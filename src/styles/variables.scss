@@ -37,20 +37,46 @@ $font-weight-bold: 700;
 $font-weight-normal: 400;
 
 // Colors
+// TODO: will probably update on the go. There are more than 240 colors in the styleguide
+// Most likely we will not use all of them, so no point in adding them
 
-$color-background: #131728;
+$color-primary: #005AA3;
+$color-highlight: #ff8000;
+$color-dark: #4D4F5D; 
+
+$color-secondary-dark: #004277;
+$color-secondary: #1769AB;
+$color-secondary-light: #4587BC;
+
+$color-text-dark: #09090B;
+$color-text: #4D4F5D;
+$color-text-light: #9799A4;
+$color-text-button: #FDFDFD;
+
+$color-background-dark: #E1E2E5;
+$color-background: #F0F0F2;
+$color-background-disabled: #D2D3D8;
+$color-background-card: #F9F9F9;
+
+$color-background-main: #F4F4F6;
+
+$color-border: #D2D3D8;
+
+$color-success: #308653;
+$color-success-light: #ECF4EF;
+
+$color-warning: #FFB511;
+$color-warning-light: #FFF1D3;
+
+$color-error: #D73E3E;
+$color-error-light: #FCEEEE;
+
+$color-navigation-icon: #A2C3DD;
+
+
 $color-white: #ffffff;
-$color-splitter-white: #F7F7FD;
 $color-black: #000000;
-$color-secondary: #0f0f0f;
-$color-primary: #00a767;
-$color-card-background: #151B2F;
-$color-disabled-background: #96a7a1;
-$color-disabled-text: #717b8e;
-$color-input-label: #888888;
-$color-social-background: #888888;
-$color-splitter-text: #BBBBBB;
-$color-highlight: #ffb82e;
+
 
 // Header
 
