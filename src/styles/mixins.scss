@@ -3,109 +3,75 @@
 // typography mixin
 
 @mixin h1TextStyle {
-  font-size: $font-size-48;
-  line-height: $line-height-title;
-  font-weight: $font-weight-bold;
-  @media (max-width: $laptop) {
-    font-size: $font-size-32;
-  }
-  @media (max-width: $tablet) {
+  font-size: $font-size-32;
+  font-weight: $font-weight-light;
+  @media (max-width: $mobile) {
     font-size: $font-size-24;
   }
 }
 
 @mixin h2TextStyle {
-  font-size: $font-size-32;
-  line-height: $line-height-title;
-  font-weight: $font-weight-bold;
-  @media (max-width: $laptop) {
-    font-size: $font-size-24;
-  }
-  @media (max-width: $tablet) {
-    font-size: $font-size-18;
+  font-size: $font-size-28;
+  font-weight: $font-weight-normal;
+  @media (max-width: $mobile) {
+    font-size: $font-size-20;
   }
 }
 
 @mixin h3TextStyle {
   font-size: $font-size-24;
-  line-height: $line-height-title;
-  font-weight: $font-weight-bold;
-  @media (max-width: $laptop) {
-    font-size: $font-size-18;
+  font-weight: $font-weight-normal;
+  @media (max-width: $mobile) {
+    font-size: $font-size-19;
   }
 }
 
 @mixin h4TextStyle {
-  font-size: $font-size-18;
-  line-height: $line-height-title;
-  font-weight: $font-weight-bold;
-  @media (max-width: $laptop) {
-    font-size: $font-size-16;
-  }
-  @media (max-width: $tablet) {
-    font-size: $font-size-14;
-  }
+  font-size: $font-size-20;
+  font-weight: $font-weight-normal;
 }
 
 @mixin h5TextStyle {
+  font-size: $font-size-18;
+  font-weight: $font-weight-normal;
+}
+
+@mixin h6TextStyle {
   font-size: $font-size-16;
-  line-height: $line-height-title;
   font-weight: $font-weight-bold;
-  @media (max-width: $tablet) {
-    font-size: $font-size-14;
-  }
 }
 
 @mixin bodyTextStyle {
-  font-size: $font-size-18;
-  line-height: $line-height-body;
-  font-weight: $font-weight-normal;
-
-  @media (max-width: $laptop) {
-    font-size: $font-size-16;
-    line-height: $line-height-body-tablet;
-  }
-}
-
-@mixin inputTextStyle {
   font-size: $font-size-16;
-  line-height: $line-height-body;
-  font-weight: $font-weight-normal;
-  color: $color-black;
 }
 
-@mixin labelTextStyle {
-  font-size: $font-size-12;
-  line-height: $line-height-16;
-  font-weight: $font-weight-normal;
-}
-
-@mixin helperTextStyle {
+@mixin bodyTextSmallStyle {
   font-size: $font-size-14;
-  line-height: $line-height-16;
+}
+
+@mixin subtitleTextStyle {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+}
+
+@mixin subtitleSmallTextStyle {
+  font-size: $font-size-14;
   font-weight: $font-weight-normal;
 }
 
 @mixin buttonTextStyle {
-  font-size: $font-size-18;
-  line-height: $line-height-24;
+  font-size: $font-size-16;
   font-weight: $font-weight-normal;
-  @media (max-width: $laptop) {
-    font-size: $font-size-16;
-    line-height: $line-height-20;
-  }
-  @media (max-width: $tablet) {
-    font-size: $font-size-14;
-    line-height: $line-height-16;
-  }
 }
 
-@mixin sharedButtonStyle {
-  padding: spacing(2) spacing(4);
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  display: grid;
-  grid-auto-flow: column;
-  gap: spacing(1);
+@mixin labelTextStyle {
+  font-size: $font-size-16;
+  font-weight: $font-weight-normal;
 }
+
+@mixin smallButtonTextStyle {
+  font-size: $font-size-12;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-14;
+}
+
