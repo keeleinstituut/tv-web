@@ -8,33 +8,34 @@
 }
 
 // BREAKPOINTS
-$mobile: 375px; // smaller than mobile is extra small devices and old mobiles
-$tablet: 768px; // smaller than tablet is mobile
-$laptop: 1024px; // smaller than laptop is tablet
+// NOTE: use max-width for media queries
+$xs-mobile: 320px; // for solving edge cases on extra small mobiles
+$mobile: 599px;
+$tablet: 899px;
+$laptop: 1199px;
 
 // TYPOGRAPHY
 
 // Font sizes
-$font-size-48: 48px;
 $font-size-32: 32px;
+$font-size-28: 28px;
 $font-size-24: 24px;
+$font-size-20: 20px;
+$font-size-19: 19px;
 $font-size-18: 18px;
 $font-size-16: 16px;
 $font-size-14: 14px;
 $font-size-12: 12px;
 
 // Line heights
-$line-height-title: 1.2;
-$line-height-body: 1.4;
-$line-height-body-tablet: 1.3;
-$line-height-16: 16px;
-$line-height-20: 20px;
-$line-height-24: 24px;
+$line-height: 1.5;
+$line-height-14: 14px;
 
 // Font weights
 
 $font-weight-bold: 700;
 $font-weight-normal: 400;
+$font-weight-light: 300;
 
 // Colors
 // TODO: will probably update on the go. There are more than 240 colors in the styleguide
@@ -76,10 +77,3 @@ $color-navigation-icon: #A2C3DD;
 
 $color-white: #ffffff;
 $color-black: #000000;
-
-
-// Header
-
-$header-height: 136px;
-$header-height-tablet: 104px;
-$header-height-mobile: 80px;

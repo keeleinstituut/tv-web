@@ -3,14 +3,15 @@
 @import "./mixins.scss";
 
 body {
-  background-color: $color-background;
+  background-color: $color-background-main;
   margin: 0;
   padding: 0;
-  color: $color-white;
 }
 
 * {
   box-sizing: border-box;
+  line-height: $line-height;
+  font-family: 'Roboto', sans-serif;
 }
 
 a {
@@ -36,6 +37,10 @@ h4 {
 
 h5 {
   @include h5TextStyle;
+}
+
+h6 {
+  @include h6TextStyle;
 }
 
 p {
