@@ -1,4 +1,8 @@
 .mainContainer {
   display: flex;
-  background: red;
+
+  button {
+    display: flex;
+    background: white;
+  }
 }
