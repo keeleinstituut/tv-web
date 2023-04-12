@@ -1,0 +1,11 @@
+{
+  "label": {
+    "email": "Email"
+  },
+  "placeholder": {
+    "email": "example@mail.com"
+  },
+  "button": {
+    "login": "Log in"
+  }
+}

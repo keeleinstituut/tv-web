@@ -1,0 +1,28 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  display: flex;
+  align-items: center;
+  background-color: $color-white;
+  border-radius: 8px;
+  padding: 8px 20px;
+
+  .labelAndInputContainer {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .label {
+    @include labelTextStyle;
+  }
+
+  input {
+    @include labelTextStyle;
+  }
+
+  .inputButton {
+    margin-left: spacing(2);
+  }
+}
