@@ -8,8 +8,8 @@ import {
   SubmitErrorHandler,
 } from 'react-hook-form'
 import DynamicForm, {
-  InputTypes,
   FieldProps,
+  InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 
@@ -24,18 +24,21 @@ const App: FC = () => {
     mode: 'onChange',
     reValidateMode: 'onSubmit',
   })
-  const stockItemFields: FieldProps[] = [
+  const testFields: FieldProps[] = [
     {
-      inputType: InputTypes.text,
+      inputType: InputTypes.Text,
+      label: <div />,
+      ariaLabel: 'ranodm',
       name: 'email',
-      label: t('label.email'),
       placeholder: t('placeholder.email'),
       type: 'email',
     },
+    { component: <h2>random</h2> },
     {
-      inputType: InputTypes.checkbox,
+      inputType: InputTypes.Checkbox,
       name: 'terms',
       label: 'terms label',
+      ariaLabel: 'aria label',
     },
   ]
 
@@ -71,7 +74,7 @@ const App: FC = () => {
         <button onClick={testLogin}>{t('button.login')}</button>
       )}
       <DynamicForm
-        fields={stockItemFields}
+        fields={testFields}
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
       />

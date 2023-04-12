@@ -5,13 +5,14 @@ import styles from './styles.module.scss'
 
 import { InputHTMLAttributes } from 'react'
 import { FieldError } from 'react-hook-form'
-import { DefaultTFuncReturn } from 'i18next'
 
-export type CheckBoxInputProps = InputHTMLAttributes<HTMLInputElement> & {
-  label?: DefaultTFuncReturn | JSX.Element
+export interface CheckBoxInputProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'label' | 'placeholder'> {
   name: string
   className?: string
   error?: FieldError
+  label?: JSX.Element | string
+  ariaLabel: string
 }
 
 const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
