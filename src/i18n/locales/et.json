@@ -7,5 +7,9 @@
   },
   "button": {
     "login": "Logi sisse"
+  },
+  "error": {
+    "input_title": "Veateade: ",
+    "invalid_email": "Vale formaat"
   }
 }

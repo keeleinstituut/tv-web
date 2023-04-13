@@ -1,53 +1,55 @@
-import { forwardRef, useState, useCallback } from 'react'
+import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
-import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import styles from './styles.module.scss'
+import classes from './styles.module.scss'
 
-import { DefaultTFuncReturn } from 'i18next'
+import InputError from 'components/atoms/InputError/InputError'
 import { InputHTMLAttributes } from 'react'
 import { FieldError } from 'react-hook-form'
 
 export interface TextInputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'placeholder'> {
-  label?: DefaultTFuncReturn | JSX.Element
-  placeholder?: DefaultTFuncReturn
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'label'> {
   name: string
   className?: string
   error?: FieldError
+  label?: JSX.Element | string
+  ariaLabel: string
 }
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   function TextInput(props, ref) {
-    const { label, name, className, type, value, placeholder, ...rest } = props
-    // Might need event handler wrappers here
-    const [useType, setUseType] = useState(type)
-    const toggleShowPassword = useCallback(() => {
-      const newType = useType === 'password' ? 'text' : 'password'
-      setUseType(newType)
-    }, [useType])
+    const {
+      label,
+      ariaLabel,
+      error,
+      name,
+      className,
+      value,
+      placeholder,
+      ...rest
+    } = props
 
+    // Might need event handler wrappers here
+    // Essentially this is just ariaLabel || label, but typescript seems to fail here
+    const ariaLabelToUse = ariaLabel || (label as string)
     return (
-      <Field name={name} className={classNames(styles.container, className)}>
-        <div className={styles.labelAndInputContainer}>
-          <Label className={classNames(styles.label)}>{label}</Label>
+      <Field name={name} className={classNames(classes.container, className)}>
+        <Label className={classNames(classes.label, !label && classes.hidden)}>
+          {label}
+        </Label>
+        <div className={classes.inputContainer}>
           <Control asChild>
             <input
               {...(placeholder ? { placeholder } : {})}
+              className={classes.inputField}
               ref={ref}
-              type={useType}
               value={value || ''}
+              aria-label={ariaLabelToUse}
               {...rest}
             />
           </Control>
+          <InputError {...error} className={classes.error} />
         </div>
-        <BaseButton
-          onClick={toggleShowPassword}
-          hidden={type !== 'password'}
-          className={styles.inputButton}
-        >
-          Show password
-        </BaseButton>
       </Field>
     )
   }

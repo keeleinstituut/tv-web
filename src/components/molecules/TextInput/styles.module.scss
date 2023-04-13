@@ -4,25 +4,50 @@
 .container {
   display: flex;
   align-items: center;
-  background-color: $color-white;
-  border-radius: 8px;
-  padding: 8px 20px;
+  height: 40px;
 
-  .labelAndInputContainer {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
+  .inputContainer {
+    position: relative;
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .inputField {
+    padding: spacing(1);
+    background-color: $color-white;
+    border: solid $color-input-border 1px;
+    border-radius: 4px;
+    height: 100%;
+
+    &:focus {
+      border-color: $color-primary;
+
+      & + .error {
+        display: none;
+      }
+    }
+
+    &:disabled {
+      background-color: $color-background
+    }
+
+    &[data-invalid] {
+      border-color: $color-error
+    }
+
+  
   }
 
   .label {
     @include labelTextStyle;
+    margin-right: spacing(1);
+
+    &.hidden {
+      display: none;
+    }
   }
 
   input {
     @include labelTextStyle;
-  }
-
-  .inputButton {
-    margin-left: spacing(2);
   }
 }
