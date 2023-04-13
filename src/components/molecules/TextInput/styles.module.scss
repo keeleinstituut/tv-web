@@ -4,12 +4,43 @@
 .container {
   display: flex;
   align-items: center;
-  background-color: $color-highlight;
-  border-radius: 8px;
-  padding: 8px 20px;
+  height: 40px;
+
+  .inputContainer {
+    position: relative;
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .inputField {
+    padding: spacing(1);
+    background-color: $color-white;
+    border: solid $color-input-border 1px;
+    border-radius: 4px;
+    height: 100%;
+
+    &:focus {
+      border-color: $color-primary;
+
+      & + .error {
+        display: none;
+      }
+    }
+
+    &:disabled {
+      background-color: $color-background
+    }
+
+    &[data-invalid] {
+      border-color: $color-error
+    }
+
+  
+  }
 
   .label {
     @include labelTextStyle;
+    margin-right: spacing(1);
 
     &.hidden {
       display: none;

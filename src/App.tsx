@@ -1,6 +1,7 @@
 import { FC, useEffect, useState, useCallback } from 'react'
 import MainLayout from 'components/organisms/MainLayout/MainLayout'
 import Keycloak from 'keycloak-js'
+import useValidators from 'hooks/useValidators'
 import {
   useForm,
   FieldValues,
@@ -19,6 +20,7 @@ const App: FC = () => {
   const { t } = useTranslation()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userId, setUserId] = useState<string>('')
+  const { emailValidator } = useValidators()
 
   const { control, handleSubmit } = useForm<FieldValues>({
     mode: 'onChange',
@@ -27,11 +29,15 @@ const App: FC = () => {
   const testFields: FieldProps[] = [
     {
       inputType: InputTypes.Text,
-      label: <div />,
-      ariaLabel: 'ranodm',
+      ariaLabel: t('label.email'),
+      label: t('label.email'),
       name: 'email',
       placeholder: t('placeholder.email'),
       type: 'email',
+      rules: {
+        required: true,
+        validate: emailValidator,
+      },
     },
     { component: <h2>random</h2> },
     {

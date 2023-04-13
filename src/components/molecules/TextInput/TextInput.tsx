@@ -1,8 +1,9 @@
 import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
-import styles from './styles.module.scss'
+import classes from './styles.module.scss'
 
+import InputError from 'components/atoms/InputError/InputError'
 import { InputHTMLAttributes } from 'react'
 import { FieldError } from 'react-hook-form'
 
@@ -17,26 +18,38 @@ export interface TextInputProps
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   function TextInput(props, ref) {
-    const { label, ariaLabel, name, className, value, placeholder, ...rest } =
-      props
+    const {
+      label,
+      ariaLabel,
+      error,
+      name,
+      className,
+      value,
+      placeholder,
+      ...rest
+    } = props
 
     // Might need event handler wrappers here
     // Essentially this is just ariaLabel || label, but typescript seems to fail here
     const ariaLabelToUse = ariaLabel || (label as string)
     return (
-      <Field name={name} className={classNames(styles.container, className)}>
-        <Label className={classNames(styles.label, !label && styles.hidden)}>
+      <Field name={name} className={classNames(classes.container, className)}>
+        <Label className={classNames(classes.label, !label && classes.hidden)}>
           {label}
         </Label>
-        <Control asChild>
-          <input
-            {...(placeholder ? { placeholder } : {})}
-            ref={ref}
-            value={value || ''}
-            aria-label={ariaLabelToUse}
-            {...rest}
-          />
-        </Control>
+        <div className={classes.inputContainer}>
+          <Control asChild>
+            <input
+              {...(placeholder ? { placeholder } : {})}
+              className={classes.inputField}
+              ref={ref}
+              value={value || ''}
+              aria-label={ariaLabelToUse}
+              {...rest}
+            />
+          </Control>
+          <InputError {...error} className={classes.error} />
+        </div>
       </Field>
     )
   }

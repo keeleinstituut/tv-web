@@ -1,6 +1,7 @@
 import { useCallback, forwardRef, Suspense } from 'react'
 import { ControllerProps } from 'react-hook-form'
-import { assertNever, SimpleUnionOmit } from 'types/helpers'
+import { omit } from 'lodash'
+import { SimpleUnionOmit } from 'types/helpers'
 import TextInput, {
   TextInputProps,
 } from 'components/molecules/TextInput/TextInput'
@@ -35,16 +36,16 @@ export type InputPropsWithoutControllerProps = SimpleUnionOmit<
 // eslint-disable-next-line react/display-name
 const InputComponent = forwardRef<HTMLInputElement, InputPropsByType>(
   (props, ref) => {
-    const { inputType, ...inputProps } = props
+    const { inputType } = props
 
-    switch (inputType) {
-      case InputTypes.Text:
-        return <TextInput {...inputProps} ref={ref} />
-      case InputTypes.Checkbox:
-        return <CheckBoxInput {...inputProps} ref={ref} />
-      default:
-        return assertNever(inputType)
+    const inputsByType = {
+      [InputTypes.Text]: <TextInput {...omit(props, 'inputType')} ref={ref} />,
+      [InputTypes.Checkbox]: (
+        <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
+      ),
     }
+
+    return inputsByType[inputType]
   }
 )
 
