@@ -1,0 +1,15 @@
+{
+  "label": {
+    "email": "Email"
+  },
+  "placeholder": {
+    "email": "example@mail.com"
+  },
+  "button": {
+    "login": "Logi sisse"
+  },
+  "error": {
+    "input_title": "Veateade: ",
+    "invalid_email": "Vale formaat"
+  }
+}

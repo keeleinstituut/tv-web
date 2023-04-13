@@ -1,0 +1,32 @@
+@import 'styles/variables';
+
+.errorContainer {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  padding: spacing(1);
+  width: calc(100% - spacing(1));
+  top: calc(100% + spacing(1));
+  left: 0;
+  right: 0;
+  background-color: $color-error-light;
+  filter: drop-shadow(0px 1px 5px rgba(0, 0, 0, 0.2));
+
+  &:before {
+    content:"\A";
+    border-style: solid;
+    border-width: 0 6px 8px 6px;
+    border-color: transparent transparent $color-error-light transparent;
+    position: absolute;
+    left: spacing(1);
+    top: spacing(-1);
+  }
+
+  span {
+    margin-left: spacing(1);
+    font-size: $font-size-13;
+    b {
+      font-weight: $font-weight-bold;
+    }
+  }
+}

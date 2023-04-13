@@ -1,26 +1,91 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { FC, useEffect, useState, useCallback } from 'react'
+import MainLayout from 'components/organisms/MainLayout/MainLayout'
+import Keycloak from 'keycloak-js'
+import useValidators from 'hooks/useValidators'
+import {
+  useForm,
+  FieldValues,
+  SubmitHandler,
+  SubmitErrorHandler,
+} from 'react-hook-form'
+import DynamicForm, {
+  FieldProps,
+  InputTypes,
+} from 'components/organisms/DynamicForm/DynamicForm'
+import { useTranslation } from 'react-i18next'
 
-function App() {
+const keycloak = new Keycloak()
+
+const App: FC = () => {
+  const { t } = useTranslation()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [userId, setUserId] = useState<string>('')
+  const { emailValidator } = useValidators()
+
+  const { control, handleSubmit } = useForm<FieldValues>({
+    mode: 'onChange',
+    reValidateMode: 'onSubmit',
+  })
+  const testFields: FieldProps[] = [
+    {
+      inputType: InputTypes.Text,
+      ariaLabel: t('label.email'),
+      label: t('label.email'),
+      name: 'email',
+      placeholder: t('placeholder.email'),
+      type: 'email',
+      rules: {
+        required: true,
+        validate: emailValidator,
+      },
+    },
+    { component: <h2>random</h2> },
+    {
+      inputType: InputTypes.Checkbox,
+      name: 'terms',
+      label: 'terms label',
+      ariaLabel: 'aria label',
+    },
+  ]
+
+  const onSubmit: SubmitHandler<FieldValues> = useCallback((values, e) => {
+    console.log('on submit', values, e)
+  }, [])
+
+  const onError: SubmitErrorHandler<FieldValues> = useCallback(
+    (errors, e) => console.log('on error', errors, e),
+    []
+  )
+
+  useEffect(() => {
+    const checkIfUserLoggedIn = async () => {
+      const isUserLoggedIn = await keycloak.init({})
+      if (isUserLoggedIn) {
+        setIsAuthenticated(true)
+        setUserId(keycloak?.idTokenParsed?.aud || '')
+      } else {
+        setIsAuthenticated(false)
+      }
+    }
+    checkIfUserLoggedIn()
+  }, [])
+
+  const testLogin = () => keycloak && keycloak.login()
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <MainLayout>
+      <div />
+      {userId && isAuthenticated ? (
+        <h1>{userId}</h1>
+      ) : (
+        <button onClick={testLogin}>{t('button.login')}</button>
+      )}
+      <DynamicForm
+        fields={testFields}
+        control={control}
+        onSubmit={handleSubmit(onSubmit, onError)}
+      />
+    </MainLayout>
+  )
 }
 
-export default App;
+export default App

@@ -1,0 +1,82 @@
+// LAYOUT
+
+@function spacing($amount) {
+  @if ($amount == 0) {
+    @return 0;
+  }
+  @return ($amount * 8) + px;
+}
+
+// BREAKPOINTS
+// NOTE: use max-width for media queries
+$xs-mobile: 320px; // for solving edge cases on extra small mobiles
+$mobile: 599px;
+$tablet: 899px;
+$laptop: 1199px;
+
+// TYPOGRAPHY
+
+// Font sizes
+$font-size-32: 32px;
+$font-size-28: 28px;
+$font-size-24: 24px;
+$font-size-20: 20px;
+$font-size-19: 19px;
+$font-size-18: 18px;
+$font-size-16: 16px;
+$font-size-14: 14px;
+$font-size-13: 13px;
+$font-size-12: 12px;
+
+// Line heights
+$line-height: 1.5;
+$line-height-14: 14px;
+
+// Font weights
+
+$font-weight-bold: 700;
+$font-weight-normal: 400;
+$font-weight-light: 300;
+
+// Colors
+// TODO: will probably update on the go. There are more than 240 colors in the styleguide
+// Most likely we will not use all of them, so no point in adding them
+
+$color-primary: #005AA3;
+$color-highlight: #ff8000;
+$color-dark: #4D4F5D; 
+
+$color-secondary-dark: #004277;
+$color-secondary: #1769AB;
+$color-secondary-light: #4587BC;
+
+$color-text-dark: #09090B;
+$color-text: #4D4F5D;
+$color-text-light: #9799A4;
+$color-text-button: #FDFDFD;
+
+$color-background-dark: #E1E2E5;
+$color-background: #F0F0F2;
+$color-background-disabled: #D2D3D8;
+$color-background-card: #F9F9F9;
+
+$color-background-main: #F4F4F6;
+
+$color-border: #D2D3D8;
+
+$color-success: #308653;
+$color-success-light: #ECF4EF;
+
+$color-warning: #FFB511;
+$color-warning-light: #FFF1D3;
+
+$color-error: #D73E3E;
+$color-error-light: #FCEEEE;
+
+$color-navigation-icon: #A2C3DD;
+
+// Input colors
+$color-input-border: #9799A4;
+
+$color-white: #ffffff;
+$color-black: #000000;
