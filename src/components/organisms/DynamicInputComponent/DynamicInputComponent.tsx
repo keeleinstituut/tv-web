@@ -1,8 +1,7 @@
 import { useCallback, forwardRef, Suspense } from 'react'
-import { omit } from 'lodash'
 import { ControllerProps } from 'react-hook-form'
-import { assertNever, SimpleUnionOmit } from 'types/helpers'
-
+import { omit } from 'lodash'
+import { SimpleUnionOmit } from 'types/helpers'
 import TextInput, {
   TextInputProps,
 } from 'components/molecules/TextInput/TextInput'
@@ -13,16 +12,16 @@ import CheckBoxInput, {
 // Extend all props of an input with the corresponding inputType
 
 export enum InputTypes {
-  text = 'text',
-  checkbox = 'checkbox',
+  Text = 'text',
+  Checkbox = 'checkbox',
 }
 
-interface TextInputPropsWithType extends TextInputProps {
-  inputType: InputTypes.text
+type TextInputPropsWithType = TextInputProps & {
+  inputType: InputTypes.Text
 }
 
-interface CheckBoxInputPropsWithType extends CheckBoxInputProps {
-  inputType: InputTypes.checkbox
+type CheckBoxInputPropsWithType = CheckBoxInputProps & {
+  inputType: InputTypes.Checkbox
 }
 
 export type InputPropsByType =
@@ -39,14 +38,14 @@ const InputComponent = forwardRef<HTMLInputElement, InputPropsByType>(
   (props, ref) => {
     const { inputType } = props
 
-    switch (inputType) {
-      case InputTypes.text:
-        return <TextInput {...omit(props, 'inputType')} ref={ref} />
-      case InputTypes.checkbox:
-        return <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
-      default:
-        return assertNever(inputType)
+    const inputsByType = {
+      [InputTypes.Text]: <TextInput {...omit(props, 'inputType')} ref={ref} />,
+      [InputTypes.Checkbox]: (
+        <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
+      ),
     }
+
+    return inputsByType[inputType]
   }
 )
 

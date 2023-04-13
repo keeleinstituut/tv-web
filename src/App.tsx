@@ -1,6 +1,7 @@
 import { FC, useEffect, useState, useCallback } from 'react'
 import MainLayout from 'components/organisms/MainLayout/MainLayout'
 import Keycloak from 'keycloak-js'
+import useValidators from 'hooks/useValidators'
 import {
   useForm,
   FieldValues,
@@ -8,8 +9,8 @@ import {
   SubmitErrorHandler,
 } from 'react-hook-form'
 import DynamicForm, {
-  InputTypes,
   FieldProps,
+  InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 
@@ -19,23 +20,31 @@ const App: FC = () => {
   const { t } = useTranslation()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userId, setUserId] = useState<string>('')
+  const { emailValidator } = useValidators()
 
   const { control, handleSubmit } = useForm<FieldValues>({
     mode: 'onChange',
     reValidateMode: 'onSubmit',
   })
-  const stockItemFields: FieldProps[] = [
+  const testFields: FieldProps[] = [
     {
-      inputType: InputTypes.text,
-      name: 'email',
+      inputType: InputTypes.Text,
+      ariaLabel: t('label.email'),
       label: t('label.email'),
+      name: 'email',
       placeholder: t('placeholder.email'),
       type: 'email',
+      rules: {
+        required: true,
+        validate: emailValidator,
+      },
     },
+    { component: <h2>random</h2> },
     {
-      inputType: InputTypes.checkbox,
+      inputType: InputTypes.Checkbox,
       name: 'terms',
       label: 'terms label',
+      ariaLabel: 'aria label',
     },
   ]
 
@@ -71,7 +80,7 @@ const App: FC = () => {
         <button onClick={testLogin}>{t('button.login')}</button>
       )}
       <DynamicForm
-        fields={stockItemFields}
+        fields={testFields}
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
       />
