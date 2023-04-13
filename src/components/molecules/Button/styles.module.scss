@@ -1,0 +1,115 @@
+@import 'src/styles/variables';
+@import 'src/styles/mixins';
+
+.btn {
+  $self: &;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: 0;
+  color: $color-white;
+  cursor: pointer;
+  font: inherit;
+  overflow: visible;
+  padding: 8px 40px;
+  text-decoration: none;
+  @include buttonTextStyle;
+  line-height: $line-height-24;
+  border-radius: $border-radius-20;
+  white-space: nowrap;
+  background-color: $color-primary;
+
+  &:focus {
+    outline: none;
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    background-color: $color-primary;
+
+    &:hover,
+    &:active,
+    &:focus {
+      background-color: $color-secondary-dark;
+    }
+
+    &:focus {
+      border: 2px solid $color-navigation-icon;
+    }
+
+    &#{$self}--disabled {
+      background-color: $color-background-disabled;
+    }
+  }
+
+  &--secondary {
+    background-color: $color-white;
+    border: 2px solid $color-border-secondary;
+    color: $color-text;
+
+    &:hover,
+    &:active {
+      border: 2px solid $color-border;
+    }
+
+    &:focus {
+      border: 2px solid $color-primary;
+    }
+
+    &#{$self}--disabled {
+      color: $color-text-light;
+      background-color: $color-background;
+      border: 2px solid $color-background-disabled;
+    }
+  }
+
+  &--text {
+    padding: 0;
+    background: none;
+    color: $color-primary;
+    border-radius: 0;
+
+    &:hover,
+    &:active {
+      text-decoration: underline;
+    }
+
+    &:focus {
+      box-shadow: inset 0 0 0 2px $color-primary;
+    }
+
+    &#{$self}--disabled {
+      color: $color-text-light;
+      text-decoration: none;
+      box-shadow: none;
+    }
+  }
+
+  &--icon {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+    color: get-color(black-coral-10);
+    font-size: 24px;
+
+    &:hover,
+    &:active {
+      color: get-color(sapphire-blue-10);
+    }
+
+    &:focus {
+      color: get-color(sapphire-blue-10);
+      box-shadow: inset 0 0 0 2px get-color(sapphire-blue-10);
+    }
+  }
+
+  &--s {
+    padding: 4.5px 24px;
+    @include smallButtonTextStyle;
+  }
+}
