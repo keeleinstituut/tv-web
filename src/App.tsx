@@ -1,7 +1,8 @@
-import { FC, useEffect, useState, useCallback } from 'react'
+import { FC, useCallback } from 'react'
 import MainLayout from 'components/organisms/MainLayout/MainLayout'
-import Keycloak from 'keycloak-js'
+import { map } from 'lodash'
 import useValidators from 'hooks/useValidators'
+import useKeycloak from 'hooks/useKeycloak'
 import {
   useForm,
   FieldValues,
@@ -14,13 +15,10 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 
-const keycloak = new Keycloak()
-
 const App: FC = () => {
   const { t } = useTranslation()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [userId, setUserId] = useState<string>('')
   const { emailValidator } = useValidators()
+  const { keycloak, isUserLoggedIn, userId } = useKeycloak()
 
   const { control, handleSubmit } = useForm<FieldValues>({
     mode: 'onChange',
@@ -57,28 +55,26 @@ const App: FC = () => {
     []
   )
 
-  useEffect(() => {
-    const checkIfUserLoggedIn = async () => {
-      const isUserLoggedIn = await keycloak.init({})
-      if (isUserLoggedIn) {
-        setIsAuthenticated(true)
-        setUserId(keycloak?.idTokenParsed?.aud || '')
-      } else {
-        setIsAuthenticated(false)
-      }
+  const testLogin = () => {
+    if (keycloak && keycloak.login) {
+      keycloak.login()
     }
-    checkIfUserLoggedIn()
-  }, [])
-
-  const testLogin = () => keycloak && keycloak.login()
+  }
   return (
     <MainLayout>
       <div />
-      {userId && isAuthenticated ? (
-        <h1>{userId}</h1>
-      ) : (
-        <button onClick={testLogin}>{t('button.login')}</button>
-      )}
+      <div>
+        {userId && isUserLoggedIn ? (
+          map(userId, (value: string, key: string) => (
+            <h6>
+              {key}: {value}
+            </h6>
+          ))
+        ) : (
+          <button onClick={testLogin}>{t('button.login')}</button>
+        )}
+      </div>
+
       <DynamicForm
         fields={testFields}
         control={control}
