@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest",
+    "plugin:prettier/recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["prettier", "@typescript-eslint", "unused-imports"],
+  "rules": {
+    // Enable reporting Prettier issues as ESlint issues
+    "prettier/prettier": "error",
+    "quotes": ["error", "single"],
+    "@typescript-eslint/no-unused-vars": 1,
+    "unused-imports/no-unused-imports": 2
+  }
+}

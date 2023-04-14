@@ -1,0 +1,15 @@
+{
+  "label": {
+    "email": "Email"
+  },
+  "placeholder": {
+    "email": "example@mail.com"
+  },
+  "button": {
+    "login": "Log in"
+  },
+  "error": {
+    "input_title": "Error message: ",
+    "invalid_email": "Invalid email"
+  }
+}
