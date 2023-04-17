@@ -13,6 +13,7 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
+import Button from 'components/molecules/Button/Button'
 
 const keycloak = new Keycloak()
 
@@ -84,6 +85,7 @@ const App: FC = () => {
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
       />
+      <Button appearance="primary" children="bu" />
     </MainLayout>
   )
 }

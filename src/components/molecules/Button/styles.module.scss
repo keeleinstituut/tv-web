@@ -8,7 +8,6 @@
 .buttonText {
   order: 2;
   @include buttonTextStyle;
-  line-height: $line-height-24;
 }
 
 .btn {
@@ -16,15 +15,12 @@
   appearance: none;
   display: inline-flex;
   align-items: center;
-  background: none;
-  border: 0;
   color: $color-white;
   cursor: pointer;
   overflow: visible;
   padding: 8px 40px;
   text-decoration: none;
   border-radius: $border-radius-20;
-  white-space: nowrap;
   background-color: $color-primary;
 
   &:focus {
@@ -57,6 +53,8 @@
   &--secondary {
     background-color: $color-white;
     border: 2px solid $color-border-secondary;
+    padding-top: 6px;
+    padding-bottom: 6px;
     color: $color-text;
 
     &:hover,
