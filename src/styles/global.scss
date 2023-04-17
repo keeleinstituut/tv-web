@@ -1,4 +1,4 @@
-@import "./_reset.scss";
+@use "reset";
 @import "./variables.scss";
 @import "./mixins.scss";
 
@@ -87,7 +87,11 @@ summary,
 time,
 mark,
 audio,
-video {
+video,
+button,
+input,
+select,
+textarea {
   box-sizing: border-box;
   line-height: $line-height;
   font-family: 'Roboto', sans-serif;
