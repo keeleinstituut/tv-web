@@ -6,6 +6,7 @@ import buttonArrowWhite from 'assets/icons/button_arrow_white.svg'
 import buttonArrowLightGrey from 'assets/icons/button_arrow_light_grey.svg'
 import buttonArrowDarkGrey from 'assets/icons/button_arrow_dark_grey.svg'
 import buttonArrowBlue from 'assets/icons/button_arrow_blue.svg'
+import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 import classNames from 'classnames'
 import classes from './styles.module.scss'
 
@@ -69,6 +70,7 @@ const Button: FC<PropsWithChildren<ButtonProps>> = ({
     >
       <span className={classes.buttonText}>{children}</span>
       <Icon icon={icon} appearance={appearance} disabled={disabled} />
+      <ButtonArrowWhite />
     </BaseButton>
   )
 }
