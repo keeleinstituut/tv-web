@@ -1,6 +1,7 @@
 {
   "label": {
-    "email": "Email"
+    "email": "Email",
+    "button_arrow": "Button arrow"
   },
   "placeholder": {
     "email": "example@mail.com"

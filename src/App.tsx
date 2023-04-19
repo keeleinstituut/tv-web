@@ -14,7 +14,11 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
-import Button from 'components/molecules/Button/Button'
+import Button, {
+  AppearanceTypes,
+  SizeTypes,
+} from 'components/molecules/Button/Button'
+import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 
 const App: FC = () => {
   const { t } = useTranslation()
@@ -81,7 +85,13 @@ const App: FC = () => {
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
       />
-      <Button appearance="primary" children="bu" />
+      <Button
+        appearance={AppearanceTypes.Primary}
+        children="bu"
+        size={SizeTypes.M}
+        icon={ButtonArrowWhite}
+        ariaLabel={t('label.button_arrow')}
+      />
     </MainLayout>
   )
 }

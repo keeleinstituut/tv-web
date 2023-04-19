@@ -1,76 +1,75 @@
-import { FC, PropsWithChildren, useMemo } from 'react'
+import { FC, PropsWithChildren, SVGProps, FunctionComponent } from 'react'
 import BaseButton, {
   BaseButtonProps,
 } from 'components/atoms/BaseButton/BaseButton'
-import buttonArrowWhite from 'assets/icons/button_arrow_white.svg'
-import buttonArrowLightGrey from 'assets/icons/button_arrow_light_grey.svg'
-import buttonArrowDarkGrey from 'assets/icons/button_arrow_dark_grey.svg'
-import buttonArrowBlue from 'assets/icons/button_arrow_blue.svg'
-import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 import classNames from 'classnames'
 import classes from './styles.module.scss'
 
+export enum AppearanceTypes {
+  Primary = 'primary',
+  Secondary = 'secondary',
+  Text = 'text',
+}
+
+export enum SizeTypes {
+  M = 'm',
+  S = 's',
+}
+
 export interface ButtonProps extends BaseButtonProps {
-  appearance?: 'primary' | 'secondary' | 'text'
-  size?: 'm' | 's'
-  icon?: boolean
+  appearance?: AppearanceTypes
+  size?: SizeTypes
+  icon?: FunctionComponent<SVGProps<SVGSVGElement>>
+  ariaLabel?: string
   hidden?: boolean
   disabled?: boolean
+  className?: string
 }
 
 export type IconProps = {
-  appearance?: 'primary' | 'secondary' | 'text'
-  icon?: boolean
-  disabled?: boolean
+  icon?: FunctionComponent<SVGProps<SVGSVGElement>>
+  className?: string
+  ariaLabel?: string
 }
 
-const Icon: FC<IconProps> = ({ icon, appearance, disabled }) => {
-  const iconClass = `${classes.icon} ${classes[`icon--${appearance}`]} `
+const Icon: FC<IconProps> = ({ icon: IconComponent, className, ariaLabel }) => {
+  const ariaLabelToUse = ariaLabel
 
-  const iconButtonClass = useMemo(() => {
-    switch (appearance) {
-      case 'primary': {
-        return buttonArrowWhite
-      }
-      case 'secondary': {
-        return disabled ? buttonArrowLightGrey : buttonArrowDarkGrey
-      }
-      case 'text': {
-        return disabled ? buttonArrowLightGrey : buttonArrowBlue
-      }
-      default: {
-        return buttonArrowWhite
-      }
-    }
-  }, [appearance, disabled])
-
-  if (!icon) return null
-  return <img className={iconClass} src={iconButtonClass} alt="buttonArrow" />
+  if (!IconComponent) return null
+  return (
+    <IconComponent
+      className={(classes.icon, className)}
+      aria-label={ariaLabelToUse}
+    />
+  )
 }
 
 const Button: FC<PropsWithChildren<ButtonProps>> = ({
   appearance = 'primary',
   size = 'm',
   icon,
+  ariaLabel,
   hidden,
   disabled,
+  className,
   children,
   ...rest
 }) => {
-  const buttonClass = `${classes.btn} ${classes[`btn--${appearance}`]} ${
-    classes[`btn--${size}`]
-  } ${disabled ? classes['btn--disabled'] : ''}`
-
   if (hidden) return null
   return (
     <BaseButton
-      className={classNames(buttonClass, classes.baseButton)}
+      className={classNames(
+        classes.btn,
+        classes[`${appearance}`],
+        classes[`${size}`],
+        classes.baseButton,
+        className
+      )}
       disabled={disabled}
       {...rest}
     >
       <span className={classes.buttonText}>{children}</span>
-      <Icon icon={icon} appearance={appearance} disabled={disabled} />
-      <ButtonArrowWhite />
+      <Icon icon={icon} className={className} ariaLabel={ariaLabel} />
     </BaseButton>
   )
 }
