@@ -13,6 +13,7 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
+import DatePicker from 'components/molecules/DatePicker/DatePickerInput'
 
 const keycloak = new Keycloak()
 
@@ -83,6 +84,19 @@ const App: FC = () => {
         fields={testFields}
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
+      />
+      <DatePicker
+        value={'10.10.2010'}
+        onChange={function (...event: any[]): void {
+          throw new Error('Function not implemented.')
+        }}
+        name={'Date picker'}
+        label={'Label'}
+        placeholder={'bu'}
+        onBlur={function (): void {
+          throw new Error('Function not implemented.')
+        }}
+        // message="error"
       />
     </MainLayout>
   )
