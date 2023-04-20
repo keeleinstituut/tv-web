@@ -13,13 +13,14 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
-import DatePicker from 'components/molecules/DatePicker/DatePickerInput'
+import DatePicker from 'components/molecules/DatePickerInput/DatePickerInput'
 
 const keycloak = new Keycloak()
 
 const App: FC = () => {
   const { t } = useTranslation()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [selectedDate, setSelectedDate] = useState(new Date())
   const [userId, setUserId] = useState<string>('')
   const { emailValidator } = useValidators()
 
@@ -86,13 +87,13 @@ const App: FC = () => {
         onSubmit={handleSubmit(onSubmit, onError)}
       />
       <DatePicker
-        value={'10.10.2010'}
-        onChange={function (...event: any[]): void {
-          throw new Error('Function not implemented.')
-        }}
+        value={selectedDate}
+        selected={selectedDate}
+        onChange={(date) => setSelectedDate(date)}
         name={'Date picker'}
         label={'Label'}
-        placeholder={'bu'}
+        placeholder={'dd.MM.yyyy'}
+        disabled
         onBlur={function (): void {
           throw new Error('Function not implemented.')
         }}

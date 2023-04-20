@@ -1,24 +1,28 @@
 import { forwardRef, useId } from 'react'
-import DatePicker from 'react-datepicker'
+import DatePicker, { registerLocale } from 'react-datepicker'
+import { et } from 'date-fns/locale'
 import { ControllerRenderProps } from 'react-hook-form'
-// import { MdChevronRight, MdChevronLeft } from 'react-icons/md'
-// import classNames from 'classnames'
 import InputError from 'components/atoms/InputError/InputError'
-import classes from './styles.module.scss'
 import Icon from 'components/atoms/Icon/Icon'
-import { ReactComponent as Arrow } from 'assets/icons/arrow.svg'
 import { ReactComponent as Calender } from 'assets/icons/calender.svg'
+import classNames from 'classnames'
+
+import 'react-datepicker/dist/react-datepicker.css'
+import classes from './styles.module.scss'
 
 type DatePickerProps = ControllerRenderProps & {
-  label: string
-  name: string
+  label?: string
+  name?: string
   hideLabel?: boolean
   disabled?: boolean
   placeholder?: string
   className?: string
   ariaLabel?: string
   message?: string
+  selected?: Date
 }
+
+registerLocale('et-EE', et)
 
 const DatePickerInput = forwardRef<any, DatePickerProps>(
   (
@@ -31,15 +35,21 @@ const DatePickerInput = forwardRef<any, DatePickerProps>(
       className,
       ariaLabel,
       message,
+      selected,
+      onChange,
       ...rest
     },
     ref
   ) => {
     const id = useId()
-    const { value, onChange } = rest
+
+    const isWeekday = (date: { getDay: () => any }) => {
+      const day = date.getDay()
+      return day !== 0 && day !== 6
+    }
 
     return (
-      <div className={classes.datepicker}>
+      <div className={classes.datePickerContainer}>
         <div>
           {label && !hideLabel && (
             <label htmlFor={id} className={classes.label}>
@@ -48,21 +58,26 @@ const DatePickerInput = forwardRef<any, DatePickerProps>(
           )}
           <div className={classes.wrapper}>
             <DatePicker
-              selected={new Date(value)}
+              selected={selected}
               dateFormat={'dd.MM.yyyy'}
-              // locale="et-EE"
+              locale="et-EE"
+              filterDate={isWeekday}
               placeholderText={placeholder}
-              // previousMonthButtonLabel={<MdChevronLeft />}
-              // nextMonthButtonLabel={<MdChevronRight />}
               aria-label={hideLabel ? label : undefined}
-              // portalId="overlay-root"
-              // {...rest}
+              disabled={disabled}
+              {...rest}
               onChange={onChange}
             />
-            <Icon icon={Calender} className={className} ariaLabel={ariaLabel} />
+            <Icon
+              icon={Calender}
+              className={classNames(
+                disabled ? classes.disabledCalender : '',
+                className
+              )}
+              ariaLabel={ariaLabel}
+            />
             <InputError message={message} />
           </div>
-          <Icon icon={Arrow} className={className} ariaLabel={ariaLabel} />
         </div>
       </div>
     )
