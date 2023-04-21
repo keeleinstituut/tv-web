@@ -8,12 +8,16 @@ import TextInput, {
 import CheckBoxInput, {
   CheckBoxInputProps,
 } from 'components/molecules/CheckBoxInput/CheckBoxInput'
+import DatePickerInput, {
+  DatePickerInputProps,
+} from 'components/molecules/DatePickerInput/DatePickerInput'
 
 // Extend all props of an input with the corresponding inputType
 
 export enum InputTypes {
   Text = 'text',
   Checkbox = 'checkbox',
+  Date = 'date',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -24,9 +28,14 @@ type CheckBoxInputPropsWithType = CheckBoxInputProps & {
   inputType: InputTypes.Checkbox
 }
 
+type DatePickerPropsWithType = DatePickerInputProps & {
+  inputType: InputTypes.Date
+}
+
 export type InputPropsByType =
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
+  | DatePickerPropsWithType
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
   InputPropsByType,
@@ -42,6 +51,13 @@ const InputComponent = forwardRef<HTMLInputElement, InputPropsByType>(
       [InputTypes.Text]: <TextInput {...omit(props, 'inputType')} ref={ref} />,
       [InputTypes.Checkbox]: (
         <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
+      ),
+      [InputTypes.Date]: (
+        <DatePickerInput
+          {...omit(props, 'inputType')}
+          ref={ref}
+          value={props.value ? props.value.toString() : undefined}
+        />
       ),
     }
 

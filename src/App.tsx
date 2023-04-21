@@ -13,14 +13,14 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
-import DatePicker from 'components/molecules/DatePickerInput/DatePickerInput'
+// import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInput'
 
 const keycloak = new Keycloak()
 
 const App: FC = () => {
   const { t } = useTranslation()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [selectedDate, setSelectedDate] = useState(new Date())
+  // const [selectedDate, setSelectedDate] = useState(new Date())
   const [userId, setUserId] = useState<string>('')
   const { emailValidator } = useValidators()
 
@@ -47,6 +47,13 @@ const App: FC = () => {
       name: 'terms',
       label: 'terms label',
       ariaLabel: 'aria label',
+    },
+    {
+      inputType: InputTypes.Date,
+      name: 'datePicker',
+      label: 'date picker label',
+      ariaLabel: 'date picker aria label',
+      placeholder: 'dd.MM.yyyy',
     },
   ]
 
@@ -86,19 +93,20 @@ const App: FC = () => {
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
       />
-      <DatePicker
+      {/* <DatePickerInput
         value={selectedDate}
-        selected={selectedDate}
+        // selected={selectedDate}
         onChange={(date) => setSelectedDate(date)}
-        name={'Date picker'}
+        name={'datePicker'}
         label={'Label'}
         placeholder={'dd.MM.yyyy'}
-        disabled
         onBlur={function (): void {
           throw new Error('Function not implemented.')
-        }}
+        }} // disabled
+        ariaLabel={''}
+        // onBlur={onBlur}
         // message="error"
-      />
+      /> */}
     </MainLayout>
   )
 }

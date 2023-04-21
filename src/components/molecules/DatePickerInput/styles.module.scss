@@ -26,33 +26,6 @@
     }
   }
 
-  .error {
-    width: 100%;
-    margin-right: 6px;
-    display: flex;
-    align-items: center;
-    // gap: get-spacing(paldiski);
-    // color: get-color(black-coral-20);
-    color: red;
-    // border-radius: $veera-radius-s;
-    border-radius: 20px;
-    // background-color: get-color(jasper-3);
-    background-color: blue;
-    font-size: 13px;
-    line-height: 20px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-
-    &::before {
-      content: '';
-      display: block;
-      //   background-color: get-color(jasper-3);
-      background-color: green;
-      border-left: 16px solid transparent;
-      border-right: 16px solid transparent;
-      border-bottom: 25px;
-    }
-  }
-
   input {
     width: 100%;
     display: block;
@@ -75,18 +48,6 @@
       border-color: $color-primary;
     }
   }
-
-  .error {
-    input {
-      border-color: $color-error;
-    }
-  }
-
-  &:disabled & {
-    input {
-      background-color: $color-input-border;
-    }
-  }
 }
 
 input:disabled {
@@ -96,6 +57,16 @@ input:disabled {
 
 .disabledCalender g path {
   fill: $color-input-border;
+}
+
+.errorMessage {
+  input {
+    border: 1px solid $color-error;
+  }
+}
+
+.hiddenLabel {
+  display: none;
 }
 
 :global(.react-datepicker-popper[data-placement^='bottom']) {
