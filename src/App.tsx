@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import Button, {
   AppearanceTypes,
   SizeTypes,
+  IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 
@@ -91,6 +92,7 @@ const App: FC = () => {
         size={SizeTypes.M}
         icon={ButtonArrowWhite}
         ariaLabel={t('label.button_arrow')}
+        iconPositioning={IconPositioningTypes.Right}
       />
     </MainLayout>
   )

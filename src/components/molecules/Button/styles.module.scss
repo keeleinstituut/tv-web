@@ -1,25 +1,8 @@
-@import 'src/styles/variables';
-@import 'src/styles/mixins';
-
-.baseButton {
-  display: flex;
-}
-
-.buttonText {
-  order: 2;
-}
-
-.m {
-  @include buttonTextStyle;
-  padding: spacing(1) spacing(5);
-}
-
-.s {
-  @include smallButtonTextStyle;
-  padding: spacing(0.625) spacing(3);
-}
+@import 'styles/variables';
+@import 'styles/mixins';
 
 .btn {
+  display: flex;
   appearance: none;
   align-items: center;
   color: $color-white;
@@ -37,10 +20,6 @@
 
 .primary {
   background-color: $color-primary;
-
-  svg {
-    order: 3;
-  }
 
   &:hover,
   &:active,
@@ -61,9 +40,11 @@
 .secondary {
   background-color: $color-white;
   border: 2px solid $color-border-secondary;
-  padding-top: 6px;
-  padding-bottom: 6px;
   color: $color-text;
+
+  svg g path {
+    fill: $color-border-secondary;
+  }
 
   &:hover,
   &:active {
@@ -78,6 +59,10 @@
     color: $color-text-light;
     background-color: $color-background;
     border: 2px solid $color-background-disabled;
+
+    svg g path {
+      fill: $color-input-border;
+    }
   }
 }
 
@@ -86,6 +71,10 @@
   background: none;
   color: $color-primary;
   border-radius: 0;
+
+  svg g path {
+    fill: $color-primary;
+  }
 
   &:hover,
   &:active {
@@ -100,5 +89,45 @@
     color: $color-text-light;
     text-decoration: none;
     box-shadow: none;
+
+    svg g path {
+      fill: $color-text-light;
+    }
+  }
+}
+
+.m {
+  @include buttonTextStyle;
+  padding: spacing(1) spacing(5);
+
+  &.secondary {
+    padding: spacing(0.75) spacing(5);
+  }
+}
+
+.s {
+  @include smallButtonTextStyle;
+  padding: spacing(0.375) spacing(3);
+
+  &.secondary {
+    padding: spacing(0.125) spacing(3);
+  }
+}
+
+.buttonText {
+  order: 2;
+}
+
+.right {
+  svg {
+    order: 3;
+    padding-left: spacing(1.25);
+  }
+}
+
+.left {
+  svg {
+    order: 1;
+    padding-right: spacing(1.25);
   }
 }
