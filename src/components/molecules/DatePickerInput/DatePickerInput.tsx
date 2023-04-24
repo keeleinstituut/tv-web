@@ -1,9 +1,11 @@
-import { InputHTMLAttributes, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { FieldError } from 'react-hook-form'
-import DatePicker, { registerLocale } from 'react-datepicker'
-import { Field, Label, Control } from '@radix-ui/react-form'
+import DatePicker, {
+  registerLocale,
+  ReactDatePickerProps,
+} from 'react-datepicker'
+import { Field, Label } from '@radix-ui/react-form'
 import { et } from 'date-fns/locale'
-// import { ControllerRenderProps } from 'react-hook-form'
 import InputError from 'components/atoms/InputError/InputError'
 import Icon from 'components/atoms/Icon/Icon'
 import { ReactComponent as Calender } from 'assets/icons/calender.svg'
@@ -12,38 +14,23 @@ import classNames from 'classnames'
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
 
-// export type DatePickerInputProps = ControllerRenderProps & {
-//   name?: string
-//   disabled?: boolean
-//   placeholder?: string
-//   className?: string
-//   message?: string
-//   selected?: Date
-//   value?: Date
-//   label?: JSX.Element | string
-//   ariaLabel: string
-// }
-
-export interface DatePickerInputProps
-  extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    'label' | 'placeholder' | 'value'
-  > {
+export interface DatePickerInputProps {
   name: string
   className?: string
   error?: FieldError
   label?: JSX.Element | string
   ariaLabel: string
   message?: string
-  // selected?: Date
-  value?: string | undefined
   placeholder?: string
+  disabled?: boolean
+  value?: string
+  onChange: ReactDatePickerProps['onChange']
 }
 
 registerLocale('et-EE', et)
 
 const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
-  function TextInput(props, ref) {
+  function DatePickerInput(props) {
     const {
       label,
       name,
@@ -52,7 +39,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       className,
       ariaLabel,
       message,
-      // selected,
       value,
       ...rest
     } = props
@@ -64,51 +50,39 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
 
     const ariaLabelToUse = ariaLabel || (label as string)
 
+    console.log('value: ', value)
+    console.log('value type of: ', typeof value)
+
+    const temp = new Date()
+
     return (
       <Field name={name} className={classes.datePickerContainer}>
         <Label
           htmlFor="DatePicker"
-          className={classNames(
-            classes.label,
-            !label && classes.hiddenLabel,
-            className
-          )}
+          className={classNames(classes.label, !label && classes.hiddenLabel)}
         >
           {label}
         </Label>
         <div
           className={classNames(
             classes.wrapper,
-            message && classes.errorMessage,
-            className
+            message && classes.errorMessage
           )}
         >
-          <Control asChild>
-            <DatePicker
-              id="DatePicker"
-              value={value}
-              // selected={selected}
-              dateFormat={'dd.MM.yyyy'}
-              locale="et-EE"
-              filterDate={isWeekday}
-              placeholderText={placeholder}
-              aria-label={ariaLabelToUse || ''}
-              disabled={disabled}
-              {...rest}
-              onChange={(date: Date) => {
-                console.log(date)
-              }}
-              onSelect={(date, event) => {
-                // handle date selection here
-              }}
-            />
-          </Control>
+          <DatePicker
+            id="DatePicker"
+            selected={temp}
+            // dateFormat={'dd.MM.yyyy'}
+            locale="et-EE"
+            filterDate={isWeekday}
+            placeholderText={placeholder}
+            aria-label={ariaLabelToUse || ''}
+            disabled={disabled}
+            {...rest}
+          />
           <Icon
             icon={Calender}
-            className={classNames(
-              disabled && classes.disabledCalender,
-              className
-            )}
+            className={classNames(disabled && classes.disabledCalender)}
             ariaLabel={ariaLabel}
           />
           <InputError message={message} />

@@ -4,31 +4,35 @@ import Keycloak from 'keycloak-js'
 import useValidators from 'hooks/useValidators'
 import {
   useForm,
-  FieldValues,
   SubmitHandler,
   SubmitErrorHandler,
+  useWatch,
 } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
-// import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInput'
+
+type FormValues = {
+  email?: string
+  terms?: string
+  datePicker?: string
+}
 
 const keycloak = new Keycloak()
 
 const App: FC = () => {
   const { t } = useTranslation()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  // const [selectedDate, setSelectedDate] = useState(new Date())
   const [userId, setUserId] = useState<string>('')
   const { emailValidator } = useValidators()
 
-  const { control, handleSubmit } = useForm<FieldValues>({
+  const { control, handleSubmit } = useForm<FormValues>({
     mode: 'onChange',
     reValidateMode: 'onSubmit',
   })
-  const testFields: FieldProps[] = [
+  const testFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Text,
       ariaLabel: t('label.email'),
@@ -53,15 +57,21 @@ const App: FC = () => {
       name: 'datePicker',
       label: 'date picker label',
       ariaLabel: 'date picker aria label',
-      placeholder: 'dd.MM.yyyy',
+      // placeholder: 'dd.MM.yyyy',
     },
   ]
 
-  const onSubmit: SubmitHandler<FieldValues> = useCallback((values, e) => {
+  const firstName = useWatch({
+    control,
+  })
+
+  console.log('firstName: ', firstName)
+
+  const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {
     console.log('on submit', values, e)
   }, [])
 
-  const onError: SubmitErrorHandler<FieldValues> = useCallback(
+  const onError: SubmitErrorHandler<FormValues> = useCallback(
     (errors, e) => console.log('on error', errors, e),
     []
   )
@@ -80,6 +90,7 @@ const App: FC = () => {
   }, [])
 
   const testLogin = () => keycloak && keycloak.login()
+
   return (
     <MainLayout>
       <div />
@@ -88,25 +99,11 @@ const App: FC = () => {
       ) : (
         <button onClick={testLogin}>{t('button.login')}</button>
       )}
-      <DynamicForm
+      <DynamicForm<FormValues>
         fields={testFields}
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
       />
-      {/* <DatePickerInput
-        value={selectedDate}
-        // selected={selectedDate}
-        onChange={(date) => setSelectedDate(date)}
-        name={'datePicker'}
-        label={'Label'}
-        placeholder={'dd.MM.yyyy'}
-        onBlur={function (): void {
-          throw new Error('Function not implemented.')
-        }} // disabled
-        ariaLabel={''}
-        // onBlur={onBlur}
-        // message="error"
-      /> */}
     </MainLayout>
   )
 }

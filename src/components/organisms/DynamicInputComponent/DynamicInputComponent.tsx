@@ -1,7 +1,7 @@
 import { useCallback, forwardRef, Suspense } from 'react'
-import { ControllerProps } from 'react-hook-form'
+import { ControllerProps, FieldValues } from 'react-hook-form'
 import { omit } from 'lodash'
-import { SimpleUnionOmit } from 'types/helpers'
+import { SimpleUnionOmit, assertNever } from 'types/helpers'
 import TextInput, {
   TextInputProps,
 } from 'components/molecules/TextInput/TextInput'
@@ -47,28 +47,23 @@ const InputComponent = forwardRef<HTMLInputElement, InputPropsByType>(
   (props, ref) => {
     const { inputType } = props
 
-    const inputsByType = {
-      [InputTypes.Text]: <TextInput {...omit(props, 'inputType')} ref={ref} />,
-      [InputTypes.Checkbox]: (
-        <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
-      ),
-      [InputTypes.Date]: (
-        <DatePickerInput
-          {...omit(props, 'inputType')}
-          ref={ref}
-          value={props.value ? props.value.toString() : undefined}
-        />
-      ),
+    switch (inputType) {
+      case InputTypes.Text:
+        return <TextInput {...omit(props, 'inputType')} ref={ref} />
+      case InputTypes.Checkbox:
+        return <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
+      case InputTypes.Date:
+        return <DatePickerInput {...omit(props, 'inputType')} ref={ref} />
+      default:
+        return assertNever(inputType)
     }
-
-    return inputsByType[inputType]
   }
 )
 
-const DynamicInputComponent = (
+function DynamicInputComponent<Type extends FieldValues>(
   props: InputPropsWithoutControllerProps
-): ControllerProps['render'] => {
-  const FieldComponent: ControllerProps['render'] = useCallback(
+) {
+  const FieldComponent: ControllerProps<Type>['render'] = useCallback(
     ({ field, fieldState: { error } }) => {
       return (
         <Suspense fallback={<div />}>

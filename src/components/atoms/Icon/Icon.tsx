@@ -1,16 +1,14 @@
-import { FC, FunctionComponent, SVGProps } from 'react'
+import { FC, SVGProps } from 'react'
 
 export type IconProps = {
-  icon?: FunctionComponent<SVGProps<SVGSVGElement>>
+  icon?: FC<SVGProps<SVGSVGElement>>
   className?: string
   ariaLabel?: string
 }
 
 const Icon: FC<IconProps> = ({ icon: IconComponent, className, ariaLabel }) => {
-  const ariaLabelToUse = ariaLabel
-
   if (!IconComponent) return null
-  return <IconComponent className={className} aria-label={ariaLabelToUse} />
+  return <IconComponent className={className} aria-label={ariaLabel} />
 }
 
 export default Icon
