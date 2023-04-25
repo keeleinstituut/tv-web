@@ -1,9 +1,6 @@
-import { forwardRef } from 'react'
+import { SyntheticEvent, forwardRef } from 'react'
 import { FieldError } from 'react-hook-form'
-import DatePicker, {
-  registerLocale,
-  ReactDatePickerProps,
-} from 'react-datepicker'
+import DatePicker, { registerLocale } from 'react-datepicker'
 import { Field, Label } from '@radix-ui/react-form'
 import { et } from 'date-fns/locale'
 import InputError from 'components/atoms/InputError/InputError'
@@ -13,6 +10,7 @@ import classNames from 'classnames'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
+import dayjs from 'dayjs'
 
 export interface DatePickerInputProps {
   name: string
@@ -22,26 +20,31 @@ export interface DatePickerInputProps {
   ariaLabel: string
   message?: string
   placeholder?: string
+  dateFormat?: string
   disabled?: boolean
   value?: string
-  onChange: ReactDatePickerProps['onChange']
+  // onChange: ReactDatePickerProps['onChange']
+  onChange: (value: string) => void
 }
 
 registerLocale('et-EE', et)
 
 const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
-  function DatePickerInput(props) {
+  function DatePickerInput(props, ref) {
     const {
       label,
       name,
       disabled,
       placeholder,
+      dateFormat,
       className,
       ariaLabel,
       message,
       value,
       ...rest
     } = props
+
+    const { onChange } = rest
 
     const isWeekday = (date: { getDay: () => number }) => {
       const day = date.getDay()
@@ -50,10 +53,25 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
 
     const ariaLabelToUse = ariaLabel || (label as string)
 
-    console.log('value: ', value)
-    console.log('value type of: ', typeof value)
+    const changeValueToString = (value: any) => {
+      const formatDateValue = dayjs(value).format('dd/mm/yyyy')
 
-    const temp = new Date()
+      console.log('formatDateValue value: ', value)
+      return formatDateValue
+    }
+    // console.log('changeValueToString(value): ', changeValueToString(value))
+
+    const selectedValue = value ? new Date(value) : null
+
+    const handleDateChange = (
+      value: Date | null,
+      event: SyntheticEvent<any, Event> | undefined
+    ) => {
+      const stringValue = changeValueToString(value)
+      console.log('handleDateChange value: ', value)
+      console.log('stringValue: ', stringValue)
+      return onChange(stringValue)
+    }
 
     return (
       <Field name={name} className={classes.datePickerContainer}>
@@ -71,14 +89,15 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         >
           <DatePicker
             id="DatePicker"
-            selected={temp}
-            // dateFormat={'dd.MM.yyyy'}
+            selected={selectedValue}
+            dateFormat={dateFormat}
             locale="et-EE"
             filterDate={isWeekday}
             placeholderText={placeholder}
             aria-label={ariaLabelToUse || ''}
             disabled={disabled}
             {...rest}
+            onChange={handleDateChange}
           />
           <Icon
             icon={Calender}

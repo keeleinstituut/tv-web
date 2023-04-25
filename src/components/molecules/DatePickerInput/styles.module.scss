@@ -1,5 +1,5 @@
-@import 'src/styles/variables';
-@import 'src/styles/mixins';
+@import 'styles/variables';
+@import 'styles/mixins';
 
 .datePickerContainer {
   display: flex;
@@ -16,7 +16,7 @@
     display: inline-block;
     flex-direction: column;
     position: relative;
-    width: 125px;
+    width: spacing(15.625);
 
     svg {
       position: absolute;
@@ -32,10 +32,10 @@
     appearance: none;
     background-color: $color-white;
     border: 1px solid $color-input-border;
-    border-radius: 4px;
+    border-radius: spacing(0.5);
     color: $color-input-main;
     @include buttonTextStyle;
-    height: 40px;
+    height: spacing(5);
     padding: spacing(1);
 
     &::placeholder {
@@ -77,7 +77,7 @@ input:disabled {
   font-family: inherit;
   @include subtitleSmallTextStyle;
   border: 1.25px solid $color-input-border;
-  border-radius: 4px;
+  border-radius: spacing(0.5);
 }
 
 :global(.react-datepicker__triangle) {
@@ -85,8 +85,8 @@ input:disabled {
 }
 
 :global(.react-datepicker__navigation) {
-  width: 50px;
-  height: 50px;
+  width: spacing(6.25);
+  height: spacing(6.25);
   top: 0;
 
   &:hover *::before {
@@ -107,16 +107,16 @@ input:disabled {
 }
 
 :global(.react-datepicker__month-container) {
-  width: 392px;
+  width: spacing(49);
 }
 
 :global(.react-datepicker__header) {
   padding: 0;
-  border-bottom: 0px;
+  border-bottom: 0;
 }
 
 :global(.react-datepicker__current-month) {
-  height: 50px;
+  height: spacing(6.25);
   border-bottom: 1px solid $color-input-border;
   background-color: $color-primary;
   color: $color-white;
@@ -132,7 +132,7 @@ input:disabled {
 
 :global(.react-datepicker__month) {
   margin: 0;
-  padding-bottom: 20px;
+  padding-bottom: spacing(2.5);
 }
 
 :global(.react-datepicker__week) {
@@ -140,14 +140,14 @@ input:disabled {
 }
 
 :global(.react-datepicker__day-name) {
-  margin-top: 11px;
+  margin-top: spacing(1.375);
   margin-left: 0;
   margin-bottom: 0;
   margin-right: 0;
   line-height: $line-height;
   color: $color-input-main;
-  height: 33px;
-  width: 56px;
+  height: spacing(4.125);
+  width: spacing(7);
   vertical-align: sub;
   background-color: $color-white;
   @include bodyTextSmallStyle;
@@ -159,59 +159,59 @@ input:disabled {
   margin: 0;
   @include subtitleSmallTextStyle;
   line-height: $line-height;
-  height: 33px;
-  width: 56px;
-  padding: 6px 0;
+  height: spacing(4.125);
+  width: spacing(7);
+  padding: spacing(0.75) 0;
 
   &:hover {
-    border-radius: 16px;
+    border-radius: spacing(2);
     position: relative;
     display: inline-block;
     background-color: $color-background-dark;
-    padding: 6px;
+    padding: spacing(0.75);
     text-align: center;
-    width: 32px;
-    margin: 0 12px;
+    width: spacing(4);
+    margin: 0 spacing(1.5);
   }
 }
 
 :global(.react-datepicker__day--selected) {
   color: $color-white;
-  border-radius: 16px;
+  border-radius: spacing(2);
   position: relative;
   display: inline-block;
   background-color: $color-primary;
   color: $color-white;
-  padding: 6px;
+  padding: spacing(0.75);
   text-align: center;
-  width: 32px;
-  margin: 0 12px;
+  width: spacing(4);
+  margin: 0 spacing(1.5);
 }
 
 :global(.react-datepicker__navigation-icon::before) {
-  border-width: 4px 4px 0 0;
-  height: 14px;
-  width: 14px;
+  border-width: spacing(0.5) spacing(0.5) 0 0;
+  height: spacing(1.75);
+  width: spacing(1.75);
 }
 
 :global(.react-datepicker__navigation-icon--previous) {
-  right: -8px;
+  right: spacing(-1);
 }
 
 :global(.react-datepicker__navigation-icon--next) {
-  left: -8px;
+  left: spacing(-1);
 }
 
 :global(.react-datepicker__day--keyboard-selected) {
   background-color: $color-navigation-icon;
-  border-radius: 16px;
+  border-radius: spacing(2);
   position: relative;
   display: inline-block;
   color: $color-white;
-  padding: 6px;
+  padding: spacing(0.75);
   text-align: center;
-  width: 32px;
-  margin: 0 12px;
+  width: spacing(4);
+  margin: 0 spacing(1.5);
 }
 
 :global(.react-datepicker__day--disabled) {

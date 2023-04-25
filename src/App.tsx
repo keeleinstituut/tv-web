@@ -57,15 +57,16 @@ const App: FC = () => {
       name: 'datePicker',
       label: 'date picker label',
       ariaLabel: 'date picker aria label',
-      // placeholder: 'dd.MM.yyyy',
+      placeholder: 'pp.kk.aaaa',
+      dateFormat: 'dd.MM.yyyy',
     },
   ]
 
-  const firstName = useWatch({
+  const formValue = useWatch({
     control,
   })
 
-  console.log('firstName: ', firstName)
+  console.log('FORM VALUE: ', formValue)
 
   const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {
     console.log('on submit', values, e)
