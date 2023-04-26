@@ -5,7 +5,6 @@ import DatePicker, {
   registerLocale,
 } from 'react-datepicker'
 import { Field, Label } from '@radix-ui/react-form'
-import dayjs from 'dayjs'
 import { et } from 'date-fns/locale'
 import InputError from 'components/atoms/InputError/InputError'
 import Icon from 'components/atoms/Icon/Icon'
@@ -14,6 +13,7 @@ import classNames from 'classnames'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
+import dayjs from 'dayjs'
 
 export interface DatePickerInputProps {
   name: string
@@ -26,13 +26,15 @@ export interface DatePickerInputProps {
   dateFormat?: string
   disabled?: boolean
   value?: string
-  onChange: (value: string) => void
+  timePicker?: boolean
+  // onChange: (value: string) => void
+  onChange: ReactDatePickerProps['onChange']
 }
 
 registerLocale('et-EE', et)
 
-const changeDateToString = (dateObject: Date | null | undefined) =>
-  dayjs(dateObject).format('DD/MM/YYYY')
+// const changeDateToString = (dateObject: Date | null | undefined) =>
+//   dayjs(dateObject).format('DD/MM/YYYY')
 
 const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
   function DatePickerInput(props, ref) {
@@ -46,25 +48,59 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       ariaLabel,
       message,
       value,
+      timePicker,
       ...rest
     } = props
 
-    const { onChange } = rest
+    // const { onChange } = rest
 
     const ariaLabelToUse = ariaLabel || (label as string)
 
-    const isWeekday = (date: { getDay: () => number }) => {
-      const day = date.getDay()
-      return day !== 0 && day !== 6
-    }
+    // const isWeekday = (date: { getDay: () => number }) => {
+    //   const day = date.getDay()
+    //   return day !== 0 && day !== 6
+    // }
 
-    const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
-      return onChange(changeDateToString(value))
-    }
+    // const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
+    //   return onChange(changeDateToString(value))
+    // }
 
-    const splittedValue = value?.split('/')
-    const formattedValue =
-      splittedValue?.[2] + '-' + splittedValue?.[1] + '-' + splittedValue?.[0]
+    // const splittedValue = value?.split('/')
+    // const formattedValue =
+    //   splittedValue?.[2] + '-' + splittedValue?.[1] + '-' + splittedValue?.[0]
+
+    // const selectedDay = value ? new Date(formattedValue) : null
+    // const selectedDate = timePicker ? value : selectedDay
+
+    console.log('value: ', value)
+    console.log('typeof value: ', typeof value)
+
+    const changeDateToString = (
+      dateObject: string | number | Date | dayjs.Dayjs | null | undefined
+    ) => dayjs(dateObject).format('ss/mm/HH/DD/MM/YYYY')
+
+    const dateToString = changeDateToString(value)
+    console.log('dateToString: ', dateToString)
+
+    const splittedTimeValue = dateToString?.split('/')
+    const formattedTimeValue =
+      splittedTimeValue?.[5] +
+      ',' +
+      splittedTimeValue?.[4] +
+      ',' +
+      splittedTimeValue?.[3] +
+      ',' +
+      splittedTimeValue?.[2] +
+      ',' +
+      splittedTimeValue?.[1] +
+      ',' +
+      splittedTimeValue?.[0]
+
+    console.log('formattedTimeValue: ', formattedTimeValue)
+
+    const selectedTime = new Date(formattedTimeValue)
+
+    console.log('selectedTime: ', selectedTime)
 
     return (
       <Field
@@ -85,15 +121,24 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         >
           <DatePicker
             id="DatePicker"
-            selected={value ? new Date(formattedValue) : null}
-            dateFormat={dateFormat}
+            // selected={value ? new Date(formattedValue) : null}
+            selected={new Date()}
+            // dateFormat={dateFormat}
+            // dateFormat={timePicker ? 'hh:mm:ss' : 'dd.MM.yyyy'}
+            dateFormat={'hh:mm:ss'}
             locale="et-EE"
-            filterDate={isWeekday}
+            // filterDate={isWeekday}
             placeholderText={placeholder}
             aria-label={ariaLabelToUse || ''}
             disabled={disabled}
+            showTimeSelect={timePicker}
+            showTimeSelectOnly={timePicker}
+            timeIntervals={15}
+            timeFormat="HH:mm:ss"
+            timeInputLabel=""
             {...rest}
-            onChange={handleDateChange}
+            // onChange={handleDateChange}
+            // onChange={onChange}
           />
           <Icon
             icon={Calender}

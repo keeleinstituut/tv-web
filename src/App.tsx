@@ -3,7 +3,12 @@ import MainLayout from 'components/organisms/MainLayout/MainLayout'
 import { map } from 'lodash'
 import useValidators from 'hooks/useValidators'
 import useKeycloak from 'hooks/useKeycloak'
-import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
+import {
+  useForm,
+  SubmitHandler,
+  SubmitErrorHandler,
+  useWatch,
+} from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -14,6 +19,7 @@ type FormValues = {
   email?: string
   terms?: string
   datePicker?: string
+  timePicker?: string
 }
 
 const App: FC = () => {
@@ -45,13 +51,22 @@ const App: FC = () => {
       label: 'terms label',
       ariaLabel: 'aria label',
     },
+    // {
+    //   inputType: InputTypes.Date,
+    //   name: 'datePicker',
+    //   label: 'date picker label',
+    //   ariaLabel: 'date picker aria label',
+    //   placeholder: 'pp.kk.aaaa',
+    //   dateFormat: 'dd.MM.yyyy',
+    // },
     {
       inputType: InputTypes.Date,
-      name: 'datePicker',
-      label: 'date picker label',
-      ariaLabel: 'date picker aria label',
-      placeholder: 'pp.kk.aaaa',
+      name: 'timePicker',
+      label: 'time picker label',
+      ariaLabel: 'time picker aria label',
+      // placeholder: 'pp.kk.aaaa',
       dateFormat: 'dd.MM.yyyy',
+      timePicker: true,
     },
   ]
 
@@ -69,6 +84,11 @@ const App: FC = () => {
       keycloak.login()
     }
   }
+
+  const formValue = useWatch({ control })
+
+  console.log('FORM VALUE: ', formValue)
+
   return (
     <MainLayout>
       <div />
