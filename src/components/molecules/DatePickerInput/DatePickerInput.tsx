@@ -1,7 +1,11 @@
-import { SyntheticEvent, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { FieldError } from 'react-hook-form'
-import DatePicker, { registerLocale } from 'react-datepicker'
+import DatePicker, {
+  ReactDatePickerProps,
+  registerLocale,
+} from 'react-datepicker'
 import { Field, Label } from '@radix-ui/react-form'
+import dayjs from 'dayjs'
 import { et } from 'date-fns/locale'
 import InputError from 'components/atoms/InputError/InputError'
 import Icon from 'components/atoms/Icon/Icon'
@@ -10,7 +14,6 @@ import classNames from 'classnames'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
-import dayjs from 'dayjs'
 
 export interface DatePickerInputProps {
   name: string
@@ -23,11 +26,13 @@ export interface DatePickerInputProps {
   dateFormat?: string
   disabled?: boolean
   value?: string
-  // onChange: ReactDatePickerProps['onChange']
   onChange: (value: string) => void
 }
 
 registerLocale('et-EE', et)
+
+const changeDateToString = (dateObject: Date | null | undefined) =>
+  dayjs(dateObject).format('DD/MM/YYYY')
 
 const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
   function DatePickerInput(props, ref) {
@@ -46,35 +51,26 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
 
     const { onChange } = rest
 
+    const ariaLabelToUse = ariaLabel || (label as string)
+
     const isWeekday = (date: { getDay: () => number }) => {
       const day = date.getDay()
       return day !== 0 && day !== 6
     }
 
-    const ariaLabelToUse = ariaLabel || (label as string)
-
-    const changeValueToString = (value: any) => {
-      const formatDateValue = dayjs(value).format('dd/mm/yyyy')
-
-      console.log('formatDateValue value: ', value)
-      return formatDateValue
+    const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
+      return onChange(changeDateToString(value))
     }
-    // console.log('changeValueToString(value): ', changeValueToString(value))
 
-    const selectedValue = value ? new Date(value) : null
-
-    const handleDateChange = (
-      value: Date | null,
-      event: SyntheticEvent<any, Event> | undefined
-    ) => {
-      const stringValue = changeValueToString(value)
-      console.log('handleDateChange value: ', value)
-      console.log('stringValue: ', stringValue)
-      return onChange(stringValue)
-    }
+    const splittedValue = value?.split('/')
+    const formattedValue =
+      splittedValue?.[2] + '-' + splittedValue?.[1] + '-' + splittedValue?.[0]
 
     return (
-      <Field name={name} className={classes.datePickerContainer}>
+      <Field
+        name={name}
+        className={classNames(classes.datePickerContainer, className)}
+      >
         <Label
           htmlFor="DatePicker"
           className={classNames(classes.label, !label && classes.hiddenLabel)}
@@ -89,7 +85,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         >
           <DatePicker
             id="DatePicker"
-            selected={selectedValue}
+            selected={value ? new Date(formattedValue) : null}
             dateFormat={dateFormat}
             locale="et-EE"
             filterDate={isWeekday}

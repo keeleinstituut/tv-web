@@ -2,12 +2,7 @@ import { FC, useEffect, useState, useCallback } from 'react'
 import MainLayout from 'components/organisms/MainLayout/MainLayout'
 import Keycloak from 'keycloak-js'
 import useValidators from 'hooks/useValidators'
-import {
-  useForm,
-  SubmitHandler,
-  SubmitErrorHandler,
-  useWatch,
-} from 'react-hook-form'
+import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -61,12 +56,6 @@ const App: FC = () => {
       dateFormat: 'dd.MM.yyyy',
     },
   ]
-
-  const formValue = useWatch({
-    control,
-  })
-
-  console.log('FORM VALUE: ', formValue)
 
   const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {
     console.log('on submit', values, e)
