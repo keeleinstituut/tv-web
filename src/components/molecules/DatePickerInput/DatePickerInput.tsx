@@ -9,6 +9,7 @@ import { et } from 'date-fns/locale'
 import InputError from 'components/atoms/InputError/InputError'
 import Icon from 'components/atoms/Icon/Icon'
 import { ReactComponent as Calender } from 'assets/icons/calender.svg'
+import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import classNames from 'classnames'
 
 import 'react-datepicker/dist/react-datepicker.css'
@@ -126,13 +127,14 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         <div
           className={classNames(
             classes.wrapper,
-            message && classes.errorMessage
+            message && classes.errorMessage,
+            timePicker && classes.timePicker
           )}
         >
           <DatePicker
             id="DatePicker"
             selected={selectedDate}
-            dateFormat={timePicker ? 'hh:mm:ss' : 'dd.MM.yyyy'}
+            dateFormat={timePicker ? 'HH:mm:ss' : 'dd.MM.yyyy'}
             locale="et-EE"
             filterDate={isWeekday}
             placeholderText={placeholder}
@@ -142,12 +144,12 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
             showTimeSelectOnly={timePicker}
             timeIntervals={15}
             timeFormat="HH:mm:ss"
-            timeInputLabel=""
+            // showTimeInput={timePicker}
             {...rest}
             onChange={handleDateChange}
           />
           <Icon
-            icon={Calender}
+            icon={timePicker ? Clock : Calender}
             className={classNames(disabled && classes.disabledCalender)}
             ariaLabel={ariaLabel}
           />

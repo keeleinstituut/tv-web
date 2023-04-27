@@ -65,7 +65,7 @@ const App: FC = () => {
       name: 'timePicker',
       label: 'time picker label',
       ariaLabel: 'time picker aria label',
-      // placeholder: 'pp.kk.aaaa',
+      placeholder: 'hh.mm.ss',
       dateFormat: 'dd.MM.yyyy',
       timePicker: true,
     },

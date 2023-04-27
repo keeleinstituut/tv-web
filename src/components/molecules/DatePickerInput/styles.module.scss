@@ -52,10 +52,15 @@
 
 input:disabled {
   background-color: $color-background;
+}
+
+input:disabled::placeholder,
+.timePicker input::placeholder {
   color: $color-input-border;
 }
 
-.disabledCalender g path {
+.disabledCalender g path,
+.disabledCalender path {
   fill: $color-input-border;
 }
 
