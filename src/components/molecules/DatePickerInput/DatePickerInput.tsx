@@ -27,14 +27,19 @@ export interface DatePickerInputProps {
   disabled?: boolean
   value?: string
   timePicker?: boolean
-  // onChange: (value: string) => void
-  onChange: ReactDatePickerProps['onChange']
+  onChange: (value: string) => void
 }
 
 registerLocale('et-EE', et)
 
-// const changeDateToString = (dateObject: Date | null | undefined) =>
-//   dayjs(dateObject).format('DD/MM/YYYY')
+const changeDateToString = (
+  dateObject: Date | null | undefined,
+  timePicker: boolean
+) => {
+  return timePicker
+    ? dayjs(dateObject).format('ss/mm/HH/DD/MM/YYYY')
+    : dayjs(dateObject).format('DD/MM/YYYY')
+}
 
 const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
   function DatePickerInput(props, ref) {
@@ -52,55 +57,60 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       ...rest
     } = props
 
-    // const { onChange } = rest
+    const { onChange } = rest
 
     const ariaLabelToUse = ariaLabel || (label as string)
 
-    // const isWeekday = (date: { getDay: () => number }) => {
-    //   const day = date.getDay()
-    //   return day !== 0 && day !== 6
-    // }
+    const isWeekday = (date: { getDay: () => number }) => {
+      const day = date.getDay()
+      return day !== 0 && day !== 6
+    }
 
-    // const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
-    //   return onChange(changeDateToString(value))
-    // }
+    const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
+      return timePicker
+        ? onChange(changeDateToString(value, true))
+        : onChange(changeDateToString(value, false))
+    }
 
-    // const splittedValue = value?.split('/')
-    // const formattedValue =
-    //   splittedValue?.[2] + '-' + splittedValue?.[1] + '-' + splittedValue?.[0]
-
-    // const selectedDay = value ? new Date(formattedValue) : null
-    // const selectedDate = timePicker ? value : selectedDay
+    const splittedDayValue = value?.split('/')
+    const formattedDayValue =
+      splittedDayValue?.[2] +
+      '-' +
+      splittedDayValue?.[1] +
+      '-' +
+      splittedDayValue?.[0]
 
     console.log('value: ', value)
-    console.log('typeof value: ', typeof value)
 
-    const changeDateToString = (
-      dateObject: string | number | Date | dayjs.Dayjs | null | undefined
-    ) => dayjs(dateObject).format('ss/mm/HH/DD/MM/YYYY')
-
-    const dateToString = changeDateToString(value)
-    console.log('dateToString: ', dateToString)
-
-    const splittedTimeValue = dateToString?.split('/')
+    const splittedTimeValue = value?.split('/')
     const formattedTimeValue =
       splittedTimeValue?.[5] +
-      ',' +
+      '/' +
       splittedTimeValue?.[4] +
-      ',' +
+      '/' +
       splittedTimeValue?.[3] +
-      ',' +
+      '/' +
       splittedTimeValue?.[2] +
-      ',' +
+      '/' +
       splittedTimeValue?.[1] +
-      ',' +
+      '/' +
       splittedTimeValue?.[0]
 
-    console.log('formattedTimeValue: ', formattedTimeValue)
+    const dateString2 = formattedTimeValue
+    const dateArray = dateString2.split('/')
+    const year = parseInt(dateArray[0])
+    const month = parseInt(dateArray[1]) - 1
+    const day = parseInt(dateArray[2])
+    const hour = parseInt(dateArray[3])
+    const minute = parseInt(dateArray[4])
+    const second = parseInt(dateArray[5])
 
-    const selectedTime = new Date(formattedTimeValue)
+    const date = new Date(year, month, day, hour, minute, second)
 
-    console.log('selectedTime: ', selectedTime)
+    const selectedTime = value ? new Date(date) : null
+    const selectedDay = value ? new Date(formattedDayValue) : null
+
+    const selectedDate = timePicker ? selectedTime : selectedDay
 
     return (
       <Field
@@ -121,13 +131,10 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         >
           <DatePicker
             id="DatePicker"
-            // selected={value ? new Date(formattedValue) : null}
-            selected={new Date()}
-            // dateFormat={dateFormat}
-            // dateFormat={timePicker ? 'hh:mm:ss' : 'dd.MM.yyyy'}
-            dateFormat={'hh:mm:ss'}
+            selected={selectedDate}
+            dateFormat={timePicker ? 'hh:mm:ss' : 'dd.MM.yyyy'}
             locale="et-EE"
-            // filterDate={isWeekday}
+            filterDate={isWeekday}
             placeholderText={placeholder}
             aria-label={ariaLabelToUse || ''}
             disabled={disabled}
@@ -137,8 +144,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
             timeFormat="HH:mm:ss"
             timeInputLabel=""
             {...rest}
-            // onChange={handleDateChange}
-            // onChange={onChange}
+            onChange={handleDateChange}
           />
           <Icon
             icon={Calender}

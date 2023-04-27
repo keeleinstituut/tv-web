@@ -51,14 +51,15 @@ const App: FC = () => {
       label: 'terms label',
       ariaLabel: 'aria label',
     },
-    // {
-    //   inputType: InputTypes.Date,
-    //   name: 'datePicker',
-    //   label: 'date picker label',
-    //   ariaLabel: 'date picker aria label',
-    //   placeholder: 'pp.kk.aaaa',
-    //   dateFormat: 'dd.MM.yyyy',
-    // },
+    {
+      inputType: InputTypes.Date,
+      name: 'datePicker',
+      label: 'date picker label',
+      ariaLabel: 'date picker aria label',
+      placeholder: 'pp.kk.aaaa',
+      dateFormat: 'dd.MM.yyyy',
+      timePicker: false,
+    },
     {
       inputType: InputTypes.Date,
       name: 'timePicker',
