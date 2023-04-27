@@ -100,6 +100,12 @@
   @include buttonTextStyle;
   padding: spacing(1) spacing(5);
 
+  &.primary {
+    &:focus {
+      padding: spacing(0.75) spacing(5);
+    }
+  }
+
   &.secondary {
     padding: spacing(0.75) spacing(5);
   }
@@ -108,6 +114,12 @@
 .s {
   @include smallButtonTextStyle;
   padding: spacing(0.375) spacing(3);
+
+  &.primary {
+    &:focus {
+      padding: spacing(0.125) spacing(3);
+    }
+  }
 
   &.secondary {
     padding: spacing(0.125) spacing(3);
