@@ -31,6 +31,29 @@ export interface DatePickerInputProps {
   onChange: (value: string) => void
 }
 
+interface TimeInputProps {
+  value?: string
+  onChange: (value: string) => void
+  timePicker?: boolean
+}
+
+const TimeInput: React.FC<TimeInputProps> = ({
+  value,
+  onChange,
+  timePicker,
+}) => {
+  console.log('TimeInput value: ', value)
+  return (
+    <input
+      className={classNames(timePicker && classes.timeInput)}
+      type="time"
+      step="1"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    />
+  )
+}
+
 registerLocale('et-EE', et)
 
 const changeDateToString = (
@@ -113,6 +136,8 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
 
     const selectedDate = timePicker ? selectedTime : selectedDay
 
+    console.log('selectedTime: ', selectedTime)
+
     return (
       <Field
         name={name}
@@ -140,11 +165,22 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
             placeholderText={placeholder}
             aria-label={ariaLabelToUse || ''}
             disabled={disabled}
-            showTimeSelect={timePicker}
+            // showTimeSelect={timePicker}
             showTimeSelectOnly={timePicker}
-            timeIntervals={15}
+            // timeIntervals={30}
             timeFormat="HH:mm:ss"
-            // showTimeInput={timePicker}
+            showTimeInput={timePicker}
+            customTimeInput={
+              timePicker && (
+                <TimeInput
+                  value={''}
+                  onChange={function (value: string): void {
+                    throw new Error('Function not implemented.')
+                  }}
+                  timePicker={timePicker}
+                />
+              )
+            }
             {...rest}
             onChange={handleDateChange}
           />
@@ -155,6 +191,8 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
           />
           <InputError message={message} />
         </div>
+
+        {/* <TimeInput value={''} onChange={onChange} timePicker={timePicker} /> */}
       </Field>
     )
   }
