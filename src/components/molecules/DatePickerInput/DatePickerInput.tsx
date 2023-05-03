@@ -11,10 +11,11 @@ import Icon from 'components/atoms/Icon/Icon'
 import { ReactComponent as Calender } from 'assets/icons/calender.svg'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import classNames from 'classnames'
+import TimePickerInput from '../TimePickerInput/TimePickerInput'
+import dayjs from 'dayjs'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
-import dayjs from 'dayjs'
 
 export interface DatePickerInputProps {
   name: string
@@ -29,29 +30,7 @@ export interface DatePickerInputProps {
   value?: string
   timePicker?: boolean
   onChange: (value: string) => void
-}
-
-interface TimeInputProps {
-  value?: string
-  onChange: (value: string) => void
-  timePicker?: boolean
-}
-
-const TimeInput: React.FC<TimeInputProps> = ({
-  value,
-  onChange,
-  timePicker,
-}) => {
-  console.log('TimeInput value: ', value)
-  return (
-    <input
-      className={classNames(timePicker && classes.timeInput)}
-      type="time"
-      step="1"
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    />
-  )
+  showSeconds?: boolean
 }
 
 registerLocale('et-EE', et)
@@ -78,6 +57,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       message,
       value,
       timePicker,
+      showSeconds,
       ...rest
     } = props
 
@@ -152,47 +132,57 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         <div
           className={classNames(
             classes.wrapper,
-            message && classes.errorMessage,
-            timePicker && classes.timePicker
+            message && classes.errorMessage
+            // timePicker && classes.timePicker
           )}
         >
-          <DatePicker
-            id="DatePicker"
-            selected={selectedDate}
-            dateFormat={timePicker ? 'HH:mm:ss' : 'dd.MM.yyyy'}
-            locale="et-EE"
-            filterDate={isWeekday}
-            placeholderText={placeholder}
-            aria-label={ariaLabelToUse || ''}
-            disabled={disabled}
-            // showTimeSelect={timePicker}
-            showTimeSelectOnly={timePicker}
-            // timeIntervals={30}
-            timeFormat="HH:mm:ss"
-            showTimeInput={timePicker}
-            customTimeInput={
-              timePicker && (
-                <TimeInput
-                  value={''}
-                  onChange={function (value: string): void {
-                    throw new Error('Function not implemented.')
-                  }}
-                  timePicker={timePicker}
-                />
-              )
-            }
-            {...rest}
-            onChange={handleDateChange}
-          />
-          <Icon
-            icon={timePicker ? Clock : Calender}
-            className={classNames(disabled && classes.disabledCalender)}
-            ariaLabel={ariaLabel}
-          />
+          {!timePicker ? (
+            <>
+              <DatePicker
+                id="DatePicker"
+                selected={selectedDate}
+                dateFormat={timePicker ? 'HH:mm:ss' : 'dd.MM.yyyy'}
+                locale="et-EE"
+                filterDate={isWeekday}
+                placeholderText={placeholder}
+                aria-label={ariaLabelToUse || ''}
+                disabled={disabled}
+                // showTimeSelect={timePicker}
+                showTimeSelectOnly={timePicker}
+                // timeIntervals={30}
+                timeFormat="HH:mm:ss"
+                showTimeInput={timePicker}
+                // customTimeInput={
+                //   timePicker && (
+                //     <TimeInput
+                //       value={''}
+                //       onChange={function (value: string): void {
+                //         throw new Error('Function not implemented.')
+                //       }}
+                //       timePicker={timePicker}
+                //     />
+                //   )
+                // }
+                {...rest}
+                onChange={handleDateChange}
+              />
+              <Icon
+                icon={timePicker ? Clock : Calender}
+                className={classNames(disabled && classes.disabledCalender)}
+                ariaLabel={ariaLabel}
+              />
+            </>
+          ) : (
+            <TimePickerInput
+              value={value}
+              onChange={onChange}
+              // timePicker={timePicker}
+              // showSeconds={showSeconds}
+              // ariaLabel={ariaLabel}
+            />
+          )}
           <InputError message={message} />
         </div>
-
-        {/* <TimeInput value={''} onChange={onChange} timePicker={timePicker} /> */}
       </Field>
     )
   }

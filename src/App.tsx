@@ -20,6 +20,7 @@ type FormValues = {
   terms?: string
   datePicker?: string
   timePicker?: string
+  timePickerSeconds?: string
 }
 
 const App: FC = () => {
@@ -65,10 +66,19 @@ const App: FC = () => {
       name: 'timePicker',
       label: 'time picker label',
       ariaLabel: 'time picker aria label',
-      placeholder: 'hh.mm.ss',
-      dateFormat: 'dd.MM.yyyy',
+      // dateFormat: 'dd.MM.yyyy',
       timePicker: true,
+      // showSeconds: false,
     },
+    // {
+    //   inputType: InputTypes.Date,
+    //   name: 'timePickerSeconds',
+    //   label: 'time picker seconds label',
+    //   ariaLabel: 'time picker seconds aria label',
+    //   dateFormat: 'dd.MM.yyyy',
+    //   timePicker: true,
+    //   showSeconds: true,
+    // },
   ]
 
   const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {

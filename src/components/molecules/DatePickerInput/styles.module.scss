@@ -26,6 +26,28 @@
     }
   }
 
+  // input[type='time']::-webkit-calendar-picker-indicator {
+  //   background: none;
+  //   -webkit-background: none;
+  // }
+
+  // input[type='time'] {
+  //   // background-image: url('../../../assets/icons/clock.svg');
+  //   // background-repeat: no-repeat;
+  //   // background-position: right;
+  //   // background-origin: content-box;
+  // }
+
+  // .timeInput::before {
+  //   content: attr(placeholder);
+  //   -webkit-content: attr(placeholder);
+  // }
+
+  // .timeInput:focus::before {
+  //   display: none;
+  //   -webkit-display: none;
+  // }
+
   input {
     width: 100%;
     display: block;
@@ -221,10 +243,4 @@ input:disabled::placeholder,
 
 :global(.react-datepicker__day--disabled) {
   color: $color-background-dark;
-}
-
-:global(.react-datepicker-ignore-onclickoutside) {
-  display: block;
-  background-color: red;
-  margin-left: 10px;
 }
