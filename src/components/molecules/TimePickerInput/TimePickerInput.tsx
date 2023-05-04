@@ -5,7 +5,7 @@ import classes from './styles.module.scss'
 
 type TimePickerInputProps = {
   value?: string
-  onChange: (value: string) => any
+  onChange: (value: string) => void
   defaultValue?: string
   minuteExclude?: Array<number>
   hourExclude?: Array<number>
@@ -15,7 +15,7 @@ type TimePickerInputProps = {
 const TimePickerInput = ({
   onChange,
   defaultValue,
-  //   minuteExclude,
+  // minuteExclude,
   //   hourExclude,
   notShowExclude,
 }: TimePickerInputProps) => {
@@ -25,14 +25,13 @@ const TimePickerInput = ({
   const [minute, setMinute] = useState(
     defaultValue ? defaultValue.split(':')[1] : '00'
   )
-
   const [second, setSecond] = useState(
     defaultValue ? defaultValue.split(':')[2] : '00'
   )
 
   useEffect(() => {
-    onChange && onChange(`${hour}:${minute}`)
-  }, [hour, minute])
+    onChange && onChange(`${hour}:${minute}:${second}`)
+  }, [hour, minute, second])
 
   return (
     <div className={classes.container}>

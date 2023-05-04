@@ -1,39 +1,51 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
 .control {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 10px;
 }
 
-.control__time {
-  cursor: pointer;
-  transition: opacity 0.5s;
-  &:hover {
-    opacity: 0.5;
-  }
+.controlTimeTop,
+.controlTimeBottom {
+  position: inherit;
+  left: 20px;
 }
 
-.control__svg {
-  stroke: var(--timeit-primary-color);
+// .controlTimeTop,
+// .controlTimeBottom {
+//   position: inherit;
+//   // cursor: pointer;
+//   // transition: opacity 0.5s;
+//   // &:hover {
+//   //   opacity: 0.5;
+//   // }
+// }
+
+.controlTimeBottom svg {
+  transform: rotate(180deg);
 }
 
-.wrapper {
+.timeContainer {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 128px;
-  width: 64px;
+  height: 106px;
+  width: auto;
   overflow: hidden;
-  // userSelect: 'none',
 }
 
 .selector {
-  width: 100%;
   height: 40px;
-  background-color: 'var(--timeit-primary-color)';
+  width: 34px;
+  background-color: $color-white;
+  border: 1px solid $color-input-border;
+  border-radius: 5px;
   position: absolute;
-  top: 39px;
-  border-radius: 8px;
+  top: 32px;
 }
 
 .timeWrapper {
@@ -41,22 +53,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  line-height: 40px;
-  font-size: 20px;
   transition: transform 0.5s;
   padding-top: 40px;
 }
 
-.time {
-  z-index: 1;
-  color: var(--timeit-primary-color);
-  opacity: '0.5';
-  transition: 'color 0.5s';
+// .time {
+//   z-index: 1;
+//   color: blue;
+//   opacity: 0.5;
+//   transition: color 0.5s;
+// }
+
+.numbers {
+  display: none;
 }
+
 .selected {
-  color: #ffffff;
-  opacity: 1;
+  color: $color-text-dark;
+  @include buttonTextStyle;
+  padding: 1px 8px;
 }
-.disabled {
-  opacity: '0.2 !important';
-}
+
+// .disabled {
+//   opacity: 0.2 !important;
+// }
