@@ -1,6 +1,7 @@
 {
   "label": {
-    "email": "Email"
+    "email": "Email",
+    "button_arrow": "Nupu nool"
   },
   "placeholder": {
     "email": "example@mail.com"
