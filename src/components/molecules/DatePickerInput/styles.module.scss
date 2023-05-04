@@ -47,12 +47,12 @@
       color: $color-text-dark;
       border-color: $color-primary;
     }
-  }
-}
 
-input:disabled {
-  background-color: $color-background;
-  color: $color-input-border;
+    &:disabled {
+      background-color: $color-background;
+      color: $color-input-border;
+    }
+  }
 }
 
 .disabledCalender g path {
@@ -203,11 +203,11 @@ input:disabled {
 }
 
 :global(.react-datepicker__day--keyboard-selected) {
-  background-color: $color-navigation-icon;
+  background-color: transparent;
   border-radius: spacing(2);
   position: relative;
   display: inline-block;
-  color: $color-white;
+  color: $color-input-main;
   padding: spacing(0.75);
   text-align: center;
   width: spacing(4);

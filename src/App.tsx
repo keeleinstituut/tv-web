@@ -51,7 +51,6 @@ const App: FC = () => {
       label: 'date picker label',
       ariaLabel: 'date picker aria label',
       placeholder: 'pp.kk.aaaa',
-      dateFormat: 'dd.MM.yyyy',
     },
   ]
 
@@ -69,6 +68,7 @@ const App: FC = () => {
       keycloak.login()
     }
   }
+
   return (
     <MainLayout>
       <div />

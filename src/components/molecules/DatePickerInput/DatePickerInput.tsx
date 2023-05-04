@@ -21,9 +21,7 @@ export interface DatePickerInputProps {
   error?: FieldError
   label?: JSX.Element | string
   ariaLabel: string
-  message?: string
   placeholder?: string
-  dateFormat?: string
   disabled?: boolean
   value?: string
   onChange: (value: string) => void
@@ -39,17 +37,15 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
     const {
       label,
       name,
+      error,
       disabled,
       placeholder,
-      dateFormat,
       className,
       ariaLabel,
-      message,
       value,
+      onChange,
       ...rest
     } = props
-
-    const { onChange } = rest
 
     const ariaLabelToUse = ariaLabel || (label as string)
 
@@ -78,15 +74,12 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
           {label}
         </Label>
         <div
-          className={classNames(
-            classes.wrapper,
-            message && classes.errorMessage
-          )}
+          className={classNames(classes.wrapper, error && classes.errorMessage)}
         >
           <DatePicker
             id="DatePicker"
             selected={value ? new Date(formattedValue) : null}
-            dateFormat={dateFormat}
+            dateFormat={'dd.MM.yyyy'}
             locale="et-EE"
             filterDate={isWeekday}
             placeholderText={placeholder}
@@ -100,7 +93,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
             className={classNames(disabled && classes.disabledCalender)}
             ariaLabel={ariaLabel}
           />
-          <InputError message={message} />
+          <InputError {...error} />
         </div>
       </Field>
     )
