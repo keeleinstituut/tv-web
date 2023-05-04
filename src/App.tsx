@@ -9,6 +9,12 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
+import Button, {
+  AppearanceTypes,
+  SizeTypes,
+  IconPositioningTypes,
+} from 'components/molecules/Button/Button'
+import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 
 type FormValues = {
   email?: string
@@ -88,6 +94,14 @@ const App: FC = () => {
         fields={testFields}
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
+      />
+      <Button
+        appearance={AppearanceTypes.Primary}
+        children="bu"
+        size={SizeTypes.M}
+        icon={ButtonArrowWhite}
+        ariaLabel={t('label.button_arrow')}
+        iconPositioning={IconPositioningTypes.Right}
       />
     </MainLayout>
   )
