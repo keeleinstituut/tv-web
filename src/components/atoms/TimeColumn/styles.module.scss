@@ -11,7 +11,27 @@
 .controlTimeTop,
 .controlTimeBottom {
   position: inherit;
-  left: 20px;
+}
+
+.controlTimeBottom {
+  top: 10px;
+}
+
+.controlTimeTop {
+  padding-top: 4px;
+}
+
+.controlTimeTop svg {
+  transform: rotate(270deg);
+}
+
+.controlTimeBottom svg {
+  transform: rotate(90deg);
+}
+
+.controlTimeTop svg g path,
+.controlTimeBottom svg g path {
+  fill: $color-border-secondary;
 }
 
 // .controlTimeTop,
@@ -24,10 +44,6 @@
 //   // }
 // }
 
-.controlTimeBottom svg {
-  transform: rotate(180deg);
-}
-
 .timeContainer {
   position: relative;
   display: flex;
@@ -35,7 +51,7 @@
   align-items: center;
   height: 106px;
   width: auto;
-  overflow: hidden;
+  // overflow: hidden;
 }
 
 .selector {
@@ -54,7 +70,7 @@
   flex-direction: column;
   align-items: center;
   transition: transform 0.5s;
-  padding-top: 40px;
+  padding-top: 4px;
 }
 
 // .time {

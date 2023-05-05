@@ -19,7 +19,7 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
+import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 
 type FormValues = {
   email?: string
@@ -130,7 +130,7 @@ const App: FC = () => {
         appearance={AppearanceTypes.Primary}
         children="bu"
         size={SizeTypes.M}
-        icon={ButtonArrowWhite}
+        icon={ButtonArrow}
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
       />

@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react'
-import Icon from 'components/atoms/Icon/Icon'
-import { ReactComponent as TimeArrow } from 'assets/icons/time_arrow.svg'
+import { useEffect, useState } from 'react'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
+import Icon from '../Icon/Icon'
 
 import classes from './styles.module.scss'
 
-type TimeColumnProps = {
+export type TimeColumnProps = {
   start: number
   end: number
   setValue: (value: string) => void
@@ -93,40 +94,17 @@ const TimeColumn = ({
     }
   }
 
-  const controlTopTest = () => {
-    let prev = selectorMove
-    if (prev !== start) {
-      if (exclude?.includes(prev - 1)) {
-        while (exclude?.includes(prev - 1)) {
-          if (prev - 2 < start) {
-            return setSlecetorMove(end)
-          }
-          prev = prev - 1
-          setSlecetorMove(prev - 1)
-        }
-      } else {
-        return setSlecetorMove(prev - 1)
-      }
-    } else {
-      let endnumber = end
-      if (exclude?.includes(end)) {
-        while (exclude?.includes(endnumber - 1)) {
-          endnumber = endnumber - 1
-          setSlecetorMove(endnumber - 1)
-        }
-      } else {
-        return setSlecetorMove(end)
-      }
-    }
-  }
+  // const handleClick = () => {
+  //   alert('bu')
+  // }
 
   return (
     <div className={classes.control}>
       <div className={classes.timeContainer}>
         <div className={classes.selector} />
-        <div className={classes.controlTimeTop} onClick={controlTopTest}>
-          <Icon icon={TimeArrow} ariaLabel={'top time arrow'} />
-        </div>
+        <BaseButton onClick={controlTop} className={classes.controlTimeTop}>
+          <Icon icon={ButtonArrow} ariaLabel={'top time arrow'} />
+        </BaseButton>
         <div
           className={classes.timeWrapper}
           style={{
@@ -146,9 +124,12 @@ const TimeColumn = ({
             </div>
           ))}
         </div>
-        <div className={classes.controlTimeBottom} onClick={controlBottom}>
-          <Icon icon={TimeArrow} ariaLabel={'bottom time arrow'} />
-        </div>
+        <BaseButton
+          onClick={controlBottom}
+          className={classes.controlTimeBottom}
+        >
+          <Icon icon={ButtonArrow} ariaLabel={'bottom time arrow'} />
+        </BaseButton>
       </div>
     </div>
   )

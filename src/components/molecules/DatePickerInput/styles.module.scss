@@ -17,13 +17,13 @@
     flex-direction: column;
     position: relative;
     width: spacing(15.625);
+  }
 
-    svg {
-      position: absolute;
-      right: spacing(1);
-      top: spacing(1);
-      pointer-events: none;
-    }
+  .dateIcon {
+    position: absolute;
+    right: spacing(1);
+    top: spacing(1);
+    pointer-events: none;
   }
 
   // input[type='time']::-webkit-calendar-picker-indicator {

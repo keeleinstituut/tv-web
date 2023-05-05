@@ -6,16 +6,16 @@ import DatePicker, {
 } from 'react-datepicker'
 import { Field, Label } from '@radix-ui/react-form'
 import { et } from 'date-fns/locale'
-import InputError from 'components/atoms/InputError/InputError'
-import Icon from 'components/atoms/Icon/Icon'
-import { ReactComponent as Calender } from 'assets/icons/calender.svg'
-import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import classNames from 'classnames'
-import TimePickerInput from '../TimePickerInput/TimePickerInput'
 import dayjs from 'dayjs'
+// import { ReactComponent as Clock } from 'assets/icons/clock.svg'
+import { ReactComponent as Calender } from 'assets/icons/clock.svg'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
+import Icon from 'components/atoms/Icon/Icon'
+import InputError from 'components/atoms/InputError/InputError'
+import TimePickerInput from '../TimePickerInput/TimePickerInput'
 
 export interface DatePickerInputProps {
   name: string
@@ -141,17 +141,18 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               <DatePicker
                 id="DatePicker"
                 selected={selectedDate}
-                dateFormat={timePicker ? 'HH:mm:ss' : 'dd.MM.yyyy'}
+                // dateFormat={timePicker ? 'HH:mm:ss' : 'dd.MM.yyyy'}
+                dateFormat={'dd.MM.yyyy'}
                 locale="et-EE"
                 filterDate={isWeekday}
                 placeholderText={placeholder}
                 aria-label={ariaLabelToUse || ''}
                 disabled={disabled}
                 // showTimeSelect={timePicker}
-                showTimeSelectOnly={timePicker}
+                // showTimeSelectOnly={timePicker}
                 // timeIntervals={30}
-                timeFormat="HH:mm:ss"
-                showTimeInput={timePicker}
+                // timeFormat="HH:mm:ss"
+                // showTimeInput={timePicker}
                 // customTimeInput={
                 //   timePicker && (
                 //     <TimeInput
@@ -167,19 +168,17 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
                 onChange={handleDateChange}
               />
               <Icon
-                icon={timePicker ? Clock : Calender}
-                className={classNames(disabled && classes.disabledCalender)}
+                // icon={timePicker ? Clock : Calender}
+                icon={Calender}
+                className={classNames(
+                  classes.dateIcon,
+                  disabled && classes.disabledCalender
+                )}
                 ariaLabel={ariaLabel}
               />
             </>
           ) : (
-            <TimePickerInput
-              value={value}
-              onChange={onChange}
-              // timePicker={timePicker}
-              // showSeconds={showSeconds}
-              // ariaLabel={ariaLabel}
-            />
+            <TimePickerInput value={value} onChange={onChange} />
           )}
           <InputError message={message} />
         </div>
