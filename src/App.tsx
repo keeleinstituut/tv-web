@@ -1,6 +1,5 @@
 import { FC, useCallback } from 'react'
 import MainLayout from 'components/organisms/MainLayout/MainLayout'
-import { map } from 'lodash'
 import useValidators from 'hooks/useValidators'
 import useKeycloak from 'hooks/useKeycloak'
 import {
@@ -14,6 +13,12 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
+import Button, {
+  AppearanceTypes,
+  SizeTypes,
+  IconPositioningTypes,
+} from 'components/molecules/Button/Button'
+import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 
 const App: FC = () => {
   const { t } = useTranslation()
@@ -65,11 +70,7 @@ const App: FC = () => {
       <div />
       <div>
         {userId && isUserLoggedIn ? (
-          map(userId, (value: string, key: string) => (
-            <h6>
-              {key}: {value}
-            </h6>
-          ))
+          <pre>{JSON.stringify(userId, null, 2)}</pre>
         ) : (
           <button onClick={testLogin}>{t('button.login')}</button>
         )}
@@ -79,6 +80,14 @@ const App: FC = () => {
         fields={testFields}
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
+      />
+      <Button
+        appearance={AppearanceTypes.Primary}
+        children="bu"
+        size={SizeTypes.M}
+        icon={ButtonArrowWhite}
+        ariaLabel={t('label.button_arrow')}
+        iconPositioning={IconPositioningTypes.Right}
       />
     </MainLayout>
   )

@@ -38,45 +38,48 @@ $font-weight-bold: 700;
 $font-weight-normal: 400;
 $font-weight-light: 300;
 
+// Border radius
+$border-radius-20: 20px;
+
 // Colors
 // TODO: will probably update on the go. There are more than 240 colors in the styleguide
 // Most likely we will not use all of them, so no point in adding them
 
-$color-primary: #005AA3;
+$color-primary: #005aa3;
 $color-highlight: #ff8000;
-$color-dark: #4D4F5D; 
+$color-dark: #4d4f5d;
 
 $color-secondary-dark: #004277;
-$color-secondary: #1769AB;
-$color-secondary-light: #4587BC;
+$color-secondary: #1769ab;
+$color-secondary-light: #4587bc;
 
-$color-text-dark: #09090B;
-$color-text: #4D4F5D;
-$color-text-light: #9799A4;
-$color-text-button: #FDFDFD;
+$color-text-dark: #09090b;
+$color-text: #4d4f5d;
+$color-text-light: #9799a4;
+$color-text-button: #fdfdfd;
 
-$color-background-dark: #E1E2E5;
-$color-background: #F0F0F2;
-$color-background-disabled: #D2D3D8;
-$color-background-card: #F9F9F9;
+$color-background-dark: #e1e2e5;
+$color-background: #f0f0f2;
+$color-background-disabled: #d2d3d8;
+$color-background-card: #f9f9f9;
 
-$color-background-main: #F4F4F6;
+$color-background-main: #f4f4f6;
 
-$color-border: #D2D3D8;
+$color-border: #d2d3d8;
+$color-border-secondary: #5d6071;
 
 $color-success: #308653;
-$color-success-light: #ECF4EF;
+$color-success-light: #ecf4ef;
 
-$color-warning: #FFB511;
-$color-warning-light: #FFF1D3;
+$color-warning: #ffb511;
+$color-warning-light: #fff1d3;
 
-$color-error: #D73E3E;
-$color-error-light: #FCEEEE;
+$color-error: #d73e3e;
+$color-error-light: #fceeee;
 
-$color-navigation-icon: #A2C3DD;
-
+$color-navigation-icon: #a2c3dd;
 // Input colors
-$color-input-border: #9799A4;
+$color-input-border: #9799a4;
 
 $color-white: #ffffff;
 $color-black: #000000;
