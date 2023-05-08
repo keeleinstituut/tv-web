@@ -8,3 +8,14 @@
   width: 166px;
   background-color: $color-white;
 }
+
+.hiddenContainer {
+  display: none;
+}
+
+.timeIcon {
+  position: absolute;
+  right: spacing(1);
+  top: spacing(1);
+  pointer-events: none;
+}

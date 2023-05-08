@@ -9,7 +9,7 @@ import { et } from 'date-fns/locale'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 // import { ReactComponent as Clock } from 'assets/icons/clock.svg'
-import { ReactComponent as Calender } from 'assets/icons/clock.svg'
+import { ReactComponent as Calender } from 'assets/icons/calender.svg'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
@@ -84,7 +84,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       '-' +
       splittedDayValue?.[0]
 
-    console.log('value: ', value)
+    console.log('DatePickerInput value: ', value)
 
     const splittedTimeValue = value?.split('/')
     const formattedTimeValue =
@@ -116,7 +116,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
 
     const selectedDate = timePicker ? selectedTime : selectedDay
 
-    console.log('selectedTime: ', selectedTime)
+    // console.log('selectedTime: ', selectedTime)
 
     return (
       <Field
@@ -178,7 +178,13 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               />
             </>
           ) : (
-            <TimePickerInput value={value} onChange={onChange} />
+            <TimePickerInput
+              value={value}
+              onChange={onChange}
+              disabled={false}
+              ariaLabel={'clock'}
+              // defaultValue="10:10:10"
+            />
           )}
           <InputError message={message} />
         </div>
