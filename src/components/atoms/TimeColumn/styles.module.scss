@@ -14,8 +14,7 @@
 }
 
 .controlTimeBottom {
-  // top: 10px;
-  top: -36px;
+  top: -37px;
 }
 
 .controlTimeTop {
@@ -52,7 +51,6 @@
   align-items: center;
   height: 106px;
   width: auto;
-  // overflow: hidden;
 }
 
 .selector {
@@ -70,17 +68,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  // padding-top: 4px;
   transform: translateY(-43px);
   margin-top: 44px;
 }
-
-// .time {
-//   z-index: 1;
-//   color: blue;
-//   opacity: 0.5;
-//   transition: color 0.5s;
-// }
 
 .numbers {
   display: none;
@@ -89,7 +79,6 @@
 .selected {
   color: $color-text-dark;
   @include buttonTextStyle;
-  // padding: 1px 8px;
   padding: 1px 8px;
 }
 
