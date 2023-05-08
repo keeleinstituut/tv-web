@@ -1,5 +1,4 @@
 import { FC, useCallback } from 'react'
-import MainLayout from 'components/organisms/MainLayout/MainLayout'
 import { map } from 'lodash'
 import useValidators from 'hooks/useValidators'
 import useKeycloak from 'hooks/useKeycloak'
@@ -21,7 +20,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 
-const App: FC = () => {
+const Test: FC = () => {
   const { t } = useTranslation()
   const { emailValidator } = useValidators()
   const { keycloak, isUserLoggedIn, userId } = useKeycloak()
@@ -67,7 +66,7 @@ const App: FC = () => {
     }
   }
   return (
-    <MainLayout>
+    <>
       <div />
       <div>
         {userId && isUserLoggedIn ? (
@@ -94,8 +93,8 @@ const App: FC = () => {
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
       />
-    </MainLayout>
+    </>
   )
 }
 
-export default App
+export default Test
