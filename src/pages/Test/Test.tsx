@@ -1,5 +1,4 @@
 import { FC, useCallback } from 'react'
-import { map } from 'lodash'
 import useValidators from 'hooks/useValidators'
 import useKeycloak from 'hooks/useKeycloak'
 import {
@@ -70,11 +69,7 @@ const Test: FC = () => {
       <div />
       <div>
         {userId && isUserLoggedIn ? (
-          map(userId, (value: string, key: string) => (
-            <h6>
-              {key}: {value}
-            </h6>
-          ))
+          <pre>{JSON.stringify(userId, null, 2)}</pre>
         ) : (
           <button onClick={testLogin}>{t('button.login')}</button>
         )}
