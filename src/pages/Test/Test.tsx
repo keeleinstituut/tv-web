@@ -1,6 +1,5 @@
 import { FC, useCallback } from 'react'
 import useValidators from 'hooks/useValidators'
-import useKeycloak from 'hooks/useKeycloak'
 import {
   useForm,
   FieldValues,
@@ -18,11 +17,12 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
+import useAuth from 'hooks/useAuth'
 
 const Test: FC = () => {
   const { t } = useTranslation()
   const { emailValidator } = useValidators()
-  const { keycloak, isUserLoggedIn, userId } = useKeycloak()
+  const { userId, login, isUserLoggedIn } = useAuth()
 
   const { control, handleSubmit } = useForm<FieldValues>({
     mode: 'onChange',
@@ -59,11 +59,6 @@ const Test: FC = () => {
     []
   )
 
-  const testLogin = () => {
-    if (keycloak && keycloak.login) {
-      keycloak.login()
-    }
-  }
   return (
     <>
       <div />
@@ -71,7 +66,7 @@ const Test: FC = () => {
         {userId && isUserLoggedIn ? (
           <pre>{JSON.stringify(userId, null, 2)}</pre>
         ) : (
-          <button onClick={testLogin}>{t('button.login')}</button>
+          <button onClick={login}>{t('button.login')}</button>
         )}
       </div>
 

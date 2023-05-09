@@ -1,23 +1,29 @@
 import PageNotFound from 'pages/PageNotFound/PageNotFound'
-import MainLayout from 'components/organisms/MainLayout/MainLayout'
-import Landing from 'pages/Landing/Landing'
+import MainLayout from 'components/templates/MainLayout/MainLayout'
+import AuthWrapper from 'components/templates/AuthWrapper/AuthWrapper'
 import Test from 'pages/Test/Test'
 
 import { createBrowserRouter } from 'react-router-dom'
 
 const router = createBrowserRouter([
   {
+    path: 'test',
+    element: <Test />,
+  },
+  {
     path: '/',
-    element: <MainLayout />,
-    errorElement: <PageNotFound />,
+    element: <AuthWrapper />,
     children: [
       {
-        path: '',
-        element: <Landing />,
-      },
-      {
-        path: 'test',
-        element: <Test />,
+        path: '/',
+        element: <MainLayout />,
+        errorElement: <PageNotFound />,
+        children: [
+          {
+            path: 'dashboard',
+            element: <Test />,
+          },
+        ],
       },
     ],
   },

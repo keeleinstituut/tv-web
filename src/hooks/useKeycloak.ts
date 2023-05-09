@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, createContext } from 'react'
 import {
   pickBy,
   startsWith,
@@ -8,6 +8,13 @@ import {
   Dictionary,
 } from 'lodash'
 import Keycloak, { KeycloakConfig } from 'keycloak-js'
+
+export const AuthContext = createContext({
+  isUserLoggedIn: false,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  login: () => {},
+  userId: {},
+})
 
 const keyCloakVariables: Dictionary<string | undefined> = pickBy(
   process.env,
@@ -30,6 +37,8 @@ const useKeycloak = () => {
       const isUserLoggedIn = await keycloak.init({
         onLoad: 'check-sso',
         checkLoginIframe: false,
+        silentCheckSsoRedirectUri:
+          window.location.origin + '/silent-check-sso.html',
       })
       setIsUserLoggedIn(isUserLoggedIn)
       if (isUserLoggedIn) {

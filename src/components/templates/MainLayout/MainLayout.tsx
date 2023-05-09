@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from 'react'
 import { Outlet, Link } from 'react-router-dom'
-import classes from './MainLayout.module.scss'
+import classes from './styles.module.scss'
 
 const MainLayout: FC<PropsWithChildren> = (props) => {
   return (
@@ -9,7 +9,7 @@ const MainLayout: FC<PropsWithChildren> = (props) => {
         <nav>
           <ul>
             <li>
-              <Link to={'/test'}>test page</Link>
+              <Link to={'/dashboard'}>Dashboard</Link>
             </li>
             <li>
               <Link to={'/'}>landing page</Link>
