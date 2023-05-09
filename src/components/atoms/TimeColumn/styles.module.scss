@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 spacing(1.25);
 }
 
 .controlTimeTop,
@@ -14,11 +14,11 @@
 }
 
 .controlTimeBottom {
-  top: -37px;
+  top: spacing(-4.625);
 }
 
 .controlTimeTop {
-  padding-top: 8px;
+  padding-top: spacing(1);
 }
 
 .controlTimeTop svg {
@@ -34,33 +34,23 @@
   fill: $color-border-secondary;
 }
 
-// .controlTimeTop,
-// .controlTimeBottom {
-//   position: inherit;
-//   // cursor: pointer;
-//   // transition: opacity 0.5s;
-//   // &:hover {
-//   //   opacity: 0.5;
-//   // }
-// }
-
 .timeContainer {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 106px;
+  height: spacing(13.25);
   width: auto;
 }
 
 .selector {
-  height: 40px;
-  width: 34px;
+  height: spacing(5);
+  width: spacing(4.25);
   background-color: $color-white;
-  border: 1px solid $color-input-border;
-  border-radius: 5px;
+  border: spacing(0.125) solid $color-input-border;
+  border-radius: spacing(0.625);
   position: absolute;
-  top: 32px;
+  top: spacing(4);
 }
 
 .timeWrapper {
@@ -68,8 +58,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateY(-43px);
-  margin-top: 44px;
+  transform: translateY(spacing(-5.375));
+  margin-top: spacing(5.5);
 }
 
 .numbers {
@@ -79,9 +69,5 @@
 .selected {
   color: $color-text-dark;
   @include buttonTextStyle;
-  padding: 1px 8px;
+  padding: spacing(0.125) spacing(1);
 }
-
-// .disabled {
-//   opacity: 0.2 !important;
-// }

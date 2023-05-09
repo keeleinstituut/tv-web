@@ -9,17 +9,20 @@ import {
 } from 'react'
 import TimeColumn from 'components/atoms/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
-
-import classes from './styles.module.scss'
+import { FieldError } from 'react-hook-form'
 import Icon from 'components/atoms/Icon/Icon'
 import classNames from 'classnames'
+
+import classes from './styles.module.scss'
 
 export type TimePickerInputProps = {
   value?: string
   onChange: (value: string) => void
-  defaultValue?: string
   disabled?: boolean
   ariaLabel?: string
+  error?: FieldError
+  showSeconds?: boolean
+  timePicker?: boolean
 }
 
 export type TimeInputProps = {
@@ -28,6 +31,8 @@ export type TimeInputProps = {
   value?: string
   timeColumnVisibility: () => void
   inputRef?: Ref<HTMLInputElement> | null
+  error?: FieldError
+  showSeconds?: boolean
 }
 
 const TimeInput: FC<TimeInputProps> = forwardRef(
@@ -38,7 +43,8 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
       value,
       timeColumnVisibility,
       inputRef,
-      ...rest
+      error,
+      showSeconds,
     }: TimeInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
@@ -48,14 +54,20 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
       }
     }
 
+    const timePlaceholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
+
     return (
       <>
         <input
-          value={value ? value : 'hh:mm:ss'}
+          className={classNames(
+            classes.timeInput,
+            disabled && classes.disabledTimeInput,
+            error && classes.errorMessage
+          )}
+          value={value ? value : timePlaceholder}
           type="text"
           onClick={handleClick}
           ref={inputRef}
-          {...rest}
         />
         <Icon
           icon={Clock}
@@ -72,27 +84,21 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
 
 const TimePickerInput = ({
   onChange,
-  defaultValue,
   disabled,
   ariaLabel,
   value,
+  error,
+  showSeconds,
+  timePicker,
 }: TimePickerInputProps) => {
-  const [hour, setHour] = useState(
-    defaultValue ? defaultValue.split(':')[0] : '00'
-  )
-  const [minute, setMinute] = useState(
-    defaultValue ? defaultValue.split(':')[1] : '00'
-  )
-  const [second, setSecond] = useState(
-    defaultValue ? defaultValue.split(':')[2] : '00'
-  )
+  const [hour, setHour] = useState<string>('00')
+  const [minute, setMinute] = useState<string>('00')
+  const [second, setSecond] = useState<string>('00')
   const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
 
   const timeColumnVisibility = () => {
     setTimeColumnOpen((prevState) => !prevState)
   }
-
-  console.log('isTimeColumnOpen: ', isTimeColumnOpen)
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
@@ -116,8 +122,12 @@ const TimePickerInput = ({
   const timeColumnRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    onChange && onChange(`${hour}:${minute}:${second}`)
-  }, [hour, minute, second])
+    const timeWithSeconds = `${hour}:${minute}:${second}`
+    const formattedTime = `${hour}:${minute}`
+    onChange(showSeconds ? timeWithSeconds : formattedTime)
+  }, [hour, minute, second, onChange, showSeconds])
+
+  if (!timePicker) return null
 
   return (
     <>
@@ -127,16 +137,22 @@ const TimePickerInput = ({
         value={value}
         timeColumnVisibility={timeColumnVisibility}
         inputRef={inputRef}
+        error={error}
+        showSeconds={showSeconds}
       />
       <div
         className={
-          isTimeColumnOpen ? classes.container : classes.hiddenContainer
+          !isTimeColumnOpen || disabled
+            ? classes.hiddenContainer
+            : classes.container
         }
         ref={timeColumnRef}
       >
         <TimeColumn start={0} end={24} value={hour} setValue={setHour} />
         <TimeColumn start={0} end={59} value={minute} setValue={setMinute} />
-        <TimeColumn start={0} end={59} value={second} setValue={setSecond} />
+        {showSeconds && (
+          <TimeColumn start={0} end={59} value={second} setValue={setSecond} />
+        )}
       </div>
     </>
   )

@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 import Icon from '../Icon/Icon'
+import { map, range } from 'lodash'
 
 import classes from './styles.module.scss'
-import { range } from 'lodash'
 
 export type TimeColumnProps = {
   start: number
@@ -52,14 +52,13 @@ const TimeColumn = ({ start, end, setValue, value }: TimeColumnProps) => {
           <Icon icon={ButtonArrow} ariaLabel={'top time arrow'} />
         </BaseButton>
         <div className={classes.timeWrapper}>
-          {timeArray.map((time) => {
+          {map(timeArray, (time) => {
             return (
               <div
                 key={time}
-                className={` ${
+                className={`${
                   +time === selectedTime ? classes.selected : classes.numbers
-                } 
-               `}
+                }`}
               >
                 {time.toString().length === 1 ? `0${time}` : time}
               </div>

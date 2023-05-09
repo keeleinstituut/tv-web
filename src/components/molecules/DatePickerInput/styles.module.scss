@@ -6,10 +6,15 @@
   align-items: center;
   width: 100%;
 
+  .contentContainer {
+    display: flex;
+  }
+
   .label {
     @include labelTextStyle;
     display: inline-block;
     padding-right: spacing(1.25);
+    padding-top: 6px;
   }
 
   .wrapper {
@@ -25,60 +30,6 @@
     top: spacing(1);
     pointer-events: none;
   }
-
-  // input[type='time']::-webkit-calendar-picker-indicator {
-  //   background: none;
-  //   -webkit-background: none;
-  // }
-
-  // input[type='time'] {
-  //   // background-image: url('../../../assets/icons/clock.svg');
-  //   // background-repeat: no-repeat;
-  //   // background-position: right;
-  //   // background-origin: content-box;
-  // }
-
-  // .timeInput::before {
-  //   content: attr(placeholder);
-  //   -webkit-content: attr(placeholder);
-  // }
-
-  // .timeInput:focus::before {
-  //   display: none;
-  //   -webkit-display: none;
-  // }
-
-  input {
-    width: 100%;
-    display: block;
-    appearance: none;
-    background-color: $color-white;
-    border: 1px solid $color-input-border;
-    border-radius: spacing(0.5);
-    color: $color-input-main;
-    @include buttonTextStyle;
-    height: spacing(5);
-    padding: spacing(1);
-
-    &::placeholder {
-      color: $color-input-main;
-    }
-
-    &:focus {
-      outline: none;
-      color: $color-text-dark;
-      border-color: $color-primary;
-    }
-  }
-}
-
-input:disabled {
-  background-color: $color-background;
-}
-
-input:disabled::placeholder,
-.timePicker input::placeholder {
-  color: $color-input-border;
 }
 
 .disabledCalender g path,
@@ -86,14 +37,43 @@ input:disabled::placeholder,
   fill: $color-input-border;
 }
 
-.errorMessage {
-  input {
-    border: 1px solid $color-error;
+.hiddenLabel {
+  display: none;
+}
+
+:global(.react-datepicker__input-container) {
+  width: 100%;
+  display: block;
+  appearance: none;
+  background-color: $color-white;
+  border: 1px solid $color-input-border;
+  border-radius: spacing(0.5);
+  color: $color-input-main;
+  @include buttonTextStyle;
+  height: spacing(5);
+  padding: spacing(1);
+
+  &::placeholder {
+    color: $color-input-main;
+  }
+
+  &:focus {
+    outline: none;
+    color: $color-text-dark;
+    border-color: $color-primary;
+  }
+
+  &:disabled {
+    background-color: $color-background;
+  }
+
+  &:disabled::placeholder {
+    color: $color-input-border;
   }
 }
 
-.hiddenLabel {
-  display: none;
+.errorMessage :global(.react-datepicker__input-container) {
+  border: 1px solid $color-error;
 }
 
 :global(.react-datepicker-popper[data-placement^='bottom']) {

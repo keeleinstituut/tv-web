@@ -1,11 +1,13 @@
 @import 'styles/variables';
+@import 'styles/mixins';
 
 .container {
   display: flex;
-  border: 1px solid $color-input-border;
-  border-radius: 5px;
-  height: 106px;
-  width: 166px;
+  border: spacing(0.125) solid $color-input-border;
+  border-radius: spacing(0.625);
+  height: spacing(13.25);
+  max-width: spacing(20.75);
+  width: fit-content;
   background-color: $color-white;
 }
 
@@ -13,9 +15,44 @@
   display: none;
 }
 
+.timeInput {
+  width: 100%;
+  display: block;
+  appearance: none;
+  background-color: $color-white;
+  border: spacing(0.125) solid $color-input-border;
+  border-radius: spacing(0.5);
+  color: $color-input-border;
+  @include buttonTextStyle;
+  height: spacing(5);
+  padding: spacing(1);
+
+  &:focus {
+    color: $color-text-dark;
+    border-color: $color-primary;
+  }
+}
+
+.disabledTimeInput {
+  background-color: $color-background;
+}
+
+.disabledTimeInput:focus {
+  color: $color-input-border;
+  border-color: $color-input-border;
+}
+
 .timeIcon {
   position: absolute;
   right: spacing(1);
   top: spacing(1);
   pointer-events: none;
+}
+
+.disabledIcon path {
+  fill: $color-input-border;
+}
+
+.errorMessage {
+  border: spacing(0.125) solid $color-error;
 }

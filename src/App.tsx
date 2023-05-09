@@ -3,12 +3,7 @@ import MainLayout from 'components/organisms/MainLayout/MainLayout'
 import { map } from 'lodash'
 import useValidators from 'hooks/useValidators'
 import useKeycloak from 'hooks/useKeycloak'
-import {
-  useForm,
-  SubmitHandler,
-  SubmitErrorHandler,
-  useWatch,
-} from 'react-hook-form'
+import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -72,19 +67,17 @@ const App: FC = () => {
       name: 'timePicker',
       label: 'time picker label',
       ariaLabel: 'time picker aria label',
-      // dateFormat: 'dd.MM.yyyy',
       timePicker: true,
-      // showSeconds: false,
+      showSeconds: false,
     },
-    // {
-    //   inputType: InputTypes.Date,
-    //   name: 'timePickerSeconds',
-    //   label: 'time picker seconds label',
-    //   ariaLabel: 'time picker seconds aria label',
-    //   dateFormat: 'dd.MM.yyyy',
-    //   timePicker: true,
-    //   showSeconds: true,
-    // },
+    {
+      inputType: InputTypes.Date,
+      name: 'timePickerSeconds',
+      label: 'time picker seconds label',
+      ariaLabel: 'time picker seconds aria label',
+      timePicker: true,
+      showSeconds: true,
+    },
   ]
 
   const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {
@@ -101,10 +94,6 @@ const App: FC = () => {
       keycloak.login()
     }
   }
-
-  const formValue = useWatch({ control })
-
-  console.log('FORM VALUE: ', formValue)
 
   return (
     <MainLayout>
