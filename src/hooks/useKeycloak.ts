@@ -28,6 +28,7 @@ const useKeycloak = () => {
   useEffect(() => {
     const initKeycloak = async () => {
       const isUserLoggedIn = await keycloak.init({
+        onLoad: 'check-sso',
         checkLoginIframe: false,
       })
       setIsUserLoggedIn(isUserLoggedIn)
