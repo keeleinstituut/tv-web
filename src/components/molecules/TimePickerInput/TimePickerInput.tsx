@@ -23,6 +23,7 @@ export type TimePickerInputProps = {
   error?: FieldError
   showSeconds?: boolean
   timePicker?: boolean
+  range?: boolean
 }
 
 export type TimeInputProps = {
@@ -90,6 +91,7 @@ const TimePickerInput = ({
   error,
   showSeconds,
   timePicker,
+  range,
 }: TimePickerInputProps) => {
   const [hour, setHour] = useState<string>('00')
   const [minute, setMinute] = useState<string>('00')

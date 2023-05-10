@@ -30,6 +30,7 @@ export interface DatePickerInputProps {
   timePicker?: boolean
   onChange: (value: string) => void
   showSeconds?: boolean
+  range?: boolean
 }
 
 export interface DatePickerComponentProps extends DatePickerInputProps {
@@ -50,6 +51,7 @@ const DatePickerComponent = ({
   disabled,
   ariaLabel,
   timePicker,
+  range,
   onChange,
   ...rest
 }: DatePickerComponentProps) => {
@@ -90,11 +92,13 @@ const DatePickerComponent = ({
       <Icon
         icon={Calender}
         className={classNames(
-          classes.dateIcon,
-          disabled && classes.disabledCalender
+          // classes.dateIcon,
+          disabled && classes.disabledCalender,
+          range ? classes.rangeDateIcon : classes.dateIcon
         )}
         ariaLabel={ariaLabel}
       />
+      <div className={range ? classes.dateGap : ''} />
     </>
   )
 }
@@ -114,6 +118,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       value,
       timePicker,
       showSeconds,
+      range,
       onChange,
       ...rest
     } = props
@@ -123,19 +128,33 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
     return (
       <Field
         name={name}
-        className={classNames(classes.datePickerContainer, className)}
+        className={classNames(
+          // classes.datePickerContainer,
+          className,
+          range ? classes.rangeDatePickerContainer : classes.datePickerContainer
+        )}
       >
-        <div className={classes.contentContainer}>
+        <div
+          className={
+            // classes.contentContainer
+            range ? classes.rangeContentContainer : classes.contentContainer
+          }
+        >
           <Label
             htmlFor="DatePicker"
-            className={classNames(classes.label, !label && classes.hiddenLabel)}
+            className={classNames(
+              classes.label,
+              !label && classes.hiddenLabel,
+              range ? classes.rangeLabel : classes.label
+            )}
           >
             {label}
           </Label>
           <div
             className={classNames(
-              classes.wrapper,
-              message && classes.errorMessage
+              // classes.wrapper,
+              message && classes.errorMessage,
+              range ? classes.rangeWrapper : classes.wrapper
             )}
           >
             <DatePickerComponent
@@ -147,6 +166,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               placeholder={placeholder}
               timePicker={timePicker}
               onChange={onChange}
+              range={range}
               {...rest}
             />
             <TimePickerInput
@@ -157,6 +177,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               error={error}
               showSeconds={showSeconds}
               timePicker={timePicker}
+              range={range}
             />
             <InputError message={message} />
           </div>

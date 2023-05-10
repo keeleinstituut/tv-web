@@ -14,7 +14,7 @@
     @include labelTextStyle;
     display: inline-block;
     padding-right: spacing(1.25);
-    padding-top: 6px;
+    padding-top: spacing(0.75);
   }
 
   .wrapper {
@@ -23,13 +23,14 @@
     position: relative;
     width: spacing(15.625);
   }
+}
 
-  .dateIcon {
-    position: absolute;
-    right: spacing(1);
-    top: spacing(1);
-    pointer-events: none;
-  }
+.dateIcon,
+.rangeDateIcon {
+  position: absolute;
+  right: spacing(1);
+  top: spacing(1);
+  pointer-events: none;
 }
 
 .disabledCalender g path,
@@ -38,6 +39,40 @@
 }
 
 .hiddenLabel {
+  display: none;
+}
+
+.rangeDatePickerContainer {
+  display: inline-block;
+  margin-right: spacing(3);
+
+  .rangeContentContainer {
+    display: -webkit-inline-box;
+  }
+
+  .rangeLabel {
+    display: inline-block;
+    padding-right: spacing(1.25);
+    position: relative;
+    top: spacing(0.75);
+  }
+
+  .rangeWrapper {
+    display: flex;
+    position: relative;
+    width: spacing(15.625);
+  }
+
+  .dateGap {
+    padding: spacing(1) spacing(1.5);
+    &::after {
+      content: '–';
+      color: #5d6071;
+    }
+  }
+}
+
+.rangeDatePickerContainer:last-child .dateGap {
   display: none;
 }
 
