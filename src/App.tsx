@@ -1,6 +1,5 @@
 import { FC, useCallback } from 'react'
 import MainLayout from 'components/organisms/MainLayout/MainLayout'
-import { map } from 'lodash'
 import useValidators from 'hooks/useValidators'
 import useKeycloak from 'hooks/useKeycloak'
 import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
@@ -100,11 +99,7 @@ const App: FC = () => {
       <div />
       <div>
         {userId && isUserLoggedIn ? (
-          map(userId, (value: string, key: string) => (
-            <h6>
-              {key}: {value}
-            </h6>
-          ))
+          <pre>{JSON.stringify(userId, null, 2)}</pre>
         ) : (
           <button onClick={testLogin}>{t('button.login')}</button>
         )}
