@@ -217,3 +217,17 @@
 :global(.react-datepicker__day--disabled) {
   color: $color-background-dark;
 }
+
+:global(.react-datepicker__day--weekend) {
+  color: $color-background-dark;
+
+  &:hover {
+    color: $color-white;
+  }
+}
+
+:global(
+    .react-datepicker__day.react-datepicker__day--selected.react-datepicker__day--weekend
+  ) {
+  color: $color-white;
+}

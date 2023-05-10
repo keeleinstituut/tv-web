@@ -49,11 +49,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
 
     const ariaLabelToUse = ariaLabel || (label as string)
 
-    const isWeekday = (date: { getDay: () => number }) => {
-      const day = date.getDay()
-      return day !== 0 && day !== 6
-    }
-
     const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
       return onChange(changeDateToString(value))
     }
@@ -81,7 +76,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
             selected={value ? new Date(formattedValue) : null}
             dateFormat={'dd.MM.yyyy'}
             locale="et-EE"
-            filterDate={isWeekday}
             placeholderText={placeholder}
             aria-label={ariaLabelToUse || ''}
             disabled={disabled}
