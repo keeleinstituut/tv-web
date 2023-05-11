@@ -1,7 +1,8 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-.container {
+.container,
+.rangeContainer {
   display: flex;
   border: spacing(0.125) solid $color-input-border;
   border-radius: spacing(0.625);
@@ -42,7 +43,8 @@
   border-color: $color-input-border;
 }
 
-.timeIcon {
+.timeIcon,
+.rangeTimeIcon {
   position: absolute;
   right: spacing(1);
   top: spacing(1);
@@ -55,4 +57,28 @@
 
 .errorMessage {
   border: spacing(0.125) solid $color-error;
+}
+
+.rangeContainer {
+  position: absolute;
+  top: spacing(5);
+}
+
+.rangeTimeInput {
+  display: block;
+  appearance: none;
+  background-color: $color-white;
+  border: spacing(0.125) solid $color-input-border;
+  border-radius: spacing(0.5);
+  color: $color-input-border;
+  @include buttonTextStyle;
+  height: spacing(5);
+  padding: spacing(1);
+  position: relative;
+  width: spacing(15.625);
+
+  &:focus {
+    color: $color-text-dark;
+    border-color: $color-primary;
+  }
 }

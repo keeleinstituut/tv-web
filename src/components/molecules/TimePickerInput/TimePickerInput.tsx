@@ -9,6 +9,7 @@ import {
 } from 'react'
 import TimeColumn from 'components/atoms/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
+import { ReactComponent as Alarm } from 'assets/icons/alarm.svg'
 import { FieldError } from 'react-hook-form'
 import Icon from 'components/atoms/Icon/Icon'
 import classNames from 'classnames'
@@ -24,6 +25,7 @@ export type TimePickerInputProps = {
   showSeconds?: boolean
   timePicker?: boolean
   range?: boolean
+  timePickerLineClass?: string
 }
 
 export type TimeInputProps = {
@@ -34,6 +36,8 @@ export type TimeInputProps = {
   inputRef?: Ref<HTMLInputElement> | null
   error?: FieldError
   showSeconds?: boolean
+  range?: boolean
+  timePickerLineClass?: string
 }
 
 const TimeInput: FC<TimeInputProps> = forwardRef(
@@ -46,6 +50,8 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
       inputRef,
       error,
       showSeconds,
+      timePickerLineClass,
+      range,
     }: TimeInputProps,
     ref: ForwardedRef<HTMLInputElement>
   ) => {
@@ -61,9 +67,9 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
       <>
         <input
           className={classNames(
-            classes.timeInput,
             disabled && classes.disabledTimeInput,
-            error && classes.errorMessage
+            error && classes.errorMessage,
+            range ? classes.rangeTimeInput : classes.timeInput
           )}
           value={value ? value : timePlaceholder}
           type="text"
@@ -71,13 +77,14 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
           ref={inputRef}
         />
         <Icon
-          icon={Clock}
+          icon={range ? Alarm : Clock}
           className={classNames(
-            classes.timeIcon,
-            disabled && classes.disabledIcon
+            disabled && classes.disabledIcon,
+            range ? classes.rangeTimeIcon : classes.timeIcon
           )}
           ariaLabel={ariaLabel}
         />
+        <div className={range ? timePickerLineClass : ''} />
       </>
     )
   }
@@ -91,6 +98,7 @@ const TimePickerInput = ({
   error,
   showSeconds,
   timePicker,
+  timePickerLineClass,
   range,
 }: TimePickerInputProps) => {
   const [hour, setHour] = useState<string>('00')
@@ -129,6 +137,8 @@ const TimePickerInput = ({
     onChange(showSeconds ? timeWithSeconds : formattedTime)
   }, [hour, minute, second, onChange, showSeconds])
 
+  const rangeContainerClass = range ? classes.rangeContainer : classes.container
+
   if (!timePicker) return null
 
   return (
@@ -141,12 +151,14 @@ const TimePickerInput = ({
         inputRef={inputRef}
         error={error}
         showSeconds={showSeconds}
+        range={range}
+        timePickerLineClass={timePickerLineClass}
       />
       <div
         className={
           !isTimeColumnOpen || disabled
             ? classes.hiddenContainer
-            : classes.container
+            : rangeContainerClass
         }
         ref={timeColumnRef}
       >

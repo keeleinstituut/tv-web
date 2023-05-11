@@ -63,16 +63,18 @@
     width: spacing(15.625);
   }
 
-  .dateGap {
+  .dateLine,
+  .timePickerLineClass {
     padding: spacing(1) spacing(1.5);
     &::after {
       content: '–';
-      color: #5d6071;
+      color: $color-input-main;
     }
   }
 }
 
-.rangeDatePickerContainer:last-child .dateGap {
+.rangeDatePickerContainer:nth-child(even) .dateLine,
+.rangeDatePickerContainer:nth-child(even) .timePickerLineClass {
   display: none;
 }
 

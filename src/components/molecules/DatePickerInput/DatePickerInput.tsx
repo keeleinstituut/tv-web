@@ -92,13 +92,12 @@ const DatePickerComponent = ({
       <Icon
         icon={Calender}
         className={classNames(
-          // classes.dateIcon,
           disabled && classes.disabledCalender,
           range ? classes.rangeDateIcon : classes.dateIcon
         )}
         ariaLabel={ariaLabel}
       />
-      <div className={range ? classes.dateGap : ''} />
+      <div className={range ? classes.dateLine : ''} />
     </>
   )
 }
@@ -129,14 +128,12 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       <Field
         name={name}
         className={classNames(
-          // classes.datePickerContainer,
           className,
           range ? classes.rangeDatePickerContainer : classes.datePickerContainer
         )}
       >
         <div
           className={
-            // classes.contentContainer
             range ? classes.rangeContentContainer : classes.contentContainer
           }
         >
@@ -152,7 +149,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
           </Label>
           <div
             className={classNames(
-              // classes.wrapper,
               message && classes.errorMessage,
               range ? classes.rangeWrapper : classes.wrapper
             )}
@@ -178,6 +174,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               showSeconds={showSeconds}
               timePicker={timePicker}
               range={range}
+              timePickerLineClass={classes.timePickerLineClass}
             />
             <InputError message={message} />
           </div>
