@@ -16,28 +16,24 @@ import classNames from 'classnames'
 
 import classes from './styles.module.scss'
 
-export type TimePickerInputProps = {
-  value?: string
-  onChange: (value: string) => void
+interface CommonTimeInputProps {
   disabled?: boolean
   ariaLabel?: string
+  value?: string
   error?: FieldError
   showSeconds?: boolean
-  timePicker?: boolean
   range?: boolean
   timePickerLineClass?: string
 }
 
-export type TimeInputProps = {
-  disabled?: boolean
-  ariaLabel?: string
-  value?: string
+type TimeInputProps = CommonTimeInputProps & {
   timeColumnVisibility: () => void
   inputRef?: Ref<HTMLInputElement> | null
-  error?: FieldError
-  showSeconds?: boolean
-  range?: boolean
-  timePickerLineClass?: string
+}
+
+type TimePickerInputProps = CommonTimeInputProps & {
+  onChange: (value: string) => void
+  timePicker?: boolean
 }
 
 const TimeInput: FC<TimeInputProps> = forwardRef(

@@ -21,10 +21,8 @@ type FormValues = {
   datePicker?: string
   timePicker?: string
   timePickerSeconds?: string
-  datePickerRange1?: string
-  datePickerRange2?: string
-  timePickerSecondsRange1?: string
-  timePickerSecondsRange2?: string
+  timePickerRange1?: string
+  timePickerRange2?: string
 }
 
 const App: FC = () => {
@@ -83,26 +81,7 @@ const App: FC = () => {
     },
     {
       inputType: InputTypes.Date,
-      name: 'datePickerRange1',
-      label: 'date range label',
-      ariaLabel: 'date picker aria label',
-      placeholder: 'pp.kk.aaaa',
-      dateFormat: 'dd.MM.yyyy',
-      timePicker: false,
-      range: true,
-    },
-    {
-      inputType: InputTypes.Date,
-      name: 'datePickerRange2',
-      ariaLabel: 'date picker aria label',
-      placeholder: 'pp.kk.aaaa',
-      dateFormat: 'dd.MM.yyyy',
-      timePicker: false,
-      range: true,
-    },
-    {
-      inputType: InputTypes.Date,
-      name: 'timePickerSecondsRange1',
+      name: 'timePickerRange1',
       label: 'time range label',
       ariaLabel: 'time picker seconds aria label',
       timePicker: true,
@@ -111,7 +90,7 @@ const App: FC = () => {
     },
     {
       inputType: InputTypes.Date,
-      name: 'timePickerSecondsRange2',
+      name: 'timePickerRange2',
       ariaLabel: 'time picker seconds aria label',
       timePicker: true,
       showSeconds: true,
