@@ -7,10 +7,12 @@
     "email": "example@mail.com"
   },
   "button": {
-    "login": "Logi sisse"
+    "login": "Logi sisse",
+    "cancel": "Katkesta"
   },
   "error": {
     "input_title": "Veateade: ",
     "invalid_email": "Vale formaat"
   }
+  
 }

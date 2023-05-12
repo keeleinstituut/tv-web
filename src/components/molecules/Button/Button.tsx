@@ -63,6 +63,7 @@ const Button: FC<PropsWithChildren<ButtonProps>> = ({
         classes[appearance],
         classes[size],
         classes[iconPositioning],
+        icon ? classes.customButtonPadding : '',
         className
       )}
       {...rest}

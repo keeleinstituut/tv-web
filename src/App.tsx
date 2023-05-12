@@ -19,6 +19,10 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
+import Modal from 'components/atoms/Modal/Modal'
+import * as Dialog from '@radix-ui/react-dialog'
+
+import classes from './styles.module.scss'
 
 const App: FC = () => {
   const { t } = useTranslation()
@@ -89,6 +93,36 @@ const App: FC = () => {
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
       />
+
+      <Modal
+        customDialogContent={classes.customDialogContent}
+        topButton={true}
+        trigger={
+          <Dialog.Trigger asChild>
+            <Button
+              appearance={AppearanceTypes.Text}
+              className={classes.button}
+            >
+              Kustuta konto
+            </Button>
+          </Dialog.Trigger>
+        }
+        footer={
+          <div className={classes.modalFooter}>
+            <Dialog.Close asChild>
+              <Button appearance={AppearanceTypes.Secondary}>Tühista</Button>
+            </Dialog.Close>
+            <Button className={classes.modalButton}>Jah</Button>
+          </div>
+        }
+      >
+        <>
+          <Dialog.Title className={classes.dialogTitle}>
+            <h1>Pealkiri</h1>
+          </Dialog.Title>
+          <p>Bu</p>
+        </>
+      </Modal>
     </MainLayout>
   )
 }

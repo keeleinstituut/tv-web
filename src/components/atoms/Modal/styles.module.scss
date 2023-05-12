@@ -1,0 +1,34 @@
+@import 'styles/variables';
+
+.dialogOverlay {
+  background-color: $color-secondary-dark;
+  opacity: 0.7;
+  backdrop-filter: blur(10px);
+  position: fixed;
+  inset: 0;
+}
+
+.dialogContent {
+  background-color: $color-white;
+  border: spacing(0.25) solid $color-border;
+  box-shadow: 0px spacing(0.5) spacing(1.25) rgba(0, 0, 0, 0.14);
+  border-radius: spacing(0.5);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: spacing(122.5);
+  max-height: 100%;
+  padding: spacing(5) 0;
+}
+
+.dialogDescription {
+  padding: 0 spacing(8.75);
+}
+
+.topButton {
+  position: absolute;
+  top: spacing(-8);
+  right: 0;
+}

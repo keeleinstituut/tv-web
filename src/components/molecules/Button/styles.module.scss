@@ -100,14 +100,23 @@
   @include buttonTextStyle;
   padding: spacing(1) spacing(5);
 
+  &.customButtonPadding {
+    padding: spacing(1) spacing(3);
+  }
   &.primary {
     &:focus {
       padding: spacing(0.75) spacing(5);
+      &.customButtonPadding {
+        padding: spacing(0.75) spacing(3);
+      }
     }
   }
 
   &.secondary {
     padding: spacing(0.75) spacing(5);
+    &.customButtonPadding {
+      padding: spacing(0.75) spacing(3);
+    }
   }
 }
 
