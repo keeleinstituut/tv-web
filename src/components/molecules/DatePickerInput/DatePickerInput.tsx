@@ -21,10 +21,8 @@ export interface DatePickerInputProps {
   className?: string
   error?: FieldError
   label?: JSX.Element | string
-  ariaLabel?: string
-  message?: string
+  ariaLabel: string
   placeholder?: string
-  dateFormat?: string
   disabled?: boolean
   value?: string
   timePicker?: boolean
@@ -53,11 +51,6 @@ const DatePickerComponent = ({
   onChange,
   ...rest
 }: DatePickerComponentProps) => {
-  const isWeekday = (date: { getDay: () => number }) => {
-    const day = date.getDay()
-    return day !== 0 && day !== 6
-  }
-
   const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
     return onChange(changeDateToString(value))
   }
@@ -80,7 +73,6 @@ const DatePickerComponent = ({
         selected={value ? new Date(formattedDayValue) : null}
         dateFormat={'dd.MM.yyyy'}
         locale="et-EE"
-        filterDate={isWeekday}
         placeholderText={placeholder}
         aria-label={ariaLabelToUse || ''}
         disabled={disabled}
@@ -104,13 +96,11 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
     const {
       label,
       name,
+      error,
       disabled,
       placeholder,
-      dateFormat,
       className,
       ariaLabel,
-      message,
-      error,
       value,
       timePicker,
       showSeconds,
@@ -135,7 +125,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
           <div
             className={classNames(
               classes.wrapper,
-              message && classes.errorMessage
+              error && classes.errorMessage
             )}
           >
             <DatePickerComponent
@@ -158,7 +148,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               showSeconds={showSeconds}
               timePicker={timePicker}
             />
-            <InputError message={message} />
+            <InputError {...error} />
           </div>
         </div>
       </Field>

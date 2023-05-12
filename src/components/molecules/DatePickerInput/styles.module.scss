@@ -32,8 +32,7 @@
   }
 }
 
-.disabledCalender g path,
-.disabledCalender path {
+.disabledCalender g path {
   fill: $color-input-border;
 }
 
@@ -210,11 +209,11 @@
 }
 
 :global(.react-datepicker__day--keyboard-selected) {
-  background-color: $color-navigation-icon;
+  background-color: transparent;
   border-radius: spacing(2);
   position: relative;
   display: inline-block;
-  color: $color-white;
+  color: $color-input-main;
   padding: spacing(0.75);
   text-align: center;
   width: spacing(4);
@@ -223,4 +222,18 @@
 
 :global(.react-datepicker__day--disabled) {
   color: $color-background-dark;
+}
+
+:global(.react-datepicker__day--weekend) {
+  color: $color-background-dark;
+
+  &:hover {
+    color: $color-white;
+  }
+}
+
+:global(
+    .react-datepicker__day.react-datepicker__day--selected.react-datepicker__day--weekend
+  ) {
+  color: $color-white;
 }

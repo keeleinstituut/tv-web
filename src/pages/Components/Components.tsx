@@ -1,7 +1,5 @@
 import { FC, useCallback } from 'react'
-import MainLayout from 'components/organisms/MainLayout/MainLayout'
 import useValidators from 'hooks/useValidators'
-import useKeycloak from 'hooks/useKeycloak'
 import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
@@ -23,10 +21,9 @@ type FormValues = {
   timePickerSeconds?: string
 }
 
-const App: FC = () => {
+const Test: FC = () => {
   const { t } = useTranslation()
   const { emailValidator } = useValidators()
-  const { keycloak, isUserLoggedIn, userId } = useKeycloak()
 
   const { control, handleSubmit } = useForm<FormValues>({
     mode: 'onChange',
@@ -58,8 +55,8 @@ const App: FC = () => {
       label: 'date picker label',
       ariaLabel: 'date picker aria label',
       placeholder: 'pp.kk.aaaa',
-      dateFormat: 'dd.MM.yyyy',
       timePicker: false,
+      // disabled: true,
     },
     {
       inputType: InputTypes.Date,
@@ -88,23 +85,9 @@ const App: FC = () => {
     []
   )
 
-  const testLogin = () => {
-    if (keycloak && keycloak.login) {
-      keycloak.login()
-    }
-  }
-
   return (
-    <MainLayout>
+    <>
       <div />
-      <div>
-        {userId && isUserLoggedIn ? (
-          <pre>{JSON.stringify(userId, null, 2)}</pre>
-        ) : (
-          <button onClick={testLogin}>{t('button.login')}</button>
-        )}
-      </div>
-
       <DynamicForm
         fields={testFields}
         control={control}
@@ -118,8 +101,8 @@ const App: FC = () => {
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
       />
-    </MainLayout>
+    </>
   )
 }
 
-export default App
+export default Test
