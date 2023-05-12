@@ -4,7 +4,7 @@
   @if ($amount == 0) {
     @return 0;
   }
-  @return ($amount * 8) + px;
+  @return ($amount * 4) + px;
 }
 
 // BREAKPOINTS
@@ -52,6 +52,9 @@ $color-dark: #4d4f5d;
 $color-secondary-dark: #004277;
 $color-secondary: #1769ab;
 $color-secondary-light: #4587bc;
+
+$color-submenu-background: #003A68;
+$color-submenu-shadow: #00213C;
 
 $color-text-dark: #09090b;
 $color-text: #4d4f5d;
