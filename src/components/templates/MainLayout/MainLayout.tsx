@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from 'react'
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 // import Header from 'components/organisms/Header/Header'
 import SideBar from 'components/organisms/SideBar/SideBar'
 import classes from './styles.module.scss'
