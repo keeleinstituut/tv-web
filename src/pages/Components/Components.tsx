@@ -1,11 +1,6 @@
 import { FC, useCallback } from 'react'
 import useValidators from 'hooks/useValidators'
-import {
-  useForm,
-  FieldValues,
-  SubmitHandler,
-  SubmitErrorHandler,
-} from 'react-hook-form'
+import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -18,15 +13,21 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 
+type FormValues = {
+  email?: string
+  terms?: string
+  datePicker?: string
+}
+
 const Test: FC = () => {
   const { t } = useTranslation()
   const { emailValidator } = useValidators()
 
-  const { control, handleSubmit } = useForm<FieldValues>({
+  const { control, handleSubmit } = useForm<FormValues>({
     mode: 'onChange',
     reValidateMode: 'onSubmit',
   })
-  const testFields: FieldProps[] = [
+  const testFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Text,
       ariaLabel: t('label.email'),
@@ -46,13 +47,20 @@ const Test: FC = () => {
       label: 'terms label',
       ariaLabel: 'aria label',
     },
+    {
+      inputType: InputTypes.Date,
+      name: 'datePicker',
+      label: 'date picker label',
+      ariaLabel: 'date picker aria label',
+      placeholder: 'pp.kk.aaaa',
+    },
   ]
 
-  const onSubmit: SubmitHandler<FieldValues> = useCallback((values, e) => {
+  const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {
     console.log('on submit', values, e)
   }, [])
 
-  const onError: SubmitErrorHandler<FieldValues> = useCallback(
+  const onError: SubmitErrorHandler<FormValues> = useCallback(
     (errors, e) => console.log('on error', errors, e),
     []
   )
