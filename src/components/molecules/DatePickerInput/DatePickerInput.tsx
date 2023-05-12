@@ -30,8 +30,14 @@ export interface DatePickerInputProps {
   showSeconds?: boolean
 }
 
-export interface DatePickerComponentProps extends DatePickerInputProps {
+export interface DatePickerComponentProps {
   ariaLabelToUse?: string
+  value?: string
+  placeholder?: string
+  disabled?: boolean
+  ariaLabel: string
+  timePicker?: boolean
+  onChange: (value: string) => void
 }
 
 registerLocale('et-EE', et)
@@ -42,7 +48,6 @@ const changeDateToString = (dateObject: Date | null | undefined) => {
 
 const DatePickerComponent = ({
   value,
-  name,
   placeholder,
   ariaLabelToUse,
   disabled,
@@ -133,7 +138,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               disabled={disabled}
               ariaLabel={ariaLabel}
               ariaLabelToUse={ariaLabelToUse}
-              name={name}
               placeholder={placeholder}
               timePicker={timePicker}
               onChange={onChange}

@@ -56,7 +56,6 @@ const Test: FC = () => {
       ariaLabel: 'date picker aria label',
       placeholder: 'pp.kk.aaaa',
       timePicker: false,
-      // disabled: true,
     },
     {
       inputType: InputTypes.Date,
