@@ -58,7 +58,7 @@ export const protectedRoutes: FullRouteObject[] = [
     children: [
       {
         path: '',
-        label: i18n.t('menu.sub_orders'),
+        label: i18n.t('menu.orders'),
         element: <Orders />,
       },
       {

@@ -48,7 +48,9 @@ const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
               )}
               onClick={handleNavToggle}
               aria-expanded={
-                path && location.pathname.includes(path) ? 'true' : 'false'
+                isInterTitle || (path && location.pathname.includes(path))
+                  ? 'true'
+                  : 'false'
               }
             >
               {Icon ? (
@@ -84,7 +86,6 @@ const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
 
 const SideBar: FC = () => {
   const { t } = useTranslation()
-  console.log('protectedRoutes', protectedRoutes)
   const [navCollapsed, setNavCollapsed] = useState(false)
 
   const toggleNavCollapsed = useCallback(() => {
