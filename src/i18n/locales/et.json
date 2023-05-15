@@ -9,7 +9,8 @@
   "button": {
     "login": "Logi sisse",
     "check_tutorial": "Vaata kasutusjuhendit",
-    "enter": "Sisene"
+    "enter": "Sisene",
+    "log_out": "Log out"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -34,5 +35,8 @@
     "institution_settings": "Asutuse sätted",
     "technical_settings": "Tehnilised sätted",
     "collapse_menu": "Kitsendan menüü"
+  },
+  "alt": {
+    "header_logo": "Logo"
   }
 }

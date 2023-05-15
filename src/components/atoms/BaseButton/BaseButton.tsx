@@ -47,7 +47,6 @@ const BaseButton: FC<BaseButtonProps> = ({
   ) => {
     if (disabled || loading || !onClick) return
     if (isKeyboardEvent(event)) {
-      console.warn('is keyboard event')
       const handlePress = onClick as unknown as KeyboardEventHandler
       handlePress(event)
     } else (onClick as unknown as MouseEventHandler<T>)(event)
