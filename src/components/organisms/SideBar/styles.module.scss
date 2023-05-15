@@ -102,13 +102,6 @@
     }
   }
 
-  .toggleButton {
-    // gap: get-spacing(paldiski);
-    // color: get-color(white);
-    // padding: 14px 8px;
-    // box-shadow: inset 0 -1px 0 get-color(sapphire-blue-14);
-  }
-
   &.collapsed {
     width: 56px;
     overflow-x: hidden;
@@ -144,15 +137,5 @@
         display: none;
       }
     }
-
-    // .subMenu {
-    //   display: block;
-  
-    //   .listItem {
-    //     padding: spacing(3.5) spacing(2);
-    //     box-shadow: inset 0px -1px 0px $color-submenu-background;
-    //     background-color: $color-primary;
-    //   }
-    // }
   }
 }

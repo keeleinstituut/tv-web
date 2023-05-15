@@ -99,7 +99,7 @@ const SideBar: FC = () => {
       )}
     >
       <BaseButton
-        className={classNames(classes.listItem, classes.toggleButton)}
+        className={classNames(classes.listItem)}
         onClick={toggleNavCollapsed}
       >
         <Burger className={classes.collapsedIcon} />
