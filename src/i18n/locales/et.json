@@ -8,9 +8,11 @@
   },
   "button": {
     "login": "Logi sisse",
-    "cancel": "Katkesta",
+    "cancel": "Tühista",
     "check_tutorial": "Vaata kasutusjuhendit",
-    "enter": "Sisene"
+    "enter": "Sisene",
+    "break": "Katkesta",
+    "yes": "Jah"
   },
   "error": {
     "input_title": "Veateade: ",

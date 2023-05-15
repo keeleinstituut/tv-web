@@ -7,31 +7,47 @@ import { useTranslation } from 'react-i18next'
 
 import classes from './styles.module.scss'
 
+export enum ModalSizeTypes {
+  Narrow = 'narrow',
+  Medium = 'medium',
+  Big = 'big',
+}
+
+export enum ButtonPositionTypes {
+  SpaceBetween = 'spaceBetween',
+  Right = 'right',
+}
+
 export interface ModalProps {
   title?: string
-  footer?: ReactNode
   trigger?: ReactNode
   customDialogContent?: string
   topButton?: boolean
+  size: ModalSizeTypes
+  buttonPosition?: ButtonPositionTypes
+  breakButtonLabel?: string
+  proceedButtonLabel?: string
 }
 
 const Modal: FC<PropsWithChildren<ModalProps>> = ({
   title,
-  footer,
   trigger,
   children,
-  customDialogContent,
   topButton,
+  size = 'medium',
+  buttonPosition = 'right',
+  breakButtonLabel,
+  proceedButtonLabel,
 }) => {
   const { t } = useTranslation()
 
   return (
     <Dialog.Root>
-      <div>{trigger}</div>
+      {trigger}
       <Dialog.Portal>
         <Dialog.Overlay className={classes.dialogOverlay} />
         <Dialog.Content
-          className={classNames(classes.dialogContent, customDialogContent)}
+          className={classNames(classes.dialogContent, classes[size])}
         >
           {topButton && (
             <Dialog.Close asChild className={classes.topButton}>
@@ -48,7 +64,16 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
               {children}
             </Dialog.Description>
           </Dialog.Overlay>
-          <div>{footer}</div>
+          <div className={classes[buttonPosition]}>
+            <Dialog.Close asChild>
+              <Button appearance={AppearanceTypes.Secondary}>
+                {breakButtonLabel}
+              </Button>
+            </Dialog.Close>
+            <Button className={classes.modalButton}>
+              {proceedButtonLabel}
+            </Button>
+          </div>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

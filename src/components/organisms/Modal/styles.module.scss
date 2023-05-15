@@ -41,3 +41,26 @@
   max-height: 50vh;
   overflow: auto;
 }
+
+.big {
+  max-width: 1208px;
+}
+
+.medium {
+  max-width: 980px;
+}
+
+.narrow {
+  max-width: 556px;
+}
+
+.right {
+  display: flex;
+  margin-top: spacing(3);
+  justify-content: flex-end;
+}
+
+.modalButton {
+  margin-left: spacing(1);
+  margin-right: spacing(3);
+}

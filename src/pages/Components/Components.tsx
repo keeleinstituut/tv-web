@@ -12,10 +12,11 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
-import Modal from 'components/atoms/Modal/Modal'
+import Modal, {
+  ModalSizeTypes,
+  ButtonPositionTypes,
+} from 'components/organisms/Modal/Modal'
 import * as Dialog from '@radix-ui/react-dialog'
-
-import classes from './styles.module.scss'
 
 type FormValues = {
   email?: string
@@ -87,31 +88,19 @@ const Test: FC = () => {
       />
       <Modal
         title="Pealkiri"
-        customDialogContent={classes.customDialogContent}
+        size={ModalSizeTypes.Narrow}
+        buttonPosition={ButtonPositionTypes.Right}
+        breakButtonLabel={t('button.cancel')}
+        proceedButtonLabel={t('button.yes')}
         topButton={true}
         trigger={
           <Dialog.Trigger asChild>
-            <Button
-              appearance={AppearanceTypes.Text}
-              className={classes.button}
-            >
-              Kustuta konto
-            </Button>
+            <Button appearance={AppearanceTypes.Text}>Kustuta konto</Button>
           </Dialog.Trigger>
-        }
-        footer={
-          <div className={classes.modalFooter}>
-            <Dialog.Close asChild>
-              <Button appearance={AppearanceTypes.Secondary}>Tühista</Button>
-            </Dialog.Close>
-            <Button className={classes.modalButton}>Jah</Button>
-          </div>
         }
       >
         <>
-          <Dialog.Title className={classes.dialogTitle}>
-            <h2>Alapealkiri</h2>
-          </Dialog.Title>
+          <h2>Alapealkiri</h2>
           <p>
             The standard Lorem Ipsum passage, used since the 1500s "Lorem ipsum
             dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
