@@ -1,0 +1,47 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  // TODO: currently will leave it as is, since this is using some weird values
+  .whiteBackground {
+    position: absolute;
+    background: $color-white;
+    height: 216px;
+    width: 100%;
+    z-index: -1;
+  }
+
+  img {
+    margin-left: spacing(16);
+    width: 386px;
+    height: 275px;
+  }
+
+  .contentContainer {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    margin-left: spacing(22);
+    margin-right: spacing(8);
+
+    .buttonsContainer {
+      margin-top: spacing(4);
+
+      button {
+        display: inline-flex;
+        margin-left: 8px;
+      }
+    }
+
+    h1 {
+      text-align: end;
+    }
+  }
+}
