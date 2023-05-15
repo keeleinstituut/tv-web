@@ -1,13 +1,6 @@
 import { FC, useCallback } from 'react'
-import MainLayout from 'components/organisms/MainLayout/MainLayout'
 import useValidators from 'hooks/useValidators'
-import useKeycloak from 'hooks/useKeycloak'
-import {
-  useForm,
-  FieldValues,
-  SubmitHandler,
-  SubmitErrorHandler,
-} from 'react-hook-form'
+import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -24,16 +17,21 @@ import * as Dialog from '@radix-ui/react-dialog'
 
 import classes from './styles.module.scss'
 
-const App: FC = () => {
+type FormValues = {
+  email?: string
+  terms?: string
+  datePicker?: string
+}
+
+const Test: FC = () => {
   const { t } = useTranslation()
   const { emailValidator } = useValidators()
-  const { keycloak, isUserLoggedIn, userId } = useKeycloak()
 
-  const { control, handleSubmit } = useForm<FieldValues>({
+  const { control, handleSubmit } = useForm<FormValues>({
     mode: 'onChange',
     reValidateMode: 'onSubmit',
   })
-  const testFields: FieldProps[] = [
+  const testFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Text,
       ariaLabel: t('label.email'),
@@ -53,33 +51,27 @@ const App: FC = () => {
       label: 'terms label',
       ariaLabel: 'aria label',
     },
+    {
+      inputType: InputTypes.Date,
+      name: 'datePicker',
+      label: 'date picker label',
+      ariaLabel: 'date picker aria label',
+      placeholder: 'pp.kk.aaaa',
+    },
   ]
 
-  const onSubmit: SubmitHandler<FieldValues> = useCallback((values, e) => {
+  const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {
     console.log('on submit', values, e)
   }, [])
 
-  const onError: SubmitErrorHandler<FieldValues> = useCallback(
+  const onError: SubmitErrorHandler<FormValues> = useCallback(
     (errors, e) => console.log('on error', errors, e),
     []
   )
 
-  const testLogin = () => {
-    if (keycloak && keycloak.login) {
-      keycloak.login()
-    }
-  }
   return (
-    <MainLayout>
+    <>
       <div />
-      <div>
-        {userId && isUserLoggedIn ? (
-          <pre>{JSON.stringify(userId, null, 2)}</pre>
-        ) : (
-          <button onClick={testLogin}>{t('button.login')}</button>
-        )}
-      </div>
-
       <DynamicForm
         fields={testFields}
         control={control}
@@ -93,7 +85,6 @@ const App: FC = () => {
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
       />
-
       <Modal
         customDialogContent={classes.customDialogContent}
         topButton={true}
@@ -123,8 +114,8 @@ const App: FC = () => {
           <p>Bu</p>
         </>
       </Modal>
-    </MainLayout>
+    </>
   )
 }
 
-export default App
+export default Test
