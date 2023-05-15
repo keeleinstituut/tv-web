@@ -7,6 +7,9 @@
   overflow: auto;
   scrollbar-width: none;
   transition: width .1s ease-out;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
 
   .collapsedIcon {
     display: none;

@@ -1,8 +1,19 @@
+@import 'styles/variables';
+
 .mainContainer {
   display: flex;
   min-height: 100vh;
 
   .contentContainer {
+    position: relative;
     width: 100%;
+
+    .scrollableContent {
+      margin-top: $header-height;
+      height: calc(100vh - $header-height);
+      width: 100%;
+      overflow-x: hidden;
+      overflow-y: scroll;
+    }
   }
 }

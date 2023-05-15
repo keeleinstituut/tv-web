@@ -10,7 +10,9 @@ const MainLayout: FC<PropsWithChildren> = (props) => {
       <SideBar />
       <div className={classes.contentContainer}>
         <Header />
-        <Outlet />
+        <div className={classes.scrollableContent}>
+          <Outlet />
+        </div>
       </div>
     </main>
   )
