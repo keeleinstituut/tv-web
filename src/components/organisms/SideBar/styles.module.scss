@@ -2,7 +2,8 @@
 @import 'styles/mixins';
 
 .sidebarContainer {
-  width: 208px;
+  min-width: 208px;
+  max-width: 208px;
   background-color: $color-primary;
   overflow: auto;
   scrollbar-width: none;
@@ -103,7 +104,8 @@
   }
 
   &.collapsed {
-    width: 56px;
+    min-width: 56px;
+    max-width: 56px;
     overflow-x: hidden;
 
     .collapsedIcon {
