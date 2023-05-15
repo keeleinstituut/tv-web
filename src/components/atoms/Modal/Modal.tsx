@@ -16,8 +16,9 @@ export interface ModalProps {
 }
 
 const Modal: FC<PropsWithChildren<ModalProps>> = ({
-  trigger,
+  title,
   footer,
+  trigger,
   children,
   customDialogContent,
   topButton,
@@ -39,9 +40,14 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
               </Button>
             </Dialog.Close>
           )}
-          <Dialog.Description className={classes.dialogDescription}>
-            {children}
-          </Dialog.Description>
+          <Dialog.Title className={classes.dialogTitle}>
+            <h1>{title}</h1>
+          </Dialog.Title>
+          <Dialog.Overlay className={classes.scrollableContent}>
+            <Dialog.Description className={classes.dialogDescription}>
+              {children}
+            </Dialog.Description>
+          </Dialog.Overlay>
           <div>{footer}</div>
         </Dialog.Content>
       </Dialog.Portal>

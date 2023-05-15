@@ -23,6 +23,10 @@
   padding: spacing(5) 0;
 }
 
+.dialogTitle {
+  padding: 0 spacing(8.75);
+}
+
 .dialogDescription {
   padding: 0 spacing(8.75);
 }
@@ -31,4 +35,9 @@
   position: absolute;
   top: spacing(-8);
   right: 0;
+}
+
+.scrollableContent {
+  max-height: 50vh;
+  overflow: auto;
 }
