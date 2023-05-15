@@ -34,7 +34,8 @@
     .buttonsContainer {
       margin-top: spacing(4);
 
-      button {
+      button,
+      a {
         display: inline-flex;
         margin-left: 8px;
       }

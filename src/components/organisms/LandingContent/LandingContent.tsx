@@ -7,7 +7,7 @@ import classes from './styles.module.scss'
 
 const LandingContent = () => {
   const { t } = useTranslation()
-  const { login } = useAuth()
+  const { login, isUserLoggedIn } = useAuth()
   return (
     <div className={classes.container}>
       <div className={classes.whiteBackground} />
@@ -22,8 +22,11 @@ const LandingContent = () => {
           />
           <Button
             appearance={AppearanceTypes.Primary}
-            children={t('button.enter')}
-            onClick={login}
+            children={
+              isUserLoggedIn ? t('button.add_new_order') : t('button.enter')
+            }
+            href={isUserLoggedIn ? '/orders/new-order' : undefined}
+            onClick={isUserLoggedIn ? undefined : login}
           />
         </div>
       </div>
