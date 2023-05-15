@@ -21,10 +21,8 @@ export interface DatePickerInputProps {
   className?: string
   error?: FieldError
   label?: JSX.Element | string
-  ariaLabel?: string
-  message?: string
+  ariaLabel: string
   placeholder?: string
-  dateFormat?: string
   disabled?: boolean
   value?: string
   timePicker?: boolean
@@ -107,13 +105,11 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
     const {
       label,
       name,
+      error,
       disabled,
       placeholder,
-      dateFormat,
       className,
       ariaLabel,
-      message,
-      error,
       value,
       timePicker,
       showSeconds,
@@ -149,7 +145,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
           </Label>
           <div
             className={classNames(
-              message && classes.errorMessage,
+              error && classes.errorMessage,
               range ? classes.rangeWrapper : classes.wrapper
             )}
           >
@@ -176,7 +172,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               range={range}
               timePickerLineClass={classes.timePickerLineClass}
             />
-            <InputError message={message} />
+            <InputError {...error} />
           </div>
         </div>
       </Field>

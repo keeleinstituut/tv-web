@@ -31,6 +31,13 @@
   right: spacing(1);
   top: spacing(1);
   pointer-events: none;
+
+  svg {
+    position: absolute;
+    right: spacing(1);
+    top: spacing(1);
+    pointer-events: none;
+  }
 }
 
 .disabledCalender g path,
@@ -78,7 +85,7 @@
   display: none;
 }
 
-:global(.react-datepicker__input-container) {
+:global(.react-datepicker__input-container) input {
   width: 100%;
   display: block;
   appearance: none;
@@ -247,11 +254,11 @@
 }
 
 :global(.react-datepicker__day--keyboard-selected) {
-  background-color: $color-navigation-icon;
+  background-color: transparent;
   border-radius: spacing(2);
   position: relative;
   display: inline-block;
-  color: $color-white;
+  color: $color-input-main;
   padding: spacing(0.75);
   text-align: center;
   width: spacing(4);
@@ -260,4 +267,18 @@
 
 :global(.react-datepicker__day--disabled) {
   color: $color-background-dark;
+}
+
+:global(.react-datepicker__day--weekend) {
+  color: $color-background-dark;
+
+  &:hover {
+    color: $color-white;
+  }
+}
+
+:global(
+    .react-datepicker__day.react-datepicker__day--selected.react-datepicker__day--weekend
+  ) {
+  color: $color-white;
 }
