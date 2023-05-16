@@ -98,17 +98,14 @@ const SideBar: FC = () => {
         navCollapsed && classes.collapsed
       )}
     >
-      <BaseButton
-        className={classNames(classes.listItem)}
-        onClick={toggleNavCollapsed}
-      >
+      <BaseButton className={classes.listItem} onClick={toggleNavCollapsed}>
         <Burger className={classes.collapsedIcon} />
         <ChevronLeft
           className={classNames(classes.itemIcon, classes.expandedIcon)}
         />
         <span>{t('menu.collapse_menu')}</span>
       </BaseButton>
-      <ul>
+      <ul className={classes.menuList}>
         <MenuItems menuItems={protectedRoutes} />
       </ul>
     </nav>
