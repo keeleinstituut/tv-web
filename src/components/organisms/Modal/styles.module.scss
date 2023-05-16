@@ -1,4 +1,5 @@
 @import 'styles/variables';
+@import 'styles/mixins';
 
 .dialogOverlay {
   background-color: $color-secondary-dark;
@@ -24,7 +25,8 @@
 }
 
 .dialogTitle {
-  padding: 0 spacing(8.75);
+  padding: 0 spacing(8.75) spacing(2) spacing(8.75);
+  @include h1TextStyle;
 }
 
 .dialogDescription {
@@ -54,13 +56,34 @@
   max-width: 556px;
 }
 
-.right {
+.right,
+.spaceBetween {
   display: flex;
-  margin-top: spacing(3);
+  padding-top: spacing(3);
+  padding-right: spacing(3);
+}
+
+.right {
   justify-content: flex-end;
+}
+
+.spaceBetween {
+  padding-left: spacing(3);
+  justify-content: space-between;
+}
+
+.none {
+  display: none;
 }
 
 .modalButton {
   margin-left: spacing(1);
-  margin-right: spacing(3);
+}
+
+.black {
+  color: #09090b;
+}
+
+.gray {
+  color: #5d6071;
 }
