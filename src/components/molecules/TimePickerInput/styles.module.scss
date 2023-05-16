@@ -3,10 +3,10 @@
 
 .container {
   display: flex;
-  border: spacing(0.125) solid $color-input-border;
-  border-radius: spacing(0.625);
-  height: spacing(13.25);
-  max-width: spacing(20.75);
+  border: 1px solid $color-input-border;
+  border-radius: 5px;
+  height: 106px;
+  max-width: 166px;
   width: fit-content;
   background-color: $color-white;
 }
@@ -20,12 +20,12 @@
   display: block;
   appearance: none;
   background-color: $color-white;
-  border: spacing(0.125) solid $color-input-border;
-  border-radius: spacing(0.5);
+  border: 1px solid $color-input-border;
+  border-radius: 4px;
   color: $color-input-border;
   @include buttonTextStyle;
-  height: spacing(5);
-  padding: spacing(1);
+  height: 40px;
+  padding: spacing(2);
 
   &:focus {
     color: $color-text-dark;
@@ -44,8 +44,8 @@
 
 .timeIcon {
   position: absolute;
-  right: spacing(1);
-  top: spacing(1);
+  right: 8px;
+  top: 8px;
   pointer-events: none;
 }
 
@@ -54,5 +54,5 @@
 }
 
 .errorMessage {
-  border: spacing(0.125) solid $color-error;
+  border: 1px solid $color-error;
 }
