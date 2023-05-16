@@ -22,6 +22,7 @@ import Flags from 'pages/Flags/Flags'
 import ReportExport from 'pages/ReportExport/ReportExport'
 import InstitutionSettings from 'pages/InstitutionSettings/InstitutionSettings'
 import TechnicalSettings from 'pages/TechnicalSettings/TechnicalSettings'
+import Manual from 'pages/Manual/Manual'
 import Components from 'pages/Components/Components'
 
 // import icons
@@ -37,6 +38,7 @@ import { ReactComponent as FlagsIcon } from 'assets/icons/flags.svg'
 import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
+import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
 
 export type FullRouteObject = Omit<RouteObject, 'children'> & {
   label?: string
@@ -143,6 +145,12 @@ export const protectedRoutes: FullRouteObject[] = [
         Icon: TechnicalIcon,
       },
     ],
+  },
+  {
+    path: 'manual',
+    label: i18n.t('menu.manual'),
+    element: <Manual />,
+    Icon: ManualIcon,
   },
 ]
 

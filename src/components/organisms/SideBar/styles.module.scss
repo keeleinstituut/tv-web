@@ -10,6 +10,8 @@
   height: 100vh;
   overflow-x: hidden;
   overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
 
   .collapsedIcon {
     display: none;
@@ -21,6 +23,16 @@
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  .menuList {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    > li:last-child {
+      margin-top: auto;
+    }
   }
 
   .listItem {
@@ -42,7 +54,6 @@
       background-color: $color-secondary-light;
     }
 
-    &:focus,
     &:focus-visible {
       outline: $color-white 2px solid;
       width: calc(100% - 6px);
