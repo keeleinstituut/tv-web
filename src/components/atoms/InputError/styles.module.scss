@@ -4,9 +4,9 @@
   position: absolute;
   display: flex;
   align-items: center;
-  padding: spacing(1);
-  width: calc(100% - spacing(1));
-  top: calc(100% + spacing(1));
+  padding: spacing(2);
+  width: calc(100% - spacing(2));
+  top: calc(100% + spacing(2));
   left: 0;
   right: 0;
   background-color: $color-error-light;
@@ -18,12 +18,12 @@
     border-width: 0 6px 8px 6px;
     border-color: transparent transparent $color-error-light transparent;
     position: absolute;
-    left: spacing(1);
-    top: spacing(-1);
+    left: spacing(2);
+    top: spacing(-2);
   }
 
   span {
-    margin-left: spacing(1);
+    margin-left: spacing(2);
     font-size: $font-size-13;
     b {
       font-weight: $font-weight-bold;
