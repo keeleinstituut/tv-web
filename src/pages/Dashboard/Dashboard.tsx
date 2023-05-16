@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import useAuth from 'hooks/useAuth'
 
-const Test: FC = () => {
+const Dashboard: FC = () => {
   const { t } = useTranslation()
   const { userId, login, isUserLoggedIn } = useAuth()
 
@@ -22,4 +22,4 @@ const Test: FC = () => {
   )
 }
 
-export default Test
+export default Dashboard
