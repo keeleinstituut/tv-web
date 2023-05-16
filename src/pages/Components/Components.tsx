@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useState } from 'react'
 import useValidators from 'hooks/useValidators'
 import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
@@ -17,7 +17,6 @@ import Modal, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/Modal/Modal'
-import * as Dialog from '@radix-ui/react-dialog'
 
 type FormValues = {
   email?: string
@@ -33,6 +32,17 @@ const Test: FC = () => {
     mode: 'onChange',
     reValidateMode: 'onSubmit',
   })
+
+  const [open, setOpen] = useState(false)
+
+  const handleClose = () => {
+    setOpen(false)
+  }
+
+  const handleOpen = () => {
+    setOpen(true)
+  }
+
   const testFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Text,
@@ -95,14 +105,15 @@ const Test: FC = () => {
         proceedButtonLabel={t('button.yes')}
         titleFont={TitleFontTypes.Gray}
         topButton={true}
+        handleClose={handleClose}
+        handleProceed={handleClose}
+        open={open}
+        setOpen={setOpen}
         trigger={
-          <Dialog.Trigger asChild>
-            <Button appearance={AppearanceTypes.Text}>Kustuta konto</Button>
-          </Dialog.Trigger>
+          <Button appearance={AppearanceTypes.Text} onClick={handleOpen}>
+            Kustuta konto
+          </Button>
         }
-        onClick={function (): void {
-          throw new Error('Function not implemented.')
-        }}
       >
         <p>
           The standard Lorem Ipsum passage, used since the 1500s "Lorem ipsum

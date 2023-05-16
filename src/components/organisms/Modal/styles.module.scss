@@ -11,31 +11,30 @@
 
 .dialogContent {
   background-color: $color-white;
-  border: spacing(0.25) solid $color-border;
-  box-shadow: 0px spacing(0.5) spacing(1.25) rgba(0, 0, 0, 0.14);
-  border-radius: spacing(0.5);
+  border: 2px solid $color-border;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.14);
+  border-radius: 4px;
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
-  max-width: spacing(122.5);
   max-height: 100%;
-  padding: spacing(5) 0;
+  padding: spacing(10) 0;
 }
 
 .dialogTitle {
-  padding: 0 spacing(8.75) spacing(2) spacing(8.75);
+  padding: 0 spacing(17.5) spacing(4) spacing(17.5);
   @include h1TextStyle;
 }
 
 .dialogDescription {
-  padding: 0 spacing(8.75);
+  padding: 0 spacing(17.5);
 }
 
 .topButton {
   position: absolute;
-  top: spacing(-8);
+  top: spacing(-16);
   right: 0;
 }
 
@@ -59,8 +58,8 @@
 .right,
 .spaceBetween {
   display: flex;
-  padding-top: spacing(3);
-  padding-right: spacing(3);
+  padding-top: spacing(6);
+  padding-right: spacing(6);
 }
 
 .right {
@@ -68,7 +67,7 @@
 }
 
 .spaceBetween {
-  padding-left: spacing(3);
+  padding-left: spacing(6);
   justify-content: space-between;
 }
 
@@ -77,13 +76,13 @@
 }
 
 .modalButton {
-  margin-left: spacing(1);
+  margin-left: spacing(2);
 }
 
 .black {
-  color: #09090b;
+  color: $color-text-dark;
 }
 
 .gray {
-  color: #5d6071;
+  color: $color-input-main;
 }
