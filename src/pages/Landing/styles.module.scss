@@ -6,7 +6,7 @@
   min-height: 100vh;
   justify-content: space-between;
   align-items: center;
-  padding: 0 spacing(21) 0 spacing(17);
+  padding: 0 spacing(42) 0 spacing(34);
 
   img {
     width: 386px;
@@ -19,11 +19,11 @@
     flex-direction: column;
     justify-content: center;
     align-items: flex-end;
-    margin-left: spacing(11);
+    margin-left: spacing(22);
 
 
     .buttonsContainer {
-      margin-top: spacing(2);
+      margin-top: spacing(4);
 
       button {
         display: inline-flex;
