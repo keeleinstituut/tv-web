@@ -52,6 +52,7 @@ const Button: FC<PropsWithChildren<ButtonProps>> = ({
   hidden,
   className,
   children,
+  disabled,
   ...rest
 }) => {
   if (hidden) return null
@@ -65,6 +66,7 @@ const Button: FC<PropsWithChildren<ButtonProps>> = ({
         classes[iconPositioning],
         className
       )}
+      disabled={disabled}
       {...rest}
     >
       <span className={classes.buttonText}>{children}</span>

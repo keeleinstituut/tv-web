@@ -1,0 +1,10 @@
+@import 'styles/variables';
+
+.container {
+  display: grid;
+  margin: spacing(1) spacing(3);
+  background: $color-white;
+  border: 1px solid $color-border;
+  box-shadow: $template-box-shadow;
+  border-radius: $border-radius-6;
+}

@@ -81,6 +81,7 @@ const BaseButton: FC<BaseButtonProps> = ({
       className={classNames(className)}
       onClick={onClickHandler}
       onKeyDown={keyPressHandler}
+      disabled={disabled}
     >
       {loading ? <Loader loading={loading} /> : children}
     </button>
