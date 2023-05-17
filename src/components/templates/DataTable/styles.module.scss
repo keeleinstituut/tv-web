@@ -1,0 +1,127 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.title {
+  margin: 12px 16px;
+}
+
+.tableWrapper {
+  display: grid;
+
+  thead,
+  tbody {
+    width: 100%;
+    @include bodyTextStyle;
+    text-align: left;
+  }
+
+  th {
+    padding: 12px 14px;
+    border-bottom: 1px solid $color-border-secondary;
+    line-height: $line-height-24;
+    color: $color-text;
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid $color-border;
+    line-height: $line-height-24;
+  }
+
+  tbody {
+    tr {
+      &:last-child {
+        td {
+          border-bottom: 1px solid $color-border-secondary;
+        }
+      }
+    }
+  }
+}
+
+.paginationWrapper {
+  display: flex;
+  justify-content: center;
+  padding: 8px 44px;
+
+  .pagination {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 15px;
+    margin: 0 auto;
+
+    + .pageSizeWrapper {
+      margin-left: 0;
+    }
+
+    button {
+      height: 100%;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+
+    .links {
+      display: grid;
+      grid-auto-flow: column;
+      align-items: center;
+      gap: 8px;
+
+      li {
+        display: block;
+
+        a,
+        span {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+
+          &:hover {
+            text-decoration: none;
+          }
+        }
+
+        &.active {
+          a,
+          span {
+            color: $color-white;
+            background-color: $color-primary;
+          }
+        }
+      }
+    }
+    .arrow {
+      transform: rotate(-180deg);
+    }
+  }
+  .pageNumber,
+  .pageSizeLabel,
+  .pageSizeSelect {
+    @include subtitleSmallTextStyle;
+    color: $color-input-main;
+    line-height: $line-height-21;
+  }
+
+  .pageSizeWrapper {
+    display: grid;
+    grid-auto-flow: column;
+    align-items: center;
+    justify-items: left;
+    gap: 8px;
+    margin-left: auto;
+
+    .pageSizeSelect {
+      appearance: none;
+      padding: spacing(0.5) spacing(3) spacing(0.5) spacing(1);
+      border: 1px solid $color-border;
+      border-radius: $border-radius-2;
+      background-color: $color-white;
+      background-image: url('/assets/icons/arrow_down.svg');
+      background-repeat: no-repeat;
+      background-position: top 11px right 8px;
+    }
+  }
+}

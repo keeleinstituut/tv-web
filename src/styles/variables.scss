@@ -31,6 +31,8 @@ $font-size-12: 12px;
 // Line heights
 $line-height: 1.5;
 $line-height-14: 14px;
+$line-height-24: 24px;
+$line-height-21: 21px;
 
 // Font weights
 
@@ -40,6 +42,8 @@ $font-weight-light: 300;
 
 // Border radius
 $border-radius-20: 20px;
+$border-radius-6: 6px;
+$border-radius-2: 2px;
 
 // Colors
 // TODO: will probably update on the go. There are more than 240 colors in the styleguide
@@ -86,3 +90,6 @@ $color-input-main: #5d6071;
 
 $color-white: #ffffff;
 $color-black: #000000;
+
+// Box shadows
+$template-box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.14);

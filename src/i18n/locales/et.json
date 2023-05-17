@@ -1,7 +1,8 @@
 {
   "label": {
     "email": "Email",
-    "button_arrow": "Nupu nool"
+    "button_arrow": "Nupu nool",
+    "pagination_result_count": "Kuvan korraga"
   },
   "placeholder": {
     "email": "example@mail.com"
