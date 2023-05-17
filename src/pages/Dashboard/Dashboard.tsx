@@ -6,12 +6,13 @@ import useAuth from 'hooks/useAuth'
 
 const Dashboard: FC = () => {
   const { t } = useTranslation()
-  const { userId, login, isUserLoggedIn } = useAuth()
-
+  const { userId, login, isUserLoggedIn, token } = useAuth()
+  console.warn('token', token)
   return (
     <>
       <div />
       <div>
+        <p>{`token: ${token}`}</p>
         {userId && isUserLoggedIn ? (
           <pre>{JSON.stringify(userId, null, 2)}</pre>
         ) : (

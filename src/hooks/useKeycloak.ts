@@ -16,6 +16,7 @@ export const AuthContext = createContext({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   logout: () => {},
   userId: {},
+  token: '',
 })
 
 const keyCloakVariables: Dictionary<string | undefined> = pickBy(
@@ -34,6 +35,7 @@ const keycloak = new Keycloak(keyCloakConfig)
 const useKeycloak = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
   const [userId, setUserIdInfo] = useState<object>({})
+  const [token, setToken] = useState<string>('')
   useEffect(() => {
     const initKeycloak = async () => {
       const isUserLoggedIn = await keycloak.init({
@@ -44,13 +46,15 @@ const useKeycloak = () => {
       })
       setIsUserLoggedIn(isUserLoggedIn)
       if (isUserLoggedIn) {
+        console.log('keycloak', keycloak)
         setUserIdInfo(keycloak?.idTokenParsed || {})
+        setToken(keycloak?.token || '')
       }
     }
     initKeycloak()
   }, [])
 
-  return { keycloak, isUserLoggedIn, userId }
+  return { keycloak, isUserLoggedIn, userId, token }
 }
 
 export default useKeycloak

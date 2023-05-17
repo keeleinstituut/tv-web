@@ -4,15 +4,16 @@ import useKeycloak, { AuthContext } from 'hooks/useKeycloak'
 import Landing from 'pages/Landing/Landing'
 
 const AuthWrapper: FC<PropsWithChildren> = () => {
-  const { keycloak, isUserLoggedIn, userId } = useKeycloak()
+  const { keycloak, isUserLoggedIn, userId, token } = useKeycloak()
 
   return (
     <AuthContext.Provider
       value={{
         isUserLoggedIn,
+        token,
+        userId,
         login: keycloak && keycloak.login,
         logout: keycloak && keycloak.logout,
-        userId,
       }}
     >
       {isUserLoggedIn ? <Outlet /> : <Landing />}
