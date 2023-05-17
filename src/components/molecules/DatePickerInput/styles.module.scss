@@ -14,7 +14,7 @@
     @include labelTextStyle;
     display: inline-block;
     padding-right: spacing(2.5);
-    padding-top: spacing(1.5);
+    align-self: center;
   }
 
   .wrapper {

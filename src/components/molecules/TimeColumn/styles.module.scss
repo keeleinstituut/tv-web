@@ -6,6 +6,7 @@
   flex-direction: column;
   align-items: center;
   padding: 0 spacing(2.5);
+  position: relative;
 }
 
 .controlTimeTop,
@@ -32,15 +33,6 @@
 .controlTimeTop svg g path,
 .controlTimeBottom svg g path {
   fill: $color-border-secondary;
-}
-
-.timeContainer {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 106px;
-  width: auto;
 }
 
 .selector {

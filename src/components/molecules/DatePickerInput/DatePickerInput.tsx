@@ -11,34 +11,29 @@ import dayjs from 'dayjs'
 import { ReactComponent as Calender } from 'assets/icons/calender.svg'
 import Icon from 'components/atoms/Icon/Icon'
 import InputError from 'components/atoms/InputError/InputError'
-import TimePickerInput from '../TimePickerInput/TimePickerInput'
+import TimePickerInput from 'components/molecules/TimePickerInput/TimePickerInput'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
 
-export interface DatePickerInputProps {
+type SharedDateProps = {
+  ariaLabel: string
+  placeholder?: string
+  disabled?: boolean
+  value?: string
+  timePicker?: boolean
+  onChange: (value: string) => void
+}
+
+export type DatePickerInputProps = SharedDateProps & {
   name: string
   className?: string
   error?: FieldError
   label?: JSX.Element | string
-  ariaLabel: string
-  placeholder?: string
-  disabled?: boolean
-  value?: string
-  timePicker?: boolean
-  onChange: (value: string) => void
   showSeconds?: boolean
 }
 
-export interface DatePickerComponentProps {
-  ariaLabelToUse?: string
-  value?: string
-  placeholder?: string
-  disabled?: boolean
-  ariaLabel: string
-  timePicker?: boolean
-  onChange: (value: string) => void
-}
+export type DatePickerComponentProps = SharedDateProps
 
 registerLocale('et-EE', et)
 
@@ -49,10 +44,9 @@ const changeDateToString = (dateObject: Date | null | undefined) => {
 const DatePickerComponent = ({
   value,
   placeholder,
-  ariaLabelToUse,
   disabled,
-  ariaLabel,
   timePicker,
+  ariaLabel,
   onChange,
   ...rest
 }: DatePickerComponentProps) => {
@@ -79,7 +73,7 @@ const DatePickerComponent = ({
         dateFormat={'dd.MM.yyyy'}
         locale="et-EE"
         placeholderText={placeholder}
-        aria-label={ariaLabelToUse || ''}
+        aria-label={ariaLabel}
         disabled={disabled}
         {...rest}
         onChange={handleDateChange}
@@ -90,7 +84,6 @@ const DatePickerComponent = ({
           classes.dateIcon,
           disabled && classes.disabledCalender
         )}
-        ariaLabel={ariaLabel}
       />
     </>
   )
@@ -113,8 +106,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       ...rest
     } = props
 
-    const ariaLabelToUse = ariaLabel || (label as string)
-
     return (
       <Field
         name={name}
@@ -122,7 +113,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       >
         <div className={classes.contentContainer}>
           <Label
-            htmlFor="DatePicker"
             className={classNames(classes.label, !label && classes.hiddenLabel)}
           >
             {label}
@@ -137,7 +127,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               value={value}
               disabled={disabled}
               ariaLabel={ariaLabel}
-              ariaLabelToUse={ariaLabelToUse}
               placeholder={placeholder}
               timePicker={timePicker}
               onChange={onChange}

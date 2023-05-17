@@ -7,7 +7,7 @@ import {
   ForwardedRef,
   useRef,
 } from 'react'
-import TimeColumn from 'components/atoms/TimeColumn/TimeColumn'
+import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
 import Icon from 'components/atoms/Icon/Icon'
@@ -15,24 +15,22 @@ import classNames from 'classnames'
 
 import classes from './styles.module.scss'
 
-export type TimePickerInputProps = {
+type SharedTimeProps = {
   value?: string
-  onChange: (value: string) => void
   disabled?: boolean
   ariaLabel?: string
-  error?: FieldError
   showSeconds?: boolean
+  error?: FieldError
+}
+
+export type TimePickerInputProps = SharedTimeProps & {
+  onChange: (value: string) => void
   timePicker?: boolean
 }
 
-export type TimeInputProps = {
-  disabled?: boolean
-  ariaLabel?: string
-  value?: string
-  timeColumnVisibility: () => void
+export type TimeInputProps = SharedTimeProps & {
+  isTimeColumnVisible: () => void
   inputRef?: Ref<HTMLInputElement> | null
-  error?: FieldError
-  showSeconds?: boolean
 }
 
 const TimeInput: FC<TimeInputProps> = forwardRef(
@@ -41,7 +39,7 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
       disabled,
       ariaLabel,
       value,
-      timeColumnVisibility,
+      isTimeColumnVisible,
       inputRef,
       error,
       showSeconds,
@@ -49,8 +47,8 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
     ref: ForwardedRef<HTMLInputElement>
   ) => {
     const handleClick = () => {
-      if (timeColumnVisibility) {
-        timeColumnVisibility()
+      if (isTimeColumnVisible) {
+        isTimeColumnVisible()
       }
     }
 
@@ -68,6 +66,7 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
           type="text"
           onClick={handleClick}
           ref={inputRef}
+          aria-label={ariaLabel}
         />
         <Icon
           icon={Clock}
@@ -75,7 +74,6 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
             classes.timeIcon,
             disabled && classes.disabledIcon
           )}
-          ariaLabel={ariaLabel}
         />
       </>
     )
@@ -96,7 +94,7 @@ const TimePickerInput = ({
   const [second, setSecond] = useState<string>('00')
   const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
 
-  const timeColumnVisibility = () => {
+  const isTimeColumnVisible = () => {
     setTimeColumnOpen((prevState) => !prevState)
   }
 
@@ -135,7 +133,7 @@ const TimePickerInput = ({
         disabled={disabled}
         ariaLabel={ariaLabel}
         value={value}
-        timeColumnVisibility={timeColumnVisibility}
+        isTimeColumnVisible={isTimeColumnVisible}
         inputRef={inputRef}
         error={error}
         showSeconds={showSeconds}
@@ -149,9 +147,9 @@ const TimePickerInput = ({
         ref={timeColumnRef}
       >
         <TimeColumn start={0} end={24} value={hour} setValue={setHour} />
-        <TimeColumn start={0} end={59} value={minute} setValue={setMinute} />
+        <TimeColumn start={0} end={60} value={minute} setValue={setMinute} />
         {showSeconds && (
-          <TimeColumn start={0} end={59} value={second} setValue={setSecond} />
+          <TimeColumn start={0} end={60} value={second} setValue={setSecond} />
         )}
       </div>
     </>

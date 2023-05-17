@@ -3,12 +3,11 @@ import { FC, SVGProps } from 'react'
 export type IconProps = {
   icon?: FC<SVGProps<SVGSVGElement>>
   className?: string
-  ariaLabel?: string
 }
 
-const Icon: FC<IconProps> = ({ icon: IconComponent, className, ariaLabel }) => {
+const Icon: FC<IconProps> = ({ icon: IconComponent, className }) => {
   if (!IconComponent) return null
-  return <IconComponent className={className} aria-label={ariaLabel} />
+  return <IconComponent className={className} />
 }
 
 export default Icon
