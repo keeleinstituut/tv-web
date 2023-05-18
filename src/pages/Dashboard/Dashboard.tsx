@@ -7,7 +7,6 @@ import useAuth from 'hooks/useAuth'
 const Dashboard: FC = () => {
   const { t } = useTranslation()
   const { userId, login, isUserLoggedIn, token } = useAuth()
-  console.warn('token', token)
   return (
     <>
       <div />

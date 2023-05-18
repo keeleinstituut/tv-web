@@ -40,5 +40,8 @@
   "alt": {
     "header_logo": "Logo",
     "checked": "Valitud"
+  },
+  "roles": {
+    "roles_management": "Rollihaldus"
   }
 }
