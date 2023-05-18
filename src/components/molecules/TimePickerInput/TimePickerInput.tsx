@@ -33,6 +33,10 @@ export type TimeInputProps = SharedTimeProps & {
   inputRef?: Ref<HTMLInputElement> | null
 }
 
+const formatTimeString = (time: number) => {
+  return time?.toString().length === 1 ? `0${time}` : time?.toString()
+}
+
 const TimeInput: FC<TimeInputProps> = forwardRef(
   (
     {
@@ -89,9 +93,15 @@ const TimePickerInput = ({
   showSeconds,
   timePicker,
 }: TimePickerInputProps) => {
-  const [hour, setHour] = useState<string>('00')
-  const [minute, setMinute] = useState<string>('00')
-  const [second, setSecond] = useState<string>('00')
+  const splittedTimeValue = value?.split(':')
+
+  const hourValue = Number(splittedTimeValue?.[0])
+  const minuteValue = Number(splittedTimeValue?.[1])
+  const secondValue = Number(splittedTimeValue?.[2])
+
+  const [hour, setHour] = useState<number>(hourValue ? hourValue : 0)
+  const [minute, setMinute] = useState<number>(minuteValue ? minuteValue : 0)
+  const [second, setSecond] = useState<number>(secondValue ? secondValue : 0)
   const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
 
   const isTimeColumnVisible = () => {
@@ -120,8 +130,12 @@ const TimePickerInput = ({
   const timeColumnRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const timeWithSeconds = `${hour}:${minute}:${second}`
-    const formattedTime = `${hour}:${minute}`
+    const timeWithSeconds = `${formatTimeString(hour)}:${formatTimeString(
+      minute
+    )}:${formatTimeString(second)}`
+    const formattedTime = `${formatTimeString(hour)}:${formatTimeString(
+      minute
+    )}`
     onChange(showSeconds ? timeWithSeconds : formattedTime)
   }, [hour, minute, second, onChange, showSeconds])
 

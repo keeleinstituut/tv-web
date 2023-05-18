@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 import Icon from 'components/atoms/Icon/Icon'
@@ -9,37 +8,27 @@ import classes from './styles.module.scss'
 export type TimeColumnProps = {
   start: number
   end: number
-  setValue: (value: string) => void
-  value: string
+  setValue: (value: number) => void
+  value: number
 }
 
 const TimeColumn = ({ start, end, setValue, value }: TimeColumnProps) => {
-  const [selectedTime, setSelectedTime] = useState<number>(+value ? +value : 0)
-
   const timeArray = range(start, end)
 
-  useEffect(() => {
-    setValue(
-      selectedTime.toString().length === 1
-        ? `0${selectedTime}`
-        : selectedTime.toString()
-    )
-  }, [selectedTime, setValue])
-
-  const controlBottom = () => {
-    if (selectedTime !== end - 1) {
-      setSelectedTime(selectedTime + 1)
+  const controlTop = () => {
+    if (value !== end - 1) {
+      setValue(value + 1)
     }
-    if (selectedTime === end - 1) {
-      setSelectedTime(start)
+    if (value === end - 1) {
+      setValue(start)
     }
   }
 
-  const controlTop = () => {
-    if (selectedTime !== start) {
-      setSelectedTime(selectedTime - 1)
+  const controlBottom = () => {
+    if (value !== start) {
+      setValue(value - 1)
     } else {
-      setSelectedTime(end - 1)
+      setValue(end - 1)
     }
   }
 
@@ -54,9 +43,7 @@ const TimeColumn = ({ start, end, setValue, value }: TimeColumnProps) => {
           return (
             <div
               key={time}
-              className={
-                +time === selectedTime ? classes.selected : classes.numbers
-              }
+              className={+time === value ? classes.selected : classes.numbers}
             >
               {time.toString().length === 1 ? `0${time}` : time}
             </div>
