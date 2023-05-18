@@ -101,7 +101,7 @@
   padding: spacing(2) spacing(10);
 
   &.customButtonPadding {
-    padding: spacing(1) spacing(3);
+    padding: spacing(2) spacing(6);
   }
   &.primary {
     &:focus {
@@ -142,13 +142,18 @@
 .right {
   svg {
     order: 3;
-    padding-left: spacing(2.5);
+    padding-left: spacing(1);
   }
 }
 
 .left {
   svg {
     order: 1;
-    padding-right: spacing(2.5);
+    padding-right: spacing(1);
   }
+}
+
+.textIconSize svg {
+  height: spacing(4);
+  width: spacing(4);
 }

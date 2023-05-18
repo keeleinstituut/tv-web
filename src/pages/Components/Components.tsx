@@ -97,23 +97,41 @@ const Test: FC = () => {
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
       />
+
       <Modal
         title="Pealkiri"
         size={ModalSizeTypes.Narrow}
         buttonsPosition={ButtonPositionTypes.SpaceBetween}
-        breakButtonLabel={t('button.cancel')}
-        proceedButtonLabel={t('button.yes')}
         titleFont={TitleFontTypes.Gray}
         topButton={true}
         handleClose={handleClose}
-        handleProceed={handleClose}
         open={open}
         setOpen={setOpen}
+        progressBar={true}
         trigger={
           <Button appearance={AppearanceTypes.Text} onClick={handleOpen}>
             Kustuta konto
           </Button>
         }
+        buttons={[
+          {
+            appearance: AppearanceTypes.Text,
+            onClick: handleClose,
+            children: t('button.cancel'),
+            size: SizeTypes.M,
+            ariaLabel: t('button.cancel'),
+            href: 'http://localhost:3000/',
+            icon: ButtonArrowWhite,
+            iconPositioning: IconPositioningTypes.Left,
+          },
+          {
+            appearance: AppearanceTypes.Secondary,
+            onClick: handleClose,
+            children: t('button.yes'),
+            disabled: true,
+            icon: ButtonArrowWhite,
+          },
+        ]}
       >
         <p>
           The standard Lorem Ipsum passage, used since the 1500s "Lorem ipsum

@@ -7,9 +7,13 @@ import {
 } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import Button, {
+  AppearanceTypes,
+  ButtonProps,
+} from 'components/molecules/Button/Button'
 import { ReactComponent as Close } from 'assets/icons/close.svg'
 import { useTranslation } from 'react-i18next'
+import { map } from 'lodash'
 
 import classes from './styles.module.scss'
 
@@ -30,45 +34,56 @@ export enum TitleFontTypes {
   Black = 'black',
 }
 
-export interface ModalProps {
+export interface ModalButtonProps extends ButtonProps {
+  onClick: () => void
+}
+
+export interface ModalProps extends ModalFooterProps {
   title?: string
   trigger?: ReactNode
   customDialogContent?: string
   topButton?: boolean
   size?: ModalSizeTypes
-  buttonsPosition: ButtonPositionTypes
-  breakButtonLabel?: string
-  proceedButtonLabel?: string
-  handleClose: () => void
-  handleProceed: () => void
+  titleFont?: TitleFontTypes
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
-  titleFont?: TitleFontTypes
+  handleClose: () => void
+  progressBar?: boolean
 }
 
 export interface ModalFooterProps {
   buttonsPosition: ButtonPositionTypes
-  breakButtonLabel?: string
-  proceedButtonLabel?: string
-  handleClose: () => void
-  handleProceed: () => void
+  buttons: ModalButtonProps[]
 }
 
-const ModalFooter: FC<ModalFooterProps> = ({
+const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
   buttonsPosition = 'right',
-  breakButtonLabel,
-  proceedButtonLabel,
-  handleClose,
-  handleProceed,
+  buttons,
 }) => {
   return (
     <div className={classes[buttonsPosition]}>
-      <Button appearance={AppearanceTypes.Secondary} onClick={handleClose}>
-        {breakButtonLabel}
-      </Button>
-      <Button className={classes.modalButton} onClick={handleProceed}>
-        {proceedButtonLabel}
-      </Button>
+      {map(buttons, (button, index) => {
+        return (
+          <Button
+            key={index}
+            appearance={button?.appearance}
+            disabled={button?.disabled}
+            size={button?.size}
+            iconPositioning={button?.iconPositioning}
+            icon={button?.icon}
+            ariaLabel={button?.ariaLabel}
+            hidden={button?.hidden}
+            onClick={button?.onClick}
+            href={button?.href}
+            className={classNames(
+              buttonsPosition !== 'spaceBetween' && classes.modalButton,
+              button?.className
+            )}
+          >
+            {button?.children}
+          </Button>
+        )
+      })}
     </div>
   )
 }
@@ -81,12 +96,11 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
   titleFont = 'gray',
   size = 'medium',
   buttonsPosition,
-  breakButtonLabel,
-  proceedButtonLabel,
   open,
   setOpen,
   handleClose,
-  handleProceed,
+  buttons,
+  progressBar,
 }) => {
   const { t } = useTranslation()
 
@@ -98,31 +112,28 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
         <Dialog.Content
           className={classNames(classes.dialogContent, classes[size])}
         >
-          {topButton && (
-            <Button
-              icon={Close}
-              appearance={AppearanceTypes.Secondary}
-              onClick={handleClose}
-              className={classes.topButton}
-            >
-              {t('button.cancel')}
-            </Button>
-          )}
+          <Button
+            hidden={!topButton}
+            icon={Close}
+            appearance={AppearanceTypes.Secondary}
+            onClick={handleClose}
+            className={classes.topButton}
+          >
+            {t('button.cancel')}
+          </Button>
           <Dialog.Title
-            className={classNames(classes.dialogTitle, classes[titleFont])}
+            className={classNames(
+              classes.dialogTitle,
+              classes[titleFont],
+              progressBar && classes.progressBar
+            )}
           >
             {title}
           </Dialog.Title>
           <Dialog.Overlay className={classes.scrollableContent}>
             <div className={classes.dialogDescription}>{children}</div>
           </Dialog.Overlay>
-          <ModalFooter
-            buttonsPosition={buttonsPosition}
-            breakButtonLabel={breakButtonLabel}
-            proceedButtonLabel={proceedButtonLabel}
-            handleClose={handleClose}
-            handleProceed={handleProceed}
-          />
+          <ModalFooter buttonsPosition={buttonsPosition} buttons={buttons} />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
