@@ -69,6 +69,7 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
           value={value ? value : timePlaceholder}
           type="text"
           onClick={handleClick}
+          onKeyDown={handleClick}
           ref={inputRef}
           aria-label={ariaLabel}
         />
