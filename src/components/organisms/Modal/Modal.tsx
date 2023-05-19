@@ -4,7 +4,7 @@ import {
   PropsWithChildren,
   Dispatch,
   SetStateAction,
-  Fragment,
+  ReactElement,
 } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
@@ -39,10 +39,6 @@ export interface ModalButtonProps extends ButtonProps {
   onClick?: () => void
 }
 
-export interface ProgressBarProps {
-  title?: string
-}
-
 export interface ModalProps extends ModalFooterProps {
   title?: string
   trigger?: ReactNode
@@ -53,7 +49,7 @@ export interface ModalProps extends ModalFooterProps {
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
   handleClose: () => void
-  progressBar?: ProgressBarProps[]
+  progressBar?: ReactElement
 }
 
 export interface ModalFooterProps {
@@ -115,9 +111,7 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
           </Button>
           <Dialog.Title>
             <div hidden={!progressBar} className={classes.progressBarContent}>
-              {map(progressBar, (componentObj, index) => (
-                <Fragment key={index}>{componentObj?.title}</Fragment>
-              ))}
+              {progressBar}
             </div>
             <div className={classNames(classes.modalTitle, classes[titleFont])}>
               {title}

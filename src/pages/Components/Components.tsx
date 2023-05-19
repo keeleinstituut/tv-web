@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react'
+import { FC, Fragment, useCallback, useState } from 'react'
 import useValidators from 'hooks/useValidators'
 import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
@@ -107,7 +107,7 @@ const Test: FC = () => {
         handleClose={handleClose}
         open={open}
         setOpen={setOpen}
-        progressBar={[{ title: 'Vali keelepaarid' }]}
+        progressBar={<Fragment />}
         trigger={
           <Button appearance={AppearanceTypes.Text} onClick={handleOpen}>
             Kustuta konto
