@@ -11,6 +11,7 @@ import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
 import Icon from 'components/atoms/Icon/Icon'
+import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import classNames from 'classnames'
 
 import classes from './styles.module.scss'
@@ -25,7 +26,9 @@ type SharedTimeProps = {
 
 export type TimePickerInputProps = SharedTimeProps & {
   onChange: (value: string) => void
-  timePicker?: boolean
+  label?: string
+  className?: string
+  name: string
 }
 
 export type TimeInputProps = SharedTimeProps & {
@@ -85,90 +88,104 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
   }
 )
 
-const TimePickerInput = ({
-  onChange,
-  disabled,
-  ariaLabel,
-  value,
-  error,
-  showSeconds,
-  timePicker,
-}: TimePickerInputProps) => {
-  const splittedTimeValue = value?.split(':')
+const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
+  function TimePickerInput(props, ref) {
+    const {
+      onChange,
+      disabled,
+      ariaLabel,
+      value,
+      error,
+      showSeconds,
+      label,
+      className,
+      name,
+    } = props
 
-  const hourValue = Number(splittedTimeValue?.[0])
-  const minuteValue = Number(splittedTimeValue?.[1])
-  const secondValue = Number(splittedTimeValue?.[2])
+    const splittedTimeValue = value?.split(':')
 
-  const [hour, setHour] = useState<number>(hourValue ? hourValue : 0)
-  const [minute, setMinute] = useState<number>(minuteValue ? minuteValue : 0)
-  const [second, setSecond] = useState<number>(secondValue ? secondValue : 0)
-  const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
+    const hourValue = Number(splittedTimeValue?.[0])
+    const minuteValue = Number(splittedTimeValue?.[1])
+    const secondValue = Number(splittedTimeValue?.[2])
 
-  const isTimeColumnVisible = () => {
-    setTimeColumnOpen((prevState) => !prevState)
-  }
+    const [hour, setHour] = useState<number>(hourValue ? hourValue : 0)
+    const [minute, setMinute] = useState<number>(minuteValue ? minuteValue : 0)
+    const [second, setSecond] = useState<number>(secondValue ? secondValue : 0)
+    const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      timeColumnRef.current &&
-      !timeColumnRef.current.contains(event.target as Node) &&
-      inputRef.current &&
-      !inputRef.current.contains(event.target as Node)
-    ) {
-      setTimeColumnOpen(false)
+    const isTimeColumnVisible = () => {
+      setTimeColumnOpen((prevState) => !prevState)
     }
-  }
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        timeColumnRef.current &&
+        !timeColumnRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setTimeColumnOpen(false)
+      }
     }
-  }, [])
 
-  const inputRef = useRef<HTMLInputElement>(null)
-  const timeColumnRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }, [])
 
-  useEffect(() => {
-    const timeWithSeconds = `${formatTimeString(hour)}:${formatTimeString(
-      minute
-    )}:${formatTimeString(second)}`
-    const formattedTime = `${formatTimeString(hour)}:${formatTimeString(
-      minute
-    )}`
-    onChange(showSeconds ? timeWithSeconds : formattedTime)
-  }, [hour, minute, second, onChange, showSeconds])
+    const inputRef = useRef<HTMLInputElement>(null)
+    const timeColumnRef = useRef<HTMLDivElement>(null)
 
-  if (!timePicker) return null
+    useEffect(() => {
+      const timeWithSeconds = `${formatTimeString(hour)}:${formatTimeString(
+        minute
+      )}:${formatTimeString(second)}`
+      const formattedTime = `${formatTimeString(hour)}:${formatTimeString(
+        minute
+      )}`
+      onChange(showSeconds ? timeWithSeconds : formattedTime)
+    }, [hour, minute, second, onChange, showSeconds])
 
-  return (
-    <>
-      <TimeInput
-        disabled={disabled}
-        ariaLabel={ariaLabel}
-        value={value}
-        isTimeColumnVisible={isTimeColumnVisible}
-        inputRef={inputRef}
+    return (
+      <InputWrapper
+        label={label}
+        name={name}
         error={error}
-        showSeconds={showSeconds}
-      />
-      <div
-        className={
-          !isTimeColumnOpen || disabled
-            ? classes.hiddenContainer
-            : classes.container
-        }
-        ref={timeColumnRef}
+        className={className}
       >
-        <TimeColumn start={0} end={24} value={hour} setValue={setHour} />
-        <TimeColumn start={0} end={60} value={minute} setValue={setMinute} />
-        {showSeconds && (
-          <TimeColumn start={0} end={60} value={second} setValue={setSecond} />
-        )}
-      </div>
-    </>
-  )
-}
+        <TimeInput
+          disabled={disabled}
+          ariaLabel={ariaLabel}
+          value={value}
+          isTimeColumnVisible={isTimeColumnVisible}
+          inputRef={inputRef}
+          error={error}
+          showSeconds={showSeconds}
+        />
+        <div
+          className={
+            !isTimeColumnOpen || disabled
+              ? classes.hiddenContainer
+              : classes.timeColumnContainer
+          }
+          ref={timeColumnRef}
+        >
+          <TimeColumn start={0} end={24} value={hour} setValue={setHour} />
+          <TimeColumn start={0} end={60} value={minute} setValue={setMinute} />
+          {showSeconds && (
+            <TimeColumn
+              start={0}
+              end={60}
+              value={second}
+              setValue={setSecond}
+            />
+          )}
+        </div>
+      </InputWrapper>
+    )
+  }
+)
 
 export default TimePickerInput

@@ -1,7 +1,11 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-.container {
+.hiddenContainer {
+  display: none;
+}
+
+.timeColumnContainer {
   display: flex;
   border: 1px solid $color-input-border;
   border-radius: 5px;
@@ -9,10 +13,6 @@
   max-width: 166px;
   width: fit-content;
   background-color: $color-white;
-}
-
-.hiddenContainer {
-  display: none;
 }
 
 .timeInput {
@@ -51,8 +51,4 @@
 
 .disabledIcon path {
   fill: $color-input-border;
-}
-
-.errorMessage {
-  border: 1px solid $color-error;
 }

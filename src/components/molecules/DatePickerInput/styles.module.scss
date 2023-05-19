@@ -1,43 +1,15 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-.datePickerContainer {
-  display: flex;
-  align-items: center;
-  width: 100%;
-
-  .contentContainer {
-    display: flex;
-  }
-
-  .label {
-    @include labelTextStyle;
-    display: inline-block;
-    padding-right: spacing(2.5);
-    align-self: center;
-  }
-
-  .wrapper {
-    display: inline-block;
-    flex-direction: column;
-    position: relative;
-    width: 125px;
-  }
-
-  .dateIcon {
-    position: absolute;
-    right: spacing(2);
-    top: spacing(2);
-    pointer-events: none;
-  }
+.dateIcon {
+  position: absolute;
+  right: spacing(2);
+  top: spacing(2);
+  pointer-events: none;
 }
 
 .disabledCalender g path {
   fill: $color-input-border;
-}
-
-.hiddenLabel {
-  display: none;
 }
 
 :global(.react-datepicker__input-container) input {

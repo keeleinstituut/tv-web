@@ -4,14 +4,12 @@ import DatePicker, {
   ReactDatePickerProps,
   registerLocale,
 } from 'react-datepicker'
-import { Field, Label } from '@radix-ui/react-form'
 import { et } from 'date-fns/locale'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import { ReactComponent as Calender } from 'assets/icons/calender.svg'
 import Icon from 'components/atoms/Icon/Icon'
-import InputError from 'components/atoms/InputError/InputError'
-import TimePickerInput from 'components/molecules/TimePickerInput/TimePickerInput'
+import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
@@ -21,7 +19,6 @@ type SharedDateProps = {
   placeholder?: string
   disabled?: boolean
   value?: string
-  timePicker?: boolean
   onChange: (value: string) => void
 }
 
@@ -30,7 +27,6 @@ export type DatePickerInputProps = SharedDateProps & {
   className?: string
   error?: FieldError
   label?: JSX.Element | string
-  showSeconds?: boolean
 }
 
 export type DatePickerComponentProps = SharedDateProps
@@ -45,7 +41,6 @@ const DatePickerComponent = ({
   value,
   placeholder,
   disabled,
-  timePicker,
   ariaLabel,
   onChange,
   ...rest
@@ -62,8 +57,6 @@ const DatePickerComponent = ({
     splittedDayValue?.[1] +
     '-' +
     splittedDayValue?.[0]
-
-  if (timePicker) return null
 
   return (
     <>
@@ -100,51 +93,26 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       className,
       ariaLabel,
       value,
-      timePicker,
-      showSeconds,
       onChange,
       ...rest
     } = props
 
     return (
-      <Field
+      <InputWrapper
+        label={label}
         name={name}
-        className={classNames(classes.datePickerContainer, className)}
+        error={error}
+        className={className}
       >
-        <div className={classes.contentContainer}>
-          <Label
-            className={classNames(classes.label, !label && classes.hiddenLabel)}
-          >
-            {label}
-          </Label>
-          <div
-            className={classNames(
-              classes.wrapper,
-              error && classes.errorMessage
-            )}
-          >
-            <DatePickerComponent
-              value={value}
-              disabled={disabled}
-              ariaLabel={ariaLabel}
-              placeholder={placeholder}
-              timePicker={timePicker}
-              onChange={onChange}
-              {...rest}
-            />
-            <TimePickerInput
-              value={value}
-              onChange={onChange}
-              disabled={disabled}
-              ariaLabel={ariaLabel}
-              error={error}
-              showSeconds={showSeconds}
-              timePicker={timePicker}
-            />
-            <InputError {...error} />
-          </div>
-        </div>
-      </Field>
+        <DatePickerComponent
+          value={value}
+          disabled={disabled}
+          ariaLabel={ariaLabel}
+          placeholder={placeholder}
+          onChange={onChange}
+          {...rest}
+        />
+      </InputWrapper>
     )
   }
 )

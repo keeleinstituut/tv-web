@@ -1,6 +1,11 @@
 import { FC, useCallback } from 'react'
 import useValidators from 'hooks/useValidators'
-import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
+import {
+  useForm,
+  SubmitHandler,
+  SubmitErrorHandler,
+  useWatch,
+} from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -55,22 +60,19 @@ const Test: FC = () => {
       label: 'date picker label',
       ariaLabel: 'date picker aria label',
       placeholder: 'pp.kk.aaaa',
-      timePicker: false,
     },
     {
-      inputType: InputTypes.Date,
+      inputType: InputTypes.Time,
       name: 'timePicker',
       label: 'time picker label',
       ariaLabel: 'time picker aria label',
-      timePicker: true,
       showSeconds: false,
     },
     {
-      inputType: InputTypes.Date,
+      inputType: InputTypes.Time,
       name: 'timePickerSeconds',
       label: 'time picker seconds label',
       ariaLabel: 'time picker seconds aria label',
-      timePicker: true,
       showSeconds: true,
     },
   ]
@@ -83,6 +85,10 @@ const Test: FC = () => {
     (errors, e) => console.log('on error', errors, e),
     []
   )
+
+  const formValue = useWatch({ control })
+
+  console.log('Form: ', formValue)
 
   return (
     <>

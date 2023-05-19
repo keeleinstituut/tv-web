@@ -1,0 +1,41 @@
+import { FC, PropsWithChildren, ReactNode } from 'react'
+import { Field, Label } from '@radix-ui/react-form'
+import classNames from 'classnames'
+import { FieldError } from 'react-hook-form'
+import InputError from 'components/atoms/InputError/InputError'
+
+import classes from './styles.module.scss'
+
+export type InputWrapperProps = {
+  name: string
+  className?: string
+  error?: FieldError
+  label?: JSX.Element | string
+  children?: ReactNode
+}
+
+const InputWrapper: FC<PropsWithChildren<InputWrapperProps>> = ({
+  label,
+  name,
+  error,
+  className,
+  children,
+}) => {
+  return (
+    <Field name={name} className={classNames(classes.container, className)}>
+      <Label
+        className={classNames(classes.label, !label && classes.hiddenLabel)}
+      >
+        {label}
+      </Label>
+      <div
+        className={classNames(classes.wrapper, error && classes.errorMessage)}
+      >
+        {children}
+        <InputError {...error} />
+      </div>
+    </Field>
+  )
+}
+
+export default InputWrapper
