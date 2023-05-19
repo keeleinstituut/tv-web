@@ -15,10 +15,10 @@ type SharedTimeProps = {
   ariaLabel?: string
   showSeconds?: boolean
   error?: FieldError
+  onChange: (value: string) => void
 }
 
 export type TimePickerInputProps = SharedTimeProps & {
-  onChange: (value: string) => void
   label?: string
   className?: string
   name: string
@@ -42,6 +42,7 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
       inputRef,
       error,
       showSeconds,
+      onChange,
     }: TimeInputProps,
     ref
   ) => {
@@ -49,6 +50,9 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
       if (isTimeColumnVisible) {
         isTimeColumnVisible()
       }
+    }
+    const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(event.target.value)
     }
 
     const timePlaceholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
@@ -67,6 +71,7 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
           onKeyDown={handleClick}
           ref={inputRef}
           aria-label={ariaLabel}
+          onChange={handleTimeChange}
         />
         <Icon
           icon={Clock}
@@ -141,6 +146,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           inputRef={clickAwayInputRef}
           error={error}
           showSeconds={showSeconds}
+          onChange={onChange}
         />
         <div
           className={
