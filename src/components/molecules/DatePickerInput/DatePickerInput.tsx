@@ -33,9 +33,8 @@ export type DatePickerComponentProps = SharedDateProps
 
 registerLocale('et-EE', et)
 
-const changeDateToString = (dateObject: Date | null | undefined) => {
-  return dayjs(dateObject).format('DD/MM/YYYY')
-}
+const changeDateToString = (dateObject: Date | null | undefined) =>
+  dayjs(dateObject).format('DD/MM/YYYY')
 
 const DatePickerComponent = ({
   value,
@@ -45,9 +44,8 @@ const DatePickerComponent = ({
   onChange,
   ...rest
 }: DatePickerComponentProps) => {
-  const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
-    return onChange(changeDateToString(value))
-  }
+  const handleDateChange: ReactDatePickerProps['onChange'] = (value) =>
+    onChange(changeDateToString(value))
 
   const splittedDayValue = value?.split('/')
 

@@ -1,17 +1,10 @@
-import {
-  useState,
-  useEffect,
-  FC,
-  forwardRef,
-  Ref,
-  ForwardedRef,
-  useRef,
-} from 'react'
+import { useState, useEffect, FC, forwardRef, Ref, useRef } from 'react'
 import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
 import Icon from 'components/atoms/Icon/Icon'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
+import { useClickAway } from 'ahooks'
 import classNames from 'classnames'
 
 import classes from './styles.module.scss'
@@ -36,9 +29,8 @@ export type TimeInputProps = SharedTimeProps & {
   inputRef?: Ref<HTMLInputElement> | null
 }
 
-const formatTimeString = (time: number) => {
-  return time?.toString().length === 1 ? `0${time}` : time?.toString()
-}
+const formatTimeString = (time: number) =>
+  time?.toString().length === 1 ? `0${time}` : time?.toString()
 
 const TimeInput: FC<TimeInputProps> = forwardRef(
   (
@@ -51,7 +43,7 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
       error,
       showSeconds,
     }: TimeInputProps,
-    ref: ForwardedRef<HTMLInputElement>
+    ref
   ) => {
     const handleClick = () => {
       if (isTimeColumnVisible) {
@@ -117,26 +109,12 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       setTimeColumnOpen((prevState) => !prevState)
     }
 
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        timeColumnRef.current &&
-        !timeColumnRef.current.contains(event.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
-      ) {
-        setTimeColumnOpen(false)
-      }
-    }
+    const clickAwayInputRef = useRef(null)
+    const timeColumnContainerRef = useRef(null)
 
-    useEffect(() => {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside)
-      }
-    }, [])
-
-    const inputRef = useRef<HTMLInputElement>(null)
-    const timeColumnRef = useRef<HTMLDivElement>(null)
+    useClickAway(() => {
+      setTimeColumnOpen(false)
+    }, [clickAwayInputRef, timeColumnContainerRef])
 
     useEffect(() => {
       const timeWithSeconds = `${formatTimeString(hour)}:${formatTimeString(
@@ -160,7 +138,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           ariaLabel={ariaLabel}
           value={value}
           isTimeColumnVisible={isTimeColumnVisible}
-          inputRef={inputRef}
+          inputRef={clickAwayInputRef}
           error={error}
           showSeconds={showSeconds}
         />
@@ -170,7 +148,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
               ? classes.hiddenContainer
               : classes.timeColumnContainer
           }
-          ref={timeColumnRef}
+          ref={timeColumnContainerRef}
         >
           <TimeColumn start={0} end={24} value={hour} setValue={setHour} />
           <TimeColumn start={0} end={60} value={minute} setValue={setMinute} />
