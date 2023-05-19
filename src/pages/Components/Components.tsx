@@ -107,7 +107,7 @@ const Test: FC = () => {
         handleClose={handleClose}
         open={open}
         setOpen={setOpen}
-        progressBar={true}
+        progressBar={[{ title: 'Vali keelepaarid' }]}
         trigger={
           <Button appearance={AppearanceTypes.Text} onClick={handleOpen}>
             Kustuta konto

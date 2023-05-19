@@ -27,7 +27,6 @@ export interface ButtonProps extends BaseButtonProps {
   icon?: FC<SVGProps<SVGSVGElement>>
   ariaLabel?: string
   hidden?: boolean
-  disabled?: boolean
   className?: string
   iconPositioning?: IconPositioningTypes
 }
@@ -52,7 +51,6 @@ const Button: FC<PropsWithChildren<ButtonProps>> = ({
   hidden,
   className,
   children,
-  disabled,
   ...rest
 }) => {
   if (hidden) return null
@@ -64,11 +62,9 @@ const Button: FC<PropsWithChildren<ButtonProps>> = ({
         classes[appearance],
         classes[size],
         classes[iconPositioning],
-        icon && classes.customButtonPadding,
-        appearance === 'text' && icon && classes.textIconSize,
+        icon && classes.customIconPadding,
         className
       )}
-      disabled={disabled}
       {...rest}
     >
       <span className={classes.buttonText}>{children}</span>

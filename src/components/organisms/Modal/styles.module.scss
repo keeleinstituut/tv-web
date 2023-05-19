@@ -23,9 +23,8 @@
   padding: spacing(10) 0;
 }
 
-.dialogTitle {
-  padding: 0 spacing(17.5) spacing(4) spacing(17.5);
-  @include h1TextStyle;
+.progressBarContainer {
+  padding: 0 0 spacing(10) 0;
 }
 
 .dialogDescription {
@@ -64,6 +63,10 @@
 
 .right {
   justify-content: flex-end;
+
+  button {
+    margin-left: spacing(2);
+  }
 }
 
 .spaceBetween {
@@ -75,10 +78,6 @@
   display: none;
 }
 
-.modalButton {
-  margin-left: spacing(2);
-}
-
 .black {
   color: $color-text-dark;
 }
@@ -87,6 +86,12 @@
   color: $color-input-main;
 }
 
-.progressBar {
-  margin-top: spacing(17.5);
+.modalTitle {
+  padding: spacing(10) spacing(17.5) spacing(4);
+  @include h1TextStyle;
+}
+
+.progressBarContent {
+  padding: spacing(6) spacing(6) spacing(2);
+  @include subtitleSmallTextStyle;
 }

@@ -4,6 +4,7 @@ import {
   PropsWithChildren,
   Dispatch,
   SetStateAction,
+  Fragment,
 } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
@@ -35,7 +36,11 @@ export enum TitleFontTypes {
 }
 
 export interface ModalButtonProps extends ButtonProps {
-  onClick: () => void
+  onClick?: () => void
+}
+
+export interface ProgressBarProps {
+  title?: string
 }
 
 export interface ModalProps extends ModalFooterProps {
@@ -48,7 +53,7 @@ export interface ModalProps extends ModalFooterProps {
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
   handleClose: () => void
-  progressBar?: boolean
+  progressBar?: ProgressBarProps[]
 }
 
 export interface ModalFooterProps {
@@ -62,28 +67,11 @@ const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
 }) => {
   return (
     <div className={classes[buttonsPosition]}>
-      {map(buttons, (button, index) => {
-        return (
-          <Button
-            key={index}
-            appearance={button?.appearance}
-            disabled={button?.disabled}
-            size={button?.size}
-            iconPositioning={button?.iconPositioning}
-            icon={button?.icon}
-            ariaLabel={button?.ariaLabel}
-            hidden={button?.hidden}
-            onClick={button?.onClick}
-            href={button?.href}
-            className={classNames(
-              buttonsPosition !== 'spaceBetween' && classes.modalButton,
-              button?.className
-            )}
-          >
-            {button?.children}
-          </Button>
-        )
-      })}
+      {map(buttons, (button, index) => (
+        <Button key={index} {...button}>
+          {button?.children}
+        </Button>
+      ))}
     </div>
   )
 }
@@ -110,7 +98,11 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
       <Dialog.Portal>
         <Dialog.Overlay className={classes.dialogOverlay} />
         <Dialog.Content
-          className={classNames(classes.dialogContent, classes[size])}
+          className={classNames(
+            classes.dialogContent,
+            classes[size],
+            progressBar && classes.progressBarContainer
+          )}
         >
           <Button
             hidden={!topButton}
@@ -121,14 +113,15 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
           >
             {t('button.cancel')}
           </Button>
-          <Dialog.Title
-            className={classNames(
-              classes.dialogTitle,
-              classes[titleFont],
-              progressBar && classes.progressBar
-            )}
-          >
-            {title}
+          <Dialog.Title>
+            <div hidden={!progressBar} className={classes.progressBarContent}>
+              {map(progressBar, (componentObj, index) => (
+                <Fragment key={index}>{componentObj?.title}</Fragment>
+              ))}
+            </div>
+            <div className={classNames(classes.modalTitle, classes[titleFont])}>
+              {title}
+            </div>
           </Dialog.Title>
           <Dialog.Overlay className={classes.scrollableContent}>
             <div className={classes.dialogDescription}>{children}</div>

@@ -76,6 +76,11 @@
     fill: $color-primary;
   }
 
+  &.customIconPadding svg {
+    height: spacing(4);
+    width: spacing(4);
+  }
+
   &:hover,
   &:active {
     text-decoration: underline;
@@ -100,13 +105,13 @@
   @include buttonTextStyle;
   padding: spacing(2) spacing(10);
 
-  &.customButtonPadding {
+  &.customIconPadding {
     padding: spacing(2) spacing(6);
   }
   &.primary {
     &:focus {
       padding: spacing(1.5) spacing(10);
-      &.customButtonPadding {
+      &.customIconPadding {
         padding: spacing(1.5) spacing(6);
       }
     }
@@ -114,7 +119,7 @@
 
   &.secondary {
     padding: spacing(1.5) spacing(10);
-    &.customButtonPadding {
+    &.customIconPadding {
       padding: spacing(1.5) spacing(6);
     }
   }
@@ -151,9 +156,4 @@
     order: 1;
     padding-right: spacing(1);
   }
-}
-
-.textIconSize svg {
-  height: spacing(4);
-  width: spacing(4);
 }
