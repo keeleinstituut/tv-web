@@ -12,6 +12,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
+import TestingTable from 'components/templates/DataTable/TestingTable'
 
 type FormValues = {
   email?: string
@@ -81,6 +82,7 @@ const Test: FC = () => {
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
       />
+      <TestingTable />
     </>
   )
 }

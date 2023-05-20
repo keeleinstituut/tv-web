@@ -1,174 +1,148 @@
-import React, { CSSProperties, FC, ReactNode, useId, useState } from 'react'
+import React, { CSSProperties, FC, useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 import classes from './styles.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import {
-  createColumnHelper,
+  ExpandedState,
+  getExpandedRowModel,
   flexRender,
   getCoreRowModel,
   useReactTable,
   PaginationState,
   getPaginationRowModel,
+  TableMeta,
+  Row,
+  RowData,
+  ColumnDef,
+  getSortedRowModel,
+  SortingState,
+  FilterFn,
+  getFilteredRowModel,
+  ColumnFiltersState,
 } from '@tanstack/react-table'
+import { RankingInfo, rankItem } from '@tanstack/match-sorter-utils'
 import Container from 'components/atoms/Container/Container'
 import { ReactComponent as Arrow } from 'assets/icons/arrow_pagination.svg'
+import { ReactComponent as SortingArrows } from 'assets/icons/sorting_arrows.svg'
+
 import Button, {
   AppearanceTypes,
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
+import TableFilter from 'components/organisms/TableFilter/TableFilter'
 
-type Person = {
-  firstName: string
-  lastName: string
-  age: number
-  //   visits: number
-  //   status: string
-  //   progress: number
+export enum TableSizeTypes {
+  L = 'l',
+  M = 'm',
+  S = 's',
 }
 
-const defaultData: Person[] = [
-  {
-    firstName: 'tanner',
-    lastName: 'linsley',
-    age: 24,
-    // visits: 100,
-    // status: 'In Relationship',
-    // progress: 50,
-  },
-  {
-    firstName: 'tandy',
-    lastName: 'miller',
-    age: 40,
-    // visits: 40,
-    // status: 'Single',
-    // progress: 80,
-  },
-  {
-    firstName: 'joe',
-    lastName: 'dirte',
-    age: 45,
-    // visits: 20,
-    // status: 'Complicated',
-    // progress: 10,
-  },
-  {
-    firstName: 'tanner1',
-    lastName: 'linsley',
-    age: 24,
-    // visits: 100,
-    // status: 'In Relationship',
-    // progress: 50,
-  },
-  {
-    firstName: 'tandy1',
-    lastName: 'miller',
-    age: 40,
-    // visits: 40,
-    // status: 'Single',
-    // progress: 80,
-  },
-  {
-    firstName: 'joe1',
-    lastName: 'dirte',
-    age: 45,
-    // visits: 20,
-    // status: 'Complicated',
-    // progress: 10,
-  },
-  {
-    firstName: 'tanner2',
-    lastName: 'linsley',
-    age: 24,
-    // visits: 100,
-    // status: 'In Relationship',
-    // progress: 50,
-  },
-  {
-    firstName: 'tandy2',
-    lastName: 'miller',
-    age: 40,
-    // visits: 40,
-    // status: 'Single',
-    // progress: 80,
-  },
-  {
-    firstName: 'joe2',
-    lastName: 'dirte',
-    age: 45,
-    // visits: 20,
-    // status: 'Complicated',
-    // progress: 10,
-  },
-]
-
-const columnHelper = createColumnHelper<Person>()
-
-const columns = [
-  columnHelper.accessor('firstName', {
-    cell: (info) => info.getValue(),
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor((row) => row.lastName, {
-    id: 'lastName',
-    cell: (info) => <i>{info.getValue()}</i>,
-    header: () => <span>Last Name</span>,
-    footer: (info) => info.column.id,
-  }),
-  columnHelper.accessor('age', {
-    header: () => 'Age',
-    cell: (info) => info.renderValue(),
-    footer: (info) => info.column.id,
-  }),
-  //   columnHelper.accessor('visits', {
-  //     header: () => <span>Visits</span>,
-  //     footer: (info) => info.column.id,
-  //   }),
-  //   columnHelper.accessor('status', {
-  //     header: 'Status',
-  //     footer: (info) => info.column.id,
-  //   }),
-  //   columnHelper.accessor('progress', {
-  //     header: 'Profile Progress',
-  //     footer: (info) => info.column.id,
-  //   }),
-]
 type DataTableProps = {
-  //   data: any
-  //   columns: ColumnDef<any, any>[]
+  data: any
+  columns: ColumnDef<any, any>[]
   //tableBodyPrefix?: ReactNode
   sortable?: boolean
   filterable?: boolean
   pagination?: PaginationState
   setPagination?: React.Dispatch<React.SetStateAction<PaginationState>>
-  //   globalFilter?: string
-  //   setGlobalFilter?: React.Dispatch<React.SetStateAction<string>>
+  globalFilter?: string
+  setGlobalFilter?: React.Dispatch<React.SetStateAction<string>>
   //   columnVisibility?: VisibilityState
   //   setColumnVisibility?: React.Dispatch<React.SetStateAction<VisibilityState>>
   //   disableHead?: boolean
-  //   meta?: TableMeta<any>
+  meta?: TableMeta<any>
+  tableSize: string
 }
 
-const DataTable: FC<DataTableProps> = ({}) => {
-  const [data, setData] = React.useState(() => [...defaultData])
+type ColumnMeta = {
+  meta: {
+    size: number | string
+  }
+}
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 3,
+declare module '@tanstack/table-core' {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>
+  }
+
+  interface FilterMeta {
+    itemRank: RankingInfo
+  }
+}
+
+declare module '@tanstack/react-table' {
+  interface TableMeta<TData extends RowData> {
+    getRowStyles: (row: Row<TData>) => CSSProperties
+  }
+}
+type CustomColumnDef = ColumnDef<any> & ColumnMeta
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  const itemRank = rankItem(row.getValue(columnId), value)
+  addMeta({
+    itemRank,
   })
+  return itemRank.passed
+}
+
+const DataTable: FC<DataTableProps> = ({
+  data,
+  columns,
+  tableSize = 'm',
+  // tableBodyPrefix,
+  sortable,
+  filterable,
+  pagination,
+  setPagination,
+  globalFilter,
+  setGlobalFilter,
+  // columnVisibility,
+  // setColumnVisibility,
+  // disableHead,
+  meta,
+}) => {
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
+  const [rowSelection, setRowSelection] = React.useState({})
+  const [expanded, setExpanded] = React.useState<ExpandedState>({})
+
   const id = useId()
   const { t } = useTranslation()
 
   const table = useReactTable({
     data,
     columns,
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
     state: {
+      sorting,
+      columnFilters,
+      globalFilter,
+      rowSelection,
+      expanded,
       ...{ pagination },
     },
+    meta,
     ...(pagination && { getPaginationRowModel: getPaginationRowModel() }),
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
+    ...(sortable && { getSortedRowModel: getSortedRowModel() }),
+    onSortingChange: setSorting,
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: fuzzyFilter,
+    enableRowSelection: true, //enable row selection for all rows
+    // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
+    onRowSelectionChange: setRowSelection,
+    onExpandedChange: setExpanded,
+    getSubRows: (row) => row.subRows,
+    getExpandedRowModel: getExpandedRowModel(),
   })
 
   return (
@@ -176,26 +150,51 @@ const DataTable: FC<DataTableProps> = ({}) => {
       <h4 className={classes.title}>Pealkiri</h4>
 
       <div className={classes.tableWrapper}>
-        <table>
+        <table className={classNames(classes.dataTable, classes[tableSize])}>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  console.log('jou', header.column.getIsSorted() as string)
+                  return (
+                    <th
+                      key={header.id}
+                      style={{
+                        width: (header.column.columnDef as CustomColumnDef).meta
+                          ?.size,
+                      }}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div className={classes.headingWrapper}>
+                          {sortable && header.column.getCanSort() && (
+                            <Button
+                              onClick={header.column.getToggleSortingHandler()}
+                              appearance={AppearanceTypes.Text}
+                              size={SizeTypes.S}
+                              icon={SortingArrows}
+                              ariaLabel={t('label.button_arrow')}
+                              iconPositioning={IconPositioningTypes.Left}
+                            />
+                          )}
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+
+                          {filterable && header.column.getCanFilter() && (
+                            <TableFilter column={header.column} table={table} />
+                          )}
+                        </div>
+                      )}
+                    </th>
+                  )
+                })}
               </tr>
             ))}
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id}>
+              <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -211,7 +210,6 @@ const DataTable: FC<DataTableProps> = ({}) => {
               table.getState().pagination.pageSize && (
               <div className={classes.pagination}>
                 <Button
-                  id="preview"
                   appearance={AppearanceTypes.Text}
                   size={SizeTypes.S}
                   icon={Arrow}
@@ -223,7 +221,7 @@ const DataTable: FC<DataTableProps> = ({}) => {
 
                 <nav
                   role="navigation"
-                  //aria-label={t('global.paginationNavigation') || ''}
+                  aria-label={t('label.pagination_navigation') || ''}
                 >
                   <ul className={classes.links}>
                     {[...Array(table.getPageCount())].map((_, index) => (
@@ -238,7 +236,7 @@ const DataTable: FC<DataTableProps> = ({}) => {
                           className={classes.pageNumber}
                           to={`?page=${index + 1}`}
                           onClick={() => table.setPageIndex(index)}
-                          //aria-label={t('global.gotoPage') + index}
+                          aria-label={t('label.go_to_page') + index}
                           aria-current={
                             table.getState().pagination.pageIndex === index
                           }
@@ -250,7 +248,6 @@ const DataTable: FC<DataTableProps> = ({}) => {
                   </ul>
                 </nav>
                 <Button
-                  // id="next"
                   appearance={AppearanceTypes.Text}
                   size={SizeTypes.S}
                   icon={Arrow}

@@ -2,7 +2,10 @@
   "label": {
     "email": "Email",
     "button_arrow": "Nupu nool",
-    "pagination_result_count": "Kuvan korraga"
+    "pagination_result_count": "Kuvan korraga",
+    "pagination_navigation": "Lehekülgedel navigeerimine",
+    "go_to_page": "Mine lehele",
+    "filter": "Filter"
   },
   "placeholder": {
     "email": "example@mail.com"
