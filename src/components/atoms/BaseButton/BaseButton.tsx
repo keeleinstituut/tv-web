@@ -38,6 +38,7 @@ const BaseButton: FC<BaseButtonProps> = ({
   loading,
   hidden,
   type = 'button',
+  ...rest
 }) => {
   if (hidden) return null
 
@@ -45,15 +46,10 @@ const BaseButton: FC<BaseButtonProps> = ({
     event: MouseEvent<T> | KeyboardEvent
   ) => {
     if (disabled || loading || !onClick) return
-    if (isKeyboardEvent(event))
-      (onClick as unknown as KeyboardEventHandler)(event)
-    else (onClick as unknown as MouseEventHandler<T>)(event)
-  }
-
-  // make sure our buttons and links behave the same way, when using the keyboard
-  const keyPressHandler = <T extends HTMLElement>(event: KeyboardEvent<T>) => {
-    const { key } = event
-    if (key === 'Enter' && onClick) onClickHandler<T>(event)
+    if (isKeyboardEvent(event)) {
+      const handlePress = onClick as unknown as KeyboardEventHandler
+      handlePress(event)
+    } else (onClick as unknown as MouseEventHandler<T>)(event)
   }
 
   // For links we use <a>
@@ -61,9 +57,9 @@ const BaseButton: FC<BaseButtonProps> = ({
   if (href) {
     return (
       <a
+        {...rest}
         href={href}
         onClick={onClickHandler}
-        onKeyDown={keyPressHandler}
         role="button"
         tabIndex={0}
         className={className}
@@ -76,11 +72,10 @@ const BaseButton: FC<BaseButtonProps> = ({
   // For other clickable elements that are not links, we use a button
   return (
     <button
-      // {...rest}
+      {...rest}
       type={type}
       className={classNames(className)}
       onClick={onClickHandler}
-      onKeyDown={keyPressHandler}
       disabled={disabled}
     >
       {loading ? <Loader loading={loading} /> : children}

@@ -13,7 +13,8 @@
   "button": {
     "login": "Logi sisse",
     "check_tutorial": "Vaata kasutusjuhendit",
-    "enter": "Sisene"
+    "enter": "Sisene",
+    "log_out": "Log out"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -21,5 +22,26 @@
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
+  },
+  "menu": {
+    "landing": "Avaleht",
+    "orders": "Tellimused",
+    "sub_orders": "Alam-tellimused",
+    "my_tasks": "Minu ülesanded",
+    "performers_database": "Teostajate andmebaas",
+    "translation_memories": "Tõlkemälud",
+    "settings": "Sätted",
+    "user_management": "Kasutajate haldus",
+    "role_management": "Rollihaldus",
+    "logs": "Logid",
+    "flags": "Sildid",
+    "report_export": "Aruande eksport",
+    "institution_settings": "Asutuse sätted",
+    "technical_settings": "Tehnilised sätted",
+    "collapse_menu": "Kitsendan menüü",
+    "manual": "Kasutusjuhend"
+  },
+  "alt": {
+    "header_logo": "Logo"
   }
 }

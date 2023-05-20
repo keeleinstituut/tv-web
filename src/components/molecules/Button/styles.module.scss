@@ -67,7 +67,7 @@
 }
 
 .text {
-  padding: spacing(0);
+  padding: 0;
   background: none;
   color: $color-primary;
   border-radius: 0;
@@ -100,31 +100,31 @@
 
 .m {
   @include buttonTextStyle;
-  padding: spacing(1) spacing(5);
+  padding: spacing(2) spacing(10);
 
   &.primary {
     &:focus {
-      padding: spacing(0.75) spacing(5);
+      padding: spacing(1.5) spacing(10);
     }
   }
 
   &.secondary {
-    padding: spacing(0.75) spacing(5);
+    padding: spacing(1.5) spacing(10);
   }
 }
 
 .s {
   @include smallButtonTextStyle;
-  padding: spacing(0.375) spacing(3);
+  padding: spacing(0.75) spacing(6);
 
   &.primary {
     &:focus {
-      padding: spacing(0.125) spacing(3);
+      padding: spacing(0.25) spacing(6);
     }
   }
 
   &.secondary {
-    padding: spacing(0.125) spacing(3);
+    padding: spacing(0.25) spacing(6);
   }
 }
 
@@ -135,13 +135,13 @@
 .right {
   svg {
     order: 3;
-    padding-left: spacing(1.25);
+    padding-left: spacing(2.5);
   }
 }
 
 .left {
   svg {
     order: 1;
-    padding-right: spacing(1.25);
+    padding-right: spacing(2.5);
   }
 }

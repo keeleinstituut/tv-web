@@ -11,6 +11,7 @@ const AuthWrapper: FC<PropsWithChildren> = () => {
       value={{
         isUserLoggedIn,
         login: keycloak && keycloak.login,
+        logout: keycloak && keycloak.logout,
         userId,
       }}
     >
