@@ -1,4 +1,4 @@
-import { useState, useEffect, FC, forwardRef, Ref, useRef } from 'react'
+import { useState, useEffect, forwardRef, useRef } from 'react'
 import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
@@ -15,46 +15,27 @@ type SharedTimeProps = {
   ariaLabel?: string
   showSeconds?: boolean
   error?: FieldError
-  onChange: (value: string) => void
 }
 
 export type TimePickerInputProps = SharedTimeProps & {
   label?: string
   className?: string
   name: string
+  onChange: (value: string) => void
 }
 
 export type TimeInputProps = SharedTimeProps & {
-  isTimeColumnVisible: () => void
-  inputRef?: Ref<HTMLInputElement> | null
+  toggleTimeColumnVisible: () => void
 }
 
 const formatTimeString = (time: number) =>
   time?.toString().length === 1 ? `0${time}` : time?.toString()
 
-const TimeInput: FC<TimeInputProps> = forwardRef(
-  (
-    {
-      disabled,
-      ariaLabel,
-      value,
-      isTimeColumnVisible,
-      inputRef,
-      error,
-      showSeconds,
-      onChange,
-    }: TimeInputProps,
+const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
+  function TimeInput(
+    { disabled, ariaLabel, value, toggleTimeColumnVisible, error, showSeconds },
     ref
-  ) => {
-    const handleClick = () => {
-      if (isTimeColumnVisible) {
-        isTimeColumnVisible()
-      }
-    }
-    const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      onChange(event.target.value)
-    }
-
+  ) {
     const timePlaceholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
 
     return (
@@ -67,11 +48,11 @@ const TimeInput: FC<TimeInputProps> = forwardRef(
           )}
           value={value ? value : timePlaceholder}
           type="text"
-          onClick={handleClick}
-          onKeyDown={handleClick}
-          ref={inputRef}
+          onClick={toggleTimeColumnVisible}
+          onKeyDown={toggleTimeColumnVisible}
+          ref={ref}
           aria-label={ariaLabel}
-          onChange={handleTimeChange}
+          readOnly
         />
         <Icon
           icon={Clock}
@@ -110,16 +91,15 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
     const [second, setSecond] = useState<number>(secondValue ? secondValue : 0)
     const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
 
-    const isTimeColumnVisible = () => {
-      setTimeColumnOpen((prevState) => !prevState)
+    const toggleTimeColumnVisible = () => {
+      setTimeColumnOpen(!isTimeColumnOpen)
     }
 
     const clickAwayInputRef = useRef(null)
-    const timeColumnContainerRef = useRef(null)
 
     useClickAway(() => {
       setTimeColumnOpen(false)
-    }, [clickAwayInputRef, timeColumnContainerRef])
+    }, [clickAwayInputRef])
 
     useEffect(() => {
       const timeWithSeconds = `${formatTimeString(hour)}:${formatTimeString(
@@ -137,16 +117,15 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         name={name}
         error={error}
         className={className}
+        ref={clickAwayInputRef}
       >
         <TimeInput
           disabled={disabled}
           ariaLabel={ariaLabel}
           value={value}
-          isTimeColumnVisible={isTimeColumnVisible}
-          inputRef={clickAwayInputRef}
+          toggleTimeColumnVisible={toggleTimeColumnVisible}
           error={error}
           showSeconds={showSeconds}
-          onChange={onChange}
         />
         <div
           className={
@@ -154,7 +133,6 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
               ? classes.hiddenContainer
               : classes.timeColumnContainer
           }
-          ref={timeColumnContainerRef}
         >
           <TimeColumn start={0} end={24} value={hour} setValue={setHour} />
           <TimeColumn start={0} end={60} value={minute} setValue={setMinute} />

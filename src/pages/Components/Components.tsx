@@ -1,11 +1,6 @@
 import { FC, Fragment, useCallback, useState } from 'react'
 import useValidators from 'hooks/useValidators'
-import {
-  useForm,
-  SubmitHandler,
-  SubmitErrorHandler,
-  useWatch,
-} from 'react-hook-form'
+import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -17,7 +12,6 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
-import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 import Modal, {
   ModalSizeTypes,
   ButtonPositionTypes,
@@ -103,10 +97,6 @@ const Test: FC = () => {
     []
   )
 
-  const formValue = useWatch({ control })
-
-  console.log('Form: ', formValue)
-
   return (
     <>
       <div />
@@ -147,7 +137,7 @@ const Test: FC = () => {
             size: SizeTypes.M,
             ariaLabel: t('button.cancel'),
             href: 'http://localhost:3000/',
-            icon: ButtonArrowWhite,
+            icon: ButtonArrow,
             iconPositioning: IconPositioningTypes.Left,
           },
           {
@@ -155,7 +145,7 @@ const Test: FC = () => {
             onClick: handleClose,
             children: t('button.yes'),
             disabled: true,
-            icon: ButtonArrowWhite,
+            icon: ButtonArrow,
           },
         ]}
       >

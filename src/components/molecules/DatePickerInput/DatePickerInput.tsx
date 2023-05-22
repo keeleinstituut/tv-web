@@ -101,6 +101,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         name={name}
         error={error}
         className={className}
+        ref={ref}
       >
         <DatePickerComponent
           value={value}
