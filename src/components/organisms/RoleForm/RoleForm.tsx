@@ -24,6 +24,7 @@ interface FormValues {
 
 interface RoleFormProps extends RoleType {
   allPrivileges: PrivilegeType[]
+  hidden?: boolean
 }
 
 // TODO: temporary, will swap with buttons from modal task later
@@ -60,7 +61,12 @@ const FormButtons: FC<FormButtonProps> = ({
   )
 }
 
-const RoleForm: FC<RoleFormProps> = ({ id, privileges, allPrivileges }) => {
+const RoleForm: FC<RoleFormProps> = ({
+  id,
+  privileges,
+  allPrivileges,
+  hidden,
+}) => {
   const defaultPrivileges = useMemo(
     () =>
       reduce(
@@ -145,6 +151,8 @@ const RoleForm: FC<RoleFormProps> = ({ id, privileges, allPrivileges }) => {
   const resetForm = useCallback(() => {
     reset(defaultPrivileges)
   }, [defaultPrivileges, reset])
+
+  if (hidden) return null
 
   return (
     <div className={classes.container}>

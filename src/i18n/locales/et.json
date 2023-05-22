@@ -14,7 +14,8 @@
     "save_changes": "Salvesta muudatused",
     "cancel": "Tühista",
     "delete_this_role": "Kustuta see roll",
-    "add_new_order": "Lisa uus tellimus"
+    "add_new_order": "Lisa uus tellimus",
+    "add_new_role": "lisa uus roll"
   },
   "error": {
     "input_title": "Veateade: ",

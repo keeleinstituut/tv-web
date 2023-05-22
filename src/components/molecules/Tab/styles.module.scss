@@ -1,0 +1,21 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.tab {
+  padding: spacing(4);
+  color: $color-text-dark;
+
+  svg {
+    margin-left: spacing(1);
+  }
+
+  &.active {
+    background: white;
+    border: 1px solid $color-border;
+    color: $color-primary;
+    border-bottom: unset;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+  }
+}

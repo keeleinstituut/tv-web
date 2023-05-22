@@ -55,15 +55,11 @@ const keyCloakConfig = mapKeys(
 ) as unknown as KeycloakConfig
 const keycloak = new Keycloak(keyCloakConfig)
 
-// const getRefreshInterval = (refreshToken, interval, self) => setInterval(() => {
-//   attemptTokenRefresh()
-// })
-
 let refreshInterval: NodeJS.Timer | undefined
 
 const onVisibilityChange = () => {
   if (document.visibilityState === 'visible') {
-    startRefreshingToken()
+    keycloak.updateToken(Infinity)
   }
 }
 
@@ -112,40 +108,39 @@ const useKeycloak = () => {
         setIsUserLoggedIn(false)
         return
       }
-      console.warn('keyclocak', keycloak)
       setAccessToken(keycloak.token)
+      keycloak.onAuthRefreshSuccess = () => {
+        // Set new access token + restart refreshing interval
+        setAccessToken(keycloak.token)
+        startRefreshingToken()
+      }
       const data = await apiClient.get(endpoints.INSTITUTIONS)
       if (size(data) === 0) {
         setIsUserLoggedIn(false)
         return
       }
       if (!userAccessObject?.selectedInstitution) {
-        if (size(data) === 1 && !userAccessObject) {
-          // TODO: select institution here
-          // const selectedInstitutionId = data[0].id
-          // const params = new URLSearchParams({
-          //   grant_type: 'refresh_token',
-          //   client_id: process.env.REACT_APP_KEYCLOAK_client_id || '',
-          //   refresh_token: keycloak.refreshToken || '',
-          // })
-          // await authApiClient.post(authEndpoints.TOKEN, params, {
-          //   headers: {
-          //     'Content-Type': 'application/x-www-form-urlencoded',
-          //     'X-Selected-Institution-ID': selectedInstitutionId,
-          //   },
-          // })
-          // const response = await axios.post(
-          //   'https://sso.dev.tolkevarav.eki.ee/realms/tolkevarav-dev/protocol/openid-connect/token',
-          //   params,
-          //   {
-          //     headers: {
-          //       'X-Selected-Institution-ID':
-          //         '99342849-6f8d-4a90-b3b2-571f551bb7e7',
-          //       'Content-Type': 'application/x-www-form-urlencoded',
-          //       Accept: '*/*',
-          //     },
-          //   }
-          // )
+        if (size(data) === 1) {
+          const selectedInstitutionId = data[0].id
+          const params = new URLSearchParams({
+            grant_type: 'refresh_token',
+            client_id: process.env.REACT_APP_KEYCLOAK_client_id || '',
+            refresh_token: keycloak.refreshToken || '',
+          })
+          // select institution for user
+          await axios.post(
+            'https://sso.dev.tolkevarav.eki.ee/realms/tolkevarav-dev/protocol/openid-connect/token',
+            params,
+            {
+              headers: {
+                'X-Selected-Institution-ID': selectedInstitutionId,
+                'Content-Type': 'application/x-www-form-urlencoded',
+                Accept: '*/*',
+              },
+            }
+          )
+          // refresh token, to update state for keycloak
+          const done = await keycloak.updateToken(Infinity)
         } else {
           // TODO: send user to institution selection modal
         }
@@ -154,20 +149,15 @@ const useKeycloak = () => {
       setIsUserLoggedIn(true)
       // Start refreshing interval
       startRefreshingToken()
-      keycloak.onAuthRefreshSuccess = () => {
-        // Set new access token + restart refreshing interval
-        setAccessToken(keycloak.token)
-        startRefreshingToken()
-      }
-      // Token refreshing stops, when we focus on another tab
-      // Make sure we attempt to refresh the token again, when refocusing
+      // Token refreshing stops, when window is not visible and doesn't start again, when
+      // it becomes visible again
+      // Refresh the token again, when window becomes visible again
       if (typeof window !== 'undefined' && window.addEventListener) {
         window.addEventListener('visibilitychange', onVisibilityChange)
       }
     }
     initKeycloak()
     return () => {
-      // Be sure to unsubscribe if a new handler is set
       window.removeEventListener('visibilitychange', onVisibilityChange)
     }
   }, [])

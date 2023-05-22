@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
-import queryString from 'query-string'
+// import queryString from 'query-string'
 import ApiClientInterceptor from './ApiClientInterceptor'
 
 export interface AxiosRequestConfigWithRetries extends AxiosRequestConfig {
