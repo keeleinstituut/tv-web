@@ -13,7 +13,8 @@
     "enter": "Sisene",
     "break": "Katkesta",
     "yes": "Jah",
-    "log_out": "Log out"
+    "log_out": "Log out",
+    "add_new_order": "Lisa uus tellimus"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -41,7 +42,8 @@
     "manual": "Kasutusjuhend"
   },
   "alt": {
-    "header_logo": "Logo"
+    "header_logo": "Logo",
+    "checked": "Valitud"
   }
   
 }

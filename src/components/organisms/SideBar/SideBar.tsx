@@ -1,7 +1,7 @@
 import { FC, MouseEvent, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
-import { map } from 'lodash'
+import { map, find } from 'lodash'
 import { ReactComponent as ChevronLeft } from 'assets/icons/chevron_left.svg'
 import { ReactComponent as ArrowUp } from 'assets/icons/arrow_up.svg'
 import { ReactComponent as Burger } from 'assets/icons/burger.svg'
@@ -29,7 +29,9 @@ const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
     <>
       {map(menuItems, ({ children, path, Icon, isInterTitle, label }) => {
         const fullPath = parentPath ? `${parentPath}/${path}` : `/${path}`
-        if (!children) {
+        const hasChildrenToShow = children && find(children, 'label')
+        if (!label) return null
+        if (!hasChildrenToShow) {
           return (
             <li key={label}>
               <NavLink to={fullPath} className={classes.listItem}>
