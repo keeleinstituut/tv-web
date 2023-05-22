@@ -74,6 +74,7 @@ const BaseButton: FC<BaseButtonProps> = ({
   return (
     <button
       {...rest}
+      disabled={disabled}
       type={type}
       className={classNames(className)}
       onClick={onClickHandler}

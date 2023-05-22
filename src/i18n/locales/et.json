@@ -8,8 +8,11 @@
   },
   "button": {
     "login": "Logi sisse",
+    "cancel": "Tühista",
     "check_tutorial": "Vaata kasutusjuhendit",
     "enter": "Sisene",
+    "break": "Katkesta",
+    "yes": "Jah",
     "log_out": "Log out",
     "add_new_order": "Lisa uus tellimus"
   },
@@ -42,4 +45,5 @@
     "header_logo": "Logo",
     "checked": "Valitud"
   }
+  
 }
