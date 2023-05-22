@@ -1,0 +1,76 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.selectionsContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .label {
+    @include labelTextStyle;
+    display: flex;
+    padding-right: spacing(2.5);
+    align-self: flex-start;
+  }
+
+  .wrapper {
+    display: inline-block;
+    flex-direction: column;
+    position: relative;
+
+    svg {
+      position: absolute;
+      right: spacing(2);
+      top: spacing(2);
+      pointer-events: none;
+    }
+  }
+}
+
+.toggleDropdown {
+  @include buttonTextStyle;
+  padding: spacing(2);
+  color: $color-text-light;
+  width: 274px;
+  border: 1px solid $color-text-light;
+  border-radius: 4px;
+  background: $color-white;
+  height: 40px;
+  text-align: left;
+
+  &:focus {
+    border: 1px solid $color-primary;
+  }
+}
+
+.disabledDropdown {
+  &:focus {
+    border: 1px solid $color-text-light;
+  }
+}
+
+.disabledDropdownIcon g path {
+  fill: $color-background;
+}
+
+.errorMessage button,
+.errorMessage button:focus {
+  border: 1px solid $color-error;
+}
+
+.dropdownMenu {
+  width: 274px;
+  background: $color-white;
+  @include labelTextStyle;
+  border: 1px solid $color-border;
+  border-radius: 0px 0px 4px 4px;
+}
+
+.dropdownMenuItem {
+  padding: spacing(2);
+  cursor: pointer;
+}
+
+.openDropdownIcon {
+  transform: rotate(180deg);
+}

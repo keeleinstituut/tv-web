@@ -1,6 +1,11 @@
 import { FC, Fragment, useCallback, useState } from 'react'
 import useValidators from 'hooks/useValidators'
-import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
+import {
+  useForm,
+  SubmitHandler,
+  SubmitErrorHandler,
+  useWatch,
+} from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -22,6 +27,7 @@ type FormValues = {
   email?: string
   terms?: string
   datePicker?: string
+  selections?: string
 }
 
 const Test: FC = () => {
@@ -70,6 +76,18 @@ const Test: FC = () => {
       ariaLabel: 'date picker aria label',
       placeholder: 'pp.kk.aaaa',
     },
+    {
+      inputType: InputTypes.Selections,
+      name: 'selections',
+      label: 'selections label',
+      ariaLabel: 'selections aria label',
+      options: [
+        { label: 'Option 1', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+      ],
+      defaultLabel: 'Select an option',
+    },
   ]
 
   const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {
@@ -81,6 +99,9 @@ const Test: FC = () => {
     []
   )
 
+  const formValue = useWatch({ control })
+
+  console.log('formValue: ', formValue)
   return (
     <>
       <div />
