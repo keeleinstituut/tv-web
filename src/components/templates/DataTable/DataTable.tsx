@@ -1,5 +1,4 @@
 import React, { CSSProperties, FC, useId, useState } from 'react'
-import { Link } from 'react-router-dom'
 import classes from './styles.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -23,7 +22,6 @@ import {
 } from '@tanstack/react-table'
 import { RankingInfo, rankItem } from '@tanstack/match-sorter-utils'
 import Container from 'components/atoms/Container/Container'
-import { ReactComponent as Arrow } from 'assets/icons/arrow_pagination.svg'
 import { ReactComponent as SortingArrows } from 'assets/icons/sorting_arrows.svg'
 
 import Button, {
@@ -32,6 +30,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import TableFilter from 'components/organisms/TableFilter/TableFilter'
+import TablePagination from 'components/organisms/TablePagination/TablePagination'
 
 export enum TableSizeTypes {
   L = 'l',
@@ -204,84 +203,7 @@ const DataTable: FC<DataTableProps> = ({
             ))}
           </tbody>
         </table>
-        {pagination && (
-          <div className={classes.paginationWrapper}>
-            {table.getPageCount() * table.getState().pagination.pageSize >
-              table.getState().pagination.pageSize && (
-              <div className={classes.pagination}>
-                <Button
-                  appearance={AppearanceTypes.Text}
-                  size={SizeTypes.S}
-                  icon={Arrow}
-                  ariaLabel={t('label.button_arrow')}
-                  iconPositioning={IconPositioningTypes.Left}
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                />
-
-                <nav
-                  role="navigation"
-                  aria-label={t('label.pagination_navigation') || ''}
-                >
-                  <ul className={classes.links}>
-                    {[...Array(table.getPageCount())].map((_, index) => (
-                      <li
-                        key={`${id}-${index}`}
-                        className={classNames({
-                          [classes.active]:
-                            table.getState().pagination.pageIndex === index,
-                        })}
-                      >
-                        <Link
-                          className={classes.pageNumber}
-                          to={`?page=${index + 1}`}
-                          onClick={() => table.setPageIndex(index)}
-                          aria-label={t('label.go_to_page') + index}
-                          aria-current={
-                            table.getState().pagination.pageIndex === index
-                          }
-                        >
-                          {index + 1}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-                <Button
-                  appearance={AppearanceTypes.Text}
-                  size={SizeTypes.S}
-                  icon={Arrow}
-                  ariaLabel={t('label.button_arrow')}
-                  iconPositioning={IconPositioningTypes.Left}
-                  onClick={() => {
-                    table.nextPage()
-                  }}
-                  disabled={!table.getCanNextPage()}
-                  className={classes.arrow}
-                />
-              </div>
-            )}
-            <div className={classes.pageSizeWrapper}>
-              <label htmlFor={id} className={classes.pageSizeLabel}>
-                {t('label.pagination_result_count')}
-              </label>
-              <select
-                className={classes.pageSizeSelect}
-                id={id}
-                value={table.getState().pagination.pageSize}
-                onChange={(e) => {
-                  table.setPageSize(Number(e.target.value))
-                }}
-              >
-                {[1, 2, 3, 4, 15].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    {pageSize}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
+        <TablePagination hidden={!pagination} table={table} />
       </div>
     </Container>
   )
