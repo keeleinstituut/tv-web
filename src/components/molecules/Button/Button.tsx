@@ -27,7 +27,6 @@ export interface ButtonProps extends BaseButtonProps {
   icon?: FC<SVGProps<SVGSVGElement>>
   ariaLabel?: string
   hidden?: boolean
-  disabled?: boolean
   className?: string
   iconPositioning?: IconPositioningTypes
 }

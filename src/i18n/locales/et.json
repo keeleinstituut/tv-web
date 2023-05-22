@@ -10,7 +10,10 @@
     "login": "Logi sisse",
     "check_tutorial": "Vaata kasutusjuhendit",
     "enter": "Sisene",
-    "log_out": "Log out"
+    "log_out": "Log out",
+    "save_changes": "Salvesta muudatused",
+    "cancel": "Tühista",
+    "delete_this_role": "Kustuta see roll"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -42,6 +45,7 @@
     "checked": "Valitud"
   },
   "roles": {
-    "roles_management": "Rollihaldus"
+    "roles_management": "Rollihaldus",
+    "privileges": "Privileegid"
   }
 }

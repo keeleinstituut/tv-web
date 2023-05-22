@@ -58,7 +58,7 @@ const BaseButton: FC<BaseButtonProps> = ({
     return (
       <a
         {...rest}
-        href={href}
+        href={disabled ? undefined : href}
         onClick={onClickHandler}
         role="button"
         tabIndex={0}
@@ -73,6 +73,7 @@ const BaseButton: FC<BaseButtonProps> = ({
   return (
     <button
       {...rest}
+      disabled={disabled}
       type={type}
       className={classNames(className)}
       onClick={onClickHandler}
