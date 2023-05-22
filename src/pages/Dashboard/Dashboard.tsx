@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { useTranslation } from 'react-i18next'
+import LandingContent from 'components/organisms/LandingContent/LandingContent'
 
 import useAuth from 'hooks/useAuth'
 
@@ -9,7 +10,7 @@ const Dashboard: FC = () => {
   const { userInfo, login, isUserLoggedIn } = useAuth()
   return (
     <>
-      <div />
+      <LandingContent />
       <div>
         {userInfo && isUserLoggedIn ? (
           <pre>{JSON.stringify(userInfo, null, 2)}</pre>

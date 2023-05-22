@@ -2,37 +2,9 @@
 @import 'styles/mixins';
 
 .container {
-  display: flex;
   min-height: 100vh;
-  justify-content: space-between;
+  padding: 0 spacing(26);
+  display: flex;
   align-items: center;
-  padding: 0 spacing(42) 0 spacing(34);
-
-  img {
-    width: 386px;
-    height: 275px;
-  }
-
-  .contentContainer {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-end;
-    margin-left: spacing(22);
-
-
-    .buttonsContainer {
-      margin-top: spacing(4);
-
-      button {
-        display: inline-flex;
-        margin-left: 8px;
-      }
-    }
-
-    h1 {
-      text-align: end;
-    }
-  }
+  background-color: $color-white;
 }

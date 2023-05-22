@@ -13,7 +13,8 @@
     "log_out": "Log out",
     "save_changes": "Salvesta muudatused",
     "cancel": "Tühista",
-    "delete_this_role": "Kustuta see roll"
+    "delete_this_role": "Kustuta see roll",
+    "add_new_order": "Lisa uus tellimus"
   },
   "error": {
     "input_title": "Veateade: ",
