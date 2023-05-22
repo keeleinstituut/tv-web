@@ -87,6 +87,7 @@ const Test: FC = () => {
         { label: 'Option 3', value: 'Option 3' },
       ],
       defaultLabel: 'Select an option',
+      multiple: true,
     },
   ]
 
