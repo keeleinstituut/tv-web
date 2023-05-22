@@ -39,6 +39,7 @@
     "manual": "Kasutusjuhend"
   },
   "alt": {
-    "header_logo": "Logo"
+    "header_logo": "Logo",
+    "checked": "Valitud"
   }
 }
