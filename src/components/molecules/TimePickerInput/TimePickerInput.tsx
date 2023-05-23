@@ -50,16 +50,25 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       const inputValue = event.target.value
 
-      const inputRegex = /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?$/
-      const inputSecondsRegex =
+      const withoutSecondsRegex = /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?$/
+      const secondsRegex =
         /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?(:[0-5]?[0-9]?)?$/
 
-      const regex = showSeconds ? inputSecondsRegex : inputRegex
+      const regex = showSeconds ? secondsRegex : withoutSecondsRegex
 
       if (regex.test(inputValue)) {
         onChange(inputValue)
       }
     }
+
+    const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = event.target.value
+      onChange(inputValue)
+    }
+
+    const inputMask = withMask(showSeconds ? '99:99:99' : '99:99')
+
+    console.log('value: ', value)
 
     return (
       <>
@@ -70,11 +79,13 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             error && classes.errorMessage
           )}
           type="text"
-          value={value || ''}
+          value={value ? value : ''}
           onClick={toggleTimeColumnVisible}
           aria-label={ariaLabel}
-          onChange={handleInputChange}
+          onChange={value ? handleValueChange : handleInputChange}
+          // onChange={handleInputChange}
           id={name}
+          // readOnly={value ? true : false}
           {...(placeholder ? { placeholder } : {})}
           pattern={
             showSeconds
@@ -82,7 +93,8 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
               : '(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]'
           }
           required
-          ref={withMask(showSeconds ? '99:99:99' : '99:99')}
+          // ref={withMask(showSeconds ? '99:99:99' : '99:99')}
+          ref={!value ? inputMask : ref}
         />
         <Clock
           className={classNames(
