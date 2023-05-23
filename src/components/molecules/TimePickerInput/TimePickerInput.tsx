@@ -182,12 +182,14 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
             end={24}
             value={hourValue}
             setValue={handleSetHour}
+            isTimeColumnOpen={isTimeColumnOpen}
           />
           <TimeColumn
             start={0}
             end={60}
             value={minuteValue}
             setValue={handleSetMinute}
+            isTimeColumnOpen={isTimeColumnOpen}
           />
           {showSeconds && (
             <TimeColumn
@@ -195,6 +197,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
               end={60}
               value={secondValue}
               setValue={handleSetSecond}
+              isTimeColumnOpen={isTimeColumnOpen}
             />
           )}
         </div>

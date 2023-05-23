@@ -1,11 +1,6 @@
 import { FC, Fragment, useCallback, useState } from 'react'
 import useValidators from 'hooks/useValidators'
-import {
-  useForm,
-  SubmitHandler,
-  SubmitErrorHandler,
-  useWatch,
-} from 'react-hook-form'
+import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -101,10 +96,6 @@ const Test: FC = () => {
     (errors, e) => console.log('on error', errors, e),
     []
   )
-
-  const formValue = useWatch({ control })
-
-  console.log('formValue: ', formValue)
 
   return (
     <>
