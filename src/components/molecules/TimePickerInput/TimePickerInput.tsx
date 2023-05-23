@@ -4,6 +4,7 @@ import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import { useClickAway } from 'ahooks'
+import { withMask } from 'use-mask-input'
 import classNames from 'classnames'
 
 import classes from './styles.module.scss'
@@ -68,10 +69,9 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             disabled && classes.disabledTimeInput,
             error && classes.errorMessage
           )}
-          value={value || ''}
           type="text"
+          value={value || ''}
           onClick={toggleTimeColumnVisible}
-          ref={ref}
           aria-label={ariaLabel}
           onChange={handleInputChange}
           id={name}
@@ -82,6 +82,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
               : '(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]'
           }
           required
+          ref={withMask(showSeconds ? '99:99:99' : '99:99')}
         />
         <Clock
           className={classNames(

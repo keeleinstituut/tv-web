@@ -13,6 +13,8 @@
   max-width: 166px;
   width: fit-content;
   background-color: $color-white;
+  position: absolute;
+  z-index: 1;
 }
 
 .timeInput {

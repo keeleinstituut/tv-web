@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@radix-ui/react-form": "^0.0.2",
     "@radix-ui/react-dialog": "^1.0.3",
+    "@radix-ui/react-form": "^0.0.2",
     "@tanstack/react-query": "^4.28.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -30,6 +30,7 @@
     "react-timeit": "^1.1.12",
     "sass": "^1.60.0",
     "typescript": "^4.9.5",
+    "use-mask-input": "^3.1.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
