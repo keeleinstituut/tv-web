@@ -10,7 +10,6 @@
     @include labelTextStyle;
     display: flex;
     padding-right: spacing(2.5);
-    align-self: flex-start;
   }
 
   .wrapper {
@@ -37,6 +36,7 @@
   background: $color-white;
   height: 40px;
   text-align: left;
+  // display: block;
 
   &:focus {
     border: 1px solid $color-primary;
@@ -64,6 +64,8 @@
   @include labelTextStyle;
   border: 1px solid $color-border;
   border-radius: 0px 0px 4px 4px;
+  position: absolute;
+  // display: block;
 }
 
 .dropdownMenuItem {
