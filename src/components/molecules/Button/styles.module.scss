@@ -30,17 +30,17 @@
   order: 2;
 }
 
-.right {
-  svg {
+&.right {
+  svg{
     order: 3;
-    padding-left: spacing(2.5);
+    padding-left: spacing(1);
   }
 }
 
-.left {
-  svg {
+&.left {
+  svg{
     order: 1;
-    padding-right: spacing(2.5);
+    padding-right: spacing(1);
   }
 }
 
@@ -66,6 +66,10 @@
 
   &.m {
     padding: spacing(2) spacing(10);
+
+    &.customIconPadding {
+      padding: spacing(2) spacing(6);
+    }
   }
 
   &.s {
@@ -104,6 +108,10 @@
 
   &.m {
     padding: spacing(1.5) spacing(10);
+
+    &.customIconPadding {
+      padding: spacing(1.5) spacing(6);
+    }
   }
 
   &.s {
@@ -119,6 +127,11 @@
 
   svg g path {
     fill: $color-primary;
+  }
+
+  &.customIconPadding svg {
+    height: spacing(4);
+    width: spacing(4);
   }
 
   &:hover,
@@ -139,18 +152,6 @@
     svg g path,
     svg path {
       fill: $color-text-light;
-    }
-  }
-
-  &.right {
-    svg{
-      padding-left: spacing(1);
-    }
-  }
-
-  &.left {
-    svg{
-      padding-right: spacing(1);
     }
   }
 }

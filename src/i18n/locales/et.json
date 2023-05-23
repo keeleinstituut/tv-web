@@ -10,8 +10,11 @@
   },
   "button": {
     "login": "Logi sisse",
+    "cancel": "Tühista",
     "check_tutorial": "Vaata kasutusjuhendit",
     "enter": "Sisene",
+    "break": "Katkesta",
+    "yes": "Jah",
     "log_out": "Log out",
     "save_changes": "Salvesta muudatused",
     "cancel": "Tühista",
@@ -52,4 +55,5 @@
     "roles_management": "Rollihaldus",
     "privileges": "Privileegid"
   }
+  
 }
