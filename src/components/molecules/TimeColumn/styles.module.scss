@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 spacing(2.5);
+  padding: 0 spacing(3.8);
   position: relative;
 }
 
@@ -54,12 +54,7 @@
   margin-top: spacing(11);
 }
 
-.numbers {
-  display: none;
-}
-
 .selected {
   color: $color-text-dark;
   @include buttonTextStyle;
-  padding: spacing(0.25) spacing(2);
 }

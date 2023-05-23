@@ -19,6 +19,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
     return (
       <Field name={name} className={classNames(classes.container, className)}>
         <Label
+          htmlFor={name}
           className={classNames(classes.label, !label && classes.hiddenLabel)}
         >
           {label}

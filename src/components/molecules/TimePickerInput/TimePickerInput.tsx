@@ -2,7 +2,6 @@ import { useState, useEffect, forwardRef, useRef } from 'react'
 import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
-import Icon from 'components/atoms/Icon/Icon'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import { useClickAway } from 'ahooks'
 import classNames from 'classnames'
@@ -15,13 +14,13 @@ type SharedTimeProps = {
   ariaLabel?: string
   showSeconds?: boolean
   error?: FieldError
+  name: string
+  onChange: (value: string) => void
 }
 
 export type TimePickerInputProps = SharedTimeProps & {
   label?: string
   className?: string
-  name: string
-  onChange: (value: string) => void
 }
 
 export type TimeInputProps = SharedTimeProps & {
@@ -33,10 +32,33 @@ const formatTimeString = (time: number) =>
 
 const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
   function TimeInput(
-    { disabled, ariaLabel, value, toggleTimeColumnVisible, error, showSeconds },
+    {
+      disabled,
+      ariaLabel,
+      value,
+      toggleTimeColumnVisible,
+      error,
+      showSeconds,
+      name,
+      onChange,
+    },
     ref
   ) {
-    const timePlaceholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
+    const placeholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = event.target.value
+
+      const inputRegex = /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?$/
+      const inputSecondsRegex =
+        /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?(:[0-5]?[0-9]?)?$/
+
+      const regex = showSeconds ? inputSecondsRegex : inputRegex
+
+      if (regex.test(inputValue)) {
+        onChange(inputValue)
+      }
+    }
 
     return (
       <>
@@ -46,16 +68,22 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             disabled && classes.disabledTimeInput,
             error && classes.errorMessage
           )}
-          value={value ? value : timePlaceholder}
+          value={value || ''}
           type="text"
           onClick={toggleTimeColumnVisible}
-          onKeyDown={toggleTimeColumnVisible}
           ref={ref}
           aria-label={ariaLabel}
-          readOnly
+          onChange={handleInputChange}
+          id={name}
+          {...(placeholder ? { placeholder } : {})}
+          pattern={
+            showSeconds
+              ? '(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]'
+              : '(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]'
+          }
+          required
         />
-        <Icon
-          icon={Clock}
+        <Clock
           className={classNames(
             classes.timeIcon,
             disabled && classes.disabledIcon
@@ -120,12 +148,14 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         ref={clickAwayInputRef}
       >
         <TimeInput
+          name={name}
           disabled={disabled}
           ariaLabel={ariaLabel}
           value={value}
           toggleTimeColumnVisible={toggleTimeColumnVisible}
           error={error}
           showSeconds={showSeconds}
+          onChange={onChange}
         />
         <div
           className={
