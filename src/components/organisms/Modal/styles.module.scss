@@ -28,7 +28,7 @@
 }
 
 .dialogDescription {
-  padding: 0 spacing(17.5);
+  padding: 0 spacing(18);
 }
 
 .topButton {
@@ -87,7 +87,7 @@
 }
 
 .modalTitle {
-  padding: spacing(10) spacing(17.5) spacing(4);
+  padding: 0 spacing(18) spacing(4);
   @include h1TextStyle;
 }
 

@@ -98,5 +98,10 @@
     "EDIT_DEPARTMENT": "Asutuse üksuste muutmine",
     "DELETE_DEPARTMENT": "Asutuse üksuste kustutamine",
     "EDIT_USER_WORKTIME": "Kasutajate tööaegade muutmine"
+  },
+  "modal": {
+    "pick_institution_title": "Vali asutus, mille alt soovid Tõlkeväravasse siseneda.",
+    "no_institutions_title": "Tundub, et sul puuduvad asutused mille vahel valida.",
+    "institutions": "ASUTUSED"
   }
 }
