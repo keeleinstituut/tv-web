@@ -3,7 +3,8 @@
 
 .tabsRow {
   display: flex;
-  overflow-x: scroll;
+  overflow-x: auto;
+  display: content;
   // Hack to make room for box-shadow of single tab
   width: calc(100% + spacing(5));
   margin-left: spacing(-2.5);
@@ -12,5 +13,7 @@
 
   .addButton {
     padding: spacing(4);
+    border-top: 1px solid transparent;
+    white-space: nowrap;
   }
 }

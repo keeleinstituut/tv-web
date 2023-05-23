@@ -8,9 +8,9 @@ import {
   Dictionary,
   size,
 } from 'lodash'
-import { authApiClient, setAccessToken, apiClient } from 'api'
+import { setAccessToken, apiClient } from 'api'
 import axios from 'axios'
-import { endpoints, authEndpoints } from 'api/endpoints'
+import { endpoints } from 'api/endpoints'
 import Keycloak, { KeycloakConfig, KeycloakTokenParsed } from 'keycloak-js'
 
 // TODO: might separate refresh token logic from here
@@ -140,7 +140,7 @@ const useKeycloak = () => {
             }
           )
           // refresh token, to update state for keycloak
-          const done = await keycloak.updateToken(Infinity)
+          await keycloak.updateToken(Infinity)
         } else {
           // TODO: send user to institution selection modal
         }

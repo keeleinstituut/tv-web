@@ -1,10 +1,12 @@
 {
   "label": {
     "email": "Email",
-    "button_arrow": "Nupu nool"
+    "button_arrow": "Nupu nool",
+    "role_name_input": "Uue rolli nimi"
   },
   "placeholder": {
-    "email": "example@mail.com"
+    "email": "example@mail.com",
+    "write_new_role_here": "Kirjuta uus roll siia..."
   },
   "button": {
     "login": "Logi sisse",

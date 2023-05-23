@@ -6,10 +6,14 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { reduce, find, map, includes } from 'lodash'
+import { reduce, find, map, includes, startsWith } from 'lodash'
 import { RoleType } from 'types/roles'
 import { PrivilegeType } from 'types/privileges'
-import { useUpdateRole, useDeleteRole } from 'hooks/requests/roles'
+import {
+  useUpdateRole,
+  useDeleteRole,
+  useCreateRole,
+} from 'hooks/requests/roles'
 import { ReactComponent as DeleteIcon } from 'assets/icons/delete.svg'
 import classes from './styles.module.scss'
 import useAuth from 'hooks/useAuth'
@@ -20,11 +24,15 @@ interface PrivilegesFormValue {
 
 interface FormValues {
   privileges: PrivilegesFormValue
+  name?: string
 }
 
 interface RoleFormProps extends RoleType {
   allPrivileges: PrivilegeType[]
   hidden?: boolean
+  temporaryName?: string
+  onReset: (id: string) => void
+  onSubmitSuccess: (id: string, newId?: string) => void
 }
 
 // TODO: temporary, will swap with buttons from modal task later
@@ -66,7 +74,13 @@ const RoleForm: FC<RoleFormProps> = ({
   privileges,
   allPrivileges,
   hidden,
+  name,
+  temporaryName,
+  onReset,
+  onSubmitSuccess,
 }) => {
+  const isTemporaryRole = startsWith(id, 'temp')
+  const hasNameChanged = temporaryName && temporaryName !== name
   const defaultPrivileges = useMemo(
     () =>
       reduce(
@@ -89,6 +103,7 @@ const RoleForm: FC<RoleFormProps> = ({
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { updateRole, isLoading } = useUpdateRole({ roleId: id })
+  const { createRole, isLoading: isCreating } = useCreateRole()
   const { deleteRole, isLoading: isDeleting } = useDeleteRole({ roleId: id })
   const {
     control,
@@ -102,6 +117,18 @@ const RoleForm: FC<RoleFormProps> = ({
     },
     resetOptions: {
       keepDirtyValues: true, // keep dirty fields unchanged, but update defaultValues
+    },
+    resolver: (data) => {
+      // Validate entire form
+      const anyPrivilegePicked = find(data.privileges, (value) => value)
+      return {
+        values: {
+          privileges: data.privileges,
+        },
+        errors: {
+          ...(!anyPrivilegePicked ? { privileges: '' } : {}),
+        },
+      }
     },
   })
 
@@ -118,6 +145,7 @@ const RoleForm: FC<RoleFormProps> = ({
       // TODO: will add name from here as well possibly
       const { privileges: newPrivileges } = values
       const payload: RoleType = {
+        name: temporaryName || name,
         privileges: reduce<PrivilegesFormValue, PrivilegeType[]>(
           newPrivileges,
           (result, value, key) => {
@@ -136,7 +164,12 @@ const RoleForm: FC<RoleFormProps> = ({
       }
 
       try {
-        await updateRole(payload)
+        if (isTemporaryRole) {
+          const result = await createRole(payload)
+          onSubmitSuccess(id || '', result.id)
+        } else {
+          await updateRole(payload)
+        }
       } catch (error) {
         // TODO: if needed, take fields with error from here
         // and mark them as invalid in hook form, using setError
@@ -145,12 +178,21 @@ const RoleForm: FC<RoleFormProps> = ({
         alert(error)
       }
     },
-    [updateRole]
+    [
+      temporaryName,
+      name,
+      isTemporaryRole,
+      createRole,
+      onSubmitSuccess,
+      id,
+      updateRole,
+    ]
   )
 
   const resetForm = useCallback(() => {
     reset(defaultPrivileges)
-  }, [defaultPrivileges, reset])
+    onReset(id || '')
+  }, [defaultPrivileges, id, onReset, reset])
 
   if (hidden) return null
 
@@ -176,8 +218,12 @@ const RoleForm: FC<RoleFormProps> = ({
         className={classes.formContainer}
       >
         <FormButtons
-          disabled={!isDirty || !isValid}
-          loading={isLoading || isSubmitting}
+          disabled={
+            !isValid ||
+            (!name && !temporaryName) ||
+            (!isDirty && !hasNameChanged)
+          }
+          loading={isLoading || isCreating || isSubmitting}
           resetForm={resetForm}
           hidden={!includes(userPrivileges, 'EDIT_ROLE')}
         />
