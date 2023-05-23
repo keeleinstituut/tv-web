@@ -30,13 +30,12 @@
   @include buttonTextStyle;
   padding: spacing(2);
   color: $color-text-light;
-  width: 274px;
+  min-width: 274px;
   border: 1px solid $color-text-light;
   border-radius: 4px;
   background: $color-white;
   height: 40px;
   text-align: left;
-  // display: block;
 
   &:focus {
     border: 1px solid $color-primary;
@@ -61,11 +60,9 @@
 .dropdownMenu {
   width: 274px;
   background: $color-white;
-  @include labelTextStyle;
   border: 1px solid $color-border;
   border-radius: 0px 0px 4px 4px;
   position: absolute;
-  // display: block;
 }
 
 .dropdownMenuItem {
@@ -79,4 +76,9 @@
 
 .dropdownMenuItemSelected {
   background-color: red;
+}
+
+.option {
+  @include labelTextStyle;
+  padding: spacing(2);
 }

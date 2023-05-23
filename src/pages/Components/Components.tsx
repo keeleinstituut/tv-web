@@ -28,6 +28,7 @@ type FormValues = {
   terms?: string
   datePicker?: string
   selections?: string
+  multipleSelections?: string
 }
 
 const Test: FC = () => {
@@ -85,8 +86,23 @@ const Test: FC = () => {
         { label: 'Option 1', value: 'Option 1' },
         { label: 'Option 2', value: 'Option 2' },
         { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
       ],
       defaultLabel: 'Select an option',
+      multiple: false,
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: 'multipleSelections',
+      label: 'multipleSelections label',
+      ariaLabel: 'multipleSelections aria label',
+      options: [
+        { label: 'Option 1', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
+      ],
+      defaultLabel: 'Select multiple options',
       multiple: true,
     },
   ]

@@ -4,7 +4,7 @@ import { Field, Label } from '@radix-ui/react-form'
 import { FieldError } from 'react-hook-form'
 import InputError from 'components/atoms/InputError/InputError'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import { ReactComponent as Dropdown } from 'assets/icons/dropdown.svg'
+import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
 import { map } from 'lodash'
 import { useClickAway } from 'ahooks'
 
@@ -53,12 +53,12 @@ const SelectionControlsInput = forwardRef<
     setIsOpen(!isOpen)
   }
 
-  // const handleOptionSelect = (
-  //   option: { label: string; value: string } | null
-  // ) => {
-  //   onChange(option ? option?.value : '')
-  //   setIsOpen(false)
-  // }
+  const handleSingleOptionSelect = (
+    option: { label: string; value: string } | null
+  ) => {
+    onChange(option ? option?.value : '')
+    setIsOpen(false)
+  }
 
   // const handleOptionSelect = (
   //   option: { label: string; value: string } | null
@@ -86,7 +86,7 @@ const SelectionControlsInput = forwardRef<
   //   setIsOpen(false)
   // }
 
-  const handleOptionSelect = (selectedValue: string) => {
+  const handleMultipleOptionSelect = (selectedValue: string) => {
     const selectedOption = options.find(
       (option) => option.value === selectedValue
     )
@@ -128,11 +128,51 @@ const SelectionControlsInput = forwardRef<
     setIsOpen(false)
   }, [clickAwayInputRef])
 
+  const handleOptionSelect = (selectedOption: {
+    label: string
+    value: string
+  }) => {
+    // const selectedValues = Array.isArray(value) ? [...value] : [] // Create a new array to hold the selected values
+
+    // const optionIndex = selectedValues.indexOf(selectedOption.value)
+
+    // if (optionIndex === -1) {
+    //   // Option is not selected, add it to the selected values
+    //   selectedValues.push(selectedOption.value)
+    // } else {
+    //   // Option is already selected, remove it from the selected values
+    //   selectedValues.splice(optionIndex, 1)
+    // }
+
+    // onChange(selectedValues) // Pass the updated array of selected values
+    // setIsOpen(false)
+
+    if (multiple) {
+      const selectedValues = Array.isArray(value) ? [...value] : [] // Create a new array to hold the selected values
+
+      const optionIndex = selectedValues.indexOf(selectedOption.value)
+
+      if (optionIndex === -1) {
+        // Option is not selected, add it to the selected values
+        selectedValues.push(selectedOption.value)
+      } else {
+        // Option is already selected, remove it from the selected values
+        selectedValues.splice(optionIndex, 1)
+      }
+
+      onChange(selectedValues) // Pass the updated array of selected values
+      setIsOpen(false)
+    } else {
+      onChange(selectedOption ? selectedOption?.value : '')
+      setIsOpen(false)
+    }
+  }
+
   return (
     <Field
       name={name}
       className={classNames(classes.selectionsContainer, className)}
-      ref={clickAwayInputRef}
+      // ref={clickAwayInputRef}
     >
       <Label
         className={classNames(classes.label, !label && classes.hiddenLabel)}
@@ -143,20 +183,41 @@ const SelectionControlsInput = forwardRef<
         className={classNames(classes.wrapper, error && classes.errorMessage)}
         onClick={toggleDropdown}
       >
-        <BaseButton
+        {/* <BaseButton
           className={classNames(
             classes.toggleDropdown,
             disabled && classes.disabledDropdown
           )}
         >
           {value || defaultLabel}
-          <Dropdown
+          <DropdownArrow
+            className={classNames(
+              disabled && classes.disabledDropdownIcon,
+              isOpen && !error && classes.openDropdownIcon
+            )}
+          />
+        </BaseButton> */}
+
+        <BaseButton
+          className={classNames(
+            classes.toggleDropdown,
+            disabled && classes.disabledDropdown
+          )}
+        >
+          {value && value.length > 0
+            ? options
+                .filter((option) => value.includes(option.value))
+                .map((option) => option.label)
+                .join(', ')
+            : defaultLabel}
+          <DropdownArrow
             className={classNames(
               disabled && classes.disabledDropdownIcon,
               isOpen && !error && classes.openDropdownIcon
             )}
           />
         </BaseButton>
+
         {/* <ul
           className={classes.dropdownMenu}
           hidden={disabled || !isOpen || !!error}
@@ -167,30 +228,90 @@ const SelectionControlsInput = forwardRef<
                 key={index}
                 className={classNames(
                   classes.dropdownMenuItem,
-                  multiple &&
+                  value &&
                     value?.includes(option.value) &&
                     classes.dropdownMenuItemSelected
                 )}
-                onClick={() => handleOptionSelect(option)}
+                onClick={() => handleSingleOptionSelect(option)}
               >
                 {option?.label}
               </li>
             )
           })}
         </ul> */}
-        <select
+
+        {/* <ul
           className={classes.dropdownMenu}
           hidden={disabled || !isOpen || !!error}
-          value={value}
-          onChange={(event) => handleOptionSelect(event.target.value)}
-          multiple={multiple}
         >
-          {options.map((option, index) => (
-            <option key={index} value={option?.value}>
+          {map(options, (option, index) => {
+            return (
+              <li
+                key={index}
+                className={classNames(
+                  classes.dropdownMenuItem,
+                  value &&
+                    value?.includes(option.value) &&
+                    classes.dropdownMenuItemSelected
+                )}
+                onClick={() => handleSingleOptionSelect(option)}
+              >
+                {option?.label}
+              </li>
+            )
+          })}
+        </ul> */}
+
+        {/* <select
+          className={classes.dropdownMenu}
+          // hidden={disabled || !isOpen || !!error}
+          onChange={(event) => handleMultipleOptionSelect(event.target.value)}
+        >
+          {map(options, (option, index) => (
+            <option
+              key={index}
+              value={option?.value}
+              className={classes.option}
+            >
               {option?.label}
             </option>
           ))}
-        </select>
+        </select> */}
+
+        {/* <select
+          className={classes.dropdownMenu}
+          hidden={disabled || !isOpen || !!error}
+          value={value}
+          onChange={(event) => handleMultipleOptionSelect(event.target.value)}
+          multiple={multiple}
+        >
+          {map(options, (option, index) => (
+            <option
+              key={index}
+              value={option?.value}
+              className={classes.option}
+            >
+              {option?.label}
+            </option>
+          ))}
+        </select> */}
+
+        {map(options, (option, index) => {
+          const isSelected = value && value.includes(option.value)
+
+          return (
+            <li
+              key={index}
+              className={classNames(
+                classes.dropdownMenuItem,
+                isSelected && classes.dropdownMenuItemSelected
+              )}
+              onClick={() => handleOptionSelect(option)}
+            >
+              {option.label}
+            </li>
+          )
+        })}
 
         <InputError {...error} />
       </div>
