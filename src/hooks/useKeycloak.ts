@@ -129,7 +129,7 @@ const useKeycloak = () => {
           })
           // select institution for user
           await axios.post(
-            'https://sso.dev.tolkevarav.eki.ee/realms/tolkevarav-dev/protocol/openid-connect/token',
+            `${process.env.REACT_APP_KEYCLOAK_url}/realms/${process.env.REACT_APP_KEYCLOAK_realm}/protocol/openid-connect/token`,
             params,
             {
               headers: {
@@ -149,9 +149,8 @@ const useKeycloak = () => {
       setIsUserLoggedIn(true)
       // Start refreshing interval
       startRefreshingToken()
-      // Token refreshing stops, when window is not visible and doesn't start again, when
-      // it becomes visible again
-      // Refresh the token again, when window becomes visible again
+      // Token refreshing stops, when window is not visible and doesn't start again
+      // Refresh the token again, when window becomes visible
       if (typeof window !== 'undefined' && window.addEventListener) {
         window.addEventListener('visibilitychange', onVisibilityChange)
       }

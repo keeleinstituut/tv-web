@@ -17,11 +17,11 @@
     color: $color-primary;
     border-top-right-radius: 6px;
     border-top-left-radius: 6px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+    box-shadow: 0 4px 10px $color-shadow-main;
 
     &:focus-visible,
     &:focus {
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14), inset 0 0 0 2px #005aa3;
+      box-shadow: 0 4px 10px $color-shadow-main, inset 0 0 0 2px $color-primary;
     }
   }
 
@@ -39,7 +39,6 @@
   .innerInput {
     position: absolute;
     z-index: 10;
-    // opacity: 0;
     left: 0;
     right: 0;
     top: 0;
