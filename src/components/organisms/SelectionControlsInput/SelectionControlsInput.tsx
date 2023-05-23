@@ -3,7 +3,6 @@ import classNames from 'classnames'
 import { Field, Label } from '@radix-ui/react-form'
 import { FieldError } from 'react-hook-form'
 import InputError from 'components/atoms/InputError/InputError'
-import Icon from 'components/atoms/Icon/Icon'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as Dropdown } from 'assets/icons/dropdown.svg'
 import { map } from 'lodash'
@@ -133,7 +132,7 @@ const SelectionControlsInput = forwardRef<
     <Field
       name={name}
       className={classNames(classes.selectionsContainer, className)}
-      // ref={clickAwayInputRef}
+      ref={clickAwayInputRef}
     >
       <Label
         className={classNames(classes.label, !label && classes.hiddenLabel)}
@@ -151,14 +150,12 @@ const SelectionControlsInput = forwardRef<
           )}
         >
           {value || defaultLabel}
-          {/* <Icon
-            icon={Dropdown}
+          <Dropdown
             className={classNames(
               disabled && classes.disabledDropdownIcon,
               isOpen && !error && classes.openDropdownIcon
             )}
-            ariaLabel={ariaLabel}
-          /> */}
+          />
         </BaseButton>
         {/* <ul
           className={classes.dropdownMenu}
@@ -182,16 +179,19 @@ const SelectionControlsInput = forwardRef<
           })}
         </ul> */}
         <select
+          className={classes.dropdownMenu}
+          hidden={disabled || !isOpen || !!error}
           value={value}
           onChange={(event) => handleOptionSelect(event.target.value)}
           multiple={multiple}
         >
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
+          {options.map((option, index) => (
+            <option key={index} value={option?.value}>
+              {option?.label}
             </option>
           ))}
         </select>
+
         <InputError {...error} />
       </div>
     </Field>
