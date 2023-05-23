@@ -30,14 +30,14 @@
   order: 2;
 }
 
-&.right {
+.right {
   svg{
     order: 3;
     padding-left: spacing(1);
   }
 }
 
-&.left {
+.left {
   svg{
     order: 1;
     padding-right: spacing(1);

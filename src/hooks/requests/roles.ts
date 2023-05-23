@@ -98,7 +98,7 @@ export const useDeleteRole = ({ roleId }: { roleId?: string }) => {
   const { mutate: deleteRole, isLoading } = useMutation({
     mutationKey: ['roles', roleId],
     mutationFn: () => apiClient.delete(`${endpoints.ROLES}/${roleId}`),
-    onSuccess: (data) => {
+    onSuccess: () => {
       queryClient.setQueryData(
         ['roles'],
         // TODO: possibly will start storing all arrays as objects

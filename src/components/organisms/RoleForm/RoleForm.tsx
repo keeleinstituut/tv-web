@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { reduce, find, map, includes, startsWith } from 'lodash'
 import { RoleType } from 'types/roles'
-import { PrivilegeType } from 'types/privileges'
+import { PrivilegeType, PrivilegeKey } from 'types/privileges'
 import {
   useUpdateRole,
   useDeleteRole,
@@ -18,13 +18,12 @@ import { ReactComponent as DeleteIcon } from 'assets/icons/delete.svg'
 import classes from './styles.module.scss'
 import useAuth from 'hooks/useAuth'
 
-interface PrivilegesFormValue {
-  [key: string]: boolean
+type PrivilegesFormValue = object & {
+  [key in PrivilegeKey]?: boolean
 }
 
 interface FormValues {
   privileges: PrivilegesFormValue
-  name?: string
 }
 
 interface RoleFormProps extends RoleType {
@@ -120,7 +119,7 @@ const RoleForm: FC<RoleFormProps> = ({
     },
     resolver: (data) => {
       // Validate entire form
-      const anyPrivilegePicked = find(data.privileges, (value) => value)
+      const anyPrivilegePicked = find(data.privileges, (value) => !!value)
       return {
         values: {
           privileges: data.privileges,
@@ -135,8 +134,8 @@ const RoleForm: FC<RoleFormProps> = ({
   // map data for rendering
   const fields: FieldProps<FormValues>[] = map(allPrivileges, ({ key }) => ({
     inputType: InputTypes.Checkbox,
-    ariaLabel: `label: ${key}`,
-    label: `label: ${key}`,
+    ariaLabel: t(`privileges.${key}`),
+    label: t(`privileges.${key}`),
     name: `privileges.${key}`,
   }))
 
@@ -148,13 +147,14 @@ const RoleForm: FC<RoleFormProps> = ({
         privileges: reduce<PrivilegesFormValue, PrivilegeType[]>(
           newPrivileges,
           (result, value, key) => {
-            if (!key || !value) {
+            const typedKey = key as unknown as PrivilegeKey
+            if (!typedKey || !value) {
               return result
             }
             return [
               ...result,
               {
-                key,
+                key: typedKey,
               },
             ]
           },
