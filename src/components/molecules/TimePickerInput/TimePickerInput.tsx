@@ -1,4 +1,4 @@
-import { useState, useEffect, forwardRef, useRef } from 'react'
+import { useState, forwardRef, useRef } from 'react'
 import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
@@ -61,15 +61,6 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
       }
     }
 
-    const handleValueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const inputValue = event.target.value
-      onChange(inputValue)
-    }
-
-    const inputMask = withMask(showSeconds ? '99:99:99' : '99:99')
-
-    console.log('value: ', value)
-
     return (
       <>
         <input
@@ -80,21 +71,15 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
           )}
           type="text"
           value={value ? value : ''}
-          onClick={toggleTimeColumnVisible}
+          onFocus={toggleTimeColumnVisible}
           aria-label={ariaLabel}
-          onChange={value ? handleValueChange : handleInputChange}
-          // onChange={handleInputChange}
+          onChange={handleInputChange}
           id={name}
-          // readOnly={value ? true : false}
           {...(placeholder ? { placeholder } : {})}
-          pattern={
-            showSeconds
-              ? '(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]'
-              : '(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]'
-          }
           required
-          // ref={withMask(showSeconds ? '99:99:99' : '99:99')}
-          ref={!value ? inputMask : ref}
+          ref={withMask(showSeconds ? '99:99:99' : '99:99', {
+            placeholder: '0',
+          })}
         />
         <Clock
           className={classNames(
@@ -123,13 +108,10 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
 
     const splittedTimeValue = value?.split(':')
 
-    const hourValue = Number(splittedTimeValue?.[0])
-    const minuteValue = Number(splittedTimeValue?.[1])
-    const secondValue = Number(splittedTimeValue?.[2])
+    const hourValue = Number(splittedTimeValue?.[0]) || 0
+    const minuteValue = Number(splittedTimeValue?.[1]) || 0
+    const secondValue = Number(splittedTimeValue?.[2]) || 0
 
-    const [hour, setHour] = useState<number>(hourValue ? hourValue : 0)
-    const [minute, setMinute] = useState<number>(minuteValue ? minuteValue : 0)
-    const [second, setSecond] = useState<number>(secondValue ? secondValue : 0)
     const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
 
     const toggleTimeColumnVisible = () => {
@@ -142,15 +124,33 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       setTimeColumnOpen(false)
     }, [clickAwayInputRef])
 
-    useEffect(() => {
-      const timeWithSeconds = `${formatTimeString(hour)}:${formatTimeString(
-        minute
-      )}:${formatTimeString(second)}`
-      const formattedTime = `${formatTimeString(hour)}:${formatTimeString(
-        minute
+    const handleSetHour = (newHour: number) => {
+      const timeWithSeconds = `${formatTimeString(newHour)}:${formatTimeString(
+        minuteValue
+      )}:${formatTimeString(secondValue)}`
+      const formattedTime = `${formatTimeString(newHour)}:${formatTimeString(
+        minuteValue
       )}`
       onChange(showSeconds ? timeWithSeconds : formattedTime)
-    }, [hour, minute, second, onChange, showSeconds])
+    }
+
+    const handleSetMinute = (newMinute: number) => {
+      const timeWithSeconds = `${formatTimeString(
+        hourValue
+      )}:${formatTimeString(newMinute)}:${formatTimeString(secondValue)}`
+      const formattedTime = `${formatTimeString(hourValue)}:${formatTimeString(
+        newMinute
+      )}`
+      onChange(showSeconds ? timeWithSeconds : formattedTime)
+    }
+
+    const handleSetSecond = (newSecond: number) => {
+      const timeWithSeconds = `${formatTimeString(
+        hourValue
+      )}:${formatTimeString(minuteValue)}:${formatTimeString(newSecond)}`
+
+      onChange(timeWithSeconds)
+    }
 
     return (
       <InputWrapper
@@ -177,14 +177,24 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
               : classes.timeColumnContainer
           }
         >
-          <TimeColumn start={0} end={24} value={hour} setValue={setHour} />
-          <TimeColumn start={0} end={60} value={minute} setValue={setMinute} />
+          <TimeColumn
+            start={0}
+            end={24}
+            value={hourValue}
+            setValue={handleSetHour}
+          />
+          <TimeColumn
+            start={0}
+            end={60}
+            value={minuteValue}
+            setValue={handleSetMinute}
+          />
           {showSeconds && (
             <TimeColumn
               start={0}
               end={60}
-              value={second}
-              setValue={setSecond}
+              value={secondValue}
+              setValue={handleSetSecond}
             />
           )}
         </div>
