@@ -53,8 +53,7 @@ const BaseButton: FC<BaseButtonProps> = ({
     } else (onClick as unknown as MouseEventHandler<T>)(event)
   }
 
-  // For links we use <a>
-  // TODO: implement Link component from whatever routing library we choose
+  // For links we use <Link> from react-router-dom
   if (href) {
     return (
       <Link

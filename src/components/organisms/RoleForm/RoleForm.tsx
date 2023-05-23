@@ -142,7 +142,6 @@ const RoleForm: FC<RoleFormProps> = ({
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values, e) => {
-      // TODO: will add name from here as well possibly
       const { privileges: newPrivileges } = values
       const payload: RoleType = {
         name: temporaryName || name,

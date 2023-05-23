@@ -18,8 +18,6 @@ interface ObjectType {
 
 const RolesTabs: FC = () => {
   const { t } = useTranslation()
-  // TODO: create separate hook wrapper for most queries later to avoid automatic running
-  // instead get the fetch function from them and call manually during mount
   const {
     existingRoles = [],
     allPrivileges = [],
@@ -82,8 +80,6 @@ const RolesTabs: FC = () => {
     return <div />
   }
 
-  // onChangeName: (newValue: string, id?: string) => void
-  // TODO: we will map roles once we have tabs
   return (
     <>
       <Tabs
