@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { isEmpty, map, includes, omit, filter } from 'lodash'
 import RoleForm from 'components/organisms/forms/RoleForm/RoleForm'
 import { v4 as uuidv4 } from 'uuid'
-import { useRolesFetch } from 'hooks/requests/roles'
+import { useRolesFetch } from 'hooks/requests/useRoles'
 import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import classes from './styles.module.scss'
@@ -21,7 +21,7 @@ const RolesTabs: FC = () => {
   const {
     existingRoles = [],
     allPrivileges = [],
-    loading,
+    isLoading,
     isError,
   } = useRolesFetch()
   const { userPrivileges } = useAuth()
@@ -72,7 +72,7 @@ const RolesTabs: FC = () => {
     [existingRoles, temporaryRoles]
   )
 
-  if (loading) {
+  if (isLoading) {
     return <Loader loading />
   }
   if (isError) {

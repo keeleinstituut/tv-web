@@ -14,6 +14,7 @@ import { endpoints } from 'api/endpoints'
 import { InstitutionType } from 'types/institutions'
 import { showModal, ModalTypes } from 'components/organisms/modals'
 import Keycloak, { KeycloakConfig, KeycloakTokenParsed } from 'keycloak-js'
+import { PrivilegeKey } from 'types/privileges'
 
 // TODO: might separate refresh token logic from here
 
@@ -23,7 +24,7 @@ interface UserInfoType extends KeycloakTokenParsed {
       id: string
       name: string
     }
-    privileges?: string[]
+    privileges?: PrivilegeKey[]
   }
 }
 interface AuthContextType {
@@ -31,7 +32,7 @@ interface AuthContextType {
   login: () => void
   logout: () => void
   userInfo: UserInfoType
-  userPrivileges: string[]
+  userPrivileges: PrivilegeKey[]
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -159,6 +160,7 @@ const useKeycloak = () => {
         return
       }
       setAccessToken(keycloak.token)
+      // TODO: no need to fetch institutions, if user already has institution selected
       const data: InstitutionType[] = await apiClient.get(
         endpoints.INSTITUTIONS
       )

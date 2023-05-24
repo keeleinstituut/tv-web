@@ -28,7 +28,7 @@ export const useRolesFetch = () => {
   return {
     existingRoles,
     allPrivileges,
-    loading: isLoading || isLoadingPrivileges,
+    isLoading: isLoading || isLoadingPrivileges,
     isError: isError || isPrivilegesError,
   }
 }
