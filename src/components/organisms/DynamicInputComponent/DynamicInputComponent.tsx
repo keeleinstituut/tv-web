@@ -1,19 +1,23 @@
 import { useCallback, forwardRef, Suspense } from 'react'
-import { ControllerProps } from 'react-hook-form'
+import { ControllerProps, FieldValues } from 'react-hook-form'
 import { omit } from 'lodash'
-import { SimpleUnionOmit } from 'types/helpers'
+import { SimpleUnionOmit, assertNever } from 'types/helpers'
 import TextInput, {
   TextInputProps,
 } from 'components/molecules/TextInput/TextInput'
 import CheckBoxInput, {
   CheckBoxInputProps,
 } from 'components/molecules/CheckBoxInput/CheckBoxInput'
+import DatePickerInput, {
+  DatePickerInputProps,
+} from 'components/molecules/DatePickerInput/DatePickerInput'
 
 // Extend all props of an input with the corresponding inputType
 
 export enum InputTypes {
   Text = 'text',
   Checkbox = 'checkbox',
+  Date = 'date',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -24,9 +28,14 @@ type CheckBoxInputPropsWithType = CheckBoxInputProps & {
   inputType: InputTypes.Checkbox
 }
 
+type DatePickerPropsWithType = DatePickerInputProps & {
+  inputType: InputTypes.Date
+}
+
 export type InputPropsByType =
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
+  | DatePickerPropsWithType
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
   InputPropsByType,
@@ -38,21 +47,23 @@ const InputComponent = forwardRef<HTMLInputElement, InputPropsByType>(
   (props, ref) => {
     const { inputType } = props
 
-    const inputsByType = {
-      [InputTypes.Text]: <TextInput {...omit(props, 'inputType')} ref={ref} />,
-      [InputTypes.Checkbox]: (
-        <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
-      ),
+    switch (inputType) {
+      case InputTypes.Text:
+        return <TextInput {...omit(props, 'inputType')} ref={ref} />
+      case InputTypes.Checkbox:
+        return <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
+      case InputTypes.Date:
+        return <DatePickerInput {...omit(props, 'inputType')} ref={ref} />
+      default:
+        return assertNever(inputType)
     }
-
-    return inputsByType[inputType]
   }
 )
 
-const DynamicInputComponent = (
+function DynamicInputComponent<Type extends FieldValues>(
   props: InputPropsWithoutControllerProps
-): ControllerProps['render'] => {
-  const FieldComponent: ControllerProps['render'] = useCallback(
+) {
+  const FieldComponent: ControllerProps<Type>['render'] = useCallback(
     ({ field, fieldState: { error } }) => {
       return (
         <Suspense fallback={<div />}>

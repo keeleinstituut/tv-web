@@ -26,14 +26,21 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       className,
       value,
       placeholder,
+      disabled,
       ...rest
     } = props
 
     // Might need event handler wrappers here
     // Essentially this is just ariaLabel || label, but typescript seems to fail here
-    const ariaLabelToUse = ariaLabel || (label as string)
     return (
-      <Field name={name} className={classNames(classes.container, className)}>
+      <Field
+        name={name}
+        className={classNames(
+          classes.container,
+          disabled && classes.disabled,
+          className
+        )}
+      >
         <Label className={classNames(classes.label, !label && classes.hidden)}>
           {label}
         </Label>
@@ -44,7 +51,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               className={classes.inputField}
               ref={ref}
               value={value || ''}
-              aria-label={ariaLabelToUse}
+              aria-label={ariaLabel}
               {...rest}
             />
           </Control>

@@ -1,0 +1,47 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.tab {
+  padding: spacing(4);
+  color: $color-text-dark;
+  border: 1px solid transparent;
+
+  svg {
+    margin-left: spacing(1);
+  }
+
+  &.active {
+    background: white;
+    border: 1px solid $color-border;
+    border-bottom: 1px solid white;
+    color: $color-primary;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    box-shadow: 0 4px 10px $color-shadow-main;
+
+    &:focus-visible,
+    &:focus {
+      box-shadow: 0 4px 10px $color-shadow-main, inset 0 0 0 2px $color-primary;
+    }
+  }
+
+  span {
+    position: relative;
+    white-space: pre;
+  }
+
+  .editMode {
+    .valueContainer {
+      opacity: 0;
+    }
+  }
+
+  .innerInput {
+    position: absolute;
+    z-index: 10;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+}
