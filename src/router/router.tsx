@@ -15,6 +15,7 @@ import MyTasks from 'pages/MyTasks/MyTasks'
 import PerformersDatabase from 'pages/PerformersDatabase/PerformersDatabase'
 import TranslationMemories from 'pages/TranslationMemories/TranslationMemories'
 import UsersManagement from 'pages/UsersManagement/UsersManagement'
+import UserPage from 'pages/UserPage/UserPage'
 import RolesManagement from 'pages/RolesManagement/RolesManagement'
 import Logs from 'pages/Logs/Logs'
 import NewOrder from 'pages/NewOrder/NewOrder'
@@ -105,8 +106,11 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: 'users',
         label: i18n.t('menu.user_management'),
-        element: <UsersManagement />,
         Icon: UsersIcon,
+        children: [
+          { path: '', element: <UsersManagement /> },
+          { path: ':userId', element: <UserPage /> },
+        ],
       },
       {
         path: 'roles',
