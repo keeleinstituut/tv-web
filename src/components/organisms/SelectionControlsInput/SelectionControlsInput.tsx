@@ -7,6 +7,7 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
 import { map } from 'lodash'
 import { useClickAway } from 'ahooks'
+import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
 
 import classes from './styles.module.scss'
 
@@ -64,7 +65,7 @@ const SelectionControlsInput = forwardRef<
   }) => {
     if (multiple) {
       const selectedValues = Array.isArray(value) ? [...value] : []
-      const optionIndex = selectedValues.indexOf(selectedOption.value)
+      const optionIndex = selectedValues.indexOf(selectedOption?.value)
 
       if (optionIndex === -1) {
         selectedValues.push(selectedOption.value)
@@ -86,6 +87,7 @@ const SelectionControlsInput = forwardRef<
       ref={clickAwayInputRef}
     >
       <Label
+        htmlFor={name}
         className={classNames(classes.label, !label && classes.hiddenLabel)}
       >
         {label}
@@ -102,8 +104,8 @@ const SelectionControlsInput = forwardRef<
         >
           {value && value.length > 0
             ? options
-                .filter((option) => value.includes(option.value))
-                .map((option) => option.label)
+                .filter((option) => value.includes(option?.value))
+                .map((option) => option?.label)
                 .join(', ')
             : defaultLabel}
           <DropdownArrow
@@ -119,18 +121,25 @@ const SelectionControlsInput = forwardRef<
           hidden={disabled || !isOpen || !!error}
         >
           {map(options, (option, index) => {
-            const isSelected = value && value.includes(option.value)
+            const isSelected = value && value.includes(option?.value)
 
             return (
               <li
                 key={index}
-                className={classNames(
-                  classes.dropdownMenuItem,
-                  isSelected && classes.dropdownMenuItemSelected
-                )}
+                className={classNames(classes.dropdownMenuItem)}
                 onClick={() => handleOptionSelect(option)}
               >
-                <span className={classes.option}>{option.label}</span>
+                {multiple ? (
+                  <CheckBoxInput
+                    name={name}
+                    ariaLabel={ariaLabel}
+                    label={option?.label}
+                    value={isSelected || false}
+                    className={classes.option}
+                  />
+                ) : (
+                  <p className={classes.option}>{option?.label}</p>
+                )}
               </li>
             )
           })}
