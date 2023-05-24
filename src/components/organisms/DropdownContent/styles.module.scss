@@ -47,7 +47,7 @@
 }
 
 .helperText {
-  color: #004277;
+  color: $color-secondary-dark;
   @include subtitleSmallTextStyle;
   padding-top: spacing(1);
 }
@@ -59,10 +59,10 @@
 
 .tag {
   @include bodyTextSmallStyle;
-  color: #005aa3;
+  color: $color-primary;
   font-weight: $font-weight-bold;
-  background-color: #e7f0f6;
+  background-color: $color-tag;
   border-radius: 4px;
   margin: spacing(1);
-  padding: 2.5px 4px;
+  padding: spacing(1.6) spacing(1);
 }
