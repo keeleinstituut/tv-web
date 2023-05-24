@@ -5,10 +5,8 @@ import { FieldError } from 'react-hook-form'
 import InputError from 'components/atoms/InputError/InputError'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
-import { map } from 'lodash'
 import { useClickAway } from 'ahooks'
-import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
 
 import classes from './styles.module.scss'
 
@@ -62,16 +60,14 @@ const SelectionControlsInput = forwardRef<
     cancelButtonLabel,
     proceedButtonLabel,
     searchInput,
-    dropdownSize = 'l',
+    dropdownSize,
   },
   ref
 ) {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleDropdown = () => {
-    if (multiple) {
-      setIsOpen(true)
-    } else setIsOpen(!isOpen)
+    setIsOpen(!isOpen)
   }
 
   const clickAwayInputRef = useRef(null)
@@ -79,27 +75,6 @@ const SelectionControlsInput = forwardRef<
   useClickAway(() => {
     setIsOpen(false)
   }, [clickAwayInputRef])
-
-  const handleOptionSelect = (selectedOption: {
-    label: string
-    value: string
-  }) => {
-    if (multiple) {
-      const selectedValues = Array.isArray(value) ? [...value] : []
-      const optionIndex = selectedValues.indexOf(selectedOption?.value)
-
-      if (optionIndex === -1) {
-        selectedValues.push(selectedOption.value)
-      } else {
-        selectedValues.splice(optionIndex, 1)
-      }
-      onChange(selectedValues)
-      setIsOpen(true)
-    } else {
-      onChange(selectedOption ? selectedOption?.value : '')
-      setIsOpen(false)
-    }
-  }
 
   return (
     <Field
@@ -117,7 +92,7 @@ const SelectionControlsInput = forwardRef<
         className={classNames(
           classes.wrapper,
           error && classes.errorMessage,
-          classes[dropdownSize]
+          classes[dropdownSize || 'l']
         )}
         onClick={toggleDropdown}
       >
@@ -125,7 +100,7 @@ const SelectionControlsInput = forwardRef<
           className={classNames(
             classes.toggleDropdown,
             disabled && classes.disabledDropdown,
-            classes[dropdownSize]
+            classes[dropdownSize || 'l']
           )}
         >
           {value && value.length > 0
@@ -142,56 +117,22 @@ const SelectionControlsInput = forwardRef<
           />
         </BaseButton>
 
-        <div
-          className={classNames(classes.dropdownMenu, classes[dropdownSize])}
-          hidden={disabled || !isOpen || !!error}
-        >
-          <div hidden={!searchInput}>{searchInput}</div>
-
-          {map(options, (option, index) => {
-            const isSelected = value && value.includes(option?.value)
-
-            return (
-              <li
-                key={index}
-                className={classes.dropdownMenuItem}
-                onClick={() => handleOptionSelect(option)}
-              >
-                {multiple ? (
-                  <CheckBoxInput
-                    hidden={!multiple}
-                    name={name}
-                    ariaLabel={ariaLabel}
-                    label={option?.label}
-                    value={isSelected || false}
-                    className={classes.option}
-                  />
-                ) : (
-                  <p
-                    hidden={multiple}
-                    className={classNames(
-                      classes.option,
-                      isSelected && classes.selectedOption
-                    )}
-                  >
-                    {option?.label}
-                  </p>
-                )}
-              </li>
-            )
-          })}
-          <div
-            hidden={!buttons}
-            className={classNames(buttons && classes.buttonsContainer)}
-          >
-            <Button appearance={AppearanceTypes.Secondary}>
-              {cancelButtonLabel}
-            </Button>
-            <Button appearance={AppearanceTypes.Primary}>
-              {proceedButtonLabel}
-            </Button>
-          </div>
-        </div>
+        <DropdownContent
+          name={name}
+          ariaLabel={ariaLabel}
+          options={options}
+          onChange={onChange}
+          dropdownSize={dropdownSize}
+          disabled={disabled}
+          isOpen={isOpen}
+          error={error}
+          searchInput={searchInput}
+          multiple={multiple}
+          value={value}
+          buttons={buttons}
+          cancelButtonLabel={cancelButtonLabel}
+          proceedButtonLabel={proceedButtonLabel}
+        />
 
         <p hidden={!helperText} className={classes.helperText}>
           {helperText}

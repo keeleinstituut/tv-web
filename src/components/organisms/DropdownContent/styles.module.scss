@@ -1,0 +1,45 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.dropdownMenu {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 0px 0px 4px 4px;
+  position: absolute;
+  z-index: 1;
+}
+
+.dropdownMenuItem {
+  cursor: pointer;
+  list-style-type: none;
+}
+
+.option {
+  @include labelTextStyle;
+  padding: spacing(2);
+}
+
+.selectedOption {
+  @include subtitleTextStyle;
+
+  &:focus {
+    @include subtitleTextStyle;
+  }
+}
+
+.buttonsContainer {
+  display: flex;
+  padding: spacing(4.5) 0 spacing(3) 0;
+}
+
+.l {
+  width: 274px;
+}
+
+.m {
+  width: 150px;
+}
+
+.s {
+  width: 77px;
+}
