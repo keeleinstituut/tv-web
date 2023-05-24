@@ -8,6 +8,7 @@ import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
 import { map } from 'lodash'
 import { useClickAway } from 'ahooks'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
+import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './styles.module.scss'
 
@@ -26,6 +27,10 @@ export interface SelectionControlsInputProps {
   disabled?: boolean
   defaultLabel?: string
   multiple?: boolean
+  helperText?: string
+  buttons?: boolean
+  cancelButtonLabel?: string
+  proceedButtonLabel?: string
 }
 
 const SelectionControlsInput = forwardRef<
@@ -44,6 +49,10 @@ const SelectionControlsInput = forwardRef<
     disabled,
     defaultLabel,
     multiple = false,
+    helperText,
+    buttons = false,
+    cancelButtonLabel,
+    proceedButtonLabel,
   },
   ref
 ) {
@@ -143,7 +152,19 @@ const SelectionControlsInput = forwardRef<
               </li>
             )
           })}
+          <div hidden={!buttons} className={classes.buttonsContainer}>
+            <Button appearance={AppearanceTypes.Secondary}>
+              {cancelButtonLabel}
+            </Button>
+            <Button appearance={AppearanceTypes.Primary}>
+              {proceedButtonLabel}
+            </Button>
+          </div>
         </div>
+
+        <p hidden={!helperText} className={classes.helperText}>
+          {helperText}
+        </p>
 
         <InputError {...error} />
       </div>

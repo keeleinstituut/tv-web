@@ -16,6 +16,7 @@
     display: inline-block;
     flex-direction: column;
     position: relative;
+    max-width: 274px;
 
     svg {
       position: absolute;
@@ -30,7 +31,7 @@
   @include buttonTextStyle;
   padding: spacing(2);
   color: $color-text-light;
-  min-width: 274px;
+  width: 274px;
   border: 1px solid $color-text-light;
   border-radius: 4px;
   background: $color-white;
@@ -82,4 +83,16 @@
   &:focus {
     @include subtitleTextStyle;
   }
+}
+
+.helperText {
+  color: #004277;
+  @include subtitleSmallTextStyle;
+  max-width: 274px;
+  padding-top: spacing(1);
+}
+
+.buttonsContainer {
+  display: flex;
+  padding: spacing(4.5) 0 spacing(3) 0;
 }

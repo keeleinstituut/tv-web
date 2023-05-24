@@ -104,6 +104,11 @@ const Test: FC = () => {
       ],
       defaultLabel: 'Select multiple options',
       multiple: true,
+      helperText:
+        'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
+      buttons: true,
+      cancelButtonLabel: 'Tühista',
+      proceedButtonLabel: 'Filtreeri',
     },
   ]
 
