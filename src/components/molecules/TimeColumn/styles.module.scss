@@ -1,0 +1,64 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 spacing(3.8);
+  position: relative;
+}
+
+.controlTimeTop,
+.controlTimeBottom {
+  position: inherit;
+}
+
+.controlTimeBottom {
+  top: -36px;
+}
+
+.controlTimeTop {
+  padding-top: spacing(2);
+}
+
+.controlTimeTop svg {
+  transform: rotate(270deg);
+}
+
+.controlTimeBottom svg {
+  transform: rotate(90deg);
+}
+
+.controlTimeTop svg g path,
+.controlTimeBottom svg g path {
+  fill: $color-border-secondary;
+}
+
+.selector {
+  height: 40px;
+  width: 34px;
+  background-color: $color-white;
+  border: 1px solid $color-input-border;
+  border-radius: 5px;
+  position: absolute;
+  top: 32px;
+}
+
+.timeWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(-43px);
+  margin-top: spacing(11);
+}
+
+.selected {
+  color: $color-text-dark;
+  @include buttonTextStyle;
+}
+
+.focusTimeColumnButton:focus svg {
+  box-shadow: inset 0 0 0 2px $color-navigation-icon;
+}
