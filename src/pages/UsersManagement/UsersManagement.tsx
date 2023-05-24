@@ -8,11 +8,10 @@ const UsersManagement: FC = () => {
   const { users } = useFetchUsers()
   return (
     <>
+      <h1>UsersManagement</h1>
       <Button href={`/settings/users/${users?.[0]?.id}`}>
         kasutaja vaatesse
       </Button>
-      <h1>UsersManagement</h1>
-      <pre>{JSON.stringify(users, null, 2)}</pre>
     </>
   )
 }

@@ -9,6 +9,7 @@ import Tabs from 'components/molecules/Tabs/Tabs'
 import classes from './styles.module.scss'
 import useAuth from 'hooks/useAuth'
 import { RoleType } from 'types/roles'
+import { Privileges } from 'types/privileges'
 
 interface ObjectType {
   [key: string]: string
@@ -91,7 +92,7 @@ const RolesTabs: FC = () => {
         tabNames={tabNames}
         onAddPress={addTemporaryTab}
         addLabel={t('button.add_new_role')}
-        addDisabled={!includes(userPrivileges, 'ADD_ROLE')}
+        addDisabled={!includes(userPrivileges, Privileges.AddRole)}
       />
       {map([...existingRoles, ...temporaryRoles], (role) => {
         if (!role.id) return null

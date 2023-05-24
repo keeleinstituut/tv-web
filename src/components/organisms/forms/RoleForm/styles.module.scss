@@ -15,16 +15,8 @@
     margin-bottom: spacing(8);
   }
 
-
   .formButtons {
     grid-column: 1/3;
-    padding-top: spacing(4);
-    display: flex;
-    justify-content: flex-end;
-
-    :first-child {
-      margin-right: spacing(2);
-    }
   }
 
   .formContainer {

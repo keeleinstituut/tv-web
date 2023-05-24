@@ -18,11 +18,19 @@ export interface UserType {
   updated_at?: string
   id: string
   // TODO: department type not clear yet, needs to be added here
-  department?: string | null
+  department?: string
   email?: string
   institution: InstitutionType
   phone?: string
   roles: RoleType[]
   status: StatusKey
   user: UserDetailsType
+}
+
+export interface UserPostType {
+  user?: Partial<UserDetailsType>
+  department_id?: string
+  roles?: string[]
+  phone?: string
+  email?: string
 }

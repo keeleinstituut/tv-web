@@ -6,9 +6,10 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import FormButtons from 'components/organisms/FormButtons/FormButtons'
 import { reduce, find, map, includes, startsWith } from 'lodash'
 import { RoleType } from 'types/roles'
-import { PrivilegeType, PrivilegeKey } from 'types/privileges'
+import { PrivilegeType, PrivilegeKey, Privileges } from 'types/privileges'
 import {
   useUpdateRole,
   useDeleteRole,
@@ -32,42 +33,6 @@ interface RoleFormProps extends RoleType {
   temporaryName?: string
   onReset: (id: string) => void
   onSubmitSuccess: (id: string, newId?: string) => void
-}
-
-// TODO: temporary, will swap with buttons from modal task later
-interface FormButtonProps {
-  loading: boolean
-  isResetDisabled: boolean
-  isSubmitDisabled: boolean
-  hidden?: boolean
-  resetForm: () => void
-}
-
-const FormButtons: FC<FormButtonProps> = ({
-  loading,
-  isResetDisabled,
-  isSubmitDisabled,
-  hidden,
-  resetForm,
-}) => {
-  const { t } = useTranslation()
-  if (hidden) return null
-  return (
-    <div className={classes.formButtons}>
-      <Button
-        appearance={AppearanceTypes.Secondary}
-        onClick={resetForm}
-        children={t('button.cancel')}
-        disabled={isResetDisabled || loading}
-      />
-      <Button
-        children={t('button.save_changes')}
-        disabled={isSubmitDisabled}
-        loading={loading}
-        type="submit"
-      />
-    </div>
-  )
 }
 
 const RoleForm: FC<RoleFormProps> = ({
@@ -139,6 +104,7 @@ const RoleForm: FC<RoleFormProps> = ({
     ariaLabel: t(`privileges.${key}`),
     label: t(`privileges.${key}`),
     name: `privileges.${key}`,
+    disabled: !includes(userPrivileges, Privileges.EditRole),
   }))
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
@@ -213,7 +179,7 @@ const RoleForm: FC<RoleFormProps> = ({
         // Also onClick should open the modal, not delete the role
         onClick={deleteRole}
         disabled
-        hidden={!includes(userPrivileges, 'DELETE_ROLE')}
+        hidden={!includes(userPrivileges, Privileges.DeleteRole)}
       />
       <h2>{t('roles.privileges')}</h2>
       <DynamicForm
@@ -227,7 +193,8 @@ const RoleForm: FC<RoleFormProps> = ({
           isSubmitDisabled={isSubmitDisabled}
           loading={isLoading || isCreating || isSubmitting}
           resetForm={resetForm}
-          hidden={!includes(userPrivileges, 'EDIT_ROLE')}
+          hidden={!includes(userPrivileges, Privileges.EditRole)}
+          className={classes.formButtons}
         />
       </DynamicForm>
     </div>
