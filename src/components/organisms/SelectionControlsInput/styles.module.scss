@@ -80,3 +80,9 @@
 .s {
   width: 77px;
 }
+
+.menuLabel {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}

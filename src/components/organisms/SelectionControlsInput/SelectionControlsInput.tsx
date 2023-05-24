@@ -83,12 +83,11 @@ const SelectionControlsInput = forwardRef<
     includes(value, option?.value)
   )
 
-  const selectedOptionLabels = join(
-    map(selectedOptionObjects, ({ label }) => label),
-    ', '
-  )
+  const selectedOptionLabels = map(selectedOptionObjects, ({ label }) => label)
 
-  const dropdownMenuLabel = value ? selectedOptionLabels : defaultLabel
+  const singleSelectMenuLabel = value ? selectedOptionLabels : defaultLabel
+
+  const dropdownMenuLabel = multiple ? defaultLabel : singleSelectMenuLabel
 
   return (
     <Field
@@ -117,7 +116,9 @@ const SelectionControlsInput = forwardRef<
             classes[dropdownSize || 'l']
           )}
         >
-          <p>{dropdownMenuLabel}</p>
+          <p hidden={!defaultLabel} className={classes.menuLabel}>
+            {dropdownMenuLabel}
+          </p>
           <DropdownArrow
             className={classNames(
               disabled && classes.disabledDropdownIcon,
