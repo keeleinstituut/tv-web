@@ -21,6 +21,16 @@ type PaginationProps = {
 const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
   const { t } = useTranslation()
   const id = useId()
+  const {
+    previousPage,
+    getCanPreviousPage,
+    getPageCount,
+    setPageIndex,
+    getState,
+    nextPage,
+    getCanNextPage,
+    setPageSize,
+  } = table || {}
 
   if (hidden) return null
 
@@ -35,8 +45,8 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
           icon={Arrow}
           ariaLabel={t('label.button_arrow')}
           iconPositioning={IconPositioningTypes.Left}
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          onClick={() => previousPage()}
+          disabled={!getCanPreviousPage()}
         />
 
         <nav
@@ -44,20 +54,19 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
           aria-label={t('label.pagination_navigation') || ''}
         >
           <ul className={classes.links}>
-            {[...Array(table.getPageCount())].map((_, index) => (
+            {[...Array(getPageCount())].map((_, index) => (
               <li
                 key={`${id}-${index}`}
                 className={classNames({
-                  [classes.active]:
-                    table.getState().pagination.pageIndex === index,
+                  [classes.active]: getState().pagination.pageIndex === index,
                 })}
               >
                 <Link
                   className={classes.pageNumber}
                   to={`?page=${index + 1}`}
-                  onClick={() => table.setPageIndex(index)}
+                  onClick={() => setPageIndex(index)}
                   aria-label={t('label.go_to_page') + index}
-                  aria-current={table.getState().pagination.pageIndex === index}
+                  aria-current={getState().pagination.pageIndex === index}
                 >
                   {index + 1}
                 </Link>
@@ -72,9 +81,9 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
           ariaLabel={t('label.button_arrow')}
           iconPositioning={IconPositioningTypes.Left}
           onClick={() => {
-            table.nextPage()
+            nextPage()
           }}
-          disabled={!table.getCanNextPage()}
+          disabled={!getCanNextPage()}
           className={classes.arrow}
         />
       </div>
@@ -86,12 +95,12 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
         <select
           className={classes.pageSizeSelect}
           id={id}
-          value={table.getState().pagination.pageSize}
+          value={getState().pagination.pageSize}
           onChange={(e) => {
-            table.setPageSize(Number(e.target.value))
+            setPageSize(Number(e.target.value))
           }}
         >
-          {[1, 2, 3, 15, 50].map((pageSize) => (
+          {[1, 2, 3, 14, 50].map((pageSize) => (
             <option key={pageSize} value={pageSize}>
               {pageSize}
             </option>

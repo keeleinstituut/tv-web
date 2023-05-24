@@ -30,6 +30,7 @@ import Button, {
 import { ReactComponent as ExpandIcon } from 'assets/icons/expand.svg'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { Link } from 'react-router-dom'
+import data from 'components/templates/DataTable/data'
 
 type Person = {
   id: string
@@ -345,7 +346,7 @@ const columns = [
   }),
 ]
 
-const TestingTable: FC = () => {
+const UsersTable: FC = () => {
   const { t } = useTranslation()
 
   const [data, setData] = useState(() => [...defaultData])
@@ -369,4 +370,4 @@ const TestingTable: FC = () => {
   )
 }
 
-export default TestingTable
+export default UsersTable

@@ -13,6 +13,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
 import TestingTable from 'components/templates/DataTable/TestingTable'
+import UsersTable from 'components/templates/UsersTable/UsersTable'
 
 type FormValues = {
   email?: string
@@ -83,6 +84,7 @@ const Test: FC = () => {
         iconPositioning={IconPositioningTypes.Right}
       />
       <TestingTable />
+      <UsersTable />
     </>
   )
 }
