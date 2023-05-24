@@ -19,6 +19,7 @@ import Modal, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/Modal/Modal'
+import AddedUsersTable from 'components/templates/UsersTable/AddedUsersTable'
 
 type FormValues = {
   email?: string
@@ -100,6 +101,7 @@ const Test: FC = () => {
         iconPositioning={IconPositioningTypes.Right}
       />
       <TestingTable />
+      <AddedUsersTable />
       <UsersTable />
 
       <Modal

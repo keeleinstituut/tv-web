@@ -1,26 +1,10 @@
-import { FC, useCallback, useState, HTMLProps, useEffect, useRef } from 'react'
+import { FC, useState, HTMLProps, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/templates/DataTable/DataTable'
 
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  PaginationState,
-  getPaginationRowModel,
-  TableMeta,
-  Row,
-  RowData,
-  ColumnDef,
-  getSortedRowModel,
-  SortingState,
-  FilterFn,
-  getFilteredRowModel,
-  ColumnFiltersState,
-} from '@tanstack/react-table'
+import { createColumnHelper, PaginationState } from '@tanstack/react-table'
 import TableFilter from 'components/organisms/TableFilter/TableFilter'
 import Button, {
   AppearanceTypes,

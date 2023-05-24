@@ -36,8 +36,6 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
 
   return (
     <div className={classes.paginationWrapper}>
-      {/* {table.getPageCount() * table.getState().pagination.pageSize >
-        table.getState().pagination.pageSize && ( */}
       <div className={classes.pagination}>
         <Button
           appearance={AppearanceTypes.Text}
@@ -87,7 +85,6 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
           className={classes.arrow}
         />
       </div>
-      {/* )} */}
       <div className={classes.pageSizeWrapper}>
         <label htmlFor={id} className={classes.pageSizeLabel}>
           {t('label.pagination_result_count')}
@@ -100,7 +97,7 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
             setPageSize(Number(e.target.value))
           }}
         >
-          {[1, 2, 3, 14, 50].map((pageSize) => (
+          {[10, 20, 30, 40, 50].map((pageSize) => (
             <option key={pageSize} value={pageSize}>
               {pageSize}
             </option>

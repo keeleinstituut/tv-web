@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useId, useState } from 'react'
+import React, { CSSProperties, FC, ReactNode, useState } from 'react'
 import classes from './styles.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -41,16 +41,15 @@ export enum TableSizeTypes {
 type DataTableProps = {
   data: any
   columns: ColumnDef<any, any>[]
-  //tableBodyPrefix?: ReactNode
+  title?: string
+  tableBodyPrefix?: ReactNode
   sortable?: boolean
   filterable?: boolean
   pagination?: PaginationState
   setPagination?: React.Dispatch<React.SetStateAction<PaginationState>>
   globalFilter?: string
   setGlobalFilter?: React.Dispatch<React.SetStateAction<string>>
-  //   columnVisibility?: VisibilityState
-  //   setColumnVisibility?: React.Dispatch<React.SetStateAction<VisibilityState>>
-  //   disableHead?: boolean
+
   meta?: TableMeta<any>
   tableSize: string
 }
@@ -76,7 +75,7 @@ declare module '@tanstack/react-table' {
     getRowStyles: (row: Row<TData>) => CSSProperties
   }
 }
-type CustomColumnDef = ColumnDef<any> & ColumnMeta
+type CustomColumnDef = ColumnDef<any, unknown> & ColumnMeta
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
@@ -90,16 +89,14 @@ const DataTable: FC<DataTableProps> = ({
   data,
   columns,
   tableSize = 'm',
-  // tableBodyPrefix,
+  tableBodyPrefix,
+  title,
   sortable,
   filterable,
   pagination,
   setPagination,
   globalFilter,
   setGlobalFilter,
-  // columnVisibility,
-  // setColumnVisibility,
-  // disableHead,
   meta,
 }) => {
   const [sorting, setSorting] = useState<SortingState>([])
@@ -109,7 +106,6 @@ const DataTable: FC<DataTableProps> = ({
   const [rowSelection, setRowSelection] = React.useState({})
   const [expanded, setExpanded] = React.useState<ExpandedState>({})
 
-  const id = useId()
   const { t } = useTranslation()
 
   const table = useReactTable({
@@ -146,15 +142,13 @@ const DataTable: FC<DataTableProps> = ({
 
   return (
     <Container>
-      <h4 className={classes.title}>Pealkiri</h4>
-
+      <h4 className={classes.title}>{title}</h4>
       <div className={classes.tableWrapper}>
         <table className={classNames(classes.dataTable, classes[tableSize])}>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  console.log('jou', header.column.getIsSorted() as string)
                   return (
                     <th
                       key={header.id}
@@ -192,6 +186,7 @@ const DataTable: FC<DataTableProps> = ({
             ))}
           </thead>
           <tbody>
+            {tableBodyPrefix}
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
                 {row.getVisibleCells().map((cell) => (
