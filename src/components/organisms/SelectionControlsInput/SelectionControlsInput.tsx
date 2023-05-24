@@ -9,6 +9,7 @@ import { useClickAway } from 'ahooks'
 import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
 
 import classes from './styles.module.scss'
+import { filter, includes, join, map } from 'lodash'
 
 export enum DropdownSizeTypes {
   L = 'l',
@@ -37,6 +38,7 @@ export interface SelectionControlsInputProps {
   proceedButtonLabel?: string
   searchInput?: ReactElement
   dropdownSize?: DropdownSizeTypes
+  tags?: boolean
 }
 
 const SelectionControlsInput = forwardRef<
@@ -61,6 +63,7 @@ const SelectionControlsInput = forwardRef<
     proceedButtonLabel,
     searchInput,
     dropdownSize,
+    tags = false,
   },
   ref
 ) {
@@ -76,12 +79,16 @@ const SelectionControlsInput = forwardRef<
     setIsOpen(false)
   }, [clickAwayInputRef])
 
-  const joinedSelectedOptionLabels = options
-    .filter((option) => value?.includes(option?.value))
-    .map(({ label }) => label)
-    .join(', ')
+  const selectedOptionObjects = filter(options, (option) =>
+    includes(value, option?.value)
+  )
 
-  const dropdownMenuLabel = value ? joinedSelectedOptionLabels : defaultLabel
+  const selectedOptionLabels = join(
+    map(selectedOptionObjects, ({ label }) => label),
+    ', '
+  )
+
+  const dropdownMenuLabel = value ? selectedOptionLabels : defaultLabel
 
   return (
     <Field
@@ -134,11 +141,10 @@ const SelectionControlsInput = forwardRef<
           buttons={buttons}
           cancelButtonLabel={cancelButtonLabel}
           proceedButtonLabel={proceedButtonLabel}
+          helperText={helperText}
+          selectedOptionObjects={selectedOptionObjects}
+          tags={tags}
         />
-
-        <p hidden={!helperText} className={classes.helperText}>
-          {helperText}
-        </p>
 
         <InputError {...error} />
       </div>

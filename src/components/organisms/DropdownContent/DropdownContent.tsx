@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import classNames from 'classnames'
-import { map } from 'lodash'
+import { includes, map } from 'lodash'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { SelectionControlsInputProps } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
@@ -9,32 +9,7 @@ import classes from './styles.module.scss'
 
 type DropdownContentProps = SelectionControlsInputProps & {
   isOpen?: boolean
-}
-
-type SingleOptionDropDownProps = Omit<
-  SelectionControlsInputProps,
-  'name' | 'ariaLabel' | 'options' | 'onChange'
-> & {
-  isSelected?: boolean
-  optionLabel?: string
-}
-
-const SingleOptionDropDown: FC<SingleOptionDropDownProps> = ({
-  multiple,
-  isSelected,
-  optionLabel,
-}) => {
-  if (multiple) return null
-  return (
-    <p
-      className={classNames(
-        classes.option,
-        isSelected && classes.selectedOption
-      )}
-    >
-      {optionLabel}
-    </p>
-  )
+  selectedOptionObjects?: { label: string; value: string }[]
 }
 
 const DropdownContent: FC<DropdownContentProps> = ({
@@ -52,6 +27,9 @@ const DropdownContent: FC<DropdownContentProps> = ({
   cancelButtonLabel,
   proceedButtonLabel,
   onChange,
+  helperText,
+  selectedOptionObjects,
+  tags,
 }) => {
   const handleOptionSelect = (selectedOption: {
     label: string
@@ -73,50 +51,70 @@ const DropdownContent: FC<DropdownContentProps> = ({
   }
 
   return (
-    <div
-      className={classNames(classes.dropdownMenu, classes[dropdownSize])}
-      hidden={disabled || !isOpen || !!error}
-    >
-      <div hidden={!searchInput}>{searchInput}</div>
-
-      {map(options, (option, index) => {
-        const isSelected = value && value?.includes(option?.value)
-        return (
-          <li
-            key={index}
-            className={classes.dropdownMenuItem}
-            onClick={() => handleOptionSelect(option)}
-          >
-            {multiple && (
-              <CheckBoxInput
-                hidden={!multiple}
-                name={name}
-                ariaLabel={ariaLabel}
-                label={option?.label}
-                value={isSelected || false}
-                className={classes.option}
-              />
-            )}
-            <SingleOptionDropDown
-              isSelected={isSelected || false}
-              multiple={multiple}
-              optionLabel={option?.label}
-            />
-          </li>
-        )
-      })}
+    <>
       <div
-        hidden={!buttons}
-        className={classNames(buttons && classes.buttonsContainer)}
+        className={classNames(classes.dropdownMenu, classes[dropdownSize])}
+        hidden={disabled || !isOpen || !!error}
       >
-        <Button appearance={AppearanceTypes.Secondary}>
-          {cancelButtonLabel}
-        </Button>
-        <Button appearance={AppearanceTypes.Primary}>
-          {proceedButtonLabel}
-        </Button>
+        <div hidden={!searchInput}>{searchInput}</div>
+
+        {map(options, (option, index) => {
+          const isSelected = value && includes(value, option?.value)
+
+          return (
+            <li
+              key={index}
+              className={classes.dropdownMenuItem}
+              onClick={() => handleOptionSelect(option)}
+            >
+              {multiple && (
+                <CheckBoxInput
+                  name={name}
+                  ariaLabel={ariaLabel}
+                  label={option?.label}
+                  value={isSelected || false}
+                  className={classes.option}
+                />
+              )}
+              <p
+                className={classNames(
+                  classes.option,
+                  isSelected && classes.selectedOption
+                )}
+                hidden={multiple}
+              >
+                {option?.label}
+              </p>
+            </li>
+          )
+        })}
+        <div
+          hidden={!buttons}
+          className={classNames(buttons && classes.buttonsContainer)}
+        >
+          <Button appearance={AppearanceTypes.Secondary}>
+            {cancelButtonLabel}
+          </Button>
+          <Button appearance={AppearanceTypes.Primary}>
+            {proceedButtonLabel}
+          </Button>
+        </div>
       </div>
-    </div>
+
+      <p hidden={!helperText} className={classes.helperText}>
+        {helperText}
+      </p>
+
+      <div className={classNames(tags && classes.tagsContainer)}>
+        {map(selectedOptionObjects, ({ label }, index) => {
+          return (
+            <span hidden={!tags} className={classes.tag} key={index}>
+              {label}
+            </span>
+          )
+        })}
+      </div>
+    </>
   )
 }
 

@@ -109,6 +109,8 @@ const Test: FC = () => {
       defaultLabel: 'Choose option',
       multiple: false,
       dropdownSize: DropdownSizeTypes.M,
+      helperText:
+        'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
     },
     {
       inputType: InputTypes.Selections,
@@ -120,15 +122,18 @@ const Test: FC = () => {
         { label: 'Option 2', value: 'Option 2' },
         { label: 'Option 3', value: 'Option 3' },
         { label: 'Option 4', value: 'Option 4' },
+        { label: 'Option 5', value: 'Option 5' },
+        { label: 'Option 6', value: 'Option 6' },
+        { label: 'Option ieruhiruthr7', value: 'Option 7' },
+        { label: 'Option 8985759867', value: 'Option 8' },
       ],
       defaultLabel: 'Choose options',
       multiple: true,
-      helperText:
-        'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
       buttons: true,
       cancelButtonLabel: 'Tühista',
       proceedButtonLabel: 'Filtreeri',
       searchInput: <Fragment />,
+      tags: true,
     },
   ]
 

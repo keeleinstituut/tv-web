@@ -45,3 +45,24 @@
 .s {
   width: 77px;
 }
+
+.helperText {
+  color: #004277;
+  @include subtitleSmallTextStyle;
+  padding-top: spacing(1);
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  @include bodyTextSmallStyle;
+  color: #005aa3;
+  font-weight: $font-weight-bold;
+  background-color: #e7f0f6;
+  border-radius: 4px;
+  margin: spacing(1);
+  padding: 2.5px 4px;
+}
