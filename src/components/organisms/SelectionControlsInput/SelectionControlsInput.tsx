@@ -21,7 +21,6 @@ export interface SelectionControlsInputProps {
     label: string
     value: string
   }[]
-  // onChange: (value: string) => void
   onChange: (value: string | string[]) => void
   disabled?: boolean
   defaultLabel?: string
@@ -53,75 +52,6 @@ const SelectionControlsInput = forwardRef<
     setIsOpen(!isOpen)
   }
 
-  const handleSingleOptionSelect = (
-    option: { label: string; value: string } | null
-  ) => {
-    onChange(option ? option?.value : '')
-    setIsOpen(false)
-  }
-
-  // const handleOptionSelect = (
-  //   option: { label: string; value: string } | null
-  // ) => {
-  //   if (multiple) {
-  //     const selectedValues = option ? [option.value] : []
-  //     onChange(selectedValues)
-  //   } else {
-  //     onChange(option ? option.value : '')
-  //   }
-  //   setIsOpen(false)
-  // }
-
-  // const handleOptionSelect = (selectedValue: string) => {
-  //   const selectedOption = options.find(
-  //     (option) => option?.value === selectedValue
-  //   )
-
-  //   if (multiple) {
-  //     const selectedValues = selectedOption ? [selectedOption?.value] : []
-  //     onChange(selectedValues)
-  //   } else {
-  //     onChange(selectedOption ? selectedOption?.value : '')
-  //   }
-  //   setIsOpen(false)
-  // }
-
-  const handleMultipleOptionSelect = (selectedValue: string) => {
-    const selectedOption = options.find(
-      (option) => option.value === selectedValue
-    )
-    let updatedSelectedOptions: string[] = []
-
-    if (multiple) {
-      if (value && Array.isArray(value)) {
-        // Clone the existing array of selected options
-        updatedSelectedOptions = [...value]
-
-        if (selectedOption) {
-          // Check if the selected option is already in the array
-          const index = updatedSelectedOptions.indexOf(selectedOption.value)
-          if (index === -1) {
-            // Add the selected option to the array
-            updatedSelectedOptions.push(selectedOption.value)
-          } else {
-            // Remove the selected option from the array
-            updatedSelectedOptions.splice(index, 1)
-          }
-        }
-      } else {
-        if (selectedOption) {
-          // Create a new array with the selected option
-          updatedSelectedOptions = [selectedOption.value]
-        }
-      }
-    } else {
-      updatedSelectedOptions = selectedOption ? [selectedOption.value] : []
-    }
-
-    onChange(updatedSelectedOptions)
-    setIsOpen(false)
-  }
-
   const clickAwayInputRef = useRef(null)
 
   useClickAway(() => {
@@ -132,35 +62,16 @@ const SelectionControlsInput = forwardRef<
     label: string
     value: string
   }) => {
-    // const selectedValues = Array.isArray(value) ? [...value] : [] // Create a new array to hold the selected values
-
-    // const optionIndex = selectedValues.indexOf(selectedOption.value)
-
-    // if (optionIndex === -1) {
-    //   // Option is not selected, add it to the selected values
-    //   selectedValues.push(selectedOption.value)
-    // } else {
-    //   // Option is already selected, remove it from the selected values
-    //   selectedValues.splice(optionIndex, 1)
-    // }
-
-    // onChange(selectedValues) // Pass the updated array of selected values
-    // setIsOpen(false)
-
     if (multiple) {
-      const selectedValues = Array.isArray(value) ? [...value] : [] // Create a new array to hold the selected values
-
+      const selectedValues = Array.isArray(value) ? [...value] : []
       const optionIndex = selectedValues.indexOf(selectedOption.value)
 
       if (optionIndex === -1) {
-        // Option is not selected, add it to the selected values
         selectedValues.push(selectedOption.value)
       } else {
-        // Option is already selected, remove it from the selected values
         selectedValues.splice(optionIndex, 1)
       }
-
-      onChange(selectedValues) // Pass the updated array of selected values
+      onChange(selectedValues)
       setIsOpen(false)
     } else {
       onChange(selectedOption ? selectedOption?.value : '')
@@ -172,7 +83,7 @@ const SelectionControlsInput = forwardRef<
     <Field
       name={name}
       className={classNames(classes.selectionsContainer, className)}
-      // ref={clickAwayInputRef}
+      ref={clickAwayInputRef}
     >
       <Label
         className={classNames(classes.label, !label && classes.hiddenLabel)}
@@ -183,21 +94,6 @@ const SelectionControlsInput = forwardRef<
         className={classNames(classes.wrapper, error && classes.errorMessage)}
         onClick={toggleDropdown}
       >
-        {/* <BaseButton
-          className={classNames(
-            classes.toggleDropdown,
-            disabled && classes.disabledDropdown
-          )}
-        >
-          {value || defaultLabel}
-          <DropdownArrow
-            className={classNames(
-              disabled && classes.disabledDropdownIcon,
-              isOpen && !error && classes.openDropdownIcon
-            )}
-          />
-        </BaseButton> */}
-
         <BaseButton
           className={classNames(
             classes.toggleDropdown,
@@ -218,100 +114,27 @@ const SelectionControlsInput = forwardRef<
           />
         </BaseButton>
 
-        {/* <ul
+        <div
           className={classes.dropdownMenu}
           hidden={disabled || !isOpen || !!error}
         >
           {map(options, (option, index) => {
+            const isSelected = value && value.includes(option.value)
+
             return (
               <li
                 key={index}
                 className={classNames(
                   classes.dropdownMenuItem,
-                  value &&
-                    value?.includes(option.value) &&
-                    classes.dropdownMenuItemSelected
+                  isSelected && classes.dropdownMenuItemSelected
                 )}
-                onClick={() => handleSingleOptionSelect(option)}
+                onClick={() => handleOptionSelect(option)}
               >
-                {option?.label}
+                <span className={classes.option}>{option.label}</span>
               </li>
             )
           })}
-        </ul> */}
-
-        {/* <ul
-          className={classes.dropdownMenu}
-          hidden={disabled || !isOpen || !!error}
-        >
-          {map(options, (option, index) => {
-            return (
-              <li
-                key={index}
-                className={classNames(
-                  classes.dropdownMenuItem,
-                  value &&
-                    value?.includes(option.value) &&
-                    classes.dropdownMenuItemSelected
-                )}
-                onClick={() => handleSingleOptionSelect(option)}
-              >
-                {option?.label}
-              </li>
-            )
-          })}
-        </ul> */}
-
-        {/* <select
-          className={classes.dropdownMenu}
-          // hidden={disabled || !isOpen || !!error}
-          onChange={(event) => handleMultipleOptionSelect(event.target.value)}
-        >
-          {map(options, (option, index) => (
-            <option
-              key={index}
-              value={option?.value}
-              className={classes.option}
-            >
-              {option?.label}
-            </option>
-          ))}
-        </select> */}
-
-        {/* <select
-          className={classes.dropdownMenu}
-          hidden={disabled || !isOpen || !!error}
-          value={value}
-          onChange={(event) => handleMultipleOptionSelect(event.target.value)}
-          multiple={multiple}
-        >
-          {map(options, (option, index) => (
-            <option
-              key={index}
-              value={option?.value}
-              className={classes.option}
-            >
-              {option?.label}
-            </option>
-          ))}
-        </select> */}
-
-        {map(options, (option, index) => {
-          const isSelected = value && value.includes(option.value)
-
-          return (
-            <li
-              key={index}
-              className={classNames(
-                classes.dropdownMenuItem,
-                isSelected && classes.dropdownMenuItemSelected
-              )}
-              onClick={() => handleOptionSelect(option)}
-            >
-              {option.label}
-            </li>
-          )
-        })}
+        </div>
 
         <InputError {...error} />
       </div>
