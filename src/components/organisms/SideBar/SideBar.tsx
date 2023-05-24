@@ -1,7 +1,7 @@
 import { FC, MouseEvent, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
-import { map } from 'lodash'
+import { map, find } from 'lodash'
 import { ReactComponent as ChevronLeft } from 'assets/icons/chevron_left.svg'
 import { ReactComponent as ArrowUp } from 'assets/icons/arrow_up.svg'
 import { ReactComponent as Burger } from 'assets/icons/burger.svg'
@@ -13,13 +13,25 @@ import classes from './styles.module.scss'
 interface MenuItemsProps {
   menuItems: FullRouteObject[]
   parentPath?: string
+  navCollapsed: boolean
+  setNavCollapsed: (navCollapsed: boolean) => void
 }
 
-const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
+const MenuItems: FC<MenuItemsProps> = ({
+  menuItems,
+  parentPath,
+  navCollapsed,
+  setNavCollapsed,
+}) => {
   const location = useLocation()
   const handleNavToggle = (event: MouseEvent) => {
     const isExpanded =
       event.currentTarget.getAttribute('aria-expanded') === 'true'
+
+    if (navCollapsed && !isExpanded) {
+      setNavCollapsed(false)
+    }
+
     event.currentTarget.setAttribute(
       'aria-expanded',
       isExpanded ? 'false' : 'true'
@@ -29,7 +41,9 @@ const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
     <>
       {map(menuItems, ({ children, path, Icon, isInterTitle, label }) => {
         const fullPath = parentPath ? `${parentPath}/${path}` : `/${path}`
-        if (!children) {
+        const hasChildrenToShow = children && find(children, 'label')
+        if (!label) return null
+        if (!hasChildrenToShow) {
           return (
             <li key={label}>
               <NavLink to={fullPath} className={classes.listItem}>
@@ -48,7 +62,8 @@ const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
               )}
               onClick={handleNavToggle}
               aria-expanded={
-                isInterTitle || (path && location.pathname.includes(path))
+                isInterTitle ||
+                (!navCollapsed && path && location.pathname.includes(path))
                   ? 'true'
                   : 'false'
               }
@@ -75,7 +90,12 @@ const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
                 isInterTitle && classes.interSubMenu
               )}
             >
-              <MenuItems menuItems={children} parentPath={fullPath} />
+              <MenuItems
+                menuItems={children}
+                parentPath={fullPath}
+                navCollapsed={navCollapsed}
+                setNavCollapsed={setNavCollapsed}
+              />
             </ul>
           </li>
         )
@@ -106,7 +126,11 @@ const SideBar: FC = () => {
         <span>{t('menu.collapse_menu')}</span>
       </BaseButton>
       <ul className={classes.menuList}>
-        <MenuItems menuItems={protectedRoutes} />
+        <MenuItems
+          menuItems={protectedRoutes}
+          navCollapsed={navCollapsed}
+          setNavCollapsed={setNavCollapsed}
+        />
       </ul>
     </nav>
   )

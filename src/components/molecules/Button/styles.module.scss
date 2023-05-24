@@ -18,6 +18,33 @@
   }
 }
 
+.m {
+  @include buttonTextStyle;
+}
+
+.s {
+  @include smallButtonTextStyle;
+}
+
+.buttonText {
+  order: 2;
+}
+
+.right {
+  svg{
+    order: 3;
+    padding-left: spacing(1);
+  }
+}
+
+.left {
+  svg{
+    order: 1;
+    padding-right: spacing(1);
+  }
+}
+
+
 .primary {
   background-color: $color-primary;
 
@@ -28,12 +55,25 @@
   }
 
   &:focus {
-    border: 2px solid $color-navigation-icon;
+    box-shadow: inset 0 0 0 2px $color-navigation-icon;
   }
 
   &:disabled {
+    cursor: not-allowed;
     background-color: $color-background-disabled;
     border: none;
+  }
+
+  &.m {
+    padding: spacing(2) spacing(10);
+
+    &.customIconPadding {
+      padding: spacing(2) spacing(6);
+    }
+  }
+
+  &.s {
+    padding: spacing(0.75) spacing(6);
   }
 }
 
@@ -56,6 +96,7 @@
   }
 
   &:disabled {
+    cursor: not-allowed;
     color: $color-text-light;
     background-color: $color-background;
     border: 2px solid $color-background-disabled;
@@ -63,6 +104,18 @@
     svg g path {
       fill: $color-input-border;
     }
+  }
+
+  &.m {
+    padding: spacing(1.5) spacing(10);
+
+    &.customIconPadding {
+      padding: spacing(1.5) spacing(6);
+    }
+  }
+
+  &.s {
+      padding: spacing(0.25) spacing(6);
   }
 }
 
@@ -77,6 +130,11 @@
     fill: $color-primary;
   }
 
+  &.customIconPadding svg {
+    height: spacing(4);
+    width: spacing(4);
+  }
+
   &:hover,
   &:active {
     text-decoration: underline;
@@ -87,6 +145,7 @@
   }
 
   &:disabled {
+    cursor: not-allowed;
     color: $color-text-light;
     text-decoration: none;
     box-shadow: none;
@@ -95,53 +154,5 @@
     svg path {
       fill: $color-text-light;
     }
-  }
-}
-
-.m {
-  @include buttonTextStyle;
-  padding: spacing(2) spacing(10);
-
-  &.primary {
-    &:focus {
-      padding: spacing(1.5) spacing(10);
-    }
-  }
-
-  &.secondary {
-    padding: spacing(1.5) spacing(10);
-  }
-}
-
-.s {
-  @include smallButtonTextStyle;
-  padding: spacing(0.75) spacing(6);
-
-  &.primary {
-    &:focus {
-      padding: spacing(0.25) spacing(6);
-    }
-  }
-
-  &.secondary {
-    padding: spacing(0.25) spacing(6);
-  }
-}
-
-.buttonText {
-  order: 2;
-}
-
-.right {
-  svg {
-    order: 3;
-    padding-left: spacing(2.5);
-  }
-}
-
-.left {
-  svg {
-    order: 1;
-    padding-right: spacing(2.5);
   }
 }

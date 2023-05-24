@@ -46,8 +46,6 @@ $border-radius-6: 6px;
 $border-radius-2: 2px;
 
 // Colors
-// TODO: will probably update on the go. There are more than 240 colors in the styleguide
-// Most likely we will not use all of them, so no point in adding them
 
 $color-primary: #005aa3;
 $color-highlight: #ff8000;
@@ -94,6 +92,11 @@ $color-black: #000000;
 
 // Box shadows
 $template-box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.14);
+
+$color-checkbox-hover: rgba(0, 0, 0, 0.08);
+$color-checkbox-focus: rgba(0, 0, 0, 0.12);
+$color-checkbox-active: rgba(0, 0, 0, 0.16);
+$color-shadow-main: rgba(0, 0, 0, 0.14);
 
 // helpers
 

@@ -1,19 +1,20 @@
 import { FC } from 'react'
 
 import { useTranslation } from 'react-i18next'
+import LandingContent from 'components/organisms/LandingContent/LandingContent'
+import classes from './styles.module.scss'
 
 import useAuth from 'hooks/useAuth'
 
 const Dashboard: FC = () => {
   const { t } = useTranslation()
-  const { userId, login, isUserLoggedIn } = useAuth()
-
+  const { userInfo, login, isUserLoggedIn } = useAuth()
   return (
     <>
-      <div />
+      <LandingContent className={classes.landingContent} />
       <div>
-        {userId && isUserLoggedIn ? (
-          <pre>{JSON.stringify(userId, null, 2)}</pre>
+        {userInfo && isUserLoggedIn ? (
+          <pre>{JSON.stringify(userInfo, null, 2)}</pre>
         ) : (
           <button onClick={login}>{t('button.login')}</button>
         )}
