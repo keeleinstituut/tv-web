@@ -1,9 +1,15 @@
 import { FC } from 'react'
-
-// TODO: WIP - implement this page
+import { useTranslation } from 'react-i18next'
+import RolesTabs from 'components/organisms/RolesTabs/RolesTabs'
 
 const RolesManagement: FC = () => {
-  return <h1>RolesManagement</h1>
+  const { t } = useTranslation()
+  return (
+    <>
+      <h1>{t('roles.roles_management')}</h1>
+      <RolesTabs />
+    </>
+  )
 }
 
 export default RolesManagement

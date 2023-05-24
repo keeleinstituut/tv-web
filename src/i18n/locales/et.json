@@ -1,10 +1,12 @@
 {
   "label": {
     "email": "Email",
-    "button_arrow": "Nupu nool"
+    "button_arrow": "Nupu nool",
+    "role_name_input": "Uue rolli nimi"
   },
   "placeholder": {
-    "email": "example@mail.com"
+    "email": "example@mail.com",
+    "write_new_role_here": "Kirjuta uus roll siia..."
   },
   "button": {
     "login": "Logi sisse",
@@ -14,7 +16,10 @@
     "break": "Katkesta",
     "yes": "Jah",
     "log_out": "Log out",
-    "add_new_order": "Lisa uus tellimus"
+    "save_changes": "Salvesta muudatused",
+    "delete_this_role": "Kustuta see roll",
+    "add_new_order": "Lisa uus tellimus",
+    "add_new_role": "lisa uus roll"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -44,6 +49,54 @@
   "alt": {
     "header_logo": "Logo",
     "checked": "Valitud"
+  },
+  "roles": {
+    "roles_management": "Rollihaldus",
+    "privileges": "Privileegid"
+  },
+  "privileges": {
+    "ADD_ROLE": "Rolli lisamine süsteemi",
+    "VIEW_ROLE": "Rollihalduse tabeli vaatamine",
+    "EDIT_ROLE": "Rolli muutmine (privileegide lisamine/ eemaldamine)",
+    "DELETE_ROLE": "Rolli kustutamine",
+    "VIEW_USER": "Kasutajate vaatamine",
+    "ADD_USER": "Kasutajate lisamine süsteemi",
+    "EDIT_USER": "Kasutajate andmete muutmine",
+    "EXPORT_USER": "Kasutajate nimekirja eksport",
+    "ACTIVATE_USER": "Kasutajate aktiveerimine",
+    "DEACTIVATE_USER": "Kasutajate deaktiveerimine",
+    "ARCHIVE_USER": "Kasutajate arhiveerimine ",
+    "CREATE_TM": "Asutuse tühja tõlkemälu loomine",
+    "IMPORT_TM": "Asutuse tõlkemälu import",
+    "EXPORT_TM": "Asutuse tõlkemälu eksport",
+    "DELETE_TM": "Asutuse tõlkemälu eemaldamine",
+    "EDIT_TM_METADATA": "Asutuse tõlkemälu andmete muutmine",
+    "VIEW_TM": "Asutuse tõlkemälude vaatamine",
+    "CREATE_PROJECT": "Tellimuse lisamine",
+    "MANAGE_PROJECT": "Tõlketellimuse korraldamine",
+    "RECEIVE_AND_MANAGE_PROJECT": "Tõlketellimuse vastuvõtmine ja korraldamine",
+    "VIEW_PERSONAL_PROJECT": "Enda tellimuste vaatamine",
+    "VIEW_INSTITUTION_PROJECT_LIST": "Asutuse tellimuste nimekirja vaatamine",
+    "VIEW_INSTITUTION_PROJECT_DETAIL": "Asutuse tellimuste detailide vaatamine",
+    "CHANGE_CLIENT": "Tellija vahetamine",
+    "VIEW_PERSONAL_TASK": "Enda ülesannete vaatamine",
+    "EXPORT_INSTITUTION_GENERAL_REPORT": "Asutuse tellimuste koondraporti eksport",
+    "ADD_TAG": "Siltide lisamine",
+    "EDIT_TAG": "Siltide muutmine",
+    "DELETE_TAG": "Siltide eemaldamine",
+    "VIEW_AUDIT_LOG": "Audit logide vaatamine",
+    "EXPORT_AUDIT_LOG": "Audit logide eksportimine",
+    "VIEW_VENDOR_DB": "Teostajate andmebaasi vaatamine",
+    "EDIT_VENDOR_DB": "Teostajate andmebaasi muutmine",
+    "VIEW_GENERAL_PRICELIST": "Teostajate koondhinnakirja vaatamine",
+    "VIEW_VENDOR_TASK": "Teostaja ülesannete vaatmine",
+    "VIEW_INSTITUTION_PRICE_RATE": "Asutuse hinnakirja vaatamine",
+    "EDIT_INSTITUTION_PRICE_RATE": "Asutuse hinnakirja muutmine",
+    "EDIT_INSTITUTION_DATA": "Asutuse andmete muutmine",
+    "EDIT_INSTITUTION_WORK_TIME": "Asutuse tööaegade muutmine",
+    "ADD_DEPARTMENT": "Asutuse üksuste lisamine",
+    "EDIT_DEPARTMENT": "Asutuse üksuste muutmine",
+    "DELETE_DEPARTMENT": "Asutuse üksuste kustutamine",
+    "EDIT_USER_WORKTIME": "Kasutajate tööaegade muutmine"
   }
-  
 }

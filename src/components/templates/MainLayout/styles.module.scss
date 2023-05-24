@@ -7,6 +7,7 @@
   .contentContainer {
     position: relative;
     width: 100%;
+    overflow-x: hidden;
 
     .scrollableContent {
       margin-top: $header-height;
@@ -14,6 +15,7 @@
       width: 100%;
       overflow-x: hidden;
       overflow-y: scroll;
+      padding: spacing(6);
     }
   }
 }
