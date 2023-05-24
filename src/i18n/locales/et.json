@@ -2,11 +2,21 @@
   "label": {
     "email": "Email",
     "button_arrow": "Nupu nool",
-    "role_name_input": "Uue rolli nimi"
+    "role_name_input": "Uue rolli nimi",
+    "personal_identification_code": "Isikukood",
+    "name": "Nimi",
+    "phone": "Telefoni nr",
+    "department": "Üksus",
+    "roles": "Rollid"
   },
   "placeholder": {
     "email": "example@mail.com",
-    "write_new_role_here": "Kirjuta uus roll siia..."
+    "write_new_role_here": "Kirjuta uus roll siia...",
+    "personal_identification_code": "12345678910",
+    "name": "Minu Nimi",
+    "phone": "+372 555 5555",
+    "department": "Harju Maakohus",
+    "roles": "Vali roll(id)"
   },
   "button": {
     "login": "Logi sisse",
@@ -19,11 +29,14 @@
     "save_changes": "Salvesta muudatused",
     "delete_this_role": "Kustuta see roll",
     "add_new_order": "Lisa uus tellimus",
-    "add_new_role": "lisa uus roll"
+    "add_new_role": "lisa uus roll",
+    "deactivate_account": "Deaktiveeri konto",
+    "archive_account": "Arhiveeri konto"
   },
   "error": {
     "input_title": "Veateade: ",
-    "invalid_email": "Vale formaat"
+    "invalid_email": "Vale formaat",
+    "invalid_phone": "Vale formaat"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -97,11 +110,16 @@
     "ADD_DEPARTMENT": "Asutuse üksuste lisamine",
     "EDIT_DEPARTMENT": "Asutuse üksuste muutmine",
     "DELETE_DEPARTMENT": "Asutuse üksuste kustutamine",
-    "EDIT_USER_WORKTIME": "Kasutajate tööaegade muutmine"
+    "EDIT_USER_WORKTIME": "Kasutajate tööaegade muutmine",
+    "EDIT_USER_VACATION": "Kasutaja puhkuse muutmine"
   },
   "modal": {
     "pick_institution_title": "Vali asutus, mille alt soovid Tõlkeväravasse siseneda.",
     "no_institutions_title": "Tundub, et sul puuduvad asutused mille vahel valida.",
     "institutions": "ASUTUSED"
+  },
+  "user": {
+    "created_at": "Kasutaja loodud {{time}}",
+    "updated_at": "Kasutaja andmed muudetud {{time}}"
   }
 }

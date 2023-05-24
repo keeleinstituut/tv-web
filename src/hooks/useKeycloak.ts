@@ -14,6 +14,7 @@ import { endpoints } from 'api/endpoints'
 import { InstitutionType } from 'types/institutions'
 import { showModal, ModalTypes } from 'components/organisms/modals'
 import Keycloak, { KeycloakConfig, KeycloakTokenParsed } from 'keycloak-js'
+import { PrivilegeKey } from 'types/privileges'
 
 // TODO: might separate refresh token logic from here
 
@@ -23,7 +24,7 @@ interface UserInfoType extends KeycloakTokenParsed {
       id: string
       name: string
     }
-    privileges?: string[]
+    privileges?: PrivilegeKey[]
   }
 }
 interface AuthContextType {
@@ -31,7 +32,7 @@ interface AuthContextType {
   login: () => void
   logout: () => void
   userInfo: UserInfoType
-  userPrivileges: string[]
+  userPrivileges: PrivilegeKey[]
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -158,7 +159,15 @@ const useKeycloak = () => {
         handleLogoutWithError()
         return
       }
+
       setAccessToken(keycloak.token)
+
+      if (userAccessObject?.selectedInstitution) {
+        finishLogin()
+        return
+      }
+
+      // TODO: no need to fetch institutions, if user already has institution selected
       const data: InstitutionType[] = await apiClient.get(
         endpoints.INSTITUTIONS
       )
@@ -171,26 +180,20 @@ const useKeycloak = () => {
         setAccessToken(keycloak.token)
         startRefreshingToken()
       }
-      // Now user is logged in
-      // Check if they have some institution already selected
-      if (!userAccessObject?.selectedInstitution) {
-        // No institution selected
-        // Check if there is exactly 1 institution to pick
-        if (size(data) === 1) {
-          // Only 1 available institution
-          // Select it automatically for user
-          const selectedInstitutionId = data[0].id
-          await selectInstitution(selectedInstitutionId)
-          finishLogin()
-        } else {
-          showModal(ModalTypes.InstitutionSelect, {
-            institutions: data,
-            onClose: handleLogoutWithError,
-            onSelect: finishLogin,
-          })
-        }
-      } else {
+
+      // Check if there is exactly 1 institution to pick
+      if (size(data) === 1) {
+        // Only 1 available institution
+        // Select it automatically for user
+        const selectedInstitutionId = data[0].id
+        await selectInstitution(selectedInstitutionId)
         finishLogin()
+      } else {
+        showModal(ModalTypes.InstitutionSelect, {
+          institutions: data,
+          onClose: handleLogoutWithError,
+          onSelect: finishLogin,
+        })
       }
     }
     initKeycloak()

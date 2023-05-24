@@ -1,0 +1,24 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: spacing(4);
+
+  .buttonsContainer {
+    display: flex;
+    :first-child {
+      margin-right: spacing(2);
+    }
+  }
+}
+
+.dateText {
+  @include bodyTextSmallStyle;
+  color: $color-input-main;
+  &:first-of-type {
+    margin-top: spacing(2);
+  }
+}
