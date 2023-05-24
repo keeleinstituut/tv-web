@@ -1,0 +1,49 @@
+@import 'styles/variables';
+
+.notificationContainer {
+  width: 392px;
+  padding: spacing(4);
+  display: grid;
+  grid-gap: spacing(2);
+  grid-template-columns: 16px 1fr 1fr;
+  border: 1px solid;
+  border-radius: 5px;
+  align-items: center;
+
+  .closeButton {
+    justify-self: end;
+
+    svg {
+      width: 24px;
+      height: 24px;
+
+      path {
+        fill-opacity: 1;
+      }
+    }
+  }
+
+  p {
+    grid-column: 1/4;
+  }
+
+  &.error {
+    background-color: $color-error-light;
+    border-color: $color-error;
+  }
+
+  &.warning {
+    background-color: $color-warning-light;
+    border-color: $color-warning;
+  }
+
+  &.success {
+    background-color: $color-success-light;
+    border-color: $color-success;
+  }
+
+  &.info {
+    background-color: $color-info-light;
+    border-color: $color-primary;
+  }
+}

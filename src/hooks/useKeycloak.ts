@@ -12,7 +12,7 @@ import { setAccessToken, apiClient } from 'api'
 import axios from 'axios'
 import { endpoints } from 'api/endpoints'
 import { InstitutionType } from 'types/institutions'
-import { showModal, ModalTypes } from 'components/organisms/modals'
+import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import Keycloak, { KeycloakConfig, KeycloakTokenParsed } from 'keycloak-js'
 import { PrivilegeKey } from 'types/privileges'
 

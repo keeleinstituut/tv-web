@@ -12,11 +12,11 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
-import Modal, {
+import ModalBase, {
   ModalSizeTypes,
   ButtonPositionTypes,
   TitleFontTypes,
-} from 'components/organisms/Modal/Modal'
+} from 'components/organisms/ModalBase/ModalBase'
 
 type FormValues = {
   email?: string
@@ -98,7 +98,7 @@ const Test: FC = () => {
         iconPositioning={IconPositioningTypes.Right}
       />
 
-      <Modal
+      <ModalBase
         title="Pealkiri"
         size={ModalSizeTypes.Narrow}
         buttonsPosition={ButtonPositionTypes.SpaceBetween}
@@ -168,7 +168,7 @@ const Test: FC = () => {
           account of the system, and expound the actual teachings of the great
           explorer of the truth, the master-builder of human happiness."
         </p>
-      </Modal>
+      </ModalBase>
     </>
   )
 }

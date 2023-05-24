@@ -1,0 +1,14 @@
+@import 'styles/variables';
+
+.notificationsContainer {
+  display: grid;
+  transition: 1000ms;
+  grid-auto-rows: max-content;
+  position: absolute;
+  top: spacing(6);
+  right: spacing(6);
+
+  > :not(:first-child) {
+    margin-top: spacing(6)
+  }
+}
