@@ -15,6 +15,7 @@
     "@types/node": "18.14.2",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "ahooks": "^3.7.7",
     "@types/uuid": "^9.0.1",
     "axios": "^1.4.0",
     "classnames": "^2.3.2",
@@ -31,8 +32,10 @@
     "react-i18next": "^12.2.0",
     "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
+    "react-timeit": "^1.1.12",
     "sass": "^1.60.0",
     "typescript": "^4.9.5",
+    "use-mask-input": "^3.1.2",
     "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
   },
