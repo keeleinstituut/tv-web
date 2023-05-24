@@ -16,7 +16,6 @@
     display: inline-block;
     flex-direction: column;
     position: relative;
-    max-width: 274px;
 
     svg {
       position: absolute;
@@ -31,7 +30,6 @@
   @include buttonTextStyle;
   padding: spacing(2);
   color: $color-text-light;
-  width: 274px;
   border: 1px solid $color-text-light;
   border-radius: 4px;
   background: $color-white;
@@ -40,6 +38,11 @@
 
   &:focus {
     border: 1px solid $color-primary;
+  }
+
+  &.s {
+    border: 1px solid #d2d3d8;
+    border-radius: 5px;
   }
 }
 
@@ -59,7 +62,6 @@
 }
 
 .dropdownMenu {
-  width: 274px;
   background: $color-white;
   border: 1px solid $color-border;
   border-radius: 0px 0px 4px 4px;
@@ -79,20 +81,35 @@
 .option {
   @include labelTextStyle;
   padding: spacing(2);
-
-  &:focus {
-    @include subtitleTextStyle;
-  }
 }
 
 .helperText {
   color: #004277;
   @include subtitleSmallTextStyle;
-  max-width: 274px;
   padding-top: spacing(1);
 }
 
 .buttonsContainer {
   display: flex;
   padding: spacing(4.5) 0 spacing(3) 0;
+}
+
+.l {
+  width: 274px;
+}
+
+.m {
+  width: 150px;
+}
+
+.s {
+  width: 77px;
+}
+
+.selectedOption {
+  @include subtitleTextStyle;
+
+  &:focus {
+    @include subtitleTextStyle;
+  }
 }

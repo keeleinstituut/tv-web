@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useState } from 'react'
+import { ReactElement, forwardRef, useRef, useState } from 'react'
 import classNames from 'classnames'
 import { Field, Label } from '@radix-ui/react-form'
 import { FieldError } from 'react-hook-form'
@@ -11,6 +11,12 @@ import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './styles.module.scss'
+
+export enum DropdownSizeTypes {
+  L = 'l',
+  M = 'm',
+  S = 's',
+}
 
 export interface SelectionControlsInputProps {
   name: string
@@ -31,6 +37,8 @@ export interface SelectionControlsInputProps {
   buttons?: boolean
   cancelButtonLabel?: string
   proceedButtonLabel?: string
+  searchInput?: ReactElement
+  dropdownSize?: DropdownSizeTypes
 }
 
 const SelectionControlsInput = forwardRef<
@@ -53,13 +61,17 @@ const SelectionControlsInput = forwardRef<
     buttons = false,
     cancelButtonLabel,
     proceedButtonLabel,
+    searchInput,
+    dropdownSize = 'l',
   },
   ref
 ) {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen)
+    if (multiple) {
+      setIsOpen(true)
+    } else setIsOpen(!isOpen)
   }
 
   const clickAwayInputRef = useRef(null)
@@ -82,7 +94,7 @@ const SelectionControlsInput = forwardRef<
         selectedValues.splice(optionIndex, 1)
       }
       onChange(selectedValues)
-      setIsOpen(false)
+      setIsOpen(true)
     } else {
       onChange(selectedOption ? selectedOption?.value : '')
       setIsOpen(false)
@@ -102,13 +114,18 @@ const SelectionControlsInput = forwardRef<
         {label}
       </Label>
       <div
-        className={classNames(classes.wrapper, error && classes.errorMessage)}
+        className={classNames(
+          classes.wrapper,
+          error && classes.errorMessage,
+          classes[dropdownSize]
+        )}
         onClick={toggleDropdown}
       >
         <BaseButton
           className={classNames(
             classes.toggleDropdown,
-            disabled && classes.disabledDropdown
+            disabled && classes.disabledDropdown,
+            classes[dropdownSize]
           )}
         >
           {value && value.length > 0
@@ -126,20 +143,23 @@ const SelectionControlsInput = forwardRef<
         </BaseButton>
 
         <div
-          className={classes.dropdownMenu}
+          className={classNames(classes.dropdownMenu, classes[dropdownSize])}
           hidden={disabled || !isOpen || !!error}
         >
+          <div hidden={!searchInput}>{searchInput}</div>
+
           {map(options, (option, index) => {
             const isSelected = value && value.includes(option?.value)
 
             return (
               <li
                 key={index}
-                className={classNames(classes.dropdownMenuItem)}
+                className={classes.dropdownMenuItem}
                 onClick={() => handleOptionSelect(option)}
               >
                 {multiple ? (
                   <CheckBoxInput
+                    hidden={!multiple}
                     name={name}
                     ariaLabel={ariaLabel}
                     label={option?.label}
@@ -147,12 +167,23 @@ const SelectionControlsInput = forwardRef<
                     className={classes.option}
                   />
                 ) : (
-                  <p className={classes.option}>{option?.label}</p>
+                  <p
+                    hidden={multiple}
+                    className={classNames(
+                      classes.option,
+                      isSelected && classes.selectedOption
+                    )}
+                  >
+                    {option?.label}
+                  </p>
                 )}
               </li>
             )
           })}
-          <div hidden={!buttons} className={classes.buttonsContainer}>
+          <div
+            hidden={!buttons}
+            className={classNames(buttons && classes.buttonsContainer)}
+          >
             <Button appearance={AppearanceTypes.Secondary}>
               {cancelButtonLabel}
             </Button>

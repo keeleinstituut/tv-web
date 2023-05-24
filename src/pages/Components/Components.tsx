@@ -22,6 +22,7 @@ import Modal, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/Modal/Modal'
+import { DropdownSizeTypes } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 
 type FormValues = {
   email?: string
@@ -79,39 +80,7 @@ const Test: FC = () => {
       ariaLabel: 'date picker aria label',
       placeholder: 'pp.kk.aaaa',
     },
-    {
-      inputType: InputTypes.Selections,
-      name: 'selections',
-      label: 'selections label',
-      ariaLabel: 'selections aria label',
-      options: [
-        { label: 'Option 1', value: 'Option 1' },
-        { label: 'Option 2', value: 'Option 2' },
-        { label: 'Option 3', value: 'Option 3' },
-        { label: 'Option 4', value: 'Option 4' },
-      ],
-      defaultLabel: 'Select an option',
-      multiple: false,
-    },
-    {
-      inputType: InputTypes.Selections,
-      name: 'multipleSelections',
-      label: 'multipleSelections label',
-      ariaLabel: 'multipleSelections aria label',
-      options: [
-        { label: 'Option 1', value: 'Option 1' },
-        { label: 'Option 2', value: 'Option 2' },
-        { label: 'Option 3', value: 'Option 3' },
-        { label: 'Option 4', value: 'Option 4' },
-      ],
-      defaultLabel: 'Select multiple options',
-      multiple: true,
-      helperText:
-        'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
-      buttons: true,
-      cancelButtonLabel: 'Tühista',
-      proceedButtonLabel: 'Filtreeri',
-    },
+
     {
       inputType: InputTypes.Time,
       name: 'timePicker',
@@ -125,6 +94,41 @@ const Test: FC = () => {
       label: 'time picker seconds label',
       ariaLabel: 'time picker seconds aria label',
       showSeconds: true,
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: 'selections',
+      label: 'selections label',
+      ariaLabel: 'selections aria label',
+      options: [
+        { label: 'Option 1', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
+      ],
+      defaultLabel: 'Choose option',
+      multiple: false,
+      dropdownSize: DropdownSizeTypes.M,
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: 'multipleSelections',
+      label: 'multipleSelections label',
+      ariaLabel: 'multipleSelections aria label',
+      options: [
+        { label: 'Option 1', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
+      ],
+      defaultLabel: 'Choose options',
+      multiple: true,
+      helperText:
+        'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
+      buttons: true,
+      cancelButtonLabel: 'Tühista',
+      proceedButtonLabel: 'Filtreeri',
+      searchInput: <Fragment />,
     },
   ]
 
