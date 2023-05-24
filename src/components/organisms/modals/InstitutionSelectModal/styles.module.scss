@@ -1,0 +1,29 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.modalContent {
+  background-color: $color-background;
+
+  h1 {
+    width: 527px;
+  }
+
+  h2 {
+    @include h6TextStyle;
+    margin-top: spacing(6);
+  }
+
+  .institution {
+    width: 100%;
+    margin-top: spacing(4);
+    border-radius: 4px;
+    border: 1px solid $color-border;
+    padding: spacing(2.25) spacing(3.75);
+    filter: drop-shadow(0px 1px 5px rgba(0, 0, 0, 0.15));
+
+    span {
+      color: $color-primary;
+      font-weight: $font-weight-bold;
+    }
+  }
+}

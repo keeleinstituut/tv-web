@@ -1,4 +1,4 @@
-import { useEffect, useState, createContext } from 'react'
+import { useEffect, useState, createContext, useCallback } from 'react'
 import {
   pickBy,
   startsWith,
@@ -11,6 +11,8 @@ import {
 import { setAccessToken, apiClient } from 'api'
 import axios from 'axios'
 import { endpoints } from 'api/endpoints'
+import { InstitutionType } from 'types/institutions'
+import { showModal, ModalTypes } from 'components/organisms/modals'
 import Keycloak, { KeycloakConfig, KeycloakTokenParsed } from 'keycloak-js'
 
 // TODO: might separate refresh token logic from here
@@ -88,9 +90,52 @@ const startRefreshingToken = () => {
   }, interval * 1000)
 }
 
+export const selectInstitution = async (institutionId?: string) => {
+  // TODO: might need some error handling here as well
+  const params = new URLSearchParams({
+    grant_type: 'refresh_token',
+    client_id: process.env.REACT_APP_KEYCLOAK_client_id || '',
+    refresh_token: keycloak.refreshToken || '',
+  })
+  // select institution for user
+  await axios.post(
+    `${process.env.REACT_APP_KEYCLOAK_url}/realms/${process.env.REACT_APP_KEYCLOAK_realm}/protocol/openid-connect/token`,
+    params,
+    {
+      headers: {
+        'X-Selected-Institution-ID': institutionId,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: '*/*',
+      },
+    }
+  )
+  // refresh token, to update state for keycloak
+  await keycloak.updateToken(Infinity)
+  return true
+}
+
 const useKeycloak = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
   const [userInfo, setUserIdInfo] = useState<UserInfoType>({})
+  const handleLogoutWithError = useCallback(() => {
+    // TODO: show global error message
+    setAccessToken()
+    setIsUserLoggedIn(false)
+    keycloak.logout()
+  }, [])
+  // Setting this as a helper function, so we can use it as a callBack for modal
+  const finishLogin = useCallback(() => {
+    setUserIdInfo(keycloak.idTokenParsed || {})
+    setIsUserLoggedIn(true)
+    // Start refreshing interval
+    startRefreshingToken()
+    // Token refreshing stops, when window is not visible and doesn't start again
+    // Refresh the token again, when window becomes visible
+    if (typeof window !== 'undefined' && window.addEventListener) {
+      window.addEventListener('visibilitychange', onVisibilityChange)
+    }
+  }, [])
+
   useEffect(() => {
     const initKeycloak = async () => {
       const isKeycloakUserLoggedIn = await keycloak.init({
@@ -99,66 +144,60 @@ const useKeycloak = () => {
         silentCheckSsoRedirectUri:
           window.location.origin + '/silent-check-sso.html',
       })
+
+      if (!isKeycloakUserLoggedIn) {
+        return
+      }
+
+      // If used does not have the "tolkevarav" object in their idToken, they are not a user
+      // This means that we should not consider them as logged in
       const userAccessObject =
         isKeycloakUserLoggedIn && keycloak.idTokenParsed?.tolkevarav
 
-      // Currently if used does not have the "tolkevarav" object in their idToken, they are not a user
-      // This means that we should not consider them as logged in
       if (!userAccessObject) {
-        setIsUserLoggedIn(false)
+        handleLogoutWithError()
         return
       }
       setAccessToken(keycloak.token)
+      const data: InstitutionType[] = await apiClient.get(
+        endpoints.INSTITUTIONS
+      )
+      if (size(data) === 0) {
+        handleLogoutWithError()
+        return
+      }
       keycloak.onAuthRefreshSuccess = () => {
         // Set new access token + restart refreshing interval
         setAccessToken(keycloak.token)
         startRefreshingToken()
       }
-      const data = await apiClient.get(endpoints.INSTITUTIONS)
-      if (size(data) === 0) {
-        setIsUserLoggedIn(false)
-        return
-      }
+      // Now user is logged in
+      // Check if they have some institution already selected
       if (!userAccessObject?.selectedInstitution) {
-        if (size(data) === 1) {
+        // No institution selected
+        // Check if there is exactly 1 institution to pick
+        if (size(data) === 2) {
+          // Only 1 available institution
+          // Select it automatically for user
           const selectedInstitutionId = data[0].id
-          const params = new URLSearchParams({
-            grant_type: 'refresh_token',
-            client_id: process.env.REACT_APP_KEYCLOAK_client_id || '',
-            refresh_token: keycloak.refreshToken || '',
-          })
-          // select institution for user
-          await axios.post(
-            `${process.env.REACT_APP_KEYCLOAK_url}/realms/${process.env.REACT_APP_KEYCLOAK_realm}/protocol/openid-connect/token`,
-            params,
-            {
-              headers: {
-                'X-Selected-Institution-ID': selectedInstitutionId,
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Accept: '*/*',
-              },
-            }
-          )
-          // refresh token, to update state for keycloak
-          await keycloak.updateToken(Infinity)
+          await selectInstitution(selectedInstitutionId)
+          finishLogin()
         } else {
-          // TODO: send user to institution selection modal
+          showModal(ModalTypes.InstitutionSelect, {
+            institutions: data,
+            onClose: handleLogoutWithError,
+            onSelect: finishLogin,
+          })
         }
-      }
-      setUserIdInfo(keycloak.idTokenParsed || {})
-      setIsUserLoggedIn(true)
-      // Start refreshing interval
-      startRefreshingToken()
-      // Token refreshing stops, when window is not visible and doesn't start again
-      // Refresh the token again, when window becomes visible
-      if (typeof window !== 'undefined' && window.addEventListener) {
-        window.addEventListener('visibilitychange', onVisibilityChange)
+      } else {
+        finishLogin()
       }
     }
     initKeycloak()
     return () => {
       window.removeEventListener('visibilitychange', onVisibilityChange)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return { keycloak, isUserLoggedIn, userInfo }

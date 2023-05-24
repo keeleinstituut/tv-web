@@ -1,7 +1,7 @@
 import { FC, useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { isEmpty, map, includes, omit, filter } from 'lodash'
-import RoleForm from 'components/organisms/RoleForm/RoleForm'
+import RoleForm from 'components/organisms/forms/RoleForm/RoleForm'
 import { v4 as uuidv4 } from 'uuid'
 import { useRolesFetch } from 'hooks/requests/roles'
 import Loader from 'components/atoms/Loader/Loader'

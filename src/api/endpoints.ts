@@ -1,7 +1,7 @@
 export const endpoints = {
-  ROLES: `${process.env.REACT_APP_AUTHORIZATION_API}roles`,
-  INSTITUTIONS: `${process.env.REACT_APP_AUTHORIZATION_API}institutions`,
-  PRIVILEGES: `${process.env.REACT_APP_AUTHORIZATION_API}privileges`,
+  ROLES: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}roles`,
+  INSTITUTIONS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institutions`,
+  PRIVILEGES: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}privileges`,
 }
 
 export const authEndpoints = {
