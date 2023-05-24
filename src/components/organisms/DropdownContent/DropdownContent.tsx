@@ -11,8 +11,10 @@ type DropdownContentProps = SelectionControlsInputProps & {
   isOpen?: boolean
 }
 
-type SingleOptionDropDownProps = {
-  multiple?: boolean
+type SingleOptionDropDownProps = Omit<
+  SelectionControlsInputProps,
+  'name' | 'ariaLabel' | 'options' | 'onChange'
+> & {
   isSelected?: boolean
   optionLabel?: string
 }
@@ -59,12 +61,12 @@ const DropdownContent: FC<DropdownContentProps> = ({
       const selectedValues = Array.isArray(value) ? [...value] : []
       const optionIndex = selectedValues?.indexOf(selectedOption?.value)
 
-      if (optionIndex === -1) {
-        selectedValues.push(selectedOption.value)
-      } else {
-        selectedValues.splice(optionIndex, 1)
-      }
-      onChange(selectedValues)
+      const newSelectedValues =
+        optionIndex === -1
+          ? [...selectedValues, selectedOption?.value]
+          : selectedValues?.filter((value) => value !== selectedOption?.value)
+
+      onChange(newSelectedValues)
     } else {
       onChange(selectedOption ? selectedOption?.value : '')
     }

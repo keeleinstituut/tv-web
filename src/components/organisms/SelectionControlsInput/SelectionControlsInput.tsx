@@ -76,6 +76,13 @@ const SelectionControlsInput = forwardRef<
     setIsOpen(false)
   }, [clickAwayInputRef])
 
+  const joinedSelectedOptionLabels = options
+    .filter((option) => value?.includes(option?.value))
+    .map(({ label }) => label)
+    .join(', ')
+
+  const dropdownMenuLabel = value ? joinedSelectedOptionLabels : defaultLabel
+
   return (
     <Field
       name={name}
@@ -103,12 +110,7 @@ const SelectionControlsInput = forwardRef<
             classes[dropdownSize || 'l']
           )}
         >
-          {value && value.length > 0
-            ? options
-                .filter((option) => value.includes(option?.value))
-                .map((option) => option?.label)
-                .join(', ')
-            : defaultLabel}
+          <p>{dropdownMenuLabel}</p>
           <DropdownArrow
             className={classNames(
               disabled && classes.disabledDropdownIcon,
