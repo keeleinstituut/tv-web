@@ -176,7 +176,7 @@ const useKeycloak = () => {
       if (!userAccessObject?.selectedInstitution) {
         // No institution selected
         // Check if there is exactly 1 institution to pick
-        if (size(data) === 2) {
+        if (size(data) === 1) {
           // Only 1 available institution
           // Select it automatically for user
           const selectedInstitutionId = data[0].id

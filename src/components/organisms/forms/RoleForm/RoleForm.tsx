@@ -37,14 +37,16 @@ interface RoleFormProps extends RoleType {
 // TODO: temporary, will swap with buttons from modal task later
 interface FormButtonProps {
   loading: boolean
-  disabled: boolean
+  isResetDisabled: boolean
+  isSubmitDisabled: boolean
   hidden?: boolean
   resetForm: () => void
 }
 
 const FormButtons: FC<FormButtonProps> = ({
   loading,
-  disabled,
+  isResetDisabled,
+  isSubmitDisabled,
   hidden,
   resetForm,
 }) => {
@@ -53,15 +55,15 @@ const FormButtons: FC<FormButtonProps> = ({
   return (
     <div className={classes.formButtons}>
       <Button
-        loading={loading}
         appearance={AppearanceTypes.Secondary}
         onClick={resetForm}
         children={t('button.cancel')}
-        disabled={disabled}
+        disabled={isResetDisabled || loading}
       />
       <Button
         children={t('button.save_changes')}
-        disabled={disabled || loading}
+        disabled={isSubmitDisabled}
+        loading={loading}
         type="submit"
       />
     </div>
@@ -193,6 +195,10 @@ const RoleForm: FC<RoleFormProps> = ({
     onReset(id || '')
   }, [defaultPrivileges, id, onReset, reset])
 
+  const isResetDisabled = !isDirty && !hasNameChanged
+  const isSubmitDisabled =
+    isResetDisabled || (!name && !temporaryName) || !isValid
+
   if (hidden) return null
 
   return (
@@ -217,11 +223,8 @@ const RoleForm: FC<RoleFormProps> = ({
         className={classes.formContainer}
       >
         <FormButtons
-          disabled={
-            !isValid ||
-            (!name && !temporaryName) ||
-            (!isDirty && !hasNameChanged)
-          }
+          isResetDisabled={isResetDisabled}
+          isSubmitDisabled={isSubmitDisabled}
           loading={isLoading || isCreating || isSubmitting}
           resetForm={resetForm}
           hidden={!includes(userPrivileges, 'EDIT_ROLE')}

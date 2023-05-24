@@ -25,11 +25,12 @@ const MenuItems: FC<MenuItemsProps> = ({
 }) => {
   const location = useLocation()
   const handleNavToggle = (event: MouseEvent) => {
-    if (navCollapsed) {
-      setNavCollapsed(false)
-    }
     const isExpanded =
       event.currentTarget.getAttribute('aria-expanded') === 'true'
+
+    if (navCollapsed && !isExpanded) {
+      setNavCollapsed(false)
+    }
 
     event.currentTarget.setAttribute(
       'aria-expanded',
@@ -61,7 +62,8 @@ const MenuItems: FC<MenuItemsProps> = ({
               )}
               onClick={handleNavToggle}
               aria-expanded={
-                isInterTitle || (path && location.pathname.includes(path))
+                isInterTitle ||
+                (!navCollapsed && path && location.pathname.includes(path))
                   ? 'true'
                   : 'false'
               }
