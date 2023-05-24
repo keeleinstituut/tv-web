@@ -1,11 +1,4 @@
-import {
-  FC,
-  ReactNode,
-  PropsWithChildren,
-  Dispatch,
-  SetStateAction,
-  ReactElement,
-} from 'react'
+import { FC, ReactNode, PropsWithChildren, ReactElement } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
 import Button, {
@@ -47,20 +40,22 @@ export interface ModalProps extends ModalFooterProps {
   size?: ModalSizeTypes
   titleFont?: TitleFontTypes
   open: boolean
-  setOpen: Dispatch<SetStateAction<boolean>>
+  setOpen?: (isOpen: boolean) => void
   handleClose: () => void
   progressBar?: ReactElement
+  className?: string
 }
 
 export interface ModalFooterProps {
-  buttonsPosition: ButtonPositionTypes
-  buttons: ModalButtonProps[]
+  buttonsPosition?: ButtonPositionTypes
+  buttons?: ModalButtonProps[]
 }
 
 const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
   buttonsPosition = 'right',
   buttons,
 }) => {
+  if (!buttons) return null
   return (
     <div className={classes[buttonsPosition]}>
       {map(buttons, (button, index) => (
@@ -85,6 +80,7 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
   handleClose,
   buttons,
   progressBar,
+  className,
 }) => {
   const { t } = useTranslation()
 
@@ -97,7 +93,8 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
           className={classNames(
             classes.dialogContent,
             classes[size],
-            progressBar && classes.progressBarContainer
+            progressBar && classes.progressBarContainer,
+            className
           )}
         >
           <Button
@@ -109,14 +106,12 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
           >
             {t('button.cancel')}
           </Button>
-          <Dialog.Title>
-            <div hidden={!progressBar} className={classes.progressBarContent}>
-              {progressBar}
-            </div>
-            <div className={classNames(classes.modalTitle, classes[titleFont])}>
-              {title}
-            </div>
-          </Dialog.Title>
+          <div hidden={!progressBar} className={classes.progressBarContent}>
+            {progressBar}
+          </div>
+          <h1 className={classNames(classes.modalTitle, classes[titleFont])}>
+            {title}
+          </h1>
           <Dialog.Overlay className={classes.scrollableContent}>
             <div className={classes.dialogDescription}>{children}</div>
           </Dialog.Overlay>

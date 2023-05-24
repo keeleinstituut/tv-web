@@ -2,14 +2,20 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import landingBackground from 'assets/landing_background.svg'
 import { useTranslation } from 'react-i18next'
 import useAuth from 'hooks/useAuth'
+import { FC } from 'react'
+import classNames from 'classnames'
 
 import classes from './styles.module.scss'
 
-const LandingContent = () => {
+interface LandingContentProps {
+  className?: string
+}
+
+const LandingContent: FC<LandingContentProps> = ({ className }) => {
   const { t } = useTranslation()
   const { login, isUserLoggedIn } = useAuth()
   return (
-    <div className={classes.container}>
+    <div className={classNames(classes.container, className)}>
       <div className={classes.whiteBackground} />
       <img src={landingBackground} alt="Landing background" />
       <div className={classes.contentContainer}>

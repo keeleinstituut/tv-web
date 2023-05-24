@@ -12,7 +12,7 @@
 .dialogContent {
   background-color: $color-white;
   border: 2px solid $color-border;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.14);
+  box-shadow: 0px 4px 10px $color-shadow-main;
   border-radius: 4px;
   position: fixed;
   top: 50%;
@@ -28,7 +28,7 @@
 }
 
 .dialogDescription {
-  padding: 0 spacing(17.5);
+  padding: 0 spacing(18);
 }
 
 .topButton {
@@ -87,7 +87,7 @@
 }
 
 .modalTitle {
-  padding: spacing(10) spacing(17.5) spacing(4);
+  padding: 0 spacing(18) spacing(4);
   @include h1TextStyle;
 }
 
