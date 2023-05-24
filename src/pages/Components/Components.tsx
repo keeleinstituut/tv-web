@@ -16,7 +16,7 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as ButtonArrowWhite } from 'assets/icons/button_arrow_white.svg'
+import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 import Modal, {
   ModalSizeTypes,
   ButtonPositionTypes,
@@ -29,6 +29,8 @@ type FormValues = {
   datePicker?: string
   selections?: string
   multipleSelections?: string
+  timePicker?: string
+  timePickerSeconds?: string
 }
 
 const Test: FC = () => {
@@ -110,6 +112,20 @@ const Test: FC = () => {
       cancelButtonLabel: 'Tühista',
       proceedButtonLabel: 'Filtreeri',
     },
+    {
+      inputType: InputTypes.Time,
+      name: 'timePicker',
+      label: 'time picker label',
+      ariaLabel: 'time picker aria label',
+      showSeconds: false,
+    },
+    {
+      inputType: InputTypes.Time,
+      name: 'timePickerSeconds',
+      label: 'time picker seconds label',
+      ariaLabel: 'time picker seconds aria label',
+      showSeconds: true,
+    },
   ]
 
   const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {
@@ -136,7 +152,7 @@ const Test: FC = () => {
         appearance={AppearanceTypes.Primary}
         children="bu"
         size={SizeTypes.M}
-        icon={ButtonArrowWhite}
+        icon={ButtonArrow}
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
       />
@@ -164,7 +180,7 @@ const Test: FC = () => {
             size: SizeTypes.M,
             ariaLabel: t('button.cancel'),
             href: 'http://localhost:3000/',
-            icon: ButtonArrowWhite,
+            icon: ButtonArrow,
             iconPositioning: IconPositioningTypes.Left,
           },
           {
@@ -172,7 +188,7 @@ const Test: FC = () => {
             onClick: handleClose,
             children: t('button.yes'),
             disabled: true,
-            icon: ButtonArrowWhite,
+            icon: ButtonArrow,
           },
         ]}
       >

@@ -13,13 +13,25 @@ import classes from './styles.module.scss'
 interface MenuItemsProps {
   menuItems: FullRouteObject[]
   parentPath?: string
+  navCollapsed: boolean
+  setNavCollapsed: (navCollapsed: boolean) => void
 }
 
-const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
+const MenuItems: FC<MenuItemsProps> = ({
+  menuItems,
+  parentPath,
+  navCollapsed,
+  setNavCollapsed,
+}) => {
   const location = useLocation()
   const handleNavToggle = (event: MouseEvent) => {
     const isExpanded =
       event.currentTarget.getAttribute('aria-expanded') === 'true'
+
+    if (navCollapsed && !isExpanded) {
+      setNavCollapsed(false)
+    }
+
     event.currentTarget.setAttribute(
       'aria-expanded',
       isExpanded ? 'false' : 'true'
@@ -50,7 +62,8 @@ const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
               )}
               onClick={handleNavToggle}
               aria-expanded={
-                isInterTitle || (path && location.pathname.includes(path))
+                isInterTitle ||
+                (!navCollapsed && path && location.pathname.includes(path))
                   ? 'true'
                   : 'false'
               }
@@ -77,7 +90,12 @@ const MenuItems: FC<MenuItemsProps> = ({ menuItems, parentPath }) => {
                 isInterTitle && classes.interSubMenu
               )}
             >
-              <MenuItems menuItems={children} parentPath={fullPath} />
+              <MenuItems
+                menuItems={children}
+                parentPath={fullPath}
+                navCollapsed={navCollapsed}
+                setNavCollapsed={setNavCollapsed}
+              />
             </ul>
           </li>
         )
@@ -108,7 +126,11 @@ const SideBar: FC = () => {
         <span>{t('menu.collapse_menu')}</span>
       </BaseButton>
       <ul className={classes.menuList}>
-        <MenuItems menuItems={protectedRoutes} />
+        <MenuItems
+          menuItems={protectedRoutes}
+          navCollapsed={navCollapsed}
+          setNavCollapsed={setNavCollapsed}
+        />
       </ul>
     </nav>
   )

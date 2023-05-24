@@ -14,6 +14,9 @@ import DatePickerInput, {
 import SelectionControlsInput, {
   SelectionControlsInputProps,
 } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import TimePickerInput, {
+  TimePickerInputProps,
+} from 'components/molecules/TimePickerInput/TimePickerInput'
 
 // Extend all props of an input with the corresponding inputType
 
@@ -22,6 +25,7 @@ export enum InputTypes {
   Checkbox = 'checkbox',
   Date = 'date',
   Selections = 'selections',
+  Time = 'time',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -40,11 +44,16 @@ type SelectionControlsPropsWithType = SelectionControlsInputProps & {
   inputType: InputTypes.Selections
 }
 
+type TimePickerPropsWithType = TimePickerInputProps & {
+  inputType: InputTypes.Time
+}
+
 export type InputPropsByType =
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
   | DatePickerPropsWithType
   | SelectionControlsPropsWithType
+  | TimePickerPropsWithType
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
   InputPropsByType,
@@ -67,7 +76,8 @@ const InputComponent = forwardRef<HTMLInputElement, InputPropsByType>(
         return (
           <SelectionControlsInput {...omit(props, 'inputType')} ref={ref} />
         )
-
+      case InputTypes.Time:
+        return <TimePickerInput {...omit(props, 'inputType')} ref={ref} />
       default:
         return assertNever(inputType)
     }

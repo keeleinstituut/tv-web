@@ -4,18 +4,16 @@ import Header from 'components/organisms/Header/Header'
 import SideBar from 'components/organisms/SideBar/SideBar'
 import classes from './styles.module.scss'
 
-const MainLayout: FC<PropsWithChildren> = (props) => {
-  return (
-    <main className={classes.mainContainer}>
-      <SideBar />
-      <div className={classes.contentContainer}>
-        <Header />
-        <div className={classes.scrollableContent}>
-          <Outlet />
-        </div>
+const MainLayout: FC<PropsWithChildren> = () => (
+  <main className={classes.mainContainer}>
+    <SideBar />
+    <div className={classes.contentContainer}>
+      <Header />
+      <div className={classes.scrollableContent}>
+        <Outlet />
       </div>
-    </main>
-  )
-}
+    </div>
+  </main>
+)
 
 export default MainLayout

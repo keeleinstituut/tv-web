@@ -144,8 +144,22 @@
         margin-right: 0;
       }
 
+
+    &[aria-expanded=true] {
+      + .subMenu {
+        display: none;
+      }
+    }
+
       &.interListItem {
         display: none;
+
+        &[aria-expanded=false],
+        &[aria-expanded=true] {
+          + .subMenu {
+            display: block;
+          }
+        }
       }
     }
   }
