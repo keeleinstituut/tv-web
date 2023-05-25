@@ -101,7 +101,7 @@ const Test: FC = () => {
         { label: 'Option 3', value: 'Option 3' },
         { label: 'Option 4', value: 'Option 4' },
       ],
-      defaultLabel: 'Choose option',
+      placeholder: 'Choose option',
       multiple: false,
       dropdownSize: DropdownSizeTypes.M,
       helperText:
@@ -122,7 +122,7 @@ const Test: FC = () => {
         { label: 'Option ieruhiruthr7', value: 'Option 7' },
         { label: 'Option 8985759867', value: 'Option 8' },
       ],
-      defaultLabel: 'Choose options',
+      placeholder: 'Choose options',
       multiple: true,
       buttons: true,
       cancelButtonLabel: 'Tühista',

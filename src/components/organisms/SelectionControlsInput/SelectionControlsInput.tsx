@@ -9,7 +9,7 @@ import { useClickAway } from 'ahooks'
 import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
 
 import classes from './styles.module.scss'
-import { filter, includes, join, map } from 'lodash'
+import { filter, includes, map } from 'lodash'
 
 export enum DropdownSizeTypes {
   L = 'l',
@@ -30,7 +30,7 @@ export interface SelectionControlsInputProps {
   }[]
   onChange: (value: string | string[]) => void
   disabled?: boolean
-  defaultLabel?: string
+  placeholder?: string
   multiple?: boolean
   helperText?: string
   buttons?: boolean
@@ -55,7 +55,7 @@ const SelectionControlsInput = forwardRef<
     options,
     onChange,
     disabled,
-    defaultLabel,
+    placeholder,
     multiple = false,
     helperText,
     buttons = false,
@@ -85,9 +85,9 @@ const SelectionControlsInput = forwardRef<
 
   const selectedOptionLabels = map(selectedOptionObjects, ({ label }) => label)
 
-  const singleSelectMenuLabel = value ? selectedOptionLabels : defaultLabel
+  const singleSelectMenuLabel = value ? selectedOptionLabels : placeholder
 
-  const dropdownMenuLabel = multiple ? defaultLabel : singleSelectMenuLabel
+  const dropdownMenuLabel = multiple ? placeholder : singleSelectMenuLabel
 
   return (
     <Field
@@ -98,6 +98,7 @@ const SelectionControlsInput = forwardRef<
       <Label
         htmlFor={name}
         className={classNames(classes.label, !label && classes.hiddenLabel)}
+        onClick={toggleDropdown}
       >
         {label}
       </Label>
@@ -116,7 +117,7 @@ const SelectionControlsInput = forwardRef<
             classes[dropdownSize || 'l']
           )}
         >
-          <p hidden={!defaultLabel} className={classes.menuLabel}>
+          <p hidden={!placeholder} className={classes.menuLabel}>
             {dropdownMenuLabel}
           </p>
           <DropdownArrow

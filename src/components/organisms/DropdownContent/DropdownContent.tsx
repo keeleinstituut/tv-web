@@ -16,7 +16,6 @@ const DropdownContent: FC<DropdownContentProps> = ({
   dropdownSize = 'l',
   disabled,
   isOpen,
-  error,
   searchInput,
   options,
   multiple = false,
@@ -54,40 +53,41 @@ const DropdownContent: FC<DropdownContentProps> = ({
     <>
       <div
         className={classNames(classes.dropdownMenu, classes[dropdownSize])}
-        hidden={disabled || !isOpen || !!error}
+        hidden={disabled || !isOpen}
       >
         <div hidden={!searchInput}>{searchInput}</div>
 
-        {map(options, (option, index) => {
-          const isSelected = value && includes(value, option?.value)
+        <ul>
+          {map(options, (option, index) => {
+            const isSelected = value && includes(value, option?.value)
 
-          return (
-            <li
-              key={index}
-              className={classes.dropdownMenuItem}
-              onClick={() => handleOptionSelect(option)}
-            >
-              {multiple && (
-                <CheckBoxInput
-                  name={name}
-                  ariaLabel={ariaLabel}
-                  label={option?.label}
-                  value={isSelected || false}
-                  className={classes.option}
-                />
-              )}
-              <p
-                className={classNames(
-                  classes.option,
-                  isSelected && classes.selectedOption
+            return (
+              <li key={index} className={classes.dropdownMenuItem}>
+                {multiple && (
+                  <CheckBoxInput
+                    name={name}
+                    ariaLabel={ariaLabel}
+                    label={option?.label}
+                    value={isSelected || false}
+                    className={classes.option}
+                    onChange={() => handleOptionSelect(option)}
+                  />
                 )}
-                hidden={multiple}
-              >
-                {option?.label}
-              </p>
-            </li>
-          )
-        })}
+                <p
+                  className={classNames(
+                    classes.option,
+                    isSelected && classes.selectedOption
+                  )}
+                  hidden={multiple}
+                  onClick={() => handleOptionSelect(option)}
+                >
+                  {option?.label}
+                </p>
+              </li>
+            )
+          })}
+        </ul>
+
         <div
           hidden={!buttons}
           className={classNames(buttons && classes.buttonsContainer)}
