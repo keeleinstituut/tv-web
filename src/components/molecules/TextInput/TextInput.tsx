@@ -52,6 +52,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               ref={ref}
               value={value || ''}
               aria-label={ariaLabel}
+              disabled={disabled}
               {...rest}
             />
           </Control>
