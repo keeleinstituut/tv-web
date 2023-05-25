@@ -24,6 +24,8 @@ type FormValues = {
   datePicker?: string
   timePicker?: string
   timePickerSeconds?: string
+  datePickerRange1?: string
+  datePickerRange2?: string
   timePickerRange1?: string
   timePickerRange2?: string
 }
@@ -67,13 +69,13 @@ const Test: FC = () => {
       label: 'terms label',
       ariaLabel: 'aria label',
     },
-    {
-      inputType: InputTypes.Date,
-      name: 'datePicker',
-      label: 'date picker label',
-      ariaLabel: 'date picker aria label',
-      placeholder: 'pp.kk.aaaa',
-    },
+    // {
+    //   inputType: InputTypes.Date,
+    //   name: 'datePicker',
+    //   label: 'date picker label',
+    //   ariaLabel: 'date picker aria label',
+    //   placeholder: 'pp.kk.aaaa',
+    // },
     {
       inputType: InputTypes.Time,
       name: 'timePicker',
@@ -90,19 +92,32 @@ const Test: FC = () => {
     },
     {
       inputType: InputTypes.Date,
-      name: 'timePickerRange1',
-      label: 'time range label',
-      ariaLabel: 'time picker seconds aria label',
-      timePicker: true,
-      showSeconds: true,
+      name: 'datePickerRange1',
+      label: 'date range label',
+      ariaLabel: 'date picker seconds aria label',
+      placeholder: 'pp.kk.aaaa',
       range: true,
     },
     {
       inputType: InputTypes.Date,
+      name: 'datePickerRange2',
+      ariaLabel: 'date picker seconds aria label',
+      placeholder: 'pp.kk.aaaa',
+      range: true,
+    },
+    {
+      inputType: InputTypes.Time,
+      name: 'timePickerRange1',
+      label: 'time picker range',
+      ariaLabel: 'time picker aria label',
+      showSeconds: false,
+      range: true,
+    },
+    {
+      inputType: InputTypes.Time,
       name: 'timePickerRange2',
-      ariaLabel: 'time picker seconds aria label',
-      timePicker: true,
-      showSeconds: true,
+      ariaLabel: 'time picker aria label',
+      showSeconds: false,
       range: true,
     },
   ]

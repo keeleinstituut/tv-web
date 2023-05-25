@@ -18,6 +18,7 @@ type SharedTimeProps = {
   error?: FieldError
   name: string
   onChange: (value: string) => void
+  range?: boolean
 }
 
 export type TimePickerInputProps = SharedTimeProps & {
@@ -44,7 +45,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
       name,
       onChange,
       // timePickerLineClass,
-      // range,
+      range,
     },
     ref
   ) {
@@ -69,8 +70,9 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
         <input
           className={classNames(
             disabled && classes.disabledTimeInput,
-            error && classes.errorMessage
+            error && classes.errorMessage,
             // range ? classes.rangeTimeInput : classes.timeInput
+            classes.timeInput
           )}
           type="text"
           value={value ? value : ''}
@@ -86,9 +88,10 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
         />
         <Clock
           className={classNames(
-            disabled && classes.disabledIcon
+            disabled && classes.disabledIcon,
             // range ? classes.rangeTimeIcon : classes.timeIcon
             // icon={range ? Alarm : Clock}
+            classes.timeIcon
           )}
         />
         {/* <div className={range ? timePickerLineClass : ''} /> */}
@@ -110,7 +113,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       className,
       name,
       //     timePickerLineClass,
-      // range,
+      range,
     } = props
 
     const splittedTimeValue = value?.split(':')
@@ -159,7 +162,9 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       onChange(timeWithSeconds)
     }
 
-    // const rangeContainerClass = range ? classes.rangeContainer : classes.container
+    const rangeContainerClass = range
+      ? classes.rangeContainer
+      : classes.container
 
     return (
       <InputWrapper
@@ -178,7 +183,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           error={error}
           showSeconds={showSeconds}
           onChange={onChange}
-          //   range={range}
+          range={range}
           // timePickerLineClass={timePickerLineClass}
         />
         <div

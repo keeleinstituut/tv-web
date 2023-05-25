@@ -52,6 +52,7 @@
 .rangeDatePickerContainer {
   display: inline-block;
   margin-right: spacing(6);
+  width: fit-content;
 
   .rangeContentContainer {
     display: -webkit-inline-box;
@@ -70,20 +71,33 @@
     width: 125px;
   }
 
-  .dateLine,
-  .timePickerLineClass {
-    padding: spacing(2) spacing(3);
-    &::after {
-      content: '–';
-      color: $color-input-main;
-    }
+  // .dateLine,
+  // .timePickerLineClass {
+  //   padding: spacing(2) spacing(2);
+  //   &::after {
+  //     content: '–';
+  //     color: $color-input-main;
+  //   }
+  // }
+
+  &:nth-child(even) .dateLine {
+    display: none;
   }
 }
 
-.rangeDatePickerContainer:nth-child(even) .dateLine,
-.rangeDatePickerContainer:nth-child(even) .timePickerLineClass {
-  display: none;
+.dateLine,
+.timePickerLineClass {
+  padding: spacing(2) spacing(2);
+  &::after {
+    content: '–';
+    color: $color-input-main;
+  }
 }
+
+// .rangeDatePickerContainer:nth-child(even) .dateLine,
+// .rangeDatePickerContainer:nth-child(even) .timePickerLineClass {
+//   display: none;
+// }
 
 :global(.react-datepicker__input-container) input {
   width: 100%;

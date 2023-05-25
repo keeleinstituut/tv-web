@@ -12,12 +12,23 @@ export type InputWrapperProps = {
   error?: FieldError
   label?: JSX.Element | string
   children?: ReactNode
+  range?: boolean
 }
 
 const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
-  function InputWrapper({ label, name, error, className, children }, ref) {
+  function InputWrapper(
+    { label, name, error, className, children, range },
+    ref
+  ) {
     return (
-      <Field name={name} className={classNames(classes.container, className)}>
+      <Field
+        name={name}
+        className={classNames(
+          // classes.container,
+          className,
+          range ? classes.rangeContainer : classes.container
+        )}
+      >
         <Label
           htmlFor={name}
           className={classNames(classes.label, !label && classes.hiddenLabel)}

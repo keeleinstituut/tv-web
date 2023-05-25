@@ -2,15 +2,15 @@
 @import 'styles/mixins';
 
 // .container,  //current
-// .rangeContainer {
-//   display: flex;
-//   border: 1px solid $color-input-border;
-//   border-radius: 5px;
-//   height: 106px;
-//   max-width: 166px;
-//   width: fit-content;
-//   background-color: $color-white;
-// }
+.rangeContainer {
+  display: flex;
+  border: 1px solid $color-input-border;
+  border-radius: 5px;
+  height: 106px;
+  max-width: 166px;
+  width: fit-content;
+  background-color: $color-white;
+}
 
 .hiddenContainer {
   display: none;

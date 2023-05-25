@@ -21,7 +21,6 @@ type DatePickerComponentProps = {
   value?: string
   name: string
   onChange: (value: string) => void
-  showSeconds?: boolean
   range?: boolean
 }
 
@@ -71,10 +70,11 @@ const DatePickerComponent = ({
       <Calender
         className={classNames(
           disabled && classes.disabledCalender,
-          range ? classes.rangeDateIcon : classes.dateIcon
+          // range ? classes.rangeDateIcon : classes.dateIcon
+          classes.dateIcon
         )}
       />
-      <div className={range ? classes.dateLine : ''} />
+      {/* <div className={classNames(range && classes.dateLine)} /> */}
     </>
   )
 }
@@ -90,7 +90,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
       className,
       ariaLabel,
       value,
-      showSeconds,
       range,
       onChange,
       ...rest
@@ -101,9 +100,11 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         label={label}
         name={name}
         className={classNames(
-          className,
-          range ? classes.rangeDatePickerContainer : classes.datePickerContainer
+          className
+          // range ? classes.rangeDatePickerContainer : classes.datePickerContainer
+          // range && classes.rangeDatePickerContainer
         )}
+        range={range}
       >
         <div
           className={
@@ -113,7 +114,8 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
           <div
             className={classNames(
               error && classes.errorMessage,
-              range ? classes.rangeWrapper : classes.wrapper
+              // range ? classes.rangeWrapper : classes.wrapper
+              classes.wrapper
             )}
           >
             <DatePickerComponent
@@ -125,18 +127,19 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
               onChange={onChange}
               {...rest}
             />
+
             {/* <TimePickerInput
               value={value}
               onChange={onChange}
               disabled={disabled}
               ariaLabel={ariaLabel}
               error={error}
-              showSeconds={showSeconds}
               timePicker={timePicker}
               range={range}
               timePickerLineClass={classes.timePickerLineClass}
             /> */}
           </div>
+          <div className={classNames(range && classes.dateLine)} />
         </div>
       </InputWrapper>
     )
