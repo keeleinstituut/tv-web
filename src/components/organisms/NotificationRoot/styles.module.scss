@@ -2,13 +2,19 @@
 
 .notificationsContainer {
   display: grid;
-  transition: 1000ms;
   grid-auto-rows: max-content;
   position: absolute;
-  top: spacing(6);
-  right: spacing(6);
+  top: 0;
+  right: 0;
+  max-height: 100vh;
+  overflow-y: auto;
 
-  > :not(:first-child) {
-    margin-top: spacing(6)
+  .transitionContainer {
+    transition: margin-top .5s ease-in-out;
+    margin-top: spacing(6);
+    margin-right: 24px;
+    &:empty {
+      margin-top: -100px;
+    }
   }
 }

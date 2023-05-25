@@ -17,6 +17,34 @@ import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
+import NotificationRoot, {
+  showNotification,
+  NotificationPropsWithoutClose,
+} from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+
+const dummyNotifications: NotificationPropsWithoutClose[] = [
+  {
+    title: 'Test Success',
+    content: 'Random success message here with some longer text',
+    type: NotificationTypes.Success,
+  },
+  {
+    title: 'Test Warning',
+    content: 'Random warning message here with some longer text',
+    type: NotificationTypes.Warning,
+  },
+  {
+    title: 'Test Error',
+    content: 'Random error message here with some longer text',
+    type: NotificationTypes.Error,
+  },
+  {
+    title: 'Test Info',
+    content: 'Random info message here with some longer text',
+    type: NotificationTypes.Info,
+  },
+]
 
 type FormValues = {
   email?: string
@@ -96,6 +124,13 @@ const Test: FC = () => {
     (errors, e) => console.log('on error', errors, e),
     []
   )
+
+  const testNotifications = () => {
+    showNotification(dummyNotifications[0])
+    setTimeout(showNotification, 2000, dummyNotifications[1])
+    setTimeout(showNotification, 4000, dummyNotifications[2])
+    setTimeout(showNotification, 6000, dummyNotifications[3])
+  }
 
   return (
     <>
@@ -185,6 +220,16 @@ const Test: FC = () => {
           explorer of the truth, the master-builder of human happiness."
         </p>
       </ModalBase>
+      <Button
+        appearance={AppearanceTypes.Primary}
+        children="Test notifications"
+        size={SizeTypes.M}
+        icon={ButtonArrow}
+        ariaLabel={t('label.button_arrow')}
+        iconPositioning={IconPositioningTypes.Right}
+        onClick={testNotifications}
+      />
+      <NotificationRoot />
     </>
   )
 }
