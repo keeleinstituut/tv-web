@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { isEmpty, map, includes, omit, filter } from 'lodash'
 import RoleForm from 'components/organisms/forms/RoleForm/RoleForm'
 import { v4 as uuidv4 } from 'uuid'
-import { useRolesFetch } from 'hooks/requests/roles'
+import { useRolesFetch } from 'hooks/requests/useRoles'
 import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import classes from './styles.module.scss'
 import useAuth from 'hooks/useAuth'
 import { RoleType } from 'types/roles'
+import { Privileges } from 'types/privileges'
 
 interface ObjectType {
   [key: string]: string
@@ -21,7 +22,7 @@ const RolesTabs: FC = () => {
   const {
     existingRoles = [],
     allPrivileges = [],
-    loading,
+    isLoading,
     isError,
   } = useRolesFetch()
   const { userPrivileges } = useAuth()
@@ -72,7 +73,7 @@ const RolesTabs: FC = () => {
     [existingRoles, temporaryRoles]
   )
 
-  if (loading) {
+  if (isLoading) {
     return <Loader loading />
   }
   if (isError) {
@@ -91,7 +92,7 @@ const RolesTabs: FC = () => {
         tabNames={tabNames}
         onAddPress={addTemporaryTab}
         addLabel={t('button.add_new_role')}
-        addDisabled={!includes(userPrivileges, 'ADD_ROLE')}
+        addDisabled={!includes(userPrivileges, Privileges.AddRole)}
       />
       {map([...existingRoles, ...temporaryRoles], (role) => {
         if (!role.id) return null
