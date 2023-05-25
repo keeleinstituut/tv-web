@@ -1,8 +1,24 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-.container,
-.rangeContainer {
+// .container,  //current
+// .rangeContainer {
+//   display: flex;
+//   border: 1px solid $color-input-border;
+//   border-radius: 5px;
+//   height: 106px;
+//   max-width: 166px;
+//   width: fit-content;
+//   background-color: $color-white;
+// }
+
+.hiddenContainer {
+  display: none;
+}
+
+// .timeInput, // current
+// .rangeTimeInput {
+.timeColumnContainer {
   display: flex;
   border: 1px solid $color-input-border;
   border-radius: 5px;
@@ -10,14 +26,12 @@
   max-width: 166px;
   width: fit-content;
   background-color: $color-white;
+  position: absolute;
+  z-index: 1;
 }
 
-.hiddenContainer {
-  display: none;
-}
-
-.timeInput,
-.rangeTimeInput {
+.timeInput {
+  width: 100%;
   display: block;
   appearance: none;
   background-color: $color-white;
@@ -27,8 +41,8 @@
   @include buttonTextStyle;
   height: 40px;
   padding: spacing(2);
-  position: relative;
-  width: 125px;
+  // position: relative; // current
+  // width: 125px;
 
   &:focus {
     color: $color-text-dark;
@@ -61,16 +75,16 @@
   fill: $color-input-border;
 }
 
-.errorMessage {
-  border: 1px solid $color-error;
-}
+// .errorMessage { // current
+//   border: 1px solid $color-error;
+// }
 
-.rangeContainer {
-  position: absolute;
-  top: 40px;
-}
+// .rangeContainer {
+//   position: absolute;
+//   top: 40px;
+// }
 
-.rangeTimeInput {
-  position: relative;
-  width: 125px;
-}
+// .rangeTimeInput {
+//   position: relative;
+//   width: 125px;
+// }

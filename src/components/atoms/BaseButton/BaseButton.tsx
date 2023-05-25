@@ -8,6 +8,7 @@ import {
   KeyboardEventHandler,
   MouseEventHandler,
 } from 'react'
+import { Link } from 'react-router-dom'
 import Loader from 'components/atoms/Loader/Loader'
 import classNames from 'classnames'
 import { isEqual } from 'lodash'
@@ -52,20 +53,19 @@ const BaseButton: FC<BaseButtonProps> = ({
     } else (onClick as unknown as MouseEventHandler<T>)(event)
   }
 
-  // For links we use <a>
-  // TODO: implement Link component from whatever routing library we choose
+  // For links we use <Link> from react-router-dom
   if (href) {
     return (
-      <a
+      <Link
         {...rest}
-        href={href}
+        to={disabled ? '#' : href}
         onClick={onClickHandler}
         role="button"
         tabIndex={0}
         className={className}
       >
         {loading ? <Loader loading={loading} /> : children}
-      </a>
+      </Link>
     )
   }
 
@@ -73,6 +73,7 @@ const BaseButton: FC<BaseButtonProps> = ({
   return (
     <button
       {...rest}
+      disabled={disabled}
       type={type}
       className={classNames(className)}
       onClick={onClickHandler}

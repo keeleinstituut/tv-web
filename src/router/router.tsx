@@ -15,8 +15,10 @@ import MyTasks from 'pages/MyTasks/MyTasks'
 import PerformersDatabase from 'pages/PerformersDatabase/PerformersDatabase'
 import TranslationMemories from 'pages/TranslationMemories/TranslationMemories'
 import UsersManagement from 'pages/UsersManagement/UsersManagement'
+import UserPage from 'pages/UserPage/UserPage'
 import RolesManagement from 'pages/RolesManagement/RolesManagement'
 import Logs from 'pages/Logs/Logs'
+import NewOrder from 'pages/NewOrder/NewOrder'
 import Flags from 'pages/Flags/Flags'
 import ReportExport from 'pages/ReportExport/ReportExport'
 import InstitutionSettings from 'pages/InstitutionSettings/InstitutionSettings'
@@ -40,7 +42,7 @@ import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
 
 export type FullRouteObject = Omit<RouteObject, 'children'> & {
-  label: string
+  label?: string
   Icon?: FC<SVGProps<SVGSVGElement>>
   children?: FullRouteObject[]
   isInterTitle?: boolean
@@ -61,15 +63,24 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: '',
         label: i18n.t('menu.orders'),
-        element: <Orders />,
+        children: [
+          {
+            path: '',
+            element: <Orders />,
+          },
+          {
+            path: 'new-order',
+            element: <NewOrder />,
+          },
+        ],
       },
       {
-        path: 'sub_orders',
+        path: 'sub-orders',
         label: i18n.t('menu.sub_orders'),
         element: <SubOrders />,
       },
       {
-        path: 'my_tasks',
+        path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
         element: <MyTasks />,
       },
@@ -95,8 +106,11 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: 'users',
         label: i18n.t('menu.user_management'),
-        element: <UsersManagement />,
         Icon: UsersIcon,
+        children: [
+          { path: '', element: <UsersManagement /> },
+          { path: ':userId', element: <UserPage /> },
+        ],
       },
       {
         path: 'roles',

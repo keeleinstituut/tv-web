@@ -2,10 +2,9 @@
 @import 'styles/mixins';
 
 .sidebarContainer {
-  min-width: 208px;
-  max-width: 208px;
+  width: 208px;
+  flex-shrink: 0;
   background-color: $color-primary;
-  overflow: auto;
   scrollbar-width: none;
   transition: width .1s ease-out;
   height: 100vh;
@@ -115,8 +114,7 @@
   }
 
   &.collapsed {
-    min-width: 56px;
-    max-width: 56px;
+    width: 56px;
     overflow-x: hidden;
 
     .collapsedIcon {
@@ -146,8 +144,22 @@
         margin-right: 0;
       }
 
+
+    &[aria-expanded=true] {
+      + .subMenu {
+        display: none;
+      }
+    }
+
       &.interListItem {
         display: none;
+
+        &[aria-expanded=false],
+        &[aria-expanded=true] {
+          + .subMenu {
+            display: block;
+          }
+        }
       }
     }
   }

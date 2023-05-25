@@ -4,7 +4,7 @@
   width: 100%;
   background: $color-white;
   height: $header-height;
-  box-shadow: 0 0 2px rgba(0, 0, 0, 0.14), 0 2px 2px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 2px $color-shadow-main, 0 2px 2px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.2);
   padding: spacing(6);
   display: flex;
   justify-content: space-between;

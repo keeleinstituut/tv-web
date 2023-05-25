@@ -1,171 +1,225 @@
-import {
-  useState,
-  useEffect,
-  FC,
-  forwardRef,
-  Ref,
-  ForwardedRef,
-  useRef,
-} from 'react'
-import TimeColumn from 'components/atoms/TimeColumn/TimeColumn'
+import { useState, forwardRef, useRef } from 'react'
+import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { ReactComponent as Alarm } from 'assets/icons/alarm.svg'
 import { FieldError } from 'react-hook-form'
-import Icon from 'components/atoms/Icon/Icon'
+import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
+import { useClickAway } from 'ahooks'
+import { withMask } from 'use-mask-input'
 import classNames from 'classnames'
 
 import classes from './styles.module.scss'
 
-interface CommonTimeInputProps {
+type SharedTimeProps = {
+  value?: string
   disabled?: boolean
   ariaLabel?: string
-  value?: string
-  error?: FieldError
   showSeconds?: boolean
-  range?: boolean
-  timePickerLineClass?: string
-}
-
-type TimeInputProps = CommonTimeInputProps & {
-  timeColumnVisibility: () => void
-  inputRef?: Ref<HTMLInputElement> | null
-}
-
-type TimePickerInputProps = CommonTimeInputProps & {
+  error?: FieldError
+  name: string
   onChange: (value: string) => void
-  timePicker?: boolean
 }
 
-const TimeInput: FC<TimeInputProps> = forwardRef(
-  (
+export type TimePickerInputProps = SharedTimeProps & {
+  label?: string
+  className?: string
+}
+
+export type TimeInputProps = SharedTimeProps & {
+  toggleTimeColumnVisible: () => void
+}
+
+const formatTimeString = (time: number) =>
+  time?.toString().length === 1 ? `0${time}` : time?.toString()
+
+const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
+  function TimeInput(
     {
       disabled,
       ariaLabel,
       value,
-      timeColumnVisibility,
-      inputRef,
+      toggleTimeColumnVisible,
       error,
       showSeconds,
-      timePickerLineClass,
-      range,
-    }: TimeInputProps,
-    ref: ForwardedRef<HTMLInputElement>
-  ) => {
-    const handleClick = () => {
-      if (timeColumnVisibility) {
-        timeColumnVisibility()
+      name,
+      onChange,
+      // timePickerLineClass,
+      // range,
+    },
+    ref
+  ) {
+    const placeholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const inputValue = event.target.value
+
+      const withoutSecondsRegex = /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?$/
+      const secondsRegex =
+        /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?(:[0-5]?[0-9]?)?$/
+
+      const regex = showSeconds ? secondsRegex : withoutSecondsRegex
+
+      if (regex.test(inputValue)) {
+        onChange(inputValue)
       }
     }
-
-    const timePlaceholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
 
     return (
       <>
         <input
           className={classNames(
             disabled && classes.disabledTimeInput,
-            error && classes.errorMessage,
-            range ? classes.rangeTimeInput : classes.timeInput
+            error && classes.errorMessage
+            // range ? classes.rangeTimeInput : classes.timeInput
           )}
-          value={value ? value : timePlaceholder}
           type="text"
-          onClick={handleClick}
-          ref={inputRef}
+          value={value ? value : ''}
+          onFocus={toggleTimeColumnVisible}
+          aria-label={ariaLabel}
+          onChange={handleInputChange}
+          id={name}
+          {...(placeholder ? { placeholder } : {})}
+          required
+          ref={withMask(showSeconds ? '99:99:99' : '99:99', {
+            placeholder: '0',
+          })}
         />
-        <Icon
-          icon={range ? Alarm : Clock}
+        <Clock
           className={classNames(
-            disabled && classes.disabledIcon,
-            range ? classes.rangeTimeIcon : classes.timeIcon
+            disabled && classes.disabledIcon
+            // range ? classes.rangeTimeIcon : classes.timeIcon
+            // icon={range ? Alarm : Clock}
           )}
-          ariaLabel={ariaLabel}
         />
-        <div className={range ? timePickerLineClass : ''} />
+        {/* <div className={range ? timePickerLineClass : ''} /> */}
       </>
     )
   }
 )
 
-const TimePickerInput = ({
-  onChange,
-  disabled,
-  ariaLabel,
-  value,
-  error,
-  showSeconds,
-  timePicker,
-  timePickerLineClass,
-  range,
-}: TimePickerInputProps) => {
-  const [hour, setHour] = useState<string>('00')
-  const [minute, setMinute] = useState<string>('00')
-  const [second, setSecond] = useState<string>('00')
-  const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
+const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
+  function TimePickerInput(props, ref) {
+    const {
+      onChange,
+      disabled,
+      ariaLabel,
+      value,
+      error,
+      showSeconds,
+      label,
+      className,
+      name,
+      //     timePickerLineClass,
+      // range,
+    } = props
 
-  const timeColumnVisibility = () => {
-    setTimeColumnOpen((prevState) => !prevState)
-  }
+    const splittedTimeValue = value?.split(':')
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      timeColumnRef.current &&
-      !timeColumnRef.current.contains(event.target as Node) &&
-      inputRef.current &&
-      !inputRef.current.contains(event.target as Node)
-    ) {
+    const hourValue = Number(splittedTimeValue?.[0]) || 0
+    const minuteValue = Number(splittedTimeValue?.[1]) || 0
+    const secondValue = Number(splittedTimeValue?.[2]) || 0
+
+    const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
+
+    const toggleTimeColumnVisible = () => {
+      setTimeColumnOpen(!isTimeColumnOpen)
+    }
+
+    const clickAwayInputRef = useRef(null)
+
+    useClickAway(() => {
       setTimeColumnOpen(false)
+    }, [clickAwayInputRef])
+
+    const handleSetHour = (newHour: number) => {
+      const timeWithSeconds = `${formatTimeString(newHour)}:${formatTimeString(
+        minuteValue
+      )}:${formatTimeString(secondValue)}`
+      const formattedTime = `${formatTimeString(newHour)}:${formatTimeString(
+        minuteValue
+      )}`
+      onChange(showSeconds ? timeWithSeconds : formattedTime)
     }
-  }
 
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+    const handleSetMinute = (newMinute: number) => {
+      const timeWithSeconds = `${formatTimeString(
+        hourValue
+      )}:${formatTimeString(newMinute)}:${formatTimeString(secondValue)}`
+      const formattedTime = `${formatTimeString(hourValue)}:${formatTimeString(
+        newMinute
+      )}`
+      onChange(showSeconds ? timeWithSeconds : formattedTime)
     }
-  }, [])
 
-  const inputRef = useRef<HTMLInputElement>(null)
-  const timeColumnRef = useRef<HTMLDivElement>(null)
+    const handleSetSecond = (newSecond: number) => {
+      const timeWithSeconds = `${formatTimeString(
+        hourValue
+      )}:${formatTimeString(minuteValue)}:${formatTimeString(newSecond)}`
 
-  useEffect(() => {
-    const timeWithSeconds = `${hour}:${minute}:${second}`
-    const formattedTime = `${hour}:${minute}`
-    onChange(showSeconds ? timeWithSeconds : formattedTime)
-  }, [hour, minute, second, onChange, showSeconds])
+      onChange(timeWithSeconds)
+    }
 
-  const rangeContainerClass = range ? classes.rangeContainer : classes.container
+    // const rangeContainerClass = range ? classes.rangeContainer : classes.container
 
-  if (!timePicker) return null
-
-  return (
-    <>
-      <TimeInput
-        disabled={disabled}
-        ariaLabel={ariaLabel}
-        value={value}
-        timeColumnVisibility={timeColumnVisibility}
-        inputRef={inputRef}
+    return (
+      <InputWrapper
+        label={label}
+        name={name}
         error={error}
-        showSeconds={showSeconds}
-        range={range}
-        timePickerLineClass={timePickerLineClass}
-      />
-      <div
-        className={
-          !isTimeColumnOpen || disabled
-            ? classes.hiddenContainer
-            : rangeContainerClass
-        }
-        ref={timeColumnRef}
+        className={className}
+        ref={clickAwayInputRef}
       >
-        <TimeColumn start={0} end={24} value={hour} setValue={setHour} />
-        <TimeColumn start={0} end={59} value={minute} setValue={setMinute} />
-        {showSeconds && (
-          <TimeColumn start={0} end={59} value={second} setValue={setSecond} />
-        )}
-      </div>
-    </>
-  )
-}
+        <TimeInput
+          name={name}
+          disabled={disabled}
+          ariaLabel={ariaLabel}
+          value={value}
+          toggleTimeColumnVisible={toggleTimeColumnVisible}
+          error={error}
+          showSeconds={showSeconds}
+          onChange={onChange}
+          //   range={range}
+          // timePickerLineClass={timePickerLineClass}
+        />
+        <div
+          className={
+            !isTimeColumnOpen || disabled
+              ? classes.hiddenContainer
+              : classes.timeColumnContainer
+          }
+          // className={
+          //   !isTimeColumnOpen || disabled
+          //     ? classes.hiddenContainer
+          //     : rangeContainerClass
+          // }
+        >
+          <TimeColumn
+            start={0}
+            end={24}
+            value={hourValue}
+            setValue={handleSetHour}
+            isTimeColumnOpen={isTimeColumnOpen}
+          />
+          <TimeColumn
+            start={0}
+            end={60}
+            value={minuteValue}
+            setValue={handleSetMinute}
+            isTimeColumnOpen={isTimeColumnOpen}
+          />
+          {showSeconds && (
+            <TimeColumn
+              start={0}
+              end={60}
+              value={secondValue}
+              setValue={handleSetSecond}
+              isTimeColumnOpen={isTimeColumnOpen}
+            />
+          )}
+        </div>
+      </InputWrapper>
+    )
+  }
+)
 
 export default TimePickerInput

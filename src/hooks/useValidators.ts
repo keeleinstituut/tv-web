@@ -1,3 +1,4 @@
+import { isArray } from 'lodash'
 import { useTranslation } from 'react-i18next'
 
 const emailIsCorrect = (email: string) =>
@@ -5,13 +6,26 @@ const emailIsCorrect = (email: string) =>
     email
   )
 
+const phoneIsCorrect = (phone: string) =>
+  /(\+372\s?)?[3-7]([0-9]{6,7})/.test(phone)
+
 const useValidators = () => {
   const { t } = useTranslation()
 
-  const emailValidator = (value?: string) =>
-    !value || emailIsCorrect(value) ? true : t('error.invalid_email')
+  // TODO: improve typescript for react-hook-form validate
+  // Currently the validator has to work for all input field types
+  // instead of just the one we are validating
+  const emailValidator = (value?: string | string[]) => {
+    if (isArray(value)) return 'error'
+    return !value || emailIsCorrect(value) ? true : t('error.invalid_email')
+  }
 
-  return { emailValidator }
+  const phoneValidator = (value?: string | string[]) => {
+    if (isArray(value)) return 'error'
+    return !value || phoneIsCorrect(value) ? true : t('error.invalid_phone')
+  }
+
+  return { emailValidator, phoneValidator }
 }
 
 export default useValidators
