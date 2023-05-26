@@ -159,6 +159,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         error={error}
         className={className}
         ref={clickAwayInputRef}
+        wrapperSizeClass={classes.timePickerWrapper}
       >
         <TimeInput
           name={name}

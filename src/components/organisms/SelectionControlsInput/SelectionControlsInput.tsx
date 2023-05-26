@@ -1,8 +1,7 @@
 import { ReactElement, forwardRef, useRef, useState } from 'react'
 import classNames from 'classnames'
-import { Field, Label } from '@radix-ui/react-form'
 import { FieldError } from 'react-hook-form'
-import InputError from 'components/atoms/InputError/InputError'
+import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
 import { useClickAway } from 'ahooks'
@@ -19,7 +18,6 @@ export enum DropdownSizeTypes {
 
 export interface SelectionControlsInputProps {
   name: string
-  className?: string
   error?: FieldError
   label?: JSX.Element | string
   ariaLabel: string
@@ -49,7 +47,6 @@ const SelectionControlsInput = forwardRef<
     label,
     name,
     ariaLabel,
-    className,
     value,
     error,
     options,
@@ -90,68 +87,54 @@ const SelectionControlsInput = forwardRef<
   const dropdownMenuLabel = multiple ? placeholder : singleSelectMenuLabel
 
   return (
-    <Field
+    <InputWrapper
+      label={label}
       name={name}
-      className={classNames(classes.selectionsContainer, className)}
+      error={error}
+      className={classNames(classes.selectionsContainer)}
+      wrapperSizeClass={classes[dropdownSize || 'l']}
       ref={clickAwayInputRef}
+      onClick={toggleDropdown}
     >
-      <Label
-        htmlFor={name}
-        className={classNames(classes.label, !label && classes.hiddenLabel)}
-        onClick={toggleDropdown}
-      >
-        {label}
-      </Label>
-      <div
+      <BaseButton
         className={classNames(
-          classes.wrapper,
-          error && classes.errorMessage,
+          classes.toggleDropdown,
+          disabled && classes.disabledDropdown,
           classes[dropdownSize || 'l']
         )}
-        onClick={toggleDropdown}
       >
-        <BaseButton
+        <p hidden={!placeholder} className={classes.menuLabel}>
+          {dropdownMenuLabel}
+        </p>
+        <DropdownArrow
           className={classNames(
-            classes.toggleDropdown,
-            disabled && classes.disabledDropdown,
-            classes[dropdownSize || 'l']
+            disabled && classes.disabledDropdownIcon,
+            isOpen && !error && classes.openDropdownIcon
           )}
-        >
-          <p hidden={!placeholder} className={classes.menuLabel}>
-            {dropdownMenuLabel}
-          </p>
-          <DropdownArrow
-            className={classNames(
-              disabled && classes.disabledDropdownIcon,
-              isOpen && !error && classes.openDropdownIcon
-            )}
-          />
-        </BaseButton>
-
-        <DropdownContent
-          name={name}
-          ariaLabel={ariaLabel}
-          options={options}
-          onChange={onChange}
-          dropdownSize={dropdownSize}
-          disabled={disabled}
-          isOpen={isOpen}
-          error={error}
-          searchInput={searchInput}
-          multiple={multiple}
-          value={value}
-          buttons={buttons}
-          cancelButtonLabel={cancelButtonLabel}
-          proceedButtonLabel={proceedButtonLabel}
-          helperText={helperText}
-          selectedOptionObjects={selectedOptionObjects}
-          tags={tags}
-          setIsOpen={setIsOpen}
         />
+      </BaseButton>
 
-        <InputError {...error} />
-      </div>
-    </Field>
+      <DropdownContent
+        name={name}
+        ariaLabel={ariaLabel}
+        options={options}
+        onChange={onChange}
+        dropdownSize={dropdownSize}
+        disabled={disabled}
+        isOpen={isOpen}
+        error={error}
+        searchInput={searchInput}
+        multiple={multiple}
+        value={value}
+        buttons={buttons}
+        cancelButtonLabel={cancelButtonLabel}
+        proceedButtonLabel={proceedButtonLabel}
+        helperText={helperText}
+        selectedOptionObjects={selectedOptionObjects}
+        tags={tags}
+        setIsOpen={setIsOpen}
+      />
+    </InputWrapper>
   )
 })
 
