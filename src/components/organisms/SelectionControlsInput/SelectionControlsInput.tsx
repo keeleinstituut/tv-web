@@ -146,6 +146,7 @@ const SelectionControlsInput = forwardRef<
           helperText={helperText}
           selectedOptionObjects={selectedOptionObjects}
           tags={tags}
+          setIsOpen={setIsOpen}
         />
 
         <InputError {...error} />

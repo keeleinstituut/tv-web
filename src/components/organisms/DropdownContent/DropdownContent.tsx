@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { Dispatch, FC, SetStateAction } from 'react'
 import classNames from 'classnames'
 import { includes, map } from 'lodash'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
@@ -10,6 +10,7 @@ import classes from './styles.module.scss'
 type DropdownContentProps = SelectionControlsInputProps & {
   isOpen?: boolean
   selectedOptionObjects?: { label: string; value: string }[]
+  setIsOpen?: Dispatch<SetStateAction<boolean>>
 }
 
 const DropdownContent: FC<DropdownContentProps> = ({
@@ -26,6 +27,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
   cancelButtonLabel,
   proceedButtonLabel,
   onChange,
+  setIsOpen,
   helperText,
   selectedOptionObjects,
   tags,
@@ -44,6 +46,9 @@ const DropdownContent: FC<DropdownContentProps> = ({
           : selectedValues?.filter((value) => value !== selectedOption?.value)
 
       onChange(newSelectedValues)
+      if (setIsOpen) {
+        setIsOpen(true)
+      }
     } else {
       onChange(selectedOption ? selectedOption?.value : '')
     }
