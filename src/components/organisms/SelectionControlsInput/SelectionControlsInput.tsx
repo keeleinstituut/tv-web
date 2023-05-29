@@ -92,9 +92,13 @@ const SelectionControlsInput = forwardRef<
       name={name}
       error={error}
       className={classNames(classes.selectionsContainer)}
-      wrapperSizeClass={classes[dropdownSize || 'l']}
-      ref={clickAwayInputRef}
+      wrapperSizeClass={classNames(
+        classes.focusedWrapper,
+        classes[dropdownSize || 'l']
+      )}
       onClick={toggleDropdown}
+      ref={ref}
+      clickAwayInputRef={clickAwayInputRef}
     >
       <BaseButton
         className={classNames(
@@ -102,6 +106,7 @@ const SelectionControlsInput = forwardRef<
           disabled && classes.disabledDropdown,
           classes[dropdownSize || 'l']
         )}
+        id={name}
       >
         <p hidden={!placeholder} className={classes.menuLabel}>
           {dropdownMenuLabel}
