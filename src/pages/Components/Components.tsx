@@ -126,7 +126,7 @@ const Test: FC = () => {
       multiple: true,
       buttons: true,
       cancelButtonLabel: 'Tühista',
-      proceedButtonLabel: 'Filtreeri',
+      proceedButtonLabel: 'Salvesta',
       searchInput: <Fragment />,
       tags: true,
     },

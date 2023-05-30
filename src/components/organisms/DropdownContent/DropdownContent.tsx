@@ -2,7 +2,10 @@ import { Dispatch, FC, SetStateAction, useState } from 'react'
 import classNames from 'classnames'
 import { includes, map } from 'lodash'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import Button, {
+  AppearanceTypes,
+  SizeTypes,
+} from 'components/molecules/Button/Button'
 import { SelectionControlsInputProps } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 
 import classes from './styles.module.scss'
@@ -110,11 +113,17 @@ const DropdownContent: FC<DropdownContentProps> = ({
           >
             <Button
               appearance={AppearanceTypes.Secondary}
+              size={SizeTypes.S}
               onClick={handleCancel}
             >
               {cancelButtonLabel}
             </Button>
-            <Button appearance={AppearanceTypes.Primary} onClick={handleOnSave}>
+            <Button
+              appearance={AppearanceTypes.Primary}
+              size={SizeTypes.S}
+              onClick={handleOnSave}
+              className={classes.dropdownButton}
+            >
               {proceedButtonLabel}
             </Button>
           </div>
