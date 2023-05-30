@@ -17,6 +17,9 @@ import Modal, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/Modal/Modal'
+import CsvImport, {
+  InputFileTypes,
+} from 'components/organisms/CsvImport/CsvImport'
 
 type FormValues = {
   email?: string
@@ -185,6 +188,7 @@ const Test: FC = () => {
           explorer of the truth, the master-builder of human happiness."
         </p>
       </Modal>
+      <CsvImport inputFileType={InputFileTypes.Csv} name={'csvFileInput'} />
     </>
   )
 }
