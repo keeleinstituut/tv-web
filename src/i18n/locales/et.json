@@ -25,7 +25,7 @@
     "enter": "Sisene",
     "break": "Katkesta",
     "yes": "Jah",
-    "log_out": "Log out",
+    "log_out": "Logi välja",
     "save_changes": "Salvesta muudatused",
     "delete_this_role": "Kustuta see roll",
     "add_new_order": "Lisa uus tellimus",
@@ -36,7 +36,8 @@
   "error": {
     "input_title": "Veateade: ",
     "invalid_email": "Vale formaat",
-    "invalid_phone": "Vale formaat"
+    "invalid_phone": "Vale formaat",
+    "unknown_error": "Teadmata viga: {{code}}"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -121,5 +122,14 @@
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
     "updated_at": "Kasutaja andmed muudetud {{time}}"
+  },
+  "success": {
+    "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
+    "role_updated": "Roll „{{roleName}}“ on edukalt muudetud"
+  },
+  "notification": {
+    "announcement": "Teade",
+    "error": "Viga",
+    "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse"
   }
 }

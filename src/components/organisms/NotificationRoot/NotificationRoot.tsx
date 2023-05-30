@@ -50,7 +50,7 @@ const NotificationRoot = () => {
         (notification) => !('type' in notification)
       ) || { id: permanentNotificationId }
 
-      console.warn('empty', emptyNotification)
+      console.warn('showNotification', notificationProps)
 
       setNotifications([
         { id: tempId },

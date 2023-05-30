@@ -17,7 +17,7 @@ import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import NotificationRoot, {
+import {
   showNotification,
   NotificationPropsWithoutClose,
 } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -229,7 +229,6 @@ const Test: FC = () => {
         iconPositioning={IconPositioningTypes.Right}
         onClick={testNotifications}
       />
-      <NotificationRoot />
     </>
   )
 }

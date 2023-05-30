@@ -18,6 +18,8 @@ import {
 import { ReactComponent as DeleteIcon } from 'assets/icons/delete.svg'
 import classes from './styles.module.scss'
 import useAuth from 'hooks/useAuth'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 type PrivilegesFormValue = object & {
   [key in PrivilegeKey]?: boolean
@@ -110,8 +112,9 @@ const RoleForm: FC<RoleFormProps> = ({
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values, e) => {
       const { privileges: newPrivileges } = values
+      const newName = temporaryName || name
       const payload: RoleType = {
-        name: temporaryName || name,
+        name: newName,
         privileges: reduce<PrivilegesFormValue, PrivilegeType[]>(
           newPrivileges,
           (result, value, key) => {
@@ -131,24 +134,31 @@ const RoleForm: FC<RoleFormProps> = ({
       }
 
       try {
+        let result
         if (isTemporaryRole) {
-          const result = await createRole(payload)
+          result = await createRole(payload)
           onSubmitSuccess(id || '', result.id)
         } else {
-          await updateRole(payload)
+          result = await updateRole(payload)
         }
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: isTemporaryRole
+            ? t('success.role_updated', { roleName: newName })
+            : t('success.role_created', { roleName: newName }),
+        })
       } catch (error) {
         // TODO: if needed, take fields with error from here
-        // and mark them as invalid in hook form, using setError
-        // TODO: Call global errorhandler here, once we implement it
-        // errorHandler(error)
-        alert(error)
+        // Alert for 422 error will come from global error handler
+        // So no need to show it here
       }
     },
     [
       temporaryName,
       name,
       isTemporaryRole,
+      t,
       createRole,
       onSubmitSuccess,
       id,

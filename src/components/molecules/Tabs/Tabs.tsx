@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import classNames from 'classnames'
-import { map } from 'lodash'
+import { isEmpty, map } from 'lodash'
 import Tab, { TabType } from 'components/molecules/Tab/Tab'
 import Button, {
   AppearanceTypes,
@@ -28,13 +28,14 @@ const Tabs: FC<TabsProps> = ({
   activeTab,
   className,
   setActiveTab,
-  tabs,
+  tabs = [],
   onAddPress,
   addLabel,
   addDisabled,
   onChangeName,
   tabNames,
 }) => {
+  if (isEmpty(tabs)) return null
   return (
     <div className={classNames(classes.tabsRow, className)}>
       {map(tabs, ({ id, name }) => {
