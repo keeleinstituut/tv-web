@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction } from 'react'
+import { Dispatch, FC, SetStateAction, useState } from 'react'
 import classNames from 'classnames'
 import { includes, map } from 'lodash'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
@@ -32,26 +32,38 @@ const DropdownContent: FC<DropdownContentProps> = ({
   selectedOptionObjects,
   tags,
 }) => {
-  const handleOptionSelect = (selectedOption: {
-    label: string
-    value: string
-  }) => {
-    if (multiple) {
-      const selectedValues = Array.isArray(value) ? [...value] : []
-      const optionIndex = selectedValues?.indexOf(selectedOption?.value)
+  const [selectedValue, setSelectedValue] = useState<string[]>(
+    value ? (Array.isArray(value) ? value : [value]) : []
+  )
 
-      const newSelectedValues =
-        optionIndex === -1
-          ? [...selectedValues, selectedOption?.value]
-          : selectedValues?.filter((value) => value !== selectedOption?.value)
+  const handleSingleSelect = (selectedOption: string) => {
+    onChange(selectedOption ? selectedOption : '')
+  }
 
-      onChange(newSelectedValues)
-      if (setIsOpen) {
-        setIsOpen(true)
-      }
-    } else {
-      onChange(selectedOption ? selectedOption?.value : '')
+  const handleMultipleSelect = (selectedOption: string) => {
+    const selectedValues = Array.isArray(selectedValue)
+      ? [...selectedValue]
+      : []
+    const optionIndex = selectedValues.indexOf(selectedOption)
+
+    const newSelectedValues =
+      optionIndex === -1
+        ? [...selectedValues, selectedOption]
+        : selectedValues.filter((value) => value !== selectedOption)
+
+    setSelectedValue(newSelectedValues)
+
+    if (setIsOpen) {
+      setIsOpen(true)
     }
+  }
+
+  const handleOnSave = () => {
+    onChange(selectedValue)
+  }
+
+  const handleCancel = () => {
+    setSelectedValue([])
   }
 
   return (
@@ -64,7 +76,8 @@ const DropdownContent: FC<DropdownContentProps> = ({
 
         <ul>
           {map(options, (option, index) => {
-            const isSelected = value && includes(value, option?.value)
+            const isSelected =
+              selectedValue && includes(selectedValue, option?.value)
 
             return (
               <li key={index} className={classes.dropdownMenuItem}>
@@ -75,7 +88,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
                     label={option?.label}
                     value={isSelected || false}
                     className={classes.option}
-                    onChange={() => handleOptionSelect(option)}
+                    onChange={() => handleMultipleSelect(option?.value)}
                   />
                 )}
                 <p
@@ -84,26 +97,28 @@ const DropdownContent: FC<DropdownContentProps> = ({
                     isSelected && classes.selectedOption
                   )}
                   hidden={multiple}
-                  onClick={() => handleOptionSelect(option)}
+                  onClick={() => handleSingleSelect(option?.value)}
                 >
                   {option?.label}
                 </p>
               </li>
             )
           })}
+          <div
+            hidden={!buttons}
+            className={classNames(buttons && classes.buttonsContainer)}
+          >
+            <Button
+              appearance={AppearanceTypes.Secondary}
+              onClick={handleCancel}
+            >
+              {cancelButtonLabel}
+            </Button>
+            <Button appearance={AppearanceTypes.Primary} onClick={handleOnSave}>
+              {proceedButtonLabel}
+            </Button>
+          </div>
         </ul>
-
-        <div
-          hidden={!buttons}
-          className={classNames(buttons && classes.buttonsContainer)}
-        >
-          <Button appearance={AppearanceTypes.Secondary}>
-            {cancelButtonLabel}
-          </Button>
-          <Button appearance={AppearanceTypes.Primary}>
-            {proceedButtonLabel}
-          </Button>
-        </div>
       </div>
 
       <p hidden={!helperText} className={classes.helperText}>
