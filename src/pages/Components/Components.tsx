@@ -188,7 +188,12 @@ const Test: FC = () => {
           explorer of the truth, the master-builder of human happiness."
         </p>
       </Modal>
-      <CsvImport inputFileType={InputFileTypes.Csv} name={'csvFileInput'} />
+      <CsvImport
+        inputFileType={InputFileTypes.Csv}
+        name={'csvFileInput'}
+        helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
+        buttonText={'Lisa .csv'}
+      />
     </>
   )
 }
