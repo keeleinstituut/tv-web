@@ -6,23 +6,31 @@ import { get, compact, map, isEmpty } from 'lodash'
 import { keycloak } from 'hooks/useKeycloak'
 import { ReactElement } from 'react'
 
-export type ErrorType = AxiosError
+interface ValidationErrorDataType {
+  [key: string]: string[]
+}
 
-const handleError = async (error: ErrorType) => {
-  // TODO: this handles the assumed structure of errors from BE
-  // Currently not sure what the actual possible structures will be
-  console.warn('handling error', error)
-  const tempCode = 401
+export interface ValidationError extends Error {
+  errors: ValidationErrorDataType
+}
+
+const handleError = async (error: AxiosError) => {
+  // TODO: needs some improvements + handling of 403 errors
   const { response } = error
   const code = response?.status
   const specificErrors = get(response, 'data.errors', {})
+  const genericErrorMessage = get(response, 'data.message', '')
   const mappedErrors = compact(
     map(specificErrors, (value) => get(value, '[0]', null))
   )
   let errorContent: ReactElement | string = ''
   if (typeof error === 'string') {
     errorContent = error
+  } else if (genericErrorMessage) {
+    errorContent = genericErrorMessage
   } else if (!isEmpty(mappedErrors)) {
+    // Normally these are field specific errors
+    // Currently we are assuming that there will be some generic error message together with these
     errorContent = (
       <>
         {map(mappedErrors, (error, index) => (
@@ -31,15 +39,11 @@ const handleError = async (error: ErrorType) => {
       </>
     )
   } else {
-    errorContent = get(
-      response?.data,
-      'message',
-      i18n.t('error.unknown_error', { code })
-    )
+    // unknown error
+    errorContent = i18n.t('error.unknown_error', { code })
   }
 
-  if (tempCode === 401) {
-    console.warn('got error 401, so logging out', window.location)
+  if (code === 401) {
     keycloak.logout({
       redirectUri: `${window.location.href}#show-error`,
     })
@@ -55,7 +59,13 @@ const handleError = async (error: ErrorType) => {
     // TODO: might do sth here, although if we get error message from BE, then there is no need to
   }
 
-  throw error
+  if (code === 422) {
+    // Throw only validation errors
+    throw error?.response?.data
+  } else {
+    // In all other cases we will throw the error as well for more fine-grained handling in some cases
+    throw error
+  }
 }
 
 export default handleError

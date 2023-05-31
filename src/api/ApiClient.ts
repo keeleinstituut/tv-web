@@ -1,7 +1,7 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
 // import queryString from 'query-string'
 import ApiClientInterceptor from './ApiClientInterceptor'
-import handleError, { ErrorType } from './errorHandler'
+import handleError from './errorHandler'
 
 export interface AxiosRequestConfigWithRetries extends AxiosRequestConfig {
   retries?: number
@@ -74,7 +74,7 @@ class ApiClient {
 
       return response.data.data
     } catch (error) {
-      return handleError(error as ErrorType)
+      return handleError(error as AxiosError)
     }
   }
 

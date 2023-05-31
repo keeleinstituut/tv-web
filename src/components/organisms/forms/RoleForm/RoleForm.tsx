@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
+import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -7,7 +7,7 @@ import DynamicForm, {
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
-import { reduce, find, map, includes, startsWith } from 'lodash'
+import { reduce, find, map, includes, startsWith, join } from 'lodash'
 import { RoleType } from 'types/roles'
 import { PrivilegeType, PrivilegeKey, Privileges } from 'types/privileges'
 import {
@@ -20,6 +20,7 @@ import classes from './styles.module.scss'
 import useAuth from 'hooks/useAuth'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { ValidationError } from 'api/errorHandler'
 
 type PrivilegesFormValue = object & {
   [key in PrivilegeKey]?: boolean
@@ -77,6 +78,7 @@ const RoleForm: FC<RoleFormProps> = ({
     control,
     handleSubmit,
     reset,
+    setError,
     formState: { isSubmitting, isDirty, isValid },
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
@@ -134,24 +136,28 @@ const RoleForm: FC<RoleFormProps> = ({
       }
 
       try {
-        let result
         if (isTemporaryRole) {
-          result = await createRole(payload)
+          const result = await createRole(payload)
           onSubmitSuccess(id || '', result.id)
         } else {
-          result = await updateRole(payload)
+          await updateRole(payload)
         }
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
           content: isTemporaryRole
-            ? t('success.role_updated', { roleName: newName })
-            : t('success.role_created', { roleName: newName }),
+            ? t('success.role_created', { roleName: newName })
+            : t('success.role_updated', { roleName: newName }),
         })
-      } catch (error) {
-        // TODO: if needed, take fields with error from here
-        // Alert for 422 error will come from global error handler
-        // So no need to show it here
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            setError(typedKey, { type: 'custom', message: errorString })
+          })
+        }
       }
     },
     [
@@ -163,6 +169,7 @@ const RoleForm: FC<RoleFormProps> = ({
       onSubmitSuccess,
       id,
       updateRole,
+      setError,
     ]
   )
 
