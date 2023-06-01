@@ -29,10 +29,6 @@
 
     &:focus {
       border-color: $color-primary;
-
-      & + .error {
-        display: none;
-      }
     }
 
     &:disabled {

@@ -76,7 +76,6 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
           onChange={handleInputChange}
           id={name}
           {...(placeholder ? { placeholder } : {})}
-          required
           ref={withMask(showSeconds ? '99:99:99' : '99:99', {
             placeholder: '0',
           })}
