@@ -150,6 +150,7 @@ const RoleForm: FC<RoleFormProps> = ({
             : t('success.role_updated', { roleName: newName }),
         })
       } catch (errorData) {
+        // Set errors from BE for corresponding fields
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
