@@ -20,6 +20,7 @@ import Modal, {
 import CsvImport, {
   InputFileTypes,
 } from 'components/organisms/CsvImport/CsvImport'
+import { ReactComponent as Attach } from 'assets/icons/attach.svg'
 
 type FormValues = {
   email?: string
@@ -193,6 +194,11 @@ const Test: FC = () => {
         name={'csvFileInput'}
         helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
         buttonText={'Lisa .csv'}
+        icon={Attach}
+        appearance={AppearanceTypes.Primary}
+        size={SizeTypes.M}
+        ariaLabel={t('label.button_arrow')}
+        iconPositioning={IconPositioningTypes.Right}
       />
     </>
   )

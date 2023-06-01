@@ -1,21 +1,22 @@
-import { ChangeEvent, FC, FormEvent, useState } from 'react'
-import Button from 'components/molecules/Button/Button'
-import { ReactComponent as Attach } from 'assets/icons/attach.svg'
-import { map, reduce, toString } from 'lodash'
+import { ChangeEvent, FC, useState, useRef, SetStateAction } from 'react'
+import Button, { ButtonProps } from 'components/molecules/Button/Button'
+import { map, reduce } from 'lodash'
 import classNames from 'classnames'
 
 import classes from './styles.module.scss'
+import { FieldError } from 'react-hook-form'
+import InputError from 'components/atoms/InputError/InputError'
 
 export enum InputFileTypes {
   Csv = '.csv',
 }
 
-type CsvImportProps = {
-  className?: string
+interface CsvImportProps extends ButtonProps {
   inputFileType: InputFileTypes
   name?: string
   helperText?: string
   buttonText?: string
+  error?: FieldError
 }
 
 type CsvObject = Record<string, string>
@@ -26,17 +27,16 @@ const CsvImport: FC<CsvImportProps> = ({
   name,
   helperText,
   buttonText,
+  icon,
+  appearance,
+  size,
+  ariaLabel,
+  iconPositioning,
+  error,
+  disabled,
 }) => {
-  const [file, setFile] = useState<File | undefined>()
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [csvArray, setCsvArray] = useState<CsvObject[]>([])
-
-  const fileReader = new FileReader()
-
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    if (event.target.files && event.target.files.length > 0) {
-      setFile(event.target.files[0])
-    }
-  }
 
   const csvFileToArray = (string: string): void => {
     const csvHeader = string.slice(0, string.indexOf('\n')).split(',')
@@ -57,41 +57,56 @@ const CsvImport: FC<CsvImportProps> = ({
     setCsvArray(csvRowsArray)
   }
 
-  const handleOnSubmit = (event: FormEvent): void => {
-    event.preventDefault()
+  const fileReader = new FileReader()
 
-    if (file) {
-      fileReader.onload = function (event: ProgressEvent<FileReader>): void {
-        if (event.target && event.target.result) {
-          const csvOutput: string = toString(event.target.result)
-          csvFileToArray(csvOutput)
-        }
-      }
-      fileReader.readAsText(file)
+  fileReader.onload = function (event: ProgressEvent<FileReader>): void {
+    if (event.target && event.target.result) {
+      const csvOutput: string = event.target.result.toString()
+
+      csvFileToArray(csvOutput)
+    }
+  }
+
+  const handleOnChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    if (event.target.files && event.target.files.length > 0) {
+      const selectedFile = event.target.files[0]
+      fileReader.readAsText(selectedFile)
     }
   }
 
   const headerKeys = Object.keys(Object.assign({}, ...csvArray)) as string[]
 
   return (
-    <div className={classNames(classes.container, className)}>
+    <div className={classNames(className)}>
       <form>
+        <Button
+          onClick={() => {
+            if (fileInputRef.current) {
+              fileInputRef.current.click()
+            }
+          }}
+          icon={icon}
+          appearance={appearance}
+          size={size}
+          ariaLabel={ariaLabel}
+          iconPositioning={iconPositioning}
+          disabled={disabled}
+        >
+          {buttonText}
+        </Button>
         <input
+          ref={fileInputRef}
           type="file"
           id={name}
           accept={inputFileType}
           onChange={handleOnChange}
+          className={classes.fileInput}
         />
-
-        <Button
-          onClick={(e) => {
-            handleOnSubmit(e)
-          }}
-          icon={Attach}
-        >
-          {buttonText}
-        </Button>
       </form>
+
+      <p hidden={!helperText} className={classes.helperText}>
+        {helperText}
+      </p>
 
       <table>
         <thead>
@@ -114,9 +129,7 @@ const CsvImport: FC<CsvImportProps> = ({
           })}
         </tbody>
       </table>
-      <p hidden={!helperText} className={classes.helperText}>
-        {helperText}
-      </p>
+      <InputError {...error} />
     </div>
   )
 }
