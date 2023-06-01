@@ -13,13 +13,14 @@ interface InputErrorProps {
 
 const InputError: FC<InputErrorProps> = ({ type, message, className }) => {
   const { t } = useTranslation()
-  if (!message) return null
+  if (!message && type !== 'required') return null
+  const messageToShow = message || t('error.required')
   return (
     <div className={classNames(classes.errorContainer, className)}>
       <img src={errorOutline} alt={t('error.input_title')} />
       <span>
         <b>{t('error.input_title')}</b>
-        {message}
+        {messageToShow}
       </span>
     </div>
   )
