@@ -199,6 +199,9 @@ const Test: FC = () => {
         size={SizeTypes.M}
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
+        fileLabel={t('label.added_file')}
+        kilobytesLabel={t('label.kilobytes')}
+        megabytesLabel={t('label.megabytes')}
       />
     </>
   )

@@ -7,7 +7,10 @@
     "name": "Nimi",
     "phone": "Telefoni nr",
     "department": "Üksus",
-    "roles": "Rollid"
+    "roles": "Rollid",
+    "added_file": "Lisatud fail",
+    "kilobytes": "KB",
+    "megabytes": "MB"
   },
   "placeholder": {
     "email": "example@mail.com",

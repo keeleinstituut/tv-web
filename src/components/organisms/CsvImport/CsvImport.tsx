@@ -1,11 +1,10 @@
-import { ChangeEvent, FC, useState, useRef, SetStateAction } from 'react'
+import { ChangeEvent, FC, useState, useRef } from 'react'
 import Button, { ButtonProps } from 'components/molecules/Button/Button'
-import { map, reduce } from 'lodash'
 import classNames from 'classnames'
+import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import { ReactComponent as File } from 'assets/icons/file.svg'
 
 import classes from './styles.module.scss'
-import { FieldError } from 'react-hook-form'
-import InputError from 'components/atoms/InputError/InputError'
 
 export enum InputFileTypes {
   Csv = '.csv',
@@ -16,10 +15,12 @@ interface CsvImportProps extends ButtonProps {
   name?: string
   helperText?: string
   buttonText?: string
-  error?: FieldError
+  fileLabel?: string
+  kilobytesLabel?: string
+  megabytesLabel?: string
+  onClick?: () => void
+  error?: string
 }
-
-type CsvObject = Record<string, string>
 
 const CsvImport: FC<CsvImportProps> = ({
   className,
@@ -34,36 +35,39 @@ const CsvImport: FC<CsvImportProps> = ({
   iconPositioning,
   error,
   disabled,
+  fileLabel,
+  kilobytesLabel,
+  megabytesLabel,
+  onClick,
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const [csvArray, setCsvArray] = useState<CsvObject[]>([])
-
-  const csvFileToArray = (string: string): void => {
-    const csvHeader = string.slice(0, string.indexOf('\n')).split(',')
-    const csvRows = string.slice(string.indexOf('\n') + 1).split('\n')
-
-    const csvRowsArray = map(csvRows, (row) => {
-      const rowValues = row.split(',')
-      const rowObject: CsvObject = reduce(
-        csvHeader,
-        (object, header, index) => {
-          object[header as keyof CsvObject] = rowValues[index]
-          return object
-        },
-        {} as CsvObject
-      )
-      return rowObject
-    })
-    setCsvArray(csvRowsArray)
-  }
+  const [file, setFile] = useState<string>('')
+  const [fileSize, setFileSize] = useState<string>('')
+  const [fileName, setFileName] = useState<string>('')
 
   const fileReader = new FileReader()
 
+  const formatFileSize = (sizeInBytes: number): string => {
+    const kilobytes = sizeInBytes / 1024
+    if (kilobytes < 1024) {
+      return kilobytes.toFixed(2) + ` ${kilobytesLabel}`
+    }
+
+    const megabytes = kilobytes / 1024
+    return megabytes.toFixed(2) + ` ${megabytesLabel}`
+  }
+
   fileReader.onload = function (event: ProgressEvent<FileReader>): void {
     if (event.target && event.target.result) {
-      const csvOutput: string = event.target.result.toString()
+      const fileOutput: string = event.target.result.toString()
+      setFile(fileOutput)
 
-      csvFileToArray(csvOutput)
+      const fileInput = fileInputRef.current
+      if (fileInput && fileInput.files && fileInput.files.length > 0) {
+        const selectedFile = fileInput.files[0]
+        setFileName(selectedFile.name)
+        setFileSize(formatFileSize(selectedFile.size))
+      }
     }
   }
 
@@ -73,8 +77,6 @@ const CsvImport: FC<CsvImportProps> = ({
       fileReader.readAsText(selectedFile)
     }
   }
-
-  const headerKeys = Object.keys(Object.assign({}, ...csvArray)) as string[]
 
   return (
     <div className={classNames(className)}>
@@ -108,28 +110,29 @@ const CsvImport: FC<CsvImportProps> = ({
         {helperText}
       </p>
 
-      <table>
-        <thead>
-          <tr key="header">
-            {map(headerKeys, (key) => {
-              return <th key={key}>{key}</th>
-            })}
-          </tr>
-        </thead>
+      <h5 hidden={!file} className={classes.fileLabel}>
+        {fileLabel}
+      </h5>
+      <div
+        hidden={!file}
+        className={classNames(
+          file && classes.fileContainer,
+          error && classes.errorContainer
+        )}
+      >
+        <File className={classes.icon} />
+        <div className={classes.fileDetailsContainer}>
+          <p className={classes.fileName}>{fileName}</p>
+          <p className={classes.fileSize}>{fileSize}</p>
+        </div>
+        <Delete onClick={onClick} />
+      </div>
 
-        <tbody>
-          {map(csvArray, (row, index) => {
-            return (
-              <tr key={index}>
-                {map(Object.values(row), (rowValue, index) => {
-                  return <td key={index}>{rowValue}</td>
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-      <InputError {...error} />
+      <p hidden={!error} className={classes.errorText}>
+        {error}
+      </p>
+
+      {file}
     </div>
   )
 }

@@ -10,3 +10,50 @@
 .fileInput {
   display: none;
 }
+
+.fileLabel {
+  padding-top: spacing(6);
+}
+
+.fileContainer {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 6px;
+  max-width: 418px;
+  padding: spacing(4) spacing(3);
+  margin-top: spacing(2);
+  display: flex;
+  align-items: center;
+}
+
+.fileDetailsContainer {
+  padding-left: spacing(3);
+  flex: auto;
+}
+
+.fileName {
+  @include labelTextStyle;
+}
+
+.fileSize {
+  @include subtitleSmallTextStyle;
+  color: $color-input-main;
+}
+
+.icon {
+  align-self: flex-start;
+  padding-top: spacing(1);
+}
+
+.errorContainer {
+  background: $color-error-light;
+  border: 1px solid $color-error;
+  border-radius: 6px;
+}
+
+.errorText {
+  color: $color-error;
+  @include subtitleSmallTextStyle;
+  padding-top: spacing(2);
+  max-width: 418px;
+}
