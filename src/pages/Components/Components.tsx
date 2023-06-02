@@ -49,6 +49,7 @@ const dummyNotifications: NotificationPropsWithoutClose[] = [
 type FormValues = {
   email?: string
   terms?: string
+  name?: string
   datePicker?: string
   timePicker?: string
   timePickerSeconds?: string
@@ -59,8 +60,8 @@ const Test: FC = () => {
   const { emailValidator } = useValidators()
 
   const { control, handleSubmit } = useForm<FormValues>({
-    mode: 'onChange',
-    reValidateMode: 'onSubmit',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   })
 
   const [open, setOpen] = useState(false)
@@ -99,6 +100,9 @@ const Test: FC = () => {
       label: 'date picker label',
       ariaLabel: 'date picker aria label',
       placeholder: 'pp.kk.aaaa',
+      rules: {
+        required: true,
+      },
     },
     {
       inputType: InputTypes.Time,
@@ -106,6 +110,9 @@ const Test: FC = () => {
       label: 'time picker label',
       ariaLabel: 'time picker aria label',
       showSeconds: false,
+      rules: {
+        required: true,
+      },
     },
     {
       inputType: InputTypes.Time,
@@ -113,6 +120,9 @@ const Test: FC = () => {
       label: 'time picker seconds label',
       ariaLabel: 'time picker seconds aria label',
       showSeconds: true,
+      rules: {
+        required: true,
+      },
     },
   ]
 
@@ -139,15 +149,17 @@ const Test: FC = () => {
         fields={testFields}
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
-      />
-      <Button
-        appearance={AppearanceTypes.Primary}
-        children="bu"
-        size={SizeTypes.M}
-        icon={ButtonArrow}
-        ariaLabel={t('label.button_arrow')}
-        iconPositioning={IconPositioningTypes.Right}
-      />
+      >
+        <Button
+          appearance={AppearanceTypes.Primary}
+          children="bu"
+          size={SizeTypes.M}
+          icon={ButtonArrow}
+          type="submit"
+          ariaLabel={t('label.button_arrow')}
+          iconPositioning={IconPositioningTypes.Right}
+        />
+      </DynamicForm>
 
       <ModalBase
         title="Pealkiri"

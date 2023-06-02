@@ -50,8 +50,6 @@ const NotificationRoot = () => {
         (notification) => !('type' in notification)
       ) || { id: permanentNotificationId }
 
-      console.warn('showNotification', notificationProps)
-
       setNotifications([
         { id: tempId },
         ...uniqBy(

@@ -71,10 +71,11 @@ const onVisibilityChange = () => {
   }
 }
 
-const startRefreshingToken = () => {
+export const startRefreshingToken = (onFail?: () => void) => {
   const refreshToken = keycloak.refreshToken
   const tokenExpiry = keycloak.tokenParsed?.exp
   if (!tokenExpiry || !refreshToken) {
+    if (onFail) onFail()
     return null
   }
   if (refreshInterval) {

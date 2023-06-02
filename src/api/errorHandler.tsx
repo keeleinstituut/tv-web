@@ -3,7 +3,7 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import i18n from 'i18n/i18n'
 import { get, compact, map, isEmpty } from 'lodash'
-import { keycloak } from 'hooks/useKeycloak'
+import { keycloak, startRefreshingToken } from 'hooks/useKeycloak'
 import { ReactElement } from 'react'
 
 interface ValidationErrorDataType {
@@ -14,9 +14,9 @@ export interface ValidationError extends Error {
   errors: ValidationErrorDataType
 }
 
-const handleError = async (error: AxiosError) => {
-  // TODO: needs some improvements + handling of 403 errors
-  const { response } = error
+const handleError = async (error?: AxiosError) => {
+  // TODO: needs some improvements + better handling of 403 errors
+  const { response } = error || {}
   const code = response?.status
   const specificErrors = get(response, 'data.errors', {})
   const genericErrorMessage = get(response, 'data.message', '')
@@ -44,8 +44,11 @@ const handleError = async (error: AxiosError) => {
   }
 
   if (code === 401) {
-    keycloak.logout({
-      redirectUri: `${window.location.href}#show-error`,
+    // Attemp token refresh, log out if it fails
+    startRefreshingToken(() => {
+      keycloak.logout({
+        redirectUri: `${window.location.href}#show-error`,
+      })
     })
   }
 

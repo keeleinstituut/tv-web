@@ -37,7 +37,8 @@
     "input_title": "Veateade: ",
     "invalid_email": "Vale formaat",
     "invalid_phone": "Vale formaat",
-    "unknown_error": "Teadmata viga: {{code}}"
+    "unknown_error": "Teadmata viga: {{code}}",
+    "required": "Kohustuslik väli"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
