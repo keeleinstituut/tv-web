@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { Ref, forwardRef } from 'react'
 import DatePicker, {
   ReactDatePickerProps,
   registerLocale,
@@ -13,6 +13,7 @@ import InputWrapper, {
 
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
+import { RefCallBack } from 'react-hook-form'
 
 type DatePickerComponentProps = {
   ariaLabel: string
@@ -75,7 +76,7 @@ const DatePickerComponent = ({
   )
 }
 
-const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
+const DatePickerInput = forwardRef<RefCallBack, DatePickerInputProps>(
   function DatePickerInput(props, ref) {
     const {
       label,
@@ -96,8 +97,8 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         name={name}
         error={error}
         className={className}
-        ref={ref}
-        wrapperSizeClass={classes.datePickerWrapper}
+        ref={ref as unknown as Ref<HTMLInputElement>}
+        wrapperClass={classes.datePickerWrapper}
       >
         <DatePickerComponent
           name={name}

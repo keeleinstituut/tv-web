@@ -1,6 +1,6 @@
-import { ReactElement, forwardRef, useRef, useState } from 'react'
+import { ReactElement, Ref, forwardRef, useRef, useState } from 'react'
 import classNames from 'classnames'
-import { FieldError } from 'react-hook-form'
+import { FieldError, RefCallBack } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
@@ -40,7 +40,7 @@ export interface SelectionControlsInputProps {
 }
 
 const SelectionControlsInput = forwardRef<
-  HTMLInputElement,
+  RefCallBack,
   SelectionControlsInputProps
 >(function SelectionControlsInput(
   {
@@ -91,14 +91,11 @@ const SelectionControlsInput = forwardRef<
       label={label}
       name={name}
       error={error}
-      className={classNames(classes.selectionsContainer)}
-      wrapperSizeClass={classNames(
-        classes.focusedWrapper,
-        classes[dropdownSize || 'l']
-      )}
+      className={classes.selectionsContainer}
+      wrapperClass={classes[dropdownSize || 'l']}
       onClick={toggleDropdown}
-      ref={ref}
-      clickAwayInputRef={clickAwayInputRef}
+      ref={clickAwayInputRef}
+      selectionsError={classes.selectionsError}
     >
       <BaseButton
         className={classNames(
@@ -107,6 +104,7 @@ const SelectionControlsInput = forwardRef<
           classes[dropdownSize || 'l']
         )}
         id={name}
+        ref={ref as unknown as Ref<HTMLButtonElement>}
       >
         <p hidden={!placeholder} className={classes.menuLabel}>
           {dropdownMenuLabel}
@@ -127,7 +125,6 @@ const SelectionControlsInput = forwardRef<
         dropdownSize={dropdownSize}
         disabled={disabled}
         isOpen={isOpen}
-        error={error}
         searchInput={searchInput}
         multiple={multiple}
         value={value}

@@ -116,6 +116,9 @@ const Test: FC = () => {
       dropdownSize: DropdownSizeTypes.M,
       helperText:
         'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
+      rules: {
+        required: true,
+      },
     },
     {
       inputType: InputTypes.Selections,
@@ -139,6 +142,9 @@ const Test: FC = () => {
       proceedButtonLabel: 'Salvesta',
       searchInput: <Fragment />,
       tags: true,
+      rules: {
+        required: true,
+      },
     },
   ]
 

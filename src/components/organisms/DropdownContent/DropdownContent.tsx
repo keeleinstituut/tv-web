@@ -79,8 +79,9 @@ const DropdownContent: FC<DropdownContentProps> = ({
 
         <ul>
           {map(options, (option, index) => {
-            const isSelected =
+            const isMultiSelected =
               selectedValue && includes(selectedValue, option?.value)
+            const isSingleSelected = value && includes(value, option?.value)
 
             return (
               <li key={index} className={classes.dropdownMenuItem}>
@@ -89,7 +90,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
                     name={name}
                     ariaLabel={ariaLabel}
                     label={option?.label}
-                    value={isSelected || false}
+                    value={isMultiSelected || false}
                     className={classes.option}
                     onChange={() => handleMultipleSelect(option?.value)}
                   />
@@ -97,7 +98,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
                 <p
                   className={classNames(
                     classes.option,
-                    isSelected && classes.selectedOption
+                    isSingleSelected && classes.selectedOption
                   )}
                   hidden={multiple}
                   onClick={() => handleSingleSelect(option?.value)}

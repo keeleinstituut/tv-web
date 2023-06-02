@@ -1,4 +1,4 @@
-import { MutableRefObject, ReactNode, forwardRef } from 'react'
+import { ReactNode, forwardRef } from 'react'
 import { Field, Label } from '@radix-ui/react-form'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
@@ -13,8 +13,8 @@ export type InputWrapperProps = {
   label?: JSX.Element | string
   children?: ReactNode
   onClick?: () => void
-  wrapperSizeClass?: string
-  clickAwayInputRef?: MutableRefObject<null>
+  wrapperClass?: string
+  selectionsError?: string
 }
 
 const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
@@ -26,17 +26,13 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
       className,
       children,
       onClick,
-      wrapperSizeClass,
-      clickAwayInputRef,
+      wrapperClass,
+      selectionsError,
     },
     ref
   ) {
     return (
-      <Field
-        name={name}
-        className={classNames(classes.container, className)}
-        ref={clickAwayInputRef}
-      >
+      <Field name={name} className={classNames(classes.container, className)}>
         <Label
           htmlFor={name}
           className={classNames(classes.label, !label && classes.hiddenLabel)}
@@ -47,13 +43,13 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
           className={classNames(
             classes.wrapper,
             error && classes.errorMessage,
-            wrapperSizeClass
+            wrapperClass
           )}
           ref={ref}
           onClick={onClick}
         >
           {children}
-          <InputError {...error} />
+          <InputError {...error} selectionsError={selectionsError} />
         </div>
       </Field>
     )

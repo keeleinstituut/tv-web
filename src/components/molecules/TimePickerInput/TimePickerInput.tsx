@@ -1,7 +1,7 @@
-import { useState, forwardRef, useRef } from 'react'
+import { useState, forwardRef, useRef, Ref } from 'react'
 import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
-import { FieldError } from 'react-hook-form'
+import { FieldError, RefCallBack } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import { useClickAway } from 'ahooks'
 import { withMask } from 'use-mask-input'
@@ -91,7 +91,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
   }
 )
 
-const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
+const TimePickerInput = forwardRef<RefCallBack, TimePickerInputProps>(
   function TimePickerInput(props, ref) {
     const {
       onChange,
@@ -158,7 +158,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         error={error}
         className={className}
         ref={clickAwayInputRef}
-        wrapperSizeClass={classes.timePickerWrapper}
+        wrapperClass={classes.timePickerWrapper}
       >
         <TimeInput
           name={name}
@@ -169,6 +169,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           error={error}
           showSeconds={showSeconds}
           onChange={onChange}
+          ref={ref as unknown as Ref<HTMLInputElement>}
         />
         <div
           className={

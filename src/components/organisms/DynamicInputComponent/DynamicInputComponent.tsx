@@ -1,5 +1,5 @@
 import { useCallback, forwardRef, Suspense } from 'react'
-import { ControllerProps, FieldValues } from 'react-hook-form'
+import { ControllerProps, FieldValues, RefCallBack } from 'react-hook-form'
 import { omit } from 'lodash'
 import { SimpleUnionOmit, assertNever } from 'types/helpers'
 import TextInput, {
@@ -61,7 +61,7 @@ export type InputPropsWithoutControllerProps = SimpleUnionOmit<
 >
 
 // eslint-disable-next-line react/display-name
-const InputComponent = forwardRef<HTMLInputElement, InputPropsByType>(
+const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
   (props, ref) => {
     const { inputType } = props
 

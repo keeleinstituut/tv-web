@@ -26,10 +26,11 @@
 
   &:focus {
     border: 1px solid $color-primary;
+    border-radius: 5px;
   }
 
   &.m svg g path {
-    fill: #09090b;
+    fill: $color-text-dark;
   }
 
   &.s {
@@ -70,7 +71,6 @@
   white-space: nowrap;
 }
 
-.focusedWrapper:focus {
-  border: 1px solid $color-primary;
-  border-radius: 5px;
+.selectionsError {
+  top: spacing(12.5);
 }
