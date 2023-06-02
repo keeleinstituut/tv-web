@@ -28,6 +28,8 @@ interface NotificationInState extends NotificationPropsWithoutClose {
 export const notificationRef = createRef<RefType>()
 
 const NotificationRoot = () => {
+  // We keep 1 empty notification in state
+  // This will be used to render the animation wrapper around the actual notification
   const [notifications, setNotifications] = useState<
     Array<NotificationInState | { id: string }>
   >([{ id: permanentNotificationId }])
@@ -39,17 +41,21 @@ const NotificationRoot = () => {
   }, [])
 
   const closeAllNotifications = useCallback(() => {
-    setNotifications([])
+    setNotifications([{ id: permanentNotificationId }])
   }, [])
 
   const showNotification = useCallback(
     (notificationProps: NotificationPropsWithoutClose, timeout?: number) => {
+      // create a unique id for the following notification
       const tempId = uuidv4()
+      // find the first empty notification
       const emptyNotification = find(
         notifications,
         (notification) => !('type' in notification)
       ) || { id: permanentNotificationId }
 
+      // Fill the data of the first empty notification
+      // and add a new empty notification on top for the next notification
       setNotifications([
         { id: tempId },
         ...uniqBy(

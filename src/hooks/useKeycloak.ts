@@ -153,6 +153,8 @@ const useKeycloak = () => {
       })
 
       if (!isKeycloakUserLoggedIn) {
+        // Currently will show error with any hash
+        // If we add any extra hash parameters later, then this should be changed
         if (window.location.hash) {
           showNotification({
             type: NotificationTypes.Error,
