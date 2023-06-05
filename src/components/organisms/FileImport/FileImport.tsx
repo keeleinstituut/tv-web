@@ -140,7 +140,7 @@
 
 // export default FileImport
 
-import React, { FC, useCallback, useState } from 'react'
+import React, { FC, Fragment, useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as File } from 'assets/icons/file.svg'
@@ -148,6 +148,7 @@ import { ButtonProps } from 'components/molecules/Button/Button'
 import classNames from 'classnames'
 
 import classes from './styles.module.scss'
+import { map } from 'lodash'
 
 export enum InputFileTypes {
   Csv = '.csv',
@@ -170,16 +171,19 @@ const DragAndDrop: FC<FileImportProps> = ({
   fileLabel,
   onClick,
   error,
+  kilobytesLabel,
+  megabytesLabel,
 }) => {
   const [files, setFiles] = useState<File[]>([])
+  const [fileContent, setFileContent] = useState<string>('')
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     acceptedFiles.forEach((file) => {
       const reader = new FileReader()
 
       reader.onload = () => {
-        const fileContent = reader.result as string
-        console.log(fileContent)
+        const currentFile = reader.result as string
+        setFileContent(currentFile)
       }
 
       reader.readAsText(file)
@@ -189,6 +193,16 @@ const DragAndDrop: FC<FileImportProps> = ({
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+
+  const formatFileSize = (sizeInBytes: number): string => {
+    const kilobytes = sizeInBytes / 1024
+    if (kilobytes < 1024) {
+      return kilobytes.toFixed(2) + ` ${kilobytesLabel}`
+    }
+
+    const megabytes = kilobytes / 1024
+    return megabytes.toFixed(2) + ` ${megabytesLabel}`
+  }
 
   return (
     <>
@@ -205,47 +219,39 @@ const DragAndDrop: FC<FileImportProps> = ({
             <p>To choose multiple files hold down CTRL/CMND</p>
           </>
         )}
-        {files.length > 0 && (
-          <div>
-            <h4>Uploaded Files:</h4>
-            <ul>
-              {files.map((file) => (
-                <li key={file.name}>{file.name}</li>
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
-      <p
-        //  hidden={!helperText}
-        className={classes.helperText}
-      >
+      <p hidden={!helperText} className={classes.helperText}>
         {helperText}
       </p>
       <h5
-        // hidden={!files}
-        className={classes.fileLabel}
+        hidden={!files?.length}
+        className={classNames(files?.length && classes.fileLabel)}
       >
         {fileLabel}
       </h5>
-      <div
-        // hidden={!files}
+      <ul
         className={classNames(
-          files && classes.fileContainer,
+          files?.length && classes.fileContainer,
           error && classes.errorContainer
         )}
       >
-        <File className={classes.icon} />
-        <div className={classes.fileDetailsContainer}>
-          {/* <p className={classes.fileName}>{fileName}</p> */}
-          {/* <p className={classes.fileSize}>{fileSize}</p> */}
-        </div>
-        <Delete onClick={onClick} />
-      </div>
+        {map(files, (file, index) => {
+          return (
+            <Fragment key={index}>
+              <File className={classes.icon} />
+              <div className={classes.fileDetailsContainer}>
+                <p className={classes.fileName}>{file?.name}</p>
+                <p className={classes.fileSize}>{formatFileSize(file?.size)}</p>
+              </div>
+              <Delete onClick={onClick} />
+            </Fragment>
+          )
+        })}
+      </ul>
       <p hidden={!error} className={classes.errorText}>
         {error}
       </p>
-      {/* {files} */}
+      {fileContent}
     </>
   )
 }
@@ -255,6 +261,8 @@ const FileImport: FC<FileImportProps> = ({
   fileLabel,
   onClick,
   error,
+  kilobytesLabel,
+  megabytesLabel,
 }) => {
   return (
     <DragAndDrop
@@ -262,6 +270,8 @@ const FileImport: FC<FileImportProps> = ({
       fileLabel={fileLabel}
       onClick={onClick}
       error={error}
+      kilobytesLabel={kilobytesLabel}
+      megabytesLabel={megabytesLabel}
     />
   )
 }

@@ -18,7 +18,6 @@ import Modal, {
   TitleFontTypes,
 } from 'components/organisms/Modal/Modal'
 import FileImport from 'components/organisms/FileImport/FileImport'
-import { ReactComponent as Attach } from 'assets/icons/attach.svg'
 
 type FormValues = {
   email?: string
@@ -221,6 +220,11 @@ const Test: FC = () => {
       <FileImport
         helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
         fileLabel={t('label.added_file')}
+        // error={
+        //   'Faili andmeväljad on vigased. Palun parandada väljad all tabelis. Pärast vigaste väljade muutmist klõpsa  „Salvesta ja saada teavitused“ nupule. Seejärel saavad kasutajad teate konto loomisest.'
+        // }
+        kilobytesLabel={t('label.kilobytes')}
+        megabytesLabel={t('label.megabytes')}
       />
     </>
   )
