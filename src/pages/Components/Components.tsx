@@ -17,9 +17,7 @@ import Modal, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/Modal/Modal'
-import CsvImport, {
-  InputFileTypes,
-} from 'components/organisms/CsvImport/CsvImport'
+import FileImport from 'components/organisms/FileImport/FileImport'
 import { ReactComponent as Attach } from 'assets/icons/attach.svg'
 
 type FormValues = {
@@ -111,6 +109,11 @@ const Test: FC = () => {
     []
   )
 
+  const handleFileUpload = (files: File[]) => {
+    console.log('Uploaded files:', files)
+    // Do something with the uploaded files, such as sending them to a server
+  }
+
   return (
     <>
       <div />
@@ -201,7 +204,7 @@ const Test: FC = () => {
           explorer of the truth, the master-builder of human happiness."
         </p>
       </Modal>
-      <CsvImport
+      {/* <CsvImport
         inputFileType={InputFileTypes.Csv}
         name={'csvFileInput'}
         helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
@@ -214,6 +217,10 @@ const Test: FC = () => {
         fileLabel={t('label.added_file')}
         kilobytesLabel={t('label.kilobytes')}
         megabytesLabel={t('label.megabytes')}
+      /> */}
+      <FileImport
+        helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
+        fileLabel={t('label.added_file')}
       />
     </>
   )
