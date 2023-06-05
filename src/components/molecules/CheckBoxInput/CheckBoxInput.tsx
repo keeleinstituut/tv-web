@@ -1,9 +1,9 @@
-import { Ref, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './styles.module.scss'
 import { InputHTMLAttributes } from 'react'
-import { FieldError, RefCallBack } from 'react-hook-form'
+import { FieldError } from 'react-hook-form'
 
 export interface CheckBoxInputProps
   extends Omit<
@@ -18,7 +18,7 @@ export interface CheckBoxInputProps
   value?: boolean
 }
 
-const CheckBoxInput = forwardRef<RefCallBack, CheckBoxInputProps>(
+const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
   function CheckBoxInput(
     { label, name, ariaLabel, className, disabled, value = false, ...rest },
     ref
@@ -34,7 +34,7 @@ const CheckBoxInput = forwardRef<RefCallBack, CheckBoxInputProps>(
       >
         <Control asChild>
           <input
-            ref={ref as unknown as Ref<HTMLInputElement>}
+            ref={ref}
             type="checkbox"
             checked={value}
             aria-label={ariaLabel}

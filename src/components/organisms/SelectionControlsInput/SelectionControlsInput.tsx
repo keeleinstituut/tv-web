@@ -1,6 +1,6 @@
-import { ReactElement, Ref, forwardRef, useRef, useState } from 'react'
+import { ReactElement, forwardRef, useRef, useState } from 'react'
 import classNames from 'classnames'
-import { FieldError, RefCallBack } from 'react-hook-form'
+import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
@@ -40,7 +40,7 @@ export interface SelectionControlsInputProps {
 }
 
 const SelectionControlsInput = forwardRef<
-  RefCallBack,
+  HTMLButtonElement,
   SelectionControlsInputProps
 >(function SelectionControlsInput(
   {
@@ -104,7 +104,7 @@ const SelectionControlsInput = forwardRef<
           classes[dropdownSize || 'l']
         )}
         id={name}
-        ref={ref as unknown as Ref<HTMLButtonElement>}
+        ref={ref}
       >
         <p hidden={!placeholder} className={classes.menuLabel}>
           {dropdownMenuLabel}

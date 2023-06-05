@@ -1,11 +1,11 @@
-import { Ref, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './styles.module.scss'
 
 import InputError from 'components/atoms/InputError/InputError'
 import { InputHTMLAttributes } from 'react'
-import { FieldError, RefCallBack } from 'react-hook-form'
+import { FieldError } from 'react-hook-form'
 
 export interface TextInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'label'> {
@@ -16,52 +16,51 @@ export interface TextInputProps
   ariaLabel: string
 }
 
-const TextInput = forwardRef<RefCallBack, TextInputProps>(function TextInput(
-  props,
-  ref
-) {
-  const {
-    label,
-    ariaLabel,
-    error,
-    name,
-    className,
-    value,
-    placeholder,
-    disabled,
-    ...rest
-  } = props
+const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+  function TextInput(props, ref) {
+    const {
+      label,
+      ariaLabel,
+      error,
+      name,
+      className,
+      value,
+      placeholder,
+      disabled,
+      ...rest
+    } = props
 
-  // Might need event handler wrappers here
-  // Essentially this is just ariaLabel || label, but typescript seems to fail here
-  return (
-    <Field
-      name={name}
-      className={classNames(
-        classes.container,
-        disabled && classes.disabled,
-        className
-      )}
-    >
-      <Label className={classNames(classes.label, !label && classes.hidden)}>
-        {label}
-      </Label>
-      <div className={classes.inputContainer}>
-        <Control asChild>
-          <input
-            {...(placeholder ? { placeholder } : {})}
-            className={classes.inputField}
-            ref={ref as unknown as Ref<HTMLInputElement>}
-            value={value || ''}
-            aria-label={ariaLabel}
-            disabled={disabled}
-            {...rest}
-          />
-        </Control>
-        <InputError {...error} className={classes.error} />
-      </div>
-    </Field>
-  )
-})
+    // Might need event handler wrappers here
+    // Essentially this is just ariaLabel || label, but typescript seems to fail here
+    return (
+      <Field
+        name={name}
+        className={classNames(
+          classes.container,
+          disabled && classes.disabled,
+          className
+        )}
+      >
+        <Label className={classNames(classes.label, !label && classes.hidden)}>
+          {label}
+        </Label>
+        <div className={classes.inputContainer}>
+          <Control asChild>
+            <input
+              {...(placeholder ? { placeholder } : {})}
+              className={classes.inputField}
+              ref={ref}
+              value={value || ''}
+              aria-label={ariaLabel}
+              disabled={disabled}
+              {...rest}
+            />
+          </Control>
+          <InputError {...error} className={classes.error} />
+        </div>
+      </Field>
+    )
+  }
+)
 
 export default TextInput

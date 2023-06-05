@@ -1,4 +1,4 @@
-import { useCallback, forwardRef, Suspense } from 'react'
+import { useCallback, forwardRef, Suspense, Ref } from 'react'
 import { ControllerProps, FieldValues, RefCallBack } from 'react-hook-form'
 import { omit } from 'lodash'
 import { SimpleUnionOmit, assertNever } from 'types/helpers'
@@ -67,17 +67,40 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
 
     switch (inputType) {
       case InputTypes.Text:
-        return <TextInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <TextInput
+            {...omit(props, 'inputType')}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       case InputTypes.Checkbox:
-        return <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <CheckBoxInput
+            {...omit(props, 'inputType')}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       case InputTypes.Date:
-        return <DatePickerInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <DatePickerInput
+            {...omit(props, 'inputType')}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       case InputTypes.Selections:
         return (
-          <SelectionControlsInput {...omit(props, 'inputType')} ref={ref} />
+          <SelectionControlsInput
+            {...omit(props, 'inputType')}
+            ref={ref as unknown as Ref<HTMLButtonElement>}
+          />
         )
       case InputTypes.Time:
-        return <TimePickerInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <TimePickerInput
+            {...omit(props, 'inputType')}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       default:
         return assertNever(inputType)
     }
