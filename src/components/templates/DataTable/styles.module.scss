@@ -21,17 +21,16 @@
 
   .l th,
   td {
-    padding: 12px 14px;
-    line-height: $line-height-24;
+    padding: spacing(3) spacing(3.5);
   }
   .m th,
   td {
-    padding: 8px 14px;
+    padding: spacing(2) spacing(3.5);
     line-height: 20px;
   }
   .s th,
   td {
-    padding: 4px 14px;
+    padding: spacing(1) spacing(3.5);
     line-height: 20px;
   }
 

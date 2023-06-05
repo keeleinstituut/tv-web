@@ -1,4 +1,4 @@
-import React, { FC, useId } from 'react'
+import React, { useId } from 'react'
 import { Link } from 'react-router-dom'
 import classes from './styles.module.scss'
 import classNames from 'classnames'
@@ -13,12 +13,15 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 
-type PaginationProps = {
+type PaginationProps<TData> = {
   hidden?: boolean
-  table: Table<PaginationState>
+  table: Table<PaginationState> | Table<TData>
 }
 
-const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
+const TablePagination = <TData extends object>({
+  hidden,
+  table,
+}: PaginationProps<TData>) => {
   const { t } = useTranslation()
   const id = useId()
   const {
@@ -43,14 +46,11 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
           icon={Arrow}
           ariaLabel={t('label.button_arrow')}
           iconPositioning={IconPositioningTypes.Left}
-          onClick={() => previousPage()}
+          onClick={previousPage}
           disabled={!getCanPreviousPage()}
         />
 
-        <nav
-          role="navigation"
-          aria-label={t('label.pagination_navigation') || ''}
-        >
+        <nav role="navigation" aria-label={t('label.pagination_navigation')}>
           <ul className={classes.links}>
             {[...Array(getPageCount())].map((_, index) => (
               <li
@@ -78,9 +78,7 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
           icon={Arrow}
           ariaLabel={t('label.button_arrow')}
           iconPositioning={IconPositioningTypes.Left}
-          onClick={() => {
-            nextPage()
-          }}
+          onClick={nextPage}
           disabled={!getCanNextPage()}
           className={classes.arrow}
         />
@@ -89,6 +87,7 @@ const TablePagination: FC<PaginationProps> = ({ hidden, table }) => {
         <label htmlFor={id} className={classes.pageSizeLabel}>
           {t('label.pagination_result_count')}
         </label>
+        {/* TODO: replace with our select component */}
         <select
           className={classes.pageSizeSelect}
           id={id}
