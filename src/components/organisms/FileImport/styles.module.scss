@@ -12,110 +12,13 @@
   display: none;
 }
 
-.fileLabel {
-  padding-top: spacing(6);
-  order: 4;
-}
-
-.fileContainer {
-  background: $color-white;
-  border: 1px solid $color-border;
-  border-radius: 6px;
-  max-width: 418px;
-  padding: spacing(4) spacing(3);
-  margin-top: spacing(2);
-  display: flex;
-  align-items: center;
-  order: 5;
-}
-
-.fileDetailsContainer {
-  padding-left: spacing(3);
-  flex: auto;
-}
-
-.fileName {
-  @include labelTextStyle;
-}
-
-.fileSize {
-  @include subtitleSmallTextStyle;
-  color: $color-input-main;
-}
-
-.icon {
-  align-self: flex-start;
-  padding-top: spacing(1);
-}
-
-.errorContainer {
-  background: $color-error-light;
-  border: 1px solid $color-error;
-  border-radius: 6px;
-}
-
-.errorText {
-  color: $color-error;
-  @include subtitleSmallTextStyle;
-  padding-top: spacing(2);
-  max-width: 418px;
-  order: 6;
-}
-
-.dragAndDropContainer {
-  background: #fdfdfd;
-  border: 1px solid #c4c5cb;
-  border-radius: 5px;
-  width: 318px;
-  padding: spacing(4) spacing(4) spacing(2) spacing(4);
-  position: relative;
-  &::after {
-    content: ' ';
-    display: block;
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
-    border-top: 20px solid #fdfdfd;
-    border-bottom-color: red;
-  }
-}
-
-.dragAndDropContent {
-  border: 1px dashed #5d6071;
-  border-radius: 2px;
-  padding: spacing(3.5) 0 spacing(5) 0;
-  text-align: center;
-}
-
 .fileButton {
   margin-top: spacing(4);
   max-width: fit-content;
   order: 2;
 }
 
-.multipleFilesText {
-  font-size: $font-size-12;
-  font-weight: $font-weight-normal;
-  padding-top: spacing(1);
-}
-
 .fileImportContainer {
   display: flex;
   flex-direction: column;
-}
-
-.fileContent {
-  order: 7;
-}
-
-.dragAndDropText {
-  @include bodyTextSmallStyle;
-  padding-top: spacing(0.5);
-  display: inline-flex;
-}
-
-.dropButton {
-  margin-left: spacing(2);
 }
