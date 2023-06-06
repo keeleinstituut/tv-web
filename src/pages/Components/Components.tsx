@@ -17,7 +17,10 @@ import Modal, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/Modal/Modal'
-import FileImport from 'components/organisms/FileImport/FileImport'
+import FileImport, {
+  InputFileTypes,
+} from 'components/organisms/FileImport/FileImport'
+import { ReactComponent as Attach } from 'assets/icons/attach.svg'
 
 type FormValues = {
   email?: string
@@ -107,11 +110,6 @@ const Test: FC = () => {
     (errors, e) => console.log('on error', errors, e),
     []
   )
-
-  const handleFileUpload = (files: File[]) => {
-    console.log('Uploaded files:', files)
-    // Do something with the uploaded files, such as sending them to a server
-  }
 
   return (
     <>
@@ -203,20 +201,6 @@ const Test: FC = () => {
           explorer of the truth, the master-builder of human happiness."
         </p>
       </Modal>
-      {/* <CsvImport
-        inputFileType={InputFileTypes.Csv}
-        name={'csvFileInput'}
-        helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
-        buttonText={'Lisa .csv'}
-        icon={Attach}
-        appearance={AppearanceTypes.Primary}
-        size={SizeTypes.M}
-        ariaLabel={t('label.button_arrow')}
-        iconPositioning={IconPositioningTypes.Right}
-        fileLabel={t('label.added_file')}
-        kilobytesLabel={t('label.kilobytes')}
-        megabytesLabel={t('label.megabytes')}
-      /> */}
       <FileImport
         helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
         fileLabel={t('label.added_file')}
@@ -225,6 +209,19 @@ const Test: FC = () => {
         // }
         kilobytesLabel={t('label.kilobytes')}
         megabytesLabel={t('label.megabytes')}
+        fileButtonText={'New file'}
+        icon={Attach}
+        appearance={AppearanceTypes.Primary}
+        size={SizeTypes.M}
+        ariaLabel={t('label.button_arrow')}
+        iconPositioning={IconPositioningTypes.Right}
+        name={'csvFileInput'}
+        inputFileType={InputFileTypes.Csv}
+        dropFilesText={'Drop the files here...'}
+        dragFilesText={'Drag & drop'}
+        dropFilesButtonText={'a file here or'}
+        multipleFilesText={'To choose multiple files hold down CTRL/CMND'}
+        dropButtonText={'Choose'}
       />
     </>
   )
