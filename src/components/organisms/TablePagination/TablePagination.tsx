@@ -1,5 +1,4 @@
-import React, { useId } from 'react'
-import { Link } from 'react-router-dom'
+import { useId } from 'react'
 import classes from './styles.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -48,6 +47,7 @@ const TablePagination = <TData extends object>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={previousPage}
           disabled={!getCanPreviousPage()}
+          className={classes.arrows}
         />
 
         <nav role="navigation" aria-label={t('label.pagination_navigation')}>
@@ -55,19 +55,19 @@ const TablePagination = <TData extends object>({
             {[...Array(getPageCount())].map((_, index) => (
               <li
                 key={`${id}-${index}`}
-                className={classNames({
+                className={classNames(classes.list, {
                   [classes.active]: getState().pagination.pageIndex === index,
                 })}
               >
-                <Link
+                <Button
                   className={classes.pageNumber}
-                  to={`?page=${index + 1}`}
+                  href={`?page=${index + 1}`}
                   onClick={() => setPageIndex(index)}
                   aria-label={t('label.go_to_page') + index}
                   aria-current={getState().pagination.pageIndex === index}
                 >
                   {index + 1}
-                </Link>
+                </Button>
               </li>
             ))}
           </ul>
@@ -80,7 +80,7 @@ const TablePagination = <TData extends object>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={nextPage}
           disabled={!getCanNextPage()}
-          className={classes.arrow}
+          className={classNames(classes.arrows, classes.toRight)}
         />
       </div>
       <div className={classes.pageSizeWrapper}>
