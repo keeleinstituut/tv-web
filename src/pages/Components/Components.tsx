@@ -209,7 +209,7 @@ const Test: FC = () => {
         // }
         kilobytesLabel={t('label.kilobytes')}
         megabytesLabel={t('label.megabytes')}
-        fileButtonText={'New file'}
+        fileButtonText={t('button.add_csv')}
         icon={Attach}
         appearance={AppearanceTypes.Primary}
         size={SizeTypes.M}

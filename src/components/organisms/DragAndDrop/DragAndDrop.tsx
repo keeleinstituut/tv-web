@@ -1,4 +1,11 @@
-import { FC, Fragment, useCallback, useState } from 'react'
+import {
+  Dispatch,
+  FC,
+  Fragment,
+  SetStateAction,
+  useCallback,
+  useState,
+} from 'react'
 import { useDropzone } from 'react-dropzone'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as File } from 'assets/icons/file.svg'
@@ -14,6 +21,74 @@ import classes from './styles.module.scss'
 
 type FileProps = Omit<FileImportProps, 'helperText' | 'fileButtonText'> & {
   isDragAndDropOpen?: boolean
+  setFileContent?: Dispatch<SetStateAction<string>>
+  setFiles?: Dispatch<SetStateAction<File[]>>
+}
+
+const DragAndDropContent: FC<FileProps> = ({
+  name,
+  inputFileType,
+  dropFilesText,
+  dragFilesText,
+  dropFilesButtonText,
+  multipleFilesText,
+  dropButtonText,
+  isDragAndDropOpen,
+  setFileContent,
+  setFiles,
+}) => {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      acceptedFiles.forEach((file) => {
+        const reader = new FileReader()
+
+        reader.onload = () => {
+          const currentFile = reader.result as string
+          if (setFileContent) {
+            setFileContent(currentFile)
+          }
+        }
+        reader.readAsText(file)
+      })
+      if (setFiles) {
+        setFiles(acceptedFiles)
+      }
+    },
+    [setFileContent, setFiles]
+  )
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+
+  if (!isDragAndDropOpen) return null
+  return (
+    <div {...getRootProps()}>
+      <input
+        id={name}
+        type="file"
+        accept={inputFileType}
+        {...getInputProps()}
+      />
+      <div className={classes.dragAndDropContainer}>
+        <div className={classes.dragAndDropContent}>
+          <p hidden={!isDragActive}>{dropFilesText}</p>
+          <h3 hidden={isDragActive}>{dragFilesText}</h3>
+          <p hidden={isDragActive} className={classes.dragAndDropText}>
+            {dropFilesButtonText}
+            <Button
+              appearance={AppearanceTypes.Primary}
+              size={SizeTypes.S}
+              className={classes.dropButton}
+            >
+              {dropButtonText}
+            </Button>
+          </p>
+        </div>
+        <p hidden={isDragActive} className={classes.multipleFilesText}>
+          {multipleFilesText}
+        </p>
+      </div>
+    </div>
+  )
 }
 
 const DragAndDrop: FC<FileProps> = ({
@@ -34,21 +109,6 @@ const DragAndDrop: FC<FileProps> = ({
   const [files, setFiles] = useState<File[]>([])
   const [fileContent, setFileContent] = useState<string>('')
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    acceptedFiles.forEach((file) => {
-      const reader = new FileReader()
-
-      reader.onload = () => {
-        const currentFile = reader.result as string
-        setFileContent(currentFile)
-      }
-      reader.readAsText(file)
-    })
-    setFiles(acceptedFiles)
-  }, [])
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
-
   const formatFileSize = (sizeInBytes: number): string => {
     const kilobytes = sizeInBytes / 1024
     if (kilobytes < 1024) {
@@ -61,36 +121,18 @@ const DragAndDrop: FC<FileProps> = ({
 
   return (
     <>
-      {isDragAndDropOpen && (
-        //move into separate comp.
-        <div {...getRootProps()}>
-          <input
-            id={name}
-            type="file"
-            accept={inputFileType}
-            {...getInputProps()}
-          />
-          <div className={classes.dragAndDropContainer}>
-            <div className={classes.dragAndDropContent}>
-              <p hidden={!isDragActive}>{dropFilesText}</p>
-              <h3 hidden={isDragActive}>{dragFilesText}</h3>
-              <p hidden={isDragActive} className={classes.dragAndDropText}>
-                {dropFilesButtonText}
-                <Button
-                  appearance={AppearanceTypes.Primary}
-                  size={SizeTypes.S}
-                  className={classes.dropButton}
-                >
-                  {dropButtonText}
-                </Button>
-              </p>
-            </div>
-            <p hidden={isDragActive} className={classes.multipleFilesText}>
-              {multipleFilesText}
-            </p>
-          </div>
-        </div>
-      )}
+      <DragAndDropContent
+        inputFileType={inputFileType}
+        name={name}
+        dropFilesText={dropFilesText}
+        dragFilesText={dragFilesText}
+        dropFilesButtonText={dropFilesButtonText}
+        multipleFilesText={multipleFilesText}
+        dropButtonText={dropButtonText}
+        isDragAndDropOpen={isDragAndDropOpen}
+        setFileContent={setFileContent}
+        setFiles={setFiles}
+      />
       <h5
         hidden={!files?.length}
         className={classNames(files?.length && classes.fileLabel)}

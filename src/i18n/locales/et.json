@@ -34,7 +34,8 @@
     "add_new_order": "Lisa uus tellimus",
     "add_new_role": "lisa uus roll",
     "deactivate_account": "Deaktiveeri konto",
-    "archive_account": "Arhiveeri konto"
+    "archive_account": "Arhiveeri konto",
+    "add_csv": "Lisa .csv"
   },
   "error": {
     "input_title": "Veateade: ",
