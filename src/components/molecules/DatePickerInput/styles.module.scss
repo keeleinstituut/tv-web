@@ -47,6 +47,10 @@
   border: 1px solid $color-error;
 }
 
+.datePickerWrapper {
+  width: 125px;
+}
+
 :global(.react-datepicker-popper[data-placement^='bottom']) {
   padding: 0;
 }

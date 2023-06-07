@@ -158,6 +158,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         error={error}
         className={className}
         ref={clickAwayInputRef}
+        wrapperClass={classes.timePickerWrapper}
       >
         <TimeInput
           name={name}
@@ -168,6 +169,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           error={error}
           showSeconds={showSeconds}
           onChange={onChange}
+          ref={ref}
         />
         <div
           className={

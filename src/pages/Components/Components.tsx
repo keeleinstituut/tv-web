@@ -17,6 +17,7 @@ import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
+import { DropdownSizeTypes } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import {
   showNotification,
   NotificationPropsWithoutClose,
@@ -51,6 +52,8 @@ type FormValues = {
   terms?: string
   name?: string
   datePicker?: string
+  selections?: string
+  multipleSelections?: string
   timePicker?: string
   timePickerSeconds?: string
 }
@@ -104,6 +107,7 @@ const Test: FC = () => {
         required: true,
       },
     },
+
     {
       inputType: InputTypes.Time,
       name: 'timePicker',
@@ -120,6 +124,52 @@ const Test: FC = () => {
       label: 'time picker seconds label',
       ariaLabel: 'time picker seconds aria label',
       showSeconds: true,
+      rules: {
+        required: true,
+      },
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: 'selections',
+      label: 'selections label',
+      ariaLabel: 'selections aria label',
+      options: [
+        { label: 'Option1jhiruguehiue', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
+      ],
+      placeholder: 'Choose option',
+      multiple: false,
+      dropdownSize: DropdownSizeTypes.M,
+      helperText:
+        'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
+      rules: {
+        required: true,
+      },
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: 'multipleSelections',
+      label: 'multipleSelections label',
+      ariaLabel: 'multipleSelections aria label',
+      options: [
+        { label: 'Option 1', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
+        { label: 'Option 5', value: 'Option 5' },
+        { label: 'Option 6', value: 'Option 6' },
+        { label: 'Option ieruhiruthr7', value: 'Option 7' },
+        { label: 'Option 8985759867', value: 'Option 8' },
+      ],
+      placeholder: 'Choose options',
+      multiple: true,
+      buttons: true,
+      cancelButtonLabel: 'Tühista',
+      proceedButtonLabel: 'Salvesta',
+      searchInput: <Fragment />,
+      tags: true,
       rules: {
         required: true,
       },

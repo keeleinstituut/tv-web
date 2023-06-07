@@ -1,12 +1,12 @@
 import {
   memo,
-  FC,
   MouseEvent,
   KeyboardEvent,
   ButtonHTMLAttributes,
   AnchorHTMLAttributes,
   KeyboardEventHandler,
   MouseEventHandler,
+  forwardRef,
 } from 'react'
 import { Link } from 'react-router-dom'
 import Loader from 'components/atoms/Loader/Loader'
@@ -30,57 +30,62 @@ const isKeyboardEvent = (
   return (event as KeyboardEvent).getModifierState !== undefined
 }
 
-const BaseButton: FC<BaseButtonProps> = ({
-  onClick,
-  disabled,
-  className,
-  children,
-  href,
-  loading,
-  hidden,
-  type = 'button',
-  ...rest
-}) => {
-  if (hidden) return null
+const BaseButton = forwardRef<HTMLButtonElement, BaseButtonProps>(
+  function BaseButton(props, ref) {
+    const {
+      onClick,
+      disabled,
+      className,
+      children,
+      href,
+      loading,
+      hidden,
+      type = 'button',
+      ...rest
+    } = props
 
-  const onClickHandler = <T extends HTMLElement>(
-    event: MouseEvent<T> | KeyboardEvent
-  ) => {
-    if (disabled || loading || !onClick) return
-    if (isKeyboardEvent(event)) {
-      const handlePress = onClick as unknown as KeyboardEventHandler
-      handlePress(event)
-    } else (onClick as unknown as MouseEventHandler<T>)(event)
-  }
+    if (hidden) return null
 
-  // For links we use <Link> from react-router-dom
-  if (href) {
+    const onClickHandler = <T extends HTMLElement>(
+      event: MouseEvent<T> | KeyboardEvent
+    ) => {
+      if (disabled || loading || !onClick) return
+      if (isKeyboardEvent(event)) {
+        const handlePress = onClick as unknown as KeyboardEventHandler
+        handlePress(event)
+      } else (onClick as unknown as MouseEventHandler<T>)(event)
+    }
+
+    // For links we use <Link> from react-router-dom
+    if (href) {
+      return (
+        <Link
+          {...rest}
+          to={disabled ? '#' : href}
+          onClick={onClickHandler}
+          role="button"
+          tabIndex={0}
+          className={className}
+        >
+          {loading ? <Loader loading={loading} /> : children}
+        </Link>
+      )
+    }
+
+    // For other clickable elements that are not links, we use a button
     return (
-      <Link
+      <button
         {...rest}
-        to={disabled ? '#' : href}
+        disabled={disabled}
+        type={type}
+        className={classNames(className)}
         onClick={onClickHandler}
-        role="button"
-        tabIndex={0}
-        className={className}
+        ref={ref}
       >
         {loading ? <Loader loading={loading} /> : children}
-      </Link>
+      </button>
     )
   }
-
-  // For other clickable elements that are not links, we use a button
-  return (
-    <button
-      {...rest}
-      disabled={disabled}
-      type={type}
-      className={classNames(className)}
-      onClick={onClickHandler}
-    >
-      {loading ? <Loader loading={loading} /> : children}
-    </button>
-  )
-}
+)
 
 export default memo(BaseButton, isEqual)
