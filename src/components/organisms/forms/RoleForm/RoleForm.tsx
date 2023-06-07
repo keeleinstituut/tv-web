@@ -156,7 +156,7 @@ const RoleForm: FC<RoleFormProps> = ({
           map(typedErrorData.errors, (errorsArray, key) => {
             const typedKey = key as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
-            setError(typedKey, { type: 'custom', message: errorString })
+            setError(typedKey, { type: 'backend', message: errorString })
           })
         }
       }

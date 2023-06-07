@@ -34,3 +34,12 @@ export interface UserPostType {
   phone?: string
   email?: string
 }
+
+export interface UserCsvType {
+  roles?: string[]
+  phone?: string
+  email?: string
+  name?: string
+  personal_identification_code?: string
+  department?: string
+}

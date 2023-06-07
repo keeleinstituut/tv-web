@@ -33,7 +33,7 @@ export interface DynamicFormProps<Type extends FieldValues> {
   onSubmit?: FormEventHandler<HTMLFormElement>
 }
 
-function FormInput<Type extends FieldValues>({
+export function FormInput<Type extends FieldValues>({
   name,
   rules,
   shouldUnregister,

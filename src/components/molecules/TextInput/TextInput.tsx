@@ -2,6 +2,7 @@ import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './styles.module.scss'
+import { omit } from 'lodash'
 
 import InputError from 'components/atoms/InputError/InputError'
 import { InputHTMLAttributes } from 'react'
@@ -29,7 +30,6 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       disabled,
       ...rest
     } = props
-
     // Might need event handler wrappers here
     // Essentially this is just ariaLabel || label, but typescript seems to fail here
     return (
@@ -56,7 +56,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               {...rest}
             />
           </Control>
-          <InputError {...error} className={classes.error} />
+          <InputError {...omit(error, 'ref')} className={classes.error} />
         </div>
       </Field>
     )

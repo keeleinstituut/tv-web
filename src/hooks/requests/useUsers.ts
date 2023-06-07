@@ -51,3 +51,25 @@ export const useUpdateUser = ({ userId }: { userId?: string }) => {
     isLoading,
   }
 }
+
+export const useValidateUsers = () => {
+  const formData = new FormData()
+  const {
+    mutateAsync: validateUsers,
+    isLoading,
+    error,
+  } = useMutation({
+    mutationKey: ['csv'],
+    mutationFn: async (file: File) => {
+      console.warn('inside mutation', file)
+      formData.append('file', file, 'file.csv')
+      return apiClient.post(endpoints.VALIDATE_CSV, formData)
+    },
+  })
+
+  return {
+    validateUsers,
+    isLoading,
+    error,
+  }
+}

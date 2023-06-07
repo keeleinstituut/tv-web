@@ -2,6 +2,7 @@ import { ReactNode, forwardRef } from 'react'
 import { Field, Label } from '@radix-ui/react-form'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
+import { omit } from 'lodash'
 import InputError from 'components/atoms/InputError/InputError'
 
 import classes from './styles.module.scss'
@@ -29,7 +30,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
           ref={ref}
         >
           {children}
-          <InputError {...error} />
+          <InputError {...omit(error, 'ref')} />
         </div>
       </Field>
     )

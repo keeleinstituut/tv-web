@@ -14,6 +14,7 @@ import DatePickerInput, {
 import TimePickerInput, {
   TimePickerInputProps,
 } from 'components/molecules/TimePickerInput/TimePickerInput'
+import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
 
 // Extend all props of an input with the corresponding inputType
 
@@ -40,11 +41,12 @@ type TimePickerPropsWithType = TimePickerInputProps & {
   inputType: InputTypes.Time
 }
 
-export type InputPropsByType =
+export type InputPropsByType = (
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
   | DatePickerPropsWithType
   | TimePickerPropsWithType
+) & { onlyDisplay?: boolean }
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
   InputPropsByType,
@@ -54,17 +56,38 @@ export type InputPropsWithoutControllerProps = SimpleUnionOmit<
 // eslint-disable-next-line react/display-name
 const InputComponent = forwardRef<HTMLInputElement, InputPropsByType>(
   (props, ref) => {
-    const { inputType } = props
+    const { inputType, onlyDisplay } = props
+
+    if (onlyDisplay) {
+      return <DisplayValue value={props.value} />
+    }
 
     switch (inputType) {
       case InputTypes.Text:
-        return <TextInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <TextInput {...omit(props, ['inputType', 'onlyDisplay'])} ref={ref} />
+        )
       case InputTypes.Checkbox:
-        return <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <CheckBoxInput
+            {...omit(props, ['inputType', 'onlyDisplay'])}
+            ref={ref}
+          />
+        )
       case InputTypes.Date:
-        return <DatePickerInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <DatePickerInput
+            {...omit(props, ['inputType', 'onlyDisplay'])}
+            ref={ref}
+          />
+        )
       case InputTypes.Time:
-        return <TimePickerInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <TimePickerInput
+            {...omit(props, ['inputType', 'onlyDisplay'])}
+            ref={ref}
+          />
+        )
       default:
         return assertNever(inputType)
     }

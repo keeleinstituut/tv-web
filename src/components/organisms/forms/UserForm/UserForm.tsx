@@ -191,9 +191,9 @@ const UserForm: FC<UserFormProps> = ({
             const typedKey = key as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
             if (startsWith(typedKey, 'user')) {
-              setError('name', { type: 'custom', message: errorString })
+              setError('name', { type: 'backend', message: errorString })
             } else {
-              setError(typedKey, { type: 'custom', message: errorString })
+              setError(typedKey, { type: 'backend', message: errorString })
             }
           })
         }

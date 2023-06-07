@@ -31,14 +31,18 @@
     "add_new_order": "Lisa uus tellimus",
     "add_new_role": "lisa uus roll",
     "deactivate_account": "Deaktiveeri konto",
-    "archive_account": "Arhiveeri konto"
+    "archive_account": "Arhiveeri konto",
+    "save_and_send_notifications": "Salvesta ja saada teavitused"
   },
   "error": {
     "input_title": "Veateade: ",
     "invalid_email": "Vale formaat",
     "invalid_phone": "Vale formaat",
     "unknown_error": "Teadmata viga: {{code}}",
-    "required": "Kohustuslik väli"
+    "required": "Kohustuslik väli",
+    "invalid_pic": "Vale formaat",
+    "role_required": "Vali vähemalt 1 roll",
+    "invalid_username": "Palun lisage ka perekonnanimi"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -123,6 +127,9 @@
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
     "updated_at": "Kasutaja andmed muudetud {{time}}"
+  },
+  "users": {
+    "add_users": "Kasutajate lisamine"
   },
   "success": {
     "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
