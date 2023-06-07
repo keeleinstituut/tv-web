@@ -61,7 +61,6 @@ export const useValidateUsers = () => {
   } = useMutation({
     mutationKey: ['csv'],
     mutationFn: async (file: File) => {
-      console.warn('inside mutation', file)
       formData.append('file', file, 'file.csv')
       return apiClient.post(endpoints.VALIDATE_CSV, formData)
     },

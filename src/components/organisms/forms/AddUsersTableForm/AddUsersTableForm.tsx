@@ -137,7 +137,6 @@ const AddUsersTableForm: FC = () => {
               })
               return typedKey
             })
-            console.warn('fieldsWithErrors', errorFields)
             setRowsWithErrors({
               ...rowsWithErrors,
               [`row-${row}`]: errorFields,
@@ -163,7 +162,6 @@ const AddUsersTableForm: FC = () => {
     }
     if (uploadedFile) {
       const validationPassed = await handleFileValidationAttempt(uploadedFile)
-      console.warn('file validate done, red file', validationPassed)
       fileReader.readAsText(uploadedFile)
     }
   }

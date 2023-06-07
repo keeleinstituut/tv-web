@@ -41,7 +41,6 @@ const useValidators = () => {
   }
 
   const nameValidator = (value?: string) => {
-    console.warn('validating name', size(compact(split(value, ' '))))
     if (value && size(compact(split(value, ' '))) > 1) return true
     return t('error.invalid_username')
   }
