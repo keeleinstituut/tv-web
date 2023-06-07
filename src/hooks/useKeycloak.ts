@@ -12,9 +12,13 @@ import { setAccessToken, apiClient } from 'api'
 import axios from 'axios'
 import { endpoints } from 'api/endpoints'
 import { InstitutionType } from 'types/institutions'
-import { showModal, ModalTypes } from 'components/organisms/modals'
+import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import Keycloak, { KeycloakConfig, KeycloakTokenParsed } from 'keycloak-js'
 import { PrivilegeKey } from 'types/privileges'
+import { useNavigate } from 'react-router-dom'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import i18n from 'i18n/i18n'
 
 // TODO: might separate refresh token logic from here
 
@@ -56,7 +60,8 @@ const keyCloakConfig = mapKeys(
   (_variable: string | undefined, key: string) =>
     camelCase(trim(key, 'REACT_APP_KEYCLOAK_'))
 ) as unknown as KeycloakConfig
-const keycloak = new Keycloak(keyCloakConfig)
+
+export const keycloak = new Keycloak(keyCloakConfig)
 
 let refreshInterval: NodeJS.Timer | undefined
 
@@ -66,10 +71,11 @@ const onVisibilityChange = () => {
   }
 }
 
-const startRefreshingToken = () => {
+export const startRefreshingToken = (onFail?: () => void) => {
   const refreshToken = keycloak.refreshToken
   const tokenExpiry = keycloak.tokenParsed?.exp
   if (!tokenExpiry || !refreshToken) {
+    if (onFail) onFail()
     return null
   }
   if (refreshInterval) {
@@ -116,6 +122,7 @@ export const selectInstitution = async (institutionId?: string) => {
 }
 
 const useKeycloak = () => {
+  const navigate = useNavigate()
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
   const [userInfo, setUserIdInfo] = useState<UserInfoType>({})
   const handleLogoutWithError = useCallback(() => {
@@ -141,12 +148,22 @@ const useKeycloak = () => {
     const initKeycloak = async () => {
       const isKeycloakUserLoggedIn = await keycloak.init({
         onLoad: 'check-sso',
-        checkLoginIframe: false,
         silentCheckSsoRedirectUri:
           window.location.origin + '/silent-check-sso.html',
       })
 
       if (!isKeycloakUserLoggedIn) {
+        // Currently will show error with any hash
+        // If we add any extra hash parameters later, then this should be changed
+        if (window.location.hash) {
+          showNotification({
+            type: NotificationTypes.Error,
+            title: i18n.t('notification.error'),
+            content: i18n.t('notification.token_expired_error'),
+          })
+          navigate(window.location.pathname)
+        }
+
         return
       }
 
