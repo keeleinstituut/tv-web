@@ -9,22 +9,14 @@ interface InputErrorProps {
   type?: FieldError['type']
   message?: FieldError['message']
   className?: string
-  selectionsError?: string
 }
 
-const InputError: FC<InputErrorProps> = ({
-  type,
-  message,
-  className,
-  selectionsError,
-}) => {
+const InputError: FC<InputErrorProps> = ({ type, message, className }) => {
   const { t } = useTranslation()
   if (!message && type !== 'required') return null
   const messageToShow = message || t('error.required')
   return (
-    <div
-      className={classNames(classes.errorContainer, className, selectionsError)}
-    >
+    <div className={classNames(classes.errorContainer, className)}>
       <img src={errorOutline} alt={t('error.input_title')} />
       <span>
         <b>{t('error.input_title')}</b>

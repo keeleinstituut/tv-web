@@ -14,7 +14,7 @@ export type InputWrapperProps = {
   children?: ReactNode
   onClick?: () => void
   wrapperClass?: string
-  selectionsError?: string
+  errorClass?: string
 }
 
 const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
@@ -27,7 +27,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
       children,
       onClick,
       wrapperClass,
-      selectionsError,
+      errorClass,
     },
     ref
   ) {
@@ -49,7 +49,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
           onClick={onClick}
         >
           {children}
-          <InputError {...error} selectionsError={selectionsError} />
+          <InputError {...error} className={errorClass} />
         </div>
       </Field>
     )

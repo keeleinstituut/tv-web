@@ -21,7 +21,7 @@ export interface SelectionControlsInputProps {
   error?: FieldError
   label?: JSX.Element | string
   ariaLabel: string
-  value?: string
+  value?: string | string[]
   options: {
     label: string
     value: string
@@ -95,7 +95,7 @@ const SelectionControlsInput = forwardRef<
       wrapperClass={classes[dropdownSize || 'l']}
       onClick={toggleDropdown}
       ref={clickAwayInputRef}
-      selectionsError={classes.selectionsError}
+      errorClass={classes.selectionsError}
     >
       <BaseButton
         className={classNames(

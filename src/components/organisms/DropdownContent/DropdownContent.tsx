@@ -35,8 +35,9 @@ const DropdownContent: FC<DropdownContentProps> = ({
   selectedOptionObjects,
   tags,
 }) => {
-  const [selectedValue, setSelectedValue] = useState<string[]>(
-    value ? (Array.isArray(value) ? value : [value]) : []
+  const initialValue = value || multiple ? [] : ''
+  const [selectedValue, setSelectedValue] = useState<string | string[]>(
+    initialValue
   )
 
   const handleSingleSelect = (selectedOption: string) => {
@@ -44,15 +45,14 @@ const DropdownContent: FC<DropdownContentProps> = ({
   }
 
   const handleMultipleSelect = (selectedOption: string) => {
-    const selectedValues = Array.isArray(selectedValue)
-      ? [...selectedValue]
-      : []
-    const optionIndex = selectedValues.indexOf(selectedOption)
+    // TODO: type of value and of selectedValue should be inferred from "multiple" prop
+    const typedSelectedValue = selectedValue as string[]
+    const optionIndex = typedSelectedValue.indexOf(selectedOption)
 
     const newSelectedValues =
       optionIndex === -1
-        ? [...selectedValues, selectedOption]
-        : selectedValues.filter((value) => value !== selectedOption)
+        ? [...typedSelectedValue, selectedOption]
+        : typedSelectedValue.filter((value) => value !== selectedOption)
 
     setSelectedValue(newSelectedValues)
 
@@ -66,7 +66,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
   }
 
   const handleCancel = () => {
-    setSelectedValue([])
+    setSelectedValue(initialValue)
   }
 
   return (
@@ -88,11 +88,11 @@ const DropdownContent: FC<DropdownContentProps> = ({
                 {multiple && (
                   <CheckBoxInput
                     name={name}
-                    ariaLabel={ariaLabel}
-                    label={option?.label}
+                    ariaLabel={option.label}
+                    label={option.label}
                     value={isMultiSelected || false}
                     className={classes.option}
-                    onChange={() => handleMultipleSelect(option?.value)}
+                    onChange={() => handleMultipleSelect(option.value)}
                   />
                 )}
                 <p
