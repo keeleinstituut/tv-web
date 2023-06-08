@@ -36,7 +36,7 @@ export interface UserPostType {
 }
 
 export interface UserCsvType {
-  roles?: string[]
+  role?: string[]
   phone?: string
   email?: string
   name?: string

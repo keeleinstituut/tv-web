@@ -38,8 +38,10 @@
     "deactivate_account": "Deaktiveeri konto",
     "archive_account": "Arhiveeri konto",
     "save_and_send_notifications": "Salvesta ja saada teavitused",
+    "save": "Salvesta",
     "add_csv": "Lisa .csv",
-    "choose": "Vali"
+    "choose": "Vali",
+    "add_new_csv": "Lisa uus .csv"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -153,5 +155,8 @@
     "announcement": "Teade",
     "error": "Viga",
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse"
+  },
+  "helper": {
+    "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga."
   }
 }

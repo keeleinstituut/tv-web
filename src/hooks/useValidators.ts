@@ -1,4 +1,4 @@
-import { isArray, isEmpty, split, size, compact } from 'lodash'
+import { isArray, isEmpty } from 'lodash'
 import { useTranslation } from 'react-i18next'
 
 const emailIsCorrect = (email: string) =>
@@ -40,17 +40,11 @@ const useValidators = () => {
     return true
   }
 
-  const nameValidator = (value?: string) => {
-    if (value && size(compact(split(value, ' '))) > 1) return true
-    return t('error.invalid_username')
-  }
-
   return {
     emailValidator,
     phoneValidator,
     picValidator,
     rolesValidator,
-    nameValidator,
   }
 }
 

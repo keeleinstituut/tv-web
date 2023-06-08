@@ -15,7 +15,7 @@ export const usersCsvFieldsToKeys = {
   Meiliaadress: 'email',
   Telefoninumber: 'phone',
   Üksus: 'department',
-  Roll: 'roles',
+  Roll: 'role',
 }
 
 export const deepOmit = <

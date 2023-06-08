@@ -169,8 +169,6 @@ const Test: FC = () => {
       placeholder: 'Choose options',
       multiple: true,
       buttons: true,
-      cancelButtonLabel: 'Tühista',
-      proceedButtonLabel: 'Salvesta',
       searchInput: <Fragment />,
       tags: true,
       rules: {
@@ -288,8 +286,8 @@ const Test: FC = () => {
       <FileImport
         helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
         fileButtonText={t('button.add_csv')}
-        ariaLabel={t('label.button_arrow')}
         inputFileType={InputFileTypes.Csv}
+        allowMultiple
       />
       <Button
         appearance={AppearanceTypes.Primary}

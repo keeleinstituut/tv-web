@@ -1,7 +1,7 @@
-import { ChangeEventHandler, FC, useCallback, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button'
-import { reduce, map, join, isEmpty, keys, includes } from 'lodash'
+import { reduce, map, join, isEmpty, keys, includes, compact } from 'lodash'
 import { InputTypes } from 'components/organisms/DynamicInputComponent/DynamicInputComponent'
 import { Root } from '@radix-ui/react-form'
 import classes from './styles.module.scss'
@@ -13,9 +13,13 @@ import {
   usersCsvFieldsToKeys,
 } from 'helpers'
 import { CsvValidationError } from 'api/errorHandler'
+import FileImport, {
+  InputFileTypes,
+} from 'components/organisms/FileImport/FileImport'
 import { FormInput } from 'components/organisms/DynamicForm/DynamicForm'
 import useValidators from 'hooks/useValidators'
 import { useTranslation } from 'react-i18next'
+import { useRolesFetch } from 'hooks/requests/useRoles'
 
 interface FormValues {
   [key: string]: UserCsvType
@@ -29,70 +33,10 @@ const AddUsersTableForm: FC = () => {
   const { validateUsers } = useValidateUsers()
   const [tableData, setTableData] = useState<UserCsvType[]>([])
   const [rowsWithErrors, setRowsWithErrors] = useState<ErrorsInRow>({})
+  const { existingRoles = [] } = useRolesFetch()
   const { t } = useTranslation()
-  const {
-    emailValidator,
-    picValidator,
-    rolesValidator,
-    phoneValidator,
-    nameValidator,
-  } = useValidators()
-
-  const getRulesByKey = useCallback(
-    (key: keyof UserCsvType) => {
-      switch (key) {
-        case 'personal_identification_code':
-          return {
-            required: true,
-            validate: (value: unknown) => {
-              const typedValue = value as string
-              return picValidator(typedValue)
-            },
-          }
-        case 'email':
-          return {
-            required: true,
-            validate: (value: unknown) => {
-              const typedValue = value as string
-              return emailValidator(typedValue)
-            },
-          }
-        case 'roles':
-          return {
-            required: true,
-            validate: (value: unknown) => {
-              const typedValue = value as string[]
-              return rolesValidator(typedValue)
-            },
-          }
-        case 'phone':
-          return {
-            required: true,
-            validate: (value: unknown) => {
-              const typedValue = value as string
-              return phoneValidator(typedValue)
-            },
-          }
-        case 'name':
-          return {
-            required: true,
-            validate: (value: unknown) => {
-              const typedValue = value as string
-              return nameValidator(typedValue)
-            },
-          }
-        default:
-          return {}
-      }
-    },
-    [
-      emailValidator,
-      nameValidator,
-      phoneValidator,
-      picValidator,
-      rolesValidator,
-    ]
-  )
+  const { emailValidator, picValidator, rolesValidator, phoneValidator } =
+    useValidators()
 
   const formValues = isEmpty(tableData)
     ? {}
@@ -116,6 +60,52 @@ const AddUsersTableForm: FC = () => {
       keepErrors: true,
     },
   })
+
+  const getRulesByKey = useCallback(
+    (key: keyof UserCsvType) => {
+      switch (key) {
+        case 'personal_identification_code':
+          return {
+            required: true,
+            validate: (value: unknown) => {
+              const typedValue = value as string
+              return picValidator(typedValue)
+            },
+          }
+        case 'email':
+          return {
+            required: true,
+            validate: (value: unknown) => {
+              const typedValue = value as string
+              return emailValidator(typedValue)
+            },
+          }
+        case 'role':
+          return {
+            required: true,
+            validate: (value: unknown) => {
+              const typedValue = value as string[]
+              return rolesValidator(typedValue)
+            },
+          }
+        case 'phone':
+          return {
+            required: true,
+            validate: (value: unknown) => {
+              const typedValue = value as string
+              return phoneValidator(typedValue)
+            },
+          }
+        case 'name':
+          return {
+            required: true,
+          }
+        default:
+          return {}
+      }
+    },
+    [emailValidator, phoneValidator, picValidator, rolesValidator]
+  )
 
   const handleFileValidationAttempt = useCallback(
     async (file: File) => {
@@ -149,10 +139,7 @@ const AddUsersTableForm: FC = () => {
     [rowsWithErrors, setError, validateUsers]
   )
 
-  const handleFileUploaded: ChangeEventHandler<HTMLInputElement> = async (
-    event
-  ) => {
-    const uploadedFile = event.target.files?.[0]
+  const handleFileUploaded = async (uploadedFile: File) => {
     const fileReader = new FileReader()
     fileReader.onload = async (event) => {
       if (event?.target?.result) {
@@ -161,12 +148,10 @@ const AddUsersTableForm: FC = () => {
       }
     }
     if (uploadedFile) {
-      const validationPassed = await handleFileValidationAttempt(uploadedFile)
+      await handleFileValidationAttempt(uploadedFile)
       fileReader.readAsText(uploadedFile)
     }
   }
-
-  const columns = keys(tableData[0])
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (formValues, e) => {
@@ -182,16 +167,50 @@ const AddUsersTableForm: FC = () => {
     [handleFileValidationAttempt]
   )
 
+  const onDeleteFile = useCallback(() => {
+    setTableData([])
+  }, [])
+
   // TODO: might add loader here, while csv is uploading
   // if (isLoading) {
   //   return <Loader loading />
   // }
 
+  const roleOptions = compact(
+    map(existingRoles, ({ id, name }) => {
+      if (id && name) {
+        return {
+          label: name,
+          value: id,
+        }
+      }
+    })
+  )
+
+  const columns = keys(tableData[0])
+
   return (
     <>
-      <input type="file" onChange={handleFileUploaded} />
-      <Root className={classes.container} onSubmit={handleSubmit(onSubmit)}>
-        <Button type="submit">{t('button.save_and_send_notifications')}</Button>
+      <div className={classes.row}>
+        <FileImport
+          helperText={t('helper.csv_upload_helper')}
+          fileButtonText={t('button.add_csv')}
+          fileButtonChangeText={t('button.add_new_csv')}
+          onChange={handleFileUploaded}
+          inputFileType={InputFileTypes.Csv}
+          onDelete={onDeleteFile}
+          allowMultiple={false}
+        />
+        <Button
+          onClick={handleSubmit(onSubmit)}
+          type="submit"
+          hidden={isEmpty(tableData)}
+        >
+          {t('button.save_and_send_notifications')}
+        </Button>
+      </div>
+
+      <Root onSubmit={handleSubmit(onSubmit)}>
         <table>
           <thead>
             <tr>
@@ -214,9 +233,21 @@ const AddUsersTableForm: FC = () => {
                         <FormInput
                           name={`row-${index}.${key}`}
                           ariaLabel={key}
-                          inputType={InputTypes.Text}
                           control={control}
                           onlyDisplay={!includes(rowErrors, typedKey)}
+                          {...(typedKey === 'role'
+                            ? {
+                                options: roleOptions,
+                                inputType: InputTypes.Selections,
+                                multiple: true,
+                                buttons: true,
+                                placeholder: t('placeholder.roles'),
+                                tags: true,
+                              }
+                            : { inputType: InputTypes.Text })}
+                          {...(typedKey === 'personal_identification_code'
+                            ? { type: 'number' }
+                            : {})}
                           rules={getRulesByKey(typedKey)}
                         />
                       </td>

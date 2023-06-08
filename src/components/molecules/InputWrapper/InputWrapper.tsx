@@ -41,11 +41,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
           {label}
         </Label>
         <div
-          className={classNames(
-            classes.wrapper,
-            error && classes.errorMessage,
-            wrapperClass
-          )}
+          className={classNames(classes.wrapper, wrapperClass)}
           ref={ref}
           onClick={onClick}
         >

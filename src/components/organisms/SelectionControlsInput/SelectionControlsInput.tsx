@@ -32,8 +32,6 @@ export interface SelectionControlsInputProps {
   multiple?: boolean
   helperText?: string
   buttons?: boolean
-  cancelButtonLabel?: string
-  proceedButtonLabel?: string
   searchInput?: ReactElement
   dropdownSize?: DropdownSizeTypes
   tags?: boolean
@@ -56,8 +54,6 @@ const SelectionControlsInput = forwardRef<
     multiple = false,
     helperText,
     buttons = false,
-    cancelButtonLabel,
-    proceedButtonLabel,
     searchInput,
     dropdownSize,
     tags = false,
@@ -101,6 +97,7 @@ const SelectionControlsInput = forwardRef<
         className={classNames(
           classes.toggleDropdown,
           disabled && classes.disabledDropdown,
+          error && classes.error,
           classes[dropdownSize || 'l']
         )}
         id={name}
@@ -129,8 +126,6 @@ const SelectionControlsInput = forwardRef<
         multiple={multiple}
         value={value}
         buttons={buttons}
-        cancelButtonLabel={cancelButtonLabel}
-        proceedButtonLabel={proceedButtonLabel}
         helperText={helperText}
         selectedOptionObjects={selectedOptionObjects}
         tags={tags}
