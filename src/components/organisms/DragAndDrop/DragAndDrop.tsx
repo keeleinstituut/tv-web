@@ -1,11 +1,4 @@
-import {
-  Dispatch,
-  FC,
-  Fragment,
-  SetStateAction,
-  useCallback,
-  useState,
-} from 'react'
+import { FC, Fragment, useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as File } from 'assets/icons/file.svg'
@@ -13,30 +6,27 @@ import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
-import { map } from 'lodash'
+import { map, filter, size } from 'lodash'
 import classNames from 'classnames'
 import { FileImportProps } from 'components/organisms/FileImport/FileImport'
 
 import classes from './styles.module.scss'
+import { useTranslation } from 'react-i18next'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
 type FileProps = Omit<FileImportProps, 'helperText' | 'fileButtonText'> & {
   isDragAndDropOpen?: boolean
-  setFileContent?: Dispatch<SetStateAction<string>>
-  setFiles?: Dispatch<SetStateAction<File[]>>
+  setFileContent?: (string: string) => void
+  setFiles?: (files: File[]) => void
 }
 
 const DragAndDropContent: FC<FileProps> = ({
-  name,
   inputFileType,
-  dropFilesText,
-  dragFilesText,
-  dropFilesButtonText,
-  multipleFilesText,
-  dropButtonText,
   isDragAndDropOpen,
   setFileContent,
   setFiles,
 }) => {
+  const { t } = useTranslation()
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       acceptedFiles.forEach((file) => {
@@ -61,30 +51,24 @@ const DragAndDropContent: FC<FileProps> = ({
 
   if (!isDragAndDropOpen) return null
   return (
-    <div {...getRootProps()}>
-      <input
-        id={name}
-        type="file"
-        accept={inputFileType}
-        {...getInputProps()}
-      />
+    <div {...getRootProps()} className={classes.container}>
+      <input type="file" accept={inputFileType} {...getInputProps()} />
       <div className={classes.dragAndDropContainer}>
         <div className={classes.dragAndDropContent}>
-          <p hidden={!isDragActive}>{dropFilesText}</p>
-          <h3 hidden={isDragActive}>{dragFilesText}</h3>
+          <h3> {isDragActive ? t('file.drop_files') : t('file.drag_drop')}</h3>
           <p hidden={isDragActive} className={classes.dragAndDropText}>
-            {dropFilesButtonText}
+            {t('file.file_here_or')}
             <Button
               appearance={AppearanceTypes.Primary}
               size={SizeTypes.S}
               className={classes.dropButton}
             >
-              {dropButtonText}
+              {t('button.choose')}
             </Button>
           </p>
         </div>
-        <p hidden={isDragActive} className={classes.multipleFilesText}>
-          {multipleFilesText}
+        <p className={classes.multipleFilesText}>
+          {t('file.pick_multiple_files')}
         </p>
       </div>
     </div>
@@ -92,43 +76,41 @@ const DragAndDropContent: FC<FileProps> = ({
 }
 
 const DragAndDrop: FC<FileProps> = ({
-  fileLabel,
-  onClick,
+  onDelete,
   error,
-  kilobytesLabel,
-  megabytesLabel,
   name,
   inputFileType,
-  dropFilesText,
-  dragFilesText,
-  dropFilesButtonText,
-  multipleFilesText,
-  dropButtonText,
   isDragAndDropOpen,
+  setFileContent,
 }) => {
+  const { t } = useTranslation()
   const [files, setFiles] = useState<File[]>([])
-  const [fileContent, setFileContent] = useState<string>('')
 
   const formatFileSize = (sizeInBytes: number): string => {
     const kilobytes = sizeInBytes / 1024
     if (kilobytes < 1024) {
-      return kilobytes.toFixed(2) + ` ${kilobytesLabel}`
+      return kilobytes.toFixed(2) + ` ${t('label.kilobytes')}`
     }
 
     const megabytes = kilobytes / 1024
-    return megabytes.toFixed(2) + ` ${megabytesLabel}`
+    return megabytes.toFixed(2) + ` ${t('label.megabytes')}`
   }
+
+  const handleDelete = useCallback(
+    (index: number) => {
+      setFiles(filter(files, (_, fileIndex) => index !== fileIndex))
+      if (onDelete) {
+        onDelete()
+      }
+    },
+    [files, onDelete]
+  )
 
   return (
     <>
       <DragAndDropContent
         inputFileType={inputFileType}
         name={name}
-        dropFilesText={dropFilesText}
-        dragFilesText={dragFilesText}
-        dropFilesButtonText={dropFilesButtonText}
-        multipleFilesText={multipleFilesText}
-        dropButtonText={dropButtonText}
         isDragAndDropOpen={isDragAndDropOpen}
         setFileContent={setFileContent}
         setFiles={setFiles}
@@ -137,7 +119,7 @@ const DragAndDrop: FC<FileProps> = ({
         hidden={!files?.length}
         className={classNames(files?.length && classes.fileLabel)}
       >
-        {fileLabel}
+        {size(files) > 1 ? t('label.added_files') : t('label.added_file')}
       </h5>
       <ul
         className={classNames(
@@ -153,7 +135,9 @@ const DragAndDrop: FC<FileProps> = ({
                 <p className={classes.fileName}>{file?.name}</p>
                 <p className={classes.fileSize}>{formatFileSize(file?.size)}</p>
               </div>
-              <Delete onClick={onClick} />
+              <BaseButton onClick={() => handleDelete(index)}>
+                <Delete />
+              </BaseButton>
             </Fragment>
           )
         })}
@@ -164,7 +148,6 @@ const DragAndDrop: FC<FileProps> = ({
       >
         {error}
       </p>
-      <div className={classes.fileContent}>{fileContent}</div>
     </>
   )
 }

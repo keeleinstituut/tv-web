@@ -20,7 +20,6 @@ import Modal, {
 import FileImport, {
   InputFileTypes,
 } from 'components/organisms/FileImport/FileImport'
-import { ReactComponent as Attach } from 'assets/icons/attach.svg'
 
 type FormValues = {
   email?: string
@@ -203,25 +202,9 @@ const Test: FC = () => {
       </Modal>
       <FileImport
         helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
-        fileLabel={t('label.added_file')}
-        // error={
-        //   'Faili andmeväljad on vigased. Palun parandada väljad all tabelis. Pärast vigaste väljade muutmist klõpsa  „Salvesta ja saada teavitused“ nupule. Seejärel saavad kasutajad teate konto loomisest.'
-        // }
-        kilobytesLabel={t('label.kilobytes')}
-        megabytesLabel={t('label.megabytes')}
         fileButtonText={t('button.add_csv')}
-        icon={Attach}
-        appearance={AppearanceTypes.Primary}
-        size={SizeTypes.M}
         ariaLabel={t('label.button_arrow')}
-        iconPositioning={IconPositioningTypes.Right}
-        name={'csvFileInput'}
         inputFileType={InputFileTypes.Csv}
-        dropFilesText={'Drop the files here...'}
-        dragFilesText={'Drag & drop'}
-        dropFilesButtonText={'a file here or'}
-        multipleFilesText={'To choose multiple files hold down CTRL/CMND'}
-        dropButtonText={'Choose'}
       />
     </>
   )
