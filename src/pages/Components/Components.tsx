@@ -12,20 +12,51 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
-import Modal, {
+import ModalBase, {
   ModalSizeTypes,
   ButtonPositionTypes,
   TitleFontTypes,
-} from 'components/organisms/Modal/Modal'
+} from 'components/organisms/ModalBase/ModalBase'
+import { DropdownSizeTypes } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import FileImport, {
   InputFileTypes,
 } from 'components/organisms/FileImport/FileImport'
+import {
+  showNotification,
+  NotificationPropsWithoutClose,
+} from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+
+const dummyNotifications: NotificationPropsWithoutClose[] = [
+  {
+    title: 'Test Success',
+    content: 'Random success message here with some longer text',
+    type: NotificationTypes.Success,
+  },
+  {
+    title: 'Test Warning',
+    content: 'Random warning message here with some longer text',
+    type: NotificationTypes.Warning,
+  },
+  {
+    title: 'Test Error',
+    content: 'Random error message here with some longer text',
+    type: NotificationTypes.Error,
+  },
+  {
+    title: 'Test Info',
+    content: 'Random info message here with some longer text',
+    type: NotificationTypes.Info,
+  },
+]
 
 type FormValues = {
   email?: string
   terms?: string
   name?: string
   datePicker?: string
+  selections?: string
+  multipleSelections?: string
   timePicker?: string
   timePickerSeconds?: string
 }
@@ -79,6 +110,7 @@ const Test: FC = () => {
         required: true,
       },
     },
+
     {
       inputType: InputTypes.Time,
       name: 'timePicker',
@@ -99,6 +131,52 @@ const Test: FC = () => {
         required: true,
       },
     },
+    {
+      inputType: InputTypes.Selections,
+      name: 'selections',
+      label: 'selections label',
+      ariaLabel: 'selections aria label',
+      options: [
+        { label: 'Option1jhiruguehiue', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
+      ],
+      placeholder: 'Choose option',
+      multiple: false,
+      dropdownSize: DropdownSizeTypes.M,
+      helperText:
+        'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
+      rules: {
+        required: true,
+      },
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: 'multipleSelections',
+      label: 'multipleSelections label',
+      ariaLabel: 'multipleSelections aria label',
+      options: [
+        { label: 'Option 1', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
+        { label: 'Option 5', value: 'Option 5' },
+        { label: 'Option 6', value: 'Option 6' },
+        { label: 'Option ieruhiruthr7', value: 'Option 7' },
+        { label: 'Option 8985759867', value: 'Option 8' },
+      ],
+      placeholder: 'Choose options',
+      multiple: true,
+      buttons: true,
+      cancelButtonLabel: 'Tühista',
+      proceedButtonLabel: 'Salvesta',
+      searchInput: <Fragment />,
+      tags: true,
+      rules: {
+        required: true,
+      },
+    },
   ]
 
   const onSubmit: SubmitHandler<FormValues> = useCallback((values, e) => {
@@ -109,6 +187,13 @@ const Test: FC = () => {
     (errors, e) => console.log('on error', errors, e),
     []
   )
+
+  const testNotifications = () => {
+    showNotification(dummyNotifications[0])
+    setTimeout(showNotification, 2000, dummyNotifications[1])
+    setTimeout(showNotification, 4000, dummyNotifications[2])
+    setTimeout(showNotification, 6000, dummyNotifications[3])
+  }
 
   return (
     <>
@@ -129,7 +214,7 @@ const Test: FC = () => {
         />
       </DynamicForm>
 
-      <Modal
+      <ModalBase
         title="Pealkiri"
         size={ModalSizeTypes.Narrow}
         buttonsPosition={ButtonPositionTypes.SpaceBetween}
@@ -199,12 +284,21 @@ const Test: FC = () => {
           account of the system, and expound the actual teachings of the great
           explorer of the truth, the master-builder of human happiness."
         </p>
-      </Modal>
+      </ModalBase>
       <FileImport
         helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
         fileButtonText={t('button.add_csv')}
         ariaLabel={t('label.button_arrow')}
         inputFileType={InputFileTypes.Csv}
+      />
+      <Button
+        appearance={AppearanceTypes.Primary}
+        children="Test notifications"
+        size={SizeTypes.M}
+        icon={ButtonArrow}
+        ariaLabel={t('label.button_arrow')}
+        iconPositioning={IconPositioningTypes.Right}
+        onClick={testNotifications}
       />
     </>
   )

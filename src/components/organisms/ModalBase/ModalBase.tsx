@@ -67,7 +67,7 @@ const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
   )
 }
 
-const Modal: FC<PropsWithChildren<ModalProps>> = ({
+const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
   title,
   trigger,
   children,
@@ -122,4 +122,4 @@ const Modal: FC<PropsWithChildren<ModalProps>> = ({
   )
 }
 
-export default Modal
+export default ModalBase
