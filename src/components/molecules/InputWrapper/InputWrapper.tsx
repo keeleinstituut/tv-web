@@ -13,10 +13,25 @@ export type InputWrapperProps = {
   error?: FieldError
   label?: JSX.Element | string
   children?: ReactNode
+  onClick?: () => void
+  wrapperClass?: string
+  errorClass?: string
 }
 
 const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
-  function InputWrapper({ label, name, error, className, children }, ref) {
+  function InputWrapper(
+    {
+      label,
+      name,
+      error,
+      className,
+      children,
+      onClick,
+      wrapperClass,
+      errorClass,
+    },
+    ref
+  ) {
     return (
       <Field name={name} className={classNames(classes.container, className)}>
         <Label
@@ -26,11 +41,16 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
           {label}
         </Label>
         <div
-          className={classNames(classes.wrapper, error && classes.errorMessage)}
+          className={classNames(
+            classes.wrapper,
+            error && classes.errorMessage,
+            wrapperClass
+          )}
           ref={ref}
+          onClick={onClick}
         >
           {children}
-          <InputError {...omit(error, 'ref')} />
+          <InputError {...omit(error, 'ref')} className={errorClass} />
         </div>
       </Field>
     )

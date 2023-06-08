@@ -7,7 +7,12 @@
     "name": "Nimi",
     "phone": "Telefoni nr",
     "department": "Üksus",
-    "roles": "Rollid"
+    "roles": "Rollid",
+    "added_file": "Lisatud fail",
+    "added_files": "Lisatud failid",
+    "kilobytes": "KB",
+    "megabytes": "MB",
+    "attach_file": "lisa fail"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -32,7 +37,9 @@
     "add_new_role": "lisa uus roll",
     "deactivate_account": "Deaktiveeri konto",
     "archive_account": "Arhiveeri konto",
-    "save_and_send_notifications": "Salvesta ja saada teavitused"
+    "save_and_send_notifications": "Salvesta ja saada teavitused",
+    "add_csv": "Lisa .csv",
+    "choose": "Vali"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -130,6 +137,12 @@
   },
   "users": {
     "add_users": "Kasutajate lisamine"
+  },
+  "file": {
+    "drop_files": "Pane failid siia...",
+    "drag_drop": "Tiri",
+    "file_here_or": "fail siia, või",
+    "pick_multiple_files": "Mitme faili valimiseks hoia all CTRL/CMND nuppu"
   },
   "success": {
     "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
