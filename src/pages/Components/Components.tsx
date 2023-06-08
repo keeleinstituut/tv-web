@@ -18,6 +18,9 @@ import ModalBase, {
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import { DropdownSizeTypes } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import FileImport, {
+  InputFileTypes,
+} from 'components/organisms/FileImport/FileImport'
 import {
   showNotification,
   NotificationPropsWithoutClose,
@@ -282,6 +285,12 @@ const Test: FC = () => {
           explorer of the truth, the master-builder of human happiness."
         </p>
       </ModalBase>
+      <FileImport
+        helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
+        fileButtonText={t('button.add_csv')}
+        ariaLabel={t('label.button_arrow')}
+        inputFileType={InputFileTypes.Csv}
+      />
       <Button
         appearance={AppearanceTypes.Primary}
         children="Test notifications"

@@ -1,0 +1,105 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  position: absolute;
+  height: 146px;
+  top: -141px;
+}
+
+.dragAndDropContainer {
+  height: 100%;
+  background: $color-text-button;
+  border: 1px solid $color-border-black-coral;
+  border-radius: 5px;
+  width: 318px;
+  padding: spacing(4) spacing(4) spacing(2) spacing(4);
+  position: relative;
+  box-shadow: 0px 0px 2px $color-shadow-main, 0px 2px 2px $color-checkbox-focus, 0px 1px 3px $color-shadow-secondary;
+  
+  &::after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 10px solid $color-text-button;
+    margin-top: 6px;
+    filter: drop-shadow(0px 2px 2px $color-shadow-secondary);
+  }
+}
+
+.dragAndDropContent {
+  border: 1px dashed $color-border-secondary;
+  border-radius: 2px;
+  padding: spacing(3.5) 0 spacing(5) 0;
+  text-align: center;
+}
+
+.dragAndDropText {
+  @include bodyTextSmallStyle;
+  padding-top: spacing(0.5);
+  display: inline-flex;
+}
+
+.dropButton {
+  margin-left: spacing(2);
+}
+
+.multipleFilesText {
+  font-size: $font-size-12;
+  font-weight: $font-weight-normal;
+  padding-top: spacing(1);
+}
+
+.fileLabel {
+  padding-top: spacing(6);
+  order: 4;
+}
+
+.fileContainer {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 6px;
+  max-width: 418px;
+  padding: spacing(4) spacing(3);
+  margin-top: spacing(2);
+  display: flex;
+  align-items: center;
+  order: 5;
+}
+
+.errorContainer {
+  background: $color-error-light;
+  border: 1px solid $color-error;
+  border-radius: 6px;
+}
+
+.icon {
+  align-self: flex-start;
+  padding-top: spacing(1);
+}
+
+.fileDetailsContainer {
+  padding-left: spacing(3);
+  flex: auto;
+}
+
+.fileName {
+  @include labelTextStyle;
+}
+
+.fileSize {
+  @include subtitleSmallTextStyle;
+  color: $color-input-main;
+}
+
+.errorText {
+  color: $color-error;
+  @include subtitleSmallTextStyle;
+  padding-top: spacing(2);
+  max-width: 418px;
+  order: 6;
+}
