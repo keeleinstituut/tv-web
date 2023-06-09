@@ -31,9 +31,9 @@ const DropdownContent: FC<DropdownContentProps> = ({
   setIsOpen,
   helperText,
   selectedOptionObjects,
+  errorZIndex,
   tags,
 }) => {
-  console.warn('selectedOptionObjects', selectedOptionObjects)
   const { t } = useTranslation()
   const initialValue = value || multiple ? [] : ''
   const [selectedValue, setSelectedValue] = useState<string | string[]>(
@@ -73,6 +73,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
     <>
       <div
         className={classNames(classes.dropdownMenu, classes[dropdownSize])}
+        style={{ zIndex: 51 + (errorZIndex || 0) }}
         hidden={disabled || !isOpen}
       >
         <div hidden={!searchInput}>{searchInput}</div>

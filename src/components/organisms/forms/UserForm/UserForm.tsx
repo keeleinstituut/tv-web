@@ -202,9 +202,6 @@ const UserForm: FC<UserFormProps> = ({
     [updateUser, t, resetForm, setError]
   )
 
-  const isResetDisabled = !isDirty
-  const isSubmitDisabled = isResetDisabled || !isValid
-
   return (
     <DynamicForm
       fields={fields}
@@ -213,8 +210,8 @@ const UserForm: FC<UserFormProps> = ({
       className={classes.formContainer}
     >
       <FormButtons
-        isResetDisabled={isResetDisabled}
-        isSubmitDisabled={isSubmitDisabled}
+        isResetDisabled={!isDirty}
+        isSubmitDisabled={!isDirty || !isValid}
         loading={isSubmitting || isLoading}
         resetForm={resetForm}
         hidden={!includes(userPrivileges, Privileges.EditUser)}

@@ -15,6 +15,7 @@ export interface TextInputProps
   error?: FieldError
   label?: JSX.Element | string
   ariaLabel: string
+  errorZIndex?: number
 }
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
@@ -28,6 +29,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       value,
       placeholder,
       disabled,
+      errorZIndex,
       ...rest
     } = props
     // Might need event handler wrappers here
@@ -38,6 +40,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         className={classNames(
           classes.container,
           disabled && classes.disabled,
+          error && classes.error,
           className
         )}
       >
@@ -56,7 +59,11 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               {...rest}
             />
           </Control>
-          <InputError {...omit(error, 'ref')} className={classes.error} />
+          <InputError
+            {...omit(error, 'ref')}
+            className={classes.error}
+            errorZIndex={errorZIndex}
+          />
         </div>
       </Field>
     )

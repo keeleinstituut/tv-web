@@ -1,5 +1,5 @@
 import { Fragment, PropsWithChildren } from 'react'
-import { map } from 'lodash'
+import { map, size } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import DynamicInputComponent, {
   InputPropsWithoutControllerProps,
@@ -72,7 +72,12 @@ function DynamicForm<Type extends FieldValues>({
         }
         // Else render Input and pass the props
         return (
-          <FormInput key={inputData.name} control={control} {...inputData} />
+          <FormInput
+            key={inputData.name}
+            control={control}
+            {...inputData}
+            errorZIndex={size(fields) - index}
+          />
         )
       })}
       {children}

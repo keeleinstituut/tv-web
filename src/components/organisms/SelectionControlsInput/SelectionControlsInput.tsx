@@ -35,6 +35,7 @@ export interface SelectionControlsInputProps {
   searchInput?: ReactElement
   dropdownSize?: DropdownSizeTypes
   tags?: boolean
+  errorZIndex?: number
 }
 
 const SelectionControlsInput = forwardRef<
@@ -56,6 +57,7 @@ const SelectionControlsInput = forwardRef<
     buttons = false,
     searchInput,
     dropdownSize,
+    errorZIndex,
     tags = false,
   },
   ref
@@ -92,6 +94,7 @@ const SelectionControlsInput = forwardRef<
       onClick={toggleDropdown}
       ref={clickAwayInputRef}
       errorClass={classes.selectionsError}
+      errorZIndex={errorZIndex}
     >
       <BaseButton
         className={classNames(
@@ -130,6 +133,7 @@ const SelectionControlsInput = forwardRef<
         selectedOptionObjects={selectedOptionObjects}
         tags={tags}
         setIsOpen={setIsOpen}
+        errorZIndex={errorZIndex}
       />
     </InputWrapper>
   )

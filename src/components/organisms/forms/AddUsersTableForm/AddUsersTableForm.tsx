@@ -1,12 +1,21 @@
 import { FC, useCallback, useState } from 'react'
 import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button'
-import { reduce, map, join, isEmpty, keys, includes, compact } from 'lodash'
+import {
+  reduce,
+  map,
+  join,
+  isEmpty,
+  keys,
+  includes,
+  compact,
+  size,
+} from 'lodash'
 import { InputTypes } from 'components/organisms/DynamicInputComponent/DynamicInputComponent'
 import { Root } from '@radix-ui/react-form'
 import classes from './styles.module.scss'
 import { UserCsvType } from 'types/users'
-import { useValidateUsers } from 'hooks/requests/useUsers'
+import { useValidateUsers, useUploadUsers } from 'hooks/requests/useUsers'
 import {
   convertUsersCsvToArray,
   objectsToCsvFile,
@@ -20,6 +29,9 @@ import { FormInput } from 'components/organisms/DynamicForm/DynamicForm'
 import useValidators from 'hooks/useValidators'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { useNavigate } from 'react-router-dom'
 
 interface FormValues {
   [key: string]: UserCsvType
@@ -30,11 +42,13 @@ interface ErrorsInRow {
 }
 
 const AddUsersTableForm: FC = () => {
-  const { validateUsers } = useValidateUsers()
+  const { validateUsers, isLoading } = useValidateUsers()
+  const { uploadUsers, isLoading: isUploadLoading } = useUploadUsers()
   const [tableData, setTableData] = useState<UserCsvType[]>([])
   const [rowsWithErrors, setRowsWithErrors] = useState<ErrorsInRow>({})
   const { existingRoles = [] } = useRolesFetch()
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { emailValidator, picValidator, rolesValidator, phoneValidator } =
     useValidators()
 
@@ -52,7 +66,12 @@ const AddUsersTableForm: FC = () => {
         {}
       )
 
-  const { control, handleSubmit, setError } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    setError,
+    formState: { isValid, isDirty },
+  } = useForm<FormValues>({
     reValidateMode: 'onChange',
     mode: 'onChange',
     values: formValues,
@@ -111,6 +130,7 @@ const AddUsersTableForm: FC = () => {
     async (file: File) => {
       try {
         await validateUsers(file)
+        setRowsWithErrors({})
         return true
       } catch (errorData) {
         const typedErrorData = errorData as CsvValidationError
@@ -127,16 +147,16 @@ const AddUsersTableForm: FC = () => {
               })
               return typedKey
             })
-            setRowsWithErrors({
-              ...rowsWithErrors,
+            setRowsWithErrors((prevRowsWithErrors) => ({
+              ...prevRowsWithErrors,
               [`row-${row}`]: errorFields,
-            })
+            }))
           })
         }
       }
       return false
     },
-    [rowsWithErrors, setError, validateUsers]
+    [setError, validateUsers]
   )
 
   const handleFileUploaded = async (uploadedFile: File) => {
@@ -161,27 +181,32 @@ const AddUsersTableForm: FC = () => {
       )
       const validationPassed = await handleFileValidationAttempt(csvFile)
       if (validationPassed) {
-        // TODO: if validation has passed, upload the csv and navigate to users management view
+        try {
+          await uploadUsers(csvFile)
+          showNotification({
+            type: NotificationTypes.Success,
+            title: t('notification.announcement'),
+            content: t('success.users_uploaded'),
+          })
+          navigate('/users')
+        } catch (_) {
+          // Do nothing, error notification is already displayed
+        }
       }
     },
-    [handleFileValidationAttempt]
+    [handleFileValidationAttempt, navigate, t, uploadUsers]
   )
 
   const onDeleteFile = useCallback(() => {
     setTableData([])
   }, [])
 
-  // TODO: might add loader here, while csv is uploading
-  // if (isLoading) {
-  //   return <Loader loading />
-  // }
-
   const roleOptions = compact(
-    map(existingRoles, ({ id, name }) => {
-      if (id && name) {
+    map(existingRoles, ({ name }) => {
+      if (name) {
         return {
           label: name,
-          value: id,
+          value: name,
         }
       }
     })
@@ -205,6 +230,8 @@ const AddUsersTableForm: FC = () => {
           onClick={handleSubmit(onSubmit)}
           type="submit"
           hidden={isEmpty(tableData)}
+          loading={isLoading || isUploadLoading}
+          disabled={!isDirty || !isValid}
         >
           {t('button.save_and_send_notifications')}
         </Button>
@@ -222,12 +249,16 @@ const AddUsersTableForm: FC = () => {
           <tbody>
             {map(tableData, (item, index) => {
               const rowErrors = rowsWithErrors[`row-${index}`]
+              let errorZIndexModifier = 0
               return (
                 <tr key={index}>
-                  {map(item, (itemValue, key) => {
+                  {map(item, (_, key) => {
                     // TODO: hack for now, hopefully we can get rid of this
                     // it currently seems that lodash map can't infer the type of key
                     const typedKey = key as unknown as keyof UserCsvType
+                    errorZIndexModifier += 1
+                    const errorZIndex =
+                      index * 10 + size(item) - errorZIndexModifier
                     return (
                       <td key={key}>
                         <FormInput
@@ -235,6 +266,7 @@ const AddUsersTableForm: FC = () => {
                           ariaLabel={key}
                           control={control}
                           onlyDisplay={!includes(rowErrors, typedKey)}
+                          errorZIndex={errorZIndex}
                           {...(typedKey === 'role'
                             ? {
                                 options: roleOptions,
