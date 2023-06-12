@@ -13,15 +13,12 @@
     order: -1;
   }
 
-  button {
+  .sortingButton {
     width: max-content;
     padding: 0;
     svg g path,
     svg path {
       fill: $color-input-main;
-    }
-    &:focus {
-      box-shadow: none;
     }
   }
 }
