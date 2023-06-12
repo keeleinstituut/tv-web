@@ -1,18 +1,31 @@
-import { FC, useCallback } from 'react'
-import { useForm, SubmitHandler } from 'react-hook-form'
+import { FC, useCallback, useMemo } from 'react'
+import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
-import { includes, split, size, last, join, initial, isEmpty } from 'lodash'
+import {
+  includes,
+  split,
+  size,
+  last,
+  join,
+  initial,
+  isEmpty,
+  map,
+  startsWith,
+} from 'lodash'
 import { Privileges } from 'types/privileges'
 import classes from './styles.module.scss'
 import useAuth from 'hooks/useAuth'
 import { UserType, UserPostType } from 'types/users'
 import { useUpdateUser } from 'hooks/requests/useUsers'
 import useValidators from 'hooks/useValidators'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { ValidationError } from 'api/errorHandler'
 
 interface FormValues {
   personal_identification_code?: string
@@ -40,25 +53,26 @@ const UserForm: FC<UserFormProps> = ({
   const { emailValidator, phoneValidator } = useValidators()
   const { updateUser, isLoading } = useUpdateUser({ userId: id })
 
-  const defaultValues = {
-    personal_identification_code,
-    name: `${forename} ${surname}`,
-    email,
-    phone,
-    department_id: department,
-    roles: [],
-  }
+  const defaultValues = useMemo(
+    () => ({
+      personal_identification_code,
+      name: `${forename} ${surname}`,
+      email,
+      phone,
+      department_id: department,
+      roles: [],
+    }),
+    [department, email, forename, personal_identification_code, phone, surname]
+  )
   const {
     control,
     handleSubmit,
     reset,
     formState: { isSubmitting, isDirty, isValid },
+    setError,
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     defaultValues: defaultValues,
-    resetOptions: {
-      keepDirtyValues: true, // keep dirty fields unchanged, but update defaultValues
-    },
   })
 
   // map data for rendering
@@ -137,8 +151,8 @@ const UserForm: FC<UserFormProps> = ({
   ]
 
   const resetForm = useCallback(() => {
-    reset()
-  }, [reset])
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
@@ -151,7 +165,8 @@ const UserForm: FC<UserFormProps> = ({
       } = values
       const splitName = split(name, ' ')
       const surname = size(splitName) > 1 ? last(splitName) : ''
-      const forename = join(initial(splitName), ' ')
+      const forename =
+        size(splitName) > 1 ? join(initial(splitName), ' ') : name
       const payload: UserPostType = {
         ...rest,
         ...(isEmpty(roles) ? {} : { roles }),
@@ -163,16 +178,28 @@ const UserForm: FC<UserFormProps> = ({
       }
       try {
         await updateUser(payload)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.user_updated', { name }),
+        })
         resetForm()
-      } catch (error) {
-        // TODO: if needed, take fields with error from here
-        // and mark them as invalid in hook form, using setError
-        // TODO: Call global errorhandler here, once we implement it
-        // errorHandler(error)
-        alert(error)
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            if (startsWith(typedKey, 'user')) {
+              setError('name', { type: 'custom', message: errorString })
+            } else {
+              setError(typedKey, { type: 'custom', message: errorString })
+            }
+          })
+        }
       }
     },
-    [updateUser, resetForm]
+    [updateUser, t, resetForm, setError]
   )
 
   const isResetDisabled = !isDirty

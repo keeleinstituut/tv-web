@@ -13,18 +13,53 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import TestingTable from 'components/templates/Tables/ExamplesTable/ExamplesTable'
 import UsersTable from 'components/templates/Tables/UsersTable/UsersTable'
+import AddedUsersTable from 'components/templates/Tables/AddedUsersTable/AddedUsersTable'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
-import Modal, {
+import ModalBase, {
   ModalSizeTypes,
   ButtonPositionTypes,
   TitleFontTypes,
-} from 'components/organisms/Modal/Modal'
-import AddedUsersTable from 'components/templates/Tables/AddedUsersTable/AddedUsersTable'
+} from 'components/organisms/ModalBase/ModalBase'
+import { DropdownSizeTypes } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import FileImport, {
+  InputFileTypes,
+} from 'components/organisms/FileImport/FileImport'
+import {
+  showNotification,
+  NotificationPropsWithoutClose,
+} from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+
+const dummyNotifications: NotificationPropsWithoutClose[] = [
+  {
+    title: 'Test Success',
+    content: 'Random success message here with some longer text',
+    type: NotificationTypes.Success,
+  },
+  {
+    title: 'Test Warning',
+    content: 'Random warning message here with some longer text',
+    type: NotificationTypes.Warning,
+  },
+  {
+    title: 'Test Error',
+    content: 'Random error message here with some longer text',
+    type: NotificationTypes.Error,
+  },
+  {
+    title: 'Test Info',
+    content: 'Random info message here with some longer text',
+    type: NotificationTypes.Info,
+  },
+]
 
 type FormValues = {
   email?: string
   terms?: string
+  name?: string
   datePicker?: string
+  selections?: string
+  multipleSelections?: string
   timePicker?: string
   timePickerSeconds?: string
 }
@@ -34,8 +69,8 @@ const Test: FC = () => {
   const { emailValidator } = useValidators()
 
   const { control, handleSubmit } = useForm<FormValues>({
-    mode: 'onChange',
-    reValidateMode: 'onSubmit',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
   })
 
   const [open, setOpen] = useState(false)
@@ -74,13 +109,20 @@ const Test: FC = () => {
       label: 'date picker label',
       ariaLabel: 'date picker aria label',
       placeholder: 'pp.kk.aaaa',
+      rules: {
+        required: true,
+      },
     },
+
     {
       inputType: InputTypes.Time,
       name: 'timePicker',
       label: 'time picker label',
       ariaLabel: 'time picker aria label',
       showSeconds: false,
+      rules: {
+        required: true,
+      },
     },
     {
       inputType: InputTypes.Time,
@@ -88,6 +130,55 @@ const Test: FC = () => {
       label: 'time picker seconds label',
       ariaLabel: 'time picker seconds aria label',
       showSeconds: true,
+      rules: {
+        required: true,
+      },
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: 'selections',
+      label: 'selections label',
+      ariaLabel: 'selections aria label',
+      options: [
+        { label: 'Option1jhiruguehiue', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
+      ],
+      placeholder: 'Choose option',
+      multiple: false,
+      dropdownSize: DropdownSizeTypes.M,
+      helperText:
+        'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
+      rules: {
+        required: true,
+      },
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: 'multipleSelections',
+      label: 'multipleSelections label',
+      ariaLabel: 'multipleSelections aria label',
+      options: [
+        { label: 'Option 1', value: 'Option 1' },
+        { label: 'Option 2', value: 'Option 2' },
+        { label: 'Option 3', value: 'Option 3' },
+        { label: 'Option 4', value: 'Option 4' },
+        { label: 'Option 5', value: 'Option 5' },
+        { label: 'Option 6', value: 'Option 6' },
+        { label: 'Option ieruhiruthr7', value: 'Option 7' },
+        { label: 'Option 8985759867', value: 'Option 8' },
+      ],
+      placeholder: 'Choose options',
+      multiple: true,
+      buttons: true,
+      cancelButtonLabel: 'Tühista',
+      proceedButtonLabel: 'Salvesta',
+      searchInput: <Fragment />,
+      tags: true,
+      rules: {
+        required: true,
+      },
     },
   ]
 
@@ -100,6 +191,13 @@ const Test: FC = () => {
     []
   )
 
+  const testNotifications = () => {
+    showNotification(dummyNotifications[0])
+    setTimeout(showNotification, 2000, dummyNotifications[1])
+    setTimeout(showNotification, 4000, dummyNotifications[2])
+    setTimeout(showNotification, 6000, dummyNotifications[3])
+  }
+
   return (
     <>
       <div />
@@ -107,20 +205,23 @@ const Test: FC = () => {
         fields={testFields}
         control={control}
         onSubmit={handleSubmit(onSubmit, onError)}
-      />
-      <Button
-        appearance={AppearanceTypes.Primary}
-        children="bu"
-        size={SizeTypes.M}
-        icon={ButtonArrow}
-        ariaLabel={t('label.button_arrow')}
-        iconPositioning={IconPositioningTypes.Right}
-      />
+      >
+        <Button
+          appearance={AppearanceTypes.Primary}
+          children="bu"
+          size={SizeTypes.M}
+          icon={ButtonArrow}
+          type="submit"
+          ariaLabel={t('label.button_arrow')}
+          iconPositioning={IconPositioningTypes.Right}
+        />
+      </DynamicForm>
+
       <TestingTable />
       <AddedUsersTable />
       {/* <UsersTable /> */}
 
-      <Modal
+      <ModalBase
         title="Pealkiri"
         size={ModalSizeTypes.Narrow}
         buttonsPosition={ButtonPositionTypes.SpaceBetween}
@@ -190,7 +291,22 @@ const Test: FC = () => {
           account of the system, and expound the actual teachings of the great
           explorer of the truth, the master-builder of human happiness."
         </p>
-      </Modal>
+      </ModalBase>
+      <FileImport
+        helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
+        fileButtonText={t('button.add_csv')}
+        ariaLabel={t('label.button_arrow')}
+        inputFileType={InputFileTypes.Csv}
+      />
+      <Button
+        appearance={AppearanceTypes.Primary}
+        children="Test notifications"
+        size={SizeTypes.M}
+        icon={ButtonArrow}
+        ariaLabel={t('label.button_arrow')}
+        iconPositioning={IconPositioningTypes.Right}
+        onClick={testNotifications}
+      />
     </>
   )
 }

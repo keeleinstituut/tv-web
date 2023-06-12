@@ -1,6 +1,7 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
 // import queryString from 'query-string'
 import ApiClientInterceptor from './ApiClientInterceptor'
+import handleError from './errorHandler'
 
 export interface AxiosRequestConfigWithRetries extends AxiosRequestConfig {
   retries?: number
@@ -63,14 +64,18 @@ class ApiClient {
       `API Request #${this.count} to ${this.baseURL}${config.url}`,
       config
     )
-    const response = await this.instance.request(config)
-    this.debug(
-      `API Response #${this.count} from ${this.baseURL}${config.url}`,
-      response
-    )
-    this.count += 1
+    try {
+      const response = await this.instance.request(config)
+      this.debug(
+        `API Response #${this.count} from ${this.baseURL}${config.url}`,
+        response
+      )
+      this.count += 1
 
-    return response.data.data
+      return response.data.data
+    } catch (error) {
+      return handleError(error as AxiosError)
+    }
   }
 
   get = async (url: string, params = {}, config = {}) =>
