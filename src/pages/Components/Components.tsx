@@ -11,15 +11,15 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import TestingTable from 'components/templates/DataTable/TestingTable'
-import UsersTable from 'components/templates/UsersTable/UsersTable'
+import TestingTable from 'components/templates/Tables/ExamplesTable/ExamplesTable'
+import UsersTable from 'components/templates/Tables/UsersTable/UsersTable'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 import Modal, {
   ModalSizeTypes,
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/Modal/Modal'
-import AddedUsersTable from 'components/templates/UsersTable/AddedUsersTable'
+import AddedUsersTable from 'components/templates/Tables/AddedUsersTable/AddedUsersTable'
 
 type FormValues = {
   email?: string
@@ -118,7 +118,7 @@ const Test: FC = () => {
       />
       <TestingTable />
       <AddedUsersTable />
-      <UsersTable />
+      {/* <UsersTable /> */}
 
       <Modal
         title="Pealkiri"

@@ -2,10 +2,14 @@ import { FC, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
-} from 'components/templates/DataTable/DataTable'
+} from 'components/organisms/DataTable/DataTable'
 import { map, join } from 'lodash'
-import { createColumnHelper, PaginationState } from '@tanstack/react-table'
-import TableFilter from 'components/organisms/TableFilter/TableFilter'
+import {
+  createColumnHelper,
+  PaginationState,
+  ColumnDef,
+} from '@tanstack/react-table'
+import TableFilter from 'components/organisms/TableColumnFilter/TableColumnFilter'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -13,15 +17,15 @@ import Button, {
 } from 'components/molecules/Button/Button'
 
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import { Link } from 'react-router-dom'
-import users from 'components/templates/UsersTable/users.json'
+import users from 'components/templates/Tables/users.json'
 
-export type Person = {
+type Person = {
   id: string
   name: string
-  department: string
-  roles: []
+  department: string | null
+  roles: string[]
   status: string
+  subRows?: Person[]
 }
 
 const columnHelper = createColumnHelper<Person>()
@@ -69,18 +73,17 @@ const AddedUsersTable: FC = () => {
             icon={ArrowRight}
             ariaLabel={t('label.button_arrow')}
             iconPositioning={IconPositioningTypes.Left}
+            href={`/user=${getValue()}`}
           >
-            <Link to={`/user=${getValue()}`}>{'ID xxxxxx'}</Link>
+            {'ID xxxxxx'}
           </Button>
         </div>
       ),
       footer: (info) => info.column.id,
-      enableColumnFilter: false,
     }),
     columnHelper.accessor('name', {
       header: () => 'Nimi',
       footer: (info) => info.column.id,
-      enableColumnFilter: false,
     }),
     columnHelper.accessor('department', {
       header: () => 'Üksus',
@@ -98,20 +101,18 @@ const AddedUsersTable: FC = () => {
         //One example how to add filter component
         <>
           Staatus
-          <TableFilter table={table} column={column} />
+          {/* <TableFilter table={table} column={column} /> */}
         </>
       ),
       footer: (info) => info.column.id,
-      enableColumnFilter: false,
     }),
-  ]
+  ] as ColumnDef<Person>[]
 
   return (
     <DataTable
       data={usersData}
       columns={columns}
       title="Lisatud kasutajad"
-      filterable
       pagination={pagination}
       setPagination={setPagination}
       tableSize={TableSizeTypes.M}

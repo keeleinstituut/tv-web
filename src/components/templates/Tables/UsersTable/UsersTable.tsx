@@ -2,19 +2,24 @@ import { FC, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
-} from 'components/templates/DataTable/DataTable'
+} from 'components/organisms/DataTable/DataTable'
 import { map, join } from 'lodash'
-import { createColumnHelper, PaginationState } from '@tanstack/react-table'
+import {
+  createColumnHelper,
+  PaginationState,
+  ColumnDef,
+} from '@tanstack/react-table'
 
-import users from 'components/templates/UsersTable/users.json'
+import users from 'components/templates/Tables/users.json'
 
 export type Person = {
   id: string
   name: string
   email: string
   phone: string
-  department: string
-  roles: []
+  department: string | null
+  roles: string[]
+  subRows?: Person[]
 }
 
 const columnHelper = createColumnHelper<Person>()
@@ -38,6 +43,7 @@ const UsersTable: FC = () => {
           phone: data.phone,
           department: data.department,
           roles: arrayOfRoles,
+          subRows: [],
         }
       }) || {}
     )
@@ -67,23 +73,21 @@ const UsersTable: FC = () => {
     columnHelper.accessor('roles', {
       header: () => 'Roll',
       cell: (info) => {
-        console.log('rollid', info.renderValue())
         return join(info.renderValue(), ', ')
       },
       footer: (info) => info.column.id,
     }),
-  ]
-
-  console.log('data', usersData)
+  ] as ColumnDef<Person>[]
 
   return (
-    <DataTable
-      data={usersData}
-      columns={columns}
-      pagination={pagination}
-      setPagination={setPagination}
-      tableSize={TableSizeTypes.M}
-    />
+    <p>love</p>
+    // <DataTable
+    //   data={usersData}
+    //   columns={columns}
+    //   pagination={pagination}
+    //   setPagination={setPagination}
+    //   tableSize={TableSizeTypes.M}
+    // />
   )
 }
 

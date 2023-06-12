@@ -13,12 +13,11 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as SortingArrows } from 'assets/icons/sorting_arrows.svg'
-import TableFilter from 'components/organisms/TableFilter/TableFilter'
+import { useCallback } from 'react'
 
 type HeaderGroupProps<TData> = {
   table: Table<TData>
   sortable?: boolean
-  filterable?: boolean
 }
 type ColumnMeta = {
   meta: {
@@ -27,18 +26,22 @@ type ColumnMeta = {
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
 
-interface HeaderItemProps<TData> extends HeaderGroupProps<TData> {
+interface HeaderItemProps<TData> {
   hidden?: boolean
   header: Header<TData, RowData>
+  sortable?: boolean
 }
+
 const HeaderItem = <TData extends object>({
   hidden,
   sortable,
-  filterable,
   header,
-  table,
 }: HeaderItemProps<TData>) => {
   const { t } = useTranslation()
+
+  const handleOnSorting = useCallback(() => {
+    //TODO add serve side sorting
+  }, [])
 
   if (hidden) return null
 
@@ -52,14 +55,11 @@ const HeaderItem = <TData extends object>({
           icon={SortingArrows}
           ariaLabel={t('label.button_arrow')}
           iconPositioning={IconPositioningTypes.Left}
+          className={classes.sortingButton}
         />
       )}
 
       {flexRender(header.column.columnDef.header, header.getContext())}
-      {/* TODO: make more api based filtering */}
-      {filterable && header.column.getCanFilter() && (
-        <TableFilter column={header.column} table={table} />
-      )}
     </div>
   )
 }
@@ -67,7 +67,6 @@ const HeaderItem = <TData extends object>({
 const TableHeaderGroup = <TData extends object>({
   table,
   sortable,
-  filterable,
 }: HeaderGroupProps<TData>) => {
   return (
     <thead>
@@ -86,8 +85,6 @@ const TableHeaderGroup = <TData extends object>({
                   hidden={header.isPlaceholder}
                   header={header}
                   sortable={sortable}
-                  filterable={filterable}
-                  table={table}
                 />
               </th>
             )

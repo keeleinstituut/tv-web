@@ -37,9 +37,8 @@ type DataTableProps<TData extends RowData> = {
   sortable?: boolean
   setSorting?: React.Dispatch<React.SetStateAction<SortingState>>
   sorting?: SortingState
-  filterable?: boolean
-  columnFilters?: ColumnFiltersState
-  setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
+  // columnFilters?: ColumnFiltersState
+  // setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
   pagination?: PaginationState
   setPagination?: React.Dispatch<React.SetStateAction<PaginationState>>
   meta?: TableMeta<TData>
@@ -62,11 +61,10 @@ const DataTable = <TData extends object>({
   tableBodyPrefix,
   title,
   sortable,
-  sorting,
-  setSorting,
-  filterable,
-  columnFilters,
-  setColumnFilters,
+  // sorting,
+  // setSorting,
+  // columnFilters,
+  // setColumnFilters,
   pagination,
   setPagination,
   meta,
@@ -79,8 +77,8 @@ const DataTable = <TData extends object>({
     data,
     columns,
     state: {
-      sorting,
-      columnFilters,
+      // sorting,
+      // columnFilters,
       rowSelection,
       expanded,
       ...{ pagination },
@@ -90,9 +88,9 @@ const DataTable = <TData extends object>({
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     ...(sortable && { getSortedRowModel: getSortedRowModel() }),
-    onSortingChange: setSorting,
+    // onSortingChange: setSorting,
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnFiltersChange: setColumnFilters,
+    // onColumnFiltersChange: setColumnFilters,
     enableRowSelection: true, //enable row selection for all rows
     // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
     onRowSelectionChange: setRowSelection,
@@ -106,11 +104,7 @@ const DataTable = <TData extends object>({
       <h4 className={classes.title}>{title}</h4>
       <div className={classes.tableWrapper}>
         <table className={classNames(classes.dataTable, classes[tableSize])}>
-          <TableHeaderGroup
-            table={table}
-            sortable={sortable}
-            filterable={filterable}
-          />
+          <TableHeaderGroup table={table} sortable={sortable} />
           <tbody>
             {tableBodyPrefix}
             {table.getRowModel().rows.map((row) => (
