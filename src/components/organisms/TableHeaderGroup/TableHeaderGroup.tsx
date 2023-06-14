@@ -1,4 +1,6 @@
-import classes from './styles.module.scss'
+import { useCallback, useState } from 'react'
+import { isEmpty, toString, size } from 'lodash'
+import { useTranslation } from 'react-i18next'
 import {
   Table,
   ColumnDef,
@@ -6,50 +8,66 @@ import {
   Header,
   RowData,
 } from '@tanstack/react-table'
-import { useTranslation } from 'react-i18next'
+import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import Button, {
   AppearanceTypes,
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as SortingArrows } from 'assets/icons/sorting_arrows.svg'
-import { useCallback } from 'react'
-
+import TableColumnFilter from 'components/organisms/TableColumnFilter/TableColumnFilter'
+import classes from './styles.module.scss'
+interface HeaderGroupFunctions {
+  onSortingChange?: (value: string | boolean, columnId: string) => void
+  onColumnFiltersChange?: (filters: string[], columnId: string) => void
+}
 type HeaderGroupProps<TData> = {
   table: Table<TData>
-  sortable?: boolean
-}
+} & HeaderGroupFunctions
+
 type ColumnMeta = {
-  meta: {
-    size: number | string
+  meta?: {
+    size?: number | string
+    filterOption?: DropDownOptions[]
+    sortingOption?: (string | boolean)[]
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
 
-interface HeaderItemProps<TData> {
+type HeaderItemProps<TData> = {
   hidden?: boolean
   header: Header<TData, RowData>
-  sortable?: boolean
-}
+} & HeaderGroupFunctions
 
 const HeaderItem = <TData extends object>({
   hidden,
-  sortable,
   header,
+  onSortingChange,
+  onColumnFiltersChange,
 }: HeaderItemProps<TData>) => {
   const { t } = useTranslation()
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const { id, column } = header || {}
+  const { meta } = column.columnDef as CustomColumnDef<TData>
+  const filterOption = meta?.filterOption || []
+  const sortingOption = meta?.sortingOption || []
+  const value = sortingOption[currentIndex]
+  const newIndex = size(sortingOption) - 1 > currentIndex ? currentIndex + 1 : 0
 
   const handleOnSorting = useCallback(() => {
-    //TODO add serve side sorting
-  }, [])
+    if (onSortingChange) {
+      onSortingChange(value, id)
+      setCurrentIndex(newIndex)
+    }
+  }, [id, newIndex, onSortingChange, value])
 
   if (hidden) return null
 
   return (
     <div className={classes.headingWrapper}>
-      {sortable && header.column.getCanSort() && (
+      {!isEmpty(sortingOption) && (
         <Button
-          onClick={header.column.getToggleSortingHandler()}
+          onClick={handleOnSorting}
           appearance={AppearanceTypes.Text}
           size={SizeTypes.S}
           icon={SortingArrows}
@@ -59,14 +77,24 @@ const HeaderItem = <TData extends object>({
         />
       )}
 
-      {flexRender(header.column.columnDef.header, header.getContext())}
+      {flexRender(column.columnDef.header, header.getContext())}
+
+      {!isEmpty(filterOption) && onColumnFiltersChange ? (
+        <TableColumnFilter
+          filterOption={filterOption}
+          columnId={toString(id)}
+          name={'Status'}
+          onChange={onColumnFiltersChange}
+        />
+      ) : null}
     </div>
   )
 }
 
 const TableHeaderGroup = <TData extends object>({
   table,
-  sortable,
+  onSortingChange,
+  onColumnFiltersChange,
 }: HeaderGroupProps<TData>) => {
   return (
     <thead>
@@ -84,7 +112,8 @@ const TableHeaderGroup = <TData extends object>({
                 <HeaderItem
                   hidden={header.isPlaceholder}
                   header={header}
-                  sortable={sortable}
+                  onSortingChange={onSortingChange}
+                  onColumnFiltersChange={onColumnFiltersChange}
                 />
               </th>
             )

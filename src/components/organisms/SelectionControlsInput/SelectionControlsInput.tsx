@@ -15,17 +15,17 @@ export enum DropdownSizeTypes {
   M = 'm',
   S = 's',
 }
-
+export type DropDownOptions = {
+  label: string
+  value: string
+}
 export interface SelectionControlsInputProps {
   name: string
   error?: FieldError
   label?: JSX.Element | string
   ariaLabel: string
   value?: string | string[]
-  options: {
-    label: string
-    value: string
-  }[]
+  options: DropDownOptions[]
   onChange: (value: string | string[]) => void
   disabled?: boolean
   placeholder?: string

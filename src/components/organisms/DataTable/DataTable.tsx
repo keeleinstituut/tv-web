@@ -1,4 +1,4 @@
-import React, { CSSProperties, ReactNode, useState } from 'react'
+import { CSSProperties, Dispatch, SetStateAction, useState } from 'react'
 import classes from './styles.module.scss'
 import classNames from 'classnames'
 import {
@@ -13,10 +13,6 @@ import {
   Row,
   RowData,
   ColumnDef,
-  getSortedRowModel,
-  SortingState,
-  getFilteredRowModel,
-  ColumnFiltersState,
 } from '@tanstack/react-table'
 import Container from 'components/atoms/Container/Container'
 import TablePagination from 'components/organisms/TablePagination/TablePagination'
@@ -33,14 +29,10 @@ type DataTableProps<TData extends RowData> = {
   columns: ColumnDef<TData>[]
   tableSize: string
   title?: string
-  tableBodyPrefix?: ReactNode
-  sortable?: boolean
-  setSorting?: React.Dispatch<React.SetStateAction<SortingState>>
-  sorting?: SortingState
-  // columnFilters?: ColumnFiltersState
-  // setColumnFilters?: React.Dispatch<React.SetStateAction<ColumnFiltersState>>
+  onSortingChange?: (value: string | boolean, columnId: string) => void
+  onColumnFiltersChange?: (filters: string[], columnId: string) => void
   pagination?: PaginationState
-  setPagination?: React.Dispatch<React.SetStateAction<PaginationState>>
+  setPagination?: Dispatch<SetStateAction<PaginationState>>
   meta?: TableMeta<TData>
   subRows?: Row<TData>[] | undefined
   getSubRows?:
@@ -58,13 +50,9 @@ const DataTable = <TData extends object>({
   data,
   columns,
   tableSize = 'm',
-  tableBodyPrefix,
   title,
-  sortable,
-  // sorting,
-  // setSorting,
-  // columnFilters,
-  // setColumnFilters,
+  onSortingChange,
+  onColumnFiltersChange,
   pagination,
   setPagination,
   meta,
@@ -77,8 +65,6 @@ const DataTable = <TData extends object>({
     data,
     columns,
     state: {
-      // sorting,
-      // columnFilters,
       rowSelection,
       expanded,
       ...{ pagination },
@@ -87,10 +73,6 @@ const DataTable = <TData extends object>({
     ...(pagination && { getPaginationRowModel: getPaginationRowModel() }),
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    ...(sortable && { getSortedRowModel: getSortedRowModel() }),
-    // onSortingChange: setSorting,
-    getFilteredRowModel: getFilteredRowModel(),
-    // onColumnFiltersChange: setColumnFilters,
     enableRowSelection: true, //enable row selection for all rows
     // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
     onRowSelectionChange: setRowSelection,
@@ -104,9 +86,12 @@ const DataTable = <TData extends object>({
       <h4 className={classes.title}>{title}</h4>
       <div className={classes.tableWrapper}>
         <table className={classNames(classes.dataTable, classes[tableSize])}>
-          <TableHeaderGroup table={table} sortable={sortable} />
+          <TableHeaderGroup
+            table={table}
+            onSortingChange={onSortingChange}
+            onColumnFiltersChange={onColumnFiltersChange}
+          />
           <tbody>
-            {tableBodyPrefix}
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
                 {row.getVisibleCells().map((cell) => (

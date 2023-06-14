@@ -42,7 +42,8 @@
     "deactivate_account": "Deaktiveeri konto",
     "archive_account": "Arhiveeri konto",
     "add_csv": "Lisa .csv",
-    "choose": "Vali"
+    "choose": "Vali",
+    "filter": "Filtreeri"
   },
   "error": {
     "input_title": "Veateade: ",

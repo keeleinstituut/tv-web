@@ -1,43 +1,70 @@
-import { map } from 'lodash'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Column } from '@tanstack/react-table'
-
+import { Root } from '@radix-ui/react-form'
 import { ReactComponent as FilterIcon } from 'assets/icons/filter.svg'
 import Button, {
   AppearanceTypes,
   SizeTypes,
-  IconPositioningTypes,
 } from 'components/molecules/Button/Button'
+import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
+import classes from './styles.module.scss'
+import { isArray } from 'lodash'
 
-type FilterProps<Person> = {
-  filterOption: string[]
-  column: Column<Person, string>
+type FilterProps = {
+  filterOption: DropDownOptions[]
+  columnId: string
+  onChange: (filters: string[], columnId: string) => void
+  name: string
+  hidden?: boolean
 }
 
-const TableColumnFilter = <TData extends object>({
+const TableColumnFilter = ({
   filterOption,
-  column,
-}: FilterProps<TData>) => {
+  columnId,
+  onChange,
+  name,
+  hidden,
+}: FilterProps) => {
   const { t } = useTranslation()
+  const [isOpen, setIsOpen] = useState(false)
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen)
+  }
+  const handelOnChange = (value: string | string[]) => {
+    const filters = isArray(value) ? value : [value]
+    onChange(filters, columnId)
+  }
+
+  if (hidden) return null
 
   return (
-    <>
-      {/* ToDO add Popup component */}
-      <datalist id={column.id + 'list'}>
-        {map(filterOption, (value: string) => (
-          <option value={value} key={value} />
-        ))}
-      </datalist>
-
+    <Root>
       <Button
-        onClick={(value) => column.setFilterValue(value)}
+        onClick={toggleDropdown}
         appearance={AppearanceTypes.Text}
         size={SizeTypes.S}
         icon={FilterIcon}
         ariaLabel={t('label.filter')}
-        iconPositioning={IconPositioningTypes.Right}
+        className={classes.iconButton}
       />
-    </>
+
+      <DropdownContent
+        name={name}
+        ariaLabel={name}
+        options={filterOption}
+        multiple
+        buttons
+        cancelButtonLabel={t('button.cancel')}
+        proceedButtonLabel={t('button.filter')}
+        // searchInput: <Fragment />,
+        onChange={handelOnChange}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        className={classes.dropDown}
+      />
+    </Root>
   )
 }
 

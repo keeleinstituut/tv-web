@@ -9,7 +9,6 @@ import {
   PaginationState,
   ColumnDef,
 } from '@tanstack/react-table'
-import TableFilter from 'components/organisms/TableColumnFilter/TableColumnFilter'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -56,7 +55,7 @@ const AddedUsersTable: FC = () => {
   const columns = [
     columnHelper.accessor('id', {
       header: () => 'Kasutajakonto ID',
-      cell: ({ row, getValue }) => (
+      cell: ({ getValue }) => (
         //Example for link row cell
         <div
           style={{
@@ -97,13 +96,7 @@ const AddedUsersTable: FC = () => {
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('status', {
-      header: ({ table, column }) => (
-        //One example how to add filter component
-        <>
-          Staatus
-          {/* <TableFilter table={table} column={column} /> */}
-        </>
-      ),
+      header: () => 'Staatus',
       footer: (info) => info.column.id,
     }),
   ] as ColumnDef<Person>[]

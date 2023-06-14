@@ -1,14 +1,12 @@
-import { FC, useState, HTMLProps, useEffect, useRef } from 'react'
+import { FC, useState, HTMLProps, useEffect, useRef, useCallback } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-
 import {
   createColumnHelper,
   PaginationState,
   ColumnDef,
 } from '@tanstack/react-table'
-import TableFilter from 'components/organisms/TableColumnFilter/TableColumnFilter'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -57,6 +55,22 @@ const ExamplesTable: FC = () => {
     pageSize: 5,
   })
 
+  const handleColumnFiltersChange = useCallback(
+    (filters: string[], columnId: string) => {
+      //TODO add to endpoint
+      // console.log('New column filters:', filters, columnId)
+    },
+    []
+  )
+
+  const onSortingChange = useCallback(
+    (value: string | boolean, columnId: string) => {
+      //TODO add to endpoint
+      // console.log('column sorting:', value, columnId)
+    },
+    []
+  )
+
   const columns = [
     columnHelper.accessor('id', {
       header: () => 'Id',
@@ -75,8 +89,6 @@ const ExamplesTable: FC = () => {
         </div>
       ),
       footer: (info) => info.column.id,
-      enableColumnFilter: false,
-      enableSorting: false,
     }),
     columnHelper.accessor('firstName', {
       header: ({ table }) => (
@@ -135,7 +147,6 @@ const ExamplesTable: FC = () => {
       ),
       header: () => <span>Last Name</span>,
       footer: (info) => info.column.id,
-      enableColumnFilter: false,
     }),
     columnHelper.accessor('age', {
       header: () => 'Age',
@@ -145,18 +156,13 @@ const ExamplesTable: FC = () => {
     columnHelper.accessor('visits', {
       header: () => <span>Visits</span>,
       footer: (info) => info.column.id,
+      meta: {
+        //Example for adding sorting
+        sortingOption: ['asc', 'desc', false],
+      },
     }),
     columnHelper.accessor('status', {
-      header: ({ table, column }) => {
-        const filterOption = ['single', 'complicated', 'married']
-        return (
-          //One example how to add filter component
-          <>
-            Status
-            <TableFilter filterOption={filterOption} column={column} />
-          </>
-        )
-      },
+      header: () => 'Status',
       footer: (info) => info.column.id,
       cell: ({ row, getValue }) => {
         //Here comes label/tag component
@@ -172,7 +178,19 @@ const ExamplesTable: FC = () => {
           </div>
         )
       },
-      enableColumnFilter: false,
+      meta: {
+        //Example for adding filter
+        filterOption: [
+          { label: 'Option 1', value: 'Option 1' },
+          { label: 'Option 2', value: 'Option 2' },
+          { label: 'Option 3', value: 'Option 3' },
+          { label: 'Option 4', value: 'Option 4' },
+          { label: 'Option 5', value: 'Option 5' },
+          { label: 'Option 6', value: 'Option 6' },
+          { label: 'Option ieruhiruthr7', value: 'Option 7' },
+          { label: 'Option 8985759867', value: 'Option 8' },
+        ],
+      },
     }),
     columnHelper.accessor('progress', {
       header: 'Profile Progress',
@@ -184,12 +202,13 @@ const ExamplesTable: FC = () => {
     <DataTable
       data={tableData}
       columns={columns}
-      sortable
       //enableExpanding
       getSubRows={(originalRow) => originalRow.subRows}
       pagination={pagination}
       setPagination={setPagination}
       tableSize={TableSizeTypes.S}
+      onColumnFiltersChange={handleColumnFiltersChange}
+      onSortingChange={onSortingChange}
     />
   )
 }

@@ -14,6 +14,7 @@ type DropdownContentProps = SelectionControlsInputProps & {
   isOpen?: boolean
   selectedOptionObjects?: { label: string; value: string }[]
   setIsOpen?: Dispatch<SetStateAction<boolean>>
+  className?: string
 }
 
 const DropdownContent: FC<DropdownContentProps> = ({
@@ -34,6 +35,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
   helperText,
   selectedOptionObjects,
   tags,
+  className,
 }) => {
   const initialValue = value || multiple ? [] : ''
   const [selectedValue, setSelectedValue] = useState<string | string[]>(
@@ -72,7 +74,11 @@ const DropdownContent: FC<DropdownContentProps> = ({
   return (
     <>
       <div
-        className={classNames(classes.dropdownMenu, classes[dropdownSize])}
+        className={classNames(
+          classes.dropdownMenu,
+          classes[dropdownSize],
+          className
+        )}
         hidden={disabled || !isOpen}
       >
         <div hidden={!searchInput}>{searchInput}</div>

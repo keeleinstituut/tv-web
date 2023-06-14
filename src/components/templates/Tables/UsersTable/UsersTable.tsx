@@ -1,5 +1,4 @@
 import { FC, useState, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -25,7 +24,6 @@ export type Person = {
 const columnHelper = createColumnHelper<Person>()
 
 const UsersTable: FC = () => {
-  const { t } = useTranslation()
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -80,14 +78,13 @@ const UsersTable: FC = () => {
   ] as ColumnDef<Person>[]
 
   return (
-    <p>love</p>
-    // <DataTable
-    //   data={usersData}
-    //   columns={columns}
-    //   pagination={pagination}
-    //   setPagination={setPagination}
-    //   tableSize={TableSizeTypes.M}
-    // />
+    <DataTable
+      data={usersData}
+      columns={columns}
+      pagination={pagination}
+      setPagination={setPagination}
+      tableSize={TableSizeTypes.M}
+    />
   )
 }
 

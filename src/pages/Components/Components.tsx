@@ -219,7 +219,7 @@ const Test: FC = () => {
 
       <TestingTable />
       <AddedUsersTable />
-      {/* <UsersTable /> */}
+      <UsersTable />
 
       <ModalBase
         title="Pealkiri"
