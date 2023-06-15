@@ -52,7 +52,7 @@ const ExamplesTable: FC = () => {
   const tableData = defaultData
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   })
 
   const handleColumnFiltersChange = useCallback(

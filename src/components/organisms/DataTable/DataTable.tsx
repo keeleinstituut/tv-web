@@ -14,6 +14,7 @@ import {
   RowData,
   ColumnDef,
 } from '@tanstack/react-table'
+import { Root } from '@radix-ui/react-form'
 import Container from 'components/atoms/Container/Container'
 import TablePagination from 'components/organisms/TablePagination/TablePagination'
 import TableHeaderGroup from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
@@ -82,30 +83,35 @@ const DataTable = <TData extends object>({
   })
 
   return (
-    <Container>
-      <h4 className={classes.title}>{title}</h4>
-      <div className={classes.tableWrapper}>
-        <table className={classNames(classes.dataTable, classes[tableSize])}>
-          <TableHeaderGroup
-            table={table}
-            onSortingChange={onSortingChange}
-            onColumnFiltersChange={onColumnFiltersChange}
-          />
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <TablePagination hidden={!pagination} table={table} />
-      </div>
-    </Container>
+    <Root>
+      <Container>
+        <h4 className={classes.title}>{title}</h4>
+        <div className={classes.tableWrapper}>
+          <table className={classNames(classes.dataTable, classes[tableSize])}>
+            <TableHeaderGroup
+              table={table}
+              onSortingChange={onSortingChange}
+              onColumnFiltersChange={onColumnFiltersChange}
+            />
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <TablePagination hidden={!pagination} table={table} />
+        </div>
+      </Container>
+    </Root>
   )
 }
 

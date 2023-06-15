@@ -14,6 +14,7 @@ export enum DropdownSizeTypes {
   L = 'l',
   M = 'm',
   S = 's',
+  XS = 'xs',
 }
 export type DropDownOptions = {
   label: string
@@ -37,6 +38,7 @@ export interface SelectionControlsInputProps {
   searchInput?: ReactElement
   dropdownSize?: DropdownSizeTypes
   tags?: boolean
+  className?: string
 }
 
 const SelectionControlsInput = forwardRef<
@@ -61,6 +63,7 @@ const SelectionControlsInput = forwardRef<
     searchInput,
     dropdownSize,
     tags = false,
+    className,
   },
   ref
 ) {
@@ -91,7 +94,7 @@ const SelectionControlsInput = forwardRef<
       label={label}
       name={name}
       error={error}
-      className={classes.selectionsContainer}
+      className={classNames(classes.selectionsContainer, className)}
       wrapperClass={classes[dropdownSize || 'l']}
       onClick={toggleDropdown}
       ref={clickAwayInputRef}

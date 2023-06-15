@@ -5,7 +5,7 @@
 .paginationWrapper {
   display: flex;
   justify-content: center;
-  padding: spacing(2) spacing(11);
+  padding: spacing(2) spacing(5);
 
   .pagination {
     display: grid;
@@ -54,31 +54,23 @@
       }
     }
   }
-  .pageNumber,
-  .pageSizeLabel,
-  .pageSizeSelect {
+  .pageNumber {
     @include subtitleSmallTextStyle;
     color: $color-input-main;
   }
 
   .pageSizeWrapper {
-    display: grid;
-    grid-template-columns: max-content 47px;
-    align-items: center;
-    justify-items: center;
-    gap: spacing(2);
-    margin-left: auto;
+    width: auto;
+    text-align: center;
 
-    .pageSizeSelect {
-      width: 100%;
-      appearance: none;
-      padding: spacing(0.5) spacing(4) spacing(0.5) spacing(1.5);
-      border: 1px solid $color-border;
-      border-radius: $border-radius-2;
-      background-color: $color-white;
-      background-image: url('/assets/icons/arrow_down.svg');
-      background-repeat: no-repeat;
-      background-position: top spacing(2.5) right spacing(2);
+    svg {
+      width: 19px;
+      height: 19px;
+      right: 4px;
+    }
+    p {
+      @include subtitleSmallTextStyle;
+      width: max-content;
     }
   }
 }

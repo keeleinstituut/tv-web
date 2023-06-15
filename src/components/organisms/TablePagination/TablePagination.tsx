@@ -1,16 +1,17 @@
 import { useId } from 'react'
+import { toString } from 'lodash'
 import classes from './styles.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import { Table, PaginationState } from '@tanstack/react-table'
-
 import { ReactComponent as Arrow } from 'assets/icons/arrow_pagination.svg'
-
+import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import Button, {
   AppearanceTypes,
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
+import { DropdownSizeTypes } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 
 type PaginationProps<TData> = {
   hidden?: boolean
@@ -35,7 +36,13 @@ const TablePagination = <TData extends object>({
   } = table || {}
 
   if (hidden) return null
-
+  const pageSizeOptions = [
+    { label: '10', value: '10' },
+    { label: '20', value: '20' },
+    { label: '30', value: '30' },
+    { label: '40', value: '40' },
+    { label: '50', value: '50' },
+  ]
   return (
     <div className={classes.paginationWrapper}>
       <div className={classes.pagination}>
@@ -83,26 +90,20 @@ const TablePagination = <TData extends object>({
           className={classNames(classes.arrows, classes.toRight)}
         />
       </div>
-      <div className={classes.pageSizeWrapper}>
-        <label htmlFor={id} className={classes.pageSizeLabel}>
-          {t('label.pagination_result_count')}
-        </label>
-        {/* TODO: replace with our select component */}
-        <select
-          className={classes.pageSizeSelect}
-          id={id}
-          value={getState().pagination.pageSize}
-          onChange={(e) => {
-            setPageSize(Number(e.target.value))
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
+      <SelectionControlsInput
+        className={classes.pageSizeWrapper}
+        name={id}
+        ariaLabel={t('label.pagination_result_count')}
+        label={t('label.pagination_result_count')}
+        options={pageSizeOptions}
+        value={toString(getState().pagination.pageSize)}
+        onChange={(value) => {
+          setPageSize(Number(value))
+        }}
+        placeholder={toString(getState().pagination.pageSize)}
+        multiple={false}
+        dropdownSize={DropdownSizeTypes.XS}
+      />
     </div>
   )
 }

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Root } from '@radix-ui/react-form'
 import { ReactComponent as FilterIcon } from 'assets/icons/filter.svg'
 import Button, {
   AppearanceTypes,
@@ -40,7 +39,7 @@ const TableColumnFilter = ({
   if (hidden) return null
 
   return (
-    <Root>
+    <div>
       <Button
         onClick={toggleDropdown}
         appearance={AppearanceTypes.Text}
@@ -64,7 +63,7 @@ const TableColumnFilter = ({
         setIsOpen={setIsOpen}
         className={classes.dropDown}
       />
-    </Root>
+    </div>
   )
 }
 
