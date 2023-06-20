@@ -34,7 +34,6 @@ interface RefType {
   isModalOpen: boolean
 }
 
-export const modalKeys = mapValues(MODALS, (_, key) => key)
 export const modalRef = createRef<RefType>()
 
 const ModalRoot = () => {

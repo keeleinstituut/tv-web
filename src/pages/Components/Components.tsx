@@ -1,4 +1,4 @@
-import { FC, Fragment, useCallback, useEffect, useState } from 'react'
+import { FC, Fragment, useCallback, useState } from 'react'
 import useValidators from 'hooks/useValidators'
 import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
@@ -26,8 +26,8 @@ import {
   NotificationPropsWithoutClose,
 } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-// import TooltipModal from 'components/organisms/modals/TooltipModal/TooltipModal'
-import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
+import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -73,7 +73,7 @@ const Test: FC = () => {
   })
 
   const [open, setOpen] = useState(false)
-  const [openTooltip, setTooltip] = useState(true)
+  const [openTooltip, setTooltipOpen] = useState(false)
 
   const handleClose = () => {
     setOpen(false)
@@ -83,8 +83,13 @@ const Test: FC = () => {
     setOpen(true)
   }
 
-  const handleTooltipClose = () => {
-    setTooltip(false)
+  // const handleModalClose = () => {
+  //   console.log('openTooltip Close', openTooltip)
+  //   setTooltipOpen(false)
+  // }
+
+  const handleModalOpen = () => {
+    setTooltipOpen(true)
   }
 
   const testFields: FieldProps<FormValues>[] = [
@@ -202,37 +207,7 @@ const Test: FC = () => {
     setTimeout(showNotification, 6000, dummyNotifications[3])
   }
 
-  // const tooltipModal = () => {
-  //   if (openTooltip) {
-  //     showModal(ModalTypes.Tooltip, {
-  //       onClose: handleTooltipClose,
-  //       title: '[Tõlkemälu loomine] kohtspikker',
-  //       textButtonContent: 'Vaata täpsemalt kasutusjuhendi lehelt',
-  //       modalContent: 'bu',
-  //       href: 'http://localhost:3000',
-  //     })
-  //   }
-  // }
-
-  // tooltipModal()
-
-  // const tooltipModal = useCallback(() => {
-  //   if (openTooltip) {
-  //     showModal(ModalTypes.Tooltip, {
-  //       onClose: handleTooltipClose,
-  //       title: '[Tõlkemälu loomine] kohtspikker',
-  //       textButtonContent: 'Vaata täpsemalt kasutusjuhendi lehelt',
-  //       modalContent: 'bu',
-  //       href: 'http://localhost:3000',
-  //     })
-  //   }
-  // }, [openTooltip, handleTooltipClose])
-
-  // useEffect(() => {
-  //   tooltipModal()
-  // }, [tooltipModal])
-
-  // console.log('tooltipModal', tooltipModal)
+  console.log('openTooltip', openTooltip)
 
   return (
     <>
@@ -339,18 +314,21 @@ const Test: FC = () => {
         iconPositioning={IconPositioningTypes.Right}
         onClick={testNotifications}
       />
-      {/* <TooltipModal
-        closeModal={function (): void {
-          throw new Error('Function not implemented.')
-        }}
-        isModalOpen={true}
+      <Tooltip
+        icon={ManualIcon}
+        ariaLabel={'manual icon'}
+        // handleModalClose={handleModalClose}
+        open={openTooltip}
         title={'[Tõlkemälu loomine] kohtspikker'}
         textButtonContent={'Vaata täpsemalt kasutusjuhendi lehelt'}
-        modalContent={'bu'}
+        modalContent={
+          'Kasutaja lisamiseks süsteemi tuleb importida kasutaja andmed CSV failiga. Laadi tüüpfaili mall alla siit (link autodownload?). Kasutaja(te) lisamine töötab vaid selle malliga. Kasutaja konto loomiseks tuleb failis kasutaja(te) andmetega täita vajalikud andmeväljad. Kui CSV failis ei ole konkreetse kasutaja roll määratud, siis saab kasutaja automaatselt tellija rolli. Pärast faili üleslaadimist tuleb kontrollid, et kõik andmed oleksid korrektsed ja vajadusel parandada vead. Kui kõik andmed on korrektsed, siis klõpsa „Salvesta ja saada teavitused“ nupule. Seejärel saavad kõik uued kasutajad teate, et neile on loodud konto Tõlkeväravas.'
+        }
         href={'http://localhost:3000'}
-      /> */}
-      {/* {tooltipModal()} */}
-      <Test />
+        handleModalOpen={handleModalOpen}
+        openTooltip={openTooltip}
+        setTooltipOpen={setTooltipOpen}
+      />
     </>
   )
 }

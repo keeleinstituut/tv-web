@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   AppearanceTypes,
@@ -9,41 +9,32 @@ import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { InstitutionSelectModalProps } from 'components/organisms/modals/InstitutionSelectModal/InstitutionSelectModal'
 import classes from './styles.module.scss'
 
-export type TooltipModalProps = Omit<
-  InstitutionSelectModalProps,
-  'institutions' | 'onSelect'
-> & {
+export type TooltipModalProps = {
   title?: string
   textButtonContent?: string
   modalContent?: string
   href?: string
+  handleModalClose?: () => void
+  open?: boolean
 }
 
 const TooltipModal: FC<TooltipModalProps> = ({
-  onClose,
-  isModalOpen,
-  closeModal,
   title,
   textButtonContent,
+  handleModalClose,
   modalContent,
+  open,
   href,
 }) => {
   const { t } = useTranslation()
-  const handleClose = useCallback(() => {
-    closeModal()
-    if (onClose) {
-      onClose()
-    }
-  }, [closeModal, onClose])
 
   return (
     <ModalBase
       title={title}
       titleFont={TitleFontTypes.Gray}
-      open={!!isModalOpen}
+      open={!!open}
       className={classes.modalContent}
       buttonsPosition={ButtonPositionTypes.SpaceBetween}
       buttons={[
@@ -56,7 +47,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
         },
         {
           appearance: AppearanceTypes.Secondary,
-          onClick: handleClose,
+          onClick: handleModalClose,
           children: t('button.close'),
         },
       ]}
