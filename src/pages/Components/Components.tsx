@@ -1,4 +1,4 @@
-import { FC, Fragment, useCallback, useState } from 'react'
+import { FC, Fragment, useCallback, useEffect, useState } from 'react'
 import useValidators from 'hooks/useValidators'
 import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
 import DynamicForm, {
@@ -26,6 +26,8 @@ import {
   NotificationPropsWithoutClose,
 } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+// import TooltipModal from 'components/organisms/modals/TooltipModal/TooltipModal'
+import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -71,6 +73,7 @@ const Test: FC = () => {
   })
 
   const [open, setOpen] = useState(false)
+  const [openTooltip, setTooltip] = useState(true)
 
   const handleClose = () => {
     setOpen(false)
@@ -78,6 +81,10 @@ const Test: FC = () => {
 
   const handleOpen = () => {
     setOpen(true)
+  }
+
+  const handleTooltipClose = () => {
+    setTooltip(false)
   }
 
   const testFields: FieldProps<FormValues>[] = [
@@ -195,6 +202,38 @@ const Test: FC = () => {
     setTimeout(showNotification, 6000, dummyNotifications[3])
   }
 
+  // const tooltipModal = () => {
+  //   if (openTooltip) {
+  //     showModal(ModalTypes.Tooltip, {
+  //       onClose: handleTooltipClose,
+  //       title: '[Tõlkemälu loomine] kohtspikker',
+  //       textButtonContent: 'Vaata täpsemalt kasutusjuhendi lehelt',
+  //       modalContent: 'bu',
+  //       href: 'http://localhost:3000',
+  //     })
+  //   }
+  // }
+
+  // tooltipModal()
+
+  // const tooltipModal = useCallback(() => {
+  //   if (openTooltip) {
+  //     showModal(ModalTypes.Tooltip, {
+  //       onClose: handleTooltipClose,
+  //       title: '[Tõlkemälu loomine] kohtspikker',
+  //       textButtonContent: 'Vaata täpsemalt kasutusjuhendi lehelt',
+  //       modalContent: 'bu',
+  //       href: 'http://localhost:3000',
+  //     })
+  //   }
+  // }, [openTooltip, handleTooltipClose])
+
+  // useEffect(() => {
+  //   tooltipModal()
+  // }, [tooltipModal])
+
+  // console.log('tooltipModal', tooltipModal)
+
   return (
     <>
       <div />
@@ -300,6 +339,18 @@ const Test: FC = () => {
         iconPositioning={IconPositioningTypes.Right}
         onClick={testNotifications}
       />
+      {/* <TooltipModal
+        closeModal={function (): void {
+          throw new Error('Function not implemented.')
+        }}
+        isModalOpen={true}
+        title={'[Tõlkemälu loomine] kohtspikker'}
+        textButtonContent={'Vaata täpsemalt kasutusjuhendi lehelt'}
+        modalContent={'bu'}
+        href={'http://localhost:3000'}
+      /> */}
+      {/* {tooltipModal()} */}
+      <Test />
     </>
   )
 }

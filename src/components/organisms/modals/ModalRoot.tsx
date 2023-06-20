@@ -1,5 +1,6 @@
 import { mapValues } from 'lodash'
 import { InstitutionSelectModalProps } from './InstitutionSelectModal/InstitutionSelectModal'
+import { TooltipModalProps } from './TooltipModal/TooltipModal'
 import {
   lazy,
   useState,
@@ -11,16 +12,20 @@ import {
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
 )
+const TooltipModal = lazy(() => import('./TooltipModal/TooltipModal'))
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
+  Tooltip = 'tooltip',
 }
 
 // Add other modal props types here as well
-type ModalPropTypes = Omit<InstitutionSelectModalProps, 'closeModal'>
+type ModalPropTypes = Omit<InstitutionSelectModalProps, 'closeModal'> &
+  Omit<TooltipModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
+  tooltip: TooltipModal,
 }
 
 interface RefType {
