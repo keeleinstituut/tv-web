@@ -73,7 +73,6 @@ const Test: FC = () => {
   })
 
   const [open, setOpen] = useState(false)
-  const [openTooltip, setTooltipOpen] = useState(false)
 
   const handleClose = () => {
     setOpen(false)
@@ -81,15 +80,6 @@ const Test: FC = () => {
 
   const handleOpen = () => {
     setOpen(true)
-  }
-
-  // const handleModalClose = () => {
-  //   console.log('openTooltip Close', openTooltip)
-  //   setTooltipOpen(false)
-  // }
-
-  const handleModalOpen = () => {
-    setTooltipOpen(true)
   }
 
   const testFields: FieldProps<FormValues>[] = [
@@ -207,8 +197,6 @@ const Test: FC = () => {
     setTimeout(showNotification, 6000, dummyNotifications[3])
   }
 
-  console.log('openTooltip', openTooltip)
-
   return (
     <>
       <div />
@@ -317,17 +305,12 @@ const Test: FC = () => {
       <Tooltip
         icon={ManualIcon}
         ariaLabel={'manual icon'}
-        // handleModalClose={handleModalClose}
-        open={openTooltip}
         title={'[Tõlkemälu loomine] kohtspikker'}
         textButtonContent={'Vaata täpsemalt kasutusjuhendi lehelt'}
         modalContent={
           'Kasutaja lisamiseks süsteemi tuleb importida kasutaja andmed CSV failiga. Laadi tüüpfaili mall alla siit (link autodownload?). Kasutaja(te) lisamine töötab vaid selle malliga. Kasutaja konto loomiseks tuleb failis kasutaja(te) andmetega täita vajalikud andmeväljad. Kui CSV failis ei ole konkreetse kasutaja roll määratud, siis saab kasutaja automaatselt tellija rolli. Pärast faili üleslaadimist tuleb kontrollid, et kõik andmed oleksid korrektsed ja vajadusel parandada vead. Kui kõik andmed on korrektsed, siis klõpsa „Salvesta ja saada teavitused“ nupule. Seejärel saavad kõik uued kasutajad teate, et neile on loodud konto Tõlkeväravas.'
         }
         href={'http://localhost:3000'}
-        handleModalOpen={handleModalOpen}
-        openTooltip={openTooltip}
-        setTooltipOpen={setTooltipOpen}
       />
     </>
   )

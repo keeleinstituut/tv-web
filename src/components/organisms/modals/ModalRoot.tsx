@@ -1,4 +1,3 @@
-import { mapValues } from 'lodash'
 import { InstitutionSelectModalProps } from './InstitutionSelectModal/InstitutionSelectModal'
 import { TooltipModalProps } from './TooltipModal/TooltipModal'
 import {

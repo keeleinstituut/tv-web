@@ -17,7 +17,7 @@ export type TooltipModalProps = {
   modalContent?: string
   href?: string
   handleModalClose?: () => void
-  open?: boolean
+  isModalOpen?: boolean
 }
 
 const TooltipModal: FC<TooltipModalProps> = ({
@@ -25,8 +25,8 @@ const TooltipModal: FC<TooltipModalProps> = ({
   textButtonContent,
   handleModalClose,
   modalContent,
-  open,
   href,
+  isModalOpen,
 }) => {
   const { t } = useTranslation()
 
@@ -34,7 +34,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
     <ModalBase
       title={title}
       titleFont={TitleFontTypes.Gray}
-      open={!!open}
+      open={!!isModalOpen}
       className={classes.modalContent}
       buttonsPosition={ButtonPositionTypes.SpaceBetween}
       buttons={[

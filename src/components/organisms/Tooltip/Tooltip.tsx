@@ -1,19 +1,14 @@
-import { FC, PropsWithChildren, SVGProps } from 'react'
+import { FC, SVGProps } from 'react'
 import BaseButton, {
   BaseButtonProps,
 } from 'components/atoms/BaseButton/BaseButton'
-import TooltipModal from 'components/organisms/modals/TooltipModal/TooltipModal'
+import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 
-export interface ButtonProps extends BaseButtonProps {
+export interface TooltipProps extends BaseButtonProps {
   icon?: FC<SVGProps<SVGSVGElement>>
   ariaLabel?: string
   textButtonContent?: string
   modalContent?: string
-  open?: boolean
-  handleModalClose?: () => void
-  handleModalOpen?: () => void
-  openTooltip?: boolean
-  setTooltipOpen: (openTooltip: boolean) => void
 }
 
 export type IconProps = {
@@ -26,38 +21,27 @@ const Icon: FC<IconProps> = ({ icon: IconComponent, ariaLabel }) => {
   return <IconComponent aria-label={ariaLabel} />
 }
 
-const Tooltip: FC<PropsWithChildren<ButtonProps>> = ({
+const Tooltip: FC<TooltipProps> = ({
   icon,
   ariaLabel,
-  href,
   title,
   textButtonContent,
   modalContent,
-  open,
-  //   handleModalClose,
-  openTooltip,
-  handleModalOpen,
-  setTooltipOpen,
+  href,
 }) => {
-  const handleModalClose = () => {
-    console.log('openTooltip Close', openTooltip)
-    setTooltipOpen(false)
+  const handleModalOpen = () => {
+    showModal(ModalTypes.Tooltip, {
+      title: title,
+      textButtonContent: textButtonContent,
+      modalContent: modalContent,
+      href: href,
+    })
   }
 
   return (
-    <>
-      <BaseButton onClick={handleModalOpen}>
-        <Icon icon={icon} ariaLabel={ariaLabel} />
-      </BaseButton>
-      <TooltipModal
-        handleModalClose={handleModalClose}
-        open={open}
-        title={title}
-        textButtonContent={textButtonContent}
-        modalContent={modalContent}
-        href={href}
-      />
-    </>
+    <BaseButton onClick={handleModalOpen}>
+      <Icon icon={icon} ariaLabel={ariaLabel} />
+    </BaseButton>
   )
 }
 
