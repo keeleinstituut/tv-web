@@ -1,19 +1,15 @@
 import { FC, SVGProps } from 'react'
-import BaseButton, {
-  BaseButtonProps,
-} from 'components/atoms/BaseButton/BaseButton'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
+import { IconProps } from 'components/molecules/Button/Button'
 
-export interface TooltipProps extends BaseButtonProps {
+interface TooltipProps {
   icon?: FC<SVGProps<SVGSVGElement>>
   ariaLabel?: string
   textButtonContent?: string
   modalContent?: string
-}
-
-export type IconProps = {
-  icon?: FC<SVGProps<SVGSVGElement>>
-  ariaLabel?: string
+  title?: string
+  href?: string
 }
 
 const Icon: FC<IconProps> = ({ icon: IconComponent, ariaLabel }) => {

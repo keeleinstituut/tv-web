@@ -26,8 +26,6 @@ import {
   NotificationPropsWithoutClose,
 } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import Tooltip from 'components/organisms/Tooltip/Tooltip'
-import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -301,16 +299,6 @@ const Test: FC = () => {
         ariaLabel={t('label.button_arrow')}
         iconPositioning={IconPositioningTypes.Right}
         onClick={testNotifications}
-      />
-      <Tooltip
-        icon={ManualIcon}
-        ariaLabel={'manual icon'}
-        title={'[Tõlkemälu loomine] kohtspikker'}
-        textButtonContent={'Vaata täpsemalt kasutusjuhendi lehelt'}
-        modalContent={
-          'Kasutaja lisamiseks süsteemi tuleb importida kasutaja andmed CSV failiga. Laadi tüüpfaili mall alla siit (link autodownload?). Kasutaja(te) lisamine töötab vaid selle malliga. Kasutaja konto loomiseks tuleb failis kasutaja(te) andmetega täita vajalikud andmeväljad. Kui CSV failis ei ole konkreetse kasutaja roll määratud, siis saab kasutaja automaatselt tellija rolli. Pärast faili üleslaadimist tuleb kontrollid, et kõik andmed oleksid korrektsed ja vajadusel parandada vead. Kui kõik andmed on korrektsed, siis klõpsa „Salvesta ja saada teavitused“ nupule. Seejärel saavad kõik uued kasutajad teate, et neile on loodud konto Tõlkeväravas.'
-        }
-        href={'http://localhost:3000'}
       />
     </>
   )

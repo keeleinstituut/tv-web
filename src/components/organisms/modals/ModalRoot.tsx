@@ -6,6 +6,7 @@ import {
   useCallback,
   createRef,
   useImperativeHandle,
+  Suspense,
 } from 'react'
 
 const InstitutionSelectModal = lazy(
@@ -68,11 +69,13 @@ const ModalRoot = () => {
   if (!currentModalKey) return null
   const SelectedModal = MODALS[currentModalKey]
   return (
-    <SelectedModal
-      isModalOpen={isModalOpen}
-      closeModal={closeModal}
-      {...currentModalProps}
-    />
+    <Suspense fallback={<div />}>
+      <SelectedModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        {...currentModalProps}
+      />
+    </Suspense>
   )
 }
 
