@@ -26,6 +26,7 @@ import {
   NotificationPropsWithoutClose,
 } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import ProgressBarC from 'components/molecules/ProgressBar/ProgressBar'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -213,7 +214,7 @@ const Test: FC = () => {
           iconPositioning={IconPositioningTypes.Right}
         />
       </DynamicForm>
-
+      <ProgressBarC />
       <ModalBase
         title="Pealkiri"
         size={ModalSizeTypes.Narrow}
