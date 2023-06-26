@@ -20,7 +20,17 @@ export interface CheckBoxInputProps
 
 const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
   function CheckBoxInput(
-    { label, name, ariaLabel, className, disabled, value = false, ...rest },
+    {
+      label,
+      name,
+      ariaLabel,
+      className,
+      disabled,
+      value = false,
+      onClick,
+      onChange,
+      ...rest
+    },
     ref
   ) {
     return (
@@ -39,6 +49,8 @@ const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
             checked={value}
             aria-label={ariaLabel}
             disabled={disabled}
+            onClick={onClick}
+            onChange={onClick ? undefined : onChange}
             {...rest}
           />
         </Control>

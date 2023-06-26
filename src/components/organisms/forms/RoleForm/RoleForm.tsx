@@ -50,9 +50,6 @@ const RoleForm: FC<RoleFormProps> = ({
   onSubmitSuccess,
   isMainUser,
 }) => {
-  console.log('id', id)
-  console.log('isMainUser', isMainUser)
-
   const isTemporaryRole = startsWith(id, 'temp')
   const hasNameChanged = temporaryName && temporaryName !== name
   const defaultPrivileges = useMemo(
@@ -74,7 +71,6 @@ const RoleForm: FC<RoleFormProps> = ({
     [allPrivileges, privileges]
   )
 
-  console.log('defaultPrivileges', defaultPrivileges)
   // hooks
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
@@ -110,6 +106,17 @@ const RoleForm: FC<RoleFormProps> = ({
     },
   })
 
+  const handleMainUserPrivilegeClick = (
+    event: React.MouseEvent<HTMLInputElement>
+  ) => {
+    event.preventDefault()
+    showNotification({
+      type: NotificationTypes.Error,
+      title: t('notification.announcement'),
+      content: t('notification.main_user_privilege_change'),
+    })
+  }
+
   // map data for rendering
   const fields: FieldProps<FormValues>[] = map(allPrivileges, ({ key }) => ({
     inputType: InputTypes.Checkbox,
@@ -117,9 +124,8 @@ const RoleForm: FC<RoleFormProps> = ({
     label: t(`privileges.${key}`),
     name: `privileges.${key}`,
     disabled: !includes(userPrivileges, Privileges.EditRole),
+    onClick: isMainUser ? handleMainUserPrivilegeClick : undefined,
   }))
-
-  console.log('userPrivileges', userPrivileges)
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values, e) => {
@@ -164,8 +170,6 @@ const RoleForm: FC<RoleFormProps> = ({
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
-            console.log('errorsArray', errorsArray)
-
             const typedKey = key as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
             setError(typedKey, { type: 'custom', message: errorString })
@@ -199,14 +203,11 @@ const RoleForm: FC<RoleFormProps> = ({
     showNotification({
       type: NotificationTypes.Error,
       title: t('notification.announcement'),
-      content: isMainUser
-        ? 'It is not possible to delete the main user role'
-        : '',
+      content: t('notification.main_user_deletion'),
     })
   }
 
   if (hidden) return null
-
   return (
     <div className={classes.container}>
       <Button
@@ -215,11 +216,9 @@ const RoleForm: FC<RoleFormProps> = ({
         children={t('button.delete_this_role')}
         icon={DeleteIcon}
         className={classes.deleteButton}
-        // TODO: remove this disabled prop, once we have the ability to add roles
         // Also onClick should open the modal, not delete the role
         // onClick={deleteRole}
-        // disabled
-        onClick={showErrorMessage}
+        onClick={isMainUser ? showErrorMessage : deleteRole}
         hidden={!includes(userPrivileges, Privileges.DeleteRole)}
       />
       <h2>{t('roles.privileges')}</h2>

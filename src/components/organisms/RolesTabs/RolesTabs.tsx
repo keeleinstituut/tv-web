@@ -81,19 +81,8 @@ const RolesTabs: FC = () => {
     return <div />
   }
 
-  console.log('existingRoles', existingRoles)
-
-  const filteredArray = filter(existingRoles, {
-    name: 'Test roll',
-  })
-
-  console.log('filteredArray', filteredArray)
-
-  const mappedFilteredArray = map(filteredArray, (mainUserId) => {
-    return mainUserId?.id
-  })
-
-  console.log('mappedFilteredArray', mappedFilteredArray)
+  const filteredMainUsers = filter(existingRoles, { is_root: true })
+  const mainUserIds = map(filteredMainUsers, 'id')
 
   return (
     <>
@@ -109,25 +98,13 @@ const RolesTabs: FC = () => {
         addDisabled={!includes(userPrivileges, Privileges.AddRole)}
       />
       {map([...existingRoles, ...temporaryRoles], (role) => {
-        console.log('[...existingRoles, ...temporaryRoles]', [
-          ...existingRoles,
-          ...temporaryRoles,
-        ])
         if (!role?.id) return null
         // We render all RoleForms, instead of just the visible one
         // This is for making sure than the internal state of the useForm inside RoleForm
         // will keep its dirty state, when switching between tabs
 
-        const checkIfMainUserExistsInArray = includes(
-          mappedFilteredArray,
-          role.id
-        )
+        const isMainUser = includes(mainUserIds, role?.id)
 
-        console.log('role.id', role.id)
-        console.log(
-          'checkIfMainUserExistsInArray',
-          checkIfMainUserExistsInArray
-        )
         return (
           <RoleForm
             hidden={activeTab !== role.id}
@@ -137,7 +114,7 @@ const RolesTabs: FC = () => {
             {...role}
             temporaryName={tabNames[role.id]}
             allPrivileges={allPrivileges}
-            isMainUser={checkIfMainUserExistsInArray}
+            isMainUser={isMainUser}
           />
         )
       })}
