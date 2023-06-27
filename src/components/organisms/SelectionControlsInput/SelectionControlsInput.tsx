@@ -1,4 +1,4 @@
-import { ReactElement, forwardRef, useRef, useState } from 'react'
+import { FC, ReactElement, SVGProps, forwardRef, useRef, useState } from 'react'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
@@ -39,6 +39,7 @@ export interface SelectionControlsInputProps {
   dropdownSize?: DropdownSizeTypes
   tags?: boolean
   className?: string
+  selectIcon?: FC<SVGProps<SVGSVGElement>>
 }
 
 const SelectionControlsInput = forwardRef<
@@ -64,6 +65,7 @@ const SelectionControlsInput = forwardRef<
     dropdownSize,
     tags = false,
     className,
+    selectIcon,
   },
   ref
 ) {
@@ -89,6 +91,8 @@ const SelectionControlsInput = forwardRef<
 
   const dropdownMenuLabel = multiple ? placeholder : singleSelectMenuLabel
 
+  const SelectInputArrow = selectIcon || DropdownArrow
+
   return (
     <InputWrapper
       label={label}
@@ -112,7 +116,8 @@ const SelectionControlsInput = forwardRef<
         <p hidden={!placeholder} className={classes.menuLabel}>
           {dropdownMenuLabel}
         </p>
-        <DropdownArrow
+
+        <SelectInputArrow
           className={classNames(
             disabled && classes.disabledDropdownIcon,
             isOpen && !error && classes.openDropdownIcon

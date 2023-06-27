@@ -14,7 +14,8 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as SortingArrows } from 'assets/icons/sorting_arrows.svg'
+import { ReactComponent as SortingMore } from 'assets/icons/sorting_arrows.svg'
+import { ReactComponent as SortingLess } from 'assets/icons/sorting_less.svg'
 import TableColumnFilter from 'components/organisms/TableColumnFilter/TableColumnFilter'
 import classes from './styles.module.scss'
 interface HeaderGroupFunctions {
@@ -70,7 +71,7 @@ const HeaderItem = <TData extends object>({
           onClick={handleOnSorting}
           appearance={AppearanceTypes.Text}
           size={SizeTypes.S}
-          icon={SortingArrows}
+          icon={value === 'asc' ? SortingLess : SortingMore}
           ariaLabel={t('label.button_arrow')}
           iconPositioning={IconPositioningTypes.Left}
           className={classes.sortingButton}

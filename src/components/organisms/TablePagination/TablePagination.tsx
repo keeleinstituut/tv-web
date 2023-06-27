@@ -5,6 +5,7 @@ import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import { Table, PaginationState } from '@tanstack/react-table'
 import { ReactComponent as Arrow } from 'assets/icons/arrow_pagination.svg'
+import { ReactComponent as SelectArrow } from 'assets/icons/select_arrow.svg'
 import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import Button, {
   AppearanceTypes,
@@ -103,6 +104,7 @@ const TablePagination = <TData extends object>({
         placeholder={toString(getState().pagination.pageSize)}
         multiple={false}
         dropdownSize={DropdownSizeTypes.XS}
+        selectIcon={SelectArrow}
       />
     </div>
   )

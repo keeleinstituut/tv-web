@@ -83,7 +83,7 @@ const UsersTable: FC = () => {
       columns={columns}
       pagination={pagination}
       setPagination={setPagination}
-      tableSize={TableSizeTypes.M}
+      tableSize={TableSizeTypes.L}
     />
   )
 }

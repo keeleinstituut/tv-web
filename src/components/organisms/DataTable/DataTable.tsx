@@ -28,7 +28,7 @@ export enum TableSizeTypes {
 type DataTableProps<TData extends RowData> = {
   data: TData[]
   columns: ColumnDef<TData>[]
-  tableSize: string
+  tableSize: TableSizeTypes
   title?: string
   onSortingChange?: (value: string | boolean, columnId: string) => void
   onColumnFiltersChange?: (filters: string[], columnId: string) => void
@@ -50,7 +50,7 @@ declare module '@tanstack/react-table' {
 const DataTable = <TData extends object>({
   data,
   columns,
-  tableSize = 'm',
+  tableSize = TableSizeTypes.M,
   title,
   onSortingChange,
   onColumnFiltersChange,
@@ -59,14 +59,12 @@ const DataTable = <TData extends object>({
   meta,
   getSubRows,
 }: DataTableProps<TData>) => {
-  const [rowSelection, setRowSelection] = useState({})
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
   const table = useReactTable<TData>({
     data,
     columns,
     state: {
-      rowSelection,
       expanded,
       ...{ pagination },
     },
@@ -74,9 +72,6 @@ const DataTable = <TData extends object>({
     ...(pagination && { getPaginationRowModel: getPaginationRowModel() }),
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    enableRowSelection: true, //enable row selection for all rows
-    // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
-    onRowSelectionChange: setRowSelection,
     onExpandedChange: setExpanded,
     getSubRows: getSubRows,
     getExpandedRowModel: getExpandedRowModel(),

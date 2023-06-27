@@ -19,19 +19,26 @@
     @include bodyTextStyle;
   }
 
-  .l th,
-  td {
-    padding: spacing(3) spacing(3.5);
+  .l {
+    th,
+    td {
+      padding: spacing(4) spacing(3.5);
+      height: 56px;
+    }
   }
-  .m th,
-  td {
-    padding: spacing(2) spacing(3.5);
-    line-height: 20px;
+  .m {
+    th,
+    td {
+      padding: spacing(2.5) spacing(3.5);
+      height: 49px;
+    }
   }
-  .s th,
-  td {
-    padding: spacing(1) spacing(3.5);
-    line-height: 20px;
+  .s {
+    th,
+    td {
+      padding: spacing(1) spacing(3.5);
+      height: 40px;
+    }
   }
 
   th {
