@@ -1,26 +1,32 @@
-import { mapValues } from 'lodash'
 import { InstitutionSelectModalProps } from './InstitutionSelectModal/InstitutionSelectModal'
+import { DeleteRoleModalProps } from './DeleteRoleModal/DeleteRoleModal'
 import {
   lazy,
   useState,
   useCallback,
   createRef,
   useImperativeHandle,
+  Suspense,
 } from 'react'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
 )
 
+const DeleteRoleModal = lazy(() => import('./DeleteRoleModal/DeleteRoleModal'))
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
+  DeleteRole = 'deleteRole',
 }
 
 // Add other modal props types here as well
-type ModalPropTypes = Omit<InstitutionSelectModalProps, 'closeModal'>
+type ModalPropTypes = Omit<InstitutionSelectModalProps, 'closeModal'> &
+  Omit<DeleteRoleModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
+  deleteRole: DeleteRoleModal,
 }
 
 interface RefType {
@@ -29,7 +35,6 @@ interface RefType {
   isModalOpen: boolean
 }
 
-export const modalKeys = mapValues(MODALS, (_, key) => key)
 export const modalRef = createRef<RefType>()
 
 const ModalRoot = () => {
@@ -65,11 +70,13 @@ const ModalRoot = () => {
   if (!currentModalKey) return null
   const SelectedModal = MODALS[currentModalKey]
   return (
-    <SelectedModal
-      isModalOpen={isModalOpen}
-      closeModal={closeModal}
-      {...currentModalProps}
-    />
+    <Suspense fallback={<div />}>
+      <SelectedModal
+        isModalOpen={isModalOpen}
+        closeModal={closeModal}
+        {...currentModalProps}
+      />
+    </Suspense>
   )
 }
 

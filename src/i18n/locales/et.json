@@ -30,6 +30,7 @@
     "enter": "Sisene",
     "break": "Katkesta",
     "yes": "Jah",
+    "no": "Ei",
     "log_out": "Logi välja",
     "save_changes": "Salvesta muudatused",
     "delete_this_role": "Kustuta see roll",
@@ -147,6 +148,7 @@
     "error": "Viga",
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
     "main_user_deletion": "Peakasutaja rolli ei saa kustutada",
-    "main_user_privilege_change": "Peakasutaja privileege ei saa muuta"
+    "main_user_privilege_change": "Peakasutaja privileege ei saa muuta",
+    "delete_role": "Kas oled kindel, et soovid rolli kustutada?"
   }
 }
