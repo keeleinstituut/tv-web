@@ -32,11 +32,10 @@ export interface SelectionControlsInputProps {
   multiple?: boolean
   helperText?: string
   buttons?: boolean
-  cancelButtonLabel?: string
-  proceedButtonLabel?: string
   searchInput?: ReactElement
   dropdownSize?: DropdownSizeTypes
   tags?: boolean
+  errorZIndex?: number
 }
 
 const SelectionControlsInput = forwardRef<
@@ -56,10 +55,9 @@ const SelectionControlsInput = forwardRef<
     multiple = false,
     helperText,
     buttons = false,
-    cancelButtonLabel,
-    proceedButtonLabel,
     searchInput,
     dropdownSize,
+    errorZIndex,
     tags = false,
   },
   ref
@@ -96,11 +94,13 @@ const SelectionControlsInput = forwardRef<
       onClick={toggleDropdown}
       ref={clickAwayInputRef}
       errorClass={classes.selectionsError}
+      errorZIndex={errorZIndex}
     >
       <BaseButton
         className={classNames(
           classes.toggleDropdown,
           disabled && classes.disabledDropdown,
+          error && classes.error,
           classes[dropdownSize || 'l']
         )}
         id={name}
@@ -129,12 +129,11 @@ const SelectionControlsInput = forwardRef<
         multiple={multiple}
         value={value}
         buttons={buttons}
-        cancelButtonLabel={cancelButtonLabel}
-        proceedButtonLabel={proceedButtonLabel}
         helperText={helperText}
         selectedOptionObjects={selectedOptionObjects}
         tags={tags}
         setIsOpen={setIsOpen}
+        errorZIndex={errorZIndex}
       />
     </InputWrapper>
   )

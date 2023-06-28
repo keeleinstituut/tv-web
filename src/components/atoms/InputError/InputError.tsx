@@ -9,14 +9,23 @@ interface InputErrorProps {
   type?: FieldError['type']
   message?: FieldError['message']
   className?: string
+  errorZIndex?: number
 }
 
-const InputError: FC<InputErrorProps> = ({ type, message, className }) => {
+const InputError: FC<InputErrorProps> = ({
+  type,
+  message,
+  className,
+  errorZIndex,
+}) => {
   const { t } = useTranslation()
   if (!message && type !== 'required') return null
   const messageToShow = message || t('error.required')
   return (
-    <div className={classNames(classes.errorContainer, className)}>
+    <div
+      className={classNames(classes.errorContainer, className)}
+      style={{ zIndex: errorZIndex }}
+    >
       <img src={errorOutline} alt={t('error.input_title')} />
       <span>
         <b>{t('error.input_title')}</b>

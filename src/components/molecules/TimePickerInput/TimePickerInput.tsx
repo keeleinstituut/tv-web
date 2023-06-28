@@ -16,6 +16,7 @@ type SharedTimeProps = {
   showSeconds?: boolean
   error?: FieldError
   name: string
+  errorZIndex?: number
   onChange: (value: string) => void
 }
 
@@ -103,6 +104,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       label,
       className,
       name,
+      errorZIndex,
     } = props
 
     const splittedTimeValue = value?.split(':')
@@ -159,6 +161,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         className={className}
         ref={clickAwayInputRef}
         wrapperClass={classes.timePickerWrapper}
+        errorZIndex={errorZIndex}
       >
         <TimeInput
           name={name}

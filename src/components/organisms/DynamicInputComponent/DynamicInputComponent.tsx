@@ -17,6 +17,7 @@ import SelectionControlsInput, {
 import TimePickerInput, {
   TimePickerInputProps,
 } from 'components/molecules/TimePickerInput/TimePickerInput'
+import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
 
 // Extend all props of an input with the corresponding inputType
 
@@ -48,12 +49,13 @@ type TimePickerPropsWithType = TimePickerInputProps & {
   inputType: InputTypes.Time
 }
 
-export type InputPropsByType =
+export type InputPropsByType = (
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
   | DatePickerPropsWithType
   | SelectionControlsPropsWithType
   | TimePickerPropsWithType
+) & { onlyDisplay?: boolean }
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
   InputPropsByType,
@@ -63,41 +65,45 @@ export type InputPropsWithoutControllerProps = SimpleUnionOmit<
 // eslint-disable-next-line react/display-name
 const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
   (props, ref) => {
-    const { inputType } = props
+    const { inputType, onlyDisplay } = props
+
+    if (onlyDisplay) {
+      return <DisplayValue value={props.value} />
+    }
 
     switch (inputType) {
       case InputTypes.Text:
         return (
           <TextInput
-            {...omit(props, 'inputType')}
+            {...omit(props, ['inputType', 'onlyDisplay'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Checkbox:
         return (
           <CheckBoxInput
-            {...omit(props, 'inputType')}
+            {...omit(props, ['inputType', 'onlyDisplay'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Date:
         return (
           <DatePickerInput
-            {...omit(props, 'inputType')}
+            {...omit(props, ['inputType', 'onlyDisplay'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Selections:
         return (
           <SelectionControlsInput
-            {...omit(props, 'inputType')}
+            {...omit(props, ['inputType', 'onlyDisplay'])}
             ref={ref as unknown as Ref<HTMLButtonElement>}
           />
         )
       case InputTypes.Time:
         return (
           <TimePickerInput
-            {...omit(props, 'inputType')}
+            {...omit(props, ['inputType', 'onlyDisplay'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )

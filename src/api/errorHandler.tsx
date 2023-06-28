@@ -10,8 +10,16 @@ interface ValidationErrorDataType {
   [key: string]: string[]
 }
 
+interface RowValidationErrorType {
+  row: number
+  errors: ValidationErrorDataType
+}
 export interface ValidationError extends Error {
   errors: ValidationErrorDataType
+}
+
+export interface CsvValidationError extends Error {
+  errors: RowValidationErrorType[]
 }
 
 const handleError = async (error?: AxiosError) => {
