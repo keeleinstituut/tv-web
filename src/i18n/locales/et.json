@@ -41,7 +41,8 @@
     "save": "Salvesta",
     "add_csv": "Lisa .csv",
     "choose": "Vali",
-    "add_new_csv": "Lisa uus .csv"
+    "add_new_csv": "Lisa uus .csv",
+    "close": "Sulge"
   },
   "error": {
     "input_title": "Veateade: ",
