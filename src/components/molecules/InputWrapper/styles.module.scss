@@ -21,9 +21,7 @@
     display: none;
   }
 
-  .errorMessage input,
-  .errorMessage button,
-  .errorMessage button:focus {
+  .errorMessage input {
     border: 1px solid $color-error;
     border-radius: 5px;
   }

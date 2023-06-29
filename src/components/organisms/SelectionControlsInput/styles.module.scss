@@ -20,6 +20,11 @@
   overflow: hidden;
   width: 100%;
 
+  &.error {
+    border: 1px solid $color-error;
+    border-radius: 5px;
+  }
+
   &:focus {
     border: 1px solid $color-primary;
     border-radius: 5px;
