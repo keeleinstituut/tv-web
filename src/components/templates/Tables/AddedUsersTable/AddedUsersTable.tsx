@@ -40,7 +40,7 @@ const AddedUsersTable: FC = () => {
   const usersData = useMemo(() => {
     return (
       map(tableData, (data) => {
-        const arrayOfRoles = map(data.roles, ({ name }) => name)
+        const arrayOfRoles = map(data.roles, 'name')
         return {
           id: data.id,
           name: `${data.user?.forename} ${data.user?.surname}`,

@@ -1,4 +1,3 @@
-import { useId } from 'react'
 import { toString } from 'lodash'
 import classes from './styles.module.scss'
 import classNames from 'classnames'
@@ -24,7 +23,6 @@ const TablePagination = <TData extends object>({
   table,
 }: PaginationProps<TData>) => {
   const { t } = useTranslation()
-  const id = useId()
   const {
     previousPage,
     getCanPreviousPage,
@@ -51,7 +49,7 @@ const TablePagination = <TData extends object>({
           appearance={AppearanceTypes.Text}
           size={SizeTypes.S}
           icon={Arrow}
-          ariaLabel={t('label.button_arrow')}
+          ariaLabel={t('button.previous_page')}
           iconPositioning={IconPositioningTypes.Left}
           onClick={previousPage}
           disabled={!getCanPreviousPage()}
@@ -62,7 +60,7 @@ const TablePagination = <TData extends object>({
           <ul className={classes.links}>
             {[...Array(getPageCount())].map((_, index) => (
               <li
-                key={`${id}-${index}`}
+                key={index}
                 className={classNames(classes.list, {
                   [classes.active]: getState().pagination.pageIndex === index,
                 })}
@@ -71,7 +69,7 @@ const TablePagination = <TData extends object>({
                   className={classes.pageNumber}
                   href={`?page=${index + 1}`}
                   onClick={() => setPageIndex(index)}
-                  aria-label={t('label.go_to_page') + index}
+                  ariaLabel={t('label.go_to_page') + index}
                   aria-current={getState().pagination.pageIndex === index}
                 >
                   {index + 1}
@@ -84,7 +82,7 @@ const TablePagination = <TData extends object>({
           appearance={AppearanceTypes.Text}
           size={SizeTypes.S}
           icon={Arrow}
-          ariaLabel={t('label.button_arrow')}
+          ariaLabel={t('button.next_page')}
           iconPositioning={IconPositioningTypes.Left}
           onClick={nextPage}
           disabled={!getCanNextPage()}
@@ -93,7 +91,7 @@ const TablePagination = <TData extends object>({
       </div>
       <SelectionControlsInput
         className={classes.pageSizeWrapper}
-        name={id}
+        name={t('label.pagination_result_count')}
         ariaLabel={t('label.pagination_result_count')}
         label={t('label.pagination_result_count')}
         options={pageSizeOptions}
@@ -102,7 +100,6 @@ const TablePagination = <TData extends object>({
           setPageSize(Number(value))
         }}
         placeholder={toString(getState().pagination.pageSize)}
-        multiple={false}
         dropdownSize={DropdownSizeTypes.XS}
         selectIcon={SelectArrow}
       />

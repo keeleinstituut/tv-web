@@ -1,4 +1,4 @@
-import { CSSProperties, Dispatch, SetStateAction, useState } from 'react'
+import { CSSProperties, useState } from 'react'
 import classes from './styles.module.scss'
 import classNames from 'classnames'
 import {
@@ -13,11 +13,14 @@ import {
   Row,
   RowData,
   ColumnDef,
+  OnChangeFn,
 } from '@tanstack/react-table'
 import { Root } from '@radix-ui/react-form'
 import Container from 'components/atoms/Container/Container'
 import TablePagination from 'components/organisms/TablePagination/TablePagination'
-import TableHeaderGroup from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
+import TableHeaderGroup, {
+  HeaderGroupFunctions,
+} from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 
 export enum TableSizeTypes {
   L = 'l',
@@ -30,16 +33,14 @@ type DataTableProps<TData extends RowData> = {
   columns: ColumnDef<TData>[]
   tableSize: TableSizeTypes
   title?: string
-  onSortingChange?: (value: string | boolean, columnId: string) => void
-  onColumnFiltersChange?: (filters: string[], columnId: string) => void
   pagination?: PaginationState
-  setPagination?: Dispatch<SetStateAction<PaginationState>>
+  setPagination?: OnChangeFn<PaginationState>
   meta?: TableMeta<TData>
   subRows?: Row<TData>[] | undefined
   getSubRows?:
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
-}
+} & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {

@@ -1,8 +1,10 @@
 @import 'styles/variables';
 
 .iconButton {
-  &:focus {
-    box-shadow: inset 0 0 0 2px transparent;
+  padding: spacing(1);
+
+  svg {
+    padding: 0;
   }
 
   svg g path,

@@ -7,13 +7,13 @@ import Button, {
   SizeTypes,
 } from 'components/molecules/Button/Button'
 import { SelectionControlsInputProps } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-
+import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import classes from './styles.module.scss'
 import { useTranslation } from 'react-i18next'
 
 type DropdownContentProps = SelectionControlsInputProps & {
   isOpen?: boolean
-  selectedOptionObjects?: { label: string; value: string }[]
+  selectedOptionObjects?: DropDownOptions[]
   setIsOpen?: Dispatch<SetStateAction<boolean>>
   className?: string
 }

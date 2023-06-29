@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react'
-import { isEmpty, toString, size } from 'lodash'
+import { useState } from 'react'
+import { isEmpty, toString } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import {
   Table,
@@ -9,19 +9,17 @@ import {
   RowData,
 } from '@tanstack/react-table'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-import Button, {
-  AppearanceTypes,
-  SizeTypes,
-  IconPositioningTypes,
-} from 'components/molecules/Button/Button'
+import { ReactComponent as FilterIcon } from 'assets/icons/filter.svg'
 import { ReactComponent as SortingMore } from 'assets/icons/sorting_arrows.svg'
 import { ReactComponent as SortingLess } from 'assets/icons/sorting_less.svg'
 import TableColumnFilter from 'components/organisms/TableColumnFilter/TableColumnFilter'
 import classes from './styles.module.scss'
-interface HeaderGroupFunctions {
-  onSortingChange?: (value: string | boolean, columnId: string) => void
-  onColumnFiltersChange?: (filters: string[], columnId: string) => void
+
+export interface HeaderGroupFunctions {
+  onSortingChange?: (filters: string | string[], columnId: string) => void
+  onColumnFiltersChange?: (filters: string | string[], columnId: string) => void
 }
+
 type HeaderGroupProps<TData> = {
   table: Table<TData>
 } & HeaderGroupFunctions
@@ -30,7 +28,7 @@ type ColumnMeta = {
   meta?: {
     size?: number | string
     filterOption?: DropDownOptions[]
-    sortingOption?: (string | boolean)[]
+    sortingOption?: DropDownOptions[]
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
@@ -47,47 +45,50 @@ const HeaderItem = <TData extends object>({
   onColumnFiltersChange,
 }: HeaderItemProps<TData>) => {
   const { t } = useTranslation()
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [currentSorting, setCurrentSorting] = useState<string>()
   const { id, column } = header || {}
   const { meta } = column.columnDef as CustomColumnDef<TData>
   const filterOption = meta?.filterOption || []
   const sortingOption = meta?.sortingOption || []
-  const value = sortingOption[currentIndex]
-  const newIndex = size(sortingOption) - 1 > currentIndex ? currentIndex + 1 : 0
 
-  const handleOnSorting = useCallback(() => {
+  const handleOnSorting = (value: string | string[]) => {
     if (onSortingChange) {
-      onSortingChange(value, id)
-      setCurrentIndex(newIndex)
+      onSortingChange(value, toString(id))
+      setCurrentSorting(toString(value))
     }
-  }, [id, newIndex, onSortingChange, value])
+  }
+
+  const handleOnFiltering = (value: string | string[]) => {
+    if (onColumnFiltersChange) {
+      onColumnFiltersChange(value, toString(id))
+    }
+  }
 
   if (hidden) return null
 
   return (
     <div className={classes.headingWrapper}>
-      {!isEmpty(sortingOption) && (
-        <Button
-          onClick={handleOnSorting}
-          appearance={AppearanceTypes.Text}
-          size={SizeTypes.S}
-          icon={value === 'asc' ? SortingLess : SortingMore}
-          ariaLabel={t('label.button_arrow')}
-          iconPositioning={IconPositioningTypes.Left}
-          className={classes.sortingButton}
-        />
-      )}
+      <TableColumnFilter
+        hidden={isEmpty(sortingOption)}
+        filterOption={sortingOption}
+        name={toString(id)}
+        onChange={handleOnSorting}
+        icon={currentSorting === 'asc' ? SortingLess : SortingMore}
+        ariaLabel={t('button.sort')}
+      />
 
       {flexRender(column.columnDef.header, header.getContext())}
 
-      {!isEmpty(filterOption) && onColumnFiltersChange ? (
-        <TableColumnFilter
-          filterOption={filterOption}
-          columnId={toString(id)}
-          name={'Status'}
-          onChange={onColumnFiltersChange}
-        />
-      ) : null}
+      <TableColumnFilter
+        hidden={isEmpty(filterOption)}
+        filterOption={filterOption}
+        name={toString(id)}
+        onChange={handleOnFiltering}
+        icon={FilterIcon}
+        multiple
+        buttons
+        ariaLabel={t('button.filter')}
+      />
     </div>
   )
 }

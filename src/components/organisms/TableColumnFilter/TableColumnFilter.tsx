@@ -1,6 +1,4 @@
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { ReactComponent as FilterIcon } from 'assets/icons/filter.svg'
+import { FC, SVGProps, useState } from 'react'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -8,32 +6,32 @@ import Button, {
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
 import classes from './styles.module.scss'
-import { isArray } from 'lodash'
 
 type FilterProps = {
   filterOption: DropDownOptions[]
-  columnId: string
-  onChange: (filters: string[], columnId: string) => void
+  onChange: (value: string | string[]) => void
   name: string
   hidden?: boolean
+  multiple?: boolean
+  icon: FC<SVGProps<SVGSVGElement>>
+  buttons?: boolean
+  ariaLabel: string
 }
 
 const TableColumnFilter = ({
   filterOption,
-  columnId,
   onChange,
   name,
   hidden,
+  multiple,
+  icon,
+  buttons,
+  ariaLabel,
 }: FilterProps) => {
-  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
-  }
-  const handelOnChange = (value: string | string[]) => {
-    const filters = isArray(value) ? value : [value]
-    onChange(filters, columnId)
   }
 
   if (hidden) return null
@@ -44,21 +42,19 @@ const TableColumnFilter = ({
         onClick={toggleDropdown}
         appearance={AppearanceTypes.Text}
         size={SizeTypes.S}
-        icon={FilterIcon}
-        ariaLabel={t('label.filter')}
+        icon={icon}
+        ariaLabel={ariaLabel}
         className={classes.iconButton}
       />
 
       <DropdownContent
         name={name}
-        ariaLabel={name}
+        ariaLabel={ariaLabel}
         options={filterOption}
-        multiple
-        buttons
-        cancelButtonLabel={t('button.cancel')}
-        proceedButtonLabel={t('button.filter')}
+        multiple={multiple}
+        buttons={buttons}
         // searchInput: <Fragment />,
-        onChange={handelOnChange}
+        onChange={onChange}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         className={classes.dropDown}

@@ -56,17 +56,17 @@ const ExamplesTable: FC = () => {
   })
 
   const handleColumnFiltersChange = useCallback(
-    (filters: string[], columnId: string) => {
+    (filters: string | string[], columnId: string) => {
       //TODO add to endpoint
-      // console.log('New column filters:', filters, columnId)
+      //console.log('New column filters:', filters, columnId)
     },
     []
   )
 
   const onSortingChange = useCallback(
-    (value: string | boolean, columnId: string) => {
+    (filters: string | string[], columnId: string) => {
       //TODO add to endpoint
-      // console.log('column sorting:', value, columnId)
+      //console.log('column sorting:', filters, columnId)
     },
     []
   )
@@ -158,7 +158,11 @@ const ExamplesTable: FC = () => {
       footer: (info) => info.column.id,
       meta: {
         //Example for adding sorting
-        sortingOption: ['asc', 'desc', false],
+        sortingOption: [
+          { label: 'Tühjenda filtrid', value: 'clean' },
+          { label: '€ - €€', value: 'asc' },
+          { label: '€€ - €', value: 'desc' },
+        ],
       },
     }),
     columnHelper.accessor('status', {
