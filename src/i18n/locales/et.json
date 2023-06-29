@@ -126,7 +126,10 @@
   "modal": {
     "pick_institution_title": "Vali asutus, mille alt soovid Tõlkeväravasse siseneda.",
     "no_institutions_title": "Tundub, et sul puuduvad asutused mille vahel valida.",
-    "institutions": "ASUTUSED"
+    "institutions": "ASUTUSED",
+    "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
+    "archive_role": "Kas oled kindel, et soovid konto arhiveerida?",
+    "archive_role_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida."
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -149,6 +152,7 @@
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
     "main_user_deletion": "Peakasutaja rolli ei saa kustutada",
     "main_user_privilege_change": "Peakasutaja privileege ei saa muuta",
-    "delete_role": "Kas oled kindel, et soovid rolli kustutada?"
+    "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida"
+    
   }
 }

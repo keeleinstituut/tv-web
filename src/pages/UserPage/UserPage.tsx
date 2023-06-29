@@ -4,12 +4,15 @@ import { useFetchUser } from 'hooks/requests/useUsers'
 import { FC } from 'react'
 import { useParams } from 'react-router-dom'
 import classes from './styles.module.scss'
-import { includes } from 'lodash'
+import { filter, includes, map } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 const UserPage: FC = () => {
   const { t } = useTranslation()
@@ -29,6 +32,29 @@ const UserPage: FC = () => {
 
   const userNameString = `${user.user.forename} ${user.user.surname}`
 
+  const handleArchiveModal = () => {
+    // const isMainUser = !!filter(user?.roles, { is_root: true })
+
+    // !isMainUser &&
+    showModal(ModalTypes.DeleteRole, {
+      title: t('modal.archive_role'),
+      cancelButtonContent: t('button.no'),
+      proceedButtonContent: t('button.yes'),
+      modalContent: t('modal.archive_role_content'),
+      className: classes.archiveContent,
+      // handleProceed: deleteRole,
+    })
+
+    // isMainUser &&
+    showNotification({
+      type: NotificationTypes.Error,
+      title: t('notification.announcement'),
+      content: t('notification.main_user_archive'),
+    })
+  }
+
+  console.log('user', user)
+
   return (
     <>
       <div className={classes.titleRow}>
@@ -40,15 +66,15 @@ const UserPage: FC = () => {
             // TODO: disabled for now, we don't have endpoint for this
             // open confirmation modal from here
             disabled
-            hidden={!includes(userPrivileges, Privileges.ArchiveUser)}
+            hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
           />
           <Button
             appearance={AppearanceTypes.Secondary}
             children={t('button.archive_account')}
             // TODO: disabled for now, we don't have endpoint for this
             // open confirmation modal from here
-            disabled
-            hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
+            onClick={handleArchiveModal}
+            hidden={!includes(userPrivileges, Privileges.ArchiveUser)}
           />
         </div>
       </div>

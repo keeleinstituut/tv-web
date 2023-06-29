@@ -14,6 +14,7 @@ export interface DeleteRoleModalProps {
   closeModal: () => void
   onClose?: () => void
   handleProceed?: () => void
+  className?: string
 }
 
 const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
@@ -25,6 +26,7 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
   onClose,
   closeModal,
   handleProceed,
+  className,
 }) => {
   const handleClose = useCallback(() => {
     closeModal()
@@ -39,6 +41,7 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}
       buttonsPosition={ButtonPositionTypes.Right}
+      className={className}
       buttons={[
         {
           appearance: AppearanceTypes.Secondary,
@@ -49,9 +52,9 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
         {
           appearance: AppearanceTypes.Primary,
           onClick: () => {
-            if (handleProceed) {
-              handleProceed()
-            }
+            // if (handleProceed) {
+            //   handleProceed()
+            // }
             handleClose()
           },
           children: proceedButtonContent,
