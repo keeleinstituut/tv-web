@@ -26,7 +26,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
     setIsTooltipVisible(!isTooltipVisible)
   }
   return (
-    <>
+    <div className={classes.tooltipWrapper}>
       <div hidden={!isTooltipVisible} className={classes.tooltipContent}>
         {tooltipContent}
       </div>
@@ -34,7 +34,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
       <BaseButton className={classes.iconButton} onClick={handleTooltipOpen}>
         <Icon icon={icon} ariaLabel={ariaLabel} />
       </BaseButton>
-    </>
+    </div>
   )
 }
 
