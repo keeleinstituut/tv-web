@@ -109,7 +109,10 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
           <div hidden={!progressBar} className={classes.progressBarContent}>
             {progressBar}
           </div>
-          <h1 className={classNames(classes.modalTitle, classes[titleFont])}>
+          <h1
+            hidden={!title}
+            className={classNames(classes.modalTitle, classes[titleFont])}
+          >
             {title}
           </h1>
           <Dialog.Overlay className={classes.scrollableContent}>

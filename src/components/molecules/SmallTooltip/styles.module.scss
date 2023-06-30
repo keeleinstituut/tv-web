@@ -1,0 +1,31 @@
+@import 'styles/variables';
+
+.tooltipContent {
+  background: $color-text-button;
+  text-align: center;
+  border-radius: 5px;
+  max-width: 230px;
+  padding: spacing(1);
+  position: relative;
+  box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.25);
+
+  &::after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid $color-text-button;
+    margin-top: spacing(1);
+    margin-left: spacing(6);
+    filter: drop-shadow(0px 2px 2px $color-shadow-secondary);
+  }
+}
+
+.iconButton {
+  margin-left: spacing(7);
+  margin-top: spacing(3);
+  position: absolute;
+}
