@@ -21,8 +21,9 @@ export enum ModalTypes {
 }
 
 // Add other modal props types here as well
-type ModalPropTypes = Omit<InstitutionSelectModalProps, 'closeModal'> &
-  Omit<DeleteRoleModalProps, 'closeModal'>
+type ModalPropTypes =
+  | Omit<InstitutionSelectModalProps, 'closeModal'>
+  | Omit<DeleteRoleModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
