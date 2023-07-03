@@ -1,6 +1,5 @@
-import { FC, SVGProps, useState } from 'react'
+import { FC, SVGProps } from 'react'
 import { IconProps } from 'components/molecules/Button/Button'
-import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
 import classes from './styles.module.scss'
 
@@ -10,9 +9,9 @@ export interface SmallTooltipProps {
   ariaLabel?: string
 }
 
-const Icon: FC<IconProps> = ({ icon: IconComponent, ariaLabel }) => {
+const Icon: FC<IconProps> = ({ icon: IconComponent, ariaLabel, className }) => {
   if (!IconComponent) return null
-  return <IconComponent aria-label={ariaLabel} />
+  return <IconComponent aria-label={ariaLabel} className={className} />
 }
 
 const SmallTooltip: FC<SmallTooltipProps> = ({
@@ -20,20 +19,10 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
   icon,
   ariaLabel,
 }) => {
-  const [isTooltipVisible, setIsTooltipVisible] = useState(false)
-
-  const handleTooltipOpen = () => {
-    setIsTooltipVisible(!isTooltipVisible)
-  }
   return (
     <div className={classes.tooltipWrapper}>
-      <div hidden={!isTooltipVisible} className={classes.tooltipContent}>
-        {tooltipContent}
-      </div>
-
-      <BaseButton className={classes.iconButton} onClick={handleTooltipOpen}>
-        <Icon icon={icon} ariaLabel={ariaLabel} />
-      </BaseButton>
+      <span className={classes.tooltipContent}>{tooltipContent}</span>
+      <Icon className={classes.iconButton} icon={icon} ariaLabel={ariaLabel} />
     </div>
   )
 }
