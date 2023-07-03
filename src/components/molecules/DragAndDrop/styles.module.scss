@@ -4,7 +4,6 @@
 .container {
   position: absolute;
   height: 146px;
-  top: -141px;
 }
 
 .dragAndDropContainer {
@@ -52,54 +51,4 @@
   font-size: $font-size-12;
   font-weight: $font-weight-normal;
   padding-top: spacing(1);
-}
-
-.fileLabel {
-  padding-top: spacing(6);
-  order: 4;
-}
-
-.fileContainer {
-  background: $color-white;
-  border: 1px solid $color-border;
-  border-radius: 6px;
-  max-width: 418px;
-  padding: spacing(4) spacing(3);
-  margin-top: spacing(2);
-  display: flex;
-  align-items: center;
-  order: 5;
-}
-
-.errorContainer {
-  background: $color-error-light;
-  border: 1px solid $color-error;
-  border-radius: 6px;
-}
-
-.icon {
-  align-self: flex-start;
-  padding-top: spacing(1);
-}
-
-.fileDetailsContainer {
-  padding-left: spacing(3);
-  flex: auto;
-}
-
-.fileName {
-  @include labelTextStyle;
-}
-
-.fileSize {
-  @include subtitleSmallTextStyle;
-  color: $color-input-main;
-}
-
-.errorText {
-  color: $color-error;
-  @include subtitleSmallTextStyle;
-  padding-top: spacing(2);
-  max-width: 418px;
-  order: 6;
 }

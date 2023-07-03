@@ -14,13 +14,6 @@
     }
   }
 
-
-  &.error {
-    .inputField {
-      border-color: $color-error
-    }
-  }
-
   .inputContainer {
     position: relative;
     height: 100%;
@@ -41,6 +34,12 @@
     &:disabled {
       background-color: $color-background
     }
+
+    &[data-invalid] {
+      border-color: $color-error
+    }
+
+  
   }
 
   .label {

@@ -3,6 +3,8 @@ export const endpoints = {
   INSTITUTIONS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institutions`,
   PRIVILEGES: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}privileges`,
   USERS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users`,
+  VALIDATE_CSV: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/validate-import-csv`,
+  IMPORT_CSV: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/import-csv`,
 }
 
 export const authEndpoints = {

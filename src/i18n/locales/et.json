@@ -37,16 +37,22 @@
     "add_new_role": "lisa uus roll",
     "deactivate_account": "Deaktiveeri konto",
     "archive_account": "Arhiveeri konto",
+    "save_and_send_notifications": "Salvesta ja saada teavitused",
+    "save": "Salvesta",
     "add_csv": "Lisa .csv",
     "choose": "Vali",
-    "close": "Sulge"
+    "close": "Sulge",
+    "add_new_csv": "Lisa uus .csv"
   },
   "error": {
     "input_title": "Veateade: ",
     "invalid_email": "Vale formaat",
     "invalid_phone": "Vale formaat",
     "unknown_error": "Teadmata viga: {{code}}",
-    "required": "Kohustuslik väli"
+    "required": "Kohustuslik väli",
+    "invalid_pic": "Vale formaat",
+    "role_required": "Vali vähemalt 1 roll",
+    "invalid_username": "Palun lisage ka perekonnanimi"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -115,8 +121,8 @@
     "VIEW_VENDOR_TASK": "Teostaja ülesannete vaatmine",
     "VIEW_INSTITUTION_PRICE_RATE": "Asutuse hinnakirja vaatamine",
     "EDIT_INSTITUTION_PRICE_RATE": "Asutuse hinnakirja muutmine",
-    "EDIT_INSTITUTION_DATA": "Asutuse andmete muutmine",
-    "EDIT_INSTITUTION_WORK_TIME": "Asutuse tööaegade muutmine",
+    "EDIT_INSTITUTION": "Asutuse andmete muutmine",
+    "EDIT_INSTITUTION_WORKTIME": "Asutuse tööaegade muutmine",
     "ADD_DEPARTMENT": "Asutuse üksuste lisamine",
     "EDIT_DEPARTMENT": "Asutuse üksuste muutmine",
     "DELETE_DEPARTMENT": "Asutuse üksuste kustutamine",
@@ -132,6 +138,9 @@
     "created_at": "Kasutaja loodud {{time}}",
     "updated_at": "Kasutaja andmed muudetud {{time}}"
   },
+  "users": {
+    "add_users": "Kasutajate lisamine"
+  },
   "file": {
     "drop_files": "Pane failid siia...",
     "drag_drop": "Tiri",
@@ -141,11 +150,15 @@
   "success": {
     "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
     "role_updated": "Roll „{{roleName}}“ on edukalt muudetud",
-    "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud"
+    "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud",
+    "users_uploaded": "Kasutajad on edukalt lisatud"
   },
   "notification": {
     "announcement": "Teade",
     "error": "Viga",
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse"
+  },
+  "helper": {
+    "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga."
   }
 }
