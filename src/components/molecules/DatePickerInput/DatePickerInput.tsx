@@ -77,18 +77,7 @@ const DatePickerComponent = ({
 
 const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
   function DatePickerInput(props, ref) {
-    const {
-      label,
-      name,
-      error,
-      disabled,
-      placeholder,
-      className,
-      ariaLabel,
-      value,
-      onChange,
-      ...rest
-    } = props
+    const { label, name, error, className, errorZIndex, ...rest } = props
 
     return (
       <InputWrapper
@@ -96,18 +85,11 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         name={name}
         error={error}
         className={className}
+        errorZIndex={errorZIndex}
         ref={ref}
         wrapperClass={classes.datePickerWrapper}
       >
-        <DatePickerComponent
-          name={name}
-          value={value}
-          disabled={disabled}
-          ariaLabel={ariaLabel}
-          placeholder={placeholder}
-          onChange={onChange}
-          {...rest}
-        />
+        <DatePickerComponent name={name} {...rest} />
       </InputWrapper>
     )
   }

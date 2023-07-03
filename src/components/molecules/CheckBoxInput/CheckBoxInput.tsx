@@ -16,6 +16,7 @@ export interface CheckBoxInputProps
   label?: JSX.Element | string
   ariaLabel: string
   value?: boolean
+  errorZIndex?: number
 }
 
 const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
