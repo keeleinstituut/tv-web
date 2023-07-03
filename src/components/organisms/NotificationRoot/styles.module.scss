@@ -8,6 +8,7 @@
   right: 0;
   max-height: 100vh;
   overflow-y: auto;
+  z-index: 1;
 
   .transitionContainer {
     transition: margin-top .5s ease-in-out;

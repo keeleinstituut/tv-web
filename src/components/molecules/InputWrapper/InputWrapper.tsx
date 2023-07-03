@@ -2,6 +2,7 @@ import { ReactNode, forwardRef } from 'react'
 import { Field, Label } from '@radix-ui/react-form'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
+import { omit } from 'lodash'
 import InputError from 'components/atoms/InputError/InputError'
 
 import classes from './styles.module.scss'
@@ -15,6 +16,7 @@ export type InputWrapperProps = {
   onClick?: () => void
   wrapperClass?: string
   errorClass?: string
+  errorZIndex?: number
 }
 
 const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
@@ -28,6 +30,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
       onClick,
       wrapperClass,
       errorClass,
+      errorZIndex,
     },
     ref
   ) {
@@ -40,16 +43,16 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
           {label}
         </Label>
         <div
-          className={classNames(
-            classes.wrapper,
-            error && classes.errorMessage,
-            wrapperClass
-          )}
+          className={classNames(classes.wrapper, wrapperClass)}
           ref={ref}
           onClick={onClick}
         >
           {children}
-          <InputError {...error} className={errorClass} />
+          <InputError
+            {...omit(error, 'ref')}
+            className={errorClass}
+            errorZIndex={errorZIndex}
+          />
         </div>
       </Field>
     )
