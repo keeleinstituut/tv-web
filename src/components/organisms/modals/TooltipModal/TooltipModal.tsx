@@ -18,7 +18,6 @@ export interface TooltipModalProps {
   href?: string
   isModalOpen?: boolean
   closeModal: () => void
-  onClose?: () => void
 }
 
 const TooltipModal: FC<TooltipModalProps> = ({
@@ -27,17 +26,13 @@ const TooltipModal: FC<TooltipModalProps> = ({
   modalContent,
   href,
   isModalOpen,
-  onClose,
   closeModal,
 }) => {
   const { t } = useTranslation()
 
   const handleClose = useCallback(() => {
     closeModal()
-    if (onClose) {
-      onClose()
-    }
-  }, [closeModal, onClose])
+  }, [closeModal])
 
   return (
     <ModalBase

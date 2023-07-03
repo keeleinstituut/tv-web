@@ -20,8 +20,9 @@ export enum ModalTypes {
 }
 
 // Add other modal props types here as well
-type ModalPropTypes = Omit<InstitutionSelectModalProps, 'closeModal'> &
-  Omit<TooltipModalProps, 'closeModal'>
+type ModalPropTypes =
+  | Omit<InstitutionSelectModalProps, 'closeModal'>
+  | Omit<TooltipModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
