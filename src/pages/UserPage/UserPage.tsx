@@ -1,6 +1,6 @@
 import Loader from 'components/atoms/Loader/Loader'
 import UserForm from 'components/organisms/forms/UserForm/UserForm'
-import { useFetchUser } from 'hooks/requests/useUsers'
+import { useArchiveUser, useFetchUser } from 'hooks/requests/useUsers'
 import { FC } from 'react'
 import { useParams } from 'react-router-dom'
 import classes from './styles.module.scss'
@@ -21,6 +21,11 @@ const UserPage: FC = () => {
   const { isLoading, isError, user } = useFetchUser({
     userId,
   })
+  const { archiveUser, isLoading: isArchiving } = useArchiveUser({
+    userId: userId,
+  })
+
+  console.log('userId', userId)
 
   if (isLoading) {
     return <Loader loading />
@@ -43,6 +48,7 @@ const UserPage: FC = () => {
       modalContent: t('modal.archive_role_content'),
       className: classes.archiveContent,
       // handleProceed: deleteRole,
+      handleProceed: archiveUser,
     })
 
     // isMainUser &&
@@ -52,8 +58,6 @@ const UserPage: FC = () => {
       content: t('notification.main_user_archive'),
     })
   }
-
-  console.log('user', user)
 
   return (
     <>
