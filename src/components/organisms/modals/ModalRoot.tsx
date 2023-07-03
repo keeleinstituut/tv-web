@@ -1,31 +1,26 @@
+import { mapValues } from 'lodash'
 import { InstitutionSelectModalProps } from './InstitutionSelectModal/InstitutionSelectModal'
-import { TooltipModalProps } from './TooltipModal/TooltipModal'
 import {
   lazy,
   useState,
   useCallback,
   createRef,
   useImperativeHandle,
-  Suspense,
 } from 'react'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
 )
-const TooltipModal = lazy(() => import('./TooltipModal/TooltipModal'))
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
-  Tooltip = 'tooltip',
 }
 
 // Add other modal props types here as well
-type ModalPropTypes = Omit<InstitutionSelectModalProps, 'closeModal'> &
-  Omit<TooltipModalProps, 'closeModal'>
+type ModalPropTypes = Omit<InstitutionSelectModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
-  tooltip: TooltipModal,
 }
 
 interface RefType {
@@ -34,6 +29,7 @@ interface RefType {
   isModalOpen: boolean
 }
 
+export const modalKeys = mapValues(MODALS, (_, key) => key)
 export const modalRef = createRef<RefType>()
 
 const ModalRoot = () => {
@@ -69,13 +65,11 @@ const ModalRoot = () => {
   if (!currentModalKey) return null
   const SelectedModal = MODALS[currentModalKey]
   return (
-    <Suspense fallback={<div />}>
-      <SelectedModal
-        isModalOpen={isModalOpen}
-        closeModal={closeModal}
-        {...currentModalProps}
-      />
-    </Suspense>
+    <SelectedModal
+      isModalOpen={isModalOpen}
+      closeModal={closeModal}
+      {...currentModalProps}
+    />
   )
 }
 
