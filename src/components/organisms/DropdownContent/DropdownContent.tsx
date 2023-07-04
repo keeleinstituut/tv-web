@@ -7,14 +7,15 @@ import Button, {
   SizeTypes,
 } from 'components/molecules/Button/Button'
 import { SelectionControlsInputProps } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-
+import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import classes from './styles.module.scss'
 import { useTranslation } from 'react-i18next'
 
 type DropdownContentProps = SelectionControlsInputProps & {
   isOpen?: boolean
-  selectedOptionObjects?: { label: string; value: string }[]
+  selectedOptionObjects?: DropDownOptions[]
   setIsOpen?: Dispatch<SetStateAction<boolean>>
+  className?: string
 }
 
 const DropdownContent: FC<DropdownContentProps> = ({
@@ -33,6 +34,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
   selectedOptionObjects,
   errorZIndex,
   tags,
+  className,
 }) => {
   const { t } = useTranslation()
   const initialValue = value || multiple ? [] : ''
@@ -72,7 +74,11 @@ const DropdownContent: FC<DropdownContentProps> = ({
   return (
     <>
       <div
-        className={classNames(classes.dropdownMenu, classes[dropdownSize])}
+        className={classNames(
+          classes.dropdownMenu,
+          classes[dropdownSize],
+          className
+        )}
         style={{ zIndex: 51 + (errorZIndex || 0) }}
         hidden={disabled || !isOpen}
       >
