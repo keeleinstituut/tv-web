@@ -11,11 +11,13 @@ interface UserDetailsType {
 }
 
 // TODO: update list of possible statuskeys
-export type StatusKey = 'ACTIVATED' | 'DEACTIVATED'
+export type StatusKey = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED'
 
 export interface UserType {
   created_at?: string
   updated_at?: string
+  deactivation_date?: string
+  archived_at?: string
   id: string
   // TODO: department type not clear yet, needs to be added here
   department?: string

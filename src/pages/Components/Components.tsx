@@ -13,7 +13,6 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import TestingTable from 'components/templates/Tables/ExamplesTable/ExamplesTable'
 import UsersTable from 'components/templates/Tables/UsersTable/UsersTable'
-import AddedUsersTable from 'components/templates/Tables/AddedUsersTable/AddedUsersTable'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 import ModalBase, {
   ModalSizeTypes,
@@ -216,7 +215,6 @@ const Test: FC = () => {
       </DynamicForm>
 
       <TestingTable />
-      <AddedUsersTable />
       <UsersTable />
 
       <ModalBase

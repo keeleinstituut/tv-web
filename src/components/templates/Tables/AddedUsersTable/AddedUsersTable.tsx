@@ -1,4 +1,4 @@
-import { FC, useState, useMemo } from 'react'
+import { FC, useState, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -14,65 +14,77 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-
+import { UserType, StatusKey } from 'types/users'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import users from 'components/templates/Tables/users.json'
+import classes from './styles.module.scss'
 
-type Person = {
+type User = {
   id: string
   name: string
-  department: string | null
-  roles: string[]
-  status: string
-  subRows?: Person[]
+  department: string | undefined
+  roles: (string | undefined)[]
+  status: StatusKey
 }
 
-const columnHelper = createColumnHelper<Person>()
+const columnHelper = createColumnHelper<User>()
 
-const AddedUsersTable: FC = () => {
+type AddedUsersProps = {
+  data?: UserType[]
+  hidden?: boolean
+}
+
+const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
   const { t } = useTranslation()
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   })
-  const tableData = users?.data
+  console.log(data)
+  const tableData = data
+  console.log(tableData)
+
+  const handleColumnFiltersChange = useCallback(
+    (filters: string | string[], columnId: string) => {
+      //TODO add to endpoint
+      //console.log('New column filters:', filters, columnId)
+    },
+    []
+  )
+  const onSortingChange = useCallback(
+    (filters: string | string[], columnId: string) => {
+      //TODO add to endpoint
+      //console.log('column sorting:', filters, columnId)
+    },
+    []
+  )
 
   const usersData = useMemo(() => {
     return (
-      map(tableData, (data) => {
-        const arrayOfRoles = map(data.roles, 'name')
+      map(data, ({ id, roles, user, department, status }) => {
+        const arrayOfRoles = map(roles, 'name')
         return {
-          id: data.id,
-          name: `${data.user?.forename} ${data.user?.surname}`,
-          department: data.department,
+          id,
+          name: `${user?.forename} ${user?.surname}`,
+          department,
           roles: arrayOfRoles,
-          status: data.status,
+          status,
         }
       }) || {}
     )
-  }, [tableData])
+  }, [data])
 
   const columns = [
     columnHelper.accessor('id', {
-      header: () => 'Kasutajakonto ID',
+      header: () => t('label.user_account_id'),
       cell: ({ getValue }) => (
-        //Example for link row cell
-        <div
-          style={{
-            display: 'grid',
-            gridAutoFlow: 'column',
-            width: 'max-content',
-            gap: '10px',
-            alignItems: 'left',
-          }}
-        >
+        <div className={classes.addedUserLink}>
           <Button
             appearance={AppearanceTypes.Text}
             size={SizeTypes.M}
             icon={ArrowRight}
             ariaLabel={t('label.button_arrow')}
             iconPositioning={IconPositioningTypes.Left}
-            href={`/user=${getValue()}`}
+            href={`/settings/users/${getValue()}`}
           >
             {'ID xxxxxx'}
           </Button>
@@ -81,34 +93,82 @@ const AddedUsersTable: FC = () => {
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('name', {
-      header: () => 'Nimi',
+      header: () => t('label.name'),
       footer: (info) => info.column.id,
+      meta: {
+        //Example for adding sorting
+        sortingOption: [
+          { label: 'Tühjenda filtrid', value: 'clean' },
+          { label: 'A - Z', value: 'asc' },
+          { label: 'Z - A', value: 'desc' },
+        ],
+      },
     }),
     columnHelper.accessor('department', {
-      header: () => 'Üksus',
+      header: () => t('label.department'),
       footer: (info) => info.column.id,
+      meta: {
+        filterOption: [
+          { label: 'Option 1', value: 'Option 1' },
+          { label: 'Option 2', value: 'Option 2' },
+          { label: 'Option 3', value: 'Option 3' },
+          { label: 'Option 4', value: 'Option 4' },
+          { label: 'Option 5', value: 'Option 5' },
+          { label: 'Option 6', value: 'Option 6' },
+          { label: 'Option ieruhiruthr7', value: 'Option 7' },
+          { label: 'Option 8985759867', value: 'Option 8' },
+        ],
+      },
     }),
     columnHelper.accessor('roles', {
-      header: () => 'Roll',
+      header: () => t('label.role'),
       cell: (info) => {
         return join(info.renderValue(), ', ')
       },
       footer: (info) => info.column.id,
+      meta: {
+        filterOption: [
+          { label: 'Option 1', value: 'Option 1' },
+          { label: 'Option 2', value: 'Option 2' },
+          { label: 'Option 3', value: 'Option 3' },
+          { label: 'Option 4', value: 'Option 4' },
+          { label: 'Option 5', value: 'Option 5' },
+          { label: 'Option 6', value: 'Option 6' },
+          { label: 'Option ieruhiruthr7', value: 'Option 7' },
+          { label: 'Option 8985759867', value: 'Option 8' },
+        ],
+      },
     }),
     columnHelper.accessor('status', {
-      header: () => 'Staatus',
+      header: () => t('label.status'),
       footer: (info) => info.column.id,
+      meta: {
+        filterOption: [
+          { label: 'Option 1', value: 'Option 1' },
+          { label: 'Option 2', value: 'Option 2' },
+          { label: 'Option 3', value: 'Option 3' },
+          { label: 'Option 4', value: 'Option 4' },
+          { label: 'Option 5', value: 'Option 5' },
+          { label: 'Option 6', value: 'Option 6' },
+          { label: 'Option ieruhiruthr7', value: 'Option 7' },
+          { label: 'Option 8985759867', value: 'Option 8' },
+        ],
+      },
     }),
-  ] as ColumnDef<Person>[]
+  ] as ColumnDef<User>[]
+
+  if (hidden) return null
 
   return (
     <DataTable
       data={usersData}
       columns={columns}
-      title="Lisatud kasutajad"
+      title={t('users.added_users')}
       pagination={pagination}
       setPagination={setPagination}
       tableSize={TableSizeTypes.M}
+      onColumnFiltersChange={handleColumnFiltersChange}
+      onSortingChange={onSortingChange}
     />
   )
 }
