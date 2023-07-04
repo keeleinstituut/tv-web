@@ -1,11 +1,7 @@
 import { UserPostType, UserType } from 'types/users'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
-import { useCallback } from 'react'
-import { filter } from 'lodash'
-import { RoleType } from 'types/roles'
-import useAuth from 'hooks/useAuth'
 
 export const useFetchUsers = () => {
   const {
