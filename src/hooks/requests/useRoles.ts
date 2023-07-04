@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { PrivilegeType } from 'types/privileges'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
-import { findIndex, filter } from 'lodash'
+import { findIndex, filter, map } from 'lodash'
 import useAuth from 'hooks/useAuth'
 
 export const useRolesFetch = () => {
@@ -24,12 +24,16 @@ export const useRolesFetch = () => {
     queryKey: ['privileges'],
     queryFn: () => apiClient.get(endpoints.PRIVILEGES),
   })
+  const rolesFilters = map(existingRoles, ({ id, name }) => {
+    return { value: id, label: name }
+  })
 
   return {
     existingRoles,
     allPrivileges,
     isLoading: isLoading || isLoadingPrivileges,
     isError: isError || isPrivilegesError,
+    rolesFilters,
   }
 }
 

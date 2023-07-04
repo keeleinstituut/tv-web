@@ -1,5 +1,7 @@
 import { FC, useState, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRolesFetch } from 'hooks/requests/useRoles'
+import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -35,13 +37,13 @@ type AddedUsersProps = {
 
 const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
   const { t } = useTranslation()
+  const { rolesFilters = [] } = useRolesFetch()
+  const { departmentFilters = [] } = useDepartmentsFetch()
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   })
-  console.log(data)
-  const tableData = data
-  console.log(tableData)
 
   const handleColumnFiltersChange = useCallback(
     (filters: string | string[], columnId: string) => {
@@ -108,16 +110,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
       header: () => t('label.department'),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: [
-          { label: 'Option 1', value: 'Option 1' },
-          { label: 'Option 2', value: 'Option 2' },
-          { label: 'Option 3', value: 'Option 3' },
-          { label: 'Option 4', value: 'Option 4' },
-          { label: 'Option 5', value: 'Option 5' },
-          { label: 'Option 6', value: 'Option 6' },
-          { label: 'Option ieruhiruthr7', value: 'Option 7' },
-          { label: 'Option 8985759867', value: 'Option 8' },
-        ],
+        filterOption: departmentFilters,
       },
     }),
     columnHelper.accessor('roles', {
@@ -127,16 +120,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
       },
       footer: (info) => info.column.id,
       meta: {
-        filterOption: [
-          { label: 'Option 1', value: 'Option 1' },
-          { label: 'Option 2', value: 'Option 2' },
-          { label: 'Option 3', value: 'Option 3' },
-          { label: 'Option 4', value: 'Option 4' },
-          { label: 'Option 5', value: 'Option 5' },
-          { label: 'Option 6', value: 'Option 6' },
-          { label: 'Option ieruhiruthr7', value: 'Option 7' },
-          { label: 'Option 8985759867', value: 'Option 8' },
-        ],
+        filterOption: rolesFilters,
       },
     }),
     columnHelper.accessor('status', {
@@ -144,14 +128,9 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
       footer: (info) => info.column.id,
       meta: {
         filterOption: [
-          { label: 'Option 1', value: 'Option 1' },
-          { label: 'Option 2', value: 'Option 2' },
-          { label: 'Option 3', value: 'Option 3' },
-          { label: 'Option 4', value: 'Option 4' },
-          { label: 'Option 5', value: 'Option 5' },
-          { label: 'Option 6', value: 'Option 6' },
-          { label: 'Option ieruhiruthr7', value: 'Option 7' },
-          { label: 'Option 8985759867', value: 'Option 8' },
+          { label: 'Active', value: 'ACTIVE' },
+          { label: 'Deactivated', value: 'DEACTIVATED' },
+          { label: 'Archived', value: 'ARCHIVED' },
         ],
       },
     }),
