@@ -12,7 +12,6 @@ export interface DeleteRoleModalProps {
   modalContent?: string
   isModalOpen?: boolean
   closeModal: () => void
-  onClose?: () => void
   handleProceed?: () => void
   className?: string
 }
@@ -23,17 +22,13 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
   proceedButtonContent,
   modalContent,
   isModalOpen,
-  onClose,
   closeModal,
   handleProceed,
   className,
 }) => {
   const handleClose = useCallback(() => {
     closeModal()
-    if (onClose) {
-      onClose()
-    }
-  }, [closeModal, onClose])
+  }, [closeModal])
 
   return (
     <ModalBase
