@@ -41,7 +41,7 @@ export interface ModalProps extends ModalFooterProps {
   titleFont?: TitleFontTypes
   open: boolean
   setOpen?: (isOpen: boolean) => void
-  handleClose: () => void
+  handleClose?: () => void
   progressBar?: ReactElement
   className?: string
 }

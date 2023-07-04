@@ -88,3 +88,19 @@ export const useUploadUsers = () => {
     error,
   }
 }
+
+export const useArchiveUser = ({ userId }: { userId?: string }) => {
+  const { mutate: archiveUser, isLoading } = useMutation({
+    mutationKey: ['users', userId],
+    mutationFn: () => {
+      return apiClient.post(endpoints.ARCHIVE_USER, {
+        institution_user_id: userId,
+      })
+    },
+  })
+
+  return {
+    archiveUser,
+    isLoading,
+  }
+}

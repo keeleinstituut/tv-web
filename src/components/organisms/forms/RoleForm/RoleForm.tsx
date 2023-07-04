@@ -21,6 +21,7 @@ import useAuth from 'hooks/useAuth'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 type PrivilegesFormValue = object & {
   [key in PrivilegeKey]?: boolean
@@ -36,6 +37,7 @@ interface RoleFormProps extends RoleType {
   temporaryName?: string
   onReset: (id: string) => void
   onSubmitSuccess: (id: string, newId?: string) => void
+  isMainUser?: boolean
 }
 
 const RoleForm: FC<RoleFormProps> = ({
@@ -47,6 +49,7 @@ const RoleForm: FC<RoleFormProps> = ({
   temporaryName,
   onReset,
   onSubmitSuccess,
+  isMainUser,
 }) => {
   const isTemporaryRole = startsWith(id, 'temp')
   const hasNameChanged = temporaryName && temporaryName !== name
@@ -68,12 +71,14 @@ const RoleForm: FC<RoleFormProps> = ({
       ),
     [allPrivileges, privileges]
   )
+
   // hooks
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { updateRole, isLoading } = useUpdateRole({ roleId: id })
   const { createRole, isLoading: isCreating } = useCreateRole()
   const { deleteRole, isLoading: isDeleting } = useDeleteRole({ roleId: id })
+
   const {
     control,
     handleSubmit,
@@ -91,6 +96,7 @@ const RoleForm: FC<RoleFormProps> = ({
     resolver: (data) => {
       // Validate entire form
       const anyPrivilegePicked = find(data.privileges, (value) => !!value)
+
       return {
         values: {
           privileges: data.privileges,
@@ -102,6 +108,17 @@ const RoleForm: FC<RoleFormProps> = ({
     },
   })
 
+  const handleMainUserPrivilegeClick = (
+    event: React.MouseEvent<HTMLInputElement>
+  ) => {
+    event.preventDefault()
+    showNotification({
+      type: NotificationTypes.Error,
+      title: t('notification.announcement'),
+      content: t('notification.main_user_privilege_change'),
+    })
+  }
+
   // map data for rendering
   const fields: FieldProps<FormValues>[] = map(allPrivileges, ({ key }) => ({
     inputType: InputTypes.Checkbox,
@@ -109,6 +126,7 @@ const RoleForm: FC<RoleFormProps> = ({
     label: t(`privileges.${key}`),
     name: `privileges.${key}`,
     disabled: !includes(userPrivileges, Privileges.EditRole),
+    onClick: isMainUser ? handleMainUserPrivilegeClick : undefined,
   }))
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
@@ -183,8 +201,24 @@ const RoleForm: FC<RoleFormProps> = ({
   const isSubmitDisabled =
     isResetDisabled || (!name && !temporaryName) || !isValid
 
-  if (hidden) return null
+  const showErrorMessage = () => {
+    showNotification({
+      type: NotificationTypes.Error,
+      title: t('notification.announcement'),
+      content: t('notification.main_user_deletion'),
+    })
+  }
 
+  const handleDeleteModal = () => {
+    showModal(ModalTypes.DeleteRole, {
+      title: t('modal.delete_role'),
+      cancelButtonContent: t('button.no'),
+      proceedButtonContent: t('button.yes'),
+      handleProceed: deleteRole,
+    })
+  }
+
+  if (hidden) return null
   return (
     <div className={classes.container}>
       <Button
@@ -193,10 +227,7 @@ const RoleForm: FC<RoleFormProps> = ({
         children={t('button.delete_this_role')}
         icon={DeleteIcon}
         className={classes.deleteButton}
-        // TODO: remove this disabled prop, once we have the ability to add roles
-        // Also onClick should open the modal, not delete the role
-        onClick={deleteRole}
-        disabled
+        onClick={isMainUser ? showErrorMessage : handleDeleteModal}
         hidden={!includes(userPrivileges, Privileges.DeleteRole)}
       />
       <h2>{t('roles.privileges')}</h2>
