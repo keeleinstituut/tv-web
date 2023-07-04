@@ -3,6 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { useCallback } from 'react'
+import { filter } from 'lodash'
+import { RoleType } from 'types/roles'
+import useAuth from 'hooks/useAuth'
 
 export const useFetchUsers = () => {
   const {
@@ -91,24 +94,17 @@ export const useUploadUsers = () => {
 }
 
 export const useArchiveUser = ({ userId }: { userId?: string }) => {
-  const queryClient = useQueryClient()
   const { mutate: archiveUser, isLoading } = useMutation({
     mutationKey: ['users', userId],
-    mutationFn: () => apiClient.post(`${endpoints.USERS}/${userId}`),
-    // onSuccess: () => {
-    //   queryClient.setQueryData(['roles'], (oldData?: RoleType[]) => {
-    //     if (!oldData) return oldData
-    //     return filter(oldData, ({ id }) => id !== userId)
-    //   })
-    // },
+    mutationFn: () => {
+      return apiClient.post(endpoints.ARCHIVE_USER, {
+        institution_user_id: userId,
+      })
+    },
   })
 
-  const wrappedDeleteRole = useCallback(() => {
-    archiveUser()
-  }, [archiveUser])
-
   return {
-    archiveUser: wrappedDeleteRole,
+    archiveUser,
     isLoading,
   }
 }
