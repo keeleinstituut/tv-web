@@ -12,6 +12,7 @@ const UsersManagement: FC = () => {
       <Button href={`/settings/users/${users?.[0]?.id}`}>
         kasutaja vaatesse
       </Button>
+      <Button href="/settings/users/add">Lisa kasutajad</Button>
     </>
   )
 }

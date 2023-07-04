@@ -44,7 +44,6 @@
   }
 }
 
-
 .primary {
   background-color: $color-primary;
 
@@ -125,7 +124,8 @@
   color: $color-primary;
   border-radius: 0;
 
-  svg g path {
+  svg g path,
+  svg path {
     fill: $color-primary;
   }
 

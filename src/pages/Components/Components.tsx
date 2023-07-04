@@ -11,6 +11,9 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
+import TestingTable from 'components/templates/Tables/ExamplesTable/ExamplesTable'
+import UsersTable from 'components/templates/Tables/UsersTable/UsersTable'
+import AddedUsersTable from 'components/templates/Tables/AddedUsersTable/AddedUsersTable'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 import ModalBase, {
   ModalSizeTypes,
@@ -169,8 +172,6 @@ const Test: FC = () => {
       placeholder: 'Choose options',
       multiple: true,
       buttons: true,
-      cancelButtonLabel: 'Tühista',
-      proceedButtonLabel: 'Salvesta',
       searchInput: <Fragment />,
       tags: true,
       rules: {
@@ -213,6 +214,10 @@ const Test: FC = () => {
           iconPositioning={IconPositioningTypes.Right}
         />
       </DynamicForm>
+
+      <TestingTable />
+      <AddedUsersTable />
+      <UsersTable />
 
       <ModalBase
         title="Pealkiri"
@@ -288,8 +293,9 @@ const Test: FC = () => {
       <FileImport
         helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
         fileButtonText={t('button.add_csv')}
-        ariaLabel={t('label.button_arrow')}
+        fileButtonChangeText={t('button.add_new_csv')}
         inputFileType={InputFileTypes.Csv}
+        allowMultiple
       />
       <Button
         appearance={AppearanceTypes.Primary}

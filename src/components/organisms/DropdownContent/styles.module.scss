@@ -6,7 +6,6 @@
   border: 1px solid $color-border;
   border-radius: 0px 0px 4px 4px;
   position: absolute;
-  z-index: 2;
   max-height: 50vh;
   overflow: auto;
 }
@@ -45,6 +44,9 @@
 
 .s {
   width: 77px;
+}
+.xs {
+  width: 47px;
 }
 
 .helperText {

@@ -5,17 +5,12 @@
   display: flex;
   align-items: baseline;
   width: 100%;
-
-  svg {
-    position: absolute;
-    right: spacing(2);
-    top: spacing(2);
-    pointer-events: none;
-  }
 }
 
 .toggleDropdown {
-  padding: spacing(2) spacing(8) spacing(2) spacing(2);
+  display: grid;
+  grid-template-columns: auto max-content;
+  padding: spacing(2);
   color: $color-text-light;
   border: 1px solid $color-text-light;
   border-radius: 4px;
@@ -23,6 +18,12 @@
   height: 40px;
   text-align: left;
   overflow: hidden;
+  width: 100%;
+
+  &.error {
+    border: 1px solid $color-error;
+    border-radius: 5px;
+  }
 
   &:focus {
     border: 1px solid $color-primary;
@@ -63,6 +64,10 @@
 
 .s {
   width: 77px;
+}
+.xs {
+  width: 47px;
+  height: 37px;
 }
 
 .menuLabel {

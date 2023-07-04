@@ -15,16 +15,13 @@
   .wrapper {
     display: inline-block;
     flex-direction: column;
-    position: relative;
   }
 
   .hiddenLabel {
     display: none;
   }
 
-  .errorMessage input,
-  .errorMessage button,
-  .errorMessage button:focus {
+  .errorMessage input {
     border: 1px solid $color-error;
     border-radius: 5px;
   }

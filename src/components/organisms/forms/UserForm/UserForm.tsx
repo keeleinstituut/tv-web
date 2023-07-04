@@ -191,9 +191,9 @@ const UserForm: FC<UserFormProps> = ({
             const typedKey = key as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
             if (startsWith(typedKey, 'user')) {
-              setError('name', { type: 'custom', message: errorString })
+              setError('name', { type: 'backend', message: errorString })
             } else {
-              setError(typedKey, { type: 'custom', message: errorString })
+              setError(typedKey, { type: 'backend', message: errorString })
             }
           })
         }
@@ -201,9 +201,6 @@ const UserForm: FC<UserFormProps> = ({
     },
     [updateUser, t, resetForm, setError]
   )
-
-  const isResetDisabled = !isDirty
-  const isSubmitDisabled = isResetDisabled || !isValid
 
   return (
     <DynamicForm
@@ -213,8 +210,8 @@ const UserForm: FC<UserFormProps> = ({
       className={classes.formContainer}
     >
       <FormButtons
-        isResetDisabled={isResetDisabled}
-        isSubmitDisabled={isSubmitDisabled}
+        isResetDisabled={!isDirty}
+        isSubmitDisabled={!isDirty || !isValid}
         loading={isSubmitting || isLoading}
         resetForm={resetForm}
         hidden={!includes(userPrivileges, Privileges.EditUser)}
