@@ -52,9 +52,9 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
         {
           appearance: AppearanceTypes.Primary,
           onClick: () => {
-            // if (handleProceed) {
-            //   handleProceed()
-            // }
+            if (handleProceed) {
+              handleProceed()
+            }
             handleClose()
           },
           children: proceedButtonContent,

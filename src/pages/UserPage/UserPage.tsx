@@ -2,17 +2,15 @@ import Loader from 'components/atoms/Loader/Loader'
 import UserForm from 'components/organisms/forms/UserForm/UserForm'
 import { useArchiveUser, useFetchUser } from 'hooks/requests/useUsers'
 import { FC } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import classes from './styles.module.scss'
-import { filter, includes, map, some } from 'lodash'
+import { includes, some } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 const UserPage: FC = () => {
   const { t } = useTranslation()
@@ -24,6 +22,7 @@ const UserPage: FC = () => {
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
     userId: userId,
   })
+  const navigate = useNavigate()
 
   if (isLoading) {
     return <Loader loading />
@@ -45,21 +44,12 @@ const UserPage: FC = () => {
         proceedButtonContent: t('button.yes'),
         modalContent: t('modal.archive_role_content'),
         className: classes.archiveContent,
-        handleProceed: archiveUser(),
+        handleProceed: () => {
+          archiveUser()
+          navigate('/settings/users')
+        },
       })
-
-    // isMainUser &&
-    // showNotification({
-    //   type: NotificationTypes.Error,
-    //   title: t('notification.announcement'),
-    //   content: t('notification.main_user_archive'),
-    // })
   }
-
-  // const handleArchiveModal = () => {
-  //   console.log('handleArchive')
-  //   archiveUser()
-  // }
 
   return (
     <>
