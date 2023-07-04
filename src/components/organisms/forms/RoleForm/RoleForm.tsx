@@ -36,7 +36,7 @@ interface RoleFormProps extends RoleType {
   temporaryName?: string
   onReset: (id: string) => void
   onSubmitSuccess: (id: string, newId?: string) => void
-  isMainUser?: boolean
+  is_root?: boolean
 }
 
 const RoleForm: FC<RoleFormProps> = ({
@@ -48,7 +48,7 @@ const RoleForm: FC<RoleFormProps> = ({
   temporaryName,
   onReset,
   onSubmitSuccess,
-  isMainUser,
+  is_root,
 }) => {
   const isTemporaryRole = startsWith(id, 'temp')
   const hasNameChanged = temporaryName && temporaryName !== name
@@ -124,7 +124,7 @@ const RoleForm: FC<RoleFormProps> = ({
     label: t(`privileges.${key}`),
     name: `privileges.${key}`,
     disabled: !includes(userPrivileges, Privileges.EditRole),
-    onClick: isMainUser ? handleMainUserPrivilegeClick : undefined,
+    onClick: is_root ? handleMainUserPrivilegeClick : undefined,
   }))
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
@@ -218,7 +218,7 @@ const RoleForm: FC<RoleFormProps> = ({
         className={classes.deleteButton}
         // Also onClick should open the modal, not delete the role
         // onClick={deleteRole}
-        onClick={isMainUser ? showErrorMessage : deleteRole}
+        onClick={is_root ? showErrorMessage : deleteRole}
         hidden={!includes(userPrivileges, Privileges.DeleteRole)}
       />
       <h2>{t('roles.privileges')}</h2>

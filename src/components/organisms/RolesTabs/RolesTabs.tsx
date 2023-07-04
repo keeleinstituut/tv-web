@@ -81,9 +81,6 @@ const RolesTabs: FC = () => {
     return <div />
   }
 
-  const filteredMainUsers = filter(existingRoles, { is_root: true })
-  const mainUserIds = map(filteredMainUsers, 'id')
-
   return (
     <>
       <Tabs
@@ -103,8 +100,6 @@ const RolesTabs: FC = () => {
         // This is for making sure than the internal state of the useForm inside RoleForm
         // will keep its dirty state, when switching between tabs
 
-        const isMainUser = includes(mainUserIds, role?.id)
-
         return (
           <RoleForm
             hidden={activeTab !== role.id}
@@ -114,7 +109,6 @@ const RolesTabs: FC = () => {
             {...role}
             temporaryName={tabNames[role.id]}
             allPrivileges={allPrivileges}
-            isMainUser={isMainUser}
           />
         )
       })}
