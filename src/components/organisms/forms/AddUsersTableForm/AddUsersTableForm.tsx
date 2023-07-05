@@ -168,15 +168,16 @@ const AddUsersTableForm: FC = () => {
           {t('button.save_and_send_notifications')}
         </Button>
       </div>
-
-      <Root onSubmit={handleSubmit(onSubmit)}>
-        <AddUsersTable
-          tableData={tableData}
-          rowsWithErrors={rowsWithErrors}
-          rowsWithExistingUsers={rowsWithExistingUsers}
-          control={control}
-        />
-      </Root>
+      {!isEmpty(tableData) && (
+        <Root onSubmit={handleSubmit(onSubmit)}>
+          <AddUsersTable
+            tableData={tableData}
+            rowsWithErrors={rowsWithErrors}
+            rowsWithExistingUsers={rowsWithExistingUsers}
+            control={control}
+          />
+        </Root>
+      )}
     </>
   )
 }

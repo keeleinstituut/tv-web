@@ -7,6 +7,8 @@ import classes from './classes.module.scss'
 import { isEmpty } from 'lodash'
 import classNames from 'classnames'
 import { Root } from '@radix-ui/react-form'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
+import UserManagementCheatSheet from 'components/molecules/cheatSheets/UserManagementCheatSheet'
 
 const UsersManagement: FC = () => {
   const { users, handelFilterChange, handelSortingChange } = useFetchUsers()
@@ -15,9 +17,12 @@ const UsersManagement: FC = () => {
   return (
     <>
       <div className={classes.userManagementHeader}>
-        <h1>{t('menu.user_management')}</h1>
+        <h1>{t('users.user_management')}</h1>
         {/*  {// TODO: add toolTip here  */}
-        <p className={classes.toolTip}>?</p>
+        <Tooltip
+          title={t('cheat_sheet.user_management.title')}
+          modalContent={<UserManagementCheatSheet />}
+        />
         <Button
           // href="/settings/users/add"
           appearance={AppearanceTypes.Secondary}

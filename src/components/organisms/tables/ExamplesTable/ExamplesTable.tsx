@@ -1,4 +1,4 @@
-import { FC, useState, HTMLProps, useEffect, useRef, useCallback } from 'react'
+import { FC, useState, HTMLProps, useEffect, useRef } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'

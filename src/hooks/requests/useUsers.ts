@@ -25,8 +25,7 @@ export const useFetchUsers = () => {
     queryKey: ['users', filters],
     queryFn: () => apiClient.get(endpoints.USERS, filters),
   })
-  const { meta, data: users } = data || {}
-  console.log('data', data)
+  const { data: users } = data || {}
   return {
     isLoading,
     isError,

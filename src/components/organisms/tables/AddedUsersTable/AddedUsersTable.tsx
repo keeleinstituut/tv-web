@@ -1,7 +1,7 @@
 import { FC, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRolesFetch } from 'hooks/requests/useRoles'
-import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
+// import { useRolesFetch } from 'hooks/requests/useRoles'
+// import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -46,8 +46,9 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
   handelSortingChange,
 }) => {
   const { t } = useTranslation()
-  const { rolesFilters = [] } = useRolesFetch()
-  const { departmentFilters = [] } = useDepartmentsFetch()
+  // TODO: add back once BE is done
+  // const { rolesFilters = [] } = useRolesFetch()
+  // const { departmentFilters = [] } = useDepartmentsFetch()
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
