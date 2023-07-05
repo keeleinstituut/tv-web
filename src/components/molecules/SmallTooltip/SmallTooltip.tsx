@@ -1,5 +1,7 @@
 import { FC, SVGProps } from 'react'
 import { IconProps } from 'components/molecules/Button/Button'
+import { ReactComponent as Info } from 'assets/icons/info.svg'
+import classNames from 'classnames'
 
 import classes from './styles.module.scss'
 
@@ -9,9 +11,18 @@ export interface SmallTooltipProps {
   ariaLabel?: string
 }
 
-const Icon: FC<IconProps> = ({ icon: IconComponent, ariaLabel, className }) => {
+const Icon: FC<IconProps> = ({
+  icon: IconComponent = Info,
+  ariaLabel,
+  className,
+}) => {
   if (!IconComponent) return null
-  return <IconComponent aria-label={ariaLabel} className={className} />
+  return (
+    <IconComponent
+      aria-label={ariaLabel}
+      className={classNames(classes.infoIcon, className)}
+    />
+  )
 }
 
 const SmallTooltip: FC<SmallTooltipProps> = ({
