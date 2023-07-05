@@ -5,7 +5,7 @@ import { FieldError } from 'react-hook-form'
 import { omit } from 'lodash'
 import InputError from 'components/atoms/InputError/InputError'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 export type InputWrapperProps = {
   name: string

@@ -12,7 +12,7 @@ import InputWrapper, {
 } from 'components/molecules/InputWrapper/InputWrapper'
 
 import 'react-datepicker/dist/react-datepicker.css'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 type DatePickerComponentProps = {
   ariaLabel?: string

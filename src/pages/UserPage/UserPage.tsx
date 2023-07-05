@@ -3,7 +3,6 @@ import UserForm from 'components/organisms/forms/UserForm/UserForm'
 import { useArchiveUser, useFetchUser } from 'hooks/requests/useUsers'
 import { FC } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import classes from './styles.module.scss'
 import { includes, some } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -11,6 +10,8 @@ import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+
+import classes from './classes.module.scss'
 
 const UserPage: FC = () => {
   const { t } = useTranslation()

@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from 'react'
 import classNames from 'classnames'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 interface ContainerProps {
   className?: string

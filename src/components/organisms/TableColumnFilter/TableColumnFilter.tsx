@@ -5,7 +5,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 type FilterProps = {
   filterOption: DropDownOptions[]

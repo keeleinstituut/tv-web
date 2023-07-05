@@ -1,7 +1,7 @@
 import { FC } from 'react'
 
 import LandingContent from 'components/organisms/LandingContent/LandingContent'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 const Dashboard: FC = () => {
   return <LandingContent className={classes.landingContent} />

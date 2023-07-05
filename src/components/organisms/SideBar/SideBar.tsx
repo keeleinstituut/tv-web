@@ -8,7 +8,7 @@ import { ReactComponent as Burger } from 'assets/icons/burger.svg'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { protectedRoutes, FullRouteObject } from 'router/router'
 import classNames from 'classnames'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 interface MenuItemsProps {
   menuItems: FullRouteObject[]

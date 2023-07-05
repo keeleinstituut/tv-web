@@ -13,7 +13,7 @@ import {
 } from 'lodash'
 import { InputTypes } from 'components/organisms/DynamicInputComponent/DynamicInputComponent'
 import { Root } from '@radix-ui/react-form'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { UserCsvType } from 'types/users'
 import { useValidateUsers, useUploadUsers } from 'hooks/requests/useUsers'
 import {
