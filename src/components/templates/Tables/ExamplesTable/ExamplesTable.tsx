@@ -55,21 +55,21 @@ const ExamplesTable: FC = () => {
     pageSize: 10,
   })
 
-  const handleColumnFiltersChange = useCallback(
-    (filters: string | string[], columnId: string) => {
-      //TODO add to endpoint
-      //console.log('New column filters:', filters, columnId)
-    },
-    []
-  )
+  // const handleColumnFiltersChange = useCallback(
+  //   (filters: string | string[], columnId: string) => {
+  //     //TODO add to endpoint
+  //     //console.log('New column filters:', filters, columnId)
+  //   },
+  //   []
+  // )
 
-  const onSortingChange = useCallback(
-    (filters: string | string[], columnId: string) => {
-      //TODO add to endpoint
-      //console.log('column sorting:', filters, columnId)
-    },
-    []
-  )
+  // const onSortingChange = useCallback(
+  //   (filters: string | string[], columnId: string) => {
+  //     //TODO add to endpoint
+  //     //console.log('column sorting:', filters, columnId)
+  //   },
+  //   []
+  // )
 
   const columns = [
     columnHelper.accessor('id', {
@@ -211,8 +211,8 @@ const ExamplesTable: FC = () => {
       pagination={pagination}
       setPagination={setPagination}
       tableSize={TableSizeTypes.S}
-      onColumnFiltersChange={handleColumnFiltersChange}
-      onSortingChange={onSortingChange}
+      // onColumnFiltersChange={handleColumnFiltersChange}
+      //onSortingChange={onSortingChange}
     />
   )
 }

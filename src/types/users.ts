@@ -51,11 +51,19 @@ export interface UserPayloadType {
   role_id?: string[]
   status?: StatusKey[]
   sort_by?: string
-  sort_order?: 'asc' | 'desc'
+  sort_order?: 'asc' | 'desc' | undefined
   department?: string[]
 }
 
 export interface UserDataType {
   data: UserType[]
   meta: DataMetaTypes
+}
+
+export interface FilterFunctionType {
+  [filterKey: string]: string | number | string[]
+}
+export interface SortingFunctionType {
+  sort_order?: 'asc' | 'desc' | undefined
+  sort_by?: string
 }

@@ -3,19 +3,28 @@ import {
   UserType,
   UserPayloadType,
   UserDataType,
+  FilterFunctionType,
+  SortingFunctionType,
 } from 'types/users'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
+import { useState } from 'react'
 
-export const useFetchUsers = (params?: UserPayloadType) => {
-  //const queryClient = useQueryClient()
+export const useFetchUsers = () => {
+  const [filters, setFilters] = useState<UserPayloadType>({})
 
-  //const pl = queryClient.getQueryData('users')
+  const handelFilterChange = (value?: FilterFunctionType) => {
+    setFilters({ ...filters, ...value })
+  }
+  const handelSortingChange = (value?: SortingFunctionType) => {
+    console.log('value', value)
+    setFilters({ ...filters, ...value })
+  }
 
   const { isLoading, isError, data } = useQuery<UserDataType>({
-    queryKey: ['users', params],
-    queryFn: () => apiClient.get(endpoints.USERS, params),
+    queryKey: ['users', filters],
+    queryFn: () => apiClient.get(endpoints.USERS, filters),
   })
   const { meta, data: users } = data || {}
   console.log('data', data)
@@ -23,6 +32,8 @@ export const useFetchUsers = (params?: UserPayloadType) => {
     isLoading,
     isError,
     users,
+    handelFilterChange,
+    handelSortingChange,
   }
 }
 

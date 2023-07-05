@@ -1,15 +1,14 @@
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useFetchUsers } from 'hooks/requests/useUsers'
-
 import { useTranslation } from 'react-i18next'
 import { FC } from 'react'
 import AddedUsersTable from 'components/templates/Tables/AddedUsersTable/AddedUsersTable'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { isEmpty } from 'lodash'
 import classNames from 'classnames'
 
 const UsersManagement: FC = () => {
-  const { users } = useFetchUsers()
+  const { users, handelFilterChange, handelSortingChange } = useFetchUsers()
   const { t } = useTranslation()
 
   return (
@@ -27,7 +26,12 @@ const UsersManagement: FC = () => {
         </Button>
         <Button href="/settings/users/add">{t('button.add_users')}</Button>
       </div>
-      <AddedUsersTable data={users} hidden={isEmpty(users)} />
+      <AddedUsersTable
+        data={users}
+        hidden={isEmpty(users)}
+        handelFilterChange={handelFilterChange}
+        handelSortingChange={handelSortingChange}
+      />
     </>
   )
 }

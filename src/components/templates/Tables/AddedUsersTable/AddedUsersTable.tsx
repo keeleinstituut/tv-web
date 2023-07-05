@@ -1,4 +1,4 @@
-import { FC, useState, useMemo, useCallback } from 'react'
+import { FC, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
@@ -16,7 +16,12 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { UserType, StatusKey } from 'types/users'
+import {
+  UserType,
+  StatusKey,
+  FilterFunctionType,
+  SortingFunctionType,
+} from 'types/users'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import classes from './classes.module.scss'
 
@@ -33,9 +38,16 @@ const columnHelper = createColumnHelper<User>()
 type AddedUsersProps = {
   data?: UserType[]
   hidden?: boolean
+  handelFilterChange?: (value?: FilterFunctionType) => void
+  handelSortingChange?: (value?: SortingFunctionType) => void
 }
 
-const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
+const AddedUsersTable: FC<AddedUsersProps> = ({
+  data,
+  hidden,
+  handelFilterChange,
+  handelSortingChange,
+}) => {
   const { t } = useTranslation()
   const { rolesFilters = [] } = useRolesFetch()
   const { departmentFilters = [] } = useDepartmentsFetch()
@@ -44,21 +56,6 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
     pageIndex: 0,
     pageSize: 10,
   })
-
-  const handleColumnFiltersChange = useCallback(
-    (filters: string | string[], columnId: string) => {
-      //TODO add to endpoint
-      //console.log('New column filters:', filters, columnId)
-    },
-    []
-  )
-  const onSortingChange = useCallback(
-    (filters: string | string[], columnId: string) => {
-      //TODO add to endpoint
-      //console.log('column sorting:', filters, columnId)
-    },
-    []
-  )
 
   const usersData = useMemo(() => {
     return (
@@ -98,18 +95,14 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
       meta: {
-        sortingOption: [
-          { label: 'Tühjenda filtrid', value: '' },
-          { label: 'A - Z', value: 'asc' },
-          { label: 'Z - A', value: 'desc' },
-        ],
+        sortingOption: ['asc', 'desc'],
       },
     }),
     columnHelper.accessor('department', {
       header: () => t('label.department'),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: departmentFilters,
+        filterOption: { department: departmentFilters },
       },
     }),
     columnHelper.accessor('roles', {
@@ -119,18 +112,20 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
       },
       footer: (info) => info.column.id,
       meta: {
-        filterOption: rolesFilters,
+        filterOption: { role_id: rolesFilters },
       },
     }),
     columnHelper.accessor('status', {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: [
-          { label: 'Active', value: 'ACTIVE' },
-          { label: 'Deactivated', value: 'DEACTIVATED' },
-          { label: 'Archived', value: 'ARCHIVED' },
-        ],
+        filterOption: {
+          status: [
+            { label: 'Active', value: 'ACTIVE' },
+            { label: 'Deactivated', value: 'DEACTIVATED' },
+            { label: 'Archived', value: 'ARCHIVED' },
+          ],
+        },
       },
     }),
   ] as ColumnDef<User>[]
@@ -145,8 +140,8 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
       pagination={pagination}
       setPagination={setPagination}
       tableSize={TableSizeTypes.M}
-      onColumnFiltersChange={handleColumnFiltersChange}
-      onSortingChange={onSortingChange}
+      onColumnFiltersChange={handelFilterChange}
+      onSortingChange={handelSortingChange}
     />
   )
 }
