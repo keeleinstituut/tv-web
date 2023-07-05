@@ -71,12 +71,16 @@ const onVisibilityChange = () => {
   }
 }
 
-export const startRefreshingToken = (onFail?: () => void) => {
+export const startRefreshingToken = (onFail?: () => void, force?: boolean) => {
   const refreshToken = keycloak.refreshToken
   const tokenExpiry = keycloak.tokenParsed?.exp
   if (!tokenExpiry || !refreshToken) {
     if (onFail) onFail()
     return null
+  }
+  if (force && refreshToken) {
+    keycloak.updateToken(Infinity)
+    return
   }
   if (refreshInterval) {
     clearInterval(refreshInterval)
@@ -148,6 +152,7 @@ const useKeycloak = () => {
     const initKeycloak = async () => {
       const isKeycloakUserLoggedIn = await keycloak.init({
         onLoad: 'check-sso',
+        // checkLoginIframe: false,
         silentCheckSsoRedirectUri:
           window.location.origin + '/silent-check-sso.html',
       })
@@ -163,7 +168,6 @@ const useKeycloak = () => {
           })
           navigate(window.location.pathname)
         }
-
         return
       }
 
