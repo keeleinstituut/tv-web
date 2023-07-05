@@ -7,7 +7,7 @@ import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
 import { useClickAway } from 'ahooks'
 import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { filter, find, map } from 'lodash'
 
 export enum DropdownSizeTypes {

@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import logo from 'assets/logo.svg'
 import { useTranslation } from 'react-i18next'
 import LanguageChanger from 'components/molecules/LanguageChanger/LanguageChanger'

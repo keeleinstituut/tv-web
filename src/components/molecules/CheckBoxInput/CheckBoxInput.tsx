@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { InputHTMLAttributes } from 'react'
 import { FieldError } from 'react-hook-form'
 
@@ -29,6 +29,8 @@ const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
       disabled,
       value = false,
       errorZIndex,
+      onClick,
+      onChange,
       ...rest
     },
     ref
@@ -49,6 +51,8 @@ const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
             checked={value}
             aria-label={ariaLabel}
             disabled={disabled}
+            onClick={onClick}
+            onChange={onClick ? undefined : onChange}
             {...rest}
           />
         </Control>

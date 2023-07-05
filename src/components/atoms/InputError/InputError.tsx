@@ -1,5 +1,5 @@
 import { memo, FC } from 'react'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
 import errorOutline from 'assets/icons/error_outline.svg'

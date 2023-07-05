@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import classNames from 'classnames'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { ReactComponent as CloseIcon } from 'assets/icons/close.svg'
 import { ReactComponent as WarningIcon } from 'assets/icons/warning.svg'
 import { ReactComponent as SuccessIcon } from 'assets/icons/success.svg'

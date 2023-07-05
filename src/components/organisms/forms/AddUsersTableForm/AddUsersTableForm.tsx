@@ -3,7 +3,7 @@ import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button'
 import { reduce, map, join, isEmpty, keys } from 'lodash'
 import { Root } from '@radix-ui/react-form'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { UserCsvType } from 'types/users'
 import { useValidateUsers, useUploadUsers } from 'hooks/requests/useUsers'
 import {

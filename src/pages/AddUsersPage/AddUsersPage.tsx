@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import AddUsersTableForm from 'components/organisms/forms/AddUsersTableForm/AddUsersTableForm'
 
