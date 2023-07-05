@@ -2,6 +2,10 @@ import { FC, SVGProps } from 'react'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import { IconProps } from 'components/molecules/Button/Button'
+import { ReactComponent as QuestionMark } from 'assets/icons/question_mark.svg'
+import classNames from 'classnames'
+
+import classes from './styles.module.scss'
 
 interface TooltipProps {
   icon?: FC<SVGProps<SVGSVGElement>>
@@ -12,9 +16,18 @@ interface TooltipProps {
   href?: string
 }
 
-const Icon: FC<IconProps> = ({ icon: IconComponent, ariaLabel }) => {
+const Icon: FC<IconProps> = ({
+  icon: IconComponent = QuestionMark,
+  ariaLabel,
+  className,
+}) => {
   if (!IconComponent) return null
-  return <IconComponent aria-label={ariaLabel} />
+  return (
+    <IconComponent
+      aria-label={ariaLabel}
+      className={classNames(classes.infoIcon, className)}
+    />
+  )
 }
 
 const Tooltip: FC<TooltipProps> = ({
