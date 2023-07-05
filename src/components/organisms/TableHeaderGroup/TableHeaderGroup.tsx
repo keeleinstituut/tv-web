@@ -19,7 +19,7 @@ import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
-import { FilterFunctionType, SortingFunctionType } from 'types/users'
+import { FilterFunctionType, SortingFunctionType } from 'types/collective'
 
 export interface HeaderGroupFunctions {
   onSortingChange?: (value?: SortingFunctionType) => void
@@ -38,7 +38,7 @@ type ColumnMeta = {
   meta?: {
     size?: number | string
     filterOption?: FilterTypes
-    sortingOption?: string[]
+    sortingOption?: SortingFunctionType['sort_order'][]
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
@@ -56,7 +56,9 @@ const HeaderItem = <TData extends object>({
 }: HeaderItemProps<TData>) => {
   const { t } = useTranslation()
   const [step, setStep] = useState<number>(0)
-  const [currentSorting, setCurrentSorting] = useState<string>('')
+  const [currentSorting, setCurrentSorting] =
+    useState<SortingFunctionType['sort_order']>(undefined)
+
   const { id, column } = header || {}
   const { meta } = column.columnDef as CustomColumnDef<TData>
   const filterOption = meta?.filterOption || []
@@ -64,7 +66,6 @@ const HeaderItem = <TData extends object>({
   const options = values(filterOption)[0] || []
 
   const handleOnSorting = () => {
-    console.log('!', sortingOption[step], !!sortingOption[step])
     const newStep = size(sortingOption) > step ? step + 1 : 0
     setStep(newStep)
     setCurrentSorting(sortingOption[step])

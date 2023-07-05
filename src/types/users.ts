@@ -59,11 +59,3 @@ export interface UserDataType {
   data: UserType[]
   meta: DataMetaTypes
 }
-
-export interface FilterFunctionType {
-  [filterKey: string]: string | number | string[]
-}
-export interface SortingFunctionType {
-  sort_order?: 'asc' | 'desc' | undefined
-  sort_by?: string
-}

@@ -2,10 +2,11 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useFetchUsers } from 'hooks/requests/useUsers'
 import { useTranslation } from 'react-i18next'
 import { FC } from 'react'
-import AddedUsersTable from 'components/templates/Tables/AddedUsersTable/AddedUsersTable'
+import AddedUsersTable from 'components/organisms/tables/AddedUsersTable/AddedUsersTable'
 import classes from './classes.module.scss'
 import { isEmpty } from 'lodash'
 import classNames from 'classnames'
+import { Root } from '@radix-ui/react-form'
 
 const UsersManagement: FC = () => {
   const { users, handelFilterChange, handelSortingChange } = useFetchUsers()
@@ -26,12 +27,15 @@ const UsersManagement: FC = () => {
         </Button>
         <Button href="/settings/users/add">{t('button.add_users')}</Button>
       </div>
-      <AddedUsersTable
-        data={users}
-        hidden={isEmpty(users)}
-        handelFilterChange={handelFilterChange}
-        handelSortingChange={handelSortingChange}
-      />
+      {/* TODO: remove this form root wrapper, once we refactor CheckBox */}
+      <Root>
+        <AddedUsersTable
+          data={users}
+          hidden={isEmpty(users)}
+          handelFilterChange={handelFilterChange}
+          handelSortingChange={handelSortingChange}
+        />
+      </Root>
     </>
   )
 }

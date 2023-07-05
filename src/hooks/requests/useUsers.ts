@@ -3,9 +3,8 @@ import {
   UserType,
   UserPayloadType,
   UserDataType,
-  FilterFunctionType,
-  SortingFunctionType,
 } from 'types/users'
+import { FilterFunctionType, SortingFunctionType } from 'types/collective'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'

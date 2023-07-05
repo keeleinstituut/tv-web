@@ -16,12 +16,8 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import {
-  UserType,
-  StatusKey,
-  FilterFunctionType,
-  SortingFunctionType,
-} from 'types/users'
+import { UserType, StatusKey } from 'types/users'
+import { FilterFunctionType, SortingFunctionType } from 'types/collective'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 
 import classes from './classes.module.scss'
@@ -95,16 +91,18 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
     columnHelper.accessor('name', {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
-      meta: {
-        sortingOption: ['asc', 'desc'],
-      },
+      // TODO: comment back in, once BE fixes returned values
+      // meta: {
+      //   sortingOption: ['asc', 'desc'],
+      // },
     }),
     columnHelper.accessor('department', {
       header: () => t('label.department'),
       footer: (info) => info.column.id,
-      meta: {
-        filterOption: { department: departmentFilters },
-      },
+      // TODO: comment back in once we have BE support
+      // meta: {
+      //   filterOption: { department: departmentFilters },
+      // },
     }),
     columnHelper.accessor('roles', {
       header: () => t('label.role'),
@@ -112,22 +110,24 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
         return join(info.renderValue(), ', ')
       },
       footer: (info) => info.column.id,
-      meta: {
-        filterOption: { role_id: rolesFilters },
-      },
+      // TODO: comment back in once we have BE support
+      // meta: {
+      //   filterOption: { role_id: rolesFilters },
+      // },
     }),
     columnHelper.accessor('status', {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
-      meta: {
-        filterOption: {
-          status: [
-            { label: 'Active', value: 'ACTIVE' },
-            { label: 'Deactivated', value: 'DEACTIVATED' },
-            { label: 'Archived', value: 'ARCHIVED' },
-          ],
-        },
-      },
+      // TODO: comment back in once we have BE support
+      // meta: {
+      //   filterOption: {
+      //     status: [
+      //       { label: 'Active', value: 'ACTIVE' },
+      //       { label: 'Deactivated', value: 'DEACTIVATED' },
+      //       { label: 'Archived', value: 'ARCHIVED' },
+      //     ],
+      //   },
+      // },
     }),
   ] as ColumnDef<User>[]
 
