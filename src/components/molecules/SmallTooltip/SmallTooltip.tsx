@@ -3,7 +3,7 @@ import { IconProps } from 'components/molecules/Button/Button'
 import { ReactComponent as Info } from 'assets/icons/info.svg'
 import classNames from 'classnames'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 export interface SmallTooltipProps {
   tooltipContent?: string
