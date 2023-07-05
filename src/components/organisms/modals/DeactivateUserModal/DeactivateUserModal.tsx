@@ -4,6 +4,8 @@ import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
+import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInput'
+import { useTranslation } from 'react-i18next'
 
 export interface DeactivateUserModalProps {
   title?: string
@@ -26,9 +28,28 @@ const DeactivateUserModal: FC<DeactivateUserModalProps> = ({
   handleProceed,
   className,
 }) => {
+  const { t } = useTranslation()
+
   const handleClose = useCallback(() => {
     closeModal()
   }, [closeModal])
+
+  const calculateOneYearFromCurrentDate = () => {
+    const currentDate = new Date()
+    const nextYear = new Date(
+      currentDate.getFullYear() + 1,
+      currentDate.getMonth(),
+      currentDate.getDate()
+    )
+
+    const newDate = nextYear.toDateString()
+
+    console.log('newDate', newDate)
+
+    return nextYear.toDateString()
+  }
+
+  calculateOneYearFromCurrentDate()
 
   return (
     <ModalBase
@@ -56,7 +77,16 @@ const DeactivateUserModal: FC<DeactivateUserModalProps> = ({
         },
       ]}
     >
-      <div>{modalContent}</div>
+      <div>
+        <DatePickerInput
+          name={t('label.user_deactivation_date')}
+          ariaLabel={t('label.user_deactivation_date')}
+          label={t('label.user_deactivation_date')}
+          onChange={function (value: string): void {
+            throw new Error('Function not implemented.')
+          }}
+        />
+      </div>
     </ModalBase>
   )
 }

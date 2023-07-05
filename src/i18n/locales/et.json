@@ -16,7 +16,8 @@
     "added_files": "Lisatud failid",
     "kilobytes": "KB",
     "megabytes": "MB",
-    "attach_file": "lisa fail"
+    "attach_file": "lisa fail",
+    "user_deactivation_date": "Deaktiveerimise kuupäev"
   },
   "placeholder": {
     "email": "example@mail.com",

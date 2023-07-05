@@ -8,26 +8,32 @@ import {
   useImperativeHandle,
   Suspense,
 } from 'react'
+import { DeactivateUserModalProps } from './DeactivateUserModal/DeactivateUserModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
 )
-
 const DeleteRoleModal = lazy(() => import('./DeleteRoleModal/DeleteRoleModal'))
+const DeactivateUserModal = lazy(
+  () => import('./DeactivateUserModal/DeactivateUserModal')
+)
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   DeleteRole = 'deleteRole',
+  DeactivateUser = 'deactivateUser',
 }
 
 // Add other modal props types here as well
 type ModalPropTypes =
   | Omit<InstitutionSelectModalProps, 'closeModal'>
   | Omit<DeleteRoleModalProps, 'closeModal'>
+  | Omit<DeactivateUserModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
   deleteRole: DeleteRoleModal,
+  deactivateUser: DeactivateUserModal,
 }
 
 interface RefType {

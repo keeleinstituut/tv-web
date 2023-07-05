@@ -15,7 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import classes from './styles.module.scss'
 
 type DatePickerComponentProps = {
-  ariaLabel: string
+  ariaLabel?: string
   placeholder?: string
   disabled?: boolean
   value?: string

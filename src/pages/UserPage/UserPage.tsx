@@ -52,9 +52,9 @@ const UserPage: FC = () => {
 
   const handleDeactivateModal = () => {
     !isMainUser &&
-      showModal(ModalTypes.DeleteRole, {
-        title: t('modal.archive_user'),
-        cancelButtonContent: t('button.no'),
+      showModal(ModalTypes.DeactivateUser, {
+        title: t('modal.deactivate_user'),
+        cancelButtonContent: t('button.cancel'),
         proceedButtonContent: t('button.yes'),
         modalContent: t('modal.deactivate_user_content'),
         className: classes.archiveContent,
