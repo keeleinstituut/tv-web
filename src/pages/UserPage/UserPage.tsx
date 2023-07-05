@@ -39,10 +39,10 @@ const UserPage: FC = () => {
 
     !isMainUser &&
       showModal(ModalTypes.DeleteRole, {
-        title: t('modal.archive_role'),
+        title: t('modal.archive_user_account'),
         cancelButtonContent: t('button.no'),
         proceedButtonContent: t('button.yes'),
-        modalContent: t('modal.archive_role_content'),
+        modalContent: t('modal.archive_user_content'),
         className: classes.archiveContent,
         handleProceed: () => {
           archiveUser()
