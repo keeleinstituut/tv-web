@@ -99,6 +99,7 @@ const RolesTabs: FC = () => {
         // We render all RoleForms, instead of just the visible one
         // This is for making sure than the internal state of the useForm inside RoleForm
         // will keep its dirty state, when switching between tabs
+
         return (
           <RoleForm
             hidden={activeTab !== role.id}
