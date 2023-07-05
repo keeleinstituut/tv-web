@@ -13,7 +13,6 @@ import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useTranslation } from 'react-i18next'
 import { Control } from 'react-hook-form'
 import CellInput from 'components/organisms/CellInput/CellInput'
-// TODO: uncomment, once SmallTooltip is mergedõ
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 
 import classes from './classes.module.scss'
