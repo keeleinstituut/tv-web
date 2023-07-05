@@ -1,5 +1,6 @@
 import { InstitutionSelectModalProps } from './InstitutionSelectModal/InstitutionSelectModal'
 import { DeleteRoleModalProps } from './DeleteRoleModal/DeleteRoleModal'
+import { TooltipModalProps } from './TooltipModal/TooltipModal'
 import {
   lazy,
   useState,
@@ -12,22 +13,26 @@ import {
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
 )
+const TooltipModal = lazy(() => import('./TooltipModal/TooltipModal'))
 
 const DeleteRoleModal = lazy(() => import('./DeleteRoleModal/DeleteRoleModal'))
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   DeleteRole = 'deleteRole',
+  Tooltip = 'tooltip',
 }
 
 // Add other modal props types here as well
 type ModalPropTypes =
   | Omit<InstitutionSelectModalProps, 'closeModal'>
   | Omit<DeleteRoleModalProps, 'closeModal'>
+  | Omit<TooltipModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
   deleteRole: DeleteRoleModal,
+  tooltip: TooltipModal,
 }
 
 interface RefType {

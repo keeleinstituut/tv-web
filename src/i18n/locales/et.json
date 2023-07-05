@@ -46,9 +46,10 @@
     "save": "Salvesta",
     "add_csv": "Lisa .csv",
     "choose": "Vali",
+    "close": "Sulge",
+    "add_new_csv": "Lisa uus .csv",
     "filter": "Filtreeri",
     "sort": "Sorteeri",
-    "add_new_csv": "Lisa uus .csv",
     "previous_page": "Eelmine lehekülg",
     "next_page": "Järgmine lehekülg"
   },
