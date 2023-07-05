@@ -18,7 +18,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { UserType, StatusKey } from 'types/users'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 type User = {
   id: string
