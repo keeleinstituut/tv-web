@@ -26,3 +26,9 @@
 .archiveContent {
   color: $color-primary;
 }
+
+.deactivationDate {
+  @include bodyTextStyle;
+  color: $color-error;
+  padding: spacing(6) 0 spacing(8) 0;
+}

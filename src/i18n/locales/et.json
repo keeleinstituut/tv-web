@@ -17,7 +17,8 @@
     "kilobytes": "KB",
     "megabytes": "MB",
     "attach_file": "lisa fail",
-    "user_deactivation_date": "Deaktiveerimise kuupäev"
+    "user_deactivation_date": "Deaktiveerimise kuupäev",
+    "future_user_deactivation_date": "Konto deaktiveeritakse {{deactivationDate}}"
   },
   "placeholder": {
     "email": "example@mail.com",

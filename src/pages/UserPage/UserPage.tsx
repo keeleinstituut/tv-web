@@ -12,6 +12,16 @@ import useAuth from 'hooks/useAuth'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 import classes from './classes.module.scss'
+import DynamicForm, {
+  FieldProps,
+  InputTypes,
+} from 'components/organisms/DynamicForm/DynamicForm'
+import { useForm } from 'react-hook-form'
+import { format } from 'date-fns'
+
+interface FormValues {
+  user_deactivation_date?: string
+}
 
 const UserPage: FC = () => {
   const { t } = useTranslation()
@@ -24,6 +34,60 @@ const UserPage: FC = () => {
     userId: userId,
   })
   const navigate = useNavigate()
+  const currentDate = format(new Date(), 'dd.MM.yyyy')
+  const splittedDayValue = currentDate?.split('.')
+
+  const formattedDayValue =
+    splittedDayValue?.[0] +
+    '/' +
+    splittedDayValue?.[1] +
+    '/' +
+    splittedDayValue?.[2]
+
+  const user_deactivation_date = formattedDayValue
+
+  const {
+    control,
+    getValues,
+    // handleSubmit,
+    // setError,
+    // formState: { isValid, isDirty },
+  } = useForm<FormValues>({
+    reValidateMode: 'onSubmit',
+    defaultValues: { user_deactivation_date },
+    resetOptions: {
+      keepErrors: true,
+    },
+  })
+
+  const values = getValues()?.user_deactivation_date
+
+  const splittedDeactivationDate = values?.split('/')
+
+  const formattedDeactivationDate =
+    splittedDeactivationDate?.[0] +
+    '.' +
+    splittedDeactivationDate?.[1] +
+    '.' +
+    splittedDeactivationDate?.[2]
+
+  console.log('values', values)
+
+  const fields: FieldProps<FormValues>[] = [
+    {
+      inputType: InputTypes.Date,
+      name: 'user_deactivation_date',
+      ariaLabel: t('label.user_deactivation_date'),
+      label: t('label.user_deactivation_date'),
+      placeholder: 'pp.kk.aaaa',
+      rules: {
+        required: true,
+      },
+      className: classes.calenderPosition,
+    },
+  ]
+
+  const deactivationDate = formattedDeactivationDate
 
   if (isLoading) {
     return <Loader loading />
@@ -62,6 +126,7 @@ const UserPage: FC = () => {
         handleProceed: () => {
           navigate('/settings/users')
         },
+        deactivationForm: <DynamicForm fields={fields} control={control} />,
       })
   }
 
@@ -86,6 +151,12 @@ const UserPage: FC = () => {
           />
         </div>
       </div>
+      <div className={classes.deactivationDate}>
+        {t('label.future_user_deactivation_date', {
+          deactivationDate: deactivationDate,
+        })}
+      </div>
+
       <UserForm {...user} />
       <p className={classes.dateText}>
         {t('user.created_at', {

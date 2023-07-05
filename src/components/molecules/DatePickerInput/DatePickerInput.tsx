@@ -52,6 +52,14 @@ const DatePickerComponent = ({
     '-' +
     splittedDayValue?.[0]
 
+  const currentDate = new Date()
+  currentDate.setFullYear(currentDate.getFullYear() + 1)
+  const formattedDate = currentDate.toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+  })
+
   return (
     <>
       <DatePicker
@@ -62,6 +70,8 @@ const DatePickerComponent = ({
         placeholderText={placeholder}
         aria-label={ariaLabel}
         disabled={disabled}
+        minDate={new Date()}
+        maxDate={new Date(formattedDate)}
         {...rest}
         onChange={handleDateChange}
       />
