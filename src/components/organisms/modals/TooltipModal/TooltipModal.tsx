@@ -9,7 +9,7 @@ import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 export interface TooltipModalProps {
   title?: string

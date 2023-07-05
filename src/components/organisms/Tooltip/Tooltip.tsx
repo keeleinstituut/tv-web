@@ -5,7 +5,7 @@ import { IconProps } from 'components/molecules/Button/Button'
 import { ReactComponent as QuestionMark } from 'assets/icons/question_mark.svg'
 import classNames from 'classnames'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 interface TooltipProps {
   icon?: FC<SVGProps<SVGSVGElement>>
