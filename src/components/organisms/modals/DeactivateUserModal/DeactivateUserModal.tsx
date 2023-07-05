@@ -6,6 +6,11 @@ import ModalBase, {
 } from 'components/organisms/ModalBase/ModalBase'
 import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInput'
 import { useTranslation } from 'react-i18next'
+import DynamicForm, {
+  FieldProps,
+  FormInput,
+  InputTypes,
+} from 'components/organisms/DynamicForm/DynamicForm'
 
 export interface DeactivateUserModalProps {
   title?: string
@@ -16,6 +21,10 @@ export interface DeactivateUserModalProps {
   closeModal: () => void
   handleProceed?: () => void
   className?: string
+}
+
+interface FormValues {
+  deactivation_date: string
 }
 
 const DeactivateUserModal: FC<DeactivateUserModalProps> = ({
@@ -29,10 +38,6 @@ const DeactivateUserModal: FC<DeactivateUserModalProps> = ({
   className,
 }) => {
   const { t } = useTranslation()
-
-  const handleClose = useCallback(() => {
-    closeModal()
-  }, [closeModal])
 
   const calculateOneYearFromCurrentDate = () => {
     const currentDate = new Date()
@@ -51,6 +56,15 @@ const DeactivateUserModal: FC<DeactivateUserModalProps> = ({
 
   calculateOneYearFromCurrentDate()
 
+  // const fields: FieldProps<FormValues>[] = {
+  //   inputType: InputTypes.Date,
+  //   // ariaLabel: t(`privileges.${key}`),
+  //   // label: t(`privileges.${key}`),
+  //   // name: `privileges.${key}`,
+  //   // disabled: !includes(userPrivileges, Privileges.EditRole),
+  //   // onClick: is_root ? handleMainUserPrivilegeClick : undefined,
+  // }
+
   return (
     <ModalBase
       title={title}
@@ -63,7 +77,7 @@ const DeactivateUserModal: FC<DeactivateUserModalProps> = ({
           appearance: AppearanceTypes.Secondary,
           children: cancelButtonContent,
           size: SizeTypes.M,
-          onClick: handleClose,
+          onClick: closeModal,
         },
         {
           appearance: AppearanceTypes.Primary,
@@ -71,22 +85,27 @@ const DeactivateUserModal: FC<DeactivateUserModalProps> = ({
             if (handleProceed) {
               handleProceed()
             }
-            handleClose()
+            closeModal()
           },
           children: proceedButtonContent,
         },
       ]}
     >
-      <div>
-        <DatePickerInput
-          name={t('label.user_deactivation_date')}
-          ariaLabel={t('label.user_deactivation_date')}
-          label={t('label.user_deactivation_date')}
-          onChange={function (value: string): void {
-            throw new Error('Function not implemented.')
-          }}
-        />
-      </div>
+      {/* <DatePickerInput
+        name={t('label.user_deactivation_date')}
+        ariaLabel={t('label.user_deactivation_date')}
+        label={t('label.user_deactivation_date')}
+        onChange={function (value: string): void {
+          throw new Error('Function not implemented.')
+        }}
+      /> */}
+
+      {/* <DynamicForm
+        fields={fields}
+        // control={control}
+        // onSubmit={handleSubmit(onSubmit)}
+        // className={classes.formContainer}
+      ></DynamicForm> */}
     </ModalBase>
   )
 }
