@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { omit } from 'lodash'
 
 import InputError from 'components/atoms/InputError/InputError'

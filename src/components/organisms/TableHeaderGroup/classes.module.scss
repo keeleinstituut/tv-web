@@ -1,0 +1,15 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+//HeaderItem
+.headingWrapper {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: start;
+  align-items: center;
+  grid-gap: 10px;
+
+  input {
+    order: -1;
+  }
+}

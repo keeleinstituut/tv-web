@@ -7,7 +7,7 @@ import Button, {
 import DragAndDrop from 'components/molecules/DragAndDrop/DragAndDrop'
 import { ReactComponent as Attach } from 'assets/icons/attach.svg'
 import { filter, size, map } from 'lodash'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as File } from 'assets/icons/file.svg'
