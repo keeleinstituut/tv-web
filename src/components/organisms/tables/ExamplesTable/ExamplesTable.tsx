@@ -14,7 +14,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ExpandIcon } from 'assets/icons/expand.svg'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import data from 'components/templates/Tables/ExamplesTable/data.json'
+import data from 'components/organisms/tables/ExamplesTable/data.json'
 import classes from './styles.module.scss'
 
 type Person = {
@@ -206,7 +206,6 @@ const ExamplesTable: FC = () => {
     <DataTable
       data={tableData}
       columns={columns}
-      //enableExpanding
       getSubRows={(originalRow) => originalRow.subRows}
       pagination={pagination}
       setPagination={setPagination}

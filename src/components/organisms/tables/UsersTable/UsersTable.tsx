@@ -9,7 +9,7 @@ import {
   ColumnDef,
 } from '@tanstack/react-table'
 
-import users from 'components/templates/Tables/users.json'
+import users from 'components/organisms/tables/users.json'
 
 export type Person = {
   id: string

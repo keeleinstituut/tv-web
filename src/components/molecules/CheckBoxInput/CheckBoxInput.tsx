@@ -21,7 +21,16 @@ export interface CheckBoxInputProps
 
 const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
   function CheckBoxInput(
-    { label, name, ariaLabel, className, disabled, value = false, ...rest },
+    {
+      label,
+      name,
+      ariaLabel,
+      className,
+      disabled,
+      value = false,
+      errorZIndex,
+      ...rest
+    },
     ref
   ) {
     return (

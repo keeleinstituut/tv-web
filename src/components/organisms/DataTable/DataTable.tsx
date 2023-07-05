@@ -15,7 +15,6 @@ import {
   ColumnDef,
   OnChangeFn,
 } from '@tanstack/react-table'
-import { Root } from '@radix-ui/react-form'
 import Container from 'components/atoms/Container/Container'
 import TablePagination from 'components/organisms/TablePagination/TablePagination'
 import TableHeaderGroup, {
@@ -37,6 +36,7 @@ type DataTableProps<TData extends RowData> = {
   setPagination?: OnChangeFn<PaginationState>
   meta?: TableMeta<TData>
   subRows?: Row<TData>[] | undefined
+  pageSizeOptions?: { label: string; value: string }[]
   getSubRows?:
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
@@ -59,6 +59,7 @@ const DataTable = <TData extends object>({
   setPagination,
   meta,
   getSubRows,
+  pageSizeOptions,
 }: DataTableProps<TData>) => {
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
@@ -79,35 +80,36 @@ const DataTable = <TData extends object>({
   })
 
   return (
-    <Root>
-      <Container>
-        <h4 className={classes.title}>{title}</h4>
-        <div className={classes.tableWrapper}>
-          <table className={classNames(classes.dataTable, classes[tableSize])}>
-            <TableHeaderGroup
-              table={table}
-              onSortingChange={onSortingChange}
-              onColumnFiltersChange={onColumnFiltersChange}
-            />
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <TablePagination hidden={!pagination} table={table} />
-        </div>
-      </Container>
-    </Root>
+    <Container>
+      <h4 className={classes.title} hidden={!title}>
+        {title}
+      </h4>
+      <div className={classes.tableWrapper}>
+        <table className={classNames(classes.dataTable, classes[tableSize])}>
+          <TableHeaderGroup
+            table={table}
+            onSortingChange={onSortingChange}
+            onColumnFiltersChange={onColumnFiltersChange}
+          />
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <TablePagination
+        hidden={!pagination}
+        table={table}
+        pageSizeOptions={pageSizeOptions}
+      />
+    </Container>
   )
 }
 

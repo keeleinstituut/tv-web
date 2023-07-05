@@ -16,7 +16,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import users from 'components/templates/Tables/users.json'
+import users from 'components/organisms/tables/users.json'
 
 type Person = {
   id: string

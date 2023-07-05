@@ -20,6 +20,7 @@ export interface ValidationError extends Error {
 
 export interface CsvValidationError extends Error {
   errors: RowValidationErrorType[]
+  rowsWithExistingInstitutionUsers?: number[]
 }
 
 const handleError = async (error?: AxiosError) => {
@@ -60,6 +61,11 @@ const handleError = async (error?: AxiosError) => {
     })
   }
 
+  if (code === 422) {
+    // Throw only validation errors
+    throw error?.response?.data
+  }
+
   showNotification({
     type: NotificationTypes.Error,
     title: i18n.t('notification.error'),
@@ -70,13 +76,7 @@ const handleError = async (error?: AxiosError) => {
     // TODO: might do sth here, although if we get error message from BE, then there is no need to
   }
 
-  if (code === 422) {
-    // Throw only validation errors
-    throw error?.response?.data
-  } else {
-    // In all other cases we will throw the error as well for more fine-grained handling in some cases
-    throw error
-  }
+  throw error
 }
 
 export default handleError

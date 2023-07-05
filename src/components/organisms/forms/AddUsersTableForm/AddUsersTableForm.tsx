@@ -1,17 +1,7 @@
 import { FC, useCallback, useState } from 'react'
 import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button'
-import {
-  reduce,
-  map,
-  join,
-  isEmpty,
-  keys,
-  includes,
-  compact,
-  size,
-} from 'lodash'
-import { InputTypes } from 'components/organisms/DynamicInputComponent/DynamicInputComponent'
+import { reduce, map, join, isEmpty, keys } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import classes from './styles.module.scss'
 import { UserCsvType } from 'types/users'
@@ -25,20 +15,16 @@ import { CsvValidationError } from 'api/errorHandler'
 import FileImport, {
   InputFileTypes,
 } from 'components/organisms/FileImport/FileImport'
-import { FormInput } from 'components/organisms/DynamicForm/DynamicForm'
-import useValidators from 'hooks/useValidators'
 import { useTranslation } from 'react-i18next'
-import { useRolesFetch } from 'hooks/requests/useRoles'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useNavigate } from 'react-router-dom'
+import AddUsersTable, {
+  ErrorsInRow,
+} from 'components/organisms/tables/AddUsersTable/AddUsersTable'
 
 interface FormValues {
   [key: string]: UserCsvType
-}
-
-interface ErrorsInRow {
-  [key: string]: string[]
 }
 
 const AddUsersTableForm: FC = () => {
@@ -46,11 +32,11 @@ const AddUsersTableForm: FC = () => {
   const { uploadUsers, isLoading: isUploadLoading } = useUploadUsers()
   const [tableData, setTableData] = useState<UserCsvType[]>([])
   const [rowsWithErrors, setRowsWithErrors] = useState<ErrorsInRow>({})
-  const { existingRoles = [] } = useRolesFetch()
+  const [rowsWithExistingUsers, setRowsWithExistingUsers] = useState<number[]>(
+    []
+  )
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { emailValidator, picValidator, rolesValidator, phoneValidator } =
-    useValidators()
 
   const formValues = isEmpty(tableData)
     ? {}
@@ -80,52 +66,6 @@ const AddUsersTableForm: FC = () => {
     },
   })
 
-  const getRulesByKey = useCallback(
-    (key: keyof UserCsvType) => {
-      switch (key) {
-        case 'personal_identification_code':
-          return {
-            required: true,
-            validate: (value: unknown) => {
-              const typedValue = value as string
-              return picValidator(typedValue)
-            },
-          }
-        case 'email':
-          return {
-            required: true,
-            validate: (value: unknown) => {
-              const typedValue = value as string
-              return emailValidator(typedValue)
-            },
-          }
-        case 'role':
-          return {
-            required: true,
-            validate: (value: unknown) => {
-              const typedValue = value as string[]
-              return rolesValidator(typedValue)
-            },
-          }
-        case 'phone':
-          return {
-            required: true,
-            validate: (value: unknown) => {
-              const typedValue = value as string
-              return phoneValidator(typedValue)
-            },
-          }
-        case 'name':
-          return {
-            required: true,
-          }
-        default:
-          return {}
-      }
-    },
-    [emailValidator, phoneValidator, picValidator, rolesValidator]
-  )
-
   const handleFileValidationAttempt = useCallback(
     async (file: File) => {
       try {
@@ -134,9 +74,14 @@ const AddUsersTableForm: FC = () => {
         return true
       } catch (errorData) {
         const typedErrorData = errorData as CsvValidationError
+        const { errors, rowsWithExistingInstitutionUsers } = typedErrorData
 
-        if (typedErrorData.errors) {
-          map(typedErrorData.errors, (rowErrors) => {
+        if (rowsWithExistingInstitutionUsers) {
+          setRowsWithExistingUsers(rowsWithExistingInstitutionUsers)
+        }
+
+        if (errors) {
+          map(errors, (rowErrors) => {
             const { row, errors } = rowErrors
             const errorFields = map(errors, (errorsArray, key) => {
               const typedKey = key as FieldPath<FormValues>
@@ -201,19 +146,6 @@ const AddUsersTableForm: FC = () => {
     setTableData([])
   }, [])
 
-  const roleOptions = compact(
-    map(existingRoles, ({ name }) => {
-      if (name) {
-        return {
-          label: name,
-          value: name,
-        }
-      }
-    })
-  )
-
-  const columns = keys(tableData[0])
-
   return (
     <>
       <div className={classes.row}>
@@ -238,58 +170,12 @@ const AddUsersTableForm: FC = () => {
       </div>
 
       <Root onSubmit={handleSubmit(onSubmit)}>
-        <table>
-          <thead>
-            <tr>
-              {map(columns, (title) => (
-                <th key={title}>{title}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {map(tableData, (item, index) => {
-              const rowErrors = rowsWithErrors[`row-${index}`]
-              let errorZIndexModifier = 0
-              return (
-                <tr key={index}>
-                  {map(item, (_, key) => {
-                    // TODO: hack for now, hopefully we can get rid of this
-                    // it currently seems that lodash map can't infer the type of key
-                    const typedKey = key as unknown as keyof UserCsvType
-                    errorZIndexModifier += 1
-                    const errorZIndex =
-                      index * 10 + size(item) - errorZIndexModifier
-                    return (
-                      <td key={key}>
-                        <FormInput
-                          name={`row-${index}.${key}`}
-                          ariaLabel={key}
-                          control={control}
-                          onlyDisplay={!includes(rowErrors, typedKey)}
-                          errorZIndex={errorZIndex}
-                          {...(typedKey === 'role'
-                            ? {
-                                options: roleOptions,
-                                inputType: InputTypes.Selections,
-                                multiple: true,
-                                buttons: true,
-                                placeholder: t('placeholder.roles'),
-                                tags: true,
-                              }
-                            : { inputType: InputTypes.Text })}
-                          {...(typedKey === 'personal_identification_code'
-                            ? { type: 'number' }
-                            : {})}
-                          rules={getRulesByKey(typedKey)}
-                        />
-                      </td>
-                    )
-                  })}
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <AddUsersTable
+          tableData={tableData}
+          rowsWithErrors={rowsWithErrors}
+          rowsWithExistingUsers={rowsWithExistingUsers}
+          control={control}
+        />
       </Root>
     </>
   )

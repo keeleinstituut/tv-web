@@ -148,6 +148,7 @@ const useKeycloak = () => {
     const initKeycloak = async () => {
       const isKeycloakUserLoggedIn = await keycloak.init({
         onLoad: 'check-sso',
+        // checkLoginIframe: false,
         silentCheckSsoRedirectUri:
           window.location.origin + '/silent-check-sso.html',
       })
@@ -163,7 +164,6 @@ const useKeycloak = () => {
           })
           navigate(window.location.pathname)
         }
-
         return
       }
 

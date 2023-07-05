@@ -49,12 +49,6 @@
   width: 47px;
 }
 
-.helperText {
-  color: $color-secondary-dark;
-  @include subtitleSmallTextStyle;
-  padding-top: spacing(1);
-}
-
 .tagsContainer {
   display: flex;
   flex-wrap: wrap;
