@@ -169,7 +169,9 @@
   "notification": {
     "announcement": "Teade",
     "error": "Viga",
-    "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse"
+    "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
+    "main_user_deletion": "Peakasutaja rolli ei saa kustutada",
+    "main_user_privilege_change": "Peakasutaja privileege ei saa muuta"
   },
   "helper": {
     "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga."

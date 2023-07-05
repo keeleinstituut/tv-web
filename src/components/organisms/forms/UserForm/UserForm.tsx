@@ -18,7 +18,7 @@ import {
   startsWith,
 } from 'lodash'
 import { Privileges } from 'types/privileges'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import { UserType, UserPostType } from 'types/users'
 import { useUpdateUser } from 'hooks/requests/useUsers'

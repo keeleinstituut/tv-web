@@ -16,7 +16,7 @@ import {
   useCreateRole,
 } from 'hooks/requests/useRoles'
 import { ReactComponent as DeleteIcon } from 'assets/icons/delete.svg'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -36,6 +36,7 @@ interface RoleFormProps extends RoleType {
   temporaryName?: string
   onReset: (id: string) => void
   onSubmitSuccess: (id: string, newId?: string) => void
+  is_root?: boolean
 }
 
 const RoleForm: FC<RoleFormProps> = ({
@@ -47,6 +48,7 @@ const RoleForm: FC<RoleFormProps> = ({
   temporaryName,
   onReset,
   onSubmitSuccess,
+  is_root,
 }) => {
   const isTemporaryRole = startsWith(id, 'temp')
   const hasNameChanged = temporaryName && temporaryName !== name
@@ -68,6 +70,7 @@ const RoleForm: FC<RoleFormProps> = ({
       ),
     [allPrivileges, privileges]
   )
+
   // hooks
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
@@ -91,6 +94,7 @@ const RoleForm: FC<RoleFormProps> = ({
     resolver: (data) => {
       // Validate entire form
       const anyPrivilegePicked = find(data.privileges, (value) => !!value)
+
       return {
         values: {
           privileges: data.privileges,
@@ -102,6 +106,17 @@ const RoleForm: FC<RoleFormProps> = ({
     },
   })
 
+  const handleMainUserPrivilegeClick = (
+    event: React.MouseEvent<HTMLInputElement>
+  ) => {
+    event.preventDefault()
+    showNotification({
+      type: NotificationTypes.Error,
+      title: t('notification.announcement'),
+      content: t('notification.main_user_privilege_change'),
+    })
+  }
+
   // map data for rendering
   const fields: FieldProps<FormValues>[] = map(allPrivileges, ({ key }) => ({
     inputType: InputTypes.Checkbox,
@@ -109,6 +124,7 @@ const RoleForm: FC<RoleFormProps> = ({
     label: t(`privileges.${key}`),
     name: `privileges.${key}`,
     disabled: !includes(userPrivileges, Privileges.EditRole),
+    onClick: is_root ? handleMainUserPrivilegeClick : undefined,
   }))
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
@@ -183,8 +199,15 @@ const RoleForm: FC<RoleFormProps> = ({
   const isSubmitDisabled =
     isResetDisabled || (!name && !temporaryName) || !isValid
 
-  if (hidden) return null
+  const showErrorMessage = () => {
+    showNotification({
+      type: NotificationTypes.Error,
+      title: t('notification.announcement'),
+      content: t('notification.main_user_deletion'),
+    })
+  }
 
+  if (hidden) return null
   return (
     <div className={classes.container}>
       <Button
@@ -193,10 +216,9 @@ const RoleForm: FC<RoleFormProps> = ({
         children={t('button.delete_this_role')}
         icon={DeleteIcon}
         className={classes.deleteButton}
-        // TODO: remove this disabled prop, once we have the ability to add roles
         // Also onClick should open the modal, not delete the role
-        onClick={deleteRole}
-        disabled
+        // onClick={deleteRole}
+        onClick={is_root ? showErrorMessage : deleteRole}
         hidden={!includes(userPrivileges, Privileges.DeleteRole)}
       />
       <h2>{t('roles.privileges')}</h2>
