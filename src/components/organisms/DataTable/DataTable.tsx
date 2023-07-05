@@ -1,4 +1,4 @@
-import { CSSProperties, useState } from 'react'
+import { CSSProperties, ReactElement, Ref, forwardRef, useState } from 'react'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import {
@@ -48,19 +48,22 @@ declare module '@tanstack/react-table' {
   }
 }
 
-const DataTable = <TData extends object>({
-  data,
-  columns,
-  tableSize = TableSizeTypes.M,
-  title,
-  onSortingChange,
-  onColumnFiltersChange,
-  pagination,
-  setPagination,
-  meta,
-  getSubRows,
-  pageSizeOptions,
-}: DataTableProps<TData>) => {
+const DataTable = <TData extends object>(
+  {
+    data,
+    columns,
+    tableSize = TableSizeTypes.M,
+    title,
+    onSortingChange,
+    onColumnFiltersChange,
+    pagination,
+    setPagination,
+    meta,
+    getSubRows,
+    pageSizeOptions,
+  }: DataTableProps<TData>,
+  ref: Ref<HTMLDivElement>
+) => {
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
   const table = useReactTable<TData>({
@@ -80,7 +83,7 @@ const DataTable = <TData extends object>({
   })
 
   return (
-    <Container>
+    <Container ref={ref}>
       <h4 className={classes.title} hidden={!title}>
         {title}
       </h4>
@@ -113,4 +116,8 @@ const DataTable = <TData extends object>({
   )
 }
 
-export default DataTable
+const DataTableWithRef = forwardRef(DataTable) as <TData extends object>(
+  props: DataTableProps<TData> & { ref?: Ref<HTMLDivElement> }
+) => ReactElement
+
+export default DataTableWithRef

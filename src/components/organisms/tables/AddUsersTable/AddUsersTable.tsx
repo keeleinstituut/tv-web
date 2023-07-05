@@ -1,8 +1,8 @@
-import { FC, useState } from 'react'
+import { FC, useRef, useState } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, compact, size, keys } from 'lodash'
+import { map, compact, size, keys, includes } from 'lodash'
 import {
   createColumnHelper,
   ColumnDef,
@@ -14,9 +14,10 @@ import { useTranslation } from 'react-i18next'
 import { Control } from 'react-hook-form'
 import CellInput from 'components/organisms/CellInput/CellInput'
 // TODO: uncomment, once SmallTooltip is mergedõ
-// import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip.tsx'
+import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 
 import classes from './classes.module.scss'
+import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 
 export interface ErrorsInRow {
   [key: string]: string[]
@@ -41,8 +42,10 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
   rowsWithErrors,
   rowsWithExistingUsers,
 }) => {
+  const containerRef = useRef(null)
   const { t } = useTranslation()
   const { existingRoles = [] } = useRolesFetch()
+  const { existingDepartments = [] } = useDepartmentsFetch()
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -50,6 +53,17 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
 
   const roleOptions = compact(
     map(existingRoles, ({ name }) => {
+      if (name) {
+        return {
+          label: name,
+          value: name,
+        }
+      }
+    })
+  )
+
+  const departmentOptions = compact(
+    map(existingDepartments, ({ name }) => {
       if (name) {
         return {
           label: name,
@@ -83,11 +97,12 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
               errorZIndex={errorZIndex}
               type="number"
             />
-            {/* TODO: comment this back in once SmallTooltip is merged */}
-            {/* <SmallTooltip
+            <SmallTooltip
               hidden={!includes(rowsWithExistingUsers, row.index)}
               tooltipContent={t('tooltip.user_already_exists')}
-            /> */}
+              className={classes.tooltipPosition}
+              containerRef={containerRef}
+            />
           </div>
         )
       },
@@ -156,6 +171,7 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
             control={control}
             rowErrors={rowsWithErrors[`row-${row?.index}`]}
             errorZIndex={errorZIndex}
+            options={departmentOptions}
           />
         )
       },
@@ -188,6 +204,7 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
       pagination={pagination}
       setPagination={setPagination}
       tableSize={TableSizeTypes.M}
+      ref={containerRef}
       pageSizeOptions={[
         { label: '10', value: '10' },
         { label: '50', value: '50' },

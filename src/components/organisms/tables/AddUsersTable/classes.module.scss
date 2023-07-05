@@ -1,4 +1,10 @@
+@import 'styles/variables';
+
 .row {
   display: flex;
   align-items: center;
+}
+
+.tooltipPosition {
+  margin-left: spacing(2);
 }
