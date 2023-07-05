@@ -1,0 +1,9 @@
+@import 'styles/variables';
+
+.infoIcon {
+  height: 34px;
+  width: 34px;
+  path {
+    fill: $color-primary;
+  }
+}
