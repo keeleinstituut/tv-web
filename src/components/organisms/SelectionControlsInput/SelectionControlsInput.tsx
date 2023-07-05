@@ -1,4 +1,4 @@
-import { ReactElement, forwardRef, useRef, useState } from 'react'
+import { FC, ReactElement, SVGProps, forwardRef, useRef, useState } from 'react'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
@@ -7,25 +7,26 @@ import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
 import { useClickAway } from 'ahooks'
 import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { filter, includes, map } from 'lodash'
 
 export enum DropdownSizeTypes {
   L = 'l',
   M = 'm',
   S = 's',
+  XS = 'xs',
 }
-
+export type DropDownOptions = {
+  label: string
+  value: string
+}
 export interface SelectionControlsInputProps {
   name: string
   error?: FieldError
   label?: JSX.Element | string
   ariaLabel: string
   value?: string | string[]
-  options: {
-    label: string
-    value: string
-  }[]
+  options: DropDownOptions[]
   onChange: (value: string | string[]) => void
   disabled?: boolean
   placeholder?: string
@@ -35,6 +36,8 @@ export interface SelectionControlsInputProps {
   searchInput?: ReactElement
   dropdownSize?: DropdownSizeTypes
   tags?: boolean
+  className?: string
+  selectIcon?: FC<SVGProps<SVGSVGElement>>
   errorZIndex?: number
 }
 
@@ -59,6 +62,8 @@ const SelectionControlsInput = forwardRef<
     dropdownSize,
     errorZIndex,
     tags = false,
+    className,
+    selectIcon,
   },
   ref
 ) {
@@ -84,12 +89,14 @@ const SelectionControlsInput = forwardRef<
 
   const dropdownMenuLabel = multiple ? placeholder : singleSelectMenuLabel
 
+  const SelectInputArrow = selectIcon || DropdownArrow
+
   return (
     <InputWrapper
       label={label}
       name={name}
       error={error}
-      className={classes.selectionsContainer}
+      className={classNames(classes.selectionsContainer, className)}
       wrapperClass={classes[dropdownSize || 'l']}
       onClick={toggleDropdown}
       ref={clickAwayInputRef}
@@ -109,7 +116,8 @@ const SelectionControlsInput = forwardRef<
         <p hidden={!placeholder} className={classes.menuLabel}>
           {dropdownMenuLabel}
         </p>
-        <DropdownArrow
+
+        <SelectInputArrow
           className={classNames(
             disabled && classes.disabledDropdownIcon,
             isOpen && !error && classes.openDropdownIcon

@@ -2,6 +2,10 @@
   "label": {
     "email": "Email",
     "button_arrow": "Nupu nool",
+    "pagination_result_count": "Kuvan korraga",
+    "pagination_navigation": "Lehekülgedel navigeerimine",
+    "go_to_page": "Mine lehele",
+    "filter": "Filter",
     "role_name_input": "Uue rolli nimi",
     "personal_identification_code": "Isikukood",
     "name": "Nimi",
@@ -42,7 +46,11 @@
     "save": "Salvesta",
     "add_csv": "Lisa .csv",
     "choose": "Vali",
-    "add_new_csv": "Lisa uus .csv"
+    "filter": "Filtreeri",
+    "sort": "Sorteeri",
+    "add_new_csv": "Lisa uus .csv",
+    "previous_page": "Eelmine lehekülg",
+    "next_page": "Järgmine lehekülg"
   },
   "error": {
     "input_title": "Veateade: ",

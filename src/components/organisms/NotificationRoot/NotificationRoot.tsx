@@ -4,7 +4,7 @@ import Notification, {
 } from 'components/molecules/Notification/Notification'
 import { v4 as uuidv4 } from 'uuid'
 import { useState, useCallback, createRef, useImperativeHandle } from 'react'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 interface RefType {
   showNotification: (

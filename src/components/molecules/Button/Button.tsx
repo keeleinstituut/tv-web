@@ -3,7 +3,7 @@ import BaseButton, {
   BaseButtonProps,
 } from 'components/atoms/BaseButton/BaseButton'
 import classNames from 'classnames'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 export enum AppearanceTypes {
   Primary = 'primary',
