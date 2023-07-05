@@ -1,5 +1,6 @@
 import { InstitutionType } from './institutions'
 import { RoleType } from './roles'
+import { DataMetaTypes } from 'types/collective'
 
 interface UserDetailsType {
   created_at?: string
@@ -10,7 +11,6 @@ interface UserDetailsType {
   personal_identification_code: string
 }
 
-// TODO: update list of possible statuskeys
 export type StatusKey = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED'
 
 export interface UserType {
@@ -44,4 +44,18 @@ export interface UserCsvType {
   name?: string
   personal_identification_code?: string
   department?: string
+}
+
+export interface UserPayloadType {
+  per_page?: 10 | 50 | 100
+  role_id?: string[]
+  status?: StatusKey[]
+  sort_by?: string
+  sort_order?: 'asc' | 'desc'
+  department?: string[]
+}
+
+export interface UserDataType {
+  data: UserType[]
+  meta: DataMetaTypes
 }

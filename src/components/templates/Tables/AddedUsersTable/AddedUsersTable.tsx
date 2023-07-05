@@ -98,9 +98,8 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ data, hidden }) => {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
       meta: {
-        //Example for adding sorting
         sortingOption: [
-          { label: 'Tühjenda filtrid', value: 'clean' },
+          { label: 'Tühjenda filtrid', value: '' },
           { label: 'A - Z', value: 'asc' },
           { label: 'Z - A', value: 'desc' },
         ],

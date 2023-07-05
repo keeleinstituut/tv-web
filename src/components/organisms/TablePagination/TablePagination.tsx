@@ -37,11 +37,10 @@ const TablePagination = <TData extends object>({
   if (hidden) return null
   const pageSizeOptions = [
     { label: '10', value: '10' },
-    { label: '20', value: '20' },
-    { label: '30', value: '30' },
-    { label: '40', value: '40' },
     { label: '50', value: '50' },
+    { label: '100', value: '100' },
   ]
+
   return (
     <div className={classes.paginationWrapper}>
       <div className={classes.pagination}>

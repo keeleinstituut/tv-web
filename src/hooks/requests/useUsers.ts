@@ -1,18 +1,24 @@
-import { UserPostType, UserType } from 'types/users'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import {
+  UserPostType,
+  UserType,
+  UserPayloadType,
+  UserDataType,
+} from 'types/users'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 
-export const useFetchUsers = () => {
-  const {
-    isLoading,
-    isError,
-    data: users,
-  } = useQuery<UserType[]>({
-    queryKey: ['users'],
-    queryFn: () => apiClient.get(endpoints.USERS),
-  })
+export const useFetchUsers = (params?: UserPayloadType) => {
+  //const queryClient = useQueryClient()
 
+  //const pl = queryClient.getQueryData('users')
+
+  const { isLoading, isError, data } = useQuery<UserDataType>({
+    queryKey: ['users', params],
+    queryFn: () => apiClient.get(endpoints.USERS, params),
+  })
+  const { meta, data: users } = data || {}
+  console.log('data', data)
   return {
     isLoading,
     isError,
