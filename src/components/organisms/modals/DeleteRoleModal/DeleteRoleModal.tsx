@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'
 import ModalBase, {
   ButtonPositionTypes,
@@ -26,10 +26,6 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
   handleProceed,
   className,
 }) => {
-  const handleClose = useCallback(() => {
-    closeModal()
-  }, [closeModal])
-
   return (
     <ModalBase
       title={title}
@@ -42,7 +38,7 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
           appearance: AppearanceTypes.Secondary,
           children: cancelButtonContent,
           size: SizeTypes.M,
-          onClick: handleClose,
+          onClick: closeModal,
         },
         {
           appearance: AppearanceTypes.Primary,
@@ -50,7 +46,7 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
             if (handleProceed) {
               handleProceed()
             }
-            handleClose()
+            closeModal()
           },
           children: proceedButtonContent,
         },
