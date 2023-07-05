@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 export interface DisplayValueProps {
   value?: string | number | boolean | readonly string[]

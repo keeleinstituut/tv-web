@@ -16,7 +16,7 @@ import CellInput from 'components/organisms/CellInput/CellInput'
 // TODO: uncomment, once SmallTooltip is mergedõ
 // import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip.tsx'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 export interface ErrorsInRow {
   [key: string]: string[]
