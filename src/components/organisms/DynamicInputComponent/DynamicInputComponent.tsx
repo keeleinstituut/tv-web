@@ -1,5 +1,5 @@
-import { useCallback, forwardRef, Suspense } from 'react'
-import { ControllerProps, FieldValues } from 'react-hook-form'
+import { useCallback, forwardRef, Suspense, Ref } from 'react'
+import { ControllerProps, FieldValues, RefCallBack } from 'react-hook-form'
 import { omit } from 'lodash'
 import { SimpleUnionOmit, assertNever } from 'types/helpers'
 import TextInput, {
@@ -11,9 +11,13 @@ import CheckBoxInput, {
 import DatePickerInput, {
   DatePickerInputProps,
 } from 'components/molecules/DatePickerInput/DatePickerInput'
+import SelectionControlsInput, {
+  SelectionControlsInputProps,
+} from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import TimePickerInput, {
   TimePickerInputProps,
 } from 'components/molecules/TimePickerInput/TimePickerInput'
+import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
 
 // Extend all props of an input with the corresponding inputType
 
@@ -21,6 +25,7 @@ export enum InputTypes {
   Text = 'text',
   Checkbox = 'checkbox',
   Date = 'date',
+  Selections = 'selections',
   Time = 'time',
 }
 
@@ -36,15 +41,21 @@ type DatePickerPropsWithType = DatePickerInputProps & {
   inputType: InputTypes.Date
 }
 
+type SelectionControlsPropsWithType = SelectionControlsInputProps & {
+  inputType: InputTypes.Selections
+}
+
 type TimePickerPropsWithType = TimePickerInputProps & {
   inputType: InputTypes.Time
 }
 
-export type InputPropsByType =
+export type InputPropsByType = (
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
   | DatePickerPropsWithType
+  | SelectionControlsPropsWithType
   | TimePickerPropsWithType
+) & { onlyDisplay?: boolean }
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
   InputPropsByType,
@@ -52,19 +63,50 @@ export type InputPropsWithoutControllerProps = SimpleUnionOmit<
 >
 
 // eslint-disable-next-line react/display-name
-const InputComponent = forwardRef<HTMLInputElement, InputPropsByType>(
+const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
   (props, ref) => {
-    const { inputType } = props
+    const { inputType, onlyDisplay } = props
+
+    if (onlyDisplay) {
+      return <DisplayValue value={props.value} />
+    }
 
     switch (inputType) {
       case InputTypes.Text:
-        return <TextInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <TextInput
+            {...omit(props, ['inputType', 'onlyDisplay'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       case InputTypes.Checkbox:
-        return <CheckBoxInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <CheckBoxInput
+            {...omit(props, ['inputType', 'onlyDisplay'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       case InputTypes.Date:
-        return <DatePickerInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <DatePickerInput
+            {...omit(props, ['inputType', 'onlyDisplay'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
+      case InputTypes.Selections:
+        return (
+          <SelectionControlsInput
+            {...omit(props, ['inputType', 'onlyDisplay'])}
+            ref={ref as unknown as Ref<HTMLButtonElement>}
+          />
+        )
       case InputTypes.Time:
-        return <TimePickerInput {...omit(props, 'inputType')} ref={ref} />
+        return (
+          <TimePickerInput
+            {...omit(props, ['inputType', 'onlyDisplay'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       default:
         return assertNever(inputType)
     }

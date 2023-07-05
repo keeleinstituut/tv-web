@@ -35,8 +35,8 @@ export enum Privileges {
   ViewVendorTask = 'VIEW_VENDOR_TASK',
   ViewInstitutionPriceRate = 'VIEW_INSTITUTION_PRICE_RATE',
   EditInstitutionPriceRate = 'EDIT_INSTITUTION_PRICE_RATE',
-  EditInstitutionData = 'EDIT_INSTITUTION_DATA',
-  EditInstitutionWorkTime = 'EDIT_INSTITUTION_WORK_TIME',
+  EditInstitution = 'EDIT_INSTITUTION',
+  EditInstitutionWorktime = 'EDIT_INSTITUTION_WORKTIME',
   AddDepartment = 'ADD_DEPARTMENT',
   EditDepartment = 'EDIT_DEPARTMENT',
   DeleteDepartment = 'DELETE_DEPARTMENT',
@@ -48,4 +48,7 @@ export type PrivilegeKey = `${Privileges}`
 
 export interface PrivilegeType {
   key: PrivilegeKey
+}
+export interface PrivilegeDataType {
+  data: PrivilegeType[]
 }

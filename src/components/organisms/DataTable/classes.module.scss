@@ -1,0 +1,62 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.title {
+  margin: spacing(6) spacing(4);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  white-space: nowrap;
+
+  .dataTable {
+    overflow-x: auto;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 0;
+    display: table;
+    @include bodyTextStyle;
+  }
+
+  .l {
+    th,
+    td {
+      padding: spacing(4) spacing(3.5);
+      height: 56px;
+    }
+  }
+  .m {
+    th,
+    td {
+      padding: spacing(2.5) spacing(3.5);
+      height: 48px;
+    }
+  }
+  .s {
+    th,
+    td {
+      padding: spacing(1) spacing(3.5);
+      height: 40px;
+    }
+  }
+
+  th {
+    border-bottom: 1px solid $color-border-secondary;
+    vertical-align: middle;
+    color: $color-text;
+  }
+  td {
+    border-bottom: 1px solid $color-border;
+    vertical-align: middle;
+  }
+
+  tbody {
+    tr {
+      &:last-child {
+        td {
+          border-bottom: 1px solid $color-border-secondary;
+        }
+      }
+    }
+  }
+}

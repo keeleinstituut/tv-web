@@ -1,7 +1,8 @@
 import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
+import { omit } from 'lodash'
 
 import InputError from 'components/atoms/InputError/InputError'
 import { InputHTMLAttributes } from 'react'
@@ -14,6 +15,7 @@ export interface TextInputProps
   error?: FieldError
   label?: JSX.Element | string
   ariaLabel: string
+  errorZIndex?: number
 }
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
@@ -27,9 +29,9 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       value,
       placeholder,
       disabled,
+      errorZIndex,
       ...rest
     } = props
-
     // Might need event handler wrappers here
     // Essentially this is just ariaLabel || label, but typescript seems to fail here
     return (
@@ -38,6 +40,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         className={classNames(
           classes.container,
           disabled && classes.disabled,
+          error && classes.error,
           className
         )}
       >
@@ -56,7 +59,11 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               {...rest}
             />
           </Control>
-          <InputError {...error} className={classes.error} />
+          <InputError
+            {...omit(error, 'ref')}
+            className={classes.error}
+            errorZIndex={errorZIndex}
+          />
         </div>
       </Field>
     )

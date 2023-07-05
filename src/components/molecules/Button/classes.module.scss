@@ -1,0 +1,157 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.btn {
+  display: flex;
+  appearance: none;
+  align-items: center;
+  color: $color-white;
+  cursor: pointer;
+  overflow: visible;
+  text-decoration: none;
+  border-radius: $border-radius-20;
+  background-color: $color-primary;
+  height: fit-content;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.m {
+  @include buttonTextStyle;
+}
+
+.s {
+  @include smallButtonTextStyle;
+}
+
+.buttonText {
+  order: 2;
+}
+
+.right {
+  svg{
+    order: 3;
+    padding-left: spacing(1);
+  }
+}
+
+.left {
+  svg{
+    order: 1;
+    padding-right: spacing(1);
+  }
+}
+
+.primary {
+  background-color: $color-primary;
+
+  &:hover,
+  &:active,
+  &:focus {
+    background-color: $color-secondary-dark;
+  }
+
+  &:focus {
+    box-shadow: inset 0 0 0 2px $color-navigation-icon;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: $color-background-disabled;
+    border: none;
+  }
+
+  &.m {
+    padding: spacing(2) spacing(10);
+
+    &.customIconPadding {
+      padding: spacing(2) spacing(6);
+    }
+  }
+
+  &.s {
+    padding: spacing(0.75) spacing(6);
+  }
+}
+
+.secondary {
+  background-color: $color-white;
+  border: 2px solid $color-border-secondary;
+  color: $color-text;
+
+  svg g path {
+    fill: $color-border-secondary;
+  }
+
+  &:hover,
+  &:active {
+    border: 2px solid $color-border;
+  }
+
+  &:focus {
+    border: 2px solid $color-primary;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: $color-text-light;
+    background-color: $color-background;
+    border: 2px solid $color-background-disabled;
+
+    svg g path {
+      fill: $color-input-border;
+    }
+  }
+
+  &.m {
+    padding: spacing(1.5) spacing(10);
+
+    &.customIconPadding {
+      padding: spacing(1.5) spacing(6);
+    }
+  }
+
+  &.s {
+      padding: spacing(0.25) spacing(6);
+  }
+}
+
+.text {
+  padding: 0;
+  background: none;
+  color: $color-primary;
+  border-radius: 0;
+
+  svg g path,
+  svg path {
+    fill: $color-primary;
+  }
+
+  &.customIconPadding svg {
+    height: spacing(4);
+    width: spacing(4);
+  }
+
+  &:hover,
+  &:active {
+    text-decoration: underline;
+  }
+
+  &:focus {
+    box-shadow: inset 0 0 0 2px $color-primary;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: $color-text-light;
+    text-decoration: none;
+    box-shadow: none;
+
+    svg g path,
+    svg path {
+      fill: $color-text-light;
+    }
+  }
+}

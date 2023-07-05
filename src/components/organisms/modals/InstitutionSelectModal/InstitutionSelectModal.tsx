@@ -4,8 +4,10 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { size, map } from 'lodash'
 import { InstitutionType } from 'types/institutions'
 import { selectInstitution } from 'hooks/useKeycloak'
-import Modal, { TitleFontTypes } from 'components/organisms/Modal/Modal'
-import classes from './styles.module.scss'
+import ModalBase, {
+  TitleFontTypes,
+} from 'components/organisms/ModalBase/ModalBase'
+import classes from './classes.module.scss'
 
 export interface InstitutionSelectModalProps {
   onClose?: () => void
@@ -47,7 +49,7 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
   )
 
   return (
-    <Modal
+    <ModalBase
       title={
         size(institutions) === 0
           ? t('modal.no_institutions_title')
@@ -72,7 +74,7 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
           {name}
         </Button>
       ))}
-    </Modal>
+    </ModalBase>
   )
 }
 

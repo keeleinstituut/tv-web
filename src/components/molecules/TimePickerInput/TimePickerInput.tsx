@@ -7,7 +7,7 @@ import { useClickAway } from 'ahooks'
 import { withMask } from 'use-mask-input'
 import classNames from 'classnames'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 type SharedTimeProps = {
   value?: string
@@ -16,6 +16,7 @@ type SharedTimeProps = {
   showSeconds?: boolean
   error?: FieldError
   name: string
+  errorZIndex?: number
   onChange: (value: string) => void
 }
 
@@ -76,7 +77,6 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
           onChange={handleInputChange}
           id={name}
           {...(placeholder ? { placeholder } : {})}
-          required
           ref={withMask(showSeconds ? '99:99:99' : '99:99', {
             placeholder: '0',
           })}
@@ -104,6 +104,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       label,
       className,
       name,
+      errorZIndex,
     } = props
 
     const splittedTimeValue = value?.split(':')
@@ -159,6 +160,8 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         error={error}
         className={className}
         ref={clickAwayInputRef}
+        wrapperClass={classes.timePickerWrapper}
+        errorZIndex={errorZIndex}
       >
         <TimeInput
           name={name}
@@ -169,6 +172,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           error={error}
           showSeconds={showSeconds}
           onChange={onChange}
+          ref={ref}
         />
         <div
           className={

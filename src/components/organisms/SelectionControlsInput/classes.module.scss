@@ -1,0 +1,87 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.selectionsContainer {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+}
+
+.helperText {
+  color: $color-secondary-dark;
+  @include subtitleSmallTextStyle;
+  padding-top: spacing(1);
+}
+
+.toggleDropdown {
+  display: grid;
+  grid-template-columns: auto max-content;
+  padding: spacing(2);
+  color: $color-text-light;
+  border: 1px solid $color-text-light;
+  border-radius: 4px;
+  background: $color-white;
+  height: 40px;
+  text-align: left;
+  overflow: hidden;
+  width: 100%;
+
+  &.error {
+    border: 1px solid $color-error;
+    border-radius: 5px;
+  }
+
+  &:focus {
+    border: 1px solid $color-primary;
+    border-radius: 5px;
+  }
+
+  &.m svg g path {
+    fill: $color-text-dark;
+  }
+
+  &.s {
+    border: 1px solid $color-border;
+    border-radius: 5px;
+  }
+}
+
+.disabledDropdown {
+  &:focus {
+    border: 1px solid $color-text-light;
+  }
+}
+
+.disabledDropdownIcon g path {
+  fill: $color-background;
+}
+
+.openDropdownIcon {
+  transform: rotate(180deg);
+}
+
+.l {
+  width: 274px;
+}
+
+.m {
+  width: 150px;
+}
+
+.s {
+  width: 77px;
+}
+.xs {
+  width: 47px;
+  height: 37px;
+}
+
+.menuLabel {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.selectionsError {
+  top: spacing(12);
+}

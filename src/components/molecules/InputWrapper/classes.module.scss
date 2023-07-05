@@ -1,0 +1,29 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .label {
+    @include labelTextStyle;
+    display: inline-block;
+    padding-right: spacing(2.5);
+  }
+
+  .wrapper {
+    display: inline-block;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .hiddenLabel {
+    display: none;
+  }
+
+  .errorMessage input {
+    border: 1px solid $color-error;
+    border-radius: 5px;
+  }
+}

@@ -40,6 +40,8 @@ $font-weight-light: 300;
 
 // Border radius
 $border-radius-20: 20px;
+$border-radius-6: 6px;
+$border-radius-2: 2px;
 
 // Colors
 
@@ -51,8 +53,8 @@ $color-secondary-dark: #004277;
 $color-secondary: #1769ab;
 $color-secondary-light: #4587bc;
 
-$color-submenu-background: #003A68;
-$color-submenu-shadow: #00213C;
+$color-submenu-background: #003a68;
+$color-submenu-shadow: #00213c;
 
 $color-text-dark: #09090b;
 $color-text: #4d4f5d;
@@ -68,6 +70,7 @@ $color-background-main: #f4f4f6;
 
 $color-border: #d2d3d8;
 $color-border-secondary: #5d6071;
+$color-border-black-coral: #c4c5cb;
 
 $color-success: #308653;
 $color-success-light: #ecf4ef;
@@ -78,7 +81,10 @@ $color-warning-light: #fff1d3;
 $color-error: #d73e3e;
 $color-error-light: #fceeee;
 
+$color-tag: #e7f0f6;
+
 $color-navigation-icon: #a2c3dd;
+$color-info-light: #d0e1ee;
 // Input colors
 $color-input-border: #9799a4;
 $color-input-main: #5d6071;
@@ -90,7 +96,7 @@ $color-checkbox-hover: rgba(0, 0, 0, 0.08);
 $color-checkbox-focus: rgba(0, 0, 0, 0.12);
 $color-checkbox-active: rgba(0, 0, 0, 0.16);
 $color-shadow-main: rgba(0, 0, 0, 0.14);
-
+$color-shadow-secondary: rgba(0, 0, 0, 0.2);
 
 // helpers
 

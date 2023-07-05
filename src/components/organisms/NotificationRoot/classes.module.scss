@@ -1,0 +1,21 @@
+@import 'styles/variables';
+
+.notificationsContainer {
+  display: grid;
+  grid-auto-rows: max-content;
+  position: absolute;
+  top: 0;
+  right: 0;
+  max-height: 100vh;
+  overflow-y: auto;
+  z-index: 1;
+
+  .transitionContainer {
+    transition: margin-top .5s ease-in-out;
+    margin-top: spacing(6);
+    margin-right: 24px;
+    &:empty {
+      margin-top: -100px;
+    }
+  }
+}

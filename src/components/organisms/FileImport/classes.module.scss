@@ -1,0 +1,76 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.helperText {
+  padding-top: spacing(2);
+  color: $color-primary;
+  @include subtitleSmallTextStyle;
+  order: 3;
+}
+
+.fileInput {
+  display: none;
+}
+
+.fileButton {
+  margin-top: spacing(4);
+  max-width: fit-content;
+  order: 2;
+}
+
+.fileImportContainer {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.fileLabel {
+  padding-top: spacing(6);
+  order: 4;
+}
+
+.fileContainer {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 6px;
+  max-width: 418px;
+  padding: spacing(4) spacing(3);
+  margin-top: spacing(2);
+  display: flex;
+  align-items: center;
+  order: 5;
+}
+
+.errorContainer {
+  background: $color-error-light;
+  border: 1px solid $color-error;
+  border-radius: 6px;
+}
+
+.icon {
+  align-self: flex-start;
+  padding-top: spacing(1);
+}
+
+.fileDetailsContainer {
+  padding-left: spacing(3);
+  flex: auto;
+}
+
+.fileName {
+  @include labelTextStyle;
+}
+
+.fileSize {
+  @include subtitleSmallTextStyle;
+  color: $color-input-main;
+}
+
+.errorText {
+  color: $color-error;
+  @include subtitleSmallTextStyle;
+  padding-top: spacing(2);
+  max-width: 418px;
+  order: 6;
+}
+

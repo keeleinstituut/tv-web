@@ -1,0 +1,213 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.dateIcon {
+  position: absolute;
+  right: spacing(2);
+  top: spacing(2);
+  pointer-events: none;
+}
+
+.disabledCalender g path {
+  fill: $color-input-border;
+}
+
+:global(.react-datepicker__input-container) input {
+  width: 100%;
+  display: block;
+  appearance: none;
+  background-color: $color-white;
+  border: 1px solid $color-input-border;
+  border-radius: 4px;
+  color: $color-input-main;
+  @include buttonTextStyle;
+  height: 40px;
+  padding: spacing(2);
+
+  &::placeholder {
+    color: $color-input-main;
+  }
+
+  &:focus {
+    outline: none;
+    color: $color-text-dark;
+    border-color: $color-primary;
+  }
+
+  &:disabled {
+    background-color: $color-background;
+  }
+
+  &:disabled::placeholder {
+    color: $color-input-border;
+  }
+}
+
+.errorMessage :global(.react-datepicker__input-container) {
+  border: 1px solid $color-error;
+}
+
+.datePickerWrapper {
+  width: 125px;
+  position: relative;
+}
+
+:global(.react-datepicker-popper[data-placement^='bottom']) {
+  padding: 0;
+}
+
+:global(.react-datepicker) {
+  font-family: inherit;
+  @include subtitleSmallTextStyle;
+  border: 1.25px solid $color-input-border;
+  border-radius: spacing(1);
+}
+
+:global(.react-datepicker__triangle) {
+  display: none;
+}
+
+:global(.react-datepicker__navigation) {
+  width: 50px;
+  height: 50px;
+  top: 0;
+
+  &:hover *::before {
+    border-color: $color-background-dark;
+  }
+}
+
+:global(.react-datepicker__navigation--previous) {
+  ::before {
+    border-color: $color-white;
+  }
+}
+
+:global(.react-datepicker__navigation--next) {
+  ::before {
+    border-color: $color-white;
+  }
+}
+
+:global(.react-datepicker__month-container) {
+  width: 392px;
+}
+
+:global(.react-datepicker__header) {
+  padding: 0;
+  border-bottom: 0;
+}
+
+:global(.react-datepicker__current-month) {
+  height: 50px;
+  border-bottom: 1px solid $color-input-border;
+  background-color: $color-primary;
+  color: $color-white;
+  @include h5TextStyle;
+  line-height: $line-height;
+  padding-top: spacing(3);
+}
+
+:global(.react-datepicker__day-names) {
+  background-color: $color-white;
+  margin-bottom: 0;
+}
+
+:global(.react-datepicker__month) {
+  margin: 0;
+  padding-bottom: spacing(5);
+}
+
+:global(.react-datepicker__week) {
+  width: fit-content;
+}
+
+:global(.react-datepicker__day-name) {
+  margin: spacing(2.75) 0 0 0;
+  line-height: $line-height;
+  color: $color-input-main;
+  height: 33px;
+  width: 56px;
+  vertical-align: sub;
+  background-color: $color-white;
+  @include bodyTextSmallStyle;
+  font-weight: $font-weight-bold;
+}
+
+:global(.react-datepicker__day) {
+  color: $color-input-main;
+  margin: 0;
+  @include subtitleSmallTextStyle;
+  line-height: $line-height;
+  height: 33px;
+  width: 56px;
+  padding: spacing(1.5) 0;
+
+  &:hover {
+    border-radius: 16px;
+    position: relative;
+    display: inline-block;
+    background-color: $color-background-dark;
+    padding: spacing(1.5);
+    text-align: center;
+    width: 32px;
+    margin: 0 spacing(3);
+  }
+}
+
+:global(.react-datepicker__day--selected) {
+  color: $color-white;
+  border-radius: 16px;
+  position: relative;
+  display: inline-block;
+  background-color: $color-primary;
+  color: $color-white;
+  padding: spacing(1.5);
+  text-align: center;
+  width: 32px;
+  margin: 0 spacing(3);
+}
+
+:global(.react-datepicker__navigation-icon::before) {
+  border-width: 4px 4px 0 0;
+  height: 14px;
+  width: 14px;
+}
+
+:global(.react-datepicker__navigation-icon--previous) {
+  right: -8px;
+}
+
+:global(.react-datepicker__navigation-icon--next) {
+  left: -8px;
+}
+
+:global(.react-datepicker__day--keyboard-selected) {
+  background-color: transparent;
+  border-radius: 16px;
+  position: relative;
+  display: inline-block;
+  color: $color-input-main;
+  padding: spacing(1.5);
+  text-align: center;
+  width: 32px;
+  margin: 0 spacing(3);
+}
+
+:global(.react-datepicker__day--disabled) {
+  color: $color-background-dark;
+}
+
+:global(.react-datepicker__day--weekend) {
+  color: $color-background-dark;
+
+  &:hover {
+    color: $color-white;
+  }
+}
+
+:global(
+    .react-datepicker__day.react-datepicker__day--selected.react-datepicker__day--weekend
+  ) {
+  color: $color-white;
+}

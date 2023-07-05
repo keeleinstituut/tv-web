@@ -1,0 +1,69 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.dropdownMenu {
+  background: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 0px 0px 4px 4px;
+  position: absolute;
+  max-height: 50vh;
+  overflow: auto;
+}
+
+.dropdownMenuItem {
+  cursor: pointer;
+  list-style-type: none;
+}
+
+.option {
+  @include labelTextStyle;
+  padding: spacing(2);
+}
+
+.selectedOption {
+  @include subtitleTextStyle;
+
+  &:focus {
+    @include subtitleTextStyle;
+  }
+}
+
+.buttonsContainer {
+  display: flex;
+  padding: spacing(4.5) 0 spacing(3) 0;
+  justify-content: center;
+}
+
+.l {
+  width: 274px;
+}
+
+.m {
+  width: 150px;
+}
+
+.s {
+  width: 77px;
+}
+.xs {
+  width: 47px;
+}
+
+.tagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  @include bodyTextSmallStyle;
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+  background-color: $color-tag;
+  border-radius: 4px;
+  margin: spacing(2) spacing(2) 0 0;
+  padding: spacing(0.625) spacing(1);
+}
+
+.dropdownButton {
+  margin-left: spacing(2);
+}

@@ -1,13 +1,13 @@
 import { FC } from 'react'
 import classNames from 'classnames'
-import { map } from 'lodash'
+import { isEmpty, map } from 'lodash'
 import Tab, { TabType } from 'components/molecules/Tab/Tab'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 interface ObjectType {
   [key: string]: string
@@ -28,13 +28,14 @@ const Tabs: FC<TabsProps> = ({
   activeTab,
   className,
   setActiveTab,
-  tabs,
+  tabs = [],
   onAddPress,
   addLabel,
   addDisabled,
   onChangeName,
   tabNames,
 }) => {
+  if (isEmpty(tabs)) return null
   return (
     <div className={classNames(classes.tabsRow, className)}>
       {map(tabs, ({ id, name }) => {

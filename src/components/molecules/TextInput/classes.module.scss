@@ -1,0 +1,58 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  display: flex;
+  align-items: center;
+  height: 40px;
+
+  &.disabled {
+    cursor: not-allowed;
+    input,
+    .label {
+      pointer-events: none;
+    }
+  }
+
+
+  &.error {
+    .inputField {
+      border-color: $color-error
+    }
+  }
+
+  .inputContainer {
+    position: relative;
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .inputField {
+    padding: spacing(2);
+    background-color: $color-white;
+    border: solid $color-input-border 1px;
+    border-radius: 4px;
+    height: 100%;
+
+    &:focus {
+      border-color: $color-primary;
+    }
+
+    &:disabled {
+      background-color: $color-background
+    }
+  }
+
+  .label {
+    @include labelTextStyle;
+    margin-right: spacing(2);
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  input {
+    @include labelTextStyle;
+  }
+}

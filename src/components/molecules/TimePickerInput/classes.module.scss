@@ -1,0 +1,61 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.hiddenContainer {
+  display: none;
+}
+
+.timeColumnContainer {
+  display: flex;
+  border: 1px solid $color-input-border;
+  border-radius: 5px;
+  height: 106px;
+  max-width: 166px;
+  width: fit-content;
+  background-color: $color-white;
+  position: absolute;
+  z-index: 1;
+}
+
+.timeInput {
+  width: 100%;
+  display: block;
+  appearance: none;
+  background-color: $color-white;
+  border: 1px solid $color-input-border;
+  border-radius: 4px;
+  color: $color-input-border;
+  @include buttonTextStyle;
+  height: 40px;
+  padding: spacing(2);
+
+  &:focus {
+    color: $color-text-dark;
+    border-color: $color-primary;
+  }
+}
+
+.disabledTimeInput {
+  background-color: $color-background;
+}
+
+.disabledTimeInput:focus {
+  color: $color-input-border;
+  border-color: $color-input-border;
+}
+
+.timeIcon {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  pointer-events: none;
+}
+
+.disabledIcon path {
+  fill: $color-input-border;
+}
+
+.timePickerWrapper {
+  width: 125px;
+  position: relative;
+}
