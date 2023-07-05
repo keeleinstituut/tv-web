@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   AppearanceTypes,
@@ -30,10 +30,6 @@ const TooltipModal: FC<TooltipModalProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const handleClose = useCallback(() => {
-    closeModal()
-  }, [closeModal])
-
   return (
     <ModalBase
       title={title}
@@ -51,7 +47,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
         },
         {
           appearance: AppearanceTypes.Secondary,
-          onClick: handleClose,
+          onClick: closeModal,
           children: t('button.close'),
         },
       ]}
