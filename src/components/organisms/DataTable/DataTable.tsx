@@ -1,4 +1,4 @@
-import { CSSProperties, useState } from 'react'
+import { CSSProperties, ReactElement, Ref, forwardRef, useState } from 'react'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import {
@@ -15,7 +15,6 @@ import {
   ColumnDef,
   OnChangeFn,
 } from '@tanstack/react-table'
-import { Root } from '@radix-ui/react-form'
 import Container from 'components/atoms/Container/Container'
 import TablePagination from 'components/organisms/TablePagination/TablePagination'
 import TableHeaderGroup, {
@@ -37,6 +36,7 @@ type DataTableProps<TData extends RowData> = {
   setPagination?: OnChangeFn<PaginationState>
   meta?: TableMeta<TData>
   subRows?: Row<TData>[] | undefined
+  pageSizeOptions?: { label: string; value: string }[]
   getSubRows?:
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
@@ -48,18 +48,22 @@ declare module '@tanstack/react-table' {
   }
 }
 
-const DataTable = <TData extends object>({
-  data,
-  columns,
-  tableSize = TableSizeTypes.M,
-  title,
-  onSortingChange,
-  onColumnFiltersChange,
-  pagination,
-  setPagination,
-  meta,
-  getSubRows,
-}: DataTableProps<TData>) => {
+const DataTable = <TData extends object>(
+  {
+    data,
+    columns,
+    tableSize = TableSizeTypes.M,
+    title,
+    onSortingChange,
+    onColumnFiltersChange,
+    pagination,
+    setPagination,
+    meta,
+    getSubRows,
+    pageSizeOptions,
+  }: DataTableProps<TData>,
+  ref: Ref<HTMLDivElement>
+) => {
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
   const table = useReactTable<TData>({
@@ -79,36 +83,41 @@ const DataTable = <TData extends object>({
   })
 
   return (
-    <Root>
-      <Container>
-        <h4 className={classes.title}>{title}</h4>
-        <div className={classes.tableWrapper}>
-          <table className={classNames(classes.dataTable, classes[tableSize])}>
-            <TableHeaderGroup
-              table={table}
-              onSortingChange={onSortingChange}
-              onColumnFiltersChange={onColumnFiltersChange}
-            />
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <TablePagination hidden={!pagination} table={table} />
-        </div>
-      </Container>
-    </Root>
+    <Container ref={ref}>
+      <h4 className={classes.title} hidden={!title}>
+        {title}
+      </h4>
+      <div className={classes.tableWrapper}>
+        <table className={classNames(classes.dataTable, classes[tableSize])}>
+          <TableHeaderGroup
+            table={table}
+            onSortingChange={onSortingChange}
+            onColumnFiltersChange={onColumnFiltersChange}
+          />
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <TablePagination
+        hidden={!pagination}
+        table={table}
+        pageSizeOptions={pageSizeOptions}
+      />
+    </Container>
   )
 }
 
-export default DataTable
+const DataTableWithRef = forwardRef(DataTable) as <TData extends object>(
+  props: DataTableProps<TData> & { ref?: Ref<HTMLDivElement> }
+) => ReactElement
+
+export default DataTableWithRef

@@ -23,6 +23,7 @@ import {
   SortingFunctionType,
 } from 'types/users'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
+
 import classes from './classes.module.scss'
 
 type User = {

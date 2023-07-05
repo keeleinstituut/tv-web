@@ -10,8 +10,8 @@ const AddUsersPage: FC = () => {
     <>
       <div className={classes.titleRow}>
         <h1>{t('users.add_users')}</h1>
-        <AddUsersTableForm />
       </div>
+      <AddUsersTableForm />
     </>
   )
 }

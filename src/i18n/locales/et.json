@@ -176,5 +176,16 @@
   },
   "helper": {
     "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga."
+  },
+  "table": {
+    "personal_identification_code": "Isikukood",
+    "name": "Nimi",
+    "email": "Email",
+    "phone": "Telefoninumber",
+    "department": "Üksus",
+    "role": "Roll"
+  },
+  "tooltip": {
+    "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
   }
 }
