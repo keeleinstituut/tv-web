@@ -133,7 +133,7 @@ const AddUsersTableForm: FC = () => {
             title: t('notification.announcement'),
             content: t('success.users_uploaded'),
           })
-          navigate('/users')
+          navigate('/settings/users')
         } catch (_) {
           // Do nothing, error notification is already displayed
         }
