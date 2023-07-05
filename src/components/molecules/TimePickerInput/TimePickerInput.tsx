@@ -7,7 +7,7 @@ import { useClickAway } from 'ahooks'
 import { withMask } from 'use-mask-input'
 import classNames from 'classnames'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 type SharedTimeProps = {
   value?: string

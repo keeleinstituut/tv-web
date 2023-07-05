@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
 import { startsWith } from 'lodash'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 
 export interface TabType {

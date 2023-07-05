@@ -1,5 +1,5 @@
 import { toString } from 'lodash'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import { Table, PaginationState } from '@tanstack/react-table'

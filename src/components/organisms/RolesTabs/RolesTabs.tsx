@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import { RoleType } from 'types/roles'
 import { Privileges } from 'types/privileges'
@@ -99,6 +99,7 @@ const RolesTabs: FC = () => {
         // We render all RoleForms, instead of just the visible one
         // This is for making sure than the internal state of the useForm inside RoleForm
         // will keep its dirty state, when switching between tabs
+
         return (
           <RoleForm
             hidden={activeTab !== role.id}
