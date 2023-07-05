@@ -71,7 +71,10 @@ const onVisibilityChange = () => {
   }
 }
 
-export const startRefreshingToken = (onFail?: () => void, force?: boolean) => {
+export const startRefreshingToken = async (
+  onFail?: () => void,
+  force?: boolean
+) => {
   const refreshToken = keycloak.refreshToken
   const tokenExpiry = keycloak.tokenParsed?.exp
   if (!tokenExpiry || !refreshToken) {
@@ -79,7 +82,7 @@ export const startRefreshingToken = (onFail?: () => void, force?: boolean) => {
     return null
   }
   if (force && refreshToken) {
-    keycloak.updateToken(Infinity)
+    await keycloak.updateToken(Infinity)
     return
   }
   if (refreshInterval) {
@@ -123,6 +126,12 @@ export const selectInstitution = async (institutionId?: string) => {
   // refresh token, to update state for keycloak
   await keycloak.updateToken(Infinity)
   return true
+}
+
+keycloak.onAuthRefreshSuccess = () => {
+  // Set new access token + restart refreshing interval
+  setAccessToken(keycloak.token)
+  startRefreshingToken()
 }
 
 const useKeycloak = () => {
@@ -195,11 +204,6 @@ const useKeycloak = () => {
       if (size(data) === 0) {
         handleLogoutWithError()
         return
-      }
-      keycloak.onAuthRefreshSuccess = () => {
-        // Set new access token + restart refreshing interval
-        setAccessToken(keycloak.token)
-        startRefreshingToken()
       }
 
       // Check if there is exactly 1 institution to pick
