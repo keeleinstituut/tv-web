@@ -1,5 +1,5 @@
 import { memo, FC } from 'react'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import classNames from 'classnames'
 
 interface LoaderProps {

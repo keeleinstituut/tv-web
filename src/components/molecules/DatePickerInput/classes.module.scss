@@ -49,6 +49,7 @@
 
 .datePickerWrapper {
   width: 125px;
+  position: relative;
 }
 
 :global(.react-datepicker-popper[data-placement^='bottom']) {

@@ -16,7 +16,7 @@ import {
   useCreateRole,
 } from 'hooks/requests/useRoles'
 import { ReactComponent as DeleteIcon } from 'assets/icons/delete.svg'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -37,7 +37,7 @@ interface RoleFormProps extends RoleType {
   temporaryName?: string
   onReset: (id: string) => void
   onSubmitSuccess: (id: string, newId?: string) => void
-  isMainUser?: boolean
+  is_root?: boolean
 }
 
 const RoleForm: FC<RoleFormProps> = ({
@@ -49,7 +49,7 @@ const RoleForm: FC<RoleFormProps> = ({
   temporaryName,
   onReset,
   onSubmitSuccess,
-  isMainUser,
+  is_root,
 }) => {
   const isTemporaryRole = startsWith(id, 'temp')
   const hasNameChanged = temporaryName && temporaryName !== name
@@ -125,7 +125,7 @@ const RoleForm: FC<RoleFormProps> = ({
     label: t(`privileges.${key}`),
     name: `privileges.${key}`,
     disabled: !includes(userPrivileges, Privileges.EditRole),
-    onClick: isMainUser ? handleMainUserPrivilegeClick : undefined,
+    onClick: is_root ? handleMainUserPrivilegeClick : undefined,
   }))
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
@@ -226,7 +226,7 @@ const RoleForm: FC<RoleFormProps> = ({
         children={t('button.delete_this_role')}
         icon={DeleteIcon}
         className={classes.deleteButton}
-        onClick={isMainUser ? showErrorMessage : handleDeleteModal}
+        onClick={is_root ? showErrorMessage : handleDeleteModal}
         hidden={!includes(userPrivileges, Privileges.DeleteRole)}
       />
       <h2>{t('roles.privileges')}</h2>
