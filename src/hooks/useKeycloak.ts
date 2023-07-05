@@ -39,6 +39,10 @@ interface AuthContextType {
   userPrivileges: PrivilegeKey[]
 }
 
+interface InstitutionDataType {
+  data: InstitutionType[]
+}
+
 export const AuthContext = createContext<AuthContextType>({
   isUserLoggedIn: false,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -198,9 +202,10 @@ const useKeycloak = () => {
       }
 
       // TODO: no need to fetch institutions, if user already has institution selected
-      const data: InstitutionType[] = await apiClient.get(
+      const { data }: InstitutionDataType = await apiClient.get(
         endpoints.INSTITUTIONS
       )
+
       if (size(data) === 0) {
         handleLogoutWithError()
         return

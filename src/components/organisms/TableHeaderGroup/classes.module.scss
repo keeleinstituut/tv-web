@@ -13,3 +13,17 @@
     order: -1;
   }
 }
+
+.iconButton {
+  padding: spacing(1);
+
+  svg {
+    padding: 0;
+  }
+
+  svg g path,
+  svg path {
+    fill: $color-input-main;
+    fill-opacity: 1;
+  }
+}

@@ -1,5 +1,7 @@
 import { FC, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRolesFetch } from 'hooks/requests/useRoles'
+import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -14,65 +16,71 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-
+import { UserType, StatusKey } from 'types/users'
+import { FilterFunctionType, SortingFunctionType } from 'types/collective'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import users from 'components/organisms/tables/users.json'
 
-type Person = {
+import classes from './classes.module.scss'
+
+type User = {
   id: string
   name: string
-  department: string | null
-  roles: string[]
-  status: string
-  subRows?: Person[]
+  department: string | undefined
+  roles: (string | undefined)[]
+  status: StatusKey
 }
 
-const columnHelper = createColumnHelper<Person>()
+const columnHelper = createColumnHelper<User>()
 
-const AddedUsersTable: FC = () => {
+type AddedUsersProps = {
+  data?: UserType[]
+  hidden?: boolean
+  handelFilterChange?: (value?: FilterFunctionType) => void
+  handelSortingChange?: (value?: SortingFunctionType) => void
+}
+
+const AddedUsersTable: FC<AddedUsersProps> = ({
+  data,
+  hidden,
+  handelFilterChange,
+  handelSortingChange,
+}) => {
   const { t } = useTranslation()
+  const { rolesFilters = [] } = useRolesFetch()
+  const { departmentFilters = [] } = useDepartmentsFetch()
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   })
-  const tableData = users?.data
 
   const usersData = useMemo(() => {
     return (
-      map(tableData, (data) => {
-        const arrayOfRoles = map(data.roles, 'name')
+      map(data, ({ id, roles, user, department, status }) => {
+        const arrayOfRoles = map(roles, 'name')
         return {
-          id: data.id,
-          name: `${data.user?.forename} ${data.user?.surname}`,
-          department: data.department,
+          id,
+          name: `${user?.forename} ${user?.surname}`,
+          department,
           roles: arrayOfRoles,
-          status: data.status,
+          status,
         }
       }) || {}
     )
-  }, [tableData])
+  }, [data])
 
   const columns = [
     columnHelper.accessor('id', {
-      header: () => 'Kasutajakonto ID',
+      header: () => t('label.user_account_id'),
       cell: ({ getValue }) => (
-        //Example for link row cell
-        <div
-          style={{
-            display: 'grid',
-            gridAutoFlow: 'column',
-            width: 'max-content',
-            gap: '10px',
-            alignItems: 'left',
-          }}
-        >
+        <div className={classes.addedUserLink}>
           <Button
             appearance={AppearanceTypes.Text}
             size={SizeTypes.M}
             icon={ArrowRight}
             ariaLabel={t('label.button_arrow')}
             iconPositioning={IconPositioningTypes.Left}
-            href={`/user=${getValue()}`}
+            href={`/settings/users/${getValue()}`}
           >
             {'ID xxxxxx'}
           </Button>
@@ -81,34 +89,60 @@ const AddedUsersTable: FC = () => {
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('name', {
-      header: () => 'Nimi',
+      header: () => t('label.name'),
       footer: (info) => info.column.id,
+      // TODO: comment back in, once BE fixes returned values
+      // meta: {
+      //   sortingOption: ['asc', 'desc'],
+      // },
     }),
     columnHelper.accessor('department', {
-      header: () => 'Üksus',
+      header: () => t('label.department'),
       footer: (info) => info.column.id,
+      // TODO: comment back in once we have BE support
+      // meta: {
+      //   filterOption: { department: departmentFilters },
+      // },
     }),
     columnHelper.accessor('roles', {
-      header: () => 'Roll',
+      header: () => t('label.role'),
       cell: (info) => {
         return join(info.renderValue(), ', ')
       },
       footer: (info) => info.column.id,
+      // TODO: comment back in once we have BE support
+      // meta: {
+      //   filterOption: { role_id: rolesFilters },
+      // },
     }),
     columnHelper.accessor('status', {
-      header: () => 'Staatus',
+      header: () => t('label.status'),
       footer: (info) => info.column.id,
+      // TODO: comment back in once we have BE support
+      // meta: {
+      //   filterOption: {
+      //     status: [
+      //       { label: 'Active', value: 'ACTIVE' },
+      //       { label: 'Deactivated', value: 'DEACTIVATED' },
+      //       { label: 'Archived', value: 'ARCHIVED' },
+      //     ],
+      //   },
+      // },
     }),
-  ] as ColumnDef<Person>[]
+  ] as ColumnDef<User>[]
+
+  if (hidden) return null
 
   return (
     <DataTable
       data={usersData}
       columns={columns}
-      title="Lisatud kasutajad"
+      title={t('users.added_users')}
       pagination={pagination}
       setPagination={setPagination}
       tableSize={TableSizeTypes.M}
+      onColumnFiltersChange={handelFilterChange}
+      onSortingChange={handelSortingChange}
     />
   )
 }

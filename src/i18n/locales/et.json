@@ -12,11 +12,14 @@
     "phone": "Telefoni nr",
     "department": "Üksus",
     "roles": "Rollid",
+    "role": "Roll",
     "added_file": "Lisatud fail",
     "added_files": "Lisatud failid",
     "kilobytes": "KB",
     "megabytes": "MB",
-    "attach_file": "lisa fail"
+    "attach_file": "lisa fail",
+    "status": "Staatus",
+    "user_account_id": "Kasutajakonto ID"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -50,7 +53,9 @@
     "filter": "Filtreeri",
     "sort": "Sorteeri",
     "previous_page": "Eelmine lehekülg",
-    "next_page": "Järgmine lehekülg"
+    "next_page": "Järgmine lehekülg",
+    "export_csv": "Ekspordi CSV",
+    "add_users": "Lisa kasutajad"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -147,7 +152,8 @@
     "updated_at": "Kasutaja andmed muudetud {{time}}"
   },
   "users": {
-    "add_users": "Kasutajate lisamine"
+    "add_users": "Kasutajate lisamine",
+    "added_users": "Lisatud kasutajad"
   },
   "file": {
     "drop_files": "Pane failid siia...",
