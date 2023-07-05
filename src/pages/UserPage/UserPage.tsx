@@ -33,19 +33,32 @@ const UserPage: FC = () => {
   }
 
   const userNameString = `${user.user.forename} ${user.user.surname}`
+  const isMainUser = some(user?.roles, (mainUser) => mainUser?.is_root)
 
   const handleArchiveModal = () => {
-    const isMainUser = some(user?.roles, (mainUser) => mainUser?.is_root)
-
     !isMainUser &&
       showModal(ModalTypes.DeleteRole, {
-        title: t('modal.archive_role'),
+        title: t('modal.archive_user'),
         cancelButtonContent: t('button.no'),
         proceedButtonContent: t('button.yes'),
-        modalContent: t('modal.archive_role_content'),
+        modalContent: t('modal.archive_user_content'),
         className: classes.archiveContent,
         handleProceed: () => {
           archiveUser()
+          navigate('/settings/users')
+        },
+      })
+  }
+
+  const handleDeactivateModal = () => {
+    !isMainUser &&
+      showModal(ModalTypes.DeleteRole, {
+        title: t('modal.archive_user'),
+        cancelButtonContent: t('button.no'),
+        proceedButtonContent: t('button.yes'),
+        modalContent: t('modal.deactivate_user_content'),
+        className: classes.archiveContent,
+        handleProceed: () => {
           navigate('/settings/users')
         },
       })
@@ -59,15 +72,14 @@ const UserPage: FC = () => {
           <Button
             appearance={AppearanceTypes.Secondary}
             children={t('button.deactivate_account')}
-            // TODO: disabled for now, we don't have endpoint for this
-            // open confirmation modal from here
-            disabled
+            onClick={handleDeactivateModal}
             hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
           />
           <Button
             loading={isArchiving}
             appearance={AppearanceTypes.Secondary}
             children={t('button.archive_account')}
+            disabled
             onClick={handleArchiveModal}
             hidden={!includes(userPrivileges, Privileges.ArchiveUser)}
           />
