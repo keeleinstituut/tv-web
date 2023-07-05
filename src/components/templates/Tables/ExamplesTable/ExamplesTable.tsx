@@ -15,7 +15,7 @@ import Button, {
 import { ReactComponent as ExpandIcon } from 'assets/icons/expand.svg'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import data from 'components/templates/Tables/ExamplesTable/data.json'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 type Person = {
   id: string

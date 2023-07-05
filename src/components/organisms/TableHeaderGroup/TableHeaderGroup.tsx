@@ -13,7 +13,7 @@ import { ReactComponent as FilterIcon } from 'assets/icons/filter.svg'
 import { ReactComponent as SortingMore } from 'assets/icons/sorting_arrows.svg'
 import { ReactComponent as SortingLess } from 'assets/icons/sorting_less.svg'
 import TableColumnFilter from 'components/organisms/TableColumnFilter/TableColumnFilter'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 export interface HeaderGroupFunctions {
   onSortingChange?: (filters: string | string[], columnId: string) => void

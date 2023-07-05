@@ -16,7 +16,7 @@ import {
   useCreateRole,
 } from 'hooks/requests/useRoles'
 import { ReactComponent as DeleteIcon } from 'assets/icons/delete.svg'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'

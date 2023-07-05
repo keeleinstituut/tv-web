@@ -8,7 +8,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { SelectionControlsInputProps } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 
 type DropdownContentProps = SelectionControlsInputProps & {

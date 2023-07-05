@@ -10,7 +10,7 @@ import {
   acceptFileExtensions,
 } from 'components/organisms/FileImport/FileImport'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 
 interface DragAndDropContentProps {

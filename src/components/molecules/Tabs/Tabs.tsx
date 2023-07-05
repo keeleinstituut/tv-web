@@ -7,7 +7,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 interface ObjectType {
   [key: string]: string
