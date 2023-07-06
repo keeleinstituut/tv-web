@@ -12,11 +12,15 @@
     "phone": "Telefoni nr",
     "department": "Üksus",
     "roles": "Rollid",
+    "role": "Roll",
     "added_file": "Lisatud fail",
     "added_files": "Lisatud failid",
     "kilobytes": "KB",
     "megabytes": "MB",
-    "attach_file": "lisa fail"
+    "attach_file": "lisa fail",
+    "status": "Staatus",
+    "user_account_id": "Kasutajakonto ID",
+    "open_instructions": "Ava õpetus"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -45,11 +49,15 @@
     "save": "Salvesta",
     "add_csv": "Lisa .csv",
     "choose": "Vali",
+    "close": "Sulge",
+    "add_new_csv": "Lisa uus .csv",
     "filter": "Filtreeri",
     "sort": "Sorteeri",
-    "add_new_csv": "Lisa uus .csv",
     "previous_page": "Eelmine lehekülg",
-    "next_page": "Järgmine lehekülg"
+    "next_page": "Järgmine lehekülg",
+    "export_csv": "Ekspordi CSV",
+    "add_users": "Lisa kasutajad",
+    "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -141,12 +149,30 @@
     "no_institutions_title": "Tundub, et sul puuduvad asutused mille vahel valida.",
     "institutions": "ASUTUSED"
   },
+  "cheat_sheet": {
+    "user_management": {
+      "title": "[Kasutajate haldus] kohtspikker",
+      "adding_user": "Kasutaja lisamine",
+      "adding_user_text": "Uute kasutajate lisamiseks klõpsa nupule „Lisa kasutajad“. Kasutaja(te) lisamiseks süsteemi tuleb importida kasutaja(te) andmed CSV failiga. Laadi tüüpfaili mall alla siit (link autodownload?).",
+      "edit_user_details": "Kasutaja andmete haldamine",
+      "edit_user_details_text": "Kasutajate andmete haldamiseks tuleb klõpsata valitud kasutaja kasutajakonto ID lingile.\nKasutaja kontaktandmete vaates saab teha järgmist:",
+      "assign_working_times": "määrata tema tööaegu,",
+      "add_vacations": "lisada puhkuseid,",
+      "change_deails": "muuta kasutaja nime, meili, telefoninumbrit ja üksust",
+      "change_role": "muuta tema konto rolli (juurdepääsuõiguseid) ning",
+      "deactive_account": "kontot deaktiveerida/arhiveerida.",
+      "activation_archiving": "Aktiveerimine/arhiveerimine",
+      "activation_archiving_text": "Konto deaktiveerimisel kasutaja juurdepääsuõigused peatatakse ja tema roll(id) võetakse ära. See sobib kasutaja juurdepääsu ajutiseks peatamiseks. Kui pole soovi kontot hiljem taas aktiveerida, siis tuleks kasutaja konto arhiveerida.\nKui kasutaja konto deaktiveeritakse ja kasutaja pole ise oma poolikuid töid kolleegidele suunanud, siis on vaid vastavate õigustega kasutajal juurdepääs tema poolikutele tellimustele, alamtellimustele ja ülesannetele.\nDekativeeritud konto aktiveerimiseks tuleb klõpsata nupule „Aktiveeri konto“ ja kontole määrata rollid. Kasutaja juurdepääs taastatakse ja ta näeb endaga seotud tellimuste, alamtellimuste või ülesannete ajalugu, kui tema uus roll seda lubab.\nAktiveeritud/deaktiveeritud kasutajale ei saa uut kontot samas asutuse luua. Arhiveeritud kasutajaga seotud isikukoodile saab uue konto luua: süsteemis luuakse uue unikaalse identifikaatoriga konto, mis on kasutaja isikukoodiga seotud ja sellega seotakse ka kõik uued tellimused (vana kontoga seotud tellimusi sellle kontoga ei seota)."
+    }
+  },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
     "updated_at": "Kasutaja andmed muudetud {{time}}"
   },
   "users": {
-    "add_users": "Kasutajate lisamine"
+    "add_users": "Kasutajate lisamine",
+    "added_users": "Lisatud kasutajad",
+    "user_management": "Kasutajate haldus"
   },
   "file": {
     "drop_files": "Pane failid siia...",
@@ -163,9 +189,22 @@
   "notification": {
     "announcement": "Teade",
     "error": "Viga",
-    "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse"
+    "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
+    "main_user_deletion": "Peakasutaja rolli ei saa kustutada",
+    "main_user_privilege_change": "Peakasutaja privileege ei saa muuta"
   },
   "helper": {
     "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga."
+  },
+  "table": {
+    "personal_identification_code": "Isikukood",
+    "name": "Nimi",
+    "email": "Email",
+    "phone": "Telefoninumber",
+    "department": "Üksus",
+    "role": "Roll"
+  },
+  "tooltip": {
+    "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
   }
 }

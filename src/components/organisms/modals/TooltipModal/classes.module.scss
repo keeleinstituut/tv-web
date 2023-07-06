@@ -1,0 +1,28 @@
+@import 'styles/variables';
+
+.modalContent {
+  a {
+    margin-left: spacing(12);
+    padding-top: spacing(2);
+  }
+}
+
+.contentStyle {
+  p {
+    white-space: break-spaces;
+  }
+
+  ul {
+    li {
+      &::before {
+        content: ' ';
+        display: inline-block;
+        margin: 0 spacing(2.5) spacing(0.75);
+        width: 4px;
+        height: 4px;
+        border-radius: 2px;
+        background: $color-text-dark;
+      }
+    }
+  }
+}

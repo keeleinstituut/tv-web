@@ -1,4 +1,4 @@
-import { omit, map, split, trim, reduce, values, join } from 'lodash'
+import { omit, map, split, trim, reduce, values, join, compact } from 'lodash'
 
 // TODO: split these into separate helper files, if we have too many
 interface ObjectWithChildren {
@@ -36,7 +36,7 @@ export const deepOmit = <
 
 export const convertUsersCsvToArray = (csvData: string | ArrayBuffer) => {
   if (csvData && typeof csvData === 'string') {
-    const rows = split(csvData, '\n')
+    const rows = compact(split(csvData, '\n'))
     const [keys, ...values] = map(rows, trim)
     const keysArray = split(keys, ';') as Array<
       keyof typeof usersCsvFieldsToKeys

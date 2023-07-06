@@ -1,0 +1,5 @@
+@import 'styles/mixins';
+
+.cellValue {
+  @include labelTextStyle;
+}

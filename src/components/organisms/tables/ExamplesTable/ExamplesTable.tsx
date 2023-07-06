@@ -1,4 +1,4 @@
-import { FC, useState, HTMLProps, useEffect, useRef, useCallback } from 'react'
+import { FC, useState, HTMLProps, useEffect, useRef } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -14,8 +14,8 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ExpandIcon } from 'assets/icons/expand.svg'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import data from 'components/templates/Tables/ExamplesTable/data.json'
-import classes from './styles.module.scss'
+import data from 'components/organisms/tables/ExamplesTable/data.json'
+import classes from './classes.module.scss'
 
 type Person = {
   id: string
@@ -55,21 +55,21 @@ const ExamplesTable: FC = () => {
     pageSize: 10,
   })
 
-  const handleColumnFiltersChange = useCallback(
-    (filters: string | string[], columnId: string) => {
-      //TODO add to endpoint
-      //console.log('New column filters:', filters, columnId)
-    },
-    []
-  )
+  // const handleColumnFiltersChange = useCallback(
+  //   (filters: string | string[], columnId: string) => {
+  //     //TODO add to endpoint
+  //     //console.log('New column filters:', filters, columnId)
+  //   },
+  //   []
+  // )
 
-  const onSortingChange = useCallback(
-    (filters: string | string[], columnId: string) => {
-      //TODO add to endpoint
-      //console.log('column sorting:', filters, columnId)
-    },
-    []
-  )
+  // const onSortingChange = useCallback(
+  //   (filters: string | string[], columnId: string) => {
+  //     //TODO add to endpoint
+  //     //console.log('column sorting:', filters, columnId)
+  //   },
+  //   []
+  // )
 
   const columns = [
     columnHelper.accessor('id', {
@@ -206,13 +206,12 @@ const ExamplesTable: FC = () => {
     <DataTable
       data={tableData}
       columns={columns}
-      //enableExpanding
       getSubRows={(originalRow) => originalRow.subRows}
       pagination={pagination}
       setPagination={setPagination}
       tableSize={TableSizeTypes.S}
-      onColumnFiltersChange={handleColumnFiltersChange}
-      onSortingChange={onSortingChange}
+      // onColumnFiltersChange={handleColumnFiltersChange}
+      //onSortingChange={onSortingChange}
     />
   )
 }

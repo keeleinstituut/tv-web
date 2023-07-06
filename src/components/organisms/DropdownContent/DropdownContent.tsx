@@ -8,7 +8,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { SelectionControlsInputProps } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 
 type DropdownContentProps = SelectionControlsInputProps & {
@@ -30,7 +30,6 @@ const DropdownContent: FC<DropdownContentProps> = ({
   buttons = false,
   onChange,
   setIsOpen,
-  helperText,
   selectedOptionObjects,
   errorZIndex,
   tags,
@@ -79,7 +78,9 @@ const DropdownContent: FC<DropdownContentProps> = ({
           classes[dropdownSize],
           className
         )}
-        style={{ zIndex: 51 + (errorZIndex || 0) }}
+        style={{
+          zIndex: 51 + (errorZIndex || 0),
+        }}
         hidden={disabled || !isOpen}
       >
         <div hidden={!searchInput}>{searchInput}</div>
@@ -137,10 +138,6 @@ const DropdownContent: FC<DropdownContentProps> = ({
           </div>
         </ul>
       </div>
-
-      <p hidden={!helperText} className={classes.helperText}>
-        {helperText}
-      </p>
 
       <div className={classNames(tags && classes.tagsContainer)}>
         {map(selectedOptionObjects, ({ label }, index) => {

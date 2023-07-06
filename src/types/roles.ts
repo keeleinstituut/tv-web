@@ -8,3 +8,7 @@ export interface RoleType {
   privileges?: PrivilegeType[]
   updated_at?: string
 }
+
+export interface RolesDataTypes {
+  data: RoleType[]
+}

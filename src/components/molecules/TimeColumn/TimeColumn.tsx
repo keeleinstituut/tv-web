@@ -1,7 +1,7 @@
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import classNames from 'classnames'
 
 export type TimeColumnProps = {

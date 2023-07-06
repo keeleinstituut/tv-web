@@ -2,7 +2,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 interface FormButtonProps {
   loading: boolean

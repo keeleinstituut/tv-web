@@ -7,7 +7,7 @@ import { selectInstitution } from 'hooks/useKeycloak'
 import ModalBase, {
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 export interface InstitutionSelectModalProps {
   onClose?: () => void

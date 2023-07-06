@@ -9,7 +9,7 @@ import { ReactComponent as Close } from 'assets/icons/close.svg'
 import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
 
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 
 export enum ModalSizeTypes {
   Narrow = 'narrow',
@@ -41,7 +41,7 @@ export interface ModalProps extends ModalFooterProps {
   titleFont?: TitleFontTypes
   open: boolean
   setOpen?: (isOpen: boolean) => void
-  handleClose: () => void
+  handleClose?: () => void
   progressBar?: ReactElement
   className?: string
 }
