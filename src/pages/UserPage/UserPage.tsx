@@ -1,6 +1,10 @@
 import Loader from 'components/atoms/Loader/Loader'
 import UserForm from 'components/organisms/forms/UserForm/UserForm'
-import { useArchiveUser, useFetchUser } from 'hooks/requests/useUsers'
+import {
+  useArchiveUser,
+  useDeactivateUser,
+  useFetchUser,
+} from 'hooks/requests/useUsers'
 import { FC } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { includes, some } from 'lodash'
@@ -10,14 +14,16 @@ import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-
-import classes from './classes.module.scss'
+import { ReactComponent as Edit } from 'assets/icons/edit.svg'
 import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useForm } from 'react-hook-form'
 import { format } from 'date-fns'
+
+import classes from './classes.module.scss'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
 interface FormValues {
   user_deactivation_date?: string
@@ -31,6 +37,9 @@ const UserPage: FC = () => {
     userId,
   })
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
+    userId: userId,
+  })
+  const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser({
     userId: userId,
   })
   const navigate = useNavigate()
@@ -70,8 +79,6 @@ const UserPage: FC = () => {
     splittedDeactivationDate?.[1] +
     '.' +
     splittedDeactivationDate?.[2]
-
-  console.log('values', values)
 
   const fields: FieldProps<FormValues>[] = [
     {
@@ -130,6 +137,21 @@ const UserPage: FC = () => {
       })
   }
 
+  const handleEditModalOpen = () => {
+    !isMainUser &&
+      showModal(ModalTypes.DeactivateUser, {
+        title: t('modal.edit_deactivation_date'),
+        cancelButtonContent: t('button.cancel'),
+        proceedButtonContent: t('button.yes'),
+        modalContent: t('modal.deactivate_user_content'),
+        className: classes.archiveContent,
+        handleProceed: () => {
+          navigate('/settings/users')
+        },
+        deactivationForm: <DynamicForm fields={fields} control={control} />,
+      })
+  }
+
   return (
     <>
       <div className={classes.titleRow}>
@@ -151,10 +173,14 @@ const UserPage: FC = () => {
           />
         </div>
       </div>
+
       <div className={classes.deactivationDate}>
         {t('label.future_user_deactivation_date', {
           deactivationDate: deactivationDate,
         })}
+        <BaseButton onClick={handleEditModalOpen}>
+          <Edit className={classes.editIcon} />
+        </BaseButton>
       </div>
 
       <UserForm {...user} />

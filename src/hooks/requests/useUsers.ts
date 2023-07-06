@@ -104,3 +104,26 @@ export const useArchiveUser = ({ userId }: { userId?: string }) => {
     isLoading,
   }
 }
+
+export const useDeactivateUser = ({
+  userId,
+  deactivationDate,
+}: {
+  userId?: string
+  deactivationDate?: string
+}) => {
+  const { mutate: deactivateUser, isLoading } = useMutation({
+    mutationKey: ['users', userId],
+    mutationFn: () => {
+      return apiClient.post(endpoints.ARCHIVE_USER, {
+        institution_user_id: userId,
+        deactivation_date: deactivationDate,
+      })
+    },
+  })
+
+  return {
+    deactivateUser,
+    isLoading,
+  }
+}
