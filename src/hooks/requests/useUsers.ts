@@ -1,6 +1,6 @@
 import {
   UserPostType,
-  UserType,
+  UsersDataType,
   UserPayloadType,
   UserDataType,
 } from 'types/users'
@@ -21,7 +21,7 @@ export const useFetchUsers = () => {
     setFilters({ ...filters, ...value })
   }
 
-  const { isLoading, isError, data } = useQuery<UserDataType>({
+  const { isLoading, isError, data } = useQuery<UsersDataType>({
     queryKey: ['users', filters],
     queryFn: () => apiClient.get(endpoints.USERS, filters),
   })
@@ -36,11 +36,7 @@ export const useFetchUsers = () => {
 }
 
 export const useFetchUser = ({ userId }: { userId?: string }) => {
-  const {
-    isLoading,
-    isError,
-    data: user,
-  } = useQuery<UserType>({
+  const { isLoading, isError, data } = useQuery<UserDataType>({
     queryKey: ['users', userId],
     queryFn: () => apiClient.get(`${endpoints.USERS}/${userId}`),
   })
@@ -48,7 +44,7 @@ export const useFetchUser = ({ userId }: { userId?: string }) => {
   return {
     isLoading,
     isError,
-    user,
+    user: data?.data,
   }
 }
 

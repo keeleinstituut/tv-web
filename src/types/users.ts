@@ -55,7 +55,11 @@ export interface UserPayloadType {
   department?: string[]
 }
 
-export interface UserDataType {
+export interface UsersDataType {
   data: UserType[]
   meta: DataMetaTypes
+}
+
+export interface UserDataType {
+  data: UserType
 }
