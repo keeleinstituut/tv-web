@@ -218,6 +218,8 @@ const RoleForm: FC<RoleFormProps> = ({
         className={classes.deleteButton}
         // Also onClick should open the modal, not delete the role
         // onClick={deleteRole}
+        // TODO: remove disabled prop, once delete is fully implemented
+        disabled
         onClick={is_root ? showErrorMessage : deleteRole}
         hidden={!includes(userPrivileges, Privileges.DeleteRole)}
       />
