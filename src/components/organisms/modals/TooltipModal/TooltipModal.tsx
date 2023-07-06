@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   AppearanceTypes,
@@ -14,7 +14,7 @@ import classes from './classes.module.scss'
 export interface TooltipModalProps {
   title?: string
   textButtonContent?: string
-  modalContent?: string
+  modalContent?: ReactElement | string
   href?: string
   isModalOpen?: boolean
   closeModal: () => void
@@ -52,7 +52,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
         },
       ]}
     >
-      <div>{modalContent}</div>
+      <div className={classes.contentStyle}>{modalContent}</div>
     </ModalBase>
   )
 }

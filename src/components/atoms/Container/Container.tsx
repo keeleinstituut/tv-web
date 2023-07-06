@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from 'react'
+import { PropsWithChildren, Ref, forwardRef } from 'react'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
 
@@ -6,15 +6,15 @@ interface ContainerProps {
   className?: string
 }
 
-const Container: FC<PropsWithChildren<ContainerProps>> = ({
-  children,
-  className,
-}) => {
+const Container = (
+  { children, className }: PropsWithChildren<ContainerProps>,
+  ref: Ref<HTMLDivElement>
+) => {
   return (
-    <section className={classNames(classes.container, className)}>
+    <section ref={ref} className={classNames(classes.container, className)}>
       {children}
     </section>
   )
 }
 
-export default Container
+export default forwardRef(Container)

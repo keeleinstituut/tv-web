@@ -1,28 +1,36 @@
-import { RoleType } from 'types/roles'
+import { RoleType, RolesDataTypes } from 'types/roles'
 import { useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { PrivilegeType } from 'types/privileges'
+import { PrivilegeDataType } from 'types/privileges'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
-import { findIndex, filter } from 'lodash'
+import { findIndex, filter, map } from 'lodash'
 import useAuth from 'hooks/useAuth'
 
 export const useRolesFetch = () => {
   const {
     isLoading,
     isError,
-    data: existingRoles,
-  } = useQuery<RoleType[]>({
+    data: rolesData,
+  } = useQuery<RolesDataTypes>({
     queryKey: ['roles'],
     queryFn: () => apiClient.get(endpoints.ROLES),
   })
+
   const {
     isLoading: isLoadingPrivileges,
     isError: isPrivilegesError,
-    data: allPrivileges,
-  } = useQuery<PrivilegeType[]>({
+    data: privilegesData,
+  } = useQuery<PrivilegeDataType>({
     queryKey: ['privileges'],
     queryFn: () => apiClient.get(endpoints.PRIVILEGES),
+  })
+
+  const { data: existingRoles } = rolesData || {}
+  const { data: allPrivileges } = privilegesData || {}
+
+  const rolesFilters = map(existingRoles, ({ id, name }) => {
+    return { value: id, label: name }
   })
 
   return {
@@ -30,6 +38,7 @@ export const useRolesFetch = () => {
     allPrivileges,
     isLoading: isLoading || isLoadingPrivileges,
     isError: isError || isPrivilegesError,
+    rolesFilters,
   }
 }
 

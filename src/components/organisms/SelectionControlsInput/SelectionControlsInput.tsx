@@ -8,7 +8,7 @@ import { useClickAway } from 'ahooks'
 import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
 
 import classes from './classes.module.scss'
-import { filter, includes, map } from 'lodash'
+import { filter, find, map } from 'lodash'
 
 export enum DropdownSizeTypes {
   L = 'l',
@@ -79,11 +79,23 @@ const SelectionControlsInput = forwardRef<
     setIsOpen(false)
   }, [clickAwayInputRef])
 
-  const selectedOptionObjects = filter(options, (option) =>
-    includes(value, option?.value)
-  )
+  const selectedOptionObjects = filter(options, (option) => {
+    return !!find(value, (singleValue) => singleValue === option?.value)
+  })
 
-  const selectedOptionLabels = map(selectedOptionObjects, ({ label }) => label)
+  const singleValue: DropDownOptions | undefined = find(options, {
+    value,
+  }) as unknown as DropDownOptions
+  const multiValue = multiple
+    ? filter(
+        options,
+        (option) =>
+          !!find(value, (singleValue) => singleValue === option?.value)
+      )
+    : []
+  const valueAsArray = multiple ? multiValue : [singleValue]
+
+  const selectedOptionLabels = map(valueAsArray, (value) => value?.label)
 
   const singleSelectMenuLabel = value ? selectedOptionLabels : placeholder
 
@@ -124,7 +136,9 @@ const SelectionControlsInput = forwardRef<
           )}
         />
       </BaseButton>
-
+      <p hidden={!helperText} className={classes.helperText}>
+        {helperText}
+      </p>
       <DropdownContent
         name={name}
         ariaLabel={ariaLabel}

@@ -20,6 +20,7 @@ export interface ValidationError extends Error {
 
 export interface CsvValidationError extends Error {
   errors: RowValidationErrorType[]
+  rowsWithExistingInstitutionUsers?: number[]
 }
 
 const handleError = async (error?: AxiosError) => {
@@ -51,30 +52,23 @@ const handleError = async (error?: AxiosError) => {
     errorContent = i18n.t('error.unknown_error', { code })
   }
 
-  if (code === 401) {
+  if (code === 403) {
     // Attemp token refresh, log out if it fails
     startRefreshingToken(() => {
       keycloak.logout({
         redirectUri: `${window.location.href}#show-error`,
       })
-    })
-  }
-
-  showNotification({
-    type: NotificationTypes.Error,
-    title: i18n.t('notification.error'),
-    content: errorContent,
-  })
-
-  if (code === 403) {
-    // TODO: might do sth here, although if we get error message from BE, then there is no need to
-  }
-
-  if (code === 422) {
+    }, true)
+    return true
+  } else if (code === 422) {
     // Throw only validation errors
     throw error?.response?.data
   } else {
-    // In all other cases we will throw the error as well for more fine-grained handling in some cases
+    showNotification({
+      type: NotificationTypes.Error,
+      title: i18n.t('notification.error'),
+      content: errorContent,
+    })
     throw error
   }
 }

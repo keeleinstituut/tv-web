@@ -11,9 +11,9 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import TestingTable from 'components/templates/Tables/ExamplesTable/ExamplesTable'
-import UsersTable from 'components/templates/Tables/UsersTable/UsersTable'
-import AddedUsersTable from 'components/templates/Tables/AddedUsersTable/AddedUsersTable'
+import { Root } from '@radix-ui/react-form'
+import TestingTable from 'components/organisms/tables/ExamplesTable/ExamplesTable'
+import UsersTable from 'components/organisms/tables/UsersTable/UsersTable'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 import ModalBase, {
   ModalSizeTypes,
@@ -214,10 +214,10 @@ const Test: FC = () => {
           iconPositioning={IconPositioningTypes.Right}
         />
       </DynamicForm>
-
-      <TestingTable />
-      <AddedUsersTable />
-      <UsersTable />
+      <Root>
+        <TestingTable />
+        <UsersTable />
+      </Root>
 
       <ModalBase
         title="Pealkiri"
