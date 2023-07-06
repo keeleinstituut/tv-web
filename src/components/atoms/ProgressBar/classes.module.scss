@@ -1,17 +1,13 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-.progressBarContainer {
-  display: flex;
-  background-color: $color-background;
-  border-radius: $border-radius-5;
-  width: 100%;
-}
-
-.steps {
+.progressBarSteps {
   display: grid;
   grid-auto-flow: column;
   grid-gap: spacing(11);
+  background-color: $color-background;
+  border-radius: $border-radius-5;
+  width: 100%;
 }
 
 .step {
@@ -22,6 +18,7 @@
   border-top-left-radius: $border-radius-5;
   border-bottom-left-radius: $border-radius-5;
   position: relative;
+  white-space: nowrap;
 
   .stepNumber {
     color: $color-input-main;

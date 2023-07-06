@@ -216,16 +216,14 @@ const Test: FC = () => {
         />
       </DynamicForm>
       <ProgressBar
+        activeStep={2}
         steps={[
-          { label: 'Step 1', isCurrentStep: true },
-          { label: 'Step 2', isCurrentStep: false },
-          { label: 'Step 3', isCurrentStep: false },
-          { label: 'Step 4', isCurrentStep: false },
+          { label: 'Step 1' },
+          { label: 'Step 2' },
+          { label: 'Step 3' },
+          { label: 'Step 4' },
         ]}
       />
-
-      <TestingTable />
-      <UsersTable />
       <Root>
         <TestingTable />
         <UsersTable />

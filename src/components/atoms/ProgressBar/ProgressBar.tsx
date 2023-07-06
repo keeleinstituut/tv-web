@@ -1,37 +1,35 @@
 import { FC } from 'react'
-import classes from './styles.module.scss'
+import classes from './classes.module.scss'
 import classNames from 'classnames'
 
-export type Step = {
+interface Step {
   label: string
-  isCurrentStep: boolean
 }
 
 interface ProgressBarProps {
   steps: Step[]
+  activeStep: number
 }
 
-const ProgressBar: FC<ProgressBarProps> = ({ steps }) => {
+const ProgressBar: FC<ProgressBarProps> = ({ steps, activeStep }) => {
   return (
-    <div className={classes.progressBarContainer}>
-      <ul className={classes.steps}>
-        {steps.map((step, index) => {
-          const { label, isCurrentStep } = step || {}
+    <ul className={classes.progressBarSteps}>
+      {steps.map((step, index) => {
+        const { label } = step || {}
 
-          return (
-            <li
-              key={index}
-              className={classNames(classes.step, {
-                [classes.currentStep]: isCurrentStep,
-              })}
-            >
-              <p className={classes.stepNumber}>{index + 1}</p>
-              <p className={classes.stepLabel}>{label}</p>
-            </li>
-          )
-        })}
-      </ul>
-    </div>
+        return (
+          <li
+            key={index}
+            className={classNames(classes.step, {
+              [classes.currentStep]: activeStep === index + 1,
+            })}
+          >
+            <span className={classes.stepNumber}>{index + 1}</span>
+            <span className={classes.stepLabel}>{label}</span>
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 
