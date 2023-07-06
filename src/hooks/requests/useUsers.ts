@@ -9,23 +9,38 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { useState } from 'react'
+import { isEmpty, keys, omit } from 'lodash'
 
 export const useFetchUsers = () => {
   const [filters, setFilters] = useState<UserPayloadType>({})
 
   const handelFilterChange = (value?: FilterFunctionType) => {
-    setFilters({ ...filters, ...value })
-  }
-  const handelSortingChange = (value?: SortingFunctionType) => {
-    console.log('value', value)
-    setFilters({ ...filters, ...value })
+    const filterKey = keys(value)[0]
+    if (isEmpty(value?.[filterKey])) {
+      const removeFilterKey = omit(filters, filterKey)
+      setFilters({ ...removeFilterKey })
+    } else {
+      setFilters({ ...filters, ...value })
+    }
   }
 
+  const handelSortingChange = (value?: SortingFunctionType) => {
+    if (!value?.sort_order) {
+      const sortingKeys = keys(value)
+      const filtersWithOutSorting = omit(filters, sortingKeys)
+      setFilters({ ...filtersWithOutSorting })
+    } else {
+      setFilters({ ...filters, ...value })
+    }
+  }
+  console.log('filters', filters)
   const { isLoading, isError, data } = useQuery<UsersDataType>({
     queryKey: ['users', filters],
     queryFn: () => apiClient.get(endpoints.USERS, filters),
   })
-  const { data: users } = data || {}
+  const { meta, data: users } = data || {}
+
+  console.log('meta', meta)
   return {
     isLoading,
     isError,

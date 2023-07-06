@@ -62,20 +62,19 @@ const HeaderItem = <TData extends object>({
   const { id, column } = header || {}
   const { meta } = column.columnDef as CustomColumnDef<TData>
   const filterOption = meta?.filterOption || []
-  const sortingOption = meta?.sortingOption || []
   const options = values(filterOption)[0] || []
+  const sortingOption = meta?.sortingOption || []
 
   const handleOnSorting = () => {
     const newStep = size(sortingOption) > step ? step + 1 : 0
     setStep(newStep)
     setCurrentSorting(sortingOption[step])
 
-    if (onSortingChange && !!sortingOption[step]) {
+    if (onSortingChange) {
       const sortingValues = {
         sort_by: id,
         sort_order: sortingOption[step],
       }
-
       onSortingChange(sortingValues)
     }
   }

@@ -1,7 +1,7 @@
 import { FC, useState, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-// import { useRolesFetch } from 'hooks/requests/useRoles'
-// import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
+import { useRolesFetch } from 'hooks/requests/useRoles'
+import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -46,9 +46,8 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
   handelSortingChange,
 }) => {
   const { t } = useTranslation()
-  // TODO: add back once BE is done
-  // const { rolesFilters = [] } = useRolesFetch()
-  // const { departmentFilters = [] } = useDepartmentsFetch()
+  const { rolesFilters = [] } = useRolesFetch()
+  const { departmentFilters = [] } = useDepartmentsFetch()
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -92,18 +91,16 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
     columnHelper.accessor('name', {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
-      // TODO: comment back in, once BE fixes returned values
-      // meta: {
-      //   sortingOption: ['asc', 'desc'],
-      // },
+      meta: {
+        sortingOption: ['asc', 'desc'],
+      },
     }),
     columnHelper.accessor('department', {
       header: () => t('label.department'),
       footer: (info) => info.column.id,
-      // TODO: comment back in once we have BE support
-      // meta: {
-      //   filterOption: { department: departmentFilters },
-      // },
+      meta: {
+        filterOption: { department: departmentFilters },
+      },
     }),
     columnHelper.accessor('roles', {
       header: () => t('label.role'),
@@ -111,24 +108,22 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
         return join(info.renderValue(), ', ')
       },
       footer: (info) => info.column.id,
-      // TODO: comment back in once we have BE support
-      // meta: {
-      //   filterOption: { role_id: rolesFilters },
-      // },
+      meta: {
+        filterOption: { role_id: rolesFilters },
+      },
     }),
     columnHelper.accessor('status', {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
-      // TODO: comment back in once we have BE support
-      // meta: {
-      //   filterOption: {
-      //     status: [
-      //       { label: 'Active', value: 'ACTIVE' },
-      //       { label: 'Deactivated', value: 'DEACTIVATED' },
-      //       { label: 'Archived', value: 'ARCHIVED' },
-      //     ],
-      //   },
-      // },
+      meta: {
+        filterOption: {
+          status: [
+            { label: 'Active', value: 'ACTIVE' },
+            { label: 'Deactivated', value: 'DEACTIVATED' },
+            { label: 'Archived', value: 'ARCHIVED' },
+          ],
+        },
+      },
     }),
   ] as ColumnDef<User>[]
 
