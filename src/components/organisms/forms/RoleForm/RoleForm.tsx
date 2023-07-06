@@ -210,7 +210,7 @@ const RoleForm: FC<RoleFormProps> = ({
   }
 
   const handleDeleteModal = () => {
-    showModal(ModalTypes.DeleteRole, {
+    showModal(ModalTypes.Remove, {
       title: t('modal.delete_role'),
       cancelButtonContent: t('button.no'),
       proceedButtonContent: t('button.yes'),

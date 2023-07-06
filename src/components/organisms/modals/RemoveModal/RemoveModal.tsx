@@ -1,22 +1,26 @@
-import { FC, useCallback } from 'react'
+import { FC, JSXElementConstructor, ReactElement } from 'react'
 import { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'
 import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 
-export interface DeleteRoleModalProps {
+export interface RemoveModalProps {
   title?: string
   cancelButtonContent?: string
   proceedButtonContent?: string
-  modalContent?: string
+  modalContent?:
+    | string
+    | ReactElement<unknown, string | JSXElementConstructor<unknown>>
+    | undefined
   isModalOpen?: boolean
   closeModal: () => void
   handleProceed?: () => void
   className?: string
+  deactivationForm?: JSX.Element
 }
 
-const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
+const RemoveModal: FC<RemoveModalProps> = ({
   title,
   cancelButtonContent,
   proceedButtonContent,
@@ -25,11 +29,8 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
   closeModal,
   handleProceed,
   className,
+  deactivationForm,
 }) => {
-  const handleClose = useCallback(() => {
-    closeModal()
-  }, [closeModal])
-
   return (
     <ModalBase
       title={title}
@@ -42,7 +43,7 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
           appearance: AppearanceTypes.Secondary,
           children: cancelButtonContent,
           size: SizeTypes.M,
-          onClick: handleClose,
+          onClick: closeModal,
         },
         {
           appearance: AppearanceTypes.Primary,
@@ -50,15 +51,16 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
             if (handleProceed) {
               handleProceed()
             }
-            handleClose()
+            closeModal()
           },
           children: proceedButtonContent,
         },
       ]}
     >
       <div>{modalContent}</div>
+      {deactivationForm}
     </ModalBase>
   )
 }
 
-export default DeleteRoleModal
+export default RemoveModal

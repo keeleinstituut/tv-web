@@ -27,41 +27,36 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
 interface FormValues {
   user_deactivation_date?: string
+  userId?: string
 }
 
 const UserPage: FC = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { userId } = useParams()
   const { userPrivileges } = useAuth()
+
   const { isLoading, isError, user } = useFetchUser({
     userId,
   })
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
     userId: userId,
   })
-  const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser({
-    userId: userId,
-  })
-  const navigate = useNavigate()
+  const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser()
+
   const currentDate = format(new Date(), 'dd.MM.yyyy')
-  const splittedDayValue = currentDate?.split('.')
+  const splittedDateValue = currentDate?.split('.')
 
   const formattedDayValue =
-    splittedDayValue?.[0] +
+    splittedDateValue?.[0] +
     '/' +
-    splittedDayValue?.[1] +
+    splittedDateValue?.[1] +
     '/' +
-    splittedDayValue?.[2]
+    splittedDateValue?.[2]
 
   const user_deactivation_date = formattedDayValue
 
-  const {
-    control,
-    getValues,
-    // handleSubmit,
-    // setError,
-    // formState: { isValid, isDirty },
-  } = useForm<FormValues>({
+  const { control, handleSubmit } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     defaultValues: { user_deactivation_date },
     resetOptions: {
@@ -69,16 +64,18 @@ const UserPage: FC = () => {
     },
   })
 
-  const values = getValues()?.user_deactivation_date
+  const onSubmit = (values: any) => {
+    deactivateUser({ ...values, userId })
+  }
 
-  const splittedDeactivationDate = values?.split('/')
+  const splittedDeactivationDate = user?.deactivation_date?.split('-')
 
   const formattedDeactivationDate =
-    splittedDeactivationDate?.[0] +
+    splittedDeactivationDate?.[2] +
     '.' +
     splittedDeactivationDate?.[1] +
     '.' +
-    splittedDeactivationDate?.[2]
+    splittedDeactivationDate?.[0]
 
   const fields: FieldProps<FormValues>[] = [
     {
@@ -94,8 +91,6 @@ const UserPage: FC = () => {
     },
   ]
 
-  const deactivationDate = formattedDeactivationDate
-
   if (isLoading) {
     return <Loader loading />
   }
@@ -106,10 +101,35 @@ const UserPage: FC = () => {
 
   const userNameString = `${user.user.forename} ${user.user.surname}`
   const isMainUser = some(user?.roles, (mainUser) => mainUser?.is_root)
+  const isUserDeactivated = !!user?.deactivation_date
+
+  const splittedCurrentDate = currentDate?.split('.')
+
+  const formattedCurrentDate =
+    splittedCurrentDate?.[2] +
+    '-' +
+    splittedCurrentDate?.[1] +
+    '-' +
+    splittedCurrentDate?.[0]
+
+  const isDeactivationDatePastCurrentDate =
+    user?.deactivation_date === formattedCurrentDate
+
+  const currentDate2 = new Date()
+  const desiredDate = new Date(2023, 6, 1)
+
+  console.log('currentDate2', currentDate2)
+  console.log('desiredDate', desiredDate)
+
+  if (desiredDate.getTime() < currentDate2.getTime()) {
+    console.log('The desired date is in the past')
+  } else {
+    console.log('The desired date is in the future or the current date')
+  }
 
   const handleArchiveModal = () => {
     !isMainUser &&
-      showModal(ModalTypes.DeleteRole, {
+      showModal(ModalTypes.Remove, {
         title: t('modal.archive_user'),
         cancelButtonContent: t('button.no'),
         proceedButtonContent: t('button.yes'),
@@ -121,33 +141,27 @@ const UserPage: FC = () => {
         },
       })
   }
-
   const handleDeactivateModal = () => {
-    !isMainUser &&
-      showModal(ModalTypes.DeactivateUser, {
-        title: t('modal.deactivate_user'),
-        cancelButtonContent: t('button.cancel'),
-        proceedButtonContent: t('button.yes'),
-        modalContent: t('modal.deactivate_user_content'),
-        className: classes.archiveContent,
-        handleProceed: () => {
-          navigate('/settings/users')
-        },
-        deactivationForm: <DynamicForm fields={fields} control={control} />,
-      })
+    showModal(ModalTypes.Remove, {
+      title: t('modal.deactivate_user'),
+      cancelButtonContent: t('button.cancel'),
+      proceedButtonContent: t('button.yes'),
+      modalContent: t('modal.deactivate_user_content'),
+      className: classes.deactivateContent,
+      handleProceed: handleSubmit(onSubmit),
+      deactivationForm: <DynamicForm fields={fields} control={control} />,
+    })
   }
 
   const handleEditModalOpen = () => {
     !isMainUser &&
-      showModal(ModalTypes.DeactivateUser, {
+      showModal(ModalTypes.Remove, {
         title: t('modal.edit_deactivation_date'),
         cancelButtonContent: t('button.cancel'),
         proceedButtonContent: t('button.yes'),
         modalContent: t('modal.deactivate_user_content'),
-        className: classes.archiveContent,
-        handleProceed: () => {
-          navigate('/settings/users')
-        },
+        className: classes.deactivateContent,
+        handleProceed: handleSubmit(onSubmit),
         deactivationForm: <DynamicForm fields={fields} control={control} />,
       })
   }
@@ -158,27 +172,39 @@ const UserPage: FC = () => {
         <h1>{userNameString}</h1>
         <div className={classes.buttonsContainer}>
           <Button
+            loading={isUserDeactivated ? isDeactivating : isDeactivating}
             appearance={AppearanceTypes.Secondary}
-            children={t('button.deactivate_account')}
-            onClick={handleDeactivateModal}
-            hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
+            children={
+              isUserDeactivated
+                ? t('button.activate_account')
+                : t('button.deactivate_account')
+            }
+            //TODO handleActivateModal
+            onClick={
+              isUserDeactivated ? handleDeactivateModal : handleDeactivateModal
+            }
+            hidden={
+              isUserDeactivated
+                ? !includes(userPrivileges, Privileges.ActivateUser)
+                : !includes(userPrivileges, Privileges.DeactivateUser)
+            }
+            disabled={!isDeactivationDatePastCurrentDate}
           />
           <Button
             loading={isArchiving}
             appearance={AppearanceTypes.Secondary}
             children={t('button.archive_account')}
-            disabled
             onClick={handleArchiveModal}
             hidden={!includes(userPrivileges, Privileges.ArchiveUser)}
           />
         </div>
       </div>
 
-      <div className={classes.deactivationDate}>
+      <div hidden={!isUserDeactivated} className={classes.deactivationDate}>
         {t('label.future_user_deactivation_date', {
-          deactivationDate: deactivationDate,
+          deactivationDate: formattedDeactivationDate,
         })}
-        <BaseButton onClick={handleEditModalOpen}>
+        <BaseButton loading={isDeactivating} onClick={handleEditModalOpen}>
           <Edit className={classes.editIcon} />
         </BaseButton>
       </div>

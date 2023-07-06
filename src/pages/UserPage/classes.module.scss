@@ -38,3 +38,10 @@
   position: relative;
   top: spacing(1);
 }
+
+.deactivateContent > div > div {
+  color: $color-primary;
+  > form {
+    padding-top: spacing(6);
+  }
+}

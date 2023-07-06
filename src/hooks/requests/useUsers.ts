@@ -17,7 +17,6 @@ export const useFetchUsers = () => {
     setFilters({ ...filters, ...value })
   }
   const handelSortingChange = (value?: SortingFunctionType) => {
-    console.log('value', value)
     setFilters({ ...filters, ...value })
   }
 
@@ -116,19 +115,27 @@ export const useArchiveUser = ({ userId }: { userId?: string }) => {
   }
 }
 
-export const useDeactivateUser = ({
-  userId,
-  deactivationDate,
-}: {
-  userId?: string
-  deactivationDate?: string
-}) => {
+export const useDeactivateUser = () => {
   const { mutate: deactivateUser, isLoading } = useMutation({
-    mutationKey: ['users', userId],
-    mutationFn: () => {
-      return apiClient.post(endpoints.ARCHIVE_USER, {
+    mutationKey: ['users'],
+    mutationFn: (values: {
+      user_deactivation_date: string
+      userId: string
+    }) => {
+      const { user_deactivation_date: date, userId } = values
+
+      const splittedDeactivationDate = date?.split('/')
+
+      const formattedDeactivationDate =
+        splittedDeactivationDate?.[2] +
+        '-' +
+        splittedDeactivationDate?.[1] +
+        '-' +
+        splittedDeactivationDate?.[0]
+
+      return apiClient.post(endpoints.DEACTIVATE_USER, {
         institution_user_id: userId,
-        deactivation_date: deactivationDate,
+        deactivation_date: formattedDeactivationDate,
       })
     },
   })

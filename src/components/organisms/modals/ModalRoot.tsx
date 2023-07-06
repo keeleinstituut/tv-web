@@ -1,5 +1,5 @@
 import { InstitutionSelectModalProps } from './InstitutionSelectModal/InstitutionSelectModal'
-import { DeleteRoleModalProps } from './DeleteRoleModal/DeleteRoleModal'
+import { RemoveModalProps } from './RemoveModal/RemoveModal'
 import { TooltipModalProps } from './TooltipModal/TooltipModal'
 import {
   lazy,
@@ -9,35 +9,29 @@ import {
   useImperativeHandle,
   Suspense,
 } from 'react'
-import { DeactivateUserModalProps } from './DeactivateUserModal/DeactivateUserModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
 )
-const DeleteRoleModal = lazy(() => import('./DeleteRoleModal/DeleteRoleModal'))
-const DeactivateUserModal = lazy(
-  () => import('./DeactivateUserModal/DeactivateUserModal')
-)
+const RemoveModal = lazy(() => import('./RemoveModal/RemoveModal'))
+
 const TooltipModal = lazy(() => import('./TooltipModal/TooltipModal'))
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
-  DeleteRole = 'deleteRole',
-  DeactivateUser = 'deactivateUser',
   Tooltip = 'tooltip',
+  Remove = 'remove',
 }
 
 // Add other modal props types here as well
 type ModalPropTypes =
   | Omit<InstitutionSelectModalProps, 'closeModal'>
-  | Omit<DeleteRoleModalProps, 'closeModal'>
-  | Omit<DeactivateUserModalProps, 'closeModal'>
+  | Omit<RemoveModalProps, 'closeModal'>
   | Omit<TooltipModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
-  deleteRole: DeleteRoleModal,
-  deactivateUser: DeactivateUserModal,
+  remove: RemoveModal,
   tooltip: TooltipModal,
 }
 
