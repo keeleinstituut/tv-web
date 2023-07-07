@@ -36,6 +36,7 @@
   "button": {
     "login": "Logi sisse",
     "cancel": "Tühista",
+    "activate": "Aktiveeri",
     "check_tutorial": "Vaata kasutusjuhendit",
     "enter": "Sisene",
     "break": "Katkesta",
@@ -155,9 +156,11 @@
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
     "archive_user": "Kas oled kindel, et soovid konto arhiveerida?",
     "deactivate_user": "Kas oled kindel, et soovid konto deaktiveerida?",
+    "activate_user": "Kas oled kindel, et soovid konto aktiveerida?",
     "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
-    "deactivate_user_content": "Määra kuupäev, mis hetkest kasutaja sisselogimise õigused peatatakse."
+    "deactivate_user_content": "Määra kuupäev, mis hetkest kasutaja sisselogimise õigused peatatakse.",
+    "activate_user_content": "Kasutaja konto aktiveerimisel määratakse talle „Tellija“ roll. Kui soovid seda muuta, siis määra talle roll(id)."
   },
   "cheat_sheet": {
     "user_management": {
