@@ -45,6 +45,7 @@ const TablePagination = <TData extends object>({
   const amountOfPages = getPageCount()
 
   if (hidden) return null
+
   return (
     <div className={classes.paginationWrapper}>
       <div className={classes.pagination}>

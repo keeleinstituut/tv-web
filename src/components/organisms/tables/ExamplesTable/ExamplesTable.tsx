@@ -1,12 +1,8 @@
-import { FC, useState, HTMLProps, useEffect, useRef } from 'react'
+import { FC, HTMLProps, useEffect, useRef } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import {
-  createColumnHelper,
-  PaginationState,
-  ColumnDef,
-} from '@tanstack/react-table'
+import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -50,26 +46,6 @@ const columnHelper = createColumnHelper<Person>()
 
 const ExamplesTable: FC = () => {
   const tableData = defaultData
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
-
-  // const handleColumnFiltersChange = useCallback(
-  //   (filters: string | string[], columnId: string) => {
-  //     //TODO add to endpoint
-  //     //console.log('New column filters:', filters, columnId)
-  //   },
-  //   []
-  // )
-
-  // const onSortingChange = useCallback(
-  //   (filters: string | string[], columnId: string) => {
-  //     //TODO add to endpoint
-  //     //console.log('column sorting:', filters, columnId)
-  //   },
-  //   []
-  // )
 
   const columns = [
     columnHelper.accessor('id', {
@@ -207,10 +183,8 @@ const ExamplesTable: FC = () => {
       data={tableData}
       columns={columns}
       getSubRows={(originalRow) => originalRow.subRows}
-      pagination={pagination}
-      setPagination={setPagination}
       tableSize={TableSizeTypes.S}
-      // onColumnFiltersChange={handleColumnFiltersChange}
+      // onFiltersChange={handleColumnFiltersChange}
       //onSortingChange={onSortingChange}
     />
   )

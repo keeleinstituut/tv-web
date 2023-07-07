@@ -4,7 +4,11 @@ import {
   UserPayloadType,
   UserDataType,
 } from 'types/users'
-import { FilterFunctionType, SortingFunctionType } from 'types/collective'
+import {
+  FilterFunctionType,
+  PaginationFunctionType,
+  SortingFunctionType,
+} from 'types/collective'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
@@ -33,20 +37,25 @@ export const useFetchUsers = () => {
       setFilters({ ...filters, ...value })
     }
   }
-  console.log('filters', filters)
+  const handlePaginationChange = (value?: PaginationFunctionType) => {
+    setFilters({ ...filters, ...value })
+  }
+
   const { isLoading, isError, data } = useQuery<UsersDataType>({
     queryKey: ['users', filters],
     queryFn: () => apiClient.get(endpoints.USERS, filters),
+    keepPreviousData: true,
   })
-  const { meta, data: users } = data || {}
+  const { meta: paginationData, data: users } = data || {}
 
-  console.log('meta', meta)
   return {
     isLoading,
     isError,
     users,
+    paginationData,
     handelFilterChange,
     handelSortingChange,
+    handlePaginationChange,
   }
 }
 

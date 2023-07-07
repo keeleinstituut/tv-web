@@ -23,7 +23,7 @@ import { FilterFunctionType, SortingFunctionType } from 'types/collective'
 
 export interface HeaderGroupFunctions {
   onSortingChange?: (value?: SortingFunctionType) => void
-  onColumnFiltersChange?: (filters?: FilterFunctionType) => void
+  onFiltersChange?: (filters?: FilterFunctionType) => void
 }
 
 type HeaderGroupProps<TData> = {
@@ -52,7 +52,7 @@ const HeaderItem = <TData extends object>({
   hidden,
   header,
   onSortingChange,
-  onColumnFiltersChange,
+  onFiltersChange,
 }: HeaderItemProps<TData>) => {
   const { t } = useTranslation()
   const [step, setStep] = useState<number>(0)
@@ -95,8 +95,8 @@ const HeaderItem = <TData extends object>({
   const handleOnFiltering = (value: string | string[]) => {
     const filterKey = keys(filterOption)[0]
 
-    if (onColumnFiltersChange) {
-      onColumnFiltersChange({ [filterKey]: value })
+    if (onFiltersChange) {
+      onFiltersChange({ [filterKey]: value })
     }
   }
 
@@ -133,7 +133,7 @@ const HeaderItem = <TData extends object>({
 const TableHeaderGroup = <TData extends object>({
   table,
   onSortingChange,
-  onColumnFiltersChange,
+  onFiltersChange,
 }: HeaderGroupProps<TData>) => {
   return (
     <thead>
@@ -152,7 +152,7 @@ const TableHeaderGroup = <TData extends object>({
                   hidden={header.isPlaceholder}
                   header={header}
                   onSortingChange={onSortingChange}
-                  onColumnFiltersChange={onColumnFiltersChange}
+                  onFiltersChange={onFiltersChange}
                 />
               </th>
             )
