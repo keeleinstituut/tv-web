@@ -9,6 +9,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { useState } from 'react'
+import { formatDate } from 'helpers'
 
 export const useFetchUsers = () => {
   const [filters, setFilters] = useState<UserPayloadType>({})
@@ -124,14 +125,8 @@ export const useDeactivateUser = () => {
     }) => {
       const { user_deactivation_date: date, userId } = values
 
-      const splittedDeactivationDate = date?.split('/')
-
-      const formattedDeactivationDate =
-        splittedDeactivationDate?.[2] +
-        '-' +
-        splittedDeactivationDate?.[1] +
-        '-' +
-        splittedDeactivationDate?.[0]
+      const order = [2, 1, 0]
+      const formattedDeactivationDate = formatDate(date || '', '/', '-', order)
 
       return apiClient.post(endpoints.DEACTIVATE_USER, {
         institution_user_id: userId,

@@ -24,6 +24,7 @@ import { format } from 'date-fns'
 
 import classes from './classes.module.scss'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import { formatDate } from 'helpers'
 
 interface FormValues {
   user_deactivation_date?: string
@@ -43,18 +44,18 @@ const UserPage: FC = () => {
     userId: userId,
   })
   const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser()
+  const deactivationDate = user?.deactivation_date || ''
 
-  const currentDate = format(new Date(), 'dd.MM.yyyy')
-  const splittedDateValue = currentDate?.split('.')
+  const currentDefaultDate = format(new Date(), 'dd.MM.yyyy')
+  const defaultDateOrder = [0, 1, 2]
+  const formattedDefaultDate = formatDate(
+    currentDefaultDate || '',
+    '.',
+    '/',
+    defaultDateOrder
+  )
 
-  const formattedDayValue =
-    splittedDateValue?.[0] +
-    '/' +
-    splittedDateValue?.[1] +
-    '/' +
-    splittedDateValue?.[2]
-
-  const user_deactivation_date = formattedDayValue
+  const user_deactivation_date = formattedDefaultDate
 
   const { control, handleSubmit } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
@@ -64,18 +65,13 @@ const UserPage: FC = () => {
     },
   })
 
-  const onSubmit = (values: any) => {
-    deactivateUser({ ...values, userId })
-  }
-
-  const splittedDeactivationDate = user?.deactivation_date?.split('-')
-
-  const formattedDeactivationDate =
-    splittedDeactivationDate?.[2] +
-    '.' +
-    splittedDeactivationDate?.[1] +
-    '.' +
-    splittedDeactivationDate?.[0]
+  const deactivationDateOrder = [2, 1, 0]
+  const formattedDeactivationDate = formatDate(
+    deactivationDate,
+    '-',
+    '.',
+    deactivationDateOrder
+  )
 
   const fields: FieldProps<FormValues>[] = [
     {
@@ -101,31 +97,18 @@ const UserPage: FC = () => {
 
   const userNameString = `${user.user.forename} ${user.user.surname}`
   const isMainUser = some(user?.roles, (mainUser) => mainUser?.is_root)
-  const isUserDeactivated = !!user?.deactivation_date
+  const isUserDeactivated = !!deactivationDate
 
-  const splittedCurrentDate = currentDate?.split('.')
+  const dateParts = deactivationDate?.split('-')
+  const year = parseInt(dateParts[0])
+  const month = parseInt(dateParts[1]) - 1
+  const day = parseInt(dateParts[2])
 
-  const formattedCurrentDate =
-    splittedCurrentDate?.[2] +
-    '-' +
-    splittedCurrentDate?.[1] +
-    '-' +
-    splittedCurrentDate?.[0]
+  const deactivatedDate = new Date(year, month, day)
+  const currentDate = new Date()
 
   const isDeactivationDatePastCurrentDate =
-    user?.deactivation_date === formattedCurrentDate
-
-  const currentDate2 = new Date()
-  const desiredDate = new Date(2023, 6, 1)
-
-  console.log('currentDate2', currentDate2)
-  console.log('desiredDate', desiredDate)
-
-  if (desiredDate.getTime() < currentDate2.getTime()) {
-    console.log('The desired date is in the past')
-  } else {
-    console.log('The desired date is in the future or the current date')
-  }
+    deactivatedDate.getTime() < currentDate.getTime()
 
   const handleArchiveModal = () => {
     !isMainUser &&
@@ -148,12 +131,17 @@ const UserPage: FC = () => {
       proceedButtonContent: t('button.yes'),
       modalContent: t('modal.deactivate_user_content'),
       className: classes.deactivateContent,
-      handleProceed: handleSubmit(onSubmit),
+      handleProceed: handleSubmit((values) =>
+        deactivateUser({
+          user_deactivation_date: values?.user_deactivation_date || '',
+          userId: userId || '',
+        })
+      ),
       deactivationForm: <DynamicForm fields={fields} control={control} />,
     })
   }
 
-  const handleEditModalOpen = () => {
+  const handleEditModal = () => {
     !isMainUser &&
       showModal(ModalTypes.Remove, {
         title: t('modal.edit_deactivation_date'),
@@ -161,7 +149,12 @@ const UserPage: FC = () => {
         proceedButtonContent: t('button.yes'),
         modalContent: t('modal.deactivate_user_content'),
         className: classes.deactivateContent,
-        handleProceed: handleSubmit(onSubmit),
+        handleProceed: handleSubmit((values) =>
+          deactivateUser({
+            user_deactivation_date: values?.user_deactivation_date || '',
+            userId: userId || '',
+          })
+        ),
         deactivationForm: <DynamicForm fields={fields} control={control} />,
       })
   }
@@ -188,7 +181,7 @@ const UserPage: FC = () => {
                 ? !includes(userPrivileges, Privileges.ActivateUser)
                 : !includes(userPrivileges, Privileges.DeactivateUser)
             }
-            disabled={!isDeactivationDatePastCurrentDate}
+            disabled={!isDeactivationDatePastCurrentDate && isUserDeactivated}
           />
           <Button
             loading={isArchiving}
@@ -204,7 +197,7 @@ const UserPage: FC = () => {
         {t('label.future_user_deactivation_date', {
           deactivationDate: formattedDeactivationDate,
         })}
-        <BaseButton loading={isDeactivating} onClick={handleEditModalOpen}>
+        <BaseButton loading={isDeactivating} onClick={handleEditModal}>
           <Edit className={classes.editIcon} />
         </BaseButton>
       </div>

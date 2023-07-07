@@ -74,3 +74,16 @@ export const objectsToCsvFile = <ValuesType>(
   const file = new File([blob], 'users.csv', { type: 'text/csv' })
   return file
 }
+
+export const formatDate = (
+  currentDefaultDate: string,
+  splitter: string,
+  joiner: string,
+  order: number[]
+) => {
+  const splittedDateValue = currentDefaultDate?.split(splitter)
+  const formattedDate = order
+    .map((index: number) => splittedDateValue?.[index])
+    .join(joiner)
+  return formattedDate
+}

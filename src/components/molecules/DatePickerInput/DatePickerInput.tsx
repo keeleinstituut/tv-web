@@ -10,9 +10,9 @@ import { ReactComponent as Calender } from 'assets/icons/calender.svg'
 import InputWrapper, {
   InputWrapperProps,
 } from 'components/molecules/InputWrapper/InputWrapper'
-
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './classes.module.scss'
+import { formatDate } from 'helpers'
 
 type DatePickerComponentProps = {
   ariaLabel?: string
@@ -40,17 +40,12 @@ const DatePickerComponent = ({
   onChange,
   ...rest
 }: DatePickerComponentProps) => {
-  const handleDateChange: ReactDatePickerProps['onChange'] = (value) =>
-    onChange(changeDateToString(value))
+  const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
+    return onChange(changeDateToString(value))
+  }
 
-  const splittedDayValue = value?.split('/')
-
-  const formattedDayValue =
-    splittedDayValue?.[2] +
-    '-' +
-    splittedDayValue?.[1] +
-    '-' +
-    splittedDayValue?.[0]
+  const order = [2, 1, 0]
+  const splittedDayValue = formatDate(value || '', '/', '-', order)
 
   const currentDate = new Date()
   currentDate.setFullYear(currentDate.getFullYear() + 1)
@@ -64,7 +59,7 @@ const DatePickerComponent = ({
     <>
       <DatePicker
         id={name}
-        selected={value ? new Date(formattedDayValue) : null}
+        selected={value ? new Date(splittedDayValue) : null}
         dateFormat={'dd.MM.yyyy'}
         locale="et-EE"
         placeholderText={placeholder}

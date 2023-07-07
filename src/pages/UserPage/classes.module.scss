@@ -45,3 +45,7 @@
     padding-top: spacing(6);
   }
 }
+
+:global(.react-datepicker__tab-loop) {
+  position: fixed;
+}
