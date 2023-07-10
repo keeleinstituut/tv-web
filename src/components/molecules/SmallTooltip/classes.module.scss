@@ -2,7 +2,7 @@
 
 .tooltipWrapper {
   position: relative;
-  display: inline-block;
+  display: flex;
 }
 
 .tooltipContent {
@@ -12,10 +12,34 @@
   width: 230px;
   padding: spacing(1);
   position: absolute;
-  bottom: calc(100% + spacing(1));
+  bottom: calc(100% + spacing(2));
+  left: spacing(-6);
   z-index: 1;
   box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.25);
   display: none;
+  word-break: break-all;
+  white-space: normal;
+
+  &.bottomPosition {
+    bottom: unset;
+    top: spacing(8);
+
+    &::after {
+      content: ' ';
+      display: block;
+      position: absolute;
+      top: 0;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 8px solid $color-text-button;
+      border-top: unset;
+      margin-top: spacing(-2);
+      margin-left: spacing(6);
+      filter: drop-shadow(0px -2px 2px $color-shadow-secondary);
+    }
+  }
 
   &::after {
     content: ' ';
@@ -30,11 +54,6 @@
     margin-left: spacing(6);
     filter: drop-shadow(0px 2px 2px $color-shadow-secondary);
   }
-}
-
-.iconButton {
-  margin-left: spacing(6);
-  margin-top: spacing(3);
 }
 
 .tooltipWrapper:hover .tooltipContent {

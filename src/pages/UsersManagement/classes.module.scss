@@ -1,0 +1,14 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.userManagementHeader {
+  display: grid;
+  grid-template-columns: max-content auto max-content max-content;
+  align-items: center;
+  justify-items: start;
+  grid-gap: spacing(2);
+  margin-bottom: spacing(7);
+}
+.invisible {
+  visibility: hidden;
+}

@@ -49,3 +49,6 @@ export type PrivilegeKey = `${Privileges}`
 export interface PrivilegeType {
   key: PrivilegeKey
 }
+export interface PrivilegeDataType {
+  data: PrivilegeType[]
+}

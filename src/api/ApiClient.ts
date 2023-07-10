@@ -72,7 +72,7 @@ class ApiClient {
       )
       this.count += 1
 
-      return response.data.data
+      return response.data
     } catch (error) {
       return handleError(error as AxiosError)
     }
