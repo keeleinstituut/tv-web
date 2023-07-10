@@ -39,6 +39,10 @@ interface AuthContextType {
   userPrivileges: PrivilegeKey[]
 }
 
+interface InstitutionDataType {
+  data: InstitutionType[]
+}
+
 export const AuthContext = createContext<AuthContextType>({
   isUserLoggedIn: false,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -71,12 +75,19 @@ const onVisibilityChange = () => {
   }
 }
 
-export const startRefreshingToken = (onFail?: () => void) => {
+export const startRefreshingToken = async (
+  onFail?: () => void,
+  force?: boolean
+) => {
   const refreshToken = keycloak.refreshToken
   const tokenExpiry = keycloak.tokenParsed?.exp
   if (!tokenExpiry || !refreshToken) {
     if (onFail) onFail()
     return null
+  }
+  if (force && refreshToken) {
+    await keycloak.updateToken(Infinity)
+    return
   }
   if (refreshInterval) {
     clearInterval(refreshInterval)
@@ -121,6 +132,12 @@ export const selectInstitution = async (institutionId?: string) => {
   return true
 }
 
+keycloak.onAuthRefreshSuccess = () => {
+  // Set new access token + restart refreshing interval
+  setAccessToken(keycloak.token)
+  startRefreshingToken()
+}
+
 const useKeycloak = () => {
   const navigate = useNavigate()
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
@@ -148,6 +165,7 @@ const useKeycloak = () => {
     const initKeycloak = async () => {
       const isKeycloakUserLoggedIn = await keycloak.init({
         onLoad: 'check-sso',
+        // checkLoginIframe: false,
         silentCheckSsoRedirectUri:
           window.location.origin + '/silent-check-sso.html',
       })
@@ -163,7 +181,6 @@ const useKeycloak = () => {
           })
           navigate(window.location.pathname)
         }
-
         return
       }
 
@@ -185,17 +202,13 @@ const useKeycloak = () => {
       }
 
       // TODO: no need to fetch institutions, if user already has institution selected
-      const data: InstitutionType[] = await apiClient.get(
+      const { data }: InstitutionDataType = await apiClient.get(
         endpoints.INSTITUTIONS
       )
+
       if (size(data) === 0) {
         handleLogoutWithError()
         return
-      }
-      keycloak.onAuthRefreshSuccess = () => {
-        // Set new access token + restart refreshing interval
-        setAccessToken(keycloak.token)
-        startRefreshingToken()
       }
 
       // Check if there is exactly 1 institution to pick

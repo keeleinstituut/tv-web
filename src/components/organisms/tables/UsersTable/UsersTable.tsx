@@ -1,5 +1,4 @@
 import { FC, useState, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -9,28 +8,22 @@ import {
   PaginationState,
   ColumnDef,
 } from '@tanstack/react-table'
-import Button, {
-  AppearanceTypes,
-  SizeTypes,
-  IconPositioningTypes,
-} from 'components/molecules/Button/Button'
 
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import users from 'components/templates/Tables/users.json'
+import users from 'components/organisms/tables/users.json'
 
-type Person = {
+export type Person = {
   id: string
   name: string
+  email: string
+  phone: string
   department: string | null
   roles: string[]
-  status: string
   subRows?: Person[]
 }
 
 const columnHelper = createColumnHelper<Person>()
 
-const AddedUsersTable: FC = () => {
-  const { t } = useTranslation()
+const UsersTable: FC = () => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -40,13 +33,15 @@ const AddedUsersTable: FC = () => {
   const usersData = useMemo(() => {
     return (
       map(tableData, (data) => {
-        const arrayOfRoles = map(data.roles, 'name')
+        const arrayOfRoles = map(data.roles, ({ name }) => name)
         return {
-          id: data.id,
+          id: data.user.personal_identification_code,
           name: `${data.user?.forename} ${data.user?.surname}`,
+          email: data.email,
+          phone: data.phone,
           department: data.department,
           roles: arrayOfRoles,
-          status: data.status,
+          subRows: [],
         }
       }) || {}
     )
@@ -54,34 +49,19 @@ const AddedUsersTable: FC = () => {
 
   const columns = [
     columnHelper.accessor('id', {
-      header: () => 'Kasutajakonto ID',
-      cell: ({ getValue }) => (
-        //Example for link row cell
-        <div
-          style={{
-            display: 'grid',
-            gridAutoFlow: 'column',
-            width: 'max-content',
-            gap: '10px',
-            alignItems: 'left',
-          }}
-        >
-          <Button
-            appearance={AppearanceTypes.Text}
-            size={SizeTypes.M}
-            icon={ArrowRight}
-            ariaLabel={t('label.button_arrow')}
-            iconPositioning={IconPositioningTypes.Left}
-            href={`/user=${getValue()}`}
-          >
-            {'ID xxxxxx'}
-          </Button>
-        </div>
-      ),
+      header: () => 'Isikukood',
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('name', {
       header: () => 'Nimi',
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('email', {
+      header: () => 'Meiliaadress',
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('phone', {
+      header: () => 'Telefoninumber',
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('department', {
@@ -95,22 +75,17 @@ const AddedUsersTable: FC = () => {
       },
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('status', {
-      header: () => 'Staatus',
-      footer: (info) => info.column.id,
-    }),
   ] as ColumnDef<Person>[]
 
   return (
     <DataTable
       data={usersData}
       columns={columns}
-      title="Lisatud kasutajad"
       pagination={pagination}
       setPagination={setPagination}
-      tableSize={TableSizeTypes.M}
+      tableSize={TableSizeTypes.L}
     />
   )
 }
 
-export default AddedUsersTable
+export default UsersTable

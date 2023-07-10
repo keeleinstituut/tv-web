@@ -28,6 +28,7 @@ const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
       className,
       disabled,
       value = false,
+      errorZIndex,
       onClick,
       onChange,
       ...rest

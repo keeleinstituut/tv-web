@@ -6,12 +6,11 @@
 }
 
 .tableWrapper {
-  display: grid;
-  height: 100%;
   overflow-x: auto;
   white-space: nowrap;
 
   .dataTable {
+    overflow-x: auto;
     width: 100%;
     text-align: left;
     margin-bottom: 0;
@@ -30,7 +29,7 @@
     th,
     td {
       padding: spacing(2.5) spacing(3.5);
-      height: 49px;
+      height: 48px;
     }
   }
   .s {
@@ -43,10 +42,12 @@
 
   th {
     border-bottom: 1px solid $color-border-secondary;
+    vertical-align: middle;
     color: $color-text;
   }
   td {
     border-bottom: 1px solid $color-border;
+    vertical-align: middle;
   }
 
   tbody {
