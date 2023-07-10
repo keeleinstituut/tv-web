@@ -39,13 +39,35 @@
   top: spacing(1);
 }
 
-.deactivateContent > div > div {
-  color: $color-primary;
-  > form {
-    padding-top: spacing(6);
-  }
+.deactivateContent > div > div form {
+  padding-top: spacing(6);
 }
 
-// :global(.react-datepicker__tab-loop) {
-//   position: fixed;
-// }
+:global(.react-datepicker__tab-loop) {
+  position: fixed;
+}
+
+.deactivateContent > div,
+.activateContent > div {
+  color: $color-primary;
+}
+
+.activateContent h1,
+.deactivateContent h1,
+.activateContent > div > div,
+.deactivateContent > div > div {
+  max-width: 600px;
+}
+
+.activateContent > div > div > form {
+  padding-top: spacing(5);
+  padding-bottom: spacing(10);
+}
+
+.activateContent > div > div > form > :first-child {
+  padding-bottom: 16px;
+}
+
+.activateContent form > div > div > :nth-child(3) {
+  position: fixed;
+}

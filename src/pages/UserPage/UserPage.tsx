@@ -1,6 +1,7 @@
 import Loader from 'components/atoms/Loader/Loader'
 import UserForm from 'components/organisms/forms/UserForm/UserForm'
 import {
+  useActivateUser,
   useArchiveUser,
   useDeactivateUser,
   useFetchUser,
@@ -26,15 +27,12 @@ import classes from './classes.module.scss'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { formatDate } from 'helpers'
 import { useRolesFetch } from 'hooks/requests/useRoles'
-import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 
 interface FormValues {
   user_deactivation_date?: string
   userId?: string
-}
-
-interface ActivateUserFormValues {
-  options?: DropDownOptions[]
+  user_activation_roles?: (string | undefined)[]
+  user_activation_notification?: boolean
 }
 
 const UserPage: FC = () => {
@@ -51,6 +49,7 @@ const UserPage: FC = () => {
   })
   const { existingRoles = [] } = useRolesFetch()
   const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser()
+  const { activateUser, isLoading: isActivating } = useActivateUser()
   const deactivationDate = user?.deactivation_date || ''
 
   const currentDefaultDate = format(new Date(), 'dd.MM.yyyy')
@@ -94,47 +93,36 @@ const UserPage: FC = () => {
     },
   ]
 
-  // const activationFormFields: FieldProps<FormValues>[] = [
-  //   {
-  //     inputType: InputTypes.Checkbox,
-  //     name: 'user_activation_date',
-  //     ariaLabel: t('label.user_deactivation_date'),
-  //     label: t('label.user_deactivation_date'),
-  //     placeholder: 'pp.kk.aaaa',
-  //     rules: {
-  //       required: true,
-  //     },
-  //     className: classes.calenderPosition,
-  //   },
-  // ]
-
-  console.log('existingRoles', existingRoles)
-
   const roleOptions = compact(
-    map(existingRoles, ({ name }) => {
+    map(existingRoles, ({ name, id }) => {
       if (name) {
         return {
           label: name,
           value: name,
+          id: id,
         }
       }
     })
   )
 
-  console.log('roleOptions', roleOptions)
-
-  const activationFormFields: FieldProps<ActivateUserFormValues>[] = map(
-    roleOptions,
-    ({ label }, index) => ({
+  const activationFormFields: FieldProps<FormValues>[] = [
+    {
       inputType: InputTypes.Selections,
-      ariaLabel: label,
-      label: label,
-      // name: 'user_activation_date',
-      name: `row-${index}.${label}`,
-      // disabled: !includes(userPrivileges, Privileges.EditRole),
-      // onClick: is_root ? handleMainUserPrivilegeClick : undefined,
-    })
-  )
+      name: 'user_activation_roles',
+      ariaLabel: t('placeholder.roles'),
+      placeholder: t('placeholder.roles'),
+      options: roleOptions,
+      multiple: true,
+      buttons: true,
+      tags: true,
+    },
+    {
+      inputType: InputTypes.Checkbox,
+      name: 'user_activation_notification',
+      label: t('label.user_activation_notification'),
+      ariaLabel: t('label.user_activation_notification'),
+    },
+  ]
 
   if (isLoading) {
     return <Loader loading />
@@ -218,13 +206,18 @@ const UserPage: FC = () => {
       cancelButtonContent: t('button.cancel'),
       proceedButtonContent: t('button.activate'),
       modalContent: t('modal.activate_user_content'),
-      className: classes.deactivateContent,
-      // handleProceed: handleSubmit((values) =>
-      //   deactivateUser({
-      //     user_deactivation_date: values?.user_deactivation_date || '',
-      //     userId: userId || '',
-      //   })
-      // ),
+      className: classes.activateContent,
+      handleProceed: handleSubmit((values) => {
+        const roleIdsArray = roleOptions
+          .filter((obj) => values?.user_activation_roles?.includes(obj.label))
+          .map((obj) => obj?.id)
+
+        return activateUser({
+          userId: userId || '',
+          notify_user: values?.user_activation_notification || false,
+          roles: roleIdsArray || ['Tellija id?'],
+        })
+      }),
       deactivationForm: (
         <DynamicForm fields={activationFormFields} control={control} />
       ),
@@ -237,23 +230,22 @@ const UserPage: FC = () => {
         <h1>{userNameString}</h1>
         <div className={classes.buttonsContainer}>
           <Button
-            loading={isUserDeactivated ? isDeactivating : isDeactivating}
+            loading={isUserDeactivated ? isDeactivating : isActivating}
             appearance={AppearanceTypes.Secondary}
             children={
               isUserDeactivated
                 ? t('button.activate_account')
                 : t('button.deactivate_account')
             }
-            // onClick={
-            //   isUserDeactivated ? handleDeactivateModal : handleActivateModal
-            // }
-            onClick={handleActivateModal}
+            onClick={
+              isUserDeactivated ? handleActivateModal : handleDeactivateModal
+            }
             hidden={
               isUserDeactivated
                 ? !includes(userPrivileges, Privileges.ActivateUser)
                 : !includes(userPrivileges, Privileges.DeactivateUser)
             }
-            // disabled={!isDeactivationDatePastCurrentDate && isUserDeactivated}
+            disabled={!isDeactivationDatePastCurrentDate && isUserDeactivated}
           />
           <Button
             loading={isArchiving}

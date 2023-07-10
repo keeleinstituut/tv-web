@@ -140,3 +140,26 @@ export const useDeactivateUser = () => {
     isLoading,
   }
 }
+
+export const useActivateUser = () => {
+  const { mutate: activateUser, isLoading } = useMutation({
+    mutationKey: ['users'],
+    mutationFn: (values: {
+      userId: string
+      notify_user: boolean
+      roles: (string | undefined)[]
+    }) => {
+      const { userId, notify_user, roles } = values
+
+      return apiClient.post(endpoints.ACTIVATE_USER, {
+        institution_user_id: userId,
+        notify_user: notify_user,
+        roles: roles,
+      })
+    },
+  })
+  return {
+    activateUser,
+    isLoading,
+  }
+}

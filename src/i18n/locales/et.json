@@ -22,7 +22,8 @@
     "future_user_deactivation_date": "Konto deaktiveeritakse {{deactivationDate}}",
     "status": "Staatus",
     "user_account_id": "Kasutajakonto ID",
-    "open_instructions": "Ava õpetus"
+    "open_instructions": "Ava õpetus",
+    "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest"
   },
   "placeholder": {
     "email": "example@mail.com",

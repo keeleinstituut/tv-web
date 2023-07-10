@@ -138,16 +138,6 @@ const DropdownContent: FC<DropdownContentProps> = ({
           </div>
         </ul>
       </div>
-
-      <div className={classNames(tags && classes.tagsContainer)}>
-        {map(selectedOptionObjects, ({ label }, index) => {
-          return (
-            <span hidden={!tags} className={classes.tag} key={index}>
-              {label}
-            </span>
-          )
-        })}
-      </div>
     </>
   )
 }
