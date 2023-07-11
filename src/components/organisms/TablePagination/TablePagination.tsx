@@ -12,6 +12,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { DropdownSizeTypes } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import { useNavigate } from 'react-router-dom'
 
 type PaginationProps<TData> = {
   hidden?: boolean
@@ -25,6 +26,7 @@ const TablePagination = <TData extends object>({
   pageSizeOptions,
 }: PaginationProps<TData>) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const {
     previousPage,
     getCanPreviousPage,
@@ -45,6 +47,7 @@ const TablePagination = <TData extends object>({
   const amountOfPages = getPageCount()
 
   if (hidden) return null
+
   return (
     <div className={classes.paginationWrapper}>
       <div className={classes.pagination}>
@@ -54,7 +57,12 @@ const TablePagination = <TData extends object>({
           icon={Arrow}
           ariaLabel={t('button.previous_page')}
           iconPositioning={IconPositioningTypes.Left}
-          onClick={previousPage}
+          onClick={() => {
+            previousPage()
+            navigate({
+              search: `?page=${getState().pagination.pageIndex}`,
+            })
+          }}
           disabled={!getCanPreviousPage()}
           className={classes.arrows}
           hidden={!amountOfPages}
@@ -88,7 +96,12 @@ const TablePagination = <TData extends object>({
           icon={Arrow}
           ariaLabel={t('button.next_page')}
           iconPositioning={IconPositioningTypes.Left}
-          onClick={nextPage}
+          onClick={() => {
+            nextPage()
+            navigate({
+              search: `?page=${getState().pagination.pageIndex + 2}`,
+            })
+          }}
           disabled={!getCanNextPage()}
           className={classNames(classes.arrows, classes.toRight)}
           hidden={!amountOfPages}
