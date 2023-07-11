@@ -29,6 +29,7 @@ import {
   NotificationPropsWithoutClose,
 } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -214,6 +215,15 @@ const Test: FC = () => {
           iconPositioning={IconPositioningTypes.Right}
         />
       </DynamicForm>
+      <ProgressBar
+        activeStep={2}
+        steps={[
+          { label: 'Step 1' },
+          { label: 'Step 2' },
+          { label: 'Step 3' },
+          { label: 'Step 4' },
+        ]}
+      />
       <Root>
         <TestingTable />
         <UsersTable />
