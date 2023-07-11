@@ -1,22 +1,22 @@
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 import { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'
 import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 
-export interface DeleteRoleModalProps {
+export interface UserAndRoleManagementModalProps {
   title?: string
   cancelButtonContent?: string
   proceedButtonContent?: string
-  modalContent?: string
+  modalContent?: string | ReactElement
   isModalOpen?: boolean
   closeModal: () => void
   handleProceed?: () => void
   className?: string
 }
 
-const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
+const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
   title,
   cancelButtonContent,
   proceedButtonContent,
@@ -57,4 +57,4 @@ const DeleteRoleModal: FC<DeleteRoleModalProps> = ({
   )
 }
 
-export default DeleteRoleModal
+export default UserAndRoleManagementModal

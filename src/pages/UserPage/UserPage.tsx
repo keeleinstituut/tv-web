@@ -39,7 +39,7 @@ const UserPage: FC = () => {
     const isMainUser = some(user?.roles, (mainUser) => mainUser?.is_root)
 
     !isMainUser &&
-      showModal(ModalTypes.DeleteRole, {
+      showModal(ModalTypes.UserAndRoleManagement, {
         title: t('modal.archive_user_account'),
         cancelButtonContent: t('button.no'),
         proceedButtonContent: t('button.yes'),
