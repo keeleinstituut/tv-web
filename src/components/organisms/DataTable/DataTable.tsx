@@ -87,7 +87,7 @@ const DataTable = <TData extends object>(
         page: pagination.pageIndex + 1,
       })
     }
-  }, [pagination])
+  }, [onPaginationChange, pagination])
 
   const table = useReactTable<TData>({
     data,

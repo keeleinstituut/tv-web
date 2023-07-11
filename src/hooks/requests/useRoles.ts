@@ -51,17 +51,18 @@ export const useUpdateRole = ({ roleId }: { roleId?: string }) => {
         // institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
         ...payload,
       }),
-    onSuccess: (data) => {
+    onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['roles'],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
-        (oldData?: RoleType[]) => {
-          if (!oldData) return oldData
-          const roleIndex = findIndex(oldData, { id: roleId })
-          const newArray = [...oldData]
+        (oldData?: RolesDataTypes) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const roleIndex = findIndex(previousData, { id: roleId })
+          const newArray = [...previousData]
           newArray[roleIndex] = data
-          return newArray
+          return { data: newArray }
         }
       )
     },
@@ -83,14 +84,16 @@ export const useCreateRole = () => {
         institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
         ...payload,
       }),
-    onSuccess: (data) => {
+    onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['roles'],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
-        (oldData?: RoleType[]) => {
-          if (!oldData) return oldData
-          return [...oldData, data]
+        (oldData?: RolesDataTypes) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = [...previousData, data]
+          return { data: newData }
         }
       )
     },
@@ -101,7 +104,6 @@ export const useCreateRole = () => {
     isLoading,
   }
 }
-
 export const useDeleteRole = ({ roleId }: { roleId?: string }) => {
   const queryClient = useQueryClient()
   const { mutate: deleteRole, isLoading } = useMutation({
@@ -112,9 +114,11 @@ export const useDeleteRole = ({ roleId }: { roleId?: string }) => {
         ['roles'],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
-        (oldData?: RoleType[]) => {
-          if (!oldData) return oldData
-          return filter(oldData, ({ id }) => id !== roleId)
+        (oldData?: RolesDataTypes) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const deletedData = filter(previousData, ({ id }) => id !== roleId)
+          return { data: deletedData }
         }
       )
     },
