@@ -87,7 +87,8 @@ const DataTable = <TData extends object>(
         page: pagination.pageIndex + 1,
       })
     }
-  }, [onPaginationChange, pagination])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination])
 
   const table = useReactTable<TData>({
     data,
