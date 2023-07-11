@@ -99,3 +99,16 @@ export const useUploadUsers = () => {
     error,
   }
 }
+
+export const useDownloadUsers = () => {
+  const { isLoading, isError, data } = useQuery<UserDataType>({
+    queryKey: ['csv'],
+    queryFn: () => apiClient.get(endpoints.EXPORT_CSV),
+  })
+
+  return {
+    isLoading,
+    isError,
+    usersCSV: data?.data,
+  }
+}
