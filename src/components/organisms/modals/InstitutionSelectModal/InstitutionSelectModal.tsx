@@ -8,6 +8,8 @@ import ModalBase, {
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import classes from './classes.module.scss'
+import { useInstitutionsFetch } from 'hooks/requests/useInstitutions'
+import Loader from 'components/atoms/Loader/Loader'
 
 export interface InstitutionSelectModalProps {
   onClose?: () => void
@@ -25,8 +27,13 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
   onSelect,
 }) => {
   const [loadingSelect, setLoadingSelect] = useState<string>()
-  // TODO: move fetching of institutions to this component later
-  // Currently we do it after initializing keycloak, so we can attempt automatic picking of institution
+  // No need to fetch, if institutions are passed as a prop
+  const { institutions: fetchedInstitutions, isLoading } = useInstitutionsFetch(
+    { disabled: !!institutions }
+  )
+
+  const institutionsToUse = institutions || fetchedInstitutions
+
   const { t } = useTranslation()
   const handleClose = useCallback(() => {
     closeModal()
@@ -51,7 +58,7 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
   return (
     <ModalBase
       title={
-        size(institutions) === 0
+        size(institutionsToUse) === 0 && !isLoading
           ? t('modal.no_institutions_title')
           : t('modal.pick_institution_title')
       }
@@ -62,7 +69,8 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
       className={classes.modalContent}
     >
       <h2>{t('modal.institutions')}</h2>
-      {map(institutions, ({ name, id }) => (
+      <Loader loading={!institutions && isLoading} />
+      {map(institutionsToUse, ({ name, id }) => (
         <Button
           appearance={AppearanceTypes.Secondary}
           className={classes.institution}

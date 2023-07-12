@@ -1,0 +1,54 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+
+.container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  
+  .content {
+    display: none;
+    position: absolute;
+    width: 100%;
+    background-color: $color-white;
+    border: 1px solid $color-border;
+    padding: spacing(2);
+    width: 188px;
+    top: 100%;
+    li:not(:first-child) {
+      margin-top: spacing(2);
+    }
+
+    li {
+      span {
+        color: $color-text-dark;
+      }
+    }
+  }
+
+  label {
+    @include bodyTextSmallStyle;
+    font-weight: $font-weight-light;
+  }
+
+  .iconButton {
+    svg {
+      width: 14px;
+      padding-left: 0;
+      margin-left: spacing(2);
+    }
+  }
+
+  &.open {
+    .iconButton {
+      svg {
+        transform: rotate(180deg);
+      }
+    }
+
+    .content {
+      display: unset;
+    }
+  }
+}
