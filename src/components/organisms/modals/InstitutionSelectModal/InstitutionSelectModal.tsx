@@ -8,8 +8,6 @@ import ModalBase, {
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import classes from './classes.module.scss'
-import { useInstitutionsFetch } from 'hooks/requests/useInstitutions'
-import Loader from 'components/atoms/Loader/Loader'
 
 export interface InstitutionSelectModalProps {
   onClose?: () => void
@@ -28,11 +26,6 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
 }) => {
   const [loadingSelect, setLoadingSelect] = useState<string>()
   // No need to fetch, if institutions are passed as a prop
-  const { institutions: fetchedInstitutions, isLoading } = useInstitutionsFetch(
-    { disabled: !!institutions }
-  )
-
-  const institutionsToUse = institutions || fetchedInstitutions
 
   const { t } = useTranslation()
   const handleClose = useCallback(() => {
@@ -58,7 +51,7 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
   return (
     <ModalBase
       title={
-        size(institutionsToUse) === 0 && !isLoading
+        size(institutions) === 0
           ? t('modal.no_institutions_title')
           : t('modal.pick_institution_title')
       }
@@ -69,8 +62,7 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
       className={classes.modalContent}
     >
       <h2>{t('modal.institutions')}</h2>
-      <Loader loading={!institutions && isLoading} />
-      {map(institutionsToUse, ({ name, id }) => (
+      {map(institutions, ({ name, id }) => (
         <Button
           appearance={AppearanceTypes.Secondary}
           className={classes.institution}
