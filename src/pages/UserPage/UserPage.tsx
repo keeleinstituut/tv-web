@@ -3,7 +3,7 @@ import UserForm from 'components/organisms/forms/UserForm/UserForm'
 import { useArchiveUser, useFetchUser } from 'hooks/requests/useUsers'
 import { FC } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { includes, some } from 'lodash'
+import { includes } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
@@ -36,20 +36,17 @@ const UserPage: FC = () => {
   const userNameString = `${user.user.forename} ${user.user.surname}`
 
   const handleArchiveModal = () => {
-    const isMainUser = some(user?.roles, (mainUser) => mainUser?.is_root)
-
-    !isMainUser &&
-      showModal(ModalTypes.UserAndRoleManagement, {
-        title: t('modal.archive_user_account'),
-        cancelButtonContent: t('button.no'),
-        proceedButtonContent: t('button.yes'),
-        modalContent: t('modal.archive_user_content'),
-        className: classes.archiveContent,
-        handleProceed: () => {
-          archiveUser()
-          navigate('/settings/users')
-        },
-      })
+    showModal(ModalTypes.UserAndRoleManagement, {
+      title: t('modal.archive_user_account'),
+      cancelButtonContent: t('button.no'),
+      proceedButtonContent: t('button.yes'),
+      modalContent: t('modal.archive_user_content'),
+      className: classes.archiveContent,
+      handleProceed: () => {
+        archiveUser()
+        navigate('/settings/users')
+      },
+    })
   }
 
   return (
