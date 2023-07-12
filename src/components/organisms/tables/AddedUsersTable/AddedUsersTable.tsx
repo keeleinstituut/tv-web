@@ -98,7 +98,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
       header: () => t('label.department'),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { department: departmentFilters },
+        filterOption: { departments: departmentFilters },
       },
     }),
     columnHelper.accessor('roles', {
@@ -108,7 +108,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
       },
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { role_id: rolesFilters },
+        filterOption: { roles: rolesFilters },
       },
     }),
     columnHelper.accessor('status', {
@@ -116,7 +116,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
       footer: (info) => info.column.id,
       meta: {
         filterOption: {
-          status: [
+          statuses: [
             { label: 'Active', value: 'ACTIVE' },
             { label: 'Deactivated', value: 'DEACTIVATED' },
             { label: 'Archived', value: 'ARCHIVED' },

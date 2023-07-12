@@ -73,7 +73,7 @@ const DataTable = <TData extends object>(
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
-  const { per_page, total } = paginationData || {}
+  const { per_page, last_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -94,7 +94,7 @@ const DataTable = <TData extends object>(
     data,
     columns,
     manualPagination: !!paginationData, // Tell react-table that you will handle the pagination manually
-    pageCount: total, // Provide the total number of pages
+    pageCount: last_page, // Provide the total number of pages
     state: {
       expanded,
       ...{ pagination },
