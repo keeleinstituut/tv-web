@@ -1,14 +1,15 @@
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { useFetchUsers } from 'hooks/requests/useUsers'
+import { useDownloadUsers, useFetchUsers } from 'hooks/requests/useUsers'
 import { useTranslation } from 'react-i18next'
 import { FC } from 'react'
 import AddedUsersTable from 'components/organisms/tables/AddedUsersTable/AddedUsersTable'
 import classes from './classes.module.scss'
-import { isEmpty } from 'lodash'
+import { isEmpty, includes } from 'lodash'
 import classNames from 'classnames'
 import { Root } from '@radix-ui/react-form'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import UserManagementCheatSheet from 'components/molecules/cheatSheets/UserManagementCheatSheet'
+import useAuth from 'hooks/useAuth'
 
 const UsersManagement: FC = () => {
   const {
@@ -19,6 +20,12 @@ const UsersManagement: FC = () => {
     handlePaginationChange,
   } = useFetchUsers()
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
+  const { downloadCSV, isLoading } = useDownloadUsers()
+
+  const handelDownloadFile = () => {
+    downloadCSV()
+  }
 
   return (
     <>
@@ -29,9 +36,13 @@ const UsersManagement: FC = () => {
           modalContent={<UserManagementCheatSheet />}
         />
         <Button
-          // href="/settings/users/add"
           appearance={AppearanceTypes.Secondary}
-          className={classNames({ [classes.invisible]: isEmpty(users) })}
+          className={classNames({
+            [classes.invisible]: !includes(userPrivileges, 'EXPORT_USER'),
+          })}
+          onClick={handelDownloadFile}
+          disabled={!includes(userPrivileges, 'EXPORT_USER')}
+          loading={isLoading}
         >
           {t('button.export_csv')}
         </Button>

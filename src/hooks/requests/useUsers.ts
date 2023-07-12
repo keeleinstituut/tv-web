@@ -14,6 +14,7 @@ import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { useState } from 'react'
 import { isEmpty, keys, omit } from 'lodash'
+import { downloadFile } from 'helpers'
 
 export const useFetchUsers = () => {
   const [filters, setFilters] = useState<UserPayloadType>({})
@@ -125,14 +126,20 @@ export const useUploadUsers = () => {
 }
 
 export const useDownloadUsers = () => {
-  const { isLoading, isError, data } = useQuery<UserDataType>({
-    queryKey: ['csv'],
-    queryFn: () => apiClient.get(endpoints.EXPORT_CSV),
+  const { mutateAsync: downloadCSV, isLoading } = useMutation({
+    mutationKey: ['csv'],
+    mutationFn: () => apiClient.get(endpoints.EXPORT_CSV),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'users.csv',
+        fileType: 'text/csv',
+      })
+    },
   })
 
   return {
     isLoading,
-    isError,
-    usersCSV: data?.data,
+    downloadCSV,
   }
 }

@@ -8,6 +8,11 @@ interface ObjectWithChildren {
 interface CsvObjectStructure<ValuesType> {
   [key: string]: ValuesType
 }
+interface DownloadFileProps {
+  data: BlobPart
+  fileName: string
+  fileType: string
+}
 
 export const usersCsvFieldsToKeys = {
   Isikukood: 'personal_identification_code',
@@ -73,4 +78,20 @@ export const objectsToCsvFile = <ValuesType>(
   const blob = new Blob([csvString], { type: 'text/csv' })
   const file = new File([blob], 'users.csv', { type: 'text/csv' })
   return file
+}
+
+export const downloadFile = ({
+  data,
+  fileName,
+  fileType,
+}: DownloadFileProps) => {
+  const blob = new Blob([data], { type: fileType })
+  console.log('blob', blob)
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
 }
