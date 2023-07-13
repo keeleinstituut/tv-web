@@ -6,6 +6,7 @@ export const endpoints = {
   VALIDATE_CSV: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/validate-import-csv`,
   IMPORT_CSV: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/import-csv`,
   DEPARTMENTS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}departments`,
+  TAGS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tags`,
 }
 
 export const authEndpoints = {

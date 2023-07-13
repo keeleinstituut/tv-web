@@ -58,7 +58,8 @@
     "next_page": "Järgmine lehekülg",
     "export_csv": "Ekspordi CSV",
     "add_users": "Lisa kasutajad",
-    "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt"
+    "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
+    "add": "Lisa"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -84,7 +85,7 @@
     "user_management": "Kasutajate haldus",
     "role_management": "Rollihaldus",
     "logs": "Logid",
-    "flags": "Sildid",
+    "tags": "Sildid",
     "report_export": "Aruande eksport",
     "institution_settings": "Asutuse sätted",
     "technical_settings": "Tehnilised sätted",
@@ -222,6 +223,13 @@
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
   },
   "tag": {
-    "tag_management": "Sildid"
+    "tag_management": "Sildid",
+    "adding_tag": "Sildi lisamine",
+    "naming_tag": "Nimeta uus silt ja vali selle asukoht",
+    "add_new_row":"lisa uus rida",
+    "tag_name": "Nimetus",
+    "tag_input": "Sisesta siia",
+    "select_tag_category": "Vali sildi kategooria"
+
   }
 }

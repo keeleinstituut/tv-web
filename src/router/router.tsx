@@ -20,7 +20,7 @@ import UserPage from 'pages/UserPage/UserPage'
 import RolesManagement from 'pages/RolesManagement/RolesManagement'
 import Logs from 'pages/Logs/Logs'
 import NewOrder from 'pages/NewOrder/NewOrder'
-import Flags from 'pages/Tags/Tags'
+import Tags from 'pages/Tags/Tags'
 import ReportExport from 'pages/ReportExport/ReportExport'
 import InstitutionSettings from 'pages/InstitutionSettings/InstitutionSettings'
 import TechnicalSettings from 'pages/TechnicalSettings/TechnicalSettings'
@@ -36,7 +36,7 @@ import { ReactComponent as MemoriesIcon } from 'assets/icons/memories.svg'
 import { ReactComponent as UsersIcon } from 'assets/icons/users.svg'
 import { ReactComponent as RolesIcon } from 'assets/icons/roles.svg'
 import { ReactComponent as LogsIcon } from 'assets/icons/logs.svg'
-import { ReactComponent as FlagsIcon } from 'assets/icons/flags.svg'
+import { ReactComponent as TagsIcon } from 'assets/icons/tags.svg'
 import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
@@ -127,10 +127,10 @@ export const protectedRoutes: FullRouteObject[] = [
         Icon: LogsIcon,
       },
       {
-        path: 'flags',
-        label: i18n.t('menu.flags'),
-        element: <Flags />,
-        Icon: FlagsIcon,
+        path: 'tags',
+        label: i18n.t('menu.tags'),
+        element: <Tags />,
+        Icon: TagsIcon,
       },
       {
         path: 'report',
