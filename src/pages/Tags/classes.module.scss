@@ -1,0 +1,38 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.tagsHeader {
+  display: grid;
+  grid-template-columns: max-content auto max-content max-content;
+  align-items: center;
+  grid-gap: spacing(4);
+}
+
+.tagsContainer {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  margin-top: spacing(6);
+  padding: spacing(6) spacing(8);
+}
+
+.gridItemOne {
+  border: 1px solid rgba(0, 0, 0, 0.8);
+}
+
+.gridItemTwo {
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.separator {
+  margin: 0 spacing(4);
+  width: 1px;
+  height: 96px;
+  background-color: $color-background-dark;
+}
+
+.addingTag {
+  color: $color-primary;
+  padding-bottom: spacing(4);
+}
