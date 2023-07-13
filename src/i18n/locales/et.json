@@ -193,7 +193,8 @@
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
     "main_user_deletion": "Peakasutaja rolli ei saa kustutada",
     "main_user_privilege_change": "Peakasutaja privileege ei saa muuta",
-    "delete_role": "Kas oled kindel, et soovid rolli kustutada?"
+    "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
+    "warning": "Hoiatus"
   },
   "helper": {
     "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga."
@@ -208,5 +209,8 @@
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
+  },
+  "warning": {
+    "missing_permissions": "Teil puudub ligipääs soovitud lehele"
   }
 }
