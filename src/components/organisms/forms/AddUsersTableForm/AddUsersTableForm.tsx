@@ -56,7 +56,7 @@ const AddUsersTableForm: FC = () => {
     control,
     handleSubmit,
     setError,
-    formState: { isValid, isDirty },
+    formState: { isValid },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
     mode: 'onChange',
@@ -163,7 +163,7 @@ const AddUsersTableForm: FC = () => {
           type="submit"
           hidden={isEmpty(tableData)}
           loading={isLoading || isUploadLoading}
-          disabled={!isDirty || !isValid}
+          disabled={!isValid}
         >
           {t('button.save_and_send_notifications')}
         </Button>
