@@ -58,7 +58,9 @@
     "next_page": "Järgmine lehekülg",
     "export_csv": "Ekspordi CSV",
     "add_users": "Lisa kasutajad",
-    "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt"
+    "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
+    "proceed": "Edasi",
+    "quit": "Loobun"
   },
   "error": {
     "input_title": "Veateade: ",

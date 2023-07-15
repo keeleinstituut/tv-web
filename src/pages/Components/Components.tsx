@@ -30,6 +30,11 @@ import {
 } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import ModalRoot, {
+  ModalTypes,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -196,6 +201,50 @@ const Test: FC = () => {
     setTimeout(showNotification, 4000, dummyNotifications[2])
     setTimeout(showNotification, 6000, dummyNotifications[3])
   }
+  const handleModalOpen = () => {
+    showModal(ModalTypes.FormProgress, {
+      steps: [
+        { label: 'Vali keelepaarid' },
+        { label: 'Lisa oskused' },
+        { label: 'Lisa hinnakiri' },
+      ],
+      formData: [
+        {
+          title: 'Teostajale keelepaaride valimine',
+          helperText:
+            'Valida saab ühe algkeele ja ühe või mitu sihtkeelt. Vlaides rohkem kui ühe sihtkeele tuleb arvestada, et valtud keeltele saad sisestada ühed ja samad hinnad. Kui soovid igale keelepaarile sisestada einevaid ühiku hinnad, siis tuleb iga keelepaar sisestada edaldi.',
+          modalContent: (
+            <div>
+              <p>Algkeel</p>
+              <p>SihtKeel</p>
+            </div>
+          ),
+        },
+        {
+          title: 'Teostajale oskuste valimine',
+          helperText:
+            'Määra teostaja oskused, millele soovid ühikuhinnad lisada.',
+          modalContent: (
+            <div>
+              <p>Algkeel</p>
+              <p>SihtKeel</p>
+            </div>
+          ),
+        },
+        {
+          title: 'Keelepaaridele hinnakirja määramine',
+          helperText:
+            'Määra oskusele ühikupõhised hinnad. Juhul, kui mõnda arvestusühikut selle teostaja puhul ei kasutata või puudub kokkulepitud hind, siis võib jätta selle ühiku hinnaks null',
+          modalContent: (
+            <div>
+              <p>Algkeel</p>
+              <p>SihtKeel</p>
+            </div>
+          ),
+        },
+      ],
+    })
+  }
 
   return (
     <>
@@ -215,6 +264,8 @@ const Test: FC = () => {
           iconPositioning={IconPositioningTypes.Right}
         />
       </DynamicForm>
+      <BaseButton onClick={handleModalOpen}>{'Ava vorm'}</BaseButton>
+      <ModalRoot />
       <ProgressBar
         activeStep={2}
         steps={[

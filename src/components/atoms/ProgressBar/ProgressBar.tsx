@@ -2,16 +2,19 @@ import { FC } from 'react'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 
-interface Step {
+export interface Step {
   label: string
 }
 
 interface ProgressBarProps {
   steps: Step[]
   activeStep: number
+  hidden?: boolean
 }
 
-const ProgressBar: FC<ProgressBarProps> = ({ steps, activeStep }) => {
+const ProgressBar: FC<ProgressBarProps> = ({ steps, activeStep, hidden }) => {
+  if (hidden) return null
+
   return (
     <ul className={classes.progressBarSteps}>
       {steps.map((step, index) => {
