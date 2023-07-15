@@ -1,13 +1,9 @@
-import { FC, useState, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, join } from 'lodash'
-import {
-  createColumnHelper,
-  PaginationState,
-  ColumnDef,
-} from '@tanstack/react-table'
+import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 
 import users from 'components/organisms/tables/users.json'
 
@@ -24,10 +20,6 @@ export type Person = {
 const columnHelper = createColumnHelper<Person>()
 
 const UsersTable: FC = () => {
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
   const tableData = users?.data
 
   const usersData = useMemo(() => {
@@ -81,9 +73,8 @@ const UsersTable: FC = () => {
     <DataTable
       data={usersData}
       columns={columns}
-      pagination={pagination}
-      setPagination={setPagination}
       tableSize={TableSizeTypes.L}
+      hidePagination
     />
   )
 }

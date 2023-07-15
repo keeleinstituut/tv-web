@@ -3,9 +3,11 @@ import { Outlet } from 'react-router-dom'
 import useKeycloak, { AuthContext } from 'hooks/useKeycloak'
 import ModalRoot from 'components/organisms/modals/ModalRoot'
 import Landing from 'pages/Landing/Landing'
+import Loader from 'components/atoms/Loader/Loader'
+import classes from './classes.module.scss'
 
 const AuthWrapper: FC<PropsWithChildren> = () => {
-  const { keycloak, isUserLoggedIn, userInfo } = useKeycloak()
+  const { keycloak, isUserLoggedIn, userInfo, isLoading } = useKeycloak()
 
   return (
     <AuthContext.Provider
@@ -17,7 +19,12 @@ const AuthWrapper: FC<PropsWithChildren> = () => {
         userPrivileges: userInfo?.tolkevarav?.privileges || [],
       }}
     >
-      {isUserLoggedIn ? <Outlet /> : <Landing />}
+      <Loader
+        loading={isLoading && !isUserLoggedIn}
+        className={classes.fullScreenLoader}
+      />
+      {isUserLoggedIn && <Outlet />}
+      {!isUserLoggedIn && !isLoading && <Landing />}
       <ModalRoot />
     </AuthContext.Provider>
   )
