@@ -69,77 +69,36 @@ const Tags: FC = () => {
       rules: {
         required: true,
       },
+      buttons: true,
     },
   ]
 
-  // const initialInput = { type: 'text', id: 1, value: '', label: 'Nimetus' }
-  // const [inputFields, setInputFields] = useState([initialInput])
-
-  // const addInputField = () => {
-  //   setInputFields([
-  //     ...inputFields,
-  //     {
-  //       type: 'text',
-  //       id: inputFields?.length + 1,
-  //       value: '',
-  //       label: 'Nimetus',
-  //     },
-  //   ])
-  // }
-
-  // const handleInputChange = (
-  //   event: ChangeEvent<HTMLInputElement>,
-  //   id: number
-  // ) => {
-  //   const updatedInputFields = map(inputFields, (field) => {
-  //     if (field?.id === id) {
-  //       return { ...field, value: event.target.value }
-  //     }
-  //     return field
-  //   })
-  //   setInputFields(updatedInputFields)
-  // }
-
-  const initialInput = testFields
+  const initialInput = { type: 'text', id: 1, value: '' }
   const [inputFields, setInputFields] = useState([initialInput])
 
-  // const addInputField = () => {
-  //   setInputFields([
-  //     ...inputFields,
-  //     // {
-  //     //   type: 'text',
-  //     //   id: inputFields?.length + 1,
-  //     //   value: '',
-  //     //   label: 'Nimetus',
-  //     // },
-  //     {
-  //       inputType: InputTypes.Text,
-  //       ariaLabel: t('tag.tag_name'),
-  //       label: 'Nimetus',
-  //       name: `${inputFields?.length + 1}`,
-  //       placeholder: t('tag.tag_input'),
-  //       type: 'text',
-  //       rules: {
-  //         required: true,
-  //         // validate: emailValidator,
-  //       },
-  //       className: classes.tagInputField,
-  //     },
-  //   ])
-  // }
+  const addInputField = () => {
+    setInputFields([
+      ...inputFields,
+      {
+        type: 'text',
+        id: inputFields?.length + 1,
+        value: '',
+      },
+    ])
+  }
 
-  // const handleInputChange = (
-  //   event: ChangeEvent<HTMLInputElement>,
-  //   id: number
-  // ) => {
-  //   const updatedInputFields = map(inputFields, (field) => {
-  //     if (field?.id === id) {
-  //       return { ...field, value: event.target.value }
-  //     }
-  //     return field
-  //   })
-  //   setInputFields(updatedInputFields)
-  // }
+  const handleInputChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    id: number
+  ) => {
+    const updatedInputFields = map(inputFields, (field) => {
+      if (field?.id === id) {
+        return { ...field, value: event.target.value }
+      }
+      return field
+    })
+    setInputFields(updatedInputFields)
+  }
 
   return (
     <>
@@ -159,7 +118,7 @@ const Tags: FC = () => {
         <div className={classes.tagSeparator} />
 
         <div className={classes.gridItemTwo}>
-          {/* {map(inputFields, (field) => {
+          {map(inputFields, (field) => {
             console.log('inputFields', inputFields)
             return (
               <input
@@ -170,14 +129,14 @@ const Tags: FC = () => {
                 className={classes.tagInputField}
               />
             )
-          })} */}
+          })}
           <Button
             appearance={AppearanceTypes.Text}
             iconPositioning={IconPositioningTypes.Left}
             icon={Add}
             className={classes.addNewRow}
             children={t('tag.add_new_row')}
-            // onClick={addInputField}
+            onClick={addInputField}
           />
         </div>
 
