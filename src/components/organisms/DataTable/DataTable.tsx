@@ -1,6 +1,5 @@
 import {
   CSSProperties,
-  FC,
   ReactElement,
   Ref,
   forwardRef,
