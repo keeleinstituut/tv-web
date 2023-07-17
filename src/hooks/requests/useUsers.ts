@@ -4,7 +4,7 @@ import {
   UserPayloadType,
   UserDataType,
 } from 'types/users'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
@@ -49,12 +49,26 @@ export const useFetchUser = ({ userId }: { userId?: string }) => {
 }
 
 export const useUpdateUser = ({ userId }: { userId?: string }) => {
+  const queryClient = useQueryClient()
   const { mutateAsync: updateUser, isLoading } = useMutation({
     mutationKey: ['users', userId],
-    mutationFn: (payload: UserPostType) =>
+    mutationFn: async (payload: UserPostType) =>
       apiClient.put(`${endpoints.USERS}/${userId}`, {
         ...payload,
       }),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', userId],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newAData = { ...previousData, ...data }
+          return { data: newAData }
+        }
+      )
+    },
   })
 
   return {
@@ -97,5 +111,21 @@ export const useUploadUsers = () => {
     uploadUsers,
     isLoading,
     error,
+  }
+}
+
+export const useArchiveUser = ({ userId }: { userId?: string }) => {
+  const { mutate: archiveUser, isLoading } = useMutation({
+    mutationKey: ['users', userId],
+    mutationFn: () => {
+      return apiClient.post(endpoints.ARCHIVE_USER, {
+        institution_user_id: userId,
+      })
+    },
+  })
+
+  return {
+    archiveUser,
+    isLoading,
   }
 }

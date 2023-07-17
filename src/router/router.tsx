@@ -24,6 +24,7 @@ import Flags from 'pages/Flags/Flags'
 import ReportExport from 'pages/ReportExport/ReportExport'
 import InstitutionSettings from 'pages/InstitutionSettings/InstitutionSettings'
 import TechnicalSettings from 'pages/TechnicalSettings/TechnicalSettings'
+import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import Components from 'pages/Components/Components'
 
@@ -98,6 +99,10 @@ export const protectedRoutes: FullRouteObject[] = [
     label: i18n.t('menu.translation_memories'),
     element: <TranslationMemories />,
     Icon: MemoriesIcon,
+  },
+  {
+    path: 'user-details',
+    element: <UserDetails />,
   },
   {
     path: 'settings',

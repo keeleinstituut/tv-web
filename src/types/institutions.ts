@@ -8,3 +8,7 @@ export interface InstitutionType {
   phone?: string | null
   short_name?: string | null
 }
+
+export interface InstitutionsDataType {
+  data: InstitutionType[]
+}

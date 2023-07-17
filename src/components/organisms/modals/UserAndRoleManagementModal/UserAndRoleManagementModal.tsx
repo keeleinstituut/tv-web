@@ -4,6 +4,7 @@ import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
+import { useTranslation } from 'react-i18next'
 
 export interface UserAndRoleManagementModalProps {
   title?: string
@@ -13,6 +14,7 @@ export interface UserAndRoleManagementModalProps {
   isModalOpen?: boolean
   closeModal: () => void
   handleProceed?: () => void
+  className?: string
 }
 
 const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
@@ -23,17 +25,20 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
   isModalOpen,
   closeModal,
   handleProceed,
+  className,
 }) => {
+  const { t } = useTranslation()
   return (
     <ModalBase
       title={title}
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}
       buttonsPosition={ButtonPositionTypes.Right}
+      className={className}
       buttons={[
         {
           appearance: AppearanceTypes.Secondary,
-          children: cancelButtonContent,
+          children: cancelButtonContent || t('button.no'),
           size: SizeTypes.M,
           onClick: closeModal,
         },
@@ -45,7 +50,7 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
             }
             closeModal()
           },
-          children: proceedButtonContent,
+          children: proceedButtonContent || t('button.yes'),
         },
       ]}
     >
