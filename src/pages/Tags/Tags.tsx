@@ -51,6 +51,8 @@ const Tags: FC = () => {
     },
   ]
 
+  console.log('testFields', testFields)
+
   const testFields2: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Selections,
@@ -70,28 +72,74 @@ const Tags: FC = () => {
     },
   ]
 
-  const initialInput = { type: 'text', id: 1, value: '' }
+  // const initialInput = { type: 'text', id: 1, value: '', label: 'Nimetus' }
+  // const [inputFields, setInputFields] = useState([initialInput])
+
+  // const addInputField = () => {
+  //   setInputFields([
+  //     ...inputFields,
+  //     {
+  //       type: 'text',
+  //       id: inputFields?.length + 1,
+  //       value: '',
+  //       label: 'Nimetus',
+  //     },
+  //   ])
+  // }
+
+  // const handleInputChange = (
+  //   event: ChangeEvent<HTMLInputElement>,
+  //   id: number
+  // ) => {
+  //   const updatedInputFields = map(inputFields, (field) => {
+  //     if (field?.id === id) {
+  //       return { ...field, value: event.target.value }
+  //     }
+  //     return field
+  //   })
+  //   setInputFields(updatedInputFields)
+  // }
+
+  const initialInput = testFields
   const [inputFields, setInputFields] = useState([initialInput])
 
-  const addInputField = () => {
-    setInputFields([
-      ...inputFields,
-      { type: 'text', id: inputFields.length + 1, value: '' },
-    ])
-  }
+  // const addInputField = () => {
+  //   setInputFields([
+  //     ...inputFields,
+  //     // {
+  //     //   type: 'text',
+  //     //   id: inputFields?.length + 1,
+  //     //   value: '',
+  //     //   label: 'Nimetus',
+  //     // },
+  //     {
+  //       inputType: InputTypes.Text,
+  //       ariaLabel: t('tag.tag_name'),
+  //       label: 'Nimetus',
+  //       name: `${inputFields?.length + 1}`,
+  //       placeholder: t('tag.tag_input'),
+  //       type: 'text',
+  //       rules: {
+  //         required: true,
+  //         // validate: emailValidator,
+  //       },
+  //       className: classes.tagInputField,
+  //     },
+  //   ])
+  // }
 
-  const handleInputChange = (
-    event: ChangeEvent<HTMLInputElement>,
-    id: number
-  ) => {
-    const updatedInputFields = map(inputFields, (field) => {
-      if (field.id === id) {
-        return { ...field, value: event.target.value }
-      }
-      return field
-    })
-    setInputFields(updatedInputFields)
-  }
+  // const handleInputChange = (
+  //   event: ChangeEvent<HTMLInputElement>,
+  //   id: number
+  // ) => {
+  //   const updatedInputFields = map(inputFields, (field) => {
+  //     if (field?.id === id) {
+  //       return { ...field, value: event.target.value }
+  //     }
+  //     return field
+  //   })
+  //   setInputFields(updatedInputFields)
+  // }
 
   return (
     <>
@@ -111,22 +159,25 @@ const Tags: FC = () => {
         <div className={classes.tagSeparator} />
 
         <div className={classes.gridItemTwo}>
-          {map(inputFields, (field) => (
-            <input
-              key={field.id}
-              type={field.type}
-              value={field.value}
-              onChange={(event) => handleInputChange(event, field.id)}
-              className={classes.tagInputField}
-            />
-          ))}
+          {/* {map(inputFields, (field) => {
+            console.log('inputFields', inputFields)
+            return (
+              <input
+                key={field.id}
+                type={field.type}
+                value={field.value}
+                onChange={(event) => handleInputChange(event, field.id)}
+                className={classes.tagInputField}
+              />
+            )
+          })} */}
           <Button
             appearance={AppearanceTypes.Text}
             iconPositioning={IconPositioningTypes.Left}
             icon={Add}
             className={classes.addNewRow}
             children={t('tag.add_new_row')}
-            onClick={addInputField}
+            // onClick={addInputField}
           />
         </div>
 
