@@ -140,8 +140,10 @@ const useKeycloak = () => {
   const navigate = useNavigate()
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
   const [userInfo, setUserIdInfo] = useState<UserInfoType>({})
+  const [isLoading, setIsLoading] = useState(false)
   const handleLogoutWithError = useCallback(() => {
     // TODO: show global error message
+    setIsLoading(false)
     setAccessToken()
     setIsUserLoggedIn(false)
     keycloak.logout()
@@ -150,6 +152,7 @@ const useKeycloak = () => {
   const finishLogin = useCallback(() => {
     setUserIdInfo(keycloak.idTokenParsed || {})
     setIsUserLoggedIn(true)
+    setIsLoading(false)
     // Start refreshing interval
     startRefreshingToken()
     // Token refreshing stops, when window is not visible and doesn't start again
@@ -160,6 +163,7 @@ const useKeycloak = () => {
   }, [])
 
   useEffect(() => {
+    setIsLoading(true)
     const initKeycloak = async () => {
       const isKeycloakUserLoggedIn = await keycloak.init({
         onLoad: 'check-sso',
@@ -179,6 +183,7 @@ const useKeycloak = () => {
           })
           navigate(window.location.pathname)
         }
+        setIsLoading(false)
         return
       }
 
@@ -231,7 +236,7 @@ const useKeycloak = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return { keycloak, isUserLoggedIn, userInfo }
+  return { keycloak, isUserLoggedIn, userInfo, isLoading }
 }
 
 export default useKeycloak

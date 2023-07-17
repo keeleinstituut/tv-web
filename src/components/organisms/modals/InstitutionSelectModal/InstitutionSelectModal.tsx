@@ -62,18 +62,20 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
       className={classes.modalContent}
     >
       <h2>{t('modal.institutions')}</h2>
-      {map(institutions, ({ name, id }) => (
-        <Button
-          appearance={AppearanceTypes.Secondary}
-          className={classes.institution}
-          onClick={() => handleSelectInstitution(id)}
-          loading={loadingSelect === id}
-          disabled={!!loadingSelect}
-          key={id}
-        >
-          {name}
-        </Button>
-      ))}
+      <div className={classes.buttonsContainer}>
+        {map(institutions, ({ name, id }) => (
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            className={classes.institution}
+            onClick={() => handleSelectInstitution(id)}
+            loading={loadingSelect === id}
+            disabled={!!loadingSelect}
+            key={id}
+          >
+            {name}
+          </Button>
+        ))}
+      </div>
     </ModalBase>
   )
 }

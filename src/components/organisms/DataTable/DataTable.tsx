@@ -1,4 +1,11 @@
-import { CSSProperties, ReactElement, Ref, forwardRef, useState } from 'react'
+import {
+  CSSProperties,
+  ReactElement,
+  Ref,
+  forwardRef,
+  useEffect,
+  useState,
+} from 'react'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import {
@@ -13,13 +20,13 @@ import {
   Row,
   RowData,
   ColumnDef,
-  OnChangeFn,
 } from '@tanstack/react-table'
 import Container from 'components/atoms/Container/Container'
 import TablePagination from 'components/organisms/TablePagination/TablePagination'
 import TableHeaderGroup, {
   HeaderGroupFunctions,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
+import { DataMetaTypes, PaginationFunctionType } from 'types/collective'
 
 export enum TableSizeTypes {
   L = 'l',
@@ -32,14 +39,15 @@ type DataTableProps<TData extends RowData> = {
   columns: ColumnDef<TData>[]
   tableSize: TableSizeTypes
   title?: string
-  pagination?: PaginationState
-  setPagination?: OnChangeFn<PaginationState>
+  paginationData?: DataMetaTypes
+  onPaginationChange?: (value?: PaginationFunctionType) => void
   meta?: TableMeta<TData>
   subRows?: Row<TData>[] | undefined
   pageSizeOptions?: { label: string; value: string }[]
   getSubRows?:
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
+  hidePagination?: boolean
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -55,33 +63,50 @@ const DataTable = <TData extends object>(
     tableSize = TableSizeTypes.M,
     title,
     onSortingChange,
-    onColumnFiltersChange,
-    pagination,
-    setPagination,
+    onFiltersChange,
+    paginationData,
+    onPaginationChange,
     meta,
     getSubRows,
     pageSizeOptions,
+    hidePagination = false,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
+  const { per_page, last_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: per_page || 10,
+  })
+
+  useEffect(() => {
+    if (onPaginationChange) {
+      onPaginationChange({
+        per_page: pagination.pageSize,
+        page: pagination.pageIndex + 1,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination])
 
   const table = useReactTable<TData>({
     data,
     columns,
+    manualPagination: !!paginationData, // Tell react-table that you will handle the pagination manually
+    pageCount: last_page, // Provide the total number of pages
     state: {
       expanded,
       ...{ pagination },
     },
     meta,
-    ...(pagination && { getPaginationRowModel: getPaginationRowModel() }),
+    ...(!paginationData && { getPaginationRowModel: getPaginationRowModel() }), // If only doing manual pagination, you don't need this
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     onExpandedChange: setExpanded,
     getSubRows: getSubRows,
     getExpandedRowModel: getExpandedRowModel(),
   })
-
   return (
     <Container ref={ref}>
       <h4 className={classes.title} hidden={!title}>
@@ -92,7 +117,7 @@ const DataTable = <TData extends object>(
           <TableHeaderGroup
             table={table}
             onSortingChange={onSortingChange}
-            onColumnFiltersChange={onColumnFiltersChange}
+            onFiltersChange={onFiltersChange}
           />
           <tbody>
             {table.getRowModel().rows.map((row) => (
@@ -108,7 +133,7 @@ const DataTable = <TData extends object>(
         </table>
       </div>
       <TablePagination
-        hidden={!pagination}
+        hidden={hidePagination}
         table={table}
         pageSizeOptions={pageSizeOptions}
       />
