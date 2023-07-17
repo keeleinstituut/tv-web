@@ -26,6 +26,7 @@ import ReportExport from 'pages/ReportExport/ReportExport'
 import InstitutionSettings from 'pages/InstitutionSettings/InstitutionSettings'
 import TechnicalSettings from 'pages/TechnicalSettings/TechnicalSettings'
 import OrderPage from 'pages/OrderPage/OrderPage'
+import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import Components from 'pages/Components/Components'
 
@@ -130,6 +131,10 @@ export const protectedRoutes: FullRouteObject[] = [
       Privileges.ExportTm,
       Privileges.EditTmMetadata,
     ],
+  },
+  {
+    path: 'user-details',
+    element: <UserDetails />,
   },
   {
     path: 'settings',
