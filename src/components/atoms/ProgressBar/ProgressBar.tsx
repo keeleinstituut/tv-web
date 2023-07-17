@@ -9,12 +9,9 @@ export interface Step {
 interface ProgressBarProps {
   steps: Step[]
   activeStep: number
-  hidden?: boolean
 }
 
-const ProgressBar: FC<ProgressBarProps> = ({ steps, activeStep, hidden }) => {
-  if (hidden) return null
-
+const ProgressBar: FC<ProgressBarProps> = ({ steps, activeStep }) => {
   return (
     <ul className={classes.progressBarSteps}>
       {steps.map((step, index) => {

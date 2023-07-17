@@ -266,15 +266,7 @@ const Test: FC = () => {
       </DynamicForm>
       <BaseButton onClick={handleModalOpen}>{'Ava vorm'}</BaseButton>
       <ModalRoot />
-      <ProgressBar
-        activeStep={2}
-        steps={[
-          { label: 'Step 1' },
-          { label: 'Step 2' },
-          { label: 'Step 3' },
-          { label: 'Step 4' },
-        ]}
-      />
+
       <Root>
         <TestingTable />
         <UsersTable />

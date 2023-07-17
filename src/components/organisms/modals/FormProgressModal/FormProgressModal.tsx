@@ -32,6 +32,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
 
   const handleProceed = () => {
     if (size(steps) === activeStep) {
+      //Todo add form submit
       // submitForm()
       closeModal()
       setActiveStep(1)
@@ -40,6 +41,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
     }
   }
   const handelQuit = () => {
+    //Todo add form reset
     //resetForm()
     closeModal()
     setActiveStep(1)
