@@ -153,7 +153,7 @@
     "no_institutions_title": "Tundub, et sul puuduvad asutused mille vahel valida.",
     "institutions": "ASUTUSED",
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
-    "archive_user": "Kas oled kindel, et soovid konto arhiveerida?",
+    "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
     "deactivate_user": "Kas oled kindel, et soovid konto deaktiveerida?",
     "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",

@@ -100,8 +100,8 @@ const UserPage: FC = () => {
     deactivatedDate.getTime() < currentDate.getTime()
 
   const handleArchiveModal = () => {
-    showModal(ModalTypes.Remove, {
-      title: t('modal.archive_user'),
+    showModal(ModalTypes.UserAndRoleManagement, {
+      title: t('modal.archive_user_account'),
       cancelButtonContent: t('button.no'),
       proceedButtonContent: t('button.yes'),
       modalContent: t('modal.archive_user_content'),

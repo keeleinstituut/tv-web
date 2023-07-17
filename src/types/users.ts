@@ -47,7 +47,8 @@ export interface UserCsvType {
 }
 
 export interface UserPayloadType {
-  per_page?: 10 | 50 | 100
+  per_page?: 10 | 50 | 100 | number
+  page?: number
   role_id?: string[]
   status?: StatusKey[]
   sort_by?: string
@@ -57,7 +58,7 @@ export interface UserPayloadType {
 
 export interface UsersDataType {
   data: UserType[]
-  meta: DataMetaTypes
+  meta?: DataMetaTypes
 }
 
 export interface UserDataType {
