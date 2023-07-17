@@ -47,7 +47,6 @@ const UserPage: FC = () => {
   const deactivationDate = user?.deactivation_date || ''
 
   const currentFormattedDefaultDate = format(new Date(), 'dd/MM/yyyy')
-
   const user_deactivation_date = currentFormattedDefaultDate
 
   const { control, handleSubmit } = useForm<FormValues>({
@@ -125,7 +124,7 @@ const UserPage: FC = () => {
           userId: userId || '',
         })
       ),
-      deactivationForm: <DynamicForm fields={fields} control={control} />,
+      dynamicForm: <DynamicForm fields={fields} control={control} />,
     })
   }
 
@@ -142,7 +141,7 @@ const UserPage: FC = () => {
           userId: userId || '',
         })
       ),
-      deactivationForm: <DynamicForm fields={fields} control={control} />,
+      dynamicForm: <DynamicForm fields={fields} control={control} />,
     })
   }
 

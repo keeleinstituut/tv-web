@@ -15,7 +15,7 @@ export interface UserAndRoleManagementModalProps {
   closeModal: () => void
   handleProceed?: () => void
   className?: string
-  deactivationForm?: JSX.Element
+  dynamicForm?: JSX.Element
 }
 
 const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
@@ -27,7 +27,7 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
   closeModal,
   handleProceed,
   className,
-  deactivationForm,
+  dynamicForm,
 }) => {
   const { t } = useTranslation()
   return (
@@ -57,7 +57,7 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
       ]}
     >
       <div>{modalContent}</div>
-      {deactivationForm}
+      {dynamicForm}
     </ModalBase>
   )
 }
