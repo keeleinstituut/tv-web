@@ -58,7 +58,7 @@ export interface UserPayloadType {
 
 export interface UsersDataType {
   data: UserType[]
-  meta: DataMetaTypes
+  meta?: DataMetaTypes
 }
 
 export interface UserDataType {
