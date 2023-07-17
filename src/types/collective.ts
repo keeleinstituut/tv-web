@@ -1,3 +1,5 @@
+import { UserPayloadType } from './users'
+
 interface LinkTypes {
   url?: string
   label?: string
@@ -20,4 +22,9 @@ export interface FilterFunctionType {
 export interface SortingFunctionType {
   sort_order?: 'asc' | 'desc' | undefined
   sort_by?: string
+}
+
+export interface PaginationFunctionType {
+  per_page?: UserPayloadType['per_page']
+  page?: number
 }

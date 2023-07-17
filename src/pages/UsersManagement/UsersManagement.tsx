@@ -13,7 +13,13 @@ import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 
 const UsersManagement: FC = () => {
-  const { users, handelFilterChange, handelSortingChange } = useFetchUsers()
+  const {
+    users,
+    paginationData,
+    handelFilterChange,
+    handelSortingChange,
+    handlePaginationChange,
+  } = useFetchUsers()
   const { userPrivileges } = useAuth()
   const { t } = useTranslation()
 
@@ -21,7 +27,6 @@ const UsersManagement: FC = () => {
     <>
       <div className={classes.userManagementHeader}>
         <h1>{t('users.user_management')}</h1>
-        {/*  {// TODO: add toolTip here  */}
         <Tooltip
           title={t('cheat_sheet.user_management.title')}
           modalContent={<UserManagementCheatSheet />}
@@ -44,9 +49,11 @@ const UsersManagement: FC = () => {
       <Root>
         <AddedUsersTable
           data={users}
+          paginationData={paginationData}
           hidden={isEmpty(users)}
           handelFilterChange={handelFilterChange}
           handelSortingChange={handelSortingChange}
+          handlePaginationChange={handlePaginationChange}
         />
       </Root>
     </>
