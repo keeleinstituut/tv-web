@@ -65,12 +65,13 @@
     text-align: center;
 
     svg {
-      width: 19px;
-      height: 19px;
-      right: 4px;
+      width: 16px;
+      height: 16px;
+      margin-right: -4px;
     }
     p {
       @include subtitleSmallTextStyle;
+      line-height: $line-height-16;
       width: max-content;
     }
   }

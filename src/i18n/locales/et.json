@@ -20,7 +20,17 @@
     "attach_file": "lisa fail",
     "status": "Staatus",
     "user_account_id": "Kasutajakonto ID",
-    "open_instructions": "Ava õpetus"
+    "open_instructions": "Ava õpetus",
+    "show_only_my_orders": "Soovin näha vaid oma tellimusi",
+    "all": "Kõik",
+    "to_order_view": "Tellimuse vaatesse",
+    "order_id": "Tellimuse ID",
+    "cost": "Maksumus",
+    "deadline_at": "Tähtaeg",
+    "reference_number": "Viitenumber",
+    "language_directions": "Keelesuunad",
+    "type": "Tüüp",
+    "order_tags": "Tellimuse sildid"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -58,7 +68,8 @@
     "next_page": "Järgmine lehekülg",
     "export_csv": "Ekspordi CSV",
     "add_users": "Lisa kasutajad",
-    "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt"
+    "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
+    "add_order": "Lisa tellimus"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -208,5 +219,17 @@
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
+  },
+  "orders": {
+    "orders_tile": "Tellimused",
+    "status": {
+      "REGISTERED": "Registreeritud",
+      "NEW": "Uus",
+      "FORWARDED": "Edastatud",
+      "CANCELLED": "Tühistatud",
+      "ACCEPTED": "Vastuvõetud",
+      "REJECTED": "Tühistatud"
+    }
   }
 }
+

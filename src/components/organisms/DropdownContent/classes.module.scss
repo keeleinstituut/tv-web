@@ -6,6 +6,7 @@
   border: 1px solid $color-border;
   border-radius: 0px 0px 4px 4px;
   position: absolute;
+  top: 40px;
   max-height: 50vh;
   overflow: auto;
 }
@@ -47,6 +48,7 @@
 }
 .xs {
   width: 47px;
+  top: 32px;
 }
 
 .tagsContainer {
@@ -55,11 +57,6 @@
 }
 
 .tag {
-  @include bodyTextSmallStyle;
-  color: $color-primary;
-  font-weight: $font-weight-bold;
-  background-color: $color-tag;
-  border-radius: 4px;
   margin: spacing(2) spacing(2) 0 0;
   padding: spacing(0.625) spacing(1);
 }

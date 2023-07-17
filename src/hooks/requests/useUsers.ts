@@ -4,42 +4,18 @@ import {
   UserPayloadType,
   UserDataType,
 } from 'types/users'
-import {
-  FilterFunctionType,
-  PaginationFunctionType,
-  SortingFunctionType,
-} from 'types/collective'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
-import { useState } from 'react'
-import { isEmpty, keys, omit } from 'lodash'
+import useFilters from 'hooks/useFilters'
 
 export const useFetchUsers = () => {
-  const [filters, setFilters] = useState<UserPayloadType>({})
-
-  const handelFilterChange = (value?: FilterFunctionType) => {
-    const filterKey = keys(value)[0]
-    if (isEmpty(value?.[filterKey])) {
-      const removeFilterKey = omit(filters, filterKey)
-      setFilters({ ...removeFilterKey })
-    } else {
-      setFilters({ ...filters, ...value })
-    }
-  }
-
-  const handelSortingChange = (value?: SortingFunctionType) => {
-    if (!value?.sort_order) {
-      const sortingKeys = keys(value)
-      const filtersWithOutSorting = omit(filters, sortingKeys)
-      setFilters({ ...filtersWithOutSorting })
-    } else {
-      setFilters({ ...filters, ...value })
-    }
-  }
-  const handlePaginationChange = (value?: PaginationFunctionType) => {
-    setFilters({ ...filters, ...value })
-  }
+  const {
+    filters,
+    handelFilterChange,
+    handelSortingChange,
+    handlePaginationChange,
+  } = useFilters<UserPayloadType>()
 
   const { isLoading, isError, data } = useQuery<UsersDataType>({
     queryKey: ['users', filters],

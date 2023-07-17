@@ -10,6 +10,7 @@ import { SelectionControlsInputProps } from 'components/organisms/SelectionContr
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
+import Tag from 'components/atoms/Tag/Tag'
 
 type DropdownContentProps = SelectionControlsInputProps & {
   isOpen?: boolean
@@ -64,10 +65,16 @@ const DropdownContent: FC<DropdownContentProps> = ({
 
   const handleOnSave = () => {
     onChange(selectedValue)
+    if (setIsOpen) {
+      setIsOpen(false)
+    }
   }
 
   const handleCancel = () => {
     setSelectedValue(initialValue)
+    if (setIsOpen) {
+      setIsOpen(false)
+    }
   }
 
   return (
@@ -142,9 +149,13 @@ const DropdownContent: FC<DropdownContentProps> = ({
       <div className={classNames(tags && classes.tagsContainer)}>
         {map(selectedOptionObjects, ({ label }, index) => {
           return (
-            <span hidden={!tags} className={classes.tag} key={index}>
-              {label}
-            </span>
+            <Tag
+              hidden={!tags}
+              className={classes.tag}
+              value
+              key={index}
+              label={label}
+            />
           )
         })}
       </div>

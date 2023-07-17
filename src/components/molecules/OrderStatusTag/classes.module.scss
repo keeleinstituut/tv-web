@@ -1,0 +1,21 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.new {
+  @include statusTagStyle($color-warning, $color-warning-dark);
+}
+.registered {
+  @include statusTagStyle($color-highlight);
+}
+.forwarded {
+  @include statusTagStyle($color-success);
+}
+.cancelled {
+  @include statusTagStyle($color-border, $color-text);
+}
+.accepted {
+  @include statusTagStyle($color-success);
+}
+.rejected {
+  @include statusTagStyle($color-error);
+}
