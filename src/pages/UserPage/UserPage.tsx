@@ -7,7 +7,7 @@ import {
 } from 'hooks/requests/useUsers'
 import { FC } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { includes, some } from 'lodash'
+import { includes } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
@@ -21,10 +21,10 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useForm } from 'react-hook-form'
 import { format } from 'date-fns'
-
-import classes from './classes.module.scss'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { formatDate } from 'helpers'
+
+import classes from './classes.module.scss'
 
 interface FormValues {
   user_deactivation_date?: string
@@ -46,23 +46,13 @@ const UserPage: FC = () => {
   const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser()
   const deactivationDate = user?.deactivation_date || ''
 
-  const currentDefaultDate = format(new Date(), 'dd.MM.yyyy')
-  const defaultDateOrder = [0, 1, 2]
-  const formattedDefaultDate = formatDate(
-    currentDefaultDate || '',
-    '.',
-    '/',
-    defaultDateOrder
-  )
+  const currentFormattedDefaultDate = format(new Date(), 'dd/MM/yyyy')
 
-  const user_deactivation_date = formattedDefaultDate
+  const user_deactivation_date = currentFormattedDefaultDate
 
   const { control, handleSubmit } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     defaultValues: { user_deactivation_date },
-    resetOptions: {
-      keepErrors: true,
-    },
   })
 
   const deactivationDateOrder = [2, 1, 0]
@@ -96,7 +86,6 @@ const UserPage: FC = () => {
   }
 
   const userNameString = `${user.user.forename} ${user.user.surname}`
-  const isMainUser = some(user?.roles, (mainUser) => mainUser?.is_root)
   const isUserDeactivated = !!deactivationDate
 
   const dateParts = deactivationDate?.split('-')
@@ -111,18 +100,17 @@ const UserPage: FC = () => {
     deactivatedDate.getTime() < currentDate.getTime()
 
   const handleArchiveModal = () => {
-    !isMainUser &&
-      showModal(ModalTypes.Remove, {
-        title: t('modal.archive_user'),
-        cancelButtonContent: t('button.no'),
-        proceedButtonContent: t('button.yes'),
-        modalContent: t('modal.archive_user_content'),
-        className: classes.archiveContent,
-        handleProceed: () => {
-          archiveUser()
-          navigate('/settings/users')
-        },
-      })
+    showModal(ModalTypes.Remove, {
+      title: t('modal.archive_user'),
+      cancelButtonContent: t('button.no'),
+      proceedButtonContent: t('button.yes'),
+      modalContent: t('modal.archive_user_content'),
+      className: classes.archiveContent,
+      handleProceed: () => {
+        archiveUser()
+        navigate('/settings/users')
+      },
+    })
   }
   const handleDeactivateModal = () => {
     showModal(ModalTypes.Remove, {
@@ -142,22 +130,24 @@ const UserPage: FC = () => {
   }
 
   const handleEditModal = () => {
-    !isMainUser &&
-      showModal(ModalTypes.Remove, {
-        title: t('modal.edit_deactivation_date'),
-        cancelButtonContent: t('button.cancel'),
-        proceedButtonContent: t('button.yes'),
-        modalContent: t('modal.deactivate_user_content'),
-        className: classes.deactivateContent,
-        handleProceed: handleSubmit((values) =>
-          deactivateUser({
-            user_deactivation_date: values?.user_deactivation_date || '',
-            userId: userId || '',
-          })
-        ),
-        deactivationForm: <DynamicForm fields={fields} control={control} />,
-      })
+    showModal(ModalTypes.Remove, {
+      title: t('modal.edit_deactivation_date'),
+      cancelButtonContent: t('button.cancel'),
+      proceedButtonContent: t('button.yes'),
+      modalContent: t('modal.deactivate_user_content'),
+      className: classes.deactivateContent,
+      handleProceed: handleSubmit((values) =>
+        deactivateUser({
+          user_deactivation_date: values?.user_deactivation_date || '',
+          userId: userId || '',
+        })
+      ),
+      deactivationForm: <DynamicForm fields={fields} control={control} />,
+    })
   }
+
+  const currentFormattedDate = format(new Date(), 'yyyy-MM-dd')
+  const isUserDeactivatedImmediately = deactivationDate === currentFormattedDate
 
   return (
     <>
@@ -165,7 +155,8 @@ const UserPage: FC = () => {
         <h1>{userNameString}</h1>
         <div className={classes.buttonsContainer}>
           <Button
-            loading={isUserDeactivated ? isDeactivating : isDeactivating}
+            //TODO handle isActivating
+            loading={isUserDeactivated ? undefined : isDeactivating}
             appearance={AppearanceTypes.Secondary}
             children={
               isUserDeactivated
@@ -173,9 +164,7 @@ const UserPage: FC = () => {
                 : t('button.deactivate_account')
             }
             //TODO handleActivateModal
-            onClick={
-              isUserDeactivated ? handleDeactivateModal : handleDeactivateModal
-            }
+            onClick={isUserDeactivated ? undefined : handleDeactivateModal}
             hidden={
               isUserDeactivated
                 ? !includes(userPrivileges, Privileges.ActivateUser)
@@ -193,7 +182,10 @@ const UserPage: FC = () => {
         </div>
       </div>
 
-      <div hidden={!isUserDeactivated} className={classes.deactivationDate}>
+      <div
+        hidden={!isUserDeactivated || isUserDeactivatedImmediately}
+        className={classes.deactivationDate}
+      >
         {t('label.future_user_deactivation_date', {
           deactivationDate: formattedDeactivationDate,
         })}

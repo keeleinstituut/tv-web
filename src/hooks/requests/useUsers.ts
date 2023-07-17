@@ -5,7 +5,7 @@ import {
   UserDataType,
 } from 'types/users'
 import { FilterFunctionType, SortingFunctionType } from 'types/collective'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { useState } from 'react'
@@ -116,7 +116,33 @@ export const useArchiveUser = ({ userId }: { userId?: string }) => {
   }
 }
 
+// export const useDeactivateUser = () => {
+//   const { mutate: deactivateUser, isLoading } = useMutation({
+//     mutationKey: ['users'],
+//     mutationFn: (values: {
+//       user_deactivation_date: string
+//       userId: string
+//     }) => {
+//       const { user_deactivation_date: date, userId } = values
+
+//       const order = [2, 1, 0]
+//       const formattedDeactivationDate = formatDate(date || '', '/', '-', order)
+
+//       return apiClient.post(endpoints.DEACTIVATE_USER, {
+//         institution_user_id: userId,
+//         deactivation_date: formattedDeactivationDate,
+//       })
+//     },
+//   })
+
+//   return {
+//     deactivateUser,
+//     isLoading,
+//   }
+// }
+
 export const useDeactivateUser = () => {
+  const queryClient = useQueryClient()
   const { mutate: deactivateUser, isLoading } = useMutation({
     mutationKey: ['users'],
     mutationFn: (values: {
@@ -132,6 +158,17 @@ export const useDeactivateUser = () => {
         institution_user_id: userId,
         deactivation_date: formattedDeactivationDate,
       })
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(
+        ['users'],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: RoleType[]) => {
+          if (!oldData) return oldData
+          return [...oldData, data]
+        }
+      )
     },
   })
 
