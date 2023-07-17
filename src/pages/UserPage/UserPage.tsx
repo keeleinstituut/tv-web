@@ -113,7 +113,7 @@ const UserPage: FC = () => {
     })
   }
   const handleDeactivateModal = () => {
-    showModal(ModalTypes.Remove, {
+    showModal(ModalTypes.UserAndRoleManagement, {
       title: t('modal.deactivate_user'),
       cancelButtonContent: t('button.cancel'),
       proceedButtonContent: t('button.yes'),
@@ -130,7 +130,7 @@ const UserPage: FC = () => {
   }
 
   const handleEditModal = () => {
-    showModal(ModalTypes.Remove, {
+    showModal(ModalTypes.UserAndRoleManagement, {
       title: t('modal.edit_deactivation_date'),
       cancelButtonContent: t('button.cancel'),
       proceedButtonContent: t('button.yes'),
