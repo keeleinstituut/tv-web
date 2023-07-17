@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/components/organisms/modals/RemoveModal/RemoveModal.tsx
-import { FC, JSXElementConstructor, ReactElement } from 'react'
-========
 import { FC, ReactElement } from 'react'
->>>>>>>> dev:src/components/organisms/modals/UserAndRoleManagementModal/UserAndRoleManagementModal.tsx
 import { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'
 import ModalBase, {
   ButtonPositionTypes,
@@ -10,34 +6,19 @@ import ModalBase, {
 } from 'components/organisms/ModalBase/ModalBase'
 import { useTranslation } from 'react-i18next'
 
-<<<<<<<< HEAD:src/components/organisms/modals/RemoveModal/RemoveModal.tsx
-export interface RemoveModalProps {
-  title?: string
-  cancelButtonContent?: string
-  proceedButtonContent?: string
-  modalContent?:
-    | string
-    | ReactElement<unknown, string | JSXElementConstructor<unknown>>
-    | undefined
-========
 export interface UserAndRoleManagementModalProps {
   title?: string
   cancelButtonContent?: string
   proceedButtonContent?: string
   modalContent?: string | ReactElement
->>>>>>>> dev:src/components/organisms/modals/UserAndRoleManagementModal/UserAndRoleManagementModal.tsx
   isModalOpen?: boolean
   closeModal: () => void
   handleProceed?: () => void
   className?: string
-  deactivationForm?: JSX.Element
+  dynamicForm?: JSX.Element
 }
 
-<<<<<<<< HEAD:src/components/organisms/modals/RemoveModal/RemoveModal.tsx
-const RemoveModal: FC<RemoveModalProps> = ({
-========
 const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
->>>>>>>> dev:src/components/organisms/modals/UserAndRoleManagementModal/UserAndRoleManagementModal.tsx
   title,
   cancelButtonContent,
   proceedButtonContent,
@@ -46,12 +27,9 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
   closeModal,
   handleProceed,
   className,
-  deactivationForm,
+  dynamicForm,
 }) => {
-<<<<<<<< HEAD:src/components/organisms/modals/RemoveModal/RemoveModal.tsx
-========
   const { t } = useTranslation()
->>>>>>>> dev:src/components/organisms/modals/UserAndRoleManagementModal/UserAndRoleManagementModal.tsx
   return (
     <ModalBase
       title={title}
@@ -79,13 +57,9 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
       ]}
     >
       <div>{modalContent}</div>
-      {deactivationForm}
+      {dynamicForm}
     </ModalBase>
   )
 }
 
-<<<<<<<< HEAD:src/components/organisms/modals/RemoveModal/RemoveModal.tsx
-export default RemoveModal
-========
 export default UserAndRoleManagementModal
->>>>>>>> dev:src/components/organisms/modals/UserAndRoleManagementModal/UserAndRoleManagementModal.tsx

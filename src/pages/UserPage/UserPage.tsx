@@ -22,11 +22,11 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useForm } from 'react-hook-form'
 import { format } from 'date-fns'
-
-import classes from './classes.module.scss'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { formatDate } from 'helpers'
 import { useRolesFetch } from 'hooks/requests/useRoles'
+
+import classes from './classes.module.scss'
 
 interface FormValues {
   user_deactivation_date?: string
@@ -148,21 +148,20 @@ const UserPage: FC = () => {
     deactivatedDate.getTime() < currentDate.getTime()
 
   const handleArchiveModal = () => {
-    !isMainUser &&
-      showModal(ModalTypes.Remove, {
-        title: t('modal.archive_user'),
-        cancelButtonContent: t('button.no'),
-        proceedButtonContent: t('button.yes'),
-        modalContent: t('modal.archive_user_content'),
-        className: classes.archiveContent,
-        handleProceed: () => {
-          archiveUser()
-          navigate('/settings/users')
-        },
-      })
+    showModal(ModalTypes.UserAndRoleManagement, {
+      title: t('modal.archive_user_account'),
+      cancelButtonContent: t('button.no'),
+      proceedButtonContent: t('button.yes'),
+      modalContent: t('modal.archive_user_content'),
+      className: classes.archiveContent,
+      handleProceed: () => {
+        archiveUser()
+        navigate('/settings/users')
+      },
+    })
   }
   const handleDeactivateModal = () => {
-    showModal(ModalTypes.Remove, {
+    showModal(ModalTypes.UserAndRoleManagement, {
       title: t('modal.deactivate_user'),
       cancelButtonContent: t('button.cancel'),
       proceedButtonContent: t('button.yes'),
@@ -182,7 +181,7 @@ const UserPage: FC = () => {
 
   const handleEditModal = () => {
     !isMainUser &&
-      showModal(ModalTypes.Remove, {
+      showModal(ModalTypes.UserAndRoleManagement, {
         title: t('modal.edit_deactivation_date'),
         cancelButtonContent: t('button.cancel'),
         proceedButtonContent: t('button.yes'),
@@ -201,8 +200,8 @@ const UserPage: FC = () => {
   }
 
   const handleActivateModal = () => {
-    showModal(ModalTypes.Remove, {
-      title: t('modal.activate_user'),
+    showModal(ModalTypes.UserAndRoleManagement, {
+      title: t('modal.activate_user_account'),
       cancelButtonContent: t('button.cancel'),
       proceedButtonContent: t('button.activate'),
       modalContent: t('modal.activate_user_content'),
