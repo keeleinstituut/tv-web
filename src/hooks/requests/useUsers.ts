@@ -190,6 +190,10 @@ export const useActivateUser = () => {
     }) => {
       const { userId, notify_user, roles } = values
 
+      console.log('userId REQUEST', userId)
+      console.log('notify_user REQUEST', notify_user)
+      console.log('roles REQUEST', roles)
+
       return apiClient.post(endpoints.ACTIVATE_USER, {
         institution_user_id: userId,
         notify_user: notify_user,

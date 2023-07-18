@@ -173,30 +173,29 @@ const UserPage: FC = () => {
           userId: userId || '',
         })
       ),
-      deactivationForm: (
+      dynamicForm: (
         <DynamicForm fields={deactivationFormFields} control={control} />
       ),
     })
   }
 
   const handleEditModal = () => {
-    !isMainUser &&
-      showModal(ModalTypes.UserAndRoleManagement, {
-        title: t('modal.edit_deactivation_date'),
-        cancelButtonContent: t('button.cancel'),
-        proceedButtonContent: t('button.yes'),
-        modalContent: t('modal.deactivate_user_content'),
-        className: classes.deactivateContent,
-        handleProceed: handleSubmit((values) =>
-          deactivateUser({
-            user_deactivation_date: values?.user_deactivation_date || '',
-            userId: userId || '',
-          })
-        ),
-        deactivationForm: (
-          <DynamicForm fields={deactivationFormFields} control={control} />
-        ),
-      })
+    showModal(ModalTypes.UserAndRoleManagement, {
+      title: t('modal.edit_deactivation_date'),
+      cancelButtonContent: t('button.cancel'),
+      proceedButtonContent: t('button.yes'),
+      modalContent: t('modal.deactivate_user_content'),
+      className: classes.deactivateContent,
+      handleProceed: handleSubmit((values) =>
+        deactivateUser({
+          user_deactivation_date: values?.user_deactivation_date || '',
+          userId: userId || '',
+        })
+      ),
+      dynamicForm: (
+        <DynamicForm fields={deactivationFormFields} control={control} />
+      ),
+    })
   }
 
   const handleActivateModal = () => {
@@ -211,13 +210,20 @@ const UserPage: FC = () => {
           .filter((obj) => values?.user_activation_roles?.includes(obj.label))
           .map((obj) => obj?.id)
 
+        console.log('userId', userId)
+        console.log(
+          'values?.user_activation_notification',
+          values?.user_activation_notification
+        )
+        console.log('roleIdsArray', roleIdsArray)
+
         return activateUser({
           userId: userId || '',
           notify_user: values?.user_activation_notification || false,
           roles: roleIdsArray || ['Tellija id?'],
         })
       }),
-      deactivationForm: (
+      dynamicForm: (
         <DynamicForm fields={activationFormFields} control={control} />
       ),
     })
@@ -244,7 +250,7 @@ const UserPage: FC = () => {
                 ? !includes(userPrivileges, Privileges.ActivateUser)
                 : !includes(userPrivileges, Privileges.DeactivateUser)
             }
-            disabled={!isDeactivationDatePastCurrentDate && isUserDeactivated}
+            // disabled={!isDeactivationDatePastCurrentDate && isUserDeactivated}
           />
           <Button
             loading={isArchiving}
