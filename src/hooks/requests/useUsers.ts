@@ -8,13 +8,16 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { useState } from 'react'
-import { formatDate } from 'helpers'
 import {
   FilterFunctionType,
   PaginationFunctionType,
   SortingFunctionType,
 } from 'types/collective'
 import { isEmpty, keys, omit } from 'lodash'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+
+dayjs.extend(customParseFormat)
 
 export const useFetchUsers = () => {
   const [filters, setFilters] = useState<UserPayloadType>({})
@@ -163,9 +166,9 @@ export const useDeactivateUser = () => {
       userId: string
     }) => {
       const { user_deactivation_date: date, userId } = values
-
-      const order = [2, 1, 0]
-      const formattedDeactivationDate = formatDate(date || '', '/', '-', order)
+      const formattedDeactivationDate = dayjs(date, 'DD/MM/YYYY').format(
+        'YYYY-MM-DD'
+      )
 
       return apiClient.post(endpoints.DEACTIVATE_USER, {
         institution_user_id: userId,

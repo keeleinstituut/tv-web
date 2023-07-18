@@ -20,9 +20,9 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useForm } from 'react-hook-form'
-import { format } from 'date-fns'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import { formatDate } from 'helpers'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import advancedFormat from 'dayjs/plugin/advancedFormat'
 
 import classes from './classes.module.scss'
 
@@ -30,6 +30,9 @@ interface FormValues {
   user_deactivation_date?: string
   userId?: string
 }
+
+dayjs.extend(customParseFormat)
+dayjs.extend(advancedFormat)
 
 const UserPage: FC = () => {
   const { t } = useTranslation()
@@ -46,29 +49,20 @@ const UserPage: FC = () => {
   const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser()
   const deactivationDate = user?.deactivation_date || ''
 
-  const currentFormattedDefaultDate = format(new Date(), 'dd/MM/yyyy')
-  const user_deactivation_date = currentFormattedDefaultDate
+  const user_deactivation_date = dayjs(new Date()).format('DD/MM/YYYY')
 
   const { control, handleSubmit } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     defaultValues: { user_deactivation_date },
   })
 
-  const deactivationDateOrder = [2, 1, 0]
-  const formattedDeactivationDate = formatDate(
+  const formattedDeactivationDate = dayjs(
     deactivationDate,
-    '-',
-    '.',
-    deactivationDateOrder
-  )
+    'YYYY-MM-DD'
+  ).format('DD.MM.YYYY')
 
-  const currentDate = new Date()
-  currentDate.setFullYear(currentDate.getFullYear() + 1)
-  const formattedDate = currentDate.toLocaleDateString('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric',
-  })
+  const yearFromCurrentDate = dayjs().add(1, 'year').toDate()
+  const formattedDate = dayjs(yearFromCurrentDate).format('MM/DD/YYYY')
 
   const fields: FieldProps<FormValues>[] = [
     {
@@ -97,15 +91,9 @@ const UserPage: FC = () => {
   const userNameString = `${user.user.forename} ${user.user.surname}`
   const isUserDeactivated = !!deactivationDate
 
-  const dateParts = deactivationDate?.split('-')
-  const year = parseInt(dateParts[0])
-  const month = parseInt(dateParts[1]) - 1
-  const day = parseInt(dateParts[2])
-
-  const deactivatedDate = new Date(year, month, day)
-
+  const deactivatedDate = dayjs(deactivationDate, 'YYYY-MM-DD').toDate()
   const isDeactivationDatePastCurrentDate =
-    deactivatedDate.getTime() < currentDate.getTime()
+    deactivatedDate.getTime() < new Date().getTime()
 
   const handleArchiveModal = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
@@ -135,7 +123,7 @@ const UserPage: FC = () => {
     })
   }
 
-  const currentFormattedDate = format(new Date(), 'yyyy-MM-dd')
+  const currentFormattedDate = dayjs(new Date()).format('YYYY-MM-DD')
   const isUserDeactivatedImmediately = deactivationDate === currentFormattedDate
 
   const editModalTitle = t('modal.edit_deactivation_date')
