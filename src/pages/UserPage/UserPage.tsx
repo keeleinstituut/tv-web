@@ -62,6 +62,14 @@ const UserPage: FC = () => {
     deactivationDateOrder
   )
 
+  const currentDate = new Date()
+  currentDate.setFullYear(currentDate.getFullYear() + 1)
+  const formattedDate = currentDate.toLocaleDateString('en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+  })
+
   const fields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Date,
@@ -73,6 +81,8 @@ const UserPage: FC = () => {
         required: true,
       },
       className: classes.calenderPosition,
+      minDate: new Date(),
+      maxDate: new Date(formattedDate),
     },
   ]
 
@@ -93,7 +103,6 @@ const UserPage: FC = () => {
   const day = parseInt(dateParts[2])
 
   const deactivatedDate = new Date(year, month, day)
-  const currentDate = new Date()
 
   const isDeactivationDatePastCurrentDate =
     deactivatedDate.getTime() < currentDate.getTime()
@@ -101,8 +110,6 @@ const UserPage: FC = () => {
   const handleArchiveModal = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
       title: t('modal.archive_user_account'),
-      cancelButtonContent: t('button.no'),
-      proceedButtonContent: t('button.yes'),
       modalContent: t('modal.archive_user_content'),
       className: classes.archiveContent,
       handleProceed: () => {
@@ -111,28 +118,11 @@ const UserPage: FC = () => {
       },
     })
   }
-  const handleDeactivateModal = () => {
-    showModal(ModalTypes.UserAndRoleManagement, {
-      title: t('modal.deactivate_user'),
-      cancelButtonContent: t('button.cancel'),
-      proceedButtonContent: t('button.yes'),
-      modalContent: t('modal.deactivate_user_content'),
-      className: classes.deactivateContent,
-      handleProceed: handleSubmit((values) =>
-        deactivateUser({
-          user_deactivation_date: values?.user_deactivation_date || '',
-          userId: userId || '',
-        })
-      ),
-      dynamicForm: <DynamicForm fields={fields} control={control} />,
-    })
-  }
 
-  const handleEditModal = () => {
+  const handleDeactivateModal = (title: string) => {
     showModal(ModalTypes.UserAndRoleManagement, {
-      title: t('modal.edit_deactivation_date'),
+      title: title,
       cancelButtonContent: t('button.cancel'),
-      proceedButtonContent: t('button.yes'),
       modalContent: t('modal.deactivate_user_content'),
       className: classes.deactivateContent,
       handleProceed: handleSubmit((values) =>
@@ -147,6 +137,9 @@ const UserPage: FC = () => {
 
   const currentFormattedDate = format(new Date(), 'yyyy-MM-dd')
   const isUserDeactivatedImmediately = deactivationDate === currentFormattedDate
+
+  const editModalTitle = t('modal.edit_deactivation_date')
+  const deactivateModalTitle = t('modal.deactivate_user')
 
   return (
     <>
@@ -163,7 +156,11 @@ const UserPage: FC = () => {
                 : t('button.deactivate_account')
             }
             //TODO handleActivateModal
-            onClick={isUserDeactivated ? undefined : handleDeactivateModal}
+            onClick={
+              isUserDeactivated
+                ? undefined
+                : () => handleDeactivateModal(deactivateModalTitle)
+            }
             hidden={
               isUserDeactivated
                 ? !includes(userPrivileges, Privileges.ActivateUser)
@@ -188,7 +185,10 @@ const UserPage: FC = () => {
         {t('label.future_user_deactivation_date', {
           deactivationDate: formattedDeactivationDate,
         })}
-        <BaseButton loading={isDeactivating} onClick={handleEditModal}>
+        <BaseButton
+          loading={isDeactivating}
+          onClick={() => handleDeactivateModal(editModalTitle)}
+        >
           <Edit className={classes.editIcon} />
         </BaseButton>
       </div>
