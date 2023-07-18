@@ -115,12 +115,18 @@ const UserPage: FC = () => {
       multiple: true,
       buttons: true,
       tags: true,
+      rules: {
+        required: true,
+      },
     },
     {
       inputType: InputTypes.Checkbox,
       name: 'user_activation_notification',
       label: t('label.user_activation_notification'),
       ariaLabel: t('label.user_activation_notification'),
+      rules: {
+        required: true,
+      },
     },
   ]
 
@@ -133,7 +139,6 @@ const UserPage: FC = () => {
   }
 
   const userNameString = `${user.user.forename} ${user.user.surname}`
-  const isMainUser = some(user?.roles, (mainUser) => mainUser?.is_root)
   const isUserDeactivated = !!deactivationDate
 
   const dateParts = deactivationDate?.split('-')
@@ -220,7 +225,7 @@ const UserPage: FC = () => {
         return activateUser({
           userId: userId || '',
           notify_user: values?.user_activation_notification || false,
-          roles: roleIdsArray || ['Tellija id?'],
+          roles: roleIdsArray || [],
         })
       }),
       dynamicForm: (
