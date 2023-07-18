@@ -47,8 +47,8 @@
   position: fixed;
 }
 
-.deactivateContent > div,
-.activateContent > div {
+.deactivateContent > div > div > div,
+.activateContent > div > div > div {
   color: $color-primary;
 }
 
