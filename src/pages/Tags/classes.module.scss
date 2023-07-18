@@ -31,7 +31,7 @@
   align-items: flex-end;
 }
 
-.tagSeparator {
+.addingTagsSeparator {
   margin: 0 spacing(4);
   width: 1px;
   background-color: $color-background-dark;
@@ -43,13 +43,13 @@
 }
 
 .tagInputField {
-  width: 508px;
-  padding: spacing(2);
-  background-color: $color-white;
-  border: solid $color-input-border 1px;
-  border-radius: 4px;
-  height: 100%;
   margin-bottom: spacing(2);
+}
+
+.tagInputField input {
+  width: 508px;
+  height: 100%;
+  padding: spacing(2);
 }
 
 .newRow {
