@@ -13,7 +13,6 @@ import InputWrapper, {
 } from 'components/molecules/InputWrapper/InputWrapper'
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './classes.module.scss'
-import { formatDate } from 'helpers'
 
 type DatePickerComponentProps = {
   ariaLabel?: string
@@ -30,6 +29,7 @@ export type DatePickerInputProps = DatePickerComponentProps &
   Omit<InputWrapperProps, 'children'>
 
 registerLocale('et-EE', et)
+dayjs.extend(customParseFormat)
 
 const changeDateToString = (dateObject: Date | null | undefined) =>
   dayjs(dateObject).format('DD/MM/YYYY')
@@ -48,24 +48,14 @@ const DatePickerComponent = ({
   const handleDateChange: ReactDatePickerProps['onChange'] = (value) =>
     onChange(changeDateToString(value))
 
-  const convertedValue = dayjs(value ? value : null, 'DD/MM/YYYY')
-  console.log('convertedValue', convertedValue)
-  dayjs.extend(customParseFormat)
-  const splittedDayValue = value ? convertedValue?.format('YYYY-MM-DD') : null
-
-  const order = [2, 1, 0]
-  const splittedDayValueOld = formatDate(value || '', '/', '-', order)
-
-  console.log('splittedDayValue', splittedDayValue)
-  console.log('splittedDayValueOld', splittedDayValueOld)
-
-  console.log('value', value)
+  const convertedValue = dayjs(value, 'DD/MM/YYYY')
+  const splittedDayValue = convertedValue?.format('YYYY-MM-DD')
 
   return (
     <>
       <DatePicker
         id={name}
-        selected={value ? new Date(splittedDayValueOld) : null}
+        selected={value ? new Date(splittedDayValue) : null}
         dateFormat={'dd.MM.yyyy'}
         locale="et-EE"
         placeholderText={placeholder}
