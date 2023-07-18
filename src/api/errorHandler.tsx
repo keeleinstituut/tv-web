@@ -53,13 +53,13 @@ const handleError = async (error?: AxiosError) => {
   }
 
   if (code === 403) {
-    // Attemp token refresh, log out if it fails
+    // Attempt token refresh, log out if it fails
     startRefreshingToken(() => {
       keycloak.logout({
         redirectUri: `${window.location.href}#show-error`,
       })
     }, true)
-    return true
+    throw error
   } else if (code === 422) {
     // Throw only validation errors
     throw error?.response?.data
