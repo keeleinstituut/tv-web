@@ -5,15 +5,15 @@ import {
   UserDataType,
 } from 'types/users'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { endpoints } from 'api/endpoints'
+import { apiClient } from 'api'
+import { useState } from 'react'
+import { formatDate } from 'helpers'
 import {
   FilterFunctionType,
   PaginationFunctionType,
   SortingFunctionType,
 } from 'types/collective'
-import { endpoints } from 'api/endpoints'
-import { apiClient } from 'api'
-import { useState } from 'react'
-import { formatDate } from 'helpers'
 import { isEmpty, keys, omit } from 'lodash'
 
 export const useFetchUsers = () => {

@@ -52,23 +52,12 @@ const UserPage: FC = () => {
   const { activateUser, isLoading: isActivating } = useActivateUser()
   const deactivationDate = user?.deactivation_date || ''
 
-  const currentDefaultDate = format(new Date(), 'dd.MM.yyyy')
-  const defaultDateOrder = [0, 1, 2]
-  const formattedDefaultDate = formatDate(
-    currentDefaultDate || '',
-    '.',
-    '/',
-    defaultDateOrder
-  )
-
-  const user_deactivation_date = formattedDefaultDate
+  const currentFormattedDefaultDate = format(new Date(), 'dd/MM/yyyy')
+  const user_deactivation_date = currentFormattedDefaultDate
 
   const { control, handleSubmit } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     defaultValues: { user_deactivation_date },
-    resetOptions: {
-      keepErrors: true,
-    },
   })
 
   const deactivationDateOrder = [2, 1, 0]
@@ -167,7 +156,7 @@ const UserPage: FC = () => {
   }
   const handleDeactivateModal = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
-      title: t('modal.deactivate_user'),
+      title: t('modal.deactivate_user_account'),
       cancelButtonContent: t('button.cancel'),
       proceedButtonContent: t('button.yes'),
       modalContent: t('modal.deactivate_user_content'),
@@ -227,13 +216,16 @@ const UserPage: FC = () => {
     })
   }
 
+  const currentFormattedDate = format(new Date(), 'yyyy-MM-dd')
+  const isUserDeactivatedImmediately = deactivationDate === currentFormattedDate
+
   return (
     <>
       <div className={classes.titleRow}>
         <h1>{userNameString}</h1>
         <div className={classes.buttonsContainer}>
           <Button
-            loading={isUserDeactivated ? isDeactivating : isActivating}
+            loading={isUserDeactivated ? isActivating : isDeactivating}
             appearance={AppearanceTypes.Secondary}
             children={
               isUserDeactivated
@@ -260,7 +252,10 @@ const UserPage: FC = () => {
         </div>
       </div>
 
-      <div hidden={!isUserDeactivated} className={classes.deactivationDate}>
+      <div
+        hidden={!isUserDeactivated || isUserDeactivatedImmediately}
+        className={classes.deactivationDate}
+      >
         {t('label.future_user_deactivation_date', {
           deactivationDate: formattedDeactivationDate,
         })}
