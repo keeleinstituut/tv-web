@@ -3,6 +3,7 @@ export enum Privileges {
   ViewRole = 'VIEW_ROLE',
   EditRole = 'EDIT_ROLE',
   DeleteRole = 'DELETE_ROLE',
+  ViewUser = 'VIEW_USER',
   AddUser = 'ADD_USER',
   EditUser = 'EDIT_USER',
   ExportUser = 'EXPORT_USER',

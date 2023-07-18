@@ -6,13 +6,14 @@ import { map } from 'lodash'
 import { deepOmit } from 'helpers'
 import i18n from 'i18n/i18n'
 import { createBrowserRouter, RouteObject } from 'react-router-dom'
+import { Privileges } from 'types/privileges'
 
 // import pages
 import Dashboard from 'pages/Dashboard/Dashboard'
 import Orders from 'pages/Orders/Orders'
 import SubOrders from 'pages/SubOrders/SubOrders'
 import MyTasks from 'pages/MyTasks/MyTasks'
-import PerformersDatabase from 'pages/PerformersDatabase/PerformersDatabase'
+import VendorsDatabase from 'pages/VendorsDatabase/VendorsDatabase'
 import TranslationMemories from 'pages/TranslationMemories/TranslationMemories'
 import UsersManagement from 'pages/UsersManagement/UsersManagement'
 import AddUsersPage from 'pages/AddUsersPage/AddUsersPage'
@@ -20,10 +21,11 @@ import UserPage from 'pages/UserPage/UserPage'
 import RolesManagement from 'pages/RolesManagement/RolesManagement'
 import Logs from 'pages/Logs/Logs'
 import NewOrder from 'pages/NewOrder/NewOrder'
-import Flags from 'pages/Flags/Flags'
+import Tags from 'pages/Tags/Tags'
 import ReportExport from 'pages/ReportExport/ReportExport'
 import InstitutionSettings from 'pages/InstitutionSettings/InstitutionSettings'
 import TechnicalSettings from 'pages/TechnicalSettings/TechnicalSettings'
+import OrderPage from 'pages/OrderPage/OrderPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import Components from 'pages/Components/Components'
@@ -32,12 +34,12 @@ import Components from 'pages/Components/Components'
 
 import { ReactComponent as HomeIcon } from 'assets/icons/home.svg'
 import { ReactComponent as OrdersIcon } from 'assets/icons/orders.svg'
-import { ReactComponent as PerformersIcon } from 'assets/icons/performers.svg'
+import { ReactComponent as VendorsIcon } from 'assets/icons/vendors.svg'
 import { ReactComponent as MemoriesIcon } from 'assets/icons/memories.svg'
 import { ReactComponent as UsersIcon } from 'assets/icons/users.svg'
 import { ReactComponent as RolesIcon } from 'assets/icons/roles.svg'
 import { ReactComponent as LogsIcon } from 'assets/icons/logs.svg'
-import { ReactComponent as FlagsIcon } from 'assets/icons/flags.svg'
+import { ReactComponent as TagsIcon } from 'assets/icons/tags.svg'
 import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
@@ -48,6 +50,7 @@ export type FullRouteObject = Omit<RouteObject, 'children'> & {
   Icon?: FC<SVGProps<SVGSVGElement>>
   children?: FullRouteObject[]
   isInterTitle?: boolean
+  privileges?: Privileges[]
 }
 
 export const protectedRoutes: FullRouteObject[] = [
@@ -61,18 +64,32 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'orders',
     label: i18n.t('menu.orders'),
     Icon: OrdersIcon,
+    privileges: [
+      Privileges.CreateProject,
+      Privileges.ManageProject,
+      Privileges.ReceiveAndManageProject,
+      Privileges.ViewInstitutionProjectList,
+      Privileges.ViewInstitutionProjectDetail,
+      Privileges.ViewPersonalProject,
+    ],
     children: [
       {
         path: '',
         label: i18n.t('menu.orders'),
+        privileges: [
+          Privileges.ViewPersonalProject,
+          Privileges.ViewPersonalTask,
+        ],
         children: [
           {
             path: '',
             element: <Orders />,
+            privileges: [Privileges.ViewPersonalProject],
           },
           {
             path: 'new-order',
             element: <NewOrder />,
+            privileges: [Privileges.CreateProject],
           },
         ],
       },
@@ -80,25 +97,40 @@ export const protectedRoutes: FullRouteObject[] = [
         path: 'sub-orders',
         label: i18n.t('menu.sub_orders'),
         element: <SubOrders />,
+        privileges: [Privileges.ViewPersonalProject],
       },
       {
         path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
         element: <MyTasks />,
+        privileges: [Privileges.ViewPersonalTask],
+      },
+      {
+        path: ':orderId',
+        element: <OrderPage />,
+        privileges: [Privileges.ViewInstitutionProjectDetail],
       },
     ],
   },
   {
-    path: 'performers',
-    label: i18n.t('menu.performers_database'),
-    element: <PerformersDatabase />,
-    Icon: PerformersIcon,
+    path: 'vendors',
+    label: i18n.t('menu.vendors_database'),
+    element: <VendorsDatabase />,
+    Icon: VendorsIcon,
+    privileges: [Privileges.ViewVendorDb],
   },
   {
     path: 'memories',
     label: i18n.t('menu.translation_memories'),
     element: <TranslationMemories />,
     Icon: MemoriesIcon,
+    privileges: [
+      Privileges.CreateTm,
+      Privileges.ViewTm,
+      Privileges.ImportTm,
+      Privileges.ExportTm,
+      Privileges.EditTmMetadata,
+    ],
   },
   {
     path: 'user-details',
@@ -112,11 +144,44 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: 'users',
         label: i18n.t('menu.user_management'),
+        privileges: [
+          Privileges.AddUser,
+          Privileges.ViewUser,
+          Privileges.EditUser,
+          Privileges.DeactivateUser,
+          Privileges.ActivateUser,
+          Privileges.ArchiveUser,
+          Privileges.ExportUser,
+          Privileges.EditUserVacation,
+          Privileges.EditUserWorktime,
+        ],
         Icon: UsersIcon,
         children: [
-          { path: '', element: <UsersManagement /> },
-          { path: ':userId', element: <UserPage /> },
-          { path: 'add', element: <AddUsersPage /> },
+          {
+            path: '',
+            element: <UsersManagement />,
+            privileges: [
+              Privileges.AddUser,
+              Privileges.ViewUser,
+              Privileges.EditUser,
+              Privileges.DeactivateUser,
+              Privileges.ActivateUser,
+              Privileges.ArchiveUser,
+              Privileges.ExportUser,
+              Privileges.EditUserVacation,
+              Privileges.EditUserWorktime,
+            ],
+          },
+          {
+            path: ':userId',
+            element: <UserPage />,
+            privileges: [Privileges.ViewUser],
+          },
+          {
+            path: 'add',
+            element: <AddUsersPage />,
+            privileges: [Privileges.AddUser],
+          },
         ],
       },
       {
@@ -124,18 +189,30 @@ export const protectedRoutes: FullRouteObject[] = [
         label: i18n.t('menu.role_management'),
         element: <RolesManagement />,
         Icon: RolesIcon,
+        privileges: [
+          Privileges.AddRole,
+          Privileges.ViewRole,
+          Privileges.EditRole,
+          Privileges.DeleteRole,
+        ],
       },
       {
         path: 'logs',
         label: i18n.t('menu.logs'),
         element: <Logs />,
         Icon: LogsIcon,
+        privileges: [Privileges.ViewAuditLog],
       },
       {
-        path: 'flags',
-        label: i18n.t('menu.flags'),
-        element: <Flags />,
-        Icon: FlagsIcon,
+        path: 'tags',
+        label: i18n.t('menu.tags'),
+        element: <Tags />,
+        Icon: TagsIcon,
+        privileges: [
+          Privileges.AddTag,
+          Privileges.EditTag,
+          Privileges.DeleteTag,
+        ],
       },
       {
         path: 'report',
