@@ -5,7 +5,7 @@ import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, join } from 'lodash'
+import { map, join, includes } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -21,6 +21,8 @@ import {
 } from 'types/collective'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import classes from './classes.module.scss'
+import { Privileges } from 'types/privileges'
+import useAuth from 'hooks/useAuth'
 
 type User = {
   id: string
@@ -50,6 +52,8 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
   handlePaginationChange,
 }) => {
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
+
   const { rolesFilters = [] } = useRolesFetch()
   const { departmentFilters = [] } = useDepartmentsFetch()
 
@@ -79,6 +83,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
             icon={ArrowRight}
             ariaLabel={t('label.button_arrow')}
             iconPositioning={IconPositioningTypes.Left}
+            disabled={!includes(userPrivileges, Privileges.ViewUser)}
             href={`/settings/users/${getValue()}`}
           >
             {'ID xxxxxx'}

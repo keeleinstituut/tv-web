@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { FC } from 'react'
 import AddedUsersTable from 'components/organisms/tables/AddedUsersTable/AddedUsersTable'
 import classes from './classes.module.scss'
-import { isEmpty } from 'lodash'
+import { isEmpty, includes } from 'lodash'
 import classNames from 'classnames'
 import { Root } from '@radix-ui/react-form'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import UserManagementCheatSheet from 'components/molecules/cheatSheets/UserManagementCheatSheet'
+import useAuth from 'hooks/useAuth'
+import { Privileges } from 'types/privileges'
 
 const UsersManagement: FC = () => {
   const {
@@ -18,6 +20,7 @@ const UsersManagement: FC = () => {
     handelSortingChange,
     handlePaginationChange,
   } = useFetchUsers()
+  const { userPrivileges } = useAuth()
   const { t } = useTranslation()
 
   return (
@@ -35,7 +38,12 @@ const UsersManagement: FC = () => {
         >
           {t('button.export_csv')}
         </Button>
-        <Button href="/settings/users/add">{t('button.add_users')}</Button>
+        <Button
+          href="/settings/users/add"
+          hidden={!includes(userPrivileges, Privileges.AddUser)}
+        >
+          {t('button.add_users')}
+        </Button>
       </div>
       {/* TODO: remove this form root wrapper, once we refactor CheckBox */}
       <Root>

@@ -61,7 +61,9 @@
     "next_page": "Järgmine lehekülg",
     "export_csv": "Ekspordi CSV",
     "add_users": "Lisa kasutajad",
-    "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt"
+    "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
+    "my_details": "Minu andmed",
+    "change_institution": "Vaheta asutust"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -81,13 +83,13 @@
     "orders": "Tellimused",
     "sub_orders": "Alam-tellimused",
     "my_tasks": "Minu ülesanded",
-    "performers_database": "Teostajate andmebaas",
+    "vendors_database": "Teostajate andmebaas",
     "translation_memories": "Tõlkemälud",
     "settings": "Sätted",
     "user_management": "Kasutajate haldus",
     "role_management": "Rollihaldus",
     "logs": "Logid",
-    "flags": "Sildid",
+    "tags": "Sildid",
     "report_export": "Aruande eksport",
     "institution_settings": "Asutuse sätted",
     "technical_settings": "Tehnilised sätted",
@@ -97,6 +99,9 @@
   "alt": {
     "header_logo": "Logo",
     "checked": "Valitud"
+  },
+  "header": {
+    "my_role": "Minu roll:"
   },
   "roles": {
     "roles_management": "Rollihaldus",
@@ -194,7 +199,7 @@
     "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
     "role_updated": "Roll „{{roleName}}“ on edukalt muudetud",
     "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud",
-    "users_uploaded": "Kasutajad on edukalt lisatud"
+    "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile."
   },
   "notification": {
     "announcement": "Teade",
@@ -202,6 +207,8 @@
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
     "main_user_deletion": "Peakasutaja rolli ei saa kustutada",
     "main_user_privilege_change": "Peakasutaja privileege ei saa muuta",
+    "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
+    "warning": "Hoiatus",
     "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida"
   },
   "helper": {
@@ -217,5 +224,8 @@
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
+  },
+  "warning": {
+    "missing_permissions": "Teil puudub ligipääs soovitud lehele"
   }
 }
