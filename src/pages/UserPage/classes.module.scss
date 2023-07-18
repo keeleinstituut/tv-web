@@ -49,3 +49,8 @@
 :global(.react-datepicker__tab-loop) {
   position: fixed;
 }
+
+.deactivateContent h1,
+.deactivateContent > div > div {
+  max-width: 70%;
+}
