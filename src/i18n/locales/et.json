@@ -59,7 +59,9 @@
     "export_csv": "Ekspordi CSV",
     "add_users": "Lisa kasutajad",
     "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
-    "add": "Lisa"
+    "add": "Lisa",
+    "my_details": "Minu andmed",
+    "change_institution": "Vaheta asutust"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -79,7 +81,7 @@
     "orders": "Tellimused",
     "sub_orders": "Alam-tellimused",
     "my_tasks": "Minu ülesanded",
-    "performers_database": "Teostajate andmebaas",
+    "vendors_database": "Teostajate andmebaas",
     "translation_memories": "Tõlkemälud",
     "settings": "Sätted",
     "user_management": "Kasutajate haldus",
@@ -95,6 +97,9 @@
   "alt": {
     "header_logo": "Logo",
     "checked": "Valitud"
+  },
+  "header": {
+    "my_role": "Minu roll:"
   },
   "roles": {
     "roles_management": "Rollihaldus",
@@ -149,7 +154,10 @@
   "modal": {
     "pick_institution_title": "Vali asutus, mille alt soovid Tõlkeväravasse siseneda.",
     "no_institutions_title": "Tundub, et sul puuduvad asutused mille vahel valida.",
-    "institutions": "ASUTUSED"
+    "institutions": "ASUTUSED",
+    "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
+    "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
+    "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida."
   },
   "cheat_sheet": {
     "user_management": {
@@ -198,7 +206,7 @@
     "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
     "role_updated": "Roll „{{roleName}}“ on edukalt muudetud",
     "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud",
-    "users_uploaded": "Kasutajad on edukalt lisatud"
+    "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile."
   },
   "notification": {
     "announcement": "Teade",
@@ -206,7 +214,9 @@
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
     "main_user_deletion": "Peakasutaja rolli ei saa kustutada",
     "main_user_privilege_change": "Peakasutaja privileege ei saa muuta",
-    "delete_role": "Kas oled kindel, et soovid rolli kustutada?"
+    "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
+    "warning": "Hoiatus",
+    "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida"
   },
   "helper": {
     "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga."
@@ -230,6 +240,8 @@
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
     "select_tag_category": "Vali sildi kategooria"
-
+  },
+  "warning": {
+    "missing_permissions": "Teil puudub ligipääs soovitud lehele"
   }
 }

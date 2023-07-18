@@ -78,6 +78,7 @@ const RoleForm: FC<RoleFormProps> = ({
   const { updateRole, isLoading } = useUpdateRole({ roleId: id })
   const { createRole, isLoading: isCreating } = useCreateRole()
   const { deleteRole, isLoading: isDeleting } = useDeleteRole({ roleId: id })
+
   const {
     control,
     handleSubmit,
@@ -210,7 +211,7 @@ const RoleForm: FC<RoleFormProps> = ({
 
   const handleDeleteModal = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
-      title: t('notification.delete_role'),
+      title: t('modal.delete_role'),
       cancelButtonContent: t('button.no'),
       proceedButtonContent: t('button.yes'),
       handleProceed: deleteRole,
