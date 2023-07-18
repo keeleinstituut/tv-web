@@ -8,7 +8,7 @@ import {
 } from 'hooks/requests/useUsers'
 import { FC } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { compact, includes, map, some } from 'lodash'
+import { compact, includes, map } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
@@ -215,13 +215,6 @@ const UserPage: FC = () => {
           .filter((obj) => values?.user_activation_roles?.includes(obj.label))
           .map((obj) => obj?.id)
 
-        console.log('userId', userId)
-        console.log(
-          'values?.user_activation_notification',
-          values?.user_activation_notification
-        )
-        console.log('roleIdsArray', roleIdsArray)
-
         return activateUser({
           userId: userId || '',
           notify_user: values?.user_activation_notification || false,
@@ -255,7 +248,7 @@ const UserPage: FC = () => {
                 ? !includes(userPrivileges, Privileges.ActivateUser)
                 : !includes(userPrivileges, Privileges.DeactivateUser)
             }
-            // disabled={!isDeactivationDatePastCurrentDate && isUserDeactivated}
+            disabled={!isDeactivationDatePastCurrentDate && isUserDeactivated}
           />
           <Button
             loading={isArchiving}
