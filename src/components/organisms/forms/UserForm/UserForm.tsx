@@ -16,7 +16,6 @@ import {
   isEmpty,
   map,
   startsWith,
-  compact,
 } from 'lodash'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
@@ -46,7 +45,6 @@ const UserForm: FC<UserFormProps> = ({
   email,
   phone,
   department,
-  // roles,
 }) => {
   // hooks
   const { personal_identification_code, forename, surname } = user
@@ -78,17 +76,12 @@ const UserForm: FC<UserFormProps> = ({
     defaultValues: defaultValues,
   })
 
-  const roleOptions = compact(
-    map(existingRoles, ({ name, id }) => {
-      if (name) {
-        return {
-          label: name,
-          value: name,
-          id: id,
-        }
-      }
-    })
-  )
+  const roleOptions = map(existingRoles, ({ name, id }) => {
+    return {
+      label: name || '',
+      value: id || '',
+    }
+  })
 
   // map data for rendering
   const fields: FieldProps<FormValues>[] = [
