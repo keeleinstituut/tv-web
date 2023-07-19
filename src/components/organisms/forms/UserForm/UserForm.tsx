@@ -16,6 +16,7 @@ import {
   isEmpty,
   map,
   startsWith,
+  compact,
 } from 'lodash'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
@@ -26,6 +27,7 @@ import useValidators from 'hooks/useValidators'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
+import { useRolesFetch } from 'hooks/requests/useRoles'
 
 interface FormValues {
   personal_identification_code?: string
@@ -52,6 +54,7 @@ const UserForm: FC<UserFormProps> = ({
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator } = useValidators()
   const { updateUser, isLoading } = useUpdateUser({ userId: id })
+  const { existingRoles = [] } = useRolesFetch()
 
   const defaultValues = useMemo(
     () => ({
@@ -74,6 +77,18 @@ const UserForm: FC<UserFormProps> = ({
     reValidateMode: 'onSubmit',
     defaultValues: defaultValues,
   })
+
+  const roleOptions = compact(
+    map(existingRoles, ({ name, id }) => {
+      if (name) {
+        return {
+          label: name,
+          value: name,
+          id: id,
+        }
+      }
+    })
+  )
 
   // map data for rendering
   const fields: FieldProps<FormValues>[] = [
@@ -140,13 +155,18 @@ const UserForm: FC<UserFormProps> = ({
       className: classes.inputInternalPosition,
     },
     {
-      inputType: InputTypes.Text,
-      disabled: true,
+      inputType: InputTypes.Selections,
       ariaLabel: t('label.roles'),
       placeholder: t('placeholder.roles'),
       label: `${t('label.roles')}*`,
       name: 'roles',
       className: classes.inputInternalPosition,
+      options: roleOptions,
+      multiple: true,
+      buttons: true,
+      rules: {
+        required: true,
+      },
     },
   ]
 
@@ -171,6 +191,9 @@ const UserForm: FC<UserFormProps> = ({
       const surname = size(splitName) > 1 ? last(splitName) : ''
       const forename =
         size(splitName) > 1 ? join(initial(splitName), ' ') : name
+
+      console.log('roles', roles)
+
       const payload: UserPostType = {
         ...rest,
         ...(isEmpty(roles) ? {} : { roles }),
