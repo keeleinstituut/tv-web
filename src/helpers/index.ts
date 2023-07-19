@@ -1,4 +1,16 @@
-import { omit, map, split, trim, reduce, values, join, compact } from 'lodash'
+import {
+  omit,
+  map,
+  split,
+  trim,
+  reduce,
+  values,
+  join,
+  compact,
+  replace,
+} from 'lodash'
+import { FullRouteObject } from 'router/router'
+import { Privileges } from 'types/privileges'
 
 // TODO: split these into separate helper files, if we have too many
 interface ObjectWithChildren {
@@ -95,3 +107,48 @@ export const downloadFile = ({
   a.click()
   a.remove()
 }
+
+export const getPathWithPrivileges = ({
+  path,
+  privileges,
+  parentPath,
+  children,
+}: {
+  path?: string
+  privileges?: Privileges[]
+  parentPath?: string
+  children?: FullRouteObject[]
+}): object => {
+  // if parentPath is not an empty string, we need the /
+  // otherwise there is no need
+  const parentPathString = parentPath ? `${parentPath}/` : ''
+  // If path is empty string, then we use parent path
+  // otherwise we construct the full path
+  const pathKey = !path ? `${parentPath || ''}` : `${parentPathString}${path}`
+  return {
+    ...(privileges ? { [`/${pathKey}`]: privileges } : {}),
+    ...(children
+      ? reduce(
+          children,
+          (result, value) => {
+            if (!value) return result
+            return {
+              ...result,
+              ...getPathWithPrivileges({ ...value, parentPath: pathKey }),
+            }
+          },
+          {}
+        )
+      : {}),
+  }
+}
+
+export const constructFullPath = (originalPath: string, params: object) =>
+  reduce(
+    params,
+    (result, value, key) => {
+      if (!key) return result
+      return replace(result, `:${key}`, value)
+    },
+    originalPath
+  )

@@ -3,11 +3,13 @@ import { Outlet } from 'react-router-dom'
 import useKeycloak, { AuthContext } from 'hooks/useKeycloak'
 import ModalRoot from 'components/organisms/modals/ModalRoot'
 import Landing from 'pages/Landing/Landing'
+import useAuthRedirect from 'hooks/useAuthRedirect'
 import Loader from 'components/atoms/Loader/Loader'
 import classes from './classes.module.scss'
 
 const AuthWrapper: FC<PropsWithChildren> = () => {
   const { keycloak, isUserLoggedIn, userInfo, isLoading } = useKeycloak()
+  useAuthRedirect(userInfo?.tolkevarav?.privileges)
 
   return (
     <AuthContext.Provider

@@ -10,6 +10,7 @@ import { Root } from '@radix-ui/react-form'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import UserManagementCheatSheet from 'components/molecules/cheatSheets/UserManagementCheatSheet'
 import useAuth from 'hooks/useAuth'
+import { Privileges } from 'types/privileges'
 
 const UsersManagement: FC = () => {
   const {
@@ -46,7 +47,12 @@ const UsersManagement: FC = () => {
         >
           {t('button.export_csv')}
         </Button>
-        <Button href="/settings/users/add">{t('button.add_users')}</Button>
+        <Button
+          href="/settings/users/add"
+          hidden={!includes(userPrivileges, Privileges.AddUser)}
+        >
+          {t('button.add_users')}
+        </Button>
       </div>
       {/* TODO: remove this form root wrapper, once we refactor CheckBox */}
       <Root>
