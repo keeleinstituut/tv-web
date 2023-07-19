@@ -152,11 +152,19 @@ const SelectionControlsInput = forwardRef<
         value={value}
         buttons={buttons}
         helperText={helperText}
-        selectedOptionObjects={selectedOptionObjects}
         tags={tags}
         setIsOpen={setIsOpen}
         errorZIndex={errorZIndex}
       />
+      <div className={classNames(tags && classes.tagsContainer)}>
+        {map(selectedOptionObjects, ({ label }, index) => {
+          return (
+            <span hidden={!tags} className={classes.tag} key={index}>
+              {label}
+            </span>
+          )
+        })}
+      </div>
     </InputWrapper>
   )
 })

@@ -3,6 +3,7 @@ import {
   UsersDataType,
   UserPayloadType,
   UserDataType,
+  UserStatusType,
 } from 'types/users'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -158,27 +159,28 @@ export const useArchiveUser = ({ userId }: { userId?: string }) => {
   }
 }
 
-export const useDeactivateUser = ({ userId }: { userId?: string }) => {
+export const useDeactivateUser = ({
+  institution_user_id,
+}: {
+  institution_user_id?: string
+}) => {
   const queryClient = useQueryClient()
   const { mutateAsync: deactivateUser, isLoading } = useMutation({
-    mutationKey: ['users', userId],
-    mutationFn: async (values: {
-      user_deactivation_date: string
-      userId: string
-    }) => {
-      const { user_deactivation_date: date, userId } = values
+    mutationKey: ['users', institution_user_id],
+    mutationFn: async (payload: UserStatusType) => {
+      const { deactivation_date: date, institution_user_id } = payload
       const formattedDeactivationDate = dayjs(date, 'DD/MM/YYYY').format(
         'YYYY-MM-DD'
       )
       return apiClient.post(endpoints.DEACTIVATE_USER, {
-        institution_user_id: userId,
+        institution_user_id: institution_user_id,
         deactivation_date: formattedDeactivationDate,
       })
     },
 
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
-        ['users', userId],
+        ['users', institution_user_id],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
         (oldData?: UsersDataType) => {
@@ -195,6 +197,43 @@ export const useDeactivateUser = ({ userId }: { userId?: string }) => {
 
   return {
     deactivateUser,
+    isLoading,
+  }
+}
+
+export const useActivateUser = ({
+  institution_user_id,
+}: {
+  institution_user_id?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: activateUser, isLoading } = useMutation({
+    mutationKey: ['users', institution_user_id],
+    mutationFn: async (payload: UserStatusType) => {
+      return apiClient.post(endpoints.ACTIVATE_USER, {
+        ...payload,
+      })
+    },
+
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', institution_user_id],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+
+          if (!previousData) return oldData
+          const newData = { ...oldData, ...data }
+
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    activateUser,
     isLoading,
   }
 }
