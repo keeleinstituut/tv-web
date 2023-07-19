@@ -5,30 +5,32 @@ import ModalBase, {
 import { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { FC, ReactElement, useState } from 'react'
-import ProgressBar, { Step } from 'components/atoms/ProgressBar/ProgressBar'
-import { find, size } from 'lodash'
+import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
+import { find, map, size } from 'lodash'
 
 interface FormDataProps {
+  label: string
   title: string
   helperText: string
   modalContent: ReactElement | string
 }
 
 export interface FormProgressProps {
-  steps?: Step[]
   formData?: FormDataProps[]
   isModalOpen?: boolean
   closeModal: () => void
 }
 
 const FormProgressModal: FC<FormProgressProps> = ({
-  steps,
   formData,
   isModalOpen,
   closeModal,
 }) => {
   const { t } = useTranslation()
   const [activeStep, setActiveStep] = useState(1)
+  const steps = map(formData, ({ label }) => {
+    return { label }
+  })
 
   const handleProceed = () => {
     if (size(steps) === activeStep) {

@@ -203,13 +203,9 @@ const Test: FC = () => {
   }
   const handleModalOpen = () => {
     showModal(ModalTypes.FormProgress, {
-      steps: [
-        { label: 'Vali keelepaarid' },
-        { label: 'Lisa oskused' },
-        { label: 'Lisa hinnakiri' },
-      ],
       formData: [
         {
+          label: 'Vali keelepaarid',
           title: 'Teostajale keelepaaride valimine',
           helperText:
             'Valida saab ühe algkeele ja ühe või mitu sihtkeelt. Vlaides rohkem kui ühe sihtkeele tuleb arvestada, et valtud keeltele saad sisestada ühed ja samad hinnad. Kui soovid igale keelepaarile sisestada einevaid ühiku hinnad, siis tuleb iga keelepaar sisestada edaldi.',
@@ -221,6 +217,7 @@ const Test: FC = () => {
           ),
         },
         {
+          label: 'Lisa oskused',
           title: 'Teostajale oskuste valimine',
           helperText:
             'Määra teostaja oskused, millele soovid ühikuhinnad lisada.',
@@ -232,6 +229,7 @@ const Test: FC = () => {
           ),
         },
         {
+          label: 'Lisa hinnakiri',
           title: 'Keelepaaridele hinnakirja määramine',
           helperText:
             'Määra oskusele ühikupõhised hinnad. Juhul, kui mõnda arvestusühikut selle teostaja puhul ei kasutata või puudub kokkulepitud hind, siis võib jätta selle ühiku hinnaks null',
