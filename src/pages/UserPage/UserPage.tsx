@@ -8,7 +8,7 @@ import {
 } from 'hooks/requests/useUsers'
 import { FC, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { compact, includes, join, map } from 'lodash'
+import { includes, join, map } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
@@ -28,14 +28,15 @@ import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
+import { UserStatusType } from 'types/users'
 
 import classes from './classes.module.scss'
 
 interface FormValues {
-  user_deactivation_date?: string
-  userId?: string
-  user_activation_roles?: (string | undefined)[]
-  user_activation_notification?: boolean
+  deactivation_date?: string
+  institution_user_id?: string
+  roles?: (string | undefined)[]
+  notify_user?: boolean
 }
 
 dayjs.extend(customParseFormat)
@@ -45,6 +46,7 @@ const UserPage: FC = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { userId } = useParams()
+
   const { userPrivileges } = useAuth()
 
   const { isLoading, isError, user } = useFetchUser({
@@ -54,9 +56,11 @@ const UserPage: FC = () => {
     userId: userId,
   })
   const { existingRoles = [] } = useRolesFetch()
-  const { activateUser, isLoading: isActivating } = useActivateUser({ userId })
+  const { activateUser, isLoading: isActivating } = useActivateUser({
+    institution_user_id: userId,
+  })
   const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser({
-    userId,
+    institution_user_id: userId,
   })
   const deactivationDate = user?.deactivation_date || ''
   const forename = user?.user?.forename || ''
@@ -66,11 +70,13 @@ const UserPage: FC = () => {
   const editModalTitle = t('modal.edit_deactivation_date')
   const deactivateModalTitle = t('modal.deactivate_user_account')
 
-  const user_deactivation_date = dayjs(new Date()).format('DD/MM/YYYY')
+  const institution_user_id = userId
+
+  const deactivation_date = dayjs(new Date()).format('DD/MM/YYYY')
 
   const { control, handleSubmit, setError } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
-    defaultValues: { user_deactivation_date },
+    defaultValues: { deactivation_date },
   })
 
   const formattedDeactivationDate = dayjs(
@@ -84,7 +90,7 @@ const UserPage: FC = () => {
   const deactivationFormFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Date,
-      name: 'user_deactivation_date',
+      name: 'deactivation_date',
       ariaLabel: t('label.user_deactivation_date'),
       label: t('label.user_deactivation_date'),
       placeholder: 'pp.kk.aaaa',
@@ -97,22 +103,17 @@ const UserPage: FC = () => {
     },
   ]
 
-  const roleOptions = compact(
-    map(existingRoles, ({ name, id }) => {
-      if (name) {
-        return {
-          label: name,
-          value: name,
-          id: id,
-        }
-      }
-    })
-  )
+  const roleOptions = map(existingRoles, ({ name, id }) => {
+    return {
+      label: name || '',
+      value: id || '',
+    }
+  })
 
   const activationFormFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Selections,
-      name: 'user_activation_roles',
+      name: 'roles',
       ariaLabel: t('placeholder.roles'),
       placeholder: t('placeholder.roles'),
       options: roleOptions,
@@ -122,27 +123,25 @@ const UserPage: FC = () => {
       rules: {
         required: true,
       },
+      className: classes.selectionsInputClass,
     },
     {
       inputType: InputTypes.Checkbox,
-      name: 'user_activation_notification',
+      name: 'notify_user',
       label: t('label.user_activation_notification'),
       ariaLabel: t('label.user_activation_notification'),
       rules: {
         required: true,
       },
+      className: classes.checkboxInputClass,
     },
   ]
 
   const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const { user_deactivation_date } = values
       const isUserEditingDeactivationDate = deactivationDate !== ''
 
-      const payload = {
-        user_deactivation_date: user_deactivation_date || '',
-        userId: userId || '',
-      }
+      const payload: UserStatusType = { ...values, institution_user_id }
 
       try {
         await deactivateUser(payload)
@@ -164,25 +163,16 @@ const UserPage: FC = () => {
         }
       }
     },
-    [deactivationDate, userId, deactivateUser, t, name, setError]
+    [deactivationDate, institution_user_id, deactivateUser, t, name, setError]
   )
 
   const onActivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const { user_activation_notification } = values
-
-      const roleIdsArray = roleOptions
-        .filter((obj) => values?.user_activation_roles?.includes(obj.label))
-        .map((obj) => obj?.id)
-
-      const payload = {
-        userId: userId || '',
-        notify_user: user_activation_notification || false,
-        roles: roleIdsArray || [],
-      }
+      const payload: UserStatusType = { ...values, institution_user_id }
 
       try {
         await activateUser(payload)
+
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -199,7 +189,7 @@ const UserPage: FC = () => {
         }
       }
     },
-    [roleOptions, userId, activateUser, t, name, setError]
+    [institution_user_id, activateUser, t, name, setError]
   )
 
   if (isLoading) {
@@ -234,10 +224,14 @@ const UserPage: FC = () => {
       title: title,
       cancelButtonContent: t('button.cancel'),
       modalContent: t('modal.deactivate_user_content'),
-      className: classes.deactivateContent,
       handleProceed: handleSubmit(onDeactivateSubmit),
+      className: classes.deactivateContent,
       dynamicForm: (
-        <DynamicForm fields={deactivationFormFields} control={control} />
+        <DynamicForm
+          fields={deactivationFormFields}
+          control={control}
+          className={classes.deactivateDynamicForm}
+        />
       ),
     })
   }
@@ -251,7 +245,11 @@ const UserPage: FC = () => {
       className: classes.activateContent,
       handleProceed: handleSubmit(onActivateSubmit),
       dynamicForm: (
-        <DynamicForm fields={activationFormFields} control={control} />
+        <DynamicForm
+          fields={activationFormFields}
+          control={control}
+          className={classes.activateDynamicForm}
+        />
       ),
     })
   }

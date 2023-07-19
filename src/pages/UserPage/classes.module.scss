@@ -39,12 +39,12 @@
   top: spacing(1);
 }
 
-.deactivateContent > div > div form {
-  padding-top: spacing(6);
-}
-
 :global(.react-datepicker__tab-loop) {
   position: fixed;
+}
+
+.deactivateDynamicForm {
+  padding-top: spacing(6);
 }
 
 .deactivateContent > div > div > div,
@@ -59,15 +59,15 @@
   max-width: 70%;
 }
 
-.activateContent > div > div > form {
+.activateDynamicForm {
   padding-top: spacing(5);
   padding-bottom: spacing(10);
 }
 
-.activateContent > div > div > form > :first-child {
-  padding-bottom: 16px;
+.checkboxInputClass {
+  padding-top: spacing(4);
 }
 
-.activateContent form > div > div > :nth-child(3) {
+.selectionsInputClass div > div {
   position: fixed;
 }

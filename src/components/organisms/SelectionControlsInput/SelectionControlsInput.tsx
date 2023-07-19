@@ -152,7 +152,6 @@ const SelectionControlsInput = forwardRef<
         value={value}
         buttons={buttons}
         helperText={helperText}
-        selectedOptionObjects={selectedOptionObjects}
         tags={tags}
         setIsOpen={setIsOpen}
         errorZIndex={errorZIndex}
