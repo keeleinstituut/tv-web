@@ -11,6 +11,7 @@ interface FormButtonProps {
   hidden?: boolean
   resetForm: () => void
   className?: string
+  formId?: string
 }
 
 const FormButtons: FC<FormButtonProps> = ({
@@ -20,6 +21,7 @@ const FormButtons: FC<FormButtonProps> = ({
   hidden,
   resetForm,
   className,
+  formId,
 }) => {
   const { t } = useTranslation()
   if (hidden) return null
@@ -36,6 +38,7 @@ const FormButtons: FC<FormButtonProps> = ({
         disabled={isSubmitDisabled}
         loading={loading}
         type="submit"
+        form={formId}
       />
     </div>
   )

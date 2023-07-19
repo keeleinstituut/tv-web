@@ -1,0 +1,33 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.institution {
+  display: grid;
+  grid-template-columns: max-content auto;
+  align-items: center;
+}
+
+.container {
+  grid-column: 1/-1;
+  border-radius: $border-radius-4;
+  padding: spacing(4);
+  margin-top: spacing(6);
+
+  .title {
+    color: $color-primary;
+    padding-bottom: spacing(6);
+  }
+}
+
+.dateText {
+  grid-column: 1/-1;
+  @include bodyTextSmallStyle;
+  color: $color-input-main;
+  &:first-of-type {
+    margin-top: spacing(2);
+  }
+}
+
+.department {
+  margin-top: spacing(8);
+}

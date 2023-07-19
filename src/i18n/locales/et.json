@@ -20,7 +20,9 @@
     "attach_file": "lisa fail",
     "status": "Staatus",
     "user_account_id": "Kasutajakonto ID",
-    "open_instructions": "Ava õpetus"
+    "open_instructions": "Ava õpetus",
+    "institution": "Asutus",
+    "institution_short": "Asutuse lühend"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -60,7 +62,8 @@
     "add_users": "Lisa kasutajad",
     "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
     "my_details": "Minu andmed",
-    "change_institution": "Vaheta asutust"
+    "change_institution": "Vaheta asutust",
+    "update": "Redigeeri"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -103,6 +106,12 @@
   "roles": {
     "roles_management": "Rollihaldus",
     "privileges": "Privileegid"
+  },
+  "institution": {
+    "institution_management": "Asituse andmete haldamine",
+    "institution_data": "Asutuse andmed",
+    "created_at": "Konto loodud {{ time }}",
+    "updated_at": "Konto andmed muudetud {{ time }}"
   },
   "privileges": {
     "ADD_ROLE": "Rolli lisamine süsteemi",
@@ -193,7 +202,8 @@
     "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
     "role_updated": "Roll „{{roleName}}“ on edukalt muudetud",
     "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud",
-    "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile."
+    "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
+    "institution_updated": "Asutuse andmed on edukalt muudetud"
   },
   "notification": {
     "announcement": "Teade",
