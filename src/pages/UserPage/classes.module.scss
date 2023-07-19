@@ -68,6 +68,6 @@
   padding-top: spacing(4);
 }
 
-.selectionsInputClass div > div {
+.selectionsInputClass > div > :nth-child(3) {
   position: fixed;
 }
