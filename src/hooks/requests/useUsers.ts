@@ -5,15 +5,19 @@ import {
   UserDataType,
 } from 'types/users'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { endpoints } from 'api/endpoints'
+import { apiClient } from 'api'
+import { useState } from 'react'
 import {
   FilterFunctionType,
   PaginationFunctionType,
   SortingFunctionType,
 } from 'types/collective'
-import { endpoints } from 'api/endpoints'
-import { apiClient } from 'api'
-import { useState } from 'react'
 import { isEmpty, keys, omit } from 'lodash'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+
+dayjs.extend(customParseFormat)
 
 export const useFetchUsers = () => {
   const [filters, setFilters] = useState<UserPayloadType>({})
@@ -88,8 +92,8 @@ export const useUpdateUser = ({ userId }: { userId?: string }) => {
         (oldData?: UsersDataType) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const newAData = { ...previousData, ...data }
-          return { data: newAData }
+          const newData = { ...previousData, ...data }
+          return { data: newData }
         }
       )
     },
@@ -150,6 +154,47 @@ export const useArchiveUser = ({ userId }: { userId?: string }) => {
 
   return {
     archiveUser,
+    isLoading,
+  }
+}
+
+export const useDeactivateUser = ({ userId }: { userId?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deactivateUser, isLoading } = useMutation({
+    mutationKey: ['users', userId],
+    mutationFn: async (values: {
+      user_deactivation_date: string
+      userId: string
+    }) => {
+      const { user_deactivation_date: date, userId } = values
+      const formattedDeactivationDate = dayjs(date, 'DD/MM/YYYY').format(
+        'YYYY-MM-DD'
+      )
+      return apiClient.post(endpoints.DEACTIVATE_USER, {
+        institution_user_id: userId,
+        deactivation_date: formattedDeactivationDate,
+      })
+    },
+
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', userId],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+
+          if (!previousData) return oldData
+          const newData = { ...oldData, ...data }
+
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    deactivateUser,
     isLoading,
   }
 }

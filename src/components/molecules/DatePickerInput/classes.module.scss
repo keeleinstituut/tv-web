@@ -211,3 +211,7 @@
   ) {
   color: $color-white;
 }
+
+:global(.react-datepicker__day--disabled:hover) {
+  color: $color-white;
+}
