@@ -5,9 +5,9 @@ import {
   useDeactivateUser,
   useFetchUser,
 } from 'hooks/requests/useUsers'
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { includes } from 'lodash'
+import { includes, join, map } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
@@ -19,10 +19,13 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useForm } from 'react-hook-form'
+import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { ValidationError } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
 
@@ -46,12 +49,20 @@ const UserPage: FC = () => {
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
     userId: userId,
   })
-  const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser()
+  const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser({
+    userId,
+  })
   const deactivationDate = user?.deactivation_date || ''
+  const forename = user?.user?.forename || ''
+  const surname = user?.user?.surname || ''
+  const name = `${forename} ${surname}`
+
+  const editModalTitle = t('modal.edit_deactivation_date')
+  const deactivateModalTitle = t('modal.deactivate_user')
 
   const user_deactivation_date = dayjs(new Date()).format('DD/MM/YYYY')
 
-  const { control, handleSubmit } = useForm<FormValues>({
+  const { control, handleSubmit, setError } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     defaultValues: { user_deactivation_date },
   })
@@ -79,6 +90,39 @@ const UserPage: FC = () => {
       maxDate: new Date(formattedDate),
     },
   ]
+
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const { user_deactivation_date } = values
+      const isUserEditingDeactivationDate = deactivationDate !== ''
+
+      const payload = {
+        user_deactivation_date: user_deactivation_date || '',
+        userId: userId || '',
+      }
+
+      try {
+        await deactivateUser(payload)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: isUserEditingDeactivationDate
+            ? t('success.deactivation_date_edit', { name })
+            : t('success.user_deactivated', { name }),
+        })
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            setError(typedKey, { type: 'backend', message: errorString })
+          })
+        }
+      }
+    },
+    [deactivationDate, userId, deactivateUser, t, name, setError]
+  )
 
   if (isLoading) {
     return <Loader loading />
@@ -113,21 +157,13 @@ const UserPage: FC = () => {
       cancelButtonContent: t('button.cancel'),
       modalContent: t('modal.deactivate_user_content'),
       className: classes.deactivateContent,
-      handleProceed: handleSubmit((values) =>
-        deactivateUser({
-          user_deactivation_date: values?.user_deactivation_date || '',
-          userId: userId || '',
-        })
-      ),
+      handleProceed: handleSubmit(onSubmit),
       dynamicForm: <DynamicForm fields={fields} control={control} />,
     })
   }
 
   const currentFormattedDate = dayjs(new Date()).format('YYYY-MM-DD')
   const isUserDeactivatedImmediately = deactivationDate === currentFormattedDate
-
-  const editModalTitle = t('modal.edit_deactivation_date')
-  const deactivateModalTitle = t('modal.deactivate_user')
 
   return (
     <>

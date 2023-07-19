@@ -92,8 +92,8 @@ export const useUpdateUser = ({ userId }: { userId?: string }) => {
         (oldData?: UsersDataType) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const newAData = { ...previousData, ...data }
-          return { data: newAData }
+          const newData = { ...previousData, ...data }
+          return { data: newData }
         }
       )
     },
@@ -158,10 +158,11 @@ export const useArchiveUser = ({ userId }: { userId?: string }) => {
   }
 }
 
-export const useDeactivateUser = () => {
-  const { mutate: deactivateUser, isLoading } = useMutation({
-    mutationKey: ['users'],
-    mutationFn: (values: {
+export const useDeactivateUser = ({ userId }: { userId?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deactivateUser, isLoading } = useMutation({
+    mutationKey: ['users', userId],
+    mutationFn: async (values: {
       user_deactivation_date: string
       userId: string
     }) => {
@@ -169,11 +170,26 @@ export const useDeactivateUser = () => {
       const formattedDeactivationDate = dayjs(date, 'DD/MM/YYYY').format(
         'YYYY-MM-DD'
       )
-
       return apiClient.post(endpoints.DEACTIVATE_USER, {
         institution_user_id: userId,
         deactivation_date: formattedDeactivationDate,
       })
+    },
+
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', userId],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+
+          if (!previousData) return oldData
+          const newData = { ...oldData, ...data }
+
+          return { data: newData }
+        }
+      )
     },
   })
 
