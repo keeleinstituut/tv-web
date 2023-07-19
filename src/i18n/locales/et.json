@@ -18,6 +18,8 @@
     "kilobytes": "KB",
     "megabytes": "MB",
     "attach_file": "lisa fail",
+    "user_deactivation_date": "Deaktiveerimise kuupäev",
+    "future_user_deactivation_date": "Konto deaktiveeritakse {{deactivationDate}}",
     "status": "Staatus",
     "user_account_id": "Kasutajakonto ID",
     "open_instructions": "Ava õpetus",
@@ -48,6 +50,7 @@
     "add_new_role": "lisa uus roll",
     "deactivate_account": "Deaktiveeri konto",
     "archive_account": "Arhiveeri konto",
+    "activate_account": "Aktiveeri konto",
     "save_and_send_notifications": "Salvesta ja saada teavitused",
     "save": "Salvesta",
     "add_csv": "Lisa .csv",
@@ -165,7 +168,10 @@
     "institutions": "ASUTUSED",
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
-    "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida."
+    "deactivate_user": "Kas oled kindel, et soovid konto deaktiveerida?",
+    "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
+    "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
+    "deactivate_user_content": "Määra kuupäev, mis hetkest kasutaja sisselogimise õigused peatatakse."
   },
   "cheat_sheet": {
     "user_management": {
@@ -203,7 +209,9 @@
     "role_updated": "Roll „{{roleName}}“ on edukalt muudetud",
     "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud",
     "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
-    "institution_updated": "Asutuse andmed on edukalt muudetud"
+    "institution_updated": "Asutuse andmed on edukalt muudetud",
+    "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
+    "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud."
   },
   "notification": {
     "announcement": "Teade",

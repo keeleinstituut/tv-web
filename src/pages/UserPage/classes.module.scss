@@ -26,3 +26,31 @@
 .archiveContent {
   color: $color-primary;
 }
+
+.deactivationDate {
+  @include bodyTextStyle;
+  color: $color-error;
+  padding: spacing(6) 0 spacing(8) 0;
+}
+
+.editIcon {
+  padding-left: spacing(4);
+  position: relative;
+  top: spacing(1);
+}
+
+.deactivateContent > div > div {
+  color: $color-primary;
+  > form {
+    padding-top: spacing(6);
+  }
+}
+
+:global(.react-datepicker__tab-loop) {
+  position: fixed;
+}
+
+.deactivateContent h1,
+.deactivateContent > div > div {
+  max-width: 70%;
+}
