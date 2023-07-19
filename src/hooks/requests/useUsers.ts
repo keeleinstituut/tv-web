@@ -19,7 +19,7 @@ import { downloadFile } from 'helpers'
 export const useFetchUsers = () => {
   const [filters, setFilters] = useState<UserPayloadType>({})
 
-  const handelFilterChange = (value?: FilterFunctionType) => {
+  const handleFilterChange = (value?: FilterFunctionType) => {
     const filterKey = keys(value)[0]
     if (isEmpty(value?.[filterKey])) {
       const removeFilterKey = omit(filters, filterKey)
@@ -29,7 +29,7 @@ export const useFetchUsers = () => {
     }
   }
 
-  const handelSortingChange = (value?: SortingFunctionType) => {
+  const handleSortingChange = (value?: SortingFunctionType) => {
     if (!value?.sort_order) {
       const sortingKeys = keys(value)
       const filtersWithOutSorting = omit(filters, sortingKeys)
@@ -54,8 +54,8 @@ export const useFetchUsers = () => {
     isError,
     users,
     paginationData,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   }
 }

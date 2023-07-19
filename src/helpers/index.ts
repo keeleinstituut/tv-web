@@ -98,7 +98,6 @@ export const downloadFile = ({
   fileType,
 }: DownloadFileProps) => {
   const blob = new Blob([data], { type: fileType })
-  console.log('blob', blob)
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url

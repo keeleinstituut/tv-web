@@ -16,15 +16,15 @@ const UsersManagement: FC = () => {
   const {
     users,
     paginationData,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   } = useFetchUsers()
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { downloadCSV, isLoading } = useDownloadUsers()
 
-  const handelDownloadFile = () => {
+  const handleDownloadFile = () => {
     downloadCSV()
   }
 
@@ -41,7 +41,7 @@ const UsersManagement: FC = () => {
           className={classNames({
             [classes.invisible]: !includes(userPrivileges, 'EXPORT_USER'),
           })}
-          onClick={handelDownloadFile}
+          onClick={handleDownloadFile}
           disabled={!includes(userPrivileges, 'EXPORT_USER')}
           loading={isLoading}
         >
@@ -60,8 +60,8 @@ const UsersManagement: FC = () => {
           data={users}
           paginationData={paginationData}
           hidden={isEmpty(users)}
-          handelFilterChange={handelFilterChange}
-          handelSortingChange={handelSortingChange}
+          handleFilterChange={handleFilterChange}
+          handleSortingChange={handleSortingChange}
           handlePaginationChange={handlePaginationChange}
         />
       </Root>
