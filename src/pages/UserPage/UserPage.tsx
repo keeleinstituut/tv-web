@@ -178,9 +178,9 @@ const UserPage: FC = () => {
   const userNameString = `${user.user.forename} ${user.user.surname}`
   const isUserDeactivated = !!deactivationDate
 
-  const deactivatedDate = dayjs(deactivationDate, 'YYYY-MM-DD').toDate()
-  const isDeactivationDatePastCurrentDate =
-    deactivatedDate.getTime() < new Date().getTime()
+  const isDeactivationDatePastCurrentDate = dayjs().isAfter(
+    dayjs(deactivationDate)
+  )
 
   const handleArchiveModal = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
@@ -231,7 +231,7 @@ const UserPage: FC = () => {
     })
   }
 
-  const currentFormattedDate = dayjs(new Date()).format('YYYY-MM-DD')
+  const currentFormattedDate = dayjs().format('YYYY-MM-DD')
   const isUserDeactivatedImmediately = deactivationDate === currentFormattedDate
 
   return (
