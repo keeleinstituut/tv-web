@@ -11,7 +11,7 @@ import {
 import { setAccessToken, apiClient } from 'api'
 import axios from 'axios'
 import { endpoints } from 'api/endpoints'
-import { InstitutionType } from 'types/institutions'
+import { InstitutionsDataType } from 'types/institutions'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import Keycloak, { KeycloakConfig, KeycloakTokenParsed } from 'keycloak-js'
 import { PrivilegeKey } from 'types/privileges'
@@ -28,6 +28,8 @@ interface UserInfoType extends KeycloakTokenParsed {
       id: string
       name: string
     }
+    surname?: string
+    forename?: string
     privileges?: PrivilegeKey[]
   }
 }
@@ -37,10 +39,6 @@ interface AuthContextType {
   logout: () => void
   userInfo: UserInfoType
   userPrivileges: PrivilegeKey[]
-}
-
-interface InstitutionDataType {
-  data: InstitutionType[]
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -142,8 +140,10 @@ const useKeycloak = () => {
   const navigate = useNavigate()
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
   const [userInfo, setUserIdInfo] = useState<UserInfoType>({})
+  const [isLoading, setIsLoading] = useState(false)
   const handleLogoutWithError = useCallback(() => {
     // TODO: show global error message
+    setIsLoading(false)
     setAccessToken()
     setIsUserLoggedIn(false)
     keycloak.logout()
@@ -152,6 +152,7 @@ const useKeycloak = () => {
   const finishLogin = useCallback(() => {
     setUserIdInfo(keycloak.idTokenParsed || {})
     setIsUserLoggedIn(true)
+    setIsLoading(false)
     // Start refreshing interval
     startRefreshingToken()
     // Token refreshing stops, when window is not visible and doesn't start again
@@ -162,6 +163,7 @@ const useKeycloak = () => {
   }, [])
 
   useEffect(() => {
+    setIsLoading(true)
     const initKeycloak = async () => {
       const isKeycloakUserLoggedIn = await keycloak.init({
         onLoad: 'check-sso',
@@ -181,6 +183,7 @@ const useKeycloak = () => {
           })
           navigate(window.location.pathname)
         }
+        setIsLoading(false)
         return
       }
 
@@ -202,7 +205,7 @@ const useKeycloak = () => {
       }
 
       // TODO: no need to fetch institutions, if user already has institution selected
-      const { data }: InstitutionDataType = await apiClient.get(
+      const { data }: InstitutionsDataType = await apiClient.get(
         endpoints.INSTITUTIONS
       )
 
@@ -233,7 +236,7 @@ const useKeycloak = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  return { keycloak, isUserLoggedIn, userInfo }
+  return { keycloak, isUserLoggedIn, userInfo, isLoading }
 }
 
 export default useKeycloak
