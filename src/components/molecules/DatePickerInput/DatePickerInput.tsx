@@ -6,13 +6,13 @@ import DatePicker, {
 import { et } from 'date-fns/locale'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { ReactComponent as Calender } from 'assets/icons/calender.svg'
 import InputWrapper, {
   InputWrapperProps,
 } from 'components/molecules/InputWrapper/InputWrapper'
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './classes.module.scss'
-import { formatDate } from 'helpers'
 
 type DatePickerComponentProps = {
   ariaLabel?: string
@@ -21,12 +21,15 @@ type DatePickerComponentProps = {
   value?: string
   name: string
   onChange: (value: string) => void
+  minDate?: Date
+  maxDate?: Date
 }
 
 export type DatePickerInputProps = DatePickerComponentProps &
   Omit<InputWrapperProps, 'children'>
 
 registerLocale('et-EE', et)
+dayjs.extend(customParseFormat)
 
 const changeDateToString = (dateObject: Date | null | undefined) =>
   dayjs(dateObject).format('DD/MM/YYYY')
@@ -38,22 +41,15 @@ const DatePickerComponent = ({
   disabled,
   ariaLabel,
   onChange,
+  minDate,
+  maxDate,
   ...rest
 }: DatePickerComponentProps) => {
-  const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
-    return onChange(changeDateToString(value))
-  }
+  const handleDateChange: ReactDatePickerProps['onChange'] = (value) =>
+    onChange(changeDateToString(value))
 
-  const order = [2, 1, 0]
-  const splittedDayValue = formatDate(value || '', '/', '-', order)
-
-  const currentDate = new Date()
-  currentDate.setFullYear(currentDate.getFullYear() + 1)
-  const formattedDate = currentDate.toLocaleDateString('en-US', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric',
-  })
+  const convertedValue = dayjs(value, 'DD/MM/YYYY')
+  const splittedDayValue = convertedValue?.format('YYYY-MM-DD')
 
   return (
     <>
@@ -65,8 +61,8 @@ const DatePickerComponent = ({
         placeholderText={placeholder}
         aria-label={ariaLabel}
         disabled={disabled}
-        minDate={new Date()}
-        maxDate={new Date(formattedDate)}
+        minDate={minDate ? minDate : null}
+        maxDate={maxDate ? maxDate : null}
         {...rest}
         onChange={handleDateChange}
       />
