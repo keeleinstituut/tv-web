@@ -54,7 +54,7 @@ const UserPage: FC = () => {
     userId: userId,
   })
   const { existingRoles = [] } = useRolesFetch()
-  const { activateUser, isLoading: isActivating } = useActivateUser()
+  const { activateUser, isLoading: isActivating } = useActivateUser({ userId })
   const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser({
     userId,
   })
@@ -134,7 +134,7 @@ const UserPage: FC = () => {
     },
   ]
 
-  const onSubmit: SubmitHandler<FormValues> = useCallback(
+  const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const { user_deactivation_date } = values
       const isUserEditingDeactivationDate = deactivationDate !== ''
@@ -165,6 +165,41 @@ const UserPage: FC = () => {
       }
     },
     [deactivationDate, userId, deactivateUser, t, name, setError]
+  )
+
+  const onActivateSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const { user_activation_notification } = values
+
+      const roleIdsArray = roleOptions
+        .filter((obj) => values?.user_activation_roles?.includes(obj.label))
+        .map((obj) => obj?.id)
+
+      const payload = {
+        userId: userId || '',
+        notify_user: user_activation_notification || false,
+        roles: roleIdsArray || [],
+      }
+
+      try {
+        await activateUser(payload)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.user_activated', { name }),
+        })
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            setError(typedKey, { type: 'backend', message: errorString })
+          })
+        }
+      }
+    },
+    [roleOptions, userId, activateUser, t, name, setError]
   )
 
   if (isLoading) {
@@ -200,7 +235,7 @@ const UserPage: FC = () => {
       cancelButtonContent: t('button.cancel'),
       modalContent: t('modal.deactivate_user_content'),
       className: classes.deactivateContent,
-      handleProceed: handleSubmit(onSubmit),
+      handleProceed: handleSubmit(onDeactivateSubmit),
       dynamicForm: (
         <DynamicForm fields={deactivationFormFields} control={control} />
       ),
@@ -214,17 +249,7 @@ const UserPage: FC = () => {
       proceedButtonContent: t('button.activate'),
       modalContent: t('modal.activate_user_content'),
       className: classes.activateContent,
-      handleProceed: handleSubmit((values) => {
-        const roleIdsArray = roleOptions
-          .filter((obj) => values?.user_activation_roles?.includes(obj.label))
-          .map((obj) => obj?.id)
-
-        return activateUser({
-          userId: userId || '',
-          notify_user: values?.user_activation_notification || false,
-          roles: roleIdsArray || [],
-        })
-      }),
+      handleProceed: handleSubmit(onActivateSubmit),
       dynamicForm: (
         <DynamicForm fields={activationFormFields} control={control} />
       ),

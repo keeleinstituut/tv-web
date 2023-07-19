@@ -199,10 +199,11 @@ export const useDeactivateUser = ({ userId }: { userId?: string }) => {
   }
 }
 
-export const useActivateUser = () => {
-  const { mutate: activateUser, isLoading } = useMutation({
-    mutationKey: ['users'],
-    mutationFn: (values: {
+export const useActivateUser = ({ userId }: { userId?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: activateUser, isLoading } = useMutation({
+    mutationKey: ['users', userId],
+    mutationFn: async (values: {
       userId: string
       notify_user: boolean
       roles: (string | undefined)[]
@@ -215,7 +216,24 @@ export const useActivateUser = () => {
         roles: roles,
       })
     },
+
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', userId],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+
+          if (!previousData) return oldData
+          const newData = { ...oldData, ...data }
+
+          return { data: newData }
+        }
+      )
+    },
   })
+
   return {
     activateUser,
     isLoading,
