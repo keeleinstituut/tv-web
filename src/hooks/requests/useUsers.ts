@@ -81,7 +81,6 @@ export const useUpdateUser = ({ userId }: { userId?: string }) => {
   const { mutateAsync: updateUser, isLoading } = useMutation({
     mutationKey: ['users', userId],
     mutationFn: async (payload: UserPostType) => {
-      console.log('payload', payload)
       return apiClient.put(`${endpoints.USERS}/${userId}`, {
         ...payload,
       })

@@ -157,9 +157,6 @@ const UserForm: FC<UserFormProps> = ({
       options: roleOptions,
       multiple: true,
       buttons: true,
-      rules: {
-        required: true,
-      },
     },
   ]
 
@@ -180,12 +177,11 @@ const UserForm: FC<UserFormProps> = ({
         department_id,
         ...rest
       } = values
+
       const splitName = split(name, ' ')
       const surname = size(splitName) > 1 ? last(splitName) : ''
       const forename =
         size(splitName) > 1 ? join(initial(splitName), ' ') : name
-
-      console.log('roles', roles)
 
       const payload: UserPostType = {
         ...rest,
