@@ -8,6 +8,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
+import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
@@ -17,8 +18,8 @@ dayjs.extend(customParseFormat)
 export const useFetchUsers = () => {
   const {
     filters,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   } = useFilters<UserPayloadType>()
 
@@ -34,8 +35,8 @@ export const useFetchUsers = () => {
     isError,
     users,
     paginationData,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   }
 }
@@ -116,6 +117,24 @@ export const useUploadUsers = () => {
     uploadUsers,
     isLoading,
     error,
+  }
+}
+
+export const useDownloadUsers = () => {
+  const { mutateAsync: downloadCSV, isLoading } = useMutation({
+    mutationKey: ['csv'],
+    mutationFn: () => apiClient.get(endpoints.EXPORT_CSV),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'users.csv',
+        fileType: 'text/csv',
+      })
+    },
+  })
+  return {
+    isLoading,
+    downloadCSV,
   }
 }
 

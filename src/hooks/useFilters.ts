@@ -9,7 +9,7 @@ import {
 const useFilters = <TFilters extends object>() => {
   const [filters, setFilters] = useState<TFilters | object>({})
 
-  const handelFilterChange = useCallback(
+  const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {
       const filterKey = keys(value)[0]
       if (isEmpty(value?.[filterKey])) {
@@ -22,7 +22,7 @@ const useFilters = <TFilters extends object>() => {
     [filters]
   )
 
-  const handelSortingChange = useCallback(
+  const handleSortingChange = useCallback(
     (value?: SortingFunctionType) => {
       if (!value?.sort_order) {
         const sortingKeys = keys(value)
@@ -44,8 +44,8 @@ const useFilters = <TFilters extends object>() => {
 
   return {
     filters,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   }
 }

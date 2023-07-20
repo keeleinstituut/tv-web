@@ -7,8 +7,8 @@ export const useFetchOrders = () => {
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filters,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   } = useFilters<OrdersPayloadType>()
 
@@ -42,8 +42,8 @@ export const useFetchOrders = () => {
     isError,
     orders,
     paginationData,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   }
 }

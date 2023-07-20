@@ -38,8 +38,8 @@ type AddedUsersProps = {
   data?: UserType[]
   paginationData?: DataMetaTypes
   hidden?: boolean
-  handelFilterChange?: (value?: FilterFunctionType) => void
-  handelSortingChange?: (value?: SortingFunctionType) => void
+  handleFilterChange?: (value?: FilterFunctionType) => void
+  handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
 }
 
@@ -47,8 +47,8 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
   data,
   paginationData,
   hidden,
-  handelFilterChange,
-  handelSortingChange,
+  handleFilterChange,
+  handleSortingChange,
   handlePaginationChange,
 }) => {
   const { t } = useTranslation()
@@ -141,8 +141,8 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
       tableSize={TableSizeTypes.M}
       paginationData={paginationData}
       onPaginationChange={handlePaginationChange}
-      onFiltersChange={handelFilterChange}
-      onSortingChange={handelSortingChange}
+      onFiltersChange={handleFilterChange}
+      onSortingChange={handleSortingChange}
     />
   )
 }
