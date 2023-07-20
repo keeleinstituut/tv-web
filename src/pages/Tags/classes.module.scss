@@ -15,16 +15,13 @@
   padding: spacing(6) spacing(8);
 }
 
-.gridItemOne {
-}
-
-.gridItemTwo {
+.tagsSection {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.gridItemThree {
+.categorySection {
   padding-left: spacing(2);
   display: flex;
   flex-direction: column;
@@ -62,7 +59,7 @@
 
 .categoryContainer {
   display: grid;
-  grid-template-columns: auto auto auto;
+  grid-template-columns: 1fr 1fr 1fr;
   padding-top: spacing(8);
   grid-gap: spacing(6);
 }
@@ -79,4 +76,25 @@
 
 .addNewRow {
   margin-top: spacing(6);
+}
+
+.categoryName {
+  @include bodyTextSmallStyle;
+  text-decoration: underline;
+  color: $color-input-main;
+}
+
+.tagName {
+  @include bodyTextSmallStyle;
+}
+
+.tagCategoryNameContainer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.editIcon svg {
+  height: 20px;
+  width: 21px;
 }

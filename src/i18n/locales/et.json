@@ -79,7 +79,8 @@
     "quit": "Loobun",
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
-    "change_institution": "Vaheta asutust"
+    "change_institution": "Vaheta asutust",
+    "change": "Muuda"
   },
   "error": {
     "input_title": "Veateade: ",
