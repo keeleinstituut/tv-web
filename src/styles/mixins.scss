@@ -1,4 +1,4 @@
-@import "variables.scss";
+@import 'variables.scss';
 
 // typography mixin
 
@@ -76,3 +76,23 @@
   line-height: $line-height-14;
 }
 
+@mixin badgeEndTriangles($color) {
+  background-color: $color;
+  &:after {
+    content: '';
+    position: absolute;
+    left: 100%;
+    bottom: 0;
+    top: 0;
+    border-top: 19px solid transparent;
+    border-bottom: 18px solid transparent;
+    border-left: 19px solid $color;
+  }
+}
+
+@mixin statusTagStyle($color, $text-color: $color) {
+  color: $text-color;
+  box-shadow: 0 0 0 2px $color;
+  padding: spacing(1) spacing(4);
+  border-radius: 4px;
+}

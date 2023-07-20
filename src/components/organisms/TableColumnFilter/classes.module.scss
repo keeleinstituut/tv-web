@@ -5,6 +5,8 @@
 
   svg {
     padding: 0;
+    width: 20px;
+    height: 20px;
   }
 
   svg g path,
@@ -13,7 +15,12 @@
   }
 }
 
-.dropDown {
-  width: max-content;
-  transform: translateX(-43%);
+.container {
+  .dropDown {
+    min-width: max-content;
+    left: 0;
+    top: unset;
+  }
 }
+
+

@@ -4,6 +4,7 @@
 //HeaderItem
 .headingWrapper {
   display: grid;
+  position: relative;
   grid-auto-flow: column;
   justify-content: start;
   align-items: center;
@@ -19,6 +20,8 @@
 
   svg {
     padding: 0;
+    width: 20px;
+    height: 20px;
   }
 
   svg g path,

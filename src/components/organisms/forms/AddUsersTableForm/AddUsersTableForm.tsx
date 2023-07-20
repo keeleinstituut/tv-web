@@ -32,6 +32,7 @@ const AddUsersTableForm: FC = () => {
   const { uploadUsers, isLoading: isUploadLoading } = useUploadUsers()
   const [tableData, setTableData] = useState<UserCsvType[]>([])
   const [rowsWithErrors, setRowsWithErrors] = useState<ErrorsInRow>({})
+  const [fileName, setFileName] = useState('')
   const [rowsWithExistingUsers, setRowsWithExistingUsers] = useState<number[]>(
     []
   )
@@ -56,7 +57,7 @@ const AddUsersTableForm: FC = () => {
     control,
     handleSubmit,
     setError,
-    formState: { isValid, isDirty },
+    formState: { isValid },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
     mode: 'onChange',
@@ -68,14 +69,18 @@ const AddUsersTableForm: FC = () => {
 
   const handleFileValidationAttempt = useCallback(
     async (file: File) => {
+      setFileName(file.name)
       try {
-        await validateUsers(file)
+        const response = await validateUsers(file)
+        const { rowsWithExistingInstitutionUsers } = response
+        if (rowsWithExistingInstitutionUsers) {
+          setRowsWithExistingUsers(rowsWithExistingInstitutionUsers)
+        }
         setRowsWithErrors({})
         return true
       } catch (errorData) {
         const typedErrorData = errorData as CsvValidationError
         const { errors, rowsWithExistingInstitutionUsers } = typedErrorData
-
         if (rowsWithExistingInstitutionUsers) {
           setRowsWithExistingUsers(rowsWithExistingInstitutionUsers)
         }
@@ -131,7 +136,7 @@ const AddUsersTableForm: FC = () => {
           showNotification({
             type: NotificationTypes.Success,
             title: t('notification.announcement'),
-            content: t('success.users_uploaded'),
+            content: t('success.users_uploaded', { fileName }),
           })
           navigate('/settings/users')
         } catch (_) {
@@ -139,7 +144,7 @@ const AddUsersTableForm: FC = () => {
         }
       }
     },
-    [handleFileValidationAttempt, navigate, t, uploadUsers]
+    [fileName, handleFileValidationAttempt, navigate, t, uploadUsers]
   )
 
   const onDeleteFile = useCallback(() => {
@@ -163,7 +168,7 @@ const AddUsersTableForm: FC = () => {
           type="submit"
           hidden={isEmpty(tableData)}
           loading={isLoading || isUploadLoading}
-          disabled={!isDirty || !isValid}
+          disabled={!isValid}
         >
           {t('button.save_and_send_notifications')}
         </Button>

@@ -30,9 +30,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
   buttons = false,
   onChange,
   setIsOpen,
-  selectedOptionObjects,
   errorZIndex,
-  tags,
   className,
 }) => {
   const { t } = useTranslation()
@@ -64,10 +62,16 @@ const DropdownContent: FC<DropdownContentProps> = ({
 
   const handleOnSave = () => {
     onChange(selectedValue)
+    if (setIsOpen) {
+      setIsOpen(false)
+    }
   }
 
   const handleCancel = () => {
     setSelectedValue(initialValue)
+    if (setIsOpen) {
+      setIsOpen(false)
+    }
   }
 
   return (
@@ -96,11 +100,11 @@ const DropdownContent: FC<DropdownContentProps> = ({
                 {multiple && (
                   <CheckBoxInput
                     name={name}
-                    ariaLabel={option.label}
+                    ariaLabel={option?.label || ''}
                     label={option.label}
                     value={isMultiSelected || false}
                     className={classes.option}
-                    onChange={() => handleMultipleSelect(option.value)}
+                    onChange={() => handleMultipleSelect(option?.value)}
                   />
                 )}
                 <p
@@ -137,16 +141,6 @@ const DropdownContent: FC<DropdownContentProps> = ({
             </Button>
           </div>
         </ul>
-      </div>
-
-      <div className={classNames(tags && classes.tagsContainer)}>
-        {map(selectedOptionObjects, ({ label }, index) => {
-          return (
-            <span hidden={!tags} className={classes.tag} key={index}>
-              {label}
-            </span>
-          )
-        })}
       </div>
     </>
   )

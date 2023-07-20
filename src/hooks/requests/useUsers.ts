@@ -3,35 +3,41 @@ import {
   UsersDataType,
   UserPayloadType,
   UserDataType,
+  UserStatusType,
 } from 'types/users'
-import { FilterFunctionType, SortingFunctionType } from 'types/collective'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
-import { useState } from 'react'
+import { downloadFile } from 'helpers'
+import useFilters from 'hooks/useFilters'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+
+dayjs.extend(customParseFormat)
 
 export const useFetchUsers = () => {
-  const [filters, setFilters] = useState<UserPayloadType>({})
-
-  const handelFilterChange = (value?: FilterFunctionType) => {
-    setFilters({ ...filters, ...value })
-  }
-  const handelSortingChange = (value?: SortingFunctionType) => {
-    console.log('value', value)
-    setFilters({ ...filters, ...value })
-  }
+  const {
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useFilters<UserPayloadType>()
 
   const { isLoading, isError, data } = useQuery<UsersDataType>({
     queryKey: ['users', filters],
     queryFn: () => apiClient.get(endpoints.USERS, filters),
+    keepPreviousData: true,
   })
-  const { data: users } = data || {}
+  const { meta: paginationData, data: users } = data || {}
+
   return {
     isLoading,
     isError,
     users,
-    handelFilterChange,
-    handelSortingChange,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
   }
 }
 
@@ -49,12 +55,26 @@ export const useFetchUser = ({ userId }: { userId?: string }) => {
 }
 
 export const useUpdateUser = ({ userId }: { userId?: string }) => {
+  const queryClient = useQueryClient()
   const { mutateAsync: updateUser, isLoading } = useMutation({
     mutationKey: ['users', userId],
-    mutationFn: (payload: UserPostType) =>
+    mutationFn: async (payload: UserPostType) =>
       apiClient.put(`${endpoints.USERS}/${userId}`, {
         ...payload,
       }),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', userId],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+    },
   })
 
   return {
@@ -97,5 +117,118 @@ export const useUploadUsers = () => {
     uploadUsers,
     isLoading,
     error,
+  }
+}
+
+export const useDownloadUsers = () => {
+  const { mutateAsync: downloadCSV, isLoading } = useMutation({
+    mutationKey: ['csv'],
+    mutationFn: () => apiClient.get(endpoints.EXPORT_CSV),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'users.csv',
+        fileType: 'text/csv',
+      })
+    },
+  })
+  return {
+    isLoading,
+    downloadCSV,
+  }
+}
+
+export const useArchiveUser = ({ userId }: { userId?: string }) => {
+  const { mutate: archiveUser, isLoading } = useMutation({
+    mutationKey: ['users', userId],
+    mutationFn: () => {
+      return apiClient.post(endpoints.ARCHIVE_USER, {
+        institution_user_id: userId,
+      })
+    },
+  })
+
+  return {
+    archiveUser,
+    isLoading,
+  }
+}
+
+export const useDeactivateUser = ({
+  institution_user_id,
+}: {
+  institution_user_id?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deactivateUser, isLoading } = useMutation({
+    mutationKey: ['users', institution_user_id],
+    mutationFn: async (payload: UserStatusType) => {
+      const { deactivation_date: date, institution_user_id } = payload
+      const formattedDeactivationDate = dayjs(date, 'DD/MM/YYYY').format(
+        'YYYY-MM-DD'
+      )
+      return apiClient.post(endpoints.DEACTIVATE_USER, {
+        institution_user_id: institution_user_id,
+        deactivation_date: formattedDeactivationDate,
+      })
+    },
+
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', institution_user_id],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+
+          if (!previousData) return oldData
+          const newData = { ...oldData, ...data }
+
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    deactivateUser,
+    isLoading,
+  }
+}
+
+export const useActivateUser = ({
+  institution_user_id,
+}: {
+  institution_user_id?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: activateUser, isLoading } = useMutation({
+    mutationKey: ['users', institution_user_id],
+    mutationFn: async (payload: UserStatusType) => {
+      return apiClient.post(endpoints.ACTIVATE_USER, {
+        ...payload,
+      })
+    },
+
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', institution_user_id],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+
+          if (!previousData) return oldData
+          const newData = { ...oldData, ...data }
+
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    activateUser,
+    isLoading,
   }
 }

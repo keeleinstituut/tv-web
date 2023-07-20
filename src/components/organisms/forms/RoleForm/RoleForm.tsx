@@ -21,6 +21,7 @@ import useAuth from 'hooks/useAuth'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 type PrivilegesFormValue = object & {
   [key in PrivilegeKey]?: boolean
@@ -77,6 +78,7 @@ const RoleForm: FC<RoleFormProps> = ({
   const { updateRole, isLoading } = useUpdateRole({ roleId: id })
   const { createRole, isLoading: isCreating } = useCreateRole()
   const { deleteRole, isLoading: isDeleting } = useDeleteRole({ roleId: id })
+
   const {
     control,
     handleSubmit,
@@ -207,6 +209,15 @@ const RoleForm: FC<RoleFormProps> = ({
     })
   }
 
+  const handleDeleteModal = () => {
+    showModal(ModalTypes.UserAndRoleManagement, {
+      title: t('modal.delete_role'),
+      cancelButtonContent: t('button.no'),
+      proceedButtonContent: t('button.yes'),
+      handleProceed: deleteRole,
+    })
+  }
+
   if (hidden) return null
   return (
     <div className={classes.container}>
@@ -216,11 +227,7 @@ const RoleForm: FC<RoleFormProps> = ({
         children={t('button.delete_this_role')}
         icon={DeleteIcon}
         className={classes.deleteButton}
-        // Also onClick should open the modal, not delete the role
-        // onClick={deleteRole}
-        // TODO: remove disabled prop, once delete is fully implemented
-        disabled
-        onClick={is_root ? showErrorMessage : deleteRole}
+        onClick={is_root ? showErrorMessage : handleDeleteModal}
         hidden={!includes(userPrivileges, Privileges.DeleteRole)}
       />
       <h2>{t('roles.privileges')}</h2>

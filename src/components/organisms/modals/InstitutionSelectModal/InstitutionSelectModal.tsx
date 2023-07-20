@@ -25,8 +25,8 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
   onSelect,
 }) => {
   const [loadingSelect, setLoadingSelect] = useState<string>()
-  // TODO: move fetching of institutions to this component later
-  // Currently we do it after initializing keycloak, so we can attempt automatic picking of institution
+  // No need to fetch, if institutions are passed as a prop
+
   const { t } = useTranslation()
   const handleClose = useCallback(() => {
     closeModal()
@@ -62,18 +62,20 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
       className={classes.modalContent}
     >
       <h2>{t('modal.institutions')}</h2>
-      {map(institutions, ({ name, id }) => (
-        <Button
-          appearance={AppearanceTypes.Secondary}
-          className={classes.institution}
-          onClick={() => handleSelectInstitution(id)}
-          loading={loadingSelect === id}
-          disabled={!!loadingSelect}
-          key={id}
-        >
-          {name}
-        </Button>
-      ))}
+      <div className={classes.buttonsContainer}>
+        {map(institutions, ({ name, id }) => (
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            className={classes.institution}
+            onClick={() => handleSelectInstitution(id)}
+            loading={loadingSelect === id}
+            disabled={!!loadingSelect}
+            key={id}
+          >
+            {name}
+          </Button>
+        ))}
+      </div>
     </ModalBase>
   )
 }

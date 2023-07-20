@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
@@ -154,6 +154,10 @@ const UserForm: FC<UserFormProps> = ({
     reset(defaultValues)
   }, [defaultValues, reset])
 
+  useEffect(() => {
+    resetForm()
+  }, [defaultValues, resetForm])
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const {
@@ -183,7 +187,6 @@ const UserForm: FC<UserFormProps> = ({
           title: t('notification.announcement'),
           content: t('success.user_updated', { name }),
         })
-        resetForm()
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
@@ -199,7 +202,7 @@ const UserForm: FC<UserFormProps> = ({
         }
       }
     },
-    [updateUser, t, resetForm, setError]
+    [updateUser, t, setError]
   )
 
   return (

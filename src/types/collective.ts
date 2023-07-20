@@ -21,3 +21,8 @@ export interface SortingFunctionType {
   sort_order?: 'asc' | 'desc' | undefined
   sort_by?: string
 }
+
+export interface PaginationFunctionType {
+  per_page?: 10 | 50 | 100 | number
+  page?: number
+}
