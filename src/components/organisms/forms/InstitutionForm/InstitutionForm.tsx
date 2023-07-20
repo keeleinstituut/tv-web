@@ -93,9 +93,9 @@ const InstitutionForm: FC<InstitutionFormProps> = ({
     },
     {
       inputType: InputTypes.Text,
-      ariaLabel: t('label.email'),
+      ariaLabel: t('label.email_long'),
       disabled: !isUpdatingData,
-      label: t('label.email'),
+      label: t('label.email_long'),
       name: 'email',
       type: 'email',
       className: classNames(classes.inputInternalPosition, {
@@ -109,9 +109,9 @@ const InstitutionForm: FC<InstitutionFormProps> = ({
     // TODO: add masking for phone number input, once we merge timeinput
     {
       inputType: InputTypes.Text,
-      ariaLabel: t('label.phone'),
+      ariaLabel: t('label.phone_long'),
       disabled: !isUpdatingData,
-      label: t('label.phone'),
+      label: t('label.phone_long'),
       name: 'phone',
       type: 'tel',
       className: classNames(classes.inputInternalPosition, {

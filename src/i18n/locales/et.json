@@ -1,6 +1,7 @@
 {
   "label": {
     "email": "Email",
+    "email_long": "Meiliaadress",
     "button_arrow": "Nupu nool",
     "pagination_result_count": "Kuvan korraga",
     "pagination_navigation": "Lehekülgedel navigeerimine",
@@ -10,6 +11,7 @@
     "personal_identification_code": "Isikukood",
     "name": "Nimi",
     "phone": "Telefoni nr",
+    "phone_long": "Telefoninumber",
     "department": "Üksus",
     "roles": "Rollid",
     "role": "Roll",
@@ -205,6 +207,14 @@
       "deactive_account": "kontot deaktiveerida/arhiveerida.",
       "activation_archiving": "Aktiveerimine/arhiveerimine",
       "activation_archiving_text": "Konto deaktiveerimisel kasutaja juurdepääsuõigused peatatakse ja tema roll(id) võetakse ära. See sobib kasutaja juurdepääsu ajutiseks peatamiseks. Kui pole soovi kontot hiljem taas aktiveerida, siis tuleks kasutaja konto arhiveerida.\nKui kasutaja konto deaktiveeritakse ja kasutaja pole ise oma poolikuid töid kolleegidele suunanud, siis on vaid vastavate õigustega kasutajal juurdepääs tema poolikutele tellimustele, alamtellimustele ja ülesannetele.\nDekativeeritud konto aktiveerimiseks tuleb klõpsata nupule „Aktiveeri konto“ ja kontole määrata rollid. Kasutaja juurdepääs taastatakse ja ta näeb endaga seotud tellimuste, alamtellimuste või ülesannete ajalugu, kui tema uus roll seda lubab.\nAktiveeritud/deaktiveeritud kasutajale ei saa uut kontot samas asutuse luua. Arhiveeritud kasutajaga seotud isikukoodile saab uue konto luua: süsteemis luuakse uue unikaalse identifikaatoriga konto, mis on kasutaja isikukoodiga seotud ja sellega seotakse ka kõik uued tellimused (vana kontoga seotud tellimusi sellle kontoga ei seota)."
+    },
+    "institution_management": {
+      "title": "[Asutuse andmete haldamine] kohtspikker",
+      "help_text": "Asutuse sätetes saab muuta järgmisi üldandmeid: asutuse nimetus, nime lühend, meiliaadress, telefoninumber.",
+      "working_hours_vacations": "Tööajad ja puhkepäevad",
+      "working_hours_vacations_text": "Asutuse üldandmetes saab määrata ja muuta asutuse tööaegu ja puhkepäevasid. Asutuse tööajad ja puhkepäevad määratakse vaikimisi ka kõikidele asutuse kasutajatele. Soovi korral saab kasutaja andmete all neid muuta.",
+      "departments": "Üksused",
+      "departments_text": "Asutuse üldandmete all saab luua ja muuta asutuse üksuseid. Asutuse üksuseid saab kasutada asutuse kasutajate kontaktandmetes."
     }
   },
   "user": {

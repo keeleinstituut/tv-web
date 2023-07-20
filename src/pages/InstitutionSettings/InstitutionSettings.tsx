@@ -7,6 +7,7 @@ import useAuth from 'hooks/useAuth'
 import InstitutionForm from 'components/organisms/forms/InstitutionForm/InstitutionForm'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
+import InstitutionManagementCheatSheet from 'components/molecules/cheatSheets/InstitutionManagementCheatSheet'
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
@@ -23,7 +24,10 @@ const InstitutionSettings: FC = () => {
   return (
     <div className={classes.institution}>
       <h1>{t('institution.institution_management')}</h1>
-      <Tooltip />
+      <Tooltip
+        title={t('cheat_sheet.institution_management.title')}
+        modalContent={<InstitutionManagementCheatSheet />}
+      />
       <Container className={classes.container}>
         <h3 className={classes.title}>{t('institution.institution_data')}</h3>
         <InstitutionForm name={name} id={institutionId} {...institution} />
