@@ -24,7 +24,18 @@
     "user_account_id": "Kasutajakonto ID",
     "open_instructions": "Ava õpetus",
     "institution": "Asutus",
-    "institution_short": "Asutuse lühend"
+    "institution_short": "Asutuse lühend",
+    "show_only_my_orders": "Soovin näha vaid oma tellimusi",
+    "all": "Kõik",
+    "to_order_view": "Tellimuse vaatesse",
+    "order_id": "Tellimuse ID",
+    "cost": "Maksumus",
+    "deadline_at": "Tähtaeg",
+    "reference_number": "Viitenumber",
+    "language_directions": "Keelesuunad",
+    "type": "Tüüp",
+    "order_tags": "Tellimuse sildid",
+    "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -38,6 +49,7 @@
   "button": {
     "login": "Logi sisse",
     "cancel": "Tühista",
+    "activate": "Aktiveeri",
     "check_tutorial": "Vaata kasutusjuhendit",
     "enter": "Sisene",
     "break": "Katkesta",
@@ -64,6 +76,9 @@
     "export_csv": "Ekspordi CSV",
     "add_users": "Lisa kasutajad",
     "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
+    "proceed": "Edasi",
+    "quit": "Loobun",
+    "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust",
     "update": "Redigeeri"
@@ -167,11 +182,14 @@
     "no_institutions_title": "Tundub, et sul puuduvad asutused mille vahel valida.",
     "institutions": "ASUTUSED",
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
+    "archive_user": "Kas oled kindel, et soovid konto arhiveerida?",
+    "deactivate_user_account": "Kas oled kindel, et soovid konto deaktiveerida?",
+    "deactivate_user_content": "Määra kuupäev, mis hetkest kasutaja sisselogimise õigused peatatakse.",
+    "activate_user_account": "Kas oled kindel, et soovid konto aktiveerida?",
+    "activate_user_content": "Kasutaja konto aktiveerimisel määratakse talle „Tellija“ roll. Kui soovid seda muuta, siis määra talle roll(id).",
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
-    "deactivate_user": "Kas oled kindel, et soovid konto deaktiveerida?",
-    "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
-    "deactivate_user_content": "Määra kuupäev, mis hetkest kasutaja sisselogimise õigused peatatakse."
+    "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?"
   },
   "cheat_sheet": {
     "user_management": {
@@ -211,7 +229,8 @@
     "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
     "institution_updated": "Asutuse andmed on edukalt muudetud",
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
-    "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud."
+    "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
+    "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud."
   },
   "notification": {
     "announcement": "Teade",
@@ -236,6 +255,17 @@
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
+  },
+  "orders": {
+    "orders_tile": "Tellimused",
+    "status": {
+      "REGISTERED": "Registreeritud",
+      "NEW": "Uus",
+      "FORWARDED": "Edastatud",
+      "CANCELLED": "Tühistatud",
+      "ACCEPTED": "Vastuvõetud",
+      "REJECTED": "Tühistatud"
+    }
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele"

@@ -1,0 +1,12 @@
+@import 'styles/variables';
+
+.tagsContainer {
+  box-shadow: 0 0 0 1px $color-border;
+  display: flex;
+  width: fit-content;
+  border-radius: 4px;
+
+  :last-child {
+    box-shadow: unset;
+  }
+}

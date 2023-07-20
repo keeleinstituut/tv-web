@@ -9,6 +9,7 @@ import DropdownContent from 'components/organisms/DropdownContent/DropdownConten
 
 import classes from './classes.module.scss'
 import { filter, find, map } from 'lodash'
+import Tag from 'components/atoms/Tag/Tag'
 
 export enum DropdownSizeTypes {
   L = 'l',
@@ -152,11 +153,23 @@ const SelectionControlsInput = forwardRef<
         value={value}
         buttons={buttons}
         helperText={helperText}
-        selectedOptionObjects={selectedOptionObjects}
         tags={tags}
         setIsOpen={setIsOpen}
         errorZIndex={errorZIndex}
       />
+      <div className={classNames(tags && classes.tagsContainer)}>
+        {map(selectedOptionObjects, ({ label }, index) => {
+          return (
+            <Tag
+              hidden={!tags}
+              className={classes.tag}
+              value
+              key={index}
+              label={label}
+            />
+          )
+        })}
+      </div>
     </InputWrapper>
   )
 })
