@@ -1,6 +1,10 @@
 import { InstitutionType } from './institutions'
 import { RoleType } from './roles'
-import { DataMetaTypes } from 'types/collective'
+import {
+  DataMetaTypes,
+  PaginationFunctionType,
+  SortingFunctionType,
+} from 'types/collective'
 
 interface UserDetailsType {
   created_at?: string
@@ -46,15 +50,12 @@ export interface UserCsvType {
   department?: string
 }
 
-export interface UserPayloadType {
-  per_page?: 10 | 50 | 100 | number
-  page?: number
-  role_id?: string[]
-  status?: StatusKey[]
-  sort_by?: string
-  sort_order?: 'asc' | 'desc' | undefined
-  department?: string[]
-}
+export type UserPayloadType = PaginationFunctionType &
+  SortingFunctionType & {
+    role_id?: string[]
+    status?: StatusKey[]
+    department?: string[]
+  }
 
 export interface UsersDataType {
   data: UserType[]

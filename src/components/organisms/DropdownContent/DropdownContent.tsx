@@ -62,10 +62,16 @@ const DropdownContent: FC<DropdownContentProps> = ({
 
   const handleOnSave = () => {
     onChange(selectedValue)
+    if (setIsOpen) {
+      setIsOpen(false)
+    }
   }
 
   const handleCancel = () => {
     setSelectedValue(initialValue)
+    if (setIsOpen) {
+      setIsOpen(false)
+    }
   }
 
   return (
