@@ -89,3 +89,10 @@
     border-left: 19px solid $color;
   }
 }
+
+@mixin statusTagStyle($color, $text-color: $color) {
+  color: $text-color;
+  box-shadow: 0 0 0 2px $color;
+  padding: spacing(1) spacing(4);
+  border-radius: 4px;
+}

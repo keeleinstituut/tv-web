@@ -4,6 +4,7 @@
 //HeaderItem
 .headingWrapper {
   display: grid;
+  position: relative;
   grid-auto-flow: column;
   justify-content: start;
   align-items: center;

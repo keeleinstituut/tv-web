@@ -37,7 +37,7 @@ const TableColumnFilter = ({
   if (hidden) return null
 
   return (
-    <div>
+    <div className={classes.container}>
       <Button
         onClick={toggleDropdown}
         appearance={AppearanceTypes.Text}

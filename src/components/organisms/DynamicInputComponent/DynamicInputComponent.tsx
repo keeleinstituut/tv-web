@@ -1,5 +1,10 @@
 import { useCallback, forwardRef, Suspense, Ref } from 'react'
-import { ControllerProps, FieldValues, RefCallBack } from 'react-hook-form'
+import {
+  ControllerProps,
+  FieldError,
+  FieldValues,
+  RefCallBack,
+} from 'react-hook-form'
 import { omit } from 'lodash'
 import { SimpleUnionOmit, assertNever } from 'types/helpers'
 import TextInput, {
@@ -18,6 +23,9 @@ import TimePickerInput, {
   TimePickerInputProps,
 } from 'components/molecules/TimePickerInput/TimePickerInput'
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
+import TagsSelect, {
+  TagsSelectProps,
+} from 'components/molecules/TagsSelect/TagsSelect'
 
 // Extend all props of an input with the corresponding inputType
 
@@ -27,6 +35,7 @@ export enum InputTypes {
   Date = 'date',
   Selections = 'selections',
   Time = 'time',
+  TagsSelect = 'tagsSelect',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -49,13 +58,18 @@ type TimePickerPropsWithType = TimePickerInputProps & {
   inputType: InputTypes.Time
 }
 
+type TagsSelectPropsWithType = TagsSelectProps & {
+  inputType: InputTypes.TagsSelect
+}
+
 export type InputPropsByType = (
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
   | DatePickerPropsWithType
   | SelectionControlsPropsWithType
   | TimePickerPropsWithType
-) & { onlyDisplay?: boolean }
+  | TagsSelectPropsWithType
+) & { onlyDisplay?: boolean; error?: FieldError; errorZIndex?: number }
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
   InputPropsByType,
@@ -106,6 +120,12 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
             {...omit(props, ['inputType', 'onlyDisplay'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
+        )
+      case InputTypes.TagsSelect:
+        // TODO: might need to add ref and error later
+        // right now those don't seem to be needed for our only usecase
+        return (
+          <TagsSelect {...omit(props, ['inputType', 'onlyDisplay', 'error'])} />
         )
       default:
         return assertNever(inputType)
