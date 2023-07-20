@@ -3,11 +3,16 @@ import {
   UsersDataType,
   UserPayloadType,
   UserDataType,
+  UserStatusType,
 } from 'types/users'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+
+dayjs.extend(customParseFormat)
 
 export const useFetchUsers = () => {
   const {
@@ -64,8 +69,8 @@ export const useUpdateUser = ({ userId }: { userId?: string }) => {
         (oldData?: UsersDataType) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const newAData = { ...previousData, ...data }
-          return { data: newAData }
+          const newData = { ...previousData, ...data }
+          return { data: newData }
         }
       )
     },
@@ -126,6 +131,85 @@ export const useArchiveUser = ({ userId }: { userId?: string }) => {
 
   return {
     archiveUser,
+    isLoading,
+  }
+}
+
+export const useDeactivateUser = ({
+  institution_user_id,
+}: {
+  institution_user_id?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deactivateUser, isLoading } = useMutation({
+    mutationKey: ['users', institution_user_id],
+    mutationFn: async (payload: UserStatusType) => {
+      const { deactivation_date: date, institution_user_id } = payload
+      const formattedDeactivationDate = dayjs(date, 'DD/MM/YYYY').format(
+        'YYYY-MM-DD'
+      )
+      return apiClient.post(endpoints.DEACTIVATE_USER, {
+        institution_user_id: institution_user_id,
+        deactivation_date: formattedDeactivationDate,
+      })
+    },
+
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', institution_user_id],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+
+          if (!previousData) return oldData
+          const newData = { ...oldData, ...data }
+
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    deactivateUser,
+    isLoading,
+  }
+}
+
+export const useActivateUser = ({
+  institution_user_id,
+}: {
+  institution_user_id?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: activateUser, isLoading } = useMutation({
+    mutationKey: ['users', institution_user_id],
+    mutationFn: async (payload: UserStatusType) => {
+      return apiClient.post(endpoints.ACTIVATE_USER, {
+        ...payload,
+      })
+    },
+
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['users', institution_user_id],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: UsersDataType) => {
+          const { data: previousData } = oldData || {}
+
+          if (!previousData) return oldData
+          const newData = { ...oldData, ...data }
+
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    activateUser,
     isLoading,
   }
 }

@@ -18,6 +18,8 @@
     "kilobytes": "KB",
     "megabytes": "MB",
     "attach_file": "lisa fail",
+    "user_deactivation_date": "Deaktiveerimise kuupäev",
+    "future_user_deactivation_date": "Konto deaktiveeritakse {{deactivationDate}}",
     "status": "Staatus",
     "user_account_id": "Kasutajakonto ID",
     "open_instructions": "Ava õpetus",
@@ -30,7 +32,8 @@
     "reference_number": "Viitenumber",
     "language_directions": "Keelesuunad",
     "type": "Tüüp",
-    "order_tags": "Tellimuse sildid"
+    "order_tags": "Tellimuse sildid",
+    "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -44,6 +47,7 @@
   "button": {
     "login": "Logi sisse",
     "cancel": "Tühista",
+    "activate": "Aktiveeri",
     "check_tutorial": "Vaata kasutusjuhendit",
     "enter": "Sisene",
     "break": "Katkesta",
@@ -56,6 +60,7 @@
     "add_new_role": "lisa uus roll",
     "deactivate_account": "Deaktiveeri konto",
     "archive_account": "Arhiveeri konto",
+    "activate_account": "Aktiveeri konto",
     "save_and_send_notifications": "Salvesta ja saada teavitused",
     "save": "Salvesta",
     "add_csv": "Lisa .csv",
@@ -166,8 +171,14 @@
     "no_institutions_title": "Tundub, et sul puuduvad asutused mille vahel valida.",
     "institutions": "ASUTUSED",
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
+    "archive_user": "Kas oled kindel, et soovid konto arhiveerida?",
+    "deactivate_user_account": "Kas oled kindel, et soovid konto deaktiveerida?",
+    "deactivate_user_content": "Määra kuupäev, mis hetkest kasutaja sisselogimise õigused peatatakse.",
+    "activate_user_account": "Kas oled kindel, et soovid konto aktiveerida?",
+    "activate_user_content": "Kasutaja konto aktiveerimisel määratakse talle „Tellija“ roll. Kui soovid seda muuta, siis määra talle roll(id).",
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
-    "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida."
+    "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
+    "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?"
   },
   "cheat_sheet": {
     "user_management": {
@@ -202,9 +213,12 @@
   },
   "success": {
     "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
-    "role_updated": "Roll „{{roleName}}“ on edukalt muudetud",
-    "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud",
-    "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile."
+    "role_updated": "Roll „{{roleName}}“ on edukalt muudetud.",
+    "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud.",
+    "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
+    "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
+    "deactivation_date_edit" : "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
+    "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud."
   },
   "notification": {
     "announcement": "Teade",

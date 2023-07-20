@@ -10,7 +10,6 @@ import { SelectionControlsInputProps } from 'components/organisms/SelectionContr
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
-import Tag from 'components/atoms/Tag/Tag'
 
 type DropdownContentProps = SelectionControlsInputProps & {
   isOpen?: boolean
@@ -31,9 +30,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
   buttons = false,
   onChange,
   setIsOpen,
-  selectedOptionObjects,
   errorZIndex,
-  tags,
   className,
 }) => {
   const { t } = useTranslation()
@@ -103,11 +100,11 @@ const DropdownContent: FC<DropdownContentProps> = ({
                 {multiple && (
                   <CheckBoxInput
                     name={name}
-                    ariaLabel={option.label}
+                    ariaLabel={option?.label || ''}
                     label={option.label}
                     value={isMultiSelected || false}
                     className={classes.option}
-                    onChange={() => handleMultipleSelect(option.value)}
+                    onChange={() => handleMultipleSelect(option?.value)}
                   />
                 )}
                 <p
@@ -144,20 +141,6 @@ const DropdownContent: FC<DropdownContentProps> = ({
             </Button>
           </div>
         </ul>
-      </div>
-
-      <div className={classNames(tags && classes.tagsContainer)}>
-        {map(selectedOptionObjects, ({ label }, index) => {
-          return (
-            <Tag
-              hidden={!tags}
-              className={classes.tag}
-              value
-              key={index}
-              label={label}
-            />
-          )
-        })}
       </div>
     </>
   )
