@@ -86,12 +86,17 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
 }) => {
   const { t } = useTranslation()
 
+  const handleOpen = (event: { preventDefault: () => void }) => {
+    event.preventDefault()
+  }
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       {trigger}
       <Dialog.Portal>
         <Dialog.Overlay className={classes.dialogOverlay} />
         <Dialog.Content
+          onOpenAutoFocus={handleOpen}
           className={classNames(
             classes.dialogContent,
             classes[size],

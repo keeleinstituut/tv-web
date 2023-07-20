@@ -1,5 +1,5 @@
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { useFetchUsers } from 'hooks/requests/useUsers'
+import { useDownloadUsers, useFetchUsers } from 'hooks/requests/useUsers'
 import { useTranslation } from 'react-i18next'
 import { FC } from 'react'
 import AddedUsersTable from 'components/organisms/tables/AddedUsersTable/AddedUsersTable'
@@ -16,12 +16,17 @@ const UsersManagement: FC = () => {
   const {
     users,
     paginationData,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   } = useFetchUsers()
-  const { userPrivileges } = useAuth()
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
+  const { downloadCSV, isLoading } = useDownloadUsers()
+
+  const handleDownloadFile = () => {
+    downloadCSV()
+  }
 
   return (
     <>
@@ -32,9 +37,13 @@ const UsersManagement: FC = () => {
           modalContent={<UserManagementCheatSheet />}
         />
         <Button
-          // href="/settings/users/add"
           appearance={AppearanceTypes.Secondary}
-          className={classNames({ [classes.invisible]: isEmpty(users) })}
+          className={classNames({
+            [classes.invisible]: !includes(userPrivileges, 'EXPORT_USER'),
+          })}
+          onClick={handleDownloadFile}
+          disabled={!includes(userPrivileges, 'EXPORT_USER')}
+          loading={isLoading}
         >
           {t('button.export_csv')}
         </Button>
@@ -51,8 +60,8 @@ const UsersManagement: FC = () => {
           data={users}
           paginationData={paginationData}
           hidden={isEmpty(users)}
-          handelFilterChange={handelFilterChange}
-          handelSortingChange={handelSortingChange}
+          handleFilterChange={handleFilterChange}
+          handleSortingChange={handleSortingChange}
           handlePaginationChange={handlePaginationChange}
         />
       </Root>

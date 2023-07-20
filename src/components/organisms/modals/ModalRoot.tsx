@@ -14,6 +14,7 @@ import { FormProgressProps } from './FormProgressModal/FormProgressModal'
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
 )
+
 const TooltipModal = lazy(() => import('./TooltipModal/TooltipModal'))
 
 const UserAndRoleManagementModal = lazy(
