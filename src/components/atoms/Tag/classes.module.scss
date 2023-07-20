@@ -1,0 +1,27 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.tag {
+  @include bodyTextSmallStyle;
+  color: $color-input-main;
+  font-weight: $font-weight-bold;
+  padding: spacing(0.625) spacing(1);
+
+
+  &.border {
+    box-shadow: 1px 0 0 0 $color-background-dark;
+    padding: spacing(0.5) spacing(2);
+  }
+
+  &.active {
+    background-color: $color-tag;
+    border-radius: 4px;
+    color: $color-primary;
+
+
+    &.border {
+      box-shadow: 0 0 0 1px $color-primary;
+      border: unset;
+    }
+  }
+}

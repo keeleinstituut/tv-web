@@ -44,6 +44,7 @@ export interface ModalProps extends ModalFooterProps {
   handleClose?: () => void
   progressBar?: ReactElement
   className?: string
+  helperText?: string
 }
 
 export interface ModalFooterProps {
@@ -81,8 +82,13 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
   buttons,
   progressBar,
   className,
+  helperText,
 }) => {
   const { t } = useTranslation()
+
+  const handleOpen = (event: { preventDefault: () => void }) => {
+    event.preventDefault()
+  }
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -90,6 +96,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
       <Dialog.Portal>
         <Dialog.Overlay className={classes.dialogOverlay} />
         <Dialog.Content
+          onOpenAutoFocus={handleOpen}
           className={classNames(
             classes.dialogContent,
             classes[size],
@@ -112,6 +119,9 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
           <h1 className={classNames(classes.modalTitle, classes[titleFont])}>
             {title}
           </h1>
+          <p hidden={!helperText} className={classes.helperText}>
+            {helperText}
+          </p>
           <Dialog.Overlay className={classes.scrollableContent}>
             <div className={classes.dialogDescription}>{children}</div>
           </Dialog.Overlay>

@@ -9,20 +9,26 @@ import {
   useImperativeHandle,
   Suspense,
 } from 'react'
+import { FormProgressProps } from './FormProgressModal/FormProgressModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
 )
+
 const TooltipModal = lazy(() => import('./TooltipModal/TooltipModal'))
 
 const UserAndRoleManagementModal = lazy(
   () => import('./UserAndRoleManagementModal/UserAndRoleManagementModal')
+)
+const FormProgressModal = lazy(
+  () => import('./FormProgressModal/FormProgressModal')
 )
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
   Tooltip = 'tooltip',
+  FormProgress = 'formProgress',
 }
 
 // Add other modal props types here as well
@@ -30,11 +36,13 @@ type ModalPropTypes =
   | Omit<InstitutionSelectModalProps, 'closeModal'>
   | Omit<UserAndRoleManagementModalProps, 'closeModal'>
   | Omit<TooltipModalProps, 'closeModal'>
+  | Omit<FormProgressProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
   userAndRoleManagement: UserAndRoleManagementModal,
   tooltip: TooltipModal,
+  formProgress: FormProgressModal,
 }
 
 interface RefType {
