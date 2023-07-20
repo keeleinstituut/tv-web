@@ -35,7 +35,7 @@ import classes from './classes.module.scss'
 interface FormValues {
   deactivation_date?: string
   institution_user_id?: string
-  roles?: (string | undefined)[]
+  roles?: string[]
   notify_user?: boolean
 }
 
@@ -130,9 +130,6 @@ const UserPage: FC = () => {
       name: 'notify_user',
       label: t('label.user_activation_notification'),
       ariaLabel: t('label.user_activation_notification'),
-      rules: {
-        required: true,
-      },
       className: classes.checkboxInputClass,
     },
   ]
@@ -196,7 +193,15 @@ const UserPage: FC = () => {
 
   const onActivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const payload: UserStatusType = { ...values, institution_user_id }
+      const { notify_user } = values
+
+      const payload: UserStatusType = {
+        ...values,
+        institution_user_id,
+        ...(notify_user === undefined
+          ? { notify_user: false }
+          : { notify_user }),
+      }
 
       try {
         await activateUser(payload)
@@ -318,7 +323,11 @@ const UserPage: FC = () => {
       </div>
 
       <div
-        hidden={!isUserDeactivated || isUserDeactivatedImmediately}
+        hidden={
+          !isUserDeactivated ||
+          isUserDeactivatedImmediately ||
+          isDeactivationDatePastCurrentDate
+        }
         className={classes.deactivationDate}
       >
         {t('label.future_user_deactivation_date', {
