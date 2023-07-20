@@ -52,10 +52,10 @@ const UserPage: FC = () => {
   const { isLoading, isError, user } = useFetchUser({
     userId,
   })
-  const { archiveUser, isLoading: isArchiving } = useArchiveUser({
-    userId: userId,
-  })
   const { existingRoles = [] } = useRolesFetch()
+  const { archiveUser, isLoading: isArchiving } = useArchiveUser({
+    institution_user_id: userId,
+  })
   const { activateUser, isLoading: isActivating } = useActivateUser({
     institution_user_id: userId,
   })
@@ -63,9 +63,9 @@ const UserPage: FC = () => {
     institution_user_id: userId,
   })
   const deactivationDate = user?.deactivation_date || ''
-  const forename = user?.user?.forename || ''
-  const surname = user?.user?.surname || ''
-  const name = `${forename} ${surname}`
+  const name = `${user?.user.forename} ${user?.user.surname}`
+
+  const isUserArchived = user?.archived_at !== null
 
   const editModalTitle = t('modal.edit_deactivation_date')
   const deactivateModalTitle = t('modal.deactivate_user_account')
@@ -137,6 +137,34 @@ const UserPage: FC = () => {
     },
   ]
 
+  const onArhiveSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const payload: UserStatusType = { ...values, institution_user_id }
+
+      navigate('/settings/users')
+
+      try {
+        await archiveUser(payload)
+
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.user_archived', { name }),
+        })
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            setError(typedKey, { type: 'backend', message: errorString })
+          })
+        }
+      }
+    },
+    [institution_user_id, navigate, archiveUser, t, name, setError]
+  )
+
   const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const isUserEditingDeactivationDate = deactivationDate !== ''
@@ -200,7 +228,6 @@ const UserPage: FC = () => {
     return <div />
   }
 
-  const userNameString = `${user.user.forename} ${user.user.surname}`
   const isUserDeactivated = !!deactivationDate
 
   const isDeactivationDatePastCurrentDate = dayjs().isAfter(
@@ -212,10 +239,7 @@ const UserPage: FC = () => {
       title: t('modal.archive_user_account'),
       modalContent: t('modal.archive_user_content'),
       className: classes.archiveContent,
-      handleProceed: () => {
-        archiveUser()
-        navigate('/settings/users')
-      },
+      handleProceed: handleSubmit(onArhiveSubmit),
     })
   }
 
@@ -260,7 +284,7 @@ const UserPage: FC = () => {
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>{userNameString}</h1>
+        <h1>{name}</h1>
         <div className={classes.buttonsContainer}>
           <Button
             loading={isUserDeactivated ? isActivating : isDeactivating}
@@ -288,6 +312,7 @@ const UserPage: FC = () => {
             children={t('button.archive_account')}
             onClick={handleArchiveModal}
             hidden={!includes(userPrivileges, Privileges.ArchiveUser)}
+            disabled={isUserArchived}
           />
         </div>
       </div>
