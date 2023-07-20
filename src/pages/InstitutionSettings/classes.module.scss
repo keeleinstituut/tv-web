@@ -12,10 +12,11 @@
   border-radius: $border-radius-4;
   padding: spacing(4);
   margin-top: spacing(6);
+  grid-gap: spacing(4);
 
   .title {
     color: $color-primary;
-    padding-bottom: spacing(6);
+    padding: spacing(3) spacing(4);
   }
 }
 
