@@ -17,12 +17,12 @@ import { useFetchTags } from 'hooks/requests/useTags'
 import { useBulkCreate } from 'hooks/requests/useTags'
 import { flatMap, groupBy, join, map, uniqBy } from 'lodash'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
-
-import classes from './classes.module.scss'
-import { TagsDataType } from 'types/tags'
+import { TagsDataType, TagTypeTest } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
+
+import classes from './classes.module.scss'
 
 interface ObjectType {
   [key: string]: string
@@ -137,9 +137,9 @@ const Tags: FC = () => {
 
       console.log('transformedObject', transformedObject)
 
-      const payload: TagsDataType = {
+      const payload: TagTypeTest = {
         // ...transformedObject,
-        data: transformedObject2,
+        ...transformedObject2,
       }
 
       console.log('payload onTagsSubmit', payload)

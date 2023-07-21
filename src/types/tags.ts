@@ -10,3 +10,12 @@ export interface TagType {
 export interface TagsDataType {
   data: TagType[]
 }
+
+export interface TagTypeTest {
+  name?: string
+  type?: string
+}
+
+export interface TagsDataTypeTest {
+  tags: TagTypeTest[]
+}
