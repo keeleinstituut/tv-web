@@ -134,33 +134,20 @@ const UserPage: FC = () => {
     },
   ]
 
-  const onArhiveSubmit: SubmitHandler<FormValues> = useCallback(
-    async (values) => {
-      const payload: UserStatusType = { ...values, institution_user_id }
+  const onArchiveSubmit: SubmitHandler<FormValues> = useCallback(async () => {
+    const payload: UserStatusType = { institution_user_id }
+    navigate('/settings/users')
 
-      navigate('/settings/users')
+    try {
+      await archiveUser(payload)
 
-      try {
-        await archiveUser(payload)
-
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.user_archived', { name }),
-        })
-      } catch (errorData) {
-        const typedErrorData = errorData as ValidationError
-        if (typedErrorData.errors) {
-          map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
-            const errorString = join(errorsArray, ',')
-            setError(typedKey, { type: 'backend', message: errorString })
-          })
-        }
-      }
-    },
-    [institution_user_id, navigate, archiveUser, t, name, setError]
-  )
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.user_archived', { name }),
+      })
+    } catch (_) {}
+  }, [institution_user_id, navigate, archiveUser, t, name])
 
   const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
@@ -198,11 +185,8 @@ const UserPage: FC = () => {
       const payload: UserStatusType = {
         ...values,
         institution_user_id,
-        ...(notify_user === undefined
-          ? { notify_user: false }
-          : { notify_user }),
+        ...{ notify_user: !!notify_user },
       }
-
       try {
         await activateUser(payload)
 
@@ -244,7 +228,7 @@ const UserPage: FC = () => {
       title: t('modal.archive_user_account'),
       modalContent: t('modal.archive_user_content'),
       className: classes.archiveContent,
-      handleProceed: handleSubmit(onArhiveSubmit),
+      handleProceed: onArchiveSubmit,
     })
   }
 
