@@ -74,6 +74,8 @@
     "export_csv": "Ekspordi CSV",
     "add_users": "Lisa kasutajad",
     "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
+    "proceed": "Edasi",
+    "quit": "Loobun",
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust"
@@ -260,4 +262,3 @@
     "missing_permissions": "Teil puudub ligipääs soovitud lehele"
   }
 }
-

@@ -2,7 +2,7 @@ import { FC } from 'react'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 
-interface Step {
+export interface Step {
   label: string
 }
 
