@@ -30,7 +30,21 @@
 // }
 
 .progressBarContainer {
-  padding: 0 0 spacing(10) 0;
+  padding: spacing(6);
+
+  .modalTitle {
+    padding: spacing(12) spacing(6) spacing(4);
+  }
+  .helperText {
+    padding: 0 spacing(6) spacing(4);
+  }
+  .spaceBetween {
+    padding: spacing(4) 0 0;
+    border-top: 1px solid $color-border-secondary;
+  }
+  .dialogDescription {
+    padding: 0 spacing(6);
+  }
 }
 
 .dialogDescription {
@@ -97,7 +111,8 @@
   @include h1TextStyle;
 }
 
-.progressBarContent {
-  padding: spacing(6) spacing(6) spacing(2);
-  @include subtitleSmallTextStyle;
+.helperText {
+  padding: 0 spacing(18) spacing(4);
+  color: $color-primary;
+  @include bodyTextStyle;
 }
