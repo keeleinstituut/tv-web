@@ -128,7 +128,6 @@ const UserPage: FC = () => {
       rules: {
         required: true,
       },
-      className: classes.selectionsInputClass,
       usePortal: true,
     },
     {

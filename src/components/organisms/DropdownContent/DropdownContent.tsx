@@ -48,11 +48,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
     ref
   ) {
     const { left, top } =
-      useElementPosition(
-        wrapperRef,
-        'mainScroll',
-        horizontalScrollContainerId
-      ) || {}
+      useElementPosition(wrapperRef, horizontalScrollContainerId) || {}
 
     const { t } = useTranslation()
 
@@ -63,12 +59,14 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
 
     const handleSingleSelect = (selectedOption: string) => {
       onChange(selectedOption ? selectedOption : '')
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
     }
 
     const handleMultipleSelect = (selectedOption: string) => {
       // TODO: type of value and of selectedValue should be inferred from "multiple" prop
       const typedSelectedValue = selectedValue as string[]
-      console.warn('typedSelectedValue', typedSelectedValue)
       const optionIndex = typedSelectedValue.indexOf(selectedOption)
 
       const newSelectedValues =

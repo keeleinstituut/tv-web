@@ -29,7 +29,6 @@ import {
   NotificationPropsWithoutClose,
 } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import ModalRoot, {
   ModalTypes,

@@ -91,7 +91,7 @@ const SelectionControlsInput = forwardRef<
 
   useClickAway(() => {
     setIsOpen(false)
-  }, [clickAwayInputRef, wrapperRef])
+  }, [clickAwayInputRef, ...(wrapperRef?.current ? [wrapperRef] : [])])
 
   const selectedOptionObjects = filter(options, (option) => {
     return !!find(value, (singleValue) => singleValue === option?.value)

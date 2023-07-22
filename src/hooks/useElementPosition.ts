@@ -2,8 +2,8 @@ import { useState, useCallback, useEffect, RefObject } from 'react'
 
 const useElementPosition = <RefType extends HTMLElement>(
   ref?: RefObject<RefType>,
-  verticalContainerId?: string,
-  horizontalContainerId?: string
+  horizontalContainerId?: string,
+  verticalContainerId?: string
 ) => {
   const { x: initialLeft, y: initialTop } =
     ref?.current?.getBoundingClientRect() || {}

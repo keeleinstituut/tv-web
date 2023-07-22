@@ -58,7 +58,7 @@ const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
 }) => {
   if (!buttons) return null
   return (
-    <div className={classNames(classes.footer, classes[buttonsPosition])}>
+    <div className={classes[buttonsPosition]}>
       {map(buttons, (button, index) => (
         <Button key={index} {...button}>
           {button?.children}

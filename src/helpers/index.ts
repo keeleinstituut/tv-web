@@ -61,8 +61,7 @@ export const convertUsersCsvToArray = (csvData: string | ArrayBuffer) => {
     const arrayOfObjects = map(values, (value) => {
       const valuesArray = split(value, ';')
       const pattern = /("")(?!")|"/g
-      // return value ? value.replace(pattern, '') : ''
-      // const formattedValue = replace(value, character)
+
       return reduce(
         valuesArray,
         (result, value, index) => {

@@ -44,7 +44,6 @@ const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
         className={classNames(
           classes.container,
           disabled && classes.disabled,
-          error && classes.error,
           className
         )}
       >
