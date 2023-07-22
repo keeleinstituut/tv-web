@@ -7,9 +7,9 @@ import classes from './classes.module.scss'
 const MainLayout: FC<PropsWithChildren> = () => (
   <main className={classes.mainContainer}>
     <SideBar />
-    <div className={classes.contentContainer} id="test">
+    <div className={classes.contentContainer}>
       <Header />
-      <div className={classes.scrollableContent}>
+      <div className={classes.scrollableContent} id="mainScroll">
         <Outlet />
       </div>
     </div>

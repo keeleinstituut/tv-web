@@ -1,5 +1,14 @@
-import { FC, ReactElement, SVGProps, forwardRef, useRef, useState } from 'react'
+import {
+  FC,
+  ReactElement,
+  SVGProps,
+  forwardRef,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import classNames from 'classnames'
+import { createPortal } from 'react-dom'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
@@ -21,6 +30,9 @@ export type DropDownOptions = {
   label: string
   value: string
 }
+
+// TODO: currently DropdownContent child extends the props of it's parent (SelectionControlsInput)
+// Should be the other way around, to prevent child from accepting a ton of props it doesn't use
 export interface SelectionControlsInputProps {
   name: string
   error?: FieldError
@@ -40,6 +52,8 @@ export interface SelectionControlsInputProps {
   className?: string
   selectIcon?: FC<SVGProps<SVGSVGElement>>
   errorZIndex?: number
+  usePortal?: boolean
+  horizontalScrollContainerId?: string
 }
 
 const SelectionControlsInput = forwardRef<
@@ -49,22 +63,20 @@ const SelectionControlsInput = forwardRef<
   {
     label,
     name,
-    ariaLabel,
     value,
     error,
     options,
-    onChange,
     disabled,
     placeholder,
     multiple = false,
     helperText,
-    buttons = false,
-    searchInput,
     dropdownSize,
     errorZIndex,
     tags = false,
     className,
     selectIcon,
+    usePortal,
+    ...rest
   },
   ref
 ) {
@@ -75,10 +87,11 @@ const SelectionControlsInput = forwardRef<
   }
 
   const clickAwayInputRef = useRef(null)
+  const wrapperRef = useRef(null)
 
   useClickAway(() => {
     setIsOpen(false)
-  }, [clickAwayInputRef])
+  }, [clickAwayInputRef, wrapperRef])
 
   const selectedOptionObjects = filter(options, (option) => {
     return !!find(value, (singleValue) => singleValue === option?.value)
@@ -104,6 +117,32 @@ const SelectionControlsInput = forwardRef<
 
   const SelectInputArrow = selectIcon || DropdownArrow
 
+  const dropdownProps = useMemo(
+    () => ({
+      name,
+      options,
+      dropdownSize,
+      disabled,
+      isOpen,
+      multiple,
+      value,
+      setIsOpen,
+      errorZIndex,
+      ...rest,
+    }),
+    [
+      rest,
+      disabled,
+      dropdownSize,
+      errorZIndex,
+      isOpen,
+      multiple,
+      name,
+      options,
+      value,
+    ]
+  )
+
   return (
     <InputWrapper
       label={label}
@@ -111,8 +150,7 @@ const SelectionControlsInput = forwardRef<
       error={error}
       className={classNames(classes.selectionsContainer, className)}
       wrapperClass={classes[dropdownSize || 'l']}
-      onClick={toggleDropdown}
-      ref={clickAwayInputRef}
+      ref={usePortal ? wrapperRef : clickAwayInputRef}
       errorClass={classes.selectionsError}
       errorZIndex={errorZIndex}
     >
@@ -125,6 +163,7 @@ const SelectionControlsInput = forwardRef<
         )}
         id={name}
         ref={ref}
+        onClick={toggleDropdown}
       >
         <p hidden={!placeholder} className={classes.menuLabel}>
           {dropdownMenuLabel}
@@ -140,23 +179,18 @@ const SelectionControlsInput = forwardRef<
       <p hidden={!helperText} className={classes.helperText}>
         {helperText}
       </p>
-      <DropdownContent
-        name={name}
-        ariaLabel={ariaLabel}
-        options={options}
-        onChange={onChange}
-        dropdownSize={dropdownSize}
-        disabled={disabled}
-        isOpen={isOpen}
-        searchInput={searchInput}
-        multiple={multiple}
-        value={value}
-        buttons={buttons}
-        helperText={helperText}
-        tags={tags}
-        setIsOpen={setIsOpen}
-        errorZIndex={errorZIndex}
-      />
+      {usePortal ? (
+        createPortal(
+          <DropdownContent
+            {...dropdownProps}
+            wrapperRef={wrapperRef}
+            ref={clickAwayInputRef}
+          />,
+          document.getElementById('root') || document.body
+        )
+      ) : (
+        <DropdownContent {...dropdownProps} />
+      )}
       <div className={classNames(tags && classes.tagsContainer)}>
         {map(selectedOptionObjects, ({ label }, index) => {
           return (

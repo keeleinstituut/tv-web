@@ -6,8 +6,10 @@ import {
   SortingFunctionType,
 } from 'types/collective'
 
-const useFilters = <TFilters extends object>() => {
-  const [filters, setFilters] = useState<TFilters | object>({})
+const useFilters = <TFilters extends object>(initialFilters?: TFilters) => {
+  const [filters, setFilters] = useState<TFilters | object>(
+    initialFilters || {}
+  )
 
   const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {

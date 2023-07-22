@@ -60,15 +60,24 @@ export const convertUsersCsvToArray = (csvData: string | ArrayBuffer) => {
     >
     const arrayOfObjects = map(values, (value) => {
       const valuesArray = split(value, ';')
+      const pattern = /("")(?!")|"/g
+      // return value ? value.replace(pattern, '') : ''
+      // const formattedValue = replace(value, character)
       return reduce(
         valuesArray,
         (result, value, index) => {
           if (!index && index !== 0) {
             return result
           }
+          const formattedValue = value.replace(pattern, '')
+          const key = usersCsvFieldsToKeys[keysArray[index]]
+          const displayValue =
+            key === usersCsvFieldsToKeys.Roll
+              ? map(split(formattedValue, ','), trim)
+              : formattedValue
           return {
             ...result,
-            [usersCsvFieldsToKeys[keysArray[index]]]: value,
+            [key]: displayValue,
           }
         },
         {}

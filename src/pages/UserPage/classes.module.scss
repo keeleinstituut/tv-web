@@ -28,8 +28,10 @@
 }
 
 .deactivationDate {
-  @include bodyTextStyle;
-  color: $color-error;
+  span {
+    @include bodyTextStyle;
+    color: $color-error;
+  }
   padding: spacing(6) 0 spacing(8) 0;
 }
 
@@ -66,8 +68,4 @@
 
 .checkboxInputClass {
   padding-top: spacing(4);
-}
-
-.selectionsInputClass > div > :nth-child(3) {
-  position: fixed;
 }

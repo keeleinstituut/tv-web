@@ -14,6 +14,7 @@ export interface UserAndRoleManagementModalProps {
   isModalOpen?: boolean
   closeModal: () => void
   handleProceed?: () => void
+  handleCancel?: () => void
   className?: string
   dynamicForm?: JSX.Element
 }
@@ -26,6 +27,7 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
   isModalOpen,
   closeModal,
   handleProceed,
+  handleCancel,
   className,
   dynamicForm,
 }) => {
@@ -42,15 +44,22 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
           appearance: AppearanceTypes.Secondary,
           children: cancelButtonContent || t('button.no'),
           size: SizeTypes.M,
-          onClick: closeModal,
+          onClick: () => {
+            if (handleCancel) {
+              handleCancel()
+            } else {
+              closeModal()
+            }
+          },
         },
         {
           appearance: AppearanceTypes.Primary,
           onClick: () => {
             if (handleProceed) {
               handleProceed()
+            } else {
+              closeModal()
             }
-            closeModal()
           },
           children: proceedButtonContent || t('button.yes'),
         },

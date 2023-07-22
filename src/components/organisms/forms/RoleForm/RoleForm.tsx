@@ -21,7 +21,11 @@ import useAuth from 'hooks/useAuth'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import {
+  ModalTypes,
+  closeModal,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
 
 type PrivilegesFormValue = object & {
   [key in PrivilegeKey]?: boolean
@@ -209,12 +213,17 @@ const RoleForm: FC<RoleFormProps> = ({
     })
   }
 
+  const handleDeleteRole = useCallback(() => {
+    deleteRole()
+    closeModal()
+  }, [deleteRole])
+
   const handleDeleteModal = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
       title: t('modal.delete_role'),
       cancelButtonContent: t('button.no'),
       proceedButtonContent: t('button.yes'),
-      handleProceed: deleteRole,
+      handleProceed: handleDeleteRole,
     })
   }
 

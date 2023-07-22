@@ -16,6 +16,7 @@ type FilterProps = {
   icon: FC<SVGProps<SVGSVGElement>>
   buttons?: boolean
   ariaLabel: string
+  value?: string | string[]
 }
 
 const TableColumnFilter = ({
@@ -27,6 +28,7 @@ const TableColumnFilter = ({
   icon,
   buttons,
   ariaLabel,
+  value,
 }: FilterProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -51,6 +53,7 @@ const TableColumnFilter = ({
         name={name}
         ariaLabel={ariaLabel}
         options={filterOption}
+        value={value}
         multiple={multiple}
         buttons={buttons}
         // searchInput: <Fragment />,
