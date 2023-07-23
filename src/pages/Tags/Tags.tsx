@@ -15,9 +15,9 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { useBulkCreate } from 'hooks/requests/useTags'
-import { flatMap, groupBy, join, map, uniqBy } from 'lodash'
+import { flatMap, groupBy, map, uniqBy } from 'lodash'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
-import { TagsDataType, TagTypeTest } from 'types/tags'
+import { TagsType } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
@@ -110,11 +110,6 @@ const Tags: FC = () => {
 
       const { tagCategorySelection, tagInput } = values
 
-      // const type = tagCategorySelection
-      // const name = tagInput
-
-      // const { data: values } = oldData || {}
-
       const transformedObject = flatMap(tagInput, (tagInputValue) => {
         return map(tagCategorySelection, (tagCategoryValue) => {
           return {
@@ -123,6 +118,8 @@ const Tags: FC = () => {
           }
         })
       })
+
+      console.log('transformedObject', transformedObject)
 
       const transformedObject2 = [
         {
@@ -137,12 +134,9 @@ const Tags: FC = () => {
 
       console.log('transformedObject', transformedObject)
 
-      const payload: TagTypeTest = {
-        // ...transformedObject,
-        ...transformedObject2,
+      const payload: TagsType = {
+        tags: transformedObject2,
       }
-
-      console.log('payload onTagsSubmit', payload)
 
       try {
         await createTags(payload)
@@ -154,13 +148,13 @@ const Tags: FC = () => {
         })
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
-        if (typedErrorData.errors) {
-          map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
-            const errorString = join(errorsArray, ',')
-            setError(typedKey, { type: 'backend', message: errorString })
-          })
-        }
+        // if (typedErrorData.errors) {
+        //   map(typedErrorData.errors, (errorsArray, key) => {
+        //     const typedKey = key as FieldPath<FormValues>
+        //     const errorString = join(errorsArray, ',')
+        //     setError(typedKey, { type: 'backend', message: errorString })
+        //   })
+        // }
       }
     },
     [createTags, t]
@@ -212,6 +206,7 @@ const Tags: FC = () => {
             ariaLabel={t('button.add')}
             className={classes.addButton}
             onClick={handleSubmit(onTagsSubmit)}
+            loading={isCreatingTags}
           />
         </div>
       </Container>
@@ -246,6 +241,3 @@ const Tags: FC = () => {
 }
 
 export default Tags
-function setError(typedKey: string, arg1: { type: string; message: string }) {
-  throw new Error('Function not implemented.')
-}
