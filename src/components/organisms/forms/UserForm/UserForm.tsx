@@ -45,6 +45,7 @@ const UserForm: FC<UserFormProps> = ({
   email,
   phone,
   department,
+  status,
 }) => {
   // hooks
   const { personal_identification_code, forename, surname } = user
@@ -82,6 +83,8 @@ const UserForm: FC<UserFormProps> = ({
       value: id || '',
     }
   })
+
+  const isUserDeactivated = status === 'DEACTIVATED'
 
   // map data for rendering
   const fields: FieldProps<FormValues>[] = [
@@ -157,6 +160,7 @@ const UserForm: FC<UserFormProps> = ({
       options: roleOptions,
       multiple: true,
       buttons: true,
+      disabled: isUserDeactivated,
     },
   ]
 

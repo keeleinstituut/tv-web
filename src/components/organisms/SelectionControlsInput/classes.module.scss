@@ -17,7 +17,6 @@
   display: grid;
   grid-template-columns: auto max-content;
   padding: spacing(2);
-  color: $color-text-light;
   border: 1px solid $color-text-light;
   border-radius: 4px;
   background: $color-white;
@@ -80,6 +79,7 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  color: $color-text-light;
 }
 
 .selectionsError {
