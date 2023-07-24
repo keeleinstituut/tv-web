@@ -43,16 +43,19 @@
     border: 1px solid $color-border;
     border-radius: 5px;
   }
-}
 
-.disabledDropdown {
-  &:focus {
-    border: 1px solid $color-text-light;
+  &:disabled {
+    background-color: $color-background;
+    pointer-events: none;
+
+    &:focus {
+      border: 1px solid $color-text-light;
+    }
+
+    svg g path {
+      fill: $color-input-border;
+    }
   }
-}
-
-.disabledDropdownIcon g path {
-  fill: $color-background;
 }
 
 .openDropdownIcon {

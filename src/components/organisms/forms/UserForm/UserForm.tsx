@@ -161,6 +161,9 @@ const UserForm: FC<UserFormProps> = ({
       multiple: true,
       buttons: true,
       disabled: isUserDeactivated,
+      rules: {
+        required: true,
+      },
     },
   ]
 
