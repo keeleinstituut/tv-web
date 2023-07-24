@@ -11,6 +11,8 @@ export const useFetchTags = () => {
 
   const { data: tags } = data || {}
 
+  console.log('data', data)
+
   return {
     isLoading,
     isError,
@@ -25,9 +27,7 @@ export const useBulkCreate = () => {
     mutationFn: async (payload: TagsType) => {
       console.log('payload', payload)
 
-      return apiClient.post(endpoints.CREATE_TAGS, {
-        payload,
-      })
+      return apiClient.post(endpoints.CREATE_TAGS, payload)
     },
 
     onSuccess: ({ tags }) => {

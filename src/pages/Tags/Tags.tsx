@@ -8,7 +8,7 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
-import { FieldPath, SubmitHandler, useForm, useWatch } from 'react-hook-form'
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -20,7 +20,8 @@ import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
 import { TagsType } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { ValidationError } from 'api/errorHandler'
+import Loader from 'components/atoms/Loader/Loader'
+import { v4 as uuidv4 } from 'uuid'
 
 import classes from './classes.module.scss'
 
@@ -57,12 +58,12 @@ const Tags: FC = () => {
       inputType: InputTypes.Text,
       ariaLabel: t('tag.tag_name'),
       label: 'Nimetus',
-      name: `tagInput.${1}`,
+      name: `tagInput.${uuidv4()}`,
       placeholder: t('tag.tag_input'),
       type: 'text',
-      rules: {
-        required: true,
-      },
+      // rules: {
+      //   required: true,
+      // },
       className: classes.tagInputField,
     },
   ]
@@ -75,9 +76,9 @@ const Tags: FC = () => {
       options: uniqueTagCategoryOptions,
       placeholder: t('tag.select_tag_category'),
       multiple: true,
-      rules: {
-        required: true,
-      },
+      // rules: {
+      //   required: true,
+      // },
       buttons: true,
     },
   ]
@@ -93,12 +94,12 @@ const Tags: FC = () => {
         inputType: InputTypes.Text,
         ariaLabel: t('tag.tag_name'),
         label: 'Nimetus',
-        name: `tagInput.${inputFields?.length + 1}`,
+        name: `tagInput.${uuidv4()}`,
         placeholder: t('tag.tag_input'),
         type: 'text',
-        rules: {
-          required: true,
-        },
+        // rules: {
+        //   required: true,
+        // },
         className: classes.tagInputField,
       },
     ])
@@ -123,16 +124,10 @@ const Tags: FC = () => {
 
       const transformedObject2 = [
         {
-          type: 'Oskused',
+          type: 'Tellimus',
           name: 'Tag1',
         },
-        {
-          type: 'Oskused',
-          name: 'Tag2',
-        },
       ]
-
-      console.log('transformedObject', transformedObject)
 
       const payload: TagsType = {
         tags: transformedObject2,
@@ -146,16 +141,7 @@ const Tags: FC = () => {
           title: t('notification.announcement'),
           content: t('success.user_activated'),
         })
-      } catch (errorData) {
-        const typedErrorData = errorData as ValidationError
-        // if (typedErrorData.errors) {
-        //   map(typedErrorData.errors, (errorsArray, key) => {
-        //     const typedKey = key as FieldPath<FormValues>
-        //     const errorString = join(errorsArray, ',')
-        //     setError(typedKey, { type: 'backend', message: errorString })
-        //   })
-        // }
-      }
+      } catch (errorData) {}
     },
     [createTags, t]
   )
@@ -166,8 +152,9 @@ const Tags: FC = () => {
   const groupedCategoryData = groupBy(tags, 'type')
   const uniqueCategoryTypes = Object.keys(groupedCategoryData)
 
-  console.log('groupedData', groupedCategoryData)
-  console.log('uniqueTypes', uniqueCategoryTypes)
+  if (isFetchingTags) {
+    return <Loader loading />
+  }
 
   return (
     <>
