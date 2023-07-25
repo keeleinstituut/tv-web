@@ -147,7 +147,9 @@ export const useArchiveUser = ({
   const { mutateAsync: archiveUser, isLoading } = useMutation({
     mutationKey: ['users', institution_user_id],
     mutationFn: async () =>
-      apiClient.post(endpoints.ARCHIVE_USER, institution_user_id),
+      apiClient.post(endpoints.ARCHIVE_USER, {
+        institution_user_id: institution_user_id,
+      }),
 
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
