@@ -36,7 +36,11 @@ type FormValues = {
 
 const Tags: FC = () => {
   const { t } = useTranslation()
-  const { control, handleSubmit } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    formState: { dirtyFields },
+  } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
   })
   const { tags, isLoading: isFetchingTags } = useFetchTags()
@@ -152,6 +156,10 @@ const Tags: FC = () => {
   const groupedCategoryData = groupBy(tags, 'type')
   const uniqueCategoryTypes = Object.keys(groupedCategoryData)
 
+  const areInputFieldsDirty = !!(
+    dirtyFields.tagCategorySelection && dirtyFields.tagInput
+  )
+
   if (isFetchingTags) {
     return <Loader loading />
   }
@@ -194,6 +202,7 @@ const Tags: FC = () => {
             className={classes.addButton}
             onClick={handleSubmit(onTagsSubmit)}
             loading={isCreatingTags}
+            disabled={!areInputFieldsDirty}
           />
         </div>
       </Container>
