@@ -35,7 +35,7 @@ import classes from './classes.module.scss'
 interface FormValues {
   deactivation_date?: string
   institution_user_id?: string
-  roles?: (string | undefined)[]
+  roles?: string[]
   notify_user?: boolean
 }
 
@@ -52,10 +52,10 @@ const UserPage: FC = () => {
   const { isLoading, isError, user } = useFetchUser({
     userId,
   })
-  const { archiveUser, isLoading: isArchiving } = useArchiveUser({
-    userId: userId,
-  })
   const { existingRoles = [] } = useRolesFetch()
+  const { archiveUser, isLoading: isArchiving } = useArchiveUser({
+    institution_user_id: userId,
+  })
   const { activateUser, isLoading: isActivating } = useActivateUser({
     institution_user_id: userId,
   })
@@ -63,9 +63,9 @@ const UserPage: FC = () => {
     institution_user_id: userId,
   })
   const deactivationDate = user?.deactivation_date || ''
-  const forename = user?.user?.forename || ''
-  const surname = user?.user?.surname || ''
-  const name = `${forename} ${surname}`
+  const name = `${user?.user.forename} ${user?.user.surname}`
+
+  const isUserArchived = user?.archived_at !== null
 
   const editModalTitle = t('modal.edit_deactivation_date')
   const deactivateModalTitle = t('modal.deactivate_user_account')
@@ -130,12 +130,22 @@ const UserPage: FC = () => {
       name: 'notify_user',
       label: t('label.user_activation_notification'),
       ariaLabel: t('label.user_activation_notification'),
-      rules: {
-        required: true,
-      },
       className: classes.checkboxInputClass,
     },
   ]
+
+  const onArchive = useCallback(async () => {
+    try {
+      await archiveUser()
+
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.user_archived', { name }),
+      })
+      navigate('/settings/users')
+    } catch (_) {}
+  }, [navigate, archiveUser, t, name])
 
   const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
@@ -168,8 +178,13 @@ const UserPage: FC = () => {
 
   const onActivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const payload: UserStatusType = { ...values, institution_user_id }
+      const { notify_user } = values
 
+      const payload: UserStatusType = {
+        ...values,
+        institution_user_id,
+        notify_user: !!notify_user,
+      }
       try {
         await activateUser(payload)
 
@@ -200,7 +215,6 @@ const UserPage: FC = () => {
     return <div />
   }
 
-  const userNameString = `${user.user.forename} ${user.user.surname}`
   const isUserDeactivated = !!deactivationDate
 
   const isDeactivationDatePastCurrentDate = dayjs().isAfter(
@@ -212,10 +226,7 @@ const UserPage: FC = () => {
       title: t('modal.archive_user_account'),
       modalContent: t('modal.archive_user_content'),
       className: classes.archiveContent,
-      handleProceed: () => {
-        archiveUser()
-        navigate('/settings/users')
-      },
+      handleProceed: onArchive,
     })
   }
 
@@ -260,7 +271,7 @@ const UserPage: FC = () => {
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>{userNameString}</h1>
+        <h1>{name}</h1>
         <div className={classes.buttonsContainer}>
           <Button
             loading={isUserDeactivated ? isActivating : isDeactivating}
@@ -288,12 +299,17 @@ const UserPage: FC = () => {
             children={t('button.archive_account')}
             onClick={handleArchiveModal}
             hidden={!includes(userPrivileges, Privileges.ArchiveUser)}
+            disabled={isUserArchived}
           />
         </div>
       </div>
 
       <div
-        hidden={!isUserDeactivated || isUserDeactivatedImmediately}
+        hidden={
+          !isUserDeactivated ||
+          isUserDeactivatedImmediately ||
+          isDeactivationDatePastCurrentDate
+        }
         className={classes.deactivationDate}
       >
         {t('label.future_user_deactivation_date', {
