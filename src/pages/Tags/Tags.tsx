@@ -8,38 +8,31 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { useBulkCreate } from 'hooks/requests/useTags'
-import {
-  flatMap,
-  groupBy,
-  includes,
-  map,
-  mapValues,
-  truncate,
-  uniqBy,
-} from 'lodash'
+import { flatMap, groupBy, includes, map, uniqBy } from 'lodash'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
 import { TagsType } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import Loader from 'components/atoms/Loader/Loader'
 import { v4 as uuidv4 } from 'uuid'
-
-import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
+import useValidators from 'hooks/useValidators'
 
-interface ObjectType {
+import classes from './classes.module.scss'
+
+export interface ObjectType {
   [key: string]: string
 }
 
-type FormValues = {
+export type FormValues = {
   tagInput?: ObjectType
   tagCategorySelection?: string
 }
@@ -54,17 +47,7 @@ const Tags: FC = () => {
     reValidateMode: 'onSubmit',
   })
 
-  const tagInputData = control._formValues.tagInput
-
-  console.log('tagInputData', tagInputData)
-
-  const maxLength = 50
-
-  const validatedData = mapValues(tagInputData, (value) =>
-    truncate(value, { length: maxLength })
-  )
-
-  console.log('validatedData', validatedData)
+  const { tagInputValidator } = useValidators()
 
   const { userPrivileges } = useAuth()
 
@@ -90,6 +73,7 @@ const Tags: FC = () => {
       type: 'text',
       rules: {
         required: true,
+        validate: tagInputValidator,
       },
       className: classes.tagInputField,
       disabled: !includes(userPrivileges, Privileges.AddTag),
@@ -126,6 +110,7 @@ const Tags: FC = () => {
         type: 'text',
         rules: {
           required: true,
+          validate: tagInputValidator,
         },
         className: classes.tagInputField,
       },
@@ -155,7 +140,7 @@ const Tags: FC = () => {
       ]
 
       const payload: TagsType = {
-        tags: transformedObject,
+        tags: transformedObject2,
       }
 
       try {
@@ -170,8 +155,6 @@ const Tags: FC = () => {
     },
     [createTags, t]
   )
-
-  const formValue = useWatch({ control })
 
   const groupedCategoryData = groupBy(tags, 'type')
   const uniqueCategoryTypes = Object.keys(groupedCategoryData)

@@ -90,7 +90,8 @@
     "required": "Kohustuslik väli",
     "invalid_pic": "Vale formaat",
     "role_required": "Vali vähemalt 1 roll",
-    "invalid_username": "Palun lisage ka perekonnanimi"
+    "invalid_username": "Palun lisage ka perekonnanimi",
+    "tag_input_length": "Sildi maksimaalne pikkus võib olla kuni 50 tähemärki"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"

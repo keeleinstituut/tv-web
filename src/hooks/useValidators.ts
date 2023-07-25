@@ -14,6 +14,8 @@ const picIsCorrect = (pic: string) =>
     pic
   )
 
+const hasValueOver50Chars = (tagInput: string) => tagInput?.length > 50
+
 const useValidators = () => {
   const { t } = useTranslation()
 
@@ -40,11 +42,16 @@ const useValidators = () => {
     return true
   }
 
+  const tagInputValidator = (value?: any) => {
+    if (!value || hasValueOver50Chars(value)) return t('error.tag_input_length')
+  }
+
   return {
     emailValidator,
     phoneValidator,
     picValidator,
     rolesValidator,
+    tagInputValidator,
   }
 }
 
