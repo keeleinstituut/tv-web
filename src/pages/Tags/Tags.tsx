@@ -15,7 +15,15 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { useBulkCreate } from 'hooks/requests/useTags'
-import { flatMap, groupBy, map, uniqBy } from 'lodash'
+import {
+  flatMap,
+  groupBy,
+  includes,
+  map,
+  mapValues,
+  truncate,
+  uniqBy,
+} from 'lodash'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
 import { TagsType } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -24,6 +32,8 @@ import Loader from 'components/atoms/Loader/Loader'
 import { v4 as uuidv4 } from 'uuid'
 
 import classes from './classes.module.scss'
+import useAuth from 'hooks/useAuth'
+import { Privileges } from 'types/privileges'
 
 interface ObjectType {
   [key: string]: string
@@ -43,10 +53,23 @@ const Tags: FC = () => {
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
   })
+
+  const tagInputData = control._formValues.tagInput
+
+  console.log('tagInputData', tagInputData)
+
+  const maxLength = 50
+
+  const validatedData = mapValues(tagInputData, (value) =>
+    truncate(value, { length: maxLength })
+  )
+
+  console.log('validatedData', validatedData)
+
+  const { userPrivileges } = useAuth()
+
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
-
-  console.log('tags', tags)
 
   const tagCategoryOptions = map(tags, ({ type }) => {
     return {
@@ -65,10 +88,11 @@ const Tags: FC = () => {
       name: `tagInput.${uuidv4()}`,
       placeholder: t('tag.tag_input'),
       type: 'text',
-      // rules: {
-      //   required: true,
-      // },
+      rules: {
+        required: true,
+      },
       className: classes.tagInputField,
+      disabled: !includes(userPrivileges, Privileges.AddTag),
     },
   ]
 
@@ -80,16 +104,15 @@ const Tags: FC = () => {
       options: uniqueTagCategoryOptions,
       placeholder: t('tag.select_tag_category'),
       multiple: true,
-      // rules: {
-      //   required: true,
-      // },
+      rules: {
+        required: true,
+      },
       buttons: true,
+      disabled: !includes(userPrivileges, Privileges.AddTag),
     },
   ]
 
   const [inputFields, setInputFields] = useState(tagFields)
-
-  console.log('inputFields state', inputFields)
 
   const addInputField = () => {
     setInputFields([
@@ -101,9 +124,9 @@ const Tags: FC = () => {
         name: `tagInput.${uuidv4()}`,
         placeholder: t('tag.tag_input'),
         type: 'text',
-        // rules: {
-        //   required: true,
-        // },
+        rules: {
+          required: true,
+        },
         className: classes.tagInputField,
       },
     ])
@@ -124,8 +147,6 @@ const Tags: FC = () => {
         })
       })
 
-      console.log('transformedObject', transformedObject)
-
       const transformedObject2 = [
         {
           type: 'Tellimus',
@@ -134,7 +155,7 @@ const Tags: FC = () => {
       ]
 
       const payload: TagsType = {
-        tags: transformedObject2,
+        tags: transformedObject,
       }
 
       try {
@@ -151,7 +172,6 @@ const Tags: FC = () => {
   )
 
   const formValue = useWatch({ control })
-  console.log('formValue', formValue)
 
   const groupedCategoryData = groupBy(tags, 'type')
   const uniqueCategoryTypes = Object.keys(groupedCategoryData)
@@ -190,6 +210,7 @@ const Tags: FC = () => {
             className={classes.addNewRow}
             children={t('tag.add_new_row')}
             onClick={addInputField}
+            hidden={!includes(userPrivileges, Privileges.AddTag)}
           />
         </div>
 
@@ -203,6 +224,7 @@ const Tags: FC = () => {
             onClick={handleSubmit(onTagsSubmit)}
             loading={isCreatingTags}
             disabled={!areInputFieldsDirty}
+            hidden={!includes(userPrivileges, Privileges.AddTag)}
           />
         </div>
       </Container>
