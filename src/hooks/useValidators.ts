@@ -16,6 +16,12 @@ const picIsCorrect = (pic: string) =>
 
 const hasValueOver50Chars = (tagInput: string) => tagInput?.length > 50
 
+const alphanumericCharHyphenSpaceCheck = (tagInput: string) =>
+  /^[a-zA-Z0-9 -]+$/.test(tagInput)
+
+const hyphenSpaceAsFirstCharCheck = (tagInput: string) =>
+  /^(?![- ])[a-zA-Z0-9 -]+$/.test(tagInput)
+
 const useValidators = () => {
   const { t } = useTranslation()
 
@@ -44,6 +50,10 @@ const useValidators = () => {
 
   const tagInputValidator = (value?: any) => {
     if (!value || hasValueOver50Chars(value)) return t('error.tag_input_length')
+    if (!value || !alphanumericCharHyphenSpaceCheck(value))
+      return t('error.tag_input_char_error')
+    if (!value || !hyphenSpaceAsFirstCharCheck(value))
+      return t('error.tag_input_first_char_error')
   }
 
   return {
