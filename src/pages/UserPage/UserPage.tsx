@@ -134,20 +134,18 @@ const UserPage: FC = () => {
     },
   ]
 
-  const onArchiveSubmit: SubmitHandler<FormValues> = useCallback(async () => {
-    const payload: UserStatusType = { institution_user_id }
-    navigate('/settings/users')
-
+  const onArchive = useCallback(async () => {
     try {
-      await archiveUser(payload)
+      await archiveUser()
 
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
         content: t('success.user_archived', { name }),
       })
+      navigate('/settings/users')
     } catch (_) {}
-  }, [institution_user_id, navigate, archiveUser, t, name])
+  }, [navigate, archiveUser, t, name])
 
   const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
@@ -185,7 +183,7 @@ const UserPage: FC = () => {
       const payload: UserStatusType = {
         ...values,
         institution_user_id,
-        ...{ notify_user: !!notify_user },
+        notify_user: !!notify_user,
       }
       try {
         await activateUser(payload)
@@ -228,7 +226,7 @@ const UserPage: FC = () => {
       title: t('modal.archive_user_account'),
       modalContent: t('modal.archive_user_content'),
       className: classes.archiveContent,
-      handleProceed: onArchiveSubmit,
+      handleProceed: onArchive,
     })
   }
 
