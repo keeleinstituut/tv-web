@@ -15,8 +15,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { useBulkCreate } from 'hooks/requests/useTags'
-import { flatMap, groupBy, includes, map, uniqBy } from 'lodash'
-import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
+import { flatMap, includes, map, uniqBy } from 'lodash'
 import { TagsType } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -25,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import useValidators from 'hooks/useValidators'
+import TagCategory from 'components/organisms/TagCategory/TagCategory'
 
 import classes from './classes.module.scss'
 
@@ -98,6 +98,9 @@ const Tags: FC = () => {
 
   const [inputFields, setInputFields] = useState(tagFields)
 
+  console.log('tagFields', tagFields)
+  console.log('inputFields', inputFields)
+
   const addInputField = () => {
     setInputFields([
       ...inputFields,
@@ -119,8 +122,6 @@ const Tags: FC = () => {
 
   const onTagsSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      console.log('values', values)
-
       const { tagCategorySelection, tagInput } = values
 
       const transformedObject = flatMap(tagInput, (tagInputValue) => {
@@ -132,15 +133,8 @@ const Tags: FC = () => {
         })
       })
 
-      const transformedObject2 = [
-        {
-          type: 'Tellimus',
-          name: 'Tag1',
-        },
-      ]
-
       const payload: TagsType = {
-        tags: transformedObject2,
+        tags: transformedObject,
       }
 
       try {
@@ -156,12 +150,11 @@ const Tags: FC = () => {
     [createTags, t]
   )
 
-  const groupedCategoryData = groupBy(tags, 'type')
-  const uniqueCategoryTypes = Object.keys(groupedCategoryData)
-
   const areInputFieldsDirty = !!(
     dirtyFields.tagCategorySelection && dirtyFields.tagInput
   )
+
+  console.log('tags', tags)
 
   if (isFetchingTags) {
     return <Loader loading />
@@ -212,31 +205,7 @@ const Tags: FC = () => {
         </div>
       </Container>
 
-      <div className={classes.categoryContainer}>
-        {map(uniqueCategoryTypes, (type) => (
-          <Container key={type} className={classes.category}>
-            <span className={classes.tagCategoryNameContainer}>
-              <div className={classes.categoryName}>{type}</div>
-              <Button
-                appearance={AppearanceTypes.Text}
-                icon={EditIcon}
-                className={classes.editIcon}
-              >
-                <span className={classes.tagName}>{t('button.change')}</span>
-              </Button>
-            </span>
-
-            <div className={classes.tagCategorySeparator} />
-            <ul>
-              {map(groupedCategoryData[type], (tag) => (
-                <li className={classes.tagName} key={tag?.id}>
-                  {tag?.name}
-                </li>
-              ))}
-            </ul>
-          </Container>
-        ))}
-      </div>
+      <TagCategory tags={tags} control={control} />
     </>
   )
 }
