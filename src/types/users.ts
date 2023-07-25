@@ -67,8 +67,8 @@ export interface UserDataType {
 }
 
 export interface UserStatusType {
-  institution_user_id?: string | undefined
-  roles?: (string | undefined)[]
-  notify_user?: boolean | undefined
+  institution_user_id?: string
+  roles?: string[]
+  notify_user?: boolean
   deactivation_date?: string
 }

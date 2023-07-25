@@ -236,8 +236,9 @@
     "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud.",
     "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
-    "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
-    "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud."
+    "deactivation_date_edit" : "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
+    "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
+    "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud."
   },
   "notification": {
     "announcement": "Teade",
