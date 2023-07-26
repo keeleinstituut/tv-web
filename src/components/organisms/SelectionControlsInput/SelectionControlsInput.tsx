@@ -185,12 +185,12 @@ const SelectionControlsInput = forwardRef<
       <BaseButton
         className={classNames(
           classes.toggleDropdown,
-          disabled && classes.disabledDropdown,
           error && classes.error,
           classes[dropdownSize || 'l']
         )}
         id={name}
         ref={ref}
+        disabled={disabled}
         onClick={toggleDropdown}
       >
         <p hidden={!placeholder} className={classes.menuLabel}>
@@ -199,8 +199,7 @@ const SelectionControlsInput = forwardRef<
 
         <SelectInputArrow
           className={classNames(
-            disabled && classes.disabledDropdownIcon,
-            isOpen && !error && classes.openDropdownIcon
+            isOpen && !error && !disabled && classes.openDropdownIcon
           )}
         />
       </BaseButton>

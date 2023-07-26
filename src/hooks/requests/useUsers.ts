@@ -58,10 +58,11 @@ export const useUpdateUser = ({ userId }: { userId?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateUser, isLoading } = useMutation({
     mutationKey: ['users', userId],
-    mutationFn: async (payload: UserPostType) =>
-      apiClient.put(`${endpoints.USERS}/${userId}`, {
+    mutationFn: async (payload: UserPostType) => {
+      return apiClient.put(`${endpoints.USERS}/${userId}`, {
         ...payload,
-      }),
+      })
+    },
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['users', userId],
