@@ -12,7 +12,7 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { UserType, StatusKey } from 'types/users'
+import { UserType, UserStatus } from 'types/users'
 import {
   FilterFunctionType,
   SortingFunctionType,
@@ -29,7 +29,7 @@ type User = {
   name: string
   department: string | undefined
   roles: (string | undefined)[]
-  status: StatusKey
+  status: UserStatus
 }
 
 const columnHelper = createColumnHelper<User>()
@@ -38,8 +38,8 @@ type AddedUsersProps = {
   data?: UserType[]
   paginationData?: DataMetaTypes
   hidden?: boolean
-  handelFilterChange?: (value?: FilterFunctionType) => void
-  handelSortingChange?: (value?: SortingFunctionType) => void
+  handleFilterChange?: (value?: FilterFunctionType) => void
+  handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
 }
 
@@ -47,8 +47,8 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
   data,
   paginationData,
   hidden,
-  handelFilterChange,
-  handelSortingChange,
+  handleFilterChange,
+  handleSortingChange,
   handlePaginationChange,
 }) => {
   const { t } = useTranslation()
@@ -86,7 +86,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
             disabled={!includes(userPrivileges, Privileges.ViewUser)}
             href={`/settings/users/${getValue()}`}
           >
-            {'ID xxxxxx'}
+            {`ID ${getValue()}`}
           </Button>
         </div>
       ),
@@ -119,14 +119,23 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
     columnHelper.accessor('status', {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
+      cell: ({ getValue }) => {
+        return t(`user.status.${getValue()}`)
+      },
       meta: {
         filterOption: {
           statuses: [
-            { label: 'Active', value: 'ACTIVE' },
-            { label: 'Deactivated', value: 'DEACTIVATED' },
-            { label: 'Archived', value: 'ARCHIVED' },
+            // not using enum values for translations, so there would be less changes needed
+            // If the enum values change
+            { label: t('user.status.ACTIVE'), value: UserStatus.Active },
+            {
+              label: t('user.status.DEACTIVATED'),
+              value: UserStatus.Deactivated,
+            },
+            { label: t('user.status.ARCHIVED'), value: UserStatus.Archived },
           ],
         },
+        filterValue: [UserStatus.Active, UserStatus.Deactivated],
       },
     }),
   ] as ColumnDef<User>[]
@@ -141,8 +150,8 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
       tableSize={TableSizeTypes.M}
       paginationData={paginationData}
       onPaginationChange={handlePaginationChange}
-      onFiltersChange={handelFilterChange}
-      onSortingChange={handelSortingChange}
+      onFiltersChange={handleFilterChange}
+      onSortingChange={handleSortingChange}
     />
   )
 }

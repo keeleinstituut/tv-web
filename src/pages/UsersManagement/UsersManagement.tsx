@@ -1,5 +1,5 @@
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { useFetchUsers } from 'hooks/requests/useUsers'
+import { useDownloadUsers, useFetchUsers } from 'hooks/requests/useUsers'
 import { useTranslation } from 'react-i18next'
 import { FC } from 'react'
 import AddedUsersTable from 'components/organisms/tables/AddedUsersTable/AddedUsersTable'
@@ -11,17 +11,28 @@ import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import UserManagementCheatSheet from 'components/molecules/cheatSheets/UserManagementCheatSheet'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
+import { UserStatus } from 'types/users'
+import Loader from 'components/atoms/Loader/Loader'
 
 const UsersManagement: FC = () => {
+  const initialFilters = {
+    statuses: [UserStatus.Active, UserStatus.Deactivated],
+  }
   const {
     users,
     paginationData,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
-  } = useFetchUsers()
-  const { userPrivileges } = useAuth()
+    isLoading: isUsersLoading,
+  } = useFetchUsers(initialFilters)
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
+  const { downloadCSV, isLoading } = useDownloadUsers()
+
+  const handleDownloadFile = () => {
+    downloadCSV()
+  }
 
   return (
     <>
@@ -32,9 +43,13 @@ const UsersManagement: FC = () => {
           modalContent={<UserManagementCheatSheet />}
         />
         <Button
-          // href="/settings/users/add"
           appearance={AppearanceTypes.Secondary}
-          className={classNames({ [classes.invisible]: isEmpty(users) })}
+          className={classNames({
+            [classes.invisible]: !includes(userPrivileges, 'EXPORT_USER'),
+          })}
+          onClick={handleDownloadFile}
+          disabled={!includes(userPrivileges, 'EXPORT_USER')}
+          loading={isLoading}
         >
           {t('button.export_csv')}
         </Button>
@@ -47,12 +62,13 @@ const UsersManagement: FC = () => {
       </div>
       {/* TODO: remove this form root wrapper, once we refactor CheckBox */}
       <Root>
+        <Loader loading={isUsersLoading && isEmpty(users)} />
         <AddedUsersTable
           data={users}
           paginationData={paginationData}
           hidden={isEmpty(users)}
-          handelFilterChange={handelFilterChange}
-          handelSortingChange={handelSortingChange}
+          handleFilterChange={handleFilterChange}
+          handleSortingChange={handleSortingChange}
           handlePaginationChange={handlePaginationChange}
         />
       </Root>

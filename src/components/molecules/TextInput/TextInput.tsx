@@ -59,11 +59,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               {...rest}
             />
           </Control>
-          <InputError
-            {...omit(error, 'ref')}
-            className={classes.error}
-            errorZIndex={errorZIndex}
-          />
+          <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
         </div>
       </Field>
     )

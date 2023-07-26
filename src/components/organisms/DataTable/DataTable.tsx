@@ -39,6 +39,7 @@ type DataTableProps<TData extends RowData> = {
   columns: ColumnDef<TData>[]
   tableSize: TableSizeTypes
   title?: string
+  headComponent?: ReactElement
   paginationData?: DataMetaTypes
   onPaginationChange?: (value?: PaginationFunctionType) => void
   meta?: TableMeta<TData>
@@ -70,6 +71,7 @@ const DataTable = <TData extends object>(
     getSubRows,
     pageSizeOptions,
     hidePagination = false,
+    headComponent,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -112,7 +114,8 @@ const DataTable = <TData extends object>(
       <h4 className={classes.title} hidden={!title}>
         {title}
       </h4>
-      <div className={classes.tableWrapper}>
+      {headComponent}
+      <div className={classes.tableWrapper} id="tableWrapper">
         <table className={classNames(classes.dataTable, classes[tableSize])}>
           <TableHeaderGroup
             table={table}

@@ -74,8 +74,8 @@
   width: 77px;
 }
 .xs {
-  width: 47px;
-  height: 37px;
+  min-width: 47px;
+  height: 32px;
 }
 
 .menuLabel {
@@ -95,11 +95,6 @@
 }
 
 .tag {
-  @include bodyTextSmallStyle;
-  color: $color-primary;
-  font-weight: $font-weight-bold;
-  background-color: $color-tag;
-  border-radius: 4px;
   margin: spacing(2) spacing(2) 0 0;
   padding: spacing(0.625) spacing(1);
 }

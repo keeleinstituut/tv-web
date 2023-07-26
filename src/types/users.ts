@@ -1,6 +1,10 @@
 import { InstitutionType } from './institutions'
 import { RoleType } from './roles'
-import { DataMetaTypes } from 'types/collective'
+import {
+  DataMetaTypes,
+  PaginationFunctionType,
+  SortingFunctionType,
+} from 'types/collective'
 
 interface UserDetailsType {
   created_at?: string
@@ -11,8 +15,11 @@ interface UserDetailsType {
   personal_identification_code: string
 }
 
-export type StatusKey = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED'
-
+export enum UserStatus {
+  Active = 'ACTIVE',
+  Deactivated = 'DEACTIVATED',
+  Archived = 'ARCHIVED',
+}
 export interface UserType {
   created_at?: string
   updated_at?: string
@@ -25,7 +32,7 @@ export interface UserType {
   institution: InstitutionType
   phone?: string
   roles: RoleType[]
-  status: StatusKey
+  status: UserStatus
   user: UserDetailsType
 }
 
@@ -46,15 +53,13 @@ export interface UserCsvType {
   department?: string
 }
 
-export interface UserPayloadType {
-  per_page?: 10 | 50 | 100 | number
-  page?: number
-  role_id?: string[]
-  status?: StatusKey[]
-  sort_by?: string
-  sort_order?: 'asc' | 'desc' | undefined
-  department?: string[]
-}
+export type UserPayloadType = PaginationFunctionType &
+  SortingFunctionType & {
+    role_id?: string[]
+    // status?: UserStatus[]
+    statuses?: UserStatus[]
+    department?: string[]
+  }
 
 export interface UsersDataType {
   data: UserType[]
@@ -66,8 +71,8 @@ export interface UserDataType {
 }
 
 export interface UserStatusType {
-  institution_user_id?: string | undefined
-  roles?: (string | undefined)[]
-  notify_user?: boolean | undefined
-  deactivation_date?: string
+  institution_user_id?: string
+  roles?: string[]
+  notify_user?: boolean
+  deactivation_date?: string | null
 }

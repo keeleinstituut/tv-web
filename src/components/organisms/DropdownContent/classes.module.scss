@@ -6,6 +6,7 @@
   border: 1px solid $color-border;
   border-radius: 0px 0px 4px 4px;
   position: absolute;
+  top: 40px;
   max-height: 50vh;
   overflow: auto;
 }
@@ -47,6 +48,7 @@
 }
 .xs {
   width: 47px;
+  top: 32px;
 }
 
 .dropdownButton {

@@ -20,9 +20,20 @@
     "attach_file": "lisa fail",
     "user_deactivation_date": "Deaktiveerimise kuupäev",
     "future_user_deactivation_date": "Konto deaktiveeritakse {{deactivationDate}}",
+    "past_user_deactivation_date": "Konto deaktiveeriti {{deactivationDate}}",
     "status": "Staatus",
     "user_account_id": "Kasutajakonto ID",
     "open_instructions": "Ava õpetus",
+    "show_only_my_orders": "Soovin näha vaid oma tellimusi",
+    "all": "Kõik",
+    "to_order_view": "Tellimuse vaatesse",
+    "order_id": "Tellimuse ID",
+    "cost": "Maksumus",
+    "deadline_at": "Tähtaeg",
+    "reference_number": "Viitenumber",
+    "language_directions": "Keelesuunad",
+    "type": "Tüüp",
+    "order_tags": "Tellimuse sildid",
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest"
   },
   "placeholder": {
@@ -64,6 +75,9 @@
     "export_csv": "Ekspordi CSV",
     "add_users": "Lisa kasutajad",
     "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
+    "proceed": "Edasi",
+    "quit": "Loobun",
+    "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust"
   },
@@ -187,7 +201,12 @@
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
-    "updated_at": "Kasutaja andmed muudetud {{time}}"
+    "updated_at": "Kasutaja andmed muudetud {{time}}",
+    "status": {
+      "ACTIVE": "Aktiivne",
+      "DEACTIVATED": "Deaktiveeritud",
+      "ARCHIVED": "Arhiveeritud"
+    }
   },
   "users": {
     "add_users": "Kasutajate lisamine",
@@ -207,7 +226,9 @@
     "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
     "deactivation_date_edit" : "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
-    "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud."
+    "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
+    "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
+    "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud."
   },
   "notification": {
     "announcement": "Teade",
@@ -232,6 +253,17 @@
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
+  },
+  "orders": {
+    "orders_tile": "Tellimused",
+    "status": {
+      "REGISTERED": "Registreeritud",
+      "NEW": "Uus",
+      "FORWARDED": "Edastatud",
+      "CANCELLED": "Tühistatud",
+      "ACCEPTED": "Vastuvõetud",
+      "REJECTED": "Tühistatud"
+    }
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele"
