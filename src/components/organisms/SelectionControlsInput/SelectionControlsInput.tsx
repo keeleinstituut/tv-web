@@ -128,13 +128,8 @@ const SelectionControlsInput = forwardRef<
   const singleValue: DropDownOptions | undefined = find(options, {
     value,
   }) as unknown as DropDownOptions
-  const multiValue = multiple
-    ? filter(
-        options,
-        (option) =>
-          !!find(value, (singleValue) => singleValue === option?.value)
-      )
-    : []
+
+  const multiValue = multiple ? selectedOptionObjects : []
   const valueAsArray = multiple ? multiValue : [singleValue]
 
   const selectedOptionLabels = map(valueAsArray, (value) => value?.label)

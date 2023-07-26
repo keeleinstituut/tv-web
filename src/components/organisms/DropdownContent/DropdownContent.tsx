@@ -6,7 +6,7 @@ import {
   forwardRef,
 } from 'react'
 import classNames from 'classnames'
-import { includes, map } from 'lodash'
+import { includes, map, isEmpty } from 'lodash'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
 import Button, {
   AppearanceTypes,
@@ -24,6 +24,16 @@ export interface DropdownContentProps extends SelectionControlsInputProps {
   setIsOpen?: Dispatch<SetStateAction<boolean>>
   className?: string
   wrapperRef?: RefObject<HTMLDivElement>
+}
+
+const EmptyContent = ({ hidden }: { hidden?: boolean }) => {
+  const { t } = useTranslation()
+  if (hidden) return null
+  return (
+    <li className={classes.dropdownMenuItem}>
+      <p className={classes.option}>{t('placeholder.empty_list')}</p>
+    </li>
+  )
 }
 
 const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
@@ -117,6 +127,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
         <div hidden={!searchInput}>{searchInput}</div>
 
         <ul>
+          <EmptyContent hidden={!isEmpty(options)} />
           {map(options, (option, index) => {
             const isMultiSelected =
               selectedValue && includes(selectedValue, option?.value)

@@ -27,6 +27,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
 import { useRolesFetch } from 'hooks/requests/useRoles'
+import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 
 interface FormValues {
   personal_identification_code?: string
@@ -56,6 +57,7 @@ const UserForm: FC<UserFormProps> = ({
   const { emailValidator, phoneValidator } = useValidators()
   const { updateUser, isLoading } = useUpdateUser({ userId: id })
   const { existingRoles = [] } = useRolesFetch()
+  const { existingDepartments = [] } = useDepartmentsFetch()
 
   const defaultValues = useMemo(
     () => ({
@@ -88,6 +90,13 @@ const UserForm: FC<UserFormProps> = ({
   })
 
   const roleOptions = map(existingRoles, ({ name, id }) => {
+    return {
+      label: name || '',
+      value: id || '',
+    }
+  })
+
+  const departmentOptions = map(existingDepartments, ({ name, id }) => {
     return {
       label: name || '',
       value: id || '',
@@ -154,13 +163,14 @@ const UserForm: FC<UserFormProps> = ({
       },
     },
     {
-      inputType: InputTypes.Text,
+      inputType: InputTypes.Selections,
       ariaLabel: t('label.department'),
       placeholder: t('placeholder.department'),
       label: t('label.department'),
       name: 'department_id',
-      disabled: isFormDisabled,
       className: classes.inputInternalPosition,
+      options: departmentOptions,
+      disabled: isFormDisabled,
     },
     {
       inputType: InputTypes.Selections,
