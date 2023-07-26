@@ -115,7 +115,7 @@ const DataTable = <TData extends object>(
         {title}
       </h4>
       {headComponent}
-      <div className={classes.tableWrapper}>
+      <div className={classes.tableWrapper} id="tableWrapper">
         <table className={classNames(classes.dataTable, classes[tableSize])}>
           <TableHeaderGroup
             table={table}

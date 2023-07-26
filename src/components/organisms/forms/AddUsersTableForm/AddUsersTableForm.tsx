@@ -1,7 +1,13 @@
-import { FC, useCallback, useState } from 'react'
-import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
-import Button from 'components/molecules/Button/Button'
-import { reduce, map, join, isEmpty, keys } from 'lodash'
+import { FC, useCallback, useState, useMemo } from 'react'
+import {
+  useForm,
+  SubmitHandler,
+  FieldPath,
+  useFormState,
+  Control,
+} from 'react-hook-form'
+import Button, { ButtonProps } from 'components/molecules/Button/Button'
+import { reduce, map, join, isEmpty, keys, filter, find } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
 import { UserCsvType } from 'types/users'
@@ -22,12 +28,31 @@ import { useNavigate } from 'react-router-dom'
 import AddUsersTable, {
   ErrorsInRow,
 } from 'components/organisms/tables/AddUsersTable/AddUsersTable'
+import { useRolesFetch } from 'hooks/requests/useRoles'
 
 interface FormValues {
   [key: string]: UserCsvType
 }
 
+interface SubmitButtonProps extends ButtonProps {
+  control: Control
+}
+
+// TODO: might move to component, if it will be reused in other forms
+const SubmitButton: FC<SubmitButtonProps> = ({ control, ...rest }) => {
+  // Accessing form state directly in this component
+  // to avoid rerendering the entire AddUsersTableForm component
+  const formState = useFormState({ control })
+  return (
+    <Button
+      {...rest}
+      disabled={!formState.isValid || !isEmpty(formState.errors)}
+    ></Button>
+  )
+}
+
 const AddUsersTableForm: FC = () => {
+  const { existingRoles = [] } = useRolesFetch()
   const { validateUsers, isLoading } = useValidateUsers()
   const { uploadUsers, isLoading: isUploadLoading } = useUploadUsers()
   const [tableData, setTableData] = useState<UserCsvType[]>([])
@@ -39,26 +64,31 @@ const AddUsersTableForm: FC = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
 
-  const formValues = isEmpty(tableData)
-    ? {}
-    : reduce(
-        tableData,
-        (result, row, index) => {
-          if (!row) return result
-          return {
-            ...result,
-            [`row-${index}`]: row,
-          }
-        },
-        {}
-      )
+  const formValues = useMemo(
+    () =>
+      isEmpty(tableData)
+        ? {}
+        : reduce(
+            tableData,
+            (result, row, index) => {
+              if (!row) return result
+              const rowData = {
+                ...row,
+                role: filter(row.role, (role) =>
+                  find(existingRoles, { name: role })
+                ),
+              }
+              return {
+                ...result,
+                [`row-${index}`]: rowData,
+              }
+            },
+            {}
+          ),
+    [tableData, existingRoles]
+  )
 
-  const {
-    control,
-    handleSubmit,
-    setError,
-    formState: { isValid },
-  } = useForm<FormValues>({
+  const { control, handleSubmit, setError } = useForm<FormValues>({
     reValidateMode: 'onChange',
     mode: 'onChange',
     values: formValues,
@@ -79,6 +109,7 @@ const AddUsersTableForm: FC = () => {
         setRowsWithErrors({})
         return true
       } catch (errorData) {
+        setRowsWithErrors({})
         const typedErrorData = errorData as CsvValidationError
         const { errors, rowsWithExistingInstitutionUsers } = typedErrorData
         if (rowsWithExistingInstitutionUsers) {
@@ -163,15 +194,15 @@ const AddUsersTableForm: FC = () => {
           onDelete={onDeleteFile}
           allowMultiple={false}
         />
-        <Button
+        <SubmitButton
           onClick={handleSubmit(onSubmit)}
           type="submit"
           hidden={isEmpty(tableData)}
           loading={isLoading || isUploadLoading}
-          disabled={!isValid}
+          control={control}
         >
           {t('button.save_and_send_notifications')}
-        </Button>
+        </SubmitButton>
       </div>
       {!isEmpty(tableData) && (
         <Root onSubmit={handleSubmit(onSubmit)}>
@@ -179,6 +210,7 @@ const AddUsersTableForm: FC = () => {
             tableData={tableData}
             rowsWithErrors={rowsWithErrors}
             rowsWithExistingUsers={rowsWithExistingUsers}
+            existingRoles={existingRoles}
             control={control}
           />
         </Root>
