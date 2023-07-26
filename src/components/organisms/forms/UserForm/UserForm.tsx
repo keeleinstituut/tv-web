@@ -65,7 +65,7 @@ const UserForm: FC<UserFormProps> = ({
       name: `${forename} ${surname}`,
       email,
       phone,
-      department_id: department,
+      department_id: department?.id,
       roles: map(roles, 'id'),
     }),
     [
