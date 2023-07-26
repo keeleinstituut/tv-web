@@ -43,7 +43,8 @@
     "name": "Minu Nimi",
     "phone": "+372 555 5555",
     "department": "Harju Maakohus",
-    "roles": "Vali roll(id)"
+    "roles": "Vali roll(id)",
+    "empty_list": "Hetkel valikud puuduvad"
   },
   "button": {
     "login": "Logi sisse",

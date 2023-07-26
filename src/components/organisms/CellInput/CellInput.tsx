@@ -96,7 +96,6 @@ function CellInput<TData extends object>(props: CellInputProps<TData>) {
             multiple: true,
             buttons: true,
             placeholder,
-            tags: true,
           }
         : { inputType: InputTypes.Text })}
       {...(type ? { type } : {})}

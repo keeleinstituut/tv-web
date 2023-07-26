@@ -51,7 +51,7 @@ export interface SelectionControlsInputProps {
   buttons?: boolean
   searchInput?: ReactElement
   dropdownSize?: DropdownSizeTypes
-  tags?: boolean
+  hideTags?: boolean
   className?: string
   selectIcon?: FC<SVGProps<SVGSVGElement>>
   errorZIndex?: number
@@ -100,7 +100,7 @@ const SelectionControlsInput = forwardRef<
     helperText,
     dropdownSize,
     errorZIndex,
-    tags = false,
+    hideTags = false,
     className,
     selectIcon,
     usePortal,
@@ -128,13 +128,8 @@ const SelectionControlsInput = forwardRef<
   const singleValue: DropDownOptions | undefined = find(options, {
     value,
   }) as unknown as DropDownOptions
-  const multiValue = multiple
-    ? filter(
-        options,
-        (option) =>
-          !!find(value, (singleValue) => singleValue === option?.value)
-      )
-    : []
+
+  const multiValue = multiple ? selectedOptionObjects : []
   const valueAsArray = multiple ? multiValue : [singleValue]
 
   const selectedOptionLabels = map(valueAsArray, (value) => value?.label)
@@ -209,11 +204,11 @@ const SelectionControlsInput = forwardRef<
       <PositionedDropdownContent
         {...{ ...dropdownProps, wrapperRef, clickAwayInputRef, usePortal }}
       />
-      <div className={classNames(tags && classes.tagsContainer)}>
+      <div className={classNames(!hideTags && classes.tagsContainer)}>
         {map(selectedOptionObjects, ({ label }, index) => {
           return (
             <Tag
-              hidden={!tags}
+              hidden={hideTags}
               className={classes.tag}
               value
               key={index}

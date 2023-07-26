@@ -121,7 +121,6 @@ const UserPage: FC = () => {
       options: roleOptions,
       multiple: true,
       buttons: true,
-      tags: true,
       rules: {
         required: true,
       },
@@ -316,7 +315,9 @@ const UserPage: FC = () => {
         <span>{deactivatedText}</span>
         <BaseButton
           loading={isDeactivating}
-          hidden={!isDeactivationDateInTheFuture}
+          hidden={
+            !isDeactivationDateInTheFuture || status === UserStatus.Archived
+          }
           onClick={() => handleDeactivateModal(true)}
         >
           <Edit className={classes.editIcon} />
