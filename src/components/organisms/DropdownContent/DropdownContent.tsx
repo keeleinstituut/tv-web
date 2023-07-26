@@ -1,4 +1,10 @@
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useState,
+  forwardRef,
+} from 'react'
 import classNames from 'classnames'
 import { includes, map } from 'lodash'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
@@ -10,80 +16,101 @@ import { SelectionControlsInputProps } from 'components/organisms/SelectionContr
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
+import useElementPosition from 'hooks/useElementPosition'
 
-type DropdownContentProps = SelectionControlsInputProps & {
+export interface DropdownContentProps extends SelectionControlsInputProps {
   isOpen?: boolean
   selectedOptionObjects?: DropDownOptions[]
   setIsOpen?: Dispatch<SetStateAction<boolean>>
   className?: string
+  wrapperRef?: RefObject<HTMLDivElement>
 }
 
-const DropdownContent: FC<DropdownContentProps> = ({
-  dropdownSize = 'l',
-  disabled,
-  isOpen,
-  searchInput,
-  options,
-  multiple = false,
-  value,
-  name,
-  buttons = false,
-  onChange,
-  setIsOpen,
-  errorZIndex,
-  className,
-}) => {
-  const { t } = useTranslation()
-  const initialValue = value || multiple ? [] : ''
-  const [selectedValue, setSelectedValue] = useState<string | string[]>(
-    initialValue
-  )
+const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
+  function DropdownContent(
+    {
+      dropdownSize = 'l',
+      disabled,
+      isOpen,
+      searchInput,
+      options,
+      multiple = false,
+      value,
+      name,
+      buttons = false,
+      onChange,
+      setIsOpen,
+      errorZIndex,
+      wrapperRef,
+      horizontalScrollContainerId,
+      className,
+    },
+    ref
+  ) {
+    const { left, top } =
+      useElementPosition(
+        wrapperRef,
+        horizontalScrollContainerId,
+        undefined,
+        isOpen
+      ) || {}
 
-  const handleSingleSelect = (selectedOption: string) => {
-    onChange(selectedOption ? selectedOption : '')
-  }
+    const { t } = useTranslation()
 
-  const handleMultipleSelect = (selectedOption: string) => {
-    // TODO: type of value and of selectedValue should be inferred from "multiple" prop
-    const typedSelectedValue = selectedValue as string[]
-    const optionIndex = typedSelectedValue.indexOf(selectedOption)
+    const initialValue = value || (multiple ? [] : '')
+    const [selectedValue, setSelectedValue] = useState<string | string[]>(
+      initialValue
+    )
 
-    const newSelectedValues =
-      optionIndex === -1
-        ? [...typedSelectedValue, selectedOption]
-        : typedSelectedValue.filter((value) => value !== selectedOption)
-
-    setSelectedValue(newSelectedValues)
-
-    if (setIsOpen) {
-      setIsOpen(true)
+    const handleSingleSelect = (selectedOption: string) => {
+      onChange(selectedOption ? selectedOption : '')
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
     }
-  }
 
-  const handleOnSave = () => {
-    onChange(selectedValue)
-    if (setIsOpen) {
-      setIsOpen(false)
+    const handleMultipleSelect = (selectedOption: string) => {
+      // TODO: type of value and of selectedValue should be inferred from "multiple" prop
+      const typedSelectedValue = selectedValue as string[]
+      const optionIndex = typedSelectedValue.indexOf(selectedOption)
+
+      const newSelectedValues =
+        optionIndex === -1
+          ? [...typedSelectedValue, selectedOption]
+          : typedSelectedValue.filter((value) => value !== selectedOption)
+
+      setSelectedValue(newSelectedValues)
+
+      if (setIsOpen) {
+        setIsOpen(true)
+      }
     }
-  }
 
-  const handleCancel = () => {
-    setSelectedValue(initialValue)
-    if (setIsOpen) {
-      setIsOpen(false)
+    const handleOnSave = () => {
+      onChange(selectedValue)
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
     }
-  }
 
-  return (
-    <>
+    const handleCancel = () => {
+      setSelectedValue(initialValue)
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
+    }
+
+    return (
       <div
         className={classNames(
           classes.dropdownMenu,
           classes[dropdownSize],
           className
         )}
+        ref={ref}
         style={{
           zIndex: 51 + (errorZIndex || 0),
+          ...(left && top ? { left, top: top + 40 } : {}),
         }}
         hidden={disabled || !isOpen}
       >
@@ -142,8 +169,8 @@ const DropdownContent: FC<DropdownContentProps> = ({
           </div>
         </ul>
       </div>
-    </>
-  )
-}
+    )
+  }
+)
 
 export default DropdownContent

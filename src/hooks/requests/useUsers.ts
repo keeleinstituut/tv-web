@@ -15,13 +15,13 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 dayjs.extend(customParseFormat)
 
-export const useFetchUsers = () => {
+export const useFetchUsers = (initialFilters?: UserPayloadType) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<UserPayloadType>()
+  } = useFilters<UserPayloadType>(initialFilters)
 
   const { isLoading, isError, data } = useQuery<UsersDataType>({
     queryKey: ['users', filters],
@@ -148,7 +148,7 @@ export const useArchiveUser = ({
     mutationKey: ['users', institution_user_id],
     mutationFn: async () =>
       apiClient.post(endpoints.ARCHIVE_USER, {
-        institution_user_id: institution_user_id,
+        institution_user_id,
       }),
 
     onSuccess: ({ data }) => {
@@ -183,10 +183,10 @@ export const useDeactivateUser = ({
   const { mutateAsync: deactivateUser, isLoading } = useMutation({
     mutationKey: ['users', institution_user_id],
     mutationFn: async (payload: UserStatusType) => {
-      const { deactivation_date: date, institution_user_id } = payload
-      const formattedDeactivationDate = dayjs(date, 'DD/MM/YYYY').format(
-        'YYYY-MM-DD'
-      )
+      const { deactivation_date: date } = payload
+      const formattedDeactivationDate = date
+        ? dayjs(date, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        : null
       return apiClient.post(endpoints.DEACTIVATE_USER, {
         institution_user_id: institution_user_id,
         deactivation_date: formattedDeactivationDate,
@@ -227,6 +227,7 @@ export const useActivateUser = ({
     mutationFn: async (payload: UserStatusType) =>
       apiClient.post(endpoints.ACTIVATE_USER, {
         ...payload,
+        institution_user_id,
       }),
 
     onSuccess: ({ data }) => {

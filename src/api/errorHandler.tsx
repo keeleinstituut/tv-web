@@ -16,11 +16,23 @@ interface RowValidationErrorType {
 }
 export interface ValidationError extends Error {
   errors: ValidationErrorDataType
+  message: string
 }
 
 export interface CsvValidationError extends Error {
   errors: RowValidationErrorType[]
   rowsWithExistingInstitutionUsers?: number[]
+}
+
+export const showValidationErrorMessage = (errorData: unknown) => {
+  const typedErrorData = errorData as ValidationError
+  if (typedErrorData?.message) {
+    showNotification({
+      type: NotificationTypes.Error,
+      title: i18n.t('notification.error'),
+      content: typedErrorData.message,
+    })
+  }
 }
 
 const handleError = async (error?: AxiosError) => {

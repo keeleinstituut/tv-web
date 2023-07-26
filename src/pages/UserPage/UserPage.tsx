@@ -8,33 +8,36 @@ import {
 } from 'hooks/requests/useUsers'
 import { FC, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { includes, join, map } from 'lodash'
+import { includes, map } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import {
+  ModalTypes,
+  closeModal,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
 import { ReactComponent as Edit } from 'assets/icons/edit.svg'
 import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { ValidationError } from 'api/errorHandler'
-import { UserStatusType } from 'types/users'
+import { showValidationErrorMessage } from 'api/errorHandler'
+import { UserStatus, UserStatusType } from 'types/users'
 
 import classes from './classes.module.scss'
 
 interface FormValues {
   deactivation_date?: string
-  institution_user_id?: string
   roles?: string[]
   notify_user?: boolean
 }
@@ -64,19 +67,18 @@ const UserPage: FC = () => {
   })
   const deactivationDate = user?.deactivation_date || ''
   const name = `${user?.user.forename} ${user?.user.surname}`
+  const status = user?.status
 
   const isUserArchived = user?.archived_at !== null
 
   const editModalTitle = t('modal.edit_deactivation_date')
   const deactivateModalTitle = t('modal.deactivate_user_account')
 
-  const institution_user_id = userId
+  const today = dayjs().format('DD/MM/YYYY')
 
-  const deactivation_date = dayjs(new Date()).format('DD/MM/YYYY')
-
-  const { control, handleSubmit, setError } = useForm<FormValues>({
-    reValidateMode: 'onSubmit',
-    defaultValues: { deactivation_date },
+  const { control, handleSubmit } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+    defaultValues: { deactivation_date: today },
   })
 
   const formattedDeactivationDate = dayjs(
@@ -123,7 +125,7 @@ const UserPage: FC = () => {
       rules: {
         required: true,
       },
-      className: classes.selectionsInputClass,
+      usePortal: true,
     },
     {
       inputType: InputTypes.Checkbox,
@@ -137,7 +139,7 @@ const UserPage: FC = () => {
   const onArchive = useCallback(async () => {
     try {
       await archiveUser()
-
+      closeModal()
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
@@ -148,13 +150,12 @@ const UserPage: FC = () => {
   }, [navigate, archiveUser, t, name])
 
   const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
-    async (values) => {
+    async ({ roles, ...rest }) => {
       const isUserEditingDeactivationDate = deactivationDate !== ''
 
-      const payload: UserStatusType = { ...values, institution_user_id }
-
       try {
-        await deactivateUser(payload)
+        await deactivateUser({ ...rest })
+        closeModal()
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -163,48 +164,47 @@ const UserPage: FC = () => {
             : t('success.user_deactivated', { name }),
         })
       } catch (errorData) {
-        const typedErrorData = errorData as ValidationError
-        if (typedErrorData.errors) {
-          map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
-            const errorString = join(errorsArray, ',')
-            setError(typedKey, { type: 'backend', message: errorString })
-          })
-        }
+        showValidationErrorMessage(errorData)
       }
     },
-    [deactivationDate, institution_user_id, deactivateUser, t, name, setError]
+    [deactivationDate, deactivateUser, t, name]
   )
+
+  const handleCancelDeactivation = useCallback(async () => {
+    try {
+      await deactivateUser({ deactivation_date: null })
+      closeModal()
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.deactivation_cancelled', { name }),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [deactivateUser, name, t])
 
   const onActivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const { notify_user } = values
+      const { notify_user, roles } = values
 
       const payload: UserStatusType = {
-        ...values,
-        institution_user_id,
+        roles,
         notify_user: !!notify_user,
       }
       try {
         await activateUser(payload)
-
+        closeModal()
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
           content: t('success.user_activated', { name }),
         })
       } catch (errorData) {
-        const typedErrorData = errorData as ValidationError
-        if (typedErrorData.errors) {
-          map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
-            const errorString = join(errorsArray, ',')
-            setError(typedKey, { type: 'backend', message: errorString })
-          })
-        }
+        showValidationErrorMessage(errorData)
       }
     },
-    [institution_user_id, activateUser, t, name, setError]
+    [activateUser, t, name]
   )
 
   if (isLoading) {
@@ -217,8 +217,9 @@ const UserPage: FC = () => {
 
   const isUserDeactivated = !!deactivationDate
 
-  const isDeactivationDatePastCurrentDate = dayjs().isAfter(
-    dayjs(deactivationDate)
+  const isDeactivationDateInTheFuture = dayjs().isBefore(
+    dayjs(deactivationDate),
+    'day'
   )
 
   const handleArchiveModal = () => {
@@ -230,12 +231,13 @@ const UserPage: FC = () => {
     })
   }
 
-  const handleDeactivateModal = (title: string) => {
+  const handleDeactivateModal = (isEditModal: boolean) => {
     showModal(ModalTypes.UserAndRoleManagement, {
-      title: title,
+      title: isEditModal ? editModalTitle : deactivateModalTitle,
       cancelButtonContent: t('button.cancel'),
       modalContent: t('modal.deactivate_user_content'),
       handleProceed: handleSubmit(onDeactivateSubmit),
+      handleCancel: isEditModal ? handleCancelDeactivation : null,
       className: classes.deactivateContent,
       dynamicForm: (
         <DynamicForm
@@ -265,8 +267,18 @@ const UserPage: FC = () => {
     })
   }
 
-  const currentFormattedDate = dayjs().format('YYYY-MM-DD')
-  const isUserDeactivatedImmediately = deactivationDate === currentFormattedDate
+  const deactivatedText = isDeactivationDateInTheFuture
+    ? t('label.future_user_deactivation_date', {
+        deactivationDate: formattedDeactivationDate,
+      })
+    : t('label.past_user_deactivation_date', {
+        deactivationDate: formattedDeactivationDate,
+      })
+
+  const isActivationButtonHidden =
+    status === UserStatus.Archived ||
+    (!includes(userPrivileges, Privileges.ActivateUser) && isUserDeactivated) ||
+    (!includes(userPrivileges, Privileges.DeactivateUser) && !isUserDeactivated)
 
   return (
     <>
@@ -284,14 +296,10 @@ const UserPage: FC = () => {
             onClick={
               isUserDeactivated
                 ? handleActivateModal
-                : () => handleDeactivateModal(deactivateModalTitle)
+                : () => handleDeactivateModal(false)
             }
-            hidden={
-              isUserDeactivated
-                ? !includes(userPrivileges, Privileges.ActivateUser)
-                : !includes(userPrivileges, Privileges.DeactivateUser)
-            }
-            disabled={!isDeactivationDatePastCurrentDate && isUserDeactivated}
+            hidden={isActivationButtonHidden}
+            disabled={isDeactivationDateInTheFuture && isUserDeactivated}
           />
           <Button
             loading={isArchiving}
@@ -304,20 +312,12 @@ const UserPage: FC = () => {
         </div>
       </div>
 
-      <div
-        hidden={
-          !isUserDeactivated ||
-          isUserDeactivatedImmediately ||
-          isDeactivationDatePastCurrentDate
-        }
-        className={classes.deactivationDate}
-      >
-        {t('label.future_user_deactivation_date', {
-          deactivationDate: formattedDeactivationDate,
-        })}
+      <div hidden={!isUserDeactivated} className={classes.deactivationDate}>
+        <span>{deactivatedText}</span>
         <BaseButton
           loading={isDeactivating}
-          onClick={() => handleDeactivateModal(editModalTitle)}
+          hidden={!isDeactivationDateInTheFuture}
+          onClick={() => handleDeactivateModal(true)}
         >
           <Edit className={classes.editIcon} />
         </BaseButton>
