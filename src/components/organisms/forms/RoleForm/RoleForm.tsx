@@ -79,6 +79,9 @@ const RoleForm: FC<RoleFormProps> = ({
   const { createRole, isLoading: isCreating } = useCreateRole()
   const { deleteRole, isLoading: isDeleting } = useDeleteRole({ roleId: id })
 
+  console.log('allPrivileges', allPrivileges)
+  console.log('defaultPrivileges', defaultPrivileges)
+
   const {
     control,
     handleSubmit,

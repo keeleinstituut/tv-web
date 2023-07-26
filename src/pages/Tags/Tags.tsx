@@ -98,8 +98,8 @@ const Tags: FC = () => {
 
   const [inputFields, setInputFields] = useState(tagFields)
 
-  console.log('tagFields', tagFields)
-  console.log('inputFields', inputFields)
+  // console.log('tagFields', tagFields)
+  // console.log('inputFields', inputFields)
 
   const addInputField = () => {
     setInputFields([
@@ -154,7 +154,7 @@ const Tags: FC = () => {
     dirtyFields.tagCategorySelection && dirtyFields.tagInput
   )
 
-  console.log('tags', tags)
+  // console.log('tags', tags)
 
   if (isFetchingTags) {
     return <Loader loading />
@@ -205,7 +205,10 @@ const Tags: FC = () => {
         </div>
       </Container>
 
-      <TagCategory tags={tags} control={control} />
+      <TagCategory
+        tags={tags}
+        // control={control}
+      />
     </>
   )
 }
