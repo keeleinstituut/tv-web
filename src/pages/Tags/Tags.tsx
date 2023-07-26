@@ -15,7 +15,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { useBulkCreate } from 'hooks/requests/useTags'
-import { flatMap, groupBy, includes, map, uniqBy } from 'lodash'
+import { filter, flatMap, groupBy, includes, map, uniqBy } from 'lodash'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
 import { TagsType } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -25,6 +25,7 @@ import { v4 as uuidv4 } from 'uuid'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import useValidators from 'hooks/useValidators'
+import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
 
@@ -39,16 +40,7 @@ export type FormValues = {
 
 const Tags: FC = () => {
   const { t } = useTranslation()
-  const {
-    control,
-    handleSubmit,
-    formState: { dirtyFields },
-  } = useForm<FormValues>({
-    reValidateMode: 'onSubmit',
-  })
-
   const { tagInputValidator } = useValidators()
-
   const { userPrivileges } = useAuth()
 
   const { tags, isLoading: isFetchingTags } = useFetchTags()
@@ -62,6 +54,20 @@ const Tags: FC = () => {
   })
 
   const uniqueTagCategoryOptions = uniqBy(tagCategoryOptions, 'label')
+
+  const updatedDataWithoutSkillsObject = filter(
+    uniqueTagCategoryOptions,
+    (categoryObjects) => categoryObjects.label !== 'Oskused'
+  )
+
+  const {
+    control,
+    handleSubmit,
+    formState: { dirtyFields },
+    reset,
+  } = useForm<FormValues>({
+    reValidateMode: 'onSubmit',
+  })
 
   const tagFields: FieldProps<FormValues>[] = [
     {
@@ -85,7 +91,7 @@ const Tags: FC = () => {
       inputType: InputTypes.Selections,
       name: 'tagCategorySelection',
       ariaLabel: t('tag.select_tag_category'),
-      options: uniqueTagCategoryOptions,
+      options: updatedDataWithoutSkillsObject,
       placeholder: t('tag.select_tag_category'),
       multiple: true,
       rules: {
@@ -119,41 +125,32 @@ const Tags: FC = () => {
 
   const onTagsSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      console.log('values', values)
-
       const { tagCategorySelection, tagInput } = values
-
-      const transformedObject = flatMap(tagInput, (tagInputValue) => {
-        return map(tagCategorySelection, (tagCategoryValue) => {
+      const transformedObject = flatMap(tagInput, (tagInputValue) =>
+        map(tagCategorySelection, (tagCategoryValue) => {
           return {
             type: tagCategoryValue,
             name: tagInputValue,
           }
         })
-      })
-
-      const transformedObject2 = [
-        {
-          type: 'Tellimus',
-          name: 'Tag1',
-        },
-      ]
-
+      )
       const payload: TagsType = {
-        tags: transformedObject2,
+        tags: transformedObject,
       }
 
       try {
         await createTags(payload)
-
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.user_activated'),
+          content: t('success.tag_added'),
         })
-      } catch (errorData) {}
+        reset()
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
     },
-    [createTags, t]
+    [createTags, reset, t]
   )
 
   const groupedCategoryData = groupBy(tags, 'type')
@@ -221,6 +218,7 @@ const Tags: FC = () => {
                 appearance={AppearanceTypes.Text}
                 icon={EditIcon}
                 className={classes.editIcon}
+                hidden={type === 'Oskused'}
               >
                 <span className={classes.tagName}>{t('button.change')}</span>
               </Button>

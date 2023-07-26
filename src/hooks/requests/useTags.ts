@@ -22,9 +22,8 @@ export const useBulkCreate = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: createTags, isLoading } = useMutation({
     mutationKey: ['tags'],
-    mutationFn: async (payload: TagsType) => {
-      return apiClient.post(endpoints.CREATE_TAGS, payload)
-    },
+    mutationFn: async (payload: TagsType) =>
+      apiClient.post(endpoints.CREATE_TAGS, payload),
 
     onSuccess: ({ tags }) => {
       queryClient.setQueryData(

@@ -1,4 +1,6 @@
 import { isArray, isEmpty } from 'lodash'
+import { FormValues, ObjectType } from 'pages/Tags/Tags'
+import { Validate } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 const emailIsCorrect = (email: string) =>
@@ -17,10 +19,10 @@ const picIsCorrect = (pic: string) =>
 const hasValueOver50Chars = (tagInput: string) => tagInput?.length > 50
 
 const alphanumericCharHyphenSpaceCheck = (tagInput: string) =>
-  /^[a-zA-Z0-9 -]+$/.test(tagInput)
+  /^[a-zA-Z0-9ŠšŽžÕõÄäÖöÜü -]+$/.test(tagInput)
 
 const hyphenSpaceAsFirstCharCheck = (tagInput: string) =>
-  /^(?![- ])[a-zA-Z0-9 -]+$/.test(tagInput)
+  /^(?![- ])[a-zA-Z0-9ŠšŽžÕõÄäÖöÜü -]+$/.test(tagInput)
 
 const useValidators = () => {
   const { t } = useTranslation()
@@ -48,12 +50,19 @@ const useValidators = () => {
     return true
   }
 
-  const tagInputValidator = (value?: any) => {
-    if (!value || hasValueOver50Chars(value)) return t('error.tag_input_length')
-    if (!value || !alphanumericCharHyphenSpaceCheck(value))
+  const tagInputValidator: Validate<
+    string | ObjectType | undefined,
+    FormValues
+  > = (value) => {
+    const inputValue = typeof value === 'string' ? value : ''
+
+    if (!inputValue || hasValueOver50Chars(inputValue))
+      return t('error.tag_input_length')
+    if (!inputValue || !alphanumericCharHyphenSpaceCheck(inputValue))
       return t('error.tag_input_char_error')
-    if (!value || !hyphenSpaceAsFirstCharCheck(value))
+    if (!inputValue || !hyphenSpaceAsFirstCharCheck(inputValue))
       return t('error.tag_input_first_char_error')
+    return true
   }
 
   return {

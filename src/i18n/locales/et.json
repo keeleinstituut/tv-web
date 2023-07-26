@@ -246,7 +246,8 @@
     "deactivation_date_edit" : "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
-    "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud."
+    "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
+    "tag_added": "Silt / sildid on edukalt lisatud."
   },
   "notification": {
     "announcement": "Teade",
