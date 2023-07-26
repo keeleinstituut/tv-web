@@ -38,8 +38,7 @@ import classes from './classes.module.scss'
 
 interface FormValues {
   deactivation_date?: string
-  institution_user_id?: string
-  roles?: (string | undefined)[]
+  roles?: string[]
   notify_user?: boolean
 }
 
@@ -56,10 +55,10 @@ const UserPage: FC = () => {
   const { isLoading, isError, user } = useFetchUser({
     userId,
   })
-  const { archiveUser, isLoading: isArchiving } = useArchiveUser({
-    userId: userId,
-  })
   const { existingRoles = [] } = useRolesFetch()
+  const { archiveUser, isLoading: isArchiving } = useArchiveUser({
+    institution_user_id: userId,
+  })
   const { activateUser, isLoading: isActivating } = useActivateUser({
     institution_user_id: userId,
   })
@@ -67,15 +66,13 @@ const UserPage: FC = () => {
     institution_user_id: userId,
   })
   const deactivationDate = user?.deactivation_date || ''
-  const forename = user?.user?.forename || ''
-  const surname = user?.user?.surname || ''
-  const name = `${forename} ${surname}`
+  const name = `${user?.user.forename} ${user?.user.surname}`
   const status = user?.status
+
+  const isUserArchived = user?.archived_at !== null
 
   const editModalTitle = t('modal.edit_deactivation_date')
   const deactivateModalTitle = t('modal.deactivate_user_account')
-
-  const institution_user_id = userId
 
   const today = dayjs().format('DD/MM/YYYY')
 
@@ -139,14 +136,25 @@ const UserPage: FC = () => {
     },
   ]
 
+  const onArchive = useCallback(async () => {
+    try {
+      await archiveUser()
+      closeModal()
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.user_archived', { name }),
+      })
+      navigate('/settings/users')
+    } catch (_) {}
+  }, [navigate, archiveUser, t, name])
+
   const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
-    async (values) => {
+    async ({ roles, ...rest }) => {
       const isUserEditingDeactivationDate = deactivationDate !== ''
 
-      const payload: UserStatusType = { ...values }
-
       try {
-        await deactivateUser(payload)
+        await deactivateUser({ ...rest })
         closeModal()
         showNotification({
           type: NotificationTypes.Success,
@@ -178,12 +186,12 @@ const UserPage: FC = () => {
 
   const onActivateSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const payload: UserStatusType = {
-        ...values,
-        notify_user: !!values?.notify_user,
-        institution_user_id,
-      }
+      const { notify_user, roles } = values
 
+      const payload: UserStatusType = {
+        roles,
+        notify_user: !!notify_user,
+      }
       try {
         await activateUser(payload)
         closeModal()
@@ -196,7 +204,7 @@ const UserPage: FC = () => {
         showValidationErrorMessage(errorData)
       }
     },
-    [institution_user_id, activateUser, t, name]
+    [activateUser, t, name]
   )
 
   if (isLoading) {
@@ -207,7 +215,6 @@ const UserPage: FC = () => {
     return <div />
   }
 
-  const userNameString = `${user.user.forename} ${user.user.surname}`
   const isUserDeactivated = !!deactivationDate
 
   const isDeactivationDateInTheFuture = dayjs().isBefore(
@@ -220,10 +227,7 @@ const UserPage: FC = () => {
       title: t('modal.archive_user_account'),
       modalContent: t('modal.archive_user_content'),
       className: classes.archiveContent,
-      handleProceed: () => {
-        archiveUser()
-        navigate('/settings/users')
-      },
+      handleProceed: onArchive,
     })
   }
 
@@ -279,7 +283,7 @@ const UserPage: FC = () => {
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>{userNameString}</h1>
+        <h1>{name}</h1>
         <div className={classes.buttonsContainer}>
           <Button
             loading={isUserDeactivated ? isActivating : isDeactivating}
@@ -302,10 +306,8 @@ const UserPage: FC = () => {
             appearance={AppearanceTypes.Secondary}
             children={t('button.archive_account')}
             onClick={handleArchiveModal}
-            hidden={
-              !includes(userPrivileges, Privileges.ArchiveUser) ||
-              status === UserStatus.Archived
-            }
+            hidden={!includes(userPrivileges, Privileges.ArchiveUser)}
+            disabled={isUserArchived}
           />
         </div>
       </div>

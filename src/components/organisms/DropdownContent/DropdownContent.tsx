@@ -18,7 +18,7 @@ import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import useElementPosition from 'hooks/useElementPosition'
 
-type DropdownContentProps = SelectionControlsInputProps & {
+export interface DropdownContentProps extends SelectionControlsInputProps {
   isOpen?: boolean
   selectedOptionObjects?: DropDownOptions[]
   setIsOpen?: Dispatch<SetStateAction<boolean>>
@@ -48,7 +48,12 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
     ref
   ) {
     const { left, top } =
-      useElementPosition(wrapperRef, horizontalScrollContainerId) || {}
+      useElementPosition(
+        wrapperRef,
+        horizontalScrollContainerId,
+        undefined,
+        isOpen
+      ) || {}
 
     const { t } = useTranslation()
 

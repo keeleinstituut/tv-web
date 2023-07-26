@@ -1,6 +1,7 @@
 import {
   FC,
   ReactElement,
+  RefObject,
   SVGProps,
   forwardRef,
   useMemo,
@@ -14,7 +15,9 @@ import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
 import { useClickAway } from 'ahooks'
-import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
+import DropdownContent, {
+  DropdownContentProps,
+} from 'components/organisms/DropdownContent/DropdownContent'
 
 import classes from './classes.module.scss'
 import { filter, find, map } from 'lodash'
@@ -54,6 +57,31 @@ export interface SelectionControlsInputProps {
   errorZIndex?: number
   usePortal?: boolean
   horizontalScrollContainerId?: string
+}
+
+interface PositionedDropdownContentProps extends DropdownContentProps {
+  clickAwayInputRef?: RefObject<HTMLDivElement>
+  wrapperRef?: RefObject<HTMLDivElement>
+  usePortal?: boolean
+}
+
+const PositionedDropdownContent: FC<PositionedDropdownContentProps> = ({
+  wrapperRef,
+  clickAwayInputRef,
+  usePortal,
+  ...rest
+}) => {
+  if (usePortal) {
+    return createPortal(
+      <DropdownContent
+        {...rest}
+        wrapperRef={wrapperRef}
+        ref={clickAwayInputRef}
+      />,
+      document.getElementById('root') || document.body
+    )
+  }
+  return <DropdownContent {...rest} />
 }
 
 const SelectionControlsInput = forwardRef<
@@ -179,18 +207,9 @@ const SelectionControlsInput = forwardRef<
       <p hidden={!helperText} className={classes.helperText}>
         {helperText}
       </p>
-      {usePortal ? (
-        createPortal(
-          <DropdownContent
-            {...dropdownProps}
-            wrapperRef={wrapperRef}
-            ref={clickAwayInputRef}
-          />,
-          document.getElementById('root') || document.body
-        )
-      ) : (
-        <DropdownContent {...dropdownProps} />
-      )}
+      <PositionedDropdownContent
+        {...{ ...dropdownProps, wrapperRef, clickAwayInputRef, usePortal }}
+      />
       <div className={classNames(tags && classes.tagsContainer)}>
         {map(selectedOptionObjects, ({ label }, index) => {
           return (

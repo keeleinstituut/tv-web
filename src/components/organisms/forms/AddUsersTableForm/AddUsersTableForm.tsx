@@ -46,7 +46,7 @@ const SubmitButton: FC<SubmitButtonProps> = ({ control, ...rest }) => {
   return (
     <Button
       {...rest}
-      disabled={!formState.isValid && !isEmpty(formState.errors)}
+      disabled={!formState.isValid || !isEmpty(formState.errors)}
     ></Button>
   )
 }

@@ -3,7 +3,8 @@ import { useState, useCallback, useEffect, RefObject } from 'react'
 const useElementPosition = <RefType extends HTMLElement>(
   ref?: RefObject<RefType>,
   horizontalContainerId?: string,
-  verticalContainerId?: string
+  verticalContainerId?: string,
+  forceRecalculate?: boolean
 ) => {
   const { x: initialLeft, y: initialTop } =
     ref?.current?.getBoundingClientRect() || {}
@@ -17,6 +18,13 @@ const useElementPosition = <RefType extends HTMLElement>(
     const { x, y } = ref?.current?.getBoundingClientRect() || {}
     setPosition({ left: x, top: y })
   }, [ref])
+
+  useEffect(() => {
+    if (forceRecalculate) {
+      recalculatePosition()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forceRecalculate])
 
   useEffect(() => {
     // Most of the pages will only be vertically scrollable
