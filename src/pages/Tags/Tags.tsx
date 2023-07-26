@@ -98,9 +98,6 @@ const Tags: FC = () => {
 
   const [inputFields, setInputFields] = useState(tagFields)
 
-  // console.log('tagFields', tagFields)
-  // console.log('inputFields', inputFields)
-
   const addInputField = () => {
     setInputFields([
       ...inputFields,
@@ -153,8 +150,6 @@ const Tags: FC = () => {
   const areInputFieldsDirty = !!(
     dirtyFields.tagCategorySelection && dirtyFields.tagInput
   )
-
-  // console.log('tags', tags)
 
   if (isFetchingTags) {
     return <Loader loading />
