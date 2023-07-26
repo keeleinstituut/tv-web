@@ -152,6 +152,7 @@ const Test: FC = () => {
       ],
       placeholder: 'Choose option',
       multiple: false,
+      hideTags: true,
       dropdownSize: DropdownSizeTypes.M,
       helperText:
         'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
@@ -178,7 +179,6 @@ const Test: FC = () => {
       multiple: true,
       buttons: true,
       searchInput: <Fragment />,
-      tags: true,
       rules: {
         required: true,
       },

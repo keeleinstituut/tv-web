@@ -1,7 +1,6 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-
 .formContainer {
   display: flex;
   flex-direction: column;
@@ -20,7 +19,7 @@
   .inputInternalPosition {
     justify-content: flex-end;
     margin-bottom: spacing(4);
-    margin-right: spacing(10);
+    padding-right: spacing(10);
 
     input {
       width: 274px;
@@ -38,8 +37,6 @@
     @include h3TextStyle;
     margin-bottom: spacing(8);
   }
-
-
 
   .formContainer {
     display: grid;

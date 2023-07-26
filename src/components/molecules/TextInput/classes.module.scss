@@ -14,10 +14,9 @@
     }
   }
 
-
   &.error {
     .inputField {
-      border-color: $color-error
+      border-color: $color-error;
     }
   }
 
@@ -39,7 +38,7 @@
     }
 
     &:disabled {
-      background-color: $color-background
+      background-color: $color-background;
     }
   }
 

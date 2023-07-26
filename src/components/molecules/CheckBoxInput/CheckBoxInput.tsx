@@ -2,8 +2,10 @@ import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
+import { omit } from 'lodash'
 import { InputHTMLAttributes } from 'react'
 import { FieldError } from 'react-hook-form'
+import InputError from 'components/atoms/InputError/InputError'
 
 export interface CheckBoxInputProps
   extends Omit<
@@ -31,6 +33,7 @@ const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
       errorZIndex,
       onClick,
       onChange,
+      error,
       ...rest
     },
     ref
@@ -65,6 +68,7 @@ const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
           <div className={classes.visibleCheckbox} />
         </div>
         <Label className={classNames(classes.label)}>{label}</Label>
+        <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
       </Field>
     )
   }

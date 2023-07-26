@@ -39,6 +39,7 @@ type ColumnMeta = {
     size?: number | string
     filterOption?: FilterTypes
     sortingOption?: SortingFunctionType['sort_order'][]
+    filterValue?: string | string[]
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
@@ -64,6 +65,7 @@ const HeaderItem = <TData extends object>({
   const filterOption = meta?.filterOption || []
   const options = values(filterOption)[0] || []
   const sortingOption = meta?.sortingOption || []
+  const filterValue = meta?.filterValue
 
   const handleOnSorting = () => {
     const newStep = size(sortingOption) > step ? step + 1 : 0
@@ -122,6 +124,7 @@ const HeaderItem = <TData extends object>({
         name={toString(id)}
         onChange={handleOnFiltering}
         icon={FilterIcon}
+        value={filterValue}
         multiple
         buttons
         ariaLabel={t('button.filter')}
