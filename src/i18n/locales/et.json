@@ -37,9 +37,11 @@
     "reference_number": "Viitenumber",
     "language_directions": "Keelesuunad",
     "type": "Tüüp",
+    "tags": "Sildid",
     "order_tags": "Tellimuse sildid",
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
-    "tag_name": "Nimetus"
+    "tag_name": "Nimetus",
+    "company_name": "Lepingupartneri ärinimi"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -250,6 +252,9 @@
     "add_users": "Kasutajate lisamine",
     "added_users": "Lisatud kasutajad",
     "user_management": "Kasutajate haldus"
+  },
+  "vendors": {
+    "vendors_database": "Teostajate andmebaas"
   },
   "file": {
     "drop_files": "Pane failid siia...",
