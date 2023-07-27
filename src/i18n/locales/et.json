@@ -33,9 +33,11 @@
     "reference_number": "Viitenumber",
     "language_directions": "Keelesuunad",
     "type": "Tüüp",
+    "tags": "Sildid",
     "order_tags": "Tellimuse sildid",
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
-    "tag_name": "Nimetus"
+    "tag_name": "Nimetus",
+    "company_name": "Lepingupartneri ärinimi"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -232,6 +234,9 @@
     "added_users": "Lisatud kasutajad",
     "user_management": "Kasutajate haldus"
   },
+  "vendors": {
+    "vendors_database": "Teostajate andmebaas"
+  },
   "file": {
     "drop_files": "Pane failid siia...",
     "drag_drop": "Tiri",
@@ -244,7 +249,7 @@
     "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud.",
     "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
-    "deactivation_date_edit" : "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
+    "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
@@ -278,7 +283,7 @@
     "tag_management": "Sildid",
     "adding_tag": "Sildi lisamine",
     "naming_tag": "Nimeta uus silt ja vali selle asukoht",
-    "add_new_row":"lisa uus rida",
+    "add_new_row": "lisa uus rida",
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
     "select_tag_category": "Vali sildi kategooria",
