@@ -1,0 +1,9 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.categoryContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding-top: spacing(8);
+  grid-gap: spacing(6);
+}

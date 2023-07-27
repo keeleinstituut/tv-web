@@ -10,25 +10,26 @@ import {
   Suspense,
 } from 'react'
 import { FormProgressProps } from './FormProgressModal/FormProgressModal'
+import { TagEditModalProps } from './TagEditModal/TagEditModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
 )
-
 const TooltipModal = lazy(() => import('./TooltipModal/TooltipModal'))
-
 const UserAndRoleManagementModal = lazy(
   () => import('./UserAndRoleManagementModal/UserAndRoleManagementModal')
 )
 const FormProgressModal = lazy(
   () => import('./FormProgressModal/FormProgressModal')
 )
+const TagEditModal = lazy(() => import('./TagEditModal/TagEditModal'))
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
   Tooltip = 'tooltip',
   FormProgress = 'formProgress',
+  TagEditModal = 'tagEditModal',
 }
 
 // Add other modal props types here as well
@@ -37,12 +38,14 @@ type ModalPropTypes =
   | Omit<UserAndRoleManagementModalProps, 'closeModal'>
   | Omit<TooltipModalProps, 'closeModal'>
   | Omit<FormProgressProps, 'closeModal'>
+  | Omit<TagEditModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
   userAndRoleManagement: UserAndRoleManagementModal,
   tooltip: TooltipModal,
   formProgress: FormProgressModal,
+  tagEditModal: TagEditModal,
 }
 
 interface RefType {

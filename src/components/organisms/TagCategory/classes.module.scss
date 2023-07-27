@@ -1,13 +1,6 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-.categoryContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  padding-top: spacing(8);
-  grid-gap: spacing(6);
-}
-
 .category {
   padding: spacing(2) spacing(4);
   display: block;
@@ -30,12 +23,12 @@
   width: 21px;
 }
 
+.tagName {
+  @include bodyTextSmallStyle;
+}
+
 .tagCategorySeparator {
   margin: spacing(2) 0 spacing(4) 0;
   height: 1px;
   background-color: $color-background-disabled;
-}
-
-.tagName {
-  @include bodyTextSmallStyle;
 }

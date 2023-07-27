@@ -14,3 +14,8 @@ export interface TagsDataType {
 export interface TagsType {
   tags: TagType[]
 }
+
+export interface TagsUpdateType {
+  type?: string
+  data?: TagType[]
+}

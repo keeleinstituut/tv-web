@@ -24,7 +24,7 @@ import { v4 as uuidv4 } from 'uuid'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import useValidators from 'hooks/useValidators'
-import TagCategory from 'components/organisms/TagCategory/TagCategory'
+import TagCategories from 'components/organisms/TagCategories/TagCategories'
 
 import classes from './classes.module.scss'
 
@@ -200,10 +200,7 @@ const Tags: FC = () => {
         </div>
       </Container>
 
-      <TagCategory
-        tags={tags}
-        // control={control}
-      />
+      <TagCategories tags={tags} />
     </>
   )
 }
