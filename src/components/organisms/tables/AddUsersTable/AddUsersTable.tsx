@@ -5,7 +5,6 @@ import DataTable, {
 import { map, compact, size, keys, includes } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import { UserCsvType } from 'types/users'
-import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useTranslation } from 'react-i18next'
 import { Control } from 'react-hook-form'
 import CellInput from 'components/organisms/CellInput/CellInput'
@@ -13,6 +12,7 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 
 import classes from './classes.module.scss'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
+import { RoleType } from 'types/roles'
 
 export interface ErrorsInRow {
   [key: string]: string[]
@@ -23,6 +23,7 @@ interface AddUsersTableProps {
   rowsWithErrors: ErrorsInRow
   rowsWithExistingUsers?: number[]
   control: Control
+  existingRoles: RoleType[]
 }
 
 export type Person = UserCsvType & {
@@ -36,10 +37,10 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
   control,
   rowsWithErrors,
   rowsWithExistingUsers,
+  existingRoles,
 }) => {
   const containerRef = useRef(null)
   const { t } = useTranslation()
-  const { existingRoles = [] } = useRolesFetch()
   const { existingDepartments = [] } = useDepartmentsFetch()
 
   const roleOptions = compact(

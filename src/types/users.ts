@@ -15,8 +15,11 @@ interface UserDetailsType {
   personal_identification_code: string
 }
 
-export type StatusKey = 'ACTIVE' | 'DEACTIVATED' | 'ARCHIVED'
-
+export enum UserStatus {
+  Active = 'ACTIVE',
+  Deactivated = 'DEACTIVATED',
+  Archived = 'ARCHIVED',
+}
 export interface UserType {
   created_at?: string
   updated_at?: string
@@ -29,7 +32,7 @@ export interface UserType {
   institution: InstitutionType
   phone?: string
   roles: RoleType[]
-  status: StatusKey
+  status: UserStatus
   user: UserDetailsType
 }
 
@@ -53,7 +56,8 @@ export interface UserCsvType {
 export type UserPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     role_id?: string[]
-    status?: StatusKey[]
+    // status?: UserStatus[]
+    statuses?: UserStatus[]
     department?: string[]
   }
 
@@ -70,5 +74,5 @@ export interface UserStatusType {
   institution_user_id?: string
   roles?: string[]
   notify_user?: boolean
-  deactivation_date?: string
+  deactivation_date?: string | null
 }

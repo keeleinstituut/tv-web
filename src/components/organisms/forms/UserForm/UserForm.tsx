@@ -20,12 +20,14 @@ import {
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
-import { UserType, UserPostType } from 'types/users'
+import { UserType, UserPostType, UserStatus } from 'types/users'
 import { useUpdateUser } from 'hooks/requests/useUsers'
 import useValidators from 'hooks/useValidators'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
+import { useRolesFetch } from 'hooks/requests/useRoles'
+import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 
 interface FormValues {
   personal_identification_code?: string
@@ -44,14 +46,18 @@ const UserForm: FC<UserFormProps> = ({
   email,
   phone,
   department,
-  // roles,
+  roles,
+  status,
 }) => {
   // hooks
+  // TODO: department still needs to be handled
   const { personal_identification_code, forename, surname } = user
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator } = useValidators()
   const { updateUser, isLoading } = useUpdateUser({ userId: id })
+  const { existingRoles = [] } = useRolesFetch()
+  const { existingDepartments = [] } = useDepartmentsFetch()
 
   const defaultValues = useMemo(
     () => ({
@@ -60,9 +66,17 @@ const UserForm: FC<UserFormProps> = ({
       email,
       phone,
       department_id: department,
-      roles: [],
+      roles: map(roles, 'id'),
     }),
-    [department, email, forename, personal_identification_code, phone, surname]
+    [
+      department,
+      email,
+      forename,
+      personal_identification_code,
+      phone,
+      roles,
+      surname,
+    ]
   )
   const {
     control,
@@ -74,6 +88,24 @@ const UserForm: FC<UserFormProps> = ({
     reValidateMode: 'onSubmit',
     defaultValues: defaultValues,
   })
+
+  const roleOptions = map(existingRoles, ({ name, id }) => {
+    return {
+      label: name || '',
+      value: id || '',
+    }
+  })
+
+  const departmentOptions = map(existingDepartments, ({ name, id }) => {
+    return {
+      label: name || '',
+      value: id || '',
+    }
+  })
+
+  const isFormDisabled =
+    !includes(userPrivileges, Privileges.EditUser) ||
+    status === UserStatus.Archived
 
   // map data for rendering
   const fields: FieldProps<FormValues>[] = [
@@ -94,7 +126,7 @@ const UserForm: FC<UserFormProps> = ({
       ariaLabel: t('label.name'),
       placeholder: t('placeholder.name'),
       label: `${t('label.name')}*`,
-      disabled: !includes(userPrivileges, Privileges.EditUser),
+      disabled: isFormDisabled,
       name: 'name',
       className: classes.inputInternalPosition,
       rules: {
@@ -105,7 +137,7 @@ const UserForm: FC<UserFormProps> = ({
       inputType: InputTypes.Text,
       ariaLabel: t('label.email'),
       placeholder: t('placeholder.email'),
-      disabled: !includes(userPrivileges, Privileges.EditUser),
+      disabled: isFormDisabled,
       label: `${t('label.email')}*`,
       name: 'email',
       type: 'email',
@@ -120,7 +152,7 @@ const UserForm: FC<UserFormProps> = ({
       inputType: InputTypes.Text,
       ariaLabel: t('label.phone'),
       placeholder: t('placeholder.phone'),
-      disabled: !includes(userPrivileges, Privileges.EditUser),
+      disabled: isFormDisabled,
       label: `${t('label.phone')}*`,
       name: 'phone',
       type: 'tel',
@@ -131,22 +163,29 @@ const UserForm: FC<UserFormProps> = ({
       },
     },
     {
-      inputType: InputTypes.Text,
-      disabled: true,
+      inputType: InputTypes.Selections,
       ariaLabel: t('label.department'),
       placeholder: t('placeholder.department'),
       label: t('label.department'),
       name: 'department_id',
       className: classes.inputInternalPosition,
+      options: departmentOptions,
+      disabled: isFormDisabled,
     },
     {
-      inputType: InputTypes.Text,
-      disabled: true,
+      inputType: InputTypes.Selections,
       ariaLabel: t('label.roles'),
       placeholder: t('placeholder.roles'),
       label: `${t('label.roles')}*`,
       name: 'roles',
       className: classes.inputInternalPosition,
+      options: roleOptions,
+      multiple: true,
+      buttons: true,
+      disabled: isFormDisabled || status === UserStatus.Deactivated,
+      rules: {
+        required: true,
+      },
     },
   ]
 
@@ -167,10 +206,12 @@ const UserForm: FC<UserFormProps> = ({
         department_id,
         ...rest
       } = values
+
       const splitName = split(name, ' ')
       const surname = size(splitName) > 1 ? last(splitName) : ''
       const forename =
         size(splitName) > 1 ? join(initial(splitName), ' ') : name
+
       const payload: UserPostType = {
         ...rest,
         ...(isEmpty(roles) ? {} : { roles }),
@@ -217,7 +258,7 @@ const UserForm: FC<UserFormProps> = ({
         isSubmitDisabled={!isDirty || !isValid}
         loading={isSubmitting || isLoading}
         resetForm={resetForm}
-        hidden={!includes(userPrivileges, Privileges.EditUser)}
+        hidden={isFormDisabled}
         className={classes.formButtons}
       />
     </DynamicForm>
