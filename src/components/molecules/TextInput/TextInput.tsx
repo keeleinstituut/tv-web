@@ -16,6 +16,7 @@ export interface TextInputProps
   label?: JSX.Element | string
   ariaLabel: string
   errorZIndex?: number
+  button?: JSX.Element
 }
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
@@ -30,6 +31,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       placeholder,
       disabled,
       errorZIndex,
+      button,
       ...rest
     } = props
     // Might need event handler wrappers here
@@ -59,6 +61,8 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               {...rest}
             />
           </Control>
+          {button ? button : null}
+
           <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
         </div>
       </Field>
