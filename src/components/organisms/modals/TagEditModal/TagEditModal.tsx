@@ -14,7 +14,7 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { filter, flatMap, isEmpty, map } from 'lodash'
+import { filter, flatMap, includes, isEmpty, map } from 'lodash'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { TagsType, TagsUpdateType } from 'types/tags'
@@ -25,8 +25,11 @@ import {
   EditTagType,
   FormValues,
 } from 'components/organisms/TagCategories/TagCategories'
+import useAuth from 'hooks/useAuth'
 
 import classes from './classes.module.scss'
+import { Privileges } from 'types/privileges'
+import { showValidationErrorMessage } from 'api/errorHandler'
 
 export interface TagEditModalProps {
   isModalOpen?: boolean
@@ -44,6 +47,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
   const { t } = useTranslation()
   const { createTags } = useBulkCreate()
   const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate()
+  const { userPrivileges } = useAuth()
 
   const defaultValues = useMemo(
     () => ({
@@ -52,23 +56,10 @@ const TagEditModal: FC<TagEditModalProps> = ({
     [categoryData]
   )
 
-  const { control, handleSubmit } = useForm<FormValues>({
+  const { control, handleSubmit, reset } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     defaultValues: defaultValues,
   })
-
-  // const editTagFields: FieldProps<FormValues>[] = map(
-  //   categoryData,
-  //   (tag, index) => {
-  //     return {
-  //       inputType: InputTypes.Text,
-  //       ariaLabel: tag.name || '',
-  //       label: tag.name || '',
-  //       name: `tags.${index}.name`,
-  //       className: classes.editTagInput,
-  //     }
-  //   }
-  // )
 
   const editTagFields: FieldProps<FormValues>[] = useMemo(() => {
     return map(categoryData, (tag, index) => ({
@@ -78,20 +69,13 @@ const TagEditModal: FC<TagEditModalProps> = ({
       name: `tags.${index}.name`,
       className: classes.editTagInput,
     }))
-  }, [categoryData, category])
-
-  console.log('categoryData', categoryData)
-  console.log('category', category)
-  console.log('editTagFields', editTagFields)
+  }, [categoryData])
 
   const [tagInputFields, setTagInputFields] =
     useState<FieldProps<FormValues>[]>(editTagFields)
 
-  console.log('tagInputFields', tagInputFields)
-
   useEffect(() => {
     setTagInputFields(editTagFields)
-    console.log('bu!!!!!!!!')
   }, [category, editTagFields])
 
   const addInputField = () => {
@@ -136,9 +120,11 @@ const TagEditModal: FC<TagEditModalProps> = ({
           showNotification({
             type: NotificationTypes.Success,
             title: t('notification.announcement'),
-            content: 'Taginput created!',
+            content: t('success.tag_added'),
           })
-        } catch (errorData) {}
+        } catch (errorData) {
+          showValidationErrorMessage(errorData)
+        }
       }
 
       try {
@@ -149,10 +135,20 @@ const TagEditModal: FC<TagEditModalProps> = ({
           title: t('notification.announcement'),
           content: t('success.tag_updated'),
         })
-      } catch (errorData) {}
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
     },
     [category, createTags, updateTags, t]
   )
+
+  const resetForm = useCallback(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
+
+  useEffect(() => {
+    resetForm()
+  }, [defaultValues, resetForm])
 
   return (
     <ModalBase
@@ -166,12 +162,16 @@ const TagEditModal: FC<TagEditModalProps> = ({
           appearance: AppearanceTypes.Secondary,
           children: t('button.cancel'),
           size: SizeTypes.M,
-          onClick: closeModal,
+          onClick: () => {
+            resetForm()
+            closeModal()
+          },
         },
         {
           appearance: AppearanceTypes.Primary,
           onClick: () => {
             handleSubmit(onTagsEditSubmit)()
+            resetForm()
             closeModal()
           },
           children: t('button.save'),
@@ -179,11 +179,6 @@ const TagEditModal: FC<TagEditModalProps> = ({
         },
       ]}
     >
-      {/* <div>
-        {map(categoryData, (test) => {
-          return <p>{test.name}</p>
-        })}
-      </div> */}
       <DynamicForm fields={tagInputFields} control={control} />
       <Button
         appearance={AppearanceTypes.Text}
@@ -191,7 +186,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
         icon={Add}
         children={t('tag.add_new_row')}
         onClick={addInputField}
-        // hidden={!includes(userPrivileges, Privileges.AddTag)}
+        hidden={!includes(userPrivileges, Privileges.AddTag)}
       />
     </ModalBase>
   )

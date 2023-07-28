@@ -249,6 +249,7 @@
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
     "tag_updated": "Silt / sildid on edukalt uuendatud.",
+    "tag_added": "Silt / sildid on edukalt lisatud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud."
   },
   "notification": {
@@ -282,7 +283,8 @@
     "add_new_row":"lisa uus rida",
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
-    "select_tag_category": "Vali sildi kategooria"
+    "select_tag_category": "Vali sildi kategooria",
+    "skills_tag": "Oskused"
   },
   "orders": {
     "orders_tile": "Tellimused",

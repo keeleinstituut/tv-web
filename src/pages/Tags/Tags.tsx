@@ -13,8 +13,7 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { useFetchTags } from 'hooks/requests/useTags'
-import { useBulkCreate } from 'hooks/requests/useTags'
+import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
 import { flatMap, includes, map, uniqBy } from 'lodash'
 import { TagsType } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'

@@ -1,11 +1,13 @@
 import Container from 'components/atoms/Container/Container'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { map } from 'lodash'
-import { FC, useCallback } from 'react'
+import { includes, map } from 'lodash'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
 import { ModalTypes, showModal } from '../modals/ModalRoot'
 import { EditTagType } from '../TagCategories/TagCategories'
+import useAuth from 'hooks/useAuth'
+import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
 
@@ -16,6 +18,8 @@ type TagCategoryTypes = {
 
 const TagCategory: FC<TagCategoryTypes> = ({ category, categoryData }) => {
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
+  const isSkillsCategory = category === t('tag.skills_tag')
 
   const handleCategoryEdit = () => {
     showModal(ModalTypes.TagEditModal, {
@@ -33,7 +37,9 @@ const TagCategory: FC<TagCategoryTypes> = ({ category, categoryData }) => {
           icon={EditIcon}
           className={classes.editIcon}
           onClick={handleCategoryEdit}
-          // hidden={!includes(userPrivileges, Privileges.EditTag)}
+          hidden={
+            !includes(userPrivileges, Privileges.EditTag) || isSkillsCategory
+          }
         >
           <span className={classes.tagName}>{t('button.change')}</span>
         </Button>

@@ -23,10 +23,8 @@ export const useBulkCreate = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: createTags, isLoading } = useMutation({
     mutationKey: ['tags'],
-    mutationFn: async (payload: TagsType) => {
-      // console.log('payload useBulkCreate', payload)
-      return apiClient.post(endpoints.CREATE_TAGS, payload)
-    },
+    mutationFn: async (payload: TagsType) =>
+      apiClient.post(endpoints.CREATE_TAGS, payload),
 
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
@@ -55,10 +53,8 @@ export const useBulkUpdate = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateTags, isLoading } = useMutation({
     mutationKey: ['tags'],
-    mutationFn: async (payload: TagsUpdateType) => {
-      // console.log('payload useBulkUpdate', payload)
-      return apiClient.post(endpoints.UPDATE_TAGS, payload)
-    },
+    mutationFn: async (payload: TagsUpdateType) =>
+      apiClient.post(endpoints.UPDATE_TAGS, payload),
 
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
