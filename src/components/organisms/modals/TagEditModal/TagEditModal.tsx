@@ -30,6 +30,7 @@ import useAuth from 'hooks/useAuth'
 import classes from './classes.module.scss'
 import { Privileges } from 'types/privileges'
 import { showValidationErrorMessage } from 'api/errorHandler'
+import useValidators from 'hooks/useValidators'
 
 export interface TagEditModalProps {
   isModalOpen?: boolean
@@ -48,6 +49,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
   const { createTags } = useBulkCreate()
   const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate()
   const { userPrivileges } = useAuth()
+  const { tagInputValidator } = useValidators()
 
   const defaultValues = useMemo(
     () => ({
@@ -67,16 +69,19 @@ const TagEditModal: FC<TagEditModalProps> = ({
       ariaLabel: tag.name || '',
       label: tag.name || '',
       name: `tags.${index}.name`,
+      rules: {
+        validate: tagInputValidator,
+      },
       className: classes.editTagInput,
     }))
-  }, [categoryData])
+  }, [categoryData, tagInputValidator])
 
   const [tagInputFields, setTagInputFields] =
     useState<FieldProps<FormValues>[]>(editTagFields)
 
   useEffect(() => {
-    setTagInputFields(editTagFields)
-  }, [category, editTagFields])
+    setTagInputFields(tagInputFields)
+  }, [category, tagInputFields])
 
   const addInputField = () => {
     setTagInputFields([
@@ -86,6 +91,9 @@ const TagEditModal: FC<TagEditModalProps> = ({
         ariaLabel: t('tag.tag_name'),
         name: `tags.${tagInputFields.length}.name`,
         type: 'text',
+        rules: {
+          validate: tagInputValidator,
+        },
         className: classes.editTagInput,
       },
     ])
