@@ -1,7 +1,7 @@
 import Container from 'components/atoms/Container/Container'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { map } from 'lodash'
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
 import { ModalTypes, showModal } from '../modals/ModalRoot'
@@ -41,13 +41,11 @@ const TagCategory: FC<TagCategoryTypes> = ({ category, categoryData }) => {
 
       <div className={classes.tagCategorySeparator} />
       <ul>
-        {map(categoryData, (tag) => {
-          return (
-            <li className={classes.tagName} key={tag?.id}>
-              {tag?.name}
-            </li>
-          )
-        })}
+        {map(categoryData, (tag) => (
+          <li key={tag?.id} className={classes.tagName}>
+            {tag?.name}
+          </li>
+        ))}
       </ul>
     </Container>
   )

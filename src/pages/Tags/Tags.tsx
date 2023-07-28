@@ -121,14 +121,14 @@ const Tags: FC = () => {
     async (values) => {
       const { tagCategorySelection, tagInput } = values
 
-      const transformedObject = flatMap(tagInput, (tagInputValue) => {
-        return map(tagCategorySelection, (tagCategoryValue) => {
+      const transformedObject = flatMap(tagInput, (tagInputValue) =>
+        map(tagCategorySelection, (tagCategoryValue) => {
           return {
             type: tagCategoryValue,
             name: tagInputValue,
           }
         })
-      })
+      )
 
       const payload: TagsType = {
         tags: transformedObject,

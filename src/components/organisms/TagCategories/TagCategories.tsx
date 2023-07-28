@@ -24,15 +24,13 @@ const TagCategories: FC<TagCategoriesTypes> = ({ tags }) => {
 
   return (
     <div className={classes.categoryContainer}>
-      {map(uniqueCategoryTypes, (type) => {
-        return (
-          <TagCategory
-            key={type}
-            category={type}
-            categoryData={groupedCategoryData[type]}
-          />
-        )
-      })}
+      {map(uniqueCategoryTypes, (type) => (
+        <TagCategory
+          key={type}
+          category={type}
+          categoryData={groupedCategoryData[type]}
+        />
+      ))}
     </div>
   )
 }

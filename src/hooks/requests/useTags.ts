@@ -24,21 +24,22 @@ export const useBulkCreate = () => {
   const { mutateAsync: createTags, isLoading } = useMutation({
     mutationKey: ['tags'],
     mutationFn: async (payload: TagsType) => {
+      // console.log('payload useBulkCreate', payload)
       return apiClient.post(endpoints.CREATE_TAGS, payload)
     },
 
-    onSuccess: ({ tags }) => {
+    onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['tags'],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
-        (oldData?: TagsType) => {
-          const { tags: previousData } = oldData || {}
+        (oldData?: TagsDataType) => {
+          const { data: previousData } = oldData || {}
 
           if (!previousData) return oldData
-          const newData = { ...oldData, ...tags }
 
-          return { tags: newData }
+          const combinedData = [...previousData, ...data]
+          return { data: combinedData }
         }
       )
     },
@@ -55,6 +56,7 @@ export const useBulkUpdate = () => {
   const { mutateAsync: updateTags, isLoading } = useMutation({
     mutationKey: ['tags'],
     mutationFn: async (payload: TagsUpdateType) => {
+      // console.log('payload useBulkUpdate', payload)
       return apiClient.post(endpoints.UPDATE_TAGS, payload)
     },
 

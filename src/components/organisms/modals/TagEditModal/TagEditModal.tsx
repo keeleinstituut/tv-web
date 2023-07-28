@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -14,19 +14,19 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { map } from 'lodash'
+import { filter, flatMap, isEmpty, map } from 'lodash'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
-import { TagsUpdateType } from 'types/tags'
+import { TagsType, TagsUpdateType } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useBulkUpdate } from 'hooks/requests/useTags'
-
-import classes from './classes.module.scss'
+import { useBulkCreate, useBulkUpdate } from 'hooks/requests/useTags'
 import {
   EditTagType,
   FormValues,
 } from 'components/organisms/TagCategories/TagCategories'
+
+import classes from './classes.module.scss'
 
 export interface TagEditModalProps {
   isModalOpen?: boolean
@@ -42,6 +42,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
   category,
 }) => {
   const { t } = useTranslation()
+  const { createTags } = useBulkCreate()
   const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate()
 
   const defaultValues = useMemo(
@@ -56,19 +57,42 @@ const TagEditModal: FC<TagEditModalProps> = ({
     defaultValues: defaultValues,
   })
 
-  const editTagFields: FieldProps<FormValues>[] = map(
-    categoryData,
-    (tag, index) => {
-      return {
-        inputType: InputTypes.Text,
-        ariaLabel: tag.name || '',
-        label: tag.name || '',
-        name: `tags.${index}.name`,
-        className: classes.editTagInput,
-      }
-    }
-  )
-  const [tagInputFields, setTagInputFields] = useState(editTagFields)
+  // const editTagFields: FieldProps<FormValues>[] = map(
+  //   categoryData,
+  //   (tag, index) => {
+  //     return {
+  //       inputType: InputTypes.Text,
+  //       ariaLabel: tag.name || '',
+  //       label: tag.name || '',
+  //       name: `tags.${index}.name`,
+  //       className: classes.editTagInput,
+  //     }
+  //   }
+  // )
+
+  const editTagFields: FieldProps<FormValues>[] = useMemo(() => {
+    return map(categoryData, (tag, index) => ({
+      inputType: InputTypes.Text,
+      ariaLabel: tag.name || '',
+      label: tag.name || '',
+      name: `tags.${index}.name`,
+      className: classes.editTagInput,
+    }))
+  }, [categoryData, category])
+
+  console.log('categoryData', categoryData)
+  console.log('category', category)
+  console.log('editTagFields', editTagFields)
+
+  const [tagInputFields, setTagInputFields] =
+    useState<FieldProps<FormValues>[]>(editTagFields)
+
+  console.log('tagInputFields', tagInputFields)
+
+  useEffect(() => {
+    setTagInputFields(editTagFields)
+    console.log('bu!!!!!!!!')
+  }, [category, editTagFields])
 
   const addInputField = () => {
     setTagInputFields([
@@ -85,13 +109,40 @@ const TagEditModal: FC<TagEditModalProps> = ({
 
   const onTagsEditSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const payload: TagsUpdateType = {
+      const { tags } = values
+
+      const filteredData = filter(tags, (item) => !item.hasOwnProperty('id'))
+
+      const transformedObject = flatMap(filteredData, (tagInputValue) => {
+        return {
+          type: category,
+          name: tagInputValue.name,
+        }
+      })
+
+      const tagInputPayload: TagsType = {
+        tags: transformedObject,
+      }
+
+      const tagsUpdatePayload: TagsUpdateType = {
         type: category,
         ...values,
       }
 
+      if (!isEmpty(transformedObject)) {
+        try {
+          await createTags(tagInputPayload)
+
+          showNotification({
+            type: NotificationTypes.Success,
+            title: t('notification.announcement'),
+            content: 'Taginput created!',
+          })
+        } catch (errorData) {}
+      }
+
       try {
-        await updateTags(payload)
+        await updateTags(tagsUpdatePayload)
 
         showNotification({
           type: NotificationTypes.Success,
@@ -100,10 +151,8 @@ const TagEditModal: FC<TagEditModalProps> = ({
         })
       } catch (errorData) {}
     },
-    [t, category, updateTags]
+    [category, createTags, updateTags, t]
   )
-
-  const handleProceed = handleSubmit(onTagsEditSubmit)
 
   return (
     <ModalBase
@@ -122,7 +171,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
         {
           appearance: AppearanceTypes.Primary,
           onClick: () => {
-            handleProceed()
+            handleSubmit(onTagsEditSubmit)()
             closeModal()
           },
           children: t('button.save'),
@@ -130,6 +179,11 @@ const TagEditModal: FC<TagEditModalProps> = ({
         },
       ]}
     >
+      {/* <div>
+        {map(categoryData, (test) => {
+          return <p>{test.name}</p>
+        })}
+      </div> */}
       <DynamicForm fields={tagInputFields} control={control} />
       <Button
         appearance={AppearanceTypes.Text}
