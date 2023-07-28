@@ -14,13 +14,13 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { filter, flatMap, includes, isEmpty, map } from 'lodash'
+import { includes, map } from 'lodash'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
-import { TagsType, TagsUpdateType } from 'types/tags'
+import { TagsUpdateType } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useBulkCreate, useBulkUpdate } from 'hooks/requests/useTags'
+import { useBulkUpdate } from 'hooks/requests/useTags'
 import {
   EditTagType,
   FormValues,
@@ -46,7 +46,6 @@ const TagEditModal: FC<TagEditModalProps> = ({
   category,
 }) => {
   const { t } = useTranslation()
-  const { createTags } = useBulkCreate()
   const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate()
   const { userPrivileges } = useAuth()
   const { tagInputValidator } = useValidators()
@@ -101,38 +100,9 @@ const TagEditModal: FC<TagEditModalProps> = ({
 
   const onTagsEditSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const { tags } = values
-
-      const filteredData = filter(tags, (item) => !item.hasOwnProperty('id'))
-
-      const transformedObject = flatMap(filteredData, (tagInputValue) => {
-        return {
-          type: category,
-          name: tagInputValue.name,
-        }
-      })
-
-      const tagInputPayload: TagsType = {
-        tags: transformedObject,
-      }
-
       const tagsUpdatePayload: TagsUpdateType = {
         type: category,
         ...values,
-      }
-
-      if (!isEmpty(transformedObject)) {
-        try {
-          await createTags(tagInputPayload)
-
-          showNotification({
-            type: NotificationTypes.Success,
-            title: t('notification.announcement'),
-            content: t('success.tag_added'),
-          })
-        } catch (errorData) {
-          showValidationErrorMessage(errorData)
-        }
       }
 
       try {
@@ -147,7 +117,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
         showValidationErrorMessage(errorData)
       }
     },
-    [category, createTags, updateTags, t]
+    [category, updateTags, t]
   )
 
   const resetForm = useCallback(() => {
