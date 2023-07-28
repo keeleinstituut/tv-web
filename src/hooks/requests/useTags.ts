@@ -1,21 +1,30 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { filter, find, map } from 'lodash'
-import { TagsResponse, TagsPayload } from 'types/tags'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { endpoints } from 'api/endpoints'
+import { TagsDataTypes, TagsPayload, TagsResponse } from 'types/tags'
 
 export const useFetchTags = () => {
-  const { isLoading, isError, data } = useQuery<TagsResponse>({
+  const {
+    isLoading,
+    isError,
+    data: TagsData,
+  } = useQuery<TagsDataTypes>({
     queryKey: ['tags'],
     queryFn: () => apiClient.get(endpoints.TAGS),
   })
 
-  const { data: tags } = data || {}
+  const { data: tags } = TagsData || {}
+
+  const tagsFilters = map(tags, ({ id, name }) => {
+    return { value: id, label: name }
+  })
 
   return {
-    isLoading,
-    isError,
     tags,
+    isLoading: isLoading,
+    isError: isError,
+    tagsFilters,
   }
 }
 
