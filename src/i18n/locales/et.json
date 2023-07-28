@@ -82,7 +82,8 @@
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust",
-    "change": "Muuda"
+    "change": "Muuda",
+    "remove": "Kustuta"
   },
   "error": {
     "input_title": "Veateade: ",

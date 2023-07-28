@@ -62,7 +62,6 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             />
           </Control>
           {button ? button : null}
-
           <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
         </div>
       </Field>

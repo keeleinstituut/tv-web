@@ -14,7 +14,7 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { includes, map } from 'lodash'
+import { filter, get, includes, map } from 'lodash'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { TagsUpdateType } from 'types/tags'
@@ -63,27 +63,45 @@ const TagEditModal: FC<TagEditModalProps> = ({
     defaultValues: defaultValues,
   })
 
-  const editTagFields: FieldProps<FormValues>[] = useMemo(() => {
-    return map(categoryData, (tag, index) => ({
-      inputType: InputTypes.Text,
-      ariaLabel: tag.name || '',
-      label: tag.name || '',
-      name: `tags.${index}.name`,
-      rules: {
-        validate: tagInputValidator,
-      },
-      className: classes.editTagInput,
-      button: (
-        <Button
-          appearance={AppearanceTypes.Text}
-          icon={Delete}
-          children={'Kustuta'}
-          hidden={!includes(userPrivileges, Privileges.DeleteTag)}
-          className={classes.deleteIcon}
-        />
-      ),
-    }))
-  }, [categoryData, tagInputValidator, userPrivileges])
+  const handleDeleteField = (tagToDelete: number | undefined) => {
+    if (tagToDelete === undefined) return
+
+    setTagInputFields((prevFields) =>
+      filter(prevFields, (field) => {
+        const fieldName = get(field, 'name') as unknown as string
+        const isTagToDelete = fieldName.includes(`tags.${tagToDelete}.name`)
+        setTagInputFields(prevFields)
+        return !isTagToDelete
+      })
+    )
+  }
+
+  const editTagFields: FieldProps<FormValues>[] = useMemo(
+    () =>
+      map(categoryData, (tag, index) => {
+        return {
+          inputType: InputTypes.Text,
+          ariaLabel: tag.name || '',
+          label: tag.name || '',
+          name: `tags.${index}.name`,
+          rules: {
+            validate: tagInputValidator,
+          },
+          className: classes.editTagInput,
+          button: (
+            <Button
+              appearance={AppearanceTypes.Text}
+              icon={Delete}
+              children={t('button.remove')}
+              hidden={!includes(userPrivileges, Privileges.DeleteTag)}
+              className={classes.deleteIcon}
+              onClick={() => handleDeleteField(index)}
+            />
+          ),
+        }
+      }),
+    [categoryData, handleDeleteField, t, userPrivileges]
+  )
 
   const [tagInputFields, setTagInputFields] =
     useState<FieldProps<FormValues>[]>(editTagFields)
@@ -108,8 +126,6 @@ const TagEditModal: FC<TagEditModalProps> = ({
     ])
   }
 
-  console.log('tagInputFields', tagInputFields)
-
   const onTagsEditSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const tagsUpdatePayload: TagsUpdateType = {
@@ -129,7 +145,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
         showValidationErrorMessage(errorData)
       }
     },
-    [category, updateTags, t]
+    [category, updateTags, t, tagInputFields]
   )
 
   const resetForm = useCallback(() => {
