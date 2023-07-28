@@ -5,14 +5,9 @@ import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, join, includes } from 'lodash'
-import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
-import Button, {
-  AppearanceTypes,
-  SizeTypes,
-  IconPositioningTypes,
-} from 'components/molecules/Button/Button'
-
+import { map, join } from 'lodash'
+import { createColumnHelper } from '@tanstack/react-table'
+import Tag from 'components/atoms/Tag/Tag'
 import {
   FilterFunctionType,
   SortingFunctionType,
@@ -21,8 +16,6 @@ import {
 } from 'types/collective'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import classes from './classes.module.scss'
-import { Privileges } from 'types/privileges'
-import useAuth from 'hooks/useAuth'
 import { VendorType } from 'types/vendors'
 
 type VendorsTableProps = {
@@ -34,12 +27,15 @@ type VendorsTableProps = {
   handlePaginationChange?: (value?: PaginationFunctionType) => void
 }
 
-const AddedUsersTable: FC<VendorsTableProps> = ({ data, hidden }) => {
+const AddedUsersTable: FC<VendorsTableProps> = ({
+  data,
+  hidden,
+  paginationData,
+  handleFilterChange,
+  handleSortingChange,
+  handlePaginationChange,
+}) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
-
-  const { rolesFilters = [] } = useRolesFetch()
-  const { departmentFilters = [] } = useDepartmentsFetch()
 
   const columnHelper = createColumnHelper<any>()
 
@@ -54,7 +50,7 @@ const AddedUsersTable: FC<VendorsTableProps> = ({ data, hidden }) => {
           institution_user: { roles, user },
           company_name,
         }) => {
-          const arrayOfRoles = map(roles, 'name')
+          const roleNames = map(roles, 'name')
 
           const languageDirections = map(
             prices,
@@ -65,13 +61,15 @@ const AddedUsersTable: FC<VendorsTableProps> = ({ data, hidden }) => {
               `${source_language_classifier_value.value} > ${destination_language_classifier_value.value}`
           )
 
+          const tagNames = map(tags, 'name')
+
           return {
             id,
             languageDirections,
-            tags,
+            tags: tagNames,
             name: `${user?.forename} ${user?.surname}`,
             companyName: company_name,
-            roles: arrayOfRoles,
+            roles: roleNames,
           }
         }
       ) || {}
@@ -81,16 +79,23 @@ const AddedUsersTable: FC<VendorsTableProps> = ({ data, hidden }) => {
   const columns = [
     columnHelper.accessor('languageDirections', {
       header: () => t('label.language_directions'),
+      cell: ({ getValue }) => {
+        return (
+          <div className={classes.tagsRow}>
+            {map(getValue(), (value) => (
+              <Tag label={value} value key={value} />
+            ))}
+          </div>
+        )
+      },
       footer: (info) => info.column.id,
       meta: {
         sortingOption: ['asc', 'desc'],
       },
     }),
-    columnHelper.accessor('role', {
+    columnHelper.accessor('roles', {
       header: () => t('label.role'),
-      cell: (info) => {
-        return join(info.renderValue(), ', ')
-      },
+      cell: ({ renderValue }) => join(renderValue(), ', '),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('name', {
@@ -108,26 +113,39 @@ const AddedUsersTable: FC<VendorsTableProps> = ({ data, hidden }) => {
       },
     }),
     columnHelper.accessor('tags', {
-      header: () => t('label.tags'),
+      header: () => t('label.order_tags'),
       footer: (info) => info.column.id,
-      meta: {
-        sortingOption: ['asc', 'desc'],
+      cell: ({ getValue }) => {
+        return (
+          <div className={classes.tagsRow}>
+            {map(getValue(), (value) => (
+              <Tag label={value} value key={value} />
+            ))}
+          </div>
+        )
       },
     }),
-  ]
+  ] // TODO: type
 
   if (hidden) return null
+
+  console.log({
+    paginationData,
+    handleFilterChange,
+    handlePaginationChange,
+    handleSortingChange,
+  })
 
   return (
     <DataTable
       data={vendorsData}
       columns={columns}
       tableSize={TableSizeTypes.M}
+      paginationData={paginationData}
+      onPaginationChange={handlePaginationChange}
+      onFiltersChange={handleFilterChange}
+      onSortingChange={handleSortingChange}
     />
-    // paginationData={paginationData}
-    // onPaginationChange={handlePaginationChange}
-    // onFiltersChange={handleFilterChange}
-    // onSortingChange={handleSortingChange}
   )
 }
 

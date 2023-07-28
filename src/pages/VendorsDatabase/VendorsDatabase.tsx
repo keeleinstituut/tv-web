@@ -16,9 +16,14 @@ const VendorsDatabase: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
-  const { existingVendors, paginationData, isLoading } = useVendorsFetch()
-
-  console.log({ existingVendors })
+  const {
+    vendors,
+    paginationData,
+    isLoading,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useVendorsFetch()
 
   return (
     <>
@@ -41,20 +46,22 @@ const VendorsDatabase: FC = () => {
       </Button> */}
         <Button
           href="/settings/users/add"
-          hidden={!includes(userPrivileges, Privileges.AddUser)}
+          hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
         >
-          {t('button.add_users')}
+          {'TODO'}
         </Button>
       </div>
       <Root>
-        <Loader loading={isLoading && isEmpty(existingVendors)} />
+        <Loader loading={isLoading && isEmpty(vendors)} />
         <VendorsTable
-          data={existingVendors}
-          paginationData={paginationData}
-          hidden={isEmpty(existingVendors)}
-          handleFilterChange={() => null}
-          handleSortingChange={() => null}
-          handlePaginationChange={() => null}
+          data={vendors}
+          hidden={isEmpty(vendors)}
+          {...{
+            paginationData,
+            handleFilterChange,
+            handleSortingChange,
+            handlePaginationChange,
+          }}
         />
       </Root>
     </>

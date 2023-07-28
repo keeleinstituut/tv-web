@@ -1,4 +1,8 @@
-import { DataMetaTypes } from 'types/collective'
+import {
+  DataMetaTypes,
+  PaginationFunctionType,
+  SortingFunctionType,
+} from 'types/collective'
 import { UserType } from './users'
 import { Price } from './price'
 export interface VendorType {
@@ -12,3 +16,5 @@ export interface VendorsDataType {
   data: VendorType[]
   meta: DataMetaTypes
 }
+
+export type VendorsPayloadType = PaginationFunctionType & SortingFunctionType
