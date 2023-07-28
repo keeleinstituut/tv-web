@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
-import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
+import { useFetchTags } from 'hooks/requests/useTags'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -14,7 +14,6 @@ import {
   DataMetaTypes,
   PaginationFunctionType,
 } from 'types/collective'
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import classes from './classes.module.scss'
 import { VendorType } from 'types/vendors'
 
@@ -37,7 +36,10 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const columnHelper = createColumnHelper<any>()
+  const { rolesFilters = [] } = useRolesFetch()
+  const { tagsFilters = [] } = useFetchTags()
+
+  const columnHelper = createColumnHelper<any>() // TODO: type
 
   const vendorsData = useMemo(() => {
     return (
@@ -55,10 +57,9 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
           const languageDirections = map(
             prices,
             ({
-              source_language_classifier_value,
-              destination_language_classifier_value,
-            }) =>
-              `${source_language_classifier_value.value} > ${destination_language_classifier_value.value}`
+              source_language_classifier_value: srcLang,
+              destination_language_classifier_value: destLang,
+            }) => `${srcLang.value} > ${destLang.value}`
           )
 
           const tagNames = map(tags, 'name')
@@ -97,6 +98,9 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
       header: () => t('label.role'),
       cell: ({ renderValue }) => join(renderValue(), ', '),
       footer: (info) => info.column.id,
+      meta: {
+        filterOption: { role_id: rolesFilters },
+      },
     }),
     columnHelper.accessor('name', {
       header: () => t('label.name'),
@@ -124,17 +128,13 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
           </div>
         )
       },
+      meta: {
+        filterOption: { tag_id: tagsFilters },
+      },
     }),
   ] // TODO: type
 
   if (hidden) return null
-
-  console.log({
-    paginationData,
-    handleFilterChange,
-    handlePaginationChange,
-    handleSortingChange,
-  })
 
   return (
     <DataTable
