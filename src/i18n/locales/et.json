@@ -280,7 +280,8 @@
     "add_new_row":"lisa uus rida",
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
-    "select_tag_category": "Vali sildi kategooria"
+    "select_tag_category": "Vali sildi kategooria",
+    "skills_tag": "Oskused"
   },
   "orders": {
     "orders_tile": "Tellimused",

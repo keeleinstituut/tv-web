@@ -218,7 +218,7 @@ const Tags: FC = () => {
                 appearance={AppearanceTypes.Text}
                 icon={EditIcon}
                 className={classes.editIcon}
-                hidden={type === 'Oskused'}
+                hidden={type === t('tag.skills_tag')}
               >
                 <span className={classes.tagName}>{t('button.change')}</span>
               </Button>
