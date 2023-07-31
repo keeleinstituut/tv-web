@@ -2,6 +2,7 @@
 @import 'styles/mixins';
 
 .departmentContainer {
+  width: 375px;
   margin-top: spacing(8);
   padding: spacing(2) spacing(4);
   grid-gap: spacing(4);
