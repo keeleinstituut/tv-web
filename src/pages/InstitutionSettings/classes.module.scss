@@ -3,8 +3,9 @@
 
 .institution {
   display: grid;
-  grid-template-columns: max-content auto;
+  grid-template-columns: max-content max-content;
   align-items: center;
+  grid-gap: spacing(4);
 }
 
 .container {
