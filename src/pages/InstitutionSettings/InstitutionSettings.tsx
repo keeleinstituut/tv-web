@@ -8,6 +8,7 @@ import InstitutionForm from 'components/organisms/forms/InstitutionForm/Institut
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import InstitutionManagementCheatSheet from 'components/molecules/cheatSheets/InstitutionManagementCheatSheet'
+import DepartmentManagement from 'components/molecules/DepartmentManagement/DepartmentManagement'
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
@@ -43,9 +44,7 @@ const InstitutionSettings: FC = () => {
           time: dayjs(updated_at).format('DD.MM.YYYY hh:mm') || '',
         })}
       </p>
-
-      {/* TODO add departments
-       <Container className={classes.department}>departments </Container> */}
+      <DepartmentManagement />
     </div>
   )
 }

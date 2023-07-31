@@ -10,3 +10,7 @@ export interface DepartmentsDataType {
   data: DepartmentType[]
   meta: DataMetaTypes
 }
+
+export interface DepartmentDataType {
+  data: DepartmentType
+}
