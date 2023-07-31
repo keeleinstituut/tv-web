@@ -6,6 +6,12 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
+import Button, {
+  AppearanceTypes,
+  SizeTypes,
+  IconPositioningTypes,
+} from 'components/molecules/Button/Button'
+import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { map, join } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
@@ -144,6 +150,21 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
       meta: {
         filterOption: { tag_id: tagsFilters },
       },
+    }),
+    columnHelper.accessor('id', {
+      header: () => <></>,
+      cell: ({ getValue }) => (
+        <Button
+          appearance={AppearanceTypes.Text}
+          size={SizeTypes.M}
+          icon={ArrowRight}
+          ariaLabel={t('label.to_order_view')}
+          iconPositioning={IconPositioningTypes.Left}
+          href={`/orders/${getValue()}`}
+        >
+          {t('label.view')}
+        </Button>
+      ),
     }),
   ] as ColumnDef<any>[] // Seems like an package issue https://github.com/TanStack/table/issues/4382
 
