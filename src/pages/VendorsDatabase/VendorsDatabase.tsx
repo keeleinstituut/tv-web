@@ -1,7 +1,6 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { isEmpty, includes } from 'lodash'
-import classNames from 'classnames'
 import { Root } from '@radix-ui/react-form'
 import Loader from 'components/atoms/Loader/Loader'
 import useAuth from 'hooks/useAuth'

@@ -2,11 +2,12 @@ import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useFetchTags } from 'hooks/requests/useTags'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, join } from 'lodash'
-import { createColumnHelper } from '@tanstack/react-table'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
   FilterFunctionType,
@@ -38,8 +39,20 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
 
   const { rolesFilters = [] } = useRolesFetch()
   const { tagsFilters = [] } = useFetchTags()
+  const { classifierValuesFilters = [] } = useClassifierValuesFetch({
+    type: 'LANGUAGE',
+  }) // TODO: save them to local state when API available?
 
-  const columnHelper = createColumnHelper<any>() // TODO: type
+  type OrderTableRow = {
+    id: string
+    languageDirections: string
+    tags: string
+    name: string
+    companyName: string
+    roles: string
+  }
+
+  const columnHelper = createColumnHelper<OrderTableRow>()
 
   const vendorsData = useMemo(() => {
     return (
@@ -91,7 +104,7 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
       },
       footer: (info) => info.column.id,
       meta: {
-        sortingOption: ['asc', 'desc'],
+        sortingOption: ['asc', 'desc'], // TODO: when API available
       },
     }),
     columnHelper.accessor('roles', {
@@ -132,7 +145,7 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
         filterOption: { tag_id: tagsFilters },
       },
     }),
-  ] // TODO: type
+  ] as ColumnDef<any>[] // Seems like an package issue https://github.com/TanStack/table/issues/4382
 
   if (hidden) return null
 
