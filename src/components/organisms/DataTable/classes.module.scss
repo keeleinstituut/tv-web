@@ -34,8 +34,9 @@
   .m {
     th,
     td {
-      padding: spacing(2.5) spacing(3.5);
+      padding: 0 spacing(3.5);
       height: 48px;
+      max-height: 48px;
     }
   }
   .s {
