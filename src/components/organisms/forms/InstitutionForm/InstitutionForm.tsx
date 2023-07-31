@@ -26,9 +26,7 @@ interface FormValues {
   phone?: string | null
 }
 
-type InstitutionFormProps = InstitutionType
-
-const InstitutionForm: FC<InstitutionFormProps> = ({
+const InstitutionForm: FC<InstitutionType> = ({
   id,
   name,
   short_name,
@@ -181,6 +179,7 @@ const InstitutionForm: FC<InstitutionFormProps> = ({
         hidden={!isUpdatingData}
         className={classes.formButtons}
         formId="Institution"
+        submitButtonName={t('button.save')}
       />
     </>
   )

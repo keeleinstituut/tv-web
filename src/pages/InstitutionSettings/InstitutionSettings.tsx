@@ -23,12 +23,14 @@ const InstitutionSettings: FC = () => {
   const { updated_at, created_at } = institution || {}
 
   return (
-    <div className={classes.institution}>
-      <h1>{t('institution.institution_management')}</h1>
-      <Tooltip
-        title={t('cheat_sheet.institution_management.title')}
-        modalContent={<InstitutionManagementCheatSheet />}
-      />
+    <>
+      <div className={classes.institution}>
+        <h1>{t('institution.institution_management')}</h1>
+        <Tooltip
+          title={t('cheat_sheet.institution_management.title')}
+          modalContent={<InstitutionManagementCheatSheet />}
+        />
+      </div>
       <Container className={classes.container}>
         <h3 className={classes.title}>{t('institution.institution_data')}</h3>
         <InstitutionForm name={name} id={institutionId} {...institution} />
@@ -45,7 +47,7 @@ const InstitutionSettings: FC = () => {
         })}
       </p>
       <DepartmentManagement />
-    </div>
+    </>
   )
 }
 

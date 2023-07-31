@@ -11,15 +11,21 @@ import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import UserManagementCheatSheet from 'components/molecules/cheatSheets/UserManagementCheatSheet'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
+import { UserStatus } from 'types/users'
+import Loader from 'components/atoms/Loader/Loader'
 
 const UsersManagement: FC = () => {
+  const initialFilters = {
+    statuses: [UserStatus.Active, UserStatus.Deactivated],
+  }
   const {
     users,
     paginationData,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchUsers()
+    isLoading: isUsersLoading,
+  } = useFetchUsers(initialFilters)
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { downloadCSV, isLoading } = useDownloadUsers()
@@ -59,6 +65,7 @@ const UsersManagement: FC = () => {
       </div>
       {/* TODO: remove this form root wrapper, once we refactor CheckBox */}
       <Root>
+        <Loader loading={isUsersLoading && isEmpty(users)} />
         <AddedUsersTable
           data={users}
           paginationData={paginationData}

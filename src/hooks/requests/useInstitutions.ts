@@ -62,6 +62,7 @@ export const useUpdateInstitution = ({
           return { data: newData }
         }
       )
+      queryClient.refetchQueries({ queryKey: ['institutions'], type: 'active' })
     },
   })
 

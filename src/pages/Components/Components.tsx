@@ -29,7 +29,6 @@ import {
   NotificationPropsWithoutClose,
 } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import ModalRoot, {
   ModalTypes,
@@ -153,6 +152,7 @@ const Test: FC = () => {
       ],
       placeholder: 'Choose option',
       multiple: false,
+      hideTags: true,
       dropdownSize: DropdownSizeTypes.M,
       helperText:
         'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
@@ -179,7 +179,6 @@ const Test: FC = () => {
       multiple: true,
       buttons: true,
       searchInput: <Fragment />,
-      tags: true,
       rules: {
         required: true,
       },
