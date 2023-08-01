@@ -28,12 +28,12 @@ const useValidators = () => {
   // TODO: improve typescript for react-hook-form validate
   // Currently the validator has to work for all input field types
   // instead of just the one we are validating
-  const emailValidator = (value?: string | string[]) => {
+  const emailValidator = (value?: string | string[] | null) => {
     if (isArray(value)) return 'error'
     return !value || emailIsCorrect(value) ? true : t('error.invalid_email')
   }
 
-  const phoneValidator = (value?: string | string[]) => {
+  const phoneValidator = (value?: string | string[] | null) => {
     if (isArray(value)) return 'error'
     return !value || phoneIsCorrect(value) ? true : t('error.invalid_phone')
   }

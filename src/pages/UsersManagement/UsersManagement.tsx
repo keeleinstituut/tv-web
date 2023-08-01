@@ -45,10 +45,13 @@ const UsersManagement: FC = () => {
         <Button
           appearance={AppearanceTypes.Secondary}
           className={classNames({
-            [classes.invisible]: !includes(userPrivileges, 'EXPORT_USER'),
+            [classes.invisible]: !includes(
+              userPrivileges,
+              Privileges.ExportUser
+            ),
           })}
           onClick={handleDownloadFile}
-          disabled={!includes(userPrivileges, 'EXPORT_USER')}
+          disabled={!includes(userPrivileges, Privileges.ExportUser)}
           loading={isLoading}
         >
           {t('button.export_csv')}
