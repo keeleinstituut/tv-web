@@ -1,0 +1,66 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.formContainer {
+  display: grid;
+  grid-template-columns: max-content auto;
+  grid-gap: spacing(21);
+}
+.form {
+  width: max-content;
+
+  .inputInternalPosition {
+    justify-content: flex-end;
+
+    label {
+      margin-right: spacing(10);
+    }
+
+    &:disabled,
+    &:hover {
+      cursor: auto;
+    }
+
+    input,
+    :disabled,
+    :hover {
+      width: max-content;
+      border: none;
+      background-color: $color-white;
+    }
+    ::placeholder {
+      color: $color-text-dark;
+    }
+    &.updateInput {
+      margin-bottom: spacing(4);
+      input {
+        width: 274px;
+        border: 1px solid $color-border-secondary;
+      }
+    }
+  }
+}
+
+.formButtons {
+  justify-self: end;
+  padding-top: spacing(2);
+  width: max-content;
+}
+
+.container {
+  border-top: unset;
+
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;
+
+  h2 {
+    @include h3TextStyle;
+    margin-bottom: spacing(8);
+  }
+
+  .formContainer {
+    display: grid;
+    grid-gap: spacing(4);
+    grid-template-columns: 1fr 1fr;
+  }
+}

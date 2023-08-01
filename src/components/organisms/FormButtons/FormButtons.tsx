@@ -11,6 +11,8 @@ interface FormButtonProps {
   hidden?: boolean
   resetForm: () => void
   className?: string
+  formId?: string
+  submitButtonName?: string
 }
 
 const FormButtons: FC<FormButtonProps> = ({
@@ -20,6 +22,8 @@ const FormButtons: FC<FormButtonProps> = ({
   hidden,
   resetForm,
   className,
+  formId,
+  submitButtonName,
 }) => {
   const { t } = useTranslation()
   if (hidden) return null
@@ -32,10 +36,11 @@ const FormButtons: FC<FormButtonProps> = ({
         disabled={isResetDisabled || loading}
       />
       <Button
-        children={t('button.save_changes')}
+        children={submitButtonName || t('button.save_changes')}
         disabled={isSubmitDisabled}
         loading={loading}
         type="submit"
+        form={formId}
       />
     </div>
   )

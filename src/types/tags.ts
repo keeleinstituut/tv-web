@@ -1,21 +1,28 @@
-export interface TagType {
+export enum TagTypes {
+  Tolkemalud = 'Tõlkemälud',
+  Teostaja = 'Teostaja',
+  Tellimus = 'Tellimus',
+  Oskused = 'Oskused',
+}
+
+export interface TagFields extends Object {
   id?: string
   institution_id?: string
   name?: string
-  type?: string
+  type: TagTypes
   created_at?: string
   updated_at?: string
 }
 
-export interface TagsDataType {
-  data: TagType[]
+export interface TagsResponse {
+  data: TagFields[]
 }
 
-export interface TagsType {
-  tags: TagType[]
+export interface TagsPayload {
+  tags: TagFields[]
 }
 
 export interface TagsUpdateType {
   type?: string
-  data?: TagType[]
+  data?: TagTypes[]
 }

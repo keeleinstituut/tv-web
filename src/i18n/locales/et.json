@@ -1,6 +1,7 @@
 {
   "label": {
     "email": "Email",
+    "email_long": "Meiliaadress",
     "button_arrow": "Nupu nool",
     "pagination_result_count": "Kuvan korraga",
     "pagination_navigation": "Lehekülgedel navigeerimine",
@@ -10,6 +11,7 @@
     "personal_identification_code": "Isikukood",
     "name": "Nimi",
     "phone": "Telefoni nr",
+    "phone_long": "Telefoninumber",
     "department": "Üksus",
     "roles": "Rollid",
     "role": "Roll",
@@ -24,6 +26,8 @@
     "status": "Staatus",
     "user_account_id": "Kasutajakonto ID",
     "open_instructions": "Ava õpetus",
+    "institution": "Asutus",
+    "institution_short": "Asutuse lühend",
     "show_only_my_orders": "Soovin näha vaid oma tellimusi",
     "all": "Kõik",
     "to_order_view": "Tellimuse vaatesse",
@@ -34,7 +38,8 @@
     "language_directions": "Keelesuunad",
     "type": "Tüüp",
     "order_tags": "Tellimuse sildid",
-    "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest"
+    "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
+    "tag_name": "Nimetus"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -82,6 +87,7 @@
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust",
+    "update": "Redigeeri",
     "change": "Muuda"
   },
   "error": {
@@ -128,6 +134,12 @@
   "roles": {
     "roles_management": "Rollihaldus",
     "privileges": "Privileegid"
+  },
+  "institution": {
+    "institution_management": "Asituse andmete haldamine",
+    "institution_data": "Asutuse andmed",
+    "created_at": "Konto loodud {{ time }}",
+    "updated_at": "Konto andmed muudetud {{ time }}"
   },
   "privileges": {
     "ADD_ROLE": "Rolli lisamine süsteemi",
@@ -189,7 +201,6 @@
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
     "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
     "edit_category_tag": "Tellimuse siltide muutmine"
-
   },
   "cheat_sheet": {
     "user_management": {
@@ -205,6 +216,14 @@
       "deactive_account": "kontot deaktiveerida/arhiveerida.",
       "activation_archiving": "Aktiveerimine/arhiveerimine",
       "activation_archiving_text": "Konto deaktiveerimisel kasutaja juurdepääsuõigused peatatakse ja tema roll(id) võetakse ära. See sobib kasutaja juurdepääsu ajutiseks peatamiseks. Kui pole soovi kontot hiljem taas aktiveerida, siis tuleks kasutaja konto arhiveerida.\nKui kasutaja konto deaktiveeritakse ja kasutaja pole ise oma poolikuid töid kolleegidele suunanud, siis on vaid vastavate õigustega kasutajal juurdepääs tema poolikutele tellimustele, alamtellimustele ja ülesannetele.\nDekativeeritud konto aktiveerimiseks tuleb klõpsata nupule „Aktiveeri konto“ ja kontole määrata rollid. Kasutaja juurdepääs taastatakse ja ta näeb endaga seotud tellimuste, alamtellimuste või ülesannete ajalugu, kui tema uus roll seda lubab.\nAktiveeritud/deaktiveeritud kasutajale ei saa uut kontot samas asutuse luua. Arhiveeritud kasutajaga seotud isikukoodile saab uue konto luua: süsteemis luuakse uue unikaalse identifikaatoriga konto, mis on kasutaja isikukoodiga seotud ja sellega seotakse ka kõik uued tellimused (vana kontoga seotud tellimusi sellle kontoga ei seota)."
+    },
+    "institution_management": {
+      "title": "[Asutuse andmete haldamine] kohtspikker",
+      "help_text": "Asutuse sätetes saab muuta järgmisi üldandmeid: asutuse nimetus, nime lühend, meiliaadress, telefoninumber.",
+      "working_hours_vacations": "Tööajad ja puhkepäevad",
+      "working_hours_vacations_text": "Asutuse üldandmetes saab määrata ja muuta asutuse tööaegu ja puhkepäevasid. Asutuse tööajad ja puhkepäevad määratakse vaikimisi ka kõikidele asutuse kasutajatele. Soovi korral saab kasutaja andmete all neid muuta.",
+      "departments": "Üksused",
+      "departments_text": "Asutuse üldandmete all saab luua ja muuta asutuse üksuseid. Asutuse üksuseid saab kasutada asutuse kasutajate kontaktandmetes."
     },
     "tag_management": {
       "title": "[Sildid] kohtspikker",
@@ -241,11 +260,12 @@
   },
   "success": {
     "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
-    "role_updated": "Roll „{{roleName}}“ on edukalt muudetud.",
-    "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud.",
+    "role_updated": "Roll „{{roleName}}“ on edukalt muudetud",
+    "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud",
     "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
+    "institution_updated": "Asutuse andmed on edukalt muudetud",
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
-    "deactivation_date_edit" : "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
+    "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
     "tag_updated": "Silt / sildid on edukalt uuendatud.",
@@ -280,11 +300,17 @@
     "tag_management": "Sildid",
     "adding_tag": "Sildi lisamine",
     "naming_tag": "Nimeta uus silt ja vali selle asukoht",
-    "add_new_row":"lisa uus rida",
+    "add_new_row": "lisa uus rida",
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
     "select_tag_category": "Vali sildi kategooria",
-    "skills_tag": "Oskused"
+    "skills_tag": "Oskused",
+    "type": {
+      "Tõlkemälud": "Tõlkemälud",
+      "Teostaja": "Teostaja",
+      "Tellimus": "Tellimus",
+      "Oskused": "Oskused"
+    }
   },
   "orders": {
     "orders_tile": "Tellimused",

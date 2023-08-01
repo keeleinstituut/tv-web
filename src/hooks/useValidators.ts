@@ -28,12 +28,12 @@ const useValidators = () => {
   // TODO: improve typescript for react-hook-form validate
   // Currently the validator has to work for all input field types
   // instead of just the one we are validating
-  const emailValidator = (value?: string | string[]) => {
+  const emailValidator = (value?: string | string[] | null) => {
     if (isArray(value)) return 'error'
     return !value || emailIsCorrect(value) ? true : t('error.invalid_email')
   }
 
-  const phoneValidator = (value?: string | string[]) => {
+  const phoneValidator = (value?: string | string[] | null) => {
     if (isArray(value)) return 'error'
     return !value || phoneIsCorrect(value) ? true : t('error.invalid_phone')
   }
@@ -48,12 +48,16 @@ const useValidators = () => {
     return true
   }
 
-  const tagInputValidator = (value: any) => {
-    if (!value || hasValueOver50Chars(value)) return t('error.tag_input_length')
-    if (!value || !alphanumericCharHyphenSpaceCheck(value))
+  const tagInputValidator = (value?: string) => {
+    if (!value || hasValueOver50Chars(value)) {
+      return t('error.tag_input_length')
+    }
+    if (!alphanumericCharHyphenSpaceCheck(value)) {
       return t('error.tag_input_char_error')
-    if (!value || !hyphenSpaceAsFirstCharCheck(value))
+    }
+    if (!hyphenSpaceAsFirstCharCheck(value)) {
       return t('error.tag_input_first_char_error')
+    }
     return true
   }
 

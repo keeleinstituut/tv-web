@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import TagsCheatSheet from 'components/molecules/cheatSheets/TagManagementCheatSheet'
@@ -7,69 +7,69 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { ReactComponent as Add } from 'assets/icons/add.svg'
+// import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Button, {
   AppearanceTypes,
-  IconPositioningTypes,
+  // IconPositioningTypes,
+  SizeTypes,
 } from 'components/molecules/Button/Button'
 import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
-import { flatMap, includes, map, uniqBy } from 'lodash'
-import { TagsType } from 'types/tags'
+import { groupBy, includes, map, omit } from 'lodash'
+import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
+import { TagTypes, TagsPayload } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import Loader from 'components/atoms/Loader/Loader'
-import { v4 as uuidv4 } from 'uuid'
+// import { v4 as uuidv4 } from 'uuid'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import useValidators from 'hooks/useValidators'
 import TagCategories from 'components/organisms/TagCategories/TagCategories'
+import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
 
-export interface ObjectType {
-  [key: string]: string
-}
+// export interface ObjectType {
+//   [key: string]: string
+// }
 
 export type FormValues = {
-  tagInput?: ObjectType
-  tagCategorySelection?: string
+  name: string
+  type: TagTypes
 }
 
 const Tags: FC = () => {
   const { t } = useTranslation()
-  const {
-    control,
-    handleSubmit,
-    formState: { dirtyFields },
-  } = useForm<FormValues>({
-    reValidateMode: 'onSubmit',
-  })
-
   const { tagInputValidator } = useValidators()
-
   const { userPrivileges } = useAuth()
 
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
 
-  const tagCategoryOptions = map(tags, ({ type }) => {
+  const tagCategoryOptions = map(omit(TagTypes, TagTypes.Oskused), (type) => {
     return {
-      label: type || '',
+      label: t(`tag.type.${type}`),
       value: type || '',
     }
   })
 
-  const uniqueTagCategoryOptions = uniqBy(tagCategoryOptions, 'label')
+  const {
+    control,
+    handleSubmit,
+    formState: { isDirty },
+    reset,
+  } = useForm<FormValues>({
+    reValidateMode: 'onSubmit',
+  })
 
   const tagFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Text,
       ariaLabel: t('tag.tag_name'),
-      label: 'Nimetus',
-      name: `tagInput.${uuidv4()}`,
+      label: t('label.tag_name'),
+      name: 'name',
       placeholder: t('tag.tag_input'),
-      type: 'text',
       rules: {
         required: true,
         validate: tagInputValidator,
@@ -82,73 +82,89 @@ const Tags: FC = () => {
   const categoryFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Selections,
-      name: 'tagCategorySelection',
+      name: 'type',
       ariaLabel: t('tag.select_tag_category'),
-      options: uniqueTagCategoryOptions,
+      options: tagCategoryOptions,
       placeholder: t('tag.select_tag_category'),
-      multiple: true,
       rules: {
         required: true,
       },
-      buttons: true,
       disabled: !includes(userPrivileges, Privileges.AddTag),
     },
   ]
 
-  const [inputFields, setInputFields] = useState(tagFields)
+  // const [inputFields, setInputFields] = useState(tagFields)
 
-  const addInputField = () => {
-    setInputFields([
-      ...inputFields,
-      {
-        inputType: InputTypes.Text,
-        ariaLabel: t('tag.tag_name'),
-        label: 'Nimetus',
-        name: `tagInput.${uuidv4()}`,
-        placeholder: t('tag.tag_input'),
-        type: 'text',
-        rules: {
-          required: true,
-          validate: tagInputValidator,
-        },
-        className: classes.tagInputField,
-      },
-    ])
-  }
+  // const addInputField = () => {
+  //   setInputFields([
+  //     ...inputFields,
+  //     {
+  //       inputType: InputTypes.Text,
+  //       ariaLabel: t('tag.tag_name'),
+  //       label: 'Nimetus',
+  //       name: `tagInput.${uuidv4()}`,
+  //       placeholder: t('tag.tag_input'),
+  //       type: 'text',
+  //       rules: {
+  //         required: true,
+  //         validate: tagInputValidator,
+  //       },
+  //       className: classes.tagInputField,
+  //     },
+  //   ])
+  // }
 
   const onTagsSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const { tagCategorySelection, tagInput } = values
+      // const { tagCategorySelection, tagInput } = values
 
-      const transformedObject = flatMap(tagInput, (tagInputValue) =>
-        map(tagCategorySelection, (tagCategoryValue) => {
-          return {
-            type: tagCategoryValue,
-            name: tagInputValue,
-          }
-        })
-      )
+      // const transformedObject = flatMap(tagInput, (tagInputValue) =>
+      //   map(tagCategorySelection, (tagCategoryValue) => {
+      //     return {
+      //       type: tagCategoryValue,
+      //       name: tagInputValue,
+      //     }
+      //   })
+      // )
 
-      const payload: TagsType = {
-        tags: transformedObject,
+      // const payload: TagsType = {
+      //   tags: transformedObject,
+      const { name, type } = values
+      // const transformedObject = flatMap(tagInput, (tagInputValue) =>
+      //   map(tagCategorySelection, (tagCategoryValue) => {
+      //     return {
+      //       type: tagCategoryValue,
+      //       name: tagInputValue,
+      //     }
+      //   })
+      // )
+      const payload: TagsPayload = {
+        tags: [{ name, type }],
       }
 
       try {
         await createTags(payload)
-
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.user_activated'),
+          content: t('success.tag_added'),
         })
-      } catch (errorData) {}
+        reset()
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
     },
-    [createTags, t]
+    [createTags, reset, t]
   )
 
-  const areInputFieldsDirty = !!(
-    dirtyFields.tagCategorySelection && dirtyFields.tagInput
-  )
+  // const areInputFieldsDirty = !!(
+  //   dirtyFields.tagCategorySelection && dirtyFields.tagInput
+  // )
+  const groupedCategoryData = groupBy(tags, 'type')
+
+  // const areInputFieldsDirty = !!(
+  //   dirtyFields.tagCategorySelection && dirtyFields.tagInput
+  // )
 
   if (isFetchingTags) {
     return <Loader loading />
@@ -172,8 +188,8 @@ const Tags: FC = () => {
         <div className={classes.addingTagsSeparator} />
 
         <div className={classes.tagsSection}>
-          <DynamicForm fields={inputFields} control={control} />
-          <Button
+          <DynamicForm fields={tagFields} control={control} />
+          {/* <Button
             appearance={AppearanceTypes.Text}
             iconPositioning={IconPositioningTypes.Left}
             icon={Add}
@@ -181,7 +197,7 @@ const Tags: FC = () => {
             children={t('tag.add_new_row')}
             onClick={addInputField}
             hidden={!includes(userPrivileges, Privileges.AddTag)}
-          />
+          /> */}
         </div>
 
         <div className={classes.categorySection}>
@@ -193,13 +209,42 @@ const Tags: FC = () => {
             className={classes.addButton}
             onClick={handleSubmit(onTagsSubmit)}
             loading={isCreatingTags}
-            disabled={!areInputFieldsDirty}
+            disabled={!isDirty}
             hidden={!includes(userPrivileges, Privileges.AddTag)}
           />
         </div>
       </Container>
 
       <TagCategories tags={tags} />
+      {/* <div className={classes.categoryContainer}>
+        {map(groupedCategoryData, (tags, type: TagTypes) => (
+          <Container key={type} className={classes.category}>
+            <div className={classes.tagCategoryNameContainer}>
+              <span className={classes.categoryName}>
+                {t(`tag.type.${type}`)}
+              </span>
+              <Button
+                appearance={AppearanceTypes.Text}
+                size={SizeTypes.S}
+                icon={EditIcon}
+                className={classes.editIcon}
+                hidden={type === TagTypes.Oskused}
+              >
+                {t('button.change')}
+              </Button>
+            </div>
+
+            <div className={classes.tagCategorySeparator} />
+            <ul>
+              {map(tags, (tag) => (
+                <li className={classes.tagName} key={tag?.id}>
+                  {tag?.name}
+                </li>
+              ))}
+            </ul>
+          </Container>
+        ))}
+      </div> */}
     </>
   )
 }
