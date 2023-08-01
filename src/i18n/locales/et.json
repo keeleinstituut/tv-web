@@ -34,7 +34,8 @@
     "language_directions": "Keelesuunad",
     "type": "Tüüp",
     "order_tags": "Tellimuse sildid",
-    "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest"
+    "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
+    "tag_name": "Nimetus"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -76,11 +77,13 @@
     "export_csv": "Ekspordi CSV",
     "add_users": "Lisa kasutajad",
     "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
+    "add": "Lisa",
     "proceed": "Edasi",
     "quit": "Loobun",
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
-    "change_institution": "Vaheta asutust"
+    "change_institution": "Vaheta asutust",
+    "change": "Muuda"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -90,7 +93,10 @@
     "required": "Kohustuslik väli",
     "invalid_pic": "Vale formaat",
     "role_required": "Vali vähemalt 1 roll",
-    "invalid_username": "Palun lisage ka perekonnanimi"
+    "invalid_username": "Palun lisage ka perekonnanimi",
+    "tag_input_length": "Sildi maksimaalne pikkus võib olla kuni 50 tähemärki",
+    "tag_input_char_error": "Lubatud on tähed (a-z), numbrid (0-9), tühik ja sidekriips",
+    "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -198,6 +204,18 @@
       "deactive_account": "kontot deaktiveerida/arhiveerida.",
       "activation_archiving": "Aktiveerimine/arhiveerimine",
       "activation_archiving_text": "Konto deaktiveerimisel kasutaja juurdepääsuõigused peatatakse ja tema roll(id) võetakse ära. See sobib kasutaja juurdepääsu ajutiseks peatamiseks. Kui pole soovi kontot hiljem taas aktiveerida, siis tuleks kasutaja konto arhiveerida.\nKui kasutaja konto deaktiveeritakse ja kasutaja pole ise oma poolikuid töid kolleegidele suunanud, siis on vaid vastavate õigustega kasutajal juurdepääs tema poolikutele tellimustele, alamtellimustele ja ülesannetele.\nDekativeeritud konto aktiveerimiseks tuleb klõpsata nupule „Aktiveeri konto“ ja kontole määrata rollid. Kasutaja juurdepääs taastatakse ja ta näeb endaga seotud tellimuste, alamtellimuste või ülesannete ajalugu, kui tema uus roll seda lubab.\nAktiveeritud/deaktiveeritud kasutajale ei saa uut kontot samas asutuse luua. Arhiveeritud kasutajaga seotud isikukoodile saab uue konto luua: süsteemis luuakse uue unikaalse identifikaatoriga konto, mis on kasutaja isikukoodiga seotud ja sellega seotakse ka kõik uued tellimused (vana kontoga seotud tellimusi sellle kontoga ei seota)."
+    },
+    "tag_management": {
+      "title": "[Sildid] kohtspikker",
+      "tags_description": "Asutus saab võtta kasutusele enda vajaduste järgi kohandatud siltide süsteemi, mis aitab tõlkeid paremini korraldada. Siltide kategooriaid on neli: oskused, teostajad, tõlkemälud ja tellimused.",
+      "skills": "Oskused",
+      "skills_tag_description": "Need sildid on seotud töövoogudega ning teostajate andmebaasi lisatud teostajate oskuste ja hinnakirjadega.",
+      "vendors": "Teostaja",
+      "vendors_tag_description": "Teostajatele saab lisada silte, mis aitavad kasutajaid teostajate andmebaasis siltide järgi teostajaid otsida ja filtreerida.",
+      "translation_memories": "Tõlkemälud",
+      "translation_memories_tag_description": "Tõlkemälud Tõlkemäludele saab lisada silte, mis aitavad kasutajaid tõlkemälude haldamisel ja siltide järgi tõlkemälusid otsida ja filtreerida.",
+      "orders": "Tellimused",
+      "orders_tag_description": "Tellimustele saab lisada silte, mis aitavad kasutajaid tõlketellimuste haldamisel ja siltide järgi tellimusi otsida ja filtreerida."
     }
   },
   "user": {
@@ -229,7 +247,8 @@
     "deactivation_date_edit" : "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
-    "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud."
+    "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
+    "tag_added": "Silt on edukalt lisatud."
   },
   "notification": {
     "announcement": "Teade",
@@ -254,6 +273,21 @@
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
+  },
+  "tag": {
+    "tag_management": "Sildid",
+    "adding_tag": "Sildi lisamine",
+    "naming_tag": "Nimeta uus silt ja vali selle asukoht",
+    "add_new_row":"lisa uus rida",
+    "tag_name": "Nimetus",
+    "tag_input": "Sisesta siia",
+    "select_tag_category": "Vali sildi kategooria",
+    "type": {
+      "Tõlkemälud": "Tõlkemälud",
+      "Teostaja": "Teostaja",
+      "Tellimus": "Tellimus",
+      "Oskused": "Oskused"
+    }
   },
   "orders": {
     "orders_tile": "Tellimused",
