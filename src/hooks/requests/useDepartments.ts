@@ -6,7 +6,9 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
-import { map } from 'lodash'
+import { filter, map } from 'lodash'
+import useAuth from 'hooks/useAuth'
+import { useCallback } from 'react'
 
 export const useDepartmentsFetch = () => {
   const { isLoading, isError, data } = useQuery<DepartmentsDataType>({
@@ -56,6 +58,74 @@ export const useUpdateDepartment = ({
 
   return {
     updateDepartment,
+    isLoading,
+  }
+}
+
+export const useCreateDepartment = () => {
+  const { userInfo } = useAuth()
+  const queryClient = useQueryClient()
+  const { mutateAsync: createDepartment, isLoading } = useMutation({
+    mutationKey: ['departments'],
+    mutationFn: (payload: DepartmentsDataType) =>
+      apiClient.post(endpoints.DEPARTMENTS, {
+        institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
+        ...payload,
+      }),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['department'],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: DepartmentsDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = [...previousData, data]
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    createDepartment,
+    isLoading,
+  }
+}
+export const useDeleteDepartment = ({
+  departmentId,
+}: {
+  departmentId?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutate: deleteDepartment, isLoading } = useMutation({
+    mutationKey: ['departments', departmentId],
+    mutationFn: () =>
+      apiClient.delete(`${endpoints.DEPARTMENTS}/${departmentId}`),
+    onSuccess: () => {
+      queryClient.setQueryData(
+        ['departments', departmentId],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: DepartmentsDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const deletedData = filter(
+            previousData,
+            ({ id }) => id !== departmentId
+          )
+          return { data: deletedData }
+        }
+      )
+    },
+  })
+
+  const wrappedDeleteDepartment = useCallback(() => {
+    deleteDepartment()
+  }, [deleteDepartment])
+
+  return {
+    deleteDepartment: wrappedDeleteDepartment,
     isLoading,
   }
 }

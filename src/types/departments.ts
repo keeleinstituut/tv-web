@@ -8,7 +8,7 @@ export interface DepartmentType {
 }
 export interface DepartmentsDataType {
   data: DepartmentType[]
-  meta: DataMetaTypes
+  meta?: DataMetaTypes
 }
 
 export interface DepartmentDataType {
