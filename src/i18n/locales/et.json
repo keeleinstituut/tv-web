@@ -71,7 +71,9 @@
     "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
-    "change_institution": "Vaheta asutust"
+    "change_institution": "Vaheta asutust",
+    "delegate_to_other_manager": "Suuna teisele tõlkekorraldajale",
+    "cancel_order": "Tühista tellimus"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -238,7 +240,8 @@
       "FORWARDED": "Edastatud",
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
-      "REJECTED": "Tühistatud"
+      "REJECTED": "Tühistatud",
+      "FIXED": "Fixed"
     }
   },
   "warning": {

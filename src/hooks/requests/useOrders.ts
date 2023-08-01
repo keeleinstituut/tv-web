@@ -1,6 +1,13 @@
-import { OrderType, OrdersDataType, OrdersPayloadType } from 'types/orders'
+import {
+  ListOrder,
+  OrderDetail,
+  OrdersResponse,
+  OrdersPayloadType,
+  OrderResponse,
+} from 'types/orders'
 import { useQuery } from '@tanstack/react-query'
-import mockOrders from './mockOrder.json'
+import newMockOrders from './newMockOrders.json'
+import singleMockOrder from './singleMockOrder.json'
 import useFilters from 'hooks/useFilters'
 
 export const useFetchOrders = () => {
@@ -12,14 +19,14 @@ export const useFetchOrders = () => {
     handlePaginationChange,
   } = useFilters<OrdersPayloadType>()
 
-  const { isLoading, isError, data } = useQuery<OrdersDataType>({
+  const { isLoading, isError, data } = useQuery<OrdersResponse>({
     queryKey: ['orders'],
     queryFn: () => {
       return new Promise((resolve) =>
         setTimeout(() => {
           // TODO: request will be done with filters
           resolve({
-            data: mockOrders.data as unknown as OrderType[],
+            data: newMockOrders.data as unknown as ListOrder[],
             meta: {
               current_page: 1,
               from: 1,
@@ -45,5 +52,29 @@ export const useFetchOrders = () => {
     handelFilterChange,
     handelSortingChange,
     handlePaginationChange,
+  }
+}
+
+export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
+  const { isLoading, isError, data } = useQuery<OrderResponse>({
+    queryKey: ['orders', orderId],
+    queryFn: () => {
+      return new Promise((resolve) =>
+        setTimeout(() => {
+          // TODO: replace with request to BE
+          resolve({
+            data: singleMockOrder as unknown as OrderDetail,
+          })
+        }, 1000)
+      )
+    },
+  })
+
+  const { data: order } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    order,
   }
 }

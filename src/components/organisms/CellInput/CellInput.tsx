@@ -20,7 +20,7 @@ interface CellInputProps<TData> {
   placeholder?: string
 }
 
-function CellInput<TData extends object>(props: CellInputProps<TData>) {
+function CellInput<TData>(props: CellInputProps<TData>) {
   const {
     typedKey,
     rowIndex,

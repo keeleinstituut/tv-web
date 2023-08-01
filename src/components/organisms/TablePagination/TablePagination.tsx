@@ -20,7 +20,7 @@ type PaginationProps<TData> = {
   pageSizeOptions?: { label: string; value: string }[]
 }
 
-const TablePagination = <TData extends object>({
+const TablePagination = <TData,>({
   hidden,
   table,
   pageSizeOptions,

@@ -57,7 +57,7 @@ declare module '@tanstack/react-table' {
   }
 }
 
-const DataTable = <TData extends object>(
+const DataTable = <TData,>(
   {
     data,
     columns,
@@ -144,7 +144,7 @@ const DataTable = <TData extends object>(
   )
 }
 
-const DataTableWithRef = forwardRef(DataTable) as <TData extends object>(
+const DataTableWithRef = forwardRef(DataTable) as <TData>(
   props: DataTableProps<TData> & { ref?: Ref<HTMLDivElement> }
 ) => ReactElement
 
