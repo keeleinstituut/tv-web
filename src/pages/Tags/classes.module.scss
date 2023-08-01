@@ -95,7 +95,12 @@
   justify-content: space-between;
 }
 
-.editIcon svg {
-  height: 20px;
-  width: 21px;
+.editIcon {
+  font-size: $font-size-14;
+  line-height: $line-height;
+
+  svg {
+    height: 20px;
+    width: 21px;
+  }
 }

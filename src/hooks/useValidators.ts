@@ -1,6 +1,4 @@
 import { isArray, isEmpty } from 'lodash'
-import { FormValues, ObjectType } from 'pages/Tags/Tags'
-import { Validate } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 const emailIsCorrect = (email: string) =>
@@ -50,18 +48,16 @@ const useValidators = () => {
     return true
   }
 
-  const tagInputValidator: Validate<
-    string | ObjectType | undefined,
-    FormValues
-  > = (value) => {
-    const inputValue = typeof value === 'string' ? value : ''
-
-    if (!inputValue || hasValueOver50Chars(inputValue))
+  const tagInputValidator = (value?: string) => {
+    if (!value || hasValueOver50Chars(value)) {
       return t('error.tag_input_length')
-    if (!inputValue || !alphanumericCharHyphenSpaceCheck(inputValue))
+    }
+    if (!alphanumericCharHyphenSpaceCheck(value)) {
       return t('error.tag_input_char_error')
-    if (!inputValue || !hyphenSpaceAsFirstCharCheck(inputValue))
+    }
+    if (!hyphenSpaceAsFirstCharCheck(value)) {
       return t('error.tag_input_first_char_error')
+    }
     return true
   }
 

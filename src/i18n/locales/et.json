@@ -34,7 +34,8 @@
     "language_directions": "Keelesuunad",
     "type": "Tüüp",
     "order_tags": "Tellimuse sildid",
-    "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest"
+    "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
+    "tag_name": "Nimetus"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -247,7 +248,7 @@
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
-    "tag_added": "Silt / sildid on edukalt lisatud."
+    "tag_added": "Silt on edukalt lisatud."
   },
   "notification": {
     "announcement": "Teade",
@@ -281,7 +282,12 @@
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
     "select_tag_category": "Vali sildi kategooria",
-    "skills_tag": "Oskused"
+    "type": {
+      "Tõlkemälud": "Tõlkemälud",
+      "Teostaja": "Teostaja",
+      "Tellimus": "Tellimus",
+      "Oskused": "Oskused"
+    }
   },
   "orders": {
     "orders_tile": "Tellimused",
