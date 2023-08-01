@@ -14,6 +14,7 @@ export interface ConfirmationModalBaseProps {
   isModalOpen?: boolean
   closeModal: () => void
   handleProceed?: () => void
+  handleCancel?: () => void
   className?: string
 }
 
@@ -54,7 +55,7 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
         },
       ]}
     >
-      <div>{modalContent}</div>
+      {modalContent}
     </ModalBase>
   )
 }

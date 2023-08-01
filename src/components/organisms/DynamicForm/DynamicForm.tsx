@@ -31,6 +31,7 @@ export interface DynamicFormProps<Type extends FieldValues> {
   control: Control<Type>
   className?: string
   onSubmit?: FormEventHandler<HTMLFormElement>
+  formId?: string
 }
 
 export function FormInput<Type extends FieldValues>({
@@ -59,9 +60,10 @@ function DynamicForm<Type extends FieldValues>({
   className,
   onSubmit,
   children,
+  formId,
 }: PropsWithChildren<DynamicFormProps<Type>>) {
   return (
-    <Root className={classNames(className)} onSubmit={onSubmit}>
+    <Root id={formId} className={classNames(className)} onSubmit={onSubmit}>
       {map(fields, (inputData, index) => {
         // objects inside fields array can either be props needed to render an input
         // or just components that we need to render in the middle of the form

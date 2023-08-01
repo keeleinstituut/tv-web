@@ -20,6 +20,11 @@ interface ObjectWithChildren {
 interface CsvObjectStructure<ValuesType> {
   [key: string]: ValuesType
 }
+interface DownloadFileProps {
+  data: BlobPart
+  fileName: string
+  fileType: string
+}
 
 export const usersCsvFieldsToKeys = {
   Isikukood: 'personal_identification_code',
@@ -55,15 +60,23 @@ export const convertUsersCsvToArray = (csvData: string | ArrayBuffer) => {
     >
     const arrayOfObjects = map(values, (value) => {
       const valuesArray = split(value, ';')
+      const pattern = /("")(?!")|"/g
+
       return reduce(
         valuesArray,
         (result, value, index) => {
           if (!index && index !== 0) {
             return result
           }
+          const formattedValue = value.replace(pattern, '')
+          const key = usersCsvFieldsToKeys[keysArray[index]]
+          const displayValue =
+            key === usersCsvFieldsToKeys.Roll
+              ? map(split(formattedValue, ','), trim)
+              : formattedValue
           return {
             ...result,
-            [usersCsvFieldsToKeys[keysArray[index]]]: value,
+            [key]: displayValue,
           }
         },
         {}
@@ -85,6 +98,21 @@ export const objectsToCsvFile = <ValuesType>(
   const blob = new Blob([csvString], { type: 'text/csv' })
   const file = new File([blob], 'users.csv', { type: 'text/csv' })
   return file
+}
+
+export const downloadFile = ({
+  data,
+  fileName,
+  fileType,
+}: DownloadFileProps) => {
+  const blob = new Blob([data], { type: fileType })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
 }
 
 export const getPathWithPrivileges = ({

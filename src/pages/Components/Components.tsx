@@ -29,7 +29,11 @@ import {
   NotificationPropsWithoutClose,
 } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import ModalRoot, {
+  ModalTypes,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -148,6 +152,7 @@ const Test: FC = () => {
       ],
       placeholder: 'Choose option',
       multiple: false,
+      hideTags: true,
       dropdownSize: DropdownSizeTypes.M,
       helperText:
         'Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.',
@@ -174,7 +179,6 @@ const Test: FC = () => {
       multiple: true,
       buttons: true,
       searchInput: <Fragment />,
-      tags: true,
       rules: {
         required: true,
       },
@@ -196,6 +200,48 @@ const Test: FC = () => {
     setTimeout(showNotification, 4000, dummyNotifications[2])
     setTimeout(showNotification, 6000, dummyNotifications[3])
   }
+  const handleModalOpen = () => {
+    showModal(ModalTypes.FormProgress, {
+      formData: [
+        {
+          label: 'Vali keelepaarid',
+          title: 'Teostajale keelepaaride valimine',
+          helperText:
+            'Valida saab ühe algkeele ja ühe või mitu sihtkeelt. Vlaides rohkem kui ühe sihtkeele tuleb arvestada, et valtud keeltele saad sisestada ühed ja samad hinnad. Kui soovid igale keelepaarile sisestada einevaid ühiku hinnad, siis tuleb iga keelepaar sisestada edaldi.',
+          modalContent: (
+            <div>
+              <p>Algkeel</p>
+              <p>SihtKeel</p>
+            </div>
+          ),
+        },
+        {
+          label: 'Lisa oskused',
+          title: 'Teostajale oskuste valimine',
+          helperText:
+            'Määra teostaja oskused, millele soovid ühikuhinnad lisada.',
+          modalContent: (
+            <div>
+              <p>Algkeel</p>
+              <p>SihtKeel</p>
+            </div>
+          ),
+        },
+        {
+          label: 'Lisa hinnakiri',
+          title: 'Keelepaaridele hinnakirja määramine',
+          helperText:
+            'Määra oskusele ühikupõhised hinnad. Juhul, kui mõnda arvestusühikut selle teostaja puhul ei kasutata või puudub kokkulepitud hind, siis võib jätta selle ühiku hinnaks null',
+          modalContent: (
+            <div>
+              <p>Algkeel</p>
+              <p>SihtKeel</p>
+            </div>
+          ),
+        },
+      ],
+    })
+  }
 
   return (
     <>
@@ -215,15 +261,9 @@ const Test: FC = () => {
           iconPositioning={IconPositioningTypes.Right}
         />
       </DynamicForm>
-      <ProgressBar
-        activeStep={2}
-        steps={[
-          { label: 'Step 1' },
-          { label: 'Step 2' },
-          { label: 'Step 3' },
-          { label: 'Step 4' },
-        ]}
-      />
+      <BaseButton onClick={handleModalOpen}>{'Ava vorm'}</BaseButton>
+      <ModalRoot />
+
       <Root>
         <TestingTable />
         <UsersTable />

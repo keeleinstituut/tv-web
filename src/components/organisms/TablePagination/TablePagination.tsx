@@ -5,13 +5,14 @@ import { useTranslation } from 'react-i18next'
 import { Table, PaginationState } from '@tanstack/react-table'
 import { ReactComponent as Arrow } from 'assets/icons/arrow_pagination.svg'
 import { ReactComponent as SelectArrow } from 'assets/icons/select_arrow.svg'
-import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import SelectionControlsInput, {
+  DropdownSizeTypes,
+} from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import Button, {
   AppearanceTypes,
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { DropdownSizeTypes } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import { useNavigate } from 'react-router-dom'
 
 type PaginationProps<TData> = {
@@ -117,6 +118,7 @@ const TablePagination = <TData,>({
         onChange={(value) => {
           setPageSize(Number(value))
         }}
+        hideTags
         placeholder={toString(getState().pagination.pageSize)}
         dropdownSize={DropdownSizeTypes.XS}
         selectIcon={SelectArrow}

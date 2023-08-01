@@ -13,7 +13,6 @@ export type InputWrapperProps = {
   error?: FieldError
   label?: JSX.Element | string
   children?: ReactNode
-  onClick?: () => void
   wrapperClass?: string
   errorClass?: string
   errorZIndex?: number
@@ -27,7 +26,6 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
       error,
       className,
       children,
-      onClick,
       wrapperClass,
       errorClass,
       errorZIndex,
@@ -42,11 +40,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
         >
           {label}
         </Label>
-        <div
-          className={classNames(classes.wrapper, wrapperClass)}
-          ref={ref}
-          onClick={onClick}
-        >
+        <div className={classNames(classes.wrapper, wrapperClass)} ref={ref}>
           {children}
           <InputError
             {...omit(error, 'ref')}

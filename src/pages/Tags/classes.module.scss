@@ -1,0 +1,106 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.tagsHeader {
+  display: grid;
+  grid-template-columns: max-content auto max-content max-content;
+  align-items: center;
+  grid-gap: spacing(4);
+}
+
+.tagsContainer {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  margin-top: spacing(6);
+  padding: spacing(6) spacing(8);
+}
+
+.tagsSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.categorySection {
+  padding-left: spacing(2);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.addingTagsSeparator {
+  margin: 0 spacing(4);
+  width: 1px;
+  background-color: $color-background-dark;
+}
+
+.addingTag {
+  color: $color-primary;
+  padding-bottom: spacing(4);
+}
+
+.tagInputField {
+  margin-bottom: spacing(2);
+}
+
+.tagInputField input {
+  width: 508px;
+  height: 100%;
+  padding: spacing(2);
+}
+
+.newRow {
+  flex-shrink: 1;
+}
+
+.addButton {
+  margin-top: spacing(4);
+}
+
+.categoryContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding-top: spacing(8);
+  grid-gap: spacing(6);
+}
+
+.category {
+  padding: spacing(2) spacing(4);
+  display: block;
+}
+
+.tagCategorySeparator {
+  margin: spacing(2) 0 spacing(4) 0;
+  height: 1px;
+  background-color: $color-background-disabled;
+}
+
+.addNewRow {
+  margin-top: spacing(6);
+}
+
+.categoryName {
+  @include bodyTextSmallStyle;
+  text-decoration: underline;
+  color: $color-input-main;
+}
+
+.tagName {
+  @include bodyTextSmallStyle;
+}
+
+.tagCategoryNameContainer {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.editIcon {
+  font-size: $font-size-14;
+  line-height: $line-height;
+
+  svg {
+    height: 20px;
+    width: 21px;
+  }
+}

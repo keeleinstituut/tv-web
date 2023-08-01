@@ -1,29 +1,210 @@
 import Loader from 'components/atoms/Loader/Loader'
 import UserForm from 'components/organisms/forms/UserForm/UserForm'
-import { useArchiveUser, useFetchUser } from 'hooks/requests/useUsers'
-import { FC } from 'react'
+import {
+  useActivateUser,
+  useArchiveUser,
+  useDeactivateUser,
+  useFetchUser,
+} from 'hooks/requests/useUsers'
+import { FC, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { includes } from 'lodash'
+import { includes, map } from 'lodash'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import {
+  ModalTypes,
+  closeModal,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
+import { ReactComponent as Edit } from 'assets/icons/edit.svg'
+import DynamicForm, {
+  FieldProps,
+  InputTypes,
+} from 'components/organisms/DynamicForm/DynamicForm'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import { useRolesFetch } from 'hooks/requests/useRoles'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import advancedFormat from 'dayjs/plugin/advancedFormat'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showValidationErrorMessage } from 'api/errorHandler'
+import { UserStatus, UserStatusType } from 'types/users'
 
 import classes from './classes.module.scss'
 
+interface FormValues {
+  deactivation_date?: string
+  roles?: string[]
+  notify_user?: boolean
+}
+
+dayjs.extend(customParseFormat)
+dayjs.extend(advancedFormat)
+
 const UserPage: FC = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { userId } = useParams()
+
   const { userPrivileges } = useAuth()
+
   const { isLoading, isError, user } = useFetchUser({
     userId,
   })
+  const { existingRoles = [] } = useRolesFetch()
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
-    userId: userId,
+    institution_user_id: userId,
   })
-  const navigate = useNavigate()
+  const { activateUser, isLoading: isActivating } = useActivateUser({
+    institution_user_id: userId,
+  })
+  const { deactivateUser, isLoading: isDeactivating } = useDeactivateUser({
+    institution_user_id: userId,
+  })
+  const deactivationDate = user?.deactivation_date || ''
+  const name = `${user?.user.forename} ${user?.user.surname}`
+  const status = user?.status
+
+  const isUserArchived = user?.archived_at !== null
+
+  const editModalTitle = t('modal.edit_deactivation_date')
+  const deactivateModalTitle = t('modal.deactivate_user_account')
+
+  const today = dayjs().format('DD/MM/YYYY')
+
+  const { control, handleSubmit } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+    defaultValues: { deactivation_date: today },
+  })
+
+  const formattedDeactivationDate = dayjs(
+    deactivationDate,
+    'YYYY-MM-DD'
+  ).format('DD.MM.YYYY')
+
+  const yearFromCurrentDate = dayjs().add(1, 'year').toDate()
+  const formattedDate = dayjs(yearFromCurrentDate).format('MM/DD/YYYY')
+
+  const deactivationFormFields: FieldProps<FormValues>[] = [
+    {
+      inputType: InputTypes.Date,
+      name: 'deactivation_date',
+      ariaLabel: t('label.user_deactivation_date'),
+      label: t('label.user_deactivation_date'),
+      placeholder: 'pp.kk.aaaa',
+      rules: {
+        required: true,
+      },
+      className: classes.calenderPosition,
+      minDate: new Date(),
+      maxDate: new Date(formattedDate),
+    },
+  ]
+
+  const roleOptions = map(existingRoles, ({ name, id }) => {
+    return {
+      label: name || '',
+      value: id || '',
+    }
+  })
+
+  const activationFormFields: FieldProps<FormValues>[] = [
+    {
+      inputType: InputTypes.Selections,
+      name: 'roles',
+      ariaLabel: t('placeholder.roles'),
+      placeholder: t('placeholder.roles'),
+      options: roleOptions,
+      multiple: true,
+      buttons: true,
+      rules: {
+        required: true,
+      },
+      usePortal: true,
+    },
+    {
+      inputType: InputTypes.Checkbox,
+      name: 'notify_user',
+      label: t('label.user_activation_notification'),
+      ariaLabel: t('label.user_activation_notification'),
+      className: classes.checkboxInputClass,
+    },
+  ]
+
+  const onArchive = useCallback(async () => {
+    try {
+      await archiveUser()
+      closeModal()
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.user_archived', { name }),
+      })
+      navigate('/settings/users')
+    } catch (_) {}
+  }, [navigate, archiveUser, t, name])
+
+  const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
+    async ({ roles, ...rest }) => {
+      const isUserEditingDeactivationDate = deactivationDate !== ''
+
+      try {
+        await deactivateUser({ ...rest })
+        closeModal()
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: isUserEditingDeactivationDate
+            ? t('success.deactivation_date_edit', { name })
+            : t('success.user_deactivated', { name }),
+        })
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
+    },
+    [deactivationDate, deactivateUser, t, name]
+  )
+
+  const handleCancelDeactivation = useCallback(async () => {
+    try {
+      await deactivateUser({ deactivation_date: null })
+      closeModal()
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.deactivation_cancelled', { name }),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [deactivateUser, name, t])
+
+  const onActivateSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const { notify_user, roles } = values
+
+      const payload: UserStatusType = {
+        roles,
+        notify_user: !!notify_user,
+      }
+      try {
+        await activateUser(payload)
+        closeModal()
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.user_activated', { name }),
+        })
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
+    },
+    [activateUser, t, name]
+  )
 
   if (isLoading) {
     return <Loader loading />
@@ -33,34 +214,91 @@ const UserPage: FC = () => {
     return <div />
   }
 
-  const userNameString = `${user.user.forename} ${user.user.surname}`
+  const isUserDeactivated = !!deactivationDate
+
+  const isDeactivationDateInTheFuture = dayjs().isBefore(
+    dayjs(deactivationDate),
+    'day'
+  )
 
   const handleArchiveModal = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
       title: t('modal.archive_user_account'),
-      cancelButtonContent: t('button.no'),
-      proceedButtonContent: t('button.yes'),
       modalContent: t('modal.archive_user_content'),
       className: classes.archiveContent,
-      handleProceed: () => {
-        archiveUser()
-        navigate('/settings/users')
-      },
+      handleProceed: onArchive,
     })
   }
+
+  const handleDeactivateModal = (isEditModal: boolean) => {
+    showModal(ModalTypes.UserAndRoleManagement, {
+      title: isEditModal ? editModalTitle : deactivateModalTitle,
+      cancelButtonContent: t('button.cancel'),
+      modalContent: t('modal.deactivate_user_content'),
+      handleProceed: handleSubmit(onDeactivateSubmit),
+      handleCancel: isEditModal ? handleCancelDeactivation : null,
+      className: classes.deactivateContent,
+      dynamicForm: (
+        <DynamicForm
+          fields={deactivationFormFields}
+          control={control}
+          className={classes.deactivateDynamicForm}
+        />
+      ),
+    })
+  }
+
+  const handleActivateModal = () => {
+    showModal(ModalTypes.UserAndRoleManagement, {
+      title: t('modal.activate_user_account'),
+      cancelButtonContent: t('button.cancel'),
+      proceedButtonContent: t('button.activate'),
+      modalContent: t('modal.activate_user_content'),
+      className: classes.activateContent,
+      handleProceed: handleSubmit(onActivateSubmit),
+      dynamicForm: (
+        <DynamicForm
+          fields={activationFormFields}
+          control={control}
+          className={classes.activateDynamicForm}
+        />
+      ),
+    })
+  }
+
+  const deactivatedText = isDeactivationDateInTheFuture
+    ? t('label.future_user_deactivation_date', {
+        deactivationDate: formattedDeactivationDate,
+      })
+    : t('label.past_user_deactivation_date', {
+        deactivationDate: formattedDeactivationDate,
+      })
+
+  const isActivationButtonHidden =
+    status === UserStatus.Archived ||
+    (!includes(userPrivileges, Privileges.ActivateUser) && isUserDeactivated) ||
+    (!includes(userPrivileges, Privileges.DeactivateUser) && !isUserDeactivated)
 
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>{userNameString}</h1>
+        <h1>{name}</h1>
         <div className={classes.buttonsContainer}>
           <Button
+            loading={isUserDeactivated ? isActivating : isDeactivating}
             appearance={AppearanceTypes.Secondary}
-            children={t('button.deactivate_account')}
-            // TODO: disabled for now, we don't have endpoint for this
-            // open confirmation modal from here
-            disabled
-            hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
+            children={
+              isUserDeactivated
+                ? t('button.activate_account')
+                : t('button.deactivate_account')
+            }
+            onClick={
+              isUserDeactivated
+                ? handleActivateModal
+                : () => handleDeactivateModal(false)
+            }
+            hidden={isActivationButtonHidden}
+            disabled={isDeactivationDateInTheFuture && isUserDeactivated}
           />
           <Button
             loading={isArchiving}
@@ -68,9 +306,24 @@ const UserPage: FC = () => {
             children={t('button.archive_account')}
             onClick={handleArchiveModal}
             hidden={!includes(userPrivileges, Privileges.ArchiveUser)}
+            disabled={isUserArchived}
           />
         </div>
       </div>
+
+      <div hidden={!isUserDeactivated} className={classes.deactivationDate}>
+        <span>{deactivatedText}</span>
+        <BaseButton
+          loading={isDeactivating}
+          hidden={
+            !isDeactivationDateInTheFuture || status === UserStatus.Archived
+          }
+          onClick={() => handleDeactivateModal(true)}
+        >
+          <Edit className={classes.editIcon} />
+        </BaseButton>
+      </div>
+
       <UserForm {...user} />
       <p className={classes.dateText}>
         {t('user.created_at', {

@@ -1,6 +1,12 @@
-import { Dispatch, FC, SetStateAction, useState } from 'react'
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useState,
+  forwardRef,
+} from 'react'
 import classNames from 'classnames'
-import { includes, map } from 'lodash'
+import { includes, map, isEmpty } from 'lodash'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
 import Button, {
   AppearanceTypes,
@@ -10,89 +16,118 @@ import { SelectionControlsInputProps } from 'components/organisms/SelectionContr
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
-import Tag from 'components/atoms/Tag/Tag'
+import useElementPosition from 'hooks/useElementPosition'
 
-type DropdownContentProps = SelectionControlsInputProps & {
+export interface DropdownContentProps extends SelectionControlsInputProps {
   isOpen?: boolean
   selectedOptionObjects?: DropDownOptions[]
   setIsOpen?: Dispatch<SetStateAction<boolean>>
   className?: string
+  wrapperRef?: RefObject<HTMLDivElement>
 }
 
-const DropdownContent: FC<DropdownContentProps> = ({
-  dropdownSize = 'l',
-  disabled,
-  isOpen,
-  searchInput,
-  options,
-  multiple = false,
-  value,
-  name,
-  buttons = false,
-  onChange,
-  setIsOpen,
-  selectedOptionObjects,
-  errorZIndex,
-  tags,
-  className,
-}) => {
+const EmptyContent = ({ hidden }: { hidden?: boolean }) => {
   const { t } = useTranslation()
-  const initialValue = value || multiple ? [] : ''
-  const [selectedValue, setSelectedValue] = useState<string | string[]>(
-    initialValue
-  )
-
-  const handleSingleSelect = (selectedOption: string) => {
-    onChange(selectedOption ? selectedOption : '')
-  }
-
-  const handleMultipleSelect = (selectedOption: string) => {
-    // TODO: type of value and of selectedValue should be inferred from "multiple" prop
-    const typedSelectedValue = selectedValue as string[]
-    const optionIndex = typedSelectedValue.indexOf(selectedOption)
-
-    const newSelectedValues =
-      optionIndex === -1
-        ? [...typedSelectedValue, selectedOption]
-        : typedSelectedValue.filter((value) => value !== selectedOption)
-
-    setSelectedValue(newSelectedValues)
-
-    if (setIsOpen) {
-      setIsOpen(true)
-    }
-  }
-
-  const handleOnSave = () => {
-    onChange(selectedValue)
-    if (setIsOpen) {
-      setIsOpen(false)
-    }
-  }
-
-  const handleCancel = () => {
-    setSelectedValue(initialValue)
-    if (setIsOpen) {
-      setIsOpen(false)
-    }
-  }
-
+  if (hidden) return null
   return (
-    <>
+    <li className={classes.dropdownMenuItem}>
+      <p className={classes.option}>{t('placeholder.empty_list')}</p>
+    </li>
+  )
+}
+
+const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
+  function DropdownContent(
+    {
+      dropdownSize = 'l',
+      disabled,
+      isOpen,
+      searchInput,
+      options,
+      multiple = false,
+      value,
+      name,
+      buttons = false,
+      onChange,
+      setIsOpen,
+      errorZIndex,
+      wrapperRef,
+      horizontalScrollContainerId,
+      className,
+    },
+    ref
+  ) {
+    const { left, top } =
+      useElementPosition(
+        wrapperRef,
+        horizontalScrollContainerId,
+        undefined,
+        isOpen
+      ) || {}
+
+    const { t } = useTranslation()
+
+    const initialValue = value || (multiple ? [] : '')
+    const [selectedValue, setSelectedValue] = useState<string | string[]>(
+      initialValue
+    )
+
+    const handleSingleSelect = (selectedOption: string) => {
+      onChange(selectedOption ? selectedOption : '')
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
+    }
+
+    const handleMultipleSelect = (selectedOption: string) => {
+      // TODO: type of value and of selectedValue should be inferred from "multiple" prop
+      const typedSelectedValue = selectedValue as string[]
+      const optionIndex = typedSelectedValue.indexOf(selectedOption)
+
+      const newSelectedValues =
+        optionIndex === -1
+          ? [...typedSelectedValue, selectedOption]
+          : typedSelectedValue.filter((value) => value !== selectedOption)
+
+      setSelectedValue(newSelectedValues)
+
+      if (setIsOpen) {
+        setIsOpen(true)
+      }
+    }
+
+    const handleOnSave = () => {
+      onChange(selectedValue)
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
+    }
+
+    const handleCancel = () => {
+      setSelectedValue(initialValue)
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
+    }
+
+    return (
       <div
         className={classNames(
           classes.dropdownMenu,
           classes[dropdownSize],
           className
         )}
+        ref={ref}
         style={{
           zIndex: 51 + (errorZIndex || 0),
+          ...(left && top ? { left, top: top + 40 } : {}),
         }}
         hidden={disabled || !isOpen}
       >
         <div hidden={!searchInput}>{searchInput}</div>
 
         <ul>
+          <EmptyContent hidden={!isEmpty(options)} />
           {map(options, (option, index) => {
             const isMultiSelected =
               selectedValue && includes(selectedValue, option?.value)
@@ -103,11 +138,11 @@ const DropdownContent: FC<DropdownContentProps> = ({
                 {multiple && (
                   <CheckBoxInput
                     name={name}
-                    ariaLabel={option.label}
+                    ariaLabel={option?.label || ''}
                     label={option.label}
                     value={isMultiSelected || false}
                     className={classes.option}
-                    onChange={() => handleMultipleSelect(option.value)}
+                    onChange={() => handleMultipleSelect(option?.value)}
                   />
                 )}
                 <p
@@ -145,22 +180,8 @@ const DropdownContent: FC<DropdownContentProps> = ({
           </div>
         </ul>
       </div>
-
-      <div className={classNames(tags && classes.tagsContainer)}>
-        {map(selectedOptionObjects, ({ label }, index) => {
-          return (
-            <Tag
-              hidden={!tags}
-              className={classes.tag}
-              value
-              key={index}
-              label={label}
-            />
-          )
-        })}
-      </div>
-    </>
-  )
-}
+    )
+  }
+)
 
 export default DropdownContent

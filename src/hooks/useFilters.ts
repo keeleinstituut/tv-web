@@ -6,10 +6,12 @@ import {
   SortingFunctionType,
 } from 'types/collective'
 
-const useFilters = <TFilters>() => {
-  const [filters, setFilters] = useState<TFilters | object>({})
+const useFilters = <TFilters>(initialFilters?: TFilters) => {
+  const [filters, setFilters] = useState<TFilters | object>(
+    initialFilters || {}
+  )
 
-  const handelFilterChange = useCallback(
+  const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {
       const filterKey = keys(value)[0]
       if (isEmpty(value?.[filterKey])) {
@@ -22,7 +24,7 @@ const useFilters = <TFilters>() => {
     [filters]
   )
 
-  const handelSortingChange = useCallback(
+  const handleSortingChange = useCallback(
     (value?: SortingFunctionType) => {
       if (!value?.sort_order) {
         const sortingKeys = keys(value)
@@ -44,8 +46,8 @@ const useFilters = <TFilters>() => {
 
   return {
     filters,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   }
 }

@@ -65,8 +65,8 @@ const OrdersTable: FC = () => {
   const {
     orders,
     paginationData,
-    handelFilterChange,
-    handelSortingChange,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   } = useFetchOrders()
 
@@ -244,8 +244,8 @@ const OrdersTable: FC = () => {
         tableSize={TableSizeTypes.M}
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
-        onFiltersChange={handelFilterChange}
-        onSortingChange={handelSortingChange}
+        onFiltersChange={handleFilterChange}
+        onSortingChange={handleSortingChange}
         headComponent={
           <div className={classes.topSection}>
             <FormInput

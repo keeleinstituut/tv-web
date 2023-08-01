@@ -1,14 +1,27 @@
-import { FC, ReactElement, SVGProps, forwardRef, useRef, useState } from 'react'
+import {
+  FC,
+  ReactElement,
+  RefObject,
+  SVGProps,
+  forwardRef,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import classNames from 'classnames'
+import { createPortal } from 'react-dom'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
 import { useClickAway } from 'ahooks'
-import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
+import DropdownContent, {
+  DropdownContentProps,
+} from 'components/organisms/DropdownContent/DropdownContent'
 
 import classes from './classes.module.scss'
 import { filter, find, map } from 'lodash'
+import Tag from 'components/atoms/Tag/Tag'
 
 export enum DropdownSizeTypes {
   L = 'l',
@@ -20,6 +33,9 @@ export type DropDownOptions = {
   label: string
   value: string
 }
+
+// TODO: currently DropdownContent child extends the props of it's parent (SelectionControlsInput)
+// Should be the other way around, to prevent child from accepting a ton of props it doesn't use
 export interface SelectionControlsInputProps {
   name: string
   error?: FieldError
@@ -35,10 +51,37 @@ export interface SelectionControlsInputProps {
   buttons?: boolean
   searchInput?: ReactElement
   dropdownSize?: DropdownSizeTypes
-  tags?: boolean
+  hideTags?: boolean
   className?: string
   selectIcon?: FC<SVGProps<SVGSVGElement>>
   errorZIndex?: number
+  usePortal?: boolean
+  horizontalScrollContainerId?: string
+}
+
+interface PositionedDropdownContentProps extends DropdownContentProps {
+  clickAwayInputRef?: RefObject<HTMLDivElement>
+  wrapperRef?: RefObject<HTMLDivElement>
+  usePortal?: boolean
+}
+
+const PositionedDropdownContent: FC<PositionedDropdownContentProps> = ({
+  wrapperRef,
+  clickAwayInputRef,
+  usePortal,
+  ...rest
+}) => {
+  if (usePortal) {
+    return createPortal(
+      <DropdownContent
+        {...rest}
+        wrapperRef={wrapperRef}
+        ref={clickAwayInputRef}
+      />,
+      document.getElementById('root') || document.body
+    )
+  }
+  return <DropdownContent {...rest} />
 }
 
 const SelectionControlsInput = forwardRef<
@@ -48,22 +91,20 @@ const SelectionControlsInput = forwardRef<
   {
     label,
     name,
-    ariaLabel,
     value,
     error,
     options,
-    onChange,
     disabled,
     placeholder,
     multiple = false,
     helperText,
-    buttons = false,
-    searchInput,
     dropdownSize,
     errorZIndex,
-    tags = false,
+    hideTags = false,
     className,
     selectIcon,
+    usePortal,
+    ...rest
   },
   ref
 ) {
@@ -74,10 +115,11 @@ const SelectionControlsInput = forwardRef<
   }
 
   const clickAwayInputRef = useRef(null)
+  const wrapperRef = useRef(null)
 
   useClickAway(() => {
     setIsOpen(false)
-  }, [clickAwayInputRef])
+  }, [clickAwayInputRef, ...(wrapperRef?.current ? [wrapperRef] : [])])
 
   const selectedOptionObjects = filter(options, (option) => {
     return !!find(value, (singleValue) => singleValue === option?.value)
@@ -86,13 +128,8 @@ const SelectionControlsInput = forwardRef<
   const singleValue: DropDownOptions | undefined = find(options, {
     value,
   }) as unknown as DropDownOptions
-  const multiValue = multiple
-    ? filter(
-        options,
-        (option) =>
-          !!find(value, (singleValue) => singleValue === option?.value)
-      )
-    : []
+
+  const multiValue = multiple ? selectedOptionObjects : []
   const valueAsArray = multiple ? multiValue : [singleValue]
 
   const selectedOptionLabels = map(valueAsArray, (value) => value?.label)
@@ -103,6 +140,32 @@ const SelectionControlsInput = forwardRef<
 
   const SelectInputArrow = selectIcon || DropdownArrow
 
+  const dropdownProps = useMemo(
+    () => ({
+      name,
+      options,
+      dropdownSize,
+      disabled,
+      isOpen,
+      multiple,
+      value,
+      setIsOpen,
+      errorZIndex,
+      ...rest,
+    }),
+    [
+      rest,
+      disabled,
+      dropdownSize,
+      errorZIndex,
+      isOpen,
+      multiple,
+      name,
+      options,
+      value,
+    ]
+  )
+
   return (
     <InputWrapper
       label={label}
@@ -110,20 +173,20 @@ const SelectionControlsInput = forwardRef<
       error={error}
       className={classNames(classes.selectionsContainer, className)}
       wrapperClass={classes[dropdownSize || 'l']}
-      onClick={toggleDropdown}
-      ref={clickAwayInputRef}
+      ref={usePortal ? wrapperRef : clickAwayInputRef}
       errorClass={classes.selectionsError}
       errorZIndex={errorZIndex}
     >
       <BaseButton
         className={classNames(
           classes.toggleDropdown,
-          disabled && classes.disabledDropdown,
           error && classes.error,
           classes[dropdownSize || 'l']
         )}
         id={name}
         ref={ref}
+        disabled={disabled}
+        onClick={toggleDropdown}
       >
         <p hidden={!placeholder} className={classes.menuLabel}>
           {dropdownMenuLabel}
@@ -131,32 +194,29 @@ const SelectionControlsInput = forwardRef<
 
         <SelectInputArrow
           className={classNames(
-            disabled && classes.disabledDropdownIcon,
-            isOpen && !error && classes.openDropdownIcon
+            isOpen && !error && !disabled && classes.openDropdownIcon
           )}
         />
       </BaseButton>
       <p hidden={!helperText} className={classes.helperText}>
         {helperText}
       </p>
-      <DropdownContent
-        name={name}
-        ariaLabel={ariaLabel}
-        options={options}
-        onChange={onChange}
-        dropdownSize={dropdownSize}
-        disabled={disabled}
-        isOpen={isOpen}
-        searchInput={searchInput}
-        multiple={multiple}
-        value={value}
-        buttons={buttons}
-        helperText={helperText}
-        selectedOptionObjects={selectedOptionObjects}
-        tags={tags}
-        setIsOpen={setIsOpen}
-        errorZIndex={errorZIndex}
+      <PositionedDropdownContent
+        {...{ ...dropdownProps, wrapperRef, clickAwayInputRef, usePortal }}
       />
+      <div className={classNames(!hideTags && classes.tagsContainer)}>
+        {map(selectedOptionObjects, ({ label }, index) => {
+          return (
+            <Tag
+              hidden={hideTags}
+              className={classes.tag}
+              value
+              key={index}
+              label={label}
+            />
+          )
+        })}
+      </div>
     </InputWrapper>
   )
 })
