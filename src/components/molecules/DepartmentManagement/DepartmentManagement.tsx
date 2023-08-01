@@ -33,7 +33,7 @@ const DepartmentManagement: FC = () => {
           onClick={handleEditDepartmentsModal}
           icon={EditIcon}
         >
-          <span>{t('button.edit')}</span>
+          <span>{t('button.change')}</span>
         </Button>
       </div>
       <div>
