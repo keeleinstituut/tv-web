@@ -127,7 +127,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
       (event: { target: { value: string } }) => {
         setSearchValue(event.target.value)
         if (onSearch) {
-          debounce(onSearch, 300)
+          debounce(onSearch, 300)(event.target.value)
         }
       },
       [onSearch]
@@ -160,7 +160,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
 
         <ul>
           <EmptyContent hidden={!isEmpty(visibleOptions)} />
-          {map(visibleOptions, (option, index) => {
+          {map(visibleOptions, (option) => {
             const isMultiSelected =
               selectedValue && includes(selectedValue, option?.value)
             const isSingleSelected = value && includes(value, option?.value)
