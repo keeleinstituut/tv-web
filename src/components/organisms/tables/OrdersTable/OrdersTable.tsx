@@ -215,7 +215,7 @@ const OrdersTable: FC = () => {
               OrderStatus.Forwarded,
               OrderStatus.Accepted,
               OrderStatus.Cancelled,
-              OrderStatus.Fixed,
+              OrderStatus.Corrected,
             ],
             rowStatus
           )

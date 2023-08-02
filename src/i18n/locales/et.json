@@ -327,6 +327,7 @@
   },
   "orders": {
     "orders_tile": "Tellimused",
+    "new_order_title": "Tellimuse lisamine",
     "status": {
       "REGISTERED": "Registreeritud",
       "NEW": "Uus",
@@ -334,7 +335,7 @@
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
       "REJECTED": "Tühistatud",
-      "FIXED": "Fixed"
+      "CORRECTED": "Parandatud"
     }
   },
   "warning": {

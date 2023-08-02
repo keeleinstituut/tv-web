@@ -13,7 +13,7 @@ export enum OrderStatus {
   Cancelled = 'CANCELLED',
   Accepted = 'ACCEPTED',
   Rejected = 'REJECTED',
-  Fixed = 'FIXED',
+  Corrected = 'CORRECTED',
 }
 
 export enum WorkflowTemplateID {

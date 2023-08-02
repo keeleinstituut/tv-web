@@ -4,13 +4,19 @@ import classes from './classes.module.scss'
 
 export interface DisplayValueProps {
   value?: string | number | boolean | readonly string[]
+  label?: string | JSX.Element
 }
 
-const DisplayValue: FC<DisplayValueProps> = ({ value }) => {
+const DisplayValue: FC<DisplayValueProps> = ({ value, label }) => {
   return (
-    <span className={classes.cellValue}>
-      {isArray(value) ? join(value, ', ') : value}
-    </span>
+    <>
+      <span hidden={!label} className={classes.label}>
+        {label}
+      </span>
+      <span className={classes.cellValue}>
+        {isArray(value) ? join(value, ', ') : value}
+      </span>
+    </>
   )
 }
 
