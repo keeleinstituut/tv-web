@@ -16,6 +16,8 @@ export interface TextInputProps
   label?: JSX.Element | string
   ariaLabel: string
   errorZIndex?: number
+  isSearch?: boolean
+  hidden?: boolean
 }
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
@@ -30,15 +32,19 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       placeholder,
       disabled,
       errorZIndex,
+      isSearch,
+      hidden,
       ...rest
     } = props
     // Might need event handler wrappers here
-    // Essentially this is just ariaLabel || label, but typescript seems to fail here
+    if (hidden) return null
+
     return (
       <Field
         name={name}
         className={classNames(
           classes.container,
+          isSearch && classes.searchInputContainer,
           disabled && classes.disabled,
           error && classes.error,
           className

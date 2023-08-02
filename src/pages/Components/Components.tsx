@@ -67,6 +67,7 @@ type FormValues = {
   multipleSelections?: string
   timePicker?: string
   timePickerSeconds?: string
+  search?: string
 }
 
 const Test: FC = () => {
@@ -100,6 +101,13 @@ const Test: FC = () => {
         required: true,
         validate: emailValidator,
       },
+    },
+    {
+      inputType: InputTypes.Text,
+      ariaLabel: 'Otsi',
+      name: 'search',
+      placeholder: 'Otsi...',
+      isSearch: true,
     },
     { component: <h2>random</h2> },
     {
@@ -159,6 +167,7 @@ const Test: FC = () => {
       rules: {
         required: true,
       },
+      showSearch: true,
     },
     {
       inputType: InputTypes.Selections,
@@ -178,7 +187,6 @@ const Test: FC = () => {
       placeholder: 'Choose options',
       multiple: true,
       buttons: true,
-      searchInput: <Fragment />,
       rules: {
         required: true,
       },
