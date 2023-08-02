@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import Container from 'components/atoms/Container/Container'
 import OrderDetails from 'components/organisms/OrderDetails/OrderDetails'
 import { useForm } from 'react-hook-form'
+import { useFetchUsers } from 'hooks/requests/useUsers'
+import { Root } from '@radix-ui/react-form'
 
 // TODO: WIP - implement this page
 
@@ -14,6 +16,12 @@ interface FormValues {
 
 const NewOrder: FC = () => {
   const { t } = useTranslation()
+  // TODO: we will add
+  const { users, isLoading: isUsersLoading } = useFetchUsers(
+    { per_page: 20 },
+    true
+  )
+  console.warn('all users', users)
   const {
     control,
     // handleSubmit,
@@ -63,11 +71,11 @@ const NewOrder: FC = () => {
 
   return (
     <>
-      <div className={classes.titleRow}>
+      <Root className={classes.titleRow}>
         <h1>{t('orders.new_order_title')}</h1>
         <OrderDetails<FormValues> isEditable control={control} />
         {/* <SubmitButtons /> */}
-      </div>
+      </Root>
     </>
   )
 }

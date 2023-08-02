@@ -15,7 +15,10 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 dayjs.extend(customParseFormat)
 
-export const useFetchUsers = (initialFilters?: UserPayloadType) => {
+export const useFetchUsers = (
+  initialFilters?: UserPayloadType,
+  useTranslationService?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
@@ -24,8 +27,12 @@ export const useFetchUsers = (initialFilters?: UserPayloadType) => {
   } = useFilters<UserPayloadType>(initialFilters)
 
   const { isLoading, isError, data } = useQuery<UsersDataType>({
-    queryKey: ['users', filters],
-    queryFn: () => apiClient.get(endpoints.USERS, filters),
+    queryKey: [useTranslationService ? 'translationUsers' : 'users', filters],
+    queryFn: () =>
+      apiClient.get(
+        useTranslationService ? endpoints.TRANSLATION_USERS : endpoints.USERS,
+        filters
+      ),
     keepPreviousData: true,
   })
   const { meta: paginationData, data: users } = data || {}

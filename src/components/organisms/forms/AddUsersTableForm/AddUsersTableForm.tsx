@@ -43,6 +43,7 @@ const SubmitButton: FC<SubmitButtonProps> = ({ control, ...rest }) => {
   // Accessing form state directly in this component
   // to avoid rerendering the entire AddUsersTableForm component
   const formState = useFormState({ control })
+  console.warn('rendering submit button', formState.isValid, formState.errors)
   return (
     <Button
       {...rest}
@@ -88,7 +89,7 @@ const AddUsersTableForm: FC = () => {
     [tableData, existingRoles]
   )
 
-  const { control, handleSubmit, setError } = useForm<FormValues>({
+  const { control, handleSubmit, setError, clearErrors } = useForm<FormValues>({
     reValidateMode: 'onChange',
     mode: 'onChange',
     values: formValues,
@@ -110,6 +111,7 @@ const AddUsersTableForm: FC = () => {
         return true
       } catch (errorData) {
         setRowsWithErrors({})
+        clearErrors()
         const typedErrorData = errorData as CsvValidationError
         const { errors, rowsWithExistingInstitutionUsers } = typedErrorData
         if (rowsWithExistingInstitutionUsers) {

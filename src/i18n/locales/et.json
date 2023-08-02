@@ -328,6 +328,8 @@
   "orders": {
     "orders_tile": "Tellimused",
     "new_order_title": "Tellimuse lisamine",
+    "client_details": "Tellija andmed",
+    "manager_details": "Tõlkekorraldaja andmed",
     "status": {
       "REGISTERED": "Registreeritud",
       "NEW": "Uus",
