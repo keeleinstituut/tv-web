@@ -68,6 +68,7 @@ type FormValues = {
   timePicker?: string
   timePickerSeconds?: string
   search?: string
+  comment?: string
 }
 
 const Test: FC = () => {
@@ -108,6 +109,14 @@ const Test: FC = () => {
       name: 'search',
       placeholder: 'Otsi...',
       isSearch: true,
+    },
+    {
+      inputType: InputTypes.Text,
+      ariaLabel: 'Kommenteeri',
+      label: 'Kommenteeri',
+      name: 'comment',
+      placeholder: 'Kirjuta siia',
+      isTextarea: true,
     },
     { component: <h2>random</h2> },
     {

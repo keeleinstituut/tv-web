@@ -22,6 +22,11 @@ import SelectionControlsInput, {
 import TimePickerInput, {
   TimePickerInputProps,
 } from 'components/molecules/TimePickerInput/TimePickerInput'
+
+import DateTimePicker, {
+  DateTimePickerProps,
+} from 'components/molecules/DateTimePicker/DateTimePicker'
+
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
 import TagsSelect, {
   TagsSelectProps,
@@ -36,6 +41,7 @@ export enum InputTypes {
   Selections = 'selections',
   Time = 'time',
   TagsSelect = 'tagsSelect',
+  DateTime = 'dateTime',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -62,6 +68,10 @@ type TagsSelectPropsWithType = TagsSelectProps & {
   inputType: InputTypes.TagsSelect
 }
 
+type DateTimePickerPropsWithType = DateTimePickerProps & {
+  inputType: InputTypes.DateTime
+}
+
 export type InputPropsByType = (
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
@@ -69,6 +79,7 @@ export type InputPropsByType = (
   | SelectionControlsPropsWithType
   | TimePickerPropsWithType
   | TagsSelectPropsWithType
+  | DateTimePickerPropsWithType
 ) & { onlyDisplay?: boolean; error?: FieldError; errorZIndex?: number }
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
@@ -82,7 +93,7 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
     const { inputType, onlyDisplay } = props
 
     if (onlyDisplay) {
-      return <DisplayValue value={props.value} />
+      return <DisplayValue value={props.value} label={props.label} />
     }
 
     switch (inputType) {
@@ -117,6 +128,13 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.Time:
         return (
           <TimePickerInput
+            {...omit(props, ['inputType', 'onlyDisplay'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
+      case InputTypes.DateTime:
+        return (
+          <DateTimePicker
             {...omit(props, ['inputType', 'onlyDisplay'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />

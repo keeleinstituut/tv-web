@@ -15,6 +15,7 @@ export interface TagsSelectProps {
   value?: string[]
   onChange?: (values: string[]) => void
   className?: string
+  label?: string
 }
 
 const TagsSelect: FC<TagsSelectProps> = ({

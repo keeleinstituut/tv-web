@@ -55,7 +55,8 @@
     "department": "Harju Maakohus",
     "roles": "Vali roll(id)",
     "empty_list": "Hetkel valikud puuduvad",
-    "search": "Otsi..."
+    "search": "Otsi...",
+    "date": "pp.kk.aaaa"
   },
   "button": {
     "login": "Logi sisse",
