@@ -10,6 +10,9 @@ import {
   Suspense,
 } from 'react'
 import { FormProgressProps } from './FormProgressModal/FormProgressModal'
+import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
+import CatMergeModal, { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
+import CatAnalyzisModal, { CatAnalyzisModalProps } from './CatAnalyzisModal/CatAnalyzisModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -24,11 +27,18 @@ const FormProgressModal = lazy(
   () => import('./FormProgressModal/FormProgressModal')
 )
 
+const CatSplitModal = lazy(
+  () => import('./CatSplitModal/CatSplitModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
   Tooltip = 'tooltip',
   FormProgress = 'formProgress',
+  CatSplit = 'catSplit',
+  CatMerge = 'catMerge',
+  CatAnalyzis = 'catAnalyzis',
 }
 
 // Add other modal props types here as well
@@ -37,12 +47,18 @@ type ModalPropTypes =
   | Omit<UserAndRoleManagementModalProps, 'closeModal'>
   | Omit<TooltipModalProps, 'closeModal'>
   | Omit<FormProgressProps, 'closeModal'>
+  | Omit<CatSplitModalProps, 'closeModal'>
+  | Omit<CatMergeModalProps, 'closeModal'>
+  | Omit<CatAnalyzisModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
   userAndRoleManagement: UserAndRoleManagementModal,
   tooltip: TooltipModal,
   formProgress: FormProgressModal,
+  catSplit: CatSplitModal,
+  catMerge: CatMergeModal,
+  catAnalyzis: CatAnalyzisModal,
 }
 
 interface RefType {
@@ -84,7 +100,7 @@ const ModalRoot = () => {
   )
 
   if (!currentModalKey) return null
-  const SelectedModal = MODALS[currentModalKey]
+  const SelectedModal = MODALS[currentModalKey] as any
   return (
     <Suspense fallback={<div />}>
       <SelectedModal

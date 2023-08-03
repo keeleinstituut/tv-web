@@ -5,10 +5,12 @@ import {
   OrdersPayloadType,
   OrderResponse,
 } from 'types/orders'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import newMockOrders from './newMockOrders.json'
 import singleMockOrder from './singleMockOrder.json'
 import useFilters from 'hooks/useFilters'
+import { apiClient } from 'api'
+import { endpoints } from 'api/endpoints'
 
 export const useFetchOrders = () => {
   const {
@@ -22,22 +24,7 @@ export const useFetchOrders = () => {
   const { isLoading, isError, data } = useQuery<OrdersResponse>({
     queryKey: ['orders'],
     queryFn: () => {
-      return new Promise((resolve) =>
-        setTimeout(() => {
-          // TODO: request will be done with filters
-          resolve({
-            data: newMockOrders.data as unknown as ListOrder[],
-            meta: {
-              current_page: 1,
-              from: 1,
-              last_page: 1,
-              per_page: 10,
-              to: 10,
-              total: 10,
-            },
-          })
-        }, 1000)
-      )
+      return apiClient.get(`${endpoints.PROJECTS}`)
     },
     keepPreviousData: true,
   })
@@ -59,14 +46,7 @@ export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
   const { isLoading, isError, data } = useQuery<OrderResponse>({
     queryKey: ['orders', orderId],
     queryFn: () => {
-      return new Promise((resolve) =>
-        setTimeout(() => {
-          // TODO: replace with request to BE
-          resolve({
-            data: singleMockOrder as unknown as OrderDetail,
-          })
-        }, 1000)
-      )
+      return apiClient.get(`${endpoints.PROJECTS}/${orderId}`)
     },
   })
 
@@ -76,5 +56,37 @@ export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
     isLoading,
     isError,
     order,
+  }
+}
+
+export const useFetchSubProject = ({ id }: { id?: string }) => {
+  const { isLoading, isError, data } = useQuery<any>({
+    queryKey: ['subproject', id],
+    queryFn: () => {
+      return apiClient.get(`${endpoints.SUBPROJECTS}/${id}`)
+    },
+  })
+
+  const { data: subProject } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    subProject,
+  }
+}
+
+export const useSubProjectSendToCat = ({ id }: any) => {
+  const { mutateAsync: sendToCat, isLoading } = useMutation({
+    mutationKey: ['roles'],
+    mutationFn: (payload: any) =>
+      apiClient.post(`${endpoints.SUBPROJECTS}/${id}/send-to-cat`, {
+        ...payload,
+      }),
+  })
+
+  return {
+    sendToCat,
+    isLoading,
   }
 }

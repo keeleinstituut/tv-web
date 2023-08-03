@@ -1,0 +1,24 @@
+@import 'styles/variables';
+
+.topSection {
+  padding: spacing(6) spacing(4);
+}
+
+.checkbox {
+  margin-top: spacing(4);
+}
+
+.tagsRow {
+  display: flex;
+  :not(:first-child) {
+    margin-left: spacing(2);
+  }
+}
+
+.deadline {
+  font-size: $font-size-16;
+
+  &.error {
+    color: $color-error;
+  }
+}

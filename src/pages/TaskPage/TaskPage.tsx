@@ -1,7 +1,7 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchOrder, useFetchSubProject, useSubProjectSendToCat } from 'hooks/requests/useOrders'
 import { FC, Fragment, useState } from 'react'
-import { includes, find, map, chain, assign, filter, split } from 'lodash'
+import { includes, find, map, chain, assign, filter } from 'lodash'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -11,111 +11,44 @@ import { Privileges } from 'types/privileges'
 import { OrderStatus } from 'types/orders'
 import Tag from 'components/atoms/Tag/Tag'
 import Tabs from 'components/molecules/Tabs/Tabs'
-import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-import ConfirmationModalBase from 'components/organisms/modals/ConfirmationModalBase/ConfirmationModalBase'
 
 // TODO: WIP - implement this page
 
-interface OrderButtonProps {
-  status?: OrderStatus
-  isPersonalOrder?: boolean
-  //
-}
-
-const OrderButtons: FC<OrderButtonProps> = ({ status, isPersonalOrder }) => {
+const TaskPage: FC = () => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
-
-  const isOrderCancellable = includes(
-    [OrderStatus.New, OrderStatus.Registered],
-    status
-  )
-  const canCancelPersonalOrder =
-    includes(userPrivileges, Privileges.ViewPersonalProject) && isPersonalOrder
-
-  const canCancelInstitutionOrder =
-    status === OrderStatus.New &&
-    (includes(userPrivileges, Privileges.ManageProject) ||
-      includes(userPrivileges, Privileges.ReceiveAndManageProject))
-
-  //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
-
-  // const userHasPrivilege =
-  //   !privileges ||
-  //   find([Privileges.ReceiveAndManageProject, Privileges.ManageProject], (privilege) => includes(userPrivileges, privilege))
-
-  //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
-
-  const canCancelOrder =
-    isOrderCancellable && (canCancelPersonalOrder || canCancelInstitutionOrder)
-  // TODO: mapped buttons:
-  // Left:
-  // 1. Delegate to other manager (Registreeritud status + )
-  // Right:
-  // 1. Cancel order --
-  if (!status) return null
-  return (
-    <div className={classes.buttonsContainer}>
-      <Button
-        appearance={AppearanceTypes.Secondary}
-        children={t('button.delegate_to_other_manager')}
-        // TODO: disabled for now, we don't have endpoint for this
-        // open confirmation modal from here
-        disabled
-        // hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
-      />
-      <Button
-        // loading={isArchiving}
-        appearance={AppearanceTypes.Primary}
-        children={t('button.cancel_order')}
-        // onClick={handleArchiveModal}
-        hidden={!canCancelOrder}
-      />
-    </div>
-  )
-}
-
-const OrderPage: FC = () => {
-  const { t } = useTranslation()
-  const { orderId } = useParams()
-  const { order, isLoading } = useFetchOrder({ orderId })
-  const { id, status } = order || {}
+  const { taskId } = useParams()
+  // const { order, isLoading } = useFetchOrder({ orderId })
+  // const { id, status } = order || {}
   // TODO: check is "Tellija" of the order is current user
   const isPersonalOrder = true
-  console.warn('orderPage', orderId, order)
-  if (isLoading) return <Loader loading={isLoading} />
+  // console.warn('orderPage', orderId, order)
+  // if (isLoading) return <Loader loading={isLoading} />
   return (
     <div>
       <div className={classes.titleRow}>
-        <h1>{id}</h1>
-        <OrderButtons {...{ status, isPersonalOrder }} />
+        <h1>{taskId}</h1>
       </div>
 
-      <div>
+      {/* <div>
         <br />
-        {chain(order?.sub_projects)
-          .sortBy('ext_id')
-          .map((subProject) => {
-            return (
-              <div key={subProject.id}>
-                <SubProject id={subProject.id} />
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-              </div>
-            )
-          })
-          .value()
-        }
-      </div>
+        {map(order?.sub_projects, (subProject) => {
+          return (
+            <div key={subProject.id}>
+              <SubProject id={subProject.id} />
+              <br />
+              <br />
+              <br />
+              <br />
+              <br />
+            </div>
+          )
+        })}
+      </div> */}
     </div>
   )
 }
 
-export default OrderPage
+export default TaskPage
 
 
 interface ObjectType {
@@ -143,13 +76,6 @@ const SubProject: FC<any> = (props) => {
         </span>
         <span>
           alamtellimuse ID: {subProject.ext_id}
-        </span>
-        <span style={{ color: 'red'}}>
-          maksumus: {'// TODO: '}
-        </span>
-        <span style={{ color: 'red'}}>
-          maksumus: {'// TODO: '}
-          tähtaeg: {'// TODO: '}
         </span>
       </div>
       <Tabs
@@ -223,7 +149,6 @@ const GeneralInformation: FC<any> = (props) => {
   const catSupported = includes(subProject.cat_features, feature);
   const { sendToCat } = useSubProjectSendToCat({ id: subProject.id })
 
-
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column'}}>
@@ -240,83 +165,6 @@ const GeneralInformation: FC<any> = (props) => {
       <br/>
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{flex: 1}}>
-          <h1>Lähtefailid tõlketööriistas</h1>
-          <table>
-            <thead>
-              <tr>
-                <th>XLIFFi nimi</th>
-                <th>Segmendid</th>
-                <th />
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {map(subProject.cat_jobs, (catJob) => {
-                const {xliff_download_url} = catJob
-                const name = xliff_download_url.substring(xliff_download_url.lastIndexOf('/' + 1)).replace('/', '')
-                return (
-                  <tr key={name}>
-                    <td>
-                      {name}
-                    </td>
-                    <td>
-                      {/* {file.updated_at} */}
-                      {'Some percentage'}
-                    </td>
-                    <td>
-                      <Button href={catJob.translate_url} target='_blank'>
-                        Ava tõlketööriistas
-                      </Button>
-                    </td>
-                    <td>
-                      <SimpleDropdown
-                        title={''}
-                        label={'options'}
-                        options={[
-                          {
-                            label: 'Jaga fail tükkideks',
-                            onClick: () => {
-                              showModal(ModalTypes.CatSplit, {
-                                handleSplit: (splitsAmount: number) => {
-                                  console.warn('PROCEED splitting with amount: ' + splitsAmount)
-                                }
-                              })
-                            },
-                          },
-                          {
-                            label: 'Laadi alla XLIFF',
-                            href: catJob.xliff_download_url,
-                          },
-                          {
-                            label: 'Laadi alla valmis tõlge',
-                            href: catJob.translation_download_url,
-                          },
-                          {
-                            label: 'Ühenda failid kokku',
-                            onClick: () => {
-                              showModal(ModalTypes.CatMerge, {
-                                handleMerge: () => {
-                                  console.warn('PROCEED with merging')
-                                }
-                              })
-                            },
-                          },
-                        ]}                        
-                      />
-                    </td>
-                  </tr>
-                )
-              })} 
-            </tbody>
-          </table>
-          <Button
-            appearance={AppearanceTypes.Text}
-            onClick={() => {
-              showModal(ModalTypes.CatAnalyzis, {})
-          }}>
-            Vaata CAT arvestust
-          </Button>
-
           <h1>Lähtefailid</h1>
           <table>
             <thead>
@@ -463,16 +311,16 @@ const Assignment: FC<any> = (props) => {
       <h3>Teostaja {index} ({label})</h3>
       <div key={assignment.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1}}>
-          <span style={{ color: 'red' }}>
+          <span>
             deadline: 
           </span>  
-          <span style={{ color: 'red' }}>
+          <span>
             erijuhised tellimuse kohta: 
           </span>  
-          <span style={{ color: 'red' }}>
+          <span>
             maht: 
           </span>  
-          <span style={{ color: 'red' }}>
+          <span>
             teostaja märkused: 
           </span>  
         </div>
@@ -483,7 +331,7 @@ const Assignment: FC<any> = (props) => {
               <tr>
                 <th>Nimi</th>
                 <th>Staatus</th>
-                <th style={{color: 'red'}}>Maksumus</th>
+                <th>Maksumus</th>
               </tr>
             </thead>
             <tbody>
