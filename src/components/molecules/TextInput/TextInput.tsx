@@ -19,60 +19,74 @@ export interface TextInputProps
   isSearch?: boolean
   hidden?: boolean
   loading?: boolean
+  isTextarea?: boolean
 }
 
-const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
-  function TextInput(props, ref) {
-    const {
-      label,
-      ariaLabel,
-      error,
-      name,
-      className,
-      value,
-      placeholder,
-      disabled,
-      errorZIndex,
-      isSearch,
-      hidden,
-      loading,
-      ...rest
-    } = props
-    // Might need event handler wrappers here
-    if (hidden) return null
+const TextInput = forwardRef<
+  HTMLInputElement | HTMLTextAreaElement,
+  TextInputProps
+>(function TextInput(props, ref) {
+  const {
+    label,
+    ariaLabel,
+    error,
+    name,
+    className,
+    value,
+    placeholder,
+    disabled,
+    errorZIndex,
+    isSearch,
+    hidden,
+    isTextarea,
+    loading,
+    ...rest
+  } = props
+  // Might need event handler wrappers here
+  if (hidden) return null
 
-    return (
-      <Field
-        name={name}
-        className={classNames(
-          classes.container,
-          isSearch && classes.searchInputContainer,
-          isSearch && loading && classes.loading,
-          disabled && classes.disabled,
-          error && classes.error,
-          className
-        )}
-      >
-        <Label className={classNames(classes.label, !label && classes.hidden)}>
-          {label}
-        </Label>
-        <div className={classes.inputContainer}>
-          <Control asChild>
-            <input
-              {...(placeholder ? { placeholder } : {})}
-              className={classes.inputField}
-              ref={ref}
-              value={value || ''}
-              aria-label={ariaLabel}
-              disabled={disabled}
-              {...rest}
-            />
-          </Control>
-          <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
-        </div>
-      </Field>
-    )
+  const inputProps = {
+    ...(placeholder ? { placeholder } : {}),
+    className: classes.inputField,
+    ref,
+    value: value || '',
+    ariaLabel,
+    disabled,
+    ...rest,
   }
-)
+  return (
+    <Field
+      name={name}
+      className={classNames(
+        classes.container,
+        isTextarea && classes.textareaContainer,
+        isSearch && classes.searchInputContainer,
+        isSearch && loading && classes.loading,
+        disabled && classes.disabled,
+        error && classes.error,
+        className
+      )}
+    >
+      <Label className={classNames(classes.label, !label && classes.hidden)}>
+        {label}
+      </Label>
+      <div className={classes.inputContainer}>
+        <Control asChild>
+          {isTextarea ? (
+            <textarea
+              {...(inputProps as unknown as InputHTMLAttributes<HTMLTextAreaElement>)}
+              rows={4}
+            />
+          ) : (
+            <input
+              {...(inputProps as unknown as InputHTMLAttributes<HTMLInputElement>)}
+            />
+          )}
+        </Control>
+        <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
+      </div>
+    </Field>
+  )
+})
 
 export default TextInput

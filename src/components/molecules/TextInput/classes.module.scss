@@ -6,6 +6,25 @@
   align-items: center;
   height: 40px;
 
+  .inputContainer {
+    position: relative;
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .label {
+    @include labelTextStyle;
+    margin-right: spacing(2);
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  input {
+    @include labelTextStyle;
+  }
+
   &.disabled {
     cursor: not-allowed;
     input,
@@ -44,23 +63,17 @@
     }
   }
 
-  .inputContainer {
-    position: relative;
-    height: 100%;
-    border-radius: 4px;
-  }
-
-  .label {
-    @include labelTextStyle;
-    margin-right: spacing(2);
-
-    &.hidden {
-      display: none;
+  &.textareaContainer {
+    height: unset;
+    align-items: flex-start;
+    .inputContainer {
+      height: unset;
     }
-  }
 
-  input {
-    @include labelTextStyle;
+    .inputField {
+      height: unset;
+      resize: none;
+    }
   }
 }
 
