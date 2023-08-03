@@ -7,16 +7,11 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-// import { ReactComponent as Add } from 'assets/icons/add.svg'
+//import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import Button, {
-  AppearanceTypes,
-  // IconPositioningTypes,
-  SizeTypes,
-} from 'components/molecules/Button/Button'
+import Button from 'components/molecules/Button/Button' //IconPositioningTypes, //AppearanceTypes,
 import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
-import { groupBy, includes, map, omit } from 'lodash'
-import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
+import { includes, map, omit } from 'lodash'
 import { TagTypes, TagsPayload } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -89,6 +84,7 @@ const Tags: FC = () => {
       rules: {
         required: true,
       },
+      className: classes.tagInputField,
       disabled: !includes(userPrivileges, Privileges.AddTag),
     },
   ]
@@ -116,19 +112,6 @@ const Tags: FC = () => {
 
   const onTagsSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      // const { tagCategorySelection, tagInput } = values
-
-      // const transformedObject = flatMap(tagInput, (tagInputValue) =>
-      //   map(tagCategorySelection, (tagCategoryValue) => {
-      //     return {
-      //       type: tagCategoryValue,
-      //       name: tagInputValue,
-      //     }
-      //   })
-      // )
-
-      // const payload: TagsType = {
-      //   tags: transformedObject,
       const { name, type } = values
       // const transformedObject = flatMap(tagInput, (tagInputValue) =>
       //   map(tagCategorySelection, (tagCategoryValue) => {
@@ -157,15 +140,6 @@ const Tags: FC = () => {
     [createTags, reset, t]
   )
 
-  // const areInputFieldsDirty = !!(
-  //   dirtyFields.tagCategorySelection && dirtyFields.tagInput
-  // )
-  const groupedCategoryData = groupBy(tags, 'type')
-
-  // const areInputFieldsDirty = !!(
-  //   dirtyFields.tagCategorySelection && dirtyFields.tagInput
-  // )
-
   if (isFetchingTags) {
     return <Loader loading />
   }
@@ -184,8 +158,6 @@ const Tags: FC = () => {
           <h4 className={classes.addingTag}>{t('tag.adding_tag')}</h4>
           <p>{t('tag.naming_tag')}</p>
         </div>
-
-        <div className={classes.addingTagsSeparator} />
 
         <div className={classes.tagsSection}>
           <DynamicForm fields={tagFields} control={control} />
@@ -216,35 +188,6 @@ const Tags: FC = () => {
       </Container>
 
       <TagCategories tags={tags} />
-      {/* <div className={classes.categoryContainer}>
-        {map(groupedCategoryData, (tags, type: TagTypes) => (
-          <Container key={type} className={classes.category}>
-            <div className={classes.tagCategoryNameContainer}>
-              <span className={classes.categoryName}>
-                {t(`tag.type.${type}`)}
-              </span>
-              <Button
-                appearance={AppearanceTypes.Text}
-                size={SizeTypes.S}
-                icon={EditIcon}
-                className={classes.editIcon}
-                hidden={type === TagTypes.Oskused}
-              >
-                {t('button.change')}
-              </Button>
-            </div>
-
-            <div className={classes.tagCategorySeparator} />
-            <ul>
-              {map(tags, (tag) => (
-                <li className={classes.tagName} key={tag?.id}>
-                  {tag?.name}
-                </li>
-              ))}
-            </ul>
-          </Container>
-        ))}
-      </div> */}
     </>
   )
 }

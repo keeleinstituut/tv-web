@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
-import { filter, find, map } from 'lodash'
-import { TagsResponse, TagsPayload } from 'types/tags'
+import { filter, find, includes, keyBy, map, omit, reduce } from 'lodash'
+import { TagsResponse, TagsPayload, TagFields } from 'types/tags'
 
 export const useFetchTags = () => {
   const { isLoading, isError, data } = useQuery<TagsResponse>({
@@ -63,7 +63,7 @@ export const useBulkUpdate = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateTags, isLoading } = useMutation({
     mutationKey: ['tags'],
-    mutationFn: async (payload: TagsUpdateType) =>
+    mutationFn: async (payload: TagsPayload) =>
       apiClient.post(endpoints.UPDATE_TAGS, payload),
 
     onSuccess: ({ data }) => {
@@ -71,28 +71,50 @@ export const useBulkUpdate = () => {
         ['tags'],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
-        (oldData?: TagsUpdateType) => {
+        (oldData?: TagsResponse) => {
           const { data: previousData } = oldData || {}
 
           if (!previousData) return oldData
+          console.log('new', data)
+          console.log('old', oldData)
 
-          const dataMapping = keyBy(data, 'id')
+          const dataIds = map(data, 'id')
 
-          const updatedPreviousData = reduce(
-            previousData,
-            (result: TagType[], item: TagType) => {
-              const updatedTagObject = item.id
-                ? dataMapping[item.id]
-                : undefined
+          // const updatedPreviousData = reduce(
+          //   previousData,
+          //   (result: TagsResponse, item: TagFields) => {
+          //     const updatedTagObject = item.id
+          //       ? dataMapping[item.id]
+          //       : undefined
 
-              return updatedTagObject
-                ? [...result, updatedTagObject]
-                : [...result, item]
-            },
-            []
+          //     return updatedTagObject
+          //       ? [...result, updatedTagObject]
+          //       : [...result, item]
+          //   },
+          //   []
+          // )
+          const newlyAddedTags = filter(
+            data,
+            ({ id }) => !find(previousData, { id })
           )
+          const newData = [
+            ...map(previousData, (tag) => {
+              const newTag = find(data, { id: tag.id })
+              return newTag || tag
+            }),
+            ...newlyAddedTags,
+          ]
 
-          return { data: updatedPreviousData }
+          return { data: newData }
+          // const removeData = filter(
+          //   previousData,
+          //   ({ id }) => !includes(dataIds, id)
+          // )
+          // const updatedData = [...removeData, ...data]
+
+          // console.log('!', dataIds, removeData, updatedData)
+
+          // return { data: updatedData }
         }
       )
     },

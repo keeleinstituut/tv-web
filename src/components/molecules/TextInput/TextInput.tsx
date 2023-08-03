@@ -3,10 +3,15 @@ import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
 import { omit } from 'lodash'
-
+import { useTranslation } from 'react-i18next'
 import InputError from 'components/atoms/InputError/InputError'
 import { InputHTMLAttributes } from 'react'
 import { FieldError } from 'react-hook-form'
+import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Button, {
+  AppearanceTypes,
+  IconPositioningTypes,
+} from 'components/molecules/Button/Button'
 
 export interface TextInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, 'label'> {
@@ -16,6 +21,9 @@ export interface TextInputProps
   label?: JSX.Element | string
   ariaLabel: string
   errorZIndex?: number
+  handleDelete?: (
+    value: string | number | readonly string[] | undefined
+  ) => void
 }
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
@@ -30,10 +38,17 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       placeholder,
       disabled,
       errorZIndex,
+      handleDelete,
       ...rest
     } = props
+    const { t } = useTranslation()
     // Might need event handler wrappers here
     // Essentially this is just ariaLabel || label, but typescript seems to fail here
+    const handleOnClick = () => {
+      if (handleDelete) {
+        handleDelete(value)
+      }
+    }
     return (
       <Field
         name={name}
@@ -47,7 +62,11 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         <Label className={classNames(classes.label, !label && classes.hidden)}>
           {label}
         </Label>
-        <div className={classes.inputContainer}>
+        <div
+          className={classNames(classes.inputContainer, {
+            [classes.addDeleteButton]: true,
+          })}
+        >
           <Control asChild>
             <input
               {...(placeholder ? { placeholder } : {})}
@@ -59,6 +78,15 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               {...rest}
             />
           </Control>
+          <Button
+            appearance={AppearanceTypes.Text}
+            iconPositioning={IconPositioningTypes.Right}
+            icon={Delete}
+            children={t('button.delete')}
+            className={classes.button}
+            onClick={handleOnClick}
+            hidden={!handleDelete}
+          />
           <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
         </div>
       </Field>

@@ -88,7 +88,8 @@
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust",
     "update": "Redigeeri",
-    "change": "Muuda"
+    "change": "Muuda",
+    "delete": "Kustuta"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -268,8 +269,8 @@
     "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
-    "tag_updated": "Silt / sildid on edukalt uuendatud.",
-    "tag_added": "Silt / sildid on edukalt lisatud.",
+    "tag_updated": "Silt on edukalt uuendatud.",
+    "tag_added": "Silt on edukalt lisatud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud."
   },
   "notification": {
@@ -304,7 +305,6 @@
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
     "select_tag_category": "Vali sildi kategooria",
-    "skills_tag": "Oskused",
     "type": {
       "Tõlkemälud": "Tõlkemälud",
       "Teostaja": "Teostaja",

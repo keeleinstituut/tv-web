@@ -9,7 +9,7 @@ export interface TagFields extends Object {
   id?: string
   institution_id?: string
   name?: string
-  type: TagTypes
+  type?: TagTypes
   created_at?: string
   updated_at?: string
 }
@@ -19,6 +19,7 @@ export interface TagsResponse {
 }
 
 export interface TagsPayload {
+  type?: TagTypes
   tags: TagFields[]
 }
 

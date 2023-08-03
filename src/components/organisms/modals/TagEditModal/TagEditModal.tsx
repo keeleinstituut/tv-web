@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -14,19 +14,13 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { includes, map } from 'lodash'
+import { compact, includes, isEmpty, isEqual, map, reduce, size } from 'lodash'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
-import { TagsUpdateType } from 'types/tags'
+import { TagTypes } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useBulkUpdate } from 'hooks/requests/useTags'
-import {
-  EditTagType,
-  FormValues,
-} from 'components/organisms/TagCategories/TagCategories'
 import useAuth from 'hooks/useAuth'
-
 import classes from './classes.module.scss'
 import { Privileges } from 'types/privileges'
 import { showValidationErrorMessage } from 'api/errorHandler'
@@ -35,102 +29,184 @@ import useValidators from 'hooks/useValidators'
 export interface TagEditModalProps {
   isModalOpen?: boolean
   closeModal: () => void
-  categoryData?: EditTagType[]
-  category?: string
+  editableData?: EditTagType[]
+  title?: string
+  type?: TagTypes
+  isLoading?: boolean
+  handleCreateData?: (values: PayloadType[]) => void
+  handleUpdateData?: (values: PayloadType[]) => void
+  handleDeleteData?: (values: PayloadType[]) => void
+}
+export type EditTagType = {
+  id?: string
+  name?: string
+}
+
+type EditableDataType = object & {
+  [key in string]?: string
+}
+
+type FormValues = EditableDataType
+export interface PayloadType {
+  type?: TagTypes
+  name?: string
+  id?: string
 }
 
 const TagEditModal: FC<TagEditModalProps> = ({
   isModalOpen,
   closeModal,
-  categoryData,
-  category,
+  editableData,
+  title,
+  type,
+  handleCreateData,
+  handleUpdateData,
+  handleDeleteData,
+  isLoading,
 }) => {
   const { t } = useTranslation()
-  const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate()
   const { userPrivileges } = useAuth()
   const { tagInputValidator } = useValidators()
 
-  const defaultValues = useMemo(
-    () => ({
-      tags: map(categoryData, ({ id, name }) => ({ id, name })),
-    }),
-    [categoryData]
+  const defaultValues: EditableDataType = useMemo(
+    () =>
+      reduce(
+        editableData,
+        (result, value, key) => {
+          if (!value.id) {
+            return result
+          }
+          return {
+            ...(key > 0 && result),
+            [value.id]: value.name,
+          }
+        },
+        {}
+      ),
+
+    [editableData]
   )
 
   const { control, handleSubmit, reset } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
-    defaultValues: defaultValues,
+    values: defaultValues,
   })
 
-  const editTagFields: FieldProps<FormValues>[] = useMemo(() => {
-    return map(categoryData, (tag, index) => ({
+  const editableFields: FieldProps<FormValues>[] = map(
+    editableData,
+    ({ name, id }) => ({
       inputType: InputTypes.Text,
-      ariaLabel: tag.name || '',
-      label: tag.name || '',
-      name: `tags.${index}.name`,
+      ariaLabel: name || '',
+      label: name || '',
+      name: id || '',
       rules: {
         validate: tagInputValidator,
       },
       className: classes.editTagInput,
-    }))
-  }, [categoryData, tagInputValidator])
+      handleDelete: (value) => console.log('delete', value),
+    })
+  )
 
-  const [tagInputFields, setTagInputFields] =
-    useState<FieldProps<FormValues>[]>(editTagFields)
-
-  useEffect(() => {
-    setTagInputFields(tagInputFields)
-  }, [category, tagInputFields])
+  const [inputFields, setInputFields] =
+    useState<FieldProps<FormValues>[]>(editableFields)
 
   const addInputField = () => {
-    setTagInputFields([
-      ...tagInputFields,
+    setInputFields([
+      ...inputFields,
       {
         inputType: InputTypes.Text,
         ariaLabel: t('tag.tag_name'),
-        name: `tags.${tagInputFields.length}.name`,
+        name: `new_${size(inputFields)}` || '',
         type: 'text',
         rules: {
           validate: tagInputValidator,
         },
         className: classes.editTagInput,
+        handleDelete: (value) => console.log('delete', value),
       },
     ])
   }
-
-  const onTagsEditSubmit: SubmitHandler<FormValues> = useCallback(
-    async (values) => {
-      const tagsUpdatePayload: TagsUpdateType = {
-        type: category,
-        ...values,
-      }
-
-      try {
-        await updateTags(tagsUpdatePayload)
-
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.tag_updated'),
-        })
-      } catch (errorData) {
-        showValidationErrorMessage(errorData)
-      }
-    },
-    [category, updateTags, t]
-  )
-
   const resetForm = useCallback(() => {
     reset(defaultValues)
-  }, [defaultValues, reset])
+    setInputFields(editableFields)
+  }, [defaultValues, editableFields, reset])
 
-  useEffect(() => {
-    resetForm()
-  }, [defaultValues, resetForm])
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const updateValues: PayloadType[] = compact(
+        map(values, (value, key) => {
+          if (
+            // !isEqual(values[key], defaultValues[key]) &&
+            !includes(key, 'new_')
+          ) {
+            return {
+              ...(type ? { type } : {}),
+              id: key,
+              name: value,
+            }
+          }
+        })
+      )
+
+      console.log('update', updateValues)
+
+      const createNewValues: PayloadType[] = compact(
+        map(values, (value, key?: string) => {
+          if (includes(key, 'new_')) {
+            return {
+              ...(type ? { type } : {}),
+              name: value,
+            }
+          }
+        })
+      )
+
+      console.log('new', createNewValues)
+
+      const deleteValues: PayloadType[] = compact(
+        map(values, (value, key?: string) => {
+          if (includes(key, 'delete_')) {
+            return {
+              ...(type ? { type } : {}),
+              name: value,
+              id: key,
+            }
+          }
+        })
+      )
+      console.log('delete', deleteValues)
+
+      try {
+        if (handleCreateData && !isEmpty(createNewValues)) {
+          handleCreateData(createNewValues)
+        }
+        if (handleUpdateData && !isEmpty(updateValues)) {
+          handleUpdateData(updateValues)
+        }
+        if (handleDeleteData && !isEmpty(deleteValues)) {
+          handleDeleteData(deleteValues)
+        }
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      } finally {
+        resetForm()
+        closeModal()
+      }
+    },
+    [
+      defaultValues,
+      type,
+      handleCreateData,
+      handleUpdateData,
+      handleDeleteData,
+      resetForm,
+      closeModal,
+    ]
+  )
 
   return (
     <ModalBase
-      title={t('modal.edit_category_tag')}
+      title={title}
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}
       buttonsPosition={ButtonPositionTypes.Right}
@@ -147,17 +223,19 @@ const TagEditModal: FC<TagEditModalProps> = ({
         },
         {
           appearance: AppearanceTypes.Primary,
-          onClick: () => {
-            handleSubmit(onTagsEditSubmit)()
-            resetForm()
-            closeModal()
-          },
+          form: 'editableList',
           children: t('button.save'),
-          loading: isUpdatingTags,
+          loading: isLoading,
+          type: 'submit',
         },
       ]}
     >
-      <DynamicForm fields={tagInputFields} control={control} />
+      <DynamicForm
+        formId="editableList"
+        fields={inputFields}
+        control={control}
+        onSubmit={handleSubmit(onSubmit)}
+      />
       <Button
         appearance={AppearanceTypes.Text}
         iconPositioning={IconPositioningTypes.Left}
