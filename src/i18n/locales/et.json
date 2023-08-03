@@ -43,7 +43,8 @@
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
     "add_remove_vendor": "Lisa/eemalda toestaja",
-    "view": "Vaata"
+    "view": "Vaata",
+    "search": "Otsi"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -53,7 +54,8 @@
     "phone": "+372 555 5555",
     "department": "Harju Maakohus",
     "roles": "Vali roll(id)",
-    "empty_list": "Hetkel valikud puuduvad"
+    "empty_list": "Hetkel valikud puuduvad",
+    "search": "Otsi..."
   },
   "button": {
     "login": "Logi sisse",

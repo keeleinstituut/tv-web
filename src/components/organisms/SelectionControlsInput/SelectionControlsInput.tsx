@@ -1,6 +1,5 @@
 import {
   FC,
-  ReactElement,
   RefObject,
   SVGProps,
   forwardRef,
@@ -49,7 +48,8 @@ export interface SelectionControlsInputProps {
   multiple?: boolean
   helperText?: string
   buttons?: boolean
-  searchInput?: ReactElement
+  showSearch?: boolean
+  onSearch?: (value: string) => void
   dropdownSize?: DropdownSizeTypes
   hideTags?: boolean
   className?: string
