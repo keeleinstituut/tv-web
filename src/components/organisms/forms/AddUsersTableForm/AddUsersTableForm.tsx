@@ -43,7 +43,6 @@ const SubmitButton: FC<SubmitButtonProps> = ({ control, ...rest }) => {
   // Accessing form state directly in this component
   // to avoid rerendering the entire AddUsersTableForm component
   const formState = useFormState({ control })
-  console.warn('rendering submit button', formState.isValid, formState.errors)
   return (
     <Button
       {...rest}

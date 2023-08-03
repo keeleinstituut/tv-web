@@ -26,7 +26,7 @@ export const useFetchUsers = (
     handlePaginationChange,
   } = useFilters<UserPayloadType>(initialFilters)
 
-  const { isLoading, isError, data } = useQuery<UsersDataType>({
+  const { isLoading, isError, isFetching, data } = useQuery<UsersDataType>({
     queryKey: [useTranslationService ? 'translationUsers' : 'users', filters],
     queryFn: () =>
       apiClient.get(
@@ -45,15 +45,18 @@ export const useFetchUsers = (
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
+    isFetching,
   }
 }
+
+export const useFetchTranslationUsers = (initialFilters?: UserPayloadType) =>
+  useFetchUsers(initialFilters, true)
 
 export const useFetchUser = ({ userId }: { userId?: string }) => {
   const { isLoading, isError, data } = useQuery<UserDataType>({
     queryKey: ['users', userId],
     queryFn: () => apiClient.get(`${endpoints.USERS}/${userId}`),
   })
-
   return {
     isLoading,
     isError,

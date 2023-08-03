@@ -56,7 +56,6 @@ const TableColumnFilter = ({
         value={value}
         multiple={multiple}
         buttons={buttons}
-        // searchInput: <Fragment />,
         onChange={onChange}
         isOpen={isOpen}
         setIsOpen={setIsOpen}

@@ -2,14 +2,14 @@ import { apiClient } from 'api'
 import { filter, find, map } from 'lodash'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
-import { TagsDataTypes, TagsPayload, TagsResponse } from 'types/tags'
+import { TagsResponse, TagsPayload } from 'types/tags'
 
 export const useFetchTags = () => {
   const {
     isLoading,
     isError,
     data: TagsData,
-  } = useQuery<TagsDataTypes>({
+  } = useQuery<TagsResponse>({
     queryKey: ['tags'],
     queryFn: () => apiClient.get(endpoints.TAGS),
   })

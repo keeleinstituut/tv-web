@@ -10,8 +10,8 @@
     "role_name_input": "Uue rolli nimi",
     "personal_identification_code": "Isikukood",
     "name": "Nimi",
-    "phone": "Telefoni nr",
-    "phone_long": "Telefoninumber",
+    "phone": "Telefoninumber",
+    "phone_alt": "Telefoni nr",
     "department": "Üksus",
     "roles": "Rollid",
     "role": "Roll",
@@ -43,7 +43,9 @@
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
     "add_remove_vendor": "Lisa/eemalda toestaja",
-    "view": "Vaata"
+    "view": "Vaata",
+    "search": "Otsi",
+    "manager": "Tõlkekorraldaja"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -53,7 +55,8 @@
     "phone": "+372 555 5555",
     "department": "Harju Maakohus",
     "roles": "Vali roll(id)",
-    "empty_list": "Hetkel valikud puuduvad"
+    "empty_list": "Hetkel valikud puuduvad",
+    "search": "Otsi..."
   },
   "button": {
     "login": "Logi sisse",

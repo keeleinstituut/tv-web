@@ -78,7 +78,6 @@ const OrderPage: FC = () => {
   const { id, status } = order || {}
   // TODO: check is "Tellija" of the order is current user
   const isPersonalOrder = true
-  console.warn('orderPage', orderId, order)
   if (isLoading) return <Loader loading={isLoading} />
   return (
     <div className={classes.titleRow}>

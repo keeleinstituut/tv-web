@@ -197,10 +197,7 @@ const OrdersTable: FC = () => {
       },
     }),
     columnHelper.accessor('deadline_at', {
-      header: (asd) => {
-        console.warn('asd', asd)
-        return t('label.deadline_at')
-      },
+      header: () => t('label.deadline_at'),
       footer: (info) => info.column.id,
       cell: ({ getValue, row }) => {
         const deadlineDate = dayjs(getValue())

@@ -4,9 +4,11 @@ import {
   SetStateAction,
   useState,
   forwardRef,
+  useCallback,
+  useMemo,
 } from 'react'
 import classNames from 'classnames'
-import { includes, map, isEmpty } from 'lodash'
+import { includes, map, isEmpty, debounce, filter } from 'lodash'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
 import Button, {
   AppearanceTypes,
@@ -17,6 +19,8 @@ import { DropDownOptions } from 'components/organisms/SelectionControlsInput/Sel
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import useElementPosition from 'hooks/useElementPosition'
+import TextInput from 'components/molecules/TextInput/TextInput'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
 export interface DropdownContentProps extends SelectionControlsInputProps {
   isOpen?: boolean
@@ -42,7 +46,7 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
       dropdownSize = 'l',
       disabled,
       isOpen,
-      searchInput,
+      showSearch,
       options,
       multiple = false,
       value,
@@ -54,6 +58,8 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
       wrapperRef,
       horizontalScrollContainerId,
       className,
+      onSearch,
+      loading,
     },
     ref
   ) {
@@ -71,6 +77,15 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
     const [selectedValue, setSelectedValue] = useState<string | string[]>(
       initialValue
     )
+    const [searchValue, setSearchValue] = useState<string>('')
+
+    const visibleOptions = useMemo(() => {
+      if (onSearch || !searchValue) {
+        return options
+      }
+      const regexPattern = new RegExp(searchValue, 'i')
+      return filter(options, ({ label }) => regexPattern.test(label))
+    }, [onSearch, options, searchValue])
 
     const handleSingleSelect = (selectedOption: string) => {
       onChange(selectedOption ? selectedOption : '')
@@ -110,11 +125,21 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
       }
     }
 
+    const handleSearch = useCallback(
+      (event: { target: { value: string } }) => {
+        setSearchValue(event.target.value)
+        if (onSearch) {
+          debounce(onSearch, 300)(event.target.value)
+        }
+      },
+      [onSearch]
+    )
+
     return (
       <div
         className={classNames(
           classes.dropdownMenu,
-          classes[dropdownSize],
+          showSearch ? classes.l : classes[dropdownSize],
           className
         )}
         ref={ref}
@@ -124,17 +149,27 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
         }}
         hidden={disabled || !isOpen}
       >
-        <div hidden={!searchInput}>{searchInput}</div>
+        <TextInput
+          hidden={!showSearch}
+          name={`search-${name}`}
+          ariaLabel={t('label.search')}
+          placeholder={t('placeholder.search')}
+          value={searchValue}
+          onChange={handleSearch}
+          className={classes.searchInput}
+          loading={loading}
+          isSearch
+        />
 
         <ul>
-          <EmptyContent hidden={!isEmpty(options)} />
-          {map(options, (option, index) => {
+          <EmptyContent hidden={!isEmpty(visibleOptions)} />
+          {map(visibleOptions, (option) => {
             const isMultiSelected =
               selectedValue && includes(selectedValue, option?.value)
             const isSingleSelected = value && includes(value, option?.value)
 
             return (
-              <li key={index} className={classes.dropdownMenuItem}>
+              <li key={option.value} className={classes.dropdownMenuItem}>
                 {multiple && (
                   <CheckBoxInput
                     name={name}
@@ -145,16 +180,17 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
                     onChange={() => handleMultipleSelect(option?.value)}
                   />
                 )}
-                <p
+                <Button
                   className={classNames(
                     classes.option,
                     isSingleSelected && classes.selectedOption
                   )}
                   hidden={multiple}
+                  appearance={AppearanceTypes.Text}
                   onClick={() => handleSingleSelect(option?.value)}
                 >
                   {option?.label}
-                </p>
+                </Button>
               </li>
             )
           })}
