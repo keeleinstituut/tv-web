@@ -3,6 +3,11 @@ import {
   PaginationFunctionType,
   SortingFunctionType,
 } from 'types/collective'
+import {
+  ClassifierValue,
+  ClassifierValueType,
+  LanguageClassifierValue,
+} from './classifierValues'
 
 // TODO: not a full list, logic behind order statuses is not fully clear yet
 
@@ -20,11 +25,6 @@ export enum WorkflowTemplateID {
   SampleProject = 'Sample-project',
 }
 
-export enum ClassifierValueType {
-  Language = 'LANGUAGE',
-  ProjectType = 'PROJECT_TYPE',
-}
-
 export interface Link {
   url: null | string
   label: string
@@ -39,20 +39,6 @@ interface ProjectTypeConfig {
   created_at: string
   updated_at: string
 }
-
-interface ClassifierValue {
-  id: string
-  type: ClassifierValueType
-  value: string
-  name: string
-  synced_at: string | null
-  deleted_at: string | null
-}
-
-interface LanguageClassifierValue extends ClassifierValue {
-  type: ClassifierValueType.Language
-}
-
 interface TypeClassifierValue extends ClassifierValue {
   type: ClassifierValueType.ProjectType
   project_type_config: ProjectTypeConfig

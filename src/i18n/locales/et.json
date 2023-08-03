@@ -45,7 +45,16 @@
     "add_remove_vendor": "Lisa/eemalda toestaja",
     "view": "Vaata",
     "search": "Otsi",
-    "manager": "Tõlkekorraldaja"
+    "manager": "Tõlkekorraldaja",
+    "order_type": "Tellimuse tüüp",
+    "translation_domain": "Valdkond",
+    "deadline": "Tähtaeg",
+    "deadline_time": "Tähtaja kellaaeg",
+    "special_instructions": "Erijuhised tellimuse kohta",
+    "start_date": "Algus",
+    "start_time": "Alguse kellaaeg",
+    "source_language": "Algkeel",
+    "destination_language": "Sihtkeel"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -56,7 +65,11 @@
     "department": "Harju Maakohus",
     "roles": "Vali roll(id)",
     "empty_list": "Hetkel valikud puuduvad",
-    "search": "Otsi..."
+    "search": "Otsi...",
+    "pick": "Vali",
+    "date": "pp.kk.aaaa",
+    "time": "hh:mm:ss",
+    "write_here": "Kirjuta siia"
   },
   "button": {
     "login": "Logi sisse",
@@ -333,6 +346,7 @@
     "new_order_title": "Tellimuse lisamine",
     "client_details": "Tellija andmed",
     "manager_details": "Tõlkekorraldaja andmed",
+    "new_orders": "Uus tellimus",
     "status": {
       "REGISTERED": "Registreeritud",
       "NEW": "Uus",

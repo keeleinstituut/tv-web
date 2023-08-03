@@ -1,9 +1,7 @@
 @import 'styles/variables';
 
-.titleRow {
-  margin-bottom: spacing(4);
-}
-
-.detailsContainer {
-  grid-template-columns: auto auto;
+.container {
+  h1 {
+    margin-bottom: spacing(4);
+  }
 }

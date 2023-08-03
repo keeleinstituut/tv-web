@@ -23,6 +23,7 @@ import {
 } from 'types/collective'
 import classes from './classes.module.scss'
 import { VendorType } from 'types/vendors'
+import { ClassifierValueType } from 'types/classifierValues'
 
 type VendorsTableProps = {
   data?: VendorType[]
@@ -46,7 +47,7 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
   const { rolesFilters = [] } = useRolesFetch()
   const { tagsFilters = [] } = useFetchTags()
   const { classifierValuesFilters = [] } = useClassifierValuesFetch({
-    type: 'LANGUAGE',
+    type: ClassifierValueType.Language,
   }) // TODO: save them to local state when API available?
 
   type OrderTableRow = {

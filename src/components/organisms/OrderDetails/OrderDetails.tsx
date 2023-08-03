@@ -1,189 +1,35 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import Container from 'components/atoms/Container/Container'
-import {
-  map,
-  uniqBy,
-  concat,
-  compact,
-  find,
-  isEmpty,
-  intersection,
-  join,
-} from 'lodash'
-import {
-  InputTypes,
-  FormInput,
-} from 'components/organisms/DynamicForm/DynamicForm'
-import { useFetchTranslationUsers, useFetchUser } from 'hooks/requests/useUsers'
-import DetailsRow from 'components/atoms/DetailsRow/DetailsRow'
-import { Control, useForm } from 'react-hook-form'
+import PersonSection, {
+  PersonSectionTypes,
+} from 'components/molecules/PersonSection/PersonSection'
+import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
+import FilesSection from 'components/molecules/FilesSection/FilesSection'
+import { useForm } from 'react-hook-form'
 import { UserType } from 'types/users'
 import { Privileges } from 'types/privileges'
-
-type UserDetailsProps = Pick<UserType, 'email' | 'phone'> & {
-  institution?: UserType['institution']
-  department?: string
-}
-
-const UserDetails: FC<UserDetailsProps> = ({
-  department,
-  institution,
-  email,
-  phone,
-}) => {
-  const { t } = useTranslation()
-  return (
-    <>
-      {map(
-        { institution, department, email, phone },
-        (value, key: keyof UserDetailsProps) => (
-          <DetailsRow
-            label={t(`label.${key}`)}
-            key={key}
-            hidden={!value}
-            labelClass={classes.labelClass}
-            value={typeof value === 'string' ? value : value?.name}
-          />
-        )
-      )}
-    </>
-  )
-}
-
-enum PersonSectionTypes {
-  Manager = 'MANAGER',
-  Client = 'CLIENT',
-}
-
-interface PersonSectionProps {
-  type: PersonSectionTypes
-  control: Control<FormValues>
-  selectedUserId?: string
-}
-
-const PersonSection: FC<PersonSectionProps> = ({
-  type,
-  control,
-  selectedUserId,
-}) => {
-  const { t } = useTranslation()
-  const { institutionUserId, userPrivileges } = useAuth()
-  // fetch currenty logged in user
-  const { isLoading, user } = useFetchUser({
-    userId: institutionUserId,
-  })
-  // Fetch list of users bases on PersonSectionType
-  const { users, handleFilterChange, isFetching } = useFetchTranslationUsers({
-    per_page: 20,
-    // TODO: not sure yet whether filtering param will be privileges
-    privileges:
-      type === PersonSectionTypes.Client
-        ? [Privileges.CreateProject]
-        : [Privileges.ReceiveAndManageProject],
-  })
-  // Pass search as a param and fetch again
-  const handleSearchUsers = useCallback(
-    (newValue: string) => {
-      // TODO: not sure yet whether filtering param will be name
-      handleFilterChange({ name: newValue })
-    },
-    [handleFilterChange]
-  )
-
-  const usersList = useMemo(() => {
-    const isCurrentUserPotentialManager = !isEmpty(
-      intersection(
-        [Privileges.ManageProject, Privileges.ReceiveAndManageProject],
-        userPrivileges
-      )
-    )
-    const shouldAddCurrentUser =
-      type === PersonSectionTypes.Client || isCurrentUserPotentialManager
-    if (!shouldAddCurrentUser) return users
-    return uniqBy(concat([user], users), 'id')
-  }, [type, user, userPrivileges, users])
-
-  const options = useMemo(() => {
-    return compact(
-      map(usersList, (listUsers) => {
-        if (!listUsers) return null
-        const { id, user } = listUsers
-        return {
-          value: id,
-          label: `${user.forename} ${user.surname}`,
-        }
-      })
-    )
-  }, [usersList])
-
-  const selectedUserDetails = useMemo(
-    () => find(usersList, { id: selectedUserId }),
-    [selectedUserId, usersList]
-  )
-
-  const { department, institution, email, phone } = selectedUserDetails || {}
-
-  const title =
-    type === PersonSectionTypes.Client
-      ? t('orders.client_details')
-      : t('orders.manager_details')
-
-  const fieldName =
-    type === PersonSectionTypes.Client ? 'client_id' : 'manager_id'
-
-  const fieldLabel =
-    type === PersonSectionTypes.Client ? t('label.name') : t('label.manager')
-
-  const visibleUserDetails = {
-    email,
-    phone,
-    institution: type === PersonSectionTypes.Client ? institution : undefined,
-    department:
-      type === PersonSectionTypes.Client && department
-        ? join(department, ', ')
-        : undefined,
-  }
-
-  return (
-    <div className={classes.column}>
-      <h2
-        className={classNames(
-          type === PersonSectionTypes.Client && classes.extraPadding
-        )}
-      >
-        {title}
-      </h2>
-      <span className={classes.labelClass}>{fieldLabel}</span>
-      <FormInput
-        name={fieldName}
-        ariaLabel={t('label.name')}
-        control={control}
-        options={options}
-        inputType={InputTypes.Selections}
-        showSearch
-        onSearch={handleSearchUsers}
-        loading={isFetching}
-        hidden={isLoading}
-      />
-      {selectedUserDetails && <UserDetails {...visibleUserDetails} />}
-    </div>
-  )
-}
-
 interface FormValues {
   client_id: string
   manager_id: string
+  type_classifier_value_id: string
+  translation_domain: string
+  start?: { date?: string; time?: string }
+  deadline: { date?: string; time?: string }
+  comments?: string
+  reference_number?: string
+  source_language_classifier_id: string
+  destination_language_classifier_id: string[]
 }
 
 interface OrderDetailsProps {
-  isEditable?: boolean
+  isNew?: boolean
 }
 
-const OrderDetails: FC<OrderDetailsProps> = ({ isEditable }) => {
+const OrderDetails: FC<OrderDetailsProps> = ({ isNew }) => {
   const { t } = useTranslation()
   const { institutionUserId } = useAuth()
 
@@ -204,18 +50,35 @@ const OrderDetails: FC<OrderDetailsProps> = ({ isEditable }) => {
   const { client_id, manager_id } = watch()
 
   return (
-    <Container className={classes.container}>
-      <PersonSection
-        type={PersonSectionTypes.Client}
-        control={control}
-        selectedUserId={client_id}
-      />
-      <PersonSection
-        type={PersonSectionTypes.Manager}
-        control={control}
-        selectedUserId={manager_id}
-      />
-    </Container>
+    <>
+      <Container
+        className={classNames(
+          classes.peopleContainer,
+          !isNew && classes.overwriteContainerStyles
+        )}
+      >
+        <PersonSection
+          type={PersonSectionTypes.Client}
+          control={control}
+          selectedUserId={client_id}
+        />
+        <PersonSection
+          type={PersonSectionTypes.Manager}
+          control={control}
+          selectedUserId={manager_id}
+        />
+      </Container>
+      <Container
+        className={classNames(
+          classes.detailsContainer,
+          !isNew && classes.overwriteContainerStyles
+        )}
+      >
+        <h2>{t('orders.new_orders')}</h2>
+        <DetailsSection control={control} />
+        <FilesSection control={control} />
+      </Container>
+    </>
   )
 }
 
