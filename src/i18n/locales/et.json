@@ -37,9 +37,14 @@
     "reference_number": "Viitenumber",
     "language_directions": "Keelesuunad",
     "type": "Tüüp",
+    "tags": "Sildid",
     "order_tags": "Tellimuse sildid",
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
-    "tag_name": "Nimetus"
+    "tag_name": "Nimetus",
+    "company_name": "Lepingupartneri ärinimi",
+    "add_remove_vendor": "Lisa/eemalda toestaja",
+    "view": "Vaata",
+    "search": "Otsi"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -49,7 +54,9 @@
     "phone": "+372 555 5555",
     "department": "Harju Maakohus",
     "roles": "Vali roll(id)",
-    "empty_list": "Hetkel valikud puuduvad"
+    "empty_list": "Hetkel valikud puuduvad",
+    "search": "Otsi...",
+    "date": "pp.kk.aaaa"
   },
   "button": {
     "login": "Logi sisse",
@@ -237,6 +244,13 @@
       "translation_memories_tag_description": "Tõlkemälud Tõlkemäludele saab lisada silte, mis aitavad kasutajaid tõlkemälude haldamisel ja siltide järgi tõlkemälusid otsida ja filtreerida.",
       "orders": "Tellimused",
       "orders_tag_description": "Tellimustele saab lisada silte, mis aitavad kasutajaid tõlketellimuste haldamisel ja siltide järgi tellimusi otsida ja filtreerida."
+    },
+    "vendor_management": {
+      "title": "[Teostajate andmebaas] kohtspikker",
+      "description": "Teostajate andmebaasis kuvatakse kõik asutuse kasutajad, kelle rolliks on määratud „Tõlkija“ ja/või „Toimetaja“. Uute teostajate süsteemi lisamiseks liigu menüüsse „Kasutajate haldus“, siin vaates saab hallata juba lisatud kasutajaid.",
+      "manage_prices": "Iga teostaja konto all saab hallata temaga seotud hinnakirju ja temaga kokkulepitud analüüsipõhist soodustuse tabelit. Teostajale saab lisada ka silte ja kirjutada tema kohta kommentaare. Teostaja ise enda konto külge lisatud silte ja kommentaare ei näe. Need on mõeldud asutuse siseseks kasutamiseks (eelkõige tõlkekorraldajale).",
+      "view_tasks": "Lisaks saab teostaja alt vaadata temaga seotud aktiivseid ülesandeid.",
+      "privacy": "Tõlkevärava kasutajate kontod on seotud kasutaja pärisnimega ja tema isikukoodiga. Teostajate andmebaasi lisatud kasutajatele on võimalik lisada ka „Lepingupartneri ärinimi“. Kui teenust osutab asutuse väline partner (nt FIE; OÜ, vms) mitte eraisik või põhikohaga töötaja, siis soovitame teostajale lisada ka ärinime või viite koostöövormile. Kui asutus kasutab hankepartnerist tõlkebürood, siis soovitame hankepartneri töötajatele (tõlkebüroo tõlkekorraldajatele või projektijuhtidele) Tõlkeväravasse kontod luua ja nad enda kasutajate ja teostajate andmebaasi lisada."
     }
   },
   "user": {
@@ -252,6 +266,9 @@
     "add_users": "Kasutajate lisamine",
     "added_users": "Lisatud kasutajad",
     "user_management": "Kasutajate haldus"
+  },
+  "vendors": {
+    "vendors_database": "Teostajate andmebaas"
   },
   "file": {
     "drop_files": "Pane failid siia...",

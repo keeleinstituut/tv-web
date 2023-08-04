@@ -24,74 +24,95 @@ export interface TextInputProps
   handleDelete?: (
     value: string | number | readonly string[] | undefined
   ) => void
+  isSearch?: boolean
+  hidden?: boolean
+  isTextarea?: boolean
 }
 
-const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
-  function TextInput(props, ref) {
-    const {
-      label,
-      ariaLabel,
-      error,
-      name,
-      className,
-      value,
-      placeholder,
-      disabled,
-      errorZIndex,
-      handleDelete,
-      ...rest
-    } = props
-    const { t } = useTranslation()
-    // Might need event handler wrappers here
-    // Essentially this is just ariaLabel || label, but typescript seems to fail here
-    const handleOnClick = () => {
-      if (handleDelete) {
-        handleDelete(value)
-      }
+const TextInput = forwardRef<
+  HTMLInputElement | HTMLTextAreaElement,
+  TextInputProps
+>(function TextInput(props, ref) {
+  const {
+    label,
+    ariaLabel,
+    error,
+    name,
+    className,
+    value,
+    placeholder,
+    disabled,
+    errorZIndex,
+    isSearch,
+    hidden,
+    isTextarea,
+    handleDelete,
+    ...rest
+  } = props
+  const { t } = useTranslation()
+
+  const handleOnClick = () => {
+    if (handleDelete) {
+      handleDelete(value)
     }
-    return (
-      <Field
-        name={name}
-        className={classNames(
-          classes.container,
-          disabled && classes.disabled,
-          error && classes.error,
-          className
-        )}
-      >
-        <Label className={classNames(classes.label, !label && classes.hidden)}>
-          {label}
-        </Label>
-        <div
-          className={classNames(classes.inputContainer, {
-            [classes.addDeleteButton]: true,
-          })}
-        >
-          <Control asChild>
-            <input
-              {...(placeholder ? { placeholder } : {})}
-              className={classes.inputField}
-              ref={ref}
-              value={value || ''}
-              aria-label={ariaLabel}
-              disabled={disabled}
-              {...rest}
-            />
-          </Control>
-          <Button
-            appearance={AppearanceTypes.Text}
-            iconPositioning={IconPositioningTypes.Right}
-            icon={Delete}
-            children={t('button.delete')}
-            className={classes.button}
-            onClick={handleOnClick}
-            hidden={!handleDelete}
-          />
-          <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
-        </div>
-      </Field>
-    )
   }
-)
+  // Might need event handler wrappers here
+  if (hidden) return null
+
+  const inputProps = {
+    ...(placeholder ? { placeholder } : {}),
+    className: classes.inputField,
+    ref,
+    value: value || '',
+    ariaLabel,
+    disabled,
+    ...rest,
+  }
+  return (
+    <Field
+      name={name}
+      className={classNames(
+        classes.container,
+        isTextarea && classes.textareaContainer,
+        isSearch && classes.searchInputContainer,
+        disabled && classes.disabled,
+        error && classes.error,
+        className
+      )}
+    >
+      <Label className={classNames(classes.label, !label && classes.hidden)}>
+        {label}
+      </Label>
+      <div
+        className={classNames(classes.inputContainer, {
+          [classes.addDeleteButton]: true,
+        })}
+      >
+        <Control asChild>
+          {isTextarea ? (
+            <textarea
+              {...(inputProps as unknown as InputHTMLAttributes<HTMLTextAreaElement>)}
+              rows={4}
+            />
+          ) : (
+            <input
+              {...(inputProps as unknown as InputHTMLAttributes<HTMLInputElement>)}
+            />
+          )}
+        </Control>
+        <Button
+          appearance={AppearanceTypes.Text}
+          iconPositioning={IconPositioningTypes.Right}
+          icon={Delete}
+          children={t('button.delete')}
+          className={classes.button}
+          onClick={handleOnClick}
+          hidden={!handleDelete}
+        />
+        <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
+      </div>
+    </Field>
+  )
+})
 
 export default TextInput

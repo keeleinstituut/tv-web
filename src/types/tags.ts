@@ -23,6 +23,15 @@ export interface TagsPayload {
   tags: TagFields[]
 }
 
+export interface Tag {
+  id: string
+  institution_id: null
+  name: string
+  type: TagTypes
+  created_at: string
+  updated_at: string
+}
+
 export interface TagsUpdateType {
   type?: string
   data?: TagTypes[]

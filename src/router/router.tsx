@@ -118,6 +118,13 @@ export const protectedRoutes: FullRouteObject[] = [
     element: <VendorsDatabase />,
     Icon: VendorsIcon,
     privileges: [Privileges.ViewVendorDb],
+    children: [
+      {
+        path: ':vendorId',
+        element: <OrderPage />,
+        privileges: [Privileges.EditVendorDb],
+      },
+    ],
   },
   {
     path: 'memories',
