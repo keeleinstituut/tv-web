@@ -6,26 +6,16 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
-import {
-  includes,
-  split,
-  size,
-  last,
-  join,
-  initial,
-  isEmpty,
-  map,
-  startsWith,
-} from 'lodash'
+import { includes, join, isEmpty, map, startsWith } from 'lodash'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
-import { useUpdateUser } from 'hooks/requests/useUsers'
+import { useUpdateVendor } from 'hooks/requests/useVendors'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
-import { Vendor } from 'types/vendors'
+import { UpdateVendorPayload, Vendor } from 'types/vendors'
 
 interface FormValues {
   name?: string
@@ -33,7 +23,7 @@ interface FormValues {
   phone?: string
   company_name?: string
   comment?: string
-  tags?: string
+  tags?: string[]
 }
 
 type VendorFormProps = {
@@ -43,13 +33,10 @@ type VendorFormProps = {
 const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { tags = [] } = useFetchTags()
+  const { tags: allTags = [] } = useFetchTags()
+  const { updateVendor } = useUpdateVendor(vendor.id as string)
 
-  const { updateUser } = useUpdateUser({ userId: vendor.id }) // TODO: remove
-
-  console.log('vendors', vendor)
-
-  const { institution_user, company_name, comment, tags: vendorTags } = vendor
+  const { institution_user, company_name, comment, tags } = vendor
 
   const {
     user: { forename, surname },
@@ -64,8 +51,9 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       phone,
       comment,
       company_name,
+      tags: map(tags, 'id'),
     }),
-    [company_name, email, forename, phone, surname, comment]
+    [company_name, email, forename, phone, surname, comment, tags]
   )
 
   const {
@@ -76,19 +64,18 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
     setError,
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
-    defaultValues: defaultValues,
+    defaultValues,
   })
 
-  const tagOptions = map(tags, ({ name, id }) => {
+  const tagOptions = map(allTags, ({ name, id }) => {
     return {
       label: name || '',
       value: id || '',
     }
   })
 
-  const isFormDisabled = !includes(userPrivileges, Privileges.EditUser)
+  const isFormDisabled = !includes(userPrivileges, Privileges.EditVendorDb)
 
-  // map data for rendering
   const fields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Text,
@@ -182,35 +169,29 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const { name, ...rest } = values
+      const { name, tags, company_name, comment } = values
 
-      const splitName = split(name, ' ')
-      const surname = size(splitName) > 1 ? last(splitName) : ''
-      const forename =
-        size(splitName) > 1 ? join(initial(splitName), ' ') : name
-
-      const payload = {
-        ...rest,
-        // ...(isEmpty(roles) ? {} : { roles }),
-        user: {
-          surname,
-          forename,
-        },
+      const payload: UpdateVendorPayload = {
+        tags: (isEmpty(tags) ? [] : tags) as string[],
+        company_name: company_name ?? '',
+        comment: comment ?? '',
       }
+
       try {
-        // TODO: implement
+        await updateVendor(payload)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
           content: t('success.vendor_updated', { name }),
         })
       } catch (errorData) {
+        // should be unified?
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
             const typedKey = key as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
-            if (startsWith(typedKey, 'user')) {
+            if (startsWith(typedKey, 'vendor')) {
               setError('name', { type: 'backend', message: errorString })
             } else {
               setError(typedKey, { type: 'backend', message: errorString })
@@ -219,7 +200,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
         }
       }
     },
-    [updateUser, t, setError]
+    [updateVendor, t, setError]
   )
 
   return (

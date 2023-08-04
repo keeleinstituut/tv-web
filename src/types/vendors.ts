@@ -16,9 +16,16 @@ export interface Vendor {
 }
 export interface VendorsDataType {
   data: Vendor[]
-  meta: DataMetaTypes
+  meta?: DataMetaTypes
 }
 
-export type VendorsPayload = Partial<Vendor> &
+export type GetVendorsPayload = Partial<Vendor> &
   PaginationFunctionType &
   SortingFunctionType
+
+export type UpdateVendorPayload = {
+  company_name?: string
+  prices?: string[]
+  tags?: string[]
+  comment?: string
+}
