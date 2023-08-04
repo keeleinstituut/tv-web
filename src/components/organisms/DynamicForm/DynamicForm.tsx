@@ -20,6 +20,8 @@ export type InputFieldProps<Type extends FieldValues> =
 
 interface ComponentInForm {
   component: Array<ReactElement> | ReactElement | string
+  name?: string
+  label?: string
 }
 
 export type FieldProps<Type extends FieldValues> =

@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -14,12 +14,19 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { compact, includes, isEmpty, isEqual, map, reduce, size } from 'lodash'
+import {
+  compact,
+  filter,
+  includes,
+  isEmpty,
+  isEqual,
+  map,
+  reduce,
+  size,
+} from 'lodash'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { TagTypes } from 'types/tags'
-import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import useAuth from 'hooks/useAuth'
 import classes from './classes.module.scss'
 import { Privileges } from 'types/privileges'
@@ -33,6 +40,7 @@ export interface TagEditModalProps {
   title?: string
   type?: TagTypes
   isLoading?: boolean
+  // handelOnSubmitData: () => void
   handleCreateData?: (values: PayloadType[]) => void
   handleUpdateData?: (values: PayloadType[]) => void
   handleDeleteData?: (values: PayloadType[]) => void
@@ -103,14 +111,16 @@ const TagEditModal: FC<TagEditModalProps> = ({
         validate: tagInputValidator,
       },
       className: classes.editTagInput,
-      handleDelete: (value) => console.log('delete', value),
+      handleDelete: () => handelOnDelete(name, id),
     })
   )
 
   const [inputFields, setInputFields] =
     useState<FieldProps<FormValues>[]>(editableFields)
 
-  const addInputField = () => {
+  const [deletedValues, setDeletedValues] = useState<EditTagType[]>([])
+
+  const addInputField = () =>
     setInputFields([
       ...inputFields,
       {
@@ -122,13 +132,28 @@ const TagEditModal: FC<TagEditModalProps> = ({
           validate: tagInputValidator,
         },
         className: classes.editTagInput,
-        handleDelete: (value) => console.log('delete', value),
+        handleDelete: () => handelOnDelete(`new_${size(inputFields)}`),
       },
     ])
+
+  const handelOnDelete = (name?: string, id?: string) => {
+    setDeletedValues((deletedValues) => [...deletedValues, { name, id }])
   }
+
+  useEffect(() => {
+    const deleteFiled = filter(inputFields, (field) => {
+      const values = map(deletedValues, ({ name }) => name)
+      const name = !field?.label ? field?.name : field?.label
+      return !includes(values, name)
+    })
+    setInputFields(deleteFiled)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deletedValues])
+
   const resetForm = useCallback(() => {
     reset(defaultValues)
     setInputFields(editableFields)
+    setDeletedValues([])
   }, [defaultValues, editableFields, reset])
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
@@ -136,7 +161,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
       const updateValues: PayloadType[] = compact(
         map(values, (value, key) => {
           if (
-            // !isEqual(values[key], defaultValues[key]) &&
+            !isEqual(values[key], defaultValues[key]) &&
             !includes(key, 'new_')
           ) {
             return {
@@ -177,15 +202,16 @@ const TagEditModal: FC<TagEditModalProps> = ({
       console.log('delete', deleteValues)
 
       try {
-        if (handleCreateData && !isEmpty(createNewValues)) {
-          handleCreateData(createNewValues)
-        }
-        if (handleUpdateData && !isEmpty(updateValues)) {
-          handleUpdateData(updateValues)
-        }
-        if (handleDeleteData && !isEmpty(deleteValues)) {
-          handleDeleteData(deleteValues)
-        }
+        // handelOnSubmitData({ deleteValues, createNewValues, updateValues })
+        // if (handleCreateData && !isEmpty(createNewValues)) {
+        //   handleCreateData(createNewValues)
+        // }
+        // if (handleUpdateData && !isEmpty(updateValues)) {
+        //   handleUpdateData(updateValues)
+        // }
+        // if (handleDeleteData && !isEmpty(deleteValues)) {
+        //   handleDeleteData(deleteValues)
+        // }
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       } finally {
@@ -243,6 +269,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
         children={t('tag.add_new_row')}
         onClick={addInputField}
         hidden={!includes(userPrivileges, Privileges.AddTag)}
+        form="editableList"
       />
     </ModalBase>
   )

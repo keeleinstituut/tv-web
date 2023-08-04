@@ -21,9 +21,7 @@ export interface TextInputProps
   label?: JSX.Element | string
   ariaLabel: string
   errorZIndex?: number
-  handleDelete?: (
-    value: string | number | readonly string[] | undefined
-  ) => void
+  handleDelete?: () => void
   isSearch?: boolean
   hidden?: boolean
   isTextarea?: boolean
@@ -53,7 +51,7 @@ const TextInput = forwardRef<
 
   const handleOnClick = () => {
     if (handleDelete) {
-      handleDelete(value)
+      handleDelete()
     }
   }
   // Might need event handler wrappers here
