@@ -9,6 +9,7 @@ export interface TagsResponse {
   data: Tag[]
 }
 
+export type GetTagsPayload = Partial<Tag>
 export interface TagsPayload {
   tags: Partial<Tag>[]
 }

@@ -16,6 +16,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
 import { UpdateVendorPayload, Vendor } from 'types/vendors'
+import { TagTypes } from 'types/tags'
 
 interface FormValues {
   name?: string
@@ -33,7 +34,7 @@ type VendorFormProps = {
 const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { tags: allTags = [] } = useFetchTags()
+  const { tags: allTags = [] } = useFetchTags({ type: TagTypes.Teostaja })
   const { updateVendor } = useUpdateVendor(vendor.id as string)
 
   const { institution_user, company_name, comment, tags } = vendor
