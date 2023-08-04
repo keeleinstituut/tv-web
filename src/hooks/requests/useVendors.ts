@@ -1,16 +1,16 @@
-import { VendorsDataType, VendorsPayloadType } from 'types/vendors'
+import { VendorsDataType, VendorsPayload } from 'types/vendors'
 import { useQuery } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
 
-export const useVendorsFetch = () => {
+export const useVendorsFetch = (initialFilters?: VendorsPayload) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<VendorsPayloadType>()
+  } = useFilters<VendorsPayload>()
 
   const { isLoading, isError, data } = useQuery<VendorsDataType>({
     queryKey: ['vendors', filters],

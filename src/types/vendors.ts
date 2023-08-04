@@ -5,16 +5,20 @@ import {
 } from 'types/collective'
 import { UserType } from './users'
 import { Price } from './price'
-export interface VendorType {
+import { Tag } from './tags'
+export interface Vendor {
   id?: string
   institution_user: UserType
   company_name: string
   prices: Price[]
-  tags: any[] // TODO: when types ready add them
+  tags: Tag[]
+  comment: string
 }
 export interface VendorsDataType {
-  data: VendorType[]
+  data: Vendor[]
   meta: DataMetaTypes
 }
 
-export type VendorsPayloadType = PaginationFunctionType & SortingFunctionType
+export type VendorsPayload = Partial<Vendor> &
+  PaginationFunctionType &
+  SortingFunctionType
