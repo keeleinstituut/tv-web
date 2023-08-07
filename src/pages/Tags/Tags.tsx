@@ -7,17 +7,11 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-// import { ReactComponent as Add } from 'assets/icons/add.svg'
+//import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import Button, {
-  AppearanceTypes,
-  // IconPositioningTypes,
-  SizeTypes,
-} from 'components/molecules/Button/Button'
-import { useFetchTags } from 'hooks/requests/useTags'
-import { useBulkCreate } from 'hooks/requests/useTags'
+import Button from 'components/molecules/Button/Button' //IconPositioningTypes, //AppearanceTypes,
+import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
 import { groupBy, includes, map, omit } from 'lodash'
-import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
 import { TagTypes, TagsPayload } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -26,9 +20,11 @@ import Loader from 'components/atoms/Loader/Loader'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import useValidators from 'hooks/useValidators'
+import TagCategory from 'components/organisms/TagCategory/TagCategory'
 import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
+import { ListDataType } from 'components/molecules/EditableListContainer/EditableListContainer'
 
 // export interface ObjectType {
 //   [key: string]: string
@@ -46,6 +42,8 @@ const Tags: FC = () => {
 
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
+
+  const groupedCategoryData = groupBy(tags, 'type')
 
   const tagCategoryOptions = map(omit(TagTypes, TagTypes.Oskused), (type) => {
     return {
@@ -89,6 +87,7 @@ const Tags: FC = () => {
       rules: {
         required: true,
       },
+      className: classes.tagInputField,
       disabled: !includes(userPrivileges, Privileges.AddTag),
     },
   ]
@@ -144,12 +143,6 @@ const Tags: FC = () => {
     [createTags, reset, t]
   )
 
-  const groupedCategoryData = groupBy(tags, 'type')
-
-  // const areInputFieldsDirty = !!(
-  //   dirtyFields.tagCategorySelection && dirtyFields.tagInput
-  // )
-
   if (isFetchingTags) {
     return <Loader loading />
   }
@@ -168,8 +161,6 @@ const Tags: FC = () => {
           <h4 className={classes.addingTag}>{t('tag.adding_tag')}</h4>
           <p>{t('tag.naming_tag')}</p>
         </div>
-
-        <div className={classes.addingTagsSeparator} />
 
         <div className={classes.tagsSection}>
           <DynamicForm fields={tagFields} control={control} />
@@ -198,35 +189,21 @@ const Tags: FC = () => {
           />
         </div>
       </Container>
-
       <div className={classes.categoryContainer}>
-        {map(groupedCategoryData, (tags, type: TagTypes) => (
-          <Container key={type} className={classes.category}>
-            <div className={classes.tagCategoryNameContainer}>
-              <span className={classes.categoryName}>
-                {t(`tag.type.${type}`)}
-              </span>
-              <Button
-                appearance={AppearanceTypes.Text}
-                size={SizeTypes.S}
-                icon={EditIcon}
-                className={classes.editIcon}
-                hidden={type === TagTypes.Oskused}
-              >
-                {t('button.change')}
-              </Button>
-            </div>
-
-            <div className={classes.tagCategorySeparator} />
-            <ul>
-              {map(tags, (tag) => (
-                <li className={classes.tagName} key={tag?.id}>
-                  {tag?.name}
-                </li>
-              ))}
-            </ul>
-          </Container>
-        ))}
+        {map(
+          groupedCategoryData,
+          (tagsList: ListDataType[], type: TagTypes) => (
+            <TagCategory
+              key={type}
+              tagsList={tagsList}
+              type={type}
+              isEditable={
+                type !== TagTypes.Oskused ||
+                !includes(userPrivileges, Privileges.EditTag)
+              }
+            />
+          )
+        )}
       </div>
     </>
   )

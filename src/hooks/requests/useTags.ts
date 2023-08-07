@@ -1,8 +1,13 @@
 import { apiClient } from 'api'
 import { filter, find, map } from 'lodash'
+import {
+  TagsResponse,
+  TagsPayload,
+  TagsUpdatePayloadType,
+  TagTypes,
+} from 'types/tags'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
-import { TagsResponse, TagsPayload } from 'types/tags'
 
 export const useFetchTags = () => {
   const {
@@ -64,6 +69,41 @@ export const useBulkCreate = () => {
 
   return {
     createTags,
+    isLoading,
+  }
+}
+
+export const useBulkUpdate = ({ type }: { type: TagTypes }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateTags, isLoading } = useMutation({
+    mutationKey: ['tags'],
+    mutationFn: async (payload: TagsUpdatePayloadType) =>
+      apiClient.post(endpoints.UPDATE_TAGS, payload),
+
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['tags'],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: TagsResponse) => {
+          const { data: previousData } = oldData || {}
+
+          if (!previousData) return oldData
+
+          const otherTypeData = filter(
+            previousData,
+            (data) => data.type !== type
+          )
+          const newData = [...otherTypeData, ...data]
+
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    updateTags,
     isLoading,
   }
 }

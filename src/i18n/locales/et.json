@@ -95,7 +95,8 @@
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust",
     "update": "Redigeeri",
-    "change": "Muuda"
+    "change": "Muuda",
+    "delete": "Kustuta"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -206,7 +207,8 @@
     "activate_user_content": "Kasutaja konto aktiveerimisel määratakse talle „Tellija“ roll. Kui soovid seda muuta, siis määra talle roll(id).",
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
-    "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?"
+    "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
+    "edit_category_tag": "Tellimuse siltide muutmine"
   },
   "cheat_sheet": {
     "user_management": {
@@ -283,9 +285,10 @@
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
     "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
-    "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
-    "tag_added": "Silt on edukalt lisatud."
+    "tag_updated": "Silt on edukalt uuendatud.",
+    "tag_added": "Silt on edukalt lisatud.",
+    "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud."
   },
   "notification": {
     "announcement": "Teade",
