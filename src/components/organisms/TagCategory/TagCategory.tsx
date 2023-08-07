@@ -9,12 +9,13 @@ import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import { useBulkUpdate } from 'hooks/requests/useTags'
 import {
   DataStateTypes,
-  PayloadType,
-} from 'components/organisms/modals/TagEditModal/TagEditModal'
+  EditDataType,
+} from 'components/organisms/modals/EditableListModal/EditableListModal'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { t } from 'i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import useValidators from 'hooks/useValidators'
 
 type TagCategoryTypes = {
   tagsList?: ListDataType[]
@@ -25,9 +26,10 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type }) => {
   const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate({
     type: type,
   })
+  const { tagInputValidator } = useValidators()
 
   const handelOnSubmitTags = useCallback(
-    async (values: PayloadType[]) => {
+    async (values: EditDataType[]) => {
       const filteredData = filter(
         values,
         ({ state }) => !includes([DataStateTypes.DELETED], state)
@@ -63,12 +65,13 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type }) => {
   )
 
   const handleCategoryEdit = () => {
-    showModal(ModalTypes.TagEditModal, {
+    showModal(ModalTypes.EditableListModal, {
       editableData: tagsList,
       title: t('modal.edit_category_tag'),
       handelOnSubmit: handelOnSubmitTags,
       type,
       isLoading: isUpdatingTags,
+      inputValidator: tagInputValidator,
     })
   }
 

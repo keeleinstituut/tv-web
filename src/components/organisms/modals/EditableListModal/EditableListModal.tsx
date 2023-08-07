@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import Button, {
   AppearanceTypes,
@@ -22,7 +23,6 @@ import useAuth from 'hooks/useAuth'
 import classes from './classes.module.scss'
 import { Privileges } from 'types/privileges'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import useValidators from 'hooks/useValidators'
 
 export enum DataStateTypes {
   UPDATED = 'UPDATED',
@@ -30,35 +30,32 @@ export enum DataStateTypes {
   DELETED = 'DELETED',
   OLD = 'OLD',
 }
-export interface TagEditModalProps {
-  isModalOpen?: boolean
-  closeModal: () => void
-  editableData?: EditTagType[]
-  title?: string
-  type?: TagTypes
-  isLoading?: boolean
-  handelOnSubmit?: (values: PayloadType[]) => void
-}
 
-export type EditTagType = {
-  id?: string
-  name?: string
-}
-
-type EditableDataType = object & {
-  [key in string]?: string
-}
-
-type FormValues = EditableDataType
-
-export interface PayloadType {
+export type EditDataType = {
   type?: TagTypes
   name?: string
   id?: string
   state?: DataStateTypes
 }
 
-const TagEditModal: FC<TagEditModalProps> = ({
+export interface EditableListModalProps {
+  isModalOpen?: boolean
+  closeModal: () => void
+  editableData?: EditDataType[]
+  title?: string
+  type?: TagTypes
+  isLoading?: boolean
+  handelOnSubmit?: (values: EditDataType[]) => void
+  inputValidator?: (value?: string | undefined) => string | true
+}
+
+type EditableDefaultDataType = object & {
+  [key in string]?: string
+}
+
+type FormValues = EditableDefaultDataType
+
+const EditableListModal: FC<EditableListModalProps> = ({
   isModalOpen,
   closeModal,
   editableData,
@@ -66,12 +63,12 @@ const TagEditModal: FC<TagEditModalProps> = ({
   type,
   handelOnSubmit,
   isLoading,
+  inputValidator,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { tagInputValidator } = useValidators()
 
-  const defaultValues: EditableDataType = useMemo(
+  const defaultValues: EditableDefaultDataType = useMemo(
     () =>
       reduce(
         editableData,
@@ -103,7 +100,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
       label: name || '',
       name: id || '',
       rules: {
-        validate: tagInputValidator,
+        validate: inputValidator,
       },
       className: classes.editTagInput,
       handleDelete: () => handelOnDelete(name, id),
@@ -113,7 +110,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
   const [inputFields, setInputFields] =
     useState<FieldProps<FormValues>[]>(editableFields)
 
-  const [deletedValues, setDeletedValues] = useState<EditTagType[]>([])
+  const [deletedValues, setDeletedValues] = useState<EditDataType[]>([])
 
   const addInputField = () =>
     setInputFields([
@@ -124,7 +121,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
         name: `new_${size(inputFields)}` || '',
         type: 'text',
         rules: {
-          validate: tagInputValidator,
+          validate: inputValidator,
         },
         className: classes.editTagInput,
         handleDelete: () => handelOnDelete(`new_${size(inputFields)}`),
@@ -142,18 +139,20 @@ const TagEditModal: FC<TagEditModalProps> = ({
       return !includes(values, name)
     })
     setInputFields(deleteFiled)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deletedValues])
 
-  const resetForm = useCallback(() => {
-    reset(defaultValues)
+  useEffect(() => {
     setInputFields(editableFields)
+  }, [editableData])
+
+  const resetForm = useCallback(() => {
+    reset()
     setDeletedValues([])
-  }, [defaultValues, editableFields, reset])
+  }, [editableFields, inputFields, reset])
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const payload: PayloadType[] = map(values, (value, key) => {
+      const payload: EditDataType[] = map(values, (value, key) => {
         switch (true) {
           case !isEqual(values[key], defaultValues[key]) &&
             !includes(key, 'new_'): {
@@ -230,4 +229,4 @@ const TagEditModal: FC<TagEditModalProps> = ({
   )
 }
 
-export default TagEditModal
+export default EditableListModal
