@@ -14,16 +14,7 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import {
-  compact,
-  filter,
-  includes,
-  isEmpty,
-  isEqual,
-  map,
-  reduce,
-  size,
-} from 'lodash'
+import { filter, includes, isEqual, map, reduce, size } from 'lodash'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { TagTypes } from 'types/tags'
@@ -33,6 +24,12 @@ import { Privileges } from 'types/privileges'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import useValidators from 'hooks/useValidators'
 
+export enum DataStateTypes {
+  UPDATED = 'UPDATED',
+  NEW = 'NEW',
+  DELETED = 'DELETED',
+  OLD = 'OLD',
+}
 export interface TagEditModalProps {
   isModalOpen?: boolean
   closeModal: () => void
@@ -40,11 +37,9 @@ export interface TagEditModalProps {
   title?: string
   type?: TagTypes
   isLoading?: boolean
-  // handelOnSubmitData: () => void
-  handleCreateData?: (values: PayloadType[]) => void
-  handleUpdateData?: (values: PayloadType[]) => void
-  handleDeleteData?: (values: PayloadType[]) => void
+  handelOnSubmit?: (values: PayloadType[]) => void
 }
+
 export type EditTagType = {
   id?: string
   name?: string
@@ -55,10 +50,12 @@ type EditableDataType = object & {
 }
 
 type FormValues = EditableDataType
+
 export interface PayloadType {
   type?: TagTypes
   name?: string
   id?: string
+  state?: DataStateTypes
 }
 
 const TagEditModal: FC<TagEditModalProps> = ({
@@ -67,9 +64,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
   editableData,
   title,
   type,
-  handleCreateData,
-  handleUpdateData,
-  handleDeleteData,
+  handelOnSubmit,
   isLoading,
 }) => {
   const { t } = useTranslation()
@@ -158,60 +153,28 @@ const TagEditModal: FC<TagEditModalProps> = ({
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const updateValues: PayloadType[] = compact(
-        map(values, (value, key) => {
-          if (
-            !isEqual(values[key], defaultValues[key]) &&
-            !includes(key, 'new_')
-          ) {
-            return {
-              ...(type ? { type } : {}),
-              id: key,
-              name: value,
-            }
+      const payload: PayloadType[] = map(values, (value, key) => {
+        switch (true) {
+          case !isEqual(values[key], defaultValues[key]) &&
+            !includes(key, 'new_'): {
+            return { type, name: value, id: key, state: DataStateTypes.UPDATED }
           }
-        })
-      )
-
-      console.log('update', updateValues)
-
-      const createNewValues: PayloadType[] = compact(
-        map(values, (value, key?: string) => {
-          if (includes(key, 'new_')) {
-            return {
-              ...(type ? { type } : {}),
-              name: value,
-            }
+          case includes(key, 'new_'): {
+            return { type, name: value, id: key, state: DataStateTypes.NEW }
           }
-        })
-      )
-
-      console.log('new', createNewValues)
-
-      const deleteValues: PayloadType[] = compact(
-        map(values, (value, key?: string) => {
-          if (includes(key, 'delete_')) {
-            return {
-              ...(type ? { type } : {}),
-              name: value,
-              id: key,
-            }
+          case includes(map(deletedValues, 'id'), key): {
+            return { type, name: value, id: key, state: DataStateTypes.DELETED }
           }
-        })
-      )
-      console.log('delete', deleteValues)
+          default: {
+            return { type, name: value, id: key, state: DataStateTypes.OLD }
+          }
+        }
+      })
 
       try {
-        // handelOnSubmitData({ deleteValues, createNewValues, updateValues })
-        // if (handleCreateData && !isEmpty(createNewValues)) {
-        //   handleCreateData(createNewValues)
-        // }
-        // if (handleUpdateData && !isEmpty(updateValues)) {
-        //   handleUpdateData(updateValues)
-        // }
-        // if (handleDeleteData && !isEmpty(deleteValues)) {
-        //   handleDeleteData(deleteValues)
-        // }
+        if (handelOnSubmit) {
+          handelOnSubmit(payload)
+        }
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       } finally {
@@ -219,15 +182,7 @@ const TagEditModal: FC<TagEditModalProps> = ({
         closeModal()
       }
     },
-    [
-      defaultValues,
-      type,
-      handleCreateData,
-      handleUpdateData,
-      handleDeleteData,
-      resetForm,
-      closeModal,
-    ]
+    [defaultValues, deletedValues, type, handelOnSubmit, resetForm, closeModal]
   )
 
   return (

@@ -52,3 +52,10 @@
 .addButton {
   margin-top: spacing(4);
 }
+
+.categoryContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding-top: spacing(8);
+  grid-gap: spacing(6);
+}

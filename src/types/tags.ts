@@ -33,6 +33,10 @@ export interface Tag {
 }
 
 export interface TagsUpdateType {
-  type?: string
-  data?: TagTypes[]
+  name: string
+  id?: string
+}
+export interface TagsUpdatePayloadType {
+  type?: TagTypes
+  tags: TagsUpdateType[]
 }

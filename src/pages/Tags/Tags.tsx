@@ -11,7 +11,7 @@ import DynamicForm, {
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button' //IconPositioningTypes, //AppearanceTypes,
 import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
-import { includes, map, omit } from 'lodash'
+import { groupBy, includes, map, omit } from 'lodash'
 import { TagTypes, TagsPayload } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -20,10 +20,11 @@ import Loader from 'components/atoms/Loader/Loader'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import useValidators from 'hooks/useValidators'
-import TagCategories from 'components/organisms/TagCategories/TagCategories'
+import TagCategory from 'components/organisms/TagCategory/TagCategory'
 import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
+import { ListDataType } from 'components/molecules/EditableListContainer/EditableListContainer'
 
 // export interface ObjectType {
 //   [key: string]: string
@@ -41,6 +42,8 @@ const Tags: FC = () => {
 
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
+
+  const groupedCategoryData = groupBy(tags, 'type')
 
   const tagCategoryOptions = map(omit(TagTypes, TagTypes.Oskused), (type) => {
     return {
@@ -186,8 +189,14 @@ const Tags: FC = () => {
           />
         </div>
       </Container>
-
-      <TagCategories tags={tags} />
+      <div className={classes.categoryContainer}>
+        {map(
+          groupedCategoryData,
+          (tagsList: ListDataType[], type: TagTypes) => (
+            <TagCategory key={type} tagsList={tagsList} type={type} />
+          )
+        )}
+      </div>
     </>
   )
 }

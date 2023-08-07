@@ -49,7 +49,6 @@ const useValidators = () => {
   }
 
   const tagInputValidator = (value?: string) => {
-    console.log('value', value)
     if (!value || hasValueOver50Chars(value)) {
       return t('error.tag_input_length')
     }

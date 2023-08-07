@@ -1,6 +1,11 @@
 import { apiClient } from 'api'
-import { filter, find, includes, keyBy, map, omit, reduce } from 'lodash'
-import { TagsResponse, TagsPayload, TagFields } from 'types/tags'
+import { filter, find, map } from 'lodash'
+import {
+  TagsResponse,
+  TagsPayload,
+  TagsUpdatePayloadType,
+  TagTypes,
+} from 'types/tags'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 
@@ -68,11 +73,11 @@ export const useBulkCreate = () => {
   }
 }
 
-export const useBulkUpdate = () => {
+export const useBulkUpdate = ({ type }: { type: TagTypes }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateTags, isLoading } = useMutation({
     mutationKey: ['tags'],
-    mutationFn: async (payload: TagsPayload) =>
+    mutationFn: async (payload: TagsUpdatePayloadType) =>
       apiClient.post(endpoints.UPDATE_TAGS, payload),
 
     onSuccess: ({ data }) => {
@@ -84,46 +89,14 @@ export const useBulkUpdate = () => {
           const { data: previousData } = oldData || {}
 
           if (!previousData) return oldData
-          console.log('new', data)
-          console.log('old', oldData)
 
-          const dataIds = map(data, 'id')
-
-          // const updatedPreviousData = reduce(
-          //   previousData,
-          //   (result: TagsResponse, item: TagFields) => {
-          //     const updatedTagObject = item.id
-          //       ? dataMapping[item.id]
-          //       : undefined
-
-          //     return updatedTagObject
-          //       ? [...result, updatedTagObject]
-          //       : [...result, item]
-          //   },
-          //   []
-          // )
-          const newlyAddedTags = filter(
-            data,
-            ({ id }) => !find(previousData, { id })
+          const otherTypeData = filter(
+            previousData,
+            (data) => data.type !== type
           )
-          const newData = [
-            ...map(previousData, (tag) => {
-              const newTag = find(data, { id: tag.id })
-              return newTag || tag
-            }),
-            ...newlyAddedTags,
-          ]
+          const newData = [...otherTypeData, ...data]
 
           return { data: newData }
-          // const removeData = filter(
-          //   previousData,
-          //   ({ id }) => !includes(dataIds, id)
-          // )
-          // const updatedData = [...removeData, ...data]
-
-          // console.log('!', dataIds, removeData, updatedData)
-
-          // return { data: updatedData }
         }
       )
     },
