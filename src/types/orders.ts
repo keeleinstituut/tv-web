@@ -55,6 +55,7 @@ interface LanguageClassifierValue extends ClassifierValue {
 
 interface TypeClassifierValue extends ClassifierValue {
   type: ClassifierValueType.ProjectType
+  name: string
   project_type_config: ProjectTypeConfig
 }
 

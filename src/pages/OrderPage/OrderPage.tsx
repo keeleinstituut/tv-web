@@ -1,7 +1,7 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchOrder, useFetchSubProject, useSubProjectSendToCat } from 'hooks/requests/useOrders'
 import { FC, Fragment, useState } from 'react'
-import { includes, find, map, chain, assign, filter, split } from 'lodash'
+import { includes, find, map, chain, assign, filter, split, zip } from 'lodash'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -14,6 +14,7 @@ import Tabs from 'components/molecules/Tabs/Tabs'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import ConfirmationModalBase from 'components/organisms/modals/ConfirmationModalBase/ConfirmationModalBase'
+import _ from 'lodash'
 
 // TODO: WIP - implement this page
 
@@ -63,7 +64,7 @@ const OrderButtons: FC<OrderButtonProps> = ({ status, isPersonalOrder }) => {
         // TODO: disabled for now, we don't have endpoint for this
         // open confirmation modal from here
         disabled
-        // hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
+      // hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
       />
       <Button
         // loading={isArchiving}
@@ -90,6 +91,74 @@ const OrderPage: FC = () => {
       <div className={classes.titleRow}>
         <h1>{id}</h1>
         <OrderButtons {...{ status, isPersonalOrder }} />
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <h5>Tellija andmed</h5>
+          <span>Nimi: 1</span>
+          <span>Asutus: 2</span>
+          <span>Üksus: 3</span>
+          <span>Meiliaadress: 4</span>
+          <span>Telefoninumber: 5</span>
+        </div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <h5>Tõlkekorraldaja andmed</h5>
+          <span>Nimi: 1</span>
+          <span>Asutus: 2</span>
+          <span>Üksus: 3</span>
+          <span>Meiliaadress: 4</span>
+          <span>Telefoninumber: 5</span>
+        </div>
+      </div>
+      <br></br>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <h5>Tellimuse andmed</h5>
+          <span>Tellimuse ID: {order?.ext_id}</span>
+          <span>Valdkond: 2</span>
+          <span>Tellimuse tüüp: {order?.type_classifier_value?.name}</span>
+          <span>Tähtaeg: 4</span>
+          <span>Lisainfo: 5</span>
+          <span>Viitenumber: {order?.reference_number}</span>
+          <span>Algkeel: {chain(order?.sub_projects).map('source_language_classifier_value').map('name').uniq().join(', ').value()}</span>
+          <span>Sihtkeel(ed): {chain(order?.sub_projects).map('destination_language_classifier_value').map('name').uniq().join(', ').value()}</span>
+          <span>Tellimuse sildid: 9</span>
+          <span>Loomise aeg: {order?.created_at}</span>
+          <span>Tühistamise aeg: 11</span>
+          <span>Tagasilükkamise aeg: 12</span>
+          <span>Korrektuuride tegemise aeg: 13</span>
+          <span>Vastuvõtmise aeg: 14</span>
+        </div>
+        <div style={{ flex: 1 }}>
+          <h5>Failid</h5>
+          <h6>Lähtefailid</h6>
+          <div>
+            <table>
+              <tbody>
+                {map(order?.source_files, (file) => (
+                  <tr key={file.id}>
+                    <td>{file.name}</td>
+                    <td>{file.updated_at}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <h6>Abifailid</h6>
+          <div>
+            <table>
+              <tbody>
+                {map(order?.help_files, (file) => (
+                  <tr key={file.id}>
+                    <td>{file.name}</td>
+                    <td>{file.updated_at}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -136,7 +205,7 @@ const SubProject: FC<any> = (props) => {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h1>{id}</h1>
         <span>
           keelesuunad: <Tag label={keelesuunad} value />
@@ -144,11 +213,10 @@ const SubProject: FC<any> = (props) => {
         <span>
           alamtellimuse ID: {subProject.ext_id}
         </span>
-        <span style={{ color: 'red'}}>
+        <span style={{ color: 'red' }}>
           maksumus: {'// TODO: '}
         </span>
-        <span style={{ color: 'red'}}>
-          maksumus: {'// TODO: '}
+        <span style={{ color: 'red' }}>
           tähtaeg: {'// TODO: '}
         </span>
       </div>
@@ -164,11 +232,11 @@ const SubProject: FC<any> = (props) => {
         }
         onAddPress={function (): void {
           throw new Error('Function not implemented.')
-        } }
+        }}
         addLabel={''}
         onChangeName={function (id: string, newValue: string): void {
           throw new Error('Function not implemented.')
-        } }
+        }}
         addDisabled={true}
         tabNames={tabNames}
       />
@@ -199,11 +267,11 @@ const Feature: FC<any> = (props) => {
     case 'job_overview':
       Component = OverviewFeature
       break;
-  
+
     default:
       break;
   }
-  
+
   if (!Component) {
     return <></>;
   }
@@ -226,7 +294,7 @@ const GeneralInformation: FC<any> = (props) => {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span>
           feature: {feature}
         </span>
@@ -237,9 +305,9 @@ const GeneralInformation: FC<any> = (props) => {
           catProjectCreated: {String(subProject.cat_project_created)}
         </span>
       </div>
-      <br/>
+      <br />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{flex: 1}}>
+        <div style={{ flex: 1 }}>
           <h1>Lähtefailid tõlketööriistas</h1>
           <table>
             <thead>
@@ -252,7 +320,7 @@ const GeneralInformation: FC<any> = (props) => {
             </thead>
             <tbody>
               {map(subProject.cat_jobs, (catJob) => {
-                const {xliff_download_url} = catJob
+                const { xliff_download_url } = catJob
                 const name = xliff_download_url.substring(xliff_download_url.lastIndexOf('/' + 1)).replace('/', '')
                 return (
                   <tr key={name}>
@@ -301,19 +369,67 @@ const GeneralInformation: FC<any> = (props) => {
                               })
                             },
                           },
-                        ]}                        
+                        ]}
                       />
                     </td>
                   </tr>
                 )
-              })} 
+              })}
             </tbody>
           </table>
           <Button
             appearance={AppearanceTypes.Text}
             onClick={() => {
-              showModal(ModalTypes.CatAnalyzis, {})
-          }}>
+
+              const totalWordCount = chain(subProject.cat_analyzis).map('raw_word_count').sum().value()
+              const columns = [
+                ['Kokku', '101%', 'Kordused', '100%', '95-99%', '85-94%', '75-84%', '50-74%', '0-49%'],
+                ...map(subProject.cat_analyzis, (chunk) => [
+                  chunk.total,
+                  chunk.tm_101,
+                  chunk.tm_repetitions,
+                  chunk.tm_100,
+                  chunk.tm_95_99,
+                  chunk.tm_85_94,
+                  chunk.tm_75_84,
+                  chunk.tm_50_74,
+                  chunk.tm_0_49,
+                ])
+              ]
+              const rows = zip.apply(_, columns);
+
+              showModal(ModalTypes.Tooltip, {
+                modalContent: (
+                  <>
+                    <h1>Mahu analüüs valitud failidele</h1>
+                    <h6>
+                      Analüüsitud sõnu kokku {totalWordCount}
+                    </h6>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Vaste tüüp</th>
+                          {map(subProject.cat_analyzis, chunk => (
+                            <th key={chunk.chunk_id}>Nimi: {chunk.chunk_id}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {map(rows, (row, i) => (
+                          <tr key={i}>
+                            {map(row, (column: string, j: number) => (
+                              <td key={j}>
+                                {column}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                )
+              })
+            }}>
             Vaata CAT arvestust
           </Button>
 
@@ -337,14 +453,14 @@ const GeneralInformation: FC<any> = (props) => {
                     </td>
                   </tr>
                 )
-              })} 
+              })}
             </tbody>
           </table>
           {!subProject.cat_project_created && (
             <Button onClick={() => sendToCat({})}>genereeri tõlkimiseks</Button>
           )}
         </div>
-        <div style={{flex: 1}}>
+        <div style={{ flex: 1 }}>
           <h1>Valmisfailid teostajatelt</h1>
           <table>
             <thead>
@@ -365,7 +481,7 @@ const GeneralInformation: FC<any> = (props) => {
                     </td>
                   </tr>
                 )
-              })} 
+              })}
             </tbody>
           </table>
         </div>
@@ -384,7 +500,7 @@ const TranslationFeature: FC<any> = (props) => {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span>
           feature: {feature}
         </span>
@@ -392,7 +508,7 @@ const TranslationFeature: FC<any> = (props) => {
           catSupported: {String(catSupported)}
         </span>
       </div>
-      <br/>
+      <br />
       {map(featureAssignments, (assignment, i) => {
         return (
           <Assignment key={assignment.id} assignment={assignment} index={i + 1} label="Tõlkimine" />
@@ -411,7 +527,7 @@ const RevisionFeature: FC<any> = (props) => {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span>
           feature: {feature}
         </span>
@@ -419,7 +535,7 @@ const RevisionFeature: FC<any> = (props) => {
           catSupported: {String(catSupported)}
         </span>
       </div>
-      <br/>
+      <br />
       {map(featureAssignments, (assignment, i) => {
         return (
           <Assignment key={assignment.id} assignment={assignment} index={i + 1} label="Toimetamine" />
@@ -438,7 +554,7 @@ const OverviewFeature: FC<any> = (props) => {
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span>
           feature: {feature}
         </span>
@@ -462,28 +578,28 @@ const Assignment: FC<any> = (props) => {
     <Fragment>
       <h3>Teostaja {index} ({label})</h3>
       <div key={assignment.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1}}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
           <span style={{ color: 'red' }}>
-            deadline: 
-          </span>  
+            deadline:
+          </span>
           <span style={{ color: 'red' }}>
-            erijuhised tellimuse kohta: 
-          </span>  
+            erijuhised tellimuse kohta:
+          </span>
           <span style={{ color: 'red' }}>
-            maht: 
-          </span>  
+            maht:
+          </span>
           <span style={{ color: 'red' }}>
-            teostaja märkused: 
-          </span>  
+            teostaja märkused:
+          </span>
         </div>
-        <div style={{flex: 1}}>
+        <div style={{ flex: 1 }}>
           <h1>Teostajad</h1>
           <table>
             <thead>
               <tr>
                 <th>Nimi</th>
                 <th>Staatus</th>
-                <th style={{color: 'red'}}>Maksumus</th>
+                <th style={{ color: 'red' }}>Maksumus</th>
               </tr>
             </thead>
             <tbody>
@@ -521,11 +637,11 @@ const Assignment: FC<any> = (props) => {
                     </td>
                   </tr>
                 )
-              })} 
+              })}
             </tbody>
           </table>
           {(!assignment.somethingsomething || true) && (
-            <Button onClick={() => {}}>Saada pakkumus</Button>
+            <Button onClick={() => { }}>Saada pakkumus</Button>
           )}
           {/* {!subProject.cat_project_created && (
             <Button onClick={() => {}}>genereeri tõlkimiseks</Button>
