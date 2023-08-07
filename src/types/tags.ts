@@ -5,19 +5,19 @@ export enum TagTypes {
   Oskused = 'Oskused',
 }
 
-export interface TagFields extends Object {
-  id?: string
-  institution_id?: string
-  name?: string
-  type: TagTypes
-  created_at?: string
-  updated_at?: string
-}
-
 export interface TagsResponse {
-  data: TagFields[]
+  data: Tag[]
 }
 
 export interface TagsPayload {
-  tags: TagFields[]
+  tags: Partial<Tag>[]
+}
+
+export interface Tag {
+  id: string
+  institution_id: null
+  name: string
+  type: TagTypes
+  created_at: string
+  updated_at: string
 }

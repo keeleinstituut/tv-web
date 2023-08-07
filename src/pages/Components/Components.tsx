@@ -67,6 +67,8 @@ type FormValues = {
   multipleSelections?: string
   timePicker?: string
   timePickerSeconds?: string
+  search?: string
+  comment?: string
 }
 
 const Test: FC = () => {
@@ -100,6 +102,21 @@ const Test: FC = () => {
         required: true,
         validate: emailValidator,
       },
+    },
+    {
+      inputType: InputTypes.Text,
+      ariaLabel: 'Otsi',
+      name: 'search',
+      placeholder: 'Otsi...',
+      isSearch: true,
+    },
+    {
+      inputType: InputTypes.Text,
+      ariaLabel: 'Kommenteeri',
+      label: 'Kommenteeri',
+      name: 'comment',
+      placeholder: 'Kirjuta siia',
+      isTextarea: true,
     },
     { component: <h2>random</h2> },
     {
@@ -159,6 +176,7 @@ const Test: FC = () => {
       rules: {
         required: true,
       },
+      showSearch: true,
     },
     {
       inputType: InputTypes.Selections,
@@ -178,7 +196,6 @@ const Test: FC = () => {
       placeholder: 'Choose options',
       multiple: true,
       buttons: true,
-      searchInput: <Fragment />,
       rules: {
         required: true,
       },

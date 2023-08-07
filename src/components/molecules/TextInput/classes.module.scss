@@ -6,6 +6,25 @@
   align-items: center;
   height: 40px;
 
+  .inputContainer {
+    position: relative;
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .label {
+    @include labelTextStyle;
+    margin-right: spacing(2);
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  input {
+    @include labelTextStyle;
+  }
+
   &.disabled {
     cursor: not-allowed;
     input,
@@ -20,38 +39,46 @@
     }
   }
 
-  .inputContainer {
-    position: relative;
-    height: 100%;
-    border-radius: 4px;
-  }
+  &.searchInputContainer {
+    height: 46px;
 
-  .inputField {
-    padding: spacing(2);
-    background-color: $color-white;
-    border: solid $color-input-border 1px;
-    border-radius: 4px;
-    height: 100%;
-
-    &:focus {
-      border-color: $color-primary;
-    }
-
-    &:disabled {
-      background-color: $color-background;
+    .inputField {
+      padding-left: spacing(13);
+      background-image: url('../../../assets/icons/search.svg');
+      box-shadow: 0px 1px 3px 0px $color-shadow-secondary, 0px 2px 2px 0px $color-checkbox-focus, 0px 0px 2px 0px $color-shadow-main;
+      background-size: 20px 20px;
+      background-position: spacing(4) center;
+      background-repeat: no-repeat;
+      width: 258px;
     }
   }
 
-  .label {
-    @include labelTextStyle;
-    margin-right: spacing(2);
+  &.textareaContainer {
+    height: unset;
+    align-items: flex-start;
+    .inputContainer {
+      height: unset;
+    }
 
-    &.hidden {
-      display: none;
+    .inputField {
+      height: unset;
+      resize: none;
     }
   }
+}
 
-  input {
-    @include labelTextStyle;
+.inputField {
+  padding: spacing(2);
+  background-color: $color-white;
+  border: solid $color-input-border 1px;
+  border-radius: 4px;
+  height: 100%;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+
+  &:disabled {
+    background-color: $color-background;
   }
 }
