@@ -132,7 +132,9 @@ const PersonSection = <TFormValues extends FieldValues>({
       : t('orders.manager_details')
 
   const fieldName =
-    type === PersonSectionTypes.Client ? 'client_id' : 'manager_id'
+    type === PersonSectionTypes.Client
+      ? 'client_user_institution_id'
+      : 'translation_manager_user_institution_id'
 
   const fieldLabel =
     type === PersonSectionTypes.Client ? t('label.name') : t('label.manager')

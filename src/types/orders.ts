@@ -122,3 +122,18 @@ export interface OrdersResponse {
 export interface OrderResponse {
   data: OrderDetail
 }
+export interface NewOrderPayload {
+  client_user_institution_id: string
+  translation_manager_user_institution_id: string
+  deadline_at: string
+  source_files: File[]
+  reference_number?: string
+  src_lang: string
+  dst_lang: string[]
+  help_files?: File[]
+  help_file_types?: string[]
+  // TODO: Following are currently missing
+  translation_domain: string
+  start_at?: string
+  comments?: string
+}

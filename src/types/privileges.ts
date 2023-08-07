@@ -50,6 +50,6 @@ export type PrivilegeKey = `${Privileges}`
 export interface PrivilegeType {
   key: PrivilegeKey
 }
-export interface PrivilegeDataType {
+export interface PrivilegesResponse {
   data: PrivilegeType[]
 }

@@ -66,7 +66,7 @@ const InstitutionForm: FC<InstitutionType> = ({
     {
       inputType: InputTypes.Text,
       ariaLabel: t('label.institution'),
-      label: t('label.institution'),
+      label: `${t('label.institution')}*`,
       disabled: !isUpdatingData,
       name: 'name',
       className: classNames(classes.inputInternalPosition, {

@@ -1,6 +1,6 @@
 import { InstitutionType } from './institutions'
 import { Privileges } from './privileges'
-import { RoleType } from './roles'
+import { RolePayload } from './roles'
 import {
   DataMetaTypes,
   PaginationFunctionType,
@@ -32,7 +32,7 @@ export interface UserType {
   email?: string
   institution: InstitutionType
   phone?: string
-  roles: RoleType[]
+  roles: RolePayload[]
   status: UserStatus
   user: UserDetailsType
 }

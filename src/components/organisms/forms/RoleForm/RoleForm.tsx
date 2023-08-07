@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
 import { reduce, find, map, includes, startsWith, join } from 'lodash'
-import { RoleType } from 'types/roles'
+import { RolePayload } from 'types/roles'
 import { PrivilegeType, PrivilegeKey, Privileges } from 'types/privileges'
 import {
   useUpdateRole,
@@ -35,7 +35,7 @@ interface FormValues {
   privileges: PrivilegesFormValue
 }
 
-interface RoleFormProps extends RoleType {
+interface RoleFormProps extends RolePayload {
   allPrivileges: PrivilegeType[]
   hidden?: boolean
   temporaryName?: string
@@ -137,7 +137,7 @@ const RoleForm: FC<RoleFormProps> = ({
     async (values, e) => {
       const { privileges: newPrivileges } = values
       const newName = temporaryName || name
-      const payload: RoleType = {
+      const payload: RolePayload = {
         name: newName,
         privileges: reduce<PrivilegesFormValue, PrivilegeType[]>(
           newPrivileges,

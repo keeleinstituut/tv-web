@@ -20,7 +20,6 @@ import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import useElementPosition from 'hooks/useElementPosition'
 import TextInput from 'components/molecules/TextInput/TextInput'
-import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
 export interface DropdownContentProps extends SelectionControlsInputProps {
   isOpen?: boolean

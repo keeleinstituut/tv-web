@@ -138,7 +138,7 @@ const AddUsersTableForm: FC = () => {
       }
       return false
     },
-    [setError, validateUsers]
+    [clearErrors, setError, validateUsers]
   )
 
   const handleFileUploaded = async (uploadedFile: File) => {
@@ -191,7 +191,7 @@ const AddUsersTableForm: FC = () => {
           fileButtonText={t('button.add_csv')}
           fileButtonChangeText={t('button.add_new_csv')}
           onChange={handleFileUploaded}
-          inputFileType={InputFileTypes.Csv}
+          inputFileTypes={[InputFileTypes.Csv]}
           onDelete={onDeleteFile}
           allowMultiple={false}
         />

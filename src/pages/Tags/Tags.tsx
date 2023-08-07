@@ -47,7 +47,7 @@ const Tags: FC = () => {
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
 
-  const tagCategoryOptions = map(omit(TagTypes, TagTypes.Oskused), (type) => {
+  const tagCategoryOptions = map(omit(TagTypes, TagTypes.Skills), (type) => {
     return {
       label: t(`tag.type.${type}`),
       value: type || '',
@@ -67,7 +67,7 @@ const Tags: FC = () => {
     {
       inputType: InputTypes.Text,
       ariaLabel: t('tag.tag_name'),
-      label: t('label.tag_name'),
+      label: `${t('label.tag_name')}*`,
       name: 'name',
       placeholder: t('tag.tag_input'),
       rules: {
@@ -211,7 +211,7 @@ const Tags: FC = () => {
                 size={SizeTypes.S}
                 icon={EditIcon}
                 className={classes.editIcon}
-                hidden={type === TagTypes.Oskused}
+                hidden={type === TagTypes.Skills}
               >
                 {t('button.change')}
               </Button>

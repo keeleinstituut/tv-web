@@ -43,6 +43,7 @@ type DataTableProps<TData extends RowData> = {
   paginationData?: DataMetaTypes
   onPaginationChange?: (value?: PaginationFunctionType) => void
   meta?: TableMeta<TData>
+  className?: string
   subRows?: Row<TData>[] | undefined
   pageSizeOptions?: { label: string; value: string }[]
   getSubRows?:
@@ -69,6 +70,7 @@ const DataTable = <TData,>(
     onPaginationChange,
     meta,
     getSubRows,
+    className,
     pageSizeOptions,
     hidePagination = false,
     headComponent,
@@ -110,7 +112,7 @@ const DataTable = <TData,>(
     getExpandedRowModel: getExpandedRowModel(),
   })
   return (
-    <Container ref={ref}>
+    <Container ref={ref} className={className}>
       <h4 className={classes.title} hidden={!title}>
         {title}
       </h4>

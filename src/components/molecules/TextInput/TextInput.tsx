@@ -50,7 +50,7 @@ const TextInput = forwardRef<
     className: classes.inputField,
     ref,
     value: value || '',
-    ariaLabel,
+    'aria-label': ariaLabel,
     disabled,
     ...rest,
   }

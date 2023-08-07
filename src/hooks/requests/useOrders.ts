@@ -4,11 +4,14 @@ import {
   OrdersResponse,
   OrdersPayloadType,
   OrderResponse,
+  NewOrderPayload,
 } from 'types/orders'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import newMockOrders from './newMockOrders.json'
 import singleMockOrder from './singleMockOrder.json'
 import useFilters from 'hooks/useFilters'
+import { apiClient } from 'api'
+import { endpoints } from 'api/endpoints'
 
 export const useFetchOrders = () => {
   const {
@@ -76,5 +79,27 @@ export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
     isLoading,
     isError,
     order,
+  }
+}
+
+export const useCreateOrder = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: createOrder, isLoading } = useMutation({
+    mutationKey: ['orders'],
+    mutationFn: (payload: NewOrderPayload) =>
+      apiClient.post(endpoints.PROJECTS, payload),
+    onSuccess: ({ data, meta }) => {
+      queryClient.setQueryData(['orders'], (oldData?: OrdersResponse) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = [...previousData, data]
+        return { data: newData, meta }
+      })
+    },
+  })
+
+  return {
+    createOrder,
+    isLoading,
   }
 }

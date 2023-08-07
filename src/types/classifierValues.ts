@@ -4,6 +4,7 @@ export enum ClassifierValueType {
   Language = 'LANGUAGE',
   ProjectType = 'PROJECT_TYPE',
   TranslationDomain = 'TRANSLATION_DOMAIN',
+  FileType = 'FILE_TYPE',
 }
 export interface ClassifierValue {
   id: string
@@ -16,6 +17,10 @@ export interface ClassifierValue {
 
 export interface LanguageClassifierValue extends ClassifierValue {
   type: ClassifierValueType.Language
+}
+
+export interface FileClassifierValue extends ClassifierValue {
+  type: ClassifierValueType.FileType
 }
 
 export type ClassifierValuesPayload = PaginationFunctionType &

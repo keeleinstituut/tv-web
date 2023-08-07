@@ -54,7 +54,9 @@
     "start_date": "Algus",
     "start_time": "Alguse kellaaeg",
     "source_language": "Algkeel",
-    "destination_language": "Sihtkeel"
+    "destination_language": "Sihtkeel",
+    "file_type": "Failitüüp",
+    "added": "Lisatud"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -110,7 +112,9 @@
     "delegate_to_other_manager": "Suuna teisele tõlkekorraldajale",
     "cancel_order": "Tühista tellimus",
     "update": "Redigeeri",
-    "change": "Muuda"
+    "change": "Muuda",
+    "add_file": "Lisa fail",
+    "submit_order": "Esita tellimus"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -158,7 +162,7 @@
     "privileges": "Privileegid"
   },
   "institution": {
-    "institution_management": "Asituse andmete haldamine",
+    "institution_management": "Asutuse andmete haldamine",
     "institution_data": "Asutuse andmed",
     "created_at": "Konto loodud {{ time }}",
     "updated_at": "Konto andmed muudetud {{ time }}"
@@ -300,7 +304,8 @@
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
-    "tag_added": "Silt on edukalt lisatud."
+    "tag_added": "Silt on edukalt lisatud.",
+    "order_created": "Tellimus on edukalt loodud"
   },
   "notification": {
     "announcement": "Teade",
@@ -324,7 +329,8 @@
     "role": "Roll"
   },
   "tooltip": {
-    "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
+    "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta.",
+    "file_format_helper": "Failiformaat ei garanteeri vormistuse säilimist ja automaatset tekstituvastust." 
   },
   "tag": {
     "tag_management": "Sildid",
@@ -347,6 +353,8 @@
     "client_details": "Tellija andmed",
     "manager_details": "Tõlkekorraldaja andmed",
     "new_orders": "Uus tellimus",
+    "source_files": "Lähtefailid",
+    "help_files": "Abifailid",
     "status": {
       "REGISTERED": "Registreeritud",
       "NEW": "Uus",

@@ -1,7 +1,7 @@
-import { RoleType, RolesDataTypes } from 'types/roles'
+import { RolePayload, RolesResponse } from 'types/roles'
 import { useCallback } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { PrivilegeDataType } from 'types/privileges'
+import { PrivilegesResponse } from 'types/privileges'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { findIndex, filter, map } from 'lodash'
@@ -12,7 +12,7 @@ export const useRolesFetch = () => {
     isLoading,
     isError,
     data: rolesData,
-  } = useQuery<RolesDataTypes>({
+  } = useQuery<RolesResponse>({
     queryKey: ['roles'],
     queryFn: () => apiClient.get(endpoints.ROLES),
   })
@@ -21,7 +21,7 @@ export const useRolesFetch = () => {
     isLoading: isLoadingPrivileges,
     isError: isPrivilegesError,
     data: privilegesData,
-  } = useQuery<PrivilegeDataType>({
+  } = useQuery<PrivilegesResponse>({
     queryKey: ['privileges'],
     queryFn: () => apiClient.get(endpoints.PRIVILEGES),
   })
@@ -46,7 +46,7 @@ export const useUpdateRole = ({ roleId }: { roleId?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateRole, isLoading } = useMutation({
     mutationKey: ['roles', roleId],
-    mutationFn: (payload: RoleType) =>
+    mutationFn: (payload: RolePayload) =>
       apiClient.put(`${endpoints.ROLES}/${roleId}`, {
         // institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
         ...payload,
@@ -56,7 +56,7 @@ export const useUpdateRole = ({ roleId }: { roleId?: string }) => {
         ['roles'],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
-        (oldData?: RolesDataTypes) => {
+        (oldData?: RolesResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
           const roleIndex = findIndex(previousData, { id: roleId })
@@ -79,7 +79,7 @@ export const useCreateRole = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: createRole, isLoading } = useMutation({
     mutationKey: ['roles'],
-    mutationFn: (payload: RoleType) =>
+    mutationFn: (payload: RolePayload) =>
       apiClient.post(endpoints.ROLES, {
         institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
         ...payload,
@@ -89,7 +89,7 @@ export const useCreateRole = () => {
         ['roles'],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
-        (oldData?: RolesDataTypes) => {
+        (oldData?: RolesResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
           const newData = [...previousData, data]
@@ -114,7 +114,7 @@ export const useDeleteRole = ({ roleId }: { roleId?: string }) => {
         ['roles'],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
-        (oldData?: RolesDataTypes) => {
+        (oldData?: RolesResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
           const deletedData = filter(previousData, ({ id }) => id !== roleId)

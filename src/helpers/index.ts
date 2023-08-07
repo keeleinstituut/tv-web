@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import {
   omit,
   map,
@@ -10,7 +11,10 @@ import {
   replace,
 } from 'lodash'
 import { FullRouteObject } from 'router/router'
+import utc from 'dayjs/plugin/utc'
 import { Privileges } from 'types/privileges'
+
+dayjs.extend(utc)
 
 // TODO: split these into separate helper files, if we have too many
 interface ObjectWithChildren {
@@ -159,3 +163,14 @@ export const constructFullPath = (originalPath: string, params: object) =>
     },
     originalPath
   )
+
+export const getFormattedDateFromObject = ({
+  date,
+  time,
+}: {
+  date?: string
+  time?: string
+}) => {
+  const dayjsObject = dayjs(trim(`${date || ''} ${time || ''}`))
+  return dayjsObject.format('DD/MM/YYYY hh:mm:ss')
+}

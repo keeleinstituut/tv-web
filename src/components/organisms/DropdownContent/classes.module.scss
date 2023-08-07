@@ -19,6 +19,7 @@
 .option {
   @include labelTextStyle;
   padding: spacing(2);
+  text-align: unset;
 }
 
 .selectedOption {

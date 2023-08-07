@@ -1,170 +1,213 @@
-import { FC, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import classNames from 'classnames'
 import classes from './classes.module.scss'
-import useAuth from 'hooks/useAuth'
+import { map, filter, size, isEmpty } from 'lodash'
 import {
-  map,
-  uniqBy,
-  concat,
-  compact,
-  find,
-  isEmpty,
-  intersection,
-  join,
-} from 'lodash'
-import DynamicForm, {
   InputTypes,
   FormInput,
-  FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useFetchTranslationUsers, useFetchUser } from 'hooks/requests/useUsers'
-import { Control, FieldValues, Path } from 'react-hook-form'
-import { Privileges } from 'types/privileges'
+import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import { Control, FieldValues, Path, useController } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import {
+  DropDownOptions,
+  DropdownSizeTypes,
+} from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import classNames from 'classnames'
+import FileImport, {
+  InputFileTypes,
+} from 'components/organisms/FileImport/FileImport'
+import dayjs from 'dayjs'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import DataTable, {
+  TableSizeTypes,
+} from 'components/organisms/DataTable/DataTable'
+import SmallTooltip from '../SmallTooltip/SmallTooltip'
 
-interface DetailsSectionProps<TFormValues extends FieldValues> {
+const ProjectFileTypes = [
+  InputFileTypes.Pdf,
+  InputFileTypes.Doc,
+  InputFileTypes.Docx,
+  InputFileTypes.OpenDocument,
+  InputFileTypes.Excel,
+  InputFileTypes.SpreadSheet,
+  InputFileTypes.Outlook,
+  InputFileTypes.Asice,
+  InputFileTypes.Zip,
+  InputFileTypes.Zip7,
+  InputFileTypes.Png,
+  InputFileTypes.Rtf,
+  InputFileTypes.Eml,
+  InputFileTypes.Ods,
+  InputFileTypes.Jpeg,
+  InputFileTypes.Text,
+  InputFileTypes.Html,
+  InputFileTypes.Xml,
+  InputFileTypes.TextXml,
+  InputFileTypes.Other,
+]
+
+interface FilesListProps<TFormValues extends FieldValues> {
+  title: string
+  typeOptions?: DropDownOptions[]
+  name: string
   control: Control<TFormValues>
+  tooltipContent?: string
 }
 
-const DetailsSection = <TFormValues extends FieldValues>({
-  control,
-}: DetailsSectionProps<TFormValues>) => {
-  const { t } = useTranslation()
-  const { classifierValuesFilters: projectTypeFilter } =
-    useClassifierValuesFetch({
-      type: ClassifierValueType.ProjectType,
-    })
-  // TODO: we don't have correct DomainType yet
-  const { classifierValuesFilters: domainValuesFilter } =
-    useClassifierValuesFetch({
-      type: ClassifierValueType.TranslationDomain,
-    })
-  const { classifierValuesFilters: languageFilters } = useClassifierValuesFetch(
-    {
-      type: ClassifierValueType.Language,
-    }
-  ) // TODO: save them to local state when API available?
-  const { institutionUserId, userPrivileges } = useAuth()
-  // fetch currenty logged in user
-  const { isLoading, user } = useFetchUser({
-    userId: institutionUserId,
-  })
-  // Fetch list of users bases on PersonSectionType
-  // TODO: depends on the picked type classifier
-  const shouldShowStartTimeFields = true
+interface FileRow {
+  name: string
+  help_file_types?: number
+  added: string
+  delete_button?: number
+}
 
-  const fields: FieldProps<TFormValues>[] = useMemo(
-    () => [
-      {
-        inputType: InputTypes.Selections,
-        ariaLabel: t('label.order_type'),
-        placeholder: t('placeholder.pick'),
-        label: `${t('label.order_type')}`,
-        name: 'type_classifier_value_id' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
-        options: projectTypeFilter,
-        showSearch: true,
-        rules: {
-          required: true,
-        },
-      },
-      // TODO: translation_domain info missing right now, this is based on dummydata
-      {
-        inputType: InputTypes.Selections,
-        ariaLabel: t('label.translation_domain'),
-        placeholder: t('placeholder.pick'),
-        label: `${t('label.translation_domain')}`,
-        name: 'translation_domain' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
-        options: domainValuesFilter,
-        showSearch: true,
-        rules: {
-          required: true,
-        },
-      },
-      {
-        inputType: InputTypes.DateTime,
-        ariaLabel: t('label.start_date'),
-        placeholder: t('placeholder.date'),
-        label: `${t('label.start_date')}`,
-        hidden: !shouldShowStartTimeFields,
-        className: classes.customInternalClass,
-        name: 'start' as Path<TFormValues>,
-      },
-      {
-        inputType: InputTypes.DateTime,
-        ariaLabel: t('label.deadline'),
-        placeholder: t('placeholder.date'),
-        label: `${t('label.deadline')}`,
-        className: classes.customInternalClass,
-        name: 'deadline' as Path<TFormValues>,
-      },
-      // TODO: not sure if comment field is correct for this
-      {
-        inputType: InputTypes.Text,
-        label: `${t('label.special_instructions')}`,
-        ariaLabel: t('label.special_instructions'),
-        placeholder: t('placeholder.write_here'),
-        name: 'comments' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
-        // TODO: need to add textarea option for Text input for this
-        // isTextarea: true,
-      },
-      {
-        inputType: InputTypes.Text,
-        ariaLabel: t('label.reference_number'),
-        placeholder: t('placeholder.write_here'),
-        label: `${t('label.reference_number')}`,
-        name: 'reference_number' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
-      },
-      {
-        inputType: InputTypes.Selections,
-        ariaLabel: t('label.source_language'),
-        placeholder: t('placeholder.pick'),
-        label: `${t('label.source_language')}`,
-        name: 'source_language_classifier_id' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
-        options: languageFilters,
-        showSearch: true,
-        rules: {
-          required: true,
-        },
-      },
-      {
-        inputType: InputTypes.Selections,
-        ariaLabel: t('label.destination_language'),
-        placeholder: t('placeholder.pick'),
-        label: `${t('label.destination_language')}`,
-        name: 'type_classifier_value_id' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
-        options: languageFilters,
-        showSearch: true,
-        multiple: true,
-        buttons: true,
-        rules: {
-          required: true,
-        },
-      },
-    ],
-    [
-      domainValuesFilter,
-      languageFilters,
-      projectTypeFilter,
-      shouldShowStartTimeFields,
-      t,
-    ]
+const columnHelper = createColumnHelper<FileRow>()
+
+const FilesList = <TFormValues extends FieldValues>({
+  title,
+  typeOptions,
+  name,
+  control,
+  tooltipContent,
+}: FilesListProps<TFormValues>) => {
+  const {
+    field: { onChange, value },
+  } = useController<TFormValues, Path<TFormValues>>({
+    name: name as Path<TFormValues>,
+    control,
+  })
+  const typedValue = value as File[]
+  const { t } = useTranslation()
+
+  const filesData = useMemo(
+    () =>
+      map(typedValue, (file, index) => ({
+        name: file.name,
+        help_file_types: index,
+        added: dayjs(file.lastModified).format('DD.MM.YYYY hh:mm'),
+        delete_button: index,
+      })),
+    [typedValue]
   )
 
+  const handleDelete = useCallback(
+    (index?: number) => {
+      if (index === 0 || index) {
+        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+      }
+    },
+    [onChange, typedValue]
+  )
+
+  const columns = [
+    columnHelper.accessor('name', {
+      header: () => t('label.name'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('help_file_types', {
+      header: name === 'help_files' ? t('label.file_type') : '',
+      cell: ({ column, getValue }) => {
+        const errorZIndex = size(filesData) - column.depth
+        if (name === 'help_files') {
+          return (
+            <FormInput
+              name={`help_file_types.${getValue()}` as Path<TFormValues>}
+              ariaLabel={t('label.file_type')}
+              placeholder={t('placeholder.pick')}
+              control={control}
+              options={typeOptions || []}
+              inputType={InputTypes.Selections}
+              errorZIndex={errorZIndex}
+              dropdownSize={DropdownSizeTypes.M}
+              className={classes.fitContent}
+              usePortal
+              horizontalScrollContainerId="tableWrapper"
+            />
+          )
+        }
+        return null
+      },
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('delete_button', {
+      header: '',
+      cell: ({ getValue }) => {
+        return (
+          <BaseButton onClick={() => handleDelete(getValue())}>
+            <Delete />
+          </BaseButton>
+        )
+      },
+      footer: (info) => info.column.id,
+    }),
+  ] as ColumnDef<FileRow>[]
+
   return (
-    <DynamicForm
-      fields={fields}
-      control={control}
-      className={classes.formContainer}
+    <DataTable
+      data={filesData}
+      columns={columns}
+      tableSize={TableSizeTypes.M}
+      className={classNames(
+        classes.filesListContainer,
+        isEmpty(filesData) && classes.hiddenContent
+      )}
+      hidePagination
+      headComponent={
+        <div className={classes.titleRow}>
+          <h3>{title}</h3>
+
+          <SmallTooltip
+            hidden={!tooltipContent}
+            tooltipContent={tooltipContent}
+          />
+          <FileImport
+            fileButtonText={t('button.add_file')}
+            isFilesListHidden
+            files={value}
+            inputFileTypes={ProjectFileTypes}
+            className={classes.fileImportButton}
+            onChange={onChange}
+            allowMultiple
+          />
+        </div>
+      }
     />
   )
 }
 
-export default DetailsSection
+interface FilesSectionProps<TFormValues extends FieldValues> {
+  control: Control<TFormValues>
+}
+
+const FilesSection = <TFormValues extends FieldValues>({
+  control,
+}: FilesSectionProps<TFormValues>) => {
+  const { t } = useTranslation()
+  const { classifierValuesFilters: fileTypeFilters } = useClassifierValuesFetch(
+    {
+      type: ClassifierValueType.FileType,
+    }
+  )
+
+  return (
+    <div className={classes.container}>
+      <FilesList
+        name="source_files"
+        title={t('orders.source_files')}
+        tooltipContent={t('tooltip.file_format_helper')}
+        control={control}
+      />
+      <FilesList
+        title={t('orders.help_files')}
+        control={control}
+        name="help_files"
+        typeOptions={fileTypeFilters}
+      />
+    </div>
+  )
+}
+
+export default FilesSection

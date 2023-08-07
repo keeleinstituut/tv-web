@@ -41,7 +41,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.Selections,
         ariaLabel: t('label.order_type'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.order_type')}`,
+        label: `${t('label.order_type')}*`,
         name: 'type_classifier_value_id' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: projectTypeFilter,
@@ -55,7 +55,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.Selections,
         ariaLabel: t('label.translation_domain'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.translation_domain')}`,
+        label: `${t('label.translation_domain')}*`,
         name: 'translation_domain' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: domainValuesFilter,
@@ -71,15 +71,15 @@ const DetailsSection = <TFormValues extends FieldValues>({
         label: `${t('label.start_date')}`,
         hidden: !shouldShowStartTimeFields,
         className: classes.customInternalClass,
-        name: 'start' as Path<TFormValues>,
+        name: 'start_at' as Path<TFormValues>,
       },
       {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         placeholder: t('placeholder.date'),
-        label: `${t('label.deadline')}`,
+        label: `${t('label.deadline')}*`,
         className: classes.customInternalClass,
-        name: 'deadline' as Path<TFormValues>,
+        name: 'deadline_at' as Path<TFormValues>,
         rules: {
           required: true,
         },
@@ -92,6 +92,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.write_here'),
         name: 'comments' as Path<TFormValues>,
         className: classes.inputInternalPosition,
+        isTextarea: true,
         // TODO: need to add textarea option for Text input for this
         // isTextarea: true,
       },
@@ -107,8 +108,8 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.Selections,
         ariaLabel: t('label.source_language'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.source_language')}`,
-        name: 'source_language_classifier_id' as Path<TFormValues>,
+        label: `${t('label.source_language')}*`,
+        name: 'src_lang' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: languageFilters,
         showSearch: true,
@@ -120,8 +121,8 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.Selections,
         ariaLabel: t('label.destination_language'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.destination_language')}`,
-        name: 'destination_language_classifier_id' as Path<TFormValues>,
+        label: `${t('label.destination_language')}*`,
+        name: 'dst_lang' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: languageFilters,
         showSearch: true,
@@ -146,6 +147,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
       fields={fields}
       control={control}
       className={classes.formContainer}
+      useDivWrapper
     />
   )
 }
