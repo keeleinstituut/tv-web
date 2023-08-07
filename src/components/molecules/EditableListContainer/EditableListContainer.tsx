@@ -40,7 +40,7 @@ const EditableListContainer: FC<EditableListTypes> = ({
           className={classes.editButton}
           icon={EditIcon}
           onClick={handelEditList}
-          hidden={isEditable}
+          hidden={!isEditable}
         >
           {t('button.change')}
         </Button>

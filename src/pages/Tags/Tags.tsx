@@ -193,7 +193,15 @@ const Tags: FC = () => {
         {map(
           groupedCategoryData,
           (tagsList: ListDataType[], type: TagTypes) => (
-            <TagCategory key={type} tagsList={tagsList} type={type} />
+            <TagCategory
+              key={type}
+              tagsList={tagsList}
+              type={type}
+              isEditable={
+                type !== TagTypes.Oskused ||
+                !includes(userPrivileges, Privileges.EditTag)
+              }
+            />
           )
         )}
       </div>

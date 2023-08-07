@@ -20,9 +20,10 @@ import useValidators from 'hooks/useValidators'
 type TagCategoryTypes = {
   tagsList?: ListDataType[]
   type: TagTypes
+  isEditable: boolean
 }
 
-const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type }) => {
+const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
   const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate({
     type: type,
   })
@@ -79,7 +80,7 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type }) => {
     <EditableListContainer
       title={type}
       data={tagsList}
-      isEditable={type === TagTypes.Oskused}
+      isEditable={isEditable}
       handelEditList={handleCategoryEdit}
     />
   )
