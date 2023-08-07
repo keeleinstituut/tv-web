@@ -103,7 +103,9 @@ const EditableListModal: FC<EditableListModalProps> = ({
         validate: inputValidator,
       },
       className: classes.editTagInput,
-      handleDelete: () => handelOnDelete(name, id),
+      ...(includes(userPrivileges, Privileges.DeleteTag)
+        ? { handleDelete: () => handelOnDelete(name, id) }
+        : {}),
     })
   )
 
@@ -124,7 +126,9 @@ const EditableListModal: FC<EditableListModalProps> = ({
           validate: inputValidator,
         },
         className: classes.editTagInput,
-        handleDelete: () => handelOnDelete(`new_${size(inputFields)}`),
+        ...(includes(userPrivileges, Privileges.DeleteTag)
+          ? { handleDelete: () => handelOnDelete(`new_${size(inputFields)}`) }
+          : {}),
       },
     ])
 
