@@ -67,7 +67,7 @@ export const useCreateDepartment = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: createDepartment, isLoading } = useMutation({
     mutationKey: ['departments'],
-    mutationFn: (payload: DepartmentsDataType) =>
+    mutationFn: (payload: DepartmentType) =>
       apiClient.post(endpoints.DEPARTMENTS, {
         institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
         ...payload,

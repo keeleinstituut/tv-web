@@ -1,8 +1,8 @@
 import { DataMetaTypes } from 'types/collective'
 export interface DepartmentType {
-  id?: string
+  id: string
   institution_id?: string
-  name?: string
+  name: string
   created_at?: string
   updated_at?: string
 }
