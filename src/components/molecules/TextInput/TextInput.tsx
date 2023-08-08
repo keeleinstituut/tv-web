@@ -83,7 +83,7 @@ const TextInput = forwardRef<
       </Label>
       <div
         className={classNames(classes.inputContainer, {
-          [classes.addDeleteButton]: true,
+          [classes.addDeleteButton]: !!handleDelete,
         })}
       >
         <Control asChild>

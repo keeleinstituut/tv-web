@@ -26,12 +26,6 @@
   padding-left: spacing(4);
 }
 
-// .addNewRow {
-//   width: fit-content;
-//   padding: spacing(1);
-//   margin-top: spacing(6);
-// }
-
 .categorySection {
   display: flex;
   flex-direction: column;
@@ -54,8 +48,10 @@
 }
 
 .categoryContainer {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   padding-top: spacing(8);
-  grid-gap: spacing(6);
+  & > * {
+    margin-right: spacing(6);
+  }
 }

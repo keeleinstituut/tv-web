@@ -11,7 +11,6 @@ import {
   DataStateTypes,
   EditDataType,
 } from 'components/organisms/modals/EditableListModal/EditableListModal'
-import { showValidationErrorMessage } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { t } from 'i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -24,12 +23,10 @@ type TagCategoryTypes = {
 }
 
 const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
-  const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate({
-    type: type,
-  })
+  const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate({ type })
   const { tagInputValidator } = useValidators()
 
-  const handelOnSubmitTags = useCallback(
+  const handleOnSubmitTags = useCallback(
     async (values: EditDataType[]) => {
       const filteredData = filter(
         values,
@@ -47,29 +44,25 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
       )
 
       const payload: TagsUpdatePayloadType = {
-        type: values[0].type,
+        type,
         tags: updatedData,
       }
 
-      try {
-        await updateTags(payload)
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.tag_updated'),
-        })
-      } catch (errorData) {
-        showValidationErrorMessage(errorData)
-      }
+      await updateTags(payload)
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.tag_updated'),
+      })
     },
-    [updateTags]
+    [type, updateTags]
   )
 
   const handleCategoryEdit = () => {
     showModal(ModalTypes.EditableListModal, {
       editableData: tagsList,
       title: t('modal.edit_category_tag'),
-      handelOnSubmit: handelOnSubmitTags,
+      handleOnSubmit: handleOnSubmitTags,
       type,
       isLoading: isUpdatingTags,
       inputValidator: tagInputValidator,
@@ -81,7 +74,7 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
       title={type}
       data={tagsList}
       isEditable={isEditable}
-      handelEditList={handleCategoryEdit}
+      handleEditList={handleCategoryEdit}
     />
   )
 }
