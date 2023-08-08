@@ -17,7 +17,10 @@ import {
   InputTypes,
   FormInput,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useFetchTranslationUsers, useFetchUser } from 'hooks/requests/useUsers'
+import {
+  useFetchInfiniteTranslationUsers,
+  useFetchUser,
+} from 'hooks/requests/useUsers'
 import DetailsRow from 'components/atoms/DetailsRow/DetailsRow'
 import { Control, FieldValues, Path } from 'react-hook-form'
 import { UserType } from 'types/users'
@@ -71,13 +74,19 @@ const PersonSection = <TFormValues extends FieldValues>({
 }: PersonSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
-  // fetch currenty logged in user
+  // fetch currently logged in user
   const { isLoading, user } = useFetchUser({
     userId: institutionUserId,
   })
   // Fetch list of users bases on PersonSectionType
-  const { users, handleFilterChange, isFetching } = useFetchTranslationUsers({
-    per_page: 20,
+  const {
+    users,
+    handleFilterChange,
+    isFetching,
+    paginationData,
+    fetchNextPage,
+  } = useFetchInfiniteTranslationUsers({
+    per_page: 10,
     // TODO: not sure yet whether filtering param will be privileges
     privileges:
       type === PersonSectionTypes.Client
@@ -92,6 +101,14 @@ const PersonSection = <TFormValues extends FieldValues>({
     },
     [handleFilterChange]
   )
+
+  const handleFetchNextPage = useCallback(() => {
+    const { current_page = 0, last_page = 0 } = paginationData || {}
+    if (current_page < last_page && !isFetching) {
+      // handlePaginationChange({ page: current_page + 1 })
+      fetchNextPage()
+    }
+  }, [paginationData, isFetching, fetchNextPage])
 
   const usersList = useMemo(() => {
     const isCurrentUserPotentialManager = !isEmpty(
@@ -167,6 +184,7 @@ const PersonSection = <TFormValues extends FieldValues>({
         inputType={InputTypes.Selections}
         showSearch
         onSearch={handleSearchUsers}
+        onEndReached={handleFetchNextPage}
         loading={isFetching}
         hidden={isLoading}
       />

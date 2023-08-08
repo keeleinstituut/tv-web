@@ -58,6 +58,7 @@ export interface SelectionControlsInputProps {
   usePortal?: boolean
   horizontalScrollContainerId?: string
   loading?: boolean
+  onEndReached?: () => void
   hidden?: boolean
 }
 

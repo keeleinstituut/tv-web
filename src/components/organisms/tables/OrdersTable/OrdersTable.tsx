@@ -139,9 +139,9 @@ const OrdersTable: FC = () => {
             icon={ArrowRight}
             ariaLabel={t('label.to_order_view')}
             iconPositioning={IconPositioningTypes.Left}
-            // disabled={
-            //   !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
-            // }
+            disabled={
+              !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
+            }
             href={`/orders/${order?.id}`}
           >
             {orderExtId}
