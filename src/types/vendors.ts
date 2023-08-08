@@ -29,3 +29,12 @@ export type UpdateVendorPayload = {
   tags?: string[]
   comment?: string
 }
+
+export type SkillsData = {
+  id?: string
+  name?: string
+}
+
+export type GetSkillsPayload = {
+  data?: SkillsData[]
+}

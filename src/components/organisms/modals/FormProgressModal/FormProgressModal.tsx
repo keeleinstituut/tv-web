@@ -1,5 +1,6 @@
 import ModalBase, {
   ButtonPositionTypes,
+  ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -7,6 +8,8 @@ import { useTranslation } from 'react-i18next'
 import { FC, ReactElement, useState } from 'react'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
 import { find, map, size } from 'lodash'
+
+import classes from './classes.module.scss'
 
 interface FormDataProps {
   label: string
@@ -61,6 +64,8 @@ const FormProgressModal: FC<FormProgressProps> = ({
       progressBar={
         steps && <ProgressBar activeStep={activeStep} steps={steps} />
       }
+      className={classes.progressBarHelperText}
+      size={ModalSizeTypes.Big}
       helperText={helperText}
       buttons={[
         {
