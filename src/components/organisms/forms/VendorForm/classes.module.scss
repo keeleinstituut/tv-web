@@ -3,10 +3,10 @@
 
 .formContainer {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
   background: $color-white;
-  padding: spacing(6) spacing(8) spacing(6) 0;
+  padding: spacing(8) spacing(6);
   border: 1px solid $color-border;
   border-radius: 6px;
   box-shadow: 0 4px 10px $color-shadow-main;
@@ -21,10 +21,15 @@
     margin-bottom: spacing(4);
     padding-right: spacing(10);
 
-    input {
+    input, textarea {
       width: 274px;
     }
+
   }
+}
+
+.paddingRight120 {
+  padding-right: 120px;
 }
 
 .container {
@@ -32,11 +37,6 @@
 
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
-
-  h2 {
-    @include h3TextStyle;
-    margin-bottom: spacing(8);
-  }
 
   .formContainer {
     display: grid;

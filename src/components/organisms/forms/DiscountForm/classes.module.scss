@@ -1,0 +1,40 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.discountFormContainer {
+  display: flex;
+  flex-direction: column;
+
+  h2 {
+    @include h4TextStyle;
+  }
+
+  .discountHeader {
+    display: flex;
+    padding: spacing(3);
+    justify-content: space-between;
+    border-bottom: 1px solid $color-border-secondary;
+  }
+
+  .formButtons {
+    align-self: end;
+    padding-top: spacing(2);
+  }
+
+  .inputContainer {
+    justify-content: flex-end;
+    box-sizing: content-box;
+    padding: spacing(1) 0;
+    border-bottom: 1px solid $color-border-black-coral;
+    justify-content: space-between;
+
+    input {
+      width: 220px;
+      border-color: $color-border-secondary;
+    }
+  }
+
+  .inputContainer:last-of-type {
+    border: 0;
+  }
+}

@@ -269,7 +269,11 @@
     "user_management": "Kasutajate haldus"
   },
   "vendors": {
-    "vendors_database": "Teostajate andmebaas"
+    "vendors_database": "Teostajate andmebaas",
+    "analysis_based_discount": "Analüüsipõhine soodustus",
+    "repetitions": "Kordused",
+    "match_type": "Vaste tüüp",
+    "percent_from_price": "% hinnast"
   },
   "file": {
     "drop_files": "Pane failid siia...",

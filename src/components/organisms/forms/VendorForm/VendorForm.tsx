@@ -5,8 +5,7 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
-import FormButtons from 'components/organisms/FormButtons/FormButtons'
-import { includes, join, isEmpty, map, startsWith } from 'lodash'
+import { includes, join, isEmpty, map, startsWith, pickBy } from 'lodash'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
@@ -17,6 +16,7 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { ValidationError } from 'api/errorHandler'
 import { UpdateVendorPayload, Vendor } from 'types/vendors'
 import { TagTypes } from 'types/tags'
+import DiscountFrom from '../DiscountForm/DiscountForm'
 
 interface FormValues {
   name?: string
@@ -25,6 +25,14 @@ interface FormValues {
   company_name?: string
   comment?: string
   tags?: string[]
+  discount_percentage_0_49?: string
+  discount_percentage_50_74?: string
+  discount_percentage_75_84?: string
+  discount_percentage_85_94?: string
+  discount_percentage_95_99?: string
+  discount_percentage_100?: string
+  discount_percentage_101?: string
+  discount_percentage_repetitions?: string
 }
 
 type VendorFormProps = {
@@ -37,7 +45,20 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   const { tags: allTags = [] } = useFetchTags({ type: TagTypes.Teostaja })
   const { updateVendor } = useUpdateVendor(vendor.id as string)
 
-  const { institution_user, company_name, comment, tags } = vendor
+  const {
+    institution_user,
+    company_name,
+    comment,
+    tags,
+    discount_percentage_0_49,
+    discount_percentage_50_74,
+    discount_percentage_75_84,
+    discount_percentage_85_94,
+    discount_percentage_95_99,
+    discount_percentage_100,
+    discount_percentage_101,
+    discount_percentage_repetitions,
+  } = vendor
 
   const {
     user: { forename, surname },
@@ -53,8 +74,32 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       comment,
       company_name,
       tags: map(tags, 'id'),
+      discount_percentage_0_49,
+      discount_percentage_50_74,
+      discount_percentage_75_84,
+      discount_percentage_85_94,
+      discount_percentage_95_99,
+      discount_percentage_100,
+      discount_percentage_101,
+      discount_percentage_repetitions,
     }),
-    [company_name, email, forename, phone, surname, comment, tags]
+    [
+      company_name,
+      email,
+      forename,
+      phone,
+      surname,
+      comment,
+      tags,
+      discount_percentage_0_49,
+      discount_percentage_50_74,
+      discount_percentage_75_84,
+      discount_percentage_85_94,
+      discount_percentage_95_99,
+      discount_percentage_100,
+      discount_percentage_101,
+      discount_percentage_repetitions,
+    ]
   )
 
   const {
@@ -205,21 +250,25 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   )
 
   return (
-    <DynamicForm
-      fields={fields}
-      control={control}
-      onSubmit={handleSubmit(onSubmit)}
-      className={classes.formContainer}
-    >
-      <FormButtons
-        isResetDisabled={!isDirty}
-        isSubmitDisabled={!isDirty || !isValid}
-        loading={isSubmitting}
-        resetForm={resetForm}
-        hidden={isFormDisabled}
-        className={classes.formButtons}
+    <div className={classes.formContainer}>
+      <DynamicForm
+        fields={fields}
+        control={control}
+        onSubmit={handleSubmit(onSubmit)}
+        className={classes.paddingRight120}
       />
-    </DynamicForm>
+      <DiscountFrom
+        {...{
+          isFormDisabled,
+          control,
+          isSubmitting,
+          isDirty,
+          isValid,
+          resetForm,
+          vendor,
+        }}
+      />
+    </div>
   )
 }
 

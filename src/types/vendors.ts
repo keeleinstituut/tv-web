@@ -13,6 +13,14 @@ export interface Vendor {
   prices: Price[]
   tags: Tag[]
   comment: string
+  discount_percentage_0_49?: string
+  discount_percentage_50_74?: string
+  discount_percentage_75_84?: string
+  discount_percentage_85_94?: string
+  discount_percentage_95_99?: string
+  discount_percentage_100?: string
+  discount_percentage_101?: string
+  discount_percentage_repetitions?: string
 }
 export interface VendorsDataType {
   data: Vendor[]
