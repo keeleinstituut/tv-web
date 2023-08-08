@@ -11,7 +11,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button'
 import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
 import { groupBy, includes, map, omit } from 'lodash'
-import { TagTypes, TagsPayload } from 'types/tags'
+import { Tag, TagTypes, TagsPayload } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import Loader from 'components/atoms/Loader/Loader'
@@ -22,7 +22,6 @@ import TagCategory from 'components/organisms/TagCategory/TagCategory'
 import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
-import { ListDataType } from 'components/molecules/EditableListContainer/EditableListContainer'
 
 export type FormValues = {
   name: string
@@ -147,20 +146,17 @@ const Tags: FC = () => {
         </div>
       </Container>
       <div className={classes.categoryContainer}>
-        {map(
-          groupedCategoryData,
-          (tagsList: ListDataType[], type: TagTypes) => (
-            <TagCategory
-              key={type}
-              tagsList={tagsList}
-              type={type}
-              isEditable={
-                type !== TagTypes.Oskused ||
-                !includes(userPrivileges, Privileges.EditTag)
-              }
-            />
-          )
-        )}
+        {map(groupedCategoryData, (tagsList: Tag[], type: TagTypes) => (
+          <TagCategory
+            key={type}
+            tagsList={tagsList}
+            type={type}
+            isEditable={
+              type !== TagTypes.Oskused ||
+              !includes(userPrivileges, Privileges.EditTag)
+            }
+          />
+        ))}
       </div>
     </>
   )

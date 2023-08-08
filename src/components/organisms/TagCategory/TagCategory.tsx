@@ -1,10 +1,7 @@
 import { filter, includes, map } from 'lodash'
 import { FC, useCallback } from 'react'
-import { TagTypes, TagsUpdatePayloadType, TagsUpdateType } from 'types/tags'
-import EditableListContainer, {
-  ListDataType,
-} from 'components/molecules/EditableListContainer/EditableListContainer'
-
+import { Tag, TagTypes, TagsPayload } from 'types/tags'
+import EditableListContainer from 'components/molecules/EditableListContainer/EditableListContainer'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import { useBulkUpdate } from 'hooks/requests/useTags'
 import {
@@ -17,7 +14,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import useValidators from 'hooks/useValidators'
 
 type TagCategoryTypes = {
-  tagsList?: ListDataType[]
+  tagsList?: Tag[]
   type: TagTypes
   isEditable: boolean
 }
@@ -33,7 +30,7 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
         ({ state }) => !includes([DataStateTypes.DELETED], state)
       )
 
-      const updatedData: TagsUpdateType[] = map(
+      const updatedData: Partial<Tag>[] = map(
         filteredData,
         ({ name, id, state }) => {
           return {
@@ -43,7 +40,7 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
         }
       )
 
-      const payload: TagsUpdatePayloadType = {
+      const payload: TagsPayload = {
         type,
         tags: updatedData,
       }

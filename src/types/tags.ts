@@ -4,23 +4,13 @@ export enum TagTypes {
   Tellimus = 'Tellimus',
   Oskused = 'Oskused',
 }
-
-export interface TagFields extends Object {
-  id?: string
-  institution_id?: string
-  name?: string
-  type?: TagTypes
-  created_at?: string
-  updated_at?: string
-}
-
 export interface TagsResponse {
-  data: TagFields[]
+  data: Tag[]
 }
 
 export interface TagsPayload {
   type?: TagTypes
-  tags: TagFields[]
+  tags: Partial<Tag>[]
 }
 
 export interface Tag {
@@ -30,13 +20,4 @@ export interface Tag {
   type: TagTypes
   created_at: string
   updated_at: string
-}
-
-export interface TagsUpdateType {
-  name: string
-  id?: string
-}
-export interface TagsUpdatePayloadType {
-  type?: TagTypes
-  tags: TagsUpdateType[]
 }
