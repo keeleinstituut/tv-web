@@ -6,11 +6,14 @@ import { useFetchSkills, useFetchVendorPrices } from 'hooks/requests/useVendors'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
+  SizeTypes,
 } from 'components/molecules/Button/Button'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
+import { ReactComponent as Edit } from 'assets/icons/edit.svg'
+import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import DynamicForm, {
   FieldProps,
@@ -44,6 +47,7 @@ export type Prices = {
   hour_fee: number
   minimal_fee: number
   skill: Skill
+  language_direction: string
 }
 
 const VendorPriceListForm: FC = () => {
@@ -133,13 +137,13 @@ const VendorPriceListForm: FC = () => {
         id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
         type: 'string',
         value: 'string',
-        name: 'string',
+        name: 'ee-ET',
       },
       destination_language_classifier_value: {
         id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
         type: 'string',
         value: 'string',
-        name: 'string',
+        name: 'en-GB',
       },
       skill: {
         id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
@@ -165,13 +169,13 @@ const VendorPriceListForm: FC = () => {
         id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
         type: 'string',
         value: 'string',
-        name: 'string',
+        name: 'ee-ET',
       },
       destination_language_classifier_value: {
         id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
         type: 'string',
         value: 'string',
-        name: 'string',
+        name: 'ru-RU',
       },
       skill: {
         id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
@@ -192,6 +196,7 @@ const VendorPriceListForm: FC = () => {
           hour_fee: data.hour_fee,
           minimal_fee: data.minimal_fee,
           skill: data.skill.name,
+          language_direction: `${data.source_language_classifier_value.name} > ${data.destination_language_classifier_value.name}`,
         }
       }) || {}
     )
@@ -203,32 +208,88 @@ const VendorPriceListForm: FC = () => {
 
   const columns = [
     columnHelper.accessor('skill', {
-      header: () => 'Oskus',
+      header: () => t('vendors.skill'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('character_fee', {
-      header: () => 'Tähemärk',
+      header: () => t('vendors.character_fee'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('word_fee', {
-      header: () => 'Sõna',
+      header: () => t('vendors.word_fee'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('page_fee', {
-      header: () => 'Lehekülg',
+      header: () => t('vendors.page_fee'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('minute_fee', {
-      header: () => 'Minut',
+      header: () => t('vendors.minute_fee'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('hour_fee', {
-      header: () => 'Tund',
+      header: () => t('vendors.hour_fee'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('minimal_fee', {
-      header: () => 'Min tasu',
+      header: () => t('vendors.minimal_fee'),
       footer: (info) => info.column.id,
+    }),
+  ] as ColumnDef<any>[]
+
+  const columns2 = [
+    columnHelper.accessor('language_direction', {
+      header: () => t('vendors.language_direction'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('skill', {
+      header: () => t('vendors.skill'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('character_fee', {
+      header: () => t('vendors.character_fee'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('word_fee', {
+      header: () => t('vendors.word_fee'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('page_fee', {
+      header: () => t('vendors.page_fee'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('minute_fee', {
+      header: () => t('vendors.minute_fee'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('hour_fee', {
+      header: () => t('vendors.hour_fee'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('minimal_fee', {
+      header: () => t('vendors.minimal_fee'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('id', {
+      header: () => <></>,
+      cell: ({ getValue }) => (
+        <div className={classes.iconsContainer}>
+          <Button
+            appearance={AppearanceTypes.Text}
+            icon={Edit}
+            ariaLabel={t('vendors.edit_language_pair')}
+            className={classes.editIcon}
+            // handle modal open
+          />
+          <Button
+            appearance={AppearanceTypes.Text}
+            icon={Delete}
+            ariaLabel={t('vendors.delete')}
+            className={classes.deleteIcon}
+            // handle delete
+          />
+        </div>
+      ),
     }),
   ] as ColumnDef<any>[]
 
@@ -295,7 +356,7 @@ const VendorPriceListForm: FC = () => {
                       </span>
                     </div>
                   }
-                  className={classes.vendorPriceListContainer}
+                  className={classes.priceListContainer}
                 />
               </Root>
             </>
@@ -308,20 +369,23 @@ const VendorPriceListForm: FC = () => {
   return (
     <Root>
       <DataTable
-        data={[]}
-        columns={[]}
-        tableSize={TableSizeTypes.L}
+        data={pricesData}
+        columns={columns2}
+        tableSize={TableSizeTypes.M}
         hidePagination
-        title={t('vendors.user_price_list_title')}
-        headComponent={
-          <Button
-            appearance={AppearanceTypes.Text}
-            icon={AddIcon}
-            iconPositioning={IconPositioningTypes.Left}
-            onClick={handleModalOpen}
-          >
-            {t('vendors.add_language_directions')}
-          </Button>
+        title={
+          <div className={classes.pricesDataTableHeader}>
+            {t('vendors.vendor_price_list_title')}
+            <Button
+              appearance={AppearanceTypes.Text}
+              icon={AddIcon}
+              iconPositioning={IconPositioningTypes.Left}
+              onClick={handleModalOpen}
+              className={classes.pricesLanguageButton}
+            >
+              {t('vendors.add_language_directions')}
+            </Button>
+          </div>
         }
       />
     </Root>

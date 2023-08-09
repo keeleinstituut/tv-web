@@ -41,7 +41,25 @@
   display: flex;
   justify-content: space-between;
 }
-.vendorPriceListContainer {
+.priceListContainer {
   border: 1px solid $color-primary;
   margin: spacing(6) 0;
+}
+.pricesDataTableHeader {
+  display: flex;
+}
+.pricesLanguageButton {
+  align-self: center;
+  padding-left: spacing(6);
+}
+.iconsContainer {
+  display: flex;
+}
+.deleteIcon svg,
+.editIcon svg {
+  width: 22px;
+  height: 20px;
+}
+.deleteIcon svg path {
+  fill: $color-error;
 }

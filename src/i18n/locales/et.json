@@ -272,7 +272,7 @@
   },
   "vendors": {
     "vendors_database": "Teostajate andmebaas",
-    "user_price_list_title": "Hinnakiri",
+    "vendor_price_list_title": "Hinnakiri",
     "add_language_directions": "Lisa keelesuund",
     "add_language_pairs": "Vali keelepaarid",
     "add_skills": "Lisa oskused",
@@ -286,7 +286,17 @@
     "primal_language": "Algkeel",
     "target_language": "Sihtkeel",
     "prices": "Hinnad",
-    "eur": "EUR"
+    "eur": "EUR",
+    "skill":"Oskus",
+    "character_fee": "Tähemärk",
+    "word_fee": "Sõna",
+    "page_fee": "Lehekülg",
+    "minute_fee": "Minut",
+    "hour_fee": "Tund",
+    "minimal_fee": "Min tasu",
+    "language_direction": "Keelesuund",
+    "edit_language_pair": "Muuda keelesuunda",
+    "delete": "Kustuta keelesuund"
     
   },
   "file": {
