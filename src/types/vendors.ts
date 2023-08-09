@@ -38,3 +38,12 @@ export type SkillsData = {
 export type GetSkillsPayload = {
   data?: SkillsData[]
 }
+
+export type PricesData = {
+  id?: string
+  name?: string
+}
+
+export type GetVendorPricesPayload = {
+  data?: PricesData[]
+}

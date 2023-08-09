@@ -3,6 +3,7 @@ import {
   GetVendorsPayload,
   UpdateVendorPayload,
   GetSkillsPayload,
+  GetVendorPricesPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -69,6 +70,21 @@ export const useFetchSkills = () => {
     queryKey: ['skills'],
     queryFn: () => apiClient.get(`${endpoints.SKILLS}`),
   })
+
+  return {
+    isLoading,
+    isError,
+    data: data?.data,
+  }
+}
+
+export const useFetchVendorPrices = () => {
+  const { isLoading, isError, data } = useQuery<GetVendorPricesPayload>({
+    queryKey: ['prices'],
+    queryFn: () => apiClient.get(`${endpoints.PRICES}`),
+  })
+
+  console.log('data**************', data)
 
   return {
     isLoading,

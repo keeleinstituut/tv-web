@@ -283,7 +283,8 @@
     "price_list_helper_text": "Määra oskusele ühikupõhised hinnad. Juhul, kui mõnda arvestusühikut selle teostaja puhul ei kasutata või puudub kokkulepitud hind, siis võib jätta selle ühiku hinnaks nulli.",
     "primal_language": "Algkeel",
     "target_language": "Sihtkeel",
-    "prices": "Hinnad"
+    "prices": "Hinnad",
+    "eur": "EUR"
     
   },
   "file": {
