@@ -19,14 +19,14 @@ type EditableListTypes = {
   title?: string
   data?: ListDataType[]
   isEditable?: boolean
-  handelEditList?: () => void
+  handleEditList?: () => void
 }
 
 const EditableListContainer: FC<EditableListTypes> = ({
   title,
   data,
   isEditable,
-  handelEditList,
+  handleEditList,
 }) => {
   const { t } = useTranslation()
 
@@ -39,7 +39,7 @@ const EditableListContainer: FC<EditableListTypes> = ({
           size={SizeTypes.S}
           className={classes.editButton}
           icon={EditIcon}
-          onClick={handelEditList}
+          onClick={handleEditList}
           hidden={!isEditable}
         >
           {t('button.change')}

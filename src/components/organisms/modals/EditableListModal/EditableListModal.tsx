@@ -15,14 +15,25 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { filter, includes, isEqual, map, reduce, size } from 'lodash'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import {
+  filter,
+  includes,
+  isEqual,
+  join,
+  map,
+  omitBy,
+  reduce,
+  size,
+  split,
+  toNumber,
+} from 'lodash'
+import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { TagTypes } from 'types/tags'
 import useAuth from 'hooks/useAuth'
 import classes from './classes.module.scss'
 import { Privileges } from 'types/privileges'
-import { showValidationErrorMessage } from 'api/errorHandler'
+import { ValidationError } from 'api/errorHandler'
 
 export enum DataStateTypes {
   UPDATED = 'UPDATED',
@@ -45,15 +56,13 @@ export interface EditableListModalProps {
   title?: string
   type?: TagTypes
   isLoading?: boolean
-  handelOnSubmit?: (values: EditDataType[]) => void
+  handleOnSubmit?: (values: EditDataType[]) => void
   inputValidator?: (value?: string | undefined) => string | true
 }
 
-type EditableDefaultDataType = object & {
+type FormValues = {
   [key in string]?: string
 }
-
-type FormValues = EditableDefaultDataType
 
 const EditableListModal: FC<EditableListModalProps> = ({
   isModalOpen,
@@ -61,23 +70,23 @@ const EditableListModal: FC<EditableListModalProps> = ({
   editableData,
   title,
   type,
-  handelOnSubmit,
+  handleOnSubmit,
   isLoading,
   inputValidator,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
-  const defaultValues: EditableDefaultDataType = useMemo(
+  const defaultValues: FormValues = useMemo(
     () =>
       reduce(
         editableData,
-        (result, value, key) => {
+        (result, value) => {
           if (!value.id) {
             return result
           }
           return {
-            ...(key > 0 && result),
+            ...result,
             [value.id]: value.name,
           }
         },
@@ -87,7 +96,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
     [editableData]
   )
 
-  const { control, handleSubmit, reset } = useForm<FormValues>({
+  const { control, handleSubmit, reset, setError } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     values: defaultValues,
   })
@@ -104,7 +113,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
       },
       className: classes.editTagInput,
       ...(includes(userPrivileges, Privileges.DeleteTag)
-        ? { handleDelete: () => handelOnDelete(name, id) }
+        ? { handleDelete: () => handleOnDelete(name, id) }
         : {}),
     })
   )
@@ -112,7 +121,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
   const [inputFields, setInputFields] =
     useState<FieldProps<FormValues>[]>(editableFields)
 
-  const [deletedValues, setDeletedValues] = useState<EditDataType[]>([])
+  const [prevDeletedValues, setPrevDeletedValues] = useState<EditDataType[]>([])
 
   const addInputField = () =>
     setInputFields([
@@ -127,23 +136,26 @@ const EditableListModal: FC<EditableListModalProps> = ({
         },
         className: classes.editTagInput,
         ...(includes(userPrivileges, Privileges.DeleteTag)
-          ? { handleDelete: () => handelOnDelete(`new_${size(inputFields)}`) }
+          ? { handleDelete: () => handleOnDelete(`new_${size(inputFields)}`) }
           : {}),
       },
     ])
 
-  const handelOnDelete = (name?: string, id?: string) => {
-    setDeletedValues((deletedValues) => [...deletedValues, { name, id }])
+  const handleOnDelete = (name?: string, id?: string) => {
+    setPrevDeletedValues((prevDeletedValues) => [
+      ...prevDeletedValues,
+      { name, id },
+    ])
   }
 
   useEffect(() => {
-    const deleteFiled = filter(inputFields, (field) => {
-      const values = map(deletedValues, ({ name }) => name)
+    const deleteFields = filter(inputFields, (field) => {
+      const values = map(prevDeletedValues, ({ name }) => name)
       const name = !field?.label ? field?.name : field?.label
       return !includes(values, name)
     })
-    setInputFields(deleteFiled)
-  }, [deletedValues])
+    setInputFields(deleteFields)
+  }, [prevDeletedValues])
 
   useEffect(() => {
     setInputFields(editableFields)
@@ -151,41 +163,60 @@ const EditableListModal: FC<EditableListModalProps> = ({
 
   const resetForm = useCallback(() => {
     reset()
-    setDeletedValues([])
+    setPrevDeletedValues([])
+    setInputFields(editableFields)
   }, [editableFields, inputFields, reset])
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const payload: EditDataType[] = map(values, (value, key) => {
+      const omittedValues = omitBy(values, (value) => !value)
+
+      const payload: EditDataType[] = map(omittedValues, (value, key) => {
         switch (true) {
-          case !isEqual(values[key], defaultValues[key]) &&
-            !includes(key, 'new_'): {
-            return { type, name: value, id: key, state: DataStateTypes.UPDATED }
-          }
           case includes(key, 'new_'): {
-            return { type, name: value, id: key, state: DataStateTypes.NEW }
+            return { name: value, id: key, state: DataStateTypes.NEW }
           }
-          case includes(map(deletedValues, 'id'), key): {
-            return { type, name: value, id: key, state: DataStateTypes.DELETED }
+          case !isEqual(omittedValues[key], defaultValues[key]): {
+            return { name: value, id: key, state: DataStateTypes.UPDATED }
+          }
+          case includes(map(prevDeletedValues, 'id'), key): {
+            return { name: value, id: key, state: DataStateTypes.DELETED }
           }
           default: {
-            return { type, name: value, id: key, state: DataStateTypes.OLD }
+            return { name: value, id: key, state: DataStateTypes.OLD }
           }
         }
       })
 
       try {
-        if (handelOnSubmit) {
-          handelOnSubmit(payload)
+        if (handleOnSubmit) {
+          await handleOnSubmit(payload)
         }
-      } catch (errorData) {
-        showValidationErrorMessage(errorData)
-      } finally {
         resetForm()
         closeModal()
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const tKey = split(typedKey, '.')[1]
+            const errorString = join(errorsArray, ',')
+            if (tKey) {
+              const inputName = payload[toNumber(tKey)].id || `new_${tKey}`
+              setError(inputName, { type: 'backend', message: errorString })
+            }
+          })
+        }
       }
     },
-    [defaultValues, deletedValues, type, handelOnSubmit, resetForm, closeModal]
+    [
+      defaultValues,
+      prevDeletedValues,
+      type,
+      handleOnSubmit,
+      resetForm,
+      closeModal,
+    ]
   )
 
   return (

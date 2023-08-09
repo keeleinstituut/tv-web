@@ -7,16 +7,22 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-//import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import Button from 'components/molecules/Button/Button' //IconPositioningTypes, //AppearanceTypes,
+import Button from 'components/molecules/Button/Button'
 import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
-import { groupBy, includes, map, omit } from 'lodash'
-import { TagTypes, TagsPayload } from 'types/tags'
+import {
+  fromPairs,
+  groupBy,
+  includes,
+  map,
+  omit,
+  sortBy,
+  toPairs,
+} from 'lodash'
+import { Tag, TagTypes, TagsPayload } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import Loader from 'components/atoms/Loader/Loader'
-// import { v4 as uuidv4 } from 'uuid'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import useValidators from 'hooks/useValidators'
@@ -24,11 +30,6 @@ import TagCategory from 'components/organisms/TagCategory/TagCategory'
 import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
-import { ListDataType } from 'components/molecules/EditableListContainer/EditableListContainer'
-
-// export interface ObjectType {
-//   [key: string]: string
-// }
 
 export type FormValues = {
   name: string
@@ -43,7 +44,9 @@ const Tags: FC = () => {
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
 
-  const groupedCategoryData = groupBy(tags, 'type')
+  const groupedData = groupBy(tags, 'type')
+
+  const sortedData = fromPairs(sortBy(toPairs(groupedData), 0))
 
   const tagCategoryOptions = map(omit(TagTypes, TagTypes.Oskused), (type) => {
     return {
@@ -92,38 +95,10 @@ const Tags: FC = () => {
     },
   ]
 
-  // const [inputFields, setInputFields] = useState(tagFields)
-
-  // const addInputField = () => {
-  //   setInputFields([
-  //     ...inputFields,
-  //     {
-  //       inputType: InputTypes.Text,
-  //       ariaLabel: t('tag.tag_name'),
-  //       label: 'Nimetus',
-  //       name: `tagInput.${uuidv4()}`,
-  //       placeholder: t('tag.tag_input'),
-  //       type: 'text',
-  //       rules: {
-  //         required: true,
-  //         validate: tagInputValidator,
-  //       },
-  //       className: classes.tagInputField,
-  //     },
-  //   ])
-  // }
-
   const onTagsSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const { name, type } = values
-      // const transformedObject = flatMap(tagInput, (tagInputValue) =>
-      //   map(tagCategorySelection, (tagCategoryValue) => {
-      //     return {
-      //       type: tagCategoryValue,
-      //       name: tagInputValue,
-      //     }
-      //   })
-      // )
+
       const payload: TagsPayload = {
         tags: [{ name, type }],
       }
@@ -164,15 +139,6 @@ const Tags: FC = () => {
 
         <div className={classes.tagsSection}>
           <DynamicForm fields={tagFields} control={control} />
-          {/* <Button
-            appearance={AppearanceTypes.Text}
-            iconPositioning={IconPositioningTypes.Left}
-            icon={Add}
-            className={classes.addNewRow}
-            children={t('tag.add_new_row')}
-            onClick={addInputField}
-            hidden={!includes(userPrivileges, Privileges.AddTag)}
-          /> */}
         </div>
 
         <div className={classes.categorySection}>
@@ -190,20 +156,17 @@ const Tags: FC = () => {
         </div>
       </Container>
       <div className={classes.categoryContainer}>
-        {map(
-          groupedCategoryData,
-          (tagsList: ListDataType[], type: TagTypes) => (
-            <TagCategory
-              key={type}
-              tagsList={tagsList}
-              type={type}
-              isEditable={
-                type !== TagTypes.Oskused ||
-                !includes(userPrivileges, Privileges.EditTag)
-              }
-            />
-          )
-        )}
+        {map(sortedData, (tagsList: Tag[], type: TagTypes) => (
+          <TagCategory
+            key={type}
+            tagsList={tagsList}
+            type={type}
+            isEditable={
+              type !== TagTypes.Oskused ||
+              !includes(userPrivileges, Privileges.EditTag)
+            }
+          />
+        ))}
       </div>
     </>
   )

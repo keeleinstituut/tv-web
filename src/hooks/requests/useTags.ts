@@ -1,11 +1,6 @@
 import { apiClient } from 'api'
 import { filter, find, map } from 'lodash'
-import {
-  TagsResponse,
-  TagsPayload,
-  TagsUpdatePayloadType,
-  TagTypes,
-} from 'types/tags'
+import { TagsResponse, TagsPayload, TagTypes } from 'types/tags'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 
@@ -77,7 +72,7 @@ export const useBulkUpdate = ({ type }: { type: TagTypes }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateTags, isLoading } = useMutation({
     mutationKey: ['tags'],
-    mutationFn: async (payload: TagsUpdatePayloadType) =>
+    mutationFn: async (payload: TagsPayload) =>
       apiClient.post(endpoints.UPDATE_TAGS, payload),
 
     onSuccess: ({ data }) => {
