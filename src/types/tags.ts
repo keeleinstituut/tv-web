@@ -4,12 +4,12 @@ export enum TagTypes {
   Tellimus = 'Tellimus',
   Oskused = 'Oskused',
 }
-
 export interface TagsResponse {
   data: Tag[]
 }
 
 export interface TagsPayload {
+  type?: TagTypes
   tags: Partial<Tag>[]
 }
 

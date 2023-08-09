@@ -2,6 +2,7 @@ import { FC, ReactElement } from 'react'
 import { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'
 import ModalBase, {
   ButtonPositionTypes,
+  ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import { useTranslation } from 'react-i18next'
@@ -17,6 +18,7 @@ export interface UserAndRoleManagementModalProps {
   handleCancel?: () => void
   className?: string
   dynamicForm?: JSX.Element
+  size?: ModalSizeTypes
 }
 
 const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
@@ -30,6 +32,7 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
   handleCancel,
   className,
   dynamicForm,
+  size,
 }) => {
   const { t } = useTranslation()
   return (
@@ -39,6 +42,7 @@ const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({
       open={!!isModalOpen}
       buttonsPosition={ButtonPositionTypes.Right}
       className={className}
+      size={size}
       buttons={[
         {
           appearance: AppearanceTypes.Secondary,
