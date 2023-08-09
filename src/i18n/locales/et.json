@@ -112,7 +112,8 @@
     "invalid_username": "Palun lisage ka perekonnanimi",
     "tag_input_length": "Sildi maksimaalne pikkus võib olla kuni 50 tähemärki",
     "tag_input_char_error": "Lubatud on tähed (a-z), numbrid (0-9), tühik ja sidekriips",
-    "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina"
+    "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina",
+    "discount_number": "Soodustus võib olla vahemikus 0-100"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -296,8 +297,11 @@
     "minimal_fee": "Min tasu",
     "language_direction": "Keelesuund",
     "edit_language_pair": "Muuda keelesuunda",
-    "delete": "Kustuta keelesuund"
-    
+    "delete": "Kustuta keelesuund",
+    "analysis_based_discount": "Analüüsipõhine soodustus",
+    "repetitions": "Kordused",
+    "match_type": "Vaste tüüp",
+    "percent_from_price": "% hinnast"
   },
   "file": {
     "drop_files": "Pane failid siia...",

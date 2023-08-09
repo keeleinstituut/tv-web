@@ -1,19 +1,24 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-.formContainer {
+h1 {
+  padding: spacing(8) 0;
+}
+
+.container {
   display: flex;
   flex-direction: column;
   width: 100%;
   background: $color-white;
-  padding: spacing(6) spacing(8) spacing(6) 0;
+  padding: spacing(8) spacing(6);
   border: 1px solid $color-border;
   border-radius: 6px;
   box-shadow: 0 4px 10px $color-shadow-main;
 
   .formButtons {
-    align-self: end;
-    padding-top: spacing(2);
+    display: flex;
+    margin: spacing(3);
+    justify-content: flex-end;
   }
 
   .inputInternalPosition {
@@ -21,28 +26,19 @@
     margin-bottom: spacing(4);
     padding-right: spacing(10);
 
-    input {
+    input, textarea {
       width: 274px;
     }
+
   }
 }
 
-.container {
-  border-top: unset;
+.paddingRight120 {
+  padding-right: 120px;
+}
 
-  border-bottom-right-radius: 6px;
-  border-bottom-left-radius: 6px;
-
-  h2 {
-    @include h3TextStyle;
-    margin-bottom: spacing(8);
-  }
-
-  .formContainer {
-    display: grid;
-    grid-gap: spacing(4);
-    grid-template-columns: 1fr 1fr;
-  }
+.formContainer {
+  display: flex;
 }
 
 .deleteButton {
