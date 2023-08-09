@@ -1,146 +1,66 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import FormButtons from 'components/organisms/FormButtons/FormButtons'
 import classes from './classes.module.scss'
 import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { Control } from 'react-hook-form/dist/types'
-import { Vendor } from 'types/vendors'
+import {
+  DiscountPercentageNames,
+  DiscountPercentages,
+  Vendor,
+} from 'types/vendors'
+import useValidators from 'hooks/useValidators'
+import { map } from 'lodash'
 
 interface DiscountFormProps {
   vendor: Vendor
   isFormDisabled: boolean
-  control: Control<FormValues, any>
+  control: Control<DiscountPercentages, unknown>
   isSubmitting: boolean
   isDirty: boolean
   isValid: boolean
   resetForm: () => void
 }
 
-interface FormValues {
-  discount_percentage_0_49?: string
-  discount_percentage_50_74?: string
-  discount_percentage_75_84?: string
-  discount_percentage_85_94?: string
-  discount_percentage_95_99?: string
-  discount_percentage_100?: string
-  discount_percentage_101?: string
-  discount_percentage_repetitions?: string
-}
-
-const DiscountFrom: FC<DiscountFormProps> = ({
-  vendor,
-  isFormDisabled,
-  control,
-  isSubmitting,
-  isDirty,
-  isValid,
-  resetForm,
-}) => {
+const DiscountFrom: FC<DiscountFormProps> = ({ control }) => {
   const { t } = useTranslation()
+  const { discountValidator } = useValidators()
 
-  const precentages: string[] = [
-    '101%',
-    t('vendors.repetitions'),
-    '95-99%',
-    '85-94%',
-    '75-84%',
-    '50-74%',
-    '0-49%',
-  ]
+  type PercentageRow = {
+    label: string
+    name: DiscountPercentageNames
+  }
 
-  const fields: FieldProps<FormValues>[] = [
+  const percentages: PercentageRow[] = [
+    { label: '101%', name: DiscountPercentageNames.DP_101 },
     {
-      inputType: InputTypes.Text,
-      ariaLabel: '101%',
-      placeholder: '20.00%',
-      label: '101%',
-      name: 'discount_percentage_101',
-      className: classes.inputContainer,
-      rules: {
-        required: true,
-      },
-    },
-    {
-      inputType: InputTypes.Text,
-      ariaLabel: t('vendors.repetitions'),
-      placeholder: '20.00%',
       label: t('vendors.repetitions'),
-      name: 'discount_percentage_repetitions',
-      className: classes.inputContainer,
-      rules: {
-        required: true,
-      },
+      name: DiscountPercentageNames.DP_repetitions,
     },
-    {
-      inputType: InputTypes.Text,
-      ariaLabel: t('vendors.repetitions'),
-      placeholder: '20.00%',
-      label: '100%',
-      name: 'discount_percentage_100',
-      className: classes.inputContainer,
-      rules: {
-        required: true,
-      },
-    },
-    {
-      inputType: InputTypes.Text,
-      ariaLabel: t('vendors.repetitions'),
-      placeholder: '20.00%',
-      label: '100%',
-      name: 'discount_percentage_100',
-      className: classes.inputContainer,
-      rules: {
-        required: true,
-      },
-    },
-    {
-      inputType: InputTypes.Text,
-      ariaLabel: t('vendors.repetitions'),
-      placeholder: '20.00%',
-      label: '100%',
-      name: 'discount_percentage_100',
-      className: classes.inputContainer,
-      rules: {
-        required: true,
-      },
-    },
-    {
-      inputType: InputTypes.Text,
-      ariaLabel: t('vendors.repetitions'),
-      placeholder: '20.00%',
-      label: '100%',
-      name: 'discount_percentage_100',
-      className: classes.inputContainer,
-      rules: {
-        required: true,
-      },
-    },
-    {
-      inputType: InputTypes.Text,
-      ariaLabel: t('vendors.repetitions'),
-      placeholder: '20.00%',
-      label: '100%',
-      name: 'discount_percentage_100',
-      className: classes.inputContainer,
-      rules: {
-        required: true,
-      },
-    },
-    {
-      inputType: InputTypes.Text,
-      ariaLabel: t('vendors.repetitions'),
-      placeholder: '20.00%',
-      label: '100%',
-      name: 'discount_percentage_100',
-      className: classes.inputContainer,
-      rules: {
-        required: true,
-      },
-    },
+    { label: '100%', name: DiscountPercentageNames.DP_100 },
+    { label: '95-99%', name: DiscountPercentageNames.DP_95_99 },
+    { label: '85-94%', name: DiscountPercentageNames.DP_85_94 },
+    { label: '75-84%', name: DiscountPercentageNames.DP_75_84 },
+    { label: '50-74%', name: DiscountPercentageNames.DP_50_74 },
+    { label: '0-49%', name: DiscountPercentageNames.DP_0_49 },
   ]
+
+  const fields: FieldProps<DiscountPercentages>[] = map(
+    percentages,
+    ({ label, name }) => ({
+      inputType: InputTypes.Text,
+      ariaLabel: label,
+      placeholder: '20.00%',
+      label,
+      name,
+      className: classes.inputContainer,
+      rules: {
+        validate: discountValidator,
+      },
+    })
+  )
 
   return (
     <div className={classes.discountFormContainer}>
@@ -149,22 +69,7 @@ const DiscountFrom: FC<DiscountFormProps> = ({
         <div>{t('vendors.match_type')}</div>
         <div>{t('vendors.percent_from_price')}</div>
       </div>
-      <DynamicForm
-        fields={fields}
-        control={control}
-        onSubmit={() => {
-          console.log('submit')
-        }}
-      >
-        <FormButtons
-          isResetDisabled={!isDirty}
-          isSubmitDisabled={!isDirty || !isValid}
-          loading={isSubmitting}
-          resetForm={resetForm}
-          hidden={isFormDisabled}
-          className={classes.formButtons}
-        />
-      </DynamicForm>
+      <DynamicForm fields={fields} control={control} />
     </div>
   )
 }

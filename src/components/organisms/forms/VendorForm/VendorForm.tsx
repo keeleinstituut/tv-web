@@ -5,7 +5,7 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
-import { includes, join, isEmpty, map, startsWith, pickBy } from 'lodash'
+import { includes, join, isEmpty, map, startsWith } from 'lodash'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
@@ -14,26 +14,19 @@ import { useFetchTags } from 'hooks/requests/useTags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
-import { UpdateVendorPayload, Vendor } from 'types/vendors'
+import { DiscountPercentages, UpdateVendorPayload, Vendor } from 'types/vendors'
 import { TagTypes } from 'types/tags'
 import DiscountFrom from '../DiscountForm/DiscountForm'
+import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
-interface FormValues {
+type FormValues = {
   name?: string
   email?: string
   phone?: string
   company_name?: string
   comment?: string
   tags?: string[]
-  discount_percentage_0_49?: string
-  discount_percentage_50_74?: string
-  discount_percentage_75_84?: string
-  discount_percentage_85_94?: string
-  discount_percentage_95_99?: string
-  discount_percentage_100?: string
-  discount_percentage_101?: string
-  discount_percentage_repetitions?: string
-}
+} & DiscountPercentages
 
 type VendorFormProps = {
   vendor: Vendor
@@ -74,14 +67,14 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       comment,
       company_name,
       tags: map(tags, 'id'),
-      discount_percentage_0_49,
-      discount_percentage_50_74,
-      discount_percentage_75_84,
-      discount_percentage_85_94,
-      discount_percentage_95_99,
-      discount_percentage_100,
-      discount_percentage_101,
-      discount_percentage_repetitions,
+      discount_percentage_0_49: discount_percentage_0_49 || '0',
+      discount_percentage_50_74: discount_percentage_50_74 || '0',
+      discount_percentage_75_84: discount_percentage_75_84 || '0',
+      discount_percentage_85_94: discount_percentage_85_94 || '0',
+      discount_percentage_95_99: discount_percentage_95_99 || '0',
+      discount_percentage_100: discount_percentage_100 || '0',
+      discount_percentage_101: discount_percentage_101 || '0',
+      discount_percentage_repetitions: discount_percentage_repetitions || '0',
     }),
     [
       company_name,
@@ -127,26 +120,20 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       inputType: InputTypes.Text,
       ariaLabel: t('label.name'),
       placeholder: t('placeholder.name'),
-      label: `${t('label.name')}*`,
+      label: `${t('label.name')}`,
       disabled: true,
       name: 'name',
       className: classes.inputInternalPosition,
-      rules: {
-        required: true,
-      },
     },
     {
       inputType: InputTypes.Text,
       ariaLabel: t('label.email'),
       placeholder: t('placeholder.email'),
       disabled: true,
-      label: `${t('label.email')}*`,
+      label: `${t('label.email')}`,
       name: 'email',
       type: 'email',
       className: classes.inputInternalPosition,
-      rules: {
-        required: true,
-      },
     },
     // TODO: add masking for phone number input, once we merge timeinput
     {
@@ -154,20 +141,17 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       ariaLabel: t('label.phone'),
       placeholder: t('placeholder.phone'),
       disabled: true,
-      label: `${t('label.phone')}*`,
+      label: `${t('label.phone')}`,
       name: 'phone',
       type: 'tel',
       className: classes.inputInternalPosition,
-      rules: {
-        required: true,
-      },
     },
     {
       inputType: InputTypes.Text,
       ariaLabel: t('label.company_name'),
       placeholder: t('placeholder.write_here'),
       disabled: isFormDisabled,
-      label: `${t('label.company_name')}*`,
+      label: `${t('label.company_name')}`,
       name: 'company_name',
       className: classes.inputInternalPosition,
       rules: {
@@ -178,16 +162,13 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       inputType: InputTypes.Selections,
       ariaLabel: t('label.tags'),
       placeholder: t('placeholder.select_tags'),
-      label: `${t('label.tags')}*`,
+      label: `${t('label.tags')}`,
       name: 'tags',
       className: classes.inputInternalPosition,
       options: tagOptions,
       multiple: true,
       buttons: true,
       disabled: isFormDisabled,
-      rules: {
-        required: true,
-      },
     },
     {
       inputType: InputTypes.Text,
@@ -195,13 +176,10 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       ariaLabel: t('label.comment'),
       placeholder: t('placeholder.write_here'),
       disabled: isFormDisabled,
-      label: `${t('label.comment')}*`,
+      label: `${t('label.comment')}`,
       name: 'comment',
       type: 'comment',
       className: classes.inputInternalPosition,
-      rules: {
-        required: true,
-      },
     },
   ]
 
@@ -215,12 +193,13 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const { name, tags, company_name, comment } = values
+      const { name, tags, company_name, comment, ...discounts } = values
 
       const payload: UpdateVendorPayload = {
         tags: (isEmpty(tags) ? [] : tags) as string[],
         company_name: company_name ?? '',
         comment: comment ?? '',
+        ...discounts,
       }
 
       try {
@@ -250,25 +229,44 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   )
 
   return (
-    <div className={classes.formContainer}>
-      <DynamicForm
-        fields={fields}
-        control={control}
-        onSubmit={handleSubmit(onSubmit)}
-        className={classes.paddingRight120}
-      />
-      <DiscountFrom
-        {...{
-          isFormDisabled,
-          control,
-          isSubmitting,
-          isDirty,
-          isValid,
-          resetForm,
-          vendor,
-        }}
-      />
-    </div>
+    <>
+      <h1>{defaultValues.name}</h1>
+      <div className={classes.container}>
+        <div className={classes.formContainer}>
+          <DynamicForm
+            fields={fields}
+            control={control}
+            className={classes.paddingRight120}
+          />
+
+          <DiscountFrom
+            {...{
+              isFormDisabled,
+              control,
+              isSubmitting,
+              isDirty,
+              isValid,
+              resetForm,
+              vendor,
+            }}
+          />
+        </div>
+        <div className={classes.formButtons}>
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            onClick={resetForm}
+            children={t('button.cancel')}
+            disabled={!isDirty || isSubmitting}
+          />
+          <Button
+            children={t('button.save')}
+            disabled={!isDirty || !isValid}
+            loading={isSubmitting}
+            onClick={handleSubmit(onSubmit)}
+          />
+        </div>
+      </div>
+    </>
   )
 }
 
