@@ -45,7 +45,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
       setActiveStep(activeStep + 1)
     }
   }
-  const handelQuit = () => {
+  const handleQuit = () => {
     //Todo add form reset
     //resetForm()
     closeModal()
@@ -70,7 +70,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
       buttons={[
         {
           appearance: AppearanceTypes.Secondary,
-          onClick: handelQuit,
+          onClick: handleQuit,
           children: t('button.quit'),
         },
         {
