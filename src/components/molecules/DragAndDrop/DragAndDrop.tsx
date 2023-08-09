@@ -35,7 +35,6 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
   isFilesListHidden,
 }) => {
   const containerRef = useRef(null)
-  // const { left, top } = parentRef?.current?.getBoundingClientRect() || {}
   const { left, top, right } =
     useElementPosition(parentRef, undefined, undefined, isDragAndDropOpen) || {}
   const [inViewport, ratio] = useInViewport(containerRef)

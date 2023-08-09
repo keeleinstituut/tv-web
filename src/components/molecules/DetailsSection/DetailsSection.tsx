@@ -93,8 +93,6 @@ const DetailsSection = <TFormValues extends FieldValues>({
         name: 'comments' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         isTextarea: true,
-        // TODO: need to add textarea option for Text input for this
-        // isTextarea: true,
       },
       {
         inputType: InputTypes.Text,

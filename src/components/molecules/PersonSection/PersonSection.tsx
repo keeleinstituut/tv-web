@@ -105,7 +105,6 @@ const PersonSection = <TFormValues extends FieldValues>({
   const handleFetchNextPage = useCallback(() => {
     const { current_page = 0, last_page = 0 } = paginationData || {}
     if (current_page < last_page && !isFetching) {
-      // handlePaginationChange({ page: current_page + 1 })
       fetchNextPage()
     }
   }, [paginationData, isFetching, fetchNextPage])
@@ -117,8 +116,10 @@ const PersonSection = <TFormValues extends FieldValues>({
         userPrivileges
       )
     )
+
     const shouldAddCurrentUser =
       type === PersonSectionTypes.Client || isCurrentUserPotentialManager
+
     if (!shouldAddCurrentUser) return users
     return uniqBy(concat([user], users), 'id')
   }, [type, user, userPrivileges, users])
@@ -175,7 +176,9 @@ const PersonSection = <TFormValues extends FieldValues>({
       >
         {title}
       </h2>
-      <span className={classes.labelClass}>{fieldLabel}</span>
+      <label htmlFor={fieldName} className={classes.labelClass}>
+        {fieldLabel}
+      </label>
       <FormInput
         name={fieldName as Path<TFormValues>}
         ariaLabel={t('label.name')}

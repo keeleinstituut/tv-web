@@ -172,5 +172,5 @@ export const getFormattedDateFromObject = ({
   time?: string
 }) => {
   const dayjsObject = dayjs(trim(`${date || ''} ${time || ''}`))
-  return dayjsObject.format('DD/MM/YYYY hh:mm:ss')
+  return dayjsObject.utc().format('DD/MM/YYYY hh:mm:ss')
 }

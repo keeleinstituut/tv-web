@@ -25,7 +25,4 @@ export interface SortingFunctionType {
 export interface PaginationFunctionType {
   per_page?: 10 | 50 | 100 | number
   page?: number
-  // in some other services, different approaches for pagination are used
-  // For example fetching users from translation-service accepts the limit parameter instead of per_page
-  limit?: number
 }
