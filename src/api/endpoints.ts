@@ -16,6 +16,8 @@ export const endpoints = {
   VENDORS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}vendors`,
   CLASSIFIER_VALUES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}classifier-values`,
   PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}projects`,
+  SUBPROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}subprojects`,
+  TASKS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}workflow/tasks`,
 }
 
 export const authEndpoints = {

@@ -10,6 +10,8 @@ import {
   Suspense,
 } from 'react'
 import { FormProgressProps } from './FormProgressModal/FormProgressModal'
+import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
+import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -24,11 +26,21 @@ const FormProgressModal = lazy(
   () => import('./FormProgressModal/FormProgressModal')
 )
 
+const CatSplitModal = lazy(
+  () => import('./CatSplitModal/CatSplitModal')
+)
+
+const CatMergeModal = lazy(
+  () => import('./CatMergeModal/CatMergeModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
   Tooltip = 'tooltip',
   FormProgress = 'formProgress',
+  CatSplit = 'catSplit',
+  CatMerge = 'catMerge',
 }
 
 // Add other modal props types here as well
@@ -37,12 +49,16 @@ type ModalPropTypes =
   | Omit<UserAndRoleManagementModalProps, 'closeModal'>
   | Omit<TooltipModalProps, 'closeModal'>
   | Omit<FormProgressProps, 'closeModal'>
+  | Omit<CatSplitModalProps, 'closeModal'>
+  | Omit<CatMergeModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
   userAndRoleManagement: UserAndRoleManagementModal,
   tooltip: TooltipModal,
   formProgress: FormProgressModal,
+  catSplit: CatSplitModal,
+  catMerge: CatMergeModal,
 }
 
 interface RefType {
@@ -62,6 +78,8 @@ const ModalRoot = () => {
   // so that every modal would accepts only their own props
   const showModal = useCallback(
     (modalKey: ModalTypes, modalProps: object) => {
+      console.warn(modalKey)
+      console.warn(modalProps)
       setCurrentModalProps(modalProps)
       setCurrentModalKey(modalKey)
       setIsOpen(true)
@@ -82,9 +100,13 @@ const ModalRoot = () => {
     }),
     [closeModal, showModal, isModalOpen]
   )
+  console.warn('currentModalKey: ' + currentModalKey)
 
   if (!currentModalKey) return null
-  const SelectedModal = MODALS[currentModalKey]
+  const SelectedModal = MODALS[currentModalKey] as any
+
+  console.warn(SelectedModal)
+
   return (
     <Suspense fallback={<div />}>
       <SelectedModal

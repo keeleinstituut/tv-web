@@ -44,6 +44,7 @@ import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
+import TaskPage from 'pages/TaskPage/TaskPage'
 
 export type FullRouteObject = Omit<RouteObject, 'children'> & {
   label?: string
@@ -112,8 +113,18 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
-        element: <MyTasks />,
-        privileges: [Privileges.ViewPersonalTask],
+        children: [
+          {
+            path: '',
+            element: <MyTasks />,
+            // privileges: [Privileges.ViewPersonalTask],
+          },
+          {
+            path: ':taskId',
+            element: <TaskPage />,
+            // privileges: [],
+          }
+        ]
       },
       {
         path: ':orderId',
