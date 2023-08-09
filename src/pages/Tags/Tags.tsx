@@ -10,7 +10,15 @@ import DynamicForm, {
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button'
 import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
-import { groupBy, includes, map, omit } from 'lodash'
+import {
+  fromPairs,
+  groupBy,
+  includes,
+  map,
+  omit,
+  sortBy,
+  toPairs,
+} from 'lodash'
 import { Tag, TagTypes, TagsPayload } from 'types/tags'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -36,7 +44,9 @@ const Tags: FC = () => {
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
 
-  const groupedCategoryData = groupBy(tags, 'type')
+  const groupedData = groupBy(tags, 'type')
+
+  const sortedData = fromPairs(sortBy(toPairs(groupedData), 0))
 
   const tagCategoryOptions = map(omit(TagTypes, TagTypes.Oskused), (type) => {
     return {
@@ -146,7 +156,7 @@ const Tags: FC = () => {
         </div>
       </Container>
       <div className={classes.categoryContainer}>
-        {map(groupedCategoryData, (tagsList: Tag[], type: TagTypes) => (
+        {map(sortedData, (tagsList: Tag[], type: TagTypes) => (
           <TagCategory
             key={type}
             tagsList={tagsList}

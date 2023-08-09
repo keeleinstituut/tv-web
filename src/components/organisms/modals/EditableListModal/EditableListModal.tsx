@@ -21,6 +21,7 @@ import {
   isEqual,
   join,
   map,
+  omitBy,
   reduce,
   size,
   split,
@@ -168,12 +169,14 @@ const EditableListModal: FC<EditableListModalProps> = ({
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const payload: EditDataType[] = map(values, (value, key) => {
+      const omittedValues = omitBy(values, (value) => !value)
+
+      const payload: EditDataType[] = map(omittedValues, (value, key) => {
         switch (true) {
           case includes(key, 'new_'): {
             return { name: value, id: key, state: DataStateTypes.NEW }
           }
-          case !isEqual(values[key], defaultValues[key]): {
+          case !isEqual(omittedValues[key], defaultValues[key]): {
             return { name: value, id: key, state: DataStateTypes.UPDATED }
           }
           case includes(map(prevDeletedValues, 'id'), key): {
