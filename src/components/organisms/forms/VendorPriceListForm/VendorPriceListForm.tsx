@@ -6,7 +6,6 @@ import { useFetchSkills, useFetchVendorPrices } from 'hooks/requests/useVendors'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
-  SizeTypes,
 } from 'components/molecules/Button/Button'
 import DataTable, {
   TableSizeTypes,
@@ -21,6 +20,8 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useForm } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import dayjs from 'dayjs'
+import AddPricesTable from 'components/organisms/tables/AddPricesTable/AddPricesTable'
 
 import classes from './classes.module.scss'
 
@@ -28,8 +29,8 @@ type SkillsFormValue = {
   [key in string]?: string
 }
 interface FormValues {
-  primal_language: string
-  target_language: string[]
+  source_language: string
+  destination_language: string[]
   skills: SkillsFormValue
 }
 
@@ -56,68 +57,7 @@ const VendorPriceListForm: FC = () => {
   const { data: skillsData } = useFetchSkills()
   const { data: vendorPricesData } = useFetchVendorPrices()
 
-  console.log('vendorPricesData*************', vendorPricesData)
-
-  const { control, handleSubmit } = useForm<FormValues>({
-    reValidateMode: 'onChange',
-    // defaultValues: { deactivation_date: today },
-  })
-
-  const languagePairFormFields: FieldProps<FormValues>[] = [
-    {
-      inputType: InputTypes.Selections,
-      name: 'primal_language',
-      ariaLabel: t('vendors.primal_language'),
-      label: t('vendors.primal_language'),
-      placeholder: t('button.choose'),
-      options: [
-        { label: 'Eesti ee-ET', value: 'Eesti ee-ET' },
-        { label: 'Vene ru-RU', value: 'Vene ru-RU' },
-        { label: 'Inglise en-GB', value: 'Inglise en-GB' },
-      ],
-      // rules: {
-      //   required: true,
-      // },
-      usePortal: true,
-      className: classes.languagePairSelection,
-    },
-    {
-      inputType: InputTypes.Selections,
-      name: 'target_language',
-      ariaLabel: t('vendors.target_language'),
-      label: t('vendors.target_language'),
-      placeholder: t('button.choose'),
-      options: [
-        { label: 'Eesti ee-ET', value: 'Eesti ee-ET' },
-        { label: 'Vene ru-RU', value: 'Vene ru-RU' },
-        { label: 'Inglise en-GB', value: 'Inglise en-GB' },
-      ],
-      multiple: true,
-      buttons: true,
-      // rules: {
-      //   required: true,
-      // },
-      usePortal: true,
-      className: classes.languagePairSelection,
-    },
-  ]
-
-  const skillsFormFields: FieldProps<FormValues>[] = map(
-    skillsData,
-    ({ id, name }) => ({
-      key: id,
-      inputType: InputTypes.Checkbox,
-      ariaLabel: name || '',
-      label: name,
-      name: `skills.${name}`,
-      // rules: {
-      //   required: true,
-      // },
-      className: classes.skillsField,
-    })
-  )
-
-  const prices = [
+  const pricesData = [
     {
       id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
       vendor_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
@@ -184,9 +124,9 @@ const VendorPriceListForm: FC = () => {
     },
   ]
 
-  const pricesData = useMemo(() => {
+  const pricesValues = useMemo(() => {
     return (
-      map(prices, (data) => {
+      map(pricesData, (data) => {
         return {
           id: data.id,
           character_fee: data.character_fee,
@@ -202,42 +142,67 @@ const VendorPriceListForm: FC = () => {
     )
   }, [])
 
-  console.log('pricesData********', pricesData)
+  const { control, handleSubmit } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+  })
+
+  const languagePairFormFields: FieldProps<FormValues>[] = [
+    {
+      inputType: InputTypes.Selections,
+      name: 'source_language',
+      ariaLabel: t('vendors.source_language'),
+      label: t('vendors.source_language'),
+      placeholder: t('button.choose'),
+      options: [
+        { label: 'Eesti ee-ET', value: 'Eesti ee-ET' },
+        { label: 'Vene ru-RU', value: 'Vene ru-RU' },
+        { label: 'Inglise en-GB', value: 'Inglise en-GB' },
+      ],
+      // rules: {
+      //   required: true,
+      // },
+      usePortal: true,
+      className: classes.languagePairSelection,
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: 'destination_language',
+      ariaLabel: t('vendors.destination_language'),
+      label: t('vendors.destination_language'),
+      placeholder: t('button.choose'),
+      options: [
+        { label: 'Eesti ee-ET', value: 'Eesti ee-ET' },
+        { label: 'Vene ru-RU', value: 'Vene ru-RU' },
+        { label: 'Inglise en-GB', value: 'Inglise en-GB' },
+      ],
+      multiple: true,
+      buttons: true,
+      // rules: {
+      //   required: true,
+      // },
+      usePortal: true,
+      className: classes.languagePairSelection,
+    },
+  ]
+
+  const skillsFormFields: FieldProps<FormValues>[] = map(
+    skillsData,
+    ({ id, name }) => ({
+      key: id,
+      inputType: InputTypes.Checkbox,
+      ariaLabel: name || '',
+      label: name,
+      name: `skills.${name}`,
+      // rules: {
+      //   required: true,
+      // },
+      className: classes.skillsField,
+    })
+  )
 
   const columnHelper = createColumnHelper<Prices>()
 
   const columns = [
-    columnHelper.accessor('skill', {
-      header: () => t('vendors.skill'),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('character_fee', {
-      header: () => t('vendors.character_fee'),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('word_fee', {
-      header: () => t('vendors.word_fee'),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('page_fee', {
-      header: () => t('vendors.page_fee'),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('minute_fee', {
-      header: () => t('vendors.minute_fee'),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('hour_fee', {
-      header: () => t('vendors.hour_fee'),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('minimal_fee', {
-      header: () => t('vendors.minimal_fee'),
-      footer: (info) => info.column.id,
-    }),
-  ] as ColumnDef<any>[]
-
-  const columns2 = [
     columnHelper.accessor('language_direction', {
       header: () => t('vendors.language_direction'),
       footer: (info) => info.column.id,
@@ -272,7 +237,7 @@ const VendorPriceListForm: FC = () => {
     }),
     columnHelper.accessor('id', {
       header: () => <></>,
-      cell: ({ getValue }) => (
+      cell: () => (
         <div className={classes.iconsContainer}>
           <Button
             appearance={AppearanceTypes.Text}
@@ -314,11 +279,11 @@ const VendorPriceListForm: FC = () => {
           helperText: t('vendors.skills_helper_text'),
           modalContent: (
             <>
-              <p className={classes.primalLanguage}>
-                {t('vendors.primal_language')}
+              <p className={classes.sourceLanguage}>
+                {t('vendors.source_language')}
               </p>
-              <p className={classes.targetLanguage}>
-                {t('vendors.target_language')}
+              <p className={classes.destinationLanguage}>
+                {t('vendors.destination_language')}
               </p>
               <DynamicForm
                 fields={skillsFormFields}
@@ -334,30 +299,14 @@ const VendorPriceListForm: FC = () => {
           helperText: t('vendors.price_list_helper_text'),
           modalContent: (
             <>
-              <p className={classes.primalLanguage}>
-                {t('vendors.primal_language')}
+              <p className={classes.sourceLanguage}>
+                {t('vendors.source_language')}
               </p>
-              <p className={classes.targetLanguage}>
-                {t('vendors.target_language')}
+              <p className={classes.destinationLanguage}>
+                {t('vendors.destination_language')}
               </p>
               <Root>
-                <DataTable
-                  data={pricesData}
-                  columns={columns}
-                  tableSize={TableSizeTypes.M}
-                  hidePagination
-                  title={
-                    <div className={classes.pricesTitleContainer}>
-                      <h4 className={classes.pricesTitle}>
-                        {t('vendors.prices')}
-                      </h4>
-                      <span className={classes.currency}>
-                        {t('vendors.eur')}
-                      </span>
-                    </div>
-                  }
-                  className={classes.priceListContainer}
-                />
+                <AddPricesTable />
               </Root>
             </>
           ),
@@ -367,28 +316,41 @@ const VendorPriceListForm: FC = () => {
   }
 
   return (
-    <Root>
-      <DataTable
-        data={pricesData}
-        columns={columns2}
-        tableSize={TableSizeTypes.M}
-        hidePagination
-        title={
-          <div className={classes.pricesDataTableHeader}>
-            {t('vendors.vendor_price_list_title')}
-            <Button
-              appearance={AppearanceTypes.Text}
-              icon={AddIcon}
-              iconPositioning={IconPositioningTypes.Left}
-              onClick={handleModalOpen}
-              className={classes.pricesLanguageButton}
-            >
-              {t('vendors.add_language_directions')}
-            </Button>
-          </div>
-        }
-      />
-    </Root>
+    <>
+      <Root>
+        <DataTable
+          data={pricesValues}
+          columns={columns}
+          tableSize={TableSizeTypes.M}
+          hidePagination
+          title={
+            <div className={classes.pricesDataTableHeader}>
+              {t('vendors.vendor_price_list_title')}
+              <Button
+                appearance={AppearanceTypes.Text}
+                icon={AddIcon}
+                iconPositioning={IconPositioningTypes.Left}
+                onClick={handleModalOpen}
+                className={classes.pricesLanguageButton}
+              >
+                {t('vendors.add_language_directions')}
+              </Button>
+            </div>
+          }
+        />
+      </Root>
+
+      <p className={classes.dateText}>
+        {t('vendors.price_list_created', {
+          time: dayjs().format('DD.MM.YYYY hh:mm') || '',
+        })}
+      </p>
+      <p className={classes.dateText}>
+        {t('vendors.price_list_updated_at', {
+          time: dayjs().format('DD.MM.YYYY hh:mm') || '',
+        })}
+      </p>
+    </>
   )
 }
 

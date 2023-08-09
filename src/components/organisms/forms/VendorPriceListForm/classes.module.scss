@@ -10,10 +10,10 @@
 .languagePairSelection {
   justify-content: flex-end;
 }
-.primalLanguage {
+.sourceLanguage {
   padding-top: spacing(4);
 }
-.targetLanguage {
+.destinationLanguage {
   padding-top: spacing(6);
 }
 .skillsDynamicForm {
@@ -29,21 +29,6 @@
 }
 .skillsDynamicForm > .skillsField:nth-child(n + 7) {
   grid-column: 2 / 3;
-}
-.currency {
-  @include bodyTextSmallStyle;
-  color: $color-input-main;
-}
-.pricesTitle {
-  color: $color-primary;
-}
-.pricesTitleContainer {
-  display: flex;
-  justify-content: space-between;
-}
-.priceListContainer {
-  border: 1px solid $color-primary;
-  margin: spacing(6) 0;
 }
 .pricesDataTableHeader {
   display: flex;
@@ -62,4 +47,11 @@
 }
 .deleteIcon svg path {
   fill: $color-error;
+}
+.dateText {
+  @include bodyTextSmallStyle;
+  color: $color-input-main;
+  &:first-of-type {
+    margin-top: spacing(2);
+  }
 }

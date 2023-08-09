@@ -284,8 +284,8 @@
     "language_pairs_helper_text": "Valida saab ühe algkeele ja ühe või mitu sihtkeelt. Valides rohkem kui ühe sihtkeele tuleb arvestada, et valitud keeltele saad sisestada ühed ja samad hinnad. Kui soovid igale keelepaarile sisestada erinevad ühiku hinnad, siis tuleb iga keelepaar sisestada eraldi.",
     "skills_helper_text": "Määra teostaja oskused, millele soovid ühikuhinnad lisada.",
     "price_list_helper_text": "Määra oskusele ühikupõhised hinnad. Juhul, kui mõnda arvestusühikut selle teostaja puhul ei kasutata või puudub kokkulepitud hind, siis võib jätta selle ühiku hinnaks nulli.",
-    "primal_language": "Algkeel",
-    "target_language": "Sihtkeel",
+    "source_language": "Algkeel",
+    "destination_language": "Sihtkeel",
     "prices": "Hinnad",
     "eur": "EUR",
     "skill":"Oskus",
@@ -301,7 +301,9 @@
     "analysis_based_discount": "Analüüsipõhine soodustus",
     "repetitions": "Kordused",
     "match_type": "Vaste tüüp",
-    "percent_from_price": "% hinnast"
+    "percent_from_price": "% hinnast",
+    "price_list_created": "Hinnakiri loodud",
+    "price_list_updated_at":"Hinnakirja andmeid muudetud"
   },
   "file": {
     "drop_files": "Pane failid siia...",

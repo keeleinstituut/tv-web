@@ -1,0 +1,21 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.pricesTitleContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pricesTitle {
+  color: $color-primary;
+}
+
+.currency {
+  @include bodyTextSmallStyle;
+  color: $color-input-main;
+}
+
+.priceListContainer {
+  border: 1px solid $color-primary;
+  margin: spacing(6) 0;
+}
