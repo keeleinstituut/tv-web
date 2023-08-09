@@ -90,23 +90,23 @@ const TasksTable: FC = () => {
           return {
             id,
             name,
-          //   ext_id,
-          //   reference_number,
-          //   deadline_at,
-          //   type: type_classifier_value?.value || '',
-          //   status,
-          //   tags,
-          //   cost,
-          //   language_directions: uniq(
-          //     map(
-          //       sub_projects,
-          //       ({
-          //         source_language_classifier_value,
-          //         destination_language_classifier_value,
-          //       }) =>
-          //         `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
-          //     )
-          //   ),
+            //   ext_id,
+            //   reference_number,
+            //   deadline_at,
+            //   type: type_classifier_value?.value || '',
+            //   status,
+            //   tags,
+            //   cost,
+            //   language_directions: uniq(
+            //     map(
+            //       sub_projects,
+            //       ({
+            //         source_language_classifier_value,
+            //         destination_language_classifier_value,
+            //       }) =>
+            //         `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
+            //     )
+            //   ),
           }
         }
       ),

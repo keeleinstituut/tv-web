@@ -361,7 +361,7 @@
       "FORWARDED": "Edastatud",
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
-      "REJECTED": "Tühistatud",
+      "REJECTED": "Tagasi lükatud",
       "CORRECTED": "Parandatud"
     }
   },

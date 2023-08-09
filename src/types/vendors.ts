@@ -1,5 +1,5 @@
 import {
-  DataMetaTypes,
+  ResponseMetaTypes,
   PaginationFunctionType,
   SortingFunctionType,
 } from 'types/collective'
@@ -14,7 +14,7 @@ export interface VendorType {
 }
 export interface VendorsDataType {
   data: VendorType[]
-  meta: DataMetaTypes
+  meta: ResponseMetaTypes
 }
 
 export type VendorsPayloadType = PaginationFunctionType & SortingFunctionType

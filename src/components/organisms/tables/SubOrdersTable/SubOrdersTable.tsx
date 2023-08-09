@@ -27,8 +27,10 @@ import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 
-// TODO: statuses might come from BE instead
-// Currently unclear
+// TODO: this component is very similar to OrdersTable
+// Some fields seem to be missing for SubOrders though, so not sure yet, which parts
+// will be shared between this and OrdersTable.
+// For now let's keep them separate, but they can be unified into 1 component or they should at least use some shared part later on
 
 type OrderTableRow = {
   ext_id: string
@@ -50,7 +52,7 @@ interface FormValues {
   own_orders: boolean
 }
 
-const OrdersTable: FC = () => {
+const SubOrdersTable: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
@@ -62,6 +64,8 @@ const OrdersTable: FC = () => {
     handlePaginationChange,
   } = useFetchOrders()
 
+  // TODO: Currently uses statuses of orders
+  // suborders should have some different statuses as well
   const statusFilters = map(OrderStatus, (status) => ({
     label: t(`orders.status.${status}`),
     value: status,
@@ -263,4 +267,4 @@ const OrdersTable: FC = () => {
   )
 }
 
-export default OrdersTable
+export default SubOrdersTable

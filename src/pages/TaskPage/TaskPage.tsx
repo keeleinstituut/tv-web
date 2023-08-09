@@ -1,5 +1,9 @@
 import Loader from 'components/atoms/Loader/Loader'
-import { useFetchOrder, useFetchSubProject, useSubProjectSendToCat } from 'hooks/requests/useOrders'
+import {
+  useFetchOrder,
+  useFetchSubOrder,
+  useSubOrderSendToCat,
+} from 'hooks/requests/useOrders'
 import { FC, Fragment, useState } from 'react'
 import { includes, find, map, chain, assign, filter } from 'lodash'
 import { useParams } from 'react-router-dom'
@@ -31,10 +35,10 @@ const TaskPage: FC = () => {
 
       {/* <div>
         <br />
-        {map(order?.sub_projects, (subProject) => {
+        {map(order?.sub_projects, (subOrder) => {
           return (
-            <div key={subProject.id}>
-              <SubProject id={subProject.id} />
+            <div key={subOrder.id}>
+              <SubOrder id={subOrder.id} />
               <br />
               <br />
               <br />
@@ -50,94 +54,95 @@ const TaskPage: FC = () => {
 
 export default TaskPage
 
-
 interface ObjectType {
   [key: string]: string
 }
 
-const SubProject: FC<any> = (props) => {
+const SubOrder: FC<any> = (props) => {
   const { id } = props
 
   const [tabNames, setTabNames] = useState<ObjectType>({})
   const [activeTab, setActiveTab] = useState<string>()
 
-  const { subProject, isLoading } = useFetchSubProject({ id })
+  const { subOrder, isLoading } = useFetchSubOrder({ id })
 
   if (isLoading) return <Loader loading={isLoading} />
 
-  const keelesuunad = `${subProject?.destination_language_classifier_value.value} > ${subProject?.source_language_classifier_value.value}`
+  const keelesuunad = `${subOrder?.destination_language_classifier_value.value} > ${subOrder?.source_language_classifier_value.value}`
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h1>{id}</h1>
         <span>
           keelesuunad: <Tag label={keelesuunad} value />
         </span>
-        <span>
-          alamtellimuse ID: {subProject.ext_id}
-        </span>
+        <span>alamtellimuse ID: {subOrder?.ext_id}</span>
       </div>
       <Tabs
         setActiveTab={setActiveTab}
         tabs={chain((Feature as any).supportedFeatures)
-          .filter(feature => includes(['general_information', ...subProject.features], feature))
-          .map(feature => ({
+          .filter((feature) =>
+            includes(
+              ['general_information', ...(subOrder?.features || [])],
+              feature
+            )
+          )
+          .map((feature) => ({
             id: feature,
             name: feature,
           }))
-          .value()
-        }
+          .value()}
         onAddPress={function (): void {
           throw new Error('Function not implemented.')
-        } }
+        }}
         addLabel={''}
         onChangeName={function (id: string, newValue: string): void {
           throw new Error('Function not implemented.')
-        } }
+        }}
         addDisabled={true}
         tabNames={tabNames}
       />
 
-      <Feature subProject={subProject} feature={activeTab} />
+      <Feature subOrder={subOrder} feature={activeTab} />
 
       {/* <pre>
-        {JSON.stringify(subProject, null, 2)}
+        {JSON.stringify(subOrder, null, 2)}
       </pre> */}
     </>
   )
 }
 
 const Feature: FC<any> = (props) => {
-  const { subProject, feature } = props
-  let Component = null;
+  const { subOrder, feature } = props
+  let Component = null
 
   switch (feature) {
     case 'general_information':
       Component = GeneralInformation
-      break;
+      break
     case 'job_translation':
       Component = TranslationFeature
-      break;
+      break
     case 'job_revision':
       Component = RevisionFeature
-      break;
+      break
     case 'job_overview':
       Component = OverviewFeature
-      break;
-  
+      break
+
     default:
-      break;
+      break
   }
-  
+
   if (!Component) {
-    return <></>;
+    return <></>
   }
 
   return <Component {...props} />
 }
 
-(Feature as any).supportedFeatures = [
+;(Feature as any).supportedFeatures = [
   'general_information',
   'job_translation',
   'job_revision',
@@ -145,26 +150,20 @@ const Feature: FC<any> = (props) => {
 ]
 
 const GeneralInformation: FC<any> = (props) => {
-  const { subProject, feature } = props;
-  const catSupported = includes(subProject.cat_features, feature);
-  const { sendToCat } = useSubProjectSendToCat({ id: subProject.id })
+  const { subOrder, feature } = props
+  const catSupported = includes(subOrder.cat_features, feature)
+  const { sendToCat } = useSubOrderSendToCat({ id: subOrder.id })
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
-        <span>
-          feature: {feature}
-        </span>
-        <span>
-          catSupported: {String(catSupported)}
-        </span>
-        <span>
-          catProjectCreated: {String(subProject.cat_project_created)}
-        </span>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <span>feature: {feature}</span>
+        <span>catSupported: {String(catSupported)}</span>
+        <span>catProjectCreated: {String(subOrder.cat_project_created)}</span>
       </div>
-      <br/>
+      <br />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{flex: 1}}>
+        <div style={{ flex: 1 }}>
           <h1>Lähtefailid</h1>
           <table>
             <thead>
@@ -174,25 +173,29 @@ const GeneralInformation: FC<any> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {map(subProject.source_files, (file) => {
+              {map(subOrder.source_files, (file) => {
                 return (
                   <tr key={file.id}>
-                    <td>
-                      {file.file_name}
-                    </td>
-                    <td>
-                      {file.updated_at}
-                    </td>
+                    <td>{file.file_name}</td>
+                    <td>{file.updated_at}</td>
                   </tr>
                 )
-              })} 
+              })}
             </tbody>
           </table>
-          {!subProject.cat_project_created && (
-            <Button onClick={() => sendToCat({})}>genereeri tõlkimiseks</Button>
+          {!subOrder.cat_project_created && (
+            <Button
+              onClick={() =>
+                sendToCat({
+                  id: 'asd',
+                })
+              }
+            >
+              genereeri tõlkimiseks
+            </Button>
           )}
         </div>
-        <div style={{flex: 1}}>
+        <div style={{ flex: 1 }}>
           <h1>Valmisfailid teostajatelt</h1>
           <table>
             <thead>
@@ -202,18 +205,14 @@ const GeneralInformation: FC<any> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {map(subProject.final_files, (file) => {
+              {map(subOrder.final_files, (file) => {
                 return (
                   <tr key={file.id}>
-                    <td>
-                      {file.file_name}
-                    </td>
-                    <td>
-                      {file.updated_at}
-                    </td>
+                    <td>{file.file_name}</td>
+                    <td>{file.updated_at}</td>
                   </tr>
                 )
-              })} 
+              })}
             </tbody>
           </table>
         </div>
@@ -222,28 +221,28 @@ const GeneralInformation: FC<any> = (props) => {
   )
 }
 
-
 const TranslationFeature: FC<any> = (props) => {
-  const { subProject, feature } = props;
-  const catSupported = includes(subProject.cat_features, feature);
-  const featureAssignments = filter(subProject.assignments, (assignment) => {
-    return assignment.feature === feature;
+  const { subOrder, feature } = props
+  const catSupported = includes(subOrder.cat_features, feature)
+  const featureAssignments = filter(subOrder.assignments, (assignment) => {
+    return assignment.feature === feature
   })
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
-        <span>
-          feature: {feature}
-        </span>
-        <span>
-          catSupported: {String(catSupported)}
-        </span>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <span>feature: {feature}</span>
+        <span>catSupported: {String(catSupported)}</span>
       </div>
-      <br/>
+      <br />
       {map(featureAssignments, (assignment, i) => {
         return (
-          <Assignment key={assignment.id} assignment={assignment} index={i + 1} label="Tõlkimine" />
+          <Assignment
+            key={assignment.id}
+            assignment={assignment}
+            index={i + 1}
+            label="Tõlkimine"
+          />
         )
       })}
     </>
@@ -251,26 +250,27 @@ const TranslationFeature: FC<any> = (props) => {
 }
 
 const RevisionFeature: FC<any> = (props) => {
-  const { subProject, feature } = props;
-  const catSupported = includes(subProject.cat_features, feature);
-  const featureAssignments = filter(subProject.assignments, (assignment) => {
-    return assignment.feature === feature;
+  const { subOrder, feature } = props
+  const catSupported = includes(subOrder.cat_features, feature)
+  const featureAssignments = filter(subOrder.assignments, (assignment) => {
+    return assignment.feature === feature
   })
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
-        <span>
-          feature: {feature}
-        </span>
-        <span>
-          catSupported: {String(catSupported)}
-        </span>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <span>feature: {feature}</span>
+        <span>catSupported: {String(catSupported)}</span>
       </div>
-      <br/>
+      <br />
       {map(featureAssignments, (assignment, i) => {
         return (
-          <Assignment key={assignment.id} assignment={assignment} index={i + 1} label="Toimetamine" />
+          <Assignment
+            key={assignment.id}
+            assignment={assignment}
+            index={i + 1}
+            label="Toimetamine"
+          />
         )
       })}
     </>
@@ -278,25 +278,26 @@ const RevisionFeature: FC<any> = (props) => {
 }
 
 const OverviewFeature: FC<any> = (props) => {
-  const { subProject, feature } = props;
-  const catSupported = includes(subProject.cat_features, feature);
-  const featureAssignments = filter(subProject.assignments, (assignment) => {
-    return assignment.feature === feature;
+  const { subOrder, feature } = props
+  const catSupported = includes(subOrder.cat_features, feature)
+  const featureAssignments = filter(subOrder.assignments, (assignment) => {
+    return assignment.feature === feature
   })
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column'}}>
-        <span>
-          feature: {feature}
-        </span>
-        <span>
-          catSupported: {String(catSupported)}
-        </span>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <span>feature: {feature}</span>
+        <span>catSupported: {String(catSupported)}</span>
       </div>
       {map(featureAssignments, (assignment, i) => {
         return (
-          <Assignment key={assignment.id} assignment={assignment} index={i + 1} label="Ülevaatus" />
+          <Assignment
+            key={assignment.id}
+            assignment={assignment}
+            index={i + 1}
+            label="Ülevaatus"
+          />
         )
       })}
     </>
@@ -308,23 +309,20 @@ const Assignment: FC<any> = (props) => {
 
   return (
     <Fragment>
-      <h3>Teostaja {index} ({label})</h3>
-      <div key={assignment.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1}}>
-          <span>
-            deadline: 
-          </span>  
-          <span>
-            erijuhised tellimuse kohta: 
-          </span>  
-          <span>
-            maht: 
-          </span>  
-          <span>
-            teostaja märkused: 
-          </span>  
+      <h3>
+        Teostaja {index} ({label})
+      </h3>
+      <div
+        key={assignment.id}
+        style={{ display: 'flex', justifyContent: 'space-between' }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+          <span>deadline:</span>
+          <span>erijuhised tellimuse kohta:</span>
+          <span>maht:</span>
+          <span>teostaja märkused:</span>
         </div>
-        <div style={{flex: 1}}>
+        <div style={{ flex: 1 }}>
           <h1>Teostajad</h1>
           <table>
             <thead>
@@ -339,7 +337,9 @@ const Assignment: FC<any> = (props) => {
                 const { institution_user } = candidate.vendor
                 const name = `${institution_user.user.forename} ${institution_user.user.surname}`
                 let status = '-'
-                console.log('--------------------------------------------------------------------')
+                console.log(
+                  '--------------------------------------------------------------------'
+                )
                 console.log(assignment.assigned_vendor_id)
                 console.log(candidate.vendor_id)
                 // TODO: asdasd
@@ -358,24 +358,24 @@ const Assignment: FC<any> = (props) => {
                 }
                 return (
                   <tr key={candidate.id}>
-                    <td>
-                      {name}
-                    </td>
-                    <td>
-                      {status}
-                    </td>
-                    <td>
-                      {candidate.price}
-                    </td>
+                    <td>{name}</td>
+                    <td>{status}</td>
+                    <td>{candidate.price}</td>
                   </tr>
                 )
-              })} 
+              })}
             </tbody>
           </table>
           {(!assignment.somethingsomething || true) && (
-            <Button onClick={() => {}}>Saada pakkumus</Button>
+            <Button
+              onClick={() => {
+                // Do nothing
+              }}
+            >
+              Saada pakkumus
+            </Button>
           )}
-          {/* {!subProject.cat_project_created && (
+          {/* {!subOrder.cat_project_created && (
             <Button onClick={() => {}}>genereeri tõlkimiseks</Button>
           )} */}
         </div>

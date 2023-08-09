@@ -1,5 +1,9 @@
 import Loader from 'components/atoms/Loader/Loader'
-import { useFetchOrder, useFetchSubProject, useSubProjectSendToCat } from 'hooks/requests/useOrders'
+import {
+  useFetchOrder,
+  useFetchSubOrder,
+  useSubOrderSendToCat,
+} from 'hooks/requests/useOrders'
 import { FC, Fragment, useState } from 'react'
 import { includes, find, map, chain, assign, filter, split, zip } from 'lodash'
 import { useParams } from 'react-router-dom'
@@ -64,7 +68,7 @@ const OrderButtons: FC<OrderButtonProps> = ({ status, isPersonalOrder }) => {
         // TODO: disabled for now, we don't have endpoint for this
         // open confirmation modal from here
         disabled
-      // hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
+        // hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
       />
       <Button
         // loading={isArchiving}
@@ -120,8 +124,24 @@ const OrderPage: FC = () => {
           <span>Tähtaeg: 4</span>
           <span>Lisainfo: 5</span>
           <span>Viitenumber: {order?.reference_number}</span>
-          <span>Algkeel: {chain(order?.sub_projects).map('source_language_classifier_value').map('name').uniq().join(', ').value()}</span>
-          <span>Sihtkeel(ed): {chain(order?.sub_projects).map('destination_language_classifier_value').map('name').uniq().join(', ').value()}</span>
+          <span>
+            Algkeel:{' '}
+            {chain(order?.sub_projects)
+              .map('source_language_classifier_value')
+              .map('name')
+              .uniq()
+              .join(', ')
+              .value()}
+          </span>
+          <span>
+            Sihtkeel(ed):{' '}
+            {chain(order?.sub_projects)
+              .map('destination_language_classifier_value')
+              .map('name')
+              .uniq()
+              .join(', ')
+              .value()}
+          </span>
           <span>Tellimuse sildid: 9</span>
           <span>Loomise aeg: {order?.created_at}</span>
           <span>Tühistamise aeg: 11</span>
@@ -164,10 +184,10 @@ const OrderPage: FC = () => {
         <br />
         {chain(order?.sub_projects)
           .sortBy('ext_id')
-          .map((subProject) => {
+          .map((subOrder) => {
             return (
-              <div key={subProject.id}>
-                <SubProject id={subProject.id} />
+              <div key={subOrder.id}>
+                <SubOrder id={subOrder.id} />
                 <br />
                 <br />
                 <br />
@@ -176,8 +196,7 @@ const OrderPage: FC = () => {
               </div>
             )
           })
-          .value()
-        }
+          .value()}
       </div>
     </div>
   )
@@ -185,22 +204,21 @@ const OrderPage: FC = () => {
 
 export default OrderPage
 
-
 interface ObjectType {
   [key: string]: string
 }
 
-const SubProject: FC<any> = (props) => {
+const SubOrder: FC<any> = (props) => {
   const { id } = props
 
   const [tabNames, setTabNames] = useState<ObjectType>({})
   const [activeTab, setActiveTab] = useState<string>()
 
-  const { subProject, isLoading } = useFetchSubProject({ id })
+  const { subOrder, isLoading } = useFetchSubOrder({ id }) || {}
 
   if (isLoading) return <Loader loading={isLoading} />
 
-  const keelesuunad = `${subProject?.destination_language_classifier_value.value} > ${subProject?.source_language_classifier_value.value}`
+  const keelesuunad = `${subOrder?.destination_language_classifier_value.value} > ${subOrder?.source_language_classifier_value.value}`
 
   return (
     <>
@@ -209,26 +227,24 @@ const SubProject: FC<any> = (props) => {
         <span>
           keelesuunad: <Tag label={keelesuunad} value />
         </span>
-        <span>
-          alamtellimuse ID: {subProject.ext_id}
-        </span>
-        <span style={{ color: 'red' }}>
-          maksumus: {'// TODO: '}
-        </span>
-        <span style={{ color: 'red' }}>
-          tähtaeg: {'// TODO: '}
-        </span>
+        <span>alamtellimuse ID: {subOrder?.ext_id}</span>
+        <span style={{ color: 'red' }}>maksumus: {'// TODO: '}</span>
+        <span style={{ color: 'red' }}>tähtaeg: {'// TODO: '}</span>
       </div>
       <Tabs
         setActiveTab={setActiveTab}
         tabs={chain((Feature as any).supportedFeatures)
-          .filter(feature => includes(['general_information', ...subProject.features], feature))
-          .map(feature => ({
+          .filter((feature) =>
+            includes(
+              ['general_information', ...(subOrder?.features || [])],
+              feature
+            )
+          )
+          .map((feature) => ({
             id: feature,
             name: feature,
           }))
-          .value()
-        }
+          .value()}
         onAddPress={function (): void {
           throw new Error('Function not implemented.')
         }}
@@ -240,45 +256,45 @@ const SubProject: FC<any> = (props) => {
         tabNames={tabNames}
       />
 
-      <Feature subProject={subProject} feature={activeTab} />
+      <Feature subOrder={subOrder} feature={activeTab} />
 
       {/* <pre>
-        {JSON.stringify(subProject, null, 2)}
+        {JSON.stringify(subOrder, null, 2)}
       </pre> */}
     </>
   )
 }
 
 const Feature: FC<any> = (props) => {
-  const { subProject, feature } = props
-  let Component = null;
+  const { subOrder, feature } = props
+  let Component = null
 
   switch (feature) {
     case 'general_information':
       Component = GeneralInformation
-      break;
+      break
     case 'job_translation':
       Component = TranslationFeature
-      break;
+      break
     case 'job_revision':
       Component = RevisionFeature
-      break;
+      break
     case 'job_overview':
       Component = OverviewFeature
-      break;
+      break
 
     default:
-      break;
+      break
   }
 
   if (!Component) {
-    return <></>;
+    return <></>
   }
 
   return <Component {...props} />
 }
 
-(Feature as any).supportedFeatures = [
+;(Feature as any).supportedFeatures = [
   'general_information',
   'job_translation',
   'job_revision',
@@ -286,23 +302,16 @@ const Feature: FC<any> = (props) => {
 ]
 
 const GeneralInformation: FC<any> = (props) => {
-  const { subProject, feature } = props;
-  const catSupported = includes(subProject.cat_features, feature);
-  const { sendToCat } = useSubProjectSendToCat({ id: subProject.id })
-
+  const { subOrder, feature } = props
+  const catSupported = includes(subOrder.cat_features, feature)
+  const { sendToCat } = useSubOrderSendToCat({ id: subOrder.id })
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>
-          feature: {feature}
-        </span>
-        <span>
-          catSupported: {String(catSupported)}
-        </span>
-        <span>
-          catProjectCreated: {String(subProject.cat_project_created)}
-        </span>
+        <span>feature: {feature}</span>
+        <span>catSupported: {String(catSupported)}</span>
+        <span>catProjectCreated: {String(subOrder.cat_project_created)}</span>
       </div>
       <br />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -318,20 +327,20 @@ const GeneralInformation: FC<any> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {map(subProject.cat_jobs, (catJob) => {
+              {map(subOrder.cat_jobs, (catJob) => {
                 const { xliff_download_url } = catJob
-                const name = xliff_download_url.substring(xliff_download_url.lastIndexOf('/' + 1)).replace('/', '')
+                const name = xliff_download_url
+                  .substring(xliff_download_url.lastIndexOf('/' + 1))
+                  .replace('/', '')
                 return (
                   <tr key={name}>
-                    <td>
-                      {name}
-                    </td>
+                    <td>{name}</td>
                     <td>
                       {/* {file.updated_at} */}
                       {'Some percentage'}
                     </td>
                     <td>
-                      <Button href={catJob.translate_url} target='_blank'>
+                      <Button href={catJob.translate_url} target="_blank">
                         Ava tõlketööriistas
                       </Button>
                     </td>
@@ -345,8 +354,11 @@ const GeneralInformation: FC<any> = (props) => {
                             onClick: () => {
                               showModal(ModalTypes.CatSplit, {
                                 handleSplit: (splitsAmount: number) => {
-                                  console.warn('PROCEED splitting with amount: ' + splitsAmount)
-                                }
+                                  console.warn(
+                                    'PROCEED splitting with amount: ' +
+                                      splitsAmount
+                                  )
+                                },
                               })
                             },
                           },
@@ -364,7 +376,7 @@ const GeneralInformation: FC<any> = (props) => {
                               showModal(ModalTypes.CatMerge, {
                                 handleMerge: () => {
                                   console.warn('PROCEED with merging')
-                                }
+                                },
                               })
                             },
                           },
@@ -379,11 +391,23 @@ const GeneralInformation: FC<any> = (props) => {
           <Button
             appearance={AppearanceTypes.Text}
             onClick={() => {
-
-              const totalWordCount = chain(subProject.cat_analyzis).map('raw_word_count').sum().value()
+              const totalWordCount = chain(subOrder.cat_analyzis)
+                .map('raw_word_count')
+                .sum()
+                .value()
               const columns = [
-                ['Kokku', '101%', 'Kordused', '100%', '95-99%', '85-94%', '75-84%', '50-74%', '0-49%'],
-                ...map(subProject.cat_analyzis, (chunk) => [
+                [
+                  'Kokku',
+                  '101%',
+                  'Kordused',
+                  '100%',
+                  '95-99%',
+                  '85-94%',
+                  '75-84%',
+                  '50-74%',
+                  '0-49%',
+                ],
+                ...map(subOrder.cat_analyzis, (chunk) => [
                   chunk.total,
                   chunk.tm_101,
                   chunk.tm_repetitions,
@@ -393,22 +417,20 @@ const GeneralInformation: FC<any> = (props) => {
                   chunk.tm_75_84,
                   chunk.tm_50_74,
                   chunk.tm_0_49,
-                ])
+                ]),
               ]
-              const rows = zip.apply(_, columns);
+              const rows = zip.apply(_, columns)
 
               showModal(ModalTypes.Tooltip, {
                 modalContent: (
                   <>
                     <h1>Mahu analüüs valitud failidele</h1>
-                    <h6>
-                      Analüüsitud sõnu kokku {totalWordCount}
-                    </h6>
+                    <h6>Analüüsitud sõnu kokku {totalWordCount}</h6>
                     <table>
                       <thead>
                         <tr>
                           <th>Vaste tüüp</th>
-                          {map(subProject.cat_analyzis, chunk => (
+                          {map(subOrder.cat_analyzis, (chunk) => (
                             <th key={chunk.chunk_id}>Nimi: {chunk.chunk_id}</th>
                           ))}
                         </tr>
@@ -417,18 +439,17 @@ const GeneralInformation: FC<any> = (props) => {
                         {map(rows, (row, i) => (
                           <tr key={i}>
                             {map(row, (column: string, j: number) => (
-                              <td key={j}>
-                                {column}
-                              </td>
+                              <td key={j}>{column}</td>
                             ))}
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </>
-                )
+                ),
               })
-            }}>
+            }}
+          >
             Vaata CAT arvestust
           </Button>
 
@@ -441,22 +462,26 @@ const GeneralInformation: FC<any> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {map(subProject.source_files, (file) => {
+              {map(subOrder.source_files, (file) => {
                 return (
                   <tr key={file.id}>
-                    <td>
-                      {file.file_name}
-                    </td>
-                    <td>
-                      {file.updated_at}
-                    </td>
+                    <td>{file.file_name}</td>
+                    <td>{file.updated_at}</td>
                   </tr>
                 )
               })}
             </tbody>
           </table>
-          {!subProject.cat_project_created && (
-            <Button onClick={() => sendToCat({})}>genereeri tõlkimiseks</Button>
+          {!subOrder.cat_project_created && (
+            <Button
+              onClick={() =>
+                sendToCat({
+                  id: 'asd',
+                })
+              }
+            >
+              genereeri tõlkimiseks
+            </Button>
           )}
         </div>
         <div style={{ flex: 1 }}>
@@ -469,15 +494,11 @@ const GeneralInformation: FC<any> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {map(subProject.final_files, (file) => {
+              {map(subOrder.final_files, (file) => {
                 return (
                   <tr key={file.id}>
-                    <td>
-                      {file.file_name}
-                    </td>
-                    <td>
-                      {file.updated_at}
-                    </td>
+                    <td>{file.file_name}</td>
+                    <td>{file.updated_at}</td>
                   </tr>
                 )
               })}
@@ -489,28 +510,28 @@ const GeneralInformation: FC<any> = (props) => {
   )
 }
 
-
 const TranslationFeature: FC<any> = (props) => {
-  const { subProject, feature } = props;
-  const catSupported = includes(subProject.cat_features, feature);
-  const featureAssignments = filter(subProject.assignments, (assignment) => {
-    return assignment.feature === feature;
+  const { subOrder, feature } = props
+  const catSupported = includes(subOrder.cat_features, feature)
+  const featureAssignments = filter(subOrder.assignments, (assignment) => {
+    return assignment.feature === feature
   })
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>
-          feature: {feature}
-        </span>
-        <span>
-          catSupported: {String(catSupported)}
-        </span>
+        <span>feature: {feature}</span>
+        <span>catSupported: {String(catSupported)}</span>
       </div>
       <br />
       {map(featureAssignments, (assignment, i) => {
         return (
-          <Assignment key={assignment.id} assignment={assignment} index={i + 1} label="Tõlkimine" />
+          <Assignment
+            key={assignment.id}
+            assignment={assignment}
+            index={i + 1}
+            label="Tõlkimine"
+          />
         )
       })}
     </>
@@ -518,26 +539,27 @@ const TranslationFeature: FC<any> = (props) => {
 }
 
 const RevisionFeature: FC<any> = (props) => {
-  const { subProject, feature } = props;
-  const catSupported = includes(subProject.cat_features, feature);
-  const featureAssignments = filter(subProject.assignments, (assignment) => {
-    return assignment.feature === feature;
+  const { subOrder, feature } = props
+  const catSupported = includes(subOrder.cat_features, feature)
+  const featureAssignments = filter(subOrder.assignments, (assignment) => {
+    return assignment.feature === feature
   })
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>
-          feature: {feature}
-        </span>
-        <span>
-          catSupported: {String(catSupported)}
-        </span>
+        <span>feature: {feature}</span>
+        <span>catSupported: {String(catSupported)}</span>
       </div>
       <br />
       {map(featureAssignments, (assignment, i) => {
         return (
-          <Assignment key={assignment.id} assignment={assignment} index={i + 1} label="Toimetamine" />
+          <Assignment
+            key={assignment.id}
+            assignment={assignment}
+            index={i + 1}
+            label="Toimetamine"
+          />
         )
       })}
     </>
@@ -545,25 +567,26 @@ const RevisionFeature: FC<any> = (props) => {
 }
 
 const OverviewFeature: FC<any> = (props) => {
-  const { subProject, feature } = props;
-  const catSupported = includes(subProject.cat_features, feature);
-  const featureAssignments = filter(subProject.assignments, (assignment) => {
-    return assignment.feature === feature;
+  const { subOrder, feature } = props
+  const catSupported = includes(subOrder.cat_features, feature)
+  const featureAssignments = filter(subOrder.assignments, (assignment) => {
+    return assignment.feature === feature
   })
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>
-          feature: {feature}
-        </span>
-        <span>
-          catSupported: {String(catSupported)}
-        </span>
+        <span>feature: {feature}</span>
+        <span>catSupported: {String(catSupported)}</span>
       </div>
       {map(featureAssignments, (assignment, i) => {
         return (
-          <Assignment key={assignment.id} assignment={assignment} index={i + 1} label="Ülevaatus" />
+          <Assignment
+            key={assignment.id}
+            assignment={assignment}
+            index={i + 1}
+            label="Ülevaatus"
+          />
         )
       })}
     </>
@@ -575,21 +598,18 @@ const Assignment: FC<any> = (props) => {
 
   return (
     <Fragment>
-      <h3>Teostaja {index} ({label})</h3>
-      <div key={assignment.id} style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <h3>
+        Teostaja {index} ({label})
+      </h3>
+      <div
+        key={assignment.id}
+        style={{ display: 'flex', justifyContent: 'space-between' }}
+      >
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-          <span style={{ color: 'red' }}>
-            deadline:
-          </span>
-          <span style={{ color: 'red' }}>
-            erijuhised tellimuse kohta:
-          </span>
-          <span style={{ color: 'red' }}>
-            maht:
-          </span>
-          <span style={{ color: 'red' }}>
-            teostaja märkused:
-          </span>
+          <span style={{ color: 'red' }}>deadline:</span>
+          <span style={{ color: 'red' }}>erijuhised tellimuse kohta:</span>
+          <span style={{ color: 'red' }}>maht:</span>
+          <span style={{ color: 'red' }}>teostaja märkused:</span>
         </div>
         <div style={{ flex: 1 }}>
           <h1>Teostajad</h1>
@@ -606,7 +626,9 @@ const Assignment: FC<any> = (props) => {
                 const { institution_user } = candidate.vendor
                 const name = `${institution_user.user.forename} ${institution_user.user.surname}`
                 let status = '-'
-                console.log('--------------------------------------------------------------------')
+                console.log(
+                  '--------------------------------------------------------------------'
+                )
                 console.log(assignment.assigned_vendor_id)
                 console.log(candidate.vendor_id)
                 // TODO: asdasd
@@ -625,24 +647,24 @@ const Assignment: FC<any> = (props) => {
                 }
                 return (
                   <tr key={candidate.id}>
-                    <td>
-                      {name}
-                    </td>
-                    <td>
-                      {status}
-                    </td>
-                    <td>
-                      {candidate.price}
-                    </td>
+                    <td>{name}</td>
+                    <td>{status}</td>
+                    <td>{candidate.price}</td>
                   </tr>
                 )
               })}
             </tbody>
           </table>
           {(!assignment.somethingsomething || true) && (
-            <Button onClick={() => { }}>Saada pakkumus</Button>
+            <Button
+              onClick={() => {
+                // Do nothing
+              }}
+            >
+              Saada pakkumus
+            </Button>
           )}
-          {/* {!subProject.cat_project_created && (
+          {/* {!subOrder.cat_project_created && (
             <Button onClick={() => {}}>genereeri tõlkimiseks</Button>
           )} */}
         </div>

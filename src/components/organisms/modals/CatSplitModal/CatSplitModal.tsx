@@ -5,7 +5,7 @@ import ConfirmationModalBase, {
 
 export interface CatSplitModalProps
   extends Omit<ConfirmationModalBaseProps, 'handleProceed'> {
-    handleSplit?: (splitsAmount: number) => void
+  handleSplit?: (splitsAmount: number) => void
 }
 
 const CatSplitModal: FC<CatSplitModalProps> = ({
@@ -17,7 +17,7 @@ const CatSplitModal: FC<CatSplitModalProps> = ({
 
   const handleProceedInternal = useCallback(() => {
     if (handleSplit) {
-      handleSplit(splitsAmount) 
+      handleSplit(splitsAmount)
     }
   }, [splitsAmount, handleSplit])
 
@@ -29,7 +29,11 @@ const CatSplitModal: FC<CatSplitModalProps> = ({
         <>
           <div>
             <h1>Mitmeks tükiks soovid faili jagada?</h1>
-            <input value={splitsAmount} type="number" onChange={(e) => setSplitsAmount(Number(e.currentTarget.value))} />
+            <input
+              value={splitsAmount}
+              type="number"
+              onChange={(e) => setSplitsAmount(Number(e.currentTarget.value))}
+            />
           </div>
         </>
       }

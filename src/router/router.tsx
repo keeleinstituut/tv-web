@@ -28,6 +28,7 @@ import TechnicalSettings from 'pages/TechnicalSettings/TechnicalSettings'
 import OrderPage from 'pages/OrderPage/OrderPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
+import TaskPage from 'pages/TaskPage/TaskPage'
 import Components from 'pages/Components/Components'
 
 // import icons
@@ -44,7 +45,6 @@ import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
-import TaskPage from 'pages/TaskPage/TaskPage'
 
 export type FullRouteObject = Omit<RouteObject, 'children'> & {
   label?: string
@@ -65,38 +65,38 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'orders',
     label: i18n.t('menu.orders'),
     Icon: OrdersIcon,
-    privileges: [
-      Privileges.CreateProject,
-      Privileges.ManageProject,
-      Privileges.ReceiveAndManageProject,
-      Privileges.ViewInstitutionProjectList,
-      Privileges.ViewInstitutionProjectDetail,
-      Privileges.ViewPersonalProject,
-    ],
+    // privileges: [
+    //   Privileges.CreateProject,
+    //   Privileges.ManageProject,
+    //   Privileges.ReceiveAndManageProject,
+    //   Privileges.ViewInstitutionProjectList,
+    //   Privileges.ViewInstitutionProjectDetail,
+    //   Privileges.ViewPersonalProject,
+    // ],
     children: [
       {
         path: '',
         label: i18n.t('menu.orders'),
-        privileges: [
-          Privileges.ViewInstitutionProjectList,
-          Privileges.ViewInstitutionProjectDetail,
-          Privileges.ViewPersonalProject,
-          Privileges.ViewPersonalTask,
-        ],
+        // privileges: [
+        //   Privileges.ViewInstitutionProjectList,
+        //   Privileges.ViewInstitutionProjectDetail,
+        //   Privileges.ViewPersonalProject,
+        //   Privileges.ViewPersonalTask,
+        // ],
         children: [
           {
             path: '',
             element: <Orders />,
-            privileges: [
-              Privileges.ViewPersonalProject,
-              Privileges.ViewInstitutionProjectList,
-              Privileges.ViewInstitutionProjectDetail,
-            ],
+            // privileges: [
+            //   Privileges.ViewPersonalProject,
+            //   Privileges.ViewInstitutionProjectList,
+            //   Privileges.ViewInstitutionProjectDetail,
+            // ],
           },
           {
             path: 'new-order',
             element: <NewOrder />,
-            privileges: [Privileges.CreateProject],
+            // privileges: [Privileges.CreateProject],
           },
         ],
       },
@@ -104,11 +104,11 @@ export const protectedRoutes: FullRouteObject[] = [
         path: 'sub-orders',
         label: i18n.t('menu.sub_orders'),
         element: <SubOrders />,
-        privileges: [
-          Privileges.ViewPersonalProject,
-          Privileges.ViewInstitutionProjectList,
-          Privileges.ViewInstitutionProjectDetail,
-        ],
+        // privileges: [
+        //   Privileges.ViewPersonalProject,
+        //   Privileges.ViewInstitutionProjectList,
+        //   Privileges.ViewInstitutionProjectDetail,
+        // ],
       },
       {
         path: 'my-tasks',
@@ -123,8 +123,8 @@ export const protectedRoutes: FullRouteObject[] = [
             path: ':taskId',
             element: <TaskPage />,
             // privileges: [],
-          }
-        ]
+          },
+        ],
       },
       {
         path: ':orderId',

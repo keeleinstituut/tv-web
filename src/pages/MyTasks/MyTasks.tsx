@@ -14,11 +14,11 @@ const MyTasks: FC = () => {
   const [tabNames, setTabNames] = useState<ObjectType>({})
   const [activeTab, setActiveTab] = useState<string>()
 
-  let Component: FC = () => null;
+  let Component: FC = () => null
   switch (activeTab) {
     case 'Minu ülesanded':
       Component = TasksTable
-      break;
+      break
   }
 
   return (
@@ -34,19 +34,18 @@ const MyTasks: FC = () => {
           'Ootel ülesanded',
           'Minu ülesannete ajalugu',
         ])
-          .map(feature => ({
+          .map((feature) => ({
             id: feature,
             name: feature,
           }))
-          .value()
-        }
+          .value()}
         onAddPress={function (): void {
           throw new Error('Function not implemented.')
-        } }
+        }}
         addLabel={''}
         onChangeName={function (id: string, newValue: string): void {
           throw new Error('Function not implemented.')
-        } }
+        }}
         addDisabled={true}
         tabNames={tabNames}
       />

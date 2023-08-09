@@ -5,7 +5,7 @@ import ConfirmationModalBase, {
 
 export interface CatMergeModalProps
   extends Omit<ConfirmationModalBaseProps, 'handleProceed'> {
-    handleMerge?: () => void
+  handleMerge?: () => void
 }
 
 const CatMergeModal: FC<CatMergeModalProps> = ({

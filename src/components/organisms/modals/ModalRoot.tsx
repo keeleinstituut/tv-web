@@ -26,13 +26,9 @@ const FormProgressModal = lazy(
   () => import('./FormProgressModal/FormProgressModal')
 )
 
-const CatSplitModal = lazy(
-  () => import('./CatSplitModal/CatSplitModal')
-)
+const CatSplitModal = lazy(() => import('./CatSplitModal/CatSplitModal'))
 
-const CatMergeModal = lazy(
-  () => import('./CatMergeModal/CatMergeModal')
-)
+const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
@@ -78,8 +74,6 @@ const ModalRoot = () => {
   // so that every modal would accepts only their own props
   const showModal = useCallback(
     (modalKey: ModalTypes, modalProps: object) => {
-      console.warn(modalKey)
-      console.warn(modalProps)
       setCurrentModalProps(modalProps)
       setCurrentModalKey(modalKey)
       setIsOpen(true)
@@ -100,12 +94,9 @@ const ModalRoot = () => {
     }),
     [closeModal, showModal, isModalOpen]
   )
-  console.warn('currentModalKey: ' + currentModalKey)
 
   if (!currentModalKey) return null
-  const SelectedModal = MODALS[currentModalKey] as any
-
-  console.warn(SelectedModal)
+  const SelectedModal = MODALS[currentModalKey]
 
   return (
     <Suspense fallback={<div />}>

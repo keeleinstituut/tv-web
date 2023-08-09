@@ -2,7 +2,7 @@ import { InstitutionType } from './institutions'
 import { Privileges } from './privileges'
 import { RolePayload } from './roles'
 import {
-  DataMetaTypes,
+  ResponseMetaTypes,
   PaginationFunctionType,
   SortingFunctionType,
 } from 'types/collective'
@@ -67,7 +67,7 @@ export type UserPayloadType = PaginationFunctionType &
 
 export interface UsersDataType {
   data: UserType[]
-  meta?: DataMetaTypes
+  meta?: ResponseMetaTypes
 }
 
 export interface UserDataType {

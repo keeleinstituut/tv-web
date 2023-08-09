@@ -18,7 +18,7 @@ import Tag from 'components/atoms/Tag/Tag'
 import {
   FilterFunctionType,
   SortingFunctionType,
-  DataMetaTypes,
+  ResponseMetaTypes,
   PaginationFunctionType,
 } from 'types/collective'
 import classes from './classes.module.scss'
@@ -27,7 +27,7 @@ import { ClassifierValueType } from 'types/classifierValues'
 
 type VendorsTableProps = {
   data?: VendorType[]
-  paginationData?: DataMetaTypes
+  paginationData?: ResponseMetaTypes
   hidden?: boolean
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
