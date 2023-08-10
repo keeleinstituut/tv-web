@@ -10,6 +10,8 @@ import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
 import { find, map, size } from 'lodash'
 
 import classes from './classes.module.scss'
+import { useForm } from 'react-hook-form'
+import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 interface FormDataProps {
   label: string
@@ -22,12 +24,14 @@ export interface FormProgressProps {
   formData?: FormDataProps[]
   isModalOpen?: boolean
   closeModal: () => void
+  test?: string
 }
 
 const FormProgressModal: FC<FormProgressProps> = ({
   formData,
   isModalOpen,
   closeModal,
+  test,
 }) => {
   const { t } = useTranslation()
   const [activeStep, setActiveStep] = useState(1)
@@ -55,6 +59,13 @@ const FormProgressModal: FC<FormProgressProps> = ({
   const modalData = find(formData, (_, index) => index + 1 === activeStep)
   const { title, helperText, modalContent } = modalData || {}
 
+  const { watch } = useForm<FormValues>({})
+
+  const watchfield = watch(['source_language'])
+
+  console.log('watchfield Modal', watchfield)
+  console.log('watch', watch())
+
   return (
     <ModalBase
       title={title}
@@ -81,6 +92,8 @@ const FormProgressModal: FC<FormProgressProps> = ({
         },
       ]}
     >
+      <p>???{watchfield}</p>
+
       <div>{modalContent}</div>
     </ModalBase>
   )

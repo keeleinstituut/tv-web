@@ -1,6 +1,6 @@
-import { FC, useMemo } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map } from 'lodash'
+import { filter, find, map } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useFetchSkills, useFetchVendorPrices } from 'hooks/requests/useVendors'
 import Button, {
@@ -24,11 +24,17 @@ import dayjs from 'dayjs'
 import AddPricesTable from 'components/organisms/tables/AddPricesTable/AddPricesTable'
 
 import classes from './classes.module.scss'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+
+// export type Language = {
+//   id?: string
+//   name?: string
+// }
 
 type SkillsFormValue = {
   [key in string]?: string
 }
-interface FormValues {
+export interface FormValues {
   source_language: string
   destination_language: string[]
   skills: SkillsFormValue
@@ -56,6 +62,9 @@ const VendorPriceListForm: FC = () => {
 
   const { data: skillsData } = useFetchSkills()
   const { data: vendorPricesData } = useFetchVendorPrices()
+  const { classifierValues } = useClassifierValuesFetch()
+
+  const languageData = filter(classifierValues, { type: 'LANGUAGE' })
 
   const pricesData = [
     {
@@ -142,9 +151,51 @@ const VendorPriceListForm: FC = () => {
     )
   }, [])
 
-  const { control, handleSubmit } = useForm<FormValues>({
+  // const defaultValues = {
+  //   source_language: { id: '', name: '' },
+  //   destination_language: [],
+  //   skills: {},
+  // }
+
+  const { control, handleSubmit, watch, setValue } = useForm<FormValues>({
     reValidateMode: 'onChange',
+    // defaultValues: defaultValues,
   })
+
+  const languageOptions = map(languageData, ({ id, name }) => {
+    return {
+      label: name,
+      value: id,
+    }
+  })
+
+  const findSourceLabelByValue = (value: string) => {
+    const match = find(languageOptions, { value })
+    return match?.label
+  }
+
+  const findDestinationLabelByValue = (values: string[]) => {
+    return map(values, (value) => {
+      const match = find(languageOptions, { value })
+      return match?.label
+    })
+  }
+
+  // const newValue = setValue('source_language', watch().source_language)
+
+  // const sourceLanguageLabel = findSourceLabelByValue(watch().source_language)
+  const sourceLanguageLabel = findSourceLabelByValue(watch().source_language)
+  const destinationLanguageLabels = findDestinationLabelByValue(
+    watch().destination_language
+  )
+
+  // setValue('source_language', sourceLanguageLabel ? sourceLanguageLabel : '')
+
+  const watchfield = watch(['source_language'])
+
+  console.log('watchfield Vendor', watchfield)
+
+  console.log('watch Vendor', watch())
 
   const languagePairFormFields: FieldProps<FormValues>[] = [
     {
@@ -153,11 +204,7 @@ const VendorPriceListForm: FC = () => {
       ariaLabel: t('vendors.source_language'),
       label: t('vendors.source_language'),
       placeholder: t('button.choose'),
-      options: [
-        { label: 'Eesti ee-ET', value: 'Eesti ee-ET' },
-        { label: 'Vene ru-RU', value: 'Vene ru-RU' },
-        { label: 'Inglise en-GB', value: 'Inglise en-GB' },
-      ],
+      options: languageOptions,
       // rules: {
       //   required: true,
       // },
@@ -170,11 +217,7 @@ const VendorPriceListForm: FC = () => {
       ariaLabel: t('vendors.destination_language'),
       label: t('vendors.destination_language'),
       placeholder: t('button.choose'),
-      options: [
-        { label: 'Eesti ee-ET', value: 'Eesti ee-ET' },
-        { label: 'Vene ru-RU', value: 'Vene ru-RU' },
-        { label: 'Inglise en-GB', value: 'Inglise en-GB' },
-      ],
+      options: languageOptions,
       multiple: true,
       buttons: true,
       // rules: {
@@ -280,7 +323,7 @@ const VendorPriceListForm: FC = () => {
           modalContent: (
             <>
               <p className={classes.sourceLanguage}>
-                {t('vendors.source_language')}
+                {t('vendors.source_language')} {watchfield}
               </p>
               <p className={classes.destinationLanguage}>
                 {t('vendors.destination_language')}
@@ -292,6 +335,7 @@ const VendorPriceListForm: FC = () => {
               />
             </>
           ),
+          // test: 'source_language',
         },
         {
           label: t('vendors.add_price_list'),
