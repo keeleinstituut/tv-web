@@ -56,7 +56,9 @@
     "source_language": "Algkeel",
     "destination_language": "Sihtkeel",
     "file_type": "Failitüüp",
-    "added": "Lisatud"
+    "added": "Lisatud",
+    "sub_order_id": "Alamtellimuse ID",
+    "associated_reference_number": "Seotud viide"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -362,8 +364,13 @@
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
       "REJECTED": "Tagasi lükatud",
-      "CORRECTED": "Parandatud"
-    }
+      "CORRECTED": "Parandatud",
+      "FORWARDED_TO_VENDOR": "Teostajale edastatud (ülesanne)",
+      "IN_PROGRESS": "Teostamisel (ülesanne)",
+      "DONE_TASK": "Teostatud (ülesanne)",
+      "DONE": "Teostatud"
+    },
+    "sub_orders_tile": "Alamtellimused"
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele"

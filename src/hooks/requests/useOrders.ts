@@ -164,12 +164,12 @@ export const useFetchSubOrders = () => {
     keepPreviousData: true,
   })
 
-  const { meta: paginationData, data: orders } = data || {}
+  const { meta: paginationData, data: subOrders } = data || {}
 
   return {
     isLoading,
     isError,
-    orders,
+    subOrders,
     paginationData,
     handleFilterChange,
     handleSortingChange,

@@ -24,6 +24,16 @@ export enum OrderStatus {
   Corrected = 'CORRECTED',
 }
 
+export enum SubOrderStatus {
+  Registered = 'REGISTERED',
+  New = 'NEW',
+  ForwardedToVendor = 'FORWARDED_TO_VENDOR',
+  InProgress = 'IN_PROGRESS',
+  DoneTask = 'DONE_TASK',
+  Cancelled = 'CANCELLED',
+  Done = 'DONE',
+}
+
 export enum SubProjectFeatures {
   GeneralInformation = 'general_information',
   JobTranslation = 'job_translation',
@@ -128,6 +138,12 @@ export interface ListSubOrderDetail {
   created_at: string
   updated_at: string
   features: SubProjectFeatures[]
+  // Not sure about the existance of following:
+  status?: SubOrderStatus
+  deadline_at: string
+  reference_number: string
+  type_classifier_value?: TypeClassifierValue
+  cost?: string
 }
 
 export interface SubOrderDetail extends ListSubOrderDetail {

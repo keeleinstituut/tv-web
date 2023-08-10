@@ -129,7 +129,7 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: ':orderId',
         element: <OrderPage />,
-        privileges: [Privileges.ViewInstitutionProjectDetail],
+        // privileges: [Privileges.ViewInstitutionProjectDetail],
       },
     ],
   },

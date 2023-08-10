@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, uniq, includes, find } from 'lodash'
+import { map, includes, find } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -19,8 +19,8 @@ import {
   FormInput,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useFetchOrders } from 'hooks/requests/useOrders'
-import { OrderStatus } from 'types/orders'
+import { useFetchSubOrders } from 'hooks/requests/useOrders'
+import { SubOrderStatus } from 'types/orders'
 import Tag from 'components/atoms/Tag/Tag'
 import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
 import dayjs from 'dayjs'
@@ -32,18 +32,17 @@ import useAuth from 'hooks/useAuth'
 // will be shared between this and OrdersTable.
 // For now let's keep them separate, but they can be unified into 1 component or they should at least use some shared part later on
 
-type OrderTableRow = {
+type SubOrderTableRow = {
   ext_id: string
   reference_number: string
   deadline_at: string
   type: string
-  status: OrderStatus
-  tags: string[]
+  status: SubOrderStatus
   cost: string
   language_directions: string[]
 }
 
-const columnHelper = createColumnHelper<OrderTableRow>()
+const columnHelper = createColumnHelper<SubOrderTableRow>()
 
 // TODO: we keep all filtering and sorting options inside form
 // This was we can do a new request easily every time form values change
@@ -57,16 +56,16 @@ const SubOrdersTable: FC = () => {
   const { userPrivileges } = useAuth()
 
   const {
-    orders,
+    subOrders,
     paginationData,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchOrders()
+  } = useFetchSubOrders()
 
   // TODO: Currently uses statuses of orders
   // suborders should have some different statuses as well
-  const statusFilters = map(OrderStatus, (status) => ({
+  const statusFilters = map(SubOrderStatus, (status) => ({
     label: t(`orders.status.${status}`),
     value: status,
   }))
@@ -75,15 +74,15 @@ const SubOrdersTable: FC = () => {
   const orderRows = useMemo(
     () =>
       map(
-        orders,
+        subOrders,
         ({
           reference_number,
-          sub_projects,
           deadline_at,
           ext_id,
           type_classifier_value,
-          status = OrderStatus.Registered,
-          tags = ['asutusesiseseks kasutuseks'],
+          source_language_classifier_value,
+          destination_language_classifier_value,
+          status = SubOrderStatus.ForwardedToVendor,
           cost = '500€',
         }) => {
           return {
@@ -92,22 +91,14 @@ const SubOrdersTable: FC = () => {
             deadline_at,
             type: type_classifier_value?.value || '',
             status,
-            tags,
             cost,
-            language_directions: uniq(
-              map(
-                sub_projects,
-                ({
-                  source_language_classifier_value,
-                  destination_language_classifier_value,
-                }) =>
-                  `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
-              )
-            ),
+            language_directions: [
+              `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
+            ],
           }
         }
       ),
-    [orders]
+    [subOrders]
   )
 
   const { control, handleSubmit, watch } = useForm<FormValues>({
@@ -129,10 +120,17 @@ const SubOrdersTable: FC = () => {
 
   const columns = [
     columnHelper.accessor('ext_id', {
-      header: () => t('label.order_id'),
+      header: () => t('label.sub_order_id'),
       cell: ({ getValue, row }) => {
         const orderExtId = getValue()
-        const order = find(orders, { ext_id: orderExtId })
+        const subOrder = find(subOrders, { ext_id: orderExtId })
+        // TODO: currently parent order id is not passed for subOrder
+        // Once it is, we should select it here
+        // Alternative would be for BE to make subOrders available by ext_id
+        // In that case we could split the exT_id of suborder to get the original order id
+        // const parentOrderId = subOrder?.parent_order_id
+        // Currently hardcoded mockData order id
+        const parentOrderId = '99c8bbac-b9bf-4b3b-835a-bc0865ea2168'
         return (
           <Button
             appearance={AppearanceTypes.Text}
@@ -143,7 +141,7 @@ const SubOrdersTable: FC = () => {
             disabled={
               !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
             }
-            href={`/orders/${order?.id}`}
+            href={`/orders/${parentOrderId}#${subOrder?.id}`}
           >
             {orderExtId}
           </Button>
@@ -152,7 +150,7 @@ const SubOrdersTable: FC = () => {
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('reference_number', {
-      header: () => t('label.reference_number'),
+      header: () => t('label.associated_reference_number'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('language_directions', {
@@ -171,19 +169,6 @@ const SubOrdersTable: FC = () => {
     columnHelper.accessor('type', {
       header: () => t('label.type'),
       footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('tags', {
-      header: () => t('label.order_tags'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        return (
-          <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
-            ))}
-          </div>
-        )
-      },
     }),
     columnHelper.accessor('status', {
       header: () => t('label.status'),
@@ -208,15 +193,7 @@ const SubOrdersTable: FC = () => {
         const rowStatus = row.original.status
         const hasDeadlineError =
           diff < 0 &&
-          !includes(
-            [
-              OrderStatus.Forwarded,
-              OrderStatus.Accepted,
-              OrderStatus.Cancelled,
-              OrderStatus.Corrected,
-            ],
-            rowStatus
-          )
+          !includes([SubOrderStatus.Done, SubOrderStatus.Cancelled], rowStatus)
         return (
           <span
             className={classNames(
@@ -232,7 +209,7 @@ const SubOrdersTable: FC = () => {
         sortingOption: ['asc', 'desc'],
       },
     }),
-  ] as ColumnDef<OrderTableRow>[]
+  ] as ColumnDef<SubOrderTableRow>[]
 
   return (
     <Root>
