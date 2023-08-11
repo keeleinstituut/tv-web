@@ -2,6 +2,7 @@ import { FC, ReactElement } from 'react'
 import { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'
 import ModalBase, {
   ButtonPositionTypes,
+  ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import { useTranslation } from 'react-i18next'
@@ -16,6 +17,7 @@ export interface ConfirmationModalBaseProps {
   handleProceed?: () => void
   handleCancel?: () => void
   className?: string
+  size?: ModalSizeTypes
 }
 
 const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
@@ -27,6 +29,8 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
   closeModal,
   handleProceed,
   className,
+  handleCancel,
+  size,
 }) => {
   const { t } = useTranslation()
   return (
@@ -36,12 +40,19 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
       open={!!isModalOpen}
       buttonsPosition={ButtonPositionTypes.Right}
       className={className}
+      size={size}
       buttons={[
         {
           appearance: AppearanceTypes.Secondary,
           children: cancelButtonContent || t('button.no'),
           size: SizeTypes.M,
-          onClick: closeModal,
+          onClick: () => {
+            if (handleCancel) {
+              handleCancel()
+            } else {
+              closeModal()
+            }
+          },
         },
         {
           appearance: AppearanceTypes.Primary,

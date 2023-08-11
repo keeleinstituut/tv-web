@@ -14,6 +14,7 @@ import Orders from 'pages/Orders/Orders'
 import SubOrders from 'pages/SubOrders/SubOrders'
 import MyTasks from 'pages/MyTasks/MyTasks'
 import VendorsDatabase from 'pages/VendorsDatabase/VendorsDatabase'
+import VendorPage from 'pages/VendorPage/VendorPage'
 import TranslationMemories from 'pages/TranslationMemories/TranslationMemories'
 import UsersManagement from 'pages/UsersManagement/UsersManagement'
 import AddUsersPage from 'pages/AddUsersPage/AddUsersPage'
@@ -136,13 +137,17 @@ export const protectedRoutes: FullRouteObject[] = [
   {
     path: 'vendors',
     label: i18n.t('menu.vendors_database'),
-    element: <VendorsDatabase />,
     Icon: VendorsIcon,
     privileges: [Privileges.ViewVendorDb],
     children: [
       {
+        path: '',
+        element: <VendorsDatabase />,
+        privileges: [Privileges.ViewVendorDb],
+      },
+      {
         path: ':vendorId',
-        element: <OrderPage />,
+        element: <VendorPage />,
         privileges: [Privileges.EditVendorDb],
       },
     ],

@@ -22,6 +22,9 @@ const alphanumericCharHyphenSpaceCheck = (tagInput: string) =>
 const hyphenSpaceAsFirstCharCheck = (tagInput: string) =>
   /^(?![- ])[a-zA-Z0-9ŠšŽžÕõÄäÖöÜü -]+$/.test(tagInput)
 
+const numberBetweenZeroAndHundred = (number: string) =>
+  /^(100(\.0+)?|\d{1,2}(\.\d+)?)$/.test(number)
+
 const useValidators = () => {
   const { t } = useTranslation()
 
@@ -61,12 +64,21 @@ const useValidators = () => {
     return true
   }
 
+  const discountValidator = (value?: string | null) => {
+    if (value && !numberBetweenZeroAndHundred(value)) {
+      return t('error.discount_number')
+    }
+
+    return true
+  }
+
   return {
     emailValidator,
     phoneValidator,
     picValidator,
     rolesValidator,
     tagInputValidator,
+    discountValidator,
   }
 }
 
