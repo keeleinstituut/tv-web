@@ -18,6 +18,7 @@ import DynamicForm, {
 import {
   filter,
   includes,
+  isArray,
   isEqual,
   join,
   map,
@@ -30,10 +31,10 @@ import {
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
 import { TagTypes } from 'types/tags'
-import useAuth from 'hooks/useAuth'
 import classes from './classes.module.scss'
-import { Privileges } from 'types/privileges'
 import { ValidationError } from 'api/errorHandler'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 
 export enum DataStateTypes {
   UPDATED = 'UPDATED',
@@ -58,6 +59,8 @@ export interface EditableListModalProps {
   isLoading?: boolean
   handleOnSubmit?: (values: EditDataType[]) => void
   inputValidator?: (value?: string | undefined) => string | true
+  hasAddingPrivileges?: boolean
+  hasDeletingPrivileges?: boolean
 }
 
 type FormValues = {
@@ -73,9 +76,10 @@ const EditableListModal: FC<EditableListModalProps> = ({
   handleOnSubmit,
   isLoading,
   inputValidator,
+  hasAddingPrivileges,
+  hasDeletingPrivileges,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
 
   const defaultValues: FormValues = useMemo(
     () =>
@@ -96,10 +100,14 @@ const EditableListModal: FC<EditableListModalProps> = ({
     [editableData]
   )
 
-  const { control, handleSubmit, reset, setError } = useForm<FormValues>({
-    reValidateMode: 'onSubmit',
-    values: defaultValues,
-  })
+  const { control, handleSubmit, reset, setError, resetField, setValue } =
+    useForm<FormValues>({
+      values: defaultValues,
+      resetOptions: {
+        keepDirtyValues: true, // keep dirty fields unchanged, but update defaultValues
+        keepErrors: true,
+      },
+    })
 
   const editableFields: FieldProps<FormValues>[] = map(
     editableData,
@@ -112,7 +120,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
         validate: inputValidator,
       },
       className: classes.editTagInput,
-      ...(includes(userPrivileges, Privileges.DeleteTag)
+      ...(hasDeletingPrivileges
         ? { handleDelete: () => handleOnDelete(name, id) }
         : {}),
     })
@@ -135,13 +143,14 @@ const EditableListModal: FC<EditableListModalProps> = ({
           validate: inputValidator,
         },
         className: classes.editTagInput,
-        ...(includes(userPrivileges, Privileges.DeleteTag)
+        ...(hasDeletingPrivileges
           ? { handleDelete: () => handleOnDelete(`new_${size(inputFields)}`) }
           : {}),
       },
     ])
 
   const handleOnDelete = (name?: string, id?: string) => {
+    resetField(id || name || '')
     setPrevDeletedValues((prevDeletedValues) => [
       ...prevDeletedValues,
       { name, id },
@@ -170,9 +179,11 @@ const EditableListModal: FC<EditableListModalProps> = ({
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const omittedValues = omitBy(values, (value) => !value)
-
       const payload: EditDataType[] = map(omittedValues, (value, key) => {
         switch (true) {
+          case includes(value, t('label.updated')): {
+            return {}
+          }
           case includes(key, 'new_'): {
             return { name: value, id: key, state: DataStateTypes.NEW }
           }
@@ -195,18 +206,44 @@ const EditableListModal: FC<EditableListModalProps> = ({
         resetForm()
         closeModal()
       } catch (errorData) {
-        const typedErrorData = errorData as ValidationError
-        if (typedErrorData.errors) {
-          map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
-            const tKey = split(typedKey, '.')[1]
-            const errorString = join(errorsArray, ',')
-            if (tKey) {
-              const inputName = payload[toNumber(tKey)].id || `new_${tKey}`
-              setError(inputName, { type: 'backend', message: errorString })
-            }
-          })
-        }
+        const errorArray = isArray(errorData) ? errorData : [errorData]
+        map(errorArray, (error) => {
+          const typedErrorData = error as ValidationError
+          if (typedErrorData.errors) {
+            map(typedErrorData.errors, (errorsArray, key) => {
+              const typedKey = key as FieldPath<FormValues>
+              const tKey = split(typedKey, '.')[1]
+              const errorString = join(errorsArray, ',')
+              if (tKey) {
+                const inputName = payload[toNumber(tKey)].id || `new_${tKey}`
+                setError(
+                  inputName,
+                  { type: 'backend', message: errorString },
+                  { shouldFocus: true }
+                )
+              }
+            })
+          }
+          if (error.values) {
+            const updatedNames = join(
+              map(error.values, ({ value }) => {
+                return value.data.name
+              }),
+              ', '
+            )
+
+            showNotification({
+              type: NotificationTypes.Warning,
+              title: t('notification.announcement'),
+              content: t('success.department_added', { name: updatedNames }),
+            })
+            map(error.values, ({ value, key }) => {
+              const { data } = value
+              const inputName = payload[toNumber(key)].id || `new_${key}`
+              setValue(inputName, `${data.name}   ${t('label.updated')}`)
+            })
+          }
+        })
       }
     },
     [
@@ -257,7 +294,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
         icon={Add}
         children={t('tag.add_new_row')}
         onClick={addInputField}
-        hidden={!includes(userPrivileges, Privileges.AddTag)}
+        hidden={!hasAddingPrivileges}
         form="editableList"
       />
     </ModalBase>

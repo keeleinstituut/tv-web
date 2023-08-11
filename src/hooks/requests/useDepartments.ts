@@ -1,14 +1,10 @@
-import {
-  DepartmentDataType,
-  DepartmentType,
-  DepartmentsDataType,
-} from 'types/departments'
+import { DepartmentsDataType, PromiseErrorType } from 'types/departments'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
-import { filter, map } from 'lodash'
-import useAuth from 'hooks/useAuth'
-import { useCallback } from 'react'
+import { compact, isEmpty, map } from 'lodash'
+
+import { EditDataType } from 'components/organisms/modals/EditableListModal/EditableListModal'
 
 export const useDepartmentsFetch = () => {
   const { isLoading, isError, data } = useQuery<DepartmentsDataType>({
@@ -29,103 +25,72 @@ export const useDepartmentsFetch = () => {
   }
 }
 
-export const useUpdateDepartment = ({
-  departmentId,
-}: {
-  departmentId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: updateDepartment, isLoading } = useMutation({
-    mutationKey: ['departments', departmentId],
-    mutationFn: (payload: DepartmentType) =>
-      apiClient.put(`${endpoints.DEPARTMENTS}/${departmentId}`, {
-        ...payload,
-      }),
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['departments', departmentId],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: DepartmentDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newArray = { ...previousData, ...data }
-          return { data: newArray }
+const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
+  payload: EditDataType[]
+) =>
+  new Promise(async (resolve, reject) => {
+    const results: PromiseErrorType[] = await Promise.allSettled(
+      map(payload, ({ state, id, name }) => {
+        if (state === 'NEW') {
+          return apiClient.post(endpoints.DEPARTMENTS, { name })
         }
-      )
-    },
+        if (state === 'UPDATED') {
+          return apiClient.put(`${endpoints.DEPARTMENTS}/${id}`, { name })
+        }
+        if (state === 'DELETED') {
+          return apiClient.delete(`${endpoints.DEPARTMENTS}/${id}`)
+        }
+      })
+    )
+
+    const fulfilled = compact(
+      map(results, ({ status, value }, key) => {
+        if (status === 'fulfilled') {
+          if (value) {
+            return {
+              key,
+              value,
+            }
+          }
+        }
+      })
+    )
+
+    const errors = compact(
+      map(results, ({ status, reason, value }, key) => {
+        if (status === 'rejected') {
+          const { message, errors: err } = reason || {}
+          const name = `department.${key}`
+          const error = {
+            errors: { [name]: err?.name || [] },
+            message: message || '',
+            name: key,
+          }
+          return error
+        }
+      })
+    )
+
+    if (isEmpty(errors)) {
+      resolve(results)
+    } else {
+      reject([...errors, { values: fulfilled }])
+    }
   })
 
-  return {
-    updateDepartment,
-    isLoading,
-  }
-}
-
-export const useCreateDepartment = () => {
-  const { userInfo } = useAuth()
+export const useParallelMutationDepartment = () => {
   const queryClient = useQueryClient()
-  const { mutateAsync: createDepartment, isLoading } = useMutation({
+  const { mutateAsync: parallelUpdating, isLoading } = useMutation({
     mutationKey: ['departments'],
-    mutationFn: (payload: DepartmentType) =>
-      apiClient.post(endpoints.DEPARTMENTS, {
-        institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
-        ...payload,
-      }),
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['department'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: DepartmentsDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = [...previousData, data]
-          return { data: newData }
-        }
-      )
-    },
-  })
-
-  return {
-    createDepartment,
-    isLoading,
-  }
-}
-export const useDeleteDepartment = ({
-  departmentId,
-}: {
-  departmentId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutate: deleteDepartment, isLoading } = useMutation({
-    mutationKey: ['departments', departmentId],
-    mutationFn: () =>
-      apiClient.delete(`${endpoints.DEPARTMENTS}/${departmentId}`),
+    mutationFn: async (payload: EditDataType[]) =>
+      requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed(payload),
     onSuccess: () => {
-      queryClient.setQueryData(
-        ['departments', departmentId],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: DepartmentsDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const deletedData = filter(
-            previousData,
-            ({ id }) => id !== departmentId
-          )
-          return { data: deletedData }
-        }
-      )
+      queryClient.refetchQueries({ queryKey: ['departments'], type: 'active' })
+    },
+    onError: () => {
+      queryClient.refetchQueries({ queryKey: ['departments'], type: 'active' })
     },
   })
 
-  const wrappedDeleteDepartment = useCallback(() => {
-    deleteDepartment()
-  }, [deleteDepartment])
-
-  return {
-    deleteDepartment: wrappedDeleteDepartment,
-    isLoading,
-  }
+  return { parallelUpdating, isLoading }
 }

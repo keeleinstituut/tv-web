@@ -12,6 +12,8 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { t } from 'i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import useValidators from 'hooks/useValidators'
+import useAuth from 'hooks/useAuth'
+import { Privileges } from 'types/privileges'
 
 type TagCategoryTypes = {
   tagsList?: Tag[]
@@ -22,6 +24,7 @@ type TagCategoryTypes = {
 const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
   const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate({ type })
   const { tagInputValidator } = useValidators()
+  const { userPrivileges } = useAuth()
 
   const handleOnSubmitTags = useCallback(
     async (values: EditDataType[]) => {
@@ -63,6 +66,8 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
       type,
       isLoading: isUpdatingTags,
       inputValidator: tagInputValidator,
+      hasAddingPrivileges: includes(userPrivileges, Privileges.AddTag),
+      hasDeletingPrivileges: includes(userPrivileges, Privileges.DeleteTag),
     })
   }
 
