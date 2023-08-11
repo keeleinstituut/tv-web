@@ -25,6 +25,8 @@ import AddPricesTable from 'components/organisms/tables/AddPricesTable/AddPrices
 
 import classes from './classes.module.scss'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { VendorFormProps } from '../VendorForm/VendorForm'
+import { Vendor } from 'types/vendors'
 
 type SkillsFormValue = {
   [key in string]?: string
@@ -118,7 +120,7 @@ const VendorPriceListThirdStep: FC<VendorPriceListStepProps> = ({
     <>
       <LanguageLabels control={control} languageOptions={languageOptions} />
       <Root>
-        <AddPricesTable selectedSkills={selectedSkills} />
+        <AddPricesTable selectedSkills={selectedSkills} control={control} />
       </Root>
     </>
   )

@@ -1,10 +1,10 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { identity, keys, map, merge, pick, pickBy } from 'lodash'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control, useForm } from 'react-hook-form'
+import { Control, useForm, useWatch } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 
 import classes from './classes.module.scss'
@@ -36,9 +36,13 @@ type SkillObject = {
 
 type AddPricesTableProps = {
   selectedSkills: SkillObject | undefined
+  control: Control
 }
 
-const AddPricesTable: FC<AddPricesTableProps> = ({ selectedSkills }) => {
+const AddPricesTable: FC<AddPricesTableProps> = ({
+  selectedSkills,
+  control,
+}) => {
   const { t } = useTranslation()
 
   const pricesData = [
@@ -103,10 +107,18 @@ const AddPricesTable: FC<AddPricesTableProps> = ({ selectedSkills }) => {
       },
       skill: {
         id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-        name: 'Terminoloogia töö',
+        name: 'Terminoloogia töö test objekt',
       },
     },
   ]
+
+  const vendor = {
+    id: '',
+    company_name: 'string',
+    prices: [],
+    tags: [],
+    comment: '',
+  }
 
   const feesData = map(pricesData, (item, index) => ({
     [`row-${index}`]: pick(item, [
@@ -121,50 +133,39 @@ const AddPricesTable: FC<AddPricesTableProps> = ({ selectedSkills }) => {
 
   const result = merge({}, ...feesData)
 
-  const pricesValues = useMemo(() => {
-    return (
-      map(pricesData, (data) => {
-        return {
-          id: data.id,
-          character_fee: 10,
-          word_fee: 10,
-          page_fee: 10,
-          minute_fee: 10,
-          hour_fee: 10,
-          minimal_fee: 10,
-          skill: data.skill.name,
-        }
-      }) || {}
-    )
-  }, [])
+  console.log('result', result)
 
-  const { control, handleSubmit } = useForm<FormValues>({
+  const selectedSkillsLabels = keys(pickBy(selectedSkills, identity))
+
+  //   const defaultValues = {
+  //     [`row-${''}`]: {
+  //       id: vendor.id,
+  //       character_fee: 0,
+  //       word_fee: 0,
+  //       page_fee: 0,
+  //       minute_fee: 0,
+  //       hour_fee: 0,
+  //       minimal_fee: 0,
+  //       skill: {},
+  //     },
+  //   }
+
+  const {
+    handleSubmit,
+    // control
+  } = useForm<FormValues>({
     reValidateMode: 'onChange',
-    defaultValues: result,
+    // defaultValues: result,
+    // defaultValues,
   })
 
-  console.log('selectedSkills***********', selectedSkills)
-
-  //   const selectedSkillsLabels = keys(pickBy(selectedSkills, identity))
+  //   console.log('watchValues', useWatch({ control }))
 
   const columnHelper = createColumnHelper<Prices>()
 
   const columns = [
     columnHelper.accessor('skill', {
       header: () => t('vendors.skill'),
-      //   cell: ({ row }) => {
-      //     const selectedSkillsLabels = keys(pickBy(selectedSkills, identity))
-      //     console.log('selectedSkillsLabels', selectedSkillsLabels)
-
-      //     return map(selectedSkillsLabels, (label) => {
-      //       return label
-      //     })
-      //   },
-      //   cell: (selectedSkillsLabels) =>
-      //     map(selectedSkillsLabels, (label) => {
-      //       return <div key={label}>{label}</div>
-      //     }),
-
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('character_fee', {
@@ -271,9 +272,23 @@ const AddPricesTable: FC<AddPricesTableProps> = ({ selectedSkills }) => {
     }),
   ] as ColumnDef<any>[]
 
+  const skillsValues = map(selectedSkillsLabels, (label) => {
+    return {
+      skill: label,
+      character_fee: 10,
+      word_fee: 10,
+      page_fee: 10,
+      minute_fee: 10,
+      hour_fee: 10,
+      minimal_fee: 10,
+    }
+  })
+
+  console.log('skillsValues', skillsValues)
+
   return (
     <DataTable
-      data={pricesValues}
+      data={skillsValues}
       columns={columns}
       tableSize={TableSizeTypes.M}
       hidePagination
