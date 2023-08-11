@@ -84,8 +84,6 @@ export const useFetchVendorPrices = () => {
     queryFn: () => apiClient.get(`${endpoints.PRICES}`),
   })
 
-  console.log('data**************', data)
-
   return {
     isLoading,
     isError,

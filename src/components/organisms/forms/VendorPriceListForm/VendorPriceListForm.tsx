@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { filter, find, map } from 'lodash'
 import { Root } from '@radix-ui/react-form'
@@ -18,18 +18,13 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useForm } from 'react-hook-form'
+import { Control, useForm, useWatch } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
 import AddPricesTable from 'components/organisms/tables/AddPricesTable/AddPricesTable'
 
 import classes from './classes.module.scss'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
-
-// export type Language = {
-//   id?: string
-//   name?: string
-// }
 
 type SkillsFormValue = {
   [key in string]?: string
@@ -55,6 +50,78 @@ export type Prices = {
   minimal_fee: number
   skill: Skill
   language_direction: string
+}
+
+type VendorPriceListStepProps = {
+  skillsFormFields: FieldProps<FormValues>[]
+  control: Control<FormValues>
+  languageOptions: { label: string; value: string }[]
+}
+
+type LanguageLabelsProps = Omit<VendorPriceListStepProps, 'skillsFormFields'>
+
+const LanguageLabels: FC<LanguageLabelsProps> = ({
+  control,
+  languageOptions,
+}) => {
+  const { t } = useTranslation()
+
+  const findLabelByValue = (values: string[] | string | undefined) => {
+    const valueArray = Array.isArray(values) ? values : [values]
+    return map(valueArray, (value) => find(languageOptions, { value })?.label)
+  }
+
+  const sourceLanguageLabel = findLabelByValue(
+    useWatch({ control }).source_language
+  )
+
+  const destinationLanguageLabels = findLabelByValue(
+    useWatch({ control }).destination_language
+  )
+
+  return (
+    <div hidden={!sourceLanguageLabel || !destinationLanguageLabels}>
+      <p className={classes.sourceLanguage}>{t('vendors.source_language')}</p>
+      <p className={classes.languageTag}>{sourceLanguageLabel}</p>
+      <p className={classes.destinationLanguage}>
+        {t('vendors.destination_language')}
+      </p>
+      <p className={classes.languageTag}>{destinationLanguageLabels}</p>
+    </div>
+  )
+}
+
+const VendorPriceListSecondStep: FC<VendorPriceListStepProps> = ({
+  skillsFormFields,
+  control,
+  languageOptions,
+}) => {
+  return (
+    <>
+      <LanguageLabels control={control} languageOptions={languageOptions} />
+      <DynamicForm
+        fields={skillsFormFields}
+        control={control}
+        className={classes.skillsDynamicForm}
+      />
+    </>
+  )
+}
+
+const VendorPriceListThirdStep: FC<VendorPriceListStepProps> = ({
+  control,
+  languageOptions,
+}) => {
+  const selectedSkills = useWatch({ control }).skills
+
+  return (
+    <>
+      <LanguageLabels control={control} languageOptions={languageOptions} />
+      <Root>
+        <AddPricesTable selectedSkills={selectedSkills} />
+      </Root>
+    </>
+  )
 }
 
 const VendorPriceListForm: FC = () => {
@@ -152,7 +219,7 @@ const VendorPriceListForm: FC = () => {
   }, [])
 
   // const defaultValues = {
-  //   source_language: { id: '', name: '' },
+  //   source_language: '',
   //   destination_language: [],
   //   skills: {},
   // }
@@ -168,34 +235,6 @@ const VendorPriceListForm: FC = () => {
       value: id,
     }
   })
-
-  const findSourceLabelByValue = (value: string) => {
-    const match = find(languageOptions, { value })
-    return match?.label
-  }
-
-  const findDestinationLabelByValue = (values: string[]) => {
-    return map(values, (value) => {
-      const match = find(languageOptions, { value })
-      return match?.label
-    })
-  }
-
-  // const newValue = setValue('source_language', watch().source_language)
-
-  // const sourceLanguageLabel = findSourceLabelByValue(watch().source_language)
-  const sourceLanguageLabel = findSourceLabelByValue(watch().source_language)
-  const destinationLanguageLabels = findDestinationLabelByValue(
-    watch().destination_language
-  )
-
-  // setValue('source_language', sourceLanguageLabel ? sourceLanguageLabel : '')
-
-  const watchfield = watch(['source_language'])
-
-  console.log('watchfield Vendor', watchfield)
-
-  console.log('watch Vendor', watch())
 
   const languagePairFormFields: FieldProps<FormValues>[] = [
     {
@@ -321,38 +360,23 @@ const VendorPriceListForm: FC = () => {
           title: t('vendors.choose_skills'),
           helperText: t('vendors.skills_helper_text'),
           modalContent: (
-            <>
-              <p className={classes.sourceLanguage}>
-                {t('vendors.source_language')} {watchfield}
-              </p>
-              <p className={classes.destinationLanguage}>
-                {t('vendors.destination_language')}
-              </p>
-              <DynamicForm
-                fields={skillsFormFields}
-                control={control}
-                className={classes.skillsDynamicForm}
-              />
-            </>
+            <VendorPriceListSecondStep
+              skillsFormFields={skillsFormFields}
+              control={control}
+              languageOptions={languageOptions}
+            />
           ),
-          // test: 'source_language',
         },
         {
           label: t('vendors.add_price_list'),
           title: t('vendors.set_price_list'),
           helperText: t('vendors.price_list_helper_text'),
           modalContent: (
-            <>
-              <p className={classes.sourceLanguage}>
-                {t('vendors.source_language')}
-              </p>
-              <p className={classes.destinationLanguage}>
-                {t('vendors.destination_language')}
-              </p>
-              <Root>
-                <AddPricesTable />
-              </Root>
-            </>
+            <VendorPriceListThirdStep
+              skillsFormFields={skillsFormFields}
+              control={control}
+              languageOptions={languageOptions}
+            />
           ),
         },
       ],

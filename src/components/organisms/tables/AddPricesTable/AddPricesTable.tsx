@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, merge, pick } from 'lodash'
+import { identity, keys, map, merge, pick, pickBy } from 'lodash'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -30,7 +30,15 @@ interface FormValues {
   [key: string]: Partial<Prices>
 }
 
-const AddPricesTable: FC = () => {
+type SkillObject = {
+  [key: string]: string | undefined
+}
+
+type AddPricesTableProps = {
+  selectedSkills: SkillObject | undefined
+}
+
+const AddPricesTable: FC<AddPricesTableProps> = ({ selectedSkills }) => {
   const { t } = useTranslation()
 
   const pricesData = [
@@ -135,11 +143,28 @@ const AddPricesTable: FC = () => {
     defaultValues: result,
   })
 
+  console.log('selectedSkills***********', selectedSkills)
+
+  //   const selectedSkillsLabels = keys(pickBy(selectedSkills, identity))
+
   const columnHelper = createColumnHelper<Prices>()
 
   const columns = [
     columnHelper.accessor('skill', {
       header: () => t('vendors.skill'),
+      //   cell: ({ row }) => {
+      //     const selectedSkillsLabels = keys(pickBy(selectedSkills, identity))
+      //     console.log('selectedSkillsLabels', selectedSkillsLabels)
+
+      //     return map(selectedSkillsLabels, (label) => {
+      //       return label
+      //     })
+      //   },
+      //   cell: (selectedSkillsLabels) =>
+      //     map(selectedSkillsLabels, (label) => {
+      //       return <div key={label}>{label}</div>
+      //     }),
+
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('character_fee', {
