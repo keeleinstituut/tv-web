@@ -23,4 +23,31 @@
   .extraPadding {
     padding-left: spacing(4);
   }
+
+  .boldText {
+    font-weight: $font-weight-bold;
+    span {
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  &.adjustedLayout {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 44px;
+    grid-auto-rows: 24px;
+    grid-row-gap: spacing(2);
+
+    .labelClass {
+      justify-self: unset;
+    }
+
+    .extraPadding {
+      padding-left: unset;
+    }
+
+    h2 {
+      margin-bottom: spacing(2);
+      align-self: start
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import {
   ListOrder,
-  OrderDetail,
+  DetailedOrder,
   OrdersResponse,
   OrdersPayloadType,
   OrderResponse,
@@ -76,7 +76,7 @@ export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
         setTimeout(() => {
           // TODO: replace with request to BE
           resolve({
-            data: singleMockOrder as unknown as OrderDetail,
+            data: singleMockOrder as unknown as DetailedOrder,
           })
         }, 1000)
       )

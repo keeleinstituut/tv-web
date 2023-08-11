@@ -327,12 +327,12 @@ const UserPage: FC = () => {
       <UserForm {...user} />
       <p className={classes.dateText}>
         {t('user.created_at', {
-          time: dayjs(user.created_at).format('DD.MM.YYYY hh:mm') || '',
+          time: dayjs(user.created_at).format('DD.MM.YYYY HH:mm') || '',
         })}
       </p>
       <p className={classes.dateText}>
         {t('user.updated_at', {
-          time: dayjs(user.updated_at).format('DD.MM.YYYY hh:mm') || '',
+          time: dayjs(user.updated_at).format('DD.MM.YYYY HH:mm') || '',
         })}
       </p>
     </>

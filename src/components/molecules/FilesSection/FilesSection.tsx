@@ -87,7 +87,7 @@ const FilesList = <TFormValues extends FieldValues>({
       map(typedValue, (file, index) => ({
         name: file.name,
         help_file_types: index,
-        added: dayjs(file.lastModified).format('DD.MM.YYYY hh:mm'),
+        added: dayjs(file.lastModified).format('DD.MM.YYYY HH:mm'),
         delete_button: index,
       })),
     [typedValue]
@@ -180,10 +180,12 @@ const FilesList = <TFormValues extends FieldValues>({
 
 interface FilesSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
+  isNew?: boolean
 }
 
 const FilesSection = <TFormValues extends FieldValues>({
   control,
+  isNew,
 }: FilesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { classifierValuesFilters: fileTypeFilters } = useClassifierValuesFetch(
@@ -194,6 +196,7 @@ const FilesSection = <TFormValues extends FieldValues>({
 
   return (
     <div className={classes.container}>
+      <h2>{isNew ? '' : t('orders.files')}</h2>
       <FilesList
         name="source_files"
         title={t('orders.source_files')}

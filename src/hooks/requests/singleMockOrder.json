@@ -10,6 +10,8 @@
   "deadline_at": "1992-11-19 19:18:22+00",
   "created_at": "2023-08-01T07:16:51.000000Z",
   "updated_at": "2023-08-01T07:16:51.000000Z",
+  "client_user_institution_id": "99342849-9a0e-4a5f-b3c9-3f3d5344e2fc",
+  "translation_manager_user_institution_id": "99342849-9a0e-4a5f-b3c9-3f3d5344e2fc",
   "sub_projects": [
       {
           "id": "99c8bbad-8b88-4a54-9b4a-e0c8313d2558",
@@ -18,8 +20,8 @@
           "file_collection": "intermediate/zh-TW/lg-UG",
           "matecat_job_id": null,
           "workflow_ref": null,
-          "source_language_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
-          "destination_language_classifier_value_id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+          "source_language_classifier_value_id": "56b70011-4015-416e-bd8a-fb9e4b6dd488",
+          "destination_language_classifier_value_id": "7b67b166-1c32-4380-b31f-9efecf42f6d6",
           "cat_metadata": [],
           "created_at": "2023-08-01T07:16:52.000000Z",
           "updated_at": "2023-08-01T07:16:52.000000Z"
@@ -31,8 +33,8 @@
           "file_collection": "intermediate/zh-TW/mfi-NG",
           "matecat_job_id": null,
           "workflow_ref": null,
-          "source_language_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
-          "destination_language_classifier_value_id": "99c8bbac-5523-4037-8a37-3385fc9db090",
+          "source_language_classifier_value_id": "56b70011-4015-416e-bd8a-fb9e4b6dd488",
+          "destination_language_classifier_value_id": "011bd30a-e2df-4b56-9f5d-b9f96f15c9ca",
           "cat_metadata": [],
           "created_at": "2023-08-01T07:16:52.000000Z",
           "updated_at": "2023-08-01T07:16:52.000000Z"
@@ -44,8 +46,8 @@
           "file_collection": "intermediate/zh-TW/el-GR",
           "matecat_job_id": null,
           "workflow_ref": null,
-          "source_language_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
-          "destination_language_classifier_value_id": "99c8bbac-5766-49ac-93d3-077dae760c32",
+          "source_language_classifier_value_id": "56b70011-4015-416e-bd8a-fb9e4b6dd488",
+          "destination_language_classifier_value_id": "99b7036b-fbdb-4fcb-9a00-995c0db4f654",
           "cat_metadata": [],
           "created_at": "2023-08-01T07:16:52.000000Z",
           "updated_at": "2023-08-01T07:16:52.000000Z"
@@ -57,8 +59,8 @@
           "file_collection": "intermediate/zh-TW/sa-IN",
           "matecat_job_id": null,
           "workflow_ref": null,
-          "source_language_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
-          "destination_language_classifier_value_id": "99c8bbac-827d-4e51-b0d5-5d168379373a",
+          "source_language_classifier_value_id": "56b70011-4015-416e-bd8a-fb9e4b6dd488",
+          "destination_language_classifier_value_id": "47347898-ee76-4b2a-967f-737fae22a728",
           "cat_metadata": [],
           "created_at": "2023-08-01T07:16:52.000000Z",
           "updated_at": "2023-08-01T07:16:52.000000Z"
@@ -88,7 +90,31 @@
           "preview_url": ""
       }
   ],
-  "help_files": [],
+  "help_files": [
+    {
+      "id": 1,
+      "model_type": "App\\Models\\Project",
+      "model_id": "99c8bbac-b9bf-4b3b-835a-bc0865ea2168",
+      "uuid": "8862a4ff-4dfe-4323-882c-6f0058097de1",
+      "collection_name": "source",
+      "name": "B5_pgnhealth_activity_stress_SL",
+      "file_name": "B5_pgnhealth_activity_stress_SL.docx",
+      "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "disk": "s3",
+      "conversions_disk": "s3",
+      "size": 41955,
+      "manipulations": [],
+      "custom_properties": [],
+      "generated_conversions": [],
+      "responsive_images": [],
+      "order_column": 1,
+      "created_at": "2023-08-01T07:16:51.000000Z",
+      "updated_at": "2023-08-01T07:16:51.000000Z",
+      "original_url": "http://minio:9000/local/1/B5_pgnhealth_activity_stress_SL.docx",
+      "preview_url": ""
+    }
+  ],
+  "help_file_types": ["e7856031-eac2-49ed-bda3-d08e6243e614"],
   "type_classifier_value": {
       "id": "99c8bbac-a6e5-4b80-a993-d46ba59038aa",
       "type": "PROJECT_TYPE",

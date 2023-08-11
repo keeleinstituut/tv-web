@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
@@ -11,14 +11,23 @@ import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
 import FilesSection from 'components/molecules/FilesSection/FilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder } from 'hooks/requests/useOrders'
-import { isEmpty, join, map } from 'lodash'
-import { getFormattedDateFromObject } from 'helpers'
-import { NewOrderPayload } from 'types/orders'
+import { isEmpty, join, map, uniq } from 'lodash'
+import {
+  getLocalDateOjectFromUtcDateString,
+  getUtcDateStringFromLocalDateObject,
+} from 'helpers'
+import { DetailedOrder, NewOrderPayload, SourceFile } from 'types/orders'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useNavigate } from 'react-router-dom'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ValidationError } from 'api/errorHandler'
+import { Root } from '@radix-ui/react-form'
+
+export enum OrderDetailModes {
+  New = 'new',
+  Editable = 'editable',
+}
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
@@ -28,44 +37,81 @@ interface FormValues {
   reference_number?: string
   src_lang: string
   dst_lang: string[]
-  source_files: File[]
-  help_files: File[]
+  source_files: (File | SourceFile | undefined)[]
+  help_files: (File | SourceFile | undefined)[]
   help_file_types: string[]
   // TODO: Not sure about the structure of following
   translation_domain: string
   start_at?: { date?: string; time?: string }
   comments?: string
+  ext_id?: string
 }
 
 interface OrderDetailsProps {
-  isNew?: boolean
+  mode?: OrderDetailModes
+  order?: DetailedOrder
 }
 
-const OrderDetails: FC<OrderDetailsProps> = ({ isNew }) => {
+const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
   const { t } = useTranslation()
   const { institutionUserId } = useAuth()
   const { createOrder, isLoading } = useCreateOrder()
   const navigate = useNavigate()
+  const isNew = mode === OrderDetailModes.New
+  const [isEditable, setIsEditable] = useState(isNew)
+
+  console.warn('institutionUserId', institutionUserId)
 
   // TODO: will map default values of open order here instead, when isNew === false
-  const defaultValues = useMemo(
-    () => ({
-      deadline_at: { date: '', time: '' },
-      type_classifier_value_id: '',
-      client_user_institution_id: institutionUserId,
-      translation_manager_user_institution_id: '',
-      reference_number: '',
-      src_lang: '',
-      dst_lang: [],
-      source_files: [],
-      help_files: [],
-      help_file_types: [],
-      translation_domain: '',
-      start_at: { date: '', time: '' },
-      comments: '',
-    }),
-    [institutionUserId]
-  )
+
+  const defaultValues = useMemo(() => {
+    const {
+      deadline_at,
+      start_at,
+      type_classifier_value_id = '',
+      client_user_institution_id = '',
+      translation_manager_user_institution_id = '',
+      reference_number = '',
+      source_files,
+      help_files,
+      translation_domain = '',
+      help_file_types = [],
+      comments = '',
+      ext_id = '',
+      sub_projects,
+    } = order || {}
+
+    console.warn('calculating value for', deadline_at)
+
+    const src_lang =
+      sub_projects?.[0]?.source_language_classifier_value_id || ''
+    const dst_lang =
+      uniq(map(sub_projects, 'destination_language_classifier_value_id')) || []
+    return {
+      type_classifier_value_id,
+      client_user_institution_id: isNew
+        ? institutionUserId
+        : client_user_institution_id,
+      translation_manager_user_institution_id,
+      reference_number,
+      source_files: isNew ? [] : source_files,
+      help_files: isNew ? [] : help_files,
+      ext_id,
+      deadline_at: deadline_at
+        ? getLocalDateOjectFromUtcDateString(deadline_at)
+        : { date: '', time: '' },
+      start_at: start_at
+        ? getLocalDateOjectFromUtcDateString(start_at)
+        : { date: '', time: '' },
+      src_lang,
+      dst_lang,
+      // TODO: not clear how BE will send the help_file_types back to FE
+      help_file_types,
+      translation_domain,
+      comments,
+      // TODO: these Need extra mapping
+    }
+  }, [institutionUserId, isNew, order])
 
   const {
     control,
@@ -85,17 +131,25 @@ const OrderDetails: FC<OrderDetailsProps> = ({ isNew }) => {
   } = watch()
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
-    async ({ deadline_at: deadlineObject, start_at: startObject, ...rest }) => {
-      const deadline_at = getFormattedDateFromObject(deadlineObject)
+    async ({
+      deadline_at: deadlineObject,
+      start_at: startObject,
+      source_files,
+      help_files,
+      ...rest
+    }) => {
+      const deadline_at = getUtcDateStringFromLocalDateObject(deadlineObject)
       const start_at = !isEmpty(startObject)
-        ? getFormattedDateFromObject(startObject)
+        ? getUtcDateStringFromLocalDateObject(startObject)
         : null
-      const payload: NewOrderPayload = {
-        deadline_at,
-        ...(start_at ? { start_at } : {}),
-        ...rest,
-      }
       if (isNew) {
+        const payload: NewOrderPayload = {
+          deadline_at,
+          source_files: source_files as File[],
+          help_files: help_files as File[],
+          ...(start_at ? { start_at } : {}),
+          ...rest,
+        }
         try {
           const { id } = await createOrder(payload)
           showNotification({
@@ -131,33 +185,40 @@ const OrderDetails: FC<OrderDetailsProps> = ({ isNew }) => {
   }, [reset, defaultValues])
 
   return (
-    <>
-      <Container
-        className={classNames(
-          classes.peopleContainer,
-          !isNew && classes.overwriteContainerStyles
-        )}
-      >
+    <Root
+      className={classNames(
+        classes.wrapper,
+        !isNew && classes.overwriteContainerStyles
+      )}
+    >
+      <Container className={classNames(classes.peopleContainer)}>
         <PersonSection
           type={PersonSectionTypes.Client}
           control={control}
           selectedUserId={client_user_institution_id}
+          isNew={isNew}
+          isEditable={isEditable}
         />
         <PersonSection
           type={PersonSectionTypes.Manager}
           control={control}
           selectedUserId={translation_manager_user_institution_id}
+          isNew={isNew}
+          isEditable={mode === OrderDetailModes.New}
         />
       </Container>
-      <Container
-        className={classNames(
-          classes.detailsContainer,
-          !isNew && classes.overwriteContainerStyles
-        )}
-      >
-        <h2>{t('orders.new_orders')}</h2>
-        <DetailsSection control={control} />
-        <FilesSection control={control} />
+      <Container className={classNames(classes.detailsContainer)}>
+        <DetailsSection
+          control={control}
+          isNew={isNew}
+          isEditable={isEditable}
+          // isEditable={mode === OrderDetailModes.New}
+        />
+        <FilesSection
+          control={control}
+          isNew={isNew}
+          // isEditable={mode === OrderDetailModes.New}
+        />
       </Container>
       <div className={classes.formButtons}>
         <Button
@@ -174,7 +235,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({ isNew }) => {
           onClick={handleSubmit(onSubmit)}
         />
       </div>
-    </>
+    </Root>
   )
 }
 

@@ -64,7 +64,7 @@ interface TypeClassifierValue extends ClassifierValue {
   project_type_config: ProjectTypeConfig
 }
 
-interface SourceFile {
+export interface SourceFile {
   id: number
   model_type: string
   model_id: string
@@ -88,7 +88,7 @@ interface SourceFile {
   responsive_images: string[]
 }
 
-interface CatJob {
+export interface CatJob {
   xliff_download_url: string
   translate_url: string
   translation_download_url: string
@@ -96,7 +96,7 @@ interface CatJob {
 
 export enum TranslationMemoryPercentageNames {}
 
-interface CatAnalysis {
+export interface CatAnalysis {
   raw_word_count: number
   total: string
   tm_101: string
@@ -114,9 +114,11 @@ interface Candidate {
   vendor: VendorType
   vendor_id?: string
   price: string
+  candidate: string
+  id: string
 }
 
-interface Assignment {
+export interface AssignmentType {
   feature: SubProjectFeatures
   id: string
   candidates: Candidate[]
@@ -154,7 +156,7 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   cat_analyzis: CatAnalysis[]
   source_files: SourceFile[]
   final_files: SourceFile[]
-  assignments: Assignment[]
+  assignments: AssignmentType[]
 }
 
 export interface ListOrder {
@@ -178,9 +180,15 @@ export interface ListOrder {
   cost?: string
 }
 
-export interface OrderDetail extends ListOrder {
+export interface DetailedOrder extends ListOrder {
   help_files: SourceFile[] // might be different type
   source_files: SourceFile[]
+  client_user_institution_id: string
+  translation_manager_user_institution_id: string
+  // TODO: unclear type for following:
+  help_file_types: string[]
+  translation_domain: string
+  start_at?: string
 }
 
 export type OrdersPayloadType = PaginationFunctionType &
@@ -202,7 +210,7 @@ export interface SubOrdersResponse {
   meta: ResponseMetaTypes
 }
 export interface OrderResponse {
-  data: OrderDetail
+  data: DetailedOrder
 }
 
 export interface SubOrderResponse {

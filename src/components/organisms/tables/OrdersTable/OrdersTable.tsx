@@ -26,6 +26,7 @@ import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
 import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
+import { useFetchTags } from 'hooks/requests/useTags'
 
 // TODO: statuses might come from BE instead
 // Currently unclear
@@ -61,6 +62,7 @@ const OrdersTable: FC = () => {
     handleSortingChange,
     handlePaginationChange,
   } = useFetchOrders()
+  const { tagsFilters = [] } = useFetchTags()
 
   const statusFilters = map(OrderStatus, (status) => ({
     label: t(`orders.status.${status}`),
@@ -136,9 +138,9 @@ const OrdersTable: FC = () => {
             icon={ArrowRight}
             ariaLabel={t('label.to_order_view')}
             iconPositioning={IconPositioningTypes.Left}
-            disabled={
-              !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
-            }
+            // disabled={
+            //   !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
+            // }
             href={`/orders/${order?.id}`}
           >
             {orderExtId}
@@ -200,7 +202,7 @@ const OrdersTable: FC = () => {
         const deadlineDate = dayjs(getValue())
         const currentDate = dayjs()
         const diff = deadlineDate.diff(currentDate)
-        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY hh:mm')
+        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
         const rowStatus = row.original.status
         const hasDeadlineError =
           diff < 0 &&

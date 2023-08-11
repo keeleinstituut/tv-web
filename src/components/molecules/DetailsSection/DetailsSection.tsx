@@ -5,18 +5,24 @@ import DynamicForm, {
   InputTypes,
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
+import classNames from 'classnames'
 import { Control, FieldValues, Path } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
-
+import { useFetchTags } from 'hooks/requests/useTags'
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
+  isNew?: boolean
+  isEditable?: boolean
 }
 
 const DetailsSection = <TFormValues extends FieldValues>({
   control,
+  isNew,
+  isEditable,
 }: DetailsSectionProps<TFormValues>) => {
   const { t } = useTranslation()
+  const { tagsFilters = [] } = useFetchTags()
   const { classifierValuesFilters: projectTypeFilter } =
     useClassifierValuesFetch({
       type: ClassifierValueType.ProjectType,
@@ -38,14 +44,29 @@ const DetailsSection = <TFormValues extends FieldValues>({
   const fields: FieldProps<TFormValues>[] = useMemo(
     () => [
       {
+        component: (
+          <h2>{isNew ? t('orders.new_orders') : t('orders.order_details')}</h2>
+        ),
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('label.order_id'),
+        label: `${t('label.order_id')}`,
+        name: 'ext_id' as Path<TFormValues>,
+        className: classes.inputInternalPosition,
+        onlyDisplay: true,
+        hidden: isNew,
+      },
+      {
         inputType: InputTypes.Selections,
         ariaLabel: t('label.order_type'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.order_type')}*`,
+        label: `${t('label.order_type')}${!isNew ? '' : '*'}`,
         name: 'type_classifier_value_id' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: projectTypeFilter,
         showSearch: true,
+        onlyDisplay: !isEditable,
         rules: {
           required: true,
         },
@@ -55,11 +76,12 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.Selections,
         ariaLabel: t('label.translation_domain'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.translation_domain')}*`,
+        label: `${t('label.translation_domain')}${!isNew ? '' : '*'}`,
         name: 'translation_domain' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: domainValuesFilter,
         showSearch: true,
+        onlyDisplay: !isEditable,
         rules: {
           required: true,
         },
@@ -72,14 +94,16 @@ const DetailsSection = <TFormValues extends FieldValues>({
         hidden: !shouldShowStartTimeFields,
         className: classes.customInternalClass,
         name: 'start_at' as Path<TFormValues>,
+        onlyDisplay: !isEditable,
       },
       {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         placeholder: t('placeholder.date'),
-        label: `${t('label.deadline')}*`,
+        label: `${t('label.deadline')}${!isNew ? '' : '*'}`,
         className: classes.customInternalClass,
         name: 'deadline_at' as Path<TFormValues>,
+        onlyDisplay: !isEditable,
         rules: {
           required: true,
         },
@@ -93,6 +117,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         name: 'comments' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         isTextarea: true,
+        onlyDisplay: !isEditable,
       },
       {
         inputType: InputTypes.Text,
@@ -101,16 +126,18 @@ const DetailsSection = <TFormValues extends FieldValues>({
         label: `${t('label.reference_number')}`,
         name: 'reference_number' as Path<TFormValues>,
         className: classes.inputInternalPosition,
+        onlyDisplay: !isEditable,
       },
       {
         inputType: InputTypes.Selections,
         ariaLabel: t('label.source_language'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.source_language')}*`,
+        label: `${t('label.source_language')}${!isNew ? '' : '*'}`,
         name: 'src_lang' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: languageFilters,
         showSearch: true,
+        onlyDisplay: !isEditable,
         rules: {
           required: true,
         },
@@ -119,13 +146,14 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.Selections,
         ariaLabel: t('label.destination_language'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.destination_language')}*`,
+        label: `${t('label.destination_language')}${!isNew ? '' : '*'}`,
         name: 'dst_lang' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: languageFilters,
         showSearch: true,
         multiple: true,
         buttons: true,
+        onlyDisplay: !isEditable,
         rules: {
           required: true,
         },
@@ -136,15 +164,39 @@ const DetailsSection = <TFormValues extends FieldValues>({
       languageFilters,
       projectTypeFilter,
       shouldShowStartTimeFields,
+      isNew,
+      isEditable,
       t,
     ]
   )
 
+  const extraFields: FieldProps<TFormValues>[] = useMemo(
+    () => [
+      {
+        inputType: InputTypes.Selections,
+        ariaLabel: t('label.order_tags'),
+        placeholder: t('placeholder.pick'),
+        label: t('label.order_tags'),
+        name: 'tags' as Path<TFormValues>,
+        className: classes.inputInternalPosition,
+        options: tagsFilters,
+        showSearch: true,
+        multiple: true,
+        buttons: true,
+        onlyDisplay: !isEditable,
+      },
+    ],
+    [isEditable, t, tagsFilters]
+  )
+
   return (
     <DynamicForm
-      fields={fields}
+      fields={[...fields, ...(isNew ? [] : extraFields)]}
       control={control}
-      className={classes.formContainer}
+      className={classNames(
+        classes.formContainer,
+        !isNew && classes.adjustedLayout
+      )}
       useDivWrapper
     />
   )

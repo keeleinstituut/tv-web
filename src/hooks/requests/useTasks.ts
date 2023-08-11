@@ -1,6 +1,6 @@
 import {
   ListOrder,
-  OrderDetail,
+  DetailedOrder,
   OrdersResponse,
   OrdersPayloadType,
   OrderResponse,

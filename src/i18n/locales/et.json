@@ -370,7 +370,15 @@
       "DONE_TASK": "Teostatud (ülesanne)",
       "DONE": "Teostatud"
     },
-    "sub_orders_tile": "Alamtellimused"
+    "sub_orders_tile": "Alamtellimused",
+    "features": {
+      "general_information": "üldinfo",
+      "job_translation": "tõlkimine(CAT)",
+      "job_revision": "toimetamine",
+      "job_overview": "ülevaatus"
+    },
+    "order_details": "Tellimuse andmed",
+    "files": "Failid"
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele"

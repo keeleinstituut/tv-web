@@ -189,7 +189,7 @@ const SubOrdersTable: FC = () => {
         const deadlineDate = dayjs(getValue())
         const currentDate = dayjs()
         const diff = deadlineDate.diff(currentDate)
-        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY hh:mm')
+        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
         const rowStatus = row.original.status
         const hasDeadlineError =
           diff < 0 &&
