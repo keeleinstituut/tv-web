@@ -44,7 +44,8 @@
     "company_name": "Lepingupartneri ärinimi",
     "add_remove_vendor": "Lisa/eemalda toestaja",
     "view": "Vaata",
-    "search": "Otsi"
+    "search": "Otsi",
+    "comment": "Kommentaar"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -56,7 +57,9 @@
     "roles": "Vali roll(id)",
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
-    "date": "pp.kk.aaaa"
+    "date": "pp.kk.aaaa",
+    "write_here": "Kirjuta siia..",
+    "select_tags": "Vali sildid"
   },
   "button": {
     "login": "Logi sisse",
@@ -109,7 +112,8 @@
     "invalid_username": "Palun lisage ka perekonnanimi",
     "tag_input_length": "Sildi maksimaalne pikkus võib olla kuni 50 tähemärki",
     "tag_input_char_error": "Lubatud on tähed (a-z), numbrid (0-9), tühik ja sidekriips",
-    "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina"
+    "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina",
+    "discount_number": "Soodustus võib olla vahemikus 0-100"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -268,7 +272,11 @@
     "user_management": "Kasutajate haldus"
   },
   "vendors": {
-    "vendors_database": "Teostajate andmebaas"
+    "vendors_database": "Teostajate andmebaas",
+    "analysis_based_discount": "Analüüsipõhine soodustus",
+    "repetitions": "Kordused",
+    "match_type": "Vaste tüüp",
+    "percent_from_price": "% hinnast"
   },
   "file": {
     "drop_files": "Pane failid siia...",
@@ -288,6 +296,7 @@
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
     "tag_updated": "Silt on edukalt uuendatud.",
     "tag_added": "Silt on edukalt lisatud.",
+    "vendor_updated": "Teostaja uuendatud",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud."
   },
   "notification": {

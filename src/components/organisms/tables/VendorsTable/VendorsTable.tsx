@@ -22,10 +22,10 @@ import {
   PaginationFunctionType,
 } from 'types/collective'
 import classes from './classes.module.scss'
-import { VendorType } from 'types/vendors'
+import { Vendor } from 'types/vendors'
 
 type VendorsTableProps = {
-  data?: VendorType[]
+  data?: Vendor[]
   paginationData?: DataMetaTypes
   hidden?: boolean
   handleFilterChange?: (value?: FilterFunctionType) => void
@@ -160,7 +160,7 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
           icon={ArrowRight}
           ariaLabel={t('label.to_order_view')}
           iconPositioning={IconPositioningTypes.Left}
-          href={`/orders/${getValue()}`}
+          href={`/vendors/${getValue()}`}
         >
           {t('label.view')}
         </Button>
