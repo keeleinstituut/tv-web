@@ -7,6 +7,8 @@ export interface DisplayValueProps {
   label?: string | JSX.Element
   options?: DropDownOptions[]
   className?: string
+  emptyDisplayText?: string
+  hidden?: boolean
   value?:
     | string
     | number
@@ -34,10 +36,9 @@ const DisplayValue: FC<DisplayValueProps> = ({
   label,
   options,
   className,
+  hidden,
+  emptyDisplayText = '',
 }) => {
-  if (!options && typeof value !== 'string') {
-    console.warn('value', label, value)
-  }
   const displayedValue = useMemo(() => {
     if (options) {
       return getDisplayedValueFromOptions(options, value)
@@ -62,12 +63,16 @@ const DisplayValue: FC<DisplayValueProps> = ({
       ''
     )
   }, [options, value])
+
+  if (hidden) return null
   return (
     <div className={className}>
       <span hidden={!label} className={classes.label}>
         {label}
       </span>
-      <span className={classes.cellValue}>{displayedValue}</span>
+      <span className={classes.cellValue}>
+        {displayedValue || emptyDisplayText}
+      </span>
     </div>
   )
 }

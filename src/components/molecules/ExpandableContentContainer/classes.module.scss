@@ -1,0 +1,38 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: spacing(4) spacing(6);
+  box-shadow: 0 4px 15px $color-shadow-main;
+  border-radius: $border-radius-4;
+  background-color: $color-white;
+  width: 100%;
+  h2 {
+    margin-right: auto;
+    @include h3TextStyle;
+    color: $color-input-main
+  }
+  margin-bottom: -4px;
+  z-index: 1;
+}
+
+
+.iconButton {
+  width: 20px;
+  height: 20px;
+  margin-left: 24px;
+
+  path {
+    fill: $color-primary;
+  }
+}
+
+.expandedContainer {
+  .iconButton {
+    transform: rotate(180deg);
+  }
+}

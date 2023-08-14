@@ -16,6 +16,7 @@ import newMockOrders from './newMockOrders.json'
 import newSubOrders from './newSubOrders.json'
 import singleMockOrder from './singleMockOrder.json'
 import useFilters from 'hooks/useFilters'
+import { findIndex } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 
@@ -98,10 +99,10 @@ export const useCreateOrder = () => {
     mutationKey: ['orders'],
     mutationFn: (payload: NewOrderPayload) =>
       apiClient.post(endpoints.PROJECTS, payload),
-    onSuccess: ({ data, meta }) => {
+    onSuccess: ({ data }) => {
       queryClient.setQueryData(['orders'], (oldData?: OrdersResponse) => {
-        const { data: previousData } = oldData || {}
-        if (!previousData) return oldData
+        const { data: previousData, meta } = oldData || {}
+        if (!previousData || !meta) return oldData
         const newData = [...previousData, data]
         return { data: newData, meta }
       })
@@ -113,6 +114,31 @@ export const useCreateOrder = () => {
     isLoading,
   }
 }
+
+export const useUpdateOrder = ({ orderId }: { orderId?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateOrder, isLoading } = useMutation({
+    mutationKey: ['orders', orderId],
+    mutationFn: (payload: NewOrderPayload) =>
+      apiClient.put(`${endpoints.PROJECTS}/${orderId}`, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['orders'], (oldData?: OrdersResponse) => {
+        const { data: previousData, meta } = oldData || {}
+        if (!previousData || !meta) return oldData
+        const orderIndex = findIndex(previousData, { id: orderId })
+        const newArray = [...previousData]
+        newArray[orderIndex] = data
+        return { meta, data: newArray }
+      })
+    },
+  })
+
+  return {
+    updateOrder,
+    isLoading,
+  }
+}
+
 export const useFetchSubOrder = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<SubOrderResponse>({
     queryKey: ['suborders', id],

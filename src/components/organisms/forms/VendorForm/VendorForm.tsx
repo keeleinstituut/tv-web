@@ -35,7 +35,7 @@ type VendorFormProps = {
 const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { tags: allTags = [] } = useFetchTags({ type: TagTypes.Teostaja })
+  const { tags: allTags = [] } = useFetchTags({ type: TagTypes.Vendor })
   const { updateVendor } = useUpdateVendor(vendor.id as string)
 
   const {
@@ -230,7 +230,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
 
   return (
     <>
-      <h1>{defaultValues.name}</h1>
+      <h1 className={classes.title}>{defaultValues.name}</h1>
       <div className={classes.container}>
         <div className={classes.formContainer}>
           <DynamicForm

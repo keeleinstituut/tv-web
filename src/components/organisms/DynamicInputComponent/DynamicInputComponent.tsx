@@ -80,7 +80,12 @@ export type InputPropsByType = (
   | TimePickerPropsWithType
   | TagsSelectPropsWithType
   | DateTimePickerPropsWithType
-) & { onlyDisplay?: boolean; error?: FieldError; errorZIndex?: number }
+) & {
+  emptyDisplayText?: string
+  onlyDisplay?: boolean
+  error?: FieldError
+  errorZIndex?: number
+}
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
   InputPropsByType,
@@ -100,42 +105,42 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.Text:
         return (
           <TextInput
-            {...omit(props, ['inputType', 'onlyDisplay'])}
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Checkbox:
         return (
           <CheckBoxInput
-            {...omit(props, ['inputType', 'onlyDisplay'])}
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Date:
         return (
           <DatePickerInput
-            {...omit(props, ['inputType', 'onlyDisplay'])}
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Selections:
         return (
           <SelectionControlsInput
-            {...omit(props, ['inputType', 'onlyDisplay'])}
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
             ref={ref as unknown as Ref<HTMLButtonElement>}
           />
         )
       case InputTypes.Time:
         return (
           <TimePickerInput
-            {...omit(props, ['inputType', 'onlyDisplay'])}
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.DateTime:
         return (
           <DateTimePicker
-            {...omit(props, ['inputType', 'onlyDisplay'])}
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
@@ -143,7 +148,14 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
         // TODO: might need to add ref and error later
         // right now those don't seem to be needed for our only usecase
         return (
-          <TagsSelect {...omit(props, ['inputType', 'onlyDisplay', 'error'])} />
+          <TagsSelect
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'error',
+            ])}
+          />
         )
       default:
         return assertNever(inputType)

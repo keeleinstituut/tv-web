@@ -43,6 +43,14 @@
         font-weight: $font-weight-bold;
       }
 
+      &.grayRow {
+        span {
+          color: $color-input-main;
+        }
+        :last-child {
+          font-weight: $font-weight-normal;
+        }
+      }
     }
   }
 }

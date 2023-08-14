@@ -12,7 +12,7 @@ import {
   acceptFileExtensions,
 } from 'components/organisms/FileImport/FileImport'
 import classNames from 'classnames'
-
+import { useClickAway } from 'ahooks'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import useElementPosition from 'hooks/useElementPosition'
@@ -24,6 +24,7 @@ interface DragAndDropContentProps {
   inputFileTypes?: InputFileTypes[]
   parentRef: RefObject<HTMLDivElement>
   isFilesListHidden?: boolean
+  setDragAndDropOpen?: (isOpen: boolean) => void
 }
 
 const DragAndDropContent: FC<DragAndDropContentProps> = ({
@@ -33,11 +34,18 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
   allowMultiple,
   parentRef,
   isFilesListHidden,
+  setDragAndDropOpen,
 }) => {
   const containerRef = useRef(null)
   const { left, top, right } =
     useElementPosition(parentRef, undefined, undefined, isDragAndDropOpen) || {}
   const [inViewport, ratio] = useInViewport(containerRef)
+
+  useClickAway(() => {
+    if (setDragAndDropOpen) {
+      setDragAndDropOpen(false)
+    }
+  }, [containerRef, parentRef])
   const useLeftPosition = useMemo(
     () => ratio && ratio < 1 && inViewport,
     // isDragAndDropOpen changes, when this component is displayed

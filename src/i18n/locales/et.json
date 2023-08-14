@@ -59,7 +59,12 @@
     "added": "Lisatud",
     "sub_order_id": "Alamtellimuse ID",
     "associated_reference_number": "Seotud viide",
-    "comment": "Kommentaar"
+    "comment": "Kommentaar",
+    "cancelled_at": "Tühistamise aeg",
+    "created_at": "Loomise aeg",
+    "rejected_at": "Tühistamise aeg",
+    "corrected_at": "Korrektuuride tegemise aeg",
+    "accepted_at": "Vastuvõtmise aeg"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -119,7 +124,8 @@
     "change": "Muuda",
     "add_file": "Lisa fail",
     "submit_order": "Esita tellimus",
-    "delete": "Kustuta"
+    "delete": "Kustuta",
+    "edit": "Redigeeri"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -318,7 +324,8 @@
     "tag_added": "Silt on edukalt lisatud.",
     "vendor_updated": "Teostaja uuendatud",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
-    "order_created": "Tellimus on edukalt loodud"
+    "order_created": "Tellimus on edukalt loodud",
+    "order_updated": "Tellimus on edukalt uuendatud"
   },
   "notification": {
     "announcement": "Teade",
@@ -389,7 +396,9 @@
       "job_overview": "ülevaatus"
     },
     "order_details": "Tellimuse andmed",
-    "files": "Failid"
+    "order_details_expandable": "Tellimuse detailid",
+    "files": "Failid",
+    "feedback_files": "Tagasiside failid"
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele"

@@ -10,6 +10,7 @@ import { Control, FieldValues, Path } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
+import { TagTypes } from 'types/tags'
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
@@ -22,7 +23,9 @@ const DetailsSection = <TFormValues extends FieldValues>({
   isEditable,
 }: DetailsSectionProps<TFormValues>) => {
   const { t } = useTranslation()
-  const { tagsFilters = [] } = useFetchTags()
+  const { tagsFilters = [] } = useFetchTags({
+    type: TagTypes.Order,
+  })
   const { classifierValuesFilters: projectTypeFilter } =
     useClassifierValuesFetch({
       type: ClassifierValueType.ProjectType,
@@ -55,18 +58,20 @@ const DetailsSection = <TFormValues extends FieldValues>({
         name: 'ext_id' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         onlyDisplay: true,
-        hidden: isNew,
+        emptyDisplayText: '-',
+        hidden: isEditable,
       },
       {
         inputType: InputTypes.Selections,
         ariaLabel: t('label.order_type'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.order_type')}${!isNew ? '' : '*'}`,
+        label: `${t('label.order_type')}${!isEditable ? '' : '*'}`,
         name: 'type_classifier_value_id' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: projectTypeFilter,
         showSearch: true,
         onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
         rules: {
           required: true,
         },
@@ -76,12 +81,13 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.Selections,
         ariaLabel: t('label.translation_domain'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.translation_domain')}${!isNew ? '' : '*'}`,
+        label: `${t('label.translation_domain')}${!isEditable ? '' : '*'}`,
         name: 'translation_domain' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: domainValuesFilter,
         showSearch: true,
         onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
         rules: {
           required: true,
         },
@@ -95,15 +101,17 @@ const DetailsSection = <TFormValues extends FieldValues>({
         className: classes.customInternalClass,
         name: 'start_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
       },
       {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         placeholder: t('placeholder.date'),
-        label: `${t('label.deadline')}${!isNew ? '' : '*'}`,
+        label: `${t('label.deadline')}${!isEditable ? '' : '*'}`,
         className: classes.customInternalClass,
         name: 'deadline_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
         rules: {
           required: true,
         },
@@ -118,6 +126,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         className: classes.inputInternalPosition,
         isTextarea: true,
         onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
       },
       {
         inputType: InputTypes.Text,
@@ -127,17 +136,19 @@ const DetailsSection = <TFormValues extends FieldValues>({
         name: 'reference_number' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
       },
       {
         inputType: InputTypes.Selections,
         ariaLabel: t('label.source_language'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.source_language')}${!isNew ? '' : '*'}`,
+        label: `${t('label.source_language')}${!isEditable ? '' : '*'}`,
         name: 'src_lang' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: languageFilters,
         showSearch: true,
         onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
         rules: {
           required: true,
         },
@@ -146,7 +157,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.Selections,
         ariaLabel: t('label.destination_language'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.destination_language')}${!isNew ? '' : '*'}`,
+        label: `${t('label.destination_language')}${!isEditable ? '' : '*'}`,
         name: 'dst_lang' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: languageFilters,
@@ -154,6 +165,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         multiple: true,
         buttons: true,
         onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
         rules: {
           required: true,
         },
@@ -184,6 +196,52 @@ const DetailsSection = <TFormValues extends FieldValues>({
         multiple: true,
         buttons: true,
         onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('label.created_at'),
+        label: t('label.created_at'),
+        name: 'created_at' as Path<TFormValues>,
+        className: classNames(classes.inputInternalPosition, classes.grayRow),
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('label.cancelled_at'),
+        label: t('label.cancelled_at'),
+        name: 'cancelled_at' as Path<TFormValues>,
+        className: classNames(classes.inputInternalPosition, classes.grayRow),
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('label.rejected_at'),
+        label: t('label.rejected_at'),
+        name: 'rejected_at' as Path<TFormValues>,
+        className: classNames(classes.inputInternalPosition, classes.grayRow),
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('label.corrected_at'),
+        label: t('label.corrected_at'),
+        name: 'corrected_at' as Path<TFormValues>,
+        className: classNames(classes.inputInternalPosition, classes.grayRow),
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('label.accepted_at'),
+        label: t('label.accepted_at'),
+        name: 'accepted_at' as Path<TFormValues>,
+        className: classNames(classes.inputInternalPosition, classes.grayRow),
+        onlyDisplay: true,
+        emptyDisplayText: '-',
       },
     ],
     [isEditable, t, tagsFilters]
@@ -195,7 +253,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
       control={control}
       className={classNames(
         classes.formContainer,
-        !isNew && classes.adjustedLayout
+        !isEditable && classes.adjustedLayout
       )}
       useDivWrapper
     />

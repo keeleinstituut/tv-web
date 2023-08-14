@@ -8,7 +8,7 @@ import {
   ClassifierValueType,
   LanguageClassifierValue,
 } from './classifierValues'
-import { VendorType } from './vendors'
+import { Vendor } from './vendors'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -111,7 +111,7 @@ export interface CatAnalysis {
 }
 
 interface Candidate {
-  vendor: VendorType
+  vendor: Vendor
   vendor_id?: string
   price: string
   candidate: string
@@ -189,6 +189,10 @@ export interface DetailedOrder extends ListOrder {
   help_file_types: string[]
   translation_domain: string
   start_at?: string
+  accepted_at?: string
+  corrected_at?: string
+  rejected_at?: string
+  cancelled_at?: string
 }
 
 export type OrdersPayloadType = PaginationFunctionType &

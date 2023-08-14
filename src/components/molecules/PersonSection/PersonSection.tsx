@@ -176,7 +176,10 @@ const PersonSection = <TFormValues extends FieldValues>({
 
   return (
     <div
-      className={classNames(classes.column, !isNew && classes.adjustedLayout)}
+      className={classNames(
+        classes.column,
+        !isEditable && classes.adjustedLayout
+      )}
     >
       <h2
         className={classNames(

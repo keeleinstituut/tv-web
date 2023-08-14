@@ -27,6 +27,7 @@ import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
+import { TagTypes } from 'types/tags'
 
 // TODO: statuses might come from BE instead
 // Currently unclear
@@ -62,7 +63,9 @@ const OrdersTable: FC = () => {
     handleSortingChange,
     handlePaginationChange,
   } = useFetchOrders()
-  const { tagsFilters = [] } = useFetchTags()
+  const { tagsFilters = [] } = useFetchTags({
+    type: TagTypes.Order,
+  })
 
   const statusFilters = map(OrderStatus, (status) => ({
     label: t(`orders.status.${status}`),
@@ -164,6 +167,9 @@ const OrdersTable: FC = () => {
             ))}
           </div>
         )
+      },
+      meta: {
+        filterOption: { tags: tagsFilters },
       },
     }),
     columnHelper.accessor('type', {
