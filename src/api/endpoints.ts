@@ -9,6 +9,7 @@ export const endpoints = {
   DEPARTMENTS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}departments`,
   TAGS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tags`,
   CREATE_TAGS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tags/bulk-create`,
+  UPDATE_TAGS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tags/bulk-update`,
   EXPORT_CSV: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/export-csv`,
   ARCHIVE_USER: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/archive`,
   DEACTIVATE_USER: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/deactivate`,

@@ -1,7 +1,7 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchOrder } from 'hooks/requests/useOrders'
 import { FC } from 'react'
-import { includes, find } from 'lodash'
+import { includes } from 'lodash'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -72,7 +72,7 @@ const OrderButtons: FC<OrderButtonProps> = ({ status, isPersonalOrder }) => {
 }
 
 const OrderPage: FC = () => {
-  const { t } = useTranslation()
+  // const { t } = useTranslation()
   const { orderId } = useParams()
   const { order, isLoading } = useFetchOrder({ orderId })
   const { id, status } = order || {}

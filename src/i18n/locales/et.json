@@ -56,7 +56,8 @@
     "source_language": "Algkeel",
     "destination_language": "Sihtkeel",
     "file_type": "Failitüüp",
-    "added": "Lisatud"
+    "added": "Lisatud",
+    "comment": "Kommentaar"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -71,7 +72,8 @@
     "pick": "Vali",
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
-    "write_here": "Kirjuta siia"
+    "write_here": "Kirjuta siia..",
+    "select_tags": "Vali sildid"
   },
   "button": {
     "login": "Logi sisse",
@@ -114,7 +116,8 @@
     "update": "Redigeeri",
     "change": "Muuda",
     "add_file": "Lisa fail",
-    "submit_order": "Esita tellimus"
+    "submit_order": "Esita tellimus",
+    "delete": "Kustuta"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -127,7 +130,8 @@
     "invalid_username": "Palun lisage ka perekonnanimi",
     "tag_input_length": "Sildi maksimaalne pikkus võib olla kuni 50 tähemärki",
     "tag_input_char_error": "Lubatud on tähed (a-z), numbrid (0-9), tühik ja sidekriips",
-    "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina"
+    "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina",
+    "discount_number": "Soodustus võib olla vahemikus 0-100"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -225,7 +229,8 @@
     "activate_user_content": "Kasutaja konto aktiveerimisel määratakse talle „Tellija“ roll. Kui soovid seda muuta, siis määra talle roll(id).",
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
-    "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?"
+    "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
+    "edit_category_tag": "Tellimuse siltide muutmine"
   },
   "cheat_sheet": {
     "user_management": {
@@ -285,7 +290,11 @@
     "user_management": "Kasutajate haldus"
   },
   "vendors": {
-    "vendors_database": "Teostajate andmebaas"
+    "vendors_database": "Teostajate andmebaas",
+    "analysis_based_discount": "Analüüsipõhine soodustus",
+    "repetitions": "Kordused",
+    "match_type": "Vaste tüüp",
+    "percent_from_price": "% hinnast"
   },
   "file": {
     "drop_files": "Pane failid siia...",
@@ -302,10 +311,12 @@
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
     "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
-    "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
     "tag_added": "Silt on edukalt lisatud.",
-    "order_created": "Tellimus on edukalt loodud"
+    "order_created": "Tellimus on edukalt loodud",
+    "tag_updated": "Silt on edukalt uuendatud.",
+    "vendor_updated": "Teostaja uuendatud",
+    "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud."
   },
   "notification": {
     "announcement": "Teade",
