@@ -1,8 +1,8 @@
 import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { filter, find, map } from 'lodash'
+import { find, findIndex, get, map } from 'lodash'
 import { Root } from '@radix-ui/react-form'
-import { useFetchSkills, useFetchVendorPrices } from 'hooks/requests/useVendors'
+import { useFetchSkills } from 'hooks/requests/useVendors'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -137,99 +137,52 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
 
   const { data: skillsData } = useFetchSkills()
-  const { data: vendorPricesData } = useFetchVendorPrices()
 
   const { classifierValuesFilters: languageFilter } = useClassifierValuesFetch({
     type: ClassifierValueType.Language,
   })
 
-  console.log('vendor', vendor)
-  console.log('languageFilter', languageFilter)
+  const vendorPrices = vendor?.prices
 
-  const pricesData = [
-    {
-      id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      vendor_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      skill_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      src_lang_classifier_value_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      dst_lang_classifier_Value_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      updated_at: '2023-08-09T07:48:41.163Z',
-      created_at: '2023-08-09T07:48:41.163Z',
-      character_fee: 0,
-      word_fee: 0,
-      page_fee: 0,
-      minute_fee: 0,
-      hour_fee: 0,
-      minimal_fee: 0,
-      vendor: 'string',
-      source_language_classifier_value: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        type: 'string',
-        value: 'string',
-        name: 'ee-ET',
-      },
-      destination_language_classifier_value: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        type: 'string',
-        value: 'string',
-        name: 'en-GB',
-      },
-      skill: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        name: 'Tõlkimine + toimetamine',
-      },
-    },
-    {
-      id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      vendor_id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      skill_id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      src_lang_classifier_value_id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      dst_lang_classifier_Value_id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      updated_at: '2023-08-09T07:48:41.163Z',
-      created_at: '2023-08-09T07:48:41.163Z',
-      character_fee: 0,
-      word_fee: 0,
-      page_fee: 0,
-      minute_fee: 0,
-      hour_fee: 0,
-      minimal_fee: 0,
-      vendor: 'string',
-      source_language_classifier_value: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-        type: 'string',
-        value: 'string',
-        name: 'ee-ET',
-      },
-      destination_language_classifier_value: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-        type: 'string',
-        value: 'string',
-        name: 'ru-RU',
-      },
-      skill: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-        name: 'Terminoloogia töö',
-      },
-    },
-  ]
+  console.log('vendorPrices', vendorPrices)
+  console.log('skillsData', skillsData)
 
   const pricesValues = useMemo(() => {
     return (
-      map(pricesData, (data) => {
-        return {
-          id: data.id,
-          character_fee: data.character_fee,
-          word_fee: data.word_fee,
-          page_fee: data.page_fee,
-          minute_fee: data.minimal_fee,
-          hour_fee: data.hour_fee,
-          minimal_fee: data.minimal_fee,
-          skill: data.skill.name,
-          language_direction: `${data.source_language_classifier_value.name} > ${data.destination_language_classifier_value.name}`,
+      map(
+        vendorPrices,
+        ({
+          id,
+          character_fee,
+          word_fee,
+          page_fee,
+          minute_fee,
+          hour_fee,
+          minimal_fee,
+          skill_id,
+          source_language_classifier_value,
+          destination_language_classifier_value,
+        }) => {
+          return {
+            id: id,
+            character_fee: character_fee,
+            word_fee: word_fee,
+            page_fee: page_fee,
+            minute_fee: minute_fee,
+            hour_fee: hour_fee,
+            minimal_fee: minimal_fee,
+            skill_id: get(skillsData, [
+              findIndex(skillsData, { id: skill_id }),
+              'name',
+            ]),
+            language_direction: `${source_language_classifier_value.name} > ${destination_language_classifier_value.name}`,
+          }
         }
-      }) || {}
+      ) || {}
     )
-  }, [])
+  }, [skillsData, vendorPrices])
+
+  console.log('pricesValues', pricesValues)
 
   const { handleSubmit, control } = useForm<FormValues>({
     reValidateMode: 'onChange',
@@ -397,6 +350,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           data={pricesValues}
           columns={columns}
           tableSize={TableSizeTypes.M}
+          className={classes.vendorPricesContainer}
           hidePagination
           title={
             <div className={classes.pricesDataTableHeader}>
