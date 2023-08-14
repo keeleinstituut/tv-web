@@ -12,7 +12,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import { map, join } from 'lodash'
+import { map, join, compact } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
@@ -51,12 +51,12 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
   }) // TODO: save them to local state when API available?
 
   type OrderTableRow = {
-    id: string
-    languageDirections: string
-    tags: string
+    id?: string
+    languageDirections: string[]
+    tags: string[]
     name: string
     companyName: string
-    roles: string
+    roles: string[]
   }
 
   const columnHelper = createColumnHelper<OrderTableRow>()
@@ -72,7 +72,7 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
           institution_user: { roles, user },
           company_name,
         }) => {
-          const roleNames = map(roles, 'name')
+          const roleNames = compact(map(roles, 'name'))
 
           const languageDirections = map(
             prices,
@@ -167,7 +167,7 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
         </Button>
       ),
     }),
-  ] as ColumnDef<any>[] // Seems like an package issue https://github.com/TanStack/table/issues/4382
+  ] as ColumnDef<OrderTableRow>[] // Seems like an package issue https://github.com/TanStack/table/issues/4382
 
   if (hidden) return null
 

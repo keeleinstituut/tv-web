@@ -163,7 +163,6 @@ const FilesList = <TFormValues extends FieldValues>({
       <div className={classes.altFilesContainer}>
         <h3>{title}</h3>
         {map(typedValue, (file, index) => {
-          console.warn('file', file)
           const localFileUrl =
             file instanceof File ? URL.createObjectURL(file) : ''
           const fileUrl =

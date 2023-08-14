@@ -79,7 +79,7 @@
     "pick": "Vali",
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
-    "write_here": "Kirjuta siia",
+    "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid"
   },
   "button": {
@@ -320,11 +320,11 @@
     "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
-    "tag_updated": "Silt on edukalt uuendatud.",
     "tag_added": "Silt on edukalt lisatud.",
+    "order_created": "Tellimus on edukalt loodud",
+    "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
-    "order_created": "Tellimus on edukalt loodud",
     "order_updated": "Tellimus on edukalt uuendatud"
   },
   "notification": {
