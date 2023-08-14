@@ -11,7 +11,6 @@ import VendorManagementCheatSheet from 'components/molecules/cheatSheets/VendorM
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
-import VendorPriceListForm from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 const VendorsDatabase: FC = () => {
   const { t } = useTranslation()
@@ -66,7 +65,6 @@ const VendorsDatabase: FC = () => {
           }}
         />
       </Root>
-      <VendorPriceListForm />
     </>
   )
 }

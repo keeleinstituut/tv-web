@@ -16,7 +16,7 @@ const VendorPage: FC = () => {
   return (
     <>
       <VendorForm vendor={vendor} />
-      {/* <VendorPriceListForm vendor={vendor} /> */}
+      <VendorPriceListForm vendor={vendor} />
     </>
   )
 }

@@ -38,6 +38,8 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
 
   const { data: skillsData } = useFetchSkills()
 
+  console.log('skillsData', skillsData)
+
   const selectedSkillsIds = omitBy(selectedSkills, isUndefined)
 
   const matchingSkills = filter(

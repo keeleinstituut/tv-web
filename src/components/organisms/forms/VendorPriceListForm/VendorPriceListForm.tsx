@@ -26,7 +26,7 @@ import AddPricesTable from 'components/organisms/tables/AddPricesTable/AddPrices
 import classes from './classes.module.scss'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { VendorFormProps } from '../VendorForm/VendorForm'
-import { Vendor } from 'types/vendors'
+import { ClassifierValueType } from 'types/classifierValues'
 
 export type FormValues = {
   src_lang_classifier_value_id: string
@@ -133,14 +133,18 @@ const VendorPriceListThirdStep: FC<VendorPriceListThirdStepProps> = ({
   )
 }
 
-const VendorPriceListForm: FC = () => {
+const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
 
   const { data: skillsData } = useFetchSkills()
   const { data: vendorPricesData } = useFetchVendorPrices()
-  const { classifierValues } = useClassifierValuesFetch()
 
-  const languageData = filter(classifierValues, { type: 'LANGUAGE' })
+  const { classifierValuesFilters: languageFilter } = useClassifierValuesFetch({
+    type: ClassifierValueType.Language,
+  })
+
+  console.log('vendor', vendor)
+  console.log('languageFilter', languageFilter)
 
   const pricesData = [
     {
@@ -231,10 +235,10 @@ const VendorPriceListForm: FC = () => {
     reValidateMode: 'onChange',
   })
 
-  const languageOptions = map(languageData, ({ id, name }) => {
+  const languageOptions = map(languageFilter, ({ value, label }) => {
     return {
-      label: name,
-      value: id,
+      label: label,
+      value: value,
     }
   })
 

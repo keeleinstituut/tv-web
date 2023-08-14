@@ -50,7 +50,6 @@ type DataTableProps<TData extends RowData> = {
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
   hidePagination?: boolean
-  className?: string
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -71,7 +70,6 @@ const DataTable = <TData,>(
     onPaginationChange,
     meta,
     getSubRows,
-    className,
     pageSizeOptions,
     hidePagination = false,
     headComponent,
