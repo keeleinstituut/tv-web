@@ -2,6 +2,8 @@ import { FC } from 'react'
 import { map } from 'lodash'
 import { AssignmentType } from 'types/orders'
 
+// TODO: this is WIP code for suborder view
+
 interface AssignmentProps {
   index: number
   label?: string

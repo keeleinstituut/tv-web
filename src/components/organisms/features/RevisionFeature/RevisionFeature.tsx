@@ -6,6 +6,7 @@ import Assignment from 'components/molecules/Assignment/Assignment'
 import classes from './classes.module.scss'
 
 // TODO: check later looks pretty much the same as OverviewFeature
+// TODO: this is WIP code for suborder view
 
 type RevisionFeatureProps = Pick<SubOrderDetail, 'assignments'> & {
   catSupported?: boolean

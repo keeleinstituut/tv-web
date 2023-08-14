@@ -9,6 +9,8 @@ import { compact, includes, map } from 'lodash'
 import { SubProjectFeatures } from 'types/orders'
 import { useTranslation } from 'react-i18next'
 
+// TODO: this is WIP code for suborder view
+
 // interface ObjectType {
 //   [key: string]: string
 // }

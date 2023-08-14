@@ -44,8 +44,6 @@ type SubOrderTableRow = {
 
 const columnHelper = createColumnHelper<SubOrderTableRow>()
 
-// TODO: we keep all filtering and sorting options inside form
-// This was we can do a new request easily every time form values change
 interface FormValues {
   status?: string[]
   own_orders: boolean
@@ -63,14 +61,12 @@ const SubOrdersTable: FC = () => {
     handlePaginationChange,
   } = useFetchSubOrders()
 
-  // TODO: Currently uses statuses of orders
-  // suborders should have some different statuses as well
   const statusFilters = map(SubOrderStatus, (status) => ({
     label: t(`orders.status.${status}`),
     value: status,
   }))
 
-  // TODO: remove default values, once we have actual data
+  // TODO: remove hardcoded default values, once we have actual data
   const orderRows = useMemo(
     () =>
       map(

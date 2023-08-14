@@ -28,6 +28,8 @@ import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchtasks } from 'hooks/requests/useTasks'
 
+// TODO: this is WIP code for tasks list view
+
 // TODO: statuses might come from BE instead
 // Currently unclear
 const mockStatuses = [

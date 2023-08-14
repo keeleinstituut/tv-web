@@ -6,6 +6,8 @@ import TranslationFeature from './TranslationFeature/TranslationFeature'
 import RevisionFeature from './RevisionFeature/RevisionFeature'
 import OverviewFeature from './OverviewFeature/OverviewFeature'
 
+// TODO: this is WIP code for suborder view
+
 interface FeatureProps {
   subOrder?: SubOrderDetail
   feature?: SubProjectFeatures

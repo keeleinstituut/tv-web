@@ -3,6 +3,8 @@ import ConfirmationModalBase, {
   ConfirmationModalBaseProps,
 } from 'components/organisms/modals/ConfirmationModalBase/ConfirmationModalBase'
 
+// TODO: this is WIP code for suborder view
+
 export interface CatSplitModalProps
   extends Omit<ConfirmationModalBaseProps, 'handleProceed'> {
   handleSplit?: (splitsAmount: number) => void

@@ -8,6 +8,8 @@ import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
 
 import classes from './classes.module.scss'
 
+// TODO: this is WIP code for suborder view
+
 type GeneralInformationFeatureProps = Pick<
   SubOrderDetail,
   | 'cat_project_created'
