@@ -1,0 +1,74 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  padding-left: spacing(4);
+
+  .hiddenContent {
+    :global(#tableWrapper) {
+      display: none;
+    }
+  }
+}
+
+.filesListContainer {
+  margin-bottom: spacing(10);
+  box-shadow: unset;
+  border: unset;
+
+  thead {
+    tr {
+      th {
+        &:first-child {
+          max-width: 99%;
+          padding-left: 0;
+        }
+        &:nth-child(2) {
+          width: 178px;
+        }
+        &:last-child {
+          width: 38px;
+          padding-right: 0;
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      td {
+        &:first-child {
+          padding-left: 0;
+          max-width: calc(100% - 1000px);
+        }
+        &:last-child {
+          padding-right: 0;
+        }
+      }
+    }
+  }
+
+  .fitContent {
+    width: fit-content;
+  }
+}
+
+.titleRow {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: spacing(4);
+
+  .fileImportButton {
+    margin-left: auto
+  }
+
+  h3 {
+    @include h4TextStyle;
+    margin-right: spacing(2);
+  }
+}
+
+.filesTable {
+  flex: 1;
+}

@@ -94,7 +94,7 @@ const UserPage: FC = () => {
       inputType: InputTypes.Date,
       name: 'deactivation_date',
       ariaLabel: t('label.user_deactivation_date'),
-      label: t('label.user_deactivation_date'),
+      label: `${t('label.user_deactivation_date')}*`,
       placeholder: 'pp.kk.aaaa',
       rules: {
         required: true,

@@ -10,8 +10,8 @@
     "role_name_input": "Uue rolli nimi",
     "personal_identification_code": "Isikukood",
     "name": "Nimi",
-    "phone": "Telefoni nr",
-    "phone_long": "Telefoninumber",
+    "phone": "Telefoninumber",
+    "phone_alt": "Telefoni nr",
     "department": "Üksus",
     "roles": "Rollid",
     "role": "Roll",
@@ -45,6 +45,18 @@
     "add_remove_vendor": "Lisa/eemalda toestaja",
     "view": "Vaata",
     "search": "Otsi",
+    "manager": "Tõlkekorraldaja",
+    "order_type": "Tellimuse tüüp",
+    "translation_domain": "Valdkond",
+    "deadline": "Tähtaeg",
+    "deadline_time": "Tähtaja kellaaeg",
+    "special_instructions": "Erijuhised tellimuse kohta",
+    "start_date": "Algus",
+    "start_time": "Alguse kellaaeg",
+    "source_language": "Algkeel",
+    "destination_language": "Sihtkeel",
+    "file_type": "Failitüüp",
+    "added": "Lisatud",
     "comment": "Kommentaar"
   },
   "placeholder": {
@@ -57,7 +69,9 @@
     "roles": "Vali roll(id)",
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
+    "pick": "Vali",
     "date": "pp.kk.aaaa",
+    "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid"
   },
@@ -97,8 +111,12 @@
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust",
+    "delegate_to_other_manager": "Suuna teisele tõlkekorraldajale",
+    "cancel_order": "Tühista tellimus",
     "update": "Redigeeri",
     "change": "Muuda",
+    "add_file": "Lisa fail",
+    "submit_order": "Esita tellimus",
     "delete": "Kustuta"
   },
   "error": {
@@ -148,7 +166,7 @@
     "privileges": "Privileegid"
   },
   "institution": {
-    "institution_management": "Asituse andmete haldamine",
+    "institution_management": "Asutuse andmete haldamine",
     "institution_data": "Asutuse andmed",
     "created_at": "Konto loodud {{ time }}",
     "updated_at": "Konto andmed muudetud {{ time }}"
@@ -294,8 +312,9 @@
     "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
-    "tag_updated": "Silt on edukalt uuendatud.",
     "tag_added": "Silt on edukalt lisatud.",
+    "order_created": "Tellimus on edukalt loodud",
+    "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud."
   },
@@ -321,7 +340,8 @@
     "role": "Roll"
   },
   "tooltip": {
-    "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
+    "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta.",
+    "file_format_helper": "Failiformaat ei garanteeri vormistuse säilimist ja automaatset tekstituvastust." 
   },
   "tag": {
     "tag_management": "Sildid",
@@ -340,13 +360,20 @@
   },
   "orders": {
     "orders_tile": "Tellimused",
+    "new_order_title": "Tellimuse lisamine",
+    "client_details": "Tellija andmed",
+    "manager_details": "Tõlkekorraldaja andmed",
+    "new_orders": "Uus tellimus",
+    "source_files": "Lähtefailid",
+    "help_files": "Abifailid",
     "status": {
       "REGISTERED": "Registreeritud",
       "NEW": "Uus",
       "FORWARDED": "Edastatud",
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
-      "REJECTED": "Tühistatud"
+      "REJECTED": "Tühistatud",
+      "CORRECTED": "Parandatud"
     }
   },
   "warning": {

@@ -83,6 +83,10 @@
   overflow: hidden;
   white-space: nowrap;
   color: $color-text-light;
+
+  &.selectedValue {
+    color: $color-text-dark;
+  }
 }
 
 .selectionsError {

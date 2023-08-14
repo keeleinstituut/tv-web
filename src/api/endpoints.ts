@@ -3,6 +3,7 @@ export const endpoints = {
   INSTITUTIONS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institutions`,
   PRIVILEGES: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}privileges`,
   USERS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users`,
+  TRANSLATION_USERS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}institution-users`,
   VALIDATE_CSV: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/validate-import-csv`,
   IMPORT_CSV: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/import-csv`,
   DEPARTMENTS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}departments`,
@@ -15,6 +16,7 @@ export const endpoints = {
   ACTIVATE_USER: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/activate`,
   VENDORS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}vendors`,
   CLASSIFIER_VALUES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}classifier-values`,
+  PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}projects`,
 }
 
 export const authEndpoints = {

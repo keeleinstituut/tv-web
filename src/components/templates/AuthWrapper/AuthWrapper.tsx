@@ -19,6 +19,7 @@ const AuthWrapper: FC<PropsWithChildren> = () => {
         login: keycloak && keycloak.login,
         logout: keycloak && keycloak.logout,
         userPrivileges: userInfo?.tolkevarav?.privileges || [],
+        institutionUserId: userInfo?.tolkevarav?.institutionUserId || '',
       }}
     >
       <Loader

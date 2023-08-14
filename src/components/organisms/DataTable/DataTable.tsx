@@ -43,6 +43,7 @@ type DataTableProps<TData extends RowData> = {
   paginationData?: DataMetaTypes
   onPaginationChange?: (value?: PaginationFunctionType) => void
   meta?: TableMeta<TData>
+  className?: string
   subRows?: Row<TData>[] | undefined
   pageSizeOptions?: { label: string; value: string }[]
   getSubRows?:
@@ -57,7 +58,7 @@ declare module '@tanstack/react-table' {
   }
 }
 
-const DataTable = <TData extends object>(
+const DataTable = <TData,>(
   {
     data,
     columns,
@@ -69,6 +70,7 @@ const DataTable = <TData extends object>(
     onPaginationChange,
     meta,
     getSubRows,
+    className,
     pageSizeOptions,
     hidePagination = false,
     headComponent,
@@ -110,7 +112,7 @@ const DataTable = <TData extends object>(
     getExpandedRowModel: getExpandedRowModel(),
   })
   return (
-    <Container ref={ref}>
+    <Container ref={ref} className={className}>
       <h4 className={classes.title} hidden={!title}>
         {title}
       </h4>
@@ -144,7 +146,7 @@ const DataTable = <TData extends object>(
   )
 }
 
-const DataTableWithRef = forwardRef(DataTable) as <TData extends object>(
+const DataTableWithRef = forwardRef(DataTable) as <TData>(
   props: DataTableProps<TData> & { ref?: Ref<HTMLDivElement> }
 ) => ReactElement
 

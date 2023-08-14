@@ -6,17 +6,21 @@ const useElementPosition = <RefType extends HTMLElement>(
   verticalContainerId?: string,
   forceRecalculate?: boolean
 ) => {
-  const { x: initialLeft, y: initialTop } =
-    ref?.current?.getBoundingClientRect() || {}
+  const {
+    x: initialLeft,
+    y: initialTop,
+    right: initialRight,
+  } = ref?.current?.getBoundingClientRect() || {}
 
-  const [{ left, top }, setPosition] = useState({
+  const [{ left, top, right }, setPosition] = useState({
     left: initialLeft,
     top: initialTop,
+    right: initialRight,
   })
 
   const recalculatePosition = useCallback(() => {
-    const { x, y } = ref?.current?.getBoundingClientRect() || {}
-    setPosition({ left: x, top: y })
+    const { x, y, right } = ref?.current?.getBoundingClientRect() || {}
+    setPosition({ left: x, top: y, right })
   }, [ref])
 
   useEffect(() => {
@@ -55,7 +59,7 @@ const useElementPosition = <RefType extends HTMLElement>(
     }
   }, [horizontalContainerId, recalculatePosition, ref, verticalContainerId])
 
-  return { left, top }
+  return { left, top, right }
 }
 
 export default useElementPosition

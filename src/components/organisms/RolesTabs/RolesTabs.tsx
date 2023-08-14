@@ -8,7 +8,7 @@ import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
-import { RoleType } from 'types/roles'
+import { RolePayload } from 'types/roles'
 import { Privileges } from 'types/privileges'
 
 interface ObjectType {
@@ -28,7 +28,7 @@ const RolesTabs: FC = () => {
   const { userPrivileges } = useAuth()
   const [activeTab, setActiveTab] = useState<string>()
   const [tabNames, setTabNames] = useState<ObjectType>({})
-  const [temporaryRoles, setTemporaryRoles] = useState<RoleType[]>([])
+  const [temporaryRoles, setTemporaryRoles] = useState<RolePayload[]>([])
 
   useEffect(() => {
     if (!isEmpty(existingRoles) && !activeTab) {

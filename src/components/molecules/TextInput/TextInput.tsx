@@ -24,6 +24,7 @@ export interface TextInputProps
   handleDelete?: () => void
   isSearch?: boolean
   hidden?: boolean
+  loading?: boolean
   isTextarea?: boolean
 }
 
@@ -44,6 +45,7 @@ const TextInput = forwardRef<
     isSearch,
     hidden,
     isTextarea,
+    loading,
     handleDelete,
     ...rest
   } = props
@@ -73,6 +75,7 @@ const TextInput = forwardRef<
         classes.container,
         isTextarea && classes.textareaContainer,
         isSearch && classes.searchInputContainer,
+        isSearch && loading && classes.loading,
         disabled && classes.disabled,
         error && classes.error,
         className
