@@ -55,8 +55,8 @@ export type UpdateVendorPayload = {
 }
 
 export type SkillsData = {
-  id?: string
-  name?: string
+  id: string
+  name: string
 }
 
 export type GetSkillsPayload = {

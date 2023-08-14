@@ -1,170 +1,58 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { identity, keys, map, merge, pick, pickBy } from 'lodash'
+import { filter, omitBy, isUndefined, map } from 'lodash'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control, useForm, useWatch } from 'react-hook-form'
+import { Control } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 
 import classes from './classes.module.scss'
-import CellInput from 'components/organisms/CellInput/CellInput'
+import {
+  FormInput,
+  InputTypes,
+} from 'components/organisms/DynamicForm/DynamicForm'
+import {
+  FormValues,
+  Prices,
+} from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import { useFetchSkills } from 'hooks/requests/useVendors'
 
 export type Skill = {
   id?: string
   name?: string
 }
 
-export type Prices = {
-  id: string
-  character_fee: number
-  word_fee: number
-  page_fee: number
-  minute_fee: number
-  hour_fee: number
-  minimal_fee: number
-  skill: Skill
-}
-
-interface FormValues {
-  [key: string]: Partial<Prices>
-}
-
-type SkillObject = {
-  [key: string]: string | undefined
-}
+type AddPrices = Omit<Prices, 'language_direction'>
 
 type AddPricesTableProps = {
-  selectedSkills: SkillObject | undefined
-  control: Control
+  control: Control<FormValues>
+  selectedSkills?: { [key: string]: boolean } | undefined
 }
 
 const AddPricesTable: FC<AddPricesTableProps> = ({
-  selectedSkills,
+  selectedSkills = {},
   control,
 }) => {
   const { t } = useTranslation()
 
-  const pricesData = [
-    {
-      id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      vendor_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      skill_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      src_lang_classifier_value_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      dst_lang_classifier_Value_id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      updated_at: '2023-08-09T07:48:41.163Z',
-      created_at: '2023-08-09T07:48:41.163Z',
-      character_fee: 0,
-      word_fee: 0,
-      page_fee: 0,
-      minute_fee: 0,
-      hour_fee: 0,
-      minimal_fee: 0,
-      vendor: 'string',
-      source_language_classifier_value: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        type: 'string',
-        value: 'string',
-        name: 'ee-ET',
-      },
-      destination_language_classifier_value: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        type: 'string',
-        value: 'string',
-        name: 'en-GB',
-      },
-      skill: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        name: 'Tõlkimine + toimetamine',
-      },
-    },
-    {
-      id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      vendor_id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      skill_id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      src_lang_classifier_value_id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      dst_lang_classifier_Value_id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-      updated_at: '2023-08-09T07:48:41.163Z',
-      created_at: '2023-08-09T07:48:41.163Z',
-      character_fee: 0,
-      word_fee: 0,
-      page_fee: 0,
-      minute_fee: 0,
-      hour_fee: 0,
-      minimal_fee: 0,
-      vendor: 'string',
-      source_language_classifier_value: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-        type: 'string',
-        value: 'string',
-        name: 'ee-ET',
-      },
-      destination_language_classifier_value: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-        type: 'string',
-        value: 'string',
-        name: 'ru-RU',
-      },
-      skill: {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa1',
-        name: 'Terminoloogia töö test objekt',
-      },
-    },
-  ]
+  const { data: skillsData } = useFetchSkills()
 
-  const vendor = {
-    id: '',
-    company_name: 'string',
-    prices: [],
-    tags: [],
-    comment: '',
-  }
+  const selectedSkillsIds = omitBy(selectedSkills, isUndefined)
 
-  const feesData = map(pricesData, (item, index) => ({
-    [`row-${index}`]: pick(item, [
-      'character_fee',
-      'word_fee',
-      'page_fee',
-      'minute_fee',
-      'hour_fee',
-      'minimal_fee',
-    ]),
-  }))
+  const matchingSkills = filter(
+    skillsData,
+    (skill) => selectedSkillsIds[skill.id]
+  )
 
-  const result = merge({}, ...feesData)
-
-  console.log('result', result)
-
-  const selectedSkillsLabels = keys(pickBy(selectedSkills, identity))
-
-  //   const defaultValues = {
-  //     [`row-${''}`]: {
-  //       id: vendor.id,
-  //       character_fee: 0,
-  //       word_fee: 0,
-  //       page_fee: 0,
-  //       minute_fee: 0,
-  //       hour_fee: 0,
-  //       minimal_fee: 0,
-  //       skill: {},
-  //     },
-  //   }
-
-  const {
-    handleSubmit,
-    // control
-  } = useForm<FormValues>({
-    reValidateMode: 'onChange',
-    // defaultValues: result,
-    // defaultValues,
+  const skillsLabels = map(matchingSkills, ({ name }) => {
+    return { skill_id: name }
   })
 
-  //   console.log('watchValues', useWatch({ control }))
-
-  const columnHelper = createColumnHelper<Prices>()
+  const columnHelper = createColumnHelper<AddPrices>()
 
   const columns = [
-    columnHelper.accessor('skill', {
+    columnHelper.accessor('skill_id', {
       header: () => t('vendors.skill'),
       footer: (info) => info.column.id,
     }),
@@ -172,14 +60,14 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
       header: () => t('vendors.character_fee'),
       cell: ({ row }) => {
         return (
-          <CellInput
-            typedKey={'character_fee'}
-            ariaLabel={t('vendors.skill')}
-            rowIndex={row?.index}
+          <FormInput
+            key={row?.index}
+            name={`character_fee-${row?.index}`}
             control={control}
-            rowErrors={[]}
-            errorZIndex={0}
+            inputType={InputTypes.Text}
+            ariaLabel={t('vendors.character_fee')}
             type="number"
+            className={classes.pricesInput}
           />
         )
       },
@@ -189,14 +77,14 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
       header: () => t('vendors.word_fee'),
       cell: ({ row }) => {
         return (
-          <CellInput
-            typedKey={'word_fee'}
-            ariaLabel={t('vendors.word_fee')}
-            rowIndex={row?.index}
+          <FormInput
+            key={row?.index}
+            name={`word_fee-${row?.index}`}
             control={control}
-            rowErrors={[]}
-            errorZIndex={0}
+            inputType={InputTypes.Text}
+            ariaLabel={t('vendors.word_fee')}
             type="number"
+            className={classes.pricesInput}
           />
         )
       },
@@ -206,14 +94,14 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
       header: () => t('vendors.page_fee'),
       cell: ({ row }) => {
         return (
-          <CellInput
-            typedKey={'page_fee'}
-            ariaLabel={t('vendors.page_fee')}
-            rowIndex={row?.index}
+          <FormInput
+            key={row?.index}
+            name={`page_fee-${row?.index}`}
             control={control}
-            rowErrors={[]}
-            errorZIndex={0}
+            inputType={InputTypes.Text}
+            ariaLabel={t('vendors.page_fee')}
             type="number"
+            className={classes.pricesInput}
           />
         )
       },
@@ -223,14 +111,14 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
       header: () => t('vendors.minute_fee'),
       cell: ({ row }) => {
         return (
-          <CellInput
-            typedKey={'minute_fee'}
-            ariaLabel={t('vendors.minute_fee')}
-            rowIndex={row?.index}
+          <FormInput
+            key={row?.index}
+            name={`minute_fee-${row?.index}`}
             control={control}
-            rowErrors={[]}
-            errorZIndex={0}
+            inputType={InputTypes.Text}
+            ariaLabel={t('vendors.minute_fee')}
             type="number"
+            className={classes.pricesInput}
           />
         )
       },
@@ -240,14 +128,14 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
       header: () => t('vendors.hour_fee'),
       cell: ({ row }) => {
         return (
-          <CellInput
-            typedKey={'hour_fee'}
-            ariaLabel={t('vendors.hour_fee')}
-            rowIndex={row?.index}
+          <FormInput
+            key={row?.index}
+            name={`hour_fee-${row?.index}`}
             control={control}
-            rowErrors={[]}
-            errorZIndex={0}
+            inputType={InputTypes.Text}
+            ariaLabel={t('vendors.hour_fee')}
             type="number"
+            className={classes.pricesInput}
           />
         )
       },
@@ -257,14 +145,14 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
       header: () => t('vendors.minimal_fee'),
       cell: ({ row }) => {
         return (
-          <CellInput
-            typedKey={'minimal_fee'}
-            ariaLabel={t('vendors.minimal_fee')}
-            rowIndex={row?.index}
+          <FormInput
+            key={row?.index}
+            name={`minimal_fee-${row?.index}`}
             control={control}
-            rowErrors={[]}
-            errorZIndex={0}
+            inputType={InputTypes.Text}
+            ariaLabel={t('vendors.minimal_fee')}
             type="number"
+            className={classes.pricesInput}
           />
         )
       },
@@ -272,23 +160,9 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
     }),
   ] as ColumnDef<any>[]
 
-  const skillsValues = map(selectedSkillsLabels, (label) => {
-    return {
-      skill: label,
-      character_fee: 10,
-      word_fee: 10,
-      page_fee: 10,
-      minute_fee: 10,
-      hour_fee: 10,
-      minimal_fee: 10,
-    }
-  })
-
-  console.log('skillsValues', skillsValues)
-
   return (
     <DataTable
-      data={skillsValues}
+      data={skillsLabels}
       columns={columns}
       tableSize={TableSizeTypes.M}
       hidePagination

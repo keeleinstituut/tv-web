@@ -49,10 +49,10 @@ class ApiClient {
   debug = (title: string, content: object) => {
     if (this.debug_mode && (title || content)) {
       if (title) {
-        console.log(`=== DEBUG: ${title} ===========================`)
+        // console.log(`=== DEBUG: ${title} ===========================`)
       }
       if (content) {
-        console.log(content)
+        // console.log(content)
       }
     }
   }

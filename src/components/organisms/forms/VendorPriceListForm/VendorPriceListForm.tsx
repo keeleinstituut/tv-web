@@ -28,13 +28,12 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import { Vendor } from 'types/vendors'
 
-type SkillsFormValue = {
-  [key in string]?: string
-}
-export interface FormValues {
-  source_language: string
-  destination_language: string[]
-  skills: SkillsFormValue
+export type FormValues = {
+  src_lang_classifier_value_id: string
+  dst_lang_classifier_value_id: string
+  skill_id?: { [key: string]: boolean }
+} & {
+  [key: string]: number | string
 }
 
 export type Skill = {
@@ -50,17 +49,25 @@ export type Prices = {
   minute_fee: number
   hour_fee: number
   minimal_fee: number
-  skill: Skill
+  skill_id: Skill
   language_direction: string
 }
 
-type VendorPriceListStepProps = {
+type VendorPriceListSecondStepProps = {
   skillsFormFields: FieldProps<FormValues>[]
   control: Control<FormValues>
   languageOptions: { label: string; value: string }[]
 }
 
-type LanguageLabelsProps = Omit<VendorPriceListStepProps, 'skillsFormFields'>
+type VendorPriceListThirdStepProps = Omit<
+  VendorPriceListSecondStepProps,
+  'skillsFormFields'
+>
+
+type LanguageLabelsProps = Omit<
+  VendorPriceListSecondStepProps,
+  'skillsFormFields'
+>
 
 const LanguageLabels: FC<LanguageLabelsProps> = ({
   control,
@@ -74,11 +81,11 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
   }
 
   const sourceLanguageLabel = findLabelByValue(
-    useWatch({ control }).source_language
+    useWatch({ control }).src_lang_classifier_value_id
   )
 
   const destinationLanguageLabels = findLabelByValue(
-    useWatch({ control }).destination_language
+    useWatch({ control }).dst_lang_classifier_value_id
   )
 
   return (
@@ -93,7 +100,7 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
   )
 }
 
-const VendorPriceListSecondStep: FC<VendorPriceListStepProps> = ({
+const VendorPriceListSecondStep: FC<VendorPriceListSecondStepProps> = ({
   skillsFormFields,
   control,
   languageOptions,
@@ -110,11 +117,11 @@ const VendorPriceListSecondStep: FC<VendorPriceListStepProps> = ({
   )
 }
 
-const VendorPriceListThirdStep: FC<VendorPriceListStepProps> = ({
+const VendorPriceListThirdStep: FC<VendorPriceListThirdStepProps> = ({
   control,
   languageOptions,
 }) => {
-  const selectedSkills = useWatch({ control }).skills
+  const selectedSkills = useWatch({ control, name: 'skill_id' })
 
   return (
     <>
@@ -220,15 +227,8 @@ const VendorPriceListForm: FC = () => {
     )
   }, [])
 
-  // const defaultValues = {
-  //   source_language: '',
-  //   destination_language: [],
-  //   skills: {},
-  // }
-
-  const { control, handleSubmit, watch, setValue } = useForm<FormValues>({
+  const { handleSubmit, control } = useForm<FormValues>({
     reValidateMode: 'onChange',
-    // defaultValues: defaultValues,
   })
 
   const languageOptions = map(languageData, ({ id, name }) => {
@@ -241,7 +241,7 @@ const VendorPriceListForm: FC = () => {
   const languagePairFormFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Selections,
-      name: 'source_language',
+      name: 'src_lang_classifier_value_id',
       ariaLabel: t('vendors.source_language'),
       label: t('vendors.source_language'),
       placeholder: t('button.choose'),
@@ -254,7 +254,7 @@ const VendorPriceListForm: FC = () => {
     },
     {
       inputType: InputTypes.Selections,
-      name: 'destination_language',
+      name: 'dst_lang_classifier_value_id',
       ariaLabel: t('vendors.destination_language'),
       label: t('vendors.destination_language'),
       placeholder: t('button.choose'),
@@ -271,17 +271,19 @@ const VendorPriceListForm: FC = () => {
 
   const skillsFormFields: FieldProps<FormValues>[] = map(
     skillsData,
-    ({ id, name }) => ({
-      key: id,
-      inputType: InputTypes.Checkbox,
-      ariaLabel: name || '',
-      label: name,
-      name: `skills.${name}`,
-      // rules: {
-      //   required: true,
-      // },
-      className: classes.skillsField,
-    })
+    ({ id, name }) => {
+      return {
+        key: id,
+        inputType: InputTypes.Checkbox,
+        ariaLabel: name || '',
+        label: name,
+        name: `skill_id.${id}`,
+        // rules: {
+        //   required: true,
+        // },
+        className: classes.skillsField,
+      }
+    }
   )
 
   const columnHelper = createColumnHelper<Prices>()
@@ -291,7 +293,7 @@ const VendorPriceListForm: FC = () => {
       header: () => t('vendors.language_direction'),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('skill', {
+    columnHelper.accessor('skill_id', {
       header: () => t('vendors.skill'),
       footer: (info) => info.column.id,
     }),
@@ -375,7 +377,6 @@ const VendorPriceListForm: FC = () => {
           helperText: t('vendors.price_list_helper_text'),
           modalContent: (
             <VendorPriceListThirdStep
-              skillsFormFields={skillsFormFields}
               control={control}
               languageOptions={languageOptions}
             />
