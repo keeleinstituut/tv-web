@@ -1,34 +1,51 @@
-import { FC, useCallback, RefObject } from 'react'
+import { FC, useCallback, RefObject, useRef, useMemo } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { createPortal } from 'react-dom'
+import { useInViewport } from 'ahooks'
 import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
+import { join, reduce } from 'lodash'
 import {
   InputFileTypes,
   acceptFileExtensions,
 } from 'components/organisms/FileImport/FileImport'
+import classNames from 'classnames'
 
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
+import useElementPosition from 'hooks/useElementPosition'
 
 interface DragAndDropContentProps {
   isDragAndDropOpen?: boolean
   setFiles?: (files: File[]) => void
   allowMultiple?: boolean
-  inputFileType?: InputFileTypes
+  inputFileTypes?: InputFileTypes[]
   parentRef: RefObject<HTMLDivElement>
+  isFilesListHidden?: boolean
 }
 
 const DragAndDropContent: FC<DragAndDropContentProps> = ({
-  inputFileType = InputFileTypes.Csv,
+  inputFileTypes = [InputFileTypes.Csv],
   isDragAndDropOpen,
   setFiles,
   allowMultiple,
   parentRef,
+  isFilesListHidden,
 }) => {
-  const { left, top } = parentRef?.current?.getBoundingClientRect() || {}
+  const containerRef = useRef(null)
+  const { left, top, right } =
+    useElementPosition(parentRef, undefined, undefined, isDragAndDropOpen) || {}
+  const [inViewport, ratio] = useInViewport(containerRef)
+  const useLeftPosition = useMemo(
+    () => ratio && ratio < 1 && inViewport,
+    // isDragAndDropOpen changes, when this component is displayed
+    // We don't want to update this state during any other time
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [inViewport]
+  )
+
   const { t } = useTranslation()
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -42,20 +59,44 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: !!allowMultiple,
-    accept: {
-      [inputFileType]: acceptFileExtensions[inputFileType],
-    },
+    accept: reduce(
+      inputFileTypes,
+      (result, value) => {
+        if (!value) return result
+        return {
+          ...result,
+          [value]: acceptFileExtensions[value],
+        }
+      },
+      {}
+    ),
   })
+
+  const topPositionModifier = isFilesListHidden ? 157 : 141
 
   if (!isDragAndDropOpen) return null
   return (
     <div
       {...getRootProps()}
       className={classes.container}
-      style={{ left, top: top ? top - 141 : 0 }}
+      ref={containerRef}
+      style={{
+        left: useLeftPosition ? 'unset' : left,
+        right: useLeftPosition ? (right || 0) - (left || 0) : 'unset',
+        top: top ? top - topPositionModifier : 0,
+      }}
     >
-      <input type="file" accept={inputFileType} {...getInputProps()} />
-      <div className={classes.dragAndDropContainer}>
+      <input
+        type="file"
+        accept={join(inputFileTypes, ',')}
+        {...getInputProps()}
+      />
+      <div
+        className={classNames(
+          classes.dragAndDropContainer,
+          useLeftPosition && classes.rightIndicator
+        )}
+      >
         <div className={classes.dragAndDropContent}>
           <h3> {isDragActive ? t('file.drop_files') : t('file.drag_drop')}</h3>
           <p hidden={isDragActive} className={classes.dragAndDropText}>

@@ -88,7 +88,7 @@ const AddUsersTableForm: FC = () => {
     [tableData, existingRoles]
   )
 
-  const { control, handleSubmit, setError } = useForm<FormValues>({
+  const { control, handleSubmit, setError, clearErrors } = useForm<FormValues>({
     reValidateMode: 'onChange',
     mode: 'onChange',
     values: formValues,
@@ -110,6 +110,7 @@ const AddUsersTableForm: FC = () => {
         return true
       } catch (errorData) {
         setRowsWithErrors({})
+        clearErrors()
         const typedErrorData = errorData as CsvValidationError
         const { errors, rowsWithExistingInstitutionUsers } = typedErrorData
         if (rowsWithExistingInstitutionUsers) {
@@ -137,7 +138,7 @@ const AddUsersTableForm: FC = () => {
       }
       return false
     },
-    [setError, validateUsers]
+    [clearErrors, setError, validateUsers]
   )
 
   const handleFileUploaded = async (uploadedFile: File) => {
@@ -190,7 +191,7 @@ const AddUsersTableForm: FC = () => {
           fileButtonText={t('button.add_csv')}
           fileButtonChangeText={t('button.add_new_csv')}
           onChange={handleFileUploaded}
-          inputFileType={InputFileTypes.Csv}
+          inputFileTypes={[InputFileTypes.Csv]}
           onDelete={onDeleteFile}
           allowMultiple={false}
         />

@@ -49,7 +49,7 @@ type HeaderItemProps<TData> = {
   header: Header<TData, RowData>
 } & HeaderGroupFunctions
 
-const HeaderItem = <TData extends object>({
+const HeaderItem = <TData,>({
   hidden,
   header,
   onSortingChange,
@@ -133,7 +133,7 @@ const HeaderItem = <TData extends object>({
   )
 }
 
-const TableHeaderGroup = <TData extends object>({
+const TableHeaderGroup = <TData,>({
   table,
   onSortingChange,
   onFiltersChange,

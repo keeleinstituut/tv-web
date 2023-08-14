@@ -1,6 +1,6 @@
 import { PrivilegeType } from './privileges'
 
-export interface RoleType {
+export interface RolePayload {
   created_at?: string
   id?: string
   institution_id?: string
@@ -10,6 +10,6 @@ export interface RoleType {
   updated_at?: string
 }
 
-export interface RolesDataTypes {
-  data: RoleType[]
+export interface RolesResponse {
+  data: RolePayload[]
 }

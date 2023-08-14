@@ -26,27 +26,3 @@
     }
   }
 }
-
-.container {
-  border-top: unset;
-
-  border-bottom-right-radius: 6px;
-  border-bottom-left-radius: 6px;
-
-  h2 {
-    @include h3TextStyle;
-    margin-bottom: spacing(8);
-  }
-
-  .formContainer {
-    display: grid;
-    grid-gap: spacing(4);
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.deleteButton {
-  color: $color-error;
-  margin-left: auto;
-  margin-bottom: spacing(6);
-}

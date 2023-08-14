@@ -16,7 +16,7 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { ValidationError } from 'api/errorHandler'
 import { DiscountPercentages, UpdateVendorPayload, Vendor } from 'types/vendors'
 import { TagTypes } from 'types/tags'
-import DiscountFrom from '../DiscountForm/DiscountForm'
+import DiscountForm from '../DiscountForm/DiscountForm'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 type FormValues = {
@@ -35,7 +35,7 @@ export type VendorFormProps = {
 const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { tags: allTags = [] } = useFetchTags({ type: TagTypes.Teostaja })
+  const { tags: allTags = [] } = useFetchTags({ type: TagTypes.Vendor })
   const { updateVendor } = useUpdateVendor(vendor.id as string)
 
   const {
@@ -239,7 +239,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
             className={classes.paddingRight120}
           />
 
-          <DiscountFrom
+          <DiscountForm
             {...{
               isFormDisabled,
               control,

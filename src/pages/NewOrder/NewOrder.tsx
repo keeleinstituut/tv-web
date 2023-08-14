@@ -1,9 +1,19 @@
 import { FC } from 'react'
-
-// TODO: WIP - implement this page
+import classes from './classes.module.scss'
+import { useTranslation } from 'react-i18next'
+import OrderDetails from 'components/organisms/OrderDetails/OrderDetails'
+import { Root } from '@radix-ui/react-form'
 
 const NewOrder: FC = () => {
-  return <h1>NewOrder</h1>
+  const { t } = useTranslation()
+
+  return (
+    <Root className={classes.container}>
+      <h1>{t('orders.new_order_title')}</h1>
+      <OrderDetails isNew />
+      {/* <SubmitButtons /> */}
+    </Root>
+  )
 }
 
 export default NewOrder

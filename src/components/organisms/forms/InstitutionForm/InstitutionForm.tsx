@@ -66,7 +66,7 @@ const InstitutionForm: FC<InstitutionType> = ({
     {
       inputType: InputTypes.Text,
       ariaLabel: t('label.institution'),
-      label: t('label.institution'),
+      label: `${t('label.institution')}*`,
       disabled: !isUpdatingData,
       name: 'name',
       className: classNames(classes.inputInternalPosition, {
@@ -107,9 +107,9 @@ const InstitutionForm: FC<InstitutionType> = ({
     // TODO: add masking for phone number input, once we merge timeinput
     {
       inputType: InputTypes.Text,
-      ariaLabel: t('label.phone_long'),
+      ariaLabel: t('label.phone'),
       disabled: !isUpdatingData,
-      label: t('label.phone_long'),
+      label: t('label.phone'),
       name: 'phone',
       type: 'tel',
       className: classNames(classes.inputInternalPosition, {

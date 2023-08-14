@@ -7,8 +7,14 @@
   border-radius: 0px 0px 4px 4px;
   position: absolute;
   top: 40px;
-  max-height: 35vh;
-  overflow: auto;
+  max-height: 50vh;
+  display: flex;
+  flex-direction: column;
+
+  ul {
+    overflow: auto;
+    flex: 1;
+  }
 }
 
 .dropdownMenuItem {
@@ -19,6 +25,7 @@
 .option {
   @include labelTextStyle;
   padding: spacing(2);
+  text-align: unset;
 }
 
 .selectedOption {

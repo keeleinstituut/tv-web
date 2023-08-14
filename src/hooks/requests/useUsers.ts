@@ -5,17 +5,26 @@ import {
   UserDataType,
   UserStatusType,
 } from 'types/users'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useInfiniteQuery,
+} from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
+import { flatMap, last } from 'lodash'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 dayjs.extend(customParseFormat)
 
-export const useFetchUsers = (initialFilters?: UserPayloadType) => {
+export const useFetchUsers = (
+  initialFilters?: UserPayloadType,
+  useTranslationService?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
@@ -23,9 +32,13 @@ export const useFetchUsers = (initialFilters?: UserPayloadType) => {
     handlePaginationChange,
   } = useFilters<UserPayloadType>(initialFilters)
 
-  const { isLoading, isError, data } = useQuery<UsersDataType>({
-    queryKey: ['users', filters],
-    queryFn: () => apiClient.get(endpoints.USERS, filters),
+  const { isLoading, isError, isFetching, data } = useQuery<UsersDataType>({
+    queryKey: [useTranslationService ? 'translationUsers' : 'users', filters],
+    queryFn: () =>
+      apiClient.get(
+        useTranslationService ? endpoints.TRANSLATION_USERS : endpoints.USERS,
+        filters
+      ),
     keepPreviousData: true,
   })
   const { meta: paginationData, data: users } = data || {}
@@ -38,15 +51,58 @@ export const useFetchUsers = (initialFilters?: UserPayloadType) => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
+    isFetching,
   }
 }
+
+export const useFetchInfiniteUsers = (
+  initialFilters?: UserPayloadType,
+  useTranslationService?: boolean
+) => {
+  const { filters, handleFilterChange } =
+    useFilters<UserPayloadType>(initialFilters)
+
+  const queryKey = useTranslationService
+    ? 'translationUsers-infinite'
+    : 'users-infinite'
+
+  const { isLoading, isError, isFetching, fetchNextPage, hasNextPage, data } =
+    useInfiniteQuery<UsersDataType>({
+      queryKey: [queryKey, filters],
+      queryFn: ({ pageParam = 1 }) =>
+        apiClient.get(
+          useTranslationService ? endpoints.TRANSLATION_USERS : endpoints.USERS,
+          { ...filters, page: pageParam }
+        ),
+      getNextPageParam: (lastPage) => (lastPage.meta?.current_page || 0) + 1,
+      keepPreviousData: true,
+    })
+
+  const { pages } = data || {}
+  const lastPageFetchParams = last(pages)?.meta
+  const usersData = flatMap(pages, 'data')
+
+  return {
+    isLoading,
+    isError,
+    users: usersData,
+    paginationData: lastPageFetchParams,
+    handleFilterChange,
+    hasNextPage,
+    fetchNextPage,
+    isFetching,
+  }
+}
+
+export const useFetchInfiniteTranslationUsers = (
+  initialFilters?: UserPayloadType
+) => useFetchInfiniteUsers(initialFilters, true)
 
 export const useFetchUser = ({ userId }: { userId?: string }) => {
   const { isLoading, isError, data } = useQuery<UserDataType>({
     queryKey: ['users', userId],
     queryFn: () => apiClient.get(`${endpoints.USERS}/${userId}`),
   })
-
   return {
     isLoading,
     isError,

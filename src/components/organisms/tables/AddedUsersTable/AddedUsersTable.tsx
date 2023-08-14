@@ -27,7 +27,7 @@ import useAuth from 'hooks/useAuth'
 type User = {
   id: string
   name: string
-  department: string | undefined
+  department: string[] | undefined
   roles: (string | undefined)[]
   status: UserStatus
 }

@@ -1,8 +1,8 @@
 export enum TagTypes {
-  Tolkemalud = 'Tõlkemälud',
-  Teostaja = 'Teostaja',
-  Tellimus = 'Tellimus',
-  Oskused = 'Oskused',
+  TranslationMemories = 'Tõlkemälud',
+  Vendor = 'Teostaja',
+  Project = 'Tellimus',
+  Skills = 'Oskused',
 }
 export interface TagsResponse {
   data: Tag[]

@@ -19,7 +19,7 @@ import DropdownContent, {
 } from 'components/organisms/DropdownContent/DropdownContent'
 
 import classes from './classes.module.scss'
-import { filter, find, map } from 'lodash'
+import { filter, find, map, join } from 'lodash'
 import Tag from 'components/atoms/Tag/Tag'
 
 export enum DropdownSizeTypes {
@@ -57,6 +57,9 @@ export interface SelectionControlsInputProps {
   errorZIndex?: number
   usePortal?: boolean
   horizontalScrollContainerId?: string
+  loading?: boolean
+  onEndReached?: () => void
+  hidden?: boolean
 }
 
 interface PositionedDropdownContentProps extends DropdownContentProps {
@@ -104,6 +107,7 @@ const SelectionControlsInput = forwardRef<
     className,
     selectIcon,
     usePortal,
+    hidden,
     ...rest
   },
   ref
@@ -138,7 +142,9 @@ const SelectionControlsInput = forwardRef<
 
   const selectedOptionLabels = map(valueAsArray, (value) => value?.label)
 
-  const singleSelectMenuLabel = value ? selectedOptionLabels : placeholder
+  const singleSelectMenuLabel = value
+    ? join(selectedOptionLabels, ',')
+    : placeholder
 
   const dropdownMenuLabel = multiple ? placeholder : singleSelectMenuLabel
 
@@ -170,6 +176,8 @@ const SelectionControlsInput = forwardRef<
     ]
   )
 
+  if (hidden) return null
+
   return (
     <InputWrapper
       label={label}
@@ -192,8 +200,16 @@ const SelectionControlsInput = forwardRef<
         disabled={disabled}
         onClick={toggleDropdown}
       >
-        <p hidden={!placeholder} className={classes.menuLabel}>
+        <p
+          hidden={!placeholder && multiple}
+          className={classNames(
+            classes.menuLabel,
+            value && !multiple && classes.selectedValue
+          )}
+        >
           {dropdownMenuLabel}
+          {/* Following is a hack for broken behavior of single select inputs without a placeholder */}
+          &#8203;
         </p>
 
         <SelectInputArrow

@@ -6,6 +6,7 @@ import {
   forwardRef,
   useCallback,
   useMemo,
+  useRef,
 } from 'react'
 import classNames from 'classnames'
 import { includes, map, isEmpty, debounce, filter } from 'lodash'
@@ -19,6 +20,7 @@ import { DropDownOptions } from 'components/organisms/SelectionControlsInput/Sel
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import useElementPosition from 'hooks/useElementPosition'
+import useEndReached from 'hooks/useEndReached'
 import TextInput from 'components/molecules/TextInput/TextInput'
 
 export interface DropdownContentProps extends SelectionControlsInputProps {
@@ -58,9 +60,12 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
       horizontalScrollContainerId,
       className,
       onSearch,
+      loading,
+      onEndReached,
     },
     ref
   ) {
+    const scrollContainer = useRef(null)
     const { left, top } =
       useElementPosition(
         wrapperRef,
@@ -70,6 +75,10 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
       ) || {}
 
     const { t } = useTranslation()
+
+    // Does nothing if onEndReached is not defined or scrollContainer is not defined
+    // 60 is offset in px, we want to call the function before we reach the actual end
+    useEndReached(scrollContainer, onEndReached, 60)
 
     const initialValue = value || (multiple ? [] : '')
     const [selectedValue, setSelectedValue] = useState<string | string[]>(
@@ -133,6 +142,8 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
       [onSearch]
     )
 
+    if (disabled || !isOpen) return null
+
     return (
       <div
         className={classNames(
@@ -145,7 +156,6 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
           zIndex: 51 + (errorZIndex || 0),
           ...(left && top ? { left, top: top + 40 } : {}),
         }}
-        hidden={disabled || !isOpen}
       >
         <TextInput
           hidden={!showSearch}
@@ -155,10 +165,11 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
           value={searchValue}
           onChange={handleSearch}
           className={classes.searchInput}
+          loading={loading}
           isSearch
         />
 
-        <ul>
+        <ul ref={scrollContainer}>
           <EmptyContent hidden={!isEmpty(visibleOptions)} />
           {map(visibleOptions, (option) => {
             const isMultiSelected =
@@ -177,16 +188,17 @@ const DropdownContent = forwardRef<HTMLDivElement, DropdownContentProps>(
                     onChange={() => handleMultipleSelect(option?.value)}
                   />
                 )}
-                <p
+                <Button
                   className={classNames(
                     classes.option,
                     isSingleSelected && classes.selectedOption
                   )}
                   hidden={multiple}
+                  appearance={AppearanceTypes.Text}
                   onClick={() => handleSingleSelect(option?.value)}
                 >
                   {option?.label}
-                </p>
+                </Button>
               </li>
             )
           })}

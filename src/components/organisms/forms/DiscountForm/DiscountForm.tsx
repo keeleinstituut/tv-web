@@ -24,7 +24,7 @@ interface DiscountFormProps {
   resetForm: () => void
 }
 
-const DiscountFrom: FC<DiscountFormProps> = ({ control }) => {
+const DiscountForm: FC<DiscountFormProps> = ({ control }) => {
   const { t } = useTranslation()
   const { discountValidator } = useValidators()
 
@@ -74,4 +74,4 @@ const DiscountFrom: FC<DiscountFormProps> = ({ control }) => {
   )
 }
 
-export default DiscountFrom
+export default DiscountForm
