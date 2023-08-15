@@ -8,7 +8,9 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 interface ExpandableContentContainerProps {
   className?: string
   hidden?: boolean
-  extraComponent?: JSX.Element
+  rightComponent?: JSX.Element
+  leftComponent?: JSX.Element
+  bottomComponent?: JSX.Element
   title?: string
   contentAlwaysVisible?: boolean
 }
@@ -19,9 +21,10 @@ const ExpandableContentContainer: FC<
   children,
   hidden,
   className,
-  extraComponent,
+  rightComponent,
+  leftComponent,
+  bottomComponent,
   contentAlwaysVisible,
-  title,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -41,9 +44,15 @@ const ExpandableContentContainer: FC<
           className
         )}
       >
-        <h2>{title}</h2>
-        {extraComponent}
-        <DropdownArrow className={classes.iconButton} />
+        <div className={classes.firstRow}>
+          <div>{leftComponent}</div>
+          <div>
+            {rightComponent}
+            <DropdownArrow className={classes.iconButton} />
+          </div>
+        </div>
+
+        {bottomComponent}
       </BaseButton>
       {isExpanded || contentAlwaysVisible ? children : null}
     </>

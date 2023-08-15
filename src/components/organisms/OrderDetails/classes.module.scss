@@ -74,3 +74,8 @@
     }
   }
 } 
+
+.expandableContentTitle {
+  @include h3TextStyle;
+  color: $color-input-main;
+}

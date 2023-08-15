@@ -36,6 +36,7 @@
     "deadline_at": "Tähtaeg",
     "reference_number": "Viitenumber",
     "language_directions": "Keelesuunad",
+    "language_direction": "Keelesuund",
     "type": "Tüüp",
     "tags": "Sildid",
     "order_tags": "Tellimuse sildid",

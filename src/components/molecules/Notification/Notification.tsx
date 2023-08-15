@@ -26,7 +26,8 @@ export interface NotificationProps {
   title?: string
   content?: JSX.Element | string
   hideIcon?: boolean
-  closeNotification: () => void
+  closeNotification?: () => void
+  className?: string
 }
 
 const NotificationIcon: FC<IconComponentProps> = ({ type, hidden }) => {
@@ -55,9 +56,16 @@ const Notification: FC<NotificationProps> = ({
   content,
   hideIcon,
   closeNotification,
+  className,
 }) => {
   return (
-    <div className={classNames(classes.notificationContainer, classes[type])}>
+    <div
+      className={classNames(
+        classes.notificationContainer,
+        classes[type],
+        className
+      )}
+    >
       <NotificationIcon type={type} hidden={hideIcon} />
       <h5>{title}</h5>
       <Button
@@ -65,6 +73,7 @@ const Notification: FC<NotificationProps> = ({
         appearance={AppearanceTypes.Text}
         icon={CloseIcon}
         onClick={closeNotification}
+        hidden={!closeNotification}
       />
       <p>{content}</p>
     </div>

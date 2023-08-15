@@ -356,8 +356,12 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     <ExpandableContentContainer
       hidden={isNew}
       contentAlwaysVisible={isNew}
-      extraComponent={<OrderStatusTag status={status} />}
-      title={t('orders.order_details_expandable')}
+      rightComponent={<OrderStatusTag status={status} />}
+      leftComponent={
+        <h2 className={classes.expandableContentTitle}>
+          {t('orders.order_details_expandable')}
+        </h2>
+      }
     >
       <Root
         className={classNames(

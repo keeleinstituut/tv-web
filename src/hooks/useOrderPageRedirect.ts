@@ -54,6 +54,7 @@ const useOrderPageRedirect = ({
   useEffect(() => {
     if (!isLoading && !client_user_institution_id) {
       // TODO: no order exists
+      console.warn('navigating back')
       navigate(-1)
       showNotification({
         type: NotificationTypes.Warning,
@@ -61,16 +62,17 @@ const useOrderPageRedirect = ({
         content: t('warning.order_does_not_exist'),
       })
     } else if (!canUserViewOrder && !isLoading) {
-      navigate(-1)
-      showNotification({
-        type: NotificationTypes.Warning,
-        title: t('notification.warning'),
-        content: t('warning.missing_permissions'),
-      })
+      // TODO: commented out for now for development purposes
+      // navigate(-1)
+      // showNotification({
+      //   type: NotificationTypes.Warning,
+      //   title: t('notification.warning'),
+      //   content: t('warning.missing_permissions'),
+      // })
     }
     // We want to be certain that this only runs when privilege changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canUserViewOrder])
+  }, [canUserViewOrder, navigate])
 }
 
 export default useOrderPageRedirect

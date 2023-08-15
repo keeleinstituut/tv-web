@@ -4,18 +4,28 @@
 .container {
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column;
   padding: spacing(4) spacing(6);
   box-shadow: 0 4px 15px $color-shadow-main;
   border-radius: $border-radius-4;
   background-color: $color-white;
   width: 100%;
-  h2 {
-    margin-right: auto;
-    @include h3TextStyle;
-    color: $color-input-main
+
+  .firstRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex: 1;
+
+    > div {
+      display: flex;
+      align-items: center;
+    }
   }
+
+
+
   z-index: 1;
 }
 
