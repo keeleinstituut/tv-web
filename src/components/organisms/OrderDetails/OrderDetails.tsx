@@ -1,7 +1,6 @@
 import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
-import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import Container from 'components/atoms/Container/Container'
 import PersonSection, {
@@ -11,7 +10,7 @@ import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
 import FilesSection from 'components/molecules/FilesSection/FilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
-import { isEmpty, join, map, uniq } from 'lodash'
+import { isEmpty, join, map, uniq, includes, find } from 'lodash'
 import {
   getLocalDateOjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
@@ -31,6 +30,9 @@ import { ValidationError } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
 import dayjs from 'dayjs'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
+import { Privileges } from 'types/privileges'
+
+import classes from './classes.module.scss'
 
 export enum OrderDetailModes {
   New = 'new',
@@ -113,11 +115,16 @@ interface FormValues {
 interface OrderDetailsProps {
   mode?: OrderDetailModes
   order?: DetailedOrder
+  isUserClientOfProject?: boolean
 }
 
-const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
+const OrderDetails: FC<OrderDetailsProps> = ({
+  mode,
+  order,
+  isUserClientOfProject,
+}) => {
   const { t } = useTranslation()
-  const { institutionUserId } = useAuth()
+  const { institutionUserId, userPrivileges } = useAuth()
   const { createOrder, isLoading } = useCreateOrder()
   const { updateOrder, isLoading: isUpdatingOrder } = useUpdateOrder({
     orderId: order?.id,
@@ -127,6 +134,14 @@ const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
   const [isEditable, setIsEditable] = useState(isNew)
 
   const { status = OrderStatus.Registered } = order || {}
+  const hasManagerPrivilege = find(
+    [Privileges.ManageProject, Privileges.ReceiveAndManageProject],
+    (privilege) => includes(userPrivileges, privilege)
+  )
+
+  const isEditableByManager = hasManagerPrivilege && isEditable
+  const isEditableByClient = isNew && isEditable
+  const isEditableBySomeone = isEditableByManager || isEditableByClient
 
   // TODO: will map default values of open order here instead, when isNew === false
 
@@ -357,26 +372,35 @@ const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
             control={control}
             selectedUserId={client_user_institution_id}
             isNew={isNew}
-            isEditable={isEditable}
+            isEditable={
+              includes(userPrivileges, Privileges.ChangeClient) &&
+              (isEditableBySomeone || isUserClientOfProject)
+            }
           />
           <PersonSection
             type={PersonSectionTypes.Manager}
             control={control}
             selectedUserId={translation_manager_user_institution_id}
             isNew={isNew}
-            isEditable={isEditable}
+            isEditable={isEditableBySomeone}
           />
         </Container>
         <Container className={classNames(classes.detailsContainer)}>
           <DetailsSection
             control={control}
             isNew={isNew}
-            isEditable={isEditable}
+            isEditable={isEditableBySomeone}
           />
-          <FilesSection control={control} isEditable={isEditable} />
-          <FormButtons {...formButtonsProps} hidden={isNew} />
+          <FilesSection control={control} isEditable={isEditableBySomeone} />
+          <FormButtons
+            {...formButtonsProps}
+            hidden={isNew || !isEditableBySomeone}
+          />
         </Container>
-        <FormButtons {...formButtonsProps} hidden={!isNew} />
+        <FormButtons
+          {...formButtonsProps}
+          hidden={!isNew || !isEditableBySomeone}
+        />
       </Root>
     </ExpandableContentContainer>
   )

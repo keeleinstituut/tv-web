@@ -401,6 +401,7 @@
     "feedback_files": "Tagasiside failid"
   },
   "warning": {
-    "missing_permissions": "Teil puudub ligipääs soovitud lehele"
+    "missing_permissions": "Teil puudub ligipääs soovitud lehele",
+    "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam"
   }
 }

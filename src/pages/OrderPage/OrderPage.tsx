@@ -13,16 +13,20 @@ import { OrderStatus } from 'types/orders'
 import OrderDetails, {
   OrderDetailModes,
 } from 'components/organisms/OrderDetails/OrderDetails'
+import useOrderPageRedirect from 'hooks/useOrderPageRedirect'
 
 // TODO: WIP - implement this page
 
 interface OrderButtonProps {
   status?: OrderStatus
-  isPersonalOrder?: boolean
+  isUserClientOfProject?: boolean
   //
 }
 
-const OrderButtons: FC<OrderButtonProps> = ({ status, isPersonalOrder }) => {
+const OrderButtons: FC<OrderButtonProps> = ({
+  status,
+  isUserClientOfProject,
+}) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
@@ -31,7 +35,8 @@ const OrderButtons: FC<OrderButtonProps> = ({ status, isPersonalOrder }) => {
     status
   )
   const canCancelPersonalOrder =
-    includes(userPrivileges, Privileges.ViewPersonalProject) && isPersonalOrder
+    includes(userPrivileges, Privileges.ViewPersonalProject) &&
+    isUserClientOfProject
 
   const canCancelInstitutionOrder =
     status === OrderStatus.New &&
@@ -78,22 +83,40 @@ const OrderButtons: FC<OrderButtonProps> = ({ status, isPersonalOrder }) => {
 const OrderPage: FC = () => {
   // const { t } = useTranslation()
   const { orderId } = useParams()
+  const { institutionUserId } = useAuth()
   const { order, isLoading } = useFetchOrder({ orderId })
-  const { id, status, sub_projects } = order || {}
-  // TODO: check is "Tellija" of the order is current user
-  const isPersonalOrder = true
+  const {
+    id,
+    status,
+    sub_projects,
+    client_user_institution_id,
+    translation_manager_user_institution_id,
+  } = order || {}
+
+  useOrderPageRedirect({
+    client_user_institution_id,
+    translation_manager_user_institution_id,
+    isLoading,
+  })
+
+  const isUserClientOfProject = institutionUserId === client_user_institution_id
+
   if (isLoading) return <Loader loading={isLoading} />
   return (
     <>
       <div className={classes.titleRow}>
         <h1>{id}</h1>
-        <OrderButtons {...{ status, isPersonalOrder }} />
+        <OrderButtons {...{ status, isUserClientOfProject }} />
       </div>
 
-      <OrderDetails mode={OrderDetailModes.Editable} order={order} />
+      <OrderDetails
+        mode={OrderDetailModes.Editable}
+        order={order}
+        isUserClientOfProject={isUserClientOfProject}
+      />
 
       {map(sortBy(sub_projects, 'ext_id'), (subOrder) => (
-        <div>{subOrder.id}</div>
+        <div key={subOrder.id}>{subOrder.id}</div>
       ))}
     </>
   )
