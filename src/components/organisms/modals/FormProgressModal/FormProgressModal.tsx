@@ -22,12 +22,14 @@ export interface FormProgressProps {
   formData?: FormDataProps[]
   isModalOpen?: boolean
   closeModal: () => void
+  submitForm?: () => void
 }
 
 const FormProgressModal: FC<FormProgressProps> = ({
   formData,
   isModalOpen,
   closeModal,
+  submitForm,
 }) => {
   const { t } = useTranslation()
   const [activeStep, setActiveStep] = useState(1)
@@ -38,7 +40,9 @@ const FormProgressModal: FC<FormProgressProps> = ({
   const handleProceed = () => {
     if (size(steps) === activeStep) {
       //Todo add form submit
-      // submitForm()
+      if (submitForm) {
+        submitForm()
+      }
       closeModal()
       setActiveStep(1)
     } else {

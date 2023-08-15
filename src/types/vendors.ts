@@ -62,3 +62,24 @@ export type SkillsData = {
 export type GetSkillsPayload = {
   data?: SkillsData[]
 }
+
+export interface Prices {
+  vendor_id: string | undefined
+  skill_id: string
+  src_lang_classifier_value_id: string
+  dst_lang_classifier_value_id: string
+  character_fee: number
+  word_fee: number
+  page_fee: number
+  minute_fee: number
+  hour_fee: number
+  minimal_fee: number
+}
+
+export type UpdatePricesPayload = {
+  data?: Prices[]
+}
+
+export type PricesData = {
+  data?: Price[]
+}

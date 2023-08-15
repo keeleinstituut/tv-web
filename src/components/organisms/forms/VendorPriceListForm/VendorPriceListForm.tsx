@@ -1,8 +1,17 @@
-import { FC, useMemo } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { find, findIndex, get, map } from 'lodash'
+import {
+  find,
+  findIndex,
+  flatMap,
+  get,
+  keys,
+  map,
+  pickBy,
+  toNumber,
+} from 'lodash'
 import { Root } from '@radix-ui/react-form'
-import { useFetchSkills } from 'hooks/requests/useVendors'
+import { useCreatePrices, useFetchSkills } from 'hooks/requests/useVendors'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -18,15 +27,19 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { Control, useForm, useWatch } from 'react-hook-form'
+import { Control, SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
 import AddPricesTable from 'components/organisms/tables/AddPricesTable/AddPricesTable'
-
-import classes from './classes.module.scss'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import { ClassifierValueType } from 'types/classifierValues'
+import { UpdatePricesPayload } from 'types/vendors'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showValidationErrorMessage } from 'api/errorHandler'
+
+import classes from './classes.module.scss'
 
 export type FormValues = {
   src_lang_classifier_value_id: string
@@ -137,20 +150,15 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
 
   const { data: skillsData } = useFetchSkills()
-
   const { classifierValuesFilters: languageFilter } = useClassifierValuesFetch({
     type: ClassifierValueType.Language,
   })
-
-  const vendorPrices = vendor?.prices
-
-  console.log('vendorPrices', vendorPrices)
-  console.log('skillsData', skillsData)
+  const { prices, id: userId } = vendor
 
   const pricesValues = useMemo(() => {
     return (
       map(
-        vendorPrices,
+        prices,
         ({
           id,
           character_fee,
@@ -180,13 +188,13 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         }
       ) || {}
     )
-  }, [skillsData, vendorPrices])
-
-  console.log('pricesValues', pricesValues)
+  }, [skillsData, prices])
 
   const { handleSubmit, control } = useForm<FormValues>({
     reValidateMode: 'onChange',
   })
+
+  const { createPrices, isLoading: isCreatingPrices } = useCreatePrices(userId)
 
   const languageOptions = map(languageFilter, ({ value, label }) => {
     return {
@@ -228,13 +236,13 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
   const skillsFormFields: FieldProps<FormValues>[] = map(
     skillsData,
-    ({ id, name }) => {
+    ({ id, name }, index) => {
       return {
-        key: id,
+        key: index,
         inputType: InputTypes.Checkbox,
         ariaLabel: name || '',
         label: name,
-        name: `skill_id.${id}`,
+        name: `skill_id.${id}_${index}`,
         // rules: {
         //   required: true,
         // },
@@ -301,6 +309,54 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     }),
   ] as ColumnDef<any>[]
 
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const transformedArray = flatMap(
+        values.dst_lang_classifier_value_id,
+        (dstValue) => {
+          return map(
+            keys(pickBy(values.skill_id, (value) => value === true)),
+            (key) => {
+              const number = key.split('_').pop()
+
+              return {
+                vendor_id: userId,
+                skill_id: key.replace(/_\d+$/, ''),
+                src_lang_classifier_value_id:
+                  values['src_lang_classifier_value_id'],
+                dst_lang_classifier_value_id: dstValue,
+                character_fee: toNumber(values[`character_fee-${number}`]) || 0,
+                word_fee: toNumber(values[`word_fee-${number}`]) || 0,
+                page_fee: toNumber(values[`page_fee-${number}`]) || 0,
+                minute_fee: toNumber(values[`minute_fee-${number}`]) || 0,
+                hour_fee: toNumber(values[`hour_fee-${number}`]) || 0,
+                minimal_fee: toNumber(values[`minimal_fee-${number}`]) || 0,
+              }
+            }
+          )
+        }
+      )
+
+      // console.log('transformedArray', transformedArray)
+
+      const payload: UpdatePricesPayload = {
+        data: [...transformedArray],
+      }
+
+      try {
+        await createPrices(payload)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.vendor_updated'),
+        })
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
+    },
+    [createPrices, t, userId]
+  )
+
   const handleModalOpen = () => {
     showModal(ModalTypes.FormProgress, {
       formData: [
@@ -340,6 +396,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           ),
         },
       ],
+      submitForm: handleSubmit(onSubmit),
     })
   }
 

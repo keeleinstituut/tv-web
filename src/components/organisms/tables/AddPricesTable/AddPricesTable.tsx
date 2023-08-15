@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { filter, omitBy, isUndefined, map } from 'lodash'
+import { filter, map, mapKeys } from 'lodash'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -38,11 +38,14 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
 
   const { data: skillsData } = useFetchSkills()
 
-  const selectedSkillsIds = omitBy(selectedSkills, isUndefined)
+  const transformedData = mapKeys(selectedSkills, (value, key) => {
+    const keyWithoutNumber = key.replace(/_\d+$/, '')
+    return keyWithoutNumber
+  })
 
   const matchingSkills = filter(
     skillsData,
-    (skill) => selectedSkillsIds[skill.id]
+    (skill) => transformedData[skill.id]
   )
 
   const skillsLabels = map(matchingSkills, ({ name }) => {
