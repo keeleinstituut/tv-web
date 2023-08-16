@@ -164,7 +164,7 @@ export const constructFullPath = (originalPath: string, params: object) =>
     originalPath
   )
 
-export const getFormattedDateFromObject = ({
+export const getUtcDateStringFromLocalDateObject = ({
   date,
   time,
 }: {
@@ -172,5 +172,12 @@ export const getFormattedDateFromObject = ({
   time?: string
 }) => {
   const dayjsObject = dayjs(trim(`${date || ''} ${time || ''}`))
-  return dayjsObject.utc().format('DD/MM/YYYY hh:mm:ss')
+  return dayjsObject.utc().format('DD/MM/YYYY HH:mm:ss')
+}
+
+export const getLocalDateOjectFromUtcDateString = (datetime: string) => {
+  const dayjsObject = dayjs(datetime)
+  const localDateTimeString = dayjsObject.format('DD/MM/YYYY HH:mm:ss')
+  const splitDateTime = split(localDateTimeString, ' ')
+  return { date: splitDateTime[0], time: splitDateTime[1] }
 }

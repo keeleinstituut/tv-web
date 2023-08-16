@@ -16,7 +16,7 @@ import { UserType, UserStatus } from 'types/users'
 import {
   FilterFunctionType,
   SortingFunctionType,
-  DataMetaTypes,
+  ResponseMetaTypes,
   PaginationFunctionType,
 } from 'types/collective'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
@@ -36,7 +36,7 @@ const columnHelper = createColumnHelper<User>()
 
 type AddedUsersProps = {
   data?: UserType[]
-  paginationData?: DataMetaTypes
+  paginationData?: ResponseMetaTypes
   hidden?: boolean
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void

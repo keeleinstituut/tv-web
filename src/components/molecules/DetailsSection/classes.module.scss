@@ -31,4 +31,26 @@
       justify-content: space-between;
     }
   }
+
+  &.adjustedLayout {
+    .inputInternalPosition,
+    .customInternalClass {
+      margin-bottom: spacing(2);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      :last-child {
+        font-weight: $font-weight-bold;
+      }
+
+      &.grayRow {
+        span {
+          color: $color-input-main;
+        }
+        :last-child {
+          font-weight: $font-weight-normal;
+        }
+      }
+    }
+  }
 }

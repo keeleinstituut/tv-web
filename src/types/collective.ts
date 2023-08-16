@@ -4,7 +4,7 @@ interface LinkTypes {
   active?: boolean
 }
 
-export interface DataMetaTypes {
+export interface ResponseMetaTypes {
   current_page: number
   from?: number
   last_page?: number

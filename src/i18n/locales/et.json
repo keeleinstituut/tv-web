@@ -57,7 +57,14 @@
     "destination_language": "Sihtkeel",
     "file_type": "Failitüüp",
     "added": "Lisatud",
-    "comment": "Kommentaar"
+    "sub_order_id": "Alamtellimuse ID",
+    "associated_reference_number": "Seotud viide",
+    "comment": "Kommentaar",
+    "cancelled_at": "Tühistamise aeg",
+    "created_at": "Loomise aeg",
+    "rejected_at": "Tühistamise aeg",
+    "corrected_at": "Korrektuuride tegemise aeg",
+    "accepted_at": "Vastuvõtmise aeg"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -117,7 +124,8 @@
     "change": "Muuda",
     "add_file": "Lisa fail",
     "submit_order": "Esita tellimus",
-    "delete": "Kustuta"
+    "delete": "Kustuta",
+    "edit": "Redigeeri"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -316,7 +324,8 @@
     "order_created": "Tellimus on edukalt loodud",
     "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
-    "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud."
+    "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
+    "order_updated": "Tellimus on edukalt uuendatud"
   },
   "notification": {
     "announcement": "Teade",
@@ -372,11 +381,27 @@
       "FORWARDED": "Edastatud",
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
-      "REJECTED": "Tühistatud",
-      "CORRECTED": "Parandatud"
-    }
+      "REJECTED": "Tagasi lükatud",
+      "CORRECTED": "Parandatud",
+      "FORWARDED_TO_VENDOR": "Teostajale edastatud (ülesanne)",
+      "IN_PROGRESS": "Teostamisel (ülesanne)",
+      "DONE_TASK": "Teostatud (ülesanne)",
+      "DONE": "Teostatud"
+    },
+    "sub_orders_tile": "Alamtellimused",
+    "features": {
+      "general_information": "üldinfo",
+      "job_translation": "tõlkimine(CAT)",
+      "job_revision": "toimetamine",
+      "job_overview": "ülevaatus"
+    },
+    "order_details": "Tellimuse andmed",
+    "order_details_expandable": "Tellimuse detailid",
+    "files": "Failid",
+    "feedback_files": "Tagasiside failid"
   },
   "warning": {
-    "missing_permissions": "Teil puudub ligipääs soovitud lehele"
+    "missing_permissions": "Teil puudub ligipääs soovitud lehele",
+    "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam"
   }
 }

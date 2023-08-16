@@ -29,6 +29,7 @@ import { Privileges } from 'types/privileges'
 type UserDetailsProps = Pick<UserType, 'email' | 'phone'> & {
   institution?: UserType['institution']
   department?: string
+  valueClass?: string
 }
 
 const UserDetails: FC<UserDetailsProps> = ({
@@ -36,18 +37,20 @@ const UserDetails: FC<UserDetailsProps> = ({
   institution,
   email,
   phone,
+  valueClass,
 }) => {
   const { t } = useTranslation()
   return (
     <>
       {map(
         { institution, department, email, phone },
-        (value, key: keyof UserDetailsProps) => (
+        (value, key: keyof Omit<UserDetailsProps, 'valueClass'>) => (
           <DetailsRow
             label={t(`label.${key}`)}
             key={key}
             hidden={!value}
             labelClass={classes.labelClass}
+            valueClass={valueClass}
             value={typeof value === 'string' ? value : value?.name}
           />
         )
@@ -65,12 +68,16 @@ interface PersonSectionProps<TFormValues extends FieldValues> {
   type: PersonSectionTypes
   control: Control<TFormValues>
   selectedUserId?: string
+  isEditable?: boolean
+  isNew?: boolean
 }
 
 const PersonSection = <TFormValues extends FieldValues>({
   type,
   control,
   selectedUserId,
+  isEditable,
+  isNew,
 }: PersonSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
@@ -168,7 +175,12 @@ const PersonSection = <TFormValues extends FieldValues>({
   }
 
   return (
-    <div className={classes.column}>
+    <div
+      className={classNames(
+        classes.column,
+        !isEditable && classes.adjustedLayout
+      )}
+    >
       <h2
         className={classNames(
           type === PersonSectionTypes.Client && classes.extraPadding
@@ -190,8 +202,15 @@ const PersonSection = <TFormValues extends FieldValues>({
         onEndReached={handleFetchNextPage}
         loading={isFetching}
         hidden={isLoading}
+        onlyDisplay={!isEditable}
+        className={classNames(!isEditable && !isNew && classes.boldText)}
       />
-      {selectedUserDetails && <UserDetails {...visibleUserDetails} />}
+      {selectedUserDetails && (
+        <UserDetails
+          {...visibleUserDetails}
+          valueClass={classNames(!isEditable && !isNew && classes.boldText)}
+        />
+      )}
     </div>
   )
 }

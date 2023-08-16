@@ -1,5 +1,5 @@
 import {
-  DataMetaTypes,
+  ResponseMetaTypes,
   PaginationFunctionType,
   SortingFunctionType,
 } from 'types/collective'
@@ -40,7 +40,7 @@ export enum DiscountPercentageNames {
 
 export interface VendorsDataType {
   data: Vendor[]
-  meta?: DataMetaTypes
+  meta?: ResponseMetaTypes
 }
 
 export type GetVendorsPayload = Partial<Vendor> &
