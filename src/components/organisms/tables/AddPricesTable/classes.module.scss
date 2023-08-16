@@ -23,4 +23,7 @@
 
 .pricesInput input {
   width: 114px;
+  &::placeholder {
+    color: $color-text-dark;
+  }
 }

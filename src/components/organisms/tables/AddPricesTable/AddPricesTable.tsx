@@ -6,8 +6,6 @@ import DataTable, {
 } from 'components/organisms/DataTable/DataTable'
 import { Control } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
-
-import classes from './classes.module.scss'
 import {
   FormInput,
   InputTypes,
@@ -17,6 +15,8 @@ import {
   Prices,
 } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 import { useFetchSkills } from 'hooks/requests/useVendors'
+
+import classes from './classes.module.scss'
 
 export type Skill = {
   id?: string
@@ -71,6 +71,7 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
             ariaLabel={t('vendors.character_fee')}
             type="number"
             className={classes.pricesInput}
+            placeholder="00.00€"
           />
         )
       },
@@ -88,6 +89,7 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
             ariaLabel={t('vendors.word_fee')}
             type="number"
             className={classes.pricesInput}
+            placeholder="00.00€"
           />
         )
       },
@@ -105,6 +107,7 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
             ariaLabel={t('vendors.page_fee')}
             type="number"
             className={classes.pricesInput}
+            placeholder="00.00€"
           />
         )
       },
@@ -122,6 +125,7 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
             ariaLabel={t('vendors.minute_fee')}
             type="number"
             className={classes.pricesInput}
+            placeholder="00.00€"
           />
         )
       },
@@ -139,6 +143,7 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
             ariaLabel={t('vendors.hour_fee')}
             type="number"
             className={classes.pricesInput}
+            placeholder="00.00€"
           />
         )
       },
@@ -156,6 +161,7 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
             ariaLabel={t('vendors.minimal_fee')}
             type="number"
             className={classes.pricesInput}
+            placeholder="00.00€"
           />
         )
       },

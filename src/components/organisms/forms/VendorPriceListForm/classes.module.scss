@@ -7,15 +7,11 @@
   padding-top: spacing(4);
   padding-bottom: spacing(39);
 }
+
 .languagePairSelection {
   justify-content: flex-end;
 }
-.sourceLanguage {
-  padding-top: spacing(4);
-}
-.destinationLanguage {
-  padding-top: spacing(6);
-}
+
 .skillsDynamicForm {
   padding-top: spacing(8);
   display: grid;
@@ -24,30 +20,38 @@
   column-gap: spacing(12);
   grid-auto-flow: column;
 }
+
 .skillsField {
   padding-bottom: spacing(4);
 }
+
 .skillsDynamicForm > .skillsField:nth-child(n + 7) {
   grid-column: 2 / 3;
 }
+
 .pricesDataTableHeader {
   display: flex;
 }
+
 .pricesLanguageButton {
   align-self: center;
   padding-left: spacing(6);
 }
+
 .iconsContainer {
   display: flex;
 }
+
 .deleteIcon svg,
 .editIcon svg {
   width: 22px;
   height: 20px;
 }
+
 .deleteIcon svg path {
   fill: $color-error;
 }
+
 .dateText {
   @include bodyTextSmallStyle;
   color: $color-input-main;
@@ -55,15 +59,23 @@
     margin-top: spacing(2);
   }
 }
+
+.vendorPricesContainer {
+  margin-top: spacing(9);
+}
+
+.hiddenVendorPrices > div {
+  display: none;
+}
+
 .languageTag {
   background-color: $color-tag;
   border-radius: $border-radius-4;
   color: $color-primary;
   @include bodyTextSmallStyle;
   font-weight: $font-weight-bold;
-  padding: spacing(1.6) spacing(1);
+  padding: spacing(0.6) spacing(1);
   width: fit-content;
-}
-.vendorPricesContainer {
-  margin-top: spacing(9);
+  margin-left: spacing(2.5);
+  display: inline-block;
 }

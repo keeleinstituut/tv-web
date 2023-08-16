@@ -1,17 +1,21 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  find,
   findIndex,
   flatMap,
   get,
+  isEmpty,
   keys,
   map,
   pickBy,
   toNumber,
 } from 'lodash'
 import { Root } from '@radix-ui/react-form'
-import { useCreatePrices, useFetchSkills } from 'hooks/requests/useVendors'
+import {
+  useCreatePrices,
+  useFetchPrices,
+  useFetchSkills,
+} from 'hooks/requests/useVendors'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -37,6 +41,7 @@ import { ClassifierValueType } from 'types/classifierValues'
 import { UpdatePricesPayload } from 'types/vendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
 import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
@@ -47,11 +52,6 @@ export type FormValues = {
   skill_id?: { [key: string]: boolean }
 } & {
   [key: string]: number | string
-}
-
-export type Skill = {
-  id?: string
-  name?: string
 }
 
 export type Prices = {
@@ -66,52 +66,21 @@ export type Prices = {
   language_direction: string
 }
 
-type VendorPriceListSecondStepProps = {
+export type Skill = {
+  id?: string
+  name?: string
+}
+
+export type VendorPriceListSecondStepProps = {
   skillsFormFields: FieldProps<FormValues>[]
   control: Control<FormValues>
   languageOptions: { label: string; value: string }[]
 }
 
-type VendorPriceListThirdStepProps = Omit<
+export type VendorPriceListThirdStepProps = Omit<
   VendorPriceListSecondStepProps,
   'skillsFormFields'
 >
-
-type LanguageLabelsProps = Omit<
-  VendorPriceListSecondStepProps,
-  'skillsFormFields'
->
-
-const LanguageLabels: FC<LanguageLabelsProps> = ({
-  control,
-  languageOptions,
-}) => {
-  const { t } = useTranslation()
-
-  const findLabelByValue = (values: string[] | string | undefined) => {
-    const valueArray = Array.isArray(values) ? values : [values]
-    return map(valueArray, (value) => find(languageOptions, { value })?.label)
-  }
-
-  const sourceLanguageLabel = findLabelByValue(
-    useWatch({ control }).src_lang_classifier_value_id
-  )
-
-  const destinationLanguageLabels = findLabelByValue(
-    useWatch({ control }).dst_lang_classifier_value_id
-  )
-
-  return (
-    <div hidden={!sourceLanguageLabel || !destinationLanguageLabels}>
-      <p className={classes.sourceLanguage}>{t('vendors.source_language')}</p>
-      <p className={classes.languageTag}>{sourceLanguageLabel}</p>
-      <p className={classes.destinationLanguage}>
-        {t('vendors.destination_language')}
-      </p>
-      <p className={classes.languageTag}>{destinationLanguageLabels}</p>
-    </div>
-  )
-}
 
 const VendorPriceListSecondStep: FC<VendorPriceListSecondStepProps> = ({
   skillsFormFields,
@@ -155,6 +124,16 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   })
   const { prices, id: userId } = vendor
 
+  const { createPrices, isLoading: isCreatingPrices } = useCreatePrices(userId)
+  const { data: pricesData } = useFetchPrices(userId)
+
+  const priceListCreated = dayjs(
+    pricesData ? pricesData[0]?.created_at : ''
+  ).format('DD.MM.YYYY hh:mm')
+  const priceListUpdated = dayjs(
+    pricesData ? pricesData[0]?.updated_at : ''
+  ).format('DD.MM.YYYY hh:mm')
+
   const pricesValues = useMemo(() => {
     return (
       map(
@@ -190,11 +169,9 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     )
   }, [skillsData, prices])
 
-  const { handleSubmit, control } = useForm<FormValues>({
+  const { handleSubmit, control, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
   })
-
-  const { createPrices, isLoading: isCreatingPrices } = useCreatePrices(userId)
 
   const languageOptions = map(languageFilter, ({ value, label }) => {
     return {
@@ -208,12 +185,12 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       inputType: InputTypes.Selections,
       name: 'src_lang_classifier_value_id',
       ariaLabel: t('vendors.source_language'),
-      label: t('vendors.source_language'),
+      label: `${t('vendors.source_language')}*`,
       placeholder: t('button.choose'),
       options: languageOptions,
-      // rules: {
-      //   required: true,
-      // },
+      rules: {
+        required: true,
+      },
       usePortal: true,
       className: classes.languagePairSelection,
     },
@@ -221,14 +198,14 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       inputType: InputTypes.Selections,
       name: 'dst_lang_classifier_value_id',
       ariaLabel: t('vendors.destination_language'),
-      label: t('vendors.destination_language'),
+      label: `${t('vendors.destination_language')}*`,
       placeholder: t('button.choose'),
       options: languageOptions,
       multiple: true,
       buttons: true,
-      // rules: {
-      //   required: true,
-      // },
+      rules: {
+        required: true,
+      },
       usePortal: true,
       className: classes.languagePairSelection,
     },
@@ -243,9 +220,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         ariaLabel: name || '',
         label: name,
         name: `skill_id.${id}_${index}`,
-        // rules: {
-        //   required: true,
-        // },
         className: classes.skillsField,
       }
     }
@@ -256,6 +230,9 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const columns = [
     columnHelper.accessor('language_direction', {
       header: () => t('vendors.language_direction'),
+      cell: (info) => {
+        return <div className={classes.languageTag}>{info.renderValue()}</div>
+      },
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('skill_id', {
@@ -309,6 +286,14 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     }),
   ] as ColumnDef<any>[]
 
+  const resetForm = useCallback(() => {
+    reset()
+  }, [reset])
+
+  useEffect(() => {
+    resetForm()
+  }, [resetForm])
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const transformedArray = flatMap(
@@ -337,24 +322,24 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         }
       )
 
-      // console.log('transformedArray', transformedArray)
-
       const payload: UpdatePricesPayload = {
         data: [...transformedArray],
       }
 
       try {
         await createPrices(payload)
+
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.vendor_updated'),
+          content: t('success.language_pairs_prices_added'),
         })
+        resetForm()
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
     },
-    [createPrices, t, userId]
+    [createPrices, resetForm, t, userId]
   )
 
   const handleModalOpen = () => {
@@ -397,6 +382,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         },
       ],
       submitForm: handleSubmit(onSubmit),
+      resetForm: resetForm(),
+      isLoading: isCreatingPrices,
     })
   }
 
@@ -407,8 +394,11 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           data={pricesValues}
           columns={columns}
           tableSize={TableSizeTypes.M}
-          className={classes.vendorPricesContainer}
-          hidePagination
+          className={
+            !isEmpty(pricesValues)
+              ? classes.vendorPricesContainer
+              : classes.hiddenVendorPrices
+          }
           title={
             <div className={classes.pricesDataTableHeader}>
               {t('vendors.vendor_price_list_title')}
@@ -427,14 +417,10 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       </Root>
 
       <p className={classes.dateText}>
-        {t('vendors.price_list_created', {
-          time: dayjs().format('DD.MM.YYYY hh:mm') || '',
-        })}
+        {t('vendors.price_list_created', { priceListCreated })}
       </p>
       <p className={classes.dateText}>
-        {t('vendors.price_list_updated_at', {
-          time: dayjs().format('DD.MM.YYYY hh:mm') || '',
-        })}
+        {t('vendors.price_list_updated_at', { priceListUpdated })}
       </p>
     </>
   )

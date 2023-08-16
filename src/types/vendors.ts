@@ -4,7 +4,7 @@ import {
   SortingFunctionType,
 } from 'types/collective'
 import { UserType } from './users'
-import { Price } from './price'
+import { LanguageClassifierValue, Price } from './price'
 import { Tag } from './tags'
 
 export type Vendor = {
@@ -81,5 +81,40 @@ export type UpdatePricesPayload = {
 }
 
 export type PricesData = {
-  data?: Price[]
+  vendor_id: string | undefined
+  skill_id: string
+  src_lang_classifier_value_id: string
+  dst_lang_classifier_value_id: string
+  character_fee: number
+  word_fee: number
+  page_fee: number
+  minute_fee: number
+  hour_fee: number
+  minimal_fee: number
+  skill: SkillsData
+  source_language_classifier_value: LanguageClassifierValue
+  destination_language_classifier_value: LanguageClassifierValue
+  created_at: string
+  updated_at: string
+  id: string
+  vendor: {
+    comment: string
+    company_name?: string
+    created_at: string
+    id?: string
+    institution_user: UserType
+    institution_user_id: string
+    discount_percentage_0_49: string
+    discount_percentage_50_74: string
+    discount_percentage_75_84: string
+    discount_percentage_85_94: string
+    discount_percentage_95_99: string
+    discount_percentage_100: string
+    discount_percentage_101: string
+    discount_percentage_repetitions: string
+  }
+}
+
+export type PricesDataType = {
+  data: PricesData[]
 }

@@ -23,6 +23,8 @@ export interface FormProgressProps {
   isModalOpen?: boolean
   closeModal: () => void
   submitForm?: () => void
+  resetForm?: () => void
+  isLoading?: boolean
 }
 
 const FormProgressModal: FC<FormProgressProps> = ({
@@ -30,6 +32,8 @@ const FormProgressModal: FC<FormProgressProps> = ({
   isModalOpen,
   closeModal,
   submitForm,
+  resetForm,
+  isLoading,
 }) => {
   const { t } = useTranslation()
   const [activeStep, setActiveStep] = useState(1)
@@ -39,7 +43,6 @@ const FormProgressModal: FC<FormProgressProps> = ({
 
   const handleProceed = () => {
     if (size(steps) === activeStep) {
-      //Todo add form submit
       if (submitForm) {
         submitForm()
       }
@@ -50,8 +53,9 @@ const FormProgressModal: FC<FormProgressProps> = ({
     }
   }
   const handleQuit = () => {
-    //Todo add form reset
-    //resetForm()
+    if (resetForm) {
+      resetForm()
+    }
     closeModal()
     setActiveStep(1)
   }
@@ -82,6 +86,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
           onClick: handleProceed,
           children:
             size(steps) === activeStep ? t('button.save') : t('button.proceed'),
+          loading: isLoading,
         },
       ]}
     >
