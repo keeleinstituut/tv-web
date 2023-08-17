@@ -36,7 +36,9 @@ const ExpandableContentContainer: FC<
 }) => {
   const [isExpandedLocal, setIsExpanded] = useState(isExpanded)
 
-  const showAsExpanded = isExpanded && isExpandedLocal
+  const showAsExpanded = isExpanded
+    ? isExpanded && isExpandedLocal
+    : isExpandedLocal
 
   const toggleIsExpanded = useCallback(() => {
     setIsExpanded(!showAsExpanded)

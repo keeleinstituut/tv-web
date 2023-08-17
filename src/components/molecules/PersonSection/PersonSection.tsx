@@ -79,6 +79,7 @@ const PersonSection = <TFormValues extends FieldValues>({
   isEditable,
   isNew,
 }: PersonSectionProps<TFormValues>) => {
+  console.warn('PersonSection', isEditable)
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
   // fetch currently logged in user

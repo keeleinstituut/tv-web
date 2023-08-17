@@ -133,6 +133,8 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const isNew = mode === OrderDetailModes.New
   const [isEditable, setIsEditable] = useState(isNew)
 
+  console.warn('isEditable', isEditable)
+
   const { status = OrderStatus.Registered } = order || {}
   const hasManagerPrivilege = find(
     [Privileges.ManageProject, Privileges.ReceiveAndManageProject],
@@ -352,6 +354,13 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     ]
   )
 
+  console.warn(
+    'isEditable conditiona',
+    isEditableBySomeone,
+    isUserClientOfProject,
+    includes(userPrivileges, Privileges.ChangeClient)
+  )
+
   return (
     <ExpandableContentContainer
       hidden={isNew}
@@ -378,16 +387,16 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             isNew={isNew}
             isEditable={
               includes(userPrivileges, Privileges.ChangeClient) &&
-              (isEditableBySomeone || isUserClientOfProject)
+              (isEditableBySomeone || (isUserClientOfProject && isEditable))
             }
           />
-          <PersonSection
+          {/* <PersonSection
             type={PersonSectionTypes.Manager}
             control={control}
             selectedUserId={translation_manager_user_institution_id}
             isNew={isNew}
             isEditable={isEditableBySomeone}
-          />
+          /> */}
         </Container>
         <Container className={classNames(classes.detailsContainer)}>
           <DetailsSection
@@ -406,7 +415,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
         </Container>
         <FormButtons
           {...formButtonsProps}
-          hidden={!isNew || !isEditableBySomeone}
+          hidden={!isNew && !isEditableBySomeone}
         />
       </Root>
     </ExpandableContentContainer>

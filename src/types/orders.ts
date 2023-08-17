@@ -65,7 +65,7 @@ interface TypeClassifierValue extends ClassifierValue {
 }
 
 export interface SourceFile {
-  id: number
+  id: string
   model_type: string
   model_id: string
   uuid: string
@@ -225,8 +225,11 @@ export interface SubOrderResponse {
 export interface SubOrderPayload {
   id: string
 }
+
+// TODO: not sure what should be sent for CatProjectPayload
 export interface CatProjectPayload {
   source_file_ids: string[]
+  translation_memory_ids: string[]
 }
 export interface NewOrderPayload {
   client_user_institution_id: string

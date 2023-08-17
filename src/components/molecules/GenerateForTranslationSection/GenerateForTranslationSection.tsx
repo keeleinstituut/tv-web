@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
@@ -10,11 +10,13 @@ import Button, {
 interface GenerateForTranslationSectionProps {
   hidden?: boolean
   className?: string
+  handleSendToCat?: () => void
 }
 
 const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
   hidden,
   className,
+  handleSendToCat,
 }) => {
   const { t } = useTranslation()
   if (hidden) return null
@@ -25,6 +27,7 @@ const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
         appearance={AppearanceTypes.Primary}
         size={SizeTypes.S}
         className={classes.generateButton}
+        onClick={handleSendToCat}
       >
         {t('button.generate_for_translation')}
       </Button>

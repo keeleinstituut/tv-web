@@ -60,6 +60,7 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   className?: string
   catSupported?: boolean
   cat_project_created?: string
+  handleSendToCat?: () => void
 }
 
 interface FileRow {
@@ -82,6 +83,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   className,
   catSupported,
   cat_project_created,
+  handleSendToCat,
 }: SourceFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -263,6 +265,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
       />
       <GenerateForTranslationSection
         hidden={!catSupported || !!cat_project_created}
+        handleSendToCat={handleSendToCat}
         className={classes.generateSection}
       />
     </div>

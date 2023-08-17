@@ -138,7 +138,8 @@
     "edit": "Redigeeri",
     "generate_for_translation": "Genereeri tõlkimiseks",
     "create_empty_tm": "Loo tühimälu",
-    "add_tm": "Lisa tõlkemälud"
+    "add_tm": "Lisa tõlkemälud",
+    "send": "Saada"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -251,7 +252,11 @@
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
     "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
-    "edit_category_tag": "Tellimuse siltide muutmine"
+    "edit_category_tag": "Tellimuse siltide muutmine",
+    "confirm_send_to_cat_title": "Kas oled kindel, et soovid lähtefailid tõlketööriista saata?",
+    "confirm_send_to_cat_description": "Faile saab tõlketööriista saata vaid ühe korra ja hiljem faile juurde lisada ei saa. Hiljem lisandunud failid tuleks töösse panna uue tellimusega. Lisaks veendu, et oled valinud ka soovitud tõlkemälud. Hiljem lisatud tõlkemäludega mahuanalüüsi teha ei saa.",
+    "confirm_source_files": "1. Veendu, et kõik lähtefailid on soovitud kujul ja tõlkimiseks valmis.",
+    "confirm_translation_memories":  "Veendu, et alamtellimusele on valitud ja lisatud soovitud tõlkemälud."
   },
   "cheat_sheet": {
     "user_management": {

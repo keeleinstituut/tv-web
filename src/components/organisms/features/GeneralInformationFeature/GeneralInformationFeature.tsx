@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo } from 'react'
-import { chain, map, zip } from 'lodash'
+import { chain, map, zip, keys, filter } from 'lodash'
 import { useSubOrderSendToCat } from 'hooks/requests/useOrders'
-import { SourceFile, SubOrderDetail } from 'types/orders'
+import { CatProjectPayload, SourceFile, SubOrderDetail } from 'types/orders'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
@@ -40,7 +40,7 @@ interface FormValues {
   // TODO: no idea about these fields
   source_files_checked: number[]
   shared_with_client: number[]
-  write_to_memory: number[]
+  write_to_memory: object
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
@@ -63,7 +63,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       // TODO: no idea about these fields
       source_files_checked: [],
       shared_with_client: [],
-      write_to_memory: [],
+      write_to_memory: {},
     }),
     []
   )
@@ -82,11 +82,15 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       chosenSourceFiles,
       (index) => sourceFiles[index]
     )
-    // const payload: CatProjectPayload = {
-    //   source_file_ids: map(selectedSourceFiles, 'id'),
-    // }
-    // sendToCat(payload)
-  }, [])
+    // TODO: not sure how or what to send
+    const payload: CatProjectPayload = {
+      source_file_ids: map(selectedSourceFiles, 'id'),
+      translation_memory_ids: keys(
+        filter(translationMemories, (value) => !!value)
+      ),
+    }
+    sendToCat(payload)
+  }, [getValues, sendToCat])
 
   return (
     <Root>
@@ -109,6 +113,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           control={control}
           catSupported={catSupported}
           cat_project_created={cat_project_created}
+          handleSendToCat={handleSendToCat}
           isEditable
           // isEditable={isEditable}
         />

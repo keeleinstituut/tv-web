@@ -58,7 +58,7 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
 interface FileRow {
   language_direction: string
   name: string
-  main_write: number
+  main_write: string
   chunk_amount: number
   delete_button: number
 }
@@ -79,7 +79,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       {
         language_direction: 'et > en',
         name: 'Some name',
-        main_write: 0,
+        main_write: 'translationMemoryId1',
         chunk_amount: 12345,
         delete_button: 0,
       },
