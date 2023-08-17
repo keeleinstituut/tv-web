@@ -8,7 +8,13 @@
   position: absolute;
   top: 40px;
   max-height: 50vh;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+
+  ul {
+    overflow: auto;
+    flex: 1;
+  }
 }
 
 .dropdownMenuItem {
@@ -19,6 +25,7 @@
 .option {
   @include labelTextStyle;
   padding: spacing(2);
+  text-align: unset;
 }
 
 .selectedOption {
@@ -53,4 +60,8 @@
 
 .dropdownButton {
   margin-left: spacing(2);
+}
+
+.searchInput {
+  margin: spacing(2);
 }

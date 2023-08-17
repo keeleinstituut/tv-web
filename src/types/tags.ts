@@ -1,15 +1,16 @@
 export enum TagTypes {
-  Tolkemalud = 'Tõlkemälud',
-  Teostaja = 'Teostaja',
-  Tellimus = 'Tellimus',
-  Oskused = 'Oskused',
+  TranslationMemories = 'Tõlkemälud',
+  Vendor = 'Teostaja',
+  Order = 'Tellimus',
+  Skills = 'Oskused',
 }
-
 export interface TagsResponse {
   data: Tag[]
 }
 
+export type GetTagsPayload = Partial<Tag>
 export interface TagsPayload {
+  type?: TagTypes
   tags: Partial<Tag>[]
 }
 

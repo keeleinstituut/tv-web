@@ -1,0 +1,21 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.label {
+  @include labelTextStyle;
+  display: inline-block;
+  padding-right: spacing(2.5);
+}
+
+.innerWrapper {
+  display: flex;
+
+  .timePicker {
+    width: unset;
+  }
+}

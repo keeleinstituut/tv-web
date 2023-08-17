@@ -1,0 +1,11 @@
+@import 'styles/variables';
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: spacing(6);
+}
+
+.buttonsContainer {
+  display: flex;
+}

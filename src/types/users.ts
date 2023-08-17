@@ -1,7 +1,8 @@
 import { InstitutionType } from './institutions'
-import { RoleType } from './roles'
+import { Privileges } from './privileges'
+import { RolePayload } from './roles'
 import {
-  DataMetaTypes,
+  ResponseMetaTypes,
   PaginationFunctionType,
   SortingFunctionType,
 } from 'types/collective'
@@ -27,11 +28,11 @@ export interface UserType {
   archived_at?: string
   id: string
   // TODO: department type not clear yet, needs to be added here
-  department?: string
+  department?: string[]
   email?: string
   institution: InstitutionType
   phone?: string
-  roles: RoleType[]
+  roles: RolePayload[]
   status: UserStatus
   user: UserDetailsType
 }
@@ -59,11 +60,14 @@ export type UserPayloadType = PaginationFunctionType &
     // status?: UserStatus[]
     statuses?: UserStatus[]
     department?: string[]
+    // TODO: not sure if these fields will be called name and privileges or something else
+    name?: string
+    privileges?: Privileges[]
   }
 
 export interface UsersDataType {
   data: UserType[]
-  meta?: DataMetaTypes
+  meta?: ResponseMetaTypes
 }
 
 export interface UserDataType {

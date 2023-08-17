@@ -60,16 +60,16 @@ class ApiClient {
   request = async (
     config: AxiosRequestConfigWithRetries & { retries?: number }
   ) => {
-    this.debug(
-      `API Request #${this.count} to ${this.baseURL}${config.url}`,
-      config
-    )
+    // this.debug(
+    //   `API Request #${this.count} to ${this.baseURL}${config.url}`,
+    //   config
+    // )
     try {
       const response = await this.instance.request(config)
-      this.debug(
-        `API Response #${this.count} from ${this.baseURL}${config.url}`,
-        response
-      )
+      // this.debug(
+      //   `API Response #${this.count} from ${this.baseURL}${config.url}`,
+      //   response
+      // )
       this.count += 1
 
       return response.data

@@ -16,73 +16,67 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
 export enum InputFileTypes {
   Csv = 'text/csv',
+  Pdf = 'application/pdf',
+  Doc = 'application/msword',
+  Docx = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  OpenDocument = 'application/vnd.oasis.opendocument.text',
+  Excel = 'application/vnd.ms-excel',
+  SpreadSheet = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  Outlook = 'application/vnd.ms-outlook',
+  Asice = 'application/vnd.etsi.asic-e+zip',
+  Zip = 'application/zip',
+  Zip7 = 'application/x-7z-compressed',
+  Png = 'image/png',
+  Rtf = 'application/rtf',
+  Eml = 'message/rfc822',
+  Ods = 'application/vnd.oasis.opendocument.spreadsheet',
+  Jpeg = 'image/jpeg',
+  Text = 'text/plain',
+  Html = 'text/html',
+  Xml = 'application/xml',
+  TextXml = 'text/xml',
+  Other = 'application/octet-stream',
 }
-
-interface SharedImportProps {
-  helperText?: string
-  disabled?: boolean
-  fileButtonText?: string
-  fileButtonChangeText?: string
-  inputFileType?: InputFileTypes
-  onDelete?: (file: File) => void
-  error?: string
-}
-
-type SingleSelectProps = {
-  allowMultiple: false | undefined
-  onChange?: (file: File) => void
-}
-
-type MultiSelectProps = {
-  allowMultiple: true
-  onChange?: (files: File[]) => void
-}
-
-export type FileImportProps = SharedImportProps &
-  (SingleSelectProps | MultiSelectProps)
 
 export const acceptFileExtensions = {
   [InputFileTypes.Csv]: ['.csv'],
+  [InputFileTypes.Pdf]: ['.pdf'],
+  [InputFileTypes.Doc]: ['.doc', '.docx'],
+  [InputFileTypes.Docx]: ['.doc', '.docx'],
+  [InputFileTypes.OpenDocument]: ['.odt'],
+  [InputFileTypes.Excel]: ['.xls', '.xlsx'],
+  [InputFileTypes.SpreadSheet]: ['.xls', '.xlsx'],
+  [InputFileTypes.Outlook]: ['.msg'],
+  [InputFileTypes.Asice]: ['.asice'],
+  [InputFileTypes.Zip]: ['.zip'],
+  [InputFileTypes.Zip7]: ['.7z'],
+  [InputFileTypes.Png]: ['.png'],
+  [InputFileTypes.Rtf]: ['.rtf'],
+  [InputFileTypes.Eml]: ['.eml'],
+  [InputFileTypes.Ods]: ['.ods'],
+  [InputFileTypes.Jpeg]: ['.jpg', '.jpeg'],
+  [InputFileTypes.Text]: ['.txt'],
+  [InputFileTypes.Html]: ['.html', '.htm'],
+  [InputFileTypes.Xml]: ['.xml'],
+  [InputFileTypes.TextXml]: ['.xml'],
+  [InputFileTypes.Other]: ['.akt', '.xst'],
 }
 
-const FileImport: FC<FileImportProps> = ({
-  helperText,
-  disabled,
-  fileButtonText,
-  fileButtonChangeText,
-  onChange,
-  allowMultiple,
-  onDelete,
+interface AddedFilesListProps {
+  hidden?: boolean
+  files: File[]
+  handleDelete: (index: number) => void
+  error?: string
+}
+
+// TODO: might use a different custom component instead of this
+const AddedFilesList: FC<AddedFilesListProps> = ({
+  hidden,
+  files,
+  handleDelete,
   error,
-  ...rest
 }) => {
-  const [files, setFiles] = useState<File[]>([])
-  const parentRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
-  const [isDragAndDropOpen, setDragAndDropOpen] = useState<boolean>(false)
-
-  useEffect(() => {
-    if (onChange) {
-      if (allowMultiple) {
-        onChange(files)
-      } else {
-        onChange(files[0])
-      }
-    }
-    // Make sure we only trigger this, when files change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [files])
-
-  const handleDelete = useCallback(
-    (index: number) => {
-      setFiles(filter(files, (_, fileIndex) => index !== fileIndex))
-      if (onDelete) {
-        onDelete(files[index])
-      }
-    },
-    [files, onDelete]
-  )
-
   const formatFileSize = (sizeInBytes: number): string => {
     const kilobytes = sizeInBytes / 1024
     if (kilobytes < 1024) {
@@ -93,44 +87,9 @@ const FileImport: FC<FileImportProps> = ({
     return `${megabytes.toFixed(2)} ${t('label.megabytes')}`
   }
 
-  const toggleDragAndDrop = () => {
-    setDragAndDropOpen(!isDragAndDropOpen)
-  }
-
-  const handleSetFiles = useCallback(
-    (files: File[]) => {
-      setFiles(files)
-      setDragAndDropOpen(!isDragAndDropOpen)
-    },
-    [isDragAndDropOpen]
-  )
-
+  if (hidden) return null
   return (
-    <div className={classes.fileImportContainer} ref={parentRef}>
-      <DragAndDrop
-        parentRef={parentRef}
-        isDragAndDropOpen={isDragAndDropOpen}
-        setFiles={handleSetFiles}
-        allowMultiple={allowMultiple}
-        {...rest}
-      />
-      <Button
-        onClick={toggleDragAndDrop}
-        icon={!files?.length ? Attach : undefined}
-        size={SizeTypes.M}
-        ariaLabel={t('label.attach_file')}
-        iconPositioning={IconPositioningTypes.Right}
-        appearance={
-          !files?.length ? AppearanceTypes.Primary : AppearanceTypes.Secondary
-        }
-        disabled={disabled}
-        className={classes.fileButton}
-      >
-        {!files?.length ? fileButtonText : fileButtonChangeText}
-      </Button>
-      <p hidden={!helperText} className={classes.helperText}>
-        {helperText}
-      </p>
+    <>
       <h5
         hidden={!files?.length}
         className={classNames(files?.length && classes.fileLabel)}
@@ -158,9 +117,153 @@ const FileImport: FC<FileImportProps> = ({
           )
         })}
       </ul>
+    </>
+  )
+}
+
+interface SharedImportProps {
+  helperText?: string
+  disabled?: boolean
+  fileButtonText?: string
+  fileButtonChangeText?: string
+  inputFileTypes?: InputFileTypes[]
+  onDelete?: (file: File) => void
+  error?: string
+  isFilesListHidden?: boolean
+  className?: string
+  files?: File[]
+  hidden?: boolean
+}
+
+type SingleSelectProps = {
+  allowMultiple: false | undefined
+  onChange?: (file: File) => void
+}
+
+type MultiSelectProps = {
+  allowMultiple: true
+  onChange?: (files: File[]) => void
+}
+
+export type FileImportProps = SharedImportProps &
+  (SingleSelectProps | MultiSelectProps)
+
+const FileImport: FC<FileImportProps> = ({
+  helperText,
+  disabled,
+  fileButtonText,
+  fileButtonChangeText,
+  onChange,
+  allowMultiple,
+  onDelete,
+  error,
+  isFilesListHidden,
+  className,
+  files,
+  hidden,
+  ...rest
+}) => {
+  const [localFiles, setFiles] = useState<File[]>(files || [])
+  const parentRef = useRef<HTMLDivElement>(null)
+  const { t } = useTranslation()
+  const [isDragAndDropOpen, setDragAndDropOpen] = useState<boolean>(false)
+
+  useEffect(() => {
+    // Sync files from outside to local state
+    if (files) {
+      setFiles(files)
+    }
+  }, [files])
+
+  const onChangeHandler = useCallback(
+    (newFiles: File[]) => {
+      if (onChange) {
+        if (allowMultiple) {
+          onChange(newFiles)
+        } else {
+          onChange(newFiles[0])
+        }
+      }
+    },
+    [allowMultiple, onChange]
+  )
+
+  const handleDelete = useCallback(
+    (index: number) => {
+      const newFiles = filter(localFiles, (_, fileIndex) => index !== fileIndex)
+      setFiles(newFiles)
+      onChangeHandler(newFiles)
+      if (onDelete) {
+        onDelete(localFiles[index])
+      }
+    },
+    [localFiles, onChangeHandler, onDelete]
+  )
+
+  const toggleDragAndDrop = () => {
+    setDragAndDropOpen(!isDragAndDropOpen)
+  }
+
+  const handleSetFiles = useCallback(
+    (newFiles: File[]) => {
+      const filesToSave = isFilesListHidden
+        ? [...localFiles, ...newFiles]
+        : newFiles
+      onChangeHandler(filesToSave)
+      setFiles(filesToSave)
+      setDragAndDropOpen(!isDragAndDropOpen)
+    },
+    [isDragAndDropOpen, isFilesListHidden, localFiles, onChangeHandler]
+  )
+
+  if (hidden) return null
+
+  return (
+    <div
+      className={classNames(
+        classes.fileImportContainer,
+        isFilesListHidden && classes.tableStyleContainer,
+        className
+      )}
+      ref={parentRef}
+    >
+      <DragAndDrop
+        parentRef={parentRef}
+        isDragAndDropOpen={isDragAndDropOpen}
+        setDragAndDropOpen={setDragAndDropOpen}
+        setFiles={handleSetFiles}
+        allowMultiple={allowMultiple}
+        {...rest}
+      />
+      <Button
+        onClick={toggleDragAndDrop}
+        icon={!localFiles?.length || isFilesListHidden ? Attach : undefined}
+        size={SizeTypes.M}
+        ariaLabel={t('label.attach_file')}
+        iconPositioning={IconPositioningTypes.Right}
+        appearance={
+          !localFiles?.length || isFilesListHidden
+            ? AppearanceTypes.Primary
+            : AppearanceTypes.Secondary
+        }
+        disabled={disabled}
+        className={classes.fileButton}
+      >
+        {!localFiles?.length || isFilesListHidden
+          ? fileButtonText
+          : fileButtonChangeText}
+      </Button>
+      <p hidden={!helperText} className={classes.helperText}>
+        {helperText}
+      </p>
+      <AddedFilesList
+        handleDelete={handleDelete}
+        files={localFiles}
+        hidden={isFilesListHidden}
+      />
       <p
-        hidden={!error || !files?.length}
-        className={classNames(files?.length && classes.errorText)}
+        hidden={!error || !localFiles?.length}
+        className={classNames(localFiles?.length && classes.errorText)}
       >
         {error}
       </p>

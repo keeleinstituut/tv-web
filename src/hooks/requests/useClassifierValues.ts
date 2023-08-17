@@ -15,8 +15,8 @@ export const useClassifierValuesFetch = (
     isError,
     data: classifierValuesData,
   } = useQuery<ClassifierValuesDataTypes>({
-    queryKey: ['classifierValues'],
-    queryFn: () => apiClient.get(endpoints.CLASSIFIER_VALUES),
+    queryKey: ['classifierValues', initialFilters],
+    queryFn: () => apiClient.get(endpoints.CLASSIFIER_VALUES, initialFilters),
   })
 
   const { data: classifierValues } = classifierValuesData || {}

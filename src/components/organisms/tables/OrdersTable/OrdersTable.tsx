@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, uniq } from 'lodash'
+import { map, uniq, includes, find } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -24,20 +24,16 @@ import { OrderStatus } from 'types/orders'
 import Tag from 'components/atoms/Tag/Tag'
 import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
 import dayjs from 'dayjs'
+import { Privileges } from 'types/privileges'
+import useAuth from 'hooks/useAuth'
+import { useFetchTags } from 'hooks/requests/useTags'
+import { TagTypes } from 'types/tags'
 
 // TODO: statuses might come from BE instead
 // Currently unclear
-const mockStatuses = [
-  { label: 'Uus', value: 'NEW' },
-  { label: 'Registreeritud', value: 'REGISTERED' },
-  { label: 'Tellijale edastatud', value: 'FORWARDED' },
-  { label: 'Tühistatud', value: 'CANCELLED' },
-  { label: 'Vastuvõetud', value: 'ACCEPTED' },
-  { label: 'Tagasi lükatud', value: 'REJECTED' },
-]
 
 type OrderTableRow = {
-  order_id: string
+  ext_id: string
   reference_number: string
   deadline_at: string
   type: string
@@ -58,6 +54,7 @@ interface FormValues {
 
 const OrdersTable: FC = () => {
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
 
   const {
     orders,
@@ -66,6 +63,14 @@ const OrdersTable: FC = () => {
     handleSortingChange,
     handlePaginationChange,
   } = useFetchOrders()
+  const { tagsFilters = [] } = useFetchTags({
+    type: TagTypes.Order,
+  })
+
+  const statusFilters = map(OrderStatus, (status) => ({
+    label: t(`orders.status.${status}`),
+    value: status,
+  }))
 
   // TODO: remove default values, once we have actual data
   const orderRows = useMemo(
@@ -73,29 +78,31 @@ const OrdersTable: FC = () => {
       map(
         orders,
         ({
-          id,
           reference_number,
           sub_projects,
           deadline_at,
-          order_id = '2021-04-K-13',
-          type = { value: 'Tõlkimine + toimetamine' },
-          status = 'REGISTERED',
+          ext_id,
+          type_classifier_value,
+          status = OrderStatus.Registered,
           tags = ['asutusesiseseks kasutuseks'],
           cost = '500€',
         }) => {
           return {
-            order_id: order_id || id,
+            ext_id,
             reference_number,
             deadline_at,
-            type: type.value,
+            type: type_classifier_value?.value || '',
             status,
             tags,
             cost,
             language_directions: uniq(
               map(
                 sub_projects,
-                ({ src_lang, dst_lang }) =>
-                  `${src_lang?.value} > ${dst_lang.value}`
+                ({
+                  source_language_classifier_value,
+                  destination_language_classifier_value,
+                }) =>
+                  `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
               )
             ),
           }
@@ -122,20 +129,27 @@ const OrdersTable: FC = () => {
   }, [handleSubmit, watch])
 
   const columns = [
-    columnHelper.accessor('order_id', {
+    columnHelper.accessor('ext_id', {
       header: () => t('label.order_id'),
-      cell: ({ getValue }) => (
-        <Button
-          appearance={AppearanceTypes.Text}
-          size={SizeTypes.M}
-          icon={ArrowRight}
-          ariaLabel={t('label.to_order_view')}
-          iconPositioning={IconPositioningTypes.Left}
-          href={`/orders/${getValue()}`}
-        >
-          {getValue()}
-        </Button>
-      ),
+      cell: ({ getValue, row }) => {
+        const orderExtId = getValue()
+        const order = find(orders, { ext_id: orderExtId })
+        return (
+          <Button
+            appearance={AppearanceTypes.Text}
+            size={SizeTypes.M}
+            icon={ArrowRight}
+            ariaLabel={t('label.to_order_view')}
+            iconPositioning={IconPositioningTypes.Left}
+            disabled={
+              !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
+            }
+            href={`/orders/${order?.id}`}
+          >
+            {orderExtId}
+          </Button>
+        )
+      },
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('reference_number', {
@@ -153,6 +167,9 @@ const OrdersTable: FC = () => {
             ))}
           </div>
         )
+      },
+      meta: {
+        filterOption: { tags: tagsFilters },
       },
     }),
     columnHelper.accessor('type', {
@@ -187,14 +204,29 @@ const OrdersTable: FC = () => {
     columnHelper.accessor('deadline_at', {
       header: () => t('label.deadline_at'),
       footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
+      cell: ({ getValue, row }) => {
         const deadlineDate = dayjs(getValue())
         const currentDate = dayjs()
         const diff = deadlineDate.diff(currentDate)
-        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY hh:mm')
+        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
+        const rowStatus = row.original.status
+        const hasDeadlineError =
+          diff < 0 &&
+          !includes(
+            [
+              OrderStatus.Forwarded,
+              OrderStatus.Accepted,
+              OrderStatus.Cancelled,
+              OrderStatus.Corrected,
+            ],
+            rowStatus
+          )
         return (
           <span
-            className={classNames(classes.deadline, diff < 0 && classes.error)}
+            className={classNames(
+              classes.deadline,
+              hasDeadlineError && classes.error
+            )}
           >
             {formattedDate}
           </span>
@@ -221,7 +253,7 @@ const OrdersTable: FC = () => {
             <FormInput
               name="status"
               control={control}
-              options={mockStatuses}
+              options={statusFilters}
               inputType={InputTypes.TagsSelect}
             />
             <FormInput

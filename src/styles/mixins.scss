@@ -93,6 +93,7 @@
 @mixin statusTagStyle($color, $text-color: $color) {
   color: $text-color;
   box-shadow: 0 0 0 2px $color;
-  padding: spacing(1) spacing(4);
+  padding: spacing(0.5) spacing(4);
   border-radius: 4px;
+  height: 25px;
 }

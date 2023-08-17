@@ -43,6 +43,7 @@
 
 :global(.react-datepicker__tab-loop) {
   position: fixed;
+  z-index: 1;
 }
 
 .deactivateDynamicForm {

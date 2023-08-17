@@ -1,0 +1,11 @@
+@import 'styles/variables';
+
+.editTagInput {
+  margin: spacing(4) 0;
+  div input {
+    width: 274px;
+  }
+  label {
+    display: none;
+  }
+}

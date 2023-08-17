@@ -6,40 +6,10 @@
   align-items: center;
   height: 40px;
 
-  &.disabled {
-    cursor: not-allowed;
-    input,
-    .label {
-      pointer-events: none;
-    }
-  }
-
-  &.error {
-    .inputField {
-      border-color: $color-error;
-    }
-  }
-
   .inputContainer {
     position: relative;
     height: 100%;
     border-radius: 4px;
-  }
-
-  .inputField {
-    padding: spacing(2);
-    background-color: $color-white;
-    border: solid $color-input-border 1px;
-    border-radius: 4px;
-    height: 100%;
-
-    &:focus {
-      border-color: $color-primary;
-    }
-
-    &:disabled {
-      background-color: $color-background;
-    }
   }
 
   .label {
@@ -53,5 +23,98 @@
 
   input {
     @include labelTextStyle;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    input,
+    .label {
+      pointer-events: none;
+    }
+  }
+
+  &.error {
+    .inputField {
+      border-color: $color-error;
+    }
+  }
+  .addDeleteButton {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    align-items: center;
+    grid-gap: spacing(4);
+
+    .button {
+      @include bodyTextSmallStyle;
+      color: $color-error;
+      padding: spacing(1);
+
+      svg {
+        width: 20px;
+        height: 21px;
+
+        path {
+          fill: $color-error;
+        }
+      }
+      &:focus {
+        box-shadow: inset 0 0 0 2px $color-error;
+      }
+    }
+  }
+
+  &.searchInputContainer {
+    height: 46px;
+
+    .inputField {
+      padding-left: spacing(13);
+      background-image: url('../../../assets/icons/search.svg');
+      box-shadow: 0px 1px 3px 0px $color-shadow-secondary,
+        0px 2px 2px 0px $color-checkbox-focus,
+        0px 0px 2px 0px $color-shadow-main;
+      background-size: 20px 20px;
+      background-position: spacing(4) center;
+      background-repeat: no-repeat;
+      width: 258px;
+      border: solid $color-background 1px;
+      &:focus {
+        border-color: $color-primary;
+      }
+    }
+
+    &.loading {
+      .inputField {
+        background-image: url('../../../assets/icons/loading.gif');
+      }
+    }
+  }
+
+  &.textareaContainer {
+    height: unset;
+    align-items: flex-start;
+    .inputContainer {
+      height: unset;
+    }
+
+    .inputField {
+      height: unset;
+      resize: none;
+    }
+  }
+}
+
+.inputField {
+  padding: spacing(2);
+  background-color: $color-white;
+  border: solid $color-input-border 1px;
+  border-radius: 4px;
+  height: 100%;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+
+  &:disabled {
+    background-color: $color-background;
   }
 }
