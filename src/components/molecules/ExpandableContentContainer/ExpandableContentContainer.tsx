@@ -47,8 +47,6 @@ const ExpandableContentContainer: FC<
     }
   }, [showAsExpanded, onExpandedChange])
 
-  console.warn('showAsExpanded', showAsExpanded)
-
   const isContentVisible = showAsExpanded || contentAlwaysVisible
 
   return (
@@ -62,18 +60,22 @@ const ExpandableContentContainer: FC<
         )}
         id={id}
       >
-        <BaseButton onClick={toggleIsExpanded} className={classes.firstRow}>
-          <div>{leftComponent}</div>
+        <div className={classes.firstRow}>
+          <BaseButton className={classes.row} onClick={toggleIsExpanded}>
+            {leftComponent}
+          </BaseButton>
           <div>
             {rightComponent}
-            <DropdownArrow
-              className={classNames(
-                classes.iconButton,
-                showAsExpanded && classes.expandedIconButton
-              )}
-            />
+            <BaseButton className={classes.row} onClick={toggleIsExpanded}>
+              <DropdownArrow
+                className={classNames(
+                  classes.iconButton,
+                  showAsExpanded && classes.expandedIconButton
+                )}
+              />
+            </BaseButton>
           </div>
-        </BaseButton>
+        </div>
         {bottomComponent}
         {isContentVisible && wrapContent ? children : null}
       </div>

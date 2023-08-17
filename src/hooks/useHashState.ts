@@ -18,7 +18,6 @@ const useHashState = () => {
 
   const setHash = useCallback(
     (hash: string) => {
-      console.warn('setting hash', hash, isMounted)
       if (isMounted) {
         setHashState(hash)
         navigate({

@@ -10,13 +10,13 @@ import Button, {
 interface GenerateForTranslationSectionProps {
   hidden?: boolean
   className?: string
-  handleSendToCat?: () => void
+  openSendToCatModal?: () => void
 }
 
 const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
   hidden,
   className,
-  handleSendToCat,
+  openSendToCatModal,
 }) => {
   const { t } = useTranslation()
   if (hidden) return null
@@ -27,7 +27,7 @@ const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
         appearance={AppearanceTypes.Primary}
         size={SizeTypes.S}
         className={classes.generateButton}
-        onClick={handleSendToCat}
+        onClick={openSendToCatModal}
       >
         {t('button.generate_for_translation')}
       </Button>

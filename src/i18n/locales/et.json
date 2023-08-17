@@ -256,7 +256,7 @@
     "confirm_send_to_cat_title": "Kas oled kindel, et soovid lähtefailid tõlketööriista saata?",
     "confirm_send_to_cat_description": "Faile saab tõlketööriista saata vaid ühe korra ja hiljem faile juurde lisada ei saa. Hiljem lisandunud failid tuleks töösse panna uue tellimusega. Lisaks veendu, et oled valinud ka soovitud tõlkemälud. Hiljem lisatud tõlkemäludega mahuanalüüsi teha ei saa.",
     "confirm_source_files": "1. Veendu, et kõik lähtefailid on soovitud kujul ja tõlkimiseks valmis.",
-    "confirm_translation_memories":  "Veendu, et alamtellimusele on valitud ja lisatud soovitud tõlkemälud."
+    "confirm_translation_memories":  "2. Veendu, et alamtellimusele on valitud ja lisatud soovitud tõlkemälud."
   },
   "cheat_sheet": {
     "user_management": {
@@ -343,7 +343,8 @@
     "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
-    "order_updated": "Tellimus on edukalt uuendatud"
+    "order_updated": "Tellimus on edukalt uuendatud",
+    "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud"
   },
   "notification": {
     "announcement": "Teade",
@@ -372,7 +373,8 @@
     "file_format_helper": "Failiformaat ei garanteeri vormistuse säilimist ja automaatset tekstituvastust.",
     "source_files_helper": "Vali lähtefailid, mida soovid tõlketööriistas tõlkida. Veendu, et failid oleks tõlkimiseks ettevalmistatud.",
     "owned_by_other_company": "Mälu omanik on teine asutus. Puudub õigus sellesse kirjutada.",
-    "main_write_helper": "„Peamine/Kirjuta“ mällu salvestatakse selle alamtellimuse tõlkesegmendid."
+    "main_write_helper": "„Peamine/Kirjuta“ mällu salvestatakse selle alamtellimuse tõlkesegmendid.",
+    "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail)."
   },
   "tag": {
     "tag_management": "Sildid",
@@ -422,7 +424,8 @@
     "files": "Failid",
     "feedback_files": "Tagasiside failid",
     "ready_files_from_vendors": "Valmisfailid teostajatelt",
-    "generate_for_translation_helper": "Failide tõlketööriistas tõlkimiseks toimi järgmiselt: vali tõlkemälu(d); märgi linnukestega failid, mida soovid tõlkida; klõpsa nupule „Genereeri tõlkimiseks“."
+    "generate_for_translation_helper": "Failide tõlketööriistas tõlkimiseks toimi järgmiselt: vali tõlkemälu(d); märgi linnukestega failid, mida soovid tõlkida; klõpsa nupule „Genereeri tõlkimiseks“.",
+    "source_files_in_translation_tool": "Lähtefailid tõlketööriistas"
   },
   "translation_memory": {
     "chosen_translation_memories": "Valitud tõlkemälud"

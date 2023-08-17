@@ -1,9 +1,18 @@
 import { FC, useCallback, useMemo } from 'react'
-import { chain, map, zip, keys, filter } from 'lodash'
+import { chain, map, zip, keys, filter, compact } from 'lodash'
 import { useSubOrderSendToCat } from 'hooks/requests/useOrders'
-import { CatProjectPayload, SourceFile, SubOrderDetail } from 'types/orders'
+import {
+  CatJob,
+  CatProjectPayload,
+  SourceFile,
+  SubOrderDetail,
+} from 'types/orders'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import {
+  ModalTypes,
+  closeModal,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
 import { Root } from '@radix-ui/react-form'
 import {
@@ -16,8 +25,10 @@ import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesLis
 
 import classes from './classes.module.scss'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
-import { isEditable } from '@testing-library/user-event/dist/utils'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showValidationErrorMessage } from 'api/errorHandler'
 
 // TODO: this is WIP code for suborder view
 
@@ -37,6 +48,7 @@ type GeneralInformationFeatureProps = Pick<
 interface FormValues {
   deadline_at: string
   source_files: SourceFile[]
+  cat_jobs: CatJob[]
   // TODO: no idea about these fields
   source_files_checked: number[]
   shared_with_client: number[]
@@ -60,12 +72,13 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     () => ({
       deadline_at,
       source_files,
+      cat_jobs,
       // TODO: no idea about these fields
       source_files_checked: [],
       shared_with_client: [],
       write_to_memory: {},
     }),
-    []
+    [cat_jobs, deadline_at, source_files]
   )
 
   const { control, getValues, setError } = useForm<FormValues>({
@@ -73,7 +86,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     values: defaultValues,
   })
 
-  const handleSendToCat = useCallback(() => {
+  const handleSendToCat = useCallback(async () => {
     const chosenSourceFiles = getValues('source_files_checked')
     const translationMemories = getValues('write_to_memory')
     const sourceFiles = getValues('source_files')
@@ -84,13 +97,31 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     )
     // TODO: not sure how or what to send
     const payload: CatProjectPayload = {
-      source_file_ids: map(selectedSourceFiles, 'id'),
+      source_file_ids: compact(map(selectedSourceFiles, 'id')),
       translation_memory_ids: keys(
         filter(translationMemories, (value) => !!value)
       ),
     }
-    sendToCat(payload)
-  }, [getValues, sendToCat])
+    try {
+      await sendToCat(payload)
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.files_sent_to_cat'),
+      })
+      closeModal()
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [getValues, sendToCat, t])
+
+  const openSendToCatModal = useCallback(
+    () =>
+      showModal(ModalTypes.ConfirmSendToCat, {
+        handleProceed: handleSendToCat,
+      }),
+    [handleSendToCat]
+  )
 
   return (
     <Root>
@@ -113,7 +144,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           control={control}
           catSupported={catSupported}
           cat_project_created={cat_project_created}
-          handleSendToCat={handleSendToCat}
+          openSendToCatModal={openSendToCatModal}
           isEditable
           // isEditable={isEditable}
         />
@@ -126,6 +157,19 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           isEditable
           // isEditable={isEditable}
         />
+        {/* TODO: missing, will add later */}
+        {/* <CatJobsList
+          name="cat_jobs"
+          title={t('orders.source_files_in_translation_tool')}
+          tooltipContent={t('tooltip.source_files_in_translation_tool_helper')}
+          className={classes.catJobs}
+          control={control}
+          catSupported={catSupported}
+          cat_project_created={cat_project_created}
+          openSendToCatModal={openSendToCatModal}
+          isEditable
+          // isEditable={isEditable}
+        /> */}
         <TranslationMemoriesSection
           className={classes.translationMemories}
           hidden={!catSupported}

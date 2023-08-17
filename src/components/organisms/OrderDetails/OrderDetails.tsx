@@ -420,7 +420,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
         </Container>
         <FormButtons
           {...formButtonsProps}
-          hidden={!isNew && !isEditableBySomeone}
+          hidden={!isNew || !isEditableBySomeone}
         />
       </Root>
     </ExpandableContentContainer>
