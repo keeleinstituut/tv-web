@@ -65,7 +65,7 @@ const UserForm: FC<UserFormProps> = ({
       name: `${forename} ${surname}`,
       email,
       phone,
-      department_id: department,
+      department_id: department ? department[0] : undefined,
       roles: map(roles, 'id'),
     }),
     [
@@ -150,10 +150,10 @@ const UserForm: FC<UserFormProps> = ({
     // TODO: add masking for phone number input, once we merge timeinput
     {
       inputType: InputTypes.Text,
-      ariaLabel: t('label.phone'),
+      ariaLabel: t('label.phone_alt'),
       placeholder: t('placeholder.phone'),
       disabled: isFormDisabled,
-      label: `${t('label.phone')}*`,
+      label: `${t('label.phone_alt')}*`,
       name: 'phone',
       type: 'tel',
       className: classes.inputInternalPosition,

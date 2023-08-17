@@ -10,8 +10,8 @@
     "role_name_input": "Uue rolli nimi",
     "personal_identification_code": "Isikukood",
     "name": "Nimi",
-    "phone": "Telefoni nr",
-    "phone_long": "Telefoninumber",
+    "phone": "Telefoninumber",
+    "phone_alt": "Telefoni nr",
     "department": "Üksus",
     "roles": "Rollid",
     "role": "Roll",
@@ -45,7 +45,27 @@
     "add_remove_vendor": "Lisa/eemalda toestaja",
     "view": "Vaata",
     "search": "Otsi",
-    "updated": "UUENDATUD"
+    "updated": "UUENDATUD",
+    "manager": "Tõlkekorraldaja",
+    "order_type": "Tellimuse tüüp",
+    "translation_domain": "Valdkond",
+    "deadline": "Tähtaeg",
+    "deadline_time": "Tähtaja kellaaeg",
+    "special_instructions": "Erijuhised tellimuse kohta",
+    "start_date": "Algus",
+    "start_time": "Alguse kellaaeg",
+    "source_language": "Algkeel",
+    "destination_language": "Sihtkeel",
+    "file_type": "Failitüüp",
+    "added": "Lisatud",
+    "sub_order_id": "Alamtellimuse ID",
+    "associated_reference_number": "Seotud viide",
+    "comment": "Kommentaar",
+    "cancelled_at": "Tühistamise aeg",
+    "created_at": "Loomise aeg",
+    "rejected_at": "Tühistamise aeg",
+    "corrected_at": "Korrektuuride tegemise aeg",
+    "accepted_at": "Vastuvõtmise aeg"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -57,7 +77,11 @@
     "roles": "Vali roll(id)",
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
-    "date": "pp.kk.aaaa"
+    "pick": "Vali",
+    "date": "pp.kk.aaaa",
+    "time": "hh:mm:ss",
+    "write_here": "Kirjuta siia..",
+    "select_tags": "Vali sildid"
   },
   "button": {
     "login": "Logi sisse",
@@ -95,9 +119,14 @@
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust",
+    "delegate_to_other_manager": "Suuna teisele tõlkekorraldajale",
+    "cancel_order": "Tühista tellimus",
     "update": "Redigeeri",
     "change": "Muuda",
-    "delete": "Kustuta"
+    "add_file": "Lisa fail",
+    "submit_order": "Esita tellimus",
+    "delete": "Kustuta",
+    "edit": "Redigeeri"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -110,7 +139,8 @@
     "invalid_username": "Palun lisage ka perekonnanimi",
     "tag_input_length": "Sildi maksimaalne pikkus võib olla kuni 50 tähemärki",
     "tag_input_char_error": "Lubatud on tähed (a-z), numbrid (0-9), tühik ja sidekriips",
-    "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina"
+    "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina",
+    "discount_number": "Soodustus võib olla vahemikus 0-100"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -145,7 +175,7 @@
     "privileges": "Privileegid"
   },
   "institution": {
-    "institution_management": "Asituse andmete haldamine",
+    "institution_management": "Asutuse andmete haldamine",
     "institution_data": "Asutuse andmed",
     "created_at": "Konto loodud {{ time }}",
     "updated_at": "Konto andmed muudetud {{ time }}"
@@ -270,7 +300,11 @@
     "user_management": "Kasutajate haldus"
   },
   "vendors": {
-    "vendors_database": "Teostajate andmebaas"
+    "vendors_database": "Teostajate andmebaas",
+    "analysis_based_discount": "Analüüsipõhine soodustus",
+    "repetitions": "Kordused",
+    "match_type": "Vaste tüüp",
+    "percent_from_price": "% hinnast"
   },
   "file": {
     "drop_files": "Pane failid siia...",
@@ -288,11 +322,14 @@
     "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
-    "tag_updated": "Silt on edukalt uuendatud.",
     "tag_added": "Silt on edukalt lisatud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "department_added": "Üksus {{name}} edukalt lisatud",
-    "department_updated": "Üksused edukalt uuendatud"
+    "department_updated": "Üksused edukalt uuendatud",
+    "order_created": "Tellimus on edukalt loodud",
+    "tag_updated": "Silt on edukalt uuendatud.",
+    "vendor_updated": "Teostaja uuendatud",
+    "order_updated": "Tellimus on edukalt uuendatud"
   },
   "notification": {
     "announcement": "Teade",
@@ -316,7 +353,8 @@
     "role": "Roll"
   },
   "tooltip": {
-    "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta."
+    "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta.",
+    "file_format_helper": "Failiformaat ei garanteeri vormistuse säilimist ja automaatset tekstituvastust."
   },
   "tag": {
     "tag_management": "Sildid",
@@ -335,16 +373,39 @@
   },
   "orders": {
     "orders_tile": "Tellimused",
+    "new_order_title": "Tellimuse lisamine",
+    "client_details": "Tellija andmed",
+    "manager_details": "Tõlkekorraldaja andmed",
+    "new_orders": "Uus tellimus",
+    "source_files": "Lähtefailid",
+    "help_files": "Abifailid",
     "status": {
       "REGISTERED": "Registreeritud",
       "NEW": "Uus",
       "FORWARDED": "Edastatud",
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
-      "REJECTED": "Tühistatud"
-    }
+      "REJECTED": "Tagasi lükatud",
+      "CORRECTED": "Parandatud",
+      "FORWARDED_TO_VENDOR": "Teostajale edastatud (ülesanne)",
+      "IN_PROGRESS": "Teostamisel (ülesanne)",
+      "DONE_TASK": "Teostatud (ülesanne)",
+      "DONE": "Teostatud"
+    },
+    "sub_orders_tile": "Alamtellimused",
+    "features": {
+      "general_information": "üldinfo",
+      "job_translation": "tõlkimine(CAT)",
+      "job_revision": "toimetamine",
+      "job_overview": "ülevaatus"
+    },
+    "order_details": "Tellimuse andmed",
+    "order_details_expandable": "Tellimuse detailid",
+    "files": "Failid",
+    "feedback_files": "Tagasiside failid"
   },
   "warning": {
-    "missing_permissions": "Teil puudub ligipääs soovitud lehele"
+    "missing_permissions": "Teil puudub ligipääs soovitud lehele",
+    "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam"
   }
 }

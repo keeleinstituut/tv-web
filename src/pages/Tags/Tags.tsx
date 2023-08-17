@@ -48,7 +48,7 @@ const Tags: FC = () => {
 
   const sortedData = fromPairs(sortBy(toPairs(groupedData), 0))
 
-  const tagCategoryOptions = map(omit(TagTypes, TagTypes.Oskused), (type) => {
+  const tagCategoryOptions = map(omit(TagTypes, TagTypes.Skills), (type) => {
     return {
       label: t(`tag.type.${type}`),
       value: type || '',
@@ -68,7 +68,7 @@ const Tags: FC = () => {
     {
       inputType: InputTypes.Text,
       ariaLabel: t('tag.tag_name'),
-      label: t('label.tag_name'),
+      label: `${t('label.tag_name')}*`,
       name: 'name',
       placeholder: t('tag.tag_input'),
       rules: {
@@ -162,7 +162,7 @@ const Tags: FC = () => {
             tagsList={tagsList}
             type={type}
             isEditable={
-              type !== TagTypes.Oskused ||
+              type !== TagTypes.Skills ||
               !includes(userPrivileges, Privileges.EditTag)
             }
           />

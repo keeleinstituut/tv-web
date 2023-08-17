@@ -1,0 +1,8 @@
+@import 'styles/variables';
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: spacing(4);
+}

@@ -3,10 +3,10 @@ import { toLower } from 'lodash'
 import classes from './classes.module.scss'
 import Tag from 'components/atoms/Tag/Tag'
 import { useTranslation } from 'react-i18next'
-import { OrderStatus } from 'types/orders'
+import { OrderStatus, SubOrderStatus } from 'types/orders'
 
 export interface OrderStatusTagProps {
-  status?: OrderStatus
+  status?: OrderStatus | SubOrderStatus
 }
 
 const OrderStatusTag: FC<OrderStatusTagProps> = ({ status }) => {

@@ -94,7 +94,7 @@ const UserPage: FC = () => {
       inputType: InputTypes.Date,
       name: 'deactivation_date',
       ariaLabel: t('label.user_deactivation_date'),
-      label: t('label.user_deactivation_date'),
+      label: `${t('label.user_deactivation_date')}*`,
       placeholder: 'pp.kk.aaaa',
       rules: {
         required: true,
@@ -327,12 +327,12 @@ const UserPage: FC = () => {
       <UserForm {...user} />
       <p className={classes.dateText}>
         {t('user.created_at', {
-          time: dayjs(user.created_at).format('DD.MM.YYYY hh:mm') || '',
+          time: dayjs(user.created_at).format('DD.MM.YYYY HH:mm') || '',
         })}
       </p>
       <p className={classes.dateText}>
         {t('user.updated_at', {
-          time: dayjs(user.updated_at).format('DD.MM.YYYY hh:mm') || '',
+          time: dayjs(user.updated_at).format('DD.MM.YYYY HH:mm') || '',
         })}
       </p>
     </>

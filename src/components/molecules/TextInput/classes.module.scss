@@ -76,6 +76,16 @@
       background-position: spacing(4) center;
       background-repeat: no-repeat;
       width: 258px;
+      border: solid $color-background 1px;
+      &:focus {
+        border-color: $color-primary;
+      }
+    }
+
+    &.loading {
+      .inputField {
+        background-image: url('../../../assets/icons/loading.gif');
+      }
     }
   }
 

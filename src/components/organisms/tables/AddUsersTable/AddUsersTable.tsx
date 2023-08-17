@@ -12,7 +12,7 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 
 import classes from './classes.module.scss'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
-import { RoleType } from 'types/roles'
+import { RolePayload } from 'types/roles'
 
 export interface ErrorsInRow {
   [key: string]: string[]
@@ -23,7 +23,7 @@ interface AddUsersTableProps {
   rowsWithErrors: ErrorsInRow
   rowsWithExistingUsers?: number[]
   control: Control
-  existingRoles: RoleType[]
+  existingRoles: RolePayload[]
 }
 
 export type Person = UserCsvType & {

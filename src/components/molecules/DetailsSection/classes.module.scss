@@ -1,0 +1,56 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+
+  .inputInternalPosition {
+    justify-content: flex-end;
+    margin-bottom: spacing(4);
+
+    label {
+      text-align: end;
+    }
+    input,
+    textarea {
+      width: 274px;
+    }
+  }
+
+  .customInternalClass {
+    justify-content: flex-end;
+    margin-bottom: spacing(4);
+
+    label {
+      text-align: end;
+    }
+
+    & > div {
+      width: 274px;
+      justify-content: space-between;
+    }
+  }
+
+  &.adjustedLayout {
+    .inputInternalPosition,
+    .customInternalClass {
+      margin-bottom: spacing(2);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      :last-child {
+        font-weight: $font-weight-bold;
+      }
+
+      &.grayRow {
+        span {
+          color: $color-input-main;
+        }
+        :last-child {
+          font-weight: $font-weight-normal;
+        }
+      }
+    }
+  }
+}

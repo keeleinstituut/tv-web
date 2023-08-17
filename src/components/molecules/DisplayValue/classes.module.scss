@@ -3,3 +3,8 @@
 .cellValue {
   @include labelTextStyle;
 }
+
+.label {
+  @include labelTextStyle;
+  margin-right: spacing(2.5);
+}

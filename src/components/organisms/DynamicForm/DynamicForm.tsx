@@ -34,6 +34,7 @@ export interface DynamicFormProps<Type extends FieldValues> {
   className?: string
   onSubmit?: FormEventHandler<HTMLFormElement>
   formId?: string
+  useDivWrapper?: boolean
 }
 
 export function FormInput<Type extends FieldValues>({
@@ -62,10 +63,16 @@ function DynamicForm<Type extends FieldValues>({
   className,
   onSubmit,
   children,
+  useDivWrapper,
   formId,
 }: PropsWithChildren<DynamicFormProps<Type>>) {
+  const Wrapper = useDivWrapper ? 'div' : Root
+  // TODO: workaround for typescript, find a better solution
+  const wrapperProps = {
+    onSubmit,
+  } as unknown as object
   return (
-    <Root id={formId} className={classNames(className)} onSubmit={onSubmit}>
+    <Wrapper id={formId} className={classNames(className)} {...wrapperProps}>
       {map(fields, (inputData, index) => {
         // objects inside fields array can either be props needed to render an input
         // or just components that we need to render in the middle of the form
@@ -85,7 +92,7 @@ function DynamicForm<Type extends FieldValues>({
         )
       })}
       {children}
-    </Root>
+    </Wrapper>
   )
 }
 

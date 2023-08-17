@@ -58,12 +58,14 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             onChange={onChangeDate}
             name={`${name}.date`}
             placeholder={t('placeholder.date')}
+            value={value?.date}
             error={error}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
           <TimePickerInput
             onChange={onChangeTime}
             name={`${name}.time`}
+            value={value?.time}
             className={classes.timePicker}
             showSeconds
           />

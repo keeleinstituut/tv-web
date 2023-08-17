@@ -3,7 +3,7 @@ import {
   DataStateTypes,
   EditDataType,
 } from 'components/organisms/modals/EditableListModal/EditableListModal'
-import { DataMetaTypes } from 'types/collective'
+import { ResponseMetaTypes } from 'types/collective'
 export interface DepartmentType {
   data: any
   id: string
@@ -14,7 +14,7 @@ export interface DepartmentType {
 }
 export interface DepartmentsDataType {
   data: DepartmentType[]
-  meta?: DataMetaTypes
+  meta?: ResponseMetaTypes
 }
 
 export interface DepartmentDataType {
@@ -29,4 +29,5 @@ export type PromiseErrorType = {
   status: string
   value?: DepartmentType
   reason?: ValidationError
+  meta: ResponseMetaTypes
 }

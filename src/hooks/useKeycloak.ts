@@ -7,6 +7,7 @@ import {
   camelCase,
   Dictionary,
   size,
+  isEmpty,
 } from 'lodash'
 import { setAccessToken, apiClient } from 'api'
 import axios from 'axios'
@@ -31,6 +32,7 @@ interface UserInfoType extends KeycloakTokenParsed {
     surname?: string
     forename?: string
     privileges?: PrivilegeKey[]
+    institutionUserId?: string
   }
 }
 interface AuthContextType {
@@ -39,6 +41,7 @@ interface AuthContextType {
   logout: () => void
   userInfo: UserInfoType
   userPrivileges: PrivilegeKey[]
+  institutionUserId: string
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -49,6 +52,7 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => {},
   userInfo: {},
   userPrivileges: [],
+  institutionUserId: '',
 })
 
 const keyCloakVariables: Dictionary<string | undefined> = pickBy(
@@ -192,7 +196,7 @@ const useKeycloak = () => {
       const userAccessObject =
         isKeycloakUserLoggedIn && keycloak.idTokenParsed?.tolkevarav
 
-      if (!userAccessObject) {
+      if (!userAccessObject || isEmpty(userAccessObject)) {
         handleLogoutWithError()
         return
       }

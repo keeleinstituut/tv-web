@@ -361,7 +361,7 @@ const Test: FC = () => {
         helperText={'CSV lisamisel tuleb väljad eraldada semikooloniga.'}
         fileButtonText={t('button.add_csv')}
         fileButtonChangeText={t('button.add_new_csv')}
-        inputFileType={InputFileTypes.Csv}
+        inputFileTypes={[InputFileTypes.Csv]}
         allowMultiple
       />
       <Button
