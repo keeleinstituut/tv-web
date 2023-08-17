@@ -97,7 +97,7 @@ export const protectedRoutes: FullRouteObject[] = [
           {
             path: 'new-order',
             element: <NewOrder />,
-            privileges: [Privileges.CreateProject],
+            // privileges: [Privileges.CreateProject],
           },
         ],
       },

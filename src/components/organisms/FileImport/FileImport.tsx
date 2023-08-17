@@ -233,6 +233,7 @@ const FileImport: FC<FileImportProps> = ({
         setDragAndDropOpen={setDragAndDropOpen}
         setFiles={handleSetFiles}
         allowMultiple={allowMultiple}
+        isFilesListHidden={isFilesListHidden}
         {...rest}
       />
       <Button

@@ -65,7 +65,15 @@
     "created_at": "Loomise aeg",
     "rejected_at": "Tühistamise aeg",
     "corrected_at": "Korrektuuride tegemise aeg",
-    "accepted_at": "Vastuvõtmise aeg"
+    "accepted_at": "Vastuvõtmise aeg",
+    "updated_at": "Viimati muudetud",
+    "share_with_client": "Jaga tellijaga",
+    "shared_with_client": "Tellijaga jagatud",
+    "file_name": "Faili nimi",
+    "task": "Ülesanne",
+    "added_at": "Lisatud",
+    "main_write": "Peamine/Kirjuta",
+    "chunk_amount": "Segmentide arv"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -126,7 +134,11 @@
     "add_file": "Lisa fail",
     "submit_order": "Esita tellimus",
     "delete": "Kustuta",
-    "edit": "Redigeeri"
+    "add_new_file": "Lisa uus fail",
+    "edit": "Redigeeri",
+    "generate_for_translation": "Genereeri tõlkimiseks",
+    "create_empty_tm": "Loo tühimälu",
+    "add_tm": "Lisa tõlkemälud"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -339,7 +351,8 @@
     "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida"
   },
   "helper": {
-    "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga."
+    "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga.",
+    "save_files_helper": "Salvestatud failid tulevad tellijale nähtavale."
   },
   "table": {
     "personal_identification_code": "Isikukood",
@@ -351,7 +364,10 @@
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta.",
-    "file_format_helper": "Failiformaat ei garanteeri vormistuse säilimist ja automaatset tekstituvastust." 
+    "file_format_helper": "Failiformaat ei garanteeri vormistuse säilimist ja automaatset tekstituvastust.",
+    "source_files_helper": "Vali lähtefailid, mida soovid tõlketööriistas tõlkida. Veendu, et failid oleks tõlkimiseks ettevalmistatud.",
+    "owned_by_other_company": "Mälu omanik on teine asutus. Puudub õigus sellesse kirjutada.",
+    "main_write_helper": "„Peamine/Kirjuta“ mällu salvestatakse selle alamtellimuse tõlkesegmendid."
   },
   "tag": {
     "tag_management": "Sildid",
@@ -399,10 +415,16 @@
     "order_details": "Tellimuse andmed",
     "order_details_expandable": "Tellimuse detailid",
     "files": "Failid",
-    "feedback_files": "Tagasiside failid"
+    "feedback_files": "Tagasiside failid",
+    "ready_files_from_vendors": "Valmisfailid teostajatelt",
+    "generate_for_translation_helper": "Failide tõlketööriistas tõlkimiseks toimi järgmiselt: vali tõlkemälu(d); märgi linnukestega failid, mida soovid tõlkida; klõpsa nupule „Genereeri tõlkimiseks“."
+  },
+  "translation_memory": {
+    "chosen_translation_memories": "Valitud tõlkemälud"
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",
-    "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam"
+    "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",
+    "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja"
   }
 }

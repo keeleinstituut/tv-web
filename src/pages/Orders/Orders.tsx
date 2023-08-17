@@ -20,7 +20,7 @@ const Orders: FC = () => {
         <Button
           children={t('button.add_order')}
           href="/orders/new-order"
-          hidden={!includes(userPrivileges, Privileges.CreateProject)}
+          // hidden={!includes(userPrivileges, Privileges.CreateProject)}
         />
       </div>
       <OrdersTable />

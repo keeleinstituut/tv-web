@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useCallback, useState } from 'react'
+import { FC, PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import { ReactComponent as DropdownArrow } from 'assets/icons/arrow_down.svg'
 import classNames from 'classnames'
 
@@ -13,6 +13,10 @@ interface ExpandableContentContainerProps {
   bottomComponent?: JSX.Element
   title?: string
   contentAlwaysVisible?: boolean
+  wrapContent?: boolean
+  isExpanded?: boolean
+  onExpandedChange?: (isExpanded: boolean) => void
+  id?: string
 }
 
 const ExpandableContentContainer: FC<
@@ -25,36 +29,53 @@ const ExpandableContentContainer: FC<
   leftComponent,
   bottomComponent,
   contentAlwaysVisible,
+  wrapContent,
+  isExpanded = false,
+  onExpandedChange,
+  id,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpandedLocal, setIsExpanded] = useState(isExpanded)
 
-  const toggleIsExpanded = useCallback(
-    () => setIsExpanded((prevIsExpanded) => !prevIsExpanded),
-    []
-  )
+  const showAsExpanded = isExpanded && isExpandedLocal
+
+  const toggleIsExpanded = useCallback(() => {
+    setIsExpanded(!showAsExpanded)
+    if (onExpandedChange) {
+      onExpandedChange(!showAsExpanded)
+    }
+  }, [showAsExpanded, onExpandedChange])
+
+  console.warn('showAsExpanded', showAsExpanded)
+
+  const isContentVisible = showAsExpanded || contentAlwaysVisible
 
   return (
     <>
-      <BaseButton
-        onClick={toggleIsExpanded}
-        hidden={hidden}
+      <div
         className={classNames(
           classes.container,
-          isExpanded && classes.expandedContainer,
+          showAsExpanded && classes.expandedContainer,
+          hidden && classes.displayNone,
           className
         )}
+        id={id}
       >
-        <div className={classes.firstRow}>
+        <BaseButton onClick={toggleIsExpanded} className={classes.firstRow}>
           <div>{leftComponent}</div>
           <div>
             {rightComponent}
-            <DropdownArrow className={classes.iconButton} />
+            <DropdownArrow
+              className={classNames(
+                classes.iconButton,
+                showAsExpanded && classes.expandedIconButton
+              )}
+            />
           </div>
-        </div>
-
+        </BaseButton>
         {bottomComponent}
-      </BaseButton>
-      {isExpanded || contentAlwaysVisible ? children : null}
+        {isContentVisible && wrapContent ? children : null}
+      </div>
+      {isContentVisible && !wrapContent ? children : null}
     </>
   )
 }

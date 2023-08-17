@@ -28,6 +28,7 @@ export interface NotificationProps {
   hideIcon?: boolean
   closeNotification?: () => void
   className?: string
+  hidden?: boolean
 }
 
 const NotificationIcon: FC<IconComponentProps> = ({ type, hidden }) => {
@@ -57,7 +58,9 @@ const Notification: FC<NotificationProps> = ({
   hideIcon,
   closeNotification,
   className,
+  hidden,
 }) => {
+  if (hidden) return null
   return (
     <div
       className={classNames(

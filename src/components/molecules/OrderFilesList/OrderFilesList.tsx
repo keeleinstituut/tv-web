@@ -9,8 +9,6 @@ import {
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
 import { Control, FieldValues, Path, useController } from 'react-hook-form'
-import { ClassifierValueType } from 'types/classifierValues'
-import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import {
   DropDownOptions,
   DropdownSizeTypes,
@@ -51,7 +49,7 @@ const ProjectFileTypes = [
   InputFileTypes.Other,
 ]
 
-interface FilesListProps<TFormValues extends FieldValues> {
+interface OrderFilesListProps<TFormValues extends FieldValues> {
   title: string
   typeOptions?: DropDownOptions[]
   name: string
@@ -70,7 +68,7 @@ interface FileRow {
 
 const columnHelper = createColumnHelper<FileRow>()
 
-const FilesList = <TFormValues extends FieldValues>({
+const OrderFilesList = <TFormValues extends FieldValues>({
   title,
   typeOptions,
   name,
@@ -78,7 +76,7 @@ const FilesList = <TFormValues extends FieldValues>({
   tooltipContent,
   hiddenIfNoValue,
   isEditable,
-}: FilesListProps<TFormValues>) => {
+}: OrderFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
   } = useController<TFormValues, Path<TFormValues>>({
@@ -219,50 +217,4 @@ const FilesList = <TFormValues extends FieldValues>({
   )
 }
 
-interface FilesSectionProps<TFormValues extends FieldValues> {
-  control: Control<TFormValues>
-  isEditable?: boolean
-}
-
-const FilesSection = <TFormValues extends FieldValues>({
-  control,
-  isEditable,
-}: FilesSectionProps<TFormValues>) => {
-  const { t } = useTranslation()
-  const { classifierValuesFilters: fileTypeFilters } = useClassifierValuesFetch(
-    {
-      type: ClassifierValueType.FileType,
-    }
-  )
-
-  return (
-    <div className={classes.container}>
-      <h2>{isEditable ? '' : t('orders.files')}</h2>
-      <FilesList
-        name="source_files"
-        title={t('orders.source_files')}
-        tooltipContent={t('tooltip.file_format_helper')}
-        control={control}
-        isEditable={isEditable}
-      />
-      <FilesList
-        title={t('orders.help_files')}
-        control={control}
-        name="help_files"
-        typeOptions={fileTypeFilters}
-        isEditable={isEditable}
-      />
-      {/* TODO: currently not sure where these come from */}
-      <FilesList
-        title={t('orders.feedback_files')}
-        control={control}
-        name="feedback_files"
-        typeOptions={fileTypeFilters}
-        hiddenIfNoValue
-        isEditable={isEditable}
-      />
-    </div>
-  )
-}
-
-export default FilesSection
+export default OrderFilesList

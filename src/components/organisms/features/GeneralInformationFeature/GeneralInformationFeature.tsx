@@ -1,12 +1,23 @@
-import { FC } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { chain, map, zip } from 'lodash'
 import { useSubOrderSendToCat } from 'hooks/requests/useOrders'
-import { SubOrderDetail } from 'types/orders'
+import { SourceFile, SubOrderDetail } from 'types/orders'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
+import { Root } from '@radix-ui/react-form'
+import {
+  FormInput,
+  InputTypes,
+} from 'components/organisms/DynamicForm/DynamicForm'
+import { useTranslation } from 'react-i18next'
+import { useForm } from 'react-hook-form'
+import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 
 import classes from './classes.module.scss'
+import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
+import { isEditable } from '@testing-library/user-event/dist/utils'
+import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 
 // TODO: this is WIP code for suborder view
 
@@ -17,9 +28,19 @@ type GeneralInformationFeatureProps = Pick<
   | 'cat_analyzis'
   | 'source_files'
   | 'final_files'
+  | 'deadline_at'
 > & {
   catSupported?: boolean
   subOrderId: string
+}
+
+interface FormValues {
+  deadline_at: string
+  source_files: SourceFile[]
+  // TODO: no idea about these fields
+  source_files_checked: number[]
+  shared_with_client: number[]
+  write_to_memory: number[]
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
@@ -30,16 +51,96 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   cat_analyzis,
   source_files,
   final_files,
+  deadline_at,
 }) => {
+  const { t } = useTranslation()
   const { sendToCat } = useSubOrderSendToCat({ id: subOrderId })
 
+  const defaultValues = useMemo(
+    () => ({
+      deadline_at,
+      source_files,
+      // TODO: no idea about these fields
+      source_files_checked: [],
+      shared_with_client: [],
+      write_to_memory: [],
+    }),
+    []
+  )
+
+  const { control, getValues, setError } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+    values: defaultValues,
+  })
+
+  const handleSendToCat = useCallback(() => {
+    const chosenSourceFiles = getValues('source_files_checked')
+    const translationMemories = getValues('write_to_memory')
+    const sourceFiles = getValues('source_files')
+
+    const selectedSourceFiles = map(
+      chosenSourceFiles,
+      (index) => sourceFiles[index]
+    )
+    // const payload: CatProjectPayload = {
+    //   source_file_ids: map(selectedSourceFiles, 'id'),
+    // }
+    // sendToCat(payload)
+  }, [])
+
   return (
-    <>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>feature: GeneralInformationFeature</span>
-        <span>catSupported: {String(catSupported)}</span>
-        <span>catProjectCreated: {String(cat_project_created)}</span>
+    <Root>
+      <FormInput
+        {...{
+          inputType: InputTypes.DateTime,
+          ariaLabel: t('label.deadline_at'),
+          label: `${t('label.deadline_at')}`,
+          control: control,
+          name: 'deadline_at',
+          // onlyDisplay: !isEditable,
+        }}
+      />
+      <div className={classes.grid}>
+        <SourceFilesList
+          name="source_files"
+          title={t('orders.source_files')}
+          tooltipContent={t('tooltip.source_files_helper')}
+          // className={classes.filesSection}
+          control={control}
+          catSupported={catSupported}
+          cat_project_created={cat_project_created}
+          isEditable
+          // isEditable={isEditable}
+        />
+        <FinalFilesList
+          // TODO: not sure what the field name will be
+          name="ready_files"
+          title={t('orders.ready_files_from_vendors')}
+          // className={classes.filesSection}
+          control={control}
+          isEditable
+          // isEditable={isEditable}
+        />
+        <TranslationMemoriesSection
+          className={classes.translationMemories}
+          hidden={!catSupported}
+          control={control}
+          isEditable
+        />
       </div>
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+      <br />
+
+      <span>feature: GeneralInformationFeature</span>
+      <span>catSupported: {String(catSupported)}</span>
+      <span>catProjectCreated: {String(cat_project_created)}</span>
       <br />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ flex: 1 }}>
@@ -205,7 +306,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
               })}
             </tbody>
           </table>
-          {!cat_project_created && (
+          {/* {!cat_project_created && (
             <Button
               onClick={() =>
                 sendToCat({
@@ -215,7 +316,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
             >
               genereeri tõlkimiseks
             </Button>
-          )}
+          )} */}
         </div>
         <div style={{ flex: 1 }}>
           <h1>Valmisfailid teostajatelt</h1>
@@ -239,7 +340,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           </table>
         </div>
       </div>
-    </>
+    </Root>
   )
 }
 

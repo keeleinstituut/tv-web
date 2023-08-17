@@ -7,7 +7,7 @@ import PersonSection, {
   PersonSectionTypes,
 } from 'components/molecules/PersonSection/PersonSection'
 import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
-import FilesSection from 'components/molecules/FilesSection/FilesSection'
+import OrderFilesSection from 'components/molecules/OrderFilesSection/OrderFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
 import { isEmpty, join, map, uniq, includes, find } from 'lodash'
@@ -395,7 +395,10 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             isNew={isNew}
             isEditable={isEditableBySomeone}
           />
-          <FilesSection control={control} isEditable={isEditableBySomeone} />
+          <OrderFilesSection
+            control={control}
+            isEditable={isEditableBySomeone}
+          />
           <FormButtons
             {...formButtonsProps}
             hidden={isNew || !isEditableBySomeone}

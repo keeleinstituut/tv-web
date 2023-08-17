@@ -98,7 +98,7 @@ export enum TranslationMemoryPercentageNames {}
 
 export interface CatAnalysis {
   raw_word_count: number
-  total: string
+  total: number
   tm_101: string
   tm_repetitions: string
   tm_100: string
@@ -224,6 +224,9 @@ export interface SubOrderResponse {
 // TODO: not sure yet
 export interface SubOrderPayload {
   id: string
+}
+export interface CatProjectPayload {
+  source_file_ids: string[]
 }
 export interface NewOrderPayload {
   client_user_institution_id: string

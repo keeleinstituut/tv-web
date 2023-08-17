@@ -19,6 +19,7 @@ const InstitutionSettings: FC = () => {
   const { institution } = useInstitutionFetch({
     institutionId: institutionId,
   })
+
   const { updated_at, created_at } = institution || {}
 
   return (

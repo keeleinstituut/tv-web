@@ -1,1 +1,12 @@
-@import 'styles/variables'
+@import 'styles/variables';
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: spacing(4);
+  margin-top: spacing(8);
+
+  .translationMemories {
+    grid-column: 1/3;
+  }
+}

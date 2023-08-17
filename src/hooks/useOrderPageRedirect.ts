@@ -54,7 +54,6 @@ const useOrderPageRedirect = ({
   useEffect(() => {
     if (!isLoading && !client_user_institution_id) {
       // TODO: no order exists
-      console.warn('navigating back')
       navigate(-1)
       showNotification({
         type: NotificationTypes.Warning,
