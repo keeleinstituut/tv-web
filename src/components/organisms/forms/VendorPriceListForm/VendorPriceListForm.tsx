@@ -34,7 +34,7 @@ import DynamicForm, {
 import { Control, SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
-import AddPricesTable from 'components/organisms/tables/AddPricesTable/AddPricesTable'
+import AddVendorPricesTable from 'components/organisms/tables/AddVendorPricesTable/AddVendorPricesTable'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import { ClassifierValueType } from 'types/classifierValues'
@@ -110,7 +110,10 @@ const VendorPriceListThirdStep: FC<VendorPriceListThirdStepProps> = ({
     <>
       <LanguageLabels control={control} languageOptions={languageOptions} />
       <Root>
-        <AddPricesTable selectedSkills={selectedSkills} control={control} />
+        <AddVendorPricesTable
+          selectedSkills={selectedSkills}
+          control={control}
+        />
       </Root>
     </>
   )
@@ -127,6 +130,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
   const { createPrices, isLoading: isCreatingPrices } =
     useCreatePrices(vendor_id)
+
   const { data: pricesData } = useFetchPrices({
     vendor_id,
     limit: 1,

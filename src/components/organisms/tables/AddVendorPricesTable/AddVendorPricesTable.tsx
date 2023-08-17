@@ -30,7 +30,7 @@ type AddPricesTableProps = {
   selectedSkills?: { [key: string]: boolean } | undefined
 }
 
-const AddPricesTable: FC<AddPricesTableProps> = ({
+const AddVendorPricesTable: FC<AddPricesTableProps> = ({
   selectedSkills = {},
   control,
 }) => {
@@ -186,4 +186,4 @@ const AddPricesTable: FC<AddPricesTableProps> = ({
   )
 }
 
-export default AddPricesTable
+export default AddVendorPricesTable
