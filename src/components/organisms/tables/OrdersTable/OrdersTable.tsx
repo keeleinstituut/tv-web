@@ -26,17 +26,11 @@ import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
 import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
+import { useFetchTags } from 'hooks/requests/useTags'
+import { TagTypes } from 'types/tags'
 
 // TODO: statuses might come from BE instead
 // Currently unclear
-const mockStatuses = [
-  { label: 'Uus', value: 'NEW' },
-  { label: 'Registreeritud', value: 'REGISTERED' },
-  { label: 'Tellijale edastatud', value: 'FORWARDED' },
-  { label: 'Tühistatud', value: 'CANCELLED' },
-  { label: 'Vastuvõetud', value: 'ACCEPTED' },
-  { label: 'Tagasi lükatud', value: 'REJECTED' },
-]
 
 type OrderTableRow = {
   ext_id: string
@@ -69,6 +63,14 @@ const OrdersTable: FC = () => {
     handleSortingChange,
     handlePaginationChange,
   } = useFetchOrders()
+  const { tagsFilters = [] } = useFetchTags({
+    type: TagTypes.Order,
+  })
+
+  const statusFilters = map(OrderStatus, (status) => ({
+    label: t(`orders.status.${status}`),
+    value: status,
+  }))
 
   // TODO: remove default values, once we have actual data
   const orderRows = useMemo(
@@ -166,6 +168,9 @@ const OrdersTable: FC = () => {
           </div>
         )
       },
+      meta: {
+        filterOption: { tags: tagsFilters },
+      },
     }),
     columnHelper.accessor('type', {
       header: () => t('label.type'),
@@ -203,7 +208,7 @@ const OrdersTable: FC = () => {
         const deadlineDate = dayjs(getValue())
         const currentDate = dayjs()
         const diff = deadlineDate.diff(currentDate)
-        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY hh:mm')
+        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
         const rowStatus = row.original.status
         const hasDeadlineError =
           diff < 0 &&
@@ -248,7 +253,7 @@ const OrdersTable: FC = () => {
             <FormInput
               name="status"
               control={control}
-              options={mockStatuses}
+              options={statusFilters}
               inputType={InputTypes.TagsSelect}
             />
             <FormInput

@@ -5,6 +5,7 @@ interface DetailsRowProps {
   value?: string
   label?: string
   labelClass?: string
+  valueClass?: string
 }
 
 const DetailsRow: FC<DetailsRowProps> = ({
@@ -12,12 +13,13 @@ const DetailsRow: FC<DetailsRowProps> = ({
   value,
   label,
   labelClass,
+  valueClass,
 }) => {
   if (hidden) return null
   return (
     <>
       <span className={labelClass}>{label}</span>
-      <span>{value}</span>
+      <span className={valueClass}>{value}</span>
     </>
   )
 }

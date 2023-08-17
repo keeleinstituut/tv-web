@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import { map, filter, size, isEmpty } from 'lodash'
@@ -7,6 +7,7 @@ import {
   FormInput,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
 import { Control, FieldValues, Path, useController } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
@@ -25,6 +26,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from '../SmallTooltip/SmallTooltip'
+import { SourceFile } from 'types/orders'
 
 const ProjectFileTypes = [
   InputFileTypes.Pdf,
@@ -55,6 +57,8 @@ interface FilesListProps<TFormValues extends FieldValues> {
   name: string
   control: Control<TFormValues>
   tooltipContent?: string
+  hiddenIfNoValue?: boolean
+  isEditable?: boolean
 }
 
 interface FileRow {
@@ -72,6 +76,8 @@ const FilesList = <TFormValues extends FieldValues>({
   name,
   control,
   tooltipContent,
+  hiddenIfNoValue,
+  isEditable,
 }: FilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -79,7 +85,7 @@ const FilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
-  const typedValue = value as File[]
+  const typedValue = value as (File | SourceFile)[]
   const { t } = useTranslation()
 
   const filesData = useMemo(
@@ -87,7 +93,10 @@ const FilesList = <TFormValues extends FieldValues>({
       map(typedValue, (file, index) => ({
         name: file.name,
         help_file_types: index,
-        added: dayjs(file.lastModified).format('DD.MM.YYYY hh:mm'),
+        added:
+          'updated_at' in file
+            ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
+            : '',
         delete_button: index,
       })),
     [typedValue]
@@ -145,6 +154,37 @@ const FilesList = <TFormValues extends FieldValues>({
     }),
   ] as ColumnDef<FileRow>[]
 
+  if (hiddenIfNoValue && isEmpty(value)) {
+    return null
+  }
+
+  if (!isEditable) {
+    return (
+      <div className={classes.altFilesContainer}>
+        <h3>{title}</h3>
+        {map(typedValue, (file, index) => {
+          const localFileUrl =
+            file instanceof File ? URL.createObjectURL(file) : ''
+          const fileUrl =
+            'original_url' in file ? file.original_url : localFileUrl
+          const updatedAt =
+            'updated_at' in file
+              ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
+              : ''
+          return (
+            <Fragment key={fileUrl || index}>
+              <label>{file.name}</label>
+              <span>{updatedAt}</span>
+              <BaseButton href={fileUrl} target="_blank" download={file.name}>
+                <DownloadFilled />
+              </BaseButton>
+            </Fragment>
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
     <DataTable
       data={filesData}
@@ -160,11 +200,12 @@ const FilesList = <TFormValues extends FieldValues>({
           <h3>{title}</h3>
 
           <SmallTooltip
-            hidden={!tooltipContent}
+            hidden={!tooltipContent || !isEditable}
             tooltipContent={tooltipContent}
           />
           <FileImport
             fileButtonText={t('button.add_file')}
+            hidden={!isEditable}
             isFilesListHidden
             files={value}
             inputFileTypes={ProjectFileTypes}
@@ -180,10 +221,12 @@ const FilesList = <TFormValues extends FieldValues>({
 
 interface FilesSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
+  isEditable?: boolean
 }
 
 const FilesSection = <TFormValues extends FieldValues>({
   control,
+  isEditable,
 }: FilesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { classifierValuesFilters: fileTypeFilters } = useClassifierValuesFetch(
@@ -194,17 +237,29 @@ const FilesSection = <TFormValues extends FieldValues>({
 
   return (
     <div className={classes.container}>
+      <h2>{isEditable ? '' : t('orders.files')}</h2>
       <FilesList
         name="source_files"
         title={t('orders.source_files')}
         tooltipContent={t('tooltip.file_format_helper')}
         control={control}
+        isEditable={isEditable}
       />
       <FilesList
         title={t('orders.help_files')}
         control={control}
         name="help_files"
         typeOptions={fileTypeFilters}
+        isEditable={isEditable}
+      />
+      {/* TODO: currently not sure where these come from */}
+      <FilesList
+        title={t('orders.feedback_files')}
+        control={control}
+        name="feedback_files"
+        typeOptions={fileTypeFilters}
+        hiddenIfNoValue
+        isEditable={isEditable}
       />
     </div>
   )

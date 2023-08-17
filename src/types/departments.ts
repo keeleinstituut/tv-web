@@ -1,4 +1,4 @@
-import { DataMetaTypes } from 'types/collective'
+import { ResponseMetaTypes } from 'types/collective'
 export interface DepartmentType {
   id?: string
   institution_id?: string
@@ -8,5 +8,5 @@ export interface DepartmentType {
 }
 export interface DepartmentsDataType {
   data: DepartmentType[]
-  meta: DataMetaTypes
+  meta: ResponseMetaTypes
 }

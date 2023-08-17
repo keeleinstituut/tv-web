@@ -10,6 +10,8 @@ import {
   Suspense,
 } from 'react'
 import { FormProgressProps } from './FormProgressModal/FormProgressModal'
+import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
+import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
 
 const InstitutionSelectModal = lazy(
@@ -26,11 +28,17 @@ const EditableListModal = lazy(
   () => import('./EditableListModal/EditableListModal')
 )
 
+const CatSplitModal = lazy(() => import('./CatSplitModal/CatSplitModal'))
+
+const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
   Tooltip = 'tooltip',
   FormProgress = 'formProgress',
+  CatSplit = 'catSplit',
+  CatMerge = 'catMerge',
   EditableListModal = 'editableListModal',
 }
 
@@ -40,6 +48,8 @@ type ModalPropTypes =
   | Omit<UserAndRoleManagementModalProps, 'closeModal'>
   | Omit<TooltipModalProps, 'closeModal'>
   | Omit<FormProgressProps, 'closeModal'>
+  | Omit<CatSplitModalProps, 'closeModal'>
+  | Omit<CatMergeModalProps, 'closeModal'>
   | Omit<EditableListModalProps, 'closeModal'>
 
 const MODALS = {
@@ -47,6 +57,8 @@ const MODALS = {
   userAndRoleManagement: UserAndRoleManagementModal,
   tooltip: TooltipModal,
   formProgress: FormProgressModal,
+  catSplit: CatSplitModal,
+  catMerge: CatMergeModal,
   editableListModal: EditableListModal,
 }
 
@@ -90,6 +102,7 @@ const ModalRoot = () => {
 
   if (!currentModalKey) return null
   const SelectedModal = MODALS[currentModalKey]
+
   return (
     <Suspense fallback={<div />}>
       <SelectedModal

@@ -26,7 +26,7 @@ import TablePagination from 'components/organisms/TablePagination/TablePaginatio
 import TableHeaderGroup, {
   HeaderGroupFunctions,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
-import { DataMetaTypes, PaginationFunctionType } from 'types/collective'
+import { ResponseMetaTypes, PaginationFunctionType } from 'types/collective'
 
 export enum TableSizeTypes {
   L = 'l',
@@ -40,7 +40,7 @@ type DataTableProps<TData extends RowData> = {
   tableSize: TableSizeTypes
   title?: string | ReactElement
   headComponent?: ReactElement
-  paginationData?: DataMetaTypes
+  paginationData?: ResponseMetaTypes
   onPaginationChange?: (value?: PaginationFunctionType) => void
   meta?: TableMeta<TData>
   className?: string

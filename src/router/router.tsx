@@ -29,6 +29,7 @@ import TechnicalSettings from 'pages/TechnicalSettings/TechnicalSettings'
 import OrderPage from 'pages/OrderPage/OrderPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
+import TaskPage from 'pages/TaskPage/TaskPage'
 import Components from 'pages/Components/Components'
 
 // import icons
@@ -78,6 +79,8 @@ export const protectedRoutes: FullRouteObject[] = [
         path: '',
         label: i18n.t('menu.orders'),
         privileges: [
+          Privileges.ViewInstitutionProjectList,
+          Privileges.ViewInstitutionProjectDetail,
           Privileges.ViewPersonalProject,
           Privileges.ViewPersonalTask,
         ],
@@ -85,7 +88,11 @@ export const protectedRoutes: FullRouteObject[] = [
           {
             path: '',
             element: <Orders />,
-            privileges: [Privileges.ViewPersonalProject],
+            privileges: [
+              Privileges.ViewPersonalProject,
+              Privileges.ViewInstitutionProjectList,
+              Privileges.ViewInstitutionProjectDetail,
+            ],
           },
           {
             path: 'new-order',
@@ -98,13 +105,27 @@ export const protectedRoutes: FullRouteObject[] = [
         path: 'sub-orders',
         label: i18n.t('menu.sub_orders'),
         element: <SubOrders />,
-        privileges: [Privileges.ViewPersonalProject],
+        privileges: [
+          Privileges.ViewPersonalProject,
+          Privileges.ViewInstitutionProjectList,
+          Privileges.ViewInstitutionProjectDetail,
+        ],
       },
       {
         path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
-        element: <MyTasks />,
-        privileges: [Privileges.ViewPersonalTask],
+        children: [
+          {
+            path: '',
+            element: <MyTasks />,
+            privileges: [Privileges.ViewPersonalTask],
+          },
+          {
+            path: ':taskId',
+            element: <TaskPage />,
+            privileges: [],
+          },
+        ],
       },
       {
         path: ':orderId',

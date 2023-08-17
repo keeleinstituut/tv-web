@@ -132,6 +132,7 @@ interface SharedImportProps {
   isFilesListHidden?: boolean
   className?: string
   files?: File[]
+  hidden?: boolean
 }
 
 type SingleSelectProps = {
@@ -159,6 +160,7 @@ const FileImport: FC<FileImportProps> = ({
   isFilesListHidden,
   className,
   files,
+  hidden,
   ...rest
 }) => {
   const [localFiles, setFiles] = useState<File[]>(files || [])
@@ -214,6 +216,8 @@ const FileImport: FC<FileImportProps> = ({
     [isDragAndDropOpen, isFilesListHidden, localFiles, onChangeHandler]
   )
 
+  if (hidden) return null
+
   return (
     <div
       className={classNames(
@@ -226,6 +230,7 @@ const FileImport: FC<FileImportProps> = ({
       <DragAndDrop
         parentRef={parentRef}
         isDragAndDropOpen={isDragAndDropOpen}
+        setDragAndDropOpen={setDragAndDropOpen}
         setFiles={handleSetFiles}
         allowMultiple={allowMultiple}
         {...rest}

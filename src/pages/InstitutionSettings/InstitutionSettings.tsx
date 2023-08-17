@@ -37,12 +37,12 @@ const InstitutionSettings: FC = () => {
 
       <p className={classes.dateText}>
         {t('institution.created_at', {
-          time: dayjs(created_at).format('DD.MM.YYYY hh:mm') || '',
+          time: dayjs(created_at).format('DD.MM.YYYY HH:mm') || '',
         })}
       </p>
       <p className={classes.dateText}>
         {t('institution.updated_at', {
-          time: dayjs(updated_at).format('DD.MM.YYYY hh:mm') || '',
+          time: dayjs(updated_at).format('DD.MM.YYYY HH:mm') || '',
         })}
       </p>
 
