@@ -29,5 +29,5 @@ export type PromiseErrorType = {
   status: string
   value?: DepartmentType
   reason?: ValidationError
-  meta: ResponseMetaTypes
+  meta?: ResponseMetaTypes
 }

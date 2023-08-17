@@ -9,7 +9,7 @@ import EditableListContainer from 'components/molecules/EditableListContainer/Ed
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { EditDataType } from 'components/organisms/modals/EditableListModal/EditableListModal'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { NotificationTypes } from '../Notification/Notification'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { includes } from 'lodash'
 
 import useAuth from 'hooks/useAuth'
@@ -38,7 +38,7 @@ const DepartmentManagement: FC = () => {
       editableData: existingDepartments,
       title: t('modal.edit_departments'),
       handleOnSubmit: handleOnSubmit,
-      isLoading,
+      isLoading: isLoading,
       hasAddingPrivileges: includes(userPrivileges, Privileges.AddDepartment),
       hasDeletingPrivileges: includes(
         userPrivileges,
@@ -51,7 +51,7 @@ const DepartmentManagement: FC = () => {
     <EditableListContainer
       title={t('cheat_sheet.institution_management.departments')}
       data={existingDepartments}
-      isEditable={true}
+      isEditable={includes(userPrivileges, Privileges.EditDepartment)}
       handleEditList={handleEditDepartmentsModal}
     />
   )
