@@ -81,40 +81,79 @@ export type UpdatePricesPayload = {
 }
 
 export type PricesData = {
+  id: string
   vendor_id: string | undefined
   skill_id: string
   src_lang_classifier_value_id: string
   dst_lang_classifier_value_id: string
+  updated_at: string
+  created_at: string
   character_fee: number
   word_fee: number
   page_fee: number
   minute_fee: number
   hour_fee: number
   minimal_fee: number
-  skill: SkillsData
-  source_language_classifier_value: LanguageClassifierValue
-  destination_language_classifier_value: LanguageClassifierValue
-  created_at: string
-  updated_at: string
-  id: string
   vendor: {
-    comment: string
-    company_name?: string
-    created_at: string
     id?: string
-    institution_user: UserType
+    institution_id: string
+    company_name?: string
+    comment: string
+    updated_at: string
+    created_at: string
     institution_user_id: string
-    discount_percentage_0_49: string
-    discount_percentage_50_74: string
-    discount_percentage_75_84: string
-    discount_percentage_85_94: string
-    discount_percentage_95_99: string
-    discount_percentage_100: string
     discount_percentage_101: string
     discount_percentage_repetitions: string
+    discount_percentage_100: string
+    discount_percentage_95_99: string
+    discount_percentage_85_94: string
+    discount_percentage_75_84: string
+    discount_percentage_50_74: string
+    discount_percentage_0_49: string
+    institution_user: UserType
+    prices: string[]
+    tags: [
+      {
+        id: string
+        institution_id: string
+        name: string
+        type: string
+        updated_at: string
+        created_at: string
+      }
+    ]
   }
+  source_language_classifier_value: LanguageClassifierValue
+  destination_language_classifier_value: LanguageClassifierValue
+  skill: SkillsData
 }
 
 export type PricesDataType = {
   data: PricesData[]
+}
+
+export interface GetPricesPayload {
+  vendor_id?: string
+  institution_user_name?: string
+  src_lang_classifier_value_id?: string[]
+  dst_lang_classifier_value_id?: string[]
+  skill_id?: string[]
+  limit?: number
+  order_by?: string
+  order_direction?: string
+}
+
+export enum OrderBy {
+  CharacterFee = 'character_fee',
+  WordFee = 'word_fee',
+  PageFee = 'page_fee',
+  MinuteFee = 'minute_fee',
+  HourFee = 'hour_fee',
+  MinimalFee = 'minimal_fee',
+  CreatedAt = 'created_at',
+}
+
+export enum OrderDirection {
+  Asc = 'asc',
+  Desc = 'desc',
 }

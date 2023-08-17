@@ -3,19 +3,20 @@ import ModalBase, {
   ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { FC, ReactElement, useState } from 'react'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
 import { find, map, size } from 'lodash'
 
 import classes from './classes.module.scss'
+import React from 'react'
 
 interface FormDataProps {
   label: string
   title: string
   helperText: string
   modalContent: ReactElement | string
+  buttonComponent?: ReactElement
 }
 
 export interface FormProgressProps {
@@ -24,7 +25,7 @@ export interface FormProgressProps {
   closeModal: () => void
   submitForm?: () => void
   resetForm?: () => void
-  isLoading?: boolean
+  buttonComponent?: ReactElement
 }
 
 const FormProgressModal: FC<FormProgressProps> = ({
@@ -33,14 +34,13 @@ const FormProgressModal: FC<FormProgressProps> = ({
   closeModal,
   submitForm,
   resetForm,
-  isLoading,
+  buttonComponent,
 }) => {
   const { t } = useTranslation()
   const [activeStep, setActiveStep] = useState(1)
   const steps = map(formData, ({ label }) => {
     return { label }
   })
-
   const handleProceed = () => {
     if (size(steps) === activeStep) {
       if (submitForm) {
@@ -59,9 +59,17 @@ const FormProgressModal: FC<FormProgressProps> = ({
     closeModal()
     setActiveStep(1)
   }
-
   const modalData = find(formData, (_, index) => index + 1 === activeStep)
   const { title, helperText, modalContent } = modalData || {}
+
+  const ButtonComponent = buttonComponent
+    ? React.cloneElement(buttonComponent, {
+        handleProceed: handleProceed,
+        handleQuit: handleQuit,
+        steps: steps,
+        activeStep: activeStep,
+      })
+    : null
 
   return (
     <ModalBase
@@ -75,20 +83,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
       className={classes.progressBarHelperText}
       size={ModalSizeTypes.Big}
       helperText={helperText}
-      buttons={[
-        {
-          appearance: AppearanceTypes.Secondary,
-          onClick: handleQuit,
-          children: t('button.quit'),
-        },
-        {
-          appearance: AppearanceTypes.Primary,
-          onClick: handleProceed,
-          children:
-            size(steps) === activeStep ? t('button.save') : t('button.proceed'),
-          loading: isLoading,
-        },
-      ]}
+      buttonComponent={<div>{ButtonComponent}</div>}
     >
       <div>{modalContent}</div>
     </ModalBase>

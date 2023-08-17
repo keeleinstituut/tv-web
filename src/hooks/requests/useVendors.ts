@@ -5,6 +5,7 @@ import {
   GetSkillsPayload,
   PricesDataType,
   UpdatePricesPayload,
+  GetPricesPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -79,13 +80,12 @@ export const useFetchSkills = () => {
   }
 }
 
-export const useFetchPrices = (vendor_id: string | undefined) => {
+export const useFetchPrices = (initialFilters?: GetPricesPayload) => {
+  const { filters } = useFilters<GetPricesPayload>(initialFilters)
+
   const { isLoading, isError, data } = useQuery<PricesDataType>({
-    queryKey: ['prices', vendor_id],
-    queryFn: () =>
-      apiClient.get(
-        `${endpoints.PRICES}?vendor_id=${vendor_id}&limit=1&order_by=created_at&order_direction=asc`
-      ),
+    queryKey: ['prices', filters],
+    queryFn: () => apiClient.get(endpoints.PRICES, filters),
   })
 
   return {
@@ -96,26 +96,10 @@ export const useFetchPrices = (vendor_id: string | undefined) => {
 }
 
 export const useCreatePrices = (vendor_id: string | undefined) => {
-  const queryClient = useQueryClient()
   const { mutateAsync: createPrices, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: UpdatePricesPayload) => {
-      return apiClient.post(endpoints.CREATE_PRICES, { data: payload.data })
-    },
-
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['prices', vendor_id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: PricesDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = { ...oldData, ...data }
-          return { data: newData }
-        }
-      )
-    },
+    mutationFn: async (payload: UpdatePricesPayload) =>
+      apiClient.post(endpoints.CREATE_PRICES, { data: payload.data }),
   })
 
   return {

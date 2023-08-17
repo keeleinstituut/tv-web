@@ -38,11 +38,12 @@ import AddPricesTable from 'components/organisms/tables/AddPricesTable/AddPrices
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import { ClassifierValueType } from 'types/classifierValues'
-import { UpdatePricesPayload } from 'types/vendors'
+import { OrderBy, OrderDirection, UpdatePricesPayload } from 'types/vendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
 import { showValidationErrorMessage } from 'api/errorHandler'
+import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/VendorPriceListButtons'
 
 import classes from './classes.module.scss'
 
@@ -122,10 +123,16 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { classifierValuesFilters: languageFilter } = useClassifierValuesFetch({
     type: ClassifierValueType.Language,
   })
-  const { prices, id: userId } = vendor
+  const { prices, id: vendor_id } = vendor
 
-  const { createPrices, isLoading: isCreatingPrices } = useCreatePrices(userId)
-  const { data: pricesData } = useFetchPrices(userId)
+  const { createPrices, isLoading: isCreatingPrices } =
+    useCreatePrices(vendor_id)
+  const { data: pricesData } = useFetchPrices({
+    vendor_id,
+    limit: 1,
+    order_by: OrderBy.CreatedAt,
+    order_direction: OrderDirection.Asc,
+  })
 
   const priceListCreated = dayjs(
     pricesData ? pricesData[0]?.created_at : ''
@@ -305,7 +312,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               const number = key.split('_').pop()
 
               return {
-                vendor_id: userId,
+                vendor_id: vendor_id,
                 skill_id: key.replace(/_\d+$/, ''),
                 src_lang_classifier_value_id:
                   values['src_lang_classifier_value_id'],
@@ -339,7 +346,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         showValidationErrorMessage(errorData)
       }
     },
-    [createPrices, resetForm, t, userId]
+    [createPrices, resetForm, t, vendor_id]
   )
 
   const handleModalOpen = () => {
@@ -383,7 +390,12 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       ],
       submitForm: handleSubmit(onSubmit),
       resetForm: resetForm(),
-      isLoading: isCreatingPrices,
+      buttonComponent: (
+        <VendorPriceListButtons
+          control={control}
+          isLoading={isCreatingPrices}
+        />
+      ),
     })
   }
 

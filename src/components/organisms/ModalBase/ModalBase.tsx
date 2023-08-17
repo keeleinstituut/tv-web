@@ -45,26 +45,32 @@ export interface ModalProps extends ModalFooterProps {
   progressBar?: ReactElement
   className?: string
   helperText?: string
+  buttonComponent?: ReactElement
 }
 
 export interface ModalFooterProps {
   buttonsPosition?: ButtonPositionTypes
   buttons?: ModalButtonProps[]
+  buttonComponent?: ReactElement
 }
 
 const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
   buttonsPosition = 'right',
   buttons,
+  buttonComponent,
 }) => {
-  if (!buttons) return null
   return (
-    <div className={classes[buttonsPosition]}>
-      {map(buttons, (button, index) => (
-        <Button key={index} {...button}>
-          {button?.children}
-        </Button>
-      ))}
-    </div>
+    <>
+      <div className={classes[buttonsPosition]}>
+        {buttons &&
+          map(buttons, (button, index) => (
+            <Button key={index} {...button}>
+              {button?.children}
+            </Button>
+          ))}
+      </div>
+      {buttonComponent && buttonComponent}
+    </>
   )
 }
 
@@ -83,6 +89,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
   progressBar,
   className,
   helperText,
+  buttonComponent,
 }) => {
   const { t } = useTranslation()
 
@@ -125,7 +132,11 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
           <Dialog.Overlay className={classes.scrollableContent}>
             <div className={classes.dialogDescription}>{children}</div>
           </Dialog.Overlay>
-          <ModalFooter buttonsPosition={buttonsPosition} buttons={buttons} />
+          <ModalFooter
+            buttonsPosition={buttonsPosition}
+            buttons={buttons}
+            buttonComponent={buttonComponent}
+          />
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -23,14 +23,13 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
   }
 
   const sourceLanguageLabel = findLabelByValue(
-    useWatch({ control }).src_lang_classifier_value_id
+    useWatch({ control, name: 'src_lang_classifier_value_id' })
   )
-
   const destinationLanguageLabels = findLabelByValue(
-    useWatch({ control }).dst_lang_classifier_value_id
+    useWatch({ control, name: 'dst_lang_classifier_value_id' })
   )
 
-  if (!sourceLanguageLabel || !destinationLanguageLabels) return null
+  if (!sourceLanguageLabel) return null
 
   return (
     <>
@@ -44,8 +43,10 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
         <p className={classes.destinationLanguage}>
           {`${t('vendors.destination_language')}*`}
         </p>
-        {map(destinationLanguageLabels, (label) => (
-          <p className={classes.languageTag}>{label}</p>
+        {map(destinationLanguageLabels, (label, index) => (
+          <p key={index} className={classes.languageTag}>
+            {label}
+          </p>
         ))}
       </div>
     </>
