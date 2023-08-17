@@ -139,9 +139,13 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     (privilege) => includes(userPrivileges, privilege)
   )
 
-  const isEditableByManager = hasManagerPrivilege && isEditable
-  const isEditableByClient = isNew && isEditable
-  const isEditableBySomeone = isEditableByManager || isEditableByClient
+  // const isEditableByManager = hasManagerPrivilege
+  // const isEditableByManager = hasManagerPrivilege && isEditable
+  // const isEditableByClient = isNew && isEditable
+
+  const isEditableBySomeone =
+    hasManagerPrivilege ||
+    (isUserClientOfProject && includes(userPrivileges, Privileges.ChangeClient))
 
   // TODO: will map default values of open order here instead, when isNew === false
 
@@ -374,7 +378,8 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             isNew={isNew}
             isEditable={
               includes(userPrivileges, Privileges.ChangeClient) &&
-              (isEditableBySomeone || isUserClientOfProject)
+              isEditableBySomeone &&
+              isEditable
             }
           />
           <PersonSection
@@ -382,16 +387,19 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             control={control}
             selectedUserId={translation_manager_user_institution_id}
             isNew={isNew}
-            isEditable={isEditableBySomeone}
+            isEditable={isEditableBySomeone && isEditable}
           />
         </Container>
         <Container className={classNames(classes.detailsContainer)}>
           <DetailsSection
             control={control}
             isNew={isNew}
-            isEditable={isEditableBySomeone}
+            isEditable={isEditableBySomeone && isEditable}
           />
-          <FilesSection control={control} isEditable={isEditableBySomeone} />
+          <FilesSection
+            control={control}
+            isEditable={isEditableBySomeone && isEditable}
+          />
           <FormButtons
             {...formButtonsProps}
             hidden={isNew || !isEditableBySomeone}
