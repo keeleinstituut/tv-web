@@ -329,7 +329,9 @@
     "match_type": "Vaste tüüp",
     "percent_from_price": "% hinnast",
     "price_list_created": "Hinnakiri loodud {{priceListCreated}}",
-    "price_list_updated_at": "Hinnakirja andmeid muudetud {{priceListUpdated}}"
+    "price_list_updated_at": "Hinnakirja andmeid muudetud {{priceListUpdated}}",
+    "price_list_change": "Hinnakirja muutmine",
+    "price_list_change_description": "Määra oskusele ühikupõhised hinnad. Juhul, kui mõnda arvestusühikut selle teostaja puhul ei kasutata või puudub kokkulepitud hind, siis võib jätta selle ühiku hinnaks nulli."
   },
   "file": {
     "drop_files": "Pane failid siia...",

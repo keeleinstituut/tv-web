@@ -83,6 +83,11 @@ export type VendorPriceListThirdStepProps = Omit<
   'skillsFormFields'
 >
 
+export type VendorPriceListEditContentProps = {
+  control: Control<FormValues>
+  languageOptions: { label: string; value: string }[]
+}
+
 const VendorPriceListSecondStep: FC<VendorPriceListSecondStepProps> = ({
   skillsFormFields,
   control,
@@ -101,6 +106,25 @@ const VendorPriceListSecondStep: FC<VendorPriceListSecondStepProps> = ({
 }
 
 const VendorPriceListThirdStep: FC<VendorPriceListThirdStepProps> = ({
+  control,
+  languageOptions,
+}) => {
+  const selectedSkills = useWatch({ control, name: 'skill_id' })
+
+  return (
+    <>
+      <LanguageLabels control={control} languageOptions={languageOptions} />
+      <Root>
+        <AddVendorPricesTable
+          selectedSkills={selectedSkills}
+          control={control}
+        />
+      </Root>
+    </>
+  )
+}
+
+const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
   control,
   languageOptions,
 }) => {
@@ -236,6 +260,27 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     }
   )
 
+  const handleEditPriceModal = () => {
+    showModal(ModalTypes.EditableVendorPriceList, {
+      // submitForm: handleSubmit(onSubmit),
+      // resetForm: resetForm(),
+      // buttonComponent: (
+      //   <VendorPriceListButtons
+      //     control={control}
+      //     isLoading={isCreatingPrices}
+      //   />
+      // ),
+      title: t('vendors.price_list_change'),
+      helperText: t('vendors.price_list_change_description'),
+      modalContent: (
+        <VendorPriceListEditContent
+          control={control}
+          languageOptions={languageOptions}
+        />
+      ),
+    })
+  }
+
   const columnHelper = createColumnHelper<Prices>()
 
   const columns = [
@@ -284,6 +329,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
             ariaLabel={t('vendors.edit_language_pair')}
             className={classes.editIcon}
             // handle modal open
+            onClick={handleEditPriceModal}
           />
           <Button
             appearance={AppearanceTypes.Text}
