@@ -1,6 +1,7 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
+  find,
   findIndex,
   flatMap,
   get,
@@ -38,7 +39,12 @@ import AddVendorPricesTable from 'components/organisms/tables/AddVendorPricesTab
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import { ClassifierValueType } from 'types/classifierValues'
-import { OrderBy, OrderDirection, UpdatePricesPayload } from 'types/vendors'
+import {
+  OrderBy,
+  OrderDirection,
+  PricesData,
+  UpdatePricesPayload,
+} from 'types/vendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
@@ -46,6 +52,10 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/VendorPriceListButtons'
 
 import classes from './classes.module.scss'
+import { Price } from 'types/price'
+import EditVendorPricesTable, {
+  AddPrices,
+} from 'components/organisms/tables/EditVendorPricesTable/EditVendorPricesTable'
 
 export type FormValues = {
   src_lang_classifier_value_id: string
@@ -86,6 +96,9 @@ export type VendorPriceListThirdStepProps = Omit<
 export type VendorPriceListEditContentProps = {
   control: Control<FormValues>
   languageOptions: { label: string; value: string }[]
+  skillRowId: string
+  vendor_id?: string
+  prices: PricesData[]
 }
 
 const VendorPriceListSecondStep: FC<VendorPriceListSecondStepProps> = ({
@@ -127,15 +140,22 @@ const VendorPriceListThirdStep: FC<VendorPriceListThirdStepProps> = ({
 const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
   control,
   languageOptions,
+  skillRowId,
+  vendor_id,
+  prices,
 }) => {
-  const selectedSkills = useWatch({ control, name: 'skill_id' })
+  const selectedSkill = [find(prices, { id: skillRowId })].filter(
+    Boolean
+  ) as PricesData[]
+
+  console.log('selectedSkill', selectedSkill)
 
   return (
     <>
       <LanguageLabels control={control} languageOptions={languageOptions} />
       <Root>
-        <AddVendorPricesTable
-          selectedSkills={selectedSkills}
+        <EditVendorPricesTable
+          selectedSkill={selectedSkill}
           control={control}
         />
       </Root>
@@ -204,6 +224,9 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     )
   }, [skillsData, prices])
 
+  console.log('pricesData', pricesData)
+  console.log('prices', prices)
+
   const { handleSubmit, control, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
   })
@@ -260,7 +283,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     }
   )
 
-  const handleEditPriceModal = () => {
+  const handleEditPriceModal = (skillRowId: string) => {
     showModal(ModalTypes.EditableVendorPriceList, {
       // submitForm: handleSubmit(onSubmit),
       // resetForm: resetForm(),
@@ -276,6 +299,9 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         <VendorPriceListEditContent
           control={control}
           languageOptions={languageOptions}
+          skillRowId={skillRowId}
+          vendor_id={vendor_id}
+          prices={prices}
         />
       ),
     })
@@ -321,25 +347,27 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     }),
     columnHelper.accessor('id', {
       header: () => <></>,
-      cell: () => (
-        <div className={classes.iconsContainer}>
-          <Button
-            appearance={AppearanceTypes.Text}
-            icon={Edit}
-            ariaLabel={t('vendors.edit_language_pair')}
-            className={classes.editIcon}
-            // handle modal open
-            onClick={handleEditPriceModal}
-          />
-          <Button
-            appearance={AppearanceTypes.Text}
-            icon={Delete}
-            ariaLabel={t('vendors.delete')}
-            className={classes.deleteIcon}
-            // handle delete
-          />
-        </div>
-      ),
+      cell: ({ row }) => {
+        const skillRowId = row.original.id
+        return (
+          <div className={classes.iconsContainer}>
+            <Button
+              appearance={AppearanceTypes.Text}
+              icon={Edit}
+              ariaLabel={t('vendors.edit_language_pair')}
+              className={classes.editIcon}
+              onClick={() => handleEditPriceModal(skillRowId)}
+            />
+            <Button
+              appearance={AppearanceTypes.Text}
+              icon={Delete}
+              ariaLabel={t('vendors.delete')}
+              className={classes.deleteIcon}
+              // handle delete
+            />
+          </div>
+        )
+      },
     }),
   ] as ColumnDef<any>[]
 

@@ -94,7 +94,7 @@ export type PricesData = {
   minute_fee: number
   hour_fee: number
   minimal_fee: number
-  vendor: {
+  vendor?: {
     id?: string
     institution_id: string
     company_name?: string
@@ -110,9 +110,9 @@ export type PricesData = {
     discount_percentage_75_84: string
     discount_percentage_50_74: string
     discount_percentage_0_49: string
-    institution_user: UserType
-    prices: string[]
-    tags: [
+    institution_user?: UserType
+    prices?: string[]
+    tags?: [
       {
         id: string
         institution_id: string
@@ -125,7 +125,7 @@ export type PricesData = {
   }
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
-  skill: SkillsData
+  skill?: SkillsData
 }
 
 export type PricesDataType = {
