@@ -7,7 +7,6 @@ import {
   NewOrderPayload,
   SubOrdersResponse,
   SubOrderResponse,
-  SubOrderPayload,
   SubOrdersPayloadType,
   ListSubOrderDetail,
   SubOrderDetail,
@@ -51,7 +50,7 @@ export const useFetchOrders = () => {
               total: 10,
             },
           })
-        }, 1000)
+        }, 150)
       )
     },
     keepPreviousData: true,
@@ -81,7 +80,7 @@ export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
           resolve({
             data: singleMockOrder as unknown as DetailedOrder,
           })
-        }, 1000)
+        }, 150)
       )
     },
   })
@@ -152,7 +151,7 @@ export const useFetchSubOrder = ({ id }: { id?: string }) => {
           resolve({
             data: mockSubOrder as unknown as SubOrderDetail,
           })
-        }, 1000)
+        }, 150)
       )
     },
   })
@@ -194,7 +193,7 @@ export const useFetchSubOrders = () => {
               total: 10,
             },
           })
-        }, 1000)
+        }, 150)
       )
     },
     keepPreviousData: true,

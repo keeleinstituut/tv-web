@@ -161,7 +161,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
     <ExpandableContentContainer
       className={classNames(classes.expandableContainer, className)}
       rightComponent={<TranslationMemoryButtons hidden={!isEditable} />}
-      isExpanded={isEditable}
+      initialIsExpanded={isEditable}
       wrapContent
       leftComponent={
         <h3>{t('translation_memory.chosen_translation_memories')}</h3>

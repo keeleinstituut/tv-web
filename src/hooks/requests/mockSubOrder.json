@@ -54,7 +54,7 @@
     "deleted_at": null
   },
   "cost": "500€",
-  "cat_project_created": "",
+  "cat_project_created": "2023-11-07T07:16:52.000000Z",
   "cat_features": [
     "general_information",
     "job_translation",
@@ -65,7 +65,14 @@
     {
       "xliff_download_url": "https://loremflickr.com/320/240",
       "translate_url": "https://www.neti.ee/",
-      "translation_download_url": "https://loremflickr.com/320/240"
+      "translation_download_url": "https://loremflickr.com/320/240",
+      "chunk_id": "RandomChunkId1-1"
+    },
+    {
+      "xliff_download_url": "https://loremflickr.com/320/240",
+      "translate_url": "https://www.neti.ee/",
+      "translation_download_url": "https://loremflickr.com/320/240",
+      "chunk_id": "RandomChunkId1-2"
     }
   ],
   "cat_analyzis": [
@@ -80,7 +87,36 @@
       "tm_75_84": "70",
       "tm_50_74": "80",
       "tm_0_49": "90",
-      "chunk_id": "RandomChunkId123"
+      "chunk_id": "RandomChunkId1-1",
+      "file_name": "B5_pgnhealth_activity_stress_SL.docx"
+    },
+    {
+      "raw_word_count": 30,
+      "total": 500,
+      "tm_101": "20",
+      "tm_repetitions": "30",
+      "tm_100": "40",
+      "tm_95_99": "50",
+      "tm_85_94": "60",
+      "tm_75_84": "70",
+      "tm_50_74": "80",
+      "tm_0_49": "90",
+      "chunk_id": "RandomChunkId1-2",
+      "file_name": "random.doc"
+    },
+    {
+      "raw_word_count": 30,
+      "total": 500,
+      "tm_101": "20",
+      "tm_repetitions": "30",
+      "tm_100": "40",
+      "tm_95_99": "50",
+      "tm_85_94": "60",
+      "tm_75_84": "70",
+      "tm_50_74": "80",
+      "tm_0_49": "90",
+      "chunk_id": "RandomChunkId2",
+      "file_name": "File_with_super_long_name_to_test_horixontally_scrollable_table_inside_modal.pdf"
     }
   ],
   "source_files": [

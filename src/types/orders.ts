@@ -92,6 +92,7 @@ export interface CatJob {
   xliff_download_url: string
   translate_url: string
   translation_download_url: string
+  chunk_id: string
 }
 
 export enum TranslationMemoryPercentageNames {}
@@ -108,6 +109,7 @@ export interface CatAnalysis {
   tm_50_74: string
   tm_0_49: string
   chunk_id: string
+  file_name: string
 }
 
 interface Candidate {

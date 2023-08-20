@@ -133,8 +133,6 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const isNew = mode === OrderDetailModes.New
   const [isEditable, setIsEditable] = useState(isNew)
 
-  console.warn('isEditable', isEditable)
-
   const { status = OrderStatus.Registered } = order || {}
   const hasManagerPrivilege = find(
     [Privileges.ManageProject, Privileges.ReceiveAndManageProject],
@@ -148,8 +146,6 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const isEditableBySomeone =
     hasManagerPrivilege ||
     (isUserClientOfProject && includes(userPrivileges, Privileges.ChangeClient))
-
-  // TODO: will map default values of open order here instead, when isNew === false
 
   const defaultValues = useMemo(() => {
     const {
@@ -356,13 +352,6 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       onSubmit,
       resetForm,
     ]
-  )
-
-  console.warn(
-    'isEditable conditiona',
-    isEditableBySomeone,
-    isUserClientOfProject,
-    includes(userPrivileges, Privileges.ChangeClient)
   )
 
   return (
