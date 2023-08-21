@@ -309,28 +309,25 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     async (values) => {
       const transformedArray = flatMap(
         values.dst_lang_classifier_value_id,
-        (dstValue) => {
-          return map(
+        (dstValue) =>
+          map(
             keys(pickBy(values.skill_id, (value) => value === true)),
-            (key) => {
-              const number = key.split('_').pop()
-
+            (key, index) => {
               return {
                 vendor_id: vendor_id,
                 skill_id: key.replace(/_\d+$/, ''),
                 src_lang_classifier_value_id:
                   values['src_lang_classifier_value_id'],
                 dst_lang_classifier_value_id: dstValue,
-                character_fee: toNumber(values[`character_fee-${number}`]) || 0,
-                word_fee: toNumber(values[`word_fee-${number}`]) || 0,
-                page_fee: toNumber(values[`page_fee-${number}`]) || 0,
-                minute_fee: toNumber(values[`minute_fee-${number}`]) || 0,
-                hour_fee: toNumber(values[`hour_fee-${number}`]) || 0,
-                minimal_fee: toNumber(values[`minimal_fee-${number}`]) || 0,
+                character_fee: toNumber(values[`character_fee-${index}`]) || 0,
+                word_fee: toNumber(values[`word_fee-${index}`]) || 0,
+                page_fee: toNumber(values[`page_fee-${index}`]) || 0,
+                minute_fee: toNumber(values[`minute_fee-${index}`]) || 0,
+                hour_fee: toNumber(values[`hour_fee-${index}`]) || 0,
+                minimal_fee: toNumber(values[`minimal_fee-${index}`]) || 0,
               }
             }
           )
-        }
       )
 
       const payload: UpdatePricesPayload = {
