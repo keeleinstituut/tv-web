@@ -1,0 +1,48 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.topSection {
+  padding: spacing(6) spacing(4);
+}
+
+.tagsRow {
+  display: flex;
+  :not(:first-child) {
+    margin-left: spacing(2);
+  }
+}
+
+.deadline {
+  font-size: $font-size-16;
+
+  &.error {
+    color: $color-error;
+  }
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  margin-bottom: spacing(2);
+}
+.dot {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: #bbb;
+
+  &.INTERNAL {
+    background-color: $color-highlight;
+  }
+  &.SHARED {
+    background-color: $color-success;
+  }
+  &.PUBLIC {
+    background-color: $color-secondary;
+  }
+}
+.statusName {
+  margin: 0 spacing(6) 0 spacing(2);
+  @include bodyTextSmallStyle;
+}

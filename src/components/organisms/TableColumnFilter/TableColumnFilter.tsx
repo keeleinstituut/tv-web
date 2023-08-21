@@ -17,6 +17,7 @@ type FilterProps = {
   buttons?: boolean
   ariaLabel: string
   value?: string | string[]
+  showSearch?: boolean
 }
 
 const TableColumnFilter = ({
@@ -29,6 +30,7 @@ const TableColumnFilter = ({
   buttons,
   ariaLabel,
   value,
+  showSearch,
 }: FilterProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -60,6 +62,7 @@ const TableColumnFilter = ({
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         className={classes.dropDown}
+        showSearch={showSearch}
       />
     </div>
   )

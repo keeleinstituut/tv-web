@@ -16,6 +16,8 @@ import MyTasks from 'pages/MyTasks/MyTasks'
 import VendorsDatabase from 'pages/VendorsDatabase/VendorsDatabase'
 import VendorPage from 'pages/VendorPage/VendorPage'
 import TranslationMemories from 'pages/TranslationMemories/TranslationMemories'
+import TranslationMemoryPage from 'pages/TranslationMemoryPage/TranslationMemoryPage'
+import NewTranslationMemory from 'pages/NewTranslationMemory/NewTranslationMemory'
 import UsersManagement from 'pages/UsersManagement/UsersManagement'
 import AddUsersPage from 'pages/AddUsersPage/AddUsersPage'
 import UserPage from 'pages/UserPage/UserPage'
@@ -155,14 +157,30 @@ export const protectedRoutes: FullRouteObject[] = [
   {
     path: 'memories',
     label: i18n.t('menu.translation_memories'),
-    element: <TranslationMemories />,
     Icon: MemoriesIcon,
     privileges: [
-      Privileges.CreateTm,
-      Privileges.ViewTm,
-      Privileges.ImportTm,
-      Privileges.ExportTm,
-      Privileges.EditTmMetadata,
+      Privileges.AddUser,
+      // Privileges.CreateTm,
+      // Privileges.ViewTm,
+      // Privileges.ImportTm,
+      // Privileges.ExportTm,
+      // Privileges.EditTmMetadata,
+    ],
+    children: [
+      {
+        path: '',
+        element: <TranslationMemories />,
+      },
+      {
+        path: 'new-memory',
+        element: <NewTranslationMemory />,
+        privileges: [Privileges.AddUser],
+      },
+      {
+        path: ':memoryId',
+        element: <TranslationMemoryPage />,
+        privileges: [Privileges.AddUser],
+      },
     ],
   },
   {

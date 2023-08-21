@@ -18,6 +18,7 @@ export interface ConfirmationModalBaseProps {
   handleCancel?: () => void
   className?: string
   size?: ModalSizeTypes
+  helperText?: string
 }
 
 const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
@@ -31,10 +32,12 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
   className,
   handleCancel,
   size,
+  ...rest
 }) => {
   const { t } = useTranslation()
   return (
     <ModalBase
+      {...rest}
       title={title}
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}

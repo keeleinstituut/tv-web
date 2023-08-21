@@ -13,6 +13,7 @@ import { FormProgressProps } from './FormProgressModal/FormProgressModal'
 import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
 import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
+import { TranslationMemoryModalProps } from './TranslationMemoryModal/TranslationMemoryModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -32,6 +33,10 @@ const CatSplitModal = lazy(() => import('./CatSplitModal/CatSplitModal'))
 
 const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
 
+const TranslationMemoryModal = lazy(
+  () => import('./TranslationMemoryModal/TranslationMemoryModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -40,6 +45,7 @@ export enum ModalTypes {
   CatSplit = 'catSplit',
   CatMerge = 'catMerge',
   EditableListModal = 'editableListModal',
+  TranslationMemoryModal = 'translationMemoryModal',
 }
 
 // Add other modal props types here as well
@@ -51,6 +57,7 @@ type ModalPropTypes =
   | Omit<CatSplitModalProps, 'closeModal'>
   | Omit<CatMergeModalProps, 'closeModal'>
   | Omit<EditableListModalProps, 'closeModal'>
+  | Omit<TranslationMemoryModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
@@ -60,6 +67,7 @@ const MODALS = {
   catSplit: CatSplitModal,
   catMerge: CatMergeModal,
   editableListModal: EditableListModal,
+  translationMemoryModal: TranslationMemoryModal,
 }
 
 interface RefType {

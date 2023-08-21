@@ -125,7 +125,8 @@
     "add_file": "Lisa fail",
     "submit_order": "Esita tellimus",
     "delete": "Kustuta",
-    "edit": "Redigeeri"
+    "edit": "Redigeeri",
+    "add_translation_memory": "Lisa tõlkemälu"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -325,7 +326,8 @@
     "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
-    "order_updated": "Tellimus on edukalt uuendatud"
+    "order_updated": "Tellimus on edukalt uuendatud",
+    "translation_memory_created": "Tõlkemälu on edukalt lisatud"
   },
   "notification": {
     "announcement": "Teade",
@@ -350,7 +352,7 @@
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta.",
-    "file_format_helper": "Failiformaat ei garanteeri vormistuse säilimist ja automaatset tekstituvastust." 
+    "file_format_helper": "Failiformaat ei garanteeri vormistuse säilimist ja automaatset tekstituvastust."
   },
   "tag": {
     "tag_management": "Sildid",
@@ -403,5 +405,18 @@
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",
     "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam"
+  },
+  "translation_memories": {
+    "memory_title": "Mälu nimetus",
+    "memory_name": "Mälu nimi",
+    "new_translation_memory_title": "Tõlkemälu loomine",
+    "helper_text": "Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.",
+    "confirmation_text": "Kas oled kindel, et soovid tõlkemälu muuta avalikuks?",
+    "confirmation_help_text": "Kui otsustad määrata tõlkemälu kasutamise tüübiks 'Avalik' või 'Asutuse üleseks jagamiseks', siis seda mälu ja selles olevaid tõlkesegmente näevad ja saavad tõlkimisel kasutad ka asutusevälised kasutajad.",
+    "status": {
+      "INTERNAL": "Asutuse sisene",
+      "SHARED": "Asutustega jagamiseks",
+      "PUBLIC": "Avalik"
+    }
   }
 }
