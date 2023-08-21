@@ -183,7 +183,7 @@ const GeneralInformation: FC<any> = (props) => {
               })}
             </tbody>
           </table>
-          {!subOrder.cat_project_created && (
+          {/* {!subOrder.cat_project_created && (
             <Button
               onClick={() =>
                 sendToCat({
@@ -193,7 +193,7 @@ const GeneralInformation: FC<any> = (props) => {
             >
               genereeri tõlkimiseks
             </Button>
-          )}
+          )} */}
         </div>
         <div style={{ flex: 1 }}>
           <h1>Valmisfailid teostajatelt</h1>

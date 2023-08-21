@@ -11,7 +11,7 @@
   }
 
   &.active {
-    background: white;
+    background: $color-white;
     border: 1px solid $color-border;
     border-bottom: 1px solid white;
     color: $color-primary;
@@ -43,5 +43,21 @@
     right: 0;
     top: 0;
     bottom: 0;
+  }
+
+  &.primaryTab {
+    color: $color-primary;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    padding-bottom: spacing(3);
+    &:not(:first-child) {
+      margin-left: spacing(2);
+    }
+
+    &.active {
+      background: $color-primary;
+      color: $color-white;
+      border-color: $color-primary;
+    }
   }
 }

@@ -1,0 +1,24 @@
+@import 'styles/variables';
+
+.sourceFilesText,
+.helperText {
+  color: $color-primary;
+  margin-bottom: spacing(4);
+  display: block;
+
+  b {
+    font-weight: $font-weight-bold;
+  }
+} 
+
+.linkButton {
+  margin-left: spacing(12);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: spacing(6) spacing(4) spacing(4);
+}
+

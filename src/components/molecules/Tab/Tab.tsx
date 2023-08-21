@@ -6,12 +6,19 @@ import { startsWith } from 'lodash'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 
+export enum TabStyle {
+  White = 'white',
+  Primary = 'primary',
+}
+
 export interface TabType {
   name?: string
   id?: string
   isActive?: boolean
   onClick: (id?: string) => void
-  onChangeName: (id: string, newValue: string) => void
+  onChangeName?: (id: string, newValue: string) => void
+  editDisabled?: boolean
+  tabStyle?: TabStyle
 }
 
 interface InnerInputProps {
@@ -49,7 +56,15 @@ const InnerInput: FC<InnerInputProps> = ({
   )
 }
 
-const Tab: FC<TabType> = ({ name, isActive, onClick, id, onChangeName }) => {
+const Tab: FC<TabType> = ({
+  name,
+  isActive,
+  onClick,
+  id,
+  onChangeName,
+  editDisabled,
+  tabStyle = TabStyle.White,
+}) => {
   const { t } = useTranslation()
   const [tempName, setTempName] = useState(name || '')
   const [isEditMode, setIsEditMode] = useState(false)
@@ -63,7 +78,7 @@ const Tab: FC<TabType> = ({ name, isActive, onClick, id, onChangeName }) => {
   }, [])
 
   useEffect(() => {
-    if (!isEditMode && tempName !== name && id) {
+    if (!isEditMode && tempName !== name && id && onChangeName) {
       onChangeName(id, tempName)
     }
     // We only want to run this, when isEditMode changes
@@ -80,10 +95,10 @@ const Tab: FC<TabType> = ({ name, isActive, onClick, id, onChangeName }) => {
 
   const isEditModeActive = isActive && isEditMode
   const handleEnterEditMode = useCallback(() => {
-    if (!isEditMode) {
+    if (!isEditMode && !editDisabled) {
       setIsEditMode(!isEditMode)
     }
-  }, [isEditMode])
+  }, [isEditMode, editDisabled])
   const handleExitEditMode = useCallback(() => {
     if (isEditMode) {
       setIsEditMode(!isEditMode)
@@ -108,9 +123,10 @@ const Tab: FC<TabType> = ({ name, isActive, onClick, id, onChangeName }) => {
           e.preventDefault()
         }
       }}
-      icon={isEditModeActive ? undefined : EditIcon}
+      icon={isEditModeActive || editDisabled ? undefined : EditIcon}
       className={classNames(
         classes.tab,
+        tabStyle === TabStyle.Primary && classes.primaryTab,
         isActive && classes.active,
         isEditModeActive && classes.editMode
       )}
