@@ -66,38 +66,38 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'orders',
     label: i18n.t('menu.orders'),
     Icon: OrdersIcon,
-    // privileges: [
-    //   Privileges.CreateProject,
-    //   Privileges.ManageProject,
-    //   Privileges.ReceiveAndManageProject,
-    //   Privileges.ViewInstitutionProjectList,
-    //   Privileges.ViewInstitutionProjectDetail,
-    //   Privileges.ViewPersonalProject,
-    // ],
+    privileges: [
+      Privileges.CreateProject,
+      Privileges.ManageProject,
+      Privileges.ReceiveAndManageProject,
+      Privileges.ViewInstitutionProjectList,
+      Privileges.ViewInstitutionProjectDetail,
+      Privileges.ViewPersonalProject,
+    ],
     children: [
       {
         path: '',
         label: i18n.t('menu.orders'),
-        // privileges: [
-        //   Privileges.ViewInstitutionProjectList,
-        //   Privileges.ViewInstitutionProjectDetail,
-        //   Privileges.ViewPersonalProject,
-        //   Privileges.ViewPersonalTask,
-        // ],
+        privileges: [
+          Privileges.ViewInstitutionProjectList,
+          Privileges.ViewInstitutionProjectDetail,
+          Privileges.ViewPersonalProject,
+          Privileges.ViewPersonalTask,
+        ],
         children: [
           {
             path: '',
             element: <Orders />,
-            // privileges: [
-            //   Privileges.ViewPersonalProject,
-            //   Privileges.ViewInstitutionProjectList,
-            //   Privileges.ViewInstitutionProjectDetail,
-            // ],
+            privileges: [
+              Privileges.ViewPersonalProject,
+              Privileges.ViewInstitutionProjectList,
+              Privileges.ViewInstitutionProjectDetail,
+            ],
           },
           {
             path: 'new-order',
             element: <NewOrder />,
-            // privileges: [Privileges.CreateProject],
+            privileges: [Privileges.CreateProject],
           },
         ],
       },
@@ -130,15 +130,15 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: ':orderId',
         element: <OrderPage />,
-        // privileges: [
-        //   Privileges.ViewInstitutionProjectDetail,
-        //   Privileges.ViewInstitutionProjectList,
-        //   Privileges.ViewPersonalProject,
-        //   Privileges.CreateProject,
-        //   Privileges.ChangeClient,
-        //   Privileges.ReceiveAndManageProject,
-        //   Privileges.ManageProject,
-        // ],
+        privileges: [
+          Privileges.ViewInstitutionProjectDetail,
+          Privileges.ViewInstitutionProjectList,
+          Privileges.ViewPersonalProject,
+          Privileges.CreateProject,
+          Privileges.ChangeClient,
+          Privileges.ReceiveAndManageProject,
+          Privileges.ManageProject,
+        ],
       },
     ],
   },

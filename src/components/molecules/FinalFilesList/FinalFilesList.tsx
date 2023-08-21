@@ -10,7 +10,7 @@ import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.s
 import { Control, FieldValues, Path, useController } from 'react-hook-form'
 import classNames from 'classnames'
 import FileImport, {
-  InputFileTypes,
+  ProjectFileTypes,
 } from 'components/organisms/FileImport/FileImport'
 import dayjs from 'dayjs'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
@@ -25,29 +25,6 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './classes.module.scss'
 
 // TODO: very similar to OrderFilesList, these 2 can be unified
-
-const ProjectFileTypes = [
-  InputFileTypes.Pdf,
-  InputFileTypes.Doc,
-  InputFileTypes.Docx,
-  InputFileTypes.OpenDocument,
-  InputFileTypes.Excel,
-  InputFileTypes.SpreadSheet,
-  InputFileTypes.Outlook,
-  InputFileTypes.Asice,
-  InputFileTypes.Zip,
-  InputFileTypes.Zip7,
-  InputFileTypes.Png,
-  InputFileTypes.Rtf,
-  InputFileTypes.Eml,
-  InputFileTypes.Ods,
-  InputFileTypes.Jpeg,
-  InputFileTypes.Text,
-  InputFileTypes.Html,
-  InputFileTypes.Xml,
-  InputFileTypes.TextXml,
-  InputFileTypes.Other,
-]
 
 interface FinalFilesListProps<TFormValues extends FieldValues> {
   title: string

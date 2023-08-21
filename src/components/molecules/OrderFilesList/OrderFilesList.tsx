@@ -15,7 +15,7 @@ import {
 } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import classNames from 'classnames'
 import FileImport, {
-  InputFileTypes,
+  ProjectFileTypes,
 } from 'components/organisms/FileImport/FileImport'
 import dayjs from 'dayjs'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
@@ -25,30 +25,6 @@ import DataTable, {
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from '../SmallTooltip/SmallTooltip'
 import { SourceFile } from 'types/orders'
-
-const ProjectFileTypes = [
-  InputFileTypes.Pdf,
-  InputFileTypes.Doc,
-  InputFileTypes.Docx,
-  InputFileTypes.OpenDocument,
-  InputFileTypes.Excel,
-  InputFileTypes.SpreadSheet,
-  InputFileTypes.Outlook,
-  InputFileTypes.Asice,
-  InputFileTypes.Zip,
-  InputFileTypes.Zip7,
-  InputFileTypes.Png,
-  InputFileTypes.Rtf,
-  InputFileTypes.Eml,
-  InputFileTypes.Ods,
-  InputFileTypes.Jpeg,
-  InputFileTypes.Text,
-  InputFileTypes.Html,
-  InputFileTypes.Xml,
-  InputFileTypes.TextXml,
-  InputFileTypes.Other,
-]
-
 interface OrderFilesListProps<TFormValues extends FieldValues> {
   title: string
   typeOptions?: DropDownOptions[]

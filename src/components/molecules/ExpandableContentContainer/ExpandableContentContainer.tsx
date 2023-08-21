@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useCallback, useEffect, useState } from 'react'
+import { FC, PropsWithChildren, useCallback, useState } from 'react'
 import { ReactComponent as DropdownArrow } from 'assets/icons/arrow_down.svg'
 import classNames from 'classnames'
 

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, includes, find } from 'lodash'
+import { map, includes } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,

@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
