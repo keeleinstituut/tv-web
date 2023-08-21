@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control, useForm } from 'react-hook-form'
+import { Control } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import {
   FormInput,
@@ -26,16 +26,14 @@ export type AddPrices = Omit<Prices, 'language_direction'>
 
 type AddPricesTableProps = {
   control: Control<FormValues>
-  selectedSkill: PricesData[]
+  editableSkill: PricesData[]
 }
 
 const EditVendorPricesTable: FC<AddPricesTableProps> = ({
   control,
-  selectedSkill,
+  editableSkill,
 }) => {
   const { t } = useTranslation()
-
-  console.log('selectedSkill', selectedSkill)
 
   const columnHelper = createColumnHelper<PricesData>()
 
@@ -150,7 +148,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
 
   return (
     <DataTable
-      data={selectedSkill}
+      data={editableSkill}
       columns={columns}
       tableSize={TableSizeTypes.M}
       hidePagination

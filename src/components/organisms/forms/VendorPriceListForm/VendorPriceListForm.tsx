@@ -52,10 +52,8 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/VendorPriceListButtons'
 
 import classes from './classes.module.scss'
-import { Price } from 'types/price'
-import EditVendorPricesTable, {
-  AddPrices,
-} from 'components/organisms/tables/EditVendorPricesTable/EditVendorPricesTable'
+import EditVendorPricesTable from 'components/organisms/tables/EditVendorPricesTable/EditVendorPricesTable'
+import { createStringLiteral } from 'typescript'
 
 export type FormValues = {
   src_lang_classifier_value_id: string
@@ -144,18 +142,16 @@ const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
   vendor_id,
   prices,
 }) => {
-  const selectedSkill = [find(prices, { id: skillRowId })].filter(
+  const editableSkill = [find(prices, { id: skillRowId })].filter(
     Boolean
   ) as PricesData[]
-
-  console.log('selectedSkill', selectedSkill)
 
   return (
     <>
       <LanguageLabels control={control} languageOptions={languageOptions} />
       <Root>
         <EditVendorPricesTable
-          selectedSkill={selectedSkill}
+          editableSkill={editableSkill}
           control={control}
         />
       </Root>
@@ -223,9 +219,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       ) || {}
     )
   }, [skillsData, prices])
-
-  console.log('pricesData', pricesData)
-  console.log('prices', prices)
 
   const { handleSubmit, control, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
@@ -383,28 +376,25 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     async (values) => {
       const transformedArray = flatMap(
         values.dst_lang_classifier_value_id,
-        (dstValue) => {
-          return map(
+        (dstValue) =>
+          map(
             keys(pickBy(values.skill_id, (value) => value === true)),
-            (key) => {
-              const number = key.split('_').pop()
-
+            (key, index) => {
               return {
                 vendor_id: vendor_id,
                 skill_id: key.replace(/_\d+$/, ''),
                 src_lang_classifier_value_id:
                   values['src_lang_classifier_value_id'],
                 dst_lang_classifier_value_id: dstValue,
-                character_fee: toNumber(values[`character_fee-${number}`]) || 0,
-                word_fee: toNumber(values[`word_fee-${number}`]) || 0,
-                page_fee: toNumber(values[`page_fee-${number}`]) || 0,
-                minute_fee: toNumber(values[`minute_fee-${number}`]) || 0,
-                hour_fee: toNumber(values[`hour_fee-${number}`]) || 0,
-                minimal_fee: toNumber(values[`minimal_fee-${number}`]) || 0,
+                character_fee: toNumber(values[`character_fee-${index}`]) || 0,
+                word_fee: toNumber(values[`word_fee-${index}`]) || 0,
+                page_fee: toNumber(values[`page_fee-${index}`]) || 0,
+                minute_fee: toNumber(values[`minute_fee-${index}`]) || 0,
+                hour_fee: toNumber(values[`hour_fee-${index}`]) || 0,
+                minimal_fee: toNumber(values[`minimal_fee-${index}`]) || 0,
               }
             }
           )
-        }
       )
 
       const payload: UpdatePricesPayload = {
