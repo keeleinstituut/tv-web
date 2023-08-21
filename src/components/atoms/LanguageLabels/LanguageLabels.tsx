@@ -6,14 +6,17 @@ import { VendorPriceListSecondStepProps } from 'components/organisms/forms/Vendo
 
 import classes from './classes.module.scss'
 
-type LanguageLabelsProps = Omit<
-  VendorPriceListSecondStepProps,
-  'skillsFormFields'
->
+export interface LanguageLabelsProps
+  extends Omit<VendorPriceListSecondStepProps, 'skillsFormFields'> {
+  srcLanguageValue?: string
+  dstLanguageValues?: string[]
+}
 
 const LanguageLabels: FC<LanguageLabelsProps> = ({
   control,
   languageOptions,
+  srcLanguageValue,
+  dstLanguageValues,
 }) => {
   const { t } = useTranslation()
 
@@ -29,7 +32,15 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
     useWatch({ control, name: 'dst_lang_classifier_value_id' })
   )
 
-  if (!sourceLanguageLabel) return null
+  const srcLanguageLabel = srcLanguageValue
+    ? srcLanguageValue
+    : sourceLanguageLabel
+
+  const dstLanguageLabels = dstLanguageValues
+    ? dstLanguageValues
+    : destinationLanguageLabels
+
+  if (!sourceLanguageLabel || !srcLanguageValue) return null
 
   return (
     <>
@@ -37,13 +48,13 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
         <p className={classes.sourceLanguage}>{`${t(
           'vendors.source_language'
         )}*`}</p>
-        <p className={classes.languageTag}>{sourceLanguageLabel}</p>
+        <p className={classes.languageTag}>{srcLanguageLabel}</p>
       </div>
       <div className={classes.languageContianer}>
         <p className={classes.destinationLanguage}>
           {`${t('vendors.destination_language')}*`}
         </p>
-        {map(destinationLanguageLabels, (label, index) => (
+        {map(dstLanguageLabels, (label, index) => (
           <p key={index} className={classes.languageTag}>
             {label}
           </p>

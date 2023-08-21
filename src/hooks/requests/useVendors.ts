@@ -6,6 +6,7 @@ import {
   PricesDataType,
   UpdatePricesPayload,
   GetPricesPayload,
+  CreatePricesPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -98,12 +99,25 @@ export const useFetchPrices = (initialFilters?: GetPricesPayload) => {
 export const useCreatePrices = (vendor_id: string | undefined) => {
   const { mutateAsync: createPrices, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: UpdatePricesPayload) =>
+    mutationFn: async (payload: CreatePricesPayload) =>
       apiClient.post(endpoints.CREATE_PRICES, { data: payload.data }),
   })
 
   return {
     createPrices,
+    isLoading,
+  }
+}
+
+export const useUpdatePrices = (vendor_id: string | undefined) => {
+  const { mutateAsync: updatePrices, isLoading } = useMutation({
+    mutationKey: ['prices', vendor_id],
+    mutationFn: async (payload: UpdatePricesPayload) =>
+      apiClient.put(endpoints.CREATE_PRICES, { data: payload.data }),
+  })
+
+  return {
+    updatePrices,
     isLoading,
   }
 }

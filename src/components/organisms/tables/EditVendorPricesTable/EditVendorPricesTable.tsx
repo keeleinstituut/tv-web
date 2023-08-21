@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control } from 'react-hook-form'
+import { Control, useWatch } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import {
   FormInput,
@@ -11,11 +11,11 @@ import {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import {
   FormValues,
+  PriceObject,
   Prices,
 } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 import classes from './classes.module.scss'
-import { PricesData } from 'types/vendors'
 
 export type Skill = {
   id?: string
@@ -26,7 +26,7 @@ export type AddPrices = Omit<Prices, 'language_direction'>
 
 type AddPricesTableProps = {
   control: Control<FormValues>
-  editableSkill: PricesData[]
+  editableSkill: PriceObject[]
 }
 
 const EditVendorPricesTable: FC<AddPricesTableProps> = ({
@@ -35,7 +35,9 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const columnHelper = createColumnHelper<PricesData>()
+  console.log('editableSkill Table', editableSkill)
+
+  const columnHelper = createColumnHelper<PriceObject>()
 
   const columns = [
     columnHelper.accessor('skill_id', {
@@ -48,7 +50,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`character_fee-${row?.index}`}
+            name={'priceObject.character_fee'}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.character_fee')}
@@ -65,7 +67,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`word_fee-${row?.index}`}
+            name={'priceObject.word_fee'}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.word_fee')}
@@ -82,7 +84,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`page_fee-${row?.index}`}
+            name={'priceObject.page_fee'}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.page_fee')}
@@ -99,7 +101,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`minute_fee-${row?.index}`}
+            name={'priceObject.minute_fee'}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minute_fee')}
@@ -116,7 +118,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`hour_fee-${row?.index}`}
+            name={'priceObject.hour_fee'}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.hour_fee')}
@@ -133,7 +135,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`minimal_fee-${row?.index}`}
+            name={'priceObject.minimal_fee'}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minimal_fee')}
@@ -144,13 +146,16 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
       },
       footer: (info) => info.column.id,
     }),
-  ] as ColumnDef<PricesData>[]
+  ] as ColumnDef<PriceObject>[]
+
+  const formValues = useWatch({ control })
+  console.log('formValues Edit', formValues)
 
   return (
     <DataTable
       data={editableSkill}
       columns={columns}
-      tableSize={TableSizeTypes.M}
+      tableSize={TableSizeTypes.L}
       hidePagination
       title={
         <div className={classes.pricesTitleContainer}>

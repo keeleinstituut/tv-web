@@ -6,6 +6,7 @@ import {
 } from 'components/molecules/Button/Button'
 import ModalBase, {
   ButtonPositionTypes,
+  ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import classes from './classes.module.scss'
@@ -16,6 +17,8 @@ export interface EditVendorPriceListModalProps {
   isModalOpen?: boolean
   closeModal: () => void
   helperText?: string
+  submitForm?: () => void
+  resetForm?: () => void
 }
 
 const EditVendorPriceListModal: FC<EditVendorPriceListModalProps> = ({
@@ -24,8 +27,24 @@ const EditVendorPriceListModal: FC<EditVendorPriceListModalProps> = ({
   isModalOpen,
   closeModal,
   helperText,
+  resetForm,
+  submitForm,
 }) => {
   const { t } = useTranslation()
+
+  const handleQuit = () => {
+    if (resetForm) {
+      resetForm()
+    }
+    closeModal()
+  }
+
+  const handleProceed = () => {
+    if (submitForm) {
+      submitForm()
+    }
+    closeModal()
+  }
 
   return (
     <ModalBase
@@ -35,16 +54,17 @@ const EditVendorPriceListModal: FC<EditVendorPriceListModalProps> = ({
       open={!!isModalOpen}
       className={classes.modalContent}
       buttonsPosition={ButtonPositionTypes.SpaceBetween}
+      size={ModalSizeTypes.Big}
       buttons={[
         {
           appearance: AppearanceTypes.Secondary,
           iconPositioning: IconPositioningTypes.Left,
           children: t('button.quit'),
-          onClick: closeModal,
+          onClick: handleQuit,
         },
         {
           appearance: AppearanceTypes.Primary,
-          onClick: closeModal,
+          onClick: handleProceed,
           children: t('button.save'),
         },
       ]}

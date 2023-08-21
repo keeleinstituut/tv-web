@@ -3,7 +3,6 @@ import ModalBase, {
   ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { useTranslation } from 'react-i18next'
 import { FC, ReactElement, useState } from 'react'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
 import { find, map, size } from 'lodash'
@@ -36,7 +35,6 @@ const FormProgressModal: FC<FormProgressProps> = ({
   resetForm,
   buttonComponent,
 }) => {
-  const { t } = useTranslation()
   const [activeStep, setActiveStep] = useState(1)
   const steps = map(formData, ({ label }) => {
     return { label }
