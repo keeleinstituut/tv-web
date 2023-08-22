@@ -1,12 +1,12 @@
+import { FC } from 'react'
+import { includes } from 'lodash'
 import Button from 'components/molecules/Button/Button'
 import TranslationMemoriesTable from 'components/organisms/tables/TranslationMemoriesTable/TranslationMemoriesTable'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import useAuth from 'hooks/useAuth'
-import { includes } from 'lodash'
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
-import Tooltip from 'components/organisms/Tooltip/Tooltip'
 
 const TranslationMemories: FC = () => {
   const { t } = useTranslation()

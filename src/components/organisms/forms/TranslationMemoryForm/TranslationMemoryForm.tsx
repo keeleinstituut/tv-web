@@ -114,8 +114,8 @@ const TranslationMemoryForm: FC = () => {
     },
     {
       inputType: InputTypes.Selections,
-      ariaLabel: t('label.translation_domain'),
-      label: t('label.translation_domain'),
+      ariaLabel: t('label.usage'),
+      label: t('label.usage'),
       name: 'status',
       options: statusOptions,
       className: classes.inputInternalPosition,
@@ -167,6 +167,7 @@ const TranslationMemoryForm: FC = () => {
         loading={isSubmitting}
         resetForm={reset}
         className={classes.formButtons}
+        submitButtonName={t('button.create_translation_memory')}
       />
     </DynamicForm>
   )

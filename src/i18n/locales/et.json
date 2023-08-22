@@ -77,7 +77,8 @@
     "xliff_name": "XLIFFi nimi",
     "chunks": "Segmendid",
     "match_type": "Vaste tüüp",
-    "cat_split_amount": "Tükkide arv"
+    "cat_split_amount": "Tükkide arv",
+    "usage": "Kasutus"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -140,6 +141,10 @@
     "delete": "Kustuta",
     "edit": "Redigeeri",
     "add_translation_memory": "Lisa tõlkemälu",
+    "create_translation_memory": "Loo tõlkemälu",
+    "export": "Ekspordi",
+    "import_tmx": "Impordi .tmx",
+    "delete_translation_memory": "Kustuta tõlkemälu",
     "add_new_file": "Lisa uus fail",
     "generate_for_translation": "Genereeri tõlkimiseks",
     "create_empty_tm": "Loo tühimälu",
@@ -475,6 +480,7 @@
   "translation_memories": {
     "memory_title": "Mälu nimetus",
     "memory_name": "Mälu nimi",
+    "memory_details": "Tõlkemälu andmed",
     "new_translation_memory_title": "Tõlkemälu loomine",
     "helper_text": "Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.",
     "confirmation_text": "Kas oled kindel, et soovid tõlkemälu muuta avalikuks?",
