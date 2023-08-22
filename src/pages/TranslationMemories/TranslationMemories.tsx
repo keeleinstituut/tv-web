@@ -6,6 +6,7 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
 
 const TranslationMemories: FC = () => {
   const { t } = useTranslation()
@@ -15,7 +16,10 @@ const TranslationMemories: FC = () => {
     <>
       <div className={classes.titleRow}>
         <h1>{t('menu.translation_memories')}</h1>
-        {/* TODO: add tooltip */}
+        <Tooltip
+          title={t('cheat_sheet.user_management.title')}
+          //modalContent={}
+        />
         <Button
           children={t('button.add_translation_memory')}
           href="/memories/new-memory"

@@ -1,19 +1,24 @@
 import { FC } from 'react'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
-import OrderDetails, {
-  OrderDetailModes,
-} from 'components/organisms/OrderDetails/OrderDetails'
 import TranslationMemoryForm from 'components/organisms/forms/TranslationMemoryForm/TranslationMemoryForm'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
 
 const NewTranslationMemory: FC = () => {
   const { t } = useTranslation()
 
   return (
-    <div className={classes.container}>
-      <h1>{t('translation_memories.new_translation_memory_title')}</h1>
+    <>
+      <div className={classes.titleRow}>
+        <h1>{t('translation_memories.new_translation_memory_title')}</h1>
+        <Tooltip
+          title={t('cheat_sheet.user_management.title')}
+          //modalContent={}
+        />
+      </div>
+
       <TranslationMemoryForm />
-    </div>
+    </>
   )
 }
 

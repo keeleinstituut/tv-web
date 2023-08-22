@@ -1,8 +1,10 @@
 @import 'styles/variables';
 
 .titleRow {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: max-content auto max-content;
   align-items: center;
+  justify-items: start;
+  grid-gap: spacing(4);
   margin-bottom: spacing(6);
 }
