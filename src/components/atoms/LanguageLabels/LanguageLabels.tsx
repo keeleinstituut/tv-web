@@ -40,7 +40,7 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
     ? dstLanguageValues
     : destinationLanguageLabels
 
-  if (!sourceLanguageLabel || !srcLanguageValue) return null
+  if (!srcLanguageLabel || !dstLanguageLabels) return null
 
   return (
     <>

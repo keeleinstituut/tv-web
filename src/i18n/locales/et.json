@@ -355,6 +355,7 @@
     "tag_updated": "Silt on edukalt uuendatud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "language_pairs_prices_added": "Keelepaari(de) hinnakiri on edukalt loodud.",
+    "language_pairs_prices_updated": "Keelepaari(de) hinnakiri on edukalt uuendatud.",
     "order_updated": "Tellimus on edukalt uuendatud"
   },
   "notification": {

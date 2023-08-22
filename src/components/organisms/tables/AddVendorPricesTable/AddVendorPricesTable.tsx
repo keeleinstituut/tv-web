@@ -10,10 +10,7 @@ import {
   FormInput,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import {
-  FormValues,
-  Prices,
-} from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 import { useFetchSkills } from 'hooks/requests/useVendors'
 
 import classes from './classes.module.scss'
@@ -23,7 +20,16 @@ export type Skill = {
   name?: string
 }
 
-type AddPrices = Omit<Prices, 'language_direction'>
+type AddPrices = {
+  id: string
+  character_fee: number
+  word_fee: number
+  page_fee: number
+  minute_fee: number
+  hour_fee: number
+  minimal_fee: number
+  skill_id: Skill
+}
 
 type AddPricesTableProps = {
   control: Control<FormValues>

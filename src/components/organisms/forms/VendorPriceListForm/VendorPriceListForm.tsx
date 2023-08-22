@@ -1,11 +1,8 @@
-import { FC, useCallback, useEffect, useMemo } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  compact,
-  find,
-  findIndex,
+  chain,
   flatMap,
-  get,
   isEmpty,
   keyBy,
   keys,
@@ -42,12 +39,7 @@ import AddVendorPricesTable from 'components/organisms/tables/AddVendorPricesTab
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import { ClassifierValueType } from 'types/classifierValues'
-import {
-  CreatePricesPayload,
-  OrderBy,
-  OrderDirection,
-  PricesData,
-} from 'types/vendors'
+import { CreatePricesPayload, OrderBy, OrderDirection } from 'types/vendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
@@ -56,17 +48,6 @@ import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/
 import EditVendorPricesTable from 'components/organisms/tables/EditVendorPricesTable/EditVendorPricesTable'
 
 import classes from './classes.module.scss'
-
-export type PriceObject = {
-  id: string
-  character_fee: number
-  word_fee: number
-  page_fee: number
-  minute_fee: number
-  hour_fee: number
-  minimal_fee: number
-  skill_id: string
-}
 
 export type FormValues = {
   src_lang_classifier_value_id?: string
@@ -77,7 +58,7 @@ export type FormValues = {
   [key: string]: number | string | undefined
 }
 
-export type Prices = {
+export type PriceObject = {
   id: string
   character_fee: number
   word_fee: number
@@ -85,13 +66,15 @@ export type Prices = {
   minute_fee: number
   hour_fee: number
   minimal_fee: number
-  skill_id: Skill
-  language_direction: string
-}
-
-export type Skill = {
-  id?: string
-  name?: string
+  skill_id: string
+  language_direction?: string
+  source_language_classifier_value?: {
+    name: string
+  }
+  destination_language_classifier_value?: {
+    name: string
+  }
+  subRows?: PriceObject[]
 }
 
 export type VendorPriceListSecondStepProps = {
@@ -201,40 +184,18 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     pricesData ? pricesData[0]?.updated_at : ''
   ).format('DD.MM.YYYY hh:mm')
 
-  const pricesValues = useMemo(() => {
-    return (
-      map(
-        prices,
-        ({
-          id,
-          character_fee,
-          word_fee,
-          page_fee,
-          minute_fee,
-          hour_fee,
-          minimal_fee,
-          skill_id,
-          source_language_classifier_value,
-          destination_language_classifier_value,
-        }) => {
-          return {
-            id: id,
-            character_fee: character_fee,
-            word_fee: word_fee,
-            page_fee: page_fee,
-            minute_fee: minute_fee,
-            hour_fee: hour_fee,
-            minimal_fee: minimal_fee,
-            skill_id: get(skillsData, [
-              findIndex(skillsData, { id: skill_id }),
-              'name',
-            ]),
-            language_direction: `${source_language_classifier_value.name} > ${destination_language_classifier_value.name}`,
-          }
-        }
-      ) || {}
+  const groupedLanguagePairData = chain(prices)
+    .groupBy(
+      (item) =>
+        `${item.src_lang_classifier_value_id}.${item.dst_lang_classifier_value_id}`
     )
-  }, [skillsData, prices])
+    .map((items) => {
+      return {
+        language_direction: `${items[0].source_language_classifier_value.name} > ${items[0].destination_language_classifier_value.name} `,
+        subRows: items,
+      }
+    })
+    .value()
 
   const { handleSubmit, control, reset, setValue } = useForm<FormValues>({
     reValidateMode: 'onChange',
@@ -303,23 +264,40 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
   const onEditPricesSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      console.log('VALUES', values)
-
-      const priceValue = values.priceObject
+      const pricesPayload = map(
+        values.priceObject,
+        ({
+          character_fee,
+          hour_fee,
+          minimal_fee,
+          minute_fee,
+          page_fee,
+          word_fee,
+          id,
+        }) => {
+          return {
+            id: id,
+            character_fee: toNumber(character_fee),
+            hour_fee: toNumber(hour_fee),
+            minimal_fee: toNumber(minimal_fee),
+            minute_fee: toNumber(minute_fee),
+            page_fee: toNumber(page_fee),
+            word_fee: toNumber(word_fee),
+          }
+        }
+      )
 
       const payload = {
-        data: [priceValue],
+        data: pricesPayload,
       }
 
-      console.log('payload', payload)
-
       try {
-        // await updatePrices(payload)
+        await updatePrices(payload)
 
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.language_pairs_prices_added'),
+          content: t('success.language_pairs_prices_updated'),
         })
         resetForm()
       } catch (errorData) {
@@ -329,48 +307,41 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     [resetForm, t, updatePrices]
   )
 
-  const handleEditPriceModal = (skillRowId: string) => {
-    const skillIdToNameMap = keyBy(skillsData, 'id')
+  const handleEditPriceModal = (languagePairModalContent: PriceObject[]) => {
+    const skillIds = keyBy(skillsData, 'id')
 
-    const editableSkill2 = [find(prices, { id: skillRowId })].filter(
-      Boolean
-    ) as PricesData[]
-
-    const skillName = map(editableSkill2, ({ skill_id }) => {
-      const skillData = skillIdToNameMap[skill_id]
-      return skillData.name
-    })
-
-    const editableSkill = compact(
-      map(prices, (skill) => {
-        if (skill.id === skillRowId) {
-          return {
-            id: skill.id,
-            character_fee: skill.character_fee,
-            hour_fee: skill.hour_fee,
-            minimal_fee: skill.minimal_fee,
-            minute_fee: skill.minute_fee,
-            page_fee: skill.page_fee,
-            word_fee: skill.word_fee,
-            skill_id: skillName[0],
-          }
+    const languagePairModalContent2 = map(
+      languagePairModalContent,
+      ({
+        id,
+        character_fee,
+        hour_fee,
+        minute_fee,
+        minimal_fee,
+        page_fee,
+        word_fee,
+        skill_id,
+      }) => {
+        return {
+          id: id,
+          character_fee: character_fee,
+          hour_fee: hour_fee,
+          minimal_fee: minimal_fee,
+          minute_fee: minute_fee,
+          page_fee: page_fee,
+          word_fee: word_fee,
+          skill_id: skillIds[skill_id].name,
         }
-        return null
-      })
+      }
     )
 
-    setValue('priceObject', editableSkill)
-
-    console.log('editableSkill handle', editableSkill)
+    setValue('priceObject', languagePairModalContent)
 
     const srcLanguageValue =
-      editableSkill2[0].source_language_classifier_value.name
-
-    const dstLanguageValues = map(
-      editableSkill2,
-      ({ destination_language_classifier_value }) =>
-        destination_language_classifier_value.name
-    )
+      languagePairModalContent[0]?.source_language_classifier_value?.name || ''
+    const dstLanguageValue =
+      languagePairModalContent[0]?.destination_language_classifier_value
+        ?.name || ''
 
     showModal(ModalTypes.EditableVendorPriceList, {
       submitForm: handleSubmit(onEditPricesSubmit),
@@ -380,26 +351,52 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       modalContent: (
         <VendorPriceListEditContent
           control={control}
-          editableSkill={editableSkill}
+          editableSkill={languagePairModalContent2}
           srcLanguageValue={srcLanguageValue}
-          dstLanguageValues={dstLanguageValues}
+          dstLanguageValues={[dstLanguageValue]}
         />
       ),
     })
   }
 
-  const columnHelper = createColumnHelper<Prices>()
+  const columnHelper = createColumnHelper<PriceObject>()
+
+  // const [myState, setMyState] = useState(false)
 
   const columns = [
     columnHelper.accessor('language_direction', {
       header: () => t('vendors.language_direction'),
-      cell: (info) => {
-        return <div className={classes.languageTag}>{info.renderValue()}</div>
+      cell: ({ row, getValue }) => {
+        const languageDirection = row.original.language_direction
+
+        if (row.getCanExpand()) {
+          row.toggleExpanded(true)
+        }
+
+        return (
+          <>
+            {row.getCanExpand() && (
+              <Button
+                onClick={() => row.toggleExpanded()}
+                // onClick={row.getToggleExpandedHandler()}
+                appearance={AppearanceTypes.Text}
+              />
+            )}
+            {/* {getValue()} */}
+            <p className={languageDirection && classes.languageTag}>
+              {languageDirection}
+            </p>
+          </>
+        )
       },
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('skill_id', {
       header: () => t('vendors.skill'),
+      cell: ({ getValue }) => {
+        const skillName = skillsData?.find((skill) => skill.id === getValue())
+        return <p>{skillName?.name}</p>
+      },
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('character_fee', {
@@ -429,7 +426,10 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     columnHelper.accessor('id', {
       header: () => <></>,
       cell: ({ row }) => {
-        const skillRowId = row.original.id
+        const languagePairModalContent = !row.originalSubRows
+          ? [row.original]
+          : row.original.subRows || []
+
         return (
           <div className={classes.iconsContainer}>
             <Button
@@ -437,7 +437,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               icon={Edit}
               ariaLabel={t('vendors.edit_language_pair')}
               className={classes.editIcon}
-              onClick={() => handleEditPriceModal(skillRowId)}
+              onClick={() => handleEditPriceModal(languagePairModalContent)}
             />
             <Button
               appearance={AppearanceTypes.Text}
@@ -547,18 +547,16 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     })
   }
 
-  const formValues = useWatch({ control })
-  console.log('formValuesVendor', formValues)
-
   return (
     <>
       <Root>
         <DataTable
-          data={pricesValues}
+          data={groupedLanguagePairData}
+          getSubRows={(originalRow) => originalRow.subRows}
           columns={columns}
           tableSize={TableSizeTypes.M}
           className={
-            !isEmpty(pricesValues)
+            !isEmpty(groupedLanguagePairData)
               ? classes.vendorPricesContainer
               : classes.hiddenVendorPrices
           }

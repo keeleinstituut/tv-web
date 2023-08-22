@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control, useWatch } from 'react-hook-form'
+import { Control } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import {
   FormInput,
@@ -12,17 +12,9 @@ import {
 import {
   FormValues,
   PriceObject,
-  Prices,
 } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 import classes from './classes.module.scss'
-
-export type Skill = {
-  id?: string
-  name?: string
-}
-
-export type AddPrices = Omit<Prices, 'language_direction'>
 
 type AddPricesTableProps = {
   control: Control<FormValues>
@@ -34,8 +26,6 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
   editableSkill,
 }) => {
   const { t } = useTranslation()
-
-  console.log('editableSkill Table', editableSkill)
 
   const columnHelper = createColumnHelper<PriceObject>()
 
@@ -50,7 +40,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={'priceObject.character_fee'}
+            name={`priceObject[${row?.index}].character_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.character_fee')}
@@ -67,7 +57,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={'priceObject.word_fee'}
+            name={`priceObject[${row?.index}].word_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.word_fee')}
@@ -84,7 +74,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={'priceObject.page_fee'}
+            name={`priceObject[${row?.index}].page_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.page_fee')}
@@ -101,7 +91,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={'priceObject.minute_fee'}
+            name={`priceObject[${row?.index}].minute_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minute_fee')}
@@ -118,7 +108,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={'priceObject.hour_fee'}
+            name={`priceObject[${row?.index}].hour_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.hour_fee')}
@@ -135,7 +125,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={'priceObject.minimal_fee'}
+            name={`priceObject[${row?.index}].minimal_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minimal_fee')}
@@ -147,9 +137,6 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
       footer: (info) => info.column.id,
     }),
   ] as ColumnDef<PriceObject>[]
-
-  const formValues = useWatch({ control })
-  console.log('formValues Edit', formValues)
 
   return (
     <DataTable
