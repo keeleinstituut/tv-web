@@ -38,6 +38,29 @@ export enum InputFileTypes {
   Other = 'application/octet-stream',
 }
 
+export const ProjectFileTypes = [
+  InputFileTypes.Pdf,
+  InputFileTypes.Doc,
+  InputFileTypes.Docx,
+  InputFileTypes.OpenDocument,
+  InputFileTypes.Excel,
+  InputFileTypes.SpreadSheet,
+  InputFileTypes.Outlook,
+  InputFileTypes.Asice,
+  InputFileTypes.Zip,
+  InputFileTypes.Zip7,
+  InputFileTypes.Png,
+  InputFileTypes.Rtf,
+  InputFileTypes.Eml,
+  InputFileTypes.Ods,
+  InputFileTypes.Jpeg,
+  InputFileTypes.Text,
+  InputFileTypes.Html,
+  InputFileTypes.Xml,
+  InputFileTypes.TextXml,
+  InputFileTypes.Other,
+]
+
 export const acceptFileExtensions = {
   [InputFileTypes.Csv]: ['.csv'],
   [InputFileTypes.Pdf]: ['.pdf'],
@@ -233,6 +256,7 @@ const FileImport: FC<FileImportProps> = ({
         setDragAndDropOpen={setDragAndDropOpen}
         setFiles={handleSetFiles}
         allowMultiple={allowMultiple}
+        isFilesListHidden={isFilesListHidden}
         {...rest}
       />
       <Button

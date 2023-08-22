@@ -8,9 +8,16 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 interface ExpandableContentContainerProps {
   className?: string
   hidden?: boolean
-  extraComponent?: JSX.Element
+  rightComponent?: JSX.Element
+  leftComponent?: JSX.Element
+  bottomComponent?: JSX.Element
   title?: string
   contentAlwaysVisible?: boolean
+  wrapContent?: boolean
+  isExpanded?: boolean
+  onExpandedChange?: (isExpanded: boolean) => void
+  id?: string
+  initialIsExpanded?: boolean
 }
 
 const ExpandableContentContainer: FC<
@@ -19,33 +26,60 @@ const ExpandableContentContainer: FC<
   children,
   hidden,
   className,
-  extraComponent,
+  rightComponent,
+  leftComponent,
+  bottomComponent,
   contentAlwaysVisible,
-  title,
+  wrapContent,
+  isExpanded = false,
+  initialIsExpanded = false,
+  onExpandedChange,
+  id,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpandedLocal, setIsExpanded] = useState(initialIsExpanded)
 
-  const toggleIsExpanded = useCallback(
-    () => setIsExpanded((prevIsExpanded) => !prevIsExpanded),
-    []
-  )
+  const showAsExpanded = isExpanded || isExpandedLocal
+
+  const toggleIsExpanded = useCallback(() => {
+    setIsExpanded(!showAsExpanded)
+    if (onExpandedChange) {
+      onExpandedChange(!showAsExpanded)
+    }
+  }, [showAsExpanded, onExpandedChange])
+
+  const isContentVisible = showAsExpanded || contentAlwaysVisible
 
   return (
     <>
-      <BaseButton
-        onClick={toggleIsExpanded}
-        hidden={hidden}
+      <div
         className={classNames(
           classes.container,
-          isExpanded && classes.expandedContainer,
+          showAsExpanded && classes.expandedContainer,
+          hidden && classes.displayNone,
           className
         )}
+        id={id}
       >
-        <h2>{title}</h2>
-        {extraComponent}
-        <DropdownArrow className={classes.iconButton} />
-      </BaseButton>
-      {isExpanded || contentAlwaysVisible ? children : null}
+        <div className={classes.firstRow}>
+          <BaseButton className={classes.row} onClick={toggleIsExpanded}>
+            {leftComponent}
+          </BaseButton>
+          <div>
+            {rightComponent}
+            <BaseButton className={classes.row} onClick={toggleIsExpanded}>
+              <DropdownArrow
+                className={classNames(
+                  classes.iconButton,
+                  showAsExpanded && classes.expandedIconButton
+                )}
+              />
+            </BaseButton>
+          </div>
+        </div>
+        {bottomComponent}
+        {isContentVisible && wrapContent ? children : null}
+      </div>
+      {isContentVisible && !wrapContent ? children : null}
     </>
   )
 }

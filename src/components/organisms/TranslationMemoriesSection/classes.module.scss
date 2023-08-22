@@ -1,0 +1,30 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.expandableContainer {
+  margin-top: spacing(8);
+  .downloadButton {
+    svg {
+      path {
+        fill: $color-primary;
+      }
+    }
+  }
+  
+  .errorTooltip {
+    svg {
+      path {
+        fill: $color-error;
+      }
+    }
+  }
+
+  .translationMemoriesTable {
+    border: unset;
+    box-shadow: unset;
+  }
+
+  .mainButton {
+    margin-left: spacing(2);
+  }
+}
