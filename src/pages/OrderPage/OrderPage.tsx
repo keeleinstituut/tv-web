@@ -14,6 +14,7 @@ import OrderDetails, {
   OrderDetailModes,
 } from 'components/organisms/OrderDetails/OrderDetails'
 import useOrderPageRedirect from 'hooks/useOrderPageRedirect'
+import SubOrderSection from 'components/templates/SubOrderSection/SubOrderSection'
 
 // TODO: WIP - implement this page
 
@@ -115,8 +116,11 @@ const OrderPage: FC = () => {
         isUserClientOfProject={isUserClientOfProject}
       />
 
+      <div className={classes.separator} />
+
       {map(sortBy(sub_projects, 'ext_id'), (subOrder) => (
-        <div key={subOrder.id}>{subOrder.id}</div>
+        // TODO: if needed we can already display some of the info from "subOrder" here
+        <SubOrderSection {...subOrder} key={subOrder.id} />
       ))}
     </>
   )

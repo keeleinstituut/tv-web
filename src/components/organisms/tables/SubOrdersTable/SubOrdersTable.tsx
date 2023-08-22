@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, includes, find } from 'lodash'
+import { map, includes } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -117,9 +117,8 @@ const SubOrdersTable: FC = () => {
   const columns = [
     columnHelper.accessor('ext_id', {
       header: () => t('label.sub_order_id'),
-      cell: ({ getValue, row }) => {
+      cell: ({ getValue }) => {
         const orderExtId = getValue()
-        const subOrder = find(subOrders, { ext_id: orderExtId })
         // TODO: currently parent order id is not passed for subOrder
         // Once it is, we should select it here
         // Alternative would be for BE to make subOrders available by ext_id
@@ -137,7 +136,7 @@ const SubOrdersTable: FC = () => {
             disabled={
               !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
             }
-            href={`/orders/${parentOrderId}#${subOrder?.id}`}
+            href={`/orders/${parentOrderId}#${orderExtId}`}
           >
             {orderExtId}
           </Button>

@@ -53,7 +53,6 @@ const useOrderPageRedirect = ({
 
   useEffect(() => {
     if (!isLoading && !client_user_institution_id) {
-      // TODO: no order exists
       navigate(-1)
       showNotification({
         type: NotificationTypes.Warning,
@@ -70,7 +69,7 @@ const useOrderPageRedirect = ({
     }
     // We want to be certain that this only runs when privilege changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canUserViewOrder])
+  }, [canUserViewOrder, navigate])
 }
 
 export default useOrderPageRedirect

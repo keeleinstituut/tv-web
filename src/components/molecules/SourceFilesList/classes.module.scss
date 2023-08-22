@@ -1,0 +1,118 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  flex: 1;
+
+  .generateSection {
+    margin-top: spacing(4);
+  }
+}
+
+.filesListContainer {
+  box-shadow: unset;
+  border: unset;
+
+  .iconButton {
+    width: 21px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+      width: 21px;
+      height: 20px;
+    }
+  }
+  
+  .downloadButton {
+    svg {
+      path {
+        fill: $color-primary;
+      }
+    }
+  }
+
+  .row {
+    display: flex;
+  }
+
+  .innerTooltip {
+    margin-left: spacing(2);
+  }
+
+  // thead {
+  //   tr {
+  //     th {
+  //       &:nth-child(2) {
+  //         width: 178px;
+  //       }
+  //     }
+  //   }
+  // }
+
+
+  tbody {
+    tr {
+      td {
+        &:nth-last-child(2),
+        &:last-child {
+          padding: spacing(1);
+        }
+      }
+    }
+  }
+
+  .fitContent {
+    width: fit-content;
+  }
+}
+
+.titleRow {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: spacing(4);
+
+  .fileImportButton {
+    margin-left: auto
+  }
+
+  h3 {
+    @include h4TextStyle;
+    margin-right: spacing(2);
+  }
+}
+
+.filesTable {
+  flex: 1;
+}
+
+.altFilesContainer {
+  display: grid;
+  grid-template-columns: minmax(194px, max-content) max-content max-content;
+  grid-row-gap: spacing(2);
+  grid-column-gap: spacing(4);
+  align-items: center;
+  margin-bottom: spacing(8);
+
+  h3 {
+    grid-column: 1/4;
+    font-size: $font-size-16;
+    margin-bottom: spacing(2);
+  }
+
+  label {
+    font-size: $font-size-16;
+    font-weight: $font-weight-bold;
+  }
+
+  span {
+    font-size: $font-size-14;
+  }
+
+  button {
+    width: 16px;
+    height: 17px;
+  }
+}
