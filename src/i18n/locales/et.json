@@ -363,7 +363,7 @@
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
     "tag_added": "Silt on edukalt lisatud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
-    "department_added": "Üksus {{name}} edukalt lisatud",
+    "department_changed": "Üksus {{name}} edukalt uuendatud",
     "department_updated": "Üksused edukalt uuendatud",
     "order_created": "Tellimus on edukalt loodud",
     "tag_updated": "Silt on edukalt uuendatud.",

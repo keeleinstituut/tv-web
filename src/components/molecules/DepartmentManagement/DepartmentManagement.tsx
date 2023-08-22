@@ -7,10 +7,13 @@ import {
 
 import EditableListContainer from 'components/molecules/EditableListContainer/EditableListContainer'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-import { EditDataType } from 'components/organisms/modals/EditableListModal/EditableListModal'
+import {
+  DataStateTypes,
+  EditDataType,
+} from 'components/organisms/modals/EditableListModal/EditableListModal'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { includes } from 'lodash'
+import { filter, includes, isEmpty } from 'lodash'
 
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
@@ -19,16 +22,23 @@ const DepartmentManagement: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { existingDepartments } = useDepartmentsFetch()
-  const { parallelUpdating, isLoading } = useParallelMutationDepartment()
+  const { parallelUpdating } = useParallelMutationDepartment()
 
   const handleOnSubmit = useCallback(
     async (values: EditDataType[]) => {
-      await parallelUpdating(values)
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.department_updated'),
-      })
+      const filteredPayload = filter(
+        values,
+        ({ state }) => state !== DataStateTypes.OLD
+      )
+
+      if (!isEmpty(filteredPayload)) {
+        await parallelUpdating(values)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.department_updated'),
+        })
+      }
     },
     [parallelUpdating, t]
   )
@@ -38,7 +48,6 @@ const DepartmentManagement: FC = () => {
       editableData: existingDepartments,
       title: t('modal.edit_departments'),
       handleOnSubmit: handleOnSubmit,
-      isLoading: isLoading,
       hasAddingPrivileges: includes(userPrivileges, Privileges.AddDepartment),
       hasDeletingPrivileges: includes(
         userPrivileges,

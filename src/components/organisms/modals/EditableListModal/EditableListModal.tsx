@@ -19,6 +19,7 @@ import {
   filter,
   includes,
   isArray,
+  isEmpty,
   isEqual,
   join,
   map,
@@ -27,6 +28,7 @@ import {
   size,
   split,
   toNumber,
+  uniqueId,
 } from 'lodash'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
@@ -56,7 +58,6 @@ export interface EditableListModalProps {
   editableData?: EditDataType[]
   title?: string
   type?: TagTypes
-  isLoading?: boolean
   handleOnSubmit?: (values: EditDataType[]) => void
   inputValidator?: (value?: string | undefined) => string | true
   hasAddingPrivileges?: boolean
@@ -74,7 +75,6 @@ const EditableListModal: FC<EditableListModalProps> = ({
   title,
   type,
   handleOnSubmit,
-  isLoading,
   inputValidator,
   hasAddingPrivileges,
   hasDeletingPrivileges,
@@ -100,14 +100,21 @@ const EditableListModal: FC<EditableListModalProps> = ({
     [editableData]
   )
 
-  const { control, handleSubmit, reset, setError, resetField, setValue } =
-    useForm<FormValues>({
-      values: defaultValues,
-      resetOptions: {
-        keepDirtyValues: true, // keep dirty fields unchanged, but update defaultValues
-        keepErrors: true,
-      },
-    })
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    resetField,
+    setValue,
+    formState: { isSubmitting, isValid },
+  } = useForm<FormValues>({
+    values: defaultValues,
+    resetOptions: {
+      keepDirtyValues: true, // keep dirty fields unchanged, but update defaultValues
+      keepErrors: true,
+    },
+  })
 
   const editableFields: FieldProps<FormValues>[] = map(
     editableData,
@@ -119,6 +126,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
       rules: {
         validate: inputValidator,
       },
+      id: id,
       className: classes.editTagInput,
       ...(hasDeletingPrivileges
         ? { handleDelete: () => handleOnDelete(name, id) }
@@ -131,24 +139,30 @@ const EditableListModal: FC<EditableListModalProps> = ({
 
   const [prevDeletedValues, setPrevDeletedValues] = useState<EditDataType[]>([])
 
-  const addInputField = () =>
+  const addInputField = () => {
+    const newId = uniqueId()
+
     setInputFields([
       ...inputFields,
       {
+        id: newId,
         inputType: InputTypes.Text,
         ariaLabel: t('tag.tag_name'),
-        name: `new_${size(inputFields)}` || '',
+        name: `new_${size(inputFields)}_${newId}`,
         type: 'text',
         rules: {
           validate: inputValidator,
         },
         className: classes.editTagInput,
         ...(hasDeletingPrivileges
-          ? { handleDelete: () => handleOnDelete(`new_${size(inputFields)}`) }
+          ? {
+              handleDelete: () =>
+                handleOnDelete(`new_${size(inputFields)}_${newId}`),
+            }
           : {}),
       },
     ])
-
+  }
   const handleOnDelete = (name?: string, id?: string) => {
     resetField(id || name || '')
     setPrevDeletedValues((prevDeletedValues) => [
@@ -224,7 +238,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
               }
             })
           }
-          if (error.values) {
+          if (!isEmpty(error.values)) {
             const updatedNames = join(
               map(error.values, ({ value }) => {
                 return value.data.name
@@ -235,7 +249,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
             showNotification({
               type: NotificationTypes.Warning,
               title: t('notification.announcement'),
-              content: t('success.department_added', { name: updatedNames }),
+              content: t('success.department_changed', { name: updatedNames }),
             })
             map(error.values, ({ value, key }) => {
               const { data } = value
@@ -277,8 +291,9 @@ const EditableListModal: FC<EditableListModalProps> = ({
           appearance: AppearanceTypes.Primary,
           form: 'editableList',
           children: t('button.save'),
-          loading: isLoading,
+          loading: isSubmitting,
           type: 'submit',
+          disabled: !isValid,
         },
       ]}
     >

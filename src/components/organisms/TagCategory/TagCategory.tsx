@@ -22,7 +22,7 @@ type TagCategoryTypes = {
 }
 
 const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
-  const { updateTags, isLoading: isUpdatingTags } = useBulkUpdate({ type })
+  const { updateTags } = useBulkUpdate({ type })
   const { tagInputValidator } = useValidators()
   const { userPrivileges } = useAuth()
 
@@ -64,7 +64,6 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
       title: t('modal.edit_category_tag'),
       handleOnSubmit: handleOnSubmitTags,
       type,
-      isLoading: isUpdatingTags,
       inputValidator: tagInputValidator,
       hasAddingPrivileges: includes(userPrivileges, Privileges.AddTag),
       hasDeletingPrivileges: includes(userPrivileges, Privileges.DeleteTag),
