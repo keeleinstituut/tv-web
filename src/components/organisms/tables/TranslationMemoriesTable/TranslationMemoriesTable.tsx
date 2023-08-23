@@ -20,18 +20,14 @@ import {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useFetchOrders } from 'hooks/requests/useOrders'
-import { OrderStatus } from 'types/orders'
 import Tag from 'components/atoms/Tag/Tag'
-import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
-import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { TranslationMemoryStatus } from 'types/translationMemories'
-
-// TODO: statuses might come from BE instead
-// Currently unclear
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
 
 type TranslationMemoriesTableRow = {
   id: string
@@ -42,9 +38,6 @@ type TranslationMemoriesTableRow = {
 }
 
 const columnHelper = createColumnHelper<TranslationMemoriesTableRow>()
-
-// TODO: we keep all filtering and sorting options inside form
-// This was we can do a new request easily every time form values change
 interface FormValues {
   status?: TranslationMemoryStatus[]
   own_orders: boolean
@@ -62,10 +55,13 @@ const TranslationMemoriesTable: FC = () => {
     handlePaginationChange,
   } = useFetchOrders()
 
-  //   const { tagsFilters = [] } =
-  //     useFetchTags({
-  //       type: TagTypes.Order,
-  //     })
+  const { tagsFilters: tagsOptions } = useFetchTags({
+    type: TagTypes.TranslationMemories,
+  })
+
+  const { classifierValuesFilters: domainOptions } = useClassifierValuesFetch({
+    type: ClassifierValueType.TranslationDomain,
+  })
 
   const tagsFilters = ['asutusesiseseks kasutuseks', 'turundus']
 
@@ -173,7 +169,7 @@ const TranslationMemoriesTable: FC = () => {
       },
       size: 520,
       meta: {
-        filterOption: { tags: statusFilters },
+        filterOption: { tags: tagsOptions },
         showSearch: true,
       },
     }),
@@ -182,7 +178,7 @@ const TranslationMemoriesTable: FC = () => {
       footer: (info) => info.column.id,
       size: 375,
       meta: {
-        filterOption: { tags: statusFilters },
+        filterOption: { tags: domainOptions },
         showSearch: true,
       },
     }),

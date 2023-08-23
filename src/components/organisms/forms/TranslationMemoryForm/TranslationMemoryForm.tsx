@@ -15,6 +15,7 @@ import { TranslationMemoryStatus } from 'types/translationMemories'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import { useNavigate } from 'react-router-dom'
 
 interface FormValues {
   name: string
@@ -26,6 +27,7 @@ interface FormValues {
 
 const TranslationMemoryForm: FC = () => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   const { classifierValuesFilters: languageOptions } = useClassifierValuesFetch(
     { type: ClassifierValueType.Language }
@@ -56,12 +58,15 @@ const TranslationMemoryForm: FC = () => {
 
   useEffect(() => {
     if (statusValue !== TranslationMemoryStatus.Internal) {
-      showModal(ModalTypes.TranslationMemoryModal, {
+      showModal(ModalTypes.ConfirmationModal, {
         handleCancel: () =>
           setValue('status', TranslationMemoryStatus.Internal),
+        title: t('translation_memories.confirmation_text'),
+        cancelButtonContent: t('button.cancel'),
+        helperText: t('translation_memories.confirmation_help_text'),
       })
     }
-  }, [setValue, statusValue])
+  }, [setValue, statusValue, t])
 
   const fields: FieldProps<FormValues>[] = [
     {
@@ -130,12 +135,14 @@ const TranslationMemoryForm: FC = () => {
       //TODO add endpoint for creating a translation memory
 
       try {
-        // await updateUser(payload)
+        // const { id } = await createOrder(payload)
+        const id = '99c8bbac-b9bf-4b3b-835a-bc0865ea2168'
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
           content: t('success.translation_memory_created'),
         })
+        navigate(`/memories/${id}`)
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
@@ -151,7 +158,7 @@ const TranslationMemoryForm: FC = () => {
         }
       }
     },
-    [t, setError]
+    [t, navigate, setError]
   )
 
   return (

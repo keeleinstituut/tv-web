@@ -13,9 +13,9 @@ import { FormProgressProps } from './FormProgressModal/FormProgressModal'
 import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
 import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
-import { TranslationMemoryModalProps } from './TranslationMemoryModal/TranslationMemoryModal'
 import { ConfirmSendToCatModalProps } from './ConfirmSendToCatModal/ConfirmSendToCatModal'
 import { CatAnalysisModalProps } from './CatAnalysisModal/CatAnalysisModal'
+import { ConfirmationModalBaseProps } from './ConfirmationModalBase/ConfirmationModalBase'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -39,8 +39,8 @@ const CatSplitModal = lazy(() => import('./CatSplitModal/CatSplitModal'))
 
 const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
 
-const TranslationMemoryModal = lazy(
-  () => import('./TranslationMemoryModal/TranslationMemoryModal')
+const ConfirmationModal = lazy(
+  () => import('./ConfirmationModal/ConfirmationModal')
 )
 const CatAnalysisModal = lazy(
   () => import('./CatAnalysisModal/CatAnalysisModal')
@@ -54,7 +54,7 @@ export enum ModalTypes {
   CatSplit = 'catSplit',
   CatMerge = 'catMerge',
   EditableListModal = 'editableListModal',
-  TranslationMemoryModal = 'translationMemoryModal',
+  ConfirmationModal = 'confirmationModal',
   ConfirmSendToCat = 'confirmSendToCat',
   CatAnalysis = 'catAnalysis',
 }
@@ -68,7 +68,7 @@ type ModalPropTypes =
   | Omit<CatSplitModalProps, 'closeModal'>
   | Omit<CatMergeModalProps, 'closeModal'>
   | Omit<EditableListModalProps, 'closeModal'>
-  | Omit<TranslationMemoryModalProps, 'closeModal'>
+  | Omit<ConfirmationModalBaseProps, 'closeModal'>
   | Omit<ConfirmSendToCatModalProps, 'closeModal'>
   | Omit<CatAnalysisModalProps, 'closeModal'>
 
@@ -80,7 +80,7 @@ const MODALS = {
   catSplit: CatSplitModal,
   catMerge: CatMergeModal,
   editableListModal: EditableListModal,
-  translationMemoryModal: TranslationMemoryModal,
+  confirmationModal: ConfirmationModal,
   confirmSendToCat: ConfirmSendToCatModal,
   catAnalysis: CatAnalysisModal,
 }

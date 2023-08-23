@@ -1,21 +1,15 @@
 import Loader from 'components/atoms/Loader/Loader'
-import { useFetchOrder } from 'hooks/requests/useOrders'
 import { FC } from 'react'
 import { map, includes, sortBy } from 'lodash'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
-import { OrderStatus } from 'types/orders'
-// import SubOrderSection from 'components/templates/SubOrderSection/SubOrderSection'
-import OrderDetails, {
-  OrderDetailModes,
-} from 'components/organisms/OrderDetails/OrderDetails'
 import useOrderPageRedirect from 'hooks/useOrderPageRedirect'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import TranslationMemoryDetails from 'components/organisms/TranslationMemoryDetails/TranslationMemoryDetails'
+import TranslationMemorySubOrdersTable from 'components/organisms/tables/TranslationMemorySubOrdersTable/TranslationMemorySubOrdersTable'
 
 // TODO: WIP - implement this page
 
@@ -46,16 +40,7 @@ const TranslationMemoryPage: FC = () => {
         />
       </div>
       <TranslationMemoryDetails memoryId={orderId} />
-
-      {/* <OrderDetails
-        mode={OrderDetailModes.Editable}
-        order={order}
-        isUserClientOfProject={isUserClientOfProject}
-      />
-
-      {map(sortBy(sub_projects, 'ext_id'), (subOrder) => (
-        <div key={subOrder.id}>{subOrder.id}</div>
-      ))} */}
+      <TranslationMemorySubOrdersTable />
     </>
   )
 }
