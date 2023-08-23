@@ -14,6 +14,8 @@ import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
 import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
 import { EditVendorPriceListModalProps } from './EditVendorPriceListModal/EditVendorPriceListModal'
+import { ConfirmSendToCatModalProps } from './ConfirmSendToCatModal/ConfirmSendToCatModal'
+import { CatAnalysisModalProps } from './CatAnalysisModal/CatAnalysisModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -32,9 +34,17 @@ const EditVendorPriceListModal = lazy(
   () => import('./EditVendorPriceListModal/EditVendorPriceListModal')
 )
 
+const ConfirmSendToCatModal = lazy(
+  () => import('./ConfirmSendToCatModal/ConfirmSendToCatModal')
+)
+
 const CatSplitModal = lazy(() => import('./CatSplitModal/CatSplitModal'))
 
 const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
+
+const CatAnalysisModal = lazy(
+  () => import('./CatAnalysisModal/CatAnalysisModal')
+)
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
@@ -45,6 +55,8 @@ export enum ModalTypes {
   CatMerge = 'catMerge',
   EditableListModal = 'editableListModal',
   EditableVendorPriceList = 'editableVendorPriceList',
+  ConfirmSendToCat = 'confirmSendToCat',
+  CatAnalysis = 'catAnalysis',
 }
 
 // Add other modal props types here as well
@@ -57,6 +69,8 @@ type ModalPropTypes =
   | Omit<CatMergeModalProps, 'closeModal'>
   | Omit<EditableListModalProps, 'closeModal'>
   | Omit<EditVendorPriceListModalProps, 'closeModal'>
+  | Omit<ConfirmSendToCatModalProps, 'closeModal'>
+  | Omit<CatAnalysisModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
@@ -67,6 +81,8 @@ const MODALS = {
   catMerge: CatMergeModal,
   editableListModal: EditableListModal,
   editableVendorPriceList: EditVendorPriceListModal,
+  confirmSendToCat: ConfirmSendToCatModal,
+  catAnalysis: CatAnalysisModal,
 }
 
 interface RefType {

@@ -46,6 +46,7 @@ type DataTableProps<TData extends RowData> = {
   className?: string
   subRows?: Row<TData>[] | undefined
   pageSizeOptions?: { label: string; value: string }[]
+  wrapperId?: string
   getSubRows?:
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
@@ -74,6 +75,7 @@ const DataTable = <TData,>(
     hidePagination = false,
     headComponent,
     className,
+    wrapperId = 'tableWrapper',
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -117,7 +119,7 @@ const DataTable = <TData,>(
         {title}
       </h4>
       {headComponent}
-      <div className={classes.tableWrapper} id="tableWrapper">
+      <div className={classes.tableWrapper} id={wrapperId}>
         <table className={classNames(classes.dataTable, classes[tableSize])}>
           <TableHeaderGroup
             table={table}

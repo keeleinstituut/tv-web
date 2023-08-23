@@ -98,7 +98,13 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
     const { inputType, onlyDisplay } = props
 
     if (onlyDisplay) {
-      return <DisplayValue value={props.value} label={props.label} {...props} />
+      return (
+        <DisplayValue
+          value={props.value}
+          label={props.label}
+          {...omit(props, 'errorZIndex')}
+        />
+      )
     }
 
     switch (inputType) {

@@ -10,10 +10,13 @@
   @include labelTextStyle;
   display: inline-block;
   padding-right: spacing(2.5);
+  text-align: end;
 }
 
 .innerWrapper {
   display: flex;
+  width: 274px;
+  justify-content: space-between;
 
   .timePicker {
     width: unset;

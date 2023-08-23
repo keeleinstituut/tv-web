@@ -1,0 +1,11 @@
+@import 'styles/variables';
+
+.firstSection,
+.secondSection {
+  margin-bottom: spacing(4);
+  color: $color-primary;
+}
+
+.secondSection {
+  font-style: italic;
+}

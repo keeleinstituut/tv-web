@@ -1,7 +1,9 @@
-import { FC, useCallback, useState } from 'react'
+import { FC } from 'react'
 import ConfirmationModalBase, {
   ConfirmationModalBaseProps,
 } from 'components/organisms/modals/ConfirmationModalBase/ConfirmationModalBase'
+import { useTranslation } from 'react-i18next'
+import classes from './classes.module.scss'
 
 // TODO: this is WIP code for suborder view
 
@@ -15,16 +17,14 @@ const CatMergeModal: FC<CatMergeModalProps> = ({
   handleMerge,
   ...rest
 }) => {
+  const { t } = useTranslation()
   return (
     <ConfirmationModalBase
       {...rest}
       handleProceed={handleMerge}
+      title={t('modal.cat_merge_title')}
       modalContent={
-        <>
-          <div>
-            <h1>Kas oled kindel, et soovid failid kokku liita?</h1>
-          </div>
-        </>
+        <p className={classes.content}>{t('modal.cat_merge_content')}</p>
       }
     />
   )
