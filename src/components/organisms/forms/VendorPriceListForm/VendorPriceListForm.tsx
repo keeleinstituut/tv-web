@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   chain,
@@ -39,7 +39,7 @@ import AddVendorPricesTable from 'components/organisms/tables/AddVendorPricesTab
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import { ClassifierValueType } from 'types/classifierValues'
-import { CreatePricesPayload, OrderBy, OrderDirection } from 'types/vendors'
+import { CreatePricesPayload } from 'types/vendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
@@ -162,7 +162,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     type: ClassifierValueType.Language,
   })
 
-  const { prices, id: vendor_id } = vendor
+  const { id: vendor_id } = vendor
 
   const { createPrices, isLoading: isCreatingPrices } =
     useCreatePrices(vendor_id)
@@ -170,11 +170,12 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { updatePrices, isLoading: isUpdatingPrices } =
     useUpdatePrices(vendor_id)
 
-  const { data: pricesData } = useFetchPrices({
+  const {
+    prices: pricesData,
+    paginationData,
+    handlePaginationChange,
+  } = useFetchPrices({
     vendor_id,
-    limit: 1,
-    order_by: OrderBy.CreatedAt,
-    order_direction: OrderDirection.Asc,
   })
 
   const priceListCreated = dayjs(
@@ -184,18 +185,20 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     pricesData ? pricesData[0]?.updated_at : ''
   ).format('DD.MM.YYYY hh:mm')
 
-  const groupedLanguagePairData = chain(prices)
-    .groupBy(
-      (item) =>
-        `${item.src_lang_classifier_value_id}.${item.dst_lang_classifier_value_id}`
-    )
-    .map((items) => {
-      return {
-        language_direction: `${items[0].source_language_classifier_value.name} > ${items[0].destination_language_classifier_value.name} `,
-        subRows: items,
-      }
-    })
-    .value()
+  const groupedLanguagePairData = useMemo(() => {
+    return chain(pricesData)
+      .groupBy(
+        (item) =>
+          `${item.src_lang_classifier_value_id}.${item.dst_lang_classifier_value_id}`
+      )
+      .map((items) => {
+        return {
+          language_direction: `${items[0].source_language_classifier_value.name} > ${items[0].destination_language_classifier_value.name} `,
+          subRows: items,
+        }
+      })
+      .value()
+  }, [pricesData])
 
   const { handleSubmit, control, reset, setValue } = useForm<FormValues>({
     reValidateMode: 'onChange',
@@ -345,7 +348,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
     showModal(ModalTypes.EditableVendorPriceList, {
       submitForm: handleSubmit(onEditPricesSubmit),
-      // resetForm: resetForm(),
       title: t('vendors.price_list_change'),
       helperText: t('vendors.price_list_change_description'),
       modalContent: (
@@ -356,33 +358,34 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           dstLanguageValues={[dstLanguageValue]}
         />
       ),
+      isLoading: isUpdatingPrices,
     })
   }
 
   const columnHelper = createColumnHelper<PriceObject>()
 
-  // const [myState, setMyState] = useState(false)
-
   const columns = [
     columnHelper.accessor('language_direction', {
       header: () => t('vendors.language_direction'),
-      cell: ({ row, getValue }) => {
-        const languageDirection = row.original.language_direction
+      cell: ({ row }) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        useEffect(() => {
+          if (row.getCanExpand()) {
+            row.toggleExpanded(true)
+          }
+        }, [row])
 
-        if (row.getCanExpand()) {
-          row.toggleExpanded(true)
-        }
+        const languageDirection = row.original.language_direction
 
         return (
           <>
             {row.getCanExpand() && (
               <Button
                 onClick={() => row.toggleExpanded()}
-                // onClick={row.getToggleExpandedHandler()}
                 appearance={AppearanceTypes.Text}
+                hidden
               />
             )}
-            {/* {getValue()} */}
             <p className={languageDirection && classes.languageTag}>
               {languageDirection}
             </p>
@@ -560,6 +563,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               ? classes.vendorPricesContainer
               : classes.hiddenVendorPrices
           }
+          paginationData={paginationData}
+          onPaginationChange={handlePaginationChange}
           title={
             <div className={classes.pricesDataTableHeader}>
               {t('vendors.vendor_price_list_title')}

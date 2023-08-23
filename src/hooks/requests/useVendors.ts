@@ -82,17 +82,22 @@ export const useFetchSkills = () => {
 }
 
 export const useFetchPrices = (initialFilters?: GetPricesPayload) => {
-  const { filters } = useFilters<GetPricesPayload>(initialFilters)
+  const { filters, handlePaginationChange } =
+    useFilters<GetPricesPayload>(initialFilters)
 
   const { isLoading, isError, data } = useQuery<PricesDataType>({
     queryKey: ['prices', filters],
     queryFn: () => apiClient.get(endpoints.PRICES, filters),
   })
 
+  const { meta: paginationData, data: prices } = data || {}
+
   return {
     isLoading,
     isError,
-    data: data?.data,
+    prices,
+    paginationData,
+    handlePaginationChange,
   }
 }
 

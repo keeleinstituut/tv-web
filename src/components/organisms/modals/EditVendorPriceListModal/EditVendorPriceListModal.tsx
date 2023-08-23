@@ -19,6 +19,7 @@ export interface EditVendorPriceListModalProps {
   helperText?: string
   submitForm?: () => void
   resetForm?: () => void
+  isLoading?: boolean
 }
 
 const EditVendorPriceListModal: FC<EditVendorPriceListModalProps> = ({
@@ -29,6 +30,7 @@ const EditVendorPriceListModal: FC<EditVendorPriceListModalProps> = ({
   helperText,
   resetForm,
   submitForm,
+  isLoading,
 }) => {
   const { t } = useTranslation()
 
@@ -66,6 +68,7 @@ const EditVendorPriceListModal: FC<EditVendorPriceListModalProps> = ({
           appearance: AppearanceTypes.Primary,
           onClick: handleProceed,
           children: t('button.save'),
+          loading: isLoading,
         },
       ]}
     >

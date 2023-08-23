@@ -148,6 +148,7 @@ export type UpdatedPrices = {
 
 export type PricesDataType = {
   data: PricesData[]
+  meta?: ResponseMetaTypes
 }
 
 export interface GetPricesPayload {
