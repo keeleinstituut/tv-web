@@ -16,14 +16,14 @@ import {
 
 import classes from './classes.module.scss'
 
-type AddPricesTableProps = {
+type EditPricesTableProps = {
   control: Control<FormValues>
-  editableSkill: PriceObject[]
+  editableSkills: PriceObject[]
 }
 
-const EditVendorPricesTable: FC<AddPricesTableProps> = ({
+const EditVendorPricesTable: FC<EditPricesTableProps> = ({
   control,
-  editableSkill,
+  editableSkills,
 }) => {
   const { t } = useTranslation()
 
@@ -44,7 +44,6 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.character_fee')}
-            type="number"
             className={classes.pricesInput}
           />
         )
@@ -61,7 +60,6 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.word_fee')}
-            type="number"
             className={classes.pricesInput}
           />
         )
@@ -78,7 +76,6 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.page_fee')}
-            type="number"
             className={classes.pricesInput}
           />
         )
@@ -95,7 +92,6 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minute_fee')}
-            type="number"
             className={classes.pricesInput}
           />
         )
@@ -112,7 +108,6 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.hour_fee')}
-            type="number"
             className={classes.pricesInput}
           />
         )
@@ -129,7 +124,6 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minimal_fee')}
-            type="number"
             className={classes.pricesInput}
           />
         )
@@ -140,7 +134,7 @@ const EditVendorPricesTable: FC<AddPricesTableProps> = ({
 
   return (
     <DataTable
-      data={editableSkill}
+      data={editableSkills}
       columns={columns}
       tableSize={TableSizeTypes.L}
       hidePagination

@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { chain, includes, isEmpty } from 'lodash'
+import { chain, includes, isEmpty, map, toString } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useFetchPrices, useFetchSkills } from 'hooks/requests/useVendors'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -30,12 +30,12 @@ export type FormValues = {
 
 export type PriceObject = {
   id: string
-  character_fee: number
-  word_fee: number
-  page_fee: number
-  minute_fee: number
-  hour_fee: number
-  minimal_fee: number
+  character_fee: number | string
+  word_fee: number | string
+  page_fee: number | string
+  minute_fee: number | string
+  hour_fee: number | string
+  minimal_fee: number | string
   skill_id: string
   skill?: { id: string; name: string }
   language_direction?: string
@@ -79,7 +79,36 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       .map((items) => {
         return {
           language_direction: `${items[0].source_language_classifier_value.name} > ${items[0].destination_language_classifier_value.name} `,
-          subRows: items,
+          subRows: map(
+            items,
+            ({
+              character_fee,
+              hour_fee,
+              minimal_fee,
+              minute_fee,
+              page_fee,
+              word_fee,
+              skill_id,
+              skill,
+              source_language_classifier_value,
+              destination_language_classifier_value,
+              id,
+            }) => {
+              return {
+                character_fee: `${toString(character_fee)}€`,
+                hour_fee: `${toString(hour_fee)}€`,
+                minimal_fee: `${toString(minimal_fee)}€`,
+                minute_fee: `${toString(minute_fee)}€`,
+                page_fee: `${toString(page_fee)}€`,
+                word_fee: `${toString(word_fee)}€`,
+                skill_id,
+                skill,
+                source_language_classifier_value,
+                destination_language_classifier_value,
+                id,
+              }
+            }
+          ),
         }
       })
       .value()

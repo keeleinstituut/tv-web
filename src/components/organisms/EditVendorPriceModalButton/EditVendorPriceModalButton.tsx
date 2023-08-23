@@ -6,7 +6,7 @@ import {
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ReactComponent as Edit } from 'assets/icons/edit.svg'
 import { useTranslation } from 'react-i18next'
-import { map, toNumber } from 'lodash'
+import { map, replace, toNumber, toString } from 'lodash'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import VendorPriceListEditContent from 'components/organisms/VendorPriceListEditContent/VendorPriceListEditContent'
 import {
@@ -61,12 +61,12 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
         }) => {
           return {
             id: id,
-            character_fee: toNumber(character_fee),
-            hour_fee: toNumber(hour_fee),
-            minimal_fee: toNumber(minimal_fee),
-            minute_fee: toNumber(minute_fee),
-            page_fee: toNumber(page_fee),
-            word_fee: toNumber(word_fee),
+            character_fee: toNumber(replace(toString(character_fee), '€', '')),
+            hour_fee: toNumber(replace(toString(hour_fee), '€', '')),
+            minimal_fee: toNumber(replace(toString(minimal_fee), '€', '')),
+            minute_fee: toNumber(replace(toString(minute_fee), '€', '')),
+            page_fee: toNumber(replace(toString(page_fee), '€', '')),
+            word_fee: toNumber(replace(toString(word_fee), '€', '')),
           }
         }
       )
@@ -132,7 +132,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
       modalContent: (
         <VendorPriceListEditContent
           control={control}
-          editableSkill={languagePairModalData}
+          editableSkills={languagePairModalData}
           srcLanguageValue={srcLanguageValue}
           dstLanguageValues={[dstLanguageValue]}
         />

@@ -10,14 +10,14 @@ import EditVendorPricesTable from 'components/organisms/tables/EditVendorPricesT
 
 type VendorPriceListEditContentProps = {
   control: Control<FormValues>
-  editableSkill: PriceObject[]
+  editableSkills: PriceObject[]
   srcLanguageValue?: string
   dstLanguageValues?: string[]
 }
 
 const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
   control,
-  editableSkill,
+  editableSkills,
   srcLanguageValue,
   dstLanguageValues,
 }) => {
@@ -30,7 +30,7 @@ const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
       />
       <Root>
         <EditVendorPricesTable
-          editableSkill={editableSkill}
+          editableSkills={editableSkills}
           control={control}
         />
       </Root>
