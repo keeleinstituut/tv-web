@@ -111,7 +111,6 @@ const EditableListModal: FC<EditableListModalProps> = ({
   } = useForm<FormValues>({
     values: defaultValues,
     resetOptions: {
-      keepDirtyValues: true, // keep dirty fields unchanged, but update defaultValues
       keepErrors: true,
     },
   })
@@ -125,6 +124,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
       name: id || '',
       rules: {
         validate: inputValidator,
+        required: true,
       },
       id: id,
       className: classes.editTagInput,
@@ -163,8 +163,10 @@ const EditableListModal: FC<EditableListModalProps> = ({
       },
     ])
   }
+
   const handleOnDelete = (name?: string, id?: string) => {
-    resetField(id || name || '')
+    const fieldName = id ? id : name || ''
+    resetField(fieldName)
     setPrevDeletedValues((prevDeletedValues) => [
       ...prevDeletedValues,
       { name, id },

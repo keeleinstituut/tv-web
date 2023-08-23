@@ -472,6 +472,7 @@
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",
     "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",
-    "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja"
+    "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja",
+    "no_changes_made": "Andmetes puuduvad muudatused"
   }
 }

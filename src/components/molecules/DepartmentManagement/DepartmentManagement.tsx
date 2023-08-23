@@ -38,6 +38,12 @@ const DepartmentManagement: FC = () => {
           title: t('notification.announcement'),
           content: t('success.department_updated'),
         })
+      } else {
+        showNotification({
+          type: NotificationTypes.Warning,
+          title: t('notification.announcement'),
+          content: t('warning.no_changes_made'),
+        })
       }
     },
     [parallelUpdating, t]
