@@ -2,9 +2,9 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { find, map } from 'lodash'
 import { useWatch } from 'react-hook-form'
-import { VendorPriceListSecondStepProps } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 import classes from './classes.module.scss'
+import { VendorPriceListSecondStepProps } from 'components/organisms/VendorPriceListSecondStep/VendorPriceListSecondStep'
 
 export interface LanguageLabelsProps
   extends Omit<VendorPriceListSecondStepProps, 'skillsFormFields'> {
