@@ -48,7 +48,7 @@ const Tags: FC = () => {
 
   const sortedData = fromPairs(sortBy(toPairs(groupedData), 0))
 
-  const tagCategoryOptions = map(omit(TagTypes, TagTypes.Skills), (type) => {
+  const tagCategoryOptions = map(omit(TagTypes, 'Skills'), (type) => {
     return {
       label: t(`tag.type.${type}`),
       value: type || '',
