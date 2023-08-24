@@ -67,6 +67,7 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
       inputValidator: tagInputValidator,
       hasAddingPrivileges: includes(userPrivileges, Privileges.AddTag),
       hasDeletingPrivileges: includes(userPrivileges, Privileges.DeleteTag),
+      hasEditPrivileges: includes(userPrivileges, Privileges.EditTag),
     })
   }
 

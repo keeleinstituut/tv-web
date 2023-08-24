@@ -62,6 +62,7 @@ export interface EditableListModalProps {
   inputValidator?: (value?: string | undefined) => string | true
   hasAddingPrivileges?: boolean
   hasDeletingPrivileges?: boolean
+  hasEditPrivileges?: boolean
 }
 
 type FormValues = {
@@ -78,6 +79,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
   inputValidator,
   hasAddingPrivileges,
   hasDeletingPrivileges,
+  hasEditPrivileges,
 }) => {
   const { t } = useTranslation()
 
@@ -107,9 +109,10 @@ const EditableListModal: FC<EditableListModalProps> = ({
     setError,
     resetField,
     setValue,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting, isValid, isDirty, dirtyFields },
   } = useForm<FormValues>({
-    values: defaultValues,
+    reValidateMode: 'onChange',
+    defaultValues: defaultValues,
     resetOptions: {
       keepErrors: true,
     },
@@ -127,8 +130,9 @@ const EditableListModal: FC<EditableListModalProps> = ({
         required: true,
       },
       id: id,
+      disabled: !hasEditPrivileges,
       className: classes.editTagInput,
-      ...(hasDeletingPrivileges
+      ...(hasDeletingPrivileges && !includes(id, 'new_')
         ? { handleDelete: () => handleOnDelete(name, id) }
         : {}),
     })
@@ -155,15 +159,13 @@ const EditableListModal: FC<EditableListModalProps> = ({
           required: true,
         },
         className: classes.editTagInput,
-        ...(hasDeletingPrivileges
-          ? {
-              handleDelete: () =>
-                handleOnDelete(`new_${size(inputFields)}_${newId}`),
-            }
-          : {}),
+        handleDelete: () => handleOnDelete(`new_${size(inputFields)}_${newId}`),
       },
     ])
   }
+  const trueIsDirty =
+    (isDirty && !isEmpty(dirtyFields)) ||
+    size(editableData) !== size(inputFields)
 
   const handleOnDelete = (name?: string, id?: string) => {
     const fieldName = id ? id : name || ''
@@ -171,7 +173,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
       ...prevDeletedValues,
       { name, id },
     ])
-    setTimeout(() => resetField(fieldName), 1)
+    setTimeout(() => resetField(fieldName), 100)
   }
 
   useEffect(() => {
@@ -186,6 +188,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
 
   useEffect(() => {
     setInputFields(editableFields)
+    reset(defaultValues)
   }, [editableData])
 
   const resetForm = useCallback(() => {
@@ -297,7 +300,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
           children: t('button.save'),
           loading: isSubmitting,
           type: 'submit',
-          disabled: !isValid,
+          disabled: !isValid || !trueIsDirty,
         },
       ]}
     >
