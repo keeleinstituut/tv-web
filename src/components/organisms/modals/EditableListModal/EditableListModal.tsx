@@ -152,6 +152,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
         type: 'text',
         rules: {
           validate: inputValidator,
+          required: true,
         },
         className: classes.editTagInput,
         ...(hasDeletingPrivileges
@@ -166,20 +167,21 @@ const EditableListModal: FC<EditableListModalProps> = ({
 
   const handleOnDelete = (name?: string, id?: string) => {
     const fieldName = id ? id : name || ''
-    resetField(fieldName)
     setPrevDeletedValues((prevDeletedValues) => [
       ...prevDeletedValues,
       { name, id },
     ])
+    setTimeout(() => resetField(fieldName), 1)
   }
 
   useEffect(() => {
-    const deleteFields = filter(inputFields, (field) => {
+    const withoutDeleteFields = filter(inputFields, (field) => {
       const values = map(prevDeletedValues, ({ name }) => name)
       const name = !field?.label ? field?.name : field?.label
       return !includes(values, name)
     })
-    setInputFields(deleteFields)
+
+    setInputFields(withoutDeleteFields)
   }, [prevDeletedValues])
 
   useEffect(() => {
