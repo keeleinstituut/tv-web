@@ -1,23 +1,21 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { chain, includes, isEmpty, map, toString } from 'lodash'
+import { chain, isEmpty, map, toString } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useFetchPrices, useFetchSkills } from 'hooks/requests/useVendors'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { useForm } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import EditVendorPriceModalButton from 'components/organisms/EditVendorPriceModalButton/EditVendorPriceModalButton'
 import AddVendorPriceModalButton from 'components/organisms/AddVendorPriceModalButton/AddVendorPriceModalButton'
+import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButton/DeleteVendorPriceButton'
 
 import classes from './classes.module.scss'
-import { Privileges } from 'types/privileges'
-import useAuth from 'hooks/useAuth'
 
 export type FormValues = {
   src_lang_classifier_value_id?: string
@@ -50,7 +48,6 @@ export type PriceObject = {
 
 const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
 
   const { data: skillsData } = useFetchSkills()
   const { id: vendor_id } = vendor
@@ -207,14 +204,10 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               handleSubmit={handleSubmit}
               vendorId={vendor_id}
               resetForm={resetForm}
-              hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
             />
-            <Button
-              appearance={AppearanceTypes.Text}
-              icon={Delete}
-              ariaLabel={t('vendors.delete')}
-              className={classes.deleteIcon}
-              // handle delete
+            <DeleteVendorPriceButton
+              languagePairModalContent={languagePairModalContent}
+              vendorId={vendor_id}
             />
           </div>
         )

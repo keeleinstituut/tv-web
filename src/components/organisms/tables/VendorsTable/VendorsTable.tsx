@@ -102,7 +102,7 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
       header: () => t('label.language_directions'),
       cell: ({ getValue }) => {
         return (
-          <div className={classes.tagsRow}>
+          <div className={classes.languageRow}>
             {map(getValue(), (value) => (
               <Tag label={value} value key={value} />
             ))}

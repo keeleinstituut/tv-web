@@ -6,7 +6,7 @@ import {
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ReactComponent as Edit } from 'assets/icons/edit.svg'
 import { useTranslation } from 'react-i18next'
-import { map, replace, toNumber, toString } from 'lodash'
+import { includes, map, replace, toNumber, toString } from 'lodash'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import VendorPriceListEditContent from 'components/organisms/VendorPriceListEditContent/VendorPriceListEditContent'
 import {
@@ -19,6 +19,8 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useUpdatePrices } from 'hooks/requests/useVendors'
+import useAuth from 'hooks/useAuth'
+import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
 
@@ -29,7 +31,6 @@ type EditVendorPriceModalButtonProps = {
   handleSubmit: UseFormHandleSubmit<FormValues>
   vendorId?: string
   resetForm: () => void
-  hidden?: boolean
 }
 
 const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
@@ -39,9 +40,9 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
   handleSubmit,
   vendorId,
   resetForm,
-  hidden,
 }) => {
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
 
   const { updatePrices, isLoading: isUpdatingPrices } =
     useUpdatePrices(vendorId)
@@ -148,7 +149,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
       ariaLabel={t('vendors.edit_language_pair')}
       className={classes.editIcon}
       onClick={() => handleEditPriceModal(languagePairModalContent)}
-      hidden={hidden}
+      hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
     />
   )
 }

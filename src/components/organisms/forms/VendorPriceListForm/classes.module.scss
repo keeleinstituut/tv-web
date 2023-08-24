@@ -9,15 +9,6 @@
   display: flex;
 }
 
-.deleteIcon svg {
-  width: 22px;
-  height: 20px;
-}
-
-.deleteIcon svg path {
-  fill: $color-error;
-}
-
 .dateText {
   @include bodyTextSmallStyle;
   color: $color-input-main;

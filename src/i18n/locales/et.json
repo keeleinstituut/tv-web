@@ -395,6 +395,7 @@
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "language_pairs_prices_added": "Keelepaari(de) hinnakiri on edukalt loodud.",
     "language_pairs_prices_updated": "Keelepaari(de) hinnakiri on edukalt uuendatud.",
+    "language_pairs_prices_deleted": "Keelepaari(de) hinnakiri on edukalt kustutatud.",
     "order_updated": "Tellimus on edukalt uuendatud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud"

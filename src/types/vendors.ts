@@ -93,6 +93,9 @@ export type CreatePricesPayload = {
 export type UpdatePricesPayload = {
   data?: UpdatedPricesData[]
 }
+export type DeletePricesPayload = {
+  id?: string[]
+}
 
 export type PricesData = {
   id: string
