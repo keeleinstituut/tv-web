@@ -3,12 +3,14 @@ import ModalBase, {
   ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { FC, ReactElement, useState } from 'react'
+import { FC, ReactElement, useEffect, useState } from 'react'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
-import { find, map, size } from 'lodash'
+import { find, keys, map, size } from 'lodash'
+import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import React from 'react'
+import { Control, useFormState } from 'react-hook-form'
 
 import classes from './classes.module.scss'
-import React from 'react'
 
 interface FormDataProps {
   label: string
@@ -25,6 +27,7 @@ export interface FormProgressProps {
   submitForm?: () => void
   resetForm?: () => void
   buttonComponent?: ReactElement
+  control?: Control<FormValues>
 }
 
 const FormProgressModal: FC<FormProgressProps> = ({
@@ -34,8 +37,28 @@ const FormProgressModal: FC<FormProgressProps> = ({
   submitForm,
   resetForm,
   buttonComponent,
+  control,
 }) => {
   const [activeStep, setActiveStep] = useState(1)
+
+  const formState = useFormState({ control })
+  const formErrors = formState.errors
+  const valuesKey = keys(formErrors)[0]
+
+  const isErrorOnSecondStep = valuesKey === 'skill_id'
+  const isErrorOnFirstStep =
+    valuesKey === 'src_lang_classifier_value_id' ||
+    valuesKey === 'dst_lang_classifier_value_id'
+
+  useEffect(() => {
+    if (isErrorOnFirstStep) {
+      setActiveStep(1)
+    }
+    if (isErrorOnSecondStep) {
+      setActiveStep(2)
+    }
+  }, [isErrorOnFirstStep, isErrorOnSecondStep])
+
   const steps = map(formData, ({ label }) => {
     return { label }
   })
@@ -44,8 +67,6 @@ const FormProgressModal: FC<FormProgressProps> = ({
       if (submitForm) {
         submitForm()
       }
-      closeModal()
-      setActiveStep(1)
     } else {
       setActiveStep(activeStep + 1)
     }

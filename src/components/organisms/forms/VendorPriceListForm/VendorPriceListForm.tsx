@@ -115,8 +115,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
   const { handleSubmit, control, reset, setValue, setError } =
     useForm<FormValues>({
-      reValidateMode: 'onChange',
       defaultValues: {},
+      mode: 'onChange',
     })
 
   const resetForm = useCallback(() => {
@@ -242,6 +242,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
                 control={control}
                 handleSubmit={handleSubmit}
                 resetForm={resetForm}
+                setError={setError}
               />
             </div>
           }

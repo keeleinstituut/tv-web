@@ -6,11 +6,30 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
 import { useTranslation } from 'react-i18next'
-import { flatMap, keys, map, pickBy, toNumber } from 'lodash'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-import { Control, SubmitHandler, UseFormHandleSubmit } from 'react-hook-form'
+import {
+  flatMap,
+  includes,
+  join,
+  keys,
+  map,
+  pickBy,
+  replace,
+  toNumber,
+} from 'lodash'
+import {
+  ModalTypes,
+  closeModal,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
+import {
+  Control,
+  FieldPath,
+  SubmitHandler,
+  UseFormHandleSubmit,
+  UseFormSetError,
+} from 'react-hook-form'
 import { showNotification } from '../NotificationRoot/NotificationRoot'
-import { showValidationErrorMessage } from 'api/errorHandler'
+import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useCreatePrices, useFetchSkills } from 'hooks/requests/useVendors'
 import DynamicForm, {
@@ -31,6 +50,7 @@ type AddVendorPriceModalButtonProps = {
   handleSubmit: UseFormHandleSubmit<FormValues>
   vendorId?: string
   resetForm: () => void
+  setError: UseFormSetError<FormValues>
 }
 
 const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
@@ -38,6 +58,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
   handleSubmit,
   vendorId,
   resetForm,
+  setError,
 }) => {
   const { t } = useTranslation()
 
@@ -143,11 +164,43 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
           content: t('success.language_pairs_prices_added'),
         })
         resetForm()
+        closeModal()
       } catch (errorData) {
-        showValidationErrorMessage(errorData)
+        const typedErrorData = errorData as ValidationError
+
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            const payloadKey = keys(payload)[0]
+            const dstLangClassifierResult = replace(
+              typedKey,
+              `${payloadKey}.0.`,
+              ''
+            )
+            const srcLangClassifierResult = replace(
+              typedKey,
+              `${payloadKey}.0.`,
+              ''
+            )
+
+            if (includes(typedKey, dstLangClassifierResult)) {
+              setError(dstLangClassifierResult, {
+                type: 'backend',
+                message: errorString,
+              })
+            }
+            if (includes(typedKey, srcLangClassifierResult)) {
+              setError(srcLangClassifierResult, {
+                type: 'backend',
+                message: errorString,
+              })
+            }
+          })
+        }
       }
     },
-    [createPrices, resetForm, t, vendorId]
+    [createPrices, resetForm, setError, t, vendorId]
   )
 
   const handleAddPriceModal = () => {
@@ -198,6 +251,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
           isLoading={isCreatingPrices}
         />
       ),
+      control: control,
     })
   }
 
