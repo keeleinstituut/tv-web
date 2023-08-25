@@ -14,6 +14,7 @@ import OrderDetails, {
   OrderDetailModes,
 } from 'components/organisms/OrderDetails/OrderDetails'
 import useOrderPageRedirect from 'hooks/useOrderPageRedirect'
+import SubOrderSection from 'components/templates/SubOrderSection/SubOrderSection'
 
 // TODO: WIP - implement this page
 
@@ -40,14 +41,9 @@ const OrderButtons: FC<OrderButtonProps> = ({
 
   const canCancelInstitutionOrder =
     status === OrderStatus.New &&
-    (includes(userPrivileges, Privileges.ManageProject) ||
-      includes(userPrivileges, Privileges.ReceiveAndManageProject))
+    includes(userPrivileges, Privileges.ManageProject)
 
   //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
-
-  // const userHasPrivilege =
-  //   !privileges ||
-  //   find([Privileges.ReceiveAndManageProject, Privileges.ManageProject], (privilege) => includes(userPrivileges, privilege))
 
   //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
 
@@ -115,8 +111,11 @@ const OrderPage: FC = () => {
         isUserClientOfProject={isUserClientOfProject}
       />
 
+      <div className={classes.separator} />
+
       {map(sortBy(sub_projects, 'ext_id'), (subOrder) => (
-        <div key={subOrder.id}>{subOrder.id}</div>
+        // TODO: if needed we can already display some of the info from "subOrder" here
+        <SubOrderSection {...subOrder} key={subOrder.id} />
       ))}
     </>
   )

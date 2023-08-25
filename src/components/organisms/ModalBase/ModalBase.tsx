@@ -15,6 +15,8 @@ export enum ModalSizeTypes {
   Narrow = 'narrow',
   Medium = 'medium',
   Big = 'big',
+  Small = 'small',
+  ExtraLarge = 'extraLarge',
 }
 
 export enum ButtonPositionTypes {

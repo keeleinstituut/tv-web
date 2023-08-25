@@ -7,13 +7,15 @@ import {
   NewOrderPayload,
   SubOrdersResponse,
   SubOrderResponse,
-  SubOrderPayload,
   SubOrdersPayloadType,
   ListSubOrderDetail,
+  SubOrderDetail,
+  CatProjectPayload,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import newMockOrders from './newMockOrders.json'
 import newSubOrders from './newSubOrders.json'
+import mockSubOrder from './mockSubOrder.json'
 import singleMockOrder from './singleMockOrder.json'
 import useFilters from 'hooks/useFilters'
 import { findIndex } from 'lodash'
@@ -48,7 +50,7 @@ export const useFetchOrders = () => {
               total: 10,
             },
           })
-        }, 1000)
+        }, 150)
       )
     },
     keepPreviousData: true,
@@ -75,11 +77,10 @@ export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
       // TODO: dummy data for now, replace with the line above, once BE is implemented
       return new Promise((resolve) =>
         setTimeout(() => {
-          // TODO: replace with request to BE
           resolve({
             data: singleMockOrder as unknown as DetailedOrder,
           })
-        }, 1000)
+        }, 150)
       )
     },
   })
@@ -143,7 +144,15 @@ export const useFetchSubOrder = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<SubOrderResponse>({
     queryKey: ['suborders', id],
     queryFn: () => {
-      return apiClient.get(`${endpoints.SUBPROJECTS}/${id}`)
+      // return apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`)
+      // TODO: dummy data for now, replace with the line above, once BE is implemented
+      return new Promise((resolve) =>
+        setTimeout(() => {
+          resolve({
+            data: mockSubOrder as unknown as SubOrderDetail,
+          })
+        }, 150)
+      )
     },
   })
 
@@ -168,7 +177,7 @@ export const useFetchSubOrders = () => {
   const { isLoading, isError, data } = useQuery<SubOrdersResponse>({
     queryKey: ['suborders'],
     queryFn: () => {
-      // return apiClient.get(`${endpoints.SUBPROJECTS}`, filters)
+      // return apiClient.get(`${endpoints.SUB_PROJECTS}`, filters)
       // TODO: dummyData for now, replace with the line above
       return new Promise((resolve) =>
         setTimeout(() => {
@@ -184,7 +193,7 @@ export const useFetchSubOrders = () => {
               total: 10,
             },
           })
-        }, 1000)
+        }, 150)
       )
     },
     keepPreviousData: true,
@@ -206,8 +215,8 @@ export const useFetchSubOrders = () => {
 export const useSubOrderSendToCat = ({ id }: { id?: string }) => {
   const { mutateAsync: sendToCat, isLoading } = useMutation({
     mutationKey: ['roles'],
-    mutationFn: (payload: SubOrderPayload) =>
-      apiClient.post(`${endpoints.SUBPROJECTS}/${id}/send-to-cat`, {
+    mutationFn: (payload: CatProjectPayload) =>
+      apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/send-to-cat`, {
         ...payload,
       }),
   })

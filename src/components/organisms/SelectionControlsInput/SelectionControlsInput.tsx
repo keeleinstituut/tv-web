@@ -1,22 +1,11 @@
-import {
-  FC,
-  RefObject,
-  SVGProps,
-  forwardRef,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { FC, SVGProps, forwardRef, useMemo, useRef, useState } from 'react'
 import classNames from 'classnames'
-import { createPortal } from 'react-dom'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
 import { useClickAway } from 'ahooks'
-import DropdownContent, {
-  DropdownContentProps,
-} from 'components/organisms/DropdownContent/DropdownContent'
+import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
 
 import classes from './classes.module.scss'
 import { filter, find, map, join } from 'lodash'
@@ -56,35 +45,9 @@ export interface SelectionControlsInputProps {
   selectIcon?: FC<SVGProps<SVGSVGElement>>
   errorZIndex?: number
   usePortal?: boolean
-  horizontalScrollContainerId?: string
   loading?: boolean
   onEndReached?: () => void
   hidden?: boolean
-}
-
-interface PositionedDropdownContentProps extends DropdownContentProps {
-  clickAwayInputRef?: RefObject<HTMLDivElement>
-  wrapperRef?: RefObject<HTMLDivElement>
-  usePortal?: boolean
-}
-
-const PositionedDropdownContent: FC<PositionedDropdownContentProps> = ({
-  wrapperRef,
-  clickAwayInputRef,
-  usePortal,
-  ...rest
-}) => {
-  if (usePortal) {
-    return createPortal(
-      <DropdownContent
-        {...rest}
-        wrapperRef={wrapperRef}
-        ref={clickAwayInputRef}
-      />,
-      document.getElementById('root') || document.body
-    )
-  }
-  return <DropdownContent {...rest} />
 }
 
 const SelectionControlsInput = forwardRef<
@@ -221,7 +184,7 @@ const SelectionControlsInput = forwardRef<
       <p hidden={!helperText} className={classes.helperText}>
         {helperText}
       </p>
-      <PositionedDropdownContent
+      <DropdownContent
         {...{ ...dropdownProps, wrapperRef, clickAwayInputRef, usePortal }}
       />
       <div className={classNames(!hideTags && classes.tagsContainer)}>

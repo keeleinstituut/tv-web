@@ -1,0 +1,17 @@
+@import 'styles/variables';
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  p {
+    margin-right: spacing(2);
+    color: $color-primary;
+  }
+
+  .generateButton {
+    span {
+      white-space: nowrap;
+    }
+  }
+}

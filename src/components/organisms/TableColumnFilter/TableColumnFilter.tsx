@@ -1,4 +1,4 @@
-import { FC, SVGProps, useState } from 'react'
+import { FC, SVGProps, useState, useRef } from 'react'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -30,6 +30,8 @@ const TableColumnFilter = ({
   ariaLabel,
   value,
 }: FilterProps) => {
+  const dropdownRef = useRef(null)
+  const wrapperRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleDropdown = () => {
@@ -39,7 +41,7 @@ const TableColumnFilter = ({
   if (hidden) return null
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} ref={wrapperRef}>
       <Button
         onClick={toggleDropdown}
         appearance={AppearanceTypes.Text}
@@ -60,6 +62,9 @@ const TableColumnFilter = ({
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         className={classes.dropDown}
+        wrapperRef={wrapperRef}
+        clickAwayInputRef={dropdownRef}
+        usePortal
       />
     </div>
   )

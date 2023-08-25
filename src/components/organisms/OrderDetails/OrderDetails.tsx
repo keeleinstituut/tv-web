@@ -7,10 +7,10 @@ import PersonSection, {
   PersonSectionTypes,
 } from 'components/molecules/PersonSection/PersonSection'
 import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
-import FilesSection from 'components/molecules/FilesSection/FilesSection'
+import OrderFilesSection from 'components/molecules/OrderFilesSection/OrderFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
-import { isEmpty, join, map, uniq, includes, find } from 'lodash'
+import { isEmpty, join, map, uniq, includes } from 'lodash'
 import {
   getLocalDateOjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
@@ -134,10 +134,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const [isEditable, setIsEditable] = useState(isNew)
 
   const { status = OrderStatus.Registered } = order || {}
-  const hasManagerPrivilege = find(
-    [Privileges.ManageProject, Privileges.ReceiveAndManageProject],
-    (privilege) => includes(userPrivileges, privilege)
-  )
+  const hasManagerPrivilege = includes(userPrivileges, Privileges.ManageProject)
 
   // const isEditableByManager = hasManagerPrivilege
   // const isEditableByManager = hasManagerPrivilege && isEditable
@@ -146,8 +143,6 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const isEditableBySomeone =
     hasManagerPrivilege ||
     (isUserClientOfProject && includes(userPrivileges, Privileges.ChangeClient))
-
-  // TODO: will map default values of open order here instead, when isNew === false
 
   const defaultValues = useMemo(() => {
     const {
@@ -360,8 +355,12 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     <ExpandableContentContainer
       hidden={isNew}
       contentAlwaysVisible={isNew}
-      extraComponent={<OrderStatusTag status={status} />}
-      title={t('orders.order_details_expandable')}
+      rightComponent={<OrderStatusTag status={status} />}
+      leftComponent={
+        <h2 className={classes.expandableContentTitle}>
+          {t('orders.order_details_expandable')}
+        </h2>
+      }
     >
       <Root
         className={classNames(
@@ -396,7 +395,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             isNew={isNew}
             isEditable={isEditableBySomeone && isEditable}
           />
-          <FilesSection
+          <OrderFilesSection
             control={control}
             isEditable={isEditableBySomeone && isEditable}
           />

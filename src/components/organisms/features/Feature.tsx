@@ -38,6 +38,8 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
     return <></>
   }
 
+  // from subOrder: cat_features, id, assignments
+
   return (
     <Component
       {...subOrder}

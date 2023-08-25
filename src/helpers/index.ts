@@ -9,10 +9,15 @@ import {
   join,
   compact,
   replace,
+  includes,
+  pickBy,
+  keys,
+  flatMap,
+  uniqBy,
 } from 'lodash'
 import { FullRouteObject } from 'router/router'
 import utc from 'dayjs/plugin/utc'
-import { Privileges } from 'types/privileges'
+import { PrivilegeKey, PrivilegeType, Privileges } from 'types/privileges'
 
 dayjs.extend(utc)
 
@@ -180,4 +185,65 @@ export const getLocalDateOjectFromUtcDateString = (datetime: string) => {
   const localDateTimeString = dayjsObject.format('DD/MM/YYYY HH:mm:ss')
   const splitDateTime = split(localDateTimeString, ' ')
   return { date: splitDateTime[0], time: splitDateTime[1] }
+}
+
+type PrivilegeKeyValueType = {
+  [key in PrivilegeKey]?: Privileges[]
+}
+
+const addablePrivilegesWithConditions: PrivilegeKeyValueType = {
+  [Privileges.ViewRole]: [
+    Privileges.AddRole,
+    Privileges.EditRole,
+    Privileges.DeleteRole,
+  ],
+  [Privileges.ViewUser]: [
+    Privileges.AddUser,
+    Privileges.EditUser,
+    Privileges.ExportUser,
+    Privileges.ActivateUser,
+    Privileges.DeactivateUser,
+    Privileges.ArchiveUser,
+    Privileges.EditUserWorktime,
+    Privileges.EditUserVacation,
+  ],
+  [Privileges.ViewTm]: [
+    Privileges.CreateTm,
+    Privileges.ImportTm,
+    Privileges.ExportTm,
+    Privileges.DeleteTm,
+    Privileges.EditTmMetadata,
+  ],
+  [Privileges.ViewAuditLog]: [Privileges.ExportAuditLog],
+  [Privileges.ViewVendorDb]: [
+    Privileges.EditVendorDb,
+    Privileges.ViewVendorTask,
+    Privileges.ViewGeneralPricelist,
+  ],
+  [Privileges.ViewInstitutionPriceRate]: [Privileges.EditInstitutionPriceRate],
+  [Privileges.ViewPersonalProject]: [
+    Privileges.CreateProject,
+    Privileges.ManageProject,
+    Privileges.ChangeClient,
+    Privileges.ReceiveProject,
+  ],
+  [Privileges.ManageProject]: [Privileges.ReceiveProject],
+}
+
+export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
+  const selectedByDefaultPrivileges = flatMap(selectedPrivileges, ({ key }) => {
+    const filteredArray = pickBy(
+      addablePrivilegesWithConditions,
+      (conditionsArray) => includes(conditionsArray, key)
+    )
+    const addablePrivileges = keys(filteredArray)
+    return map(addablePrivileges as Privileges[], (privilege) => ({
+      key: privilege,
+    }))
+  })
+  const allNewPrivileges: PrivilegeType[] = uniqBy(
+    [...selectedPrivileges, ...selectedByDefaultPrivileges],
+    'key'
+  )
+  return allNewPrivileges
 }
