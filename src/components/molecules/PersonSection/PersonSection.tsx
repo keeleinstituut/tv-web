@@ -3,16 +3,7 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
-import {
-  map,
-  uniqBy,
-  concat,
-  compact,
-  find,
-  isEmpty,
-  intersection,
-  join,
-} from 'lodash'
+import { map, uniqBy, concat, compact, find, includes, join } from 'lodash'
 import {
   InputTypes,
   FormInput,
@@ -98,7 +89,7 @@ const PersonSection = <TFormValues extends FieldValues>({
     privileges:
       type === PersonSectionTypes.Client
         ? [Privileges.CreateProject]
-        : [Privileges.ReceiveAndManageProject],
+        : [Privileges.ReceiveProject],
   })
   // Pass search as a param and fetch again
   const handleSearchUsers = useCallback(
@@ -117,11 +108,9 @@ const PersonSection = <TFormValues extends FieldValues>({
   }, [paginationData, isFetching, fetchNextPage])
 
   const usersList = useMemo(() => {
-    const isCurrentUserPotentialManager = !isEmpty(
-      intersection(
-        [Privileges.ManageProject, Privileges.ReceiveAndManageProject],
-        userPrivileges
-      )
+    const isCurrentUserPotentialManager = includes(
+      userPrivileges,
+      Privileges.ManageProject
     )
 
     const shouldAddCurrentUser =
