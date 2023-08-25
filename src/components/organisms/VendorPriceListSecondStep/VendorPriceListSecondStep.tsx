@@ -6,7 +6,7 @@ import DynamicForm, {
 import { Control } from 'react-hook-form'
 import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
-export type VendorPriceListSecondStepProps = {
+type VendorPriceListSecondStepProps = {
   skillsFormFields: FieldProps<FormValues>[]
   control: Control<FormValues>
   languageOptions?: { label: string; value: string }[]

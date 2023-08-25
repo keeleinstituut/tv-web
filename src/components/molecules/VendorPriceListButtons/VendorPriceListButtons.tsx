@@ -1,9 +1,9 @@
 import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 import { FC } from 'react'
-import { Control, useWatch } from 'react-hook-form'
+import { Control, useFormState, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from '../Button/Button'
-import { size } from 'lodash'
+import { size, isEmpty, some } from 'lodash'
 
 import classes from './classes.module.scss'
 
@@ -31,14 +31,24 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
     control,
     name: 'src_lang_classifier_value_id',
   })
-  const isDstLanguageSelected = !!useWatch({
+
+  const destinationLanguages = useWatch({
     control,
     name: 'dst_lang_classifier_value_id',
   })
-  const isSkillSelected = !!useWatch({
+
+  const isDstLanguageSelected =
+    !!destinationLanguages && !isEmpty(destinationLanguages)
+
+  const skills = useWatch({
     control,
     name: 'skill_id',
   })
+
+  const hasTrueValueSkill = some(skills, (value) => value === true)
+  const isSkillSelected = !!skills && hasTrueValueSkill
+
+  const formState = useFormState({ control })
 
   return (
     <div className={classes.buttonsContainer}>
@@ -49,7 +59,8 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
         appearance={AppearanceTypes.Primary}
         disabled={
           !(isSrcLanguageSelected && isDstLanguageSelected) ||
-          (activeStep === 2 && !isSkillSelected)
+          (activeStep === 2 && !isSkillSelected) ||
+          (size(steps) === activeStep && !formState.isValid)
         }
         onClick={handleProceed}
         loading={isLoading}

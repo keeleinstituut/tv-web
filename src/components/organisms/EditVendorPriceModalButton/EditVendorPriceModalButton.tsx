@@ -6,17 +6,23 @@ import {
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ReactComponent as Edit } from 'assets/icons/edit.svg'
 import { useTranslation } from 'react-i18next'
-import { includes, map, replace, toNumber, toString } from 'lodash'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import { includes, join, keys, map, replace, toNumber, toString } from 'lodash'
+import {
+  ModalTypes,
+  closeModal,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
 import VendorPriceListEditContent from 'components/organisms/VendorPriceListEditContent/VendorPriceListEditContent'
 import {
   Control,
+  FieldPath,
   SubmitHandler,
   UseFormHandleSubmit,
+  UseFormSetError,
   UseFormSetValue,
 } from 'react-hook-form'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { showValidationErrorMessage } from 'api/errorHandler'
+import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useUpdatePrices } from 'hooks/requests/useVendors'
 import useAuth from 'hooks/useAuth'
@@ -31,6 +37,7 @@ type EditVendorPriceModalButtonProps = {
   handleSubmit: UseFormHandleSubmit<FormValues>
   vendorId?: string
   resetForm: () => void
+  setError: UseFormSetError<FormValues>
 }
 
 const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
@@ -40,6 +47,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
   handleSubmit,
   vendorId,
   resetForm,
+  setError,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
@@ -85,11 +93,23 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
           content: t('success.language_pairs_prices_updated'),
         })
         resetForm()
+        closeModal()
       } catch (errorData) {
-        showValidationErrorMessage(errorData)
+        const typedErrorData = errorData as ValidationError
+
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            const valuesKey = keys(values)[0]
+            const payloadKey = keys(payload)[0]
+            const priceObject = replace(typedKey, payloadKey, valuesKey)
+            setError(priceObject, { type: 'backend', message: errorString })
+          })
+        }
       }
     },
-    [resetForm, t, updatePrices]
+    [resetForm, setError, t, updatePrices]
   )
 
   const handleEditPriceModal = (languagePairModalContent: PriceObject[]) => {

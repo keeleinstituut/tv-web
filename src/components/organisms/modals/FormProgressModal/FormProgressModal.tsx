@@ -76,7 +76,13 @@ const FormProgressModal: FC<FormProgressProps> = ({
       open={!!isModalOpen}
       buttonsPosition={ButtonPositionTypes.SpaceBetween}
       progressBar={
-        steps && <ProgressBar activeStep={activeStep} steps={steps} />
+        steps && (
+          <ProgressBar
+            activeStep={activeStep}
+            steps={steps}
+            setActiveStep={setActiveStep}
+          />
+        )
       }
       className={classes.progressBarHelperText}
       size={ModalSizeTypes.Big}

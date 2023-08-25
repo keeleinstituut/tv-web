@@ -1,15 +1,16 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { find, map } from 'lodash'
-import { useWatch } from 'react-hook-form'
+import { find, isUndefined, map } from 'lodash'
+import { Control, useWatch } from 'react-hook-form'
+import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 import classes from './classes.module.scss'
-import { VendorPriceListSecondStepProps } from 'components/organisms/VendorPriceListSecondStep/VendorPriceListSecondStep'
 
-export interface LanguageLabelsProps
-  extends Omit<VendorPriceListSecondStepProps, 'skillsFormFields'> {
+type LanguageLabelsProps = {
   srcLanguageValue?: string
   dstLanguageValues?: string[]
+  control: Control<FormValues>
+  languageOptions?: { label: string; value: string }[]
 }
 
 const LanguageLabels: FC<LanguageLabelsProps> = ({
@@ -48,14 +49,25 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
         <p className={classes.sourceLanguage}>{`${t(
           'vendors.source_language'
         )}*`}</p>
-        <p className={classes.languageTag}>{srcLanguageLabel}</p>
+        <p
+          className={
+            !isUndefined(srcLanguageLabel[0]) ? classes.languageTag : ''
+          }
+        >
+          {srcLanguageLabel}
+        </p>
       </div>
       <div className={classes.languageContianer}>
         <p className={classes.destinationLanguage}>
           {`${t('vendors.destination_language')}*`}
         </p>
         {map(dstLanguageLabels, (label, index) => (
-          <p key={index} className={classes.languageTag}>
+          <p
+            key={index}
+            className={
+              !isUndefined(dstLanguageLabels[0]) ? classes.languageTag : ''
+            }
+          >
             {label}
           </p>
         ))}

@@ -9,9 +9,18 @@ export interface Step {
 interface ProgressBarProps {
   steps: Step[]
   activeStep: number
+  setActiveStep: React.Dispatch<React.SetStateAction<number>>
 }
 
-const ProgressBar: FC<ProgressBarProps> = ({ steps, activeStep }) => {
+const ProgressBar: FC<ProgressBarProps> = ({
+  steps,
+  activeStep,
+  setActiveStep,
+}) => {
+  const handleStepClick = (index: number) => {
+    setActiveStep(index)
+  }
+
   return (
     <ul className={classes.progressBarSteps}>
       {steps.map((step, index) => {
@@ -23,6 +32,7 @@ const ProgressBar: FC<ProgressBarProps> = ({ steps, activeStep }) => {
             className={classNames(classes.step, {
               [classes.currentStep]: activeStep === index + 1,
             })}
+            onClick={() => handleStepClick(index + 1)}
           >
             <span className={classes.stepNumber}>{index + 1}</span>
             <span className={classes.stepLabel}>{label}</span>

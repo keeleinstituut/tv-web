@@ -14,6 +14,7 @@ import { VendorFormProps } from '../VendorForm/VendorForm'
 import EditVendorPriceModalButton from 'components/organisms/EditVendorPriceModalButton/EditVendorPriceModalButton'
 import AddVendorPriceModalButton from 'components/organisms/AddVendorPriceModalButton/AddVendorPriceModalButton'
 import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButton/DeleteVendorPriceButton'
+import { OrderDirection } from 'types/vendors'
 
 import classes from './classes.module.scss'
 
@@ -58,6 +59,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     handlePaginationChange,
   } = useFetchPrices({
     vendor_id,
+    order_direction: OrderDirection.Asc,
   })
 
   const priceListCreated = dayjs(
@@ -111,10 +113,11 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       .value()
   }, [pricesData])
 
-  const { handleSubmit, control, reset, setValue } = useForm<FormValues>({
-    reValidateMode: 'onChange',
-    defaultValues: {},
-  })
+  const { handleSubmit, control, reset, setValue, setError } =
+    useForm<FormValues>({
+      reValidateMode: 'onChange',
+      defaultValues: {},
+    })
 
   const resetForm = useCallback(() => {
     reset()
@@ -204,6 +207,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               handleSubmit={handleSubmit}
               vendorId={vendor_id}
               resetForm={resetForm}
+              setError={setError}
             />
             <DeleteVendorPriceButton
               languagePairModalContent={languagePairModalContent}

@@ -45,7 +45,6 @@ const EditVendorPriceListModal: FC<EditVendorPriceListModalProps> = ({
     if (submitForm) {
       submitForm()
     }
-    closeModal()
   }
 
   return (

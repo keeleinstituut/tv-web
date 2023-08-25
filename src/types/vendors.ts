@@ -111,35 +111,7 @@ export type PricesData = {
   minute_fee: number
   hour_fee: number
   minimal_fee: number
-  vendor?: {
-    id?: string
-    institution_id: string
-    company_name?: string
-    comment: string
-    updated_at: string
-    created_at: string
-    institution_user_id: string
-    discount_percentage_101: string
-    discount_percentage_repetitions: string
-    discount_percentage_100: string
-    discount_percentage_95_99: string
-    discount_percentage_85_94: string
-    discount_percentage_75_84: string
-    discount_percentage_50_74: string
-    discount_percentage_0_49: string
-    institution_user?: UserType
-    prices?: string[]
-    tags?: [
-      {
-        id: string
-        institution_id: string
-        name: string
-        type: string
-        updated_at: string
-        created_at: string
-      }
-    ]
-  }
+  vendor?: Vendor
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
   skill?: SkillsData
