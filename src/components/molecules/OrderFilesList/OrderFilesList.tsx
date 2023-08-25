@@ -107,7 +107,6 @@ const OrderFilesList = <TFormValues extends FieldValues>({
               dropdownSize={DropdownSizeTypes.M}
               className={classes.fitContent}
               usePortal
-              horizontalScrollContainerId="tableWrapper"
             />
           )
         }

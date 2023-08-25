@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { RefObject, forwardRef, useRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
@@ -50,6 +50,7 @@ const TextInput = forwardRef<
     ...rest
   } = props
   const { t } = useTranslation()
+  const wrapperRef = useRef(null)
 
   const handleOnClick = () => {
     if (handleDelete) {
@@ -88,6 +89,7 @@ const TextInput = forwardRef<
         className={classNames(classes.inputContainer, {
           [classes.addDeleteButton]: !!handleDelete,
         })}
+        ref={wrapperRef}
       >
         <Control asChild>
           {isTextarea ? (
@@ -110,7 +112,11 @@ const TextInput = forwardRef<
           onClick={handleOnClick}
           hidden={!handleDelete}
         />
-        <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
+        <InputError
+          {...omit(error, 'ref')}
+          errorZIndex={errorZIndex}
+          wrapperRef={wrapperRef as RefObject<HTMLElement>}
+        />
       </div>
     </Field>
   )

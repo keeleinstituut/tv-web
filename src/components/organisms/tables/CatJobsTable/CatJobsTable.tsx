@@ -162,7 +162,6 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             icon={HorizontalDots}
             className={classes.dropdown}
             buttonClassName={classes.dropdownInnerButton}
-            horizontalScrollContainerId="catJobsTable"
             options={[
               {
                 label: t('button.split_file'),
@@ -208,7 +207,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         data={filesData}
         columns={columns}
         tableSize={TableSizeTypes.M}
-        wrapperId={'catJobsTable'}
+        horizontalWrapperId={'catJobsTable'}
         className={classes.filesListContainer}
         hidePagination
         headComponent={

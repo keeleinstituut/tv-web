@@ -99,9 +99,7 @@ function CellInput<TData>(props: CellInputProps<TData>) {
           }
         : { inputType: InputTypes.Text })}
       {...(type ? { type } : {})}
-      {...(options
-        ? { usePortal: true, horizontalScrollContainerId: 'tableWrapper' }
-        : {})}
+      {...(options ? { usePortal: true } : {})}
       rules={getRulesByKey(typedKey)}
     />
   )
