@@ -34,6 +34,7 @@ import ModalRoot, {
   ModalTypes,
   showModal,
 } from 'components/organisms/modals/ModalRoot'
+import ToggleInput from 'components/molecules/ToggleInput/ToggleInput'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -74,6 +75,7 @@ type FormValues = {
 const Test: FC = () => {
   const { t } = useTranslation()
   const { emailValidator } = useValidators()
+  const [toggleValue, setToggleValue] = useState(false)
 
   const { control, handleSubmit } = useForm<FormValues>({
     mode: 'onSubmit',
@@ -263,6 +265,12 @@ const Test: FC = () => {
   return (
     <>
       <div />
+      <ToggleInput
+        label={t('label.translation_tool')}
+        name="translationTool"
+        value={toggleValue}
+        onChange={setToggleValue}
+      />
       <DynamicForm
         fields={testFields}
         control={control}

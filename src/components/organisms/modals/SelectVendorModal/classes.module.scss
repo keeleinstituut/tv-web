@@ -1,0 +1,44 @@
+@import 'styles/variables';
+
+.modalContainer {
+  .contentWrapper {
+    padding: 0 spacing(4);
+  }
+}
+
+.modalHeadContainer {
+  display: grid;
+  grid-template-columns: auto minmax(auto, 328px);
+  grid-template-rows: auto auto;
+  padding: 0 spacing(18);
+  justify-items: start;
+
+  h1 {
+    color: $color-input-main;
+    margin-bottom: spacing(3);
+  }  
+  p {
+    color: $color-primary;
+  }
+
+  .filterSection {
+    grid-row: 1/3;
+    grid-column: 2;
+    justify-self: end;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+
+    .searchInput {
+      margin-bottom: spacing(2);
+      width: 100%;
+
+      input {
+        width: 100%;
+      }
+    }
+  }
+}
+

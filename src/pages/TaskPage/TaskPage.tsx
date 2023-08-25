@@ -235,7 +235,7 @@ const TranslationFeature: FC<any> = (props) => {
         <span>catSupported: {String(catSupported)}</span>
       </div>
       <br />
-      {map(featureAssignments, (assignment, i) => {
+      {/* {map(featureAssignments, (assignment, i) => {
         return (
           <Assignment
             key={assignment.id}
@@ -244,7 +244,7 @@ const TranslationFeature: FC<any> = (props) => {
             label="Tõlkimine"
           />
         )
-      })}
+      })} */}
     </>
   )
 }
@@ -263,7 +263,7 @@ const RevisionFeature: FC<any> = (props) => {
         <span>catSupported: {String(catSupported)}</span>
       </div>
       <br />
-      {map(featureAssignments, (assignment, i) => {
+      {/* {map(featureAssignments, (assignment, i) => {
         return (
           <Assignment
             key={assignment.id}
@@ -272,7 +272,7 @@ const RevisionFeature: FC<any> = (props) => {
             label="Toimetamine"
           />
         )
-      })}
+      })} */}
     </>
   )
 }
@@ -290,7 +290,7 @@ const OverviewFeature: FC<any> = (props) => {
         <span>feature: {feature}</span>
         <span>catSupported: {String(catSupported)}</span>
       </div>
-      {map(featureAssignments, (assignment, i) => {
+      {/* {map(featureAssignments, (assignment, i) => {
         return (
           <Assignment
             key={assignment.id}
@@ -299,7 +299,7 @@ const OverviewFeature: FC<any> = (props) => {
             label="Ülevaatus"
           />
         )
-      })}
+      })} */}
     </>
   )
 }

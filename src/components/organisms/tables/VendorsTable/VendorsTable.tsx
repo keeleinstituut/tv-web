@@ -34,7 +34,7 @@ type VendorsTableProps = {
   handlePaginationChange?: (value?: PaginationFunctionType) => void
 }
 
-const AddedUsersTable: FC<VendorsTableProps> = ({
+const VendorsTable: FC<VendorsTableProps> = ({
   data,
   hidden,
   paginationData,
@@ -184,4 +184,4 @@ const AddedUsersTable: FC<VendorsTableProps> = ({
   )
 }
 
-export default AddedUsersTable
+export default VendorsTable

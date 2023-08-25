@@ -7,6 +7,9 @@ import NotificationRoot from 'components/organisms/NotificationRoot/Notification
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { RouterProvider } from 'react-router-dom'
+import dayjs from 'dayjs'
+
+dayjs.locale('et')
 
 const queryClient = new QueryClient({
   defaultOptions: {

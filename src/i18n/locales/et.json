@@ -77,7 +77,14 @@
     "xliff_name": "XLIFFi nimi",
     "chunks": "Segmendid",
     "match_type": "Vaste tüüp",
-    "cat_split_amount": "Tükkide arv"
+    "cat_split_amount": "Tükkide arv",
+    "translation_tool": "Tõlke tööriist",
+    "machine_translation": "Masintõlge",
+    "yes": "Jah",
+    "no": "Ei",
+    "select_vendor": "Märgi teostaja",
+    "free_days": "Vabad päevad",
+    "search_by_name": "Otsi nime alusel"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -93,7 +100,8 @@
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
-    "select_tags": "Vali sildid"
+    "select_tags": "Vali sildid",
+    "search_by_name": "Otsi nime alusel"
   },
   "button": {
     "login": "Logi sisse",
@@ -151,7 +159,12 @@
     "confirm": "Kinnita",
     "download_xliff": "Laadi alla XLIFF",
     "download_ready_translation": "Laadi alla valmis tõlge",
-    "join_files": "Ühenda failid kokku"
+    "join_files": "Ühenda failid kokku",
+    "vendors": "Teostajad",
+    "xliff": "XLIFF",
+    "add_new_vendor": "Lisa uus teostaja",
+    "choose_from_database": "Lisa andmebaasist",
+    "clear_filters": "Tühjenda filtrid"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -277,7 +290,9 @@
     "cat_split_content_first_section": "Tõlketööriista faili saab tükeldada selleks, et iga tükk tõlkimisse saata erinevatele teostajatele. Vali mitme teostaja vahel soovid faili jagada. Fail jagatakse sõnade järgi võrdseteks osadeks.",
     "cat_split_content_italic_section": "Märkus. Pärast faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“.",
     "cat_merge_title": "Kas oled kindel, et soovid failid kokku liita?",
-    "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada."
+    "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada.",
+    "choose_vendors": "Teostajate valimine",
+    "choose_vendors_helper": "Vali teostajad, kellele soovid selle ülesade pakkumise saata.\n<br/> Ülesanne määratakse automaatselt esimesele, kes ülesande vastu võtab."
   },
   "cheat_sheet": {
     "user_management": {
@@ -396,7 +411,8 @@
     "source_files_helper": "Vali lähtefailid, mida soovid tõlketööriistas tõlkida. Veendu, et failid oleks tõlkimiseks ettevalmistatud.",
     "owned_by_other_company": "Mälu omanik on teine asutus. Puudub õigus sellesse kirjutada.",
     "main_write_helper": "„Peamine/Kirjuta“ mällu salvestatakse selle alamtellimuse tõlkesegmendid.",
-    "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail)."
+    "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail).",
+    "selected_translation_memory": "Valitud masintõlkemootor: {{memory}}"
   },
   "tag": {
     "tag_management": "Sildid",
@@ -437,7 +453,7 @@
     "sub_orders_tile": "Alamtellimused",
     "features": {
       "general_information": "üldinfo",
-      "job_translation": "tõlkimine(CAT)",
+      "job_translation": "tõlkimine",
       "job_revision": "toimetamine",
       "job_overview": "ülevaatus"
     },
@@ -469,5 +485,8 @@
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",
     "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",
     "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja"
+  },
+  "task": {
+    "vendor_title": "Teostaja {{number}}"
   }
 }

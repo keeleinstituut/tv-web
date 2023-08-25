@@ -1,32 +1,65 @@
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { map } from 'lodash'
 import { AssignmentType } from 'types/orders'
+import { useTranslation } from 'react-i18next'
+import Button, { SizeTypes } from 'components/molecules/Button/Button'
 
-// TODO: this is WIP code for suborder view
+import classes from './classes.module.scss'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
-interface AssignmentProps {
+interface AssignmentProps extends AssignmentType {
   index: number
-  label?: string
-  assignment: AssignmentType
 }
 
-const Assignment: FC<AssignmentProps> = ({ index, label, assignment }) => {
-  const { candidates, assigned_vendor_id, assignee_id } = assignment
+// {
+//   /* feature: SubProjectFeatures
+//   // id: string
+//   // candidates: Candidate[]
+//   // assigned_vendor_id?: string
+//   // assignee_id?: string */
+// }
+
+const Assignment: FC<AssignmentProps> = ({
+  index,
+  candidates,
+  id,
+  assigned_vendor_id,
+  assignee_id,
+  feature,
+}) => {
+  const { t } = useTranslation()
+  const selectedVendorsIds = map(candidates, 'vendor_id')
+  const handleOpenVendorsModal = useCallback(() => {
+    showModal(ModalTypes.SelectVendor, {
+      taskId: id,
+      selectedVendorsIds,
+    })
+  }, [selectedVendorsIds, id])
+
   return (
-    <>
-      <h3>
-        Teostaja {index} ({label})
-      </h3>
-      <div
-        key={assignment.id}
-        style={{ display: 'flex', justifyContent: 'space-between' }}
-      >
+    <div className={classes.assignmentContainer}>
+      <div>
+        <h3>
+          {t('task.vendor_title', { number: index + 1 })}(
+          {t(`orders.features.${feature}`)})
+        </h3>
+        <span className={classes.assignmentId}>{id}</span>
+        <Button
+          size={SizeTypes.S}
+          className={classes.addButton}
+          onClick={handleOpenVendorsModal}
+        >
+          {t('button.choose_from_database')}
+        </Button>
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
           <span style={{ color: 'red' }}>deadline:</span>
           <span style={{ color: 'red' }}>erijuhised tellimuse kohta:</span>
           <span style={{ color: 'red' }}>maht:</span>
           <span style={{ color: 'red' }}>teostaja märkused:</span>
         </div>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <div style={{ flex: 1 }}>
           <h1>Teostajad</h1>
           <table>
@@ -85,7 +118,7 @@ const Assignment: FC<AssignmentProps> = ({ index, label, assignment }) => {
           )} */}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

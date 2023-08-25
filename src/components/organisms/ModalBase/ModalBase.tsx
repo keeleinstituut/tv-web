@@ -47,6 +47,8 @@ export interface ModalProps extends ModalFooterProps {
   progressBar?: ReactElement
   className?: string
   helperText?: string
+  innerWrapperClassName?: string
+  headComponent?: ReactElement
 }
 
 export interface ModalFooterProps {
@@ -85,6 +87,8 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
   progressBar,
   className,
   helperText,
+  innerWrapperClassName,
+  headComponent,
 }) => {
   const { t } = useTranslation()
 
@@ -121,11 +125,19 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
           <h1 className={classNames(classes.modalTitle, classes[titleFont])}>
             {title}
           </h1>
+          {headComponent}
           <p hidden={!helperText} className={classes.helperText}>
             {helperText}
           </p>
           <Dialog.Overlay className={classes.scrollableContent}>
-            <div className={classes.dialogDescription}>{children}</div>
+            <div
+              className={classNames(
+                classes.dialogDescription,
+                innerWrapperClassName
+              )}
+            >
+              {children}
+            </div>
           </Dialog.Overlay>
           <ModalFooter buttonsPosition={buttonsPosition} buttons={buttons} />
         </Dialog.Content>

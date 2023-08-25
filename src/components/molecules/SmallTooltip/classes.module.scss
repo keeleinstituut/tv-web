@@ -56,8 +56,11 @@
   }
 }
 
-.tooltipWrapper:hover .tooltipContent {
-  display: block;
+.tooltipWrapper:hover,
+.tooltipWrapper:focus {
+  .tooltipContent {
+    display: block;
+  }
 }
 
 .tooltipContent {

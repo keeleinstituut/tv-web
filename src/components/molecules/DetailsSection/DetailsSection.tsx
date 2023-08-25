@@ -95,7 +95,6 @@ const DetailsSection = <TFormValues extends FieldValues>({
       {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
-        placeholder: t('placeholder.date'),
         label: `${t('label.start_date')}`,
         hidden: !shouldShowStartTimeFields,
         className: classes.customInternalClass,
@@ -106,7 +105,6 @@ const DetailsSection = <TFormValues extends FieldValues>({
       {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
-        placeholder: t('placeholder.date'),
         label: `${t('label.deadline')}${!isEditable ? '' : '*'}`,
         className: classes.customInternalClass,
         name: 'deadline_at' as Path<TFormValues>,

@@ -22,7 +22,6 @@ const TooltipContent: FC<TooltipContentProps> = ({
   isVisible,
   horizontalScrollContainerId,
   wrapperRef,
-  ...rest
 }) => {
   const contentRef = useRef(null)
   const { left, top } =
@@ -74,8 +73,9 @@ const Icon: FC<IconProps> = ({
   icon: IconComponent = Info,
   ariaLabel,
   className,
+  hidden,
 }) => {
-  if (!IconComponent) return null
+  if (!IconComponent || hidden) return null
   return (
     <IconComponent
       aria-label={ariaLabel}
@@ -89,6 +89,7 @@ interface SmallTooltipProps extends TooltipContentProps {
   ariaLabel?: string
   hidden?: boolean
   className?: string
+  hideIcon?: boolean
 }
 
 const SmallTooltip: FC<SmallTooltipProps> = ({
@@ -97,6 +98,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
   hidden,
   className,
   horizontalScrollContainerId,
+  hideIcon,
   ...rest
 }) => {
   const [isVisible, setVisible] = useState(false)
@@ -121,8 +123,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
         horizontalScrollContainerId={horizontalScrollContainerId}
         {...rest}
       />
-
-      <Icon icon={icon} ariaLabel={ariaLabel} />
+      <Icon icon={icon} ariaLabel={ariaLabel} hidden={hideIcon} />
     </div>
   )
 }

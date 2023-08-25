@@ -23,7 +23,7 @@ const OverviewFeature: FC<OverviewFeatureProps> = ({
         <span>catSupported: {String(catSupported)}</span>
       </div>
       <br />
-      {map(assignments, (assignment, i) => {
+      {/* {map(assignments, (assignment, i) => {
         return (
           <Assignment
             key={assignment.id}
@@ -32,7 +32,7 @@ const OverviewFeature: FC<OverviewFeatureProps> = ({
             label="Ülevaatus"
           />
         )
-      })}
+      })} */}
     </>
   )
 }

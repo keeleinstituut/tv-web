@@ -8,7 +8,7 @@ import { Price } from './price'
 import { Tag } from './tags'
 
 export type Vendor = {
-  id?: string
+  id: string
   institution_user: UserType
   company_name: string
   prices: Price[]
