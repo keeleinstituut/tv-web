@@ -2,6 +2,7 @@ import {
   CSSProperties,
   ReactElement,
   Ref,
+  createContext,
   forwardRef,
   useEffect,
   useState,
@@ -34,6 +35,16 @@ export enum TableSizeTypes {
   S = 's',
 }
 
+interface TableContextType {
+  horizontalWrapperId: string
+  tableRef?: Ref<HTMLDivElement> | null
+}
+
+export const TableContext = createContext<TableContextType>({
+  horizontalWrapperId: 'tableWrapper',
+  tableRef: null,
+})
+
 type DataTableProps<TData extends RowData> = {
   data: TData[]
   columns: ColumnDef<TData>[]
@@ -46,7 +57,7 @@ type DataTableProps<TData extends RowData> = {
   className?: string
   subRows?: Row<TData>[] | undefined
   pageSizeOptions?: { label: string; value: string }[]
-  wrapperId?: string
+  horizontalWrapperId?: string
   getSubRows?:
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
@@ -75,7 +86,7 @@ const DataTable = <TData,>(
     hidePagination = false,
     headComponent,
     className,
-    wrapperId = 'tableWrapper',
+    horizontalWrapperId = 'tableWrapper',
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -114,37 +125,47 @@ const DataTable = <TData,>(
     getExpandedRowModel: getExpandedRowModel(),
   })
   return (
-    <Container ref={ref} className={className}>
-      <h4 className={classes.title} hidden={!title}>
-        {title}
-      </h4>
-      {headComponent}
-      <div className={classes.tableWrapper} id={wrapperId}>
-        <table className={classNames(classes.dataTable, classes[tableSize])}>
-          <TableHeaderGroup
-            table={table}
-            onSortingChange={onSortingChange}
-            onFiltersChange={onFiltersChange}
-          />
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <TablePagination
-        hidden={hidePagination}
-        table={table}
-        pageSizeOptions={pageSizeOptions}
-      />
-    </Container>
+    <TableContext.Provider
+      value={{
+        horizontalWrapperId,
+        tableRef: ref,
+      }}
+    >
+      <Container ref={ref} className={className}>
+        <h4 className={classes.title} hidden={!title}>
+          {title}
+        </h4>
+        {headComponent}
+        <div className={classes.tableWrapper} id={horizontalWrapperId}>
+          <table className={classNames(classes.dataTable, classes[tableSize])}>
+            <TableHeaderGroup
+              table={table}
+              onSortingChange={onSortingChange}
+              onFiltersChange={onFiltersChange}
+            />
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <TablePagination
+          hidden={hidePagination}
+          table={table}
+          pageSizeOptions={pageSizeOptions}
+        />
+      </Container>
+    </TableContext.Provider>
   )
 }
 

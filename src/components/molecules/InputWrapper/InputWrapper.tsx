@@ -1,4 +1,4 @@
-import { ReactNode, forwardRef } from 'react'
+import { ReactNode, RefObject, forwardRef } from 'react'
 import { Field, Label } from '@radix-ui/react-form'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
@@ -44,6 +44,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
           {children}
           <InputError
             {...omit(error, 'ref')}
+            wrapperRef={ref as RefObject<HTMLElement>}
             className={errorClass}
             errorZIndex={errorZIndex}
           />

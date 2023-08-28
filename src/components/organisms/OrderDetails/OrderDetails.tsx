@@ -10,7 +10,7 @@ import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
 import OrderFilesSection from 'components/molecules/OrderFilesSection/OrderFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
-import { isEmpty, join, map, uniq, includes, find } from 'lodash'
+import { isEmpty, join, map, uniq, includes } from 'lodash'
 import {
   getLocalDateOjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
@@ -134,10 +134,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const [isEditable, setIsEditable] = useState(isNew)
 
   const { status = OrderStatus.Registered } = order || {}
-  const hasManagerPrivilege = find(
-    [Privileges.ManageProject, Privileges.ReceiveAndManageProject],
-    (privilege) => includes(userPrivileges, privilege)
-  )
+  const hasManagerPrivilege = includes(userPrivileges, Privileges.ManageProject)
 
   // const isEditableByManager = hasManagerPrivilege
   // const isEditableByManager = hasManagerPrivilege && isEditable
