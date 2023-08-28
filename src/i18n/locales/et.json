@@ -46,6 +46,7 @@
     "add_remove_vendor": "Lisa/eemalda toestaja",
     "view": "Vaata",
     "search": "Otsi",
+    "updated": "UUENDATUD",
     "manager": "Tõlkekorraldaja",
     "order_type": "Tellimuse tüüp",
     "translation_domain": "Valdkond",
@@ -246,7 +247,8 @@
     "VIEW_TM": "Asutuse tõlkemälude vaatamine",
     "CREATE_PROJECT": "Tellimuse lisamine",
     "MANAGE_PROJECT": "Tõlketellimuse korraldamine",
-    "RECEIVE_AND_MANAGE_PROJECT": "Tõlketellimuse vastuvõtmine ja korraldamine",
+    "RECEIVE_PROJECT": "Tõlketellimuse vastuvõtmine",
+    "VIEW_INSTITUTION_UNCLAIMED_PROJECT_DETAIL": "Vabade tõlketellimuste vaatamine",
     "VIEW_PERSONAL_PROJECT": "Enda tellimuste vaatamine",
     "VIEW_INSTITUTION_PROJECT_LIST": "Asutuse tellimuste nimekirja vaatamine",
     "VIEW_INSTITUTION_PROJECT_DETAIL": "Asutuse tellimuste detailide vaatamine",
@@ -286,10 +288,11 @@
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
     "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
     "edit_category_tag": "Tellimuse siltide muutmine",
+    "edit_departments": "Üksuste muutmine",
     "confirm_send_to_cat_title": "Kas oled kindel, et soovid lähtefailid tõlketööriista saata?",
     "confirm_send_to_cat_description": "Faile saab tõlketööriista saata vaid ühe korra ja hiljem faile juurde lisada ei saa. Hiljem lisandunud failid tuleks töösse panna uue tellimusega. Lisaks veendu, et oled valinud ka soovitud tõlkemälud. Hiljem lisatud tõlkemäludega mahuanalüüsi teha ei saa.",
     "confirm_source_files": "1. Veendu, et kõik lähtefailid on soovitud kujul ja tõlkimiseks valmis.",
-    "confirm_translation_memories":  "2. Veendu, et alamtellimusele on valitud ja lisatud soovitud tõlkemälud.",
+    "confirm_translation_memories": "2. Veendu, et alamtellimusele on valitud ja lisatud soovitud tõlkemälud.",
     "analysis_title": "Mahu analüüs valitud failidele",
     "source_files": "Lähtefailid",
     "check_analysis_help_page": "Tõlkevärava tõlkemahu analüüsi kohta vaata täpsemat teavet kasutusjuhendi artiklist „Tõlketööriista mahuanalüüs“.",
@@ -382,10 +385,12 @@
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
     "tag_added": "Silt on edukalt lisatud.",
+    "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
+    "department_changed": "Üksus {{name}} edukalt uuendatud",
+    "department_updated": "Üksused edukalt uuendatud",
     "order_created": "Tellimus on edukalt loodud",
     "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
-    "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "order_updated": "Tellimus on edukalt uuendatud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud"
@@ -492,7 +497,8 @@
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",
     "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",
-    "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja"
+    "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja",
+    "no_changes_made": "Andmetes puuduvad muudatused"
   },
   "task": {
     "vendor_title": "Teostaja {{number}}"

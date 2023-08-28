@@ -7,6 +7,7 @@ import { useInViewport } from 'ahooks'
 import classNames from 'classnames'
 
 import classes from './classes.module.scss'
+import useTableContext from 'hooks/useTableContext'
 
 interface TooltipContentProps {
   tooltipContent?: string
@@ -21,13 +22,13 @@ const TooltipContent: FC<TooltipContentProps> = ({
   containerRef,
   tooltipContent,
   isVisible,
-  horizontalScrollContainerId,
   wrapperRef,
   className,
 }) => {
+  const { horizontalWrapperId } = useTableContext()
   const contentRef = useRef(null)
   const { left, top } =
-    useElementPosition(wrapperRef, horizontalScrollContainerId) || {}
+    useElementPosition(wrapperRef, horizontalWrapperId) || {}
   const [inViewport, ratio] = useInViewport(contentRef, { root: containerRef })
   const useBottomPosition = useMemo(
     () => ratio && ratio < 1 && inViewport,
@@ -37,7 +38,7 @@ const TooltipContent: FC<TooltipContentProps> = ({
     [inViewport]
   )
 
-  if (horizontalScrollContainerId) {
+  if (horizontalWrapperId) {
     return createPortal(
       <p
         ref={contentRef}
@@ -107,6 +108,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
   contentClassName,
   ...rest
 }) => {
+  const { horizontalWrapperId } = useTableContext()
   const [isVisible, setVisible] = useState(false)
 
   const wrapperRef = useRef(null)
@@ -115,7 +117,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
   return (
     <div
       className={classNames(classes.tooltipWrapper, className)}
-      {...(horizontalScrollContainerId
+      {...(horizontalWrapperId
         ? {
             onMouseEnter: () => setVisible(true),
             onMouseLeave: () => setVisible(false),
