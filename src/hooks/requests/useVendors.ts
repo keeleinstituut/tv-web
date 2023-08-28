@@ -2,11 +2,13 @@ import {
   VendorsDataType,
   GetVendorsPayload,
   UpdateVendorPayload,
+  GetSkillsPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
+import { GetPricesPayload, PricesDataType } from 'types/price'
 
 export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
   const {
@@ -60,5 +62,44 @@ export const useUpdateVendor = (vendorId: string) => {
   return {
     updateVendor,
     isLoading,
+  }
+}
+
+export const useFetchSkills = () => {
+  const { isLoading, isError, data } = useQuery<GetSkillsPayload>({
+    queryKey: ['skills'],
+    queryFn: () => apiClient.get(`${endpoints.SKILLS}`),
+  })
+
+  return {
+    isLoading,
+    isError,
+    data: data?.data,
+  }
+}
+
+export const useAllPricesFetch = (initialFilters?: GetPricesPayload) => {
+  const {
+    filters,
+    handlePaginationChange,
+    handleFilterChange,
+    handleSortingChange,
+  } = useFilters<GetPricesPayload>(initialFilters)
+
+  const { isLoading, isError, data } = useQuery<PricesDataType>({
+    queryKey: ['allPrices', filters],
+    queryFn: () => apiClient.get(endpoints.PRICES, filters),
+  })
+
+  const { meta: paginationData, data: prices } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    prices,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
   }
 }

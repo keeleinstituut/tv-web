@@ -3,6 +3,7 @@
 .container {
   display: grid;
   grid-auto-columns: max-content;
+  grid-auto-flow: column;
   grid-gap: spacing(1);
 
   .bar {
@@ -13,5 +14,12 @@
     &.vacation {
       background-color: $color-primary;
     }
+  }
+
+  .content {
+    padding: 0 spacing(1);
+    width: fit-content;
+    white-space: nowrap;
+    left: -33px;
   }
 }

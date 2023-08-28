@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { RouterProvider } from 'react-router-dom'
 import dayjs from 'dayjs'
+import('dayjs/locale/et')
 
 dayjs.locale('et')
 

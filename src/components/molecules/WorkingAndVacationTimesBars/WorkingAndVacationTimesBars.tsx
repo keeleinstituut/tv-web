@@ -24,6 +24,8 @@ const WorkingAndVacationTimesBars: FC<WorkingAndVacationTimesBarsProps> = ({
         tooltipContent={dateString}
         hideIcon
         className={classNames(classes.bar, isVacation && classes.vacation)}
+        contentClassName={classes.content}
+        key={dateString}
       />
     ))}
   </div>

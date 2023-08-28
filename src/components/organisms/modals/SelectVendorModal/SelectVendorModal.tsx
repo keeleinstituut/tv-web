@@ -11,11 +11,12 @@ import Button, {
   SizeTypes,
 } from 'components/molecules/Button/Button'
 import { closeModal } from '../ModalRoot'
-import { useVendorsFetch } from 'hooks/requests/useVendors'
+import { useAllPricesFetch } from 'hooks/requests/useVendors'
 import SelectVendorsTable from 'components/organisms/tables/SelectVendorsTable/SelectVendorsTable'
 import { FilterFunctionType } from 'types/collective'
 import TextInput from 'components/molecules/TextInput/TextInput'
 import { Root } from '@radix-ui/react-form'
+import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 
 // TODO: this is WIP code for suborder view
 
@@ -45,25 +46,28 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
   return (
     <div className={classes.modalHeadContainer}>
       <h1>{t('modal.choose_vendors')}</h1>
-      <div className={classes.filterSection}>
-        <TextInput
-          name={'search'}
-          ariaLabel={t('label.search_by_name')}
-          placeholder={t('placeholder.search_by_name')}
-          value={searchValue}
-          onChange={handleSearchVendors}
-          className={classes.searchInput}
-          isSearch
-        />
+      <TextInput
+        name={'search'}
+        ariaLabel={t('label.search_by_name')}
+        placeholder={t('placeholder.search_by_name')}
+        value={searchValue}
+        onChange={handleSearchVendors}
+        className={classes.searchInput}
+        isSearch
+      />
+      <p>{t('modal.choose_vendors_helper')}</p>
+      <div className={classes.row}>
         <Button
           onClick={handleClearFilters}
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           children={t('button.clear_filters')}
-          className={classes.clearFiltersButton}
+        />
+        <SmallTooltip
+          className={classes.tooltip}
+          tooltipContent={t('tooltip.clear_price_filters')}
         />
       </div>
-      <p>{t('modal.choose_vendors_helper')}</p>
     </div>
   )
   // Component
@@ -83,14 +87,13 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
   const { t } = useTranslation()
   // TODO: add prices fetch here instead
   const {
-    vendors,
+    prices,
     paginationData,
     isLoading,
-    // isFetching,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useVendorsFetch()
+  } = useAllPricesFetch()
 
   const handleAddSelectedVendors = useCallback(() => {
     // TODO: probably saving function passed in from outside
@@ -122,8 +125,8 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         </Root>
       }
     >
-      {/* <SelectVendorsTable
-        data={vendors}
+      <SelectVendorsTable
+        data={prices}
         {...{
           paginationData,
           handleFilterChange,
@@ -131,7 +134,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
           handlePaginationChange,
           selectedVendorsIds,
         }}
-      /> */}
+      />
     </ModalBase>
   )
 }

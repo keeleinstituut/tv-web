@@ -26,3 +26,14 @@
 .headerTooltip {
   margin-left: spacing(2);
 }
+
+.container {
+  .tableContainer {
+    box-shadow: unset;
+    border: unset;
+  }
+}
+
+.row {
+  display: flex;
+}

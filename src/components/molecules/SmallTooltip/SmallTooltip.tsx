@@ -14,6 +14,7 @@ interface TooltipContentProps {
   wrapperRef?: RefObject<HTMLDivElement>
   isVisible?: boolean
   horizontalScrollContainerId?: string
+  className?: string
 }
 
 const TooltipContent: FC<TooltipContentProps> = ({
@@ -22,6 +23,7 @@ const TooltipContent: FC<TooltipContentProps> = ({
   isVisible,
   horizontalScrollContainerId,
   wrapperRef,
+  className,
 }) => {
   const contentRef = useRef(null)
   const { left, top } =
@@ -42,7 +44,8 @@ const TooltipContent: FC<TooltipContentProps> = ({
         className={classNames(
           classes.tooltipContent,
           useBottomPosition && classes.bottomPosition,
-          isVisible && classes.visible
+          isVisible && classes.visible,
+          className
         )}
         style={{
           left: (left || 0) - 24,
@@ -61,7 +64,8 @@ const TooltipContent: FC<TooltipContentProps> = ({
       ref={contentRef}
       className={classNames(
         classes.tooltipContent,
-        useBottomPosition && classes.bottomPosition
+        useBottomPosition && classes.bottomPosition,
+        className
       )}
     >
       {tooltipContent}
@@ -89,6 +93,7 @@ interface SmallTooltipProps extends TooltipContentProps {
   ariaLabel?: string
   hidden?: boolean
   className?: string
+  contentClassName?: string
   hideIcon?: boolean
 }
 
@@ -99,6 +104,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
   className,
   horizontalScrollContainerId,
   hideIcon,
+  contentClassName,
   ...rest
 }) => {
   const [isVisible, setVisible] = useState(false)
@@ -121,6 +127,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
         isVisible={isVisible}
         wrapperRef={wrapperRef}
         horizontalScrollContainerId={horizontalScrollContainerId}
+        className={contentClassName}
         {...rest}
       />
       <Icon icon={icon} ariaLabel={ariaLabel} hidden={hideIcon} />

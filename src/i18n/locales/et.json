@@ -84,7 +84,14 @@
     "no": "Ei",
     "select_vendor": "Märgi teostaja",
     "free_days": "Vabad päevad",
-    "search_by_name": "Otsi nime alusel"
+    "search_by_name": "Otsi nime alusel",
+    "skill": "Oskus",
+    "character_fee": "Tähemärk",
+    "word_fee": "Sõna",
+    "page_fee": "Lehekülg",
+    "minute_fee": "Minut",
+    "hour_fee": "Tund",
+    "minimal_fee": "Minimaalne"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -292,7 +299,7 @@
     "cat_merge_title": "Kas oled kindel, et soovid failid kokku liita?",
     "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada.",
     "choose_vendors": "Teostajate valimine",
-    "choose_vendors_helper": "Vali teostajad, kellele soovid selle ülesade pakkumise saata.\n<br/> Ülesanne määratakse automaatselt esimesele, kes ülesande vastu võtab."
+    "choose_vendors_helper": "Vali teostajad, kellele soovid selle ülesade pakkumise saata.\n Ülesanne määratakse automaatselt esimesele, kes ülesande vastu võtab."
   },
   "cheat_sheet": {
     "user_management": {
@@ -412,7 +419,8 @@
     "owned_by_other_company": "Mälu omanik on teine asutus. Puudub õigus sellesse kirjutada.",
     "main_write_helper": "„Peamine/Kirjuta“ mällu salvestatakse selle alamtellimuse tõlkesegmendid.",
     "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail).",
-    "selected_translation_memory": "Valitud masintõlkemootor: {{memory}}"
+    "selected_translation_memory": "Valitud masintõlkemootor: {{memory}}",
+    "clear_price_filters": "Teostajate valimise tabel on eelfiltreeritud alamtellimuse keelesuuna ja ülesande oskuse järgi. Vajutades “Eemalda kõik filtrid” kuvame kogu teostajate andmebaasi hinnakirja"
   },
   "tag": {
     "tag_management": "Sildid",

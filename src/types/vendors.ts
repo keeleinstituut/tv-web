@@ -7,12 +7,22 @@ import { UserType } from './users'
 import { Price } from './price'
 import { Tag } from './tags'
 
+export type SkillsData = {
+  id: string
+  name: string
+}
+
+export type GetSkillsPayload = {
+  data?: SkillsData[]
+}
+
 export type Vendor = {
   id: string
   institution_user: UserType
   company_name: string
   prices: Price[]
   tags: Tag[]
+  skills: SkillsData[]
   comment: string
 } & DiscountPercentages
 

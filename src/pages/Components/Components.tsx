@@ -92,6 +92,13 @@ const Test: FC = () => {
     setOpen(true)
   }
 
+  const handleOpenVendorsModal = useCallback(() => {
+    showModal(ModalTypes.SelectVendor, {
+      taskId: 'random',
+      selectedVendorsIds: [],
+    })
+  }, [])
+
   const testFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Text,
@@ -281,9 +288,9 @@ const Test: FC = () => {
           children="bu"
           size={SizeTypes.M}
           icon={ButtonArrow}
-          type="submit"
           ariaLabel={t('label.button_arrow')}
           iconPositioning={IconPositioningTypes.Right}
+          onClick={handleOpenVendorsModal}
         />
       </DynamicForm>
       <BaseButton onClick={handleModalOpen}>{'Ava vorm'}</BaseButton>
