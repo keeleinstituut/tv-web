@@ -78,7 +78,15 @@
     "xliff_name": "XLIFFi nimi",
     "chunks": "Segmendid",
     "match_type": "Vaste tüüp",
-    "cat_split_amount": "Tükkide arv"
+    "cat_split_amount": "Tükkide arv",
+    "character_fee": "Tähemärk",
+    "word_fee": "Sõna",
+    "page_fee": "Lehekülg",
+    "minute_fee": "Minut",
+    "hour_fee": "Tund",
+    "minimal_fee": "Min tasu",
+    "skill": "Oskus",
+    "view_general_price_list": "Vaata koondhinnakirja"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -344,7 +352,8 @@
     "analysis_based_discount": "Analüüsipõhine soodustus",
     "repetitions": "Kordused",
     "match_type": "Vaste tüüp",
-    "percent_from_price": "% hinnast"
+    "percent_from_price": "% hinnast",
+    "price_list": "Koondhinnakiri"
   },
   "file": {
     "drop_files": "Pane failid siia...",
