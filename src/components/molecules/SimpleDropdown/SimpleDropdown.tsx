@@ -30,7 +30,11 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
 }) => {
   const { horizontalWrapperId } = useTableContext()
   const { left, top } =
-    useElementPosition(wrapperRef, horizontalWrapperId, undefined, isOpen) || {}
+    useElementPosition({
+      ref: wrapperRef,
+      horizontalWrapperId,
+      forceRecalculate: isOpen,
+    }) || {}
 
   if (!isOpen) return null
   if (horizontalWrapperId) {

@@ -38,7 +38,11 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
 }) => {
   const containerRef = useRef(null)
   const { left, top, right } =
-    useElementPosition(parentRef, undefined, undefined, isDragAndDropOpen) || {}
+    useElementPosition({
+      ref: parentRef,
+      forceRecalculate: isDragAndDropOpen,
+    }) || {}
+
   const [inViewport, ratio] = useInViewport(containerRef)
 
   useClickAway(() => {

@@ -9,6 +9,7 @@ import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
 import { GetPricesPayload, PricesDataType } from 'types/price'
+import { map } from 'lodash'
 
 export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
   const {
@@ -71,10 +72,17 @@ export const useFetchSkills = () => {
     queryFn: () => apiClient.get(`${endpoints.SKILLS}`),
   })
 
+  const { data: skills } = data || {}
+
+  const skillsFilters = map(skills, ({ id, name }) => {
+    return { value: id, label: name }
+  })
+
   return {
     isLoading,
     isError,
-    data: data?.data,
+    skills,
+    skillsFilters,
   }
 }
 

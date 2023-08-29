@@ -77,12 +77,18 @@ export interface SelectVendorModalProps {
   isModalOpen?: boolean
   taskId?: string
   selectedVendorsIds?: string[]
+  taskSkills?: string[]
+  source_language_classifier_value_id?: string
+  destination_language_classifier_value_id?: string
 }
 
 const SelectVendorModal: FC<SelectVendorModalProps> = ({
   taskId,
   selectedVendorsIds = [],
+  taskSkills = [],
   isModalOpen,
+  source_language_classifier_value_id,
+  destination_language_classifier_value_id,
 }) => {
   const { t } = useTranslation()
   // TODO: add prices fetch here instead
@@ -133,6 +139,9 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
           handleSortingChange,
           handlePaginationChange,
           selectedVendorsIds,
+          taskSkills,
+          source_language_classifier_value_id,
+          destination_language_classifier_value_id,
         }}
       />
     </ModalBase>

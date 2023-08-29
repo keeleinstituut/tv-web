@@ -120,6 +120,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
       footer: (info) => info.column.id,
       meta: {
         filterOption: { role_id: rolesFilters },
+        showSearch: true,
       },
     }),
     columnHelper.accessor('name', {

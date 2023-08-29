@@ -9,15 +9,9 @@ import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 interface AssignmentProps extends AssignmentType {
   index: number
+  source_language_classifier_value_id: string
+  destination_language_classifier_value_id: string
 }
-
-// {
-//   /* feature: SubProjectFeatures
-//   // id: string
-//   // candidates: Candidate[]
-//   // assigned_vendor_id?: string
-//   // assignee_id?: string */
-// }
 
 const Assignment: FC<AssignmentProps> = ({
   index,
@@ -26,6 +20,8 @@ const Assignment: FC<AssignmentProps> = ({
   assigned_vendor_id,
   assignee_id,
   feature,
+  source_language_classifier_value_id,
+  destination_language_classifier_value_id,
 }) => {
   const { t } = useTranslation()
   const selectedVendorsIds = map(candidates, 'vendor_id')
@@ -33,8 +29,17 @@ const Assignment: FC<AssignmentProps> = ({
     showModal(ModalTypes.SelectVendor, {
       taskId: id,
       selectedVendorsIds,
+      // TODO: not sure where these taskSkills will come from
+      taskSkills: [],
+      source_language_classifier_value_id,
+      destination_language_classifier_value_id,
     })
-  }, [selectedVendorsIds, id])
+  }, [
+    id,
+    selectedVendorsIds,
+    source_language_classifier_value_id,
+    destination_language_classifier_value_id,
+  ])
 
   return (
     <div className={classes.assignmentContainer}>

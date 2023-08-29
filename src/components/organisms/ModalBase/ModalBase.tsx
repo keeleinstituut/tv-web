@@ -1,4 +1,10 @@
-import { FC, ReactNode, PropsWithChildren, ReactElement } from 'react'
+import {
+  FC,
+  ReactNode,
+  PropsWithChildren,
+  ReactElement,
+  createContext,
+} from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import classNames from 'classnames'
 import Button, {
@@ -10,6 +16,13 @@ import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
 
 import classes from './classes.module.scss'
+interface ModalContextType {
+  modalContentId: string
+}
+
+export const ModalContext = createContext<ModalContextType>({
+  modalContentId: 'tableWrapper',
+})
 
 export enum ModalSizeTypes {
   Narrow = 'narrow',
@@ -97,52 +110,59 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
   }
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      {trigger}
-      <Dialog.Portal>
-        <Dialog.Overlay className={classes.dialogOverlay} />
-        <Dialog.Content
-          onOpenAutoFocus={handleOpen}
-          className={classNames(
-            classes.dialogContent,
-            classes[size],
-            progressBar && classes.progressBarContainer,
-            className
-          )}
-        >
-          <Button
-            hidden={!topButton}
-            icon={Close}
-            appearance={AppearanceTypes.Secondary}
-            onClick={handleClose}
-            className={classes.topButton}
+    <ModalContext.Provider
+      value={{
+        modalContentId: 'modalContentId',
+      }}
+    >
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        {trigger}
+        <Dialog.Portal>
+          <Dialog.Overlay className={classes.dialogOverlay} id="randomTest" />
+          <Dialog.Content
+            onOpenAutoFocus={handleOpen}
+            id="modalContentId"
+            className={classNames(
+              classes.dialogContent,
+              classes[size],
+              progressBar && classes.progressBarContainer,
+              className
+            )}
           >
-            {t('button.cancel')}
-          </Button>
-          <div hidden={!progressBar} className={classes.progressBarContent}>
-            {progressBar}
-          </div>
-          <h1 className={classNames(classes.modalTitle, classes[titleFont])}>
-            {title}
-          </h1>
-          {headComponent}
-          <p hidden={!helperText} className={classes.helperText}>
-            {helperText}
-          </p>
-          <Dialog.Overlay className={classes.scrollableContent}>
-            <div
-              className={classNames(
-                classes.dialogDescription,
-                innerWrapperClassName
-              )}
+            <Button
+              hidden={!topButton}
+              icon={Close}
+              appearance={AppearanceTypes.Secondary}
+              onClick={handleClose}
+              className={classes.topButton}
             >
-              {children}
+              {t('button.cancel')}
+            </Button>
+            <div hidden={!progressBar} className={classes.progressBarContent}>
+              {progressBar}
             </div>
-          </Dialog.Overlay>
-          <ModalFooter buttonsPosition={buttonsPosition} buttons={buttons} />
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+            <h1 className={classNames(classes.modalTitle, classes[titleFont])}>
+              {title}
+            </h1>
+            {headComponent}
+            <p hidden={!helperText} className={classes.helperText}>
+              {helperText}
+            </p>
+            <Dialog.Overlay className={classes.scrollableContent}>
+              <div
+                className={classNames(
+                  classes.dialogDescription,
+                  innerWrapperClassName
+                )}
+              >
+                {children}
+              </div>
+            </Dialog.Overlay>
+            <ModalFooter buttonsPosition={buttonsPosition} buttons={buttons} />
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </ModalContext.Provider>
   )
 }
 

@@ -26,8 +26,11 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
   const { horizontalWrapperId } = useTableContext()
   const isVisible = !message && type !== 'required'
   const { left, top } =
-    useElementPosition(wrapperRef, horizontalWrapperId, undefined, isVisible) ||
-    {}
+    useElementPosition({
+      ref: wrapperRef,
+      horizontalWrapperId,
+      forceRecalculate: isVisible,
+    }) || {}
   const { t } = useTranslation()
   if (!message && type !== 'required') return null
   const messageToShow = message || t('error.required')
