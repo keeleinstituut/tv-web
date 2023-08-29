@@ -1,0 +1,45 @@
+@import 'styles/variables';
+
+.modalContainer {
+  .contentWrapper {
+    padding: 0 spacing(4);
+  }
+
+  .modalHeadContainer {
+    display: grid;
+    grid-template-columns: auto minmax(auto, 328px);
+    grid-template-rows: auto auto;
+    padding: 0 spacing(18);
+    justify-items: start;
+  
+    h1 {
+      color: $color-input-main;
+      margin-bottom: spacing(3);
+    }  
+    p {
+      color: $color-primary;
+      white-space: pre-line;
+    }
+  
+    .searchInput {
+      justify-self: end;
+      align-self: center;
+      grid-row: 1/4;
+      grid-column: 2;
+      width: 100%;
+
+      input {
+        width: 100%;
+      }
+    }
+  }
+
+  .row {
+    display: flex;
+    margin-top: spacing(3);
+  
+    .tooltip {
+      margin-left: spacing(2);
+    }
+  }
+}

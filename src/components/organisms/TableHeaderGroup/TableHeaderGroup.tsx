@@ -40,6 +40,9 @@ type ColumnMeta = {
     filterOption?: FilterTypes
     sortingOption?: SortingFunctionType['sort_order'][]
     filterValue?: string | string[]
+    onEndReached?: () => void
+    onSearch?: (value: string) => void
+    showSearch?: boolean
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
@@ -63,6 +66,10 @@ const HeaderItem = <TData,>({
   const { id, column } = header || {}
   const { meta } = column.columnDef as CustomColumnDef<TData>
   const filterOption = meta?.filterOption || []
+  const onEndReached = meta?.onEndReached
+  const onSearch = meta?.onSearch
+  const showSearch = meta?.showSearch
+
   const options = values(filterOption)[0] || []
   const sortingOption = meta?.sortingOption || []
   const filterValue = meta?.filterValue
@@ -119,7 +126,7 @@ const HeaderItem = <TData,>({
       {flexRender(column.columnDef.header, header.getContext())}
 
       <TableColumnFilter
-        hidden={isEmpty(options)}
+        hidden={isEmpty(options) && !showSearch}
         filterOption={options}
         name={toString(id)}
         onChange={handleOnFiltering}
@@ -128,6 +135,9 @@ const HeaderItem = <TData,>({
         multiple
         buttons
         ariaLabel={t('button.filter')}
+        onEndReached={onEndReached}
+        onSearch={onSearch}
+        showSearch={showSearch}
       />
     </div>
   )

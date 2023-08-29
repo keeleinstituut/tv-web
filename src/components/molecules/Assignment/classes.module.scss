@@ -1,1 +1,20 @@
 @import 'styles/variables';
+
+.assignmentContainer {
+  display: grid;
+  grid-template-columns: minmax(auto, 409px) auto;
+  grid-column-gap: spacing(10);
+
+  h3 {
+    color: $color-primary;
+  }
+}
+
+.assignmentId {
+  font-weight: $font-weight-bold;
+  margin-top: spacing(2);
+}
+
+.addButton {
+  margin-top: spacing(6);
+}

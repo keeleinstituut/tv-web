@@ -142,7 +142,7 @@ export interface ListSubOrderDetail {
   created_at: string
   updated_at: string
   features: SubProjectFeatures[]
-  // Not sure about the existance of following:
+  // Not sure about the existence of following:
   status?: SubOrderStatus
   deadline_at: string
   reference_number: string

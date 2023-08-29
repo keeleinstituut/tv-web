@@ -1,3 +1,6 @@
+import { ResponseMetaTypes } from 'types/collective'
+import { Vendor } from './vendors'
+
 export interface Price {
   id: string
   vendor_id: string
@@ -14,8 +17,23 @@ export interface Price {
   minimal_fee: number
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
+  vendor: Vendor
+}
+export interface GetPricesPayload {
+  vendor_id?: string
+  institution_user_name?: string
+  src_lang_classifier_value_id?: string[]
+  dst_lang_classifier_value_id?: string[]
+  skill_id?: string[]
+  limit?: number
+  order_by?: string
+  order_direction?: string
 }
 
+export type PricesDataType = {
+  data: Price[]
+  meta?: ResponseMetaTypes
+}
 export interface LanguageClassifierValue {
   id: string
   type: string

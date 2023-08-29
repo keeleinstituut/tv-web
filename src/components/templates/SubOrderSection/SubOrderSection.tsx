@@ -5,7 +5,15 @@ import Tag from 'components/atoms/Tag/Tag'
 import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import Feature from 'components/organisms/features/Feature'
-import { compact, includes, map, toLower, find, filter } from 'lodash'
+import {
+  compact,
+  includes,
+  map,
+  toLower,
+  find,
+  filter,
+  findIndex,
+} from 'lodash'
 import {
   ListSubOrderDetail,
   SubOrderStatus,
@@ -116,13 +124,6 @@ const SubOrderSection: FC<SubOrderProps> = ({
     }
   }, [currentHash, ext_id, attemptScroll])
 
-  const handleOpenContainer = useCallback(
-    (isExpanded: boolean) => {
-      setHash(isExpanded ? ext_id : '')
-    },
-    [ext_id, setHash]
-  )
-
   const { features = [], assignments = [] } = subOrder || {}
 
   const languageDirection = `${destination_language_classifier_value?.value} > ${source_language_classifier_value?.value}`
@@ -138,15 +139,35 @@ const SubOrderSection: FC<SubOrderProps> = ({
     )
   })
 
+  const handleOpenContainer = useCallback(
+    (isExpanded: boolean) => {
+      setHash(isExpanded ? ext_id : '')
+    },
+    [ext_id, setHash]
+  )
+
+  // const availableTabs = compact(
+  //   map(SubProjectFeatures, (feature) => {
+  //     if (
+  //       feature === SubProjectFeatures.GeneralInformation ||
+  //       includes(features, feature)
+  //     ) {
+  //       return {
+  //         id: feature,
+  //         name: t(`orders.features.${feature}`),
+  //       }
+  //     }
+  //   })
+  // )
+
+  // TODO: not sure if GeneralInformation should be considered a feature here or just added
   const availableTabs = compact(
-    map(SubProjectFeatures, (feature) => {
-      if (
-        feature === SubProjectFeatures.GeneralInformation ||
-        includes(features, feature)
-      ) {
+    map(features, (feature) => {
+      if (feature) {
         return {
           id: feature,
-          name: t(`orders.features.${feature}`),
+          // TODO: need to add (CAT) to end of some feature names
+          name: `${t(`orders.features.${feature}`)}`,
         }
       }
     })
@@ -187,7 +208,13 @@ const SubOrderSection: FC<SubOrderProps> = ({
         editDisabled
       />
 
-      <Feature subOrder={subOrder} feature={activeTab as SubProjectFeatures} />
+      <Feature
+        subOrder={subOrder}
+        feature={activeTab as SubProjectFeatures}
+        index={findIndex(availableTabs, (tab) => {
+          return tab.id === activeTab
+        })}
+      />
     </ExpandableContentContainer>
   )
 }

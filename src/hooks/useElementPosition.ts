@@ -1,26 +1,51 @@
 import { useState, useCallback, useEffect, RefObject } from 'react'
 
-const useElementPosition = <RefType extends HTMLElement>(
-  ref?: RefObject<RefType>,
-  horizontalContainerId?: string,
-  verticalContainerId?: string,
+const useElementPosition = <RefType extends HTMLElement>({
+  ref,
+  horizontalWrapperId,
+  verticalContainerId,
+  forceRecalculate,
+  containingElementId,
+}: {
+  ref?: RefObject<RefType>
+  horizontalWrapperId?: string
+  verticalContainerId?: string
   forceRecalculate?: boolean
-) => {
+  containingElementId?: string
+}) => {
   const {
     x: initialLeft,
     y: initialTop,
     right: initialRight,
   } = ref?.current?.getBoundingClientRect() || {}
 
+  const parentElement = containingElementId
+    ? document.getElementById(containingElementId)
+    : null
+
+  const {
+    y: parentY = 0,
+    x: parentX = 0,
+    right: parentRight = 0,
+  } = parentElement?.getBoundingClientRect() || {}
+
   const [{ left, top, right }, setPosition] = useState({
-    left: initialLeft,
-    top: initialTop,
-    right: initialRight,
+    left: (initialLeft || 0) - parentX,
+    top: (initialTop || 0) - parentY,
+    right: (initialRight || 0) - parentRight,
   })
 
   const recalculatePosition = useCallback(() => {
-    const { x, y, right } = ref?.current?.getBoundingClientRect() || {}
-    setPosition({ left: x, top: y, right })
+    const {
+      x = 0,
+      y = 0,
+      right = 0,
+    } = ref?.current?.getBoundingClientRect() || {}
+    setPosition({
+      left: x - parentX,
+      top: y - parentY,
+      right: right - parentRight,
+    })
   }, [ref])
 
   useEffect(() => {
@@ -37,8 +62,8 @@ const useElementPosition = <RefType extends HTMLElement>(
     const verticalScrollContainer = verticalContainerId
       ? document.getElementById(verticalContainerId)
       : document.getElementById('mainScroll')
-    const horizontalScrollContainer = horizontalContainerId
-      ? document.getElementById(horizontalContainerId)
+    const horizontalScrollContainer = horizontalWrapperId
+      ? document.getElementById(horizontalWrapperId)
       : null
     if (ref) {
       recalculatePosition()
@@ -57,7 +82,7 @@ const useElementPosition = <RefType extends HTMLElement>(
       )
       window.removeEventListener('resize', recalculatePosition)
     }
-  }, [horizontalContainerId, recalculatePosition, ref, verticalContainerId])
+  }, [horizontalWrapperId, recalculatePosition, ref, verticalContainerId])
 
   return { left, top, right }
 }

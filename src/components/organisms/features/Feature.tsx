@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { includes, filter } from 'lodash'
+import { includes, filter, isEmpty } from 'lodash'
 import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
 import TranslationFeature from './TranslationFeature/TranslationFeature'
@@ -11,22 +11,23 @@ import OverviewFeature from './OverviewFeature/OverviewFeature'
 interface FeatureProps {
   subOrder?: SubOrderDetail
   feature?: SubProjectFeatures
+  index?: number
 }
 
-const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
+const Feature: FC<FeatureProps> = ({ feature, subOrder, index }) => {
   let Component = null
 
   switch (feature) {
-    case 'general_information':
+    case SubProjectFeatures.GeneralInformation:
       Component = GeneralInformationFeature
       break
-    case 'job_translation':
+    case SubProjectFeatures.JobTranslation:
       Component = TranslationFeature
       break
-    case 'job_revision':
+    case SubProjectFeatures.JobRevision:
       Component = RevisionFeature
       break
-    case 'job_overview':
+    case SubProjectFeatures.JobOverview:
       Component = OverviewFeature
       break
 
@@ -43,9 +44,14 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
   return (
     <Component
       {...subOrder}
-      catSupported={includes(subOrder.cat_features, feature)}
+      catSupported={
+        feature === SubProjectFeatures.GeneralInformation
+          ? !isEmpty(subOrder.cat_features)
+          : includes(subOrder.cat_features, feature)
+      }
       subOrderId={subOrder.id}
       assignments={filter(subOrder.assignments, { feature })}
+      index={index}
     />
   )
 }
