@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from 'react'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from './useClassifierValues'
-import { map, flatMap, size, filter, take } from 'lodash'
+import { map, flatMap, size, filter, take, toLower } from 'lodash'
 
 export const useLanguageDirections = ({
-  per_page = 500,
+  per_page = 40,
 }: {
   per_page?: number
 }) => {
@@ -31,7 +31,7 @@ export const useLanguageDirections = ({
   }, [isLoading])
 
   const searchRegexp = useMemo(() => {
-    const escapedSearchString = searchString.replace(
+    const escapedSearchString = toLower(searchString).replace(
       /[.*+?^${}()|[\]\\]/g,
       '\\$&'
     )
@@ -39,7 +39,7 @@ export const useLanguageDirections = ({
   }, [searchString])
 
   const filteredOptions = useMemo(
-    () => filter(allOptions, ({ label }) => searchRegexp.test(label)),
+    () => filter(allOptions, ({ label }) => searchRegexp.test(toLower(label))),
     [allOptions, searchRegexp]
   )
 
@@ -48,8 +48,6 @@ export const useLanguageDirections = ({
       setCurrentPage(currentPage + 1)
     }
   }, [allOptions, currentPage, per_page])
-
-  console.warn('language classifiers', languageFilters)
 
   const languageDirectionFilters = useMemo(
     () => take(filteredOptions, per_page * currentPage),

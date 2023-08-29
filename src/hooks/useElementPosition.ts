@@ -35,8 +35,6 @@ const useElementPosition = <RefType extends HTMLElement>({
     right: (initialRight || 0) - parentRight,
   })
 
-  // console.warn('parentPosition', parentPosition)
-
   const recalculatePosition = useCallback(() => {
     const {
       x = 0,
