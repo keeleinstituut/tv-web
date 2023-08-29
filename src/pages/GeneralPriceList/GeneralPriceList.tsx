@@ -1,29 +1,54 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Root } from '@radix-ui/react-form'
+import GeneralPriceListTable from 'components/organisms/tables/GeneralPriceListTable/GeneralPriceListTable'
+import { useAllPricesFetch } from 'hooks/requests/useVendors'
+
 import classes from './classes.module.scss'
 
-const GeneralPriceList: FC = () => {
+export interface GeneralPriceListProps {
+  isModalOpen?: boolean
+  taskId?: string
+  selectedVendorsIds?: string[]
+  taskSkills?: string[]
+  source_language_classifier_value_id?: string
+  destination_language_classifier_value_id?: string
+}
+
+const GeneralPriceList: FC<GeneralPriceListProps> = ({
+  selectedVendorsIds = [],
+  taskSkills = [],
+  source_language_classifier_value_id,
+  destination_language_classifier_value_id,
+}) => {
   const { t } = useTranslation()
+
+  const {
+    prices,
+    paginationData,
+    isLoading,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useAllPricesFetch()
 
   return (
     <>
-      <div className={classes.vendorsDatabaseHeader}>
+      <div>
         <h1>{t('vendors.price_list')}</h1>
       </div>
-      <Root>
-        {/* <Loader loading={isLoading && isEmpty(vendors)} /> */}
-        {/* <VendorsTable
-          data={vendors}
-          hidden={isEmpty(vendors)}
-          {...{
-            paginationData,
-            handleFilterChange,
-            handleSortingChange,
-            handlePaginationChange,
-          }}
-        /> */}
-      </Root>
+      <GeneralPriceListTable
+        data={prices}
+        {...{
+          paginationData,
+          handleFilterChange,
+          handleSortingChange,
+          handlePaginationChange,
+          selectedVendorsIds,
+          taskSkills,
+          source_language_classifier_value_id,
+          destination_language_classifier_value_id,
+        }}
+      />
     </>
   )
 }

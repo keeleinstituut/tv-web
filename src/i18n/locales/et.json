@@ -93,7 +93,8 @@
     "minute_fee": "Minut",
     "hour_fee": "Tund",
     "view_general_price_list": "Vaata koondhinnakirja",
-    "minimal_fee": "Minimaalne"
+    "minimal_fee": "Minimaalne",
+    "min_fee": "Min tasu"
   },
   "placeholder": {
     "email": "example@mail.com",
