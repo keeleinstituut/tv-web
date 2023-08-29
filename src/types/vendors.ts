@@ -59,23 +59,18 @@ export type SkillsData = {
   name: string
 }
 
-export type GetSkillsPayload = {
+export type GetSkillsResponse = {
   data?: SkillsData[]
 }
 
-export interface Prices {
-  id?: string
-  vendor_id?: string
-  skill_id?: string
-  src_lang_classifier_value_id?: string
-  dst_lang_classifier_value_id?: string
-  character_fee?: number
-  word_fee?: number
-  page_fee?: number
-  minute_fee?: number
-  hour_fee?: number
-  minimal_fee?: number
-}
+export type Prices = Omit<
+  Price,
+  | 'destination_language_classifier_value'
+  | 'source_language_classifier_value'
+  | 'created_at'
+  | 'updated_at'
+  | 'id'
+>
 export interface UpdatedPricesData {
   id?: string
   character_fee?: number
@@ -97,23 +92,8 @@ export type DeletePricesPayload = {
   id?: string[]
 }
 
-export type PricesData = {
-  id: string
-  vendor_id: string | undefined
-  skill_id: string
-  src_lang_classifier_value_id: string
-  dst_lang_classifier_value_id: string
-  updated_at: string
-  created_at: string
-  character_fee: number
-  word_fee: number
-  page_fee: number
-  minute_fee: number
-  hour_fee: number
-  minimal_fee: number
+interface PricesData extends Price {
   vendor?: Vendor
-  source_language_classifier_value: LanguageClassifierValue
-  destination_language_classifier_value: LanguageClassifierValue
   skill?: SkillsData
 }
 

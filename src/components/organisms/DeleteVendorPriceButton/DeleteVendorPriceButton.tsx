@@ -5,11 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { includes, map } from 'lodash'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
-import {
-  FormValues,
-  PriceObject,
-} from '../forms/VendorPriceListForm/VendorPriceListForm'
-import { SubmitHandler } from 'react-hook-form'
+import { PriceObject } from '../forms/VendorPriceListForm/VendorPriceListForm'
 import { showNotification } from '../NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
@@ -23,7 +19,7 @@ export type DeleteVendorPriceButtonProps = {
 }
 
 const DeleteVendorPriceButton: FC<DeleteVendorPriceButtonProps> = ({
-  languagePairModalContent,
+  languagePairModalContent = {},
   vendorId,
 }) => {
   const { t } = useTranslation()
@@ -32,7 +28,7 @@ const DeleteVendorPriceButton: FC<DeleteVendorPriceButtonProps> = ({
   const { deletePrices, isLoading: isDeletingPrices } =
     useDeletePrices(vendorId)
 
-  const onDeletePrices: SubmitHandler<FormValues> = useCallback(async () => {
+  const onDeletePrices = useCallback(async () => {
     const payload = {
       id: map(languagePairModalContent, ({ id }) => id),
     }
@@ -50,16 +46,12 @@ const DeleteVendorPriceButton: FC<DeleteVendorPriceButtonProps> = ({
     }
   }, [deletePrices, languagePairModalContent, t])
 
-  const handleDelete = () => {
-    onDeletePrices({})
-  }
-
   return (
     <Button
       appearance={AppearanceTypes.Text}
       icon={Delete}
       ariaLabel={t('vendors.delete')}
-      onClick={() => handleDelete()}
+      onClick={() => onDeletePrices()}
       className={classes.deleteIcon}
       hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
       loading={isDeletingPrices}

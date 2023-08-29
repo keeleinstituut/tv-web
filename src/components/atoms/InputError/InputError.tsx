@@ -31,14 +31,19 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
   const { t } = useTranslation()
   if (!message && type !== 'required') return null
   const messageToShow = message || t('error.required')
+
   return (
     <div
       className={classNames(classes.errorContainer, className)}
       style={{
         zIndex: errorZIndex,
-        left,
-        top: (top || 0) + 16,
-        transform: 'translateY(100%)',
+        ...(horizontalWrapperId
+          ? {
+              left,
+              top: (top || 0) + 16,
+              transform: 'translateY(100%)',
+            }
+          : {}),
       }}
     >
       <img src={errorOutline} alt={t('error.input_title')} />
@@ -51,10 +56,14 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
 }
 
 const InputError: FC<InputErrorComponentProps> = (props) => {
-  return createPortal(
-    <InputErrorComponent {...props} />,
-    document.getElementById('root') || document.body
-  )
+  const { horizontalWrapperId } = useTableContext()
+  if (horizontalWrapperId) {
+    return createPortal(
+      <InputErrorComponent {...props} />,
+      document.getElementById('root') || document.body
+    )
+  }
+  return <InputErrorComponent {...props} />
 }
 
 export default memo(InputError)

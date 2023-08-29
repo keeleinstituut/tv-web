@@ -217,6 +217,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         )
       },
     }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ] as ColumnDef<any>[]
 
   return (
@@ -236,7 +237,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           onPaginationChange={handlePaginationChange}
           title={
             <div className={classes.pricesDataTableHeader}>
-              {t('vendors.vendor_price_list_title')}
+              <h4>{t('vendors.vendor_price_list_title')}</h4>
               <AddVendorPriceModalButton
                 vendorId={vendor_id}
                 control={control}

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control } from 'react-hook-form'
+import { Control, useWatch } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import {
   FormInput,
@@ -134,6 +134,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
 
   return (
     <DataTable
+      horizontalWrapperId="id"
       data={editableSkills}
       columns={columns}
       tableSize={TableSizeTypes.L}

@@ -2,7 +2,7 @@ import {
   VendorsDataType,
   GetVendorsPayload,
   UpdateVendorPayload,
-  GetSkillsPayload,
+  GetSkillsResponse,
   PricesDataType,
   UpdatePricesPayload,
   GetPricesPayload,
@@ -72,7 +72,7 @@ export const useUpdateVendor = (vendorId: string) => {
 }
 
 export const useFetchSkills = () => {
-  const { isLoading, isError, data } = useQuery<GetSkillsPayload>({
+  const { isLoading, isError, data } = useQuery<GetSkillsResponse>({
     queryKey: ['skills'],
     queryFn: () => apiClient.get(`${endpoints.SKILLS}`),
   })

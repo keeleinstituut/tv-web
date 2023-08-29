@@ -69,7 +69,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
           id,
         }) => {
           return {
-            id: id,
+            id,
             character_fee: toNumber(replace(toString(character_fee), '€', '')),
             hour_fee: toNumber(replace(toString(hour_fee), '€', '')),
             minimal_fee: toNumber(replace(toString(minimal_fee), '€', '')),
@@ -104,6 +104,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
             const valuesKey = keys(values)[0]
             const payloadKey = keys(payload)[0]
             const priceObject = replace(typedKey, payloadKey, valuesKey)
+
             setError(priceObject, { type: 'backend', message: errorString })
           })
         }
@@ -126,13 +127,13 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
         skill,
       }) => {
         return {
-          id: id,
-          character_fee: character_fee,
-          hour_fee: hour_fee,
-          minimal_fee: minimal_fee,
-          minute_fee: minute_fee,
-          page_fee: page_fee,
-          word_fee: word_fee,
+          id,
+          character_fee,
+          hour_fee,
+          minimal_fee,
+          minute_fee,
+          page_fee,
+          word_fee,
           skill_id: skill?.name || '',
         }
       }
@@ -159,6 +160,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
         />
       ),
       isLoading: isUpdatingPrices,
+      resetForm: resetForm,
     })
   }
 

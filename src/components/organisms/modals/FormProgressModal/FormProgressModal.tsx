@@ -3,11 +3,10 @@ import ModalBase, {
   ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { FC, ReactElement, useEffect, useState } from 'react'
+import React, { FC, ReactElement, useEffect, useState } from 'react'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
 import { find, keys, map, size } from 'lodash'
 import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
-import React from 'react'
 import { Control, useFormState } from 'react-hook-form'
 
 import classes from './classes.module.scss'
@@ -97,13 +96,11 @@ const FormProgressModal: FC<FormProgressProps> = ({
       open={!!isModalOpen}
       buttonsPosition={ButtonPositionTypes.SpaceBetween}
       progressBar={
-        steps && (
-          <ProgressBar
-            activeStep={activeStep}
-            steps={steps}
-            setActiveStep={setActiveStep}
-          />
-        )
+        <ProgressBar
+          activeStep={activeStep}
+          steps={steps}
+          setActiveStep={setActiveStep}
+        />
       }
       className={classes.progressBarHelperText}
       size={ModalSizeTypes.Big}

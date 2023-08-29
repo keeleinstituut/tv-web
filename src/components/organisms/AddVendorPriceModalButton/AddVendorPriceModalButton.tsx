@@ -71,13 +71,6 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
 
   const { data: skillsData } = useFetchSkills()
 
-  const languageOptions = map(languageFilter, ({ value, label }) => {
-    return {
-      label: label,
-      value: value,
-    }
-  })
-
   const languagePairFormFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Selections,
@@ -85,7 +78,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
       ariaLabel: t('vendors.source_language'),
       label: `${t('vendors.source_language')}*`,
       placeholder: t('button.choose'),
-      options: languageOptions,
+      options: languageFilter,
       rules: {
         required: true,
       },
@@ -98,7 +91,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
       ariaLabel: t('vendors.destination_language'),
       label: `${t('vendors.destination_language')}*`,
       placeholder: t('button.choose'),
-      options: languageOptions,
+      options: languageFilter,
       multiple: true,
       buttons: true,
       rules: {
@@ -135,11 +128,11 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
             keys(pickBy(values.skill_id, (value) => value === true)),
             (key, index) => {
               return {
-                vendor_id: vendorId,
-                skill_id: key.replace(/_\d+$/, ''),
+                vendor_id: vendorId || '',
+                skill_id: key.replace(/_\d+$/, '') || '',
                 src_lang_classifier_value_id:
-                  values['src_lang_classifier_value_id'],
-                dst_lang_classifier_value_id: dstValue,
+                  values['src_lang_classifier_value_id'] || '',
+                dst_lang_classifier_value_id: dstValue || '',
                 character_fee: toNumber(values[`character_fee-${index}`]) || 0,
                 word_fee: toNumber(values[`word_fee-${index}`]) || 0,
                 page_fee: toNumber(values[`page_fee-${index}`]) || 0,
@@ -226,7 +219,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
             <VendorPriceListSecondStep
               skillsFormFields={skillsFormFields}
               control={control}
-              languageOptions={languageOptions}
+              languageOptions={languageFilter}
               customSkillsDynamicFormClass={classes.skillsDynamicForm}
             />
           ),
@@ -238,7 +231,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
           modalContent: (
             <VendorPriceListThirdStep
               control={control}
-              languageOptions={languageOptions}
+              languageOptions={languageFilter}
             />
           ),
         },

@@ -173,6 +173,7 @@ const AddVendorPricesTable: FC<AddPricesTableProps> = ({
       },
       footer: (info) => info.column.id,
     }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ] as ColumnDef<any>[]
 
   return (
