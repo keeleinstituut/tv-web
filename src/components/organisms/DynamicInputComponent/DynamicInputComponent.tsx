@@ -31,6 +31,12 @@ import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
 import TagsSelect, {
   TagsSelectProps,
 } from 'components/molecules/TagsSelect/TagsSelect'
+import TimeRangePicker, {
+  TimeRangePickerProps,
+} from 'components/molecules/TimeRangePicker/TimeRangePicker'
+import DayTimeRangePicker, {
+  DayTimeRangePickerProps,
+} from 'components/molecules/DayTimeRangePicker/DayTimeRangePicker'
 
 // Extend all props of an input with the corresponding inputType
 
@@ -42,6 +48,8 @@ export enum InputTypes {
   Time = 'time',
   TagsSelect = 'tagsSelect',
   DateTime = 'dateTime',
+  TimeRange = 'timeRange',
+  DayTimeRange = 'DayTimeRange',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -71,6 +79,12 @@ type TagsSelectPropsWithType = TagsSelectProps & {
 type DateTimePickerPropsWithType = DateTimePickerProps & {
   inputType: InputTypes.DateTime
 }
+type TimeRangePickerPropsWithType = TimeRangePickerProps & {
+  inputType: InputTypes.TimeRange
+}
+type DayTimeRangePickerPropsWithType = DayTimeRangePickerProps & {
+  inputType: InputTypes.DayTimeRange
+}
 
 export type InputPropsByType = (
   | TextInputPropsWithType
@@ -80,6 +94,8 @@ export type InputPropsByType = (
   | TimePickerPropsWithType
   | TagsSelectPropsWithType
   | DateTimePickerPropsWithType
+  | TimeRangePickerPropsWithType
+  | DayTimeRangePickerPropsWithType
 ) & {
   emptyDisplayText?: string
   onlyDisplay?: boolean
@@ -146,6 +162,20 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.DateTime:
         return (
           <DateTimePicker
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
+      case InputTypes.TimeRange:
+        return (
+          <TimeRangePicker
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
+      case InputTypes.DayTimeRange:
+        return (
+          <DayTimeRangePicker
             {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />

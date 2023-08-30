@@ -15,6 +15,7 @@ export interface DisplayValueProps {
     | boolean
     | readonly string[]
     | { [key: string]: string }
+    | object
 }
 
 const getDisplayedValueFromOptions = (
