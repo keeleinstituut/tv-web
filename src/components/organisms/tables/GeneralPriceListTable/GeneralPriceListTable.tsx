@@ -56,9 +56,9 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
   handlePaginationChange,
 }) => {
   const { t } = useTranslation()
-  const { skillsFilters = [] } = useFetchSkills()
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  // const { skillsFilters = [] } = useFetchSkills()
+  // const { languageDirectionFilters, loadMore, handleSearch } =
+  //   useLanguageDirections({})
 
   const tableData = useMemo(
     () =>
@@ -135,12 +135,12 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
         return <Tag label={getValue()} value />
       },
       footer: (info) => info.column.id,
-      meta: {
-        filterOption: { language_direction: languageDirectionFilters },
-        onEndReached: loadMore,
-        onSearch: handleSearch,
-        showSearch: true,
-      },
+      // meta: {
+      //   filterOption: { language_direction: languageDirectionFilters },
+      //   onEndReached: loadMore,
+      //   onSearch: handleSearch,
+      //   showSearch: true,
+      // },
     }),
     columnHelper.accessor('skill', {
       header: () => t('label.skill'),
@@ -154,10 +154,10 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
           </div>
         )
       },
-      meta: {
-        filterOption: { skill_id: skillsFilters },
-        showSearch: true,
-      },
+      // meta: {
+      //   filterOption: { skill_id: skillsFilters },
+      //   showSearch: true,
+      // },
     }),
     columnHelper.accessor('name', {
       header: () => t('label.name'),
