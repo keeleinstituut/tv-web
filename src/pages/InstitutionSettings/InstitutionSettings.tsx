@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import InstitutionManagementCheatSheet from 'components/molecules/cheatSheets/InstitutionManagementCheatSheet'
 import DepartmentManagement from 'components/molecules/DepartmentManagement/DepartmentManagement'
+import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
@@ -34,7 +35,13 @@ const InstitutionSettings: FC = () => {
       </div>
       <Container className={classes.container}>
         <h3 className={classes.title}>{t('institution.institution_data')}</h3>
-        <InstitutionForm name={name} id={institutionId} {...institution} />
+        <InstitutionForm
+          name={name}
+          id={institutionId}
+          {...institution}
+          workingTimes={<WorkingTimes data={institution} />}
+          //vacationDays={<div>Puhkepäevad:</div>}
+        />
       </Container>
 
       <p className={classes.dateText}>

@@ -34,6 +34,7 @@ import ModalRoot, {
   ModalTypes,
   showModal,
 } from 'components/organisms/modals/ModalRoot'
+import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -281,6 +282,7 @@ const Test: FC = () => {
       <BaseButton onClick={handleModalOpen}>{'Ava vorm'}</BaseButton>
       <ModalRoot />
 
+      <WorkingTimes />
       <Root>
         <TestingTable />
         <UsersTable />

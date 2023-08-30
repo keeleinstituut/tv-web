@@ -94,7 +94,8 @@
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
-    "select_tags": "Vali sildid"
+    "select_tags": "Vali sildid",
+    "pick_days": "Vali päev(ad)"
   },
   "button": {
     "login": "Logi sisse",
@@ -205,7 +206,18 @@
     "institution_management": "Asutuse andmete haldamine",
     "institution_data": "Asutuse andmed",
     "created_at": "Konto loodud {{ time }}",
-    "updated_at": "Konto andmed muudetud {{ time }}"
+    "updated_at": "Konto andmed muudetud {{ time }}",
+    "working_times": "Tööajad",
+    "working_days": "Tööpäevad",
+    "days": {
+      "monday": "Esmaspäev",
+      "tuesday": "Teisipäev",
+      "wednesday": "Kolmapäev",
+      "thursday": "Neljapäev",
+      "friday": "Reedel",
+      "saturday": "Laupäev",
+      "sunday": "Pühapäev"
+    }
   },
   "privileges": {
     "ADD_ROLE": "Rolli lisamine süsteemi",
@@ -279,7 +291,8 @@
     "cat_split_content_first_section": "Tõlketööriista faili saab tükeldada selleks, et iga tükk tõlkimisse saata erinevatele teostajatele. Vali mitme teostaja vahel soovid faili jagada. Fail jagatakse sõnade järgi võrdseteks osadeks.",
     "cat_split_content_italic_section": "Märkus. Pärast faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“.",
     "cat_merge_title": "Kas oled kindel, et soovid failid kokku liita?",
-    "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada."
+    "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada.",
+    "set_working_times_title": "Tööaegade määramine"
   },
   "cheat_sheet": {
     "user_management": {

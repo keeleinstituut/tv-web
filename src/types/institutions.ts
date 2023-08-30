@@ -22,3 +22,13 @@ export interface InstitutionPostType {
   phone?: string | null
   email?: string | null
 }
+
+export enum DayTypes {
+  monday = 'monday',
+  tuesday = 'tuesday',
+  wednesday = 'wednesday',
+  thursday = 'thursday',
+  friday = 'friday',
+  saturday = 'saturday',
+  sunday = 'sunday',
+}
