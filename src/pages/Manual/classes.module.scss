@@ -1,0 +1,17 @@
+.manualContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 100px;
+}
+
+.title {
+  grid-column-start: 1;
+}
+
+.content {
+  grid-column-start: 1;
+}
+
+.tableOfContents {
+  padding-left: 30px;
+}
