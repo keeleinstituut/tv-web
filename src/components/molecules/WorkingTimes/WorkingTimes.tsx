@@ -1,31 +1,51 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC } from 'react'
 import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
-import { isEditable } from '@testing-library/user-event/dist/utils'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
-import { groupBy, map, compact, uniqueId } from 'lodash'
+import {
+  groupBy,
+  map,
+  compact,
+  uniqueId,
+  forEach,
+  includes,
+  join,
+  upperCase,
+  replace,
+} from 'lodash'
 import classes from './classes.module.scss'
-import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { Root } from '@radix-ui/react-dialog'
-import { Type } from 'typescript'
-import { DayTypes, InstitutionType } from 'types/institutions'
+import {
+  DayTypes,
+  InstitutionPostType,
+  InstitutionType,
+} from 'types/institutions'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import { useUpdateInstitution } from 'hooks/requests/useInstitutions'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import { EditDataType } from 'components/organisms/modals/DateTimeRangeFormModal/DateTimeRangeFormModal'
+import useAuth from 'hooks/useAuth'
+import { Privileges } from 'types/privileges'
 
+dayjs.extend(timezone)
 interface WorkingTimesPropType {
   data?: InstitutionType
 }
+type PayloadType = {
+  [key in string]: string
+}
 
 const WorkingTimes: FC<WorkingTimesPropType> = (props) => {
-  const { updateInstitution, isLoading } = useUpdateInstitution({
+  const { updateInstitution } = useUpdateInstitution({
     institutionId: props?.data?.id,
   })
+  const { userPrivileges } = useAuth()
 
   const { t } = useTranslation()
   console.log('props', props)
@@ -67,7 +87,6 @@ const WorkingTimes: FC<WorkingTimesPropType> = (props) => {
       }
     })
   )
-  //console.log('formattedWorkTime', formattedWorkTime)
 
   const groupedData = groupBy(formattedWorkTime, ({ time_range }) =>
     JSON.stringify(time_range)
@@ -82,20 +101,58 @@ const WorkingTimes: FC<WorkingTimesPropType> = (props) => {
       time_range: JSON.parse(key),
     }
   })
+  //console.log('grouped', editableData)
 
-  // console.log('group', groupedData)
-  // console.log('data', editableData)
+  const dayTimeRange = join(
+    map(editableData, ({ days, time_range }, key) => {
+      const startTime = replace(time_range.start, /:\d{2}$/, '')
+      const endTime = replace(time_range.end, /:\d{2}$/, '')
+      const letters = join(
+        map(days, (day) => upperCase(t(`institution.days.${day}`).charAt(0))),
+        ','
+      )
+      return `${letters} ${startTime}-${endTime}`
+    }),
+    ', '
+  )
+
+  // console.log(dayTimeRange)
+
+  const handleOnSubmit = async (values: EditDataType[]) => {
+    // console.log('working submit, values', values)
+    const timezone = dayjs.tz.guess()
+    const workTime: PayloadType = {}
+
+    forEach(values, ({ days, time_range }) => {
+      forEach(days, (day) => {
+        workTime[`${day}_worktime_start`] = time_range?.start || ''
+        workTime[`${day}_worktime_end`] = time_range?.end || ''
+      })
+    })
+
+    const payload: InstitutionPostType = {
+      ...workTime,
+      worktime_timezone: timezone,
+      name: props?.data?.name || '',
+    }
+    // console.log('payload', payload)
+    try {
+      await updateInstitution(payload)
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.institution_updated'),
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleEditList = () => {
     showModal(ModalTypes.DateTimeRangeFormModal, {
-      editableData: editableData,
+      data: editableData,
       title: t('modal.set_working_times_title'),
-      // handleOnSubmit: handleOnSubmitTags,
-      //type: 'time',
-      // inputValidator: tagInputValidator,
-      // hasAddingPrivileges: includes(userPrivileges, Privileges.AddTag),
-      // hasDeletingPrivileges: includes(userPrivileges, Privileges.DeleteTag),
-      // hasEditPrivileges: includes(userPrivileges, Privileges.EditTag),
+      handleOnSubmit: handleOnSubmit,
     })
   }
 
@@ -105,14 +162,14 @@ const WorkingTimes: FC<WorkingTimesPropType> = (props) => {
         {t('institution.working_times')}
         {':'}
       </span>
-      <span className={classes.blue}> {'E-N 9:00-17:00'}</span>
+      <span className={classes.blue}> {dayTimeRange}</span>
       <Button
         appearance={AppearanceTypes.Text}
         size={SizeTypes.S}
         className={classes.editButton}
         icon={EditIcon}
         onClick={handleEditList}
-        hidden={!isEditable}
+        // hidden={!includes(userPrivileges, Privileges.EditUserWorktime)}
       />
     </div>
   )

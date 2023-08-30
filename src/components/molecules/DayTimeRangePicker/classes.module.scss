@@ -15,8 +15,8 @@
 
 .innerWrapper {
   display: grid;
-  grid-template-columns: max-content max-content max-content;
-  grid-gap: spacing(3);
+  grid-template-columns: max-content max-content;
+  grid-gap: spacing(4);
   align-items: start;
 
   .line {

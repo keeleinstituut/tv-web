@@ -10,19 +10,26 @@ import ModalBase, {
   ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import dayjs from 'dayjs'
-import timezone from 'dayjs/plugin/timezone'
-
 import { useTranslation } from 'react-i18next'
 import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { filter, isEqual, map, reduce, split, uniqueId } from 'lodash'
-import { Path, SubmitHandler, useForm } from 'react-hook-form'
+import {
+  filter,
+  isEqual,
+  join,
+  map,
+  reduce,
+  size,
+  split,
+  toArray,
+  uniqueId,
+} from 'lodash'
+import { FieldPath, Path, SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
-import { TagTypes } from 'types/tags'
 import classes from './classes.module.scss'
+import { ValidationError } from 'api/errorHandler'
 
 export interface TimeRangeType {
   start: string
@@ -34,19 +41,12 @@ export type EditDataType = {
   time_range?: TimeRangeType
 }
 
-dayjs.extend(timezone)
-
 export interface DateTimeRangeFormModalProps {
   isModalOpen?: boolean
   closeModal: () => void
-  editableData?: EditDataType[]
+  data?: EditDataType[]
   title?: string
-  type?: TagTypes
   handleOnSubmit?: (values: EditDataType[]) => void
-  inputValidator?: (value?: string | undefined) => string | true
-  hasAddingPrivileges?: boolean
-  hasDeletingPrivileges?: boolean
-  hasEditPrivileges?: boolean
 }
 
 type FormValues = {
@@ -59,13 +59,9 @@ type FormValues = {
 const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
   isModalOpen,
   closeModal,
-  editableData,
+  data: editableData,
   title,
-  type,
   handleOnSubmit,
-  hasAddingPrivileges,
-  hasDeletingPrivileges,
-  hasEditPrivileges,
 }) => {
   const { t } = useTranslation()
 
@@ -88,9 +84,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
     [editableData]
   )
 
-  // console.log('default', defaultValues)
-
-  const { handleSubmit, control, watch, reset, unregister } =
+  const { handleSubmit, control, watch, reset, unregister, setError } =
     useForm<FormValues>({
       reValidateMode: 'onChange',
       defaultValues: defaultValues,
@@ -105,6 +99,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
         inputType: InputTypes.DayTimeRange,
         name: `${id}` as Path<FormValues>,
         id: id,
+        formControl: control,
         handleDelete: () => setPrevDeletedValue(id),
       }
     }
@@ -122,6 +117,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
       {
         inputType: InputTypes.DayTimeRange,
         name: `${newId}` as Path<FormValues>,
+        formControl: control,
         handleDelete: () => setPrevDeletedValue(newId),
       },
     ]
@@ -140,29 +136,23 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
   console.log('updated', watchFieldArray)
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(async (values) => {
-    console.log(values)
-    const timezone = dayjs.tz.guess()
-
-    const payload = map(values, (value) => {
-      console.log(value)
-    })
-    console.log('payload', payload)
-
-    // worktime_timezone: 'Europe/Tallinn',
-    // monday_worktime_start: '08:00:00',
-    // monday_worktime_end: '16:00:00',
-    // tuesday_worktime_start: '08:00:00',
-    // tuesday_worktime_end: '16:00:00',
-    // wednesday_worktime_start: '08:00:00',
-    // wednesday_worktime_end: '16:00:00',
-    // thursday_worktime_start: '08:00:00',
-    // thursday_worktime_end: '17:00:00',
-    // friday_worktime_start: '09:00:00',
-    // friday_worktime_end: '16:00:00',
-    // saturday_worktime_start: undefined,
-    // saturday_worktime_end: undefined,
-    // sunday_worktime_start: undefined,
-    // sunday_worktime_end: undefined,
+    const payload = toArray(values)
+    try {
+      if (handleOnSubmit) {
+        await handleOnSubmit(payload)
+      }
+      reset()
+      closeModal()
+    } catch (errorData) {
+      const typedErrorData = errorData as ValidationError
+      if (typedErrorData.errors) {
+        map(typedErrorData.errors, (errorsArray, key) => {
+          const typedKey = key as FieldPath<FormValues>
+          const errorString = join(errorsArray, ',')
+          setError(typedKey, { type: 'backend', message: errorString })
+        })
+      }
+    }
   }, [])
 
   return (
@@ -205,8 +195,8 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
         icon={Add}
         children={t('tag.add_new_row')}
         onClick={addInputField}
-        // hidden={!hasAddingPrivileges}
         form="dateTimeRange"
+        hidden={size(inputFields) > 6}
       />
     </ModalBase>
   )

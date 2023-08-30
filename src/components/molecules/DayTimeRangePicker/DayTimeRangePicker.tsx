@@ -1,5 +1,5 @@
 import { forwardRef, useCallback } from 'react'
-import { FieldError, Path } from 'react-hook-form'
+import { Control, FieldError, Path, useWatch } from 'react-hook-form'
 import classNames from 'classnames'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import classes from './classes.module.scss'
@@ -10,7 +10,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-import { map, toArray } from 'lodash'
+import { compact, filter, flatMapDeep, includes, map, toArray } from 'lodash'
 import { DayTypes } from 'types/institutions'
 
 export interface DayTimeRangePickerProps {
@@ -25,6 +25,7 @@ export interface DayTimeRangePickerProps {
   hidden?: boolean
   className?: string
   handleDelete?: () => void
+  formControl?: Control
 }
 
 const DayTimeRangePicker = forwardRef<
@@ -40,9 +41,14 @@ const DayTimeRangePicker = forwardRef<
     hidden,
     className,
     handleDelete,
+    formControl,
   } = props
 
   const { t } = useTranslation()
+
+  const allFields = useWatch({
+    control: formControl,
+  })
 
   const onChangeDay = useCallback(
     (newDayValue: string | string[]) => {
@@ -70,13 +76,19 @@ const DayTimeRangePicker = forwardRef<
       handleDelete()
     }
   }
+  const filteredFields = filter(allFields, (_, key) => key !== name)
+  const usedDays = flatMapDeep(filteredFields, 'days')
 
-  const daysOption = map(DayTypes, (day) => {
-    return {
-      label: t(`institution.days.${day}`),
-      value: day,
-    }
-  })
+  const daysOption = compact(
+    map(DayTypes, (day) => {
+      if (!includes(usedDays, day)) {
+        return {
+          label: t(`institution.days.${day}`),
+          value: day,
+        }
+      }
+    })
+  )
 
   if (hidden) return null
 
