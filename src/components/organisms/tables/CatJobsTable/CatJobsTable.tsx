@@ -207,7 +207,6 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         data={filesData}
         columns={columns}
         tableSize={TableSizeTypes.M}
-        horizontalWrapperId={'catJobsTable'}
         className={classes.filesListContainer}
         hidePagination
         headComponent={

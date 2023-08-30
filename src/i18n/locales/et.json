@@ -470,6 +470,11 @@
       "job_revision": "toimetamine",
       "job_overview": "ülevaatus"
     },
+    "file_types": {
+      "STYLE_GUIDE": "Stiilijuhis",
+      "TERM_BASE": "Terminibaas",
+      "REFERENCE_FILE": "Abifail"
+    },
     "order_details": "Tellimuse andmed",
     "order_details_expandable": "Tellimuse detailid",
     "files": "Failid",

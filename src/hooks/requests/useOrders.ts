@@ -18,7 +18,7 @@ import newSubOrders from './newSubOrders.json'
 import mockSubOrder from './mockSubOrder.json'
 import singleMockOrder from './singleMockOrder.json'
 import useFilters from 'hooks/useFilters'
-import { findIndex } from 'lodash'
+import { findIndex, includes } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 
@@ -96,10 +96,35 @@ export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
 
 export const useCreateOrder = () => {
   const queryClient = useQueryClient()
+  const formData = new FormData()
   const { mutateAsync: createOrder, isLoading } = useMutation({
     mutationKey: ['orders'],
-    mutationFn: (payload: NewOrderPayload) =>
-      apiClient.post(endpoints.PROJECTS, payload),
+    mutationFn: (payload: NewOrderPayload) => {
+      for (const key in payload) {
+        const typedKey = key as keyof NewOrderPayload
+        const value = payload[typedKey]
+        if (
+          includes(
+            [
+              'destination_language_classifier_value_ids',
+              'help_files',
+              'help_file_types',
+              'source_files',
+            ],
+            typedKey
+          )
+        ) {
+          const typedValue = (value as string[] | File[]) || []
+          for (const key in typedValue) {
+            formData.append(`${typedKey}[]`, typedValue[key])
+          }
+        } else {
+          const typedValue = (value as string) || ''
+          formData.append(typedKey, typedValue)
+        }
+      }
+      return apiClient.post(endpoints.PROJECTS, formData)
+    },
     onSuccess: ({ data }) => {
       queryClient.setQueryData(['orders'], (oldData?: OrdersResponse) => {
         const { data: previousData, meta } = oldData || {}

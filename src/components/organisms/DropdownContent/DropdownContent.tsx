@@ -71,7 +71,7 @@ const DropdownContentComponent = forwardRef<
   },
   ref
 ) {
-  const { horizontalWrapperId, tableRef } = useTableContext()
+  const { tableRef } = useTableContext()
   const { modalContentId } = useModalContext()
 
   const scrollContainer = useRef(null)
@@ -83,7 +83,6 @@ const DropdownContentComponent = forwardRef<
   const { left, top, right } =
     useElementPosition({
       ref: wrapperRef,
-      horizontalWrapperId,
       forceRecalculate: isOpen,
       containingElementId: modalContentId,
     }) || {}

@@ -31,3 +31,9 @@ export type ClassifierValuesPayload = PaginationFunctionType &
 export interface ClassifierValuesDataTypes {
   data: ClassifierValue[]
 }
+
+export enum HelperFileTypes {
+  StyleGuide = 'STYLE_GUIDE',
+  TermBase = 'TERM_BASE',
+  ReferenceFile = 'REFERENCE_FILE',
+}

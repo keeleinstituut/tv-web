@@ -17,11 +17,11 @@ import { map } from 'lodash'
 
 import classes from './classes.module.scss'
 interface ModalContextType {
-  modalContentId: string
+  modalContentId?: string
 }
 
 export const ModalContext = createContext<ModalContextType>({
-  modalContentId: 'tableWrapper',
+  modalContentId: undefined,
 })
 
 export enum ModalSizeTypes {

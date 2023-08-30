@@ -1,5 +1,10 @@
 @import 'styles/variables';
 
+.helperText {
+  color: $color-primary;
+  white-space: pre-line;
+}
+
 .modalContainer {
   .contentWrapper {
     padding: 0 spacing(4);
@@ -16,10 +21,6 @@
       color: $color-input-main;
       margin-bottom: spacing(3);
     }  
-    p {
-      color: $color-primary;
-      white-space: pre-line;
-    }
   
     .searchInput {
       justify-self: end;
@@ -27,6 +28,10 @@
       grid-row: 1/4;
       grid-column: 2;
       width: 100%;
+
+      .searchInputInternal {
+        width: 100%;
+      }
 
       input {
         width: 100%;

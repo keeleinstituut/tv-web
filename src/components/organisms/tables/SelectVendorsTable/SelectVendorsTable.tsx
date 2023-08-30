@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useMemo, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useFetchTags } from 'hooks/requests/useTags'
@@ -44,6 +44,19 @@ import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import('dayjs/locale/et')
 
 dayjs.locale('et')
+
+const FreeDaysHeader = () => {
+  const { t } = useTranslation()
+  return (
+    <div className={classes.row}>
+      <span>{t('label.free_days')}</span>
+      <SmallTooltip
+        tooltipContent={'random'}
+        className={classes.headerTooltip}
+      />
+    </div>
+  )
+}
 
 interface SelectVendorsTableProps {
   // TODO: will actually be prices instead of vendors
@@ -250,6 +263,7 @@ const SelectVendorsTable: FC<SelectVendorsTableProps> = ({
       header: '',
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
+        // TODO: add error only if skill + language direction does not match the task
         return <SmallTooltip />
       },
     }),
@@ -288,15 +302,7 @@ const SelectVendorsTable: FC<SelectVendorsTableProps> = ({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('working_and_vacation_times', {
-      header: () => (
-        <div className={classes.row}>
-          <span>{t('label.free_days')}</span>
-          <SmallTooltip
-            tooltipContent={t('tooltip.main_write_helper')}
-            className={classes.headerTooltip}
-          />
-        </div>
-      ),
+      header: FreeDaysHeader,
       cell: ({ getValue }) => {
         return <WorkingAndVacationTimesBars times={getValue()} />
       },

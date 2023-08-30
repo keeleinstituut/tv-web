@@ -53,7 +53,6 @@ export interface Link {
 
 interface ProjectTypeConfig {
   id: string
-  type_classifier_value_id: string
   workflow_process_definition_id: string
   features: SubProjectFeatures[]
   created_at: string
@@ -187,10 +186,10 @@ export interface DetailedOrder extends ListOrder {
   source_files: SourceFile[]
   client_user_institution_id: string
   translation_manager_user_institution_id: string
+  translation_domain_classifier_value_id: string
   // TODO: unclear type for following:
   help_file_types: string[]
-  translation_domain: string
-  start_at?: string
+  event_start_at?: string
   accepted_at?: string
   corrected_at?: string
   rejected_at?: string
@@ -239,12 +238,13 @@ export interface NewOrderPayload {
   deadline_at: string
   source_files: File[]
   reference_number?: string
-  src_lang: string
-  dst_lang: string[]
+  source_language_classifier_value_id: string
+  destination_language_classifier_value_ids: string[]
   help_files?: File[]
   help_file_types?: string[]
+  translation_domain_classifier_value_id: string
+  type_classifier_value_id: string
+  event_start_at?: string
   // TODO: Following are currently missing
-  translation_domain: string
-  start_at?: string
   comments?: string
 }

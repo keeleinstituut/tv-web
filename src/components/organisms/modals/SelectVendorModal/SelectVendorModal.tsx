@@ -53,9 +53,10 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
         value={searchValue}
         onChange={handleSearchVendors}
         className={classes.searchInput}
+        inputContainerClassName={classes.searchInputInternal}
         isSearch
       />
-      <p>{t('modal.choose_vendors_helper')}</p>
+      <p className={classes.helperText}>{t('modal.choose_vendors_helper')}</p>
       <div className={classes.row}>
         <Button
           onClick={handleClearFilters}

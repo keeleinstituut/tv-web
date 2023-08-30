@@ -1,18 +1,19 @@
 import { useState, useCallback, useEffect, RefObject } from 'react'
+import useTableContext from './useTableContext'
 
 const useElementPosition = <RefType extends HTMLElement>({
   ref,
-  horizontalWrapperId,
   verticalContainerId,
   forceRecalculate,
   containingElementId,
 }: {
   ref?: RefObject<RefType>
-  horizontalWrapperId?: string
   verticalContainerId?: string
   forceRecalculate?: boolean
   containingElementId?: string
 }) => {
+  const { horizontalWrapperId } = useTableContext()
+
   const {
     x: initialLeft,
     y: initialTop,
