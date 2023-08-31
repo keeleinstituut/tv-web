@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { find, includes } from 'lodash'
+import { includes } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -23,33 +23,19 @@ const useOrderPageRedirect = ({
   const isUserTranslationManagerOfProject =
     institutionUserId === translation_manager_user_institution_id
 
-  const canClientViewProject =
-    isUserClientOfProject &&
-    find(
-      [
-        Privileges.ViewPersonalProject,
-        Privileges.ChangeClient,
-        Privileges.CreateProject,
-      ],
-      (privilege) => includes(userPrivileges, privilege)
-    )
-
-  const canTmViewProjectProject =
-    isUserTranslationManagerOfProject &&
-    find(
-      [
-        Privileges.ManageProject,
-        Privileges.ReceiveAndManageProject,
-        Privileges.ViewInstitutionProjectDetail,
-        Privileges.ViewInstitutionProjectList,
-      ],
-      (privilege) => includes(userPrivileges, privilege)
-    )
+  const canAnyoneViewProject =
+    includes(userPrivileges, Privileges.ViewInstitutionProjectDetail) ||
+    (includes(
+      userPrivileges,
+      Privileges.ViewInstitutionUnclaimedProjectDetail
+    ) &&
+      !translation_manager_user_institution_id)
 
   const canUserViewOrder =
-    includes(userPrivileges, Privileges.ViewInstitutionProjectDetail) ||
-    canClientViewProject ||
-    canTmViewProjectProject
+    includes(userPrivileges, Privileges.ViewPersonalProject) &&
+    (isUserClientOfProject ||
+      isUserTranslationManagerOfProject ||
+      canAnyoneViewProject)
 
   useEffect(() => {
     if (!isLoading && !client_user_institution_id) {

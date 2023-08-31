@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { RefObject, forwardRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
@@ -68,7 +68,11 @@ const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
           <div className={classes.visibleCheckbox} />
         </div>
         <Label className={classNames(classes.label)}>{label}</Label>
-        <InputError {...omit(error, 'ref')} errorZIndex={errorZIndex} />
+        <InputError
+          {...omit(error, 'ref')}
+          errorZIndex={errorZIndex}
+          wrapperRef={ref as RefObject<HTMLElement>}
+        />
       </Field>
     )
   }

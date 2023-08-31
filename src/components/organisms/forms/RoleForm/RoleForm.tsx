@@ -26,6 +26,7 @@ import {
   closeModal,
   showModal,
 } from 'components/organisms/modals/ModalRoot'
+import { getAllNewPrivileges } from 'helpers'
 
 type PrivilegesFormValue = object & {
   [key in PrivilegeKey]?: boolean
@@ -137,24 +138,27 @@ const RoleForm: FC<RoleFormProps> = ({
     async (values, e) => {
       const { privileges: newPrivileges } = values
       const newName = temporaryName || name
+      const selectedPrivileges = reduce<PrivilegesFormValue, PrivilegeType[]>(
+        newPrivileges,
+        (result, value, key) => {
+          const typedKey = key as unknown as PrivilegeKey
+          if (!typedKey || !value) {
+            return result
+          }
+          return [
+            ...result,
+            {
+              key: typedKey,
+            },
+          ]
+        },
+        []
+      )
+
+      const allNewPrivileges = getAllNewPrivileges(selectedPrivileges)
       const payload: RolePayload = {
         name: newName,
-        privileges: reduce<PrivilegesFormValue, PrivilegeType[]>(
-          newPrivileges,
-          (result, value, key) => {
-            const typedKey = key as unknown as PrivilegeKey
-            if (!typedKey || !value) {
-              return result
-            }
-            return [
-              ...result,
-              {
-                key: typedKey,
-              },
-            ]
-          },
-          []
-        ),
+        privileges: allNewPrivileges,
       }
 
       try {
