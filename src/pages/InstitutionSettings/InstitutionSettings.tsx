@@ -39,7 +39,9 @@ const InstitutionSettings: FC = () => {
           name={name}
           id={institutionId}
           {...institution}
-          workingTimes={<WorkingTimes data={institution} />}
+          workingTimes={
+            <WorkingTimes name={name} id={institutionId} data={institution} />
+          }
           //vacationDays={<div>Puhkepäevad:</div>}
         />
       </Container>

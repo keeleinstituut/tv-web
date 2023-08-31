@@ -261,6 +261,32 @@ const Test: FC = () => {
     })
   }
 
+  const data = {
+    id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    name: 'string',
+    phone: 'string',
+    email: 'user@example.com',
+    short_name: 'string',
+    logo_url: 'string',
+    updated_at: '2023-08-29T08:51:59.577Z',
+    created_at: '2023-08-29T08:51:59.577Z',
+    worktime_timezone: 'Europe/Tallinn',
+    monday_worktime_start: '08:00:00',
+    monday_worktime_end: '16:00:00',
+    tuesday_worktime_start: '08:00:00',
+    tuesday_worktime_end: '16:00:00',
+    wednesday_worktime_start: '08:00:00',
+    wednesday_worktime_end: '16:00:00',
+    thursday_worktime_start: '08:00:00',
+    thursday_worktime_end: '17:00:00',
+    friday_worktime_start: '09:00:00',
+    friday_worktime_end: '16:00:00',
+    saturday_worktime_start: undefined,
+    saturday_worktime_end: undefined,
+    sunday_worktime_start: undefined,
+    sunday_worktime_end: undefined,
+  }
+
   return (
     <>
       <div />
@@ -282,7 +308,7 @@ const Test: FC = () => {
       <BaseButton onClick={handleModalOpen}>{'Ava vorm'}</BaseButton>
       <ModalRoot />
 
-      <WorkingTimes />
+      <WorkingTimes name={data.name} id={data.id} data={data} />
       <Root>
         <TestingTable />
         <UsersTable />

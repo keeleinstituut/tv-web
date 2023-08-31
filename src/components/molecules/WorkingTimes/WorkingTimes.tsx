@@ -16,6 +16,8 @@ import {
   join,
   upperCase,
   replace,
+  flatMapDeep,
+  omit,
 } from 'lodash'
 import classes from './classes.module.scss'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -36,49 +38,26 @@ import { Privileges } from 'types/privileges'
 dayjs.extend(timezone)
 interface WorkingTimesPropType {
   data?: InstitutionType
+  name: string
+  id: string
 }
 type PayloadType = {
   [key in string]: string
 }
 
-const WorkingTimes: FC<WorkingTimesPropType> = (props) => {
+const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
   const { updateInstitution } = useUpdateInstitution({
-    institutionId: props?.data?.id,
+    institutionId: id,
   })
   const { userPrivileges } = useAuth()
 
   const { t } = useTranslation()
-  console.log('props', props)
-  const data = {
-    id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    name: 'string',
-    phone: 'string',
-    email: 'user@example.com',
-    short_name: 'string',
-    logo_url: 'string',
-    updated_at: '2023-08-29T08:51:59.577Z',
-    created_at: '2023-08-29T08:51:59.577Z',
-    worktime_timezone: 'Europe/Tallinn',
-    monday_worktime_start: '08:00:00',
-    monday_worktime_end: '16:00:00',
-    tuesday_worktime_start: '08:00:00',
-    tuesday_worktime_end: '16:00:00',
-    wednesday_worktime_start: '08:00:00',
-    wednesday_worktime_end: '16:00:00',
-    thursday_worktime_start: '08:00:00',
-    thursday_worktime_end: '17:00:00',
-    friday_worktime_start: '09:00:00',
-    friday_worktime_end: '16:00:00',
-    saturday_worktime_start: undefined,
-    saturday_worktime_end: undefined,
-    sunday_worktime_start: undefined,
-    sunday_worktime_end: undefined,
-  }
+  console.log('props', data)
 
   const formattedWorkTime = compact(
     map(DayTypes, (day) => {
-      const startTime = data[`${day}_worktime_start`]
-      const endTime = data[`${day}_worktime_end`]
+      const startTime = data?.[`${day}_worktime_start`]
+      const endTime = data?.[`${day}_worktime_end`]
       if (startTime || endTime) {
         return {
           day,
@@ -119,7 +98,8 @@ const WorkingTimes: FC<WorkingTimesPropType> = (props) => {
   // console.log(dayTimeRange)
 
   const handleOnSubmit = async (values: EditDataType[]) => {
-    // console.log('working submit, values', values)
+    const usedDays = flatMapDeep(values, 'days')
+    const unUsedDays = omit(DayTypes, usedDays) || {}
     const timezone = dayjs.tz.guess()
     const workTime: PayloadType = {}
 
@@ -129,23 +109,22 @@ const WorkingTimes: FC<WorkingTimesPropType> = (props) => {
         workTime[`${day}_worktime_end`] = time_range?.end || ''
       })
     })
+    forEach(unUsedDays, (day) => {
+      workTime[`${day}_worktime_start`] = ''
+      workTime[`${day}_worktime_end`] = ''
+    })
 
     const payload: InstitutionPostType = {
       ...workTime,
       worktime_timezone: timezone,
-      name: props?.data?.name || '',
+      name,
     }
-    // console.log('payload', payload)
-    try {
-      await updateInstitution(payload)
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.institution_updated'),
-      })
-    } catch (error) {
-      console.log(error)
-    }
+    await updateInstitution(payload)
+    showNotification({
+      type: NotificationTypes.Success,
+      title: t('notification.announcement'),
+      content: t('success.institution_updated'),
+    })
   }
 
   const handleEditList = () => {
