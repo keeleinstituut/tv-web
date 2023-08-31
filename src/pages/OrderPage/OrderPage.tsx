@@ -41,14 +41,9 @@ const OrderButtons: FC<OrderButtonProps> = ({
 
   const canCancelInstitutionOrder =
     status === OrderStatus.New &&
-    (includes(userPrivileges, Privileges.ManageProject) ||
-      includes(userPrivileges, Privileges.ReceiveAndManageProject))
+    includes(userPrivileges, Privileges.ManageProject)
 
   //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
-
-  // const userHasPrivilege =
-  //   !privileges ||
-  //   find([Privileges.ReceiveAndManageProject, Privileges.ManageProject], (privilege) => includes(userPrivileges, privilege))
 
   //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
 

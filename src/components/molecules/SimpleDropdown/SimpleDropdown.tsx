@@ -7,6 +7,7 @@ import { map } from 'lodash'
 import classNames from 'classnames'
 import useElementPosition from 'hooks/useElementPosition'
 import classes from './classes.module.scss'
+import useTableContext from 'hooks/useTableContext'
 
 export interface SimpleDropdownOption {
   label: string
@@ -19,26 +20,20 @@ export interface SimpleDropdownOption {
 interface SimpleDropdownContentProps {
   isOpen?: boolean
   options: SimpleDropdownOption[]
-  horizontalScrollContainerId?: string
   wrapperRef?: RefObject<HTMLDivElement>
 }
 
 const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
   isOpen,
   wrapperRef,
-  horizontalScrollContainerId,
   options,
 }) => {
+  const { horizontalWrapperId } = useTableContext()
   const { left, top } =
-    useElementPosition(
-      wrapperRef,
-      horizontalScrollContainerId,
-      undefined,
-      isOpen
-    ) || {}
+    useElementPosition(wrapperRef, horizontalWrapperId, undefined, isOpen) || {}
 
   if (!isOpen) return null
-  if (horizontalScrollContainerId) {
+  if (horizontalWrapperId) {
     return createPortal(
       <ul
         className={classes.content}
@@ -74,10 +69,7 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
 }
 
 interface SimpleDropdownProps
-  extends Pick<
-    SimpleDropdownContentProps,
-    'options' | 'horizontalScrollContainerId'
-  > {
+  extends Pick<SimpleDropdownContentProps, 'options'> {
   title?: string
   label?: string
   icon?: FC<SVGProps<SVGSVGElement>>

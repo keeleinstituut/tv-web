@@ -163,7 +163,10 @@ const Tags: FC = () => {
             type={type}
             isEditable={
               type !== TagTypes.Skills ||
-              !includes(userPrivileges, Privileges.EditTag)
+              !includes(
+                userPrivileges,
+                Privileges.EditTag || Privileges.AddTag || Privileges.DeleteTag
+              )
             }
           />
         ))}
