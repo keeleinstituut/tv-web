@@ -238,6 +238,10 @@ const router = createBrowserRouter([
     element: <Components />,
   },
   {
+    path: 'manual-test',
+    element: <Manual />,
+  },
+  {
     path: '/',
     element: <AuthWrapper />,
     children: [

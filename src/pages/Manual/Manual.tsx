@@ -1,9 +1,10 @@
 import { map } from 'lodash'
-import { FC, useCallback } from 'react'
-import classes from './classes.module.scss'
+import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import useHashState from 'hooks/useHashState'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import useHashState from 'hooks/useHashState'
+
+import classes from './classes.module.scss'
 
 const Manual: FC = () => {
   const { t } = useTranslation()
@@ -36,11 +37,17 @@ const Manual: FC = () => {
     { id: '10', label: '10. Title', content: '' },
   ]
 
-  const isLoading = true
+  const { setHash, currentHash } = useHashState()
 
-  const { currentHash, setHash } = useHashState()
+  const handleTitleClick = useCallback(
+    (id: string) => {
+      setHash(id)
+      scrollToElement(id)
+    },
+    [setHash]
+  )
 
-  const attemptScroll = useCallback((id: string) => {
+  const scrollToElement = (id: string) => {
     const matchingElement = document.getElementById(id)
     if (matchingElement) {
       matchingElement.scrollIntoView({
@@ -48,20 +55,15 @@ const Manual: FC = () => {
         block: 'start',
       })
     }
-  }, [])
+  }
 
-  const handleTitleClick = useCallback(
-    (id: string) => {
-      setHash(id)
-
-      attemptScroll(id)
-    },
-    [setHash, attemptScroll]
-  )
+  useEffect(() => {
+    scrollToElement(currentHash)
+  }, [currentHash])
 
   const manualContent = map(manualContentArray, ({ id, label, content }) => {
     return (
-      <div key={id}>
+      <div key={id} id={id}>
         <h2>{label}</h2>
         <p>{content}</p>
       </div>
@@ -70,7 +72,13 @@ const Manual: FC = () => {
 
   const manualTitle = map(manualContentArray, ({ id, label }) => {
     return (
-      <BaseButton key={id} onClick={() => handleTitleClick(id)}>
+      <BaseButton
+        key={id}
+        onClick={() => handleTitleClick(id)}
+        className={
+          currentHash === id ? classes.activeTitle : classes.manualTitle
+        }
+      >
         {label}
       </BaseButton>
     )
@@ -80,7 +88,10 @@ const Manual: FC = () => {
     <div className={classes.manualContainer}>
       <h1 className={classes.title}>{t('menu.manual')}</h1>
       <div className={classes.manualContent}>{manualContent}</div>
-      <div className={classes.manualTitleContainer}>{manualTitle}</div>
+      <div className={classes.manualTitleContainer}>
+        <p className={classes.tableOfContents}>{t('menu.table_of_contents')}</p>
+        <p className={classes.manualTitles}>{manualTitle}</p>
+      </div>
     </div>
   )
 }
