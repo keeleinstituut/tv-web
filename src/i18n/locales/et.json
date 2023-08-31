@@ -188,8 +188,10 @@
     "institution_settings": "Asutuse sätted",
     "technical_settings": "Tehnilised sätted",
     "collapse_menu": "Kitsendan menüü",
-    "manual": "Kasutusjuhend",
-    "table_of_contents": "SISUKORD"
+    "manual": "Tõlkevärava kasutusjuhend",
+    "table_of_contents": "SISUKORD",
+    "article_created_by": "Artikli koostaja: {{ author }} | {{ authorEmail }}",
+    "last_changed": "Viimati muudetud {{ date }}"
   },
   "alt": {
     "header_logo": "Logo",

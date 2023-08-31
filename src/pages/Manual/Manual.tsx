@@ -37,6 +37,10 @@ const Manual: FC = () => {
     { id: '10', label: '10. Title', content: '' },
   ]
 
+  const date = '15.02.2022'
+  const author = 'Interlex'
+  const authorEmail = 'koostaja@interlex.ee'
+
   const { setHash, currentHash } = useHashState()
 
   const handleTitleClick = useCallback(
@@ -87,7 +91,17 @@ const Manual: FC = () => {
   return (
     <div className={classes.manualContainer}>
       <h1 className={classes.title}>{t('menu.manual')}</h1>
-      <div className={classes.manualContent}>{manualContent}</div>
+      <div className={classes.manualContentContainer}>
+        <div className={classes.articleInfoContainer}>
+          <p className={classes.articleInfo}>
+            {t('menu.article_created_by', { author, authorEmail })}
+          </p>
+          <p className={classes.articleInfo}>
+            {t('menu.last_changed', { date })}
+          </p>
+        </div>
+        <div className={classes.manualContent}>{manualContent}</div>
+      </div>
       <div className={classes.manualTitleContainer}>
         <p className={classes.tableOfContents}>{t('menu.table_of_contents')}</p>
         <p className={classes.manualTitles}>{manualTitle}</p>
