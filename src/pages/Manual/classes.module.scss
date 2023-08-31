@@ -1,17 +1,21 @@
+@import 'styles/variables';
+
 .manualContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  padding: 100px;
+  padding: spacing(25);
 }
 
 .title {
   grid-column-start: 1;
 }
 
-.content {
+.manualContent {
   grid-column-start: 1;
 }
 
-.tableOfContents {
-  padding-left: 30px;
+.manualTitleContainer {
+  display: flex;
+  padding-left: spacing(8);
+  flex-direction: column;
 }
