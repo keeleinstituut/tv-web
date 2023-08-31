@@ -3,7 +3,7 @@
 
 .wrapper {
   display: flex;
-  align-items: start;
+  align-items: center;
 }
 
 .label {
@@ -15,9 +15,17 @@
 
 .innerWrapper {
   display: grid;
-  grid-template-columns: max-content max-content;
+  grid-template-columns: max-content max-content max-content;
   grid-gap: spacing(4);
-  align-items: start;
+  align-items: center;
+
+  .line {
+    width: 8px;
+    height: 0;
+    border: 1px solid $color-border-secondary;
+    margin: 3px;
+    display: inline-block;
+  }
 }
 
 .button {

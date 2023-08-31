@@ -15,7 +15,7 @@ export interface TimeRangePickerProps {
 }
 
 const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
-  function DateTimePicker(props, ref) {
+  function TimeRangePicker(props, ref) {
     const { onChange, value, label, name, error, hidden, className } = props
 
     const onChangeStartTime = useCallback(

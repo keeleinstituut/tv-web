@@ -37,6 +37,9 @@ import TimeRangePicker, {
 import DayTimeRangePicker, {
   DayTimeRangePickerProps,
 } from 'components/molecules/DayTimeRangePicker/DayTimeRangePicker'
+import DateRangePicker, {
+  DateRangePickerProps,
+} from 'components/molecules/DateRangePicker/DateRangePicker'
 
 // Extend all props of an input with the corresponding inputType
 
@@ -50,6 +53,7 @@ export enum InputTypes {
   DateTime = 'dateTime',
   TimeRange = 'timeRange',
   DayTimeRange = 'DayTimeRange',
+  DateRange = 'DateRange',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -85,6 +89,9 @@ type TimeRangePickerPropsWithType = TimeRangePickerProps & {
 type DayTimeRangePickerPropsWithType = DayTimeRangePickerProps & {
   inputType: InputTypes.DayTimeRange
 }
+type DateRangePickerPropsWithType = DateRangePickerProps & {
+  inputType: InputTypes.DateRange
+}
 
 export type InputPropsByType = (
   | TextInputPropsWithType
@@ -96,6 +103,7 @@ export type InputPropsByType = (
   | DateTimePickerPropsWithType
   | TimeRangePickerPropsWithType
   | DayTimeRangePickerPropsWithType
+  | DateRangePickerPropsWithType
 ) & {
   emptyDisplayText?: string
   onlyDisplay?: boolean
@@ -176,6 +184,13 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.DayTimeRange:
         return (
           <DayTimeRangePicker
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
+      case InputTypes.DateRange:
+        return (
+          <DateRangePicker
             {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />

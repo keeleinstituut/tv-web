@@ -1,6 +1,11 @@
 import { FC, Fragment, useCallback, useState } from 'react'
 import useValidators from 'hooks/useValidators'
-import { useForm, SubmitHandler, SubmitErrorHandler } from 'react-hook-form'
+import {
+  useForm,
+  SubmitHandler,
+  SubmitErrorHandler,
+  Path,
+} from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -70,6 +75,8 @@ type FormValues = {
   timePickerSeconds?: string
   search?: string
   comment?: string
+  time_range?: { start: string; end: string }
+  date_range?: { start: string; end: string }
 }
 
 const Test: FC = () => {
@@ -200,6 +207,17 @@ const Test: FC = () => {
       rules: {
         required: true,
       },
+    },
+    {
+      inputType: InputTypes.TimeRange,
+      label: 'Tööajad',
+      name: 'time_range' as Path<FormValues>,
+    },
+    {
+      inputType: InputTypes.DateRange,
+      label: 'Puhkuse vahemik',
+      name: 'date_range' as Path<FormValues>,
+      handleDelete: () => console.log('delete'),
     },
   ]
 
