@@ -9,6 +9,8 @@ import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
+import classNames from 'classnames'
+
 import classes from './classes.module.scss'
 
 export interface TooltipModalProps {
@@ -18,6 +20,7 @@ export interface TooltipModalProps {
   href?: string
   isModalOpen?: boolean
   closeModal: () => void
+  className?: string
 }
 
 const TooltipModal: FC<TooltipModalProps> = ({
@@ -27,6 +30,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
   href,
   isModalOpen,
   closeModal,
+  className,
 }) => {
   const { t } = useTranslation()
 
@@ -35,7 +39,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
       title={title}
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}
-      className={classes.modalContent}
+      className={classNames(classes.modalContent, className)}
       buttonsPosition={ButtonPositionTypes.SpaceBetween}
       buttons={[
         {
@@ -44,6 +48,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
           size: SizeTypes.M,
           href: href,
           iconPositioning: IconPositioningTypes.Left,
+          onClick: closeModal,
         },
         {
           appearance: AppearanceTypes.Secondary,

@@ -4,7 +4,7 @@
 .manualContainer {
   display: grid;
   grid-template-columns: 70fr 30fr;
-  padding: spacing(25);
+  padding: spacing(2) spacing(7) spacing(16) spacing(7);
 }
 
 .title {
@@ -29,6 +29,7 @@
   @include subtitleSmallTextStyle;
   color: $color-input-main;
   padding-left: spacing(5);
+  padding-bottom: spacing(3);
 }
 
 .manualTitles {
@@ -37,13 +38,14 @@
   justify-content: flex-start;
   border-left: 1px solid $color-background-dark;
   padding-left: spacing(5);
+  grid-gap: spacing(3.5);
 }
 
 .manualTitle,
 .activeTitle {
   display: flex;
   justify-content: flex-start;
-  padding: spacing(5) 0;
+  padding-top: spacing(2);
 }
 
 .manualTitle {
@@ -55,8 +57,7 @@
   border-left: 5px solid $color-primary;
   position: relative;
   right: spacing(5.25);
-  margin: spacing(4.25) 0;
-  padding: spacing(1.33) 0 spacing(1.33) spacing(3.75);
+  padding-left: spacing(3.75);
 }
 
 .articleInfoContainer {
@@ -69,6 +70,22 @@
   color: $color-input-main;
 }
 
-.manualContent {
-  padding-top: spacing(6);
+.sectionContent {
+  padding: spacing(6) 0;
+  border-bottom: 1px solid $color-background-dark;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.section {
+  padding: spacing(2) 0;
+
+  p {
+    padding-bottom: spacing(6);
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
 }

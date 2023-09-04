@@ -1,0 +1,38 @@
+ {
+    "institutionManagement": {
+      "title": "[Asutuse andmete haldamine] kohtspikker",
+      "content":
+        "<p>Asutuse sätetes saab muuta järgmisi üldandmeid: autuse nimetus, nime lühend, meiliaadress, telefoninumber.</p><strong>Tööajad ja puhkepäevad</strong><p>Asutuse üldandmetes saab määrata ja muuta asutuse tööaegu ja puhkepäevasid. Asutuse tööajad ja puhkepäevad määratakse vaikimisi ka kõikidele asutuse kasutajate. Soovi korral saab kasutaja andmete all neid muuta.</p><strong>Üksused</strong><p>Asutuse üldandmete all saab luua ja muuta asutuse üksuseid. Asutuse üksuseid saab kasutada asutuse kasutajate kontaktandmetes.</p>",
+      "tooltipContent":
+      "<p>Asutuse sätetes saab muuta järgmisi üldandmeid: autuse nimetus, nime lühend, meiliaadress, telefoninumber.</p><strong>Tööajad ja puhkepäevad</strong><p>Asutuse üldandmetes saab määrata ja muuta asutuse tööaegu ja puhkepäevasid. Asutuse tööajad ja puhkepäevad määratakse vaikimisi ka kõikidele asutuse kasutajate. Soovi korral saab kasutaja andmete all neid muuta.</p><strong>Üksused</strong><p>Asutuse üldandmete all saab luua ja muuta asutuse üksuseid. Asutuse üksuseid saab kasutada asutuse kasutajate kontaktandmetes.</p>"
+    },
+    "toimetamine": {
+      "title": "Toimetamine",
+      "content":
+        "<p>Toimetamine esimene peatükk. Lorem ipsum dolor sit amet consectetur. Nulla nunc ut id consectetur. Blandit ultricies aenean aenean duis adipiscing iaculis ipsum. Dis semper pellentesque cursus et ultrices amet tincidunt sollicitudin. Vitae convallis ut pellentesque cursus integer aliquam rhoncus mollis. Nunc consectetur eget quam vel sodales. Magna ut fames ipsum non. Laoreet fames vivamus nunc ac mauris a ultrices dolor nunc. Donec vulputate lacus nibh arcu.</p><p>Teine peatükk. Ullamcorper purus est eget mattis suspendisse neque ac sed. Aliquam nunc et consectetur eu sit egestas dictum lectus tincidunt. Quis amet consequat mauris ipsum est eu lacus. Volutpat arcu diam cum proin ornare. Ultricies nam sed ultrices pretium sed risus mauris. Porta mi augue tristique et mauris enim adipiscing tristique. Parturient viverra tortor interdum id molestie eget. Purus diam sagittis accumsan donec. Eu et euismod sapien suspendisse auctor vitae elit mauris ultricies. Eget senectus pellentesque velit tincidunt sed volutpat massa etiam purus. Vel tortor tempor in amet sed consectetur viverra odio. Dictum ullamcorper tortor in vitae risus pellentesque.</p><p>Kolmas peatükk. Fermentum nibh in curabitur congue tellus sit enim ornare in. Bibendum mi sed faucibus imperdiet urna molestie adipiscing. At facilisis nunc etiam phasellus. Elementum tempus vel ipsum elementum vel nisl urna in. Aliquam sit mauris nibh netus eu tincidunt dui nec. Cursus congue in vitae laoreet sit. At semper eu viverra sapien praesent nunc bibendum tempus amet. Vestibulum tempus amet at duis. In id purus vitae in. Dolor diam donec tristique euismod. Sed magna orci convallis magna in scelerisque fusce lectus. Odio natoque in at sit gravida faucibus nunc. Elit enim porttitor placerat sagittis aliquam eget massa gravida. Amet neque eu nibh tristique donec sem. Pellentesque gravida tortor a sem et rhoncus dictumst lorem consequat.</p>",
+      "tooltipContent":
+        "<p>Toimetamine esimene peatükk. Lorem ipsum dolor sit amet consectetur. Nulla nunc ut id consectetur. Blandit ultricies aenean aenean duis adipiscing iaculis ipsum. Dis semper pellentesque cursus et ultrices amet tincidunt sollicitudin. Vitae convallis ut pellentesque cursus integer aliquam rhoncus mollis. Nunc consectetur eget quam vel sodales. Magna ut fames ipsum non. Laoreet fames vivamus nunc ac mauris a ultrices dolor nunc. Donec vulputate lacus nibh arcu.</p>"
+    },
+    "tolkimine": {
+      "title": "Tõlkimine",
+      "content":
+        "<p>Tõlkimine esimene peatükk. Lorem ipsum dolor sit amet consectetur. Nulla nunc ut id consectetur. Blandit ultricies aenean aenean duis adipiscing iaculis ipsum. Dis semper pellentesque cursus et ultrices amet tincidunt sollicitudin. Vitae convallis ut pellentesque cursus integer aliquam rhoncus mollis. Nunc consectetur eget quam vel sodales. Magna ut fames ipsum non. Laoreet fames vivamus nunc ac mauris a ultrices dolor nunc. Donec vulputate lacus nibh arcu.</p><p>Teine peatükk. Ullamcorper purus est eget mattis suspendisse neque ac sed. Aliquam nunc et consectetur eu sit egestas dictum lectus tincidunt. Quis amet consequat mauris ipsum est eu lacus. Volutpat arcu diam cum proin ornare. Ultricies nam sed ultrices pretium sed risus mauris. Porta mi augue tristique et mauris enim adipiscing tristique. Parturient viverra tortor interdum id molestie eget. Purus diam sagittis accumsan donec. Eu et euismod sapien suspendisse auctor vitae elit mauris ultricies. Eget senectus pellentesque velit tincidunt sed volutpat massa etiam purus. Vel tortor tempor in amet sed consectetur viverra odio. Dictum ullamcorper tortor in vitae risus pellentesque.</p><p>Kolmas peatükk. Fermentum nibh in curabitur congue tellus sit enim ornare in. Bibendum mi sed faucibus imperdiet urna molestie adipiscing. At facilisis nunc etiam phasellus. Elementum tempus vel ipsum elementum vel nisl urna in. Aliquam sit mauris nibh netus eu tincidunt dui nec. Cursus congue in vitae laoreet sit. At semper eu viverra sapien praesent nunc bibendum tempus amet. Vestibulum tempus amet at duis. In id purus vitae in. Dolor diam donec tristique euismod. Sed magna orci convallis magna in scelerisque fusce lectus. Odio natoque in at sit gravida faucibus nunc. Elit enim porttitor placerat sagittis aliquam eget massa gravida. Amet neque eu nibh tristique donec sem. Pellentesque gravida tortor a sem et rhoncus dictumst lorem consequat.</p>",
+      "tooltipContent":
+        "<p>Tõlkimine esimene peatükk. Lorem ipsum dolor sit amet consectetur. Nulla nunc ut id consectetur. Blandit ultricies aenean aenean duis adipiscing iaculis ipsum. Dis semper pellentesque cursus et ultrices amet tincidunt sollicitudin. Vitae convallis ut pellentesque cursus integer aliquam rhoncus mollis. Nunc consectetur eget quam vel sodales. Magna ut fames ipsum non. Laoreet fames vivamus nunc ac mauris a ultrices dolor nunc. Donec vulputate lacus nibh arcu.</p>"
+    },
+    "klassifikaatorid": {
+      "title": "Klassifikaatorid",
+      "content": "<p>Klassifikaatorid esimene peatükk</p><p>Teine peatükk</p>",
+      "tooltipContent": "<p>Klassifikaatorid on tore</p>"
+    },
+    "susteemilogid": {
+      "title": "Süsteemilogid",
+      "content": "<p>Süsteemilogid esimene peatükk</p><p>Teine peatükk</p>",
+      "tooltipContent": "<p>Süsteemilogid on tore</p>"
+    },
+    "rollihalduseMoodul": {
+      "title": "Rollihalduse moodul",
+      "content": "<p>Rollihalduse esimene peatükk</p><p>Teine peatükk</p>",
+      "tooltipContent": "<p>Rollihalduse on tore</p>"
+    }
+  }

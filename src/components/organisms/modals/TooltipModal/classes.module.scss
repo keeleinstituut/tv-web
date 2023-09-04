@@ -10,6 +10,10 @@
 .contentStyle {
   p {
     white-space: break-spaces;
+    padding-bottom: spacing(6);
+    &:last-child {
+      padding-bottom: 0;
+    }
   }
 
   ul {

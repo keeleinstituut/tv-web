@@ -32,6 +32,7 @@ const VendorsDatabase: FC = () => {
         <Tooltip
           title={t('cheat_sheet.vendor_management.title')}
           modalContent={<VendorManagementCheatSheet />}
+          helpSectionKey=""
         />
         <Button
           href="/vendors"

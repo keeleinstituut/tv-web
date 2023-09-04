@@ -41,6 +41,7 @@ const UsersManagement: FC = () => {
         <Tooltip
           title={t('cheat_sheet.user_management.title')}
           modalContent={<UserManagementCheatSheet />}
+          helpSectionKey=""
         />
         <Button
           appearance={AppearanceTypes.Secondary}

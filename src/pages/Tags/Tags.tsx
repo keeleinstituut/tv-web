@@ -129,6 +129,7 @@ const Tags: FC = () => {
         <Tooltip
           title={t('cheat_sheet.user_management.title')}
           modalContent={<TagsCheatSheet />}
+          helpSectionKey=""
         />
       </div>
       <Container className={classes.tagsContainer}>

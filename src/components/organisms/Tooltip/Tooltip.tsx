@@ -4,9 +4,19 @@ import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import { IconProps } from 'components/molecules/Button/Button'
 import { ReactComponent as QuestionMark } from 'assets/icons/question_mark.svg'
 import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
+import ReactHtmlParser from 'html-react-parser'
+import helpSections from 'pages/Manual/helpSections.json'
 
 import classes from './classes.module.scss'
-import { useTranslation } from 'react-i18next'
+
+export interface HelpSections {
+  [key: string]: {
+    title: string
+    content: string
+    tooltipContent: string
+  }
+}
 
 interface TooltipProps {
   icon?: FC<SVGProps<SVGSVGElement>>
@@ -15,6 +25,8 @@ interface TooltipProps {
   modalContent?: ReactElement | string
   title?: string
   href?: string
+  helpSectionKey: string
+  className?: string
 }
 
 const Icon: FC<IconProps> = ({
@@ -39,14 +51,23 @@ const Tooltip: FC<TooltipProps> = ({
   textButtonContent,
   modalContent,
   href = '/manual',
+  helpSectionKey,
+  className,
 }) => {
   const { t } = useTranslation()
+
+  const helpSectionsData: HelpSections = helpSections
+
+  const selectedHelpSection = helpSectionsData[helpSectionKey] || {}
+
   const handleModalOpen = () => {
     showModal(ModalTypes.Tooltip, {
-      title: title,
+      title: selectedHelpSection.title || title,
       textButtonContent: textButtonContent || t('button.look_at_tutorial'),
-      modalContent: modalContent,
-      href: href,
+      modalContent:
+        ReactHtmlParser(selectedHelpSection.tooltipContent) || modalContent,
+      href: `/manual#${helpSectionKey}`,
+      className: className,
     })
   }
 
