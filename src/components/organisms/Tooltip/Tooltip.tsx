@@ -1,4 +1,4 @@
-import { FC, ReactElement, SVGProps } from 'react'
+import { FC, SVGProps } from 'react'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import { IconProps } from 'components/molecules/Button/Button'
@@ -22,9 +22,6 @@ interface TooltipProps {
   icon?: FC<SVGProps<SVGSVGElement>>
   ariaLabel?: string
   textButtonContent?: string
-  modalContent?: ReactElement | string
-  title?: string
-  href?: string
   helpSectionKey: string
   className?: string
 }
@@ -47,10 +44,7 @@ const Icon: FC<IconProps> = ({
 const Tooltip: FC<TooltipProps> = ({
   icon,
   ariaLabel,
-  title,
   textButtonContent,
-  modalContent,
-  href = '/manual',
   helpSectionKey,
   className,
 }) => {
@@ -62,10 +56,9 @@ const Tooltip: FC<TooltipProps> = ({
 
   const handleModalOpen = () => {
     showModal(ModalTypes.Tooltip, {
-      title: selectedHelpSection.title || title,
+      title: selectedHelpSection.title || '',
       textButtonContent: textButtonContent || t('button.look_at_tutorial'),
-      modalContent:
-        ReactHtmlParser(selectedHelpSection.tooltipContent) || modalContent,
+      modalContent: ReactHtmlParser(selectedHelpSection.tooltipContent) || '',
       href: `/manual#${helpSectionKey}`,
       className: className,
     })

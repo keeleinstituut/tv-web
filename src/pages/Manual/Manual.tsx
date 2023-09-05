@@ -5,9 +5,9 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import useHashState from 'hooks/useHashState'
 import ReactHtmlParser from 'html-react-parser'
 import helpSections from './helpSections.json'
+import { HelpSections } from 'components/organisms/Tooltip/Tooltip'
 
 import classes from './classes.module.scss'
-import { HelpSections } from 'components/organisms/Tooltip/Tooltip'
 
 const Manual: FC = () => {
   const { t } = useTranslation()
@@ -42,7 +42,7 @@ const Manual: FC = () => {
     scrollToElement(currentHash)
   }, [currentHash])
 
-  const manualTitle = map(helpSectionsData, (section, key) => {
+  const manualTitle = map(helpSectionsData, ({ title }, key) => {
     return (
       <BaseButton
         key={key}
@@ -51,18 +51,16 @@ const Manual: FC = () => {
           currentHash === key ? classes.activeTitle : classes.manualTitle
         }
       >
-        {section?.title}
+        {title || ''}
       </BaseButton>
     )
   })
 
-  const manualContent = map(helpSectionsData, (section, key) => {
+  const manualContent = map(helpSectionsData, ({ title, content }, key) => {
     return (
       <div key={key} id={key} className={classes.sectionContent}>
-        <h2>{section?.title}</h2>
-        <div className={classes.section}>
-          {ReactHtmlParser(section?.content)}
-        </div>
+        <h2>{title || ''}</h2>
+        <div className={classes.section}>{ReactHtmlParser(content) || ''}</div>
       </div>
     )
   })

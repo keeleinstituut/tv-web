@@ -8,7 +8,6 @@ import { isEmpty, includes } from 'lodash'
 import classNames from 'classnames'
 import { Root } from '@radix-ui/react-form'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
-import UserManagementCheatSheet from 'components/molecules/cheatSheets/UserManagementCheatSheet'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import { UserStatus } from 'types/users'
@@ -38,11 +37,7 @@ const UsersManagement: FC = () => {
     <>
       <div className={classes.userManagementHeader}>
         <h1>{t('users.user_management')}</h1>
-        <Tooltip
-          title={t('cheat_sheet.user_management.title')}
-          modalContent={<UserManagementCheatSheet />}
-          helpSectionKey=""
-        />
+        <Tooltip helpSectionKey="usersManagement" />
         <Button
           appearance={AppearanceTypes.Secondary}
           className={classNames({
