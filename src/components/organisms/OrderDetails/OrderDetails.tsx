@@ -127,7 +127,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const { institutionUserId, userPrivileges } = useAuth()
   const { createOrder, isLoading } = useCreateOrder()
   const { updateOrder, isLoading: isUpdatingOrder } = useUpdateOrder({
-    orderId: order?.id,
+    id: order?.id,
   })
   const navigate = useNavigate()
   const isNew = mode === OrderDetailModes.New

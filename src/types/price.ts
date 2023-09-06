@@ -1,6 +1,15 @@
 import { ResponseMetaTypes } from 'types/collective'
 import { Vendor } from './vendors'
 
+export enum PriceUnits {
+  CharacterFee = 'character_fee',
+  WordFee = 'word_fee',
+  PageFee = 'page_fee',
+  MinuteFee = 'minute_fee',
+  HourFee = 'hour_fee',
+  MinimalFee = 'minimal_fee',
+}
+
 export interface Price {
   id: string
   vendor_id: string

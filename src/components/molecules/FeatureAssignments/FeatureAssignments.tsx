@@ -8,8 +8,11 @@ type FeatureAssignmentsProps = Pick<
   | 'assignments'
   | 'source_language_classifier_value_id'
   | 'destination_language_classifier_value_id'
+  | 'cat_analyzis'
 > & {
   hidden?: boolean
+  projectDeadline?: string
+  catSupported?: boolean
 }
 
 const FeatureAssignments: FC<FeatureAssignmentsProps> = ({

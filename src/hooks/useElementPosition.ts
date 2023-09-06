@@ -25,15 +25,15 @@ const useElementPosition = <RefType extends HTMLElement>({
     : null
 
   const {
-    y: parentY = 0,
-    x: parentX = 0,
-    right: parentRight = 0,
+    y: initialParentY = 0,
+    x: initialParentX = 0,
+    right: initialParentRight = 0,
   } = parentElement?.getBoundingClientRect() || {}
 
   const [{ left, top, right }, setPosition] = useState({
-    left: (initialLeft || 0) - parentX,
-    top: (initialTop || 0) - parentY,
-    right: (initialRight || 0) - parentRight,
+    left: (initialLeft || 0) - initialParentX,
+    top: (initialTop || 0) - initialParentY,
+    right: (initialRight || 0) - initialParentRight,
   })
 
   const recalculatePosition = useCallback(() => {
@@ -42,12 +42,17 @@ const useElementPosition = <RefType extends HTMLElement>({
       y = 0,
       right = 0,
     } = ref?.current?.getBoundingClientRect() || {}
+    const {
+      y: parentY = 0,
+      x: parentX = 0,
+      right: parentRight = 0,
+    } = parentElement?.getBoundingClientRect() || {}
     setPosition({
       left: x - parentX,
       top: y - parentY,
       right: right - parentRight,
     })
-  }, [ref])
+  }, [parentElement, ref])
 
   useEffect(() => {
     if (forceRecalculate) {

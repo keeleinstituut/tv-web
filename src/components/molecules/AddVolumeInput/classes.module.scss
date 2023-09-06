@@ -1,0 +1,40 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  display: flex;
+  align-items: flex-start;
+
+  .valuesContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 274px;
+  }
+
+  .label {
+    @include labelTextStyle;
+    margin-right: spacing(2);
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  // &.disabled {
+  //   cursor: not-allowed;
+  //   .label {
+  //     pointer-events: none;
+  //   }
+  // }
+}
+
+.row {
+  display: flex;
+  margin-bottom: spacing(2);
+
+  .editButton,
+  .deleteButton {
+    margin-left: spacing(2);
+  }
+}

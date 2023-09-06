@@ -80,9 +80,9 @@ const RoleForm: FC<RoleFormProps> = ({
   // hooks
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { updateRole, isLoading } = useUpdateRole({ roleId: id })
+  const { updateRole, isLoading } = useUpdateRole({ id })
   const { createRole, isLoading: isCreating } = useCreateRole()
-  const { deleteRole, isLoading: isDeleting } = useDeleteRole({ roleId: id })
+  const { deleteRole, isLoading: isDeleting } = useDeleteRole({ id })
 
   const {
     control,

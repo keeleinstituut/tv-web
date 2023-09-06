@@ -80,13 +80,14 @@ const OrderPage: FC = () => {
   // const { t } = useTranslation()
   const { orderId } = useParams()
   const { institutionUserId } = useAuth()
-  const { order, isLoading } = useFetchOrder({ orderId })
+  const { order, isLoading } = useFetchOrder({ id: orderId })
   const {
     id,
     status,
     sub_projects,
     client_user_institution_id,
     translation_manager_user_institution_id,
+    deadline_at,
   } = order || {}
 
   useOrderPageRedirect({
@@ -115,7 +116,11 @@ const OrderPage: FC = () => {
 
       {map(sortBy(sub_projects, 'ext_id'), (subOrder) => (
         // TODO: if needed we can already display some of the info from "subOrder" here
-        <SubOrderSection {...subOrder} key={subOrder.id} />
+        <SubOrderSection
+          {...subOrder}
+          key={subOrder.id}
+          projectDeadline={deadline_at}
+        />
       ))}
     </>
   )

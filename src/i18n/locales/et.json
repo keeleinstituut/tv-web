@@ -92,7 +92,21 @@
     "page_fee": "Lehekülg",
     "minute_fee": "Minut",
     "hour_fee": "Tund",
-    "minimal_fee": "Minimaalne"
+    "minimal_fee": "Minimaalne",
+    "vendor_comments": "Teostaja märkused",
+    "volume": "Maht",
+    "pick_volume_type": "Vali mahu lisamise viis",
+    "task_type": "Tööülesande tüüp",
+    "unit": "Ühik",
+    "cost_price": "Hinna väärtus (EUR)",
+    "minimum_price": "Miinimum hind",
+    "total_price": "Kogumaksumus",
+    "vendor": "Teostaja",
+    "amount": "Kogus",
+    "percent_from_price": "% hinnast",
+    "price": "Hind",
+    "enter_discount_percentage": "Sisesta allahindluse protsent",
+    "total": "Kokku"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -170,9 +184,10 @@
     "join_files": "Ühenda failid kokku",
     "vendors": "Teostajad",
     "xliff": "XLIFF",
-    "add_new_vendor": "Lisa uus teostaja",
+    "add_new_vendor": "jaga ülesanne",
     "choose_from_database": "Lisa andmebaasist",
-    "clear_filters": "Tühjenda filtrid"
+    "clear_filters": "Tühjenda filtrid",
+    "add_volume": "lisa maht"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -302,7 +317,16 @@
     "cat_merge_title": "Kas oled kindel, et soovid failid kokku liita?",
     "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada.",
     "choose_vendors": "Teostajate valimine",
-    "choose_vendors_helper": "Vali teostajad, kellele soovid selle ülesade pakkumise saata.\n Ülesanne määratakse automaatselt esimesele, kes ülesande vastu võtab."
+    "choose_vendors_helper": "Vali teostajad, kellele soovid selle ülesade pakkumise saata.\n Ülesanne määratakse automaatselt esimesele, kes ülesande vastu võtab.",
+    "pick_volume_add_method": "Vali mahu lisamise viis",
+    "pick_volume_helper": "Vali kas soovid lisada mahu käsitsi või tõlkemahuanalüüsi järgi.",
+    "pick_volume_by_cat": "Mahu lisamine CAT analüüsi järgi",
+    "pick_volume_manually": "Mahu lisamine käsitsi",
+    "picked_analysis_for": "Valitud analüüs failile:",
+    "pick_volume_by_cat_helper": "Soovi korral saad süsteemist automaatselt genereeritud väärtused käsitsi üle kirjutada.",
+    "pick_volume_manually_helper": "Vali töömahu arvestamise ühik ja määra kogus. Soovi korral saad süsteemist automaatselt genereeritud hinna väärtuse käsitsi üle kirjutada.",
+    "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
+    "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?"
   },
   "cheat_sheet": {
     "user_management": {
@@ -393,7 +417,9 @@
     "vendor_updated": "Teostaja uuendatud",
     "order_updated": "Tellimus on edukalt uuendatud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
-    "file_split_success": "Fail on edukalt tükkideks jagatud"
+    "file_split_success": "Fail on edukalt tükkideks jagatud",
+    "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "volume_deleted": "Maht edukalt kustutatud!"
   },
   "notification": {
     "announcement": "Teade",
@@ -415,7 +441,8 @@
     "email": "Email",
     "phone": "Telefoninumber",
     "department": "Üksus",
-    "role": "Roll"
+    "role": "Roll",
+    "total": "Kokku"
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta.",
@@ -506,6 +533,17 @@
     "no_changes_made": "Andmetes puuduvad muudatused"
   },
   "task": {
-    "vendor_title": "Teostaja {{number}}"
+    "vendor_title": "Teostaja {{number}}",
+    "volume_row_text": "{{amount}} {{unit}}",
+    "open_in_cat": "(ava CAT analüüs)",
+    "add_cat_volume": "Lisa maht CAT analüüsi järgi",
+    "add_manual_volume": "Lisa maht käsitsi",
+    "vendors": "Teostajad",
+    "status": {
+      "NOT_ASSIGNED": "-",
+      "FORWARDED_TO_VENDOR": "Teostajale edastatud",
+      "IN_PROGRESS": "Teostamisel",
+      "DONE": "Teostatud"
+    }
   }
 }

@@ -1,21 +1,10 @@
-import { FC, useCallback, useMemo, memo } from 'react'
+import { useCallback, useMemo, memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useFetchTags } from 'hooks/requests/useTags'
-import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import {
-  map,
-  isEmpty,
-  find,
-  reduce,
-  range,
-  includes,
-  split,
-  size,
-} from 'lodash'
+import { map, find, range, includes, split } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
@@ -24,8 +13,7 @@ import {
   ResponseMetaTypes,
   PaginationFunctionType,
 } from 'types/collective'
-import { ClassifierValueType } from 'types/classifierValues'
-import { useForm } from 'react-hook-form'
+import { Control, FieldValues, Path } from 'react-hook-form'
 import {
   FormInput,
   InputTypes,
@@ -58,18 +46,18 @@ const FreeDaysHeader = () => {
   )
 }
 
-interface SelectVendorsTableProps {
+interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   // TODO: will actually be prices instead of vendors
   data?: Price[]
   paginationData?: ResponseMetaTypes
   hidden?: boolean
-  selectedVendorsIds?: string[]
   taskSkills?: string[]
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
   source_language_classifier_value_id?: string
   destination_language_classifier_value_id?: string
+  control: Control<TFormValues>
 }
 
 interface PricesTableRow {
@@ -88,13 +76,9 @@ interface PricesTableRow {
   minimal_fee?: number
 }
 
-interface FormValues {
-  selected: { [key in string]?: boolean }
-}
-
 const columnHelper = createColumnHelper<PricesTableRow>()
 
-const SelectVendorsTable: FC<SelectVendorsTableProps> = ({
+const SelectVendorsTable = <TFormValues extends FieldValues>({
   data = [],
   hidden,
   paginationData,
@@ -102,44 +86,15 @@ const SelectVendorsTable: FC<SelectVendorsTableProps> = ({
   handleSortingChange,
   handlePaginationChange,
   taskSkills = [],
-  selectedVendorsIds = [],
   source_language_classifier_value_id,
   destination_language_classifier_value_id,
-}) => {
+  control,
+}: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
   const { tagsFilters = [] } = useFetchTags()
   const { skillsFilters = [] } = useFetchSkills()
   const { languageDirectionFilters, loadMore, handleSearch } =
     useLanguageDirections({})
-
-  const selectedValues = useMemo(
-    () =>
-      isEmpty(data)
-        ? {}
-        : reduce(
-            data,
-            (result, price) => {
-              if (!price) return result
-              return {
-                ...result,
-                [price.id]: find(selectedVendorsIds, { id: price.vendor.id }),
-              }
-            },
-            {}
-          ),
-    [data, selectedVendorsIds]
-  )
-
-  const { control, handleSubmit, setError, clearErrors } = useForm<FormValues>({
-    reValidateMode: 'onChange',
-    mode: 'onChange',
-    values: {
-      selected: selectedValues,
-    },
-    resetOptions: {
-      keepErrors: true,
-    },
-  })
 
   const tableData = useMemo(
     () =>
@@ -250,7 +205,7 @@ const SelectVendorsTable: FC<SelectVendorsTableProps> = ({
       cell: ({ getValue }) => {
         return (
           <FormInput
-            name={`selected.${getValue()}`}
+            name={`selected.${getValue()}` as Path<TFormValues>}
             ariaLabel={t('label.select_vendor')}
             control={control}
             inputType={InputTypes.Checkbox}
@@ -392,4 +347,4 @@ const SelectVendorsTable: FC<SelectVendorsTableProps> = ({
   )
 }
 
-export default SelectVendorsTable
+export default memo(SelectVendorsTable) as typeof SelectVendorsTable

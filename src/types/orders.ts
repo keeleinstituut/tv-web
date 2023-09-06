@@ -9,6 +9,7 @@ import {
   LanguageClassifierValue,
 } from './classifierValues'
 import { Vendor } from './vendors'
+import { AssignmentType } from './assignments'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -99,32 +100,16 @@ export enum TranslationMemoryPercentageNames {}
 export interface CatAnalysis {
   raw_word_count: number
   total: number
-  tm_101: string
-  tm_repetitions: string
-  tm_100: string
-  tm_95_99: string
-  tm_85_94: string
-  tm_75_84: string
-  tm_50_74: string
-  tm_0_49: string
+  tm_101: number
+  tm_repetitions: number
+  tm_100: number
+  tm_95_99: number
+  tm_85_94: number
+  tm_75_84: number
+  tm_50_74: number
+  tm_0_49: number
   chunk_id: string
   file_name: string
-}
-
-interface Candidate {
-  vendor: Vendor
-  vendor_id?: string
-  price: string
-  candidate: string
-  id: string
-}
-
-export interface AssignmentType {
-  feature: SubProjectFeatures
-  id: string
-  candidates: Candidate[]
-  assigned_vendor_id?: string
-  assignee_id?: string
 }
 
 export interface ListSubOrderDetail {

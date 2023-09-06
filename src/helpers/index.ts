@@ -237,6 +237,10 @@ const addablePrivilegesWithConditions: PrivilegeKeyValueType = {
     Privileges.ReceiveProject,
   ],
   [Privileges.ManageProject]: [Privileges.ReceiveProject],
+  [Privileges.ViewPersonalTask]: [
+    Privileges.CreateProject,
+    Privileges.ManageProject,
+  ],
 }
 
 export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {

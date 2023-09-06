@@ -90,7 +90,9 @@ type SubOrderProps = Pick<
   | 'cost'
   | 'status'
   | 'deadline_at'
->
+> & {
+  projectDeadline?: string
+}
 
 const SubOrderSection: FC<SubOrderProps> = ({
   id,
@@ -99,6 +101,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
   destination_language_classifier_value,
   cost,
   status = SubOrderStatus.Registered,
+  projectDeadline,
   deadline_at,
 }) => {
   const { t } = useTranslation()
@@ -145,20 +148,6 @@ const SubOrderSection: FC<SubOrderProps> = ({
     },
     [ext_id, setHash]
   )
-
-  // const availableTabs = compact(
-  //   map(SubProjectFeatures, (feature) => {
-  //     if (
-  //       feature === SubProjectFeatures.GeneralInformation ||
-  //       includes(features, feature)
-  //     ) {
-  //       return {
-  //         id: feature,
-  //         name: t(`orders.features.${feature}`),
-  //       }
-  //     }
-  //   })
-  // )
 
   // TODO: not sure if GeneralInformation should be considered a feature here or just added
   const availableTabs = compact(
@@ -210,6 +199,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
 
       <Feature
         subOrder={subOrder}
+        projectDeadline={projectDeadline}
         feature={activeTab as SubProjectFeatures}
         index={findIndex(availableTabs, (tab) => {
           return tab.id === activeTab

@@ -122,4 +122,8 @@
   padding: 0 spacing(18) spacing(4);
   color: $color-primary;
   @include bodyTextStyle;
+
+  b {
+    font-weight: $font-weight-bold;
+  }
 }

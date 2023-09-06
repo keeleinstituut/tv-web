@@ -41,7 +41,7 @@ enum RowKeys {
 }
 
 interface TableRow {
-  matchType: string
+  match_type: string
   [key: string]: string
 }
 
@@ -89,7 +89,7 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
       return [
         ...(result as object[]),
         {
-          matchType: rowKeys[index],
+          match_type: rowKeys[index],
           ...reduce(
             cat_analyzis,
             (result, { chunk_id }, innerIndex) => {
@@ -109,7 +109,7 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
 
   // `translation_memory.chunk.${}`
   const tableColumns = [
-    columnHelper.accessor('matchType', {
+    columnHelper.accessor('match_type', {
       header: () => t('label.match_type'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) =>
@@ -175,7 +175,6 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           data={keyedRows as TableRow[]}
           columns={tableColumns}
           tableSize={TableSizeTypes.M}
-          className={classes.tableContainer}
           hidePagination
           headComponent={
             <div className={classes.titleRow}>

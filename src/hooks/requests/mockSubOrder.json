@@ -78,42 +78,42 @@
     {
       "raw_word_count": 30,
       "total": 500,
-      "tm_101": "20",
-      "tm_repetitions": "30",
-      "tm_100": "40",
-      "tm_95_99": "50",
-      "tm_85_94": "60",
-      "tm_75_84": "70",
-      "tm_50_74": "80",
-      "tm_0_49": "90",
+      "tm_101": 20,
+      "tm_repetitions": 30,
+      "tm_100": 40,
+      "tm_95_99": 50,
+      "tm_85_94": 60,
+      "tm_75_84": 70,
+      "tm_50_74": 80,
+      "tm_0_49": 90,
       "chunk_id": "RandomChunkId1-1",
       "file_name": "B5_pgnhealth_activity_stress_SL.docx"
     },
     {
       "raw_word_count": 30,
       "total": 500,
-      "tm_101": "20",
-      "tm_repetitions": "30",
-      "tm_100": "40",
-      "tm_95_99": "50",
-      "tm_85_94": "60",
-      "tm_75_84": "70",
-      "tm_50_74": "80",
-      "tm_0_49": "90",
+      "tm_101": 20,
+      "tm_repetitions": 30,
+      "tm_100": 40,
+      "tm_95_99": 50,
+      "tm_85_94": 60,
+      "tm_75_84": 70,
+      "tm_50_74": 80,
+      "tm_0_49": 90,
       "chunk_id": "RandomChunkId1-2",
       "file_name": "random.doc"
     },
     {
       "raw_word_count": 30,
       "total": 500,
-      "tm_101": "20",
-      "tm_repetitions": "30",
-      "tm_100": "40",
-      "tm_95_99": "50",
-      "tm_85_94": "60",
-      "tm_75_84": "70",
-      "tm_50_74": "80",
-      "tm_0_49": "90",
+      "tm_101": 20,
+      "tm_repetitions": 30,
+      "tm_100": 40,
+      "tm_95_99": 50,
+      "tm_85_94": 60,
+      "tm_75_84": 70,
+      "tm_50_74": 80,
+      "tm_0_49": 90,
       "chunk_id": "RandomChunkId2",
       "file_name": "File_with_super_long_name_to_test_horixontally_scrollable_table_inside_modal.pdf"
     }
@@ -219,9 +219,53 @@
               }
             },
             "company_name": "Random Company",
-            "prices": [],
+            "prices": [{
+              "id": "RandomVendorId",
+              "vendor_id": "RandomVendorId",
+              "skill_id": "randomSkillId",
+              "src_lang_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+              "dst_lang_classifier_value_id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+              "created_at": "2023-08-01T07:16:52.000000Z",
+              "updated_at": "2023-08-01T07:16:52.000000Z",
+              "character_fee": 0.1,
+              "word_fee": 0.55,
+              "page_fee": 25,
+              "minute_fee": 1,
+              "hour_fee": 50,
+              "minimal_fee": 500,
+              "source_language_classifier_value": {
+                "id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+                "type": "LANGUAGE",
+                "value": "zh-TW",
+                "name": "Chinese Traditional",
+                "meta": {
+                  "iso3_code": "zh-TW"
+                },
+                "synced_at": null,
+                "deleted_at": null
+              },
+              "destination_language_classifier_value": {
+                "id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+                "type": "LANGUAGE",
+                "value": "lg-UG",
+                "name": "Luganda",
+                "meta": {
+                  "iso3_code": "lg-UG"
+                },
+                "synced_at": null,
+                "deleted_at": null
+              }
+            }],
             "tags": [],
-            "comment": "Kommenteerime asju"
+            "comment": "Kommenteerime asju",
+            "discount_percentage_0_49": "100,00",
+            "discount_percentage_50_74": "100,00",
+            "discount_percentage_75_84": "50,00",
+            "discount_percentage_85_94": "30,00",
+            "discount_percentage_95_99": "20,00",
+            "discount_percentage_100": "15,00",
+            "discount_percentage_101": "10,00",
+            "discount_percentage_repetitions": "0"
           },
           "vendor_id": "RandomVendorId",
           "price": "500",
@@ -229,7 +273,225 @@
           "id": "candidateId"
         }
       ],
-      "assigned_vendor_id": "",
+      "assigned_vendor_id": "RandomVendorId",
+      "assignee_id": "RandomVendorId"
+    },
+    {
+      "feature": "job_overview",
+      "id": "randomId",
+      "candidates": [
+        {
+          "vendor": {
+            "id": "RandomVendorId",
+            "institution_user": {
+              "created_at": "2023-08-01T07:16:52.000000Z",
+              "updated_at": "2023-08-01T07:16:52.000000Z",
+              "deactivation_date": null,
+              "archived_at": null,
+              "id": "RandomInsititutionUserId",
+              "department": [
+                "tore üksus"
+              ],
+              "email": "random@random.ee",
+              "institution": {
+                "created_at": "2023-08-01T07:16:52.000000Z",
+                "updated_at": "2023-08-01T07:16:52.000000Z",
+                "id": "InstitutionId",
+                "email": null,
+                "logo_url": null,
+                "name": "Institutsiooni nimi",
+                "phone": null,
+                "short_name": null
+              },
+              "phone": "+37255555555",
+              "roles": [
+                {
+                  "created_at": "2023-08-01T07:16:52.000000Z",
+                  "id": "RandomRoleId",
+                  "institution_id": "InstitutionId",
+                  "is_root": false,
+                  "name": "Random",
+                  "privileges": [
+                    "DELETE_TAG"
+                  ],
+                  "updated_at": "2023-08-01T07:16:52.000000Z"
+                }
+              ],
+              "status": "ACTIVE",
+              "user": {
+                "created_at": "2023-08-01T07:16:52.000000Z",
+                "updated_at": "2023-08-01T07:16:52.000000Z",
+                "forename": "Eesnimi",
+                "surname": "Perekonnanimi",
+                "id": "RandomId",
+                "personal_identification_code": "39209022722"
+              }
+            },
+            "company_name": "Random Company",
+            "prices": [{
+              "id": "RandomVendorId",
+              "vendor_id": "RandomVendorId",
+              "skill_id": "randomSkillId",
+              "src_lang_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+              "dst_lang_classifier_value_id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+              "created_at": "2023-08-01T07:16:52.000000Z",
+              "updated_at": "2023-08-01T07:16:52.000000Z",
+              "character_fee": 0.1,
+              "word_fee": 0.55,
+              "page_fee": 25,
+              "minute_fee": 1,
+              "hour_fee": 50,
+              "minimal_fee": 500,
+              "source_language_classifier_value": {
+                "id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+                "type": "LANGUAGE",
+                "value": "zh-TW",
+                "name": "Chinese Traditional",
+                "meta": {
+                  "iso3_code": "zh-TW"
+                },
+                "synced_at": null,
+                "deleted_at": null
+              },
+              "destination_language_classifier_value": {
+                "id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+                "type": "LANGUAGE",
+                "value": "lg-UG",
+                "name": "Luganda",
+                "meta": {
+                  "iso3_code": "lg-UG"
+                },
+                "synced_at": null,
+                "deleted_at": null
+              }
+            }],
+            "tags": [],
+            "comment": "Kommenteerime asju",
+            "discount_percentage_0_49": "100,00",
+            "discount_percentage_50_74": "100,00",
+            "discount_percentage_75_84": "50,00",
+            "discount_percentage_85_94": "30,00",
+            "discount_percentage_95_99": "20,00",
+            "discount_percentage_100": "15,00",
+            "discount_percentage_101": "10,00",
+            "discount_percentage_repetitions": "0"
+          },
+          "vendor_id": "RandomVendorId",
+          "price": "500",
+          "candidate": "",
+          "id": "candidateId"
+        }
+      ],
+      "assigned_vendor_id": "RandomVendorId",
+      "assignee_id": "RandomVendorId"
+    },
+    {
+      "feature": "job_revision",
+      "id": "randomId",
+      "candidates": [
+        {
+          "vendor": {
+            "id": "RandomVendorId",
+            "institution_user": {
+              "created_at": "2023-08-01T07:16:52.000000Z",
+              "updated_at": "2023-08-01T07:16:52.000000Z",
+              "deactivation_date": null,
+              "archived_at": null,
+              "id": "RandomInsititutionUserId",
+              "department": [
+                "tore üksus"
+              ],
+              "email": "random@random.ee",
+              "institution": {
+                "created_at": "2023-08-01T07:16:52.000000Z",
+                "updated_at": "2023-08-01T07:16:52.000000Z",
+                "id": "InstitutionId",
+                "email": null,
+                "logo_url": null,
+                "name": "Institutsiooni nimi",
+                "phone": null,
+                "short_name": null
+              },
+              "phone": "+37255555555",
+              "roles": [
+                {
+                  "created_at": "2023-08-01T07:16:52.000000Z",
+                  "id": "RandomRoleId",
+                  "institution_id": "InstitutionId",
+                  "is_root": false,
+                  "name": "Random",
+                  "privileges": [
+                    "DELETE_TAG"
+                  ],
+                  "updated_at": "2023-08-01T07:16:52.000000Z"
+                }
+              ],
+              "status": "ACTIVE",
+              "user": {
+                "created_at": "2023-08-01T07:16:52.000000Z",
+                "updated_at": "2023-08-01T07:16:52.000000Z",
+                "forename": "Eesnimi",
+                "surname": "Perekonnanimi",
+                "id": "RandomId",
+                "personal_identification_code": "39209022722"
+              }
+            },
+            "company_name": "Random Company",
+            "prices": [{
+              "id": "RandomVendorId",
+              "vendor_id": "RandomVendorId",
+              "skill_id": "randomSkillId",
+              "src_lang_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+              "dst_lang_classifier_value_id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+              "created_at": "2023-08-01T07:16:52.000000Z",
+              "updated_at": "2023-08-01T07:16:52.000000Z",
+              "character_fee": 0.1,
+              "word_fee": 0.55,
+              "page_fee": 25,
+              "minute_fee": 1,
+              "hour_fee": 50,
+              "minimal_fee": 500,
+              "source_language_classifier_value": {
+                "id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+                "type": "LANGUAGE",
+                "value": "zh-TW",
+                "name": "Chinese Traditional",
+                "meta": {
+                  "iso3_code": "zh-TW"
+                },
+                "synced_at": null,
+                "deleted_at": null
+              },
+              "destination_language_classifier_value": {
+                "id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+                "type": "LANGUAGE",
+                "value": "lg-UG",
+                "name": "Luganda",
+                "meta": {
+                  "iso3_code": "lg-UG"
+                },
+                "synced_at": null,
+                "deleted_at": null
+              }
+            }],
+            "tags": [],
+            "comment": "Kommenteerime asju",
+            "discount_percentage_0_49": "100,00",
+            "discount_percentage_50_74": "100,00",
+            "discount_percentage_75_84": "50,00",
+            "discount_percentage_85_94": "30,00",
+            "discount_percentage_95_99": "20,00",
+            "discount_percentage_100": "15,00",
+            "discount_percentage_101": "10,00",
+            "discount_percentage_repetitions": "0"
+          },
+          "vendor_id": "RandomVendorId",
+          "price": "500",
+          "candidate": "",
+          "id": "candidateId"
+        }
+      ],
+      "assigned_vendor_id": "RandomVendorId",
       "assignee_id": "RandomVendorId"
     }
   ]

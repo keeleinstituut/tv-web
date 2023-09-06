@@ -69,9 +69,9 @@ export const useFetchOrders = () => {
   }
 }
 
-export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
+export const useFetchOrder = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<OrderResponse>({
-    queryKey: ['orders', orderId],
+    queryKey: ['orders', id],
     queryFn: () => {
       // return apiClient.get(`${endpoints.PROJECTS}/${orderId}`)
       // TODO: dummy data for now, replace with the line above, once BE is implemented
@@ -141,17 +141,17 @@ export const useCreateOrder = () => {
   }
 }
 
-export const useUpdateOrder = ({ orderId }: { orderId?: string }) => {
+export const useUpdateOrder = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateOrder, isLoading } = useMutation({
-    mutationKey: ['orders', orderId],
+    mutationKey: ['orders', id],
     mutationFn: (payload: NewOrderPayload) =>
-      apiClient.put(`${endpoints.PROJECTS}/${orderId}`, payload),
+      apiClient.put(`${endpoints.PROJECTS}/${id}`, payload),
     onSuccess: ({ data }) => {
       queryClient.setQueryData(['orders'], (oldData?: OrdersResponse) => {
         const { data: previousData, meta } = oldData || {}
         if (!previousData || !meta) return oldData
-        const orderIndex = findIndex(previousData, { id: orderId })
+        const orderIndex = findIndex(previousData, { id })
         const newArray = [...previousData]
         newArray[orderIndex] = data
         return { meta, data: newArray }

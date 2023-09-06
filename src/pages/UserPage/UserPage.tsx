@@ -53,7 +53,7 @@ const UserPage: FC = () => {
   const { userPrivileges } = useAuth()
 
   const { isLoading, isError, user } = useFetchUser({
-    userId,
+    id: userId,
   })
   const { existingRoles = [] } = useRolesFetch()
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
