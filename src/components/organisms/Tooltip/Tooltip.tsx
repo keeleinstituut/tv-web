@@ -14,7 +14,7 @@ export interface HelpSections {
   [key: string]: {
     title: string
     content: string
-    tooltipContent: string
+    tooltipContent?: string
   }
 }
 
@@ -58,7 +58,7 @@ const Tooltip: FC<TooltipProps> = ({
     showModal(ModalTypes.Tooltip, {
       title: selectedHelpSection.title || '',
       textButtonContent: textButtonContent || t('button.look_at_tutorial'),
-      modalContent: ReactHtmlParser(selectedHelpSection.tooltipContent) || '',
+      modalContent: ReactHtmlParser(selectedHelpSection.tooltipContent || ''),
       href: `/manual#${helpSectionKey}`,
       className: className,
     })

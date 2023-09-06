@@ -77,7 +77,7 @@ const Manual: FC = () => {
             {t('menu.last_changed', { date })}
           </p>
         </div>
-        {manualContent}
+        <div className={classes.manualContent}>{manualContent}</div>
       </div>
       <div className={classes.manualTitleContainer}>
         <p className={classes.tableOfContents}>{t('menu.table_of_contents')}</p>

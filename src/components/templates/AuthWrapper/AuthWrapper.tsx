@@ -22,14 +22,12 @@ const AuthWrapper: FC<PropsWithChildren> = () => {
         institutionUserId: userInfo?.tolkevarav?.institutionUserId || '',
       }}
     >
-      {/* <Loader
+      <Loader
         loading={isLoading && !isUserLoggedIn}
         className={classes.fullScreenLoader}
       />
       {isUserLoggedIn && <Outlet />}
-      {!isUserLoggedIn && !isLoading && <Landing />} */}
-
-      {<Outlet />}
+      {!isUserLoggedIn && !isLoading && <Landing />}
       <ModalRoot />
     </AuthContext.Provider>
   )

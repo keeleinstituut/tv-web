@@ -21,15 +21,20 @@
 
 .manualTitleContainer {
   display: flex;
-  padding-left: spacing(20);
   flex-direction: column;
+  width: 230px;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  position: fixed;
+  left: 78%;
+  padding-top: spacing(8);
 }
 
 .tableOfContents {
   @include subtitleSmallTextStyle;
   color: $color-input-main;
   padding-left: spacing(5);
-  padding-bottom: spacing(3);
 }
 
 .manualTitles {
@@ -39,6 +44,7 @@
   border-left: 1px solid $color-background-dark;
   padding-left: spacing(5);
   grid-gap: spacing(3.5);
+  margin-top: spacing(3);
 }
 
 .manualTitle,
@@ -82,15 +88,8 @@
 
 .section {
   padding: spacing(2) 0;
+}
 
-  p {
-    padding-bottom: spacing(6);
-    &:last-child {
-      padding-bottom: 0;
-    }
-  }
-
-  li {
-    list-style: inside;
-  }
+.manualContent {
+  @include manualStyle($color-text-dark);
 }
