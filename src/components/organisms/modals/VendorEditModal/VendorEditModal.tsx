@@ -1,5 +1,5 @@
-import { FC, useMemo } from 'react'
-import { map, reduce, includes, filter } from 'lodash'
+import { FC, useCallback, useMemo, useState } from 'react'
+import { map, reduce, includes, filter, debounce, toLower } from 'lodash'
 import ModalBase, {
   ButtonPositionTypes,
   ModalSizeTypes,
@@ -13,7 +13,8 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import vendors from 'components/organisms/tables/users.json'
 import VendorsEditTable from 'components/organisms/tables/VendorsEditTable/VendorsEditTable'
 import users from 'components/organisms/tables/users.json'
-
+import TextInput from 'components/molecules/TextInput/TextInput'
+import classes from './classes.module.scss'
 export interface VendorsEditModalProps {
   isModalOpen?: boolean
   closeModal: () => void
@@ -30,6 +31,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const { t } = useTranslation()
 
   //Pagination does not work after mapping the data
+  const [searchValue, setSearchValue] = useState<string>('')
 
   const filteredData = filter(users.data, ({ status }) =>
     includes(UserStatus.Active, status)
@@ -48,6 +50,14 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
       }) || {}
     )
   }, [filteredData])
+
+  const filterBySearch = useMemo(() => {
+    if (!!searchValue) {
+      return filter(vendorData, ({ name }) =>
+        includes(toLower(name), toLower(searchValue))
+      )
+    } else return vendorData
+  }, [searchValue, vendorData])
 
   const defaultValues = reduce(
     vendorData,
@@ -78,6 +88,13 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     closeModal()
   }
 
+  const handleSearch = useCallback((event: { target: { value: string } }) => {
+    setSearchValue(event.target.value)
+    //   if (onSearch) {
+    //     debounce(onSearch, 300)(event.target.value)
+    //   }
+  }, [])
+
   return (
     <ModalBase
       title={t('label.add_remove_vendor')}
@@ -99,7 +116,16 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
       ]}
     >
       <Root id="vendors" onSubmit={handleSubmit(onSubmit)}>
-        <VendorsEditTable data={vendorData} control={control} />
+        <TextInput
+          name="search"
+          ariaLabel={t('label.search')}
+          placeholder={t('placeholder.search_by_name')}
+          value={searchValue}
+          onChange={handleSearch}
+          className={classes.searchInput}
+          isSearch
+        />
+        <VendorsEditTable data={filterBySearch} control={control} />
       </Root>
     </ModalBase>
   )
