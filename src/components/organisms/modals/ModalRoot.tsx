@@ -15,6 +15,7 @@ import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
 import { ConfirmSendToCatModalProps } from './ConfirmSendToCatModal/ConfirmSendToCatModal'
 import { CatAnalysisModalProps } from './CatAnalysisModal/CatAnalysisModal'
+import { VendorsEditModalProps } from './VendorEditModal/VendorEditModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -41,6 +42,7 @@ const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
 const CatAnalysisModal = lazy(
   () => import('./CatAnalysisModal/CatAnalysisModal')
 )
+const VendorsEditModal = lazy(() => import('./VendorEditModal/VendorEditModal'))
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
@@ -52,6 +54,7 @@ export enum ModalTypes {
   EditableListModal = 'editableListModal',
   ConfirmSendToCat = 'confirmSendToCat',
   CatAnalysis = 'catAnalysis',
+  VendorsEdit = 'vendorsEdit',
 }
 
 // Add other modal props types here as well
@@ -65,6 +68,7 @@ type ModalPropTypes =
   | Omit<EditableListModalProps, 'closeModal'>
   | Omit<ConfirmSendToCatModalProps, 'closeModal'>
   | Omit<CatAnalysisModalProps, 'closeModal'>
+  | Omit<VendorsEditModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
@@ -76,6 +80,7 @@ const MODALS = {
   editableListModal: EditableListModal,
   confirmSendToCat: ConfirmSendToCatModal,
   catAnalysis: CatAnalysisModal,
+  vendorsEdit: VendorsEditModal,
 }
 
 interface RefType {

@@ -43,7 +43,7 @@
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
-    "add_remove_vendor": "Lisa/eemalda toestaja",
+    "add_remove_vendor": "Lisa/eemalda toestajad",
     "view": "Vaata",
     "search": "Otsi",
     "updated": "UUENDATUD",
@@ -344,7 +344,8 @@
     "analysis_based_discount": "Analüüsipõhine soodustus",
     "repetitions": "Kordused",
     "match_type": "Vaste tüüp",
-    "percent_from_price": "% hinnast"
+    "percent_from_price": "% hinnast",
+    "vendor": "Teostaja"
   },
   "file": {
     "drop_files": "Pane failid siia...",

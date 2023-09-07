@@ -76,6 +76,10 @@
 
 .narrow {
   max-width: 556px;
+
+  .scrollableContent {
+    max-height: 60vh;
+  }
 }
 
 .right,
