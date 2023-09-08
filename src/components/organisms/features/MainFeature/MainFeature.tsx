@@ -6,6 +6,7 @@ import FeatureHeaderSection, {
   FeatureTabs,
 } from 'components/organisms/FeatureHeaderSection/FeatureHeaderSection'
 import FeatureAssignments from 'components/molecules/FeatureAssignments/FeatureAssignments'
+import FeatureCatJobs from 'components/molecules/FeatureCatJobs/FeatureCatJobs'
 
 type MainFeatureProps = Pick<
   SubOrderDetail,
@@ -13,7 +14,7 @@ type MainFeatureProps = Pick<
   | 'source_language_classifier_value_id'
   | 'destination_language_classifier_value_id'
   | 'cat_analyzis'
-  // | 'cat_jobs'
+  | 'cat_jobs'
 > & {
   catSupported?: boolean
   projectDeadline?: string
@@ -53,6 +54,7 @@ const MainFeature: FC<MainFeatureProps> = ({ catSupported, ...rest }) => {
         catSupported={catSupported}
         {...rest}
       />
+      <FeatureCatJobs hidden={activeTab === FeatureTabs.Vendors} {...rest} />
     </Root>
   )
 }

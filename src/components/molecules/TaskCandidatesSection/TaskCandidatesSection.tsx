@@ -1,10 +1,9 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, isEmpty } from 'lodash'
+import { map } from 'lodash'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 
 import classNames from 'classnames'
-import dayjs from 'dayjs'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {
@@ -13,8 +12,6 @@ import DataTable, {
 import { AssignmentStatus, AssignmentType } from 'types/assignments'
 
 import classes from './classes.module.scss'
-
-// TODO: very similar to OrderFilesList, these 2 can be unified
 
 type TaskCandidatesSectionProps = Pick<
   AssignmentType,

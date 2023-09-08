@@ -57,7 +57,6 @@
   "cat_project_created": "2023-11-07T07:16:52.000000Z",
   "cat_features": [
     "job_translation",
-    "job_revision",
     "job_overview"
   ],
   "cat_jobs": [

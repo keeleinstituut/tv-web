@@ -106,7 +106,8 @@
     "percent_from_price": "% hinnast",
     "price": "Hind",
     "enter_discount_percentage": "Sisesta allahindluse protsent",
-    "total": "Kokku"
+    "total": "Kokku",
+    "assign_source_file": "Määra lähtefail"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -419,7 +420,8 @@
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
-    "volume_deleted": "Maht edukalt kustutatud!"
+    "volume_deleted": "Maht edukalt kustutatud!",
+    "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!"
   },
   "notification": {
     "announcement": "Teade",
@@ -539,6 +541,7 @@
     "add_cat_volume": "Lisa maht CAT analüüsi järgi",
     "add_manual_volume": "Lisa maht käsitsi",
     "vendors": "Teostajad",
+    "files_not_generated": "Tõlketööriista faili(e) pole genereeritud",
     "status": {
       "NOT_ASSIGNED": "-",
       "FORWARDED_TO_VENDOR": "Teostajale edastatud",

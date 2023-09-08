@@ -27,6 +27,8 @@ export interface AssignmentType {
   skill_id: string
   // TODO: no idea if this field will come from here
   finished_at: string
+  //
+  assigned_chunks: string[]
 }
 
 // TODO: no idea if this is the correct format

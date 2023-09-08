@@ -59,6 +59,7 @@ type DataTableProps<TData extends RowData> = {
   subRows?: Row<TData>[] | undefined
   pageSizeOptions?: { label: string; value: string }[]
   tableWrapperClassName?: string
+  hidden?: boolean
   getSubRows?:
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
@@ -88,6 +89,7 @@ const DataTable = <TData,>(
     hidePagination = false,
     headComponent,
     tableWrapperClassName,
+    hidden,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -126,6 +128,9 @@ const DataTable = <TData,>(
     getSubRows: getSubRows,
     getExpandedRowModel: getExpandedRowModel(),
   })
+  if (hidden) {
+    return null
+  }
   return (
     <TableContext.Provider
       value={{
