@@ -189,6 +189,7 @@
     "technical_settings": "Tehnilised sätted",
     "collapse_menu": "Kitsendan menüü",
     "manual": "Tõlkevärava kasutusjuhend",
+    "sidebar_manual": "Kasutusjuhend",
     "table_of_contents": "SISUKORD",
     "article_created_by": "Artikli koostaja: {{ author }} | {{ authorEmail }}",
     "last_changed": "Viimati muudetud {{ date }}"

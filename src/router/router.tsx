@@ -221,7 +221,7 @@ export const protectedRoutes: FullRouteObject[] = [
   },
   {
     path: 'manual',
-    label: i18n.t('menu.manual'),
+    label: i18n.t('menu.sidebar_manual'),
     element: <Manual />,
     Icon: ManualIcon,
   },
