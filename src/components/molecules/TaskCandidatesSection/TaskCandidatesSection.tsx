@@ -12,10 +12,15 @@ import DataTable, {
 import { AssignmentStatus, AssignmentType } from 'types/assignments'
 
 import classes from './classes.module.scss'
+import { SubProjectFeatures } from 'types/orders'
 
 type TaskCandidatesSectionProps = Pick<
   AssignmentType,
-  'assigned_vendor_id' | 'candidates' | 'assignee_id' | 'finished_at'
+  | 'assigned_vendor_id'
+  | 'candidates'
+  | 'assignee_id'
+  | 'finished_at'
+  | 'feature'
 > & {
   className?: string
 }
@@ -36,6 +41,7 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   assignee_id,
   finished_at,
   className,
+  feature,
 }) => {
   const { t } = useTranslation()
 
@@ -85,7 +91,7 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
       header: () => t('label.cost'),
       cell: ({ getValue }) => {
         const cost = getValue()
-        return cost ? `${cost}€` : ''
+        return cost ? `${cost}€` : '-'
       },
       footer: (info) => info.column.id,
     }),
@@ -95,6 +101,7 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
         return (
           <BaseButton
             className={classes.iconButton}
+            hidden={feature === SubProjectFeatures.JobOverview}
             onClick={() => handleDelete(getValue())}
           >
             <Delete />

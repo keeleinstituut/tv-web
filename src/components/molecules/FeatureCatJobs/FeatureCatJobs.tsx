@@ -102,7 +102,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         showValidationErrorMessage(errorData)
       }
     },
-    []
+    [t]
   )
 
   const resetForm = useCallback(() => {

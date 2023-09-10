@@ -188,7 +188,9 @@
     "add_new_vendor": "jaga ülesanne",
     "choose_from_database": "Lisa andmebaasist",
     "clear_filters": "Tühjenda filtrid",
-    "add_volume": "lisa maht"
+    "add_volume": "lisa maht",
+    "mark_as_finished": "Märgi lõpetatuks",
+    "send_to_previous_task": "Saada eelmisesse ülesandesse"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -421,7 +423,9 @@
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
     "volume_deleted": "Maht edukalt kustutatud!",
-    "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!"
+    "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
+    "task_finished": "Ülesanne on edukalt lõpetatud!",
+    "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud"
   },
   "notification": {
     "announcement": "Teade",

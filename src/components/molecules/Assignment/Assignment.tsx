@@ -1,9 +1,12 @@
 import { FC, useCallback, useMemo } from 'react'
 import { map, find, pick, values } from 'lodash'
-import { CatAnalysis } from 'types/orders'
+import { CatAnalysis, SubProjectFeatures } from 'types/orders'
 import { AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
-import Button, { SizeTypes } from 'components/molecules/Button/Button'
+import Button, {
+  AppearanceTypes,
+  SizeTypes,
+} from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
@@ -17,6 +20,11 @@ import { DiscountPercentageNames, DiscountPercentages } from 'types/vendors'
 import { Price } from 'types/price'
 import TaskCandidatesSection from 'components/molecules/TaskCandidatesSection/TaskCandidatesSection'
 import { VolumeValue } from 'types/volumes'
+import { showValidationErrorMessage } from 'api/errorHandler'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from '../Notification/Notification'
+import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
+import { getBEDate } from 'helpers'
 
 interface AssignmentProps extends AssignmentType {
   index: number
@@ -55,11 +63,17 @@ const Assignment: FC<AssignmentProps> = ({
   cat_analyzis,
 }) => {
   const { t } = useTranslation()
+  // TODO: no idea if this is how it will work
+  const { updateAssignment, isLoading } = useAssignmentUpdate({ id })
 
   const { vendor } = find(candidates, { vendor_id: assigned_vendor_id }) || {}
   // TODO: vendor price find is not finished yet.
   // There is a high possibility that the field names will be unified for source and destination language
   // We are also missing assignment task id at the moment
+
+  // TODO: check if all other tasks/features in this subOrder have been finished
+  // Possibly we can determine this my checking the status of the suborder, or by going over all assignments
+  const allPreviousTasksFinished = false
   const vendorDiscounts = useMemo(
     () => pick(vendor, values(DiscountPercentageNames)),
     [vendor]
@@ -89,6 +103,7 @@ const Assignment: FC<AssignmentProps> = ({
 
   const vendorName = `${vendor?.institution_user?.user?.forename} ${vendor?.institution_user?.user?.surname}`
 
+  // TODO: we should be able to get some of these values from somewhere
   const defaultValues = useMemo(
     () => ({
       deadline_at: { date: '11/07/2025', time: '11:00' },
@@ -100,6 +115,39 @@ const Assignment: FC<AssignmentProps> = ({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
+
+  const handleMarkTaskAsFinished = useCallback(async () => {
+    try {
+      await updateAssignment({
+        // TODO: not sure if this is
+        finished_at: getBEDate(),
+      })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.task_finished'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [t, updateAssignment])
+
+  const sendToPreviousAssignment = useCallback(async () => {
+    try {
+      // TODO: no idea what this does at the moment
+      // await updateAssignment({
+      //   // TODO: not sure if this is
+      //   finished_at: null,
+      // })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.sent_to_previous_task'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [t])
 
   // TODO: shouldShowStartTimeFields no info about where to take this from yet
   const shouldShowStartTimeFields = true
@@ -207,6 +255,7 @@ const Assignment: FC<AssignmentProps> = ({
           size={SizeTypes.S}
           className={classes.addButton}
           onClick={handleOpenVendorsModal}
+          disabled={feature === SubProjectFeatures.JobOverview}
         >
           {t('button.choose_from_database')}
         </Button>
@@ -220,11 +269,31 @@ const Assignment: FC<AssignmentProps> = ({
       <div>
         <TaskCandidatesSection
           {...{
+            feature,
             assigned_vendor_id,
             candidates,
             assignee_id,
             finished_at,
           }}
+        />
+      </div>
+      <div className={classes.formButtons}>
+        <Button
+          appearance={AppearanceTypes.Secondary}
+          children={t('button.send_to_previous_task')}
+          onClick={sendToPreviousAssignment}
+          hidden={feature !== SubProjectFeatures.JobOverview}
+          // disabled={isLoading}
+        />
+        <Button
+          children={t('button.mark_as_finished')}
+          disabled={
+            !!finished_at ||
+            (feature === SubProjectFeatures.JobOverview &&
+              !allPreviousTasksFinished)
+          }
+          loading={isLoading}
+          onClick={handleMarkTaskAsFinished}
         />
       </div>
     </div>
