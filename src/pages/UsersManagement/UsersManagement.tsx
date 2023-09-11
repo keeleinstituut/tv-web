@@ -69,7 +69,6 @@ const UsersManagement: FC = () => {
         <AddedUsersTable
           data={users}
           paginationData={paginationData}
-          hidden={isEmpty(users)}
           handleFilterChange={handleFilterChange}
           handleSortingChange={handleSortingChange}
           handlePaginationChange={handlePaginationChange}

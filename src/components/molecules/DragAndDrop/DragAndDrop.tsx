@@ -123,7 +123,7 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
           </p>
         </div>
         <p className={classes.multipleFilesText}>
-          {t('file.pick_multiple_files')}
+          {allowMultiple && t('file.pick_multiple_files')}
         </p>
       </div>
     </div>
