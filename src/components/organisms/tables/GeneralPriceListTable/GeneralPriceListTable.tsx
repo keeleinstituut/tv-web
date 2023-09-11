@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, find, split } from 'lodash'
+import { map, split } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
@@ -20,9 +20,9 @@ import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import classes from './classes.module.scss'
 
 interface GeneralPriceListTableProps {
-  // TODO: will actually be prices instead of vendors
   data?: Price[]
   paginationData?: ResponseMetaTypes
+  isLoading?: boolean
   hidden?: boolean
   selectedVendorsIds?: string[]
   taskSkills?: string[]
@@ -50,21 +50,23 @@ const columnHelper = createColumnHelper<PricesTableRow>()
 const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
   data = [],
   hidden,
+  isLoading,
   paginationData,
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
 }) => {
   const { t } = useTranslation()
-  // const { skillsFilters = [] } = useFetchSkills()
-  // const { languageDirectionFilters, loadMore, handleSearch } =
-  //   useLanguageDirections({})
+  const { skillsFilters = [] } = useFetchSkills()
+  const { languageDirectionFilters, loadMore, handleSearch } =
+    useLanguageDirections({})
 
   const tableData = useMemo(
     () =>
       map(
         data,
         ({
+          id,
           source_language_classifier_value,
           destination_language_classifier_value,
           character_fee,
@@ -73,20 +75,18 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
           minute_fee,
           hour_fee,
           minimal_fee,
-          skill_id,
+          skill: { name },
           vendor: {
-            skills,
             institution_user: { user },
           },
         }) => {
           const languageDirection = `${source_language_classifier_value.value} > ${destination_language_classifier_value.value}`
 
-          const skill = find(skills, { id: skill_id })?.name
-
           return {
+            key: id,
             name: `${user?.forename} ${user?.surname}`,
             languageDirection,
-            skill,
+            skill: name,
             character_fee,
             word_fee,
             page_fee,
@@ -135,29 +135,20 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
         return <Tag label={getValue()} value />
       },
       footer: (info) => info.column.id,
-      // meta: {
-      //   filterOption: { language_direction: languageDirectionFilters },
-      //   onEndReached: loadMore,
-      //   onSearch: handleSearch,
-      //   showSearch: true,
-      // },
+      meta: {
+        filterOption: { language_direction: languageDirectionFilters },
+        onEndReached: loadMore,
+        onSearch: handleSearch,
+        showSearch: true,
+      },
     }),
     columnHelper.accessor('skill', {
       header: () => t('label.skill'),
       footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        return (
-          <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
-            ))}
-          </div>
-        )
+      meta: {
+        filterOption: { skill_id: skillsFilters },
+        showSearch: true,
       },
-      // meta: {
-      //   filterOption: { skill_id: skillsFilters },
-      //   showSearch: true,
-      // },
     }),
     columnHelper.accessor('name', {
       header: () => t('label.name'),
@@ -226,6 +217,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         className={classes.tableContainer}
+        isLoading={isLoading}
       />
     </Root>
   )

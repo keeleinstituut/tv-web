@@ -94,7 +94,8 @@
     "hour_fee": "Tund",
     "view_general_price_list": "Vaata koondhinnakirja",
     "minimal_fee": "Minimaalne",
-    "min_fee": "Min tasu"
+    "min_fee": "Min tasu",
+    "search_by_name_here": "Otsi nime järgi siit..."
   },
   "placeholder": {
     "email": "example@mail.com",

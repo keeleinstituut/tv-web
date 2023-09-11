@@ -26,6 +26,7 @@ export interface TextInputProps
   hidden?: boolean
   loading?: boolean
   isTextarea?: boolean
+  generalPriceListInput?: string
 }
 
 const TextInput = forwardRef<
@@ -47,6 +48,7 @@ const TextInput = forwardRef<
     isTextarea,
     loading,
     handleDelete,
+    generalPriceListInput,
     ...rest
   } = props
   const { t } = useTranslation()
@@ -62,7 +64,7 @@ const TextInput = forwardRef<
 
   const inputProps = {
     ...(placeholder ? { placeholder } : {}),
-    className: classes.inputField,
+    className: classNames(generalPriceListInput || classes.inputField),
     ref,
     value: value || '',
     'aria-label': ariaLabel,

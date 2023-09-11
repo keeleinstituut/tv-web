@@ -18,6 +18,7 @@ export interface Price {
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
   vendor: Vendor
+  skill: { id: string; name: string }
 }
 export interface GetPricesPayload {
   vendor_id?: string

@@ -62,6 +62,7 @@ type DataTableProps<TData extends RowData> = {
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
   hidePagination?: boolean
+  isLoading?: boolean
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -87,6 +88,7 @@ const DataTable = <TData,>(
     hidePagination = false,
     headComponent,
     horizontalWrapperId = 'tableWrapper',
+    isLoading,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -143,7 +145,7 @@ const DataTable = <TData,>(
               onSortingChange={onSortingChange}
               onFiltersChange={onFiltersChange}
             />
-            <tbody>
+            <tbody hidden={isLoading}>
               {table.getRowModel().rows.map((row) => (
                 <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
                   {row.getVisibleCells().map((cell) => (
