@@ -109,7 +109,7 @@ const GeneralPriceList: FC<GeneralPriceListProps> = ({
             value={searchValue}
             onChange={handleSearchVendors}
             className={classes.searchInput}
-            generalPriceListInput={classes.generalPriceListInput}
+            inputContainerClassName={classes.generalPriceListInput}
             isSearch
           />
         </Root>
