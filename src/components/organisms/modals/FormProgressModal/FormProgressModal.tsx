@@ -65,6 +65,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
     if (size(steps) === activeStep) {
       if (submitForm) {
         submitForm()
+        setActiveStep(1)
       }
     } else {
       setActiveStep(activeStep + 1)

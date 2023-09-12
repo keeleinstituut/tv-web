@@ -113,7 +113,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
         name: `skill_id.${id}_${index}`,
         className: classes.skillsField,
         rules: {
-          required: true,
+          required: false,
         },
       }
     }

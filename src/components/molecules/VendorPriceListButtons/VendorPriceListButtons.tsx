@@ -47,8 +47,8 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
 
   const hasTrueValueSkill = some(skills, (value) => value === true)
   const isSkillSelected = !!skills && hasTrueValueSkill
-
   const formState = useFormState({ control })
+  const isSkillValid = (activeStep === 2 || activeStep === 3) && isSkillSelected
 
   return (
     <div className={classes.buttonsContainer}>
@@ -59,7 +59,7 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
         appearance={AppearanceTypes.Primary}
         disabled={
           !(isSrcLanguageSelected && isDstLanguageSelected) ||
-          (activeStep === 2 && !isSkillSelected) ||
+          !isSkillValid ||
           (size(steps) === activeStep && !formState.isValid)
         }
         onClick={handleProceed}

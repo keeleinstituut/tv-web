@@ -8,7 +8,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { useForm } from 'react-hook-form'
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import EditVendorPriceModalButton from 'components/organisms/EditVendorPriceModalButton/EditVendorPriceModalButton'
@@ -45,6 +45,36 @@ export type PriceObject = {
     name: string
   }
   subRows?: PriceObject[]
+}
+
+export type LanguageDirectionCellProps = {
+  row: Row<PriceObject>
+}
+
+const LanguageDirectionCell: FC<LanguageDirectionCellProps> = ({ row }) => {
+  const canExpand = row?.getCanExpand() ?? false
+  const languageDirection = row?.original?.language_direction
+
+  useEffect(() => {
+    if (canExpand) {
+      row.toggleExpanded(true)
+    }
+  }, [canExpand, row])
+
+  return (
+    <>
+      {canExpand && (
+        <Button
+          onClick={() => row.toggleExpanded()}
+          appearance={AppearanceTypes.Text}
+          hidden
+        />
+      )}
+      <p className={languageDirection && classes.languageTag}>
+        {languageDirection}
+      </p>
+    </>
+  )
 }
 
 const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
@@ -132,31 +162,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const columns = [
     columnHelper.accessor('language_direction', {
       header: () => t('vendors.language_direction'),
-      cell: ({ row }) => {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        useEffect(() => {
-          if (row.getCanExpand()) {
-            row.toggleExpanded(true)
-          }
-        }, [row])
-
-        const languageDirection = row.original.language_direction
-
-        return (
-          <>
-            {row.getCanExpand() && (
-              <Button
-                onClick={() => row.toggleExpanded()}
-                appearance={AppearanceTypes.Text}
-                hidden
-              />
-            )}
-            <p className={languageDirection && classes.languageTag}>
-              {languageDirection}
-            </p>
-          </>
-        )
-      },
+      cell: ({ row }) => <LanguageDirectionCell row={row} />,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('skill_id', {
