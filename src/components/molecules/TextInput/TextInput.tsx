@@ -27,6 +27,7 @@ export interface TextInputProps
   loading?: boolean
   isTextarea?: boolean
   generalPriceListInput?: string
+  inputContainerClassName?: string
 }
 
 const TextInput = forwardRef<
@@ -49,6 +50,7 @@ const TextInput = forwardRef<
     loading,
     handleDelete,
     generalPriceListInput,
+    inputContainerClassName,
     ...rest
   } = props
   const { t } = useTranslation()
@@ -88,7 +90,7 @@ const TextInput = forwardRef<
         {label}
       </Label>
       <div
-        className={classNames(classes.inputContainer, {
+        className={classNames(classes.inputContainer, inputContainerClassName, {
           [classes.addDeleteButton]: !!handleDelete,
         })}
         ref={wrapperRef}

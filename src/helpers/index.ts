@@ -16,10 +16,15 @@ import {
   uniqBy,
 } from 'lodash'
 import { FullRouteObject } from 'router/router'
-import utc from 'dayjs/plugin/utc'
 import { PrivilegeKey, PrivilegeType, Privileges } from 'types/privileges'
 
+import utc from 'dayjs/plugin/utc'
+import advancedFormat from 'dayjs/plugin/advancedFormat'
+import timezone from 'dayjs/plugin/timezone'
+
 dayjs.extend(utc)
+dayjs.extend(advancedFormat)
+dayjs.extend(timezone)
 
 // TODO: split these into separate helper files, if we have too many
 interface ObjectWithChildren {
@@ -176,8 +181,12 @@ export const getUtcDateStringFromLocalDateObject = ({
   date?: string
   time?: string
 }) => {
-  const dayjsObject = dayjs(trim(`${date || ''} ${time || ''}`))
-  return dayjsObject.utc().format('DD/MM/YYYY HH:mm:ss')
+  const dayjsObject = dayjs(
+    trim(`${date || ''} ${time || ''}`),
+    'DD/MM/YYYY HH:mm:ss'
+  )
+  const formattedString = dayjsObject.utc().format('YYYY-MM-DDTHH:mm:ss[Z]')
+  return formattedString
 }
 
 export const getLocalDateOjectFromUtcDateString = (datetime: string) => {
@@ -228,6 +237,10 @@ const addablePrivilegesWithConditions: PrivilegeKeyValueType = {
     Privileges.ReceiveProject,
   ],
   [Privileges.ManageProject]: [Privileges.ReceiveProject],
+  [Privileges.ViewPersonalTask]: [
+    Privileges.CreateProject,
+    Privileges.ManageProject,
+  ],
 }
 
 export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
@@ -246,4 +259,9 @@ export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
     'key'
   )
   return allNewPrivileges
+}
+
+export const getBEDate = (dateString?: string) => {
+  if (!dateString) return dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')
+  return dayjs(dateString).format('YYYY-MM-DDTHH:mm:ss[Z]')
 }

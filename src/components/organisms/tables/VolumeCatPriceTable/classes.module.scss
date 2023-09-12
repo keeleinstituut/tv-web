@@ -1,0 +1,44 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.tableContainer {
+
+  .input {
+    input {
+      width: 128px;
+    }
+  }
+  thead {
+    tr {
+      th {
+        &:first-child {
+          max-width: 99%;
+          width: 99%;
+        }
+        &:nth-child(3) {
+          min-width: 128px;
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      td {
+        &:first-child {
+          max-width: 99%;
+          width: 99%;
+        }
+        &:nth-child(3) {
+          min-width: 128px;
+        }
+      }
+    }
+  }
+
+}
+
+.tableTitle {
+  @include h4TextStyle;
+  padding: spacing(6) spacing(4) spacing(4) spacing(4);
+}

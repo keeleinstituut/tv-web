@@ -27,8 +27,7 @@ const TooltipContent: FC<TooltipContentProps> = ({
 }) => {
   const { horizontalWrapperId } = useTableContext()
   const contentRef = useRef(null)
-  const { left, top } =
-    useElementPosition({ ref: wrapperRef, horizontalWrapperId }) || {}
+  const { left, top } = useElementPosition({ ref: wrapperRef }) || {}
 
   const [inViewport, ratio] = useInViewport(contentRef, { root: containerRef })
   const useBottomPosition = useMemo(

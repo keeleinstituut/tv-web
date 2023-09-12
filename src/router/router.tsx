@@ -67,25 +67,25 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'orders',
     label: i18n.t('menu.orders'),
     Icon: OrdersIcon,
-    privileges: [Privileges.ViewPersonalProject, Privileges.ViewPersonalTask],
+    // privileges: [Privileges.ViewPersonalProject, Privileges.ViewPersonalTask],
     children: [
       {
         path: '',
         label: i18n.t('menu.orders'),
-        privileges: [
-          Privileges.ViewPersonalProject,
-          Privileges.ViewPersonalTask,
-        ],
+        // privileges: [
+        //   Privileges.ViewPersonalProject,
+        //   Privileges.ViewPersonalTask,
+        // ],
         children: [
           {
             path: '',
             element: <Orders />,
-            privileges: [Privileges.ViewPersonalProject],
+            // privileges: [Privileges.ViewPersonalProject],
           },
           {
             path: 'new-order',
             element: <NewOrder />,
-            privileges: [Privileges.CreateProject],
+            // privileges: [Privileges.CreateProject],
           },
         ],
       },

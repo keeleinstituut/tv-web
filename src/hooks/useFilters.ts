@@ -1,4 +1,4 @@
-import { isEmpty, keys, omit } from 'lodash'
+import { isEmpty, keys, omit, isEqual } from 'lodash'
 import { useCallback, useState } from 'react'
 import {
   FilterFunctionType,
@@ -39,7 +39,11 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
 
   const handlePaginationChange = useCallback(
     (value?: PaginationFunctionType) => {
-      setFilters({ ...filters, ...value })
+      // using deep comparison here, since this will trigger a refetch and we want to make sure we avoid
+      // any unnecessary requests
+      if (!isEqual(filters, value)) {
+        setFilters({ ...filters, ...value })
+      }
     },
     [filters]
   )

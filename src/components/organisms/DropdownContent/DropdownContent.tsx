@@ -71,7 +71,7 @@ const DropdownContentComponent = forwardRef<
   },
   ref
 ) {
-  const { horizontalWrapperId, tableRef } = useTableContext()
+  const { tableRef } = useTableContext()
   const { modalContentId } = useModalContext()
 
   const scrollContainer = useRef(null)
@@ -80,13 +80,15 @@ const DropdownContentComponent = forwardRef<
   const [inViewport, ratio] = useInViewport(typedRef, {
     root: tableRef as RefObject<HTMLDivElement> | undefined,
   })
-  const { left, top, right } =
-    useElementPosition({
-      ref: wrapperRef,
-      horizontalWrapperId,
-      forceRecalculate: isOpen,
-      containingElementId: modalContentId,
-    }) || {}
+  const {
+    left = 0,
+    top = 0,
+    right = 0,
+  } = useElementPosition({
+    ref: wrapperRef,
+    forceRecalculate: isOpen,
+    containingElementId: modalContentId,
+  }) || {}
 
   useClickAway(() => {
     if (setIsOpen) {
@@ -184,9 +186,9 @@ const DropdownContentComponent = forwardRef<
         zIndex: 51 + (errorZIndex || 0),
         ...(wrapperRef
           ? {
-              left: useLeftPosition ? 'unset' : left,
-              right: useLeftPosition ? (right || 0) - (left || 0) : 'unset',
-              top: (top || 0) + 40,
+              left: useLeftPosition ? 'unset' : left - 2,
+              right: useLeftPosition ? right - left : 'unset',
+              top: top + 40,
             }
           : {}),
       }}
@@ -275,7 +277,8 @@ const DropdownContent: FC<DropdownContentProps> = ({
   ...rest
 }) => {
   const { modalContentId } = useModalContext()
-  if (usePortal) {
+  const shouldUsePortal = usePortal || !!modalContentId
+  if (shouldUsePortal) {
     return createPortal(
       <DropdownContentComponent
         {...rest}

@@ -69,7 +69,8 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
 }) => {
   const { t } = useTranslation()
   // TODO: not sure yet what this will do
-  const [machineTranslation, setMachineTranslation] = useState(false)
+  // It should decide whether machine translation is allowed or not, but not sure what that changes in other views
+  const [machineTranslation, setMachineTranslation] = useState(true)
 
   // TODO: not sure what this check will be yet
   // First part will be "Task data entry template variable "PM task entry": "false"" - Not sure what this will look like from BE yet
@@ -94,7 +95,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
       />
       <ToggleButtonsSection
         className={classes.toggleButtons}
-        hidden={activeTab === FeatureTabs.Xliff}
+        hidden={activeTab === FeatureTabs.Xliff || !catSupported}
         machineTranslation={machineTranslation}
         setMachineTranslation={setMachineTranslation}
       />

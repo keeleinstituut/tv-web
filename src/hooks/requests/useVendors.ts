@@ -3,6 +3,7 @@ import {
   GetVendorsPayload,
   UpdateVendorPayload,
   GetSkillsPayload,
+  VendorResponse,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -38,31 +39,41 @@ export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
   }
 }
 
-export const useUpdateVendor = (vendorId: string) => {
+export const useUpdateVendor = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateVendor, isLoading } = useMutation({
-    mutationKey: ['vendors', vendorId],
+    mutationKey: ['vendors', id],
     mutationFn: async (payload: UpdateVendorPayload) => {
-      return apiClient.put(`${endpoints.VENDORS}/${vendorId}`, {
+      return apiClient.put(`${endpoints.VENDORS}/${id}`, {
         ...payload,
       })
     },
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['vendors', vendorId],
-        (oldData?: VendorsDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = { ...previousData, ...data }
-          return { data: newData }
-        }
-      )
+      queryClient.setQueryData(['vendors', id], (oldData?: VendorsDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
     },
   })
 
   return {
     updateVendor,
     isLoading,
+  }
+}
+
+export const useVendorFetch = ({ id }: { id?: string }) => {
+  const { isLoading, isError, data } = useQuery<VendorResponse>({
+    enabled: !!id,
+    queryKey: ['vendors', id],
+    queryFn: () => apiClient.get(`${endpoints.VENDORS}/${id}`),
+  })
+  return {
+    isLoading,
+    isError,
+    vendor: data?.data,
   }
 }
 

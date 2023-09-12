@@ -32,7 +32,6 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
   const { left, top } =
     useElementPosition({
       ref: wrapperRef,
-      horizontalWrapperId,
       forceRecalculate: isOpen,
     }) || {}
 

@@ -1,9 +1,9 @@
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useState, useMemo } from 'react'
 import ModalBase, {
   ButtonPositionTypes,
   ModalSizeTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { debounce } from 'lodash'
+import { debounce, find, reduce, isEmpty, pickBy, keys, filter } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import Button, {
@@ -15,10 +15,13 @@ import { useAllPricesFetch } from 'hooks/requests/useVendors'
 import SelectVendorsTable from 'components/organisms/tables/SelectVendorsTable/SelectVendorsTable'
 import { FilterFunctionType } from 'types/collective'
 import TextInput from 'components/molecules/TextInput/TextInput'
+import { showValidationErrorMessage } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-
-// TODO: this is WIP code for suborder view
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 interface ModalHeadSectionProps {
   handleFilterChange: (value?: FilterFunctionType) => void
@@ -53,9 +56,10 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
         value={searchValue}
         onChange={handleSearchVendors}
         className={classes.searchInput}
+        inputContainerClassName={classes.searchInputInternal}
         isSearch
       />
-      <p>{t('modal.choose_vendors_helper')}</p>
+      <p className={classes.helperText}>{t('modal.choose_vendors_helper')}</p>
       <div className={classes.row}>
         <Button
           onClick={handleClearFilters}
@@ -75,15 +79,19 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
 
 export interface SelectVendorModalProps {
   isModalOpen?: boolean
-  taskId?: string
+  assignmentId?: string
   selectedVendorsIds?: string[]
   taskSkills?: string[]
   source_language_classifier_value_id?: string
   destination_language_classifier_value_id?: string
 }
 
+interface FormValues {
+  selected: { [key in string]?: boolean }
+}
+
 const SelectVendorModal: FC<SelectVendorModalProps> = ({
-  taskId,
+  assignmentId,
   selectedVendorsIds = [],
   taskSkills = [],
   isModalOpen,
@@ -92,19 +100,79 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
 }) => {
   const { t } = useTranslation()
   // TODO: add prices fetch here instead
+  const { updateAssignment, isLoading } = useAssignmentUpdate({
+    id: assignmentId,
+  })
   const {
     prices,
     paginationData,
-    isLoading,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
   } = useAllPricesFetch()
 
-  const handleAddSelectedVendors = useCallback(() => {
-    // TODO: probably saving function passed in from outside
-    // SO here we are most likely just going to submit the table form
-  }, [])
+  const selectedValues = useMemo(
+    () =>
+      isEmpty(prices)
+        ? {}
+        : reduce(
+            prices,
+            (result, price) => {
+              if (!price) return result
+              return {
+                ...result,
+                [price.id]: find(selectedVendorsIds, { id: price.vendor.id }),
+              }
+            },
+            {}
+          ),
+    [prices, selectedVendorsIds]
+  )
+
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting, isValid },
+  } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+    mode: 'onChange',
+    values: {
+      selected: selectedValues,
+    },
+    resetOptions: {
+      keepErrors: true,
+    },
+  })
+
+  const handleAddSelectedVendors: SubmitHandler<FormValues> = useCallback(
+    async ({ selected }) => {
+      const newVendorIds = keys(pickBy(selected, (val) => !!val))
+      const unRemovedVendorIds = filter(selectedVendorsIds, (id) => {
+        // vendor was removed, if it exists in the "selected" object with a value of false
+        const wasVendorRemoved = find(
+          selected,
+          (value, key) => key === id && !value
+        )
+        return !wasVendorRemoved
+      })
+      try {
+        // TODO: not sure about this at all
+        await updateAssignment({
+          candidates_ids: [...unRemovedVendorIds, ...newVendorIds],
+        })
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.vendors_added_to_task'),
+        })
+        closeModal()
+      } catch (errorData) {
+        // Might map some errors to inputs from here, but not sure if it makes sense right now
+        showValidationErrorMessage(errorData)
+      }
+    },
+    [selectedVendorsIds, t, updateAssignment]
+  )
 
   return (
     <ModalBase
@@ -121,7 +189,9 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         },
         {
           appearance: AppearanceTypes.Primary,
-          onClick: handleAddSelectedVendors,
+          onClick: handleSubmit(handleAddSelectedVendors),
+          loading: isSubmitting || isLoading,
+          disabled: !isValid,
           children: t('button.add'),
         },
       ]}
@@ -142,6 +212,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
           taskSkills,
           source_language_classifier_value_id,
           destination_language_classifier_value_id,
+          control,
         }}
       />
     </ModalBase>

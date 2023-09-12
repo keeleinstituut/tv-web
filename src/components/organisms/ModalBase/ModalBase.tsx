@@ -17,11 +17,11 @@ import { map } from 'lodash'
 
 import classes from './classes.module.scss'
 interface ModalContextType {
-  modalContentId: string
+  modalContentId?: string
 }
 
 export const ModalContext = createContext<ModalContextType>({
-  modalContentId: 'tableWrapper',
+  modalContentId: undefined,
 })
 
 export enum ModalSizeTypes {
@@ -59,7 +59,7 @@ export interface ModalProps extends ModalFooterProps {
   handleClose?: () => void
   progressBar?: ReactElement
   className?: string
-  helperText?: string
+  helperText?: string | ReactElement
   innerWrapperClassName?: string
   headComponent?: ReactElement
 }
@@ -118,7 +118,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
       <Dialog.Root open={open} onOpenChange={setOpen}>
         {trigger}
         <Dialog.Portal>
-          <Dialog.Overlay className={classes.dialogOverlay} id="randomTest" />
+          <Dialog.Overlay className={classes.dialogOverlay} />
           <Dialog.Content
             onOpenAutoFocus={handleOpen}
             id="modalContentId"
@@ -145,10 +145,10 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
               {title}
             </h1>
             {headComponent}
-            <p hidden={!helperText} className={classes.helperText}>
-              {helperText}
-            </p>
             <Dialog.Overlay className={classes.scrollableContent}>
+              <p hidden={!helperText} className={classes.helperText}>
+                {helperText}
+              </p>
               <div
                 className={classNames(
                   classes.dialogDescription,

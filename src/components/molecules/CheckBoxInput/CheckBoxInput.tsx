@@ -67,7 +67,11 @@ const CheckBoxInput = forwardRef<HTMLInputElement, CheckBoxInputProps>(
         >
           <div className={classes.visibleCheckbox} />
         </div>
-        <Label className={classNames(classes.label)}>{label}</Label>
+        <Label
+          className={classNames(classes.label, !label && classes.hiddenLabel)}
+        >
+          {label}
+        </Label>
         <InputError
           {...omit(error, 'ref')}
           errorZIndex={errorZIndex}

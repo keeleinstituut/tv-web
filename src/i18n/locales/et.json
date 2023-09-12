@@ -95,7 +95,22 @@
     "view_general_price_list": "Vaata koondhinnakirja",
     "minimal_fee": "Minimaalne",
     "min_fee": "Min tasu",
-    "search_by_name_here": "Otsi nime järgi siit..."
+    "search_by_name_here": "Otsi nime järgi siit...",
+    "vendor_comments": "Teostaja märkused",
+    "volume": "Maht",
+    "pick_volume_type": "Vali mahu lisamise viis",
+    "task_type": "Tööülesande tüüp",
+    "unit": "Ühik",
+    "cost_price": "Hinna väärtus (EUR)",
+    "minimum_price": "Miinimum hind",
+    "total_price": "Kogumaksumus",
+    "vendor": "Teostaja",
+    "amount": "Kogus",
+    "percent_from_price": "% hinnast",
+    "price": "Hind",
+    "enter_discount_percentage": "Sisesta allahindluse protsent",
+    "total": "Kokku",
+    "assign_source_file": "Määra lähtefail"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -173,9 +188,12 @@
     "join_files": "Ühenda failid kokku",
     "vendors": "Teostajad",
     "xliff": "XLIFF",
-    "add_new_vendor": "Lisa uus teostaja",
+    "add_new_vendor": "jaga ülesanne",
     "choose_from_database": "Lisa andmebaasist",
-    "clear_filters": "Tühjenda filtrid"
+    "clear_filters": "Tühjenda filtrid",
+    "add_volume": "lisa maht",
+    "mark_as_finished": "Märgi lõpetatuks",
+    "send_to_previous_task": "Saada eelmisesse ülesandesse"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -305,7 +323,16 @@
     "cat_merge_title": "Kas oled kindel, et soovid failid kokku liita?",
     "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada.",
     "choose_vendors": "Teostajate valimine",
-    "choose_vendors_helper": "Vali teostajad, kellele soovid selle ülesade pakkumise saata.\n Ülesanne määratakse automaatselt esimesele, kes ülesande vastu võtab."
+    "choose_vendors_helper": "Vali teostajad, kellele soovid selle ülesade pakkumise saata.\n Ülesanne määratakse automaatselt esimesele, kes ülesande vastu võtab.",
+    "pick_volume_add_method": "Vali mahu lisamise viis",
+    "pick_volume_helper": "Vali kas soovid lisada mahu käsitsi või tõlkemahuanalüüsi järgi.",
+    "pick_volume_by_cat": "Mahu lisamine CAT analüüsi järgi",
+    "pick_volume_manually": "Mahu lisamine käsitsi",
+    "picked_analysis_for": "Valitud analüüs failile:",
+    "pick_volume_by_cat_helper": "Soovi korral saad süsteemist automaatselt genereeritud väärtused käsitsi üle kirjutada.",
+    "pick_volume_manually_helper": "Vali töömahu arvestamise ühik ja määra kogus. Soovi korral saad süsteemist automaatselt genereeritud hinna väärtuse käsitsi üle kirjutada.",
+    "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
+    "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?"
   },
   "cheat_sheet": {
     "user_management": {
@@ -397,7 +424,12 @@
     "vendor_updated": "Teostaja uuendatud",
     "order_updated": "Tellimus on edukalt uuendatud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
-    "file_split_success": "Fail on edukalt tükkideks jagatud"
+    "file_split_success": "Fail on edukalt tükkideks jagatud",
+    "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "volume_deleted": "Maht edukalt kustutatud!",
+    "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
+    "task_finished": "Ülesanne on edukalt lõpetatud!",
+    "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud"
   },
   "notification": {
     "announcement": "Teade",
@@ -419,7 +451,8 @@
     "email": "Email",
     "phone": "Telefoninumber",
     "department": "Üksus",
-    "role": "Roll"
+    "role": "Roll",
+    "total": "Kokku"
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta.",
@@ -474,6 +507,11 @@
       "job_revision": "toimetamine",
       "job_overview": "ülevaatus"
     },
+    "file_types": {
+      "STYLE_GUIDE": "Stiilijuhis",
+      "TERM_BASE": "Terminibaas",
+      "REFERENCE_FILE": "Abifail"
+    },
     "order_details": "Tellimuse andmed",
     "order_details_expandable": "Tellimuse detailid",
     "files": "Failid",
@@ -505,6 +543,18 @@
     "no_changes_made": "Andmetes puuduvad muudatused"
   },
   "task": {
-    "vendor_title": "Teostaja {{number}}"
+    "vendor_title": "Teostaja {{number}}",
+    "volume_row_text": "{{amount}} {{unit}}",
+    "open_in_cat": "(ava CAT analüüs)",
+    "add_cat_volume": "Lisa maht CAT analüüsi järgi",
+    "add_manual_volume": "Lisa maht käsitsi",
+    "vendors": "Teostajad",
+    "files_not_generated": "Tõlketööriista faili(e) pole genereeritud",
+    "status": {
+      "NOT_ASSIGNED": "-",
+      "FORWARDED_TO_VENDOR": "Teostajale edastatud",
+      "IN_PROGRESS": "Teostamisel",
+      "DONE": "Teostatud"
+    }
   }
 }

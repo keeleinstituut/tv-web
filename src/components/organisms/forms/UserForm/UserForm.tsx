@@ -55,7 +55,7 @@ const UserForm: FC<UserFormProps> = ({
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator } = useValidators()
-  const { updateUser, isLoading } = useUpdateUser({ userId: id })
+  const { updateUser, isLoading } = useUpdateUser({ id })
   const { existingRoles = [] } = useRolesFetch()
   const { existingDepartments = [] } = useDepartmentsFetch()
 
