@@ -176,12 +176,19 @@ const AddVendorPricesTable: FC<AddPricesTableProps> = ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ] as ColumnDef<any>[]
 
+  const paginationData = {
+    per_page: skillsLabels?.length,
+    current_page: 1,
+    total: skillsLabels?.length,
+  }
+
   return (
     <DataTable
       data={skillsLabels}
       columns={columns}
       tableSize={TableSizeTypes.M}
       hidePagination
+      paginationData={paginationData}
       title={
         <div className={classes.pricesTitleContainer}>
           <h4 className={classes.pricesTitle}>{t('vendors.prices')}</h4>
