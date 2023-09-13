@@ -35,6 +35,7 @@ export type IconProps = {
   icon?: FC<SVGProps<SVGSVGElement>>
   className?: string
   ariaLabel?: string
+  hidden?: boolean
 }
 
 const Icon: FC<IconProps> = ({ icon: IconComponent, className, ariaLabel }) => {

@@ -6,7 +6,6 @@ import errorOutline from 'assets/icons/error_outline.svg'
 import { useTranslation } from 'react-i18next'
 import useElementPosition from 'hooks/useElementPosition'
 import { createPortal } from 'react-dom'
-import useTableContext from 'hooks/useTableContext'
 
 interface InputErrorComponentProps {
   type?: FieldError['type']
@@ -23,11 +22,13 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
   errorZIndex,
   wrapperRef,
 }) => {
-  const { horizontalWrapperId } = useTableContext()
   const isVisible = !message && type !== 'required'
   const { left, top } =
-    useElementPosition(wrapperRef, horizontalWrapperId, undefined, isVisible) ||
-    {}
+    useElementPosition({
+      ref: wrapperRef,
+      forceRecalculate: isVisible,
+    }) || {}
+
   const { t } = useTranslation()
   if (!message && type !== 'required') return null
   const messageToShow = message || t('error.required')

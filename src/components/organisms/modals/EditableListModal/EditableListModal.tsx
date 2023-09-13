@@ -179,7 +179,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
   useEffect(() => {
     const withoutDeleteFields = filter(inputFields, (field) => {
       const values = map(prevDeletedValues, ({ name }) => name)
-      const name = !field?.label ? field?.name : field?.label
+      const name = 'label' in field ? field?.label : field?.name
       return !includes(values, name)
     })
 

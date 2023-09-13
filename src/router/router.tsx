@@ -97,6 +97,7 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
+        privileges: [Privileges.ViewPersonalTask],
         children: [
           {
             path: '',

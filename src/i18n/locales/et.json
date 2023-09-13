@@ -78,7 +78,37 @@
     "xliff_name": "XLIFFi nimi",
     "chunks": "Segmendid",
     "match_type": "Vaste tüüp",
-    "cat_split_amount": "Tükkide arv"
+    "cat_split_amount": "Tükkide arv",
+    "translation_tool": "Tõlke tööriist",
+    "machine_translation": "Masintõlge",
+    "yes": "Jah",
+    "no": "Ei",
+    "select_vendor": "Märgi teostaja",
+    "free_days": "Vabad päevad",
+    "search_by_name": "Otsi nime alusel",
+    "skill": "Oskus",
+    "character_fee": "Tähemärk",
+    "word_fee": "Sõna",
+    "page_fee": "Lehekülg",
+    "minute_fee": "Minut",
+    "hour_fee": "Tund",
+    "minimal_fee": "Minimaalne",
+    "vendor_comments": "Teostaja märkused",
+    "volume": "Maht",
+    "pick_volume_type": "Vali mahu lisamise viis",
+    "task_type": "Tööülesande tüüp",
+    "unit": "Ühik",
+    "cost_price": "Hinna väärtus (EUR)",
+    "minimum_price": "Miinimum hind",
+    "total_price": "Kogumaksumus",
+    "vendor": "Teostaja",
+    "amount": "Kogus",
+    "percent_from_price": "% hinnast",
+    "price": "Hind",
+    "enter_discount_percentage": "Sisesta allahindluse protsent",
+    "total": "Kokku",
+    "assign_source_file": "Määra lähtefail",
+    "search_by_id": "Otsi tellimuse ID siit..."
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -94,7 +124,9 @@
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
-    "select_tags": "Vali sildid"
+    "select_tags": "Vali sildid",
+    "search_by_name": "Otsi nime alusel",
+    "search_by_id": "Otsi tellimuse ID siit..."
   },
   "button": {
     "login": "Logi sisse",
@@ -152,7 +184,16 @@
     "confirm": "Kinnita",
     "download_xliff": "Laadi alla XLIFF",
     "download_ready_translation": "Laadi alla valmis tõlge",
-    "join_files": "Ühenda failid kokku"
+    "join_files": "Ühenda failid kokku",
+    "vendors": "Teostajad",
+    "xliff": "XLIFF",
+    "add_new_vendor": "jaga ülesanne",
+    "choose_from_database": "Lisa andmebaasist",
+    "clear_filters": "Tühjenda filtrid",
+    "add_volume": "lisa maht",
+    "mark_as_finished": "Märgi lõpetatuks",
+    "send_to_previous_task": "Saada eelmisesse ülesandesse",
+    "send_sub_project_to_vendors": "Saada alamtellimus teostajatele"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -287,7 +328,18 @@
     "cat_split_content_first_section": "Tõlketööriista faili saab tükeldada selleks, et iga tükk tõlkimisse saata erinevatele teostajatele. Vali mitme teostaja vahel soovid faili jagada. Fail jagatakse sõnade järgi võrdseteks osadeks.",
     "cat_split_content_italic_section": "Märkus. Pärast faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“.",
     "cat_merge_title": "Kas oled kindel, et soovid failid kokku liita?",
-    "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada."
+    "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada.",
+    "choose_vendors": "Teostajate valimine",
+    "choose_vendors_helper": "Vali teostajad, kellele soovid selle ülesade pakkumise saata.\n Ülesanne määratakse automaatselt esimesele, kes ülesande vastu võtab.",
+    "pick_volume_add_method": "Vali mahu lisamise viis",
+    "pick_volume_helper": "Vali kas soovid lisada mahu käsitsi või tõlkemahuanalüüsi järgi.",
+    "pick_volume_by_cat": "Mahu lisamine CAT analüüsi järgi",
+    "pick_volume_manually": "Mahu lisamine käsitsi",
+    "picked_analysis_for": "Valitud analüüs failile:",
+    "pick_volume_by_cat_helper": "Soovi korral saad süsteemist automaatselt genereeritud väärtused käsitsi üle kirjutada.",
+    "pick_volume_manually_helper": "Vali töömahu arvestamise ühik ja määra kogus. Soovi korral saad süsteemist automaatselt genereeritud hinna väärtuse käsitsi üle kirjutada.",
+    "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
+    "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?"
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -335,7 +387,13 @@
     "vendor_updated": "Teostaja uuendatud",
     "order_updated": "Tellimus on edukalt uuendatud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
-    "file_split_success": "Fail on edukalt tükkideks jagatud"
+    "file_split_success": "Fail on edukalt tükkideks jagatud",
+    "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "volume_deleted": "Maht edukalt kustutatud!",
+    "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
+    "task_finished": "Ülesanne on edukalt lõpetatud!",
+    "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
+    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!"
   },
   "notification": {
     "announcement": "Teade",
@@ -357,7 +415,8 @@
     "email": "Email",
     "phone": "Telefoninumber",
     "department": "Üksus",
-    "role": "Roll"
+    "role": "Roll",
+    "total": "Kokku"
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta.",
@@ -365,7 +424,10 @@
     "source_files_helper": "Vali lähtefailid, mida soovid tõlketööriistas tõlkida. Veendu, et failid oleks tõlkimiseks ettevalmistatud.",
     "owned_by_other_company": "Mälu omanik on teine asutus. Puudub õigus sellesse kirjutada.",
     "main_write_helper": "„Peamine/Kirjuta“ mällu salvestatakse selle alamtellimuse tõlkesegmendid.",
-    "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail)."
+    "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail).",
+    "selected_translation_memory": "Valitud masintõlkemootor: {{memory}}",
+    "clear_price_filters": "Teostajate valimise tabel on eelfiltreeritud alamtellimuse keelesuuna ja ülesande oskuse järgi. Vajutades “Eemalda kõik filtrid” kuvame kogu teostajate andmebaasi hinnakirja",
+    "skill_language_mismatch": "Oskus ja keelesuund ei vasta ülesandele, antud hinnakirja ei rakendata"
   },
   "tag": {
     "tag_management": "Sildid",
@@ -393,7 +455,7 @@
     "status": {
       "REGISTERED": "Registreeritud",
       "NEW": "Uus",
-      "FORWARDED": "Edastatud",
+      "SUBMITTED_TO_CLIENT": "Edastatud",
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
       "REJECTED": "Tagasi lükatud",
@@ -406,9 +468,14 @@
     "sub_orders_tile": "Alamtellimused",
     "features": {
       "general_information": "üldinfo",
-      "job_translation": "tõlkimine(CAT)",
+      "job_translation": "tõlkimine",
       "job_revision": "toimetamine",
       "job_overview": "ülevaatus"
+    },
+    "file_types": {
+      "STYLE_GUIDE": "Stiilijuhis",
+      "TERM_BASE": "Terminibaas",
+      "REFERENCE_FILE": "Abifail"
     },
     "order_details": "Tellimuse andmed",
     "order_details_expandable": "Tellimuse detailid",
@@ -438,6 +505,22 @@
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",
     "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",
     "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja",
-    "no_changes_made": "Andmetes puuduvad muudatused"
+    "no_changes_made": "Andmetes puuduvad muudatused",
+    "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobiva(d) teostaja(d) valinud."
+  },
+  "task": {
+    "vendor_title": "Teostaja {{number}}",
+    "volume_row_text": "{{amount}} {{unit}}",
+    "open_in_cat": "(ava CAT analüüs)",
+    "add_cat_volume": "Lisa maht CAT analüüsi järgi",
+    "add_manual_volume": "Lisa maht käsitsi",
+    "vendors": "Teostajad",
+    "files_not_generated": "Tõlketööriista faili(e) pole genereeritud",
+    "status": {
+      "NOT_ASSIGNED": "-",
+      "FORWARDED_TO_VENDOR": "Teostajale edastatud",
+      "IN_PROGRESS": "Teostamisel",
+      "DONE": "Teostatud"
+    }
   }
 }

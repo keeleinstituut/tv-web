@@ -8,7 +8,8 @@ import {
   ClassifierValueType,
   LanguageClassifierValue,
 } from './classifierValues'
-import { Vendor } from './vendors'
+import { AssignmentType } from './assignments'
+import { UserType } from './users'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -17,7 +18,7 @@ import { Vendor } from './vendors'
 export enum OrderStatus {
   Registered = 'REGISTERED',
   New = 'NEW',
-  Forwarded = 'FORWARDED',
+  Forwarded = 'SUBMITTED_TO_CLIENT',
   Cancelled = 'CANCELLED',
   Accepted = 'ACCEPTED',
   Rejected = 'REJECTED',
@@ -53,7 +54,6 @@ export interface Link {
 
 interface ProjectTypeConfig {
   id: string
-  type_classifier_value_id: string
   workflow_process_definition_id: string
   features: SubProjectFeatures[]
   created_at: string
@@ -100,32 +100,16 @@ export enum TranslationMemoryPercentageNames {}
 export interface CatAnalysis {
   raw_word_count: number
   total: number
-  tm_101: string
-  tm_repetitions: string
-  tm_100: string
-  tm_95_99: string
-  tm_85_94: string
-  tm_75_84: string
-  tm_50_74: string
-  tm_0_49: string
+  tm_101: number
+  tm_repetitions: number
+  tm_100: number
+  tm_95_99: number
+  tm_85_94: number
+  tm_75_84: number
+  tm_50_74: number
+  tm_0_49: number
   chunk_id: string
   file_name: string
-}
-
-interface Candidate {
-  vendor: Vendor
-  vendor_id?: string
-  price: string
-  candidate: string
-  id: string
-}
-
-export interface AssignmentType {
-  feature: SubProjectFeatures
-  id: string
-  candidates: Candidate[]
-  assigned_vendor_id?: string
-  assignee_id?: string
 }
 
 export interface ListSubOrderDetail {
@@ -142,7 +126,7 @@ export interface ListSubOrderDetail {
   created_at: string
   updated_at: string
   features: SubProjectFeatures[]
-  // Not sure about the existance of following:
+  // Not sure about the existence of following:
   status?: SubOrderStatus
   deadline_at: string
   reference_number: string
@@ -175,22 +159,20 @@ export interface ListOrder {
   created_at: string
   updated_at: string
   sub_projects: ListSubOrderDetail[]
-  // Added from detail fetch, but no available from list fetch
-  // currently not added, except for type possibly
-  status?: OrderStatus
-  tags?: string[]
-  cost?: string
+  status: OrderStatus
+  tags: string[]
+  cost: string
 }
 
 export interface DetailedOrder extends ListOrder {
   help_files: SourceFile[] // might be different type
   source_files: SourceFile[]
-  client_user_institution_id: string
+  client_institution_user: UserType
   translation_manager_user_institution_id: string
+  translation_domain_classifier_value: ClassifierValue
   // TODO: unclear type for following:
   help_file_types: string[]
-  translation_domain: string
-  start_at?: string
+  event_start_at?: string
   accepted_at?: string
   corrected_at?: string
   rejected_at?: string
@@ -200,11 +182,15 @@ export interface DetailedOrder extends ListOrder {
 export type OrdersPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
+    only_show_personal_projects?: boolean
+    statuses?: string[]
   }
 
 export type SubOrdersPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
+    only_show_personal_projects?: boolean
+    statuses?: string[]
   }
 
 export interface OrdersResponse {
@@ -239,12 +225,13 @@ export interface NewOrderPayload {
   deadline_at: string
   source_files: File[]
   reference_number?: string
-  src_lang: string
-  dst_lang: string[]
+  source_language_classifier_value_id: string
+  destination_language_classifier_value_ids: string[]
   help_files?: File[]
   help_file_types?: string[]
+  translation_domain_classifier_value_id: string
+  type_classifier_value_id: string
+  event_start_at?: string
   // TODO: Following are currently missing
-  translation_domain: string
-  start_at?: string
   comments?: string
 }

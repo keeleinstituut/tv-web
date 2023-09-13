@@ -1,9 +1,9 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, includes } from 'lodash'
+import { map, includes, find } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -37,16 +37,17 @@ type SubOrderTableRow = {
   reference_number: string
   deadline_at: string
   type: string
-  status: SubOrderStatus
-  cost: string
+  status?: SubOrderStatus
+  cost?: string
   language_directions: string[]
 }
 
 const columnHelper = createColumnHelper<SubOrderTableRow>()
 
 interface FormValues {
-  status?: string[]
-  own_orders: boolean
+  statuses?: SubOrderStatus[]
+  only_show_personal_projects: boolean
+  ext_id?: string
 }
 
 const SubOrdersTable: FC = () => {
@@ -78,8 +79,8 @@ const SubOrdersTable: FC = () => {
           type_classifier_value,
           source_language_classifier_value,
           destination_language_classifier_value,
-          status = SubOrderStatus.ForwardedToVendor,
-          cost = '500€',
+          status,
+          cost,
         }) => {
           return {
             ext_id,
@@ -104,28 +105,28 @@ const SubOrdersTable: FC = () => {
     },
   })
 
-  // TODO: use function to pass in filters and sorting to our order fetch hook
-  // Not sure yet, what keys these will have and how the params will be passed
-  const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data)
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    (payload) => {
+      handleFilterChange({
+        ...payload,
+      })
+    },
+    [handleFilterChange]
+  )
 
   useEffect(() => {
     // Submit form every time it changes
     const subscription = watch(() => handleSubmit(onSubmit)())
     return () => subscription.unsubscribe()
-  }, [handleSubmit, watch])
+  }, [handleSubmit, onSubmit, watch])
 
   const columns = [
     columnHelper.accessor('ext_id', {
       header: () => t('label.sub_order_id'),
       cell: ({ getValue }) => {
         const orderExtId = getValue()
-        // TODO: currently parent order id is not passed for subOrder
-        // Once it is, we should select it here
-        // Alternative would be for BE to make subOrders available by ext_id
-        // In that case we could split the exT_id of suborder to get the original order id
-        // const parentOrderId = subOrder?.parent_order_id
-        // Currently hardcoded mockData order id
-        const parentOrderId = '99c8bbac-b9bf-4b3b-835a-bc0865ea2168'
+        const subOrder = find(subOrders, { ext_id: orderExtId })
+        const parentOrderId = subOrder?.project_id
         return (
           <Button
             appearance={AppearanceTypes.Text}
@@ -217,18 +218,28 @@ const SubOrdersTable: FC = () => {
         headComponent={
           <div className={classes.topSection}>
             <FormInput
-              name="status"
+              name="statuses"
               control={control}
               options={statusFilters}
               inputType={InputTypes.TagsSelect}
             />
             <FormInput
-              name="own_orders"
+              name="only_show_personal_projects"
               label={t('label.show_only_my_orders')}
               ariaLabel={t('label.show_only_my_orders')}
               className={classes.checkbox}
               control={control}
               inputType={InputTypes.Checkbox}
+            />
+            <FormInput
+              name="ext_id"
+              ariaLabel={t('label.search_by_id')}
+              placeholder={t('placeholder.search_by_id')}
+              inputType={InputTypes.Text}
+              className={classes.searchInput}
+              inputContainerClassName={classes.searchInnerContainer}
+              control={control}
+              isSearch
             />
           </div>
         }
