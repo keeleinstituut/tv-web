@@ -49,7 +49,7 @@ const DepartmentManagement: FC = () => {
 
   return (
     <EditableListContainer
-      title={t('cheat_sheet.institution_management.departments')}
+      title={t('institution.departments')}
       data={existingDepartments}
       isEditable={includes(
         userPrivileges,

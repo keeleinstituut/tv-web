@@ -7,7 +7,6 @@ import useAuth from 'hooks/useAuth'
 import VendorsTable from 'components/organisms/tables/VendorsTable/VendorsTable'
 import { useVendorsFetch } from 'hooks/requests/useVendors'
 import { Privileges } from 'types/privileges'
-import VendorManagementCheatSheet from 'components/molecules/cheatSheets/VendorManagementCheatSheet'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
@@ -29,10 +28,7 @@ const VendorsDatabase: FC = () => {
     <>
       <div className={classes.vendorsDatabaseHeader}>
         <h1>{t('vendors.vendors_database')}</h1>
-        <Tooltip
-          title={t('cheat_sheet.vendor_management.title')}
-          modalContent={<VendorManagementCheatSheet />}
-        />
+        <Tooltip helpSectionKey="vendorsDatabase" />
         <Button
           href="/vendors"
           appearance={AppearanceTypes.Secondary}
