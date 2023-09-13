@@ -1,9 +1,9 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, uniq, includes, find } from 'lodash'
+import { map, uniq, includes, find, omit } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -48,8 +48,9 @@ const columnHelper = createColumnHelper<OrderTableRow>()
 // TODO: we keep all filtering and sorting options inside form
 // This was we can do a new request easily every time form values change
 interface FormValues {
-  status?: string[]
-  own_orders: boolean
+  statuses?: OrderStatus[]
+  only_show_personal_projects: boolean
+  ext_id?: string
 }
 
 const OrdersTable: FC = () => {
@@ -118,15 +119,21 @@ const OrdersTable: FC = () => {
     },
   })
 
-  // TODO: use function to pass in filters and sorting to our order fetch hook
-  // Not sure yet, what keys these will have and how the params will be passed
-  const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data)
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    (payload) => {
+      handleFilterChange({
+        // TODO: won't omit this later
+        ...omit(payload, 'only_show_personal_projects'),
+      })
+    },
+    [handleFilterChange]
+  )
 
   useEffect(() => {
     // Submit form every time it changes
     const subscription = watch(() => handleSubmit(onSubmit)())
     return () => subscription.unsubscribe()
-  }, [handleSubmit, watch])
+  }, [handleSubmit, watch, onSubmit])
 
   const columns = [
     columnHelper.accessor('ext_id', {
@@ -249,18 +256,28 @@ const OrdersTable: FC = () => {
         headComponent={
           <div className={classes.topSection}>
             <FormInput
-              name="status"
+              name="statuses"
               control={control}
               options={statusFilters}
               inputType={InputTypes.TagsSelect}
             />
             <FormInput
-              name="own_orders"
+              name="only_show_personal_projects"
               label={t('label.show_only_my_orders')}
               ariaLabel={t('label.show_only_my_orders')}
               className={classes.checkbox}
               control={control}
               inputType={InputTypes.Checkbox}
+            />
+            <FormInput
+              name="ext_id"
+              ariaLabel={t('label.search_by_id')}
+              placeholder={t('placeholder.search_by_id')}
+              inputType={InputTypes.Text}
+              className={classes.searchInput}
+              inputContainerClassName={classes.searchInnerContainer}
+              control={control}
+              isSearch
             />
           </div>
         }

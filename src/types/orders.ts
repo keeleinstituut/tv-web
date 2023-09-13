@@ -8,8 +8,8 @@ import {
   ClassifierValueType,
   LanguageClassifierValue,
 } from './classifierValues'
-import { Vendor } from './vendors'
 import { AssignmentType } from './assignments'
+import { UserType } from './users'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -18,7 +18,7 @@ import { AssignmentType } from './assignments'
 export enum OrderStatus {
   Registered = 'REGISTERED',
   New = 'NEW',
-  Forwarded = 'FORWARDED',
+  Forwarded = 'SUBMITTED_TO_CLIENT',
   Cancelled = 'CANCELLED',
   Accepted = 'ACCEPTED',
   Rejected = 'REJECTED',
@@ -167,9 +167,9 @@ export interface ListOrder {
 export interface DetailedOrder extends ListOrder {
   help_files: SourceFile[] // might be different type
   source_files: SourceFile[]
-  client_user_institution_id: string
+  client_institution_user: UserType
   translation_manager_user_institution_id: string
-  translation_domain_classifier_value_id: string
+  translation_domain_classifier_value: ClassifierValue
   // TODO: unclear type for following:
   help_file_types: string[]
   event_start_at?: string
@@ -182,11 +182,15 @@ export interface DetailedOrder extends ListOrder {
 export type OrdersPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
+    only_show_personal_projects?: boolean
+    statuses?: string[]
   }
 
 export type SubOrdersPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
+    only_show_personal_projects?: boolean
+    statuses?: string[]
   }
 
 export interface OrdersResponse {

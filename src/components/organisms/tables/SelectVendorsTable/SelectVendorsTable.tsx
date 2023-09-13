@@ -1,4 +1,4 @@
-import { useCallback, useMemo, memo, useEffect } from 'react'
+import { useCallback, useMemo, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFetchTags } from 'hooks/requests/useTags'
 import DataTable, {

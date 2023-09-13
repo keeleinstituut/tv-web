@@ -14,11 +14,7 @@ import {
   filter,
   findIndex,
 } from 'lodash'
-import {
-  ListSubOrderDetail,
-  SubOrderStatus,
-  SubProjectFeatures,
-} from 'types/orders'
+import { ListSubOrderDetail, SubProjectFeatures } from 'types/orders'
 import { useTranslation } from 'react-i18next'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import classNames from 'classnames'
@@ -103,7 +99,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   cost,
-  status = SubOrderStatus.Registered,
+  status,
   projectDeadline,
   deadline_at,
 }) => {
@@ -186,6 +182,14 @@ const SubOrderSection: FC<SubOrderProps> = ({
     })
   )
 
+  const allTabs = [
+    {
+      id: 'general_information',
+      name: t('orders.features.general_information'),
+    },
+    ...availableTabs,
+  ]
+
   if (isLoading) return <Loader loading={isLoading} />
 
   return (
@@ -239,7 +243,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
       <Tabs
         setActiveTab={setActiveTab}
         activeTab={activeTab}
-        tabs={availableTabs}
+        tabs={allTabs}
         tabStyle={TabStyle.Primary}
         className={classes.tabsContainer}
         addDisabled
@@ -250,7 +254,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
         subOrder={subOrder}
         projectDeadline={projectDeadline}
         feature={activeTab as SubProjectFeatures}
-        index={findIndex(availableTabs, (tab) => {
+        index={findIndex(allTabs, (tab) => {
           return tab.id === activeTab
         })}
       />

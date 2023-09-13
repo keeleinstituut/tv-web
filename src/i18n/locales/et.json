@@ -107,7 +107,8 @@
     "price": "Hind",
     "enter_discount_percentage": "Sisesta allahindluse protsent",
     "total": "Kokku",
-    "assign_source_file": "Määra lähtefail"
+    "assign_source_file": "Määra lähtefail",
+    "search_by_id": "Otsi tellimuse ID siit..."
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -124,7 +125,8 @@
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid",
-    "search_by_name": "Otsi nime alusel"
+    "search_by_name": "Otsi nime alusel",
+    "search_by_id": "Otsi tellimuse ID siit..."
   },
   "button": {
     "login": "Logi sisse",
@@ -489,7 +491,7 @@
     "status": {
       "REGISTERED": "Registreeritud",
       "NEW": "Uus",
-      "FORWARDED": "Edastatud",
+      "SUBMITTED_TO_CLIENT": "Edastatud",
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
       "REJECTED": "Tagasi lükatud",

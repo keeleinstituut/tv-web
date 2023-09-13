@@ -145,12 +145,12 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       deadline_at,
       event_start_at,
       type_classifier_value_id = '',
-      client_user_institution_id = '',
+      client_institution_user,
       translation_manager_user_institution_id = '',
       reference_number = '',
       source_files,
       help_files,
-      translation_domain_classifier_value_id = '',
+      translation_domain_classifier_value,
       help_file_types = [],
       comments = '',
       ext_id = '',
@@ -171,7 +171,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       type_classifier_value_id,
       client_user_institution_id: isNew
         ? institutionUserId
-        : client_user_institution_id,
+        : client_institution_user?.id,
       translation_manager_user_institution_id,
       reference_number,
       source_files: isNew ? [] : source_files,
@@ -187,7 +187,8 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       destination_language_classifier_value_ids,
       // TODO: not clear how BE will send the help_file_types back to FE
       help_file_types,
-      translation_domain_classifier_value_id,
+      translation_domain_classifier_value_id:
+        translation_domain_classifier_value?.id,
       comments,
       accepted_at: accepted_at ? dayjs(accepted_at).format('DD.MM.YYYY') : '',
       corrected_at: corrected_at
@@ -238,13 +239,13 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const handleNewOrderSubmit = useCallback(
     async (payload: NewOrderPayload) => {
       try {
-        const { id } = await createOrder(payload)
+        const createdOrder = await createOrder(payload)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
           content: t('success.order_created'),
         })
-        navigate(`/orders/${id}`)
+        navigate(`/orders/${createdOrder?.data?.id}`)
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         mapOrderValidationErrors(typedErrorData)
