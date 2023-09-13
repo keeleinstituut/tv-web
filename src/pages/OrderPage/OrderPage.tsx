@@ -43,10 +43,6 @@ const OrderButtons: FC<OrderButtonProps> = ({
     status === OrderStatus.New &&
     includes(userPrivileges, Privileges.ManageProject)
 
-  //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
-
-  //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
-
   const canCancelOrder =
     isOrderCancellable && (canCancelPersonalOrder || canCancelInstitutionOrder)
   // TODO: mapped buttons:

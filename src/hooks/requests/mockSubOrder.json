@@ -5,10 +5,10 @@
   "file_collection": "intermediate/zh-TW/lg-UG",
   "matecat_job_id": null,
   "workflow_ref": null,
-  "source_language_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
-  "destination_language_classifier_value_id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+  "source_language_classifier_value_id": "8d11e198-be58-4e3a-abe2-88ad62e95cc1",
+  "destination_language_classifier_value_id": "9f67bd20-7faa-43b9-9492-2cf465551f10",
   "source_language_classifier_value": {
-    "id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+    "id": "8d11e198-be58-4e3a-abe2-88ad62e95cc1",
     "type": "LANGUAGE",
     "value": "zh-TW",
     "name": "Chinese Traditional",
@@ -19,7 +19,7 @@
     "deleted_at": null
   },
   "destination_language_classifier_value": {
-    "id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+    "id": "9f67bd20-7faa-43b9-9492-2cf465551f10",
     "type": "LANGUAGE",
     "value": "lg-UG",
     "name": "Luganda",
@@ -222,8 +222,8 @@
               "id": "RandomVendorId",
               "vendor_id": "RandomVendorId",
               "skill_id": "randomSkillId",
-              "src_lang_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
-              "dst_lang_classifier_value_id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+              "src_lang_classifier_value_id": "8d11e198-be58-4e3a-abe2-88ad62e95cc1",
+              "dst_lang_classifier_value_id": "9f67bd20-7faa-43b9-9492-2cf465551f10",
               "created_at": "2023-08-01T07:16:52.000000Z",
               "updated_at": "2023-08-01T07:16:52.000000Z",
               "character_fee": 0.1,
@@ -233,7 +233,7 @@
               "hour_fee": 50,
               "minimal_fee": 500,
               "source_language_classifier_value": {
-                "id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+                "id": "8d11e198-be58-4e3a-abe2-88ad62e95cc1",
                 "type": "LANGUAGE",
                 "value": "zh-TW",
                 "name": "Chinese Traditional",
@@ -244,7 +244,7 @@
                 "deleted_at": null
               },
               "destination_language_classifier_value": {
-                "id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+                "id": "9f67bd20-7faa-43b9-9492-2cf465551f10",
                 "type": "LANGUAGE",
                 "value": "lg-UG",
                 "name": "Luganda",
@@ -331,8 +331,8 @@
               "id": "RandomVendorId",
               "vendor_id": "RandomVendorId",
               "skill_id": "randomSkillId",
-              "src_lang_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
-              "dst_lang_classifier_value_id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+              "src_lang_classifier_value_id": "8d11e198-be58-4e3a-abe2-88ad62e95cc1",
+              "dst_lang_classifier_value_id": "9f67bd20-7faa-43b9-9492-2cf465551f10",
               "created_at": "2023-08-01T07:16:52.000000Z",
               "updated_at": "2023-08-01T07:16:52.000000Z",
               "character_fee": 0.1,
@@ -342,7 +342,7 @@
               "hour_fee": 50,
               "minimal_fee": 500,
               "source_language_classifier_value": {
-                "id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+                "id": "8d11e198-be58-4e3a-abe2-88ad62e95cc1",
                 "type": "LANGUAGE",
                 "value": "zh-TW",
                 "name": "Chinese Traditional",
@@ -353,7 +353,7 @@
                 "deleted_at": null
               },
               "destination_language_classifier_value": {
-                "id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+                "id": "9f67bd20-7faa-43b9-9492-2cf465551f10",
                 "type": "LANGUAGE",
                 "value": "lg-UG",
                 "name": "Luganda",
@@ -440,8 +440,8 @@
               "id": "RandomVendorId",
               "vendor_id": "RandomVendorId",
               "skill_id": "randomSkillId",
-              "src_lang_classifier_value_id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
-              "dst_lang_classifier_value_id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+              "src_lang_classifier_value_id": "8d11e198-be58-4e3a-abe2-88ad62e95cc1",
+              "dst_lang_classifier_value_id": "9f67bd20-7faa-43b9-9492-2cf465551f10",
               "created_at": "2023-08-01T07:16:52.000000Z",
               "updated_at": "2023-08-01T07:16:52.000000Z",
               "character_fee": 0.1,
@@ -451,7 +451,7 @@
               "hour_fee": 50,
               "minimal_fee": 500,
               "source_language_classifier_value": {
-                "id": "99c8bbac-47ec-4301-9dbc-89ec41965271",
+                "id": "8d11e198-be58-4e3a-abe2-88ad62e95cc1",
                 "type": "LANGUAGE",
                 "value": "zh-TW",
                 "name": "Chinese Traditional",
@@ -462,7 +462,7 @@
                 "deleted_at": null
               },
               "destination_language_classifier_value": {
-                "id": "99c8bbac-6b00-4bad-96be-d18206faf8a0",
+                "id": "9f67bd20-7faa-43b9-9492-2cf465551f10",
                 "type": "LANGUAGE",
                 "value": "lg-UG",
                 "name": "Luganda",

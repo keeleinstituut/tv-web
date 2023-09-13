@@ -13,6 +13,10 @@ export interface ClassifierValue {
   name: string
   synced_at: string | null
   deleted_at: string | null
+  meta?: {
+    display_start_time?: boolean
+    workflow_id?: string
+  }
 }
 
 export interface LanguageClassifierValue extends ClassifierValue {

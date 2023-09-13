@@ -159,11 +159,9 @@ export interface ListOrder {
   created_at: string
   updated_at: string
   sub_projects: ListSubOrderDetail[]
-  // Added from detail fetch, but no available from list fetch
-  // currently not added, except for type possibly
-  status?: OrderStatus
-  tags?: string[]
-  cost?: string
+  status: OrderStatus
+  tags: string[]
+  cost: string
 }
 
 export interface DetailedOrder extends ListOrder {

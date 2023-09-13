@@ -5,8 +5,9 @@ import DynamicForm, {
   InputTypes,
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
+import { find } from 'lodash'
 import classNames from 'classnames'
-import { Control, FieldValues, Path } from 'react-hook-form'
+import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
@@ -26,10 +27,12 @@ const DetailsSection = <TFormValues extends FieldValues>({
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Order,
   })
-  const { classifierValuesFilters: projectTypeFilter } =
-    useClassifierValuesFetch({
-      type: ClassifierValueType.ProjectType,
-    })
+  const {
+    classifierValuesFilters: projectTypeFilter,
+    classifierValues: projectTypes,
+  } = useClassifierValuesFetch({
+    type: ClassifierValueType.ProjectType,
+  })
   // TODO: we don't have correct DomainType yet
   const { classifierValuesFilters: domainValuesFilter } =
     useClassifierValuesFetch({
@@ -42,7 +45,14 @@ const DetailsSection = <TFormValues extends FieldValues>({
   )
   // Fetch list of users bases on PersonSectionType
   // TODO: depends on the picked type classifier
-  const shouldShowStartTimeFields = true
+  // const shouldShowStartTimeFields = true
+
+  const selectedProjectTypeId = useWatch({
+    control,
+    name: 'type_classifier_value_id' as Path<TFormValues>,
+  })
+
+  const selectedProjectType = find(projectTypes, { id: selectedProjectTypeId })
 
   const fields: FieldProps<TFormValues>[] = useMemo(
     () => [
@@ -96,7 +106,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}`,
-        hidden: !shouldShowStartTimeFields,
+        hidden: !selectedProjectType?.meta?.display_start_time,
         className: classes.customInternalClass,
         name: 'event_start_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
@@ -170,13 +180,13 @@ const DetailsSection = <TFormValues extends FieldValues>({
       },
     ],
     [
-      domainValuesFilter,
-      languageFilters,
-      projectTypeFilter,
-      shouldShowStartTimeFields,
       isNew,
-      isEditable,
       t,
+      isEditable,
+      projectTypeFilter,
+      domainValuesFilter,
+      selectedProjectType?.meta?.display_start_time,
+      languageFilters,
     ]
   )
 

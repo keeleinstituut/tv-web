@@ -9,6 +9,10 @@
   margin-bottom: spacing(4);
   border-bottom: 1px solid $color-border-secondary;
 
+  &.hidden {
+    display: none;
+  }
+
   &.noBorder {
     border-bottom: unset;
     padding-bottom: unset;

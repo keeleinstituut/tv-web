@@ -117,6 +117,7 @@ export const useAllPricesFetch = (initialFilters?: GetPricesPayload) => {
     isError,
     prices,
     paginationData,
+    filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,

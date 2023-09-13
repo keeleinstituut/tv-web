@@ -1,6 +1,6 @@
 import { useState, FC, PropsWithChildren, useCallback, useEffect } from 'react'
 import classes from './classes.module.scss'
-import { useFetchSubOrder } from 'hooks/requests/useOrders'
+import { useFetchSubOrder, useSubOrderWorkflow } from 'hooks/requests/useOrders'
 import Tag from 'components/atoms/Tag/Tag'
 import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
@@ -29,6 +29,9 @@ import Notification, {
 } from 'components/molecules/Notification/Notification'
 import { TabStyle } from 'components/molecules/Tab/Tab'
 import useHashState from 'hooks/useHashState'
+import Button from 'components/molecules/Button/Button'
+import { showValidationErrorMessage } from 'api/errorHandler'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 
 // TODO: this is WIP code for suborder view
 
@@ -108,8 +111,12 @@ const SubOrderSection: FC<SubOrderProps> = ({
   const [activeTab, setActiveTab] = useState<string | undefined>(
     SubProjectFeatures.GeneralInformation
   )
-  const { subOrder, isLoading } = useFetchSubOrder({ id }) || {}
   const { setHash, currentHash } = useHashState()
+  const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
+  const { subOrder, isLoading } = useFetchSubOrder({ id }) || {}
+
+  const { startSubOrderWorkflow, isLoading: isStartingWorkflow } =
+    useSubOrderWorkflow({ id })
 
   const attemptScroll = useCallback(() => {
     const matchingElement = document.getElementById(ext_id)
@@ -124,8 +131,11 @@ const SubOrderSection: FC<SubOrderProps> = ({
   useEffect(() => {
     if (currentHash && includes(currentHash, ext_id)) {
       attemptScroll()
+      if (!isExpanded) {
+        setIsExpanded(true)
+      }
     }
-  }, [currentHash, ext_id, attemptScroll])
+  }, [currentHash, ext_id, attemptScroll, isExpanded])
 
   const { features = [], assignments = [] } = subOrder || {}
 
@@ -133,7 +143,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
 
   // TODO: possibly we can just check the entire assignments list and see if any of them has no assigned_vendor_id
   // However not sure right now, if the "assignments" list will contain entries for unassigned tasks
-  const hasAnyUnassignedFeatures = find(features, (feature) => {
+  const hasAnyUnassignedFeatures = !find(features, (feature) => {
     const correspondingAssignments = filter(assignments, { feature })
     // TODO: potentially also have to return true, if correspondingAssignments is empty
     return find(
@@ -145,9 +155,23 @@ const SubOrderSection: FC<SubOrderProps> = ({
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
       setHash(isExpanded ? ext_id : '')
+      setIsExpanded(isExpanded)
     },
     [ext_id, setHash]
   )
+
+  const handleStartWorkflow = useCallback(async () => {
+    try {
+      await startSubOrderWorkflow()
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.workflow_started'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [startSubOrderWorkflow, t])
 
   // TODO: not sure if GeneralInformation should be considered a feature here or just added
   const availableTabs = compact(
@@ -172,16 +196,41 @@ const SubOrderSection: FC<SubOrderProps> = ({
       )}
       onExpandedChange={handleOpenContainer}
       id={ext_id}
-      isExpanded={includes(currentHash, ext_id)}
+      isExpanded={isExpanded}
       rightComponent={<OrderStatusTag status={status} />}
       wrapContent
       bottomComponent={
-        <Notification
-          content={t('warning.sub_order_tasks_missing_vendors')}
-          type={NotificationTypes.Warning}
-          className={classes.notificationStyle}
-          hidden={!hasAnyUnassignedFeatures}
-        />
+        <>
+          <Notification
+            content={t('warning.sub_order_tasks_missing_vendors')}
+            type={NotificationTypes.Warning}
+            className={classes.notificationStyle}
+            hidden={!hasAnyUnassignedFeatures || isExpanded}
+          />
+          <Notification
+            content={t('warning.send_sub_project_to_vendor_warning')}
+            hideIcon
+            type={
+              hasAnyUnassignedFeatures
+                ? NotificationTypes.Warning
+                : NotificationTypes.Info
+            }
+            className={classNames(
+              classes.notificationStyle,
+              classes.startWorkFlowNotification,
+              hasAnyUnassignedFeatures && classes.warning
+            )}
+            hidden={!isExpanded}
+            children={
+              <Button
+                children={t('button.send_sub_project_to_vendors')}
+                disabled={!!hasAnyUnassignedFeatures}
+                loading={isStartingWorkflow}
+                onClick={handleStartWorkflow}
+              />
+            }
+          />
+        </>
       }
       leftComponent={
         <LeftComponent {...{ ext_id, deadline_at, cost, languageDirection }} />

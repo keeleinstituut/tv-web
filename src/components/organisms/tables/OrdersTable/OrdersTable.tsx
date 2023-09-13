@@ -83,9 +83,9 @@ const OrdersTable: FC = () => {
           deadline_at,
           ext_id,
           type_classifier_value,
-          status = OrderStatus.Registered,
-          tags = ['asutusesiseseks kasutuseks'],
-          cost = '500€',
+          status,
+          tags,
+          cost,
         }) => {
           return {
             ext_id,
@@ -131,7 +131,7 @@ const OrdersTable: FC = () => {
   const columns = [
     columnHelper.accessor('ext_id', {
       header: () => t('label.order_id'),
-      cell: ({ getValue, row }) => {
+      cell: ({ getValue }) => {
         const orderExtId = getValue()
         const order = find(orders, { ext_id: orderExtId })
         return (
@@ -141,7 +141,7 @@ const OrdersTable: FC = () => {
             icon={ArrowRight}
             ariaLabel={t('label.to_order_view')}
             iconPositioning={IconPositioningTypes.Left}
-            // disabled={!includes(userPrivileges, Privileges.ViewPersonalProject)}
+            disabled={!includes(userPrivileges, Privileges.ViewPersonalProject)}
             href={`/orders/${order?.id}`}
           >
             {orderExtId}

@@ -22,6 +22,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import Loader from 'components/atoms/Loader/Loader'
 
 interface ModalHeadSectionProps {
   handleFilterChange: (value?: FilterFunctionType) => void
@@ -36,15 +37,18 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      debounce(handleFilterChange, 300)({ name: event.target.value })
+      debounce(
+        handleFilterChange,
+        300
+      )({ institution_user_name: event.target.value })
       // TODO: not sure yet whether filtering param will be name
     },
     [handleFilterChange]
   )
 
   const handleClearFilters = useCallback(() => {
-    // TODO: clear all filters
-  }, [])
+    handleFilterChange()
+  }, [handleFilterChange])
 
   return (
     <div className={classes.modalHeadContainer}>
@@ -99,17 +103,22 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
   destination_language_classifier_value_id,
 }) => {
   const { t } = useTranslation()
-  // TODO: add prices fetch here instead
   const { updateAssignment, isLoading } = useAssignmentUpdate({
     id: assignmentId,
   })
   const {
     prices,
+    filters,
     paginationData,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useAllPricesFetch()
+    isLoading: isLoadingPrices,
+  } = useAllPricesFetch({
+    src_lang_classifier_value_id: [source_language_classifier_value_id],
+    dst_lang_classifier_value_id: [destination_language_classifier_value_id],
+    skill_id: taskSkills,
+  })
 
   const selectedValues = useMemo(
     () =>
@@ -201,19 +210,37 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         </Root>
       }
     >
+      <Loader loading={isLoadingPrices} />
       <SelectVendorsTable
         data={prices}
-        {...{
-          paginationData,
-          handleFilterChange,
-          handleSortingChange,
-          handlePaginationChange,
-          selectedVendorsIds,
-          taskSkills,
-          source_language_classifier_value_id,
-          destination_language_classifier_value_id,
-          control,
-        }}
+        paginationData={paginationData}
+        handleFilterChange={handleFilterChange}
+        handleSortingChange={handleSortingChange}
+        handlePaginationChange={handlePaginationChange}
+        taskSkills={taskSkills}
+        source_language_classifier_value_id={
+          source_language_classifier_value_id
+        }
+        destination_language_classifier_value_id={
+          destination_language_classifier_value_id
+        }
+        control={control}
+        hidden={isLoadingPrices}
+        filters={filters}
+
+        // {...{
+        //   data: prices,
+        //   paginationData,
+        //   handleFilterChange,
+        //   handleSortingChange,
+        //   handlePaginationChange,
+        //   taskSkills,
+        //   source_language_classifier_value_id,
+        //   destination_language_classifier_value_id,
+        //   control,
+        //   hidden: isLoadingPrices,
+        //   filters,
+        // }}
       />
     </ModalBase>
   )

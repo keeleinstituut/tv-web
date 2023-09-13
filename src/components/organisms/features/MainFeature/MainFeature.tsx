@@ -1,5 +1,5 @@
 import { FC, useCallback, useState } from 'react'
-import { SubOrderDetail } from 'types/orders'
+import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
 import { Root } from '@radix-ui/react-form'
 import { useTranslation } from 'react-i18next'
 import FeatureHeaderSection, {
@@ -18,9 +18,14 @@ type MainFeatureProps = Pick<
 > & {
   catSupported?: boolean
   projectDeadline?: string
+  feature: SubProjectFeatures
 }
 
-const MainFeature: FC<MainFeatureProps> = ({ catSupported, ...rest }) => {
+const MainFeature: FC<MainFeatureProps> = ({
+  catSupported,
+  feature,
+  ...rest
+}) => {
   const { t } = useTranslation()
   const featureTabs = [
     {
@@ -45,7 +50,8 @@ const MainFeature: FC<MainFeatureProps> = ({ catSupported, ...rest }) => {
           setActiveTab,
           activeTab,
           tabs: featureTabs,
-          addVendor,
+          addVendor:
+            feature === SubProjectFeatures.JobOverview ? undefined : addVendor,
           catSupported,
         }}
       />

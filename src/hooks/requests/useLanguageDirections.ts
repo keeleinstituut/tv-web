@@ -1,12 +1,24 @@
 import { useCallback, useMemo, useState } from 'react'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from './useClassifierValues'
-import { map, flatMap, size, filter, take, toLower } from 'lodash'
+import {
+  map,
+  flatMap,
+  size,
+  filter,
+  take,
+  toLower,
+  isEmpty,
+  includes,
+  uniqBy,
+} from 'lodash'
 
 export const useLanguageDirections = ({
   per_page = 40,
+  initialSelectedValues = [],
 }: {
   per_page?: number
+  initialSelectedValues?: string[]
 }) => {
   const { classifierValuesFilters: languageFilters, isLoading } =
     useClassifierValuesFetch({
@@ -15,13 +27,14 @@ export const useLanguageDirections = ({
 
   const [currentPage, setCurrentPage] = useState(1)
   const [searchString, handleSearch] = useState('')
+  const [selectedValues, setSelectedValues] = useState(initialSelectedValues)
 
   const allOptions = useMemo(() => {
     if (!isLoading) {
       return flatMap(languageFilters, ({ value, label }) =>
         map(languageFilters, ({ value: innerValue, label: innerLabel }) => ({
           label: `${label} > ${innerLabel}`,
-          value: `${value}-${innerValue}`,
+          value: `${value}>${innerValue}`,
         }))
       )
     }
@@ -43,6 +56,13 @@ export const useLanguageDirections = ({
     [allOptions, searchRegexp]
   )
 
+  const selectedOptions = useMemo(() => {
+    if (isEmpty(selectedValues)) return []
+    return filter(filteredOptions, ({ value }) =>
+      includes(selectedValues, value)
+    )
+  }, [selectedValues, filteredOptions])
+
   const loadMore = useCallback(() => {
     if (currentPage * per_page < size(allOptions)) {
       setCurrentPage(currentPage + 1)
@@ -50,9 +70,17 @@ export const useLanguageDirections = ({
   }, [allOptions, currentPage, per_page])
 
   const languageDirectionFilters = useMemo(
-    () => take(filteredOptions, per_page * currentPage),
-    [filteredOptions, per_page, currentPage]
+    () =>
+      uniqBy(
+        [
+          // We always show selected options on top, if they match the search string
+          ...selectedOptions,
+          ...take(filteredOptions, per_page * currentPage),
+        ],
+        'value'
+      ),
+    [selectedOptions, filteredOptions, per_page, currentPage]
   )
 
-  return { languageDirectionFilters, loadMore, handleSearch }
+  return { languageDirectionFilters, loadMore, handleSearch, setSelectedValues }
 }

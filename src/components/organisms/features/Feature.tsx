@@ -42,6 +42,7 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
           : includes(subOrder.cat_features, feature)
       }
       subOrderId={subOrder.id}
+      feature={feature}
       assignments={filter(subOrder.assignments, { feature })}
     />
   )

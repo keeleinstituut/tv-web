@@ -46,7 +46,7 @@ const useAuthRedirect = (userPrivileges?: PrivilegeKey[]) => {
     }
     // We want to be certain that this only runs when privilege changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userHasPrivilege])
+  }, [userHasPrivilege, pathname])
 }
 
 export default useAuthRedirect

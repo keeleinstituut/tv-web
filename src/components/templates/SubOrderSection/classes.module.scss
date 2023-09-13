@@ -49,6 +49,28 @@
     border-color: $color-warning;
   }
 
+  .startWorkFlowNotification {
+    border-color: transparent;
+    background-color: $color-tag;
+    color: $color-primary;
+    justify-content: space-between;
+
+    p {
+      max-width: 561px;
+      font-size: $font-size-14;
+    }
+
+    button {
+      width: fit-content;
+    }
+
+    &.warning {
+      background-color: $color-warning-light;
+      border-color: $color-warning;
+      color: $color-text;
+    }
+  }
+
   .notificationStyle {
     display: flex;
     width: 100%;
