@@ -7,10 +7,10 @@ import PersonSection, {
   PersonSectionTypes,
 } from 'components/molecules/PersonSection/PersonSection'
 import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
-import FilesSection from 'components/molecules/FilesSection/FilesSection'
+import OrderFilesSection from 'components/molecules/OrderFilesSection/OrderFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
-import { isEmpty, join, map, uniq, includes, find } from 'lodash'
+import { join, map, uniq, includes } from 'lodash'
 import {
   getLocalDateOjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
@@ -100,14 +100,14 @@ interface FormValues {
   client_user_institution_id: string
   translation_manager_user_institution_id: string
   reference_number?: string
-  src_lang: string
-  dst_lang: string[]
+  source_language_classifier_value_id: string
+  destination_language_classifier_value_ids: string[]
   source_files: (File | SourceFile | undefined)[]
   help_files: (File | SourceFile | undefined)[]
   help_file_types: string[]
+  translation_domain_classifier_value_id: string
+  event_start_at?: { date?: string; time?: string }
   // TODO: Not sure about the structure of following
-  translation_domain: string
-  start_at?: { date?: string; time?: string }
   comments?: string
   ext_id?: string
 }
@@ -127,39 +127,30 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const { institutionUserId, userPrivileges } = useAuth()
   const { createOrder, isLoading } = useCreateOrder()
   const { updateOrder, isLoading: isUpdatingOrder } = useUpdateOrder({
-    orderId: order?.id,
+    id: order?.id,
   })
   const navigate = useNavigate()
   const isNew = mode === OrderDetailModes.New
   const [isEditable, setIsEditable] = useState(isNew)
 
   const { status = OrderStatus.Registered } = order || {}
-  const hasManagerPrivilege = find(
-    [Privileges.ManageProject, Privileges.ReceiveAndManageProject],
-    (privilege) => includes(userPrivileges, privilege)
-  )
-
-  // const isEditableByManager = hasManagerPrivilege
-  // const isEditableByManager = hasManagerPrivilege && isEditable
-  // const isEditableByClient = isNew && isEditable
+  const hasManagerPrivilege = includes(userPrivileges, Privileges.ManageProject)
 
   const isEditableBySomeone =
     hasManagerPrivilege ||
     (isUserClientOfProject && includes(userPrivileges, Privileges.ChangeClient))
 
-  // TODO: will map default values of open order here instead, when isNew === false
-
   const defaultValues = useMemo(() => {
     const {
       deadline_at,
-      start_at,
+      event_start_at,
       type_classifier_value_id = '',
-      client_user_institution_id = '',
+      client_institution_user,
       translation_manager_user_institution_id = '',
       reference_number = '',
       source_files,
       help_files,
-      translation_domain = '',
+      translation_domain_classifier_value,
       help_file_types = [],
       comments = '',
       ext_id = '',
@@ -171,16 +162,16 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       created_at = '',
     } = order || {}
 
-    const src_lang =
+    const source_language_classifier_value_id =
       sub_projects?.[0]?.source_language_classifier_value_id || ''
-    const dst_lang =
+    const destination_language_classifier_value_ids =
       uniq(map(sub_projects, 'destination_language_classifier_value_id')) || []
 
     return {
       type_classifier_value_id,
       client_user_institution_id: isNew
         ? institutionUserId
-        : client_user_institution_id,
+        : client_institution_user?.id,
       translation_manager_user_institution_id,
       reference_number,
       source_files: isNew ? [] : source_files,
@@ -189,14 +180,15 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       deadline_at: deadline_at
         ? getLocalDateOjectFromUtcDateString(deadline_at)
         : { date: '', time: '' },
-      start_at: start_at
-        ? getLocalDateOjectFromUtcDateString(start_at)
+      event_start_at: event_start_at
+        ? getLocalDateOjectFromUtcDateString(event_start_at)
         : { date: '', time: '' },
-      src_lang,
-      dst_lang,
+      source_language_classifier_value_id,
+      destination_language_classifier_value_ids,
       // TODO: not clear how BE will send the help_file_types back to FE
       help_file_types,
-      translation_domain,
+      translation_domain_classifier_value_id:
+        translation_domain_classifier_value?.id,
       comments,
       accepted_at: accepted_at ? dayjs(accepted_at).format('DD.MM.YYYY') : '',
       corrected_at: corrected_at
@@ -234,14 +226,10 @@ const OrderDetails: FC<OrderDetailsProps> = ({
         map(errorData.errors, (errorsArray, key) => {
           const typedKey = key as FieldPath<FormValues>
           const errorString = join(errorsArray, ',')
-          if (typedKey === 'deadline_at' || typedKey === 'start_at') {
-            setError(`${typedKey}.date`, {
-              type: 'backend',
-              message: errorString,
-            })
-          } else {
-            setError(typedKey, { type: 'backend', message: errorString })
-          }
+          setError(typedKey, {
+            type: 'backend',
+            message: errorString,
+          })
         })
       }
     },
@@ -251,13 +239,13 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const handleNewOrderSubmit = useCallback(
     async (payload: NewOrderPayload) => {
       try {
-        const { id } = await createOrder(payload)
+        const createdOrder = await createOrder(payload)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
           content: t('success.order_created'),
         })
-        navigate(`/orders/${id}`)
+        navigate(`/orders/${createdOrder?.data?.id}`)
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         mapOrderValidationErrors(typedErrorData)
@@ -287,37 +275,41 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async ({
       deadline_at: deadlineObject,
-      start_at: startObject,
+      event_start_at: startObject,
       source_files,
       help_files,
       client_user_institution_id,
       translation_manager_user_institution_id,
       reference_number,
-      src_lang,
-      dst_lang,
+      source_language_classifier_value_id,
+      destination_language_classifier_value_ids,
       help_file_types,
-      translation_domain,
+      translation_domain_classifier_value_id,
       comments,
+      type_classifier_value_id,
       ...rest
     }) => {
       // TODO: need to go over all of this once it's clear what can be updated and how
       const deadline_at = getUtcDateStringFromLocalDateObject(deadlineObject)
-      const start_at = !isEmpty(startObject)
-        ? getUtcDateStringFromLocalDateObject(startObject)
-        : null
+      const event_start_at =
+        startObject?.date || startObject?.time
+          ? getUtcDateStringFromLocalDateObject(startObject)
+          : null
+
       const payload: NewOrderPayload = {
+        type_classifier_value_id,
         deadline_at,
         source_files: source_files as File[],
         help_files: help_files as File[],
         client_user_institution_id,
         translation_manager_user_institution_id,
         reference_number,
-        src_lang,
-        dst_lang,
+        source_language_classifier_value_id,
+        destination_language_classifier_value_ids,
         help_file_types,
-        translation_domain,
+        translation_domain_classifier_value_id,
         comments,
-        ...(start_at ? { start_at } : {}),
+        ...(event_start_at ? { event_start_at } : {}),
       }
       if (isNew) {
         handleNewOrderSubmit(payload)
@@ -360,8 +352,12 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     <ExpandableContentContainer
       hidden={isNew}
       contentAlwaysVisible={isNew}
-      extraComponent={<OrderStatusTag status={status} />}
-      title={t('orders.order_details_expandable')}
+      rightComponent={<OrderStatusTag status={status} />}
+      leftComponent={
+        <h2 className={classes.expandableContentTitle}>
+          {t('orders.order_details_expandable')}
+        </h2>
+      }
     >
       <Root
         className={classNames(
@@ -396,7 +392,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             isNew={isNew}
             isEditable={isEditableBySomeone && isEditable}
           />
-          <FilesSection
+          <OrderFilesSection
             control={control}
             isEditable={isEditableBySomeone && isEditable}
           />

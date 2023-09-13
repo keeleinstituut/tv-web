@@ -4,26 +4,43 @@
 .container {
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  flex-direction: column;
   padding: spacing(4) spacing(6);
   box-shadow: 0 4px 15px $color-shadow-main;
   border-radius: $border-radius-4;
   background-color: $color-white;
   width: 100%;
-  h2 {
-    margin-right: auto;
-    @include h3TextStyle;
-    color: $color-input-main
+
+  .row {
+    display: flex;
+
+    &:focus-visible,
+    &:focus {
+      box-shadow: inset 0 0 0 2px $color-navigation-icon;
+    }
+  }
+
+  .firstRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: text;
+    width: 100%;
+    flex: 1;
+
+    > div {
+      display: flex;
+      align-items: center;
+    }
   }
   z-index: 1;
 }
-
 
 .iconButton {
   width: 20px;
   height: 20px;
   margin-left: 24px;
+  transition: transform .2s ease-in-out;
 
   path {
     fill: $color-primary;
@@ -32,7 +49,12 @@
 
 .expandedContainer {
   margin-bottom: -4px;
-  .iconButton {
-    transform: rotate(180deg);
-  }
+}
+
+.expandedIconButton {
+  transform: rotate(180deg);
+}
+
+.displayNone {
+  display: none;
 }

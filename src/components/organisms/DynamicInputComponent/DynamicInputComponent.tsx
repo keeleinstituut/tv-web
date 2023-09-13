@@ -32,6 +32,16 @@ import TagsSelect, {
   TagsSelectProps,
 } from 'components/molecules/TagsSelect/TagsSelect'
 
+import AddVolumeInput, {
+  AddVolumeInputProps,
+} from 'components/molecules/AddVolumeInput/AddVolumeInput'
+import RadioInput, {
+  RadioInputProps,
+} from 'components/molecules/RadioInput/RadioInput'
+import RadioGroup, {
+  RadioGroupProps,
+} from 'components/molecules/RadioGroup/RadioGroup'
+
 // Extend all props of an input with the corresponding inputType
 
 export enum InputTypes {
@@ -42,6 +52,9 @@ export enum InputTypes {
   Time = 'time',
   TagsSelect = 'tagsSelect',
   DateTime = 'dateTime',
+  AddVolume = 'addVolume',
+  Radio = 'radioInput',
+  RadioGroup = 'radioGroup',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -72,6 +85,18 @@ type DateTimePickerPropsWithType = DateTimePickerProps & {
   inputType: InputTypes.DateTime
 }
 
+type AddVolumeInputPropsWithType = AddVolumeInputProps & {
+  inputType: InputTypes.AddVolume
+}
+
+type RadioInputPropsWithType = RadioInputProps & {
+  inputType: InputTypes.Radio
+}
+
+type RadioGroupPropsWithType = RadioGroupProps & {
+  inputType: InputTypes.RadioGroup
+}
+
 export type InputPropsByType = (
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
@@ -80,6 +105,9 @@ export type InputPropsByType = (
   | TimePickerPropsWithType
   | TagsSelectPropsWithType
   | DateTimePickerPropsWithType
+  | AddVolumeInputPropsWithType
+  | RadioInputPropsWithType
+  | RadioGroupPropsWithType
 ) & {
   emptyDisplayText?: string
   onlyDisplay?: boolean
@@ -98,7 +126,13 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
     const { inputType, onlyDisplay } = props
 
     if (onlyDisplay) {
-      return <DisplayValue value={props.value} label={props.label} {...props} />
+      return (
+        <DisplayValue
+          value={props.value}
+          label={'label' in props ? props?.label : ''}
+          {...omit(props, 'errorZIndex')}
+        />
+      )
     }
 
     switch (inputType) {
@@ -144,11 +178,38 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
+      case InputTypes.Radio:
+        return (
+          <RadioInput
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
+      case InputTypes.RadioGroup:
+        return (
+          <RadioGroup
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       case InputTypes.TagsSelect:
         // TODO: might need to add ref and error later
         // right now those don't seem to be needed for our only usecase
         return (
           <TagsSelect
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'error',
+            ])}
+          />
+        )
+      case InputTypes.AddVolume:
+        // TODO: might need to add ref and error later
+        // right now those don't seem to be needed for our only usecase
+        return (
+          <AddVolumeInput
             {...omit(props, [
               'inputType',
               'onlyDisplay',

@@ -66,21 +66,12 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'orders',
     label: i18n.t('menu.orders'),
     Icon: OrdersIcon,
-    privileges: [
-      Privileges.CreateProject,
-      Privileges.ManageProject,
-      Privileges.ReceiveAndManageProject,
-      Privileges.ViewInstitutionProjectList,
-      Privileges.ViewInstitutionProjectDetail,
-      Privileges.ViewPersonalProject,
-    ],
+    privileges: [Privileges.ViewPersonalProject, Privileges.ViewPersonalTask],
     children: [
       {
         path: '',
         label: i18n.t('menu.orders'),
         privileges: [
-          Privileges.ViewInstitutionProjectList,
-          Privileges.ViewInstitutionProjectDetail,
           Privileges.ViewPersonalProject,
           Privileges.ViewPersonalTask,
         ],
@@ -88,11 +79,7 @@ export const protectedRoutes: FullRouteObject[] = [
           {
             path: '',
             element: <Orders />,
-            privileges: [
-              Privileges.ViewPersonalProject,
-              Privileges.ViewInstitutionProjectList,
-              Privileges.ViewInstitutionProjectDetail,
-            ],
+            privileges: [Privileges.ViewPersonalProject],
           },
           {
             path: 'new-order',
@@ -105,15 +92,12 @@ export const protectedRoutes: FullRouteObject[] = [
         path: 'sub-orders',
         label: i18n.t('menu.sub_orders'),
         element: <SubOrders />,
-        privileges: [
-          Privileges.ViewPersonalProject,
-          Privileges.ViewInstitutionProjectList,
-          Privileges.ViewInstitutionProjectDetail,
-        ],
+        privileges: [Privileges.ViewPersonalProject],
       },
       {
         path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
+        privileges: [Privileges.ViewPersonalTask],
         children: [
           {
             path: '',
@@ -123,14 +107,14 @@ export const protectedRoutes: FullRouteObject[] = [
           {
             path: ':taskId',
             element: <TaskPage />,
-            privileges: [],
+            privileges: [Privileges.ViewPersonalTask],
           },
         ],
       },
       {
         path: ':orderId',
         element: <OrderPage />,
-        privileges: [Privileges.ViewInstitutionProjectDetail],
+        privileges: [Privileges.ViewPersonalProject],
       },
     ],
   },
@@ -157,13 +141,7 @@ export const protectedRoutes: FullRouteObject[] = [
     label: i18n.t('menu.translation_memories'),
     element: <TranslationMemories />,
     Icon: MemoriesIcon,
-    privileges: [
-      Privileges.CreateTm,
-      Privileges.ViewTm,
-      Privileges.ImportTm,
-      Privileges.ExportTm,
-      Privileges.EditTmMetadata,
-    ],
+    privileges: [Privileges.ViewTm],
   },
   {
     path: 'user-details',
@@ -177,33 +155,13 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: 'users',
         label: i18n.t('menu.user_management'),
-        privileges: [
-          Privileges.AddUser,
-          Privileges.ViewUser,
-          Privileges.EditUser,
-          Privileges.DeactivateUser,
-          Privileges.ActivateUser,
-          Privileges.ArchiveUser,
-          Privileges.ExportUser,
-          Privileges.EditUserVacation,
-          Privileges.EditUserWorktime,
-        ],
+        privileges: [Privileges.ViewUser],
         Icon: UsersIcon,
         children: [
           {
             path: '',
             element: <UsersManagement />,
-            privileges: [
-              Privileges.AddUser,
-              Privileges.ViewUser,
-              Privileges.EditUser,
-              Privileges.DeactivateUser,
-              Privileges.ActivateUser,
-              Privileges.ArchiveUser,
-              Privileges.ExportUser,
-              Privileges.EditUserVacation,
-              Privileges.EditUserWorktime,
-            ],
+            privileges: [Privileges.ViewUser],
           },
           {
             path: ':userId',
@@ -222,12 +180,7 @@ export const protectedRoutes: FullRouteObject[] = [
         label: i18n.t('menu.role_management'),
         element: <RolesManagement />,
         Icon: RolesIcon,
-        privileges: [
-          Privileges.AddRole,
-          Privileges.ViewRole,
-          Privileges.EditRole,
-          Privileges.DeleteRole,
-        ],
+        privileges: [Privileges.ViewRole],
       },
       {
         path: 'logs',
@@ -269,7 +222,7 @@ export const protectedRoutes: FullRouteObject[] = [
   },
   {
     path: 'manual',
-    label: i18n.t('menu.manual'),
+    label: i18n.t('menu.sidebar_manual'),
     element: <Manual />,
     Icon: ManualIcon,
   },

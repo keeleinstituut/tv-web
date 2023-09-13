@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, PropsWithChildren } from 'react'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
 import { ReactComponent as CloseIcon } from 'assets/icons/close.svg'
@@ -26,7 +26,9 @@ export interface NotificationProps {
   title?: string
   content?: JSX.Element | string
   hideIcon?: boolean
-  closeNotification: () => void
+  closeNotification?: () => void
+  className?: string
+  hidden?: boolean
 }
 
 const NotificationIcon: FC<IconComponentProps> = ({ type, hidden }) => {
@@ -49,24 +51,36 @@ const NotificationIcon: FC<IconComponentProps> = ({ type, hidden }) => {
   }
 }
 
-const Notification: FC<NotificationProps> = ({
+const Notification: FC<PropsWithChildren<NotificationProps>> = ({
   type,
   title,
   content,
   hideIcon,
   closeNotification,
+  className,
+  hidden,
+  children,
 }) => {
+  if (hidden) return null
   return (
-    <div className={classNames(classes.notificationContainer, classes[type])}>
+    <div
+      className={classNames(
+        classes.notificationContainer,
+        classes[type],
+        className
+      )}
+    >
       <NotificationIcon type={type} hidden={hideIcon} />
-      <h5>{title}</h5>
+      <h5 className={classNames(!title && classes.hidden)}>{title}</h5>
       <Button
         className={classes.closeButton}
         appearance={AppearanceTypes.Text}
         icon={CloseIcon}
         onClick={closeNotification}
+        hidden={!closeNotification}
       />
       <p>{content}</p>
+      {children}
     </div>
   )
 }

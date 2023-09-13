@@ -1,0 +1,12 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.column {
+  display: flex;
+  flex-direction: column;
+  padding: spacing(4) 0;
+}
+
+.radioRow {
+  margin-bottom: spacing(4);
+}

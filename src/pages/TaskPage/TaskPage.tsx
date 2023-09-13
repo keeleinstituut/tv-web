@@ -21,11 +21,10 @@ import Tabs from 'components/molecules/Tabs/Tabs'
 const TaskPage: FC = () => {
   const { t } = useTranslation()
   const { taskId } = useParams()
-  // const { order, isLoading } = useFetchOrder({ orderId })
+  // const { order, isLoading } = useFetchOrder({ id: orderId })
   // const { id, status } = order || {}
   // TODO: check is "Tellija" of the order is current user
   const isPersonalOrder = true
-  // console.warn('orderPage', orderId, order)
   // if (isLoading) return <Loader loading={isLoading} />
   return (
     <div>
@@ -114,32 +113,34 @@ const SubOrder: FC<any> = (props) => {
 }
 
 const Feature: FC<any> = (props) => {
-  const { subOrder, feature } = props
-  let Component = null
+  // const { subOrder, feature } = props
+  // let Component = null
 
-  switch (feature) {
-    case 'general_information':
-      Component = GeneralInformation
-      break
-    case 'job_translation':
-      Component = TranslationFeature
-      break
-    case 'job_revision':
-      Component = RevisionFeature
-      break
-    case 'job_overview':
-      Component = OverviewFeature
-      break
+  // switch (feature) {
+  //   case 'general_information':
+  //     Component = GeneralInformation
+  //     break
+  //   case 'job_translation':
+  //     Component = TranslationFeature
+  //     break
+  //   case 'job_revision':
+  //     Component = RevisionFeature
+  //     break
+  //   case 'job_overview':
+  //     Component = OverviewFeature
+  //     break
 
-    default:
-      break
-  }
+  //   default:
+  //     break
+  // }
 
-  if (!Component) {
-    return <></>
-  }
+  // if (!Component) {
+  //   return <></>
+  // }
 
-  return <Component {...props} />
+  return <></>
+
+  // return <Component {...props} />
 }
 
 ;(Feature as any).supportedFeatures = [
@@ -183,7 +184,7 @@ const GeneralInformation: FC<any> = (props) => {
               })}
             </tbody>
           </table>
-          {!subOrder.cat_project_created && (
+          {/* {!subOrder.cat_project_created && (
             <Button
               onClick={() =>
                 sendToCat({
@@ -193,7 +194,7 @@ const GeneralInformation: FC<any> = (props) => {
             >
               genereeri tõlkimiseks
             </Button>
-          )}
+          )} */}
         </div>
         <div style={{ flex: 1 }}>
           <h1>Valmisfailid teostajatelt</h1>
@@ -235,7 +236,7 @@ const TranslationFeature: FC<any> = (props) => {
         <span>catSupported: {String(catSupported)}</span>
       </div>
       <br />
-      {map(featureAssignments, (assignment, i) => {
+      {/* {map(featureAssignments, (assignment, i) => {
         return (
           <Assignment
             key={assignment.id}
@@ -244,65 +245,65 @@ const TranslationFeature: FC<any> = (props) => {
             label="Tõlkimine"
           />
         )
-      })}
+      })} */}
     </>
   )
 }
 
-const RevisionFeature: FC<any> = (props) => {
-  const { subOrder, feature } = props
-  const catSupported = includes(subOrder.cat_features, feature)
-  const featureAssignments = filter(subOrder.assignments, (assignment) => {
-    return assignment.feature === feature
-  })
+// const RevisionFeature: FC<any> = (props) => {
+//   const { subOrder, feature } = props
+//   const catSupported = includes(subOrder.cat_features, feature)
+//   const featureAssignments = filter(subOrder.assignments, (assignment) => {
+//     return assignment.feature === feature
+//   })
 
-  return (
-    <>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>feature: {feature}</span>
-        <span>catSupported: {String(catSupported)}</span>
-      </div>
-      <br />
-      {map(featureAssignments, (assignment, i) => {
-        return (
-          <Assignment
-            key={assignment.id}
-            assignment={assignment}
-            index={i + 1}
-            label="Toimetamine"
-          />
-        )
-      })}
-    </>
-  )
-}
+//   return (
+//     <>
+//       <div style={{ display: 'flex', flexDirection: 'column' }}>
+//         <span>feature: {feature}</span>
+//         <span>catSupported: {String(catSupported)}</span>
+//       </div>
+//       <br />
+//       {/* {map(featureAssignments, (assignment, i) => {
+//         return (
+//           <Assignment
+//             key={assignment.id}
+//             assignment={assignment}
+//             index={i + 1}
+//             label="Toimetamine"
+//           />
+//         )
+//       })} */}
+//     </>
+//   )
+// }
 
-const OverviewFeature: FC<any> = (props) => {
-  const { subOrder, feature } = props
-  const catSupported = includes(subOrder.cat_features, feature)
-  const featureAssignments = filter(subOrder.assignments, (assignment) => {
-    return assignment.feature === feature
-  })
+// const OverviewFeature: FC<any> = (props) => {
+//   const { subOrder, feature } = props
+//   const catSupported = includes(subOrder.cat_features, feature)
+//   const featureAssignments = filter(subOrder.assignments, (assignment) => {
+//     return assignment.feature === feature
+//   })
 
-  return (
-    <>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <span>feature: {feature}</span>
-        <span>catSupported: {String(catSupported)}</span>
-      </div>
-      {map(featureAssignments, (assignment, i) => {
-        return (
-          <Assignment
-            key={assignment.id}
-            assignment={assignment}
-            index={i + 1}
-            label="Ülevaatus"
-          />
-        )
-      })}
-    </>
-  )
-}
+//   return (
+//     <>
+//       <div style={{ display: 'flex', flexDirection: 'column' }}>
+//         <span>feature: {feature}</span>
+//         <span>catSupported: {String(catSupported)}</span>
+//       </div>
+//       {/* {map(featureAssignments, (assignment, i) => {
+//         return (
+//           <Assignment
+//             key={assignment.id}
+//             assignment={assignment}
+//             index={i + 1}
+//             label="Ülevaatus"
+//           />
+//         )
+//       })} */}
+//     </>
+//   )
+// }
 
 const Assignment: FC<any> = (props) => {
   const { assignment, index, label } = props

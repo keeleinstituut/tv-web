@@ -7,15 +7,21 @@
 .registered {
   @include statusTagStyle($color-highlight);
 }
-.forwarded {
+.submitted_to_client,
+.forwarded_to_vendor,
+.done,
+.done_task {
   @include statusTagStyle($color-success);
 }
 .cancelled {
   @include statusTagStyle($color-border, $color-text);
 }
 .accepted {
-  @include statusTagStyle($color-success);
+  @include statusTagStyle($color-dark);
 }
 .rejected {
   @include statusTagStyle($color-error);
+}
+.in_progress {
+  @include statusTagStyle($color-primary);
 }

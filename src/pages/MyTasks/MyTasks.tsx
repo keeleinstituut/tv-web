@@ -3,6 +3,7 @@ import classes from './classes.module.scss'
 import TasksTable from 'components/organisms/tables/TasksTable/TasksTable'
 import { chain } from 'lodash'
 import Tabs from 'components/molecules/Tabs/Tabs'
+import { TabStyle } from 'components/molecules/Tab/Tab'
 
 // TODO: WIP - implement this page
 
@@ -27,8 +28,18 @@ const MyTasks: FC = () => {
         <h1>My Tasks</h1>
         {/* TODO: add tooltip */}
       </div>
+      {/* <Tabs
+        setActiveTab={setActiveTab}
+        activeTab={activeTab}
+        tabs={availableTabs}
+        tabStyle={TabStyle.Primary}
+        className={classes.tabsContainer}
+        addDisabled
+        editDisabled
+      /> */}
       <Tabs
         setActiveTab={setActiveTab}
+        tabStyle={TabStyle.Primary}
         tabs={chain([
           'Minu ülesanded',
           'Ootel ülesanded',

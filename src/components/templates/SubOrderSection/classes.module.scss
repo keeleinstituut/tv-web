@@ -1,1 +1,85 @@
-@import 'styles/variables'
+@import 'styles/variables';
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-right: spacing(17);
+
+  .label {
+    margin-bottom: spacing(1);
+    color: $color-input-main;
+    font-size: $font-size-14;
+  }
+
+  .valueText {
+    text-align: left;
+  }
+
+  .boldValueText {
+    text-align: left;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.expandableContainer {
+  border-left: spacing(1) solid;
+  &:not(:first-child) {
+    margin-top: spacing(4);
+  }
+  &.registered {
+    border-color: $color-highlight;
+  }
+  &.new {
+    border-color: $color-warning;
+  }
+  &.forwarded_to_vendor {
+    border-color: $color-success;
+  }
+  &.in_progress {
+    border-color: $color-primary;
+  }
+  &.done_task {
+    border-color: $color-success;
+  }
+  &.cancelled {
+    border-color: $color-border;
+  }
+  &.done {
+    border-color: $color-warning;
+  }
+
+  .startWorkFlowNotification {
+    border-color: transparent;
+    background-color: $color-tag;
+    color: $color-primary;
+    justify-content: space-between;
+
+    p {
+      max-width: 561px;
+      font-size: $font-size-14;
+    }
+
+    button {
+      width: fit-content;
+    }
+
+    &.warning {
+      background-color: $color-warning-light;
+      border-color: $color-warning;
+      color: $color-text;
+    }
+  }
+
+  .notificationStyle {
+    display: flex;
+    width: 100%;
+    padding: spacing(2) spacing(4);
+    margin: spacing(4) 0 spacing(2);
+  }
+
+  .tabsContainer {
+    margin-top: spacing(8);
+    margin-bottom: spacing(4);
+  }
+}

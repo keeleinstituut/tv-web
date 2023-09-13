@@ -1,33 +1,28 @@
 import { FC } from 'react'
-import { includes, filter } from 'lodash'
+import { includes, filter, isEmpty } from 'lodash'
 import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
-import TranslationFeature from './TranslationFeature/TranslationFeature'
-import RevisionFeature from './RevisionFeature/RevisionFeature'
-import OverviewFeature from './OverviewFeature/OverviewFeature'
-
+import MainFeature from './MainFeature/MainFeature'
 // TODO: this is WIP code for suborder view
 
 interface FeatureProps {
   subOrder?: SubOrderDetail
   feature?: SubProjectFeatures
+  index?: number
+  projectDeadline?: string
 }
 
 const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
   let Component = null
 
   switch (feature) {
-    case 'general_information':
+    case SubProjectFeatures.GeneralInformation:
       Component = GeneralInformationFeature
       break
-    case 'job_translation':
-      Component = TranslationFeature
-      break
-    case 'job_revision':
-      Component = RevisionFeature
-      break
-    case 'job_overview':
-      Component = OverviewFeature
+    case SubProjectFeatures.JobTranslation:
+    case SubProjectFeatures.JobRevision:
+    case SubProjectFeatures.JobOverview:
+      Component = MainFeature
       break
 
     default:
@@ -41,8 +36,13 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
   return (
     <Component
       {...subOrder}
-      catSupported={includes(subOrder.cat_features, feature)}
+      catSupported={
+        feature === SubProjectFeatures.GeneralInformation
+          ? !isEmpty(subOrder.cat_features)
+          : includes(subOrder.cat_features, feature)
+      }
       subOrderId={subOrder.id}
+      feature={feature}
       assignments={filter(subOrder.assignments, { feature })}
     />
   )

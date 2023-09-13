@@ -8,3 +8,7 @@
   @include labelTextStyle;
   margin-right: spacing(2.5);
 }
+
+.row {
+  display: flex;
+}

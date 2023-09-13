@@ -9,12 +9,22 @@ import {
   join,
   compact,
   replace,
+  includes,
+  pickBy,
+  keys,
+  flatMap,
+  uniqBy,
 } from 'lodash'
 import { FullRouteObject } from 'router/router'
+import { PrivilegeKey, PrivilegeType, Privileges } from 'types/privileges'
+
 import utc from 'dayjs/plugin/utc'
-import { Privileges } from 'types/privileges'
+import advancedFormat from 'dayjs/plugin/advancedFormat'
+import timezone from 'dayjs/plugin/timezone'
 
 dayjs.extend(utc)
+dayjs.extend(advancedFormat)
+dayjs.extend(timezone)
 
 // TODO: split these into separate helper files, if we have too many
 interface ObjectWithChildren {
@@ -171,8 +181,12 @@ export const getUtcDateStringFromLocalDateObject = ({
   date?: string
   time?: string
 }) => {
-  const dayjsObject = dayjs(trim(`${date || ''} ${time || ''}`))
-  return dayjsObject.utc().format('DD/MM/YYYY HH:mm:ss')
+  const dayjsObject = dayjs(
+    trim(`${date || ''} ${time || ''}`),
+    'DD/MM/YYYY HH:mm:ss'
+  )
+  const formattedString = dayjsObject.utc().format('YYYY-MM-DDTHH:mm:ss[Z]')
+  return formattedString
 }
 
 export const getLocalDateOjectFromUtcDateString = (datetime: string) => {
@@ -180,4 +194,76 @@ export const getLocalDateOjectFromUtcDateString = (datetime: string) => {
   const localDateTimeString = dayjsObject.format('DD/MM/YYYY HH:mm:ss')
   const splitDateTime = split(localDateTimeString, ' ')
   return { date: splitDateTime[0], time: splitDateTime[1] }
+}
+
+type PrivilegeKeyValueType = {
+  [key in PrivilegeKey]?: Privileges[]
+}
+
+const addablePrivilegesWithConditions: PrivilegeKeyValueType = {
+  [Privileges.ViewRole]: [
+    Privileges.AddRole,
+    Privileges.EditRole,
+    Privileges.DeleteRole,
+  ],
+  [Privileges.ViewUser]: [
+    Privileges.AddUser,
+    Privileges.EditUser,
+    Privileges.ExportUser,
+    Privileges.ActivateUser,
+    Privileges.DeactivateUser,
+    Privileges.ArchiveUser,
+    Privileges.EditUserWorktime,
+    Privileges.EditUserVacation,
+  ],
+  [Privileges.ViewTm]: [
+    Privileges.CreateTm,
+    Privileges.ImportTm,
+    Privileges.ExportTm,
+    Privileges.DeleteTm,
+    Privileges.EditTmMetadata,
+  ],
+  [Privileges.ViewAuditLog]: [Privileges.ExportAuditLog],
+  [Privileges.ViewVendorDb]: [
+    Privileges.EditVendorDb,
+    Privileges.ViewVendorTask,
+    Privileges.ViewGeneralPricelist,
+  ],
+  [Privileges.ViewInstitutionPriceRate]: [Privileges.EditInstitutionPriceRate],
+  [Privileges.ViewPersonalProject]: [
+    Privileges.CreateProject,
+    Privileges.ManageProject,
+    Privileges.ChangeClient,
+    Privileges.ReceiveProject,
+  ],
+  [Privileges.ManageProject]: [Privileges.ReceiveProject],
+  // TODO: BE currently doesn't support the ViewPersonalTask privilege
+  // Add this back, once we get support for it
+  // [Privileges.ViewPersonalTask]: [
+  //   Privileges.CreateProject,
+  //   Privileges.ManageProject,
+  // ],
+}
+
+export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
+  const selectedByDefaultPrivileges = flatMap(selectedPrivileges, ({ key }) => {
+    const filteredArray = pickBy(
+      addablePrivilegesWithConditions,
+      (conditionsArray) => includes(conditionsArray, key)
+    )
+    const addablePrivileges = keys(filteredArray)
+    return map(addablePrivileges as Privileges[], (privilege) => ({
+      key: privilege,
+    }))
+  })
+  const allNewPrivileges: PrivilegeType[] = uniqBy(
+    [...selectedPrivileges, ...selectedByDefaultPrivileges],
+    'key'
+  )
+  return allNewPrivileges
+}
+
+export const getBEDate = (dateString?: string) => {
+  if (!dateString) return dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')
+  return dayjs(dateString).format('YYYY-MM-DDTHH:mm:ss[Z]')
 }

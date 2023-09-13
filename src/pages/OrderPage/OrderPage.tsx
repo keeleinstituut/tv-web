@@ -9,14 +9,11 @@ import { useTranslation } from 'react-i18next'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import { OrderStatus } from 'types/orders'
-// import SubOrderSection from 'components/templates/SubOrderSection/SubOrderSection'
 import OrderDetails, {
   OrderDetailModes,
 } from 'components/organisms/OrderDetails/OrderDetails'
 import useOrderPageRedirect from 'hooks/useOrderPageRedirect'
-
-// TODO: WIP - implement this page
-
+import SubOrderSection from 'components/templates/SubOrderSection/SubOrderSection'
 interface OrderButtonProps {
   status?: OrderStatus
   isUserClientOfProject?: boolean
@@ -40,16 +37,7 @@ const OrderButtons: FC<OrderButtonProps> = ({
 
   const canCancelInstitutionOrder =
     status === OrderStatus.New &&
-    (includes(userPrivileges, Privileges.ManageProject) ||
-      includes(userPrivileges, Privileges.ReceiveAndManageProject))
-
-  //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
-
-  // const userHasPrivilege =
-  //   !privileges ||
-  //   find([Privileges.ReceiveAndManageProject, Privileges.ManageProject], (privilege) => includes(userPrivileges, privilege))
-
-  //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
+    includes(userPrivileges, Privileges.ManageProject)
 
   const canCancelOrder =
     isOrderCancellable && (canCancelPersonalOrder || canCancelInstitutionOrder)
@@ -73,6 +61,7 @@ const OrderButtons: FC<OrderButtonProps> = ({
         // loading={isArchiving}
         appearance={AppearanceTypes.Primary}
         children={t('button.cancel_order')}
+        disabled
         // onClick={handleArchiveModal}
         hidden={!canCancelOrder}
       />
@@ -84,22 +73,24 @@ const OrderPage: FC = () => {
   // const { t } = useTranslation()
   const { orderId } = useParams()
   const { institutionUserId } = useAuth()
-  const { order, isLoading } = useFetchOrder({ orderId })
+  const { order, isLoading } = useFetchOrder({ id: orderId })
   const {
     id,
     status,
     sub_projects,
-    client_user_institution_id,
+    client_institution_user,
     translation_manager_user_institution_id,
+    deadline_at,
   } = order || {}
 
   useOrderPageRedirect({
-    client_user_institution_id,
+    client_user_institution_id: client_institution_user?.id,
     translation_manager_user_institution_id,
     isLoading,
   })
 
-  const isUserClientOfProject = institutionUserId === client_user_institution_id
+  const isUserClientOfProject =
+    institutionUserId === client_institution_user?.id
 
   if (isLoading) return <Loader loading={isLoading} />
   return (
@@ -115,8 +106,14 @@ const OrderPage: FC = () => {
         isUserClientOfProject={isUserClientOfProject}
       />
 
+      <div className={classes.separator} />
+
       {map(sortBy(sub_projects, 'ext_id'), (subOrder) => (
-        <div key={subOrder.id}>{subOrder.id}</div>
+        <SubOrderSection
+          {...subOrder}
+          key={subOrder.id}
+          projectDeadline={deadline_at}
+        />
       ))}
     </>
   )

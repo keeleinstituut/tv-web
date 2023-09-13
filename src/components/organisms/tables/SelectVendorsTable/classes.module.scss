@@ -1,0 +1,47 @@
+@import 'styles/variables';
+
+.topSection {
+  padding: spacing(6) spacing(4);
+}
+
+.checkbox {
+  margin-top: spacing(4);
+}
+
+.tagsRow {
+  display: flex;
+  :not(:first-child) {
+    margin-left: spacing(2);
+  }
+}
+
+.deadline {
+  font-size: $font-size-16;
+
+  &.error {
+    color: $color-error;
+  }
+}
+
+.headerTooltip {
+  margin-left: spacing(2);
+}
+
+.container {
+  .tableContainer {
+    box-shadow: unset;
+    border: unset;
+  }
+
+  .errorTooltip {
+    svg {
+      path {
+        fill: $color-error;
+      }
+    }
+  }
+}
+
+.row {
+  display: flex;
+}

@@ -14,10 +14,10 @@
   position: absolute;
   bottom: calc(100% + spacing(2));
   left: spacing(-6);
-  z-index: 1;
+  z-index: 5;
   box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.25);
   display: none;
-  word-break: break-all;
+  word-break: break-word;
   white-space: normal;
 
   &.bottomPosition {
@@ -56,8 +56,17 @@
   }
 }
 
-.tooltipWrapper:hover .tooltipContent {
-  display: block;
+.tooltipWrapper:hover,
+.tooltipWrapper:focus {
+  .tooltipContent {
+    display: block;
+  }
+}
+
+.tooltipContent {
+  &.visible {
+    display: block;
+  }
 }
 
 .infoIcon {

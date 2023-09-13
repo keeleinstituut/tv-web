@@ -42,12 +42,12 @@ export const useRolesFetch = () => {
   }
 }
 
-export const useUpdateRole = ({ roleId }: { roleId?: string }) => {
+export const useUpdateRole = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateRole, isLoading } = useMutation({
-    mutationKey: ['roles', roleId],
+    mutationKey: ['roles', id],
     mutationFn: (payload: RolePayload) =>
-      apiClient.put(`${endpoints.ROLES}/${roleId}`, {
+      apiClient.put(`${endpoints.ROLES}/${id}`, {
         // institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
         ...payload,
       }),
@@ -59,7 +59,7 @@ export const useUpdateRole = ({ roleId }: { roleId?: string }) => {
         (oldData?: RolesResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const roleIndex = findIndex(previousData, { id: roleId })
+          const roleIndex = findIndex(previousData, { id })
           const newArray = [...previousData]
           newArray[roleIndex] = data
           return { data: newArray }
@@ -104,11 +104,11 @@ export const useCreateRole = () => {
     isLoading,
   }
 }
-export const useDeleteRole = ({ roleId }: { roleId?: string }) => {
+export const useDeleteRole = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutate: deleteRole, isLoading } = useMutation({
-    mutationKey: ['roles', roleId],
-    mutationFn: () => apiClient.delete(`${endpoints.ROLES}/${roleId}`),
+    mutationKey: ['roles', id],
+    mutationFn: () => apiClient.delete(`${endpoints.ROLES}/${id}`),
     onSuccess: () => {
       queryClient.setQueryData(
         ['roles'],
@@ -117,7 +117,10 @@ export const useDeleteRole = ({ roleId }: { roleId?: string }) => {
         (oldData?: RolesResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const deletedData = filter(previousData, ({ id }) => id !== roleId)
+          const deletedData = filter(
+            previousData,
+            ({ id: previousId }) => previousId !== id
+          )
           return { data: deletedData }
         }
       )

@@ -6,8 +6,6 @@ import {
   OrderResponse,
 } from 'types/orders'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import newMockOrders from './newMockOrders.json'
-import singleMockOrder from './singleMockOrder.json'
 import useFilters from 'hooks/useFilters'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
@@ -63,7 +61,7 @@ export const useFetchtasks = () => {
 //   const { isLoading, isError, data } = useQuery<any>({
 //     queryKey: ['subproject', id],
 //     queryFn: () => {
-//       return apiClient.get(`${endpoints.SUBPROJECTS}/${id}`)
+//       return apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`)
 //     },
 //   })
 
@@ -80,7 +78,7 @@ export const useFetchtasks = () => {
 //   const { mutateAsync: sendToCat, isLoading } = useMutation({
 //     mutationKey: ['roles'],
 //     mutationFn: (payload: any) =>
-//       apiClient.post(`${endpoints.SUBPROJECTS}/${id}/send-to-cat`, {
+//       apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/send-to-cat`, {
 //         ...payload,
 //       }),
 //   })
