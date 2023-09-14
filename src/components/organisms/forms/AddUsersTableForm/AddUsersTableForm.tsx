@@ -11,7 +11,7 @@ import { reduce, map, join, isEmpty, keys, filter, find } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
 import { UserCsvType } from 'types/users'
-import { useValidateUsers, useUploadUsers } from 'hooks/requests/useUsers'
+import { useValidateUsers, useUsersUpload } from 'hooks/requests/useUsers'
 import {
   convertUsersCsvToArray,
   objectsToCsvFile,
@@ -54,7 +54,7 @@ const SubmitButton: FC<SubmitButtonProps> = ({ control, ...rest }) => {
 const AddUsersTableForm: FC = () => {
   const { existingRoles = [] } = useRolesFetch()
   const { validateUsers, isLoading } = useValidateUsers()
-  const { uploadUsers, isLoading: isUploadLoading } = useUploadUsers()
+  const { uploadUsers, isLoading: isUploadLoading } = useUsersUpload()
   const [tableData, setTableData] = useState<UserCsvType[]>([])
   const [rowsWithErrors, setRowsWithErrors] = useState<ErrorsInRow>({})
   const [fileName, setFileName] = useState('')

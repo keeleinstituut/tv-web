@@ -7,7 +7,16 @@ import DynamicForm, {
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
-import { reduce, find, map, includes, startsWith, join } from 'lodash'
+import {
+  reduce,
+  find,
+  map,
+  includes,
+  startsWith,
+  join,
+  split,
+  toNumber,
+} from 'lodash'
 import { RolePayload } from 'types/roles'
 import { PrivilegeType, PrivilegeKey, Privileges } from 'types/privileges'
 import {
@@ -20,7 +29,7 @@ import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { ValidationError } from 'api/errorHandler'
+import { ValidationError, showValidationErrorMessage } from 'api/errorHandler'
 import {
   ModalTypes,
   closeModal,
@@ -80,9 +89,9 @@ const RoleForm: FC<RoleFormProps> = ({
   // hooks
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { updateRole, isLoading } = useUpdateRole({ roleId: id })
+  const { updateRole, isLoading } = useUpdateRole({ id })
   const { createRole, isLoading: isCreating } = useCreateRole()
-  const { deleteRole, isLoading: isDeleting } = useDeleteRole({ roleId: id })
+  const { deleteRole, isLoading: isDeleting } = useDeleteRole({ id })
 
   const {
     control,
@@ -164,7 +173,7 @@ const RoleForm: FC<RoleFormProps> = ({
       try {
         if (isTemporaryRole) {
           const result = await createRole(payload)
-          onSubmitSuccess(id || '', result.id)
+          onSubmitSuccess(id || '', result?.data?.id)
         } else {
           await updateRole(payload)
         }
@@ -176,13 +185,23 @@ const RoleForm: FC<RoleFormProps> = ({
             : t('success.role_updated', { roleName: newName }),
         })
       } catch (errorData) {
+        showValidationErrorMessage(errorData)
         // Set errors from BE for corresponding fields
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
-            setError(typedKey, { type: 'backend', message: errorString })
+            if (startsWith(key, 'privileges')) {
+              const errorRoleIndex = split(key, '.')[1]
+              const errorRoleKey =
+                allNewPrivileges[toNumber(errorRoleIndex)]?.key
+              const typedKey =
+                `privileges.${errorRoleKey}` as FieldPath<FormValues>
+              setError(typedKey, { type: 'backend', message: errorString })
+            } else {
+              const typedKey = key as FieldPath<FormValues>
+              setError(typedKey, { type: 'backend', message: errorString })
+            }
           })
         }
       }

@@ -36,7 +36,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { tags: allTags = [] } = useFetchTags({ type: TagTypes.Vendor })
-  const { updateVendor } = useUpdateVendor(vendor.id as string)
+  const { updateVendor } = useUpdateVendor({ id: vendor.id })
 
   const {
     institution_user,

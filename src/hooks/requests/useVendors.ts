@@ -9,6 +9,8 @@ import {
   CreatePricesPayload,
   DeletePricesPayload,
   UpdatedPrices,
+  GetSkillsPayload,
+  VendorResponse,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -43,25 +45,22 @@ export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
   }
 }
 
-export const useUpdateVendor = (vendorId: string) => {
+export const useUpdateVendor = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateVendor, isLoading } = useMutation({
-    mutationKey: ['vendors', vendorId],
+    mutationKey: ['vendors', id],
     mutationFn: async (payload: UpdateVendorPayload) => {
-      return apiClient.put(`${endpoints.VENDORS}/${vendorId}`, {
+      return apiClient.put(`${endpoints.VENDORS}/${id}`, {
         ...payload,
       })
     },
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['vendors', vendorId],
-        (oldData?: VendorsDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = { ...previousData, ...data }
-          return { data: newData }
-        }
-      )
+      queryClient.setQueryData(['vendors', id], (oldData?: VendorsDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
     },
   })
 
@@ -72,21 +71,45 @@ export const useUpdateVendor = (vendorId: string) => {
 }
 
 export const useFetchSkills = () => {
-  const { isLoading, isError, data } = useQuery<GetSkillsResponse>({
+  const { isLoading, isError, data } = useQuery<GetSkillsPayload>({
     queryKey: ['skills'],
     queryFn: () => apiClient.get(`${endpoints.SKILLS}`),
+  })
+
+  const { data: skills } = data || {}
+
+  const skillsFilters = map(skills, ({ id, name }) => {
+    return { value: id, label: name }
   })
 
   return {
     isLoading,
     isError,
-    data: data?.data,
+    skills,
+    skillsFilters,
+  }
+}
+
+export const useVendorFetch = ({ id }: { id?: string }) => {
+  const { isLoading, isError, data } = useQuery<VendorResponse>({
+    enabled: !!id,
+    queryKey: ['vendors', id],
+    queryFn: () => apiClient.get(`${endpoints.VENDORS}/${id}`),
+  })
+  return {
+    isLoading,
+    isError,
+    vendor: data?.data,
   }
 }
 
 export const useFetchPrices = (initialFilters: GetPricesPayload) => {
-  const { filters, handlePaginationChange } =
-    useFilters<GetPricesPayload>(initialFilters)
+  const {
+    filters,
+    handlePaginationChange,
+    handleFilterChange,
+    handleSortingChange,
+  } = useFilters<GetPricesPayload>(initialFilters)
 
   const { vendor_id } = initialFilters
 
@@ -102,6 +125,36 @@ export const useFetchPrices = (initialFilters: GetPricesPayload) => {
     isError,
     prices,
     paginationData,
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  }
+}
+
+export const useAllPricesFetch = (initialFilters?: GetPricesPayload) => {
+  const {
+    filters,
+    handlePaginationChange,
+    handleFilterChange,
+    handleSortingChange,
+  } = useFilters<GetPricesPayload>(initialFilters)
+
+  const { isLoading, isError, data } = useQuery<PricesDataType>({
+    queryKey: ['allPrices', filters],
+    queryFn: () => apiClient.get(endpoints.PRICES, filters),
+  })
+
+  const { meta: paginationData, data: prices } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    prices,
+    paginationData,
+    filters,
+    handleFilterChange,
+    handleSortingChange,
     handlePaginationChange,
   }
 }

@@ -7,7 +7,6 @@ import useAuth from 'hooks/useAuth'
 import InstitutionForm from 'components/organisms/forms/InstitutionForm/InstitutionForm'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import InstitutionManagementCheatSheet from 'components/molecules/cheatSheets/InstitutionManagementCheatSheet'
 import DepartmentManagement from 'components/molecules/DepartmentManagement/DepartmentManagement'
 
 const InstitutionSettings: FC = () => {
@@ -18,7 +17,7 @@ const InstitutionSettings: FC = () => {
   const name = selectedInstitution?.name || ''
 
   const { institution } = useInstitutionFetch({
-    institutionId: institutionId,
+    id: institutionId,
   })
 
   const { updated_at, created_at } = institution || {}
@@ -27,10 +26,7 @@ const InstitutionSettings: FC = () => {
     <>
       <div className={classes.institution}>
         <h1>{t('institution.institution_management')}</h1>
-        <Tooltip
-          title={t('cheat_sheet.institution_management.title')}
-          modalContent={<InstitutionManagementCheatSheet />}
-        />
+        <Tooltip helpSectionKey="institutionManagement" />
       </div>
       <Container className={classes.container}>
         <h3 className={classes.title}>{t('institution.institution_data')}</h3>

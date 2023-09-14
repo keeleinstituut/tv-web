@@ -1,0 +1,95 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.manualContainer {
+  display: grid;
+  grid-template-columns: 70fr 30fr;
+  padding: spacing(2) spacing(7) spacing(16) spacing(7);
+}
+
+.title {
+  grid-column-start: 1;
+}
+
+.manualContentContainer {
+  grid-column-start: 1;
+  background-color: $color-white;
+  box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.14);
+  padding: spacing(8);
+  margin-top: spacing(4);
+}
+
+.manualTitleContainer {
+  display: flex;
+  flex-direction: column;
+  width: 230px;
+  height: 80vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  position: fixed;
+  left: 78%;
+  padding-top: spacing(8);
+}
+
+.tableOfContents {
+  @include subtitleSmallTextStyle;
+  color: $color-input-main;
+  padding-left: spacing(5);
+}
+
+.manualTitles {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-left: 1px solid $color-background-dark;
+  padding-left: spacing(5);
+  grid-gap: spacing(3.5);
+  margin-top: spacing(3);
+}
+
+.manualTitle,
+.activeTitle {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: spacing(2);
+  text-align: left;
+}
+
+.manualTitle {
+  color: $color-text;
+}
+
+.activeTitle {
+  font-weight: $font-weight-bold;
+  border-left: 5px solid $color-primary;
+  position: relative;
+  right: spacing(5.25);
+  padding-left: spacing(3.75);
+}
+
+.articleInfoContainer {
+  background-color: $color-background-card;
+  border-radius: 4px;
+  padding: spacing(2);
+}
+
+.articleInfo {
+  color: $color-input-main;
+}
+
+.sectionContent {
+  padding: spacing(6) 0;
+  border-bottom: 1px solid $color-background-dark;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.section {
+  padding: spacing(2) 0;
+}
+
+.manualContent {
+  @include manualStyle($color-text-dark);
+}

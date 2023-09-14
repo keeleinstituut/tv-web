@@ -1,0 +1,249 @@
+import { FC, useCallback, useState, useMemo } from 'react'
+import ModalBase, {
+  ButtonPositionTypes,
+  ModalSizeTypes,
+} from 'components/organisms/ModalBase/ModalBase'
+import { debounce, find, reduce, isEmpty, pickBy, keys, filter } from 'lodash'
+import { useTranslation } from 'react-i18next'
+import classes from './classes.module.scss'
+import Button, {
+  AppearanceTypes,
+  SizeTypes,
+} from 'components/molecules/Button/Button'
+import { closeModal } from '../ModalRoot'
+import { useAllPricesFetch } from 'hooks/requests/useVendors'
+import SelectVendorsTable from 'components/organisms/tables/SelectVendorsTable/SelectVendorsTable'
+import { FilterFunctionType } from 'types/collective'
+import TextInput from 'components/molecules/TextInput/TextInput'
+import { showValidationErrorMessage } from 'api/errorHandler'
+import { Root } from '@radix-ui/react-form'
+import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import Loader from 'components/atoms/Loader/Loader'
+
+interface ModalHeadSectionProps {
+  handleFilterChange: (value?: FilterFunctionType) => void
+}
+
+const ModalHeadSection: FC<ModalHeadSectionProps> = ({
+  handleFilterChange,
+}) => {
+  const { t } = useTranslation()
+  const [searchValue, setSearchValue] = useState<string>()
+
+  const handleSearchVendors = useCallback(
+    (event: { target: { value: string } }) => {
+      setSearchValue(event.target.value)
+      debounce(
+        handleFilterChange,
+        300
+      )({ institution_user_name: event.target.value })
+      // TODO: not sure yet whether filtering param will be name
+    },
+    [handleFilterChange]
+  )
+
+  const handleClearFilters = useCallback(() => {
+    handleFilterChange()
+  }, [handleFilterChange])
+
+  return (
+    <div className={classes.modalHeadContainer}>
+      <h1>{t('modal.choose_vendors')}</h1>
+      <TextInput
+        name={'search'}
+        ariaLabel={t('label.search_by_name')}
+        placeholder={t('placeholder.search_by_name')}
+        value={searchValue}
+        onChange={handleSearchVendors}
+        className={classes.searchInput}
+        inputContainerClassName={classes.searchInputInternal}
+        isSearch
+      />
+      <p className={classes.helperText}>{t('modal.choose_vendors_helper')}</p>
+      <div className={classes.row}>
+        <Button
+          onClick={handleClearFilters}
+          appearance={AppearanceTypes.Secondary}
+          size={SizeTypes.S}
+          children={t('button.clear_filters')}
+        />
+        <SmallTooltip
+          className={classes.tooltip}
+          tooltipContent={t('tooltip.clear_price_filters')}
+        />
+      </div>
+    </div>
+  )
+  // Component
+}
+
+export interface SelectVendorModalProps {
+  isModalOpen?: boolean
+  assignmentId?: string
+  selectedVendorsIds?: string[]
+  taskSkills?: string[]
+  source_language_classifier_value_id?: string
+  destination_language_classifier_value_id?: string
+}
+
+interface FormValues {
+  selected: { [key in string]?: boolean }
+}
+
+const SelectVendorModal: FC<SelectVendorModalProps> = ({
+  assignmentId,
+  selectedVendorsIds = [],
+  taskSkills = [],
+  isModalOpen,
+  source_language_classifier_value_id,
+  destination_language_classifier_value_id,
+}) => {
+  const { t } = useTranslation()
+  const { updateAssignment, isLoading } = useAssignmentUpdate({
+    id: assignmentId,
+  })
+  const {
+    prices,
+    filters,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+    isLoading: isLoadingPrices,
+  } = useAllPricesFetch({
+    src_lang_classifier_value_id: [source_language_classifier_value_id],
+    dst_lang_classifier_value_id: [destination_language_classifier_value_id],
+    skill_id: taskSkills,
+  })
+
+  const selectedValues = useMemo(
+    () =>
+      isEmpty(prices)
+        ? {}
+        : reduce(
+            prices,
+            (result, price) => {
+              if (!price) return result
+              return {
+                ...result,
+                [price.id]: find(selectedVendorsIds, { id: price.vendor.id }),
+              }
+            },
+            {}
+          ),
+    [prices, selectedVendorsIds]
+  )
+
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting, isValid },
+  } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+    mode: 'onChange',
+    values: {
+      selected: selectedValues,
+    },
+    resetOptions: {
+      keepErrors: true,
+    },
+  })
+
+  const handleAddSelectedVendors: SubmitHandler<FormValues> = useCallback(
+    async ({ selected }) => {
+      const newVendorIds = keys(pickBy(selected, (val) => !!val))
+      const unRemovedVendorIds = filter(selectedVendorsIds, (id) => {
+        // vendor was removed, if it exists in the "selected" object with a value of false
+        const wasVendorRemoved = find(
+          selected,
+          (value, key) => key === id && !value
+        )
+        return !wasVendorRemoved
+      })
+      try {
+        // TODO: not sure about this at all
+        await updateAssignment({
+          candidates_ids: [...unRemovedVendorIds, ...newVendorIds],
+        })
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.vendors_added_to_task'),
+        })
+        closeModal()
+      } catch (errorData) {
+        // Might map some errors to inputs from here, but not sure if it makes sense right now
+        showValidationErrorMessage(errorData)
+      }
+    },
+    [selectedVendorsIds, t, updateAssignment]
+  )
+
+  return (
+    <ModalBase
+      open={!!isModalOpen}
+      className={classes.modalContainer}
+      buttonsPosition={ButtonPositionTypes.Right}
+      size={ModalSizeTypes.ExtraLarge}
+      innerWrapperClassName={classes.contentWrapper}
+      buttons={[
+        {
+          appearance: AppearanceTypes.Secondary,
+          children: t('button.quit'),
+          onClick: closeModal,
+        },
+        {
+          appearance: AppearanceTypes.Primary,
+          onClick: handleSubmit(handleAddSelectedVendors),
+          loading: isSubmitting || isLoading,
+          disabled: !isValid,
+          children: t('button.add'),
+        },
+      ]}
+      headComponent={
+        <Root>
+          <ModalHeadSection handleFilterChange={handleFilterChange} />
+        </Root>
+      }
+    >
+      <Loader loading={isLoadingPrices} />
+      <SelectVendorsTable
+        data={prices}
+        paginationData={paginationData}
+        handleFilterChange={handleFilterChange}
+        handleSortingChange={handleSortingChange}
+        handlePaginationChange={handlePaginationChange}
+        taskSkills={taskSkills}
+        source_language_classifier_value_id={
+          source_language_classifier_value_id
+        }
+        destination_language_classifier_value_id={
+          destination_language_classifier_value_id
+        }
+        control={control}
+        hidden={isLoadingPrices}
+        filters={filters}
+
+        // {...{
+        //   data: prices,
+        //   paginationData,
+        //   handleFilterChange,
+        //   handleSortingChange,
+        //   handlePaginationChange,
+        //   taskSkills,
+        //   source_language_classifier_value_id,
+        //   destination_language_classifier_value_id,
+        //   control,
+        //   hidden: isLoadingPrices,
+        //   filters,
+        // }}
+      />
+    </ModalBase>
+  )
+}
+
+export default SelectVendorModal

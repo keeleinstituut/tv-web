@@ -10,6 +10,7 @@ import DropdownContent from 'components/organisms/DropdownContent/DropdownConten
 import classes from './classes.module.scss'
 import { filter, find, map, join } from 'lodash'
 import Tag from 'components/atoms/Tag/Tag'
+import useModalContext from 'hooks/useModalContext'
 
 export enum DropdownSizeTypes {
   L = 'l',
@@ -75,6 +76,10 @@ const SelectionControlsInput = forwardRef<
   },
   ref
 ) {
+  // TODO: hopefully we can get rid of usePortal completely and only use it inside modals and tables
+  // Or possibly instead we should use it always, but would be good to get rid of this prop
+  const { modalContentId } = useModalContext()
+  const shouldUsePortal = usePortal || !!modalContentId
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleDropdown = () => {
@@ -148,7 +153,7 @@ const SelectionControlsInput = forwardRef<
       error={error}
       className={classNames(classes.selectionsContainer, className)}
       wrapperClass={classes[dropdownSize || 'l']}
-      ref={usePortal ? wrapperRef : clickAwayInputRef}
+      ref={shouldUsePortal ? wrapperRef : clickAwayInputRef}
       errorClass={classes.selectionsError}
       errorZIndex={errorZIndex}
     >

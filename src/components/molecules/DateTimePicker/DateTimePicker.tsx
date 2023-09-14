@@ -16,11 +16,23 @@ export interface DateTimePickerProps {
   name: string
   hidden?: boolean
   className?: string
+  minDate?: Date
+  maxDate?: Date
 }
 
 const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
   function DateTimePicker(props, ref) {
-    const { onChange, value, label, name, error, hidden, className } = props
+    const {
+      onChange,
+      value,
+      label,
+      name,
+      error,
+      hidden,
+      className,
+      minDate,
+      maxDate,
+    } = props
 
     const { t } = useTranslation()
 
@@ -60,6 +72,8 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             placeholder={t('placeholder.date')}
             value={value?.date}
             error={error}
+            minDate={minDate}
+            maxDate={maxDate}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
           <TimePickerInput

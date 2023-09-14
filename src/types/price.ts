@@ -1,3 +1,15 @@
+import { ResponseMetaTypes } from 'types/collective'
+import { Vendor } from './vendors'
+
+export enum PriceUnits {
+  CharacterFee = 'character_fee',
+  WordFee = 'word_fee',
+  PageFee = 'page_fee',
+  MinuteFee = 'minute_fee',
+  HourFee = 'hour_fee',
+  MinimalFee = 'minimal_fee',
+}
+
 export interface Price {
   id: string
   vendor_id: string
@@ -14,8 +26,23 @@ export interface Price {
   minimal_fee: number
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
+  vendor: Vendor
+}
+export interface GetPricesPayload {
+  vendor_id?: string
+  institution_user_name?: string
+  src_lang_classifier_value_id?: Array<string | undefined>
+  dst_lang_classifier_value_id?: Array<string | undefined>
+  skill_id?: string[]
+  limit?: number
+  order_by?: string
+  order_direction?: string
 }
 
+export type PricesDataType = {
+  data: Price[]
+  meta?: ResponseMetaTypes
+}
 export interface LanguageClassifierValue {
   id: string
   type: string
