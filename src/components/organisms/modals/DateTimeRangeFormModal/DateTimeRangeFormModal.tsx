@@ -16,7 +16,9 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import {
+  compact,
   filter,
+  includes,
   isEqual,
   join,
   map,
@@ -30,6 +32,7 @@ import { FieldPath, Path, SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
 import classes from './classes.module.scss'
 import { ValidationError } from 'api/errorHandler'
+import useValidators from 'hooks/useValidators'
 
 export interface TimeRangeType {
   start: string
@@ -64,6 +67,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
   handleOnSubmit,
 }) => {
   const { t } = useTranslation()
+  const { dateTimeValidator } = useValidators()
 
   const defaultValues: FormValues = useMemo(
     () =>
@@ -84,11 +88,21 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
     [editableData]
   )
 
-  const { handleSubmit, control, watch, reset, unregister, setError } =
-    useForm<FormValues>({
-      reValidateMode: 'onChange',
-      defaultValues: defaultValues,
-    })
+  const {
+    handleSubmit,
+    control,
+    watch,
+    reset,
+    unregister,
+    setError,
+    formState: { isSubmitting, isValid, isDirty },
+  } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+    defaultValues: defaultValues,
+    resetOptions: {
+      keepErrors: false,
+    },
+  })
 
   const watchFieldArray = watch()
 
@@ -101,6 +115,10 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
         id: id,
         formControl: control,
         handleDelete: () => setPrevDeletedValue(id),
+        rules: {
+          required: true,
+          validate: dateTimeValidator,
+        },
       }
     }
   )
@@ -119,10 +137,19 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
         name: `${newId}` as Path<FormValues>,
         formControl: control,
         handleDelete: () => setPrevDeletedValue(newId),
+        rules: {
+          required: true,
+          validate: dateTimeValidator,
+        },
       },
     ]
     setInputFields(newFields)
   }
+
+  useEffect(() => {
+    setInputFields(editableFields)
+    reset(defaultValues)
+  }, [editableData])
 
   useEffect(() => {
     const withoutDeleteFields = filter(inputFields, (field) => {
@@ -135,21 +162,37 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
 
   console.log('updated', watchFieldArray)
 
+  const resetForm = useCallback(() => {
+    reset()
+    setPrevDeletedValue(undefined)
+    setInputFields(editableFields)
+  }, [editableFields, inputFields, reset])
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(async (values) => {
     const payload = toArray(values)
     try {
       if (handleOnSubmit) {
         await handleOnSubmit(payload)
       }
-      reset()
+      resetForm()
       closeModal()
     } catch (errorData) {
       const typedErrorData = errorData as ValidationError
       if (typedErrorData.errors) {
         map(typedErrorData.errors, (errorsArray, key) => {
-          const typedKey = key as FieldPath<FormValues>
+          const typedKey = key as unknown as FieldPath<FormValues>
+
+          const filedId = compact(
+            map(values, ({ days }, index) => {
+              const day = split(typedKey, '_')[0]
+              if (includes(days, day)) {
+                return index
+              }
+            })
+          )[0]
+
           const errorString = join(errorsArray, ',')
-          setError(typedKey, { type: 'backend', message: errorString })
+          setError(filedId, { type: 'backend', message: errorString })
         })
       }
     }
@@ -168,8 +211,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
           children: t('button.cancel'),
           size: SizeTypes.M,
           onClick: () => {
-            reset(defaultValues)
-            setInputFields(editableFields)
+            resetForm()
             closeModal()
           },
         },
@@ -177,8 +219,9 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
           appearance: AppearanceTypes.Primary,
           form: 'dateTimeRange',
           children: t('button.save'),
-          loading: false,
+          loading: isSubmitting,
           type: 'submit',
+          disabled: !isValid || (!prevDeletedValue && !isDirty),
         },
       ]}
     >

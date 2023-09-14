@@ -109,13 +109,22 @@ const DayTimeRangePicker = forwardRef<
           multiple={true}
           buttons={true}
           usePortal={true}
-          error={error}
+          errorZIndex={100}
+          error={!value?.days ? error : undefined}
         />
         <TimeRangePicker
           onChange={onChangeTime}
           name={`${name}.time_range`}
           value={value?.time_range as Path<unknown>}
           label={t('institution.working_times')}
+          errorZIndex={100}
+          error={
+            !value?.time_range?.start ||
+            !value?.time_range?.end ||
+            error?.message
+              ? error
+              : undefined
+          }
         />
       </div>
       <Button

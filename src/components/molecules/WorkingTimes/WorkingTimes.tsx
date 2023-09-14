@@ -28,7 +28,7 @@ import {
   InstitutionType,
 } from 'types/institutions'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
-import { useUpdateInstitution } from 'hooks/requests/useInstitutions'
+import { useInstitutionUpdate } from 'hooks/requests/useInstitutions'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import { EditDataType } from 'components/organisms/modals/DateTimeRangeFormModal/DateTimeRangeFormModal'
@@ -46,9 +46,7 @@ type PayloadType = {
 }
 
 const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
-  const { updateInstitution } = useUpdateInstitution({
-    institutionId: id,
-  })
+  const { updateInstitution } = useInstitutionUpdate({ id })
   const { userPrivileges } = useAuth()
 
   const { t } = useTranslation()
@@ -80,7 +78,6 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
       time_range: JSON.parse(key),
     }
   })
-  //console.log('grouped', editableData)
 
   const dayTimeRange = join(
     map(editableData, ({ days, time_range }, key) => {
@@ -94,8 +91,6 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
     }),
     ', '
   )
-
-  // console.log(dayTimeRange)
 
   const handleOnSubmit = async (values: EditDataType[]) => {
     const usedDays = flatMapDeep(values, 'days')
@@ -148,7 +143,7 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
         className={classes.editButton}
         icon={EditIcon}
         onClick={handleEditList}
-        // hidden={!includes(userPrivileges, Privileges.EditUserWorktime)}
+        hidden={!includes(userPrivileges, Privileges.EditUserWorktime)}
       />
     </div>
   )

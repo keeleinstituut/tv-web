@@ -72,6 +72,18 @@ const useValidators = () => {
     return true
   }
 
+  const dateTimeValidator = (value?: any) => {
+    if (
+      !value.days ||
+      !value?.time_range ||
+      !value?.time_range?.start ||
+      !value?.time_range?.end
+    ) {
+      return t('error.required')
+    }
+    return true
+  }
+
   return {
     emailValidator,
     phoneValidator,
@@ -79,6 +91,7 @@ const useValidators = () => {
     rolesValidator,
     tagInputValidator,
     discountValidator,
+    dateTimeValidator,
   }
 }
 

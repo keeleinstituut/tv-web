@@ -12,17 +12,27 @@ export interface TimeRangePickerProps {
   name: string
   hidden?: boolean
   className?: string
+  errorZIndex?: number
 }
 
 const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
   function TimeRangePicker(props, ref) {
-    const { onChange, value, label, name, error, hidden, className } = props
+    const {
+      onChange,
+      value,
+      label,
+      name,
+      error,
+      hidden,
+      className,
+      errorZIndex,
+    } = props
 
     const onChangeStartTime = useCallback(
       (newTimeValue: string) => {
         const newValue = {
           ...value,
-          start: newTimeValue,
+          start: `${newTimeValue}:00`,
         }
         onChange(newValue)
       },
@@ -33,7 +43,7 @@ const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
       (newTimeValue: string) => {
         const newValue = {
           ...value,
-          end: newTimeValue,
+          end: `${newTimeValue}:00`,
         }
         onChange(newValue)
       },
@@ -53,7 +63,8 @@ const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
             name={`${name}.start`}
             value={value?.start}
             className={classes.timePicker}
-            error={error}
+            errorZIndex={errorZIndex}
+            error={!value?.start || error?.message ? error : undefined}
           />
           <span className={classes.line} />
           <TimePickerInput
@@ -61,6 +72,8 @@ const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
             name={`${name}.end`}
             value={value?.end}
             className={classes.timePicker}
+            errorZIndex={errorZIndex}
+            error={!value?.end ? error : undefined}
           />
         </div>
       </div>
