@@ -38,13 +38,9 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
       className={classNames(classes.errorContainer, className)}
       style={{
         zIndex: errorZIndex,
-        ...(horizontalWrapperId
-          ? {
-              left,
-              top: (top || 0) + 16,
-              transform: 'translateY(100%)',
-            }
-          : {}),
+        left,
+        top: (top || 0) + 16,
+        transform: 'translateY(100%)',
       }}
     >
       <img src={errorOutline} alt={t('error.input_title')} />
@@ -57,14 +53,10 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
 }
 
 const InputError: FC<InputErrorComponentProps> = (props) => {
-  const { horizontalWrapperId } = useTableContext()
-  if (horizontalWrapperId) {
-    return createPortal(
-      <InputErrorComponent {...props} />,
-      document.getElementById('root') || document.body
-    )
-  }
-  return <InputErrorComponent {...props} />
+  return createPortal(
+    <InputErrorComponent {...props} />,
+    document.getElementById('root') || document.body
+  )
 }
 
 export default memo(InputError)

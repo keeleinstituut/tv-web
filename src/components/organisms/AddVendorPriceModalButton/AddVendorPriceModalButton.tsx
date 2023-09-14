@@ -69,7 +69,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
     type: ClassifierValueType.Language,
   })
 
-  const { data: skillsData } = useFetchSkills()
+  const { skills: skillsData } = useFetchSkills()
 
   const languagePairFormFields: FieldProps<FormValues>[] = [
     {

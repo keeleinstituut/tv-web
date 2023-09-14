@@ -80,7 +80,7 @@ const LanguageDirectionCell: FC<LanguageDirectionCellProps> = ({ row }) => {
 const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
 
-  const { data: skillsData } = useFetchSkills()
+  const { skills: skillsData } = useFetchSkills()
   const { id: vendor_id } = vendor
 
   const {

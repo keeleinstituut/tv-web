@@ -42,7 +42,7 @@ const AddVendorPricesTable: FC<AddPricesTableProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const { data: skillsData } = useFetchSkills()
+  const { skills: skillsData } = useFetchSkills()
 
   const transformedData = mapKeys(selectedSkills, (value, key) => {
     const keyWithoutNumber = key.replace(/_\d+$/, '')

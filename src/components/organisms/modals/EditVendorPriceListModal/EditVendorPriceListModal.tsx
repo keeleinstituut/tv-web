@@ -1,4 +1,4 @@
-import { FC, ReactElement } from 'react'
+import { FC, JSXElementConstructor, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   AppearanceTypes,
@@ -16,7 +16,7 @@ export interface EditVendorPriceListModalProps {
   modalContent?: ReactElement | string
   isModalOpen?: boolean
   closeModal: () => void
-  helperText?: string
+  helperText?: string | ReactElement
   submitForm?: () => void
   resetForm?: () => void
   isLoading?: boolean
