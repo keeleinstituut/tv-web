@@ -73,20 +73,19 @@ const SubOrdersTable: FC = () => {
       map(
         subOrders,
         ({
-          reference_number,
           deadline_at,
           ext_id,
-          type_classifier_value,
           source_language_classifier_value,
           destination_language_classifier_value,
           status,
+          project,
           cost,
         }) => {
           return {
             ext_id,
-            reference_number,
+            reference_number: project?.reference_number,
             deadline_at,
-            type: type_classifier_value?.value || '',
+            type: project?.type_classifier_value?.value || '',
             status,
             cost,
             language_directions: [

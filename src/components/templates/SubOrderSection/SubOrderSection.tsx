@@ -135,7 +135,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
 
   const { features = [], assignments = [] } = subOrder || {}
 
-  const languageDirection = `${destination_language_classifier_value?.value} > ${source_language_classifier_value?.value}`
+  const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
   // TODO: possibly we can just check the entire assignments list and see if any of them has no assigned_vendor_id
   // However not sure right now, if the "assignments" list will contain entries for unassigned tasks

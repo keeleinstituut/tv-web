@@ -16,6 +16,14 @@ interface UserDetailsType {
   personal_identification_code: string
 }
 
+interface Department {
+  created_at: string
+  id: string
+  institution_id: string
+  name: string
+  updated_at: string
+}
+
 export enum UserStatus {
   Active = 'ACTIVE',
   Deactivated = 'DEACTIVATED',
@@ -26,9 +34,9 @@ export interface UserType {
   updated_at?: string
   deactivation_date?: string
   archived_at?: string
+  department?: Department
   id: string
   // TODO: department type not clear yet, needs to be added here
-  department?: string[]
   email?: string
   institution: InstitutionType
   phone?: string
