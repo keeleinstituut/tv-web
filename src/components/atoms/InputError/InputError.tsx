@@ -28,6 +28,7 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
       ref: wrapperRef,
       forceRecalculate: isVisible,
     }) || {}
+
   const { t } = useTranslation()
   if (!message && type !== 'required') return null
   const messageToShow = message || t('error.required')

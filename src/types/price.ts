@@ -32,8 +32,8 @@ export interface Price {
 export interface GetPricesPayload {
   vendor_id?: string
   institution_user_name?: string
-  src_lang_classifier_value_id?: string[]
-  dst_lang_classifier_value_id?: string[]
+  src_lang_classifier_value_id?: Array<string | undefined>
+  dst_lang_classifier_value_id?: Array<string | undefined>
   skill_id?: string[]
   limit?: number
   order_by?: string

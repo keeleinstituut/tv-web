@@ -1,6 +1,4 @@
 import {
-  ListOrder,
-  DetailedOrder,
   OrdersResponse,
   OrdersPayloadType,
   OrderResponse,
@@ -8,15 +6,9 @@ import {
   SubOrdersResponse,
   SubOrderResponse,
   SubOrdersPayloadType,
-  ListSubOrderDetail,
-  SubOrderDetail,
   CatProjectPayload,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import newMockOrders from './newMockOrders.json'
-import newSubOrders from './newSubOrders.json'
-import mockSubOrder from './mockSubOrder.json'
-import singleMockOrder from './singleMockOrder.json'
 import useFilters from 'hooks/useFilters'
 import { findIndex, includes } from 'lodash'
 import { apiClient } from 'api'
@@ -24,7 +16,6 @@ import { endpoints } from 'api/endpoints'
 
 export const useFetchOrders = () => {
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filters,
     handleFilterChange,
     handleSortingChange,
@@ -32,28 +23,8 @@ export const useFetchOrders = () => {
   } = useFilters<OrdersPayloadType>()
 
   const { isLoading, isError, data } = useQuery<OrdersResponse>({
-    queryKey: ['orders'],
-    queryFn: () => {
-      // return apiClient.get(`${endpoints.PROJECTS}`, filters)
-      // TODO: dummyData for now, replace with the line above
-      return new Promise((resolve) =>
-        setTimeout(() => {
-          // TODO: request will be done with filters
-          resolve({
-            data: newMockOrders.data as unknown as ListOrder[],
-            meta: {
-              current_page: 1,
-              from: 1,
-              last_page: 1,
-              per_page: 10,
-              to: 10,
-              total: 10,
-            },
-          })
-        }, 150)
-      )
-    },
-    keepPreviousData: true,
+    queryKey: ['orders', filters],
+    queryFn: () => apiClient.get(`${endpoints.PROJECTS}`, filters),
   })
 
   const { meta: paginationData, data: orders } = data || {}
@@ -72,17 +43,7 @@ export const useFetchOrders = () => {
 export const useFetchOrder = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<OrderResponse>({
     queryKey: ['orders', id],
-    queryFn: () => {
-      // return apiClient.get(`${endpoints.PROJECTS}/${orderId}`)
-      // TODO: dummy data for now, replace with the line above, once BE is implemented
-      return new Promise((resolve) =>
-        setTimeout(() => {
-          resolve({
-            data: singleMockOrder as unknown as DetailedOrder,
-          })
-        }, 150)
-      )
-    },
+    queryFn: () => apiClient.get(`${endpoints.PROJECTS}/${id}`),
   })
 
   const { data: order } = data || {}
@@ -168,17 +129,7 @@ export const useUpdateOrder = ({ id }: { id?: string }) => {
 export const useFetchSubOrder = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<SubOrderResponse>({
     queryKey: ['suborders', id],
-    queryFn: () => {
-      // return apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`)
-      // TODO: dummy data for now, replace with the line above, once BE is implemented
-      return new Promise((resolve) =>
-        setTimeout(() => {
-          resolve({
-            data: mockSubOrder as unknown as SubOrderDetail,
-          })
-        }, 150)
-      )
-    },
+    queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`),
   })
 
   const { data: subOrder } = data || {}
@@ -200,27 +151,8 @@ export const useFetchSubOrders = () => {
   } = useFilters<SubOrdersPayloadType>()
 
   const { isLoading, isError, data } = useQuery<SubOrdersResponse>({
-    queryKey: ['suborders'],
-    queryFn: () => {
-      // return apiClient.get(`${endpoints.SUB_PROJECTS}`, filters)
-      // TODO: dummyData for now, replace with the line above
-      return new Promise((resolve) =>
-        setTimeout(() => {
-          // TODO: request will be done with filters
-          resolve({
-            data: newSubOrders.data as unknown as ListSubOrderDetail[],
-            meta: {
-              current_page: 1,
-              from: 1,
-              last_page: 1,
-              per_page: 10,
-              to: 10,
-              total: 10,
-            },
-          })
-        }, 150)
-      )
-    },
+    queryKey: ['suborders', filters],
+    queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}`, filters),
     keepPreviousData: true,
   })
 
@@ -239,7 +171,7 @@ export const useFetchSubOrders = () => {
 
 export const useSubOrderSendToCat = ({ id }: { id?: string }) => {
   const { mutateAsync: sendToCat, isLoading } = useMutation({
-    mutationKey: ['roles'],
+    mutationKey: ['send_cat'],
     mutationFn: (payload: CatProjectPayload) =>
       apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/send-to-cat`, {
         ...payload,
@@ -248,6 +180,20 @@ export const useSubOrderSendToCat = ({ id }: { id?: string }) => {
 
   return {
     sendToCat,
+    isLoading,
+  }
+}
+
+// TODO: no idea what the endpoint will be
+export const useSubOrderWorkflow = ({ id }: { id?: string }) => {
+  const { mutateAsync: startSubOrderWorkflow, isLoading } = useMutation({
+    mutationKey: ['order_workflow'],
+    mutationFn: () =>
+      apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/start-workflow`),
+  })
+
+  return {
+    startSubOrderWorkflow,
     isLoading,
   }
 }

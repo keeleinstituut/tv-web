@@ -23,7 +23,7 @@ import WorkingAndVacationTimesBars, {
   WorkingAndVacationTime,
 } from 'components/molecules/WorkingAndVacationTimesBars/WorkingAndVacationTimesBars'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { Price } from 'types/price'
+import { GetPricesPayload, Price } from 'types/price'
 import { Root } from '@radix-ui/react-form'
 
 import classes from './classes.module.scss'
@@ -52,6 +52,7 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   paginationData?: ResponseMetaTypes
   hidden?: boolean
   taskSkills?: string[]
+  filters?: GetPricesPayload
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
@@ -82,6 +83,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   data = [],
   hidden,
   paginationData,
+  filters,
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
@@ -93,8 +95,17 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   const { t } = useTranslation()
   const { tagsFilters = [] } = useFetchTags()
   const { skillsFilters = [] } = useFetchSkills()
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  const matchingLanguageString = `${source_language_classifier_value_id}>${destination_language_classifier_value_id}`
+
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({
+    per_page: 40,
+    initialSelectedValues: [matchingLanguageString],
+  })
 
   const tableData = useMemo(
     () =>
@@ -181,21 +192,24 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
               source_languages: map(
                 typedLanguageDirection,
                 (languageDirectionString) =>
-                  split(languageDirectionString, '-')[0]
+                  split(languageDirectionString, '>')[0]
               ),
               destination_languages: map(
                 typedLanguageDirection,
                 (languageDirectionString) =>
-                  split(languageDirectionString, '-')[0]
+                  split(languageDirectionString, '>')[1]
               ),
             }
           : {}),
+      }
+      if (typedLanguageDirection) {
+        setSelectedValues(typedLanguageDirection)
       }
       if (handleFilterChange) {
         handleFilterChange(newFilters)
       }
     },
-    [handleFilterChange]
+    [handleFilterChange, setSelectedValues]
   )
 
   const columns = [
@@ -218,8 +232,14 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       header: '',
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
-        // TODO: add error only if skill + language direction does not match the task
-        return <SmallTooltip />
+        const isVisible = getValue()
+        return (
+          <SmallTooltip
+            tooltipContent={t('tooltip.skill_language_mismatch')}
+            className={classes.errorTooltip}
+            hidden={!isVisible}
+          />
+        )
       },
     }),
     columnHelper.accessor('languageDirection', {
@@ -230,6 +250,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       footer: (info) => info.column.id,
       meta: {
         filterOption: { language_direction: languageDirectionFilters },
+        filterValue: [matchingLanguageString],
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
@@ -249,6 +270,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       },
       meta: {
         filterOption: { skill_id: skillsFilters },
+        filterValue: taskSkills,
         showSearch: true,
       },
     }),

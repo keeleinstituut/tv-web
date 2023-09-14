@@ -81,7 +81,8 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
     <div
       className={classNames(
         classes.sectionHeader,
-        activeTab === FeatureTabs.Xliff && classes.noBorder
+        activeTab === FeatureTabs.Xliff && classes.noBorder,
+        !catSupported && !isSplittingAllowed && classes.hidden
       )}
     >
       <ToggleTabs

@@ -237,10 +237,12 @@ const addablePrivilegesWithConditions: PrivilegeKeyValueType = {
     Privileges.ReceiveProject,
   ],
   [Privileges.ManageProject]: [Privileges.ReceiveProject],
-  [Privileges.ViewPersonalTask]: [
-    Privileges.CreateProject,
-    Privileges.ManageProject,
-  ],
+  // TODO: BE currently doesn't support the ViewPersonalTask privilege
+  // Add this back, once we get support for it
+  // [Privileges.ViewPersonalTask]: [
+  //   Privileges.CreateProject,
+  //   Privileges.ManageProject,
+  // ],
 }
 
 export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {

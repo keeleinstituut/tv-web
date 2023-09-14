@@ -12,17 +12,17 @@ const useElementPosition = <RefType extends HTMLElement>({
   forceRecalculate?: boolean
   containingElementId?: string
 }) => {
+  // Get table and modal id's from context
   const { horizontalWrapperId } = useTableContext()
+  const parentElement = containingElementId
+    ? document.getElementById(containingElementId)
+    : null
 
   const {
     x: initialLeft,
     y: initialTop,
     right: initialRight,
   } = ref?.current?.getBoundingClientRect() || {}
-
-  const parentElement = containingElementId
-    ? document.getElementById(containingElementId)
-    : null
 
   const {
     y: initialParentY = 0,

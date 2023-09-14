@@ -9,15 +9,11 @@ import { useTranslation } from 'react-i18next'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import { OrderStatus } from 'types/orders'
-// import SubOrderSection from 'components/templates/SubOrderSection/SubOrderSection'
 import OrderDetails, {
   OrderDetailModes,
 } from 'components/organisms/OrderDetails/OrderDetails'
 import useOrderPageRedirect from 'hooks/useOrderPageRedirect'
 import SubOrderSection from 'components/templates/SubOrderSection/SubOrderSection'
-
-// TODO: WIP - implement this page
-
 interface OrderButtonProps {
   status?: OrderStatus
   isUserClientOfProject?: boolean
@@ -43,10 +39,6 @@ const OrderButtons: FC<OrderButtonProps> = ({
     status === OrderStatus.New &&
     includes(userPrivileges, Privileges.ManageProject)
 
-  //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
-
-  //   RECEIVE_AND_MANAGE_PROJECT or MANAGE_PROJECT
-
   const canCancelOrder =
     isOrderCancellable && (canCancelPersonalOrder || canCancelInstitutionOrder)
   // TODO: mapped buttons:
@@ -69,6 +61,7 @@ const OrderButtons: FC<OrderButtonProps> = ({
         // loading={isArchiving}
         appearance={AppearanceTypes.Primary}
         children={t('button.cancel_order')}
+        disabled
         // onClick={handleArchiveModal}
         hidden={!canCancelOrder}
       />
@@ -85,18 +78,19 @@ const OrderPage: FC = () => {
     id,
     status,
     sub_projects,
-    client_user_institution_id,
+    client_institution_user,
     translation_manager_user_institution_id,
     deadline_at,
   } = order || {}
 
   useOrderPageRedirect({
-    client_user_institution_id,
+    client_user_institution_id: client_institution_user?.id,
     translation_manager_user_institution_id,
     isLoading,
   })
 
-  const isUserClientOfProject = institutionUserId === client_user_institution_id
+  const isUserClientOfProject =
+    institutionUserId === client_institution_user?.id
 
   if (isLoading) return <Loader loading={isLoading} />
   return (
@@ -115,7 +109,6 @@ const OrderPage: FC = () => {
       <div className={classes.separator} />
 
       {map(sortBy(sub_projects, 'ext_id'), (subOrder) => (
-        // TODO: if needed we can already display some of the info from "subOrder" here
         <SubOrderSection
           {...subOrder}
           key={subOrder.id}
