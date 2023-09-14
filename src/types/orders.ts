@@ -126,11 +126,10 @@ export interface ListSubOrderDetail {
   created_at: string
   updated_at: string
   features: SubProjectFeatures[]
+  project: ListOrder
   // Not sure about the existence of following:
   status?: SubOrderStatus
   deadline_at: string
-  reference_number: string
-  type_classifier_value?: TypeClassifierValue
   cost?: string
 }
 

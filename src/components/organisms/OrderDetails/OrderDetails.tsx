@@ -144,7 +144,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     const {
       deadline_at,
       event_start_at,
-      type_classifier_value_id = '',
+      type_classifier_value,
       client_institution_user,
       translation_manager_user_institution_id = '',
       reference_number = '',
@@ -168,7 +168,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       uniq(map(sub_projects, 'destination_language_classifier_value_id')) || []
 
     return {
-      type_classifier_value_id,
+      type_classifier_value_id: type_classifier_value?.id,
       client_user_institution_id: isNew
         ? institutionUserId
         : client_institution_user?.id,
