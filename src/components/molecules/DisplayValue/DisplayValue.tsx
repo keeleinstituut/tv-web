@@ -1,7 +1,10 @@
 import { FC, useMemo } from 'react'
 import { join, isArray, reduce, map, filter, includes, find } from 'lodash'
-import classes from './classes.module.scss'
+import classNames from 'classnames'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import { VolumeValue } from 'types/volumes'
+
+import classes from './classes.module.scss'
 
 export interface DisplayValueProps {
   label?: string | JSX.Element
@@ -16,6 +19,7 @@ export interface DisplayValueProps {
     | readonly string[]
     | { [key: string]: string }
     | object
+    | VolumeValue[]
 }
 
 const getDisplayedValueFromOptions = (
@@ -23,8 +27,9 @@ const getDisplayedValueFromOptions = (
   value: DisplayValueProps['value']
 ) => {
   if (isArray(value)) {
+    const typedValue = value as unknown as string[]
     const selectedOptions = filter(options, (option) =>
-      includes(value, option.value)
+      includes(typedValue, option.value)
     )
     return join(map(selectedOptions, 'label'), ', ')
   }
@@ -67,7 +72,7 @@ const DisplayValue: FC<DisplayValueProps> = ({
 
   if (hidden) return null
   return (
-    <div className={className}>
+    <div className={classNames(classes.row, className)}>
       <span hidden={!label} className={classes.label}>
         {label}
       </span>

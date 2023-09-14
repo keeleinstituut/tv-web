@@ -40,6 +40,7 @@ import ModalRoot, {
   showModal,
 } from 'components/organisms/modals/ModalRoot'
 import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
+import ToggleInput from 'components/molecules/ToggleInput/ToggleInput'
 
 const dummyNotifications: NotificationPropsWithoutClose[] = [
   {
@@ -82,6 +83,7 @@ type FormValues = {
 const Test: FC = () => {
   const { t } = useTranslation()
   const { emailValidator } = useValidators()
+  const [toggleValue, setToggleValue] = useState(false)
 
   const { control, handleSubmit } = useForm<FormValues>({
     mode: 'onSubmit',
@@ -97,6 +99,13 @@ const Test: FC = () => {
   const handleOpen = () => {
     setOpen(true)
   }
+
+  const handleOpenVendorsModal = useCallback(() => {
+    showModal(ModalTypes.SelectVendor, {
+      taskId: 'random',
+      selectedVendorsIds: [],
+    })
+  }, [])
 
   const testFields: FieldProps<FormValues>[] = [
     {
@@ -308,6 +317,12 @@ const Test: FC = () => {
   return (
     <>
       <div />
+      <ToggleInput
+        label={t('label.translation_tool')}
+        name="translationTool"
+        value={toggleValue}
+        onChange={setToggleValue}
+      />
       <DynamicForm
         fields={testFields}
         control={control}
@@ -318,9 +333,9 @@ const Test: FC = () => {
           children="bu"
           size={SizeTypes.M}
           icon={ButtonArrow}
-          type="submit"
           ariaLabel={t('label.button_arrow')}
           iconPositioning={IconPositioningTypes.Right}
+          onClick={handleOpenVendorsModal}
         />
       </DynamicForm>
       <BaseButton onClick={handleModalOpen}>{'Ava vorm'}</BaseButton>

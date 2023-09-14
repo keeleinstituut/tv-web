@@ -55,25 +55,21 @@ export const useFetchUsers = (
   }
 }
 
-export const useFetchInfiniteUsers = (
+export const useFetchInfiniteProjectPerson = (
   initialFilters?: UserPayloadType,
-  useTranslationService?: boolean
+  personToFetch = 'client'
 ) => {
   const { filters, handleFilterChange } =
     useFilters<UserPayloadType>(initialFilters)
 
-  const queryKey = useTranslationService
-    ? 'translationUsers-infinite'
-    : 'users-infinite'
+  const endpointToUse =
+    personToFetch === 'client' ? endpoints.PROJECT_CLIENT : endpoints.PROJECT_TM
 
   const { isLoading, isError, isFetching, fetchNextPage, hasNextPage, data } =
     useInfiniteQuery<UsersDataType>({
-      queryKey: [queryKey, filters],
+      queryKey: [personToFetch, filters],
       queryFn: ({ pageParam = 1 }) =>
-        apiClient.get(
-          useTranslationService ? endpoints.TRANSLATION_USERS : endpoints.USERS,
-          { ...filters, page: pageParam }
-        ),
+        apiClient.get(endpointToUse, { ...filters, page: pageParam }),
       getNextPageParam: (lastPage) => (lastPage.meta?.current_page || 0) + 1,
       keepPreviousData: true,
     })
@@ -94,14 +90,10 @@ export const useFetchInfiniteUsers = (
   }
 }
 
-export const useFetchInfiniteTranslationUsers = (
-  initialFilters?: UserPayloadType
-) => useFetchInfiniteUsers(initialFilters, true)
-
-export const useFetchUser = ({ userId }: { userId?: string }) => {
+export const useFetchUser = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<UserDataType>({
-    queryKey: ['users', userId],
-    queryFn: () => apiClient.get(`${endpoints.USERS}/${userId}`),
+    queryKey: ['users', id],
+    queryFn: () => apiClient.get(`${endpoints.USERS}/${id}`),
   })
   return {
     isLoading,
@@ -110,18 +102,18 @@ export const useFetchUser = ({ userId }: { userId?: string }) => {
   }
 }
 
-export const useUpdateUser = ({ userId }: { userId?: string }) => {
+export const useUpdateUser = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateUser, isLoading } = useMutation({
-    mutationKey: ['users', userId],
+    mutationKey: ['users', id],
     mutationFn: async (payload: UserPostType) => {
-      return apiClient.put(`${endpoints.USERS}/${userId}`, {
+      return apiClient.put(`${endpoints.USERS}/${id}`, {
         ...payload,
       })
     },
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
-        ['users', userId],
+        ['users', id],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
         (oldData?: UsersDataType) => {
@@ -156,7 +148,7 @@ export const useValidateUsers = () => {
   }
 }
 
-export const useUploadUsers = () => {
+export const useUsersUpload = () => {
   const formData = new FormData()
   const {
     mutateAsync: uploadUsers,

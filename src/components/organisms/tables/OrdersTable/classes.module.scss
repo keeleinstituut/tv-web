@@ -5,7 +5,7 @@
 }
 
 .checkbox {
-  margin-top: spacing(4);
+  margin: spacing(4) 0;
 }
 
 .tagsRow {
@@ -20,5 +20,14 @@
 
   &.error {
     color: $color-error;
+  }
+}
+
+.searchInput {
+  margin-top: spacing(2);
+  .searchInnerContainer {
+    input {
+      width: 328px;
+    }
   }
 }

@@ -215,7 +215,6 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         data={filesData}
         columns={columns}
         tableSize={TableSizeTypes.M}
-        horizontalWrapperId={'sourceFilesWrapper'}
         className={classes.filesListContainer}
         hidePagination
         headComponent={

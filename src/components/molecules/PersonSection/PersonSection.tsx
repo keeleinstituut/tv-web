@@ -9,7 +9,7 @@ import {
   FormInput,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import {
-  useFetchInfiniteTranslationUsers,
+  useFetchInfiniteProjectPerson,
   useFetchUser,
 } from 'hooks/requests/useUsers'
 import DetailsRow from 'components/atoms/DetailsRow/DetailsRow'
@@ -74,7 +74,7 @@ const PersonSection = <TFormValues extends FieldValues>({
   const { institutionUserId, userPrivileges } = useAuth()
   // fetch currently logged in user
   const { isLoading, user } = useFetchUser({
-    userId: institutionUserId,
+    id: institutionUserId,
   })
   // Fetch list of users bases on PersonSectionType
   const {
@@ -83,14 +83,12 @@ const PersonSection = <TFormValues extends FieldValues>({
     isFetching,
     paginationData,
     fetchNextPage,
-  } = useFetchInfiniteTranslationUsers({
-    per_page: 10,
-    // TODO: not sure yet whether filtering param will be privileges
-    privileges:
-      type === PersonSectionTypes.Client
-        ? [Privileges.CreateProject]
-        : [Privileges.ReceiveProject],
-  })
+  } = useFetchInfiniteProjectPerson(
+    {
+      per_page: 10,
+    },
+    type === PersonSectionTypes.Client ? 'client' : 'tm'
+  )
   // Pass search as a param and fetch again
   const handleSearchUsers = useCallback(
     (newValue: string) => {

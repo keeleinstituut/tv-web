@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, PropsWithChildren } from 'react'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
 import { ReactComponent as CloseIcon } from 'assets/icons/close.svg'
@@ -51,7 +51,7 @@ const NotificationIcon: FC<IconComponentProps> = ({ type, hidden }) => {
   }
 }
 
-const Notification: FC<NotificationProps> = ({
+const Notification: FC<PropsWithChildren<NotificationProps>> = ({
   type,
   title,
   content,
@@ -59,6 +59,7 @@ const Notification: FC<NotificationProps> = ({
   closeNotification,
   className,
   hidden,
+  children,
 }) => {
   if (hidden) return null
   return (
@@ -70,7 +71,7 @@ const Notification: FC<NotificationProps> = ({
       )}
     >
       <NotificationIcon type={type} hidden={hideIcon} />
-      <h5>{title}</h5>
+      <h5 className={classNames(!title && classes.hidden)}>{title}</h5>
       <Button
         className={classes.closeButton}
         appearance={AppearanceTypes.Text}
@@ -79,6 +80,7 @@ const Notification: FC<NotificationProps> = ({
         hidden={!closeNotification}
       />
       <p>{content}</p>
+      {children}
     </div>
   )
 }

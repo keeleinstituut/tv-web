@@ -14,7 +14,7 @@ import useValidators from 'hooks/useValidators'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
-import { useUpdateInstitution } from 'hooks/requests/useInstitutions'
+import { useInstitutionUpdate } from 'hooks/requests/useInstitutions'
 import { InstitutionPostType, InstitutionType } from 'types/institutions'
 import Button from 'components/molecules/Button/Button'
 import classNames from 'classnames'
@@ -45,8 +45,8 @@ const InstitutionForm: FC<InstitutionPropTypes> = ({
   const [isUpdatingData, setIsUpdatingData] = useState(false)
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator } = useValidators()
-  const { updateInstitution, isLoading } = useUpdateInstitution({
-    institutionId: id,
+  const { updateInstitution, isLoading } = useInstitutionUpdate({
+    id,
   })
 
   const defaultValues = useMemo(

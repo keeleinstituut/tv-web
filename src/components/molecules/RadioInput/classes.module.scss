@@ -1,0 +1,111 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  
+  .label {
+    @include labelTextStyle;
+    padding-left: spacing(2);
+    cursor: pointer;
+  }
+
+  .visibleCheckbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid $color-border-secondary;
+    border-radius: 50%;
+  }
+
+  .checkBoxContainer {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    &.checked {
+      .visibleCheckbox {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &::after {
+          content: ' ';
+          background-color: $color-primary;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+        }
+      }
+    }
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    input,
+    .label {
+      pointer-events: none;
+    }
+    .checkBoxContainer {
+      .visibleCheckbox {
+        border-color: $color-border;
+      }
+      &.checked {
+        .visibleCheckbox {
+          background-color: $color-border;
+        }
+      }
+    }
+  }
+
+  input {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    left: 0;
+    opacity: 0;
+    z-index: 1;
+    cursor: pointer;
+
+    // By default focus will go to the hidden input when using keyboard
+    // We will use sibling selector here, so we can use the default behavior for this
+    // as well as other accessibility features 
+    &:hover,
+    &:focus-visible,
+    &:active {
+      & +.checkBoxContainer {
+        &::after {
+          content: ' ';
+          width: 40px;
+          height: 40px;
+          position: absolute;
+          border-radius: 50%;
+        }
+      }
+    }
+
+    &:focus-visible + .checkBoxContainer {
+      &::after {
+        background: $color-checkbox-focus;
+      }
+    }
+
+
+    &:hover + .checkBoxContainer {
+      &::after {
+        background: $color-checkbox-hover;
+      }
+    }
+
+    &:active + .checkBoxContainer {
+      &::after {
+        background: $color-checkbox-active;
+      }
+    }
+  }
+}

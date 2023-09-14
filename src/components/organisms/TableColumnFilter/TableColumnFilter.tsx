@@ -17,6 +17,9 @@ type FilterProps = {
   buttons?: boolean
   ariaLabel: string
   value?: string | string[]
+  onEndReached?: () => void
+  onSearch?: (value: string) => void
+  showSearch?: boolean
 }
 
 const TableColumnFilter = ({
@@ -29,6 +32,9 @@ const TableColumnFilter = ({
   buttons,
   ariaLabel,
   value,
+  onEndReached,
+  onSearch,
+  showSearch,
 }: FilterProps) => {
   const dropdownRef = useRef(null)
   const wrapperRef = useRef(null)
@@ -64,6 +70,9 @@ const TableColumnFilter = ({
         className={classes.dropDown}
         wrapperRef={wrapperRef}
         clickAwayInputRef={dropdownRef}
+        onEndReached={onEndReached}
+        onSearch={onSearch}
+        showSearch={showSearch}
         usePortal
       />
     </div>

@@ -58,7 +58,7 @@ const columnHelper = createColumnHelper<any>()
 // This was we can do a new request easily every time form values change
 interface FormValues {
   status?: string[]
-  own_orders: boolean
+  only_show_personal_projects: boolean
 }
 
 const TasksTable: FC = () => {
@@ -288,7 +288,7 @@ const TasksTable: FC = () => {
               inputType={InputTypes.TagsSelect}
             />
             <FormInput
-              name="own_orders"
+              name="only_show_personal_projects"
               label={t('label.show_only_my_orders')}
               ariaLabel={t('label.show_only_my_orders')}
               className={classes.checkbox}

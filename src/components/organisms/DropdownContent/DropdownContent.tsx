@@ -26,6 +26,7 @@ import useEndReached from 'hooks/useEndReached'
 import TextInput from 'components/molecules/TextInput/TextInput'
 import { createPortal } from 'react-dom'
 import useTableContext from 'hooks/useTableContext'
+import useModalContext from 'hooks/useModalContext'
 
 interface DropdownContentComponentProps extends SelectionControlsInputProps {
   isOpen?: boolean
@@ -70,15 +71,24 @@ const DropdownContentComponent = forwardRef<
   },
   ref
 ) {
-  const { horizontalWrapperId, tableRef } = useTableContext()
+  const { tableRef } = useTableContext()
+  const { modalContentId } = useModalContext()
 
   const scrollContainer = useRef(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const typedRef = ref as RefObject<HTMLDivElement>
   const [inViewport, ratio] = useInViewport(typedRef, {
     root: tableRef as RefObject<HTMLDivElement> | undefined,
   })
-  const { left, top, right } =
-    useElementPosition(wrapperRef, horizontalWrapperId, undefined, isOpen) || {}
+  const {
+    left = 0,
+    top = 0,
+    right = 0,
+  } = useElementPosition({
+    ref: wrapperRef,
+    forceRecalculate: isOpen,
+    containingElementId: modalContentId,
+  }) || {}
 
   useClickAway(() => {
     if (setIsOpen) {
@@ -87,7 +97,7 @@ const DropdownContentComponent = forwardRef<
   }, [typedRef, wrapperRef])
 
   const useLeftPosition = useMemo(
-    () => ratio && ratio < 1 && inViewport,
+    () => ratio && ratio < 1 && inViewport && !modalContentId,
     // isDragAndDropOpen changes, when this component is displayed
     // We don't want to update this state during any other time
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -176,14 +186,15 @@ const DropdownContentComponent = forwardRef<
         zIndex: 51 + (errorZIndex || 0),
         ...(wrapperRef
           ? {
-              left: useLeftPosition ? 'unset' : left,
-              right: useLeftPosition ? (right || 0) - (left || 0) : 'unset',
-              top: (top || 0) + 40,
+              left: useLeftPosition ? 'unset' : left - 2,
+              right: useLeftPosition ? right - left : 'unset',
+              top: top + 40,
             }
           : {}),
       }}
     >
       <TextInput
+        ref={searchInputRef}
         hidden={!showSearch}
         name={`search-${name}`}
         ariaLabel={t('label.search')}
@@ -228,27 +239,27 @@ const DropdownContentComponent = forwardRef<
             </li>
           )
         })}
-        <div
-          hidden={!buttons}
-          className={classNames(buttons && classes.buttonsContainer)}
-        >
-          <Button
-            appearance={AppearanceTypes.Secondary}
-            size={SizeTypes.S}
-            onClick={handleCancel}
-          >
-            {t('button.cancel')}
-          </Button>
-          <Button
-            appearance={AppearanceTypes.Primary}
-            size={SizeTypes.S}
-            onClick={handleOnSave}
-            className={classes.dropdownButton}
-          >
-            {t('button.save')}
-          </Button>
-        </div>
       </ul>
+      <div
+        hidden={!buttons}
+        className={classNames(buttons && classes.buttonsContainer)}
+      >
+        <Button
+          appearance={AppearanceTypes.Secondary}
+          size={SizeTypes.S}
+          onClick={handleCancel}
+        >
+          {t('button.cancel')}
+        </Button>
+        <Button
+          appearance={AppearanceTypes.Primary}
+          size={SizeTypes.S}
+          onClick={handleOnSave}
+          className={classes.dropdownButton}
+        >
+          {t('button.save')}
+        </Button>
+      </div>
     </div>
   )
 })
@@ -265,14 +276,16 @@ const DropdownContent: FC<DropdownContentProps> = ({
   usePortal,
   ...rest
 }) => {
-  if (usePortal) {
+  const { modalContentId } = useModalContext()
+  const shouldUsePortal = usePortal || !!modalContentId
+  if (shouldUsePortal) {
     return createPortal(
       <DropdownContentComponent
         {...rest}
         wrapperRef={wrapperRef}
         ref={clickAwayInputRef}
       />,
-      document.getElementById('root') || document.body
+      document.getElementById(modalContentId || 'root') || document.body
     )
   }
   return <DropdownContentComponent {...rest} />

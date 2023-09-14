@@ -6,8 +6,6 @@ import {
   OrderResponse,
 } from 'types/orders'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import newMockOrders from './newMockOrders.json'
-import singleMockOrder from './singleMockOrder.json'
 import useFilters from 'hooks/useFilters'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'

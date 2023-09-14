@@ -135,6 +135,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           label: `${t('label.deadline_at')}`,
           control: control,
           name: 'deadline_at',
+          minDate: new Date(),
           // onlyDisplay: !isEditable,
         }}
       />

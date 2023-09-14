@@ -78,7 +78,37 @@
     "xliff_name": "XLIFFi nimi",
     "chunks": "Segmendid",
     "match_type": "Vaste tüüp",
-    "cat_split_amount": "Tükkide arv"
+    "cat_split_amount": "Tükkide arv",
+    "translation_tool": "Tõlke tööriist",
+    "machine_translation": "Masintõlge",
+    "yes": "Jah",
+    "no": "Ei",
+    "select_vendor": "Märgi teostaja",
+    "free_days": "Vabad päevad",
+    "search_by_name": "Otsi nime alusel",
+    "skill": "Oskus",
+    "character_fee": "Tähemärk",
+    "word_fee": "Sõna",
+    "page_fee": "Lehekülg",
+    "minute_fee": "Minut",
+    "hour_fee": "Tund",
+    "minimal_fee": "Minimaalne",
+    "vendor_comments": "Teostaja märkused",
+    "volume": "Maht",
+    "pick_volume_type": "Vali mahu lisamise viis",
+    "task_type": "Tööülesande tüüp",
+    "unit": "Ühik",
+    "cost_price": "Hinna väärtus (EUR)",
+    "minimum_price": "Miinimum hind",
+    "total_price": "Kogumaksumus",
+    "vendor": "Teostaja",
+    "amount": "Kogus",
+    "percent_from_price": "% hinnast",
+    "price": "Hind",
+    "enter_discount_percentage": "Sisesta allahindluse protsent",
+    "total": "Kokku",
+    "assign_source_file": "Määra lähtefail",
+    "search_by_id": "Otsi tellimuse ID siit..."
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -86,7 +116,7 @@
     "personal_identification_code": "12345678910",
     "name": "Minu Nimi",
     "phone": "+372 555 5555",
-    "department": "Harju Maakohus",
+    "department": "Vali üksus",
     "roles": "Vali roll(id)",
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
@@ -95,7 +125,9 @@
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid",
-    "pick_days": "Vali päev(ad)"
+    "pick_days": "Vali päev(ad)",
+    "search_by_name": "Otsi nime alusel",
+    "search_by_id": "Otsi tellimuse ID siit..."
   },
   "button": {
     "login": "Logi sisse",
@@ -153,7 +185,16 @@
     "confirm": "Kinnita",
     "download_xliff": "Laadi alla XLIFF",
     "download_ready_translation": "Laadi alla valmis tõlge",
-    "join_files": "Ühenda failid kokku"
+    "join_files": "Ühenda failid kokku",
+    "vendors": "Teostajad",
+    "xliff": "XLIFF",
+    "add_new_vendor": "jaga ülesanne",
+    "choose_from_database": "Lisa andmebaasist",
+    "clear_filters": "Tühjenda filtrid",
+    "add_volume": "lisa maht",
+    "mark_as_finished": "Märgi lõpetatuks",
+    "send_to_previous_task": "Saada eelmisesse ülesandesse",
+    "send_sub_project_to_vendors": "Saada alamtellimus teostajatele"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -189,7 +230,11 @@
     "institution_settings": "Asutuse sätted",
     "technical_settings": "Tehnilised sätted",
     "collapse_menu": "Kitsendan menüü",
-    "manual": "Kasutusjuhend"
+    "manual": "Tõlkevärava kasutusjuhend",
+    "sidebar_manual": "Kasutusjuhend",
+    "table_of_contents": "SISUKORD",
+    "article_created_by": "Artikli koostaja: {{ author }} | {{ authorEmail }}",
+    "last_changed": "Viimati muudetud {{ date }}"
   },
   "alt": {
     "header_logo": "Logo",
@@ -217,7 +262,8 @@
       "friday": "Reedel",
       "saturday": "Laupäev",
       "sunday": "Pühapäev"
-    }
+    },
+    "departments": "Üksused"
   },
   "privileges": {
     "ADD_ROLE": "Rolli lisamine süsteemi",
@@ -279,6 +325,8 @@
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
     "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
+    "remove_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva kustutada?",
+    "deactivation_date_content": "Hetkel on määratud deaktiveerimise kuupäevaks {{date}} ",
     "edit_category_tag": "{{type}} siltide muutmine",
     "edit_departments": "Üksuste muutmine",
     "confirm_send_to_cat_title": "Kas oled kindel, et soovid lähtefailid tõlketööriista saata?",
@@ -293,50 +341,18 @@
     "cat_split_content_italic_section": "Märkus. Pärast faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“.",
     "cat_merge_title": "Kas oled kindel, et soovid failid kokku liita?",
     "cat_merge_content": "Pärast tõlgitava XLIFF faili tükeldamist võib tekkida vajadus juba tükeldatud faili tagasi kokku liita, selleks saab kasutada funktsiooni „Ühenda failid kokku“. Failide kokku ühendamisel liidetakse jagatud faili tükid tagasi üheks failiks. Seda toimingut ei saa tühistada.",
+    "choose_vendors": "Teostajate valimine",
+    "choose_vendors_helper": "Vali teostajad, kellele soovid selle ülesade pakkumise saata.\n Ülesanne määratakse automaatselt esimesele, kes ülesande vastu võtab.",
+    "pick_volume_add_method": "Vali mahu lisamise viis",
+    "pick_volume_helper": "Vali kas soovid lisada mahu käsitsi või tõlkemahuanalüüsi järgi.",
+    "pick_volume_by_cat": "Mahu lisamine CAT analüüsi järgi",
+    "pick_volume_manually": "Mahu lisamine käsitsi",
+    "picked_analysis_for": "Valitud analüüs failile:",
+    "pick_volume_by_cat_helper": "Soovi korral saad süsteemist automaatselt genereeritud väärtused käsitsi üle kirjutada.",
+    "pick_volume_manually_helper": "Vali töömahu arvestamise ühik ja määra kogus. Soovi korral saad süsteemist automaatselt genereeritud hinna väärtuse käsitsi üle kirjutada.",
+    "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
+    "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?",
     "set_working_times_title": "Tööaegade määramine"
-  },
-  "cheat_sheet": {
-    "user_management": {
-      "title": "[Kasutajate haldus] kohtspikker",
-      "adding_user": "Kasutaja lisamine",
-      "adding_user_text": "Uute kasutajate lisamiseks klõpsa nupule „Lisa kasutajad“. Kasutaja(te) lisamiseks süsteemi tuleb importida kasutaja(te) andmed CSV failiga. Laadi tüüpfaili mall alla siit (link autodownload?).",
-      "edit_user_details": "Kasutaja andmete haldamine",
-      "edit_user_details_text": "Kasutajate andmete haldamiseks tuleb klõpsata valitud kasutaja kasutajakonto ID lingile.\nKasutaja kontaktandmete vaates saab teha järgmist:",
-      "assign_working_times": "määrata tema tööaegu,",
-      "add_vacations": "lisada puhkuseid,",
-      "change_deails": "muuta kasutaja nime, meili, telefoninumbrit ja üksust",
-      "change_role": "muuta tema konto rolli (juurdepääsuõiguseid) ning",
-      "deactive_account": "kontot deaktiveerida/arhiveerida.",
-      "activation_archiving": "Aktiveerimine/arhiveerimine",
-      "activation_archiving_text": "Konto deaktiveerimisel kasutaja juurdepääsuõigused peatatakse ja tema roll(id) võetakse ära. See sobib kasutaja juurdepääsu ajutiseks peatamiseks. Kui pole soovi kontot hiljem taas aktiveerida, siis tuleks kasutaja konto arhiveerida.\nKui kasutaja konto deaktiveeritakse ja kasutaja pole ise oma poolikuid töid kolleegidele suunanud, siis on vaid vastavate õigustega kasutajal juurdepääs tema poolikutele tellimustele, alamtellimustele ja ülesannetele.\nDekativeeritud konto aktiveerimiseks tuleb klõpsata nupule „Aktiveeri konto“ ja kontole määrata rollid. Kasutaja juurdepääs taastatakse ja ta näeb endaga seotud tellimuste, alamtellimuste või ülesannete ajalugu, kui tema uus roll seda lubab.\nAktiveeritud/deaktiveeritud kasutajale ei saa uut kontot samas asutuse luua. Arhiveeritud kasutajaga seotud isikukoodile saab uue konto luua: süsteemis luuakse uue unikaalse identifikaatoriga konto, mis on kasutaja isikukoodiga seotud ja sellega seotakse ka kõik uued tellimused (vana kontoga seotud tellimusi sellle kontoga ei seota)."
-    },
-    "institution_management": {
-      "title": "[Asutuse andmete haldamine] kohtspikker",
-      "help_text": "Asutuse sätetes saab muuta järgmisi üldandmeid: asutuse nimetus, nime lühend, meiliaadress, telefoninumber.",
-      "working_hours_vacations": "Tööajad ja puhkepäevad",
-      "working_hours_vacations_text": "Asutuse üldandmetes saab määrata ja muuta asutuse tööaegu ja puhkepäevasid. Asutuse tööajad ja puhkepäevad määratakse vaikimisi ka kõikidele asutuse kasutajatele. Soovi korral saab kasutaja andmete all neid muuta.",
-      "departments": "Üksused",
-      "departments_text": "Asutuse üldandmete all saab luua ja muuta asutuse üksuseid. Asutuse üksuseid saab kasutada asutuse kasutajate kontaktandmetes."
-    },
-    "tag_management": {
-      "title": "[Sildid] kohtspikker",
-      "tags_description": "Asutus saab võtta kasutusele enda vajaduste järgi kohandatud siltide süsteemi, mis aitab tõlkeid paremini korraldada. Siltide kategooriaid on neli: oskused, teostajad, tõlkemälud ja tellimused.",
-      "skills": "Oskused",
-      "skills_tag_description": "Need sildid on seotud töövoogudega ning teostajate andmebaasi lisatud teostajate oskuste ja hinnakirjadega.",
-      "vendors": "Teostaja",
-      "vendors_tag_description": "Teostajatele saab lisada silte, mis aitavad kasutajaid teostajate andmebaasis siltide järgi teostajaid otsida ja filtreerida.",
-      "translation_memories": "Tõlkemälud",
-      "translation_memories_tag_description": "Tõlkemälud Tõlkemäludele saab lisada silte, mis aitavad kasutajaid tõlkemälude haldamisel ja siltide järgi tõlkemälusid otsida ja filtreerida.",
-      "orders": "Tellimused",
-      "orders_tag_description": "Tellimustele saab lisada silte, mis aitavad kasutajaid tõlketellimuste haldamisel ja siltide järgi tellimusi otsida ja filtreerida."
-    },
-    "vendor_management": {
-      "title": "[Teostajate andmebaas] kohtspikker",
-      "description": "Teostajate andmebaasis kuvatakse kõik asutuse kasutajad, kelle rolliks on määratud „Tõlkija“ ja/või „Toimetaja“. Uute teostajate süsteemi lisamiseks liigu menüüsse „Kasutajate haldus“, siin vaates saab hallata juba lisatud kasutajaid.",
-      "manage_prices": "Iga teostaja konto all saab hallata temaga seotud hinnakirju ja temaga kokkulepitud analüüsipõhist soodustuse tabelit. Teostajale saab lisada ka silte ja kirjutada tema kohta kommentaare. Teostaja ise enda konto külge lisatud silte ja kommentaare ei näe. Need on mõeldud asutuse siseseks kasutamiseks (eelkõige tõlkekorraldajale).",
-      "view_tasks": "Lisaks saab teostaja alt vaadata temaga seotud aktiivseid ülesandeid.",
-      "privacy": "Tõlkevärava kasutajate kontod on seotud kasutaja pärisnimega ja tema isikukoodiga. Teostajate andmebaasi lisatud kasutajatele on võimalik lisada ka „Lepingupartneri ärinimi“. Kui teenust osutab asutuse väline partner (nt FIE; OÜ, vms) mitte eraisik või põhikohaga töötaja, siis soovitame teostajale lisada ka ärinime või viite koostöövormile. Kui asutus kasutab hankepartnerist tõlkebürood, siis soovitame hankepartneri töötajatele (tõlkebüroo tõlkekorraldajatele või projektijuhtidele) Tõlkeväravasse kontod luua ja nad enda kasutajate ja teostajate andmebaasi lisada."
-    }
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -384,7 +400,13 @@
     "vendor_updated": "Teostaja uuendatud",
     "order_updated": "Tellimus on edukalt uuendatud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
-    "file_split_success": "Fail on edukalt tükkideks jagatud"
+    "file_split_success": "Fail on edukalt tükkideks jagatud",
+    "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "volume_deleted": "Maht edukalt kustutatud!",
+    "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
+    "task_finished": "Ülesanne on edukalt lõpetatud!",
+    "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
+    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!"
   },
   "notification": {
     "announcement": "Teade",
@@ -406,7 +428,8 @@
     "email": "Email",
     "phone": "Telefoninumber",
     "department": "Üksus",
-    "role": "Roll"
+    "role": "Roll",
+    "total": "Kokku"
   },
   "tooltip": {
     "user_already_exists": "Sama isikukoodiga kasutaja on juba süsteemis ja andmeid ei muudeta.",
@@ -414,7 +437,10 @@
     "source_files_helper": "Vali lähtefailid, mida soovid tõlketööriistas tõlkida. Veendu, et failid oleks tõlkimiseks ettevalmistatud.",
     "owned_by_other_company": "Mälu omanik on teine asutus. Puudub õigus sellesse kirjutada.",
     "main_write_helper": "„Peamine/Kirjuta“ mällu salvestatakse selle alamtellimuse tõlkesegmendid.",
-    "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail)."
+    "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail).",
+    "selected_translation_memory": "Valitud masintõlkemootor: {{memory}}",
+    "clear_price_filters": "Teostajate valimise tabel on eelfiltreeritud alamtellimuse keelesuuna ja ülesande oskuse järgi. Vajutades “Eemalda kõik filtrid” kuvame kogu teostajate andmebaasi hinnakirja",
+    "skill_language_mismatch": "Oskus ja keelesuund ei vasta ülesandele, antud hinnakirja ei rakendata"
   },
   "tag": {
     "tag_management": "Sildid",
@@ -442,7 +468,7 @@
     "status": {
       "REGISTERED": "Registreeritud",
       "NEW": "Uus",
-      "FORWARDED": "Edastatud",
+      "SUBMITTED_TO_CLIENT": "Edastatud",
       "CANCELLED": "Tühistatud",
       "ACCEPTED": "Vastuvõetud",
       "REJECTED": "Tagasi lükatud",
@@ -455,9 +481,14 @@
     "sub_orders_tile": "Alamtellimused",
     "features": {
       "general_information": "üldinfo",
-      "job_translation": "tõlkimine(CAT)",
+      "job_translation": "tõlkimine",
       "job_revision": "toimetamine",
       "job_overview": "ülevaatus"
+    },
+    "file_types": {
+      "STYLE_GUIDE": "Stiilijuhis",
+      "TERM_BASE": "Terminibaas",
+      "REFERENCE_FILE": "Abifail"
     },
     "order_details": "Tellimuse andmed",
     "order_details_expandable": "Tellimuse detailid",
@@ -487,6 +518,22 @@
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",
     "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",
     "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja",
-    "no_changes_made": "Andmetes puuduvad muudatused"
+    "no_changes_made": "Andmetes puuduvad muudatused",
+    "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobiva(d) teostaja(d) valinud."
+  },
+  "task": {
+    "vendor_title": "Teostaja {{number}}",
+    "volume_row_text": "{{amount}} {{unit}}",
+    "open_in_cat": "(ava CAT analüüs)",
+    "add_cat_volume": "Lisa maht CAT analüüsi järgi",
+    "add_manual_volume": "Lisa maht käsitsi",
+    "vendors": "Teostajad",
+    "files_not_generated": "Tõlketööriista faili(e) pole genereeritud",
+    "status": {
+      "NOT_ASSIGNED": "-",
+      "FORWARDED_TO_VENDOR": "Teostajale edastatud",
+      "IN_PROGRESS": "Teostamisel",
+      "DONE": "Teostatud"
+    }
   }
 }

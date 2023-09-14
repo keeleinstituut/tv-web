@@ -41,6 +41,16 @@ import DateRangePicker, {
   DateRangePickerProps,
 } from 'components/molecules/DateRangePicker/DateRangePicker'
 
+import AddVolumeInput, {
+  AddVolumeInputProps,
+} from 'components/molecules/AddVolumeInput/AddVolumeInput'
+import RadioInput, {
+  RadioInputProps,
+} from 'components/molecules/RadioInput/RadioInput'
+import RadioGroup, {
+  RadioGroupProps,
+} from 'components/molecules/RadioGroup/RadioGroup'
+
 // Extend all props of an input with the corresponding inputType
 
 export enum InputTypes {
@@ -54,6 +64,9 @@ export enum InputTypes {
   TimeRange = 'timeRange',
   DayTimeRange = 'DayTimeRange',
   DateRange = 'DateRange',
+  AddVolume = 'addVolume',
+  Radio = 'radioInput',
+  RadioGroup = 'radioGroup',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -93,6 +106,18 @@ type DateRangePickerPropsWithType = DateRangePickerProps & {
   inputType: InputTypes.DateRange
 }
 
+type AddVolumeInputPropsWithType = AddVolumeInputProps & {
+  inputType: InputTypes.AddVolume
+}
+
+type RadioInputPropsWithType = RadioInputProps & {
+  inputType: InputTypes.Radio
+}
+
+type RadioGroupPropsWithType = RadioGroupProps & {
+  inputType: InputTypes.RadioGroup
+}
+
 export type InputPropsByType = (
   | TextInputPropsWithType
   | CheckBoxInputPropsWithType
@@ -104,6 +129,9 @@ export type InputPropsByType = (
   | TimeRangePickerPropsWithType
   | DayTimeRangePickerPropsWithType
   | DateRangePickerPropsWithType
+  | AddVolumeInputPropsWithType
+  | RadioInputPropsWithType
+  | RadioGroupPropsWithType
 ) & {
   emptyDisplayText?: string
   onlyDisplay?: boolean
@@ -125,7 +153,7 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       return (
         <DisplayValue
           value={props.value}
-          label={props.label}
+          label={'label' in props ? props?.label : ''}
           {...omit(props, 'errorZIndex')}
         />
       )
@@ -181,6 +209,14 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
+
+      case InputTypes.Radio:
+        return (
+          <RadioInput
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       case InputTypes.DayTimeRange:
         return (
           <DayTimeRangePicker
@@ -195,11 +231,31 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
+      case InputTypes.RadioGroup:
+        return (
+          <RadioGroup
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
       case InputTypes.TagsSelect:
         // TODO: might need to add ref and error later
         // right now those don't seem to be needed for our only usecase
         return (
           <TagsSelect
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'error',
+            ])}
+          />
+        )
+      case InputTypes.AddVolume:
+        // TODO: might need to add ref and error later
+        // right now those don't seem to be needed for our only usecase
+        return (
+          <AddVolumeInput
             {...omit(props, [
               'inputType',
               'onlyDisplay',
