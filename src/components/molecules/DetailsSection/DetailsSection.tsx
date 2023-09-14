@@ -5,8 +5,9 @@ import DynamicForm, {
   InputTypes,
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
+import { find } from 'lodash'
 import classNames from 'classnames'
-import { Control, FieldValues, Path } from 'react-hook-form'
+import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
@@ -26,10 +27,12 @@ const DetailsSection = <TFormValues extends FieldValues>({
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Order,
   })
-  const { classifierValuesFilters: projectTypeFilter } =
-    useClassifierValuesFetch({
-      type: ClassifierValueType.ProjectType,
-    })
+  const {
+    classifierValuesFilters: projectTypeFilter,
+    classifierValues: projectTypes,
+  } = useClassifierValuesFetch({
+    type: ClassifierValueType.ProjectType,
+  })
   // TODO: we don't have correct DomainType yet
   const { classifierValuesFilters: domainValuesFilter } =
     useClassifierValuesFetch({
@@ -42,7 +45,14 @@ const DetailsSection = <TFormValues extends FieldValues>({
   )
   // Fetch list of users bases on PersonSectionType
   // TODO: depends on the picked type classifier
-  const shouldShowStartTimeFields = true
+  // const shouldShowStartTimeFields = true
+
+  const selectedProjectTypeId = useWatch({
+    control,
+    name: 'type_classifier_value_id' as Path<TFormValues>,
+  })
+
+  const selectedProjectType = find(projectTypes, { id: selectedProjectTypeId })
 
   const fields: FieldProps<TFormValues>[] = useMemo(
     () => [
@@ -82,7 +92,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         ariaLabel: t('label.translation_domain'),
         placeholder: t('placeholder.pick'),
         label: `${t('label.translation_domain')}${!isEditable ? '' : '*'}`,
-        name: 'translation_domain' as Path<TFormValues>,
+        name: 'translation_domain_classifier_value_id' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: domainValuesFilter,
         showSearch: true,
@@ -95,18 +105,16 @@ const DetailsSection = <TFormValues extends FieldValues>({
       {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
-        placeholder: t('placeholder.date'),
         label: `${t('label.start_date')}`,
-        hidden: !shouldShowStartTimeFields,
+        hidden: !selectedProjectType?.meta?.display_start_time,
         className: classes.customInternalClass,
-        name: 'start_at' as Path<TFormValues>,
+        name: 'event_start_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
       },
       {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
-        placeholder: t('placeholder.date'),
         label: `${t('label.deadline')}${!isEditable ? '' : '*'}`,
         className: classes.customInternalClass,
         name: 'deadline_at' as Path<TFormValues>,
@@ -143,7 +151,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         ariaLabel: t('label.source_language'),
         placeholder: t('placeholder.pick'),
         label: `${t('label.source_language')}${!isEditable ? '' : '*'}`,
-        name: 'src_lang' as Path<TFormValues>,
+        name: 'source_language_classifier_value_id' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: languageFilters,
         showSearch: true,
@@ -158,7 +166,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         ariaLabel: t('label.destination_language'),
         placeholder: t('placeholder.pick'),
         label: `${t('label.destination_language')}${!isEditable ? '' : '*'}`,
-        name: 'dst_lang' as Path<TFormValues>,
+        name: 'destination_language_classifier_value_ids' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         options: languageFilters,
         showSearch: true,
@@ -172,13 +180,13 @@ const DetailsSection = <TFormValues extends FieldValues>({
       },
     ],
     [
-      domainValuesFilter,
-      languageFilters,
-      projectTypeFilter,
-      shouldShowStartTimeFields,
       isNew,
-      isEditable,
       t,
+      isEditable,
+      projectTypeFilter,
+      domainValuesFilter,
+      selectedProjectType?.meta?.display_start_time,
+      languageFilters,
     ]
   )
 

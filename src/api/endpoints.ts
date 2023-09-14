@@ -15,10 +15,14 @@ export const endpoints = {
   DEACTIVATE_USER: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/deactivate`,
   ACTIVATE_USER: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/activate`,
   VENDORS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}vendors`,
+  SKILLS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}skills`,
+  PRICES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}prices`,
   CLASSIFIER_VALUES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}classifier-values`,
   PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}projects`,
   SUB_PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}subprojects`,
   TASKS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}workflow/tasks`,
+  PROJECT_TM: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/project-managers-assignable-by-client`,
+  PROJECT_CLIENT: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/assignable-clients`,
 }
 
 export const authEndpoints = {

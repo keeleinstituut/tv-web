@@ -8,6 +8,9 @@
 
 .buttonsContainer {
   display: flex;
+  >:last-child {
+    margin-left: spacing(2);
+  }
 }
 
 .separator {

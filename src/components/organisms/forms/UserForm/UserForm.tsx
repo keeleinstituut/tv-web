@@ -55,7 +55,7 @@ const UserForm: FC<UserFormProps> = ({
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator } = useValidators()
-  const { updateUser, isLoading } = useUpdateUser({ userId: id })
+  const { updateUser, isLoading } = useUpdateUser({ id })
   const { existingRoles = [] } = useRolesFetch()
   const { existingDepartments = [] } = useDepartmentsFetch()
 
@@ -65,7 +65,7 @@ const UserForm: FC<UserFormProps> = ({
       name: `${forename} ${surname}`,
       email,
       phone,
-      department_id: department ? department[0] : undefined,
+      department_id: department ? department?.id : undefined,
       roles: map(roles, 'id'),
     }),
     [

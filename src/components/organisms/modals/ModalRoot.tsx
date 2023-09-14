@@ -16,6 +16,10 @@ import { EditableListModalProps } from './EditableListModal/EditableListModal'
 import { ConfirmSendToCatModalProps } from './ConfirmSendToCatModal/ConfirmSendToCatModal'
 import { CatAnalysisModalProps } from './CatAnalysisModal/CatAnalysisModal'
 import { VendorsEditModalProps } from './VendorEditModal/VendorEditModal'
+import { SelectVendorModalProps } from './SelectVendorModal/SelectVendorModal'
+import { AddVolumeModalProps } from './AddVolumeModal/AddVolumeModal'
+import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
+import { ConfirmDeleteVolumeModalProps } from './ConfirmDeleteVolumeModal/ConfirmDeleteVolumeModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -30,19 +34,25 @@ const FormProgressModal = lazy(
 const EditableListModal = lazy(
   () => import('./EditableListModal/EditableListModal')
 )
-
 const ConfirmSendToCatModal = lazy(
   () => import('./ConfirmSendToCatModal/ConfirmSendToCatModal')
 )
-
 const CatSplitModal = lazy(() => import('./CatSplitModal/CatSplitModal'))
-
 const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
-
 const CatAnalysisModal = lazy(
   () => import('./CatAnalysisModal/CatAnalysisModal')
 )
 const VendorsEditModal = lazy(() => import('./VendorEditModal/VendorEditModal'))
+const SelectVendorModal = lazy(
+  () => import('./SelectVendorModal/SelectVendorModal')
+)
+const AddVolumeModal = lazy(() => import('./AddVolumeModal/AddVolumeModal'))
+const VolumeChangeModal = lazy(
+  () => import('./VolumeChangeModal/VolumeChangeModal')
+)
+const ConfirmDeleteVolumeModal = lazy(
+  () => import('./ConfirmDeleteVolumeModal/ConfirmDeleteVolumeModal')
+)
 
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
@@ -55,6 +65,10 @@ export enum ModalTypes {
   ConfirmSendToCat = 'confirmSendToCat',
   CatAnalysis = 'catAnalysis',
   VendorsEdit = 'vendorsEdit',
+  SelectVendor = 'selectVendor',
+  AddVolume = 'addVolume',
+  VolumeChange = 'volumeChange',
+  ConfirmDeleteVolume = 'confirmDeleteVolume',
 }
 
 // Add other modal props types here as well
@@ -69,6 +83,10 @@ type ModalPropTypes =
   | Omit<ConfirmSendToCatModalProps, 'closeModal'>
   | Omit<CatAnalysisModalProps, 'closeModal'>
   | Omit<VendorsEditModalProps, 'closeModal'>
+  | Omit<SelectVendorModalProps, 'closeModal'>
+  | Omit<AddVolumeModalProps, 'closeModal'>
+  | Omit<VolumeChangeModalProps, 'closeModal'>
+  | Omit<ConfirmDeleteVolumeModalProps, 'closeModal'>
 
 const MODALS = {
   institutionSelect: InstitutionSelectModal,
@@ -81,6 +99,10 @@ const MODALS = {
   confirmSendToCat: ConfirmSendToCatModal,
   catAnalysis: CatAnalysisModal,
   vendorsEdit: VendorsEditModal,
+  selectVendor: SelectVendorModal,
+  addVolume: AddVolumeModal,
+  volumeChange: VolumeChangeModal,
+  confirmDeleteVolume: ConfirmDeleteVolumeModal,
 }
 
 interface RefType {

@@ -8,34 +8,6 @@
 .tableWrapper {
   overflow-x: auto;
   white-space: nowrap;
-  // Workaround for cases, where we want overflow-y to be visible
-  // While overflow-x needs to be scroll or auto
-  // Using 40px, since we are making room for 1 error message row
-  // Taken from: https://stackoverflow.com/questions/6421966/css-overflow-x-visible-and-overflow-y-hidden-causing-scrollbar-issue/6433475#6433475
-  // padding-bottom: 40px;
-  // margin-bottom: -40px;
-
-  // /* width */
-  // &::-webkit-scrollbar {
-  //   padding-bottom: 10px;
-  // }
-
-  // /* Track */
-  // &::-webkit-scrollbar-track {
-  //   margin-bottom: 40px;
-  // }
-
-  // /* Handle */
-  // &::-webkit-scrollbar-thumb {
-  //   // background: red; 
-  //   // border-radius: 10px;
-  //   margin-bottom: 40px;
-  // }
-
-  // /* Handle on hover */
-  // &::-webkit-scrollbar-thumb:hover {
-  //   margin-bottom: 40px;
-  // }
 
   .dataTable {
     overflow-x: auto;

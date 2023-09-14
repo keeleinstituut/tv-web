@@ -1,16 +1,20 @@
 import { useState, FC, PropsWithChildren, useCallback, useEffect } from 'react'
 import classes from './classes.module.scss'
-import { useFetchSubOrder } from 'hooks/requests/useOrders'
+import { useFetchSubOrder, useSubOrderWorkflow } from 'hooks/requests/useOrders'
 import Tag from 'components/atoms/Tag/Tag'
 import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import Feature from 'components/organisms/features/Feature'
-import { compact, includes, map, toLower, find, filter } from 'lodash'
 import {
-  ListSubOrderDetail,
-  SubOrderStatus,
-  SubProjectFeatures,
-} from 'types/orders'
+  compact,
+  includes,
+  map,
+  toLower,
+  find,
+  filter,
+  findIndex,
+} from 'lodash'
+import { ListSubOrderDetail, SubProjectFeatures } from 'types/orders'
 import { useTranslation } from 'react-i18next'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import classNames from 'classnames'
@@ -21,6 +25,9 @@ import Notification, {
 } from 'components/molecules/Notification/Notification'
 import { TabStyle } from 'components/molecules/Tab/Tab'
 import useHashState from 'hooks/useHashState'
+import Button from 'components/molecules/Button/Button'
+import { showValidationErrorMessage } from 'api/errorHandler'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 
 // TODO: this is WIP code for suborder view
 
@@ -82,7 +89,9 @@ type SubOrderProps = Pick<
   | 'cost'
   | 'status'
   | 'deadline_at'
->
+> & {
+  projectDeadline?: string
+}
 
 const SubOrderSection: FC<SubOrderProps> = ({
   id,
@@ -90,15 +99,20 @@ const SubOrderSection: FC<SubOrderProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   cost,
-  status = SubOrderStatus.Registered,
+  status,
+  projectDeadline,
   deadline_at,
 }) => {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<string | undefined>(
     SubProjectFeatures.GeneralInformation
   )
-  const { subOrder, isLoading } = useFetchSubOrder({ id }) || {}
   const { setHash, currentHash } = useHashState()
+  const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
+  const { subOrder, isLoading } = useFetchSubOrder({ id }) || {}
+
+  const { startSubOrderWorkflow, isLoading: isStartingWorkflow } =
+    useSubOrderWorkflow({ id })
 
   const attemptScroll = useCallback(() => {
     const matchingElement = document.getElementById(ext_id)
@@ -113,23 +127,19 @@ const SubOrderSection: FC<SubOrderProps> = ({
   useEffect(() => {
     if (currentHash && includes(currentHash, ext_id)) {
       attemptScroll()
+      if (!isExpanded) {
+        setIsExpanded(true)
+      }
     }
-  }, [currentHash, ext_id, attemptScroll])
-
-  const handleOpenContainer = useCallback(
-    (isExpanded: boolean) => {
-      setHash(isExpanded ? ext_id : '')
-    },
-    [ext_id, setHash]
-  )
+  }, [currentHash, ext_id, attemptScroll, isExpanded])
 
   const { features = [], assignments = [] } = subOrder || {}
 
-  const languageDirection = `${destination_language_classifier_value?.value} > ${source_language_classifier_value?.value}`
+  const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
   // TODO: possibly we can just check the entire assignments list and see if any of them has no assigned_vendor_id
   // However not sure right now, if the "assignments" list will contain entries for unassigned tasks
-  const hasAnyUnassignedFeatures = find(features, (feature) => {
+  const hasAnyUnassignedFeatures = !find(features, (feature) => {
     const correspondingAssignments = filter(assignments, { feature })
     // TODO: potentially also have to return true, if correspondingAssignments is empty
     return find(
@@ -138,19 +148,47 @@ const SubOrderSection: FC<SubOrderProps> = ({
     )
   })
 
+  const handleOpenContainer = useCallback(
+    (isExpanded: boolean) => {
+      setHash(isExpanded ? ext_id : '')
+      setIsExpanded(isExpanded)
+    },
+    [ext_id, setHash]
+  )
+
+  const handleStartWorkflow = useCallback(async () => {
+    try {
+      await startSubOrderWorkflow()
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.workflow_started'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [startSubOrderWorkflow, t])
+
+  // TODO: not sure if GeneralInformation should be considered a feature here or just added
   const availableTabs = compact(
-    map(SubProjectFeatures, (feature) => {
-      if (
-        feature === SubProjectFeatures.GeneralInformation ||
-        includes(features, feature)
-      ) {
+    map(features, (feature) => {
+      if (feature) {
         return {
           id: feature,
-          name: t(`orders.features.${feature}`),
+          // TODO: need to add (CAT) to end of some feature names
+          name: `${t(`orders.features.${feature}`)}`,
         }
       }
     })
   )
+
+  const allTabs = [
+    {
+      id: 'general_information',
+      name: t('orders.features.general_information'),
+    },
+    ...availableTabs,
+  ]
 
   if (isLoading) return <Loader loading={isLoading} />
 
@@ -162,16 +200,41 @@ const SubOrderSection: FC<SubOrderProps> = ({
       )}
       onExpandedChange={handleOpenContainer}
       id={ext_id}
-      isExpanded={includes(currentHash, ext_id)}
+      isExpanded={isExpanded}
       rightComponent={<OrderStatusTag status={status} />}
       wrapContent
       bottomComponent={
-        <Notification
-          content={t('warning.sub_order_tasks_missing_vendors')}
-          type={NotificationTypes.Warning}
-          className={classes.notificationStyle}
-          hidden={!hasAnyUnassignedFeatures}
-        />
+        <>
+          <Notification
+            content={t('warning.sub_order_tasks_missing_vendors')}
+            type={NotificationTypes.Warning}
+            className={classes.notificationStyle}
+            hidden={!hasAnyUnassignedFeatures || isExpanded}
+          />
+          <Notification
+            content={t('warning.send_sub_project_to_vendor_warning')}
+            hideIcon
+            type={
+              hasAnyUnassignedFeatures
+                ? NotificationTypes.Warning
+                : NotificationTypes.Info
+            }
+            className={classNames(
+              classes.notificationStyle,
+              classes.startWorkFlowNotification,
+              hasAnyUnassignedFeatures && classes.warning
+            )}
+            hidden={!isExpanded}
+            children={
+              <Button
+                children={t('button.send_sub_project_to_vendors')}
+                disabled={!!hasAnyUnassignedFeatures}
+                loading={isStartingWorkflow}
+                onClick={handleStartWorkflow}
+              />
+            }
+          />
+        </>
       }
       leftComponent={
         <LeftComponent {...{ ext_id, deadline_at, cost, languageDirection }} />
@@ -180,14 +243,21 @@ const SubOrderSection: FC<SubOrderProps> = ({
       <Tabs
         setActiveTab={setActiveTab}
         activeTab={activeTab}
-        tabs={availableTabs}
+        tabs={allTabs}
         tabStyle={TabStyle.Primary}
         className={classes.tabsContainer}
         addDisabled
         editDisabled
       />
 
-      <Feature subOrder={subOrder} feature={activeTab as SubProjectFeatures} />
+      <Feature
+        subOrder={subOrder}
+        projectDeadline={projectDeadline}
+        feature={activeTab as SubProjectFeatures}
+        index={findIndex(allTabs, (tab) => {
+          return tab.id === activeTab
+        })}
+      />
     </ExpandableContentContainer>
   )
 }
