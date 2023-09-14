@@ -167,7 +167,7 @@ export interface DetailedOrder extends ListOrder {
   help_files: SourceFile[] // might be different type
   source_files: SourceFile[]
   client_institution_user: UserType
-  translation_manager_user_institution_id: string
+  manager_institution_user?: UserType
   translation_domain_classifier_value: ClassifierValue
   // TODO: unclear type for following:
   help_file_types: string[]
