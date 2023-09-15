@@ -132,13 +132,19 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
     }),
   ] as ColumnDef<PriceObject>[]
 
+  const paginationData = {
+    per_page: editableSkills?.length,
+    current_page: 1,
+    total: editableSkills?.length,
+  }
+
   return (
     <DataTable
-      // horizontalWrapperId="id"
       data={editableSkills}
       columns={columns}
       tableSize={TableSizeTypes.L}
       hidePagination
+      paginationData={paginationData}
       title={
         <div className={classes.pricesTitleContainer}>
           <h4 className={classes.pricesTitle}>{t('vendors.prices')}</h4>

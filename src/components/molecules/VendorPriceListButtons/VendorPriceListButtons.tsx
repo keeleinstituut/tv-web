@@ -15,7 +15,6 @@ type ButtonsProps = {
     label: string
   }[]
   activeStep?: number
-  isLoading?: boolean
 }
 
 const VendorPriceListButtons: FC<ButtonsProps> = ({
@@ -24,7 +23,6 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
   handleQuit,
   steps,
   activeStep,
-  isLoading,
 }) => {
   const { t } = useTranslation()
   const isSrcLanguageSelected = !!useWatch({
@@ -48,6 +46,7 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
   const hasTrueValueSkill = some(skills, (value) => value === true)
   const isSkillSelected = !!skills && hasTrueValueSkill
   const formState = useFormState({ control })
+  const isSubmitting = useFormState({ control }).isSubmitting
 
   const isLanguageSelected = isSrcLanguageSelected && isDstLanguageSelected
   const isSkillValid =
@@ -64,7 +63,7 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
         appearance={AppearanceTypes.Primary}
         disabled={isButtonDisabled}
         onClick={handleProceed}
-        loading={isLoading}
+        loading={isSubmitting}
       >
         {size(steps) === activeStep ? t('button.save') : t('button.proceed')}
       </Button>

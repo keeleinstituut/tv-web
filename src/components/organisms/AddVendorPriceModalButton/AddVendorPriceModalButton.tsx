@@ -62,8 +62,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const { createPrices, isLoading: isCreatingPrices } =
-    useCreatePrices(vendorId)
+  const { createPrices } = useCreatePrices(vendorId)
 
   const { classifierValuesFilters: languageFilter } = useClassifierValuesFetch({
     type: ClassifierValueType.Language,
@@ -238,12 +237,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
       ],
       submitForm: handleSubmit(onAddPricesSubmit),
       resetForm: resetForm(),
-      buttonComponent: (
-        <VendorPriceListButtons
-          control={control}
-          isLoading={isCreatingPrices}
-        />
-      ),
+      buttonComponent: <VendorPriceListButtons control={control} />,
       control: control,
     })
   }

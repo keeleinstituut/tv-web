@@ -177,6 +177,7 @@ export const useCreatePrices = (vendor_id: string | undefined) => {
           return { data: newData }
         }
       )
+      queryClient.refetchQueries({ queryKey: ['prices'] })
     },
   })
 
@@ -207,6 +208,7 @@ export const useUpdatePrices = (vendor_id: string | undefined) => {
           return { data: newData }
         }
       )
+      queryClient.refetchQueries({ queryKey: ['prices'] })
     },
   })
 
@@ -237,6 +239,7 @@ export const useDeletePrices = (vendor_id: string | undefined) => {
           return { data: filteredData }
         }
       )
+      queryClient.refetchQueries({ queryKey: ['prices'] })
     },
   })
 

@@ -20,6 +20,7 @@ import {
   UseFormHandleSubmit,
   UseFormSetError,
   UseFormSetValue,
+  useFormState,
 } from 'react-hook-form'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { ValidationError } from 'api/errorHandler'
@@ -52,8 +53,9 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
-  const { updatePrices, isLoading: isUpdatingPrices } =
-    useUpdatePrices(vendorId)
+  const { updatePrices } = useUpdatePrices(vendorId)
+
+  const isSubmitting = useFormState({ control }).isSubmitting
 
   const onEditPricesSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
@@ -159,7 +161,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
           dstLanguageValues={[dstLanguageValue]}
         />
       ),
-      isLoading: isUpdatingPrices,
+      isLoading: isSubmitting,
       resetForm: resetForm,
     })
   }
