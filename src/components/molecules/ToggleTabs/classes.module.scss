@@ -1,0 +1,39 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.toggleTabsRow {
+  display: flex;
+  align-items: center;
+  .toggleTab {
+    background-color: $color-border;
+    border-color: $color-border;
+    border-radius: 0;
+    border: 1px solid $color-border;
+    padding: spacing(1.75) spacing(5.75);
+    &:first-child {
+      border-top-left-radius: 20px;
+      border-bottom-left-radius: 20px;
+    }
+    &:last-child {
+      border-top-right-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+
+    span {
+      color: $color-text-dark;
+    }
+
+    &.activeToggleTab {
+      background: $color-white;
+      span {
+        color: $color-text;
+      }
+    }
+
+    &:focus-visible,
+    &:focus {
+      box-shadow: inset 0 0 0 2px $color-navigation-icon;
+    }
+  }
+
+}

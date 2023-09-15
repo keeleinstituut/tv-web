@@ -22,14 +22,10 @@ export const useInstitutionsFetch = () => {
   }
 }
 
-export const useInstitutionFetch = ({
-  institutionId,
-}: {
-  institutionId?: string
-}) => {
+export const useInstitutionFetch = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<InstitutionDataType>({
-    queryKey: ['institutions', institutionId],
-    queryFn: () => apiClient.get(`${endpoints.INSTITUTIONS}/${institutionId}`),
+    queryKey: ['institutions', id],
+    queryFn: () => apiClient.get(`${endpoints.INSTITUTIONS}/${id}`),
   })
   const { data: institution } = data || {}
 
@@ -40,19 +36,15 @@ export const useInstitutionFetch = ({
   }
 }
 
-export const useUpdateInstitution = ({
-  institutionId,
-}: {
-  institutionId?: string | undefined
-}) => {
+export const useInstitutionUpdate = ({ id }: { id?: string | undefined }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateInstitution, isLoading } = useMutation({
-    mutationKey: ['institutions', institutionId],
+    mutationKey: ['institutions', id],
     mutationFn: (payload: InstitutionPostType) =>
-      apiClient.put(`${endpoints.INSTITUTIONS}/${institutionId}`, payload),
+      apiClient.put(`${endpoints.INSTITUTIONS}/${id}`, payload),
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
-        ['institutions', institutionId],
+        ['institutions', id],
         // TODO: possibly will start storing all arrays as objects
         // if we do, then this should be rewritten
         (oldData?: InstitutionsDataType) => {

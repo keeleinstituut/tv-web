@@ -34,7 +34,7 @@ interface CatJobsTableProps {
 }
 
 interface CatJobRow {
-  xliff_name: string
+  chunk_id: string
   percentage: string
   translate_url: string
   dots_button: number
@@ -77,7 +77,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           //   .replace('/', '')
           // TODO: currently randomly assuming that cat_jobs will have chunk_id, which will match cat_analyzis
           return {
-            xliff_name: chunk_id,
+            chunk_id,
             percentage: '50%',
             translate_url,
             dots_button: index,
@@ -127,7 +127,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const isCatAnalysisInProgress = isEmpty(cat_analyzis)
 
   const columns = [
-    columnHelper.accessor('xliff_name', {
+    columnHelper.accessor('chunk_id', {
       header: () => t('label.xliff_name'),
       footer: (info) => info.column.id,
     }),
@@ -207,7 +207,6 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         data={filesData}
         columns={columns}
         tableSize={TableSizeTypes.M}
-        horizontalWrapperId={'catJobsTable'}
         className={classes.filesListContainer}
         hidePagination
         headComponent={

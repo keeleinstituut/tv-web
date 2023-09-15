@@ -13,6 +13,10 @@ export interface ClassifierValue {
   name: string
   synced_at: string | null
   deleted_at: string | null
+  meta?: {
+    display_start_time?: boolean
+    workflow_id?: string
+  }
 }
 
 export interface LanguageClassifierValue extends ClassifierValue {
@@ -30,4 +34,10 @@ export type ClassifierValuesPayload = PaginationFunctionType &
 
 export interface ClassifierValuesDataTypes {
   data: ClassifierValue[]
+}
+
+export enum HelperFileTypes {
+  StyleGuide = 'STYLE_GUIDE',
+  TermBase = 'TERM_BASE',
+  ReferenceFile = 'REFERENCE_FILE',
 }

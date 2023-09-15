@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
+import { map } from 'lodash'
 import { Control, FieldValues } from 'react-hook-form'
-import { ClassifierValueType } from 'types/classifierValues'
-import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import OrderFilesList from 'components/molecules/OrderFilesList/OrderFilesList'
+import { HelperFileTypes } from 'types/classifierValues'
 
 interface OrderFilesSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
@@ -15,11 +15,10 @@ const OrderFilesSection = <TFormValues extends FieldValues>({
   isEditable,
 }: OrderFilesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
-  const { classifierValuesFilters: fileTypeFilters } = useClassifierValuesFetch(
-    {
-      type: ClassifierValueType.FileType,
-    }
-  )
+  const fileTypeFilters = map(HelperFileTypes, (filterValue) => ({
+    value: filterValue,
+    label: t(`orders.file_types.${filterValue}`),
+  }))
 
   return (
     <div className={classes.container}>

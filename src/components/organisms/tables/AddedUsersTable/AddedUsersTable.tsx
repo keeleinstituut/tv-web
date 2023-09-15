@@ -24,15 +24,15 @@ import classes from './classes.module.scss'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 
-type User = {
+type TableRow = {
   id: string
   name: string
-  department: string[] | undefined
+  department: string
   roles: (string | undefined)[]
   status: UserStatus
 }
 
-const columnHelper = createColumnHelper<User>()
+const columnHelper = createColumnHelper<TableRow>()
 
 type AddedUsersProps = {
   data?: UserType[]
@@ -64,7 +64,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
         return {
           id,
           name: `${user?.forename} ${user?.surname}`,
-          department,
+          department: department?.name || '',
           roles: arrayOfRoles,
           status,
         }
@@ -138,7 +138,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
         filterValue: [UserStatus.Active, UserStatus.Deactivated],
       },
     }),
-  ] as ColumnDef<User>[]
+  ] as ColumnDef<TableRow>[]
 
   if (hidden) return null
 

@@ -5,6 +5,7 @@ import {
   createContext,
   forwardRef,
   useEffect,
+  useId,
   useState,
 } from 'react'
 import classes from './classes.module.scss'
@@ -36,12 +37,12 @@ export enum TableSizeTypes {
 }
 
 interface TableContextType {
-  horizontalWrapperId: string
+  horizontalWrapperId?: string
   tableRef?: Ref<HTMLDivElement> | null
 }
 
 export const TableContext = createContext<TableContextType>({
-  horizontalWrapperId: 'tableWrapper',
+  horizontalWrapperId: undefined,
   tableRef: null,
 })
 
@@ -57,7 +58,8 @@ type DataTableProps<TData extends RowData> = {
   className?: string
   subRows?: Row<TData>[] | undefined
   pageSizeOptions?: { label: string; value: string }[]
-  horizontalWrapperId?: string
+  tableWrapperClassName?: string
+  hidden?: boolean
   getSubRows?:
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
@@ -86,10 +88,12 @@ const DataTable = <TData,>(
     pageSizeOptions,
     hidePagination = false,
     headComponent,
-    horizontalWrapperId = 'tableWrapper',
+    tableWrapperClassName,
+    hidden,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
+  const [horizontalWrapperId] = useState(useId())
   const { per_page, last_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [pagination, setPagination] = useState<PaginationState>({
@@ -124,6 +128,9 @@ const DataTable = <TData,>(
     getSubRows: getSubRows,
     getExpandedRowModel: getExpandedRowModel(),
   })
+  if (hidden) {
+    return null
+  }
   return (
     <TableContext.Provider
       value={{
@@ -136,7 +143,10 @@ const DataTable = <TData,>(
           {title}
         </h4>
         {headComponent}
-        <div className={classes.tableWrapper} id={horizontalWrapperId}>
+        <div
+          className={classNames(classes.tableWrapper, tableWrapperClassName)}
+          id={horizontalWrapperId}
+        >
           <table className={classNames(classes.dataTable, classes[tableSize])}>
             <TableHeaderGroup
               table={table}
