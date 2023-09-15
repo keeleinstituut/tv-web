@@ -22,7 +22,6 @@ import classes from './classes.module.scss'
 interface GeneralPriceListTableProps {
   data?: Price[]
   paginationData?: ResponseMetaTypes
-  isLoading?: boolean
   hidden?: boolean
   selectedVendorsIds?: string[]
   taskSkills?: string[]
@@ -50,7 +49,6 @@ const columnHelper = createColumnHelper<PricesTableRow>()
 const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
   data = [],
   hidden,
-  isLoading,
   paginationData,
   handleFilterChange,
   handleSortingChange,
@@ -217,7 +215,6 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         className={classes.tableContainer}
-        isLoading={isLoading}
       />
     </Root>
   )
