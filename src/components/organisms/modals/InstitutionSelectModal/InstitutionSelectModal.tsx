@@ -8,6 +8,7 @@ import ModalBase, {
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import classes from './classes.module.scss'
+import { useNavigate } from 'react-router-dom'
 
 export interface InstitutionSelectModalProps {
   onClose?: () => void
@@ -28,6 +29,7 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
   // No need to fetch, if institutions are passed as a prop
 
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const handleClose = useCallback(() => {
     closeModal()
     if (onClose) {
@@ -40,12 +42,13 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
       setLoadingSelect(id)
       await selectInstitution(id)
       setLoadingSelect('')
+      navigate('/')
       if (onSelect) {
         onSelect()
       }
       closeModal()
     },
-    [closeModal, onSelect]
+    [closeModal, navigate, onSelect]
   )
 
   return (
