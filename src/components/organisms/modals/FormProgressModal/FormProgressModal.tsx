@@ -56,7 +56,10 @@ const FormProgressModal: FC<FormProgressProps> = ({
     if (isErrorOnSecondStep) {
       setActiveStep(2)
     }
-  }, [isErrorOnFirstStep, isErrorOnSecondStep])
+    if (isModalOpen) {
+      setActiveStep(1)
+    }
+  }, [isErrorOnFirstStep, isErrorOnSecondStep, isModalOpen])
 
   const steps = map(formData, ({ label }) => {
     return { label }
@@ -65,7 +68,6 @@ const FormProgressModal: FC<FormProgressProps> = ({
     if (size(steps) === activeStep) {
       if (submitForm) {
         submitForm()
-        // setActiveStep(1)
       }
     } else {
       setActiveStep(activeStep + 1)
