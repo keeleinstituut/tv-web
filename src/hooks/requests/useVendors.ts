@@ -2,7 +2,6 @@ import {
   VendorsDataType,
   GetVendorsPayload,
   UpdateVendorPayload,
-  GetSkillsResponse,
   PricesDataType,
   UpdatePricesPayload,
   GetPricesPayload,

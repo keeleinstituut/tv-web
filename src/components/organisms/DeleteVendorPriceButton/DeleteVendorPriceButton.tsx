@@ -51,7 +51,7 @@ const DeleteVendorPriceButton: FC<DeleteVendorPriceButtonProps> = ({
       appearance={AppearanceTypes.Text}
       icon={Delete}
       ariaLabel={t('vendors.delete')}
-      onClick={() => onDeletePrices()}
+      onClick={onDeletePrices}
       className={classes.deleteIcon}
       hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
       loading={isDeletingPrices}

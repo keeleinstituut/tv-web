@@ -44,8 +44,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
   const formErrors = formState.errors
   const valuesKey = keys(formErrors)[0]
 
-  const isErrorOnSecondStep =
-    valuesKey === 'skill_id' || valuesKey === 'vendor_id'
+  const isErrorOnSecondStep = valuesKey === 'skill_id'
   const isErrorOnFirstStep =
     valuesKey === 'src_lang_classifier_value_id' ||
     valuesKey === 'dst_lang_classifier_value_id'
@@ -66,7 +65,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
     if (size(steps) === activeStep) {
       if (submitForm) {
         submitForm()
-        setActiveStep(1)
+        // setActiveStep(1)
       }
     } else {
       setActiveStep(activeStep + 1)

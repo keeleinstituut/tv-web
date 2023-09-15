@@ -33,13 +33,9 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
     useWatch({ control, name: 'dst_lang_classifier_value_id' })
   )
 
-  const srcLanguageLabel = srcLanguageValue
-    ? srcLanguageValue
-    : sourceLanguageLabel
+  const srcLanguageLabel = srcLanguageValue || sourceLanguageLabel
 
-  const dstLanguageLabels = dstLanguageValues
-    ? dstLanguageValues
-    : destinationLanguageLabels
+  const dstLanguageLabels = dstLanguageValues || destinationLanguageLabels
 
   if (!srcLanguageLabel || !dstLanguageLabels) return null
 
