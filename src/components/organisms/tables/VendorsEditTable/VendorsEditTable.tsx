@@ -11,16 +11,16 @@ import { Control } from 'react-hook-form'
 import { PaginationFunctionType, ResponseMetaTypes } from 'types/collective'
 
 export interface VendorsEditProps {
-  data?: any
+  data: VendorUser[]
   control: Control
   handlePaginationChange?: (value?: PaginationFunctionType) => void
   paginationData?: ResponseMetaTypes
 }
 
 export type VendorUser = {
-  id?: string
+  institution_user_id: string
   name?: string
-  vendor?: boolean
+  isVendor?: boolean
 }
 
 const columnHelper = createColumnHelper<VendorUser>()
@@ -47,15 +47,17 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
         )
       },
     }),
-    columnHelper.accessor('vendor', {
+    columnHelper.accessor('isVendor', {
       header: () => t('vendors.vendor'),
       footer: (info) => info.column.id,
       cell: (info) => {
+        console.log('table info', info)
         return (
           <FormInput
-            name={`${info.row.original.id}`}
+            name={`${info.row.original.institution_user_id}`}
             ariaLabel={t('vendors.vendor')}
             control={control}
+            defaultValue={info.row.original.isVendor}
             inputType={InputTypes.Checkbox}
           />
         )

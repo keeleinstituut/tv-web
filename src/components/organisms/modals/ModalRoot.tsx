@@ -15,7 +15,7 @@ import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
 import { ConfirmSendToCatModalProps } from './ConfirmSendToCatModal/ConfirmSendToCatModal'
 import { CatAnalysisModalProps } from './CatAnalysisModal/CatAnalysisModal'
-import { VendorsEditModalProps } from './VendorEditModal/VendorEditModal'
+import { VendorsEditModalProps } from './VendorsEditModal/VendorsEditModal'
 import { SelectVendorModalProps } from './SelectVendorModal/SelectVendorModal'
 import { AddVolumeModalProps } from './AddVolumeModal/AddVolumeModal'
 import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
@@ -42,7 +42,9 @@ const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
 const CatAnalysisModal = lazy(
   () => import('./CatAnalysisModal/CatAnalysisModal')
 )
-const VendorsEditModal = lazy(() => import('./VendorEditModal/VendorEditModal'))
+const VendorsEditModal = lazy(
+  () => import('./VendorsEditModal/VendorsEditModal')
+)
 const SelectVendorModal = lazy(
   () => import('./SelectVendorModal/SelectVendorModal')
 )
