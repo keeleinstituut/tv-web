@@ -39,26 +39,21 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         const user = getValue()
-        return (
-          <span>
-            {user}
-            {/* {user?.forename} {user?.surname} */}
-          </span>
-        )
+        return <span>{user}</span>
       },
     }),
     columnHelper.accessor('isVendor', {
       header: () => t('vendors.vendor'),
       footer: (info) => info.column.id,
       cell: (info) => {
-        console.log('table info', info)
         return (
           <FormInput
-            name={`${info.row.original.institution_user_id}`}
+            name={info.row.original.institution_user_id}
             ariaLabel={t('vendors.vendor')}
             control={control}
             defaultValue={info.row.original.isVendor}
             inputType={InputTypes.Checkbox}
+            errorZIndex={100}
           />
         )
       },

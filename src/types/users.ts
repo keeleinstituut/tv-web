@@ -1,6 +1,7 @@
 import { InstitutionType } from './institutions'
 import { Privileges } from './privileges'
 import { RolePayload } from './roles'
+import { Vendor } from './vendors'
 import {
   ResponseMetaTypes,
   PaginationFunctionType,
@@ -43,6 +44,7 @@ export interface UserType {
   roles: RolePayload[]
   status: UserStatus
   user: UserDetailsType
+  vendor?: Vendor
 }
 
 export interface UserPostType {

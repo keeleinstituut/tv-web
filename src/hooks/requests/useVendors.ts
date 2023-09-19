@@ -4,6 +4,8 @@ import {
   UpdateVendorPayload,
   GetSkillsPayload,
   VendorResponse,
+  CreateVendorPayload,
+  DeleteVendorsPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -60,6 +62,84 @@ export const useUpdateVendor = ({ id }: { id?: string }) => {
 
   return {
     updateVendor,
+    isLoading,
+  }
+}
+
+// const parallelCreateDeleteVendors = (payload: any) => {
+//   new Promise(async (resolve, reject) => {})
+// }
+
+export const useParallelCreateAndDeleteVendors = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: parallelCreateDeleteVendor, isLoading } = useMutation({
+    mutationKey: ['vendors'],
+    mutationFn: async (payload: CreateVendorPayload) => {
+      return apiClient.post(endpoints.CREATE_VENDORS, {
+        ...payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['vendors'], (oldData?: VendorsDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
+    },
+  })
+
+  return {
+    parallelCreateDeleteVendor,
+    isLoading,
+  }
+}
+
+export const useCreateVendors = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: createVendor, isLoading } = useMutation({
+    mutationKey: ['vendors'],
+    mutationFn: async (payload: CreateVendorPayload) => {
+      return apiClient.post(endpoints.CREATE_VENDORS, {
+        data: payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['vendors'], (oldData?: VendorsDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
+    },
+  })
+
+  return {
+    createVendor,
+    isLoading,
+  }
+}
+export const useDeleteVendors = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deleteVendors, isLoading } = useMutation({
+    mutationKey: ['vendors'],
+    mutationFn: async (payload: DeleteVendorsPayload) => {
+      return apiClient.delete(endpoints.DELETE_VENDORS, {
+        id: payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['vendors'], (oldData?: VendorsDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
+    },
+  })
+
+  return {
+    deleteVendors,
     isLoading,
   }
 }

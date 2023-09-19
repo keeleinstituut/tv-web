@@ -126,7 +126,6 @@
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid",
-    "search_by_name": "Otsi nime alusel",
     "search_by_id": "Otsi tellimuse ID siit..."
   },
   "button": {
@@ -391,6 +390,7 @@
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "vendors_created_removed": "Teostajad edukalt lisatud/eemaldatud",
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",

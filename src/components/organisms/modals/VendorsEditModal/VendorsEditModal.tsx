@@ -1,13 +1,16 @@
 import { FC, useCallback, useMemo, useState } from 'react'
 import {
   map,
-  reduce,
   includes,
   filter,
-  debounce,
   toLower,
   some,
   find,
+  compact,
+  isEmpty,
+  split,
+  join,
+  toNumber,
 } from 'lodash'
 import ModalBase, {
   ButtonPositionTypes,
@@ -18,7 +21,7 @@ import { useTranslation } from 'react-i18next'
 import { AppearanceTypes } from 'components/molecules/Button/Button'
 import { UserStatus } from 'types/users'
 import { Root } from '@radix-ui/react-form'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import VendorsEditTable, {
   VendorUser,
 } from 'components/organisms/tables/VendorsEditTable/VendorsEditTable'
@@ -26,7 +29,15 @@ import TextInput from 'components/molecules/TextInput/TextInput'
 import classes from './classes.module.scss'
 import { PaginationFunctionType, ResponseMetaTypes } from 'types/collective'
 import { useFetchUsers } from 'hooks/requests/useUsers'
-import { useVendorsFetch } from 'hooks/requests/useVendors'
+import {
+  useCreateVendors,
+  useDeleteVendors,
+  useVendorsFetch,
+} from 'hooks/requests/useVendors'
+
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { ValidationError } from 'api/errorHandler'
 
 export interface VendorsEditModalProps {
   isModalOpen?: boolean
@@ -47,37 +58,32 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
   const { vendors } = useVendorsFetch({ limit: undefined })
+  const { createVendor } = useCreateVendors()
+  const { deleteVendors } = useDeleteVendors()
 
   const initialFilters = {
     statuses: [UserStatus.Active],
   }
-  const {
-    users,
-    paginationData,
-    handlePaginationChange,
-    // isLoading: isUsersLoading,
-  } = useFetchUsers(initialFilters)
+  const { users, paginationData, handlePaginationChange } =
+    useFetchUsers(initialFilters)
 
   const usersData = useMemo(() => {
     return (
-      map(users, ({ user, institution, id }) => {
+      map(users, ({ user, id, vendor }) => {
         const name = `${user.forename} ${user.surname}`
         return {
-          institution_user_id: user.id,
-          company_name: institution.name,
+          institution_user_id: id,
           name: name,
+          //is BE is ready then it will be
+          // isVendor: !!vendor, true if vendor has object and false if null or empty object?
           isVendor: some(
             vendors,
-            (vendor) => vendor.institution_user.user.id === user.id
+            (vendor) => vendor.institution_user_id === id
           ),
         }
       }) || {}
     )
   }, [users, vendors])
-
-  console.log('user', users)
-  console.log('vendors', vendors)
-  console.log('userdata 1', usersData)
 
   const filterBySearch = useMemo(() => {
     if (!!searchValue) {
@@ -87,48 +93,75 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     } else return usersData
   }, [searchValue, usersData])
 
-  // const defaultValues = useMemo(
-  //   () =>
-  //     reduce(
-  //       usersData,
-  //       (result, value) => {
-  //         if (!value.institution_user_id) {
-  //           return result
-  //         }
-  //         return {
-  //           ...result,
-  //           // [value.institution_user_id]: value.isVendor,
-  //           [value.institution_user_id]: some(
-  //             vendors,
-  //             (vendor) =>
-  //               vendor.institution_user.user.id === value.institution_user_id
-  //           ),
-  //         }
-  //       },
-  //       {}
-  //     ),
-  //   [usersData]
-  // )
-
-  //console.log('default', defaultValues)
-
-  const { control, handleSubmit, watch, reset } = useForm<FormValues>({
-    //reValidateMode: 'onChange',
+  const { control, handleSubmit, reset, setError } = useForm<FormValues>({
     mode: 'onChange',
-    // resetOptions: {
-    //   keepErrors: true,
-    // },
-    // values: defaultValues,
   })
 
-  const watchAll = watch()
-  console.log('watch', watchAll)
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    const newVendorsPayload = compact(
+      map(data, (isVendor, id) => {
+        const isNotInVendorsList = !some(
+          vendors,
+          (vendor) => vendor.institution_user_id === id
+        )
+        // if BE is ready it should be like that
+        // const isNotInVendorsList= some(
+        //   users,
+        //   (user) => user.id === id && !user.vendor
+        // )
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data)
-    const payload = {}
+        if (isVendor && isNotInVendorsList) {
+          return {
+            institution_user_id: id,
+          }
+        }
+      })
+    )
 
-    closeModal()
+    const deleteVendorsPayload = compact(
+      map(data, (isVendor, id) => {
+        const isInVendorsList = find(
+          vendors,
+          (vendor) => vendor.institution_user_id === id
+        )
+        // if BE is ready it should be like that
+        // const isInVendorsList= some(
+        //   users,
+        //   (user) => user.id === id && !!user.vendor
+        // )
+        if (!isVendor && isInVendorsList) {
+          return isInVendorsList.id
+        }
+      })
+    )
+
+    const allPromise = Promise.all([
+      !isEmpty(deleteVendorsPayload) && deleteVendors(deleteVendorsPayload),
+      !isEmpty(newVendorsPayload) && createVendor(newVendorsPayload),
+    ])
+
+    try {
+      await allPromise
+      closeModal()
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.vendors_created_removed'),
+      })
+    } catch (errorData) {
+      const typedErrorData = errorData as ValidationError
+      if (typedErrorData.errors) {
+        map(typedErrorData.errors, (errorsArray, key) => {
+          const typedKey = key as FieldPath<FormValues>
+          const tKey = split(typedKey, '.')[1]
+          const fieldId = includes(typedKey, 'institution_user_id')
+            ? newVendorsPayload[toNumber(tKey)].institution_user_id
+            : deleteVendorsPayload[toNumber(tKey)]
+          const errorString = join(errorsArray, ',')
+          setError(fieldId, { type: 'backend', message: errorString })
+        })
+      }
+    }
   }
 
   const handleSearch = useCallback((event: { target: { value: string } }) => {
