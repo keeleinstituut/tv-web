@@ -66,35 +66,6 @@ export const useUpdateVendor = ({ id }: { id?: string }) => {
   }
 }
 
-// const parallelCreateDeleteVendors = (payload: any) => {
-//   new Promise(async (resolve, reject) => {})
-// }
-
-export const useParallelCreateAndDeleteVendors = () => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: parallelCreateDeleteVendor, isLoading } = useMutation({
-    mutationKey: ['vendors'],
-    mutationFn: async (payload: CreateVendorPayload) => {
-      return apiClient.post(endpoints.CREATE_VENDORS, {
-        ...payload,
-      })
-    },
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(['vendors'], (oldData?: VendorsDataType) => {
-        const { data: previousData } = oldData || {}
-        if (!previousData) return oldData
-        const newData = { ...previousData, ...data }
-        return { data: newData }
-      })
-    },
-  })
-
-  return {
-    parallelCreateDeleteVendor,
-    isLoading,
-  }
-}
-
 export const useCreateVendors = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: createVendor, isLoading } = useMutation({
@@ -119,6 +90,7 @@ export const useCreateVendors = () => {
     isLoading,
   }
 }
+
 export const useDeleteVendors = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteVendors, isLoading } = useMutation({
