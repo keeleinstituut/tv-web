@@ -23,6 +23,7 @@ export const endpoints = {
   TASKS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}workflow/tasks`,
   PROJECT_TM: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/project-managers-assignable-by-client`,
   PROJECT_CLIENT: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/assignable-clients`,
+  TRANSLATION_MEMORY: `${process.env.REACT_APP_TRANSLATION_MEMORY_API_BASE}tm`,
 }
 
 export const authEndpoints = {

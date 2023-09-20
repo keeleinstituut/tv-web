@@ -11,10 +11,7 @@ const NewTranslationMemory: FC = () => {
     <>
       <div className={classes.titleRow}>
         <h1>{t('translation_memories.new_translation_memory_title')}</h1>
-        <Tooltip
-          title={t('cheat_sheet.user_management.title')}
-          //modalContent={}
-        />
+        <Tooltip helpSectionKey="newTranslationMemory" />
       </div>
 
       <TranslationMemoryForm />

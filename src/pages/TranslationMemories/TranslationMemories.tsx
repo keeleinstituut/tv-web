@@ -16,10 +16,7 @@ const TranslationMemories: FC = () => {
     <>
       <div className={classes.titleRow}>
         <h1>{t('menu.translation_memories')}</h1>
-        <Tooltip
-          title={t('cheat_sheet.user_management.title')}
-          //modalContent={}
-        />
+        <Tooltip helpSectionKey="translationMemory" />
         <Button
           children={t('button.add_translation_memory')}
           href="/memories/new-memory"
