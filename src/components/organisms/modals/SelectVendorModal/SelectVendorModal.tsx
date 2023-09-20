@@ -32,7 +32,7 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
   handleFilterChange,
 }) => {
   const { t } = useTranslation()
-  const [searchValue, setSearchValue] = useState<string>()
+  const [searchValue, setSearchValue] = useState<string>('')
 
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
@@ -47,7 +47,13 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
   )
 
   const handleClearFilters = useCallback(() => {
-    handleFilterChange()
+    setSearchValue('')
+    handleFilterChange({
+      institution_user_name: '',
+      src_lang_classifier_value_id: [],
+      dst_lang_classifier_value_id: [],
+      skill_id: [],
+    })
   }, [handleFilterChange])
 
   return (
@@ -211,36 +217,17 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
       }
     >
       <Loader loading={isLoadingPrices} />
+
       <SelectVendorsTable
         data={prices}
         paginationData={paginationData}
         handleFilterChange={handleFilterChange}
         handleSortingChange={handleSortingChange}
         handlePaginationChange={handlePaginationChange}
+        filters={filters}
         taskSkills={taskSkills}
-        source_language_classifier_value_id={
-          source_language_classifier_value_id
-        }
-        destination_language_classifier_value_id={
-          destination_language_classifier_value_id
-        }
         control={control}
         hidden={isLoadingPrices}
-        filters={filters}
-
-        // {...{
-        //   data: prices,
-        //   paginationData,
-        //   handleFilterChange,
-        //   handleSortingChange,
-        //   handlePaginationChange,
-        //   taskSkills,
-        //   source_language_classifier_value_id,
-        //   destination_language_classifier_value_id,
-        //   control,
-        //   hidden: isLoadingPrices,
-        //   filters,
-        // }}
       />
     </ModalBase>
   )

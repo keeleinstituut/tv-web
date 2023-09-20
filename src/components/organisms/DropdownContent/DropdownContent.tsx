@@ -87,7 +87,6 @@ const DropdownContentComponent = forwardRef<
   } = useElementPosition({
     ref: wrapperRef,
     forceRecalculate: isOpen,
-    containingElementId: modalContentId,
   }) || {}
 
   useClickAway(() => {
@@ -96,8 +95,9 @@ const DropdownContentComponent = forwardRef<
     }
   }, [typedRef, wrapperRef])
 
+  // TODO: possibly also move this to "useElementPosition"
   const useLeftPosition = useMemo(
-    () => ratio && ratio < 1 && inViewport && !modalContentId,
+    () => (ratio || ratio === 0) && ratio < 1 && inViewport && !modalContentId,
     // isDragAndDropOpen changes, when this component is displayed
     // We don't want to update this state during any other time
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -393,7 +393,9 @@
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
-    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!"
+    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
+    "final_files_changed": "Valmisfailid muudetud",
+    "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud"
   },
   "notification": {
     "announcement": "Teade",
