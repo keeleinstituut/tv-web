@@ -64,8 +64,10 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const initialFilters = {
     statuses: [UserStatus.Active],
   }
-  const { users, paginationData, handlePaginationChange } =
-    useFetchUsers(initialFilters)
+  const { users, paginationData, handlePaginationChange } = useFetchUsers(
+    initialFilters,
+    true
+  )
 
   const usersData = useMemo(() => {
     return (
@@ -131,6 +133,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
         // )
         if (!isVendor && isInVendorsList) {
           return isInVendorsList.id
+          //return users.vendor.id
         }
       })
     )
