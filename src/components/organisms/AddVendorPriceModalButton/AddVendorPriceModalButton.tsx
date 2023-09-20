@@ -27,6 +27,7 @@ import {
   SubmitHandler,
   UseFormHandleSubmit,
   UseFormSetError,
+  useWatch,
 } from 'react-hook-form'
 import { showNotification } from '../NotificationRoot/NotificationRoot'
 import { ValidationError } from 'api/errorHandler'
@@ -118,6 +119,8 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
     }
   )
 
+  const formValues = useWatch({ control })
+
   const onAddPricesSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const transformedArray = flatMap(
@@ -175,6 +178,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
               `${payloadKey}.0.`,
               ''
             )
+            const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
 
             if (includes(typedKey, dstLangClassifierResult)) {
               setError(dstLangClassifierResult, {
@@ -184,6 +188,12 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
             }
             if (includes(typedKey, srcLangClassifierResult)) {
               setError(srcLangClassifierResult, {
+                type: 'backend',
+                message: errorString,
+              })
+            }
+            if (includes(typedKey, vendorIdResult)) {
+              setError(vendorIdResult, {
                 type: 'backend',
                 message: errorString,
               })

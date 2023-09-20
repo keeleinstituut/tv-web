@@ -102,35 +102,6 @@ export const useVendorFetch = ({ id }: { id?: string }) => {
   }
 }
 
-export const useFetchPrices = (initialFilters: GetPricesPayload) => {
-  const {
-    filters,
-    handlePaginationChange,
-    handleFilterChange,
-    handleSortingChange,
-  } = useFilters<GetPricesPayload>(initialFilters)
-
-  const { vendor_id } = initialFilters
-
-  const { isLoading, isError, data } = useQuery<PricesDataType>({
-    queryKey: ['prices', vendor_id],
-    queryFn: () => apiClient.get(endpoints.PRICES, filters),
-  })
-
-  const { meta: paginationData, data: prices } = data || {}
-
-  return {
-    isLoading,
-    isError,
-    prices,
-    paginationData,
-    filters,
-    handleFilterChange,
-    handleSortingChange,
-    handlePaginationChange,
-  }
-}
-
 export const useAllPricesFetch = (initialFilters?: GetPricesPayload) => {
   const {
     filters,
@@ -176,7 +147,7 @@ export const useCreatePrices = (vendor_id: string | undefined) => {
           return { data: newData }
         }
       )
-      queryClient.refetchQueries({ queryKey: ['prices'] })
+      queryClient.refetchQueries({ queryKey: ['allPrices'] })
     },
   })
 
@@ -207,7 +178,7 @@ export const useUpdatePrices = (vendor_id: string | undefined) => {
           return { data: newData }
         }
       )
-      queryClient.refetchQueries({ queryKey: ['prices'] })
+      queryClient.refetchQueries({ queryKey: ['allPrices'] })
     },
   })
 
@@ -238,7 +209,7 @@ export const useDeletePrices = (vendor_id: string | undefined) => {
           return { data: filteredData }
         }
       )
-      queryClient.refetchQueries({ queryKey: ['prices'] })
+      queryClient.refetchQueries({ queryKey: ['allPrices'] })
     },
   })
 

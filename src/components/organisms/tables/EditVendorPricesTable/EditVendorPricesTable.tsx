@@ -29,6 +29,8 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
 
   const columnHelper = createColumnHelper<PriceObject>()
 
+  console.log('editableSkills prices table', editableSkills)
+
   const columns = [
     columnHelper.accessor('skill_id', {
       header: () => t('vendors.skill'),
@@ -40,7 +42,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject[${row?.index}].character_fee`}
+            name={`priceObject.${row?.original?.id}.character_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.character_fee')}
@@ -56,7 +58,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject[${row?.index}].word_fee`}
+            name={`priceObject.${row?.original?.id}.word_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.word_fee')}
@@ -72,7 +74,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject[${row?.index}].page_fee`}
+            name={`priceObject.${row?.original?.id}.page_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.page_fee')}
@@ -88,7 +90,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject[${row?.index}].minute_fee`}
+            name={`priceObject.${row?.original?.id}.minute_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minute_fee')}
@@ -104,7 +106,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject[${row?.index}].hour_fee`}
+            name={`priceObject.${row?.original?.id}.hour_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.hour_fee')}
@@ -120,7 +122,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject[${row?.index}].minimal_fee`}
+            name={`priceObject.${row?.original?.id}.minimal_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minimal_fee')}

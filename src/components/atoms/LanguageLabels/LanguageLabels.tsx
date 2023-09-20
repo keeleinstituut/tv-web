@@ -5,12 +5,14 @@ import { Control, useWatch } from 'react-hook-form'
 import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 import classes from './classes.module.scss'
+import classNames from 'classnames'
 
 type LanguageLabelsProps = {
   srcLanguageValue?: string
   dstLanguageValues?: string[]
   control: Control<FormValues>
   languageOptions?: { label: string; value: string }[]
+  className?: string
 }
 
 const LanguageLabels: FC<LanguageLabelsProps> = ({
@@ -18,6 +20,7 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
   languageOptions,
   srcLanguageValue,
   dstLanguageValues,
+  className,
 }) => {
   const { t } = useTranslation()
 
@@ -40,7 +43,7 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
   if (!srcLanguageLabel || !dstLanguageLabels) return null
 
   return (
-    <>
+    <div className={classNames(className)}>
       <div className={classes.languageContianer}>
         <p className={classes.sourceLanguage}>{`${t(
           'vendors.source_language'
@@ -68,7 +71,7 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
           </p>
         ))}
       </div>
-    </>
+    </div>
   )
 }
 

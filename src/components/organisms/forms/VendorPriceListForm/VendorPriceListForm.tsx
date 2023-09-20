@@ -1,8 +1,8 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { chain, isEmpty, map, toString } from 'lodash'
+import { chain, find, isEmpty, map, reduce, some, toString } from 'lodash'
 import { Root } from '@radix-ui/react-form'
-import { useFetchPrices, useFetchSkills } from 'hooks/requests/useVendors'
+import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import DataTable, {
   TableSizeTypes,
@@ -22,9 +22,10 @@ export type FormValues = {
   src_lang_classifier_value_id?: string
   dst_lang_classifier_value_id?: string
   skill_id?: { [key: string]: boolean }
+  vendor_id?: string
   priceObject?: PriceObject[]
 } & {
-  [key: string]: number | string | undefined
+  [key in string]: number | string | undefined
 }
 
 export type PriceObject = {
@@ -40,9 +41,11 @@ export type PriceObject = {
   language_direction?: string
   source_language_classifier_value?: {
     name: string
+    id?: string
   }
   destination_language_classifier_value?: {
     name: string
+    id?: string
   }
   subRows?: PriceObject[]
 }
@@ -87,7 +90,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     prices: pricesData,
     paginationData,
     handlePaginationChange,
-  } = useFetchPrices({
+  } = useAllPricesFetch({
     vendor_id,
     order_direction: OrderDirection.Asc,
   })
@@ -143,9 +146,36 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       .value()
   }, [pricesData])
 
+  console.log('pricesData', pricesData)
+  console.log('skillsData', skillsData)
+
+  const defaultFormValues: FormValues = useMemo(
+    () => ({
+      src_lang_classifier_value_id: '',
+      dst_lang_classifier_value_id: '',
+      vendor_id: vendor_id,
+      priceObject: reduce(
+        skillsData,
+        (result, value) => {
+          return {
+            ...result,
+            [value.id]: {
+              isSelected: some(pricesData, { skill_id: value.id }),
+              ...find(pricesData, { skill_id: value.id }),
+            },
+          }
+        },
+        {}
+      ),
+    }),
+    [pricesData, skillsData, vendor_id]
+  )
+
+  console.log('defaultFormValues: ', defaultFormValues)
+
   const { handleSubmit, control, reset, setValue, setError } =
     useForm<FormValues>({
-      defaultValues: {},
+      values: defaultFormValues,
       mode: 'onChange',
     })
 
@@ -203,6 +233,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         const languagePairModalContent = !row.originalSubRows
           ? [row.original]
           : row.original.subRows || []
+
+        console.log('row', row)
 
         return (
           <div className={classes.iconsContainer}>

@@ -44,10 +44,11 @@ const FormProgressModal: FC<FormProgressProps> = ({
   const formErrors = formState.errors
   const valuesKey = keys(formErrors)[0]
 
-  const isErrorOnSecondStep = valuesKey === 'skill_id'
   const isErrorOnFirstStep =
     valuesKey === 'src_lang_classifier_value_id' ||
-    valuesKey === 'dst_lang_classifier_value_id'
+    valuesKey === 'dst_lang_classifier_value_id' ||
+    valuesKey === 'vendor_id'
+  const isErrorOnSecondStep = valuesKey === 'skill_id'
 
   useEffect(() => {
     if (isErrorOnFirstStep) {

@@ -1,4 +1,4 @@
-import { FC, JSXElementConstructor, ReactElement } from 'react'
+import { FC, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   AppearanceTypes,

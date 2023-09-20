@@ -16,20 +16,31 @@ import VendorPriceListEditContent from 'components/organisms/VendorPriceListEdit
 import {
   Control,
   FieldPath,
+  Path,
   SubmitHandler,
   UseFormHandleSubmit,
   UseFormSetError,
   UseFormSetValue,
   useFormState,
+  useWatch,
 } from 'react-hook-form'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useUpdatePrices } from 'hooks/requests/useVendors'
+import { useFetchSkills, useUpdatePrices } from 'hooks/requests/useVendors'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
+import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/VendorPriceListButtons'
+import DynamicForm, {
+  FieldProps,
+  FormInput,
+  InputTypes,
+} from '../DynamicForm/DynamicForm'
+import { DropdownSizeTypes } from '../SelectionControlsInput/SelectionControlsInput'
+import { Root } from '@radix-ui/react-form'
+import VendorPriceListSecondStep from '../VendorPriceListSecondStep/VendorPriceListSecondStep'
 
 type EditVendorPriceModalButtonProps = {
   languagePairModalContent: PriceObject[]
@@ -54,6 +65,8 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
   const { userPrivileges } = useAuth()
 
   const { updatePrices } = useUpdatePrices(vendorId)
+
+  const { skills: skillsData } = useFetchSkills()
 
   const isSubmitting = useFormState({ control }).isSubmitting
 
@@ -115,7 +128,13 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
     [resetForm, setError, t, updatePrices]
   )
 
-  const handleEditPriceModal = (languagePairModalContent: PriceObject[]) => {
+  const formValues = useWatch({ control })
+
+  console.log('formValues edit', formValues)
+
+  const handleEditSinglePriceModal = (
+    languagePairModalContent: PriceObject[]
+  ) => {
     const languagePairModalData = map(
       languagePairModalContent,
       ({
@@ -166,13 +185,151 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
     })
   }
 
+  const skillsFormFields: FieldProps<FormValues>[] = map(
+    skillsData,
+    ({ id, name }, index) => {
+      return {
+        key: index,
+        inputType: InputTypes.Checkbox,
+        ariaLabel: name || '',
+        label: name,
+        name: `priceObject.${id}.isSelected` as Path<FormValues>,
+        className: classes.skillsField,
+        rules: {
+          required: false,
+        },
+      }
+    }
+  )
+
+  console.log('skillsFormFields', skillsFormFields)
+
+  const handleEditMultiplePriceModal = (
+    languagePairModalContent: PriceObject[]
+  ) => {
+    const languagePairModalData = map(
+      languagePairModalContent,
+      ({
+        id,
+        character_fee,
+        hour_fee,
+        minute_fee,
+        minimal_fee,
+        page_fee,
+        word_fee,
+        skill,
+      }) => {
+        return {
+          id,
+          character_fee,
+          hour_fee,
+          minimal_fee,
+          minute_fee,
+          page_fee,
+          word_fee,
+          skill_id: skill?.name || '',
+        }
+      }
+    )
+
+    console.log('languagePairModalContent', languagePairModalContent)
+
+    setValue('priceObject', languagePairModalData)
+
+    const srcLanguageValue =
+      languagePairModalContent[0]?.source_language_classifier_value?.name || ''
+    const dstLanguageValue =
+      languagePairModalContent[0]?.destination_language_classifier_value
+        ?.name || ''
+
+    const srcLanguageValueOption = {
+      label: srcLanguageValue,
+      value: srcLanguageValue,
+    }
+    const dstLanguageValueOption = {
+      label: dstLanguageValue,
+      value: dstLanguageValue,
+    }
+
+    showModal(ModalTypes.FormProgress, {
+      formData: [
+        {
+          label: t('vendors.add_language_pairs'),
+          title: t('vendors.choose_language_pairs'),
+          helperText: t('vendors.language_pairs_helper_text'),
+          modalContent: (
+            <Root className={classes.languageLabelContainer}>
+              <FormInput
+                name={'name??'}
+                ariaLabel={srcLanguageValue}
+                control={control}
+                defaultValue={srcLanguageValue}
+                options={[srcLanguageValueOption] || []}
+                inputType={InputTypes.Selections}
+                dropdownSize={DropdownSizeTypes.L}
+                disabled
+                label={`${t('vendors.source_language')}*`}
+                className={classes.languagePairSelection}
+              />
+              <FormInput
+                name={'name??????????'}
+                ariaLabel={dstLanguageValue}
+                control={control}
+                defaultValue={dstLanguageValue}
+                options={[dstLanguageValueOption] || []}
+                inputType={InputTypes.Selections}
+                dropdownSize={DropdownSizeTypes.L}
+                disabled
+                label={`${t('vendors.destination_language')}*`}
+                className={classes.languagePairSelection}
+              />
+            </Root>
+          ),
+        },
+        {
+          label: t('vendors.add_skills'),
+          title: t('vendors.choose_skills'),
+          helperText: t('vendors.skills_helper_text'),
+          modalContent: (
+            <VendorPriceListSecondStep
+              skillsFormFields={skillsFormFields}
+              control={control}
+              // languageOptions={languageFilter}
+              customSkillsDynamicFormClass={classes.skillsDynamicForm}
+            />
+          ),
+        },
+        {
+          // submitForm: handleSubmit(onEditPricesSubmit),
+          label: t('vendors.add_price_list'),
+          title: t('vendors.price_list_change'),
+          helperText: t('vendors.price_list_change_description'),
+          modalContent: (
+            <VendorPriceListEditContent
+              control={control}
+              editableSkills={languagePairModalData}
+              srcLanguageValue={srcLanguageValue}
+              dstLanguageValues={[dstLanguageValue]}
+            />
+          ),
+          isLoading: isSubmitting,
+          resetForm: resetForm,
+        },
+      ],
+      submitForm: handleSubmit(onEditPricesSubmit),
+      resetForm: resetForm(),
+      buttonComponent: <VendorPriceListButtons control={control} />,
+      control: control,
+    })
+  }
+
   return (
     <Button
       appearance={AppearanceTypes.Text}
       icon={Edit}
       ariaLabel={t('vendors.edit_language_pair')}
       className={classes.editIcon}
-      onClick={() => handleEditPriceModal(languagePairModalContent)}
+      onClick={() => handleEditMultiplePriceModal(languagePairModalContent)}
       hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
     />
   )
