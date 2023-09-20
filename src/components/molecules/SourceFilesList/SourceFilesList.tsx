@@ -131,7 +131,6 @@ const SourceFilesList = <TFormValues extends FieldValues>({
               hidden={!isPdf}
               tooltipContent={t('tooltip.file_format_helper')}
               className={classes.innerTooltip}
-              horizontalScrollContainerId="sourceFilesWrapper"
             />
           </div>
         )
@@ -216,7 +215,6 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         data={filesData}
         columns={columns}
         tableSize={TableSizeTypes.M}
-        wrapperId={'sourceFilesWrapper'}
         className={classes.filesListContainer}
         hidePagination
         headComponent={

@@ -1,7 +1,6 @@
 import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
-import TagsCheatSheet from 'components/molecules/cheatSheets/TagManagementCheatSheet'
 import Container from 'components/atoms/Container/Container'
 import DynamicForm, {
   FieldProps,
@@ -48,7 +47,7 @@ const Tags: FC = () => {
 
   const sortedData = fromPairs(sortBy(toPairs(groupedData), 0))
 
-  const tagCategoryOptions = map(omit(TagTypes, TagTypes.Skills), (type) => {
+  const tagCategoryOptions = map(omit(TagTypes, 'Skills'), (type) => {
     return {
       label: t(`tag.type.${type}`),
       value: type || '',
@@ -126,10 +125,7 @@ const Tags: FC = () => {
     <>
       <div className={classes.tagsHeader}>
         <h1>{t('tag.tag_management')}</h1>
-        <Tooltip
-          title={t('cheat_sheet.user_management.title')}
-          modalContent={<TagsCheatSheet />}
-        />
+        <Tooltip helpSectionKey="tags" />
       </div>
       <Container className={classes.tagsContainer}>
         <div>
@@ -163,7 +159,10 @@ const Tags: FC = () => {
             type={type}
             isEditable={
               type !== TagTypes.Skills ||
-              !includes(userPrivileges, Privileges.EditTag)
+              !includes(
+                userPrivileges,
+                Privileges.EditTag || Privileges.AddTag || Privileges.DeleteTag
+              )
             }
           />
         ))}

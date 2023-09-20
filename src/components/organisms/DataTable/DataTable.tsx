@@ -2,8 +2,10 @@ import {
   CSSProperties,
   ReactElement,
   Ref,
+  createContext,
   forwardRef,
   useEffect,
+  useId,
   useState,
 } from 'react'
 import classes from './classes.module.scss'
@@ -34,6 +36,16 @@ export enum TableSizeTypes {
   S = 's',
 }
 
+interface TableContextType {
+  horizontalWrapperId?: string
+  tableRef?: Ref<HTMLDivElement> | null
+}
+
+export const TableContext = createContext<TableContextType>({
+  horizontalWrapperId: undefined,
+  tableRef: null,
+})
+
 type DataTableProps<TData extends RowData> = {
   data: TData[]
   columns: ColumnDef<TData>[]
@@ -46,7 +58,8 @@ type DataTableProps<TData extends RowData> = {
   className?: string
   subRows?: Row<TData>[] | undefined
   pageSizeOptions?: { label: string; value: string }[]
-  wrapperId?: string
+  tableWrapperClassName?: string
+  hidden?: boolean
   getSubRows?:
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
@@ -75,10 +88,12 @@ const DataTable = <TData,>(
     pageSizeOptions,
     hidePagination = false,
     headComponent,
-    wrapperId = 'tableWrapper',
+    tableWrapperClassName,
+    hidden,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
+  const [horizontalWrapperId] = useState(useId())
   const { per_page, last_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [pagination, setPagination] = useState<PaginationState>({
@@ -113,38 +128,54 @@ const DataTable = <TData,>(
     getSubRows: getSubRows,
     getExpandedRowModel: getExpandedRowModel(),
   })
+  if (hidden) {
+    return null
+  }
   return (
-    <Container ref={ref} className={className}>
-      <h4 className={classes.title} hidden={!title}>
-        {title}
-      </h4>
-      {headComponent}
-      <div className={classes.tableWrapper} id={wrapperId}>
-        <table className={classNames(classes.dataTable, classes[tableSize])}>
-          <TableHeaderGroup
-            table={table}
-            onSortingChange={onSortingChange}
-            onFiltersChange={onFiltersChange}
-          />
-          <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <TablePagination
-        hidden={hidePagination}
-        table={table}
-        pageSizeOptions={pageSizeOptions}
-      />
-    </Container>
+    <TableContext.Provider
+      value={{
+        horizontalWrapperId,
+        tableRef: ref,
+      }}
+    >
+      <Container ref={ref} className={className}>
+        <h4 className={classes.title} hidden={!title}>
+          {title}
+        </h4>
+        {headComponent}
+        <div
+          className={classNames(classes.tableWrapper, tableWrapperClassName)}
+          id={horizontalWrapperId}
+        >
+          <table className={classNames(classes.dataTable, classes[tableSize])}>
+            <TableHeaderGroup
+              table={table}
+              onSortingChange={onSortingChange}
+              onFiltersChange={onFiltersChange}
+            />
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <TablePagination
+          hidden={hidePagination}
+          table={table}
+          pageSizeOptions={pageSizeOptions}
+        />
+      </Container>
+    </TableContext.Provider>
   )
 }
 

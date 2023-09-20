@@ -7,6 +7,7 @@ import { useInViewport } from 'ahooks'
 import classNames from 'classnames'
 
 import classes from './classes.module.scss'
+import useTableContext from 'hooks/useTableContext'
 
 interface TooltipContentProps {
   tooltipContent?: string
@@ -14,19 +15,20 @@ interface TooltipContentProps {
   wrapperRef?: RefObject<HTMLDivElement>
   isVisible?: boolean
   horizontalScrollContainerId?: string
+  className?: string
 }
 
 const TooltipContent: FC<TooltipContentProps> = ({
   containerRef,
   tooltipContent,
   isVisible,
-  horizontalScrollContainerId,
   wrapperRef,
-  ...rest
+  className,
 }) => {
+  const { horizontalWrapperId } = useTableContext()
   const contentRef = useRef(null)
-  const { left, top } =
-    useElementPosition(wrapperRef, horizontalScrollContainerId) || {}
+  const { left, top } = useElementPosition({ ref: wrapperRef }) || {}
+
   const [inViewport, ratio] = useInViewport(contentRef, { root: containerRef })
   const useBottomPosition = useMemo(
     () => ratio && ratio < 1 && inViewport,
@@ -36,14 +38,15 @@ const TooltipContent: FC<TooltipContentProps> = ({
     [inViewport]
   )
 
-  if (horizontalScrollContainerId) {
+  if (horizontalWrapperId) {
     return createPortal(
       <p
         ref={contentRef}
         className={classNames(
           classes.tooltipContent,
           useBottomPosition && classes.bottomPosition,
-          isVisible && classes.visible
+          isVisible && classes.visible,
+          className
         )}
         style={{
           left: (left || 0) - 24,
@@ -62,7 +65,8 @@ const TooltipContent: FC<TooltipContentProps> = ({
       ref={contentRef}
       className={classNames(
         classes.tooltipContent,
-        useBottomPosition && classes.bottomPosition
+        useBottomPosition && classes.bottomPosition,
+        className
       )}
     >
       {tooltipContent}
@@ -74,8 +78,9 @@ const Icon: FC<IconProps> = ({
   icon: IconComponent = Info,
   ariaLabel,
   className,
+  hidden,
 }) => {
-  if (!IconComponent) return null
+  if (!IconComponent || hidden) return null
   return (
     <IconComponent
       aria-label={ariaLabel}
@@ -89,6 +94,8 @@ interface SmallTooltipProps extends TooltipContentProps {
   ariaLabel?: string
   hidden?: boolean
   className?: string
+  contentClassName?: string
+  hideIcon?: boolean
 }
 
 const SmallTooltip: FC<SmallTooltipProps> = ({
@@ -97,8 +104,11 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
   hidden,
   className,
   horizontalScrollContainerId,
+  hideIcon,
+  contentClassName,
   ...rest
 }) => {
+  const { horizontalWrapperId } = useTableContext()
   const [isVisible, setVisible] = useState(false)
 
   const wrapperRef = useRef(null)
@@ -107,7 +117,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
   return (
     <div
       className={classNames(classes.tooltipWrapper, className)}
-      {...(horizontalScrollContainerId
+      {...(horizontalWrapperId
         ? {
             onMouseEnter: () => setVisible(true),
             onMouseLeave: () => setVisible(false),
@@ -119,10 +129,10 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
         isVisible={isVisible}
         wrapperRef={wrapperRef}
         horizontalScrollContainerId={horizontalScrollContainerId}
+        className={contentClassName}
         {...rest}
       />
-
-      <Icon icon={icon} ariaLabel={ariaLabel} />
+      <Icon icon={icon} ariaLabel={ariaLabel} hidden={hideIcon} />
     </div>
   )
 }

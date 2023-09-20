@@ -107,7 +107,6 @@ const OrderFilesList = <TFormValues extends FieldValues>({
               dropdownSize={DropdownSizeTypes.M}
               className={classes.fitContent}
               usePortal
-              horizontalScrollContainerId="tableWrapper"
             />
           )
         }
@@ -168,6 +167,7 @@ const OrderFilesList = <TFormValues extends FieldValues>({
         classes.filesListContainer,
         isEmpty(filesData) && classes.hiddenContent
       )}
+      tableWrapperClassName={classes.tableWrapperClassName}
       hidePagination
       headComponent={
         <div className={classes.titleRow}>

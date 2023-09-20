@@ -3,22 +3,13 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
-import {
-  map,
-  uniqBy,
-  concat,
-  compact,
-  find,
-  isEmpty,
-  intersection,
-  join,
-} from 'lodash'
+import { map, uniqBy, concat, compact, find, includes, join } from 'lodash'
 import {
   InputTypes,
   FormInput,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import {
-  useFetchInfiniteTranslationUsers,
+  useFetchInfiniteProjectPerson,
   useFetchUser,
 } from 'hooks/requests/useUsers'
 import DetailsRow from 'components/atoms/DetailsRow/DetailsRow'
@@ -83,7 +74,7 @@ const PersonSection = <TFormValues extends FieldValues>({
   const { institutionUserId, userPrivileges } = useAuth()
   // fetch currently logged in user
   const { isLoading, user } = useFetchUser({
-    userId: institutionUserId,
+    id: institutionUserId,
   })
   // Fetch list of users bases on PersonSectionType
   const {
@@ -92,14 +83,12 @@ const PersonSection = <TFormValues extends FieldValues>({
     isFetching,
     paginationData,
     fetchNextPage,
-  } = useFetchInfiniteTranslationUsers({
-    per_page: 10,
-    // TODO: not sure yet whether filtering param will be privileges
-    privileges:
-      type === PersonSectionTypes.Client
-        ? [Privileges.CreateProject]
-        : [Privileges.ReceiveAndManageProject],
-  })
+  } = useFetchInfiniteProjectPerson(
+    {
+      per_page: 10,
+    },
+    type === PersonSectionTypes.Client ? 'client' : 'tm'
+  )
   // Pass search as a param and fetch again
   const handleSearchUsers = useCallback(
     (newValue: string) => {
@@ -117,11 +106,9 @@ const PersonSection = <TFormValues extends FieldValues>({
   }, [paginationData, isFetching, fetchNextPage])
 
   const usersList = useMemo(() => {
-    const isCurrentUserPotentialManager = !isEmpty(
-      intersection(
-        [Privileges.ManageProject, Privileges.ReceiveAndManageProject],
-        userPrivileges
-      )
+    const isCurrentUserPotentialManager = includes(
+      userPrivileges,
+      Privileges.ManageProject
     )
 
     const shouldAddCurrentUser =

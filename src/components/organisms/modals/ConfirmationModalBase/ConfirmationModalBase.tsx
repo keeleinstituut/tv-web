@@ -16,20 +16,27 @@ export interface ConfirmationModalBaseProps {
   closeModal: () => void
   handleProceed?: () => void
   handleCancel?: () => void
+  helperText?: string | ReactElement
   className?: string
   size?: ModalSizeTypes
-  helperText?: string
+  proceedButtonDisabled?: boolean
+  proceedButtonLoading?: boolean
+  cancelButtonDisabled?: boolean
 }
 
 const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
   title,
   cancelButtonContent,
+  cancelButtonDisabled,
   proceedButtonContent,
+  proceedButtonDisabled,
+  proceedButtonLoading,
   modalContent,
   isModalOpen,
   closeModal,
   handleProceed,
   className,
+  helperText,
   handleCancel,
   size,
   ...rest
@@ -42,12 +49,14 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}
       buttonsPosition={ButtonPositionTypes.Right}
+      helperText={helperText}
       className={className}
       size={size}
       buttons={[
         {
           appearance: AppearanceTypes.Secondary,
           children: cancelButtonContent || t('button.no'),
+          disabled: cancelButtonDisabled,
           size: SizeTypes.M,
           onClick: () => {
             if (handleCancel) {
@@ -59,6 +68,8 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
         },
         {
           appearance: AppearanceTypes.Primary,
+          disabled: proceedButtonDisabled,
+          loading: proceedButtonLoading,
           onClick: () => {
             if (handleProceed) {
               handleProceed()

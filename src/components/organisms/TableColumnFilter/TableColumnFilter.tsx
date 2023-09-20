@@ -1,4 +1,4 @@
-import { FC, SVGProps, useState } from 'react'
+import { FC, SVGProps, useState, useRef } from 'react'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -17,6 +17,8 @@ type FilterProps = {
   buttons?: boolean
   ariaLabel: string
   value?: string | string[]
+  onEndReached?: () => void
+  onSearch?: (value: string) => void
   showSearch?: boolean
 }
 
@@ -30,8 +32,12 @@ const TableColumnFilter = ({
   buttons,
   ariaLabel,
   value,
+  onEndReached,
+  onSearch,
   showSearch,
 }: FilterProps) => {
+  const dropdownRef = useRef(null)
+  const wrapperRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleDropdown = () => {
@@ -41,7 +47,7 @@ const TableColumnFilter = ({
   if (hidden) return null
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} ref={wrapperRef}>
       <Button
         onClick={toggleDropdown}
         appearance={AppearanceTypes.Text}
@@ -63,6 +69,11 @@ const TableColumnFilter = ({
         setIsOpen={setIsOpen}
         className={classes.dropDown}
         showSearch={showSearch}
+        wrapperRef={wrapperRef}
+        clickAwayInputRef={dropdownRef}
+        onEndReached={onEndReached}
+        onSearch={onSearch}
+        usePortal
       />
     </div>
   )
