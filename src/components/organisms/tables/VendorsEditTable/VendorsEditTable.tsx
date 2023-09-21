@@ -21,6 +21,7 @@ export type VendorUser = {
   institution_user_id: string
   name?: string
   isVendor?: boolean
+  vendor_id?: string
 }
 
 const columnHelper = createColumnHelper<VendorUser>()
@@ -47,14 +48,24 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
       footer: (info) => info.column.id,
       cell: (info) => {
         return (
-          <FormInput
-            name={info.row.original.institution_user_id}
-            ariaLabel={t('vendors.vendor')}
-            control={control}
-            defaultValue={info.row.original.isVendor}
-            inputType={InputTypes.Checkbox}
-            errorZIndex={100}
-          />
+          <>
+            <FormInput
+              name={`${info.row.original.institution_user_id}.isVendor`}
+              ariaLabel={t('vendors.vendor')}
+              control={control}
+              defaultValue={info.row.original.isVendor}
+              inputType={InputTypes.Checkbox}
+              errorZIndex={100}
+            />
+            <FormInput
+              name={`${info.row.original.institution_user_id}.vendor_id`}
+              ariaLabel={t('vendors.vendor')}
+              control={control}
+              defaultValue={info.row.original.vendor_id}
+              inputType={InputTypes.Text}
+              hidden={true}
+            />
+          </>
         )
       },
       meta: {

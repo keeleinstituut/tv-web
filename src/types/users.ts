@@ -73,6 +73,7 @@ export type UserPayloadType = PaginationFunctionType &
     // TODO: not sure if these fields will be called name and privileges or something else
     name?: string
     privileges?: Privileges[]
+    fullname?: string
   }
 
 export interface UsersDataType {

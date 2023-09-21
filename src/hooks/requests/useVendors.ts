@@ -82,6 +82,10 @@ export const useCreateVendors = () => {
         const newData = { ...previousData, ...data }
         return { data: newData }
       })
+      queryClient.refetchQueries({
+        queryKey: ['translationUsers'],
+        type: 'active',
+      })
     },
   })
 
@@ -106,6 +110,10 @@ export const useDeleteVendors = () => {
         if (!previousData) return oldData
         const newData = { ...previousData, ...data }
         return { data: newData }
+      })
+      queryClient.refetchQueries({
+        queryKey: ['translationUsers'],
+        type: 'active',
       })
     },
   })

@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   map,
   includes,
@@ -11,6 +11,8 @@ import {
   split,
   join,
   toNumber,
+  reduce,
+  debounce,
 } from 'lodash'
 import ModalBase, {
   ButtonPositionTypes,
@@ -29,12 +31,7 @@ import TextInput from 'components/molecules/TextInput/TextInput'
 import classes from './classes.module.scss'
 import { PaginationFunctionType, ResponseMetaTypes } from 'types/collective'
 import { useFetchUsers } from 'hooks/requests/useUsers'
-import {
-  useCreateVendors,
-  useDeleteVendors,
-  useVendorsFetch,
-} from 'hooks/requests/useVendors'
-
+import { useCreateVendors, useDeleteVendors } from 'hooks/requests/useVendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
@@ -48,7 +45,10 @@ export interface VendorsEditModalProps {
 }
 
 type FormValues = {
-  [key in string]: boolean
+  [key in string]: {
+    isVendor: boolean
+    vendor_id: string
+  }
 }
 
 const VendorsEditModal: FC<VendorsEditModalProps> = ({
@@ -57,16 +57,26 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
 }) => {
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
-  const { vendors } = useVendorsFetch({ limit: undefined })
   const { createVendor } = useCreateVendors()
   const { deleteVendors } = useDeleteVendors()
 
   const initialFilters = {
     statuses: [UserStatus.Active],
   }
-  const { users, paginationData, handlePaginationChange } = useFetchUsers(
-    initialFilters,
-    true
+  const { users, paginationData, handlePaginationChange, handleOnSearch } =
+    useFetchUsers(initialFilters, true)
+
+  const resetSearch = () => {
+    setSearchValue('')
+    handleOnSearch({ fullname: '' })
+  }
+
+  const handleSearch = useCallback(
+    (event: { target: { value: string } }) => {
+      setSearchValue(event.target.value)
+      handleOnSearch({ fullname: event.target.value })
+    },
+    [handleOnSearch]
   )
 
   const usersData = useMemo(() => {
@@ -76,24 +86,12 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
         return {
           institution_user_id: id,
           name: name,
-          //is BE is ready then it will be
-          // isVendor: !!vendor, true if vendor has object and false if null or empty object?
-          isVendor: some(
-            vendors,
-            (vendor) => vendor.institution_user_id === id
-          ),
+          vendor_id: vendor?.id,
+          isVendor: !!vendor,
         }
       }) || {}
     )
-  }, [users, vendors])
-
-  const filterBySearch = useMemo(() => {
-    if (!!searchValue) {
-      return filter(usersData, ({ name }) =>
-        includes(toLower(name), toLower(searchValue))
-      )
-    } else return usersData
-  }, [searchValue, usersData])
+  }, [users])
 
   const { control, handleSubmit, reset, setError } = useForm<FormValues>({
     mode: 'onChange',
@@ -101,16 +99,11 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const newVendorsPayload = compact(
-      map(data, (isVendor, id) => {
-        const isNotInVendorsList = !some(
-          vendors,
-          (vendor) => vendor.institution_user_id === id
+      map(data, ({ isVendor }, id) => {
+        const isNotInVendorsList = some(
+          users,
+          (user) => user.id === id && !user.vendor
         )
-        // if BE is ready it should be like that
-        // const isNotInVendorsList= some(
-        //   users,
-        //   (user) => user.id === id && !user.vendor
-        // )
 
         if (isVendor && isNotInVendorsList) {
           return {
@@ -121,19 +114,13 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     )
 
     const deleteVendorsPayload = compact(
-      map(data, (isVendor, id) => {
-        const isInVendorsList = find(
-          vendors,
-          (vendor) => vendor.institution_user_id === id
+      map(data, ({ isVendor, vendor_id }, id) => {
+        const isInVendorsList = some(
+          users,
+          (user) => user.id === id && !!user.vendor
         )
-        // if BE is ready it should be like that
-        // const isInVendorsList= some(
-        //   users,
-        //   (user) => user.id === id && !!user.vendor
-        // )
         if (!isVendor && isInVendorsList) {
-          return isInVendorsList.id
-          //return users.vendor.id
+          return vendor_id
         }
       })
     )
@@ -145,6 +132,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
 
     try {
       await allPromise
+      resetSearch()
       closeModal()
       showNotification({
         type: NotificationTypes.Success,
@@ -167,13 +155,6 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     }
   }
 
-  const handleSearch = useCallback((event: { target: { value: string } }) => {
-    setSearchValue(event.target.value)
-    //   if (onSearch) {
-    //     debounce(onSearch, 300)(event.target.value)
-    //   }
-  }, [])
-
   return (
     <ModalBase
       title={t('label.add_remove_vendor')}
@@ -188,6 +169,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
           onClick: () => {
             closeModal()
             reset()
+            resetSearch()
           },
         },
         {
@@ -209,7 +191,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
           isSearch
         />
         <VendorsEditTable
-          data={filterBySearch}
+          data={usersData}
           control={control}
           {...{
             paginationData,
