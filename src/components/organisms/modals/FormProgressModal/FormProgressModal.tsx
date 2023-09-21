@@ -5,7 +5,7 @@ import ModalBase, {
 } from 'components/organisms/ModalBase/ModalBase'
 import React, { FC, ReactElement, useEffect, useState } from 'react'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
-import { find, keys, map, size } from 'lodash'
+import { filter, find, isEmpty, keys, map, size } from 'lodash'
 import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 import { Control, useFormState } from 'react-hook-form'
 
@@ -17,8 +17,8 @@ interface FormDataProps {
   helperText: string
   modalContent: ReactElement | string
   buttonComponent?: ReactElement
+  showOnly?: boolean
 }
-
 export interface FormProgressProps {
   formData?: FormDataProps[]
   isModalOpen?: boolean
@@ -62,9 +62,14 @@ const FormProgressModal: FC<FormProgressProps> = ({
     }
   }, [isErrorOnFirstStep, isErrorOnSecondStep, isModalOpen])
 
-  const steps = map(formData, ({ label }) => {
+  const filteredData = filter(formData, 'showOnly')
+
+  const stepData = isEmpty(filteredData) ? formData : filteredData
+
+  const steps = map(stepData, ({ label }) => {
     return { label }
   })
+
   const handleProceed = () => {
     if (size(steps) === activeStep) {
       if (submitForm) {
@@ -81,7 +86,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
     closeModal()
     setActiveStep(1)
   }
-  const modalData = find(formData, (_, index) => index + 1 === activeStep)
+  const modalData = find(stepData, (_, index) => index + 1 === activeStep)
   const { title, helperText, modalContent } = modalData || {}
 
   const ButtonComponent = buttonComponent
@@ -100,11 +105,13 @@ const FormProgressModal: FC<FormProgressProps> = ({
       open={!!isModalOpen}
       buttonsPosition={ButtonPositionTypes.SpaceBetween}
       progressBar={
-        <ProgressBar
-          activeStep={activeStep}
-          steps={steps}
-          setActiveStep={setActiveStep}
-        />
+        size(steps) > 1 ? (
+          <ProgressBar
+            activeStep={activeStep}
+            steps={steps}
+            setActiveStep={setActiveStep}
+          />
+        ) : undefined
       }
       className={classes.progressBarHelperText}
       size={ModalSizeTypes.Big}

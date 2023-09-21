@@ -11,6 +11,8 @@ type VendorPriceListSecondStepProps = {
   control: Control<FormValues>
   languageOptions?: { label: string; value: string }[]
   customSkillsDynamicFormClass?: string
+  srcLanguageValue?: string
+  dstLanguageValues?: string[]
 }
 
 const VendorPriceListSecondStep: FC<VendorPriceListSecondStepProps> = ({
@@ -18,10 +20,17 @@ const VendorPriceListSecondStep: FC<VendorPriceListSecondStepProps> = ({
   control,
   languageOptions,
   customSkillsDynamicFormClass,
+  srcLanguageValue,
+  dstLanguageValues,
 }) => {
   return (
     <>
-      <LanguageLabels control={control} languageOptions={languageOptions} />
+      <LanguageLabels
+        control={control}
+        languageOptions={languageOptions}
+        srcLanguageValue={srcLanguageValue}
+        dstLanguageValues={dstLanguageValues}
+      />
       <DynamicForm
         fields={skillsFormFields}
         control={control}

@@ -123,35 +123,35 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
 
   const onAddPricesSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const transformedArray = flatMap(
-        values.dst_lang_classifier_value_id,
-        (dstValue) =>
-          map(
-            keys(pickBy(values.skill_id, (value) => value === true)),
-            (key, index) => {
-              return {
-                vendor_id: vendorId || '',
-                skill_id: key.replace(/_\d+$/, '') || '',
-                src_lang_classifier_value_id:
-                  values['src_lang_classifier_value_id'] || '',
-                dst_lang_classifier_value_id: dstValue || '',
-                character_fee: toNumber(values[`character_fee-${index}`]) || 0,
-                word_fee: toNumber(values[`word_fee-${index}`]) || 0,
-                page_fee: toNumber(values[`page_fee-${index}`]) || 0,
-                minute_fee: toNumber(values[`minute_fee-${index}`]) || 0,
-                hour_fee: toNumber(values[`hour_fee-${index}`]) || 0,
-                minimal_fee: toNumber(values[`minimal_fee-${index}`]) || 0,
-              }
-            }
-          )
-      )
+      // const transformedArray = flatMap(
+      //   values.dst_lang_classifier_value_id,
+      //   (dstValue) =>
+      //     map(
+      //       keys(pickBy(values.skill_id, (value) => value === true)),
+      //       (key, index) => {
+      //         return {
+      //           vendor_id: vendorId || '',
+      //           skill_id: key.replace(/_\d+$/, '') || '',
+      //           src_lang_classifier_value_id:
+      //             values['src_lang_classifier_value_id'] || '',
+      //           dst_lang_classifier_value_id: dstValue || '',
+      //           character_fee: toNumber(values[`character_fee-${index}`]) || 0,
+      //           word_fee: toNumber(values[`word_fee-${index}`]) || 0,
+      //           page_fee: toNumber(values[`page_fee-${index}`]) || 0,
+      //           minute_fee: toNumber(values[`minute_fee-${index}`]) || 0,
+      //           hour_fee: toNumber(values[`hour_fee-${index}`]) || 0,
+      //           minimal_fee: toNumber(values[`minimal_fee-${index}`]) || 0,
+      //         }
+      //       }
+      //     )
+      // )
 
-      const payload: CreatePricesPayload = {
-        data: [...transformedArray],
-      }
+      // const payload: CreatePricesPayload = {
+      //   data: [...transformedArray],
+      // }
 
       try {
-        await createPrices(payload)
+        // await createPrices(payload)
 
         showNotification({
           type: NotificationTypes.Success,
@@ -167,37 +167,37 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
           map(typedErrorData.errors, (errorsArray, key) => {
             const typedKey = key as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
-            const payloadKey = keys(payload)[0]
-            const dstLangClassifierResult = replace(
-              typedKey,
-              `${payloadKey}.0.`,
-              ''
-            )
-            const srcLangClassifierResult = replace(
-              typedKey,
-              `${payloadKey}.0.`,
-              ''
-            )
-            const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
+            // const payloadKey = keys(payload)[0]
+            // const dstLangClassifierResult = replace(
+            //   typedKey,
+            //   `${payloadKey}.0.`,
+            //   ''
+            // )
+            // const srcLangClassifierResult = replace(
+            //   typedKey,
+            //   `${payloadKey}.0.`,
+            //   ''
+            // )
+            // const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
 
-            if (includes(typedKey, dstLangClassifierResult)) {
-              setError(dstLangClassifierResult, {
-                type: 'backend',
-                message: errorString,
-              })
-            }
-            if (includes(typedKey, srcLangClassifierResult)) {
-              setError(srcLangClassifierResult, {
-                type: 'backend',
-                message: errorString,
-              })
-            }
-            if (includes(typedKey, vendorIdResult)) {
-              setError(vendorIdResult, {
-                type: 'backend',
-                message: errorString,
-              })
-            }
+            // if (includes(typedKey, dstLangClassifierResult)) {
+            //   setError(dstLangClassifierResult, {
+            //     type: 'backend',
+            //     message: errorString,
+            //   })
+            // }
+            // if (includes(typedKey, srcLangClassifierResult)) {
+            //   setError(srcLangClassifierResult, {
+            //     type: 'backend',
+            //     message: errorString,
+            //   })
+            // }
+            // if (includes(typedKey, vendorIdResult)) {
+            //   setError(vendorIdResult, {
+            //     type: 'backend',
+            //     message: errorString,
+            //   })
+            // }
           })
         }
       }

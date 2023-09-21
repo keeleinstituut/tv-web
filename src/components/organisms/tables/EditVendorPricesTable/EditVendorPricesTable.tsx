@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control } from 'react-hook-form'
+import { Control, useWatch } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import {
   FormInput,
@@ -15,25 +15,28 @@ import {
 } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 import classes from './classes.module.scss'
+import { filter } from 'lodash'
 
 type EditPricesTableProps = {
   control: Control<FormValues>
-  editableSkills: PriceObject[]
+  languageDirectionKey: string
 }
 
 const EditVendorPricesTable: FC<EditPricesTableProps> = ({
   control,
-  editableSkills,
+  languageDirectionKey,
 }) => {
   const { t } = useTranslation()
 
   const columnHelper = createColumnHelper<PriceObject>()
 
-  console.log('editableSkills prices table', editableSkills)
-
   const columns = [
-    columnHelper.accessor('skill_id', {
+    columnHelper.accessor('skill', {
       header: () => t('vendors.skill'),
+      cell: ({ getValue }) => {
+        const skillName = getValue()
+        return <span>{skillName?.name}</span>
+      },
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('character_fee', {
@@ -42,7 +45,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject.${row?.original?.id}.character_fee`}
+            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.character_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.character_fee')}
@@ -58,7 +61,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject.${row?.original?.id}.word_fee`}
+            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.word_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.word_fee')}
@@ -74,7 +77,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject.${row?.original?.id}.page_fee`}
+            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.page_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.page_fee')}
@@ -90,7 +93,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject.${row?.original?.id}.minute_fee`}
+            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.minute_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minute_fee')}
@@ -106,7 +109,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject.${row?.original?.id}.hour_fee`}
+            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.hour_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.hour_fee')}
@@ -122,7 +125,7 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`priceObject.${row?.original?.id}.minimal_fee`}
+            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.minimal_fee`}
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minimal_fee')}
@@ -132,17 +135,24 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
       },
       footer: (info) => info.column.id,
     }),
-  ] as ColumnDef<PriceObject>[]
+  ] as ColumnDef<PriceObject | unknown>[]
+
+  const languageDirectionPrices = useWatch({ control })
+
+  const languageDirectionObject =
+    languageDirectionPrices[languageDirectionKey] || {}
+
+  const filteredData = filter(languageDirectionObject.priceObject, 'isSelected')
 
   const paginationData = {
-    per_page: editableSkills?.length,
+    per_page: filteredData?.length,
     current_page: 1,
-    total: editableSkills?.length,
+    total: filteredData?.length,
   }
 
   return (
     <DataTable
-      data={editableSkills}
+      data={filteredData}
       columns={columns}
       tableSize={TableSizeTypes.L}
       hidePagination

@@ -1,25 +1,22 @@
 import { FC } from 'react'
 import { Control } from 'react-hook-form'
-import {
-  FormValues,
-  PriceObject,
-} from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
 import { Root } from '@radix-ui/react-form'
 import EditVendorPricesTable from 'components/organisms/tables/EditVendorPricesTable/EditVendorPricesTable'
 
 type VendorPriceListEditContentProps = {
   control: Control<FormValues>
-  editableSkills: PriceObject[]
   srcLanguageValue?: string
   dstLanguageValues?: string[]
+  languageDirectionKey: string
 }
 
 const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
   control,
-  editableSkills,
   srcLanguageValue,
   dstLanguageValues,
+  languageDirectionKey,
 }) => {
   return (
     <>
@@ -30,8 +27,8 @@ const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
       />
       <Root>
         <EditVendorPricesTable
-          editableSkills={editableSkills}
           control={control}
+          languageDirectionKey={languageDirectionKey}
         />
       </Root>
     </>

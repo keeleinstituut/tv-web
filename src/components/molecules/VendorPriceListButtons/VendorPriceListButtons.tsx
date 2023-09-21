@@ -43,16 +43,17 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
     name: 'skill_id',
   })
 
-  const hasTrueValueSkill = some(skills, (value) => value === true)
-  const isSkillSelected = !!skills && hasTrueValueSkill
+  // const hasTrueValueSkill = some(skills, (value) => value === true)
+  // const isSkillSelected = !!skills && hasTrueValueSkill
   const formState = useFormState({ control })
   const isSubmitting = useFormState({ control }).isSubmitting
 
   const isLanguageSelected = isSrcLanguageSelected && isDstLanguageSelected
-  const isSkillValid =
-    activeStep === 2 || activeStep === 3 ? isSkillSelected : true
+  // const isSkillValid =
+  //   activeStep === 2 || activeStep === 3 ? isSkillSelected : true
   const isFormValid = size(steps) === activeStep ? formState.isValid : true
-  const isButtonDisabled = !(isLanguageSelected && isSkillValid && isFormValid)
+  // const isButtonDisabled = !(isLanguageSelected && isSkillValid && isFormValid)
+  const isButtonDisabled = !(isLanguageSelected && isFormValid)
 
   return (
     <div className={classes.buttonsContainer}>

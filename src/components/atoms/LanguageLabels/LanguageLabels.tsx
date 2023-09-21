@@ -29,16 +29,21 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
     return map(valueArray, (value) => find(languageOptions, { value })?.label)
   }
 
-  const sourceLanguageLabel = findLabelByValue(
-    useWatch({ control, name: 'src_lang_classifier_value_id' })
-  )
-  const destinationLanguageLabels = findLabelByValue(
-    useWatch({ control, name: 'dst_lang_classifier_value_id' })
-  )
+  const languageValues = useWatch({ control })
 
-  const srcLanguageLabel = srcLanguageValue || sourceLanguageLabel
+  // const sourceLanguageLabel = findLabelByValue(
+  //   useWatch({ control, name: 'src_lang_classifier_value_id' })
+  // )
+  // const destinationLanguageLabels = findLabelByValue(
+  //   useWatch({ control, name: 'dst_lang_classifier_value_id' })
+  // )
 
-  const dstLanguageLabels = dstLanguageValues || destinationLanguageLabels
+  // const srcLanguageLabel = srcLanguageValue || sourceLanguageLabel
+
+  // const dstLanguageLabels = dstLanguageValues || destinationLanguageLabels
+  const srcLanguageLabel = srcLanguageValue
+
+  const dstLanguageLabels = dstLanguageValues
 
   if (!srcLanguageLabel || !dstLanguageLabels) return null
 

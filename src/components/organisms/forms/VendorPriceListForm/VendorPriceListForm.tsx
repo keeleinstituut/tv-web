@@ -1,6 +1,16 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { chain, find, isEmpty, map, reduce, some, toString } from 'lodash'
+import {
+  chain,
+  find,
+  isArray,
+  isEmpty,
+  map,
+  reduce,
+  replace,
+  some,
+  toString,
+} from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -19,15 +29,16 @@ import { OrderDirection } from 'types/vendors'
 import classes from './classes.module.scss'
 
 export type FormValues = {
-  src_lang_classifier_value_id?: string
-  dst_lang_classifier_value_id?: string
-  skill_id?: { [key: string]: boolean }
-  vendor_id?: string
-  priceObject?: PriceObject[]
-} & {
-  [key in string]: number | string | undefined
+  [key in string]: {
+    src_lang_classifier_value_id?: { name: string; id: string }
+    dst_lang_classifier_value_id?: { name: string; id: string }
+    skill_id?: { [key: string]: boolean }
+    vendor_id?: string
+    priceObject?: { [key in string]: PriceObject[] }
+  } & {
+    [key in string]: number | string | undefined
+  }
 }
-
 export type PriceObject = {
   id: string
   character_fee: number | string
@@ -37,8 +48,9 @@ export type PriceObject = {
   hour_fee: number | string
   minimal_fee: number | string
   skill_id: string
-  skill?: { id: string; name: string }
+  skill: { id: string; name: string }
   language_direction?: string
+  language_direction_key?: string
   source_language_classifier_value?: {
     name: string
     id?: string
@@ -47,7 +59,7 @@ export type PriceObject = {
     name: string
     id?: string
   }
-  subRows?: PriceObject[]
+  subRows: PriceObject[]
 }
 
 export type LanguageDirectionCellProps = {
@@ -110,7 +122,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       )
       .map((items) => {
         return {
-          language_direction: `${items[0].source_language_classifier_value.name} > ${items[0].destination_language_classifier_value.name} `,
+          language_direction: `${items[0].source_language_classifier_value.name} > ${items[0].destination_language_classifier_value.name}`,
+          language_direction_key: `${items[0].source_language_classifier_value.id}_${items[0].destination_language_classifier_value.id}`,
           subRows: map(
             items,
             ({
@@ -127,6 +140,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               id,
             }) => {
               return {
+                language_direction_key: `${items[0].source_language_classifier_value.id}_${items[0].destination_language_classifier_value.id}`,
                 character_fee: `${toString(character_fee)}€`,
                 hour_fee: `${toString(hour_fee)}€`,
                 minimal_fee: `${toString(minimal_fee)}€`,
@@ -146,38 +160,80 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       .value()
   }, [pricesData])
 
-  console.log('pricesData', pricesData)
-  console.log('skillsData', skillsData)
+  console.log('groupedLanguagePairData€€€€€€€€', groupedLanguagePairData)
 
+  // const defaultFormValues: FormValues = useMemo(
+  //   () => ({
+  //     src_lang_classifier_value_id: '',
+  //     dst_lang_classifier_value_id: '',
+  //     vendor_id: vendor_id,
+  //     priceObject: reduce(
+  //       skillsData,
+  //       (result, value) => {
+  //         return {
+  //           ...result,
+  //           [value.id]: {
+  //             isSelected: some(pricesData, { skill_id: value.id }),
+  //             ...find(pricesData, { skill_id: value.id }),
+  //           },
+  //         }
+  //       },
+  //       {}
+  //     ),
+  //   }),
+  //   [pricesData, skillsData, vendor_id]
+  // )
   const defaultFormValues: FormValues = useMemo(
-    () => ({
-      src_lang_classifier_value_id: '',
-      dst_lang_classifier_value_id: '',
-      vendor_id: vendor_id,
-      priceObject: reduce(
-        skillsData,
+    () =>
+      reduce(
+        groupedLanguagePairData,
         (result, value) => {
           return {
             ...result,
-            [value.id]: {
-              isSelected: some(pricesData, { skill_id: value.id }),
-              ...find(pricesData, { skill_id: value.id }),
-            },
+            [`${value.subRows[0].source_language_classifier_value.id}_${value.subRows[0].destination_language_classifier_value.id}`]:
+              {
+                src_lang_classifier_value_id:
+                  value.subRows[0].source_language_classifier_value,
+                dst_lang_classifier_value_id:
+                  value.subRows[0].destination_language_classifier_value,
+                vendor_id: vendor_id,
+                priceObject: reduce(
+                  skillsData,
+                  (result, skillData) => {
+                    const skillPrice = find(value.subRows, {
+                      skill_id: skillData.id,
+                    })
+                    return {
+                      ...result,
+                      [skillData.id]: {
+                        isSelected: some(value.subRows, {
+                          skill_id: skillData.id,
+                        }),
+                        skill_id: skillData.id,
+                        skill: skillData,
+                        character_fee: skillPrice?.character_fee || `${0}€`,
+                        hour_fee: skillPrice?.hour_fee || `${0}€`,
+                        minimal_fee: skillPrice?.minimal_fee || `${0}€`,
+                        minute_fee: skillPrice?.minute_fee || `${0}€`,
+                        page_fee: skillPrice?.page_fee || `${0}€`,
+                        word_fee: skillPrice?.word_fee || `${0}€`,
+                      },
+                    }
+                  },
+                  {}
+                ),
+              },
           }
         },
         {}
       ),
-    }),
-    [pricesData, skillsData, vendor_id]
+    [groupedLanguagePairData, skillsData, vendor_id]
   )
 
-  console.log('defaultFormValues: ', defaultFormValues)
-
-  const { handleSubmit, control, reset, setValue, setError } =
-    useForm<FormValues>({
-      values: defaultFormValues,
-      mode: 'onChange',
-    })
+  const { handleSubmit, control, reset, setError } = useForm<FormValues>({
+    values: defaultFormValues,
+    mode: 'onChange',
+  })
 
   const resetForm = useCallback(() => {
     reset()
@@ -230,27 +286,27 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     columnHelper.accessor('id', {
       header: () => <></>,
       cell: ({ row }) => {
-        const languagePairModalContent = !row.originalSubRows
-          ? [row.original]
-          : row.original.subRows || []
+        console.log('row!!!!***, ', row)
+        console.log('row.original***** ', row.original)
 
-        console.log('row', row)
+        const languageDirectionKey = row.original.language_direction_key || ''
+        const skillId = row.original.skill_id || ''
 
         return (
           <div className={classes.iconsContainer}>
             <EditVendorPriceModalButton
-              languagePairModalContent={languagePairModalContent}
+              languageDirectionKey={languageDirectionKey}
+              skillId={skillId}
               control={control}
-              setValue={setValue}
               handleSubmit={handleSubmit}
               vendorId={vendor_id}
               resetForm={resetForm}
               setError={setError}
             />
-            <DeleteVendorPriceButton
+            {/* <DeleteVendorPriceButton
               languagePairModalContent={languagePairModalContent}
               vendorId={vendor_id}
-            />
+            /> */}
           </div>
         )
       },

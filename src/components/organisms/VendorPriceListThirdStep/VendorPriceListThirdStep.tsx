@@ -20,10 +20,10 @@ const VendorPriceListThirdStep: FC<VendorPriceListThirdStepProps> = ({
     <>
       <LanguageLabels control={control} languageOptions={languageOptions} />
       <Root>
-        <AddVendorPricesTable
+        {/* <AddVendorPricesTable
           selectedSkills={selectedSkills}
           control={control}
-        />
+        /> */}
       </Root>
     </>
   )
