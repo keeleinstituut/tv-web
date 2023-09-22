@@ -146,11 +146,15 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
       meta: {
         filterOption: { skill_id: skillsFilters },
         showSearch: true,
+        size: 200,
       },
     }),
     columnHelper.accessor('name', {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
+      meta: {
+        size: 300,
+      },
     }),
     columnHelper.accessor('character_fee', {
       header: () => t('label.character_fee'),

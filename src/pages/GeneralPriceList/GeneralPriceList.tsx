@@ -5,7 +5,6 @@ import { useAllPricesFetch } from 'hooks/requests/useVendors'
 import TextInput from 'components/molecules/TextInput/TextInput'
 import { debounce } from 'lodash'
 import { Root } from '@radix-ui/react-form'
-import Loader from 'components/atoms/Loader/Loader'
 
 import classes from './classes.module.scss'
 
@@ -29,7 +28,6 @@ const GeneralPriceList: FC<GeneralPriceListProps> = ({
   const {
     prices,
     paginationData,
-    isLoading,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
@@ -65,10 +63,8 @@ const GeneralPriceList: FC<GeneralPriceListProps> = ({
           />
         </Root>
       </div>
-      <Loader loading={isLoading} />
       <GeneralPriceListTable
         data={prices}
-        hidden={isLoading}
         {...{
           paginationData,
           handleFilterChange,
