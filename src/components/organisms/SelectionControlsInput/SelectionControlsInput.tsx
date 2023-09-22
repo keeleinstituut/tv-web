@@ -11,7 +11,6 @@ import classes from './classes.module.scss'
 import { filter, find, map, join } from 'lodash'
 import Tag from 'components/atoms/Tag/Tag'
 import useModalContext from 'hooks/useModalContext'
-import { isNamespaceImport } from 'typescript'
 
 export enum DropdownSizeTypes {
   L = 'l',

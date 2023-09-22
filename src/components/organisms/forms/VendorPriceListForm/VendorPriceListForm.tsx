@@ -1,16 +1,6 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  chain,
-  find,
-  isArray,
-  isEmpty,
-  map,
-  reduce,
-  replace,
-  some,
-  toString,
-} from 'lodash'
+import { chain, find, isEmpty, map, reduce, some, toString } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -39,6 +29,7 @@ export type FormValues = {
     [key in string]: number | string | undefined
   }
 }
+
 export type PriceObject = {
   id: string
   character_fee: number | string
@@ -160,29 +151,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       .value()
   }, [pricesData])
 
-  console.log('groupedLanguagePairData€€€€€€€€', groupedLanguagePairData)
-
-  // const defaultFormValues: FormValues = useMemo(
-  //   () => ({
-  //     src_lang_classifier_value_id: '',
-  //     dst_lang_classifier_value_id: '',
-  //     vendor_id: vendor_id,
-  //     priceObject: reduce(
-  //       skillsData,
-  //       (result, value) => {
-  //         return {
-  //           ...result,
-  //           [value.id]: {
-  //             isSelected: some(pricesData, { skill_id: value.id }),
-  //             ...find(pricesData, { skill_id: value.id }),
-  //           },
-  //         }
-  //       },
-  //       {}
-  //     ),
-  //   }),
-  //   [pricesData, skillsData, vendor_id]
-  // )
   const defaultFormValues: FormValues = useMemo(
     () =>
       reduce(
@@ -217,6 +185,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
                         minute_fee: skillPrice?.minute_fee || `${0}€`,
                         page_fee: skillPrice?.page_fee || `${0}€`,
                         word_fee: skillPrice?.word_fee || `${0}€`,
+                        id: skillPrice?.id,
                       },
                     }
                   },
@@ -286,11 +255,10 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     columnHelper.accessor('id', {
       header: () => <></>,
       cell: ({ row }) => {
-        console.log('row!!!!***, ', row)
-        console.log('row.original***** ', row.original)
-
         const languageDirectionKey = row.original.language_direction_key || ''
         const skillId = row.original.skill_id || ''
+        const subRowsIds = map(row.original.subRows, ({ id }) => id)
+        const languagePairIds = skillId ? [row.original.id] : subRowsIds
 
         return (
           <div className={classes.iconsContainer}>
@@ -303,10 +271,10 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               resetForm={resetForm}
               setError={setError}
             />
-            {/* <DeleteVendorPriceButton
-              languagePairModalContent={languagePairModalContent}
+            <DeleteVendorPriceButton
+              languagePairIds={languagePairIds}
               vendorId={vendor_id}
-            /> */}
+            />
           </div>
         )
       },

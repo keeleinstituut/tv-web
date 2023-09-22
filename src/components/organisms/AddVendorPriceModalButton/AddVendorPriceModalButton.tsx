@@ -7,6 +7,7 @@ import Button, {
 import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
 import { useTranslation } from 'react-i18next'
 import {
+  find,
   flatMap,
   includes,
   join,
@@ -119,8 +120,6 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
     }
   )
 
-  const formValues = useWatch({ control })
-
   const onAddPricesSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       // const transformedArray = flatMap(
@@ -204,6 +203,18 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
     },
     [createPrices, resetForm, setError, t, vendorId]
   )
+
+  const formValues = useWatch({ control })
+
+  const srcLanguageId = formValues.src_lang_classifier_value_id || ''
+  const dstLanguageIds = formValues.dst_lang_classifier_value_id || []
+
+  const dstLanguageValues: string[] = map(dstLanguageIds, (dstLanguage) => {
+    const language = find(languageFilter, { value: dstLanguage }) as
+      | { value: string; label: string }
+      | undefined
+    return language ? language.label : ''
+  })
 
   const handleAddPriceModal = () => {
     showModal(ModalTypes.FormProgress, {

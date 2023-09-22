@@ -62,7 +62,7 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
       </Button>
       <Button
         appearance={AppearanceTypes.Primary}
-        disabled={isButtonDisabled}
+        // disabled={isButtonDisabled}
         onClick={handleProceed}
         loading={isSubmitting}
       >
