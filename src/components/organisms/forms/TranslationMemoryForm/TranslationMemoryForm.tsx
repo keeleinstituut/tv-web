@@ -6,7 +6,7 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
-import { join, map, startsWith } from 'lodash'
+import { join, map } from 'lodash'
 import classes from './classes.module.scss'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -16,18 +16,20 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { useNavigate } from 'react-router-dom'
+import { useCreateTranslationMemory } from 'hooks/requests/useTranslationMemories'
 
 interface FormValues {
   name: string
-  source_language: string[]
-  destination_language: string[]
+  slang: string
+  tlang: string
   translation_domain?: string
-  status: TranslationMemoryStatus
+  type: TranslationMemoryStatus
 }
 
 const TranslationMemoryForm: FC = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { createTranslationMemory } = useCreateTranslationMemory()
 
   const { classifierValuesFilters: languageOptions } = useClassifierValuesFetch(
     { type: ClassifierValueType.Language }
@@ -46,7 +48,7 @@ const TranslationMemoryForm: FC = () => {
     setValue,
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
-    defaultValues: { status: TranslationMemoryStatus.Internal },
+    defaultValues: { type: TranslationMemoryStatus.Internal },
   })
 
   const statusOptions = map(TranslationMemoryStatus, (status) => ({
@@ -54,13 +56,12 @@ const TranslationMemoryForm: FC = () => {
     value: status,
   }))
 
-  const statusValue = watch('status')
+  const statusValue = watch('type')
 
   useEffect(() => {
     if (statusValue !== TranslationMemoryStatus.Internal) {
       showModal(ModalTypes.ConfirmationModal, {
-        handleCancel: () =>
-          setValue('status', TranslationMemoryStatus.Internal),
+        handleCancel: () => setValue('type', TranslationMemoryStatus.Internal),
         title: t('translation_memories.confirmation_text'),
         cancelButtonContent: t('button.cancel'),
         helperText: t('translation_memories.confirmation_help_text'),
@@ -94,11 +95,10 @@ const TranslationMemoryForm: FC = () => {
       ariaLabel: t('label.source_language'),
       placeholder: t('placeholder.pick'),
       label: `${t('label.source_language')}*`,
-      name: 'source_language',
+      name: 'slang',
       className: classes.inputInternalPosition,
       options: languageOptions,
-      multiple: true,
-      buttons: true,
+      multiple: false,
       rules: {
         required: true,
       },
@@ -108,11 +108,10 @@ const TranslationMemoryForm: FC = () => {
       ariaLabel: t('label.destination_language'),
       placeholder: t('placeholder.pick'),
       label: `${t('label.destination_language')}*`,
-      name: 'destination_language',
+      name: 'tlang',
       className: classes.inputInternalPosition,
       options: languageOptions,
-      multiple: true,
-      buttons: true,
+      multiple: false,
       rules: {
         required: true,
       },
@@ -121,7 +120,7 @@ const TranslationMemoryForm: FC = () => {
       inputType: InputTypes.Selections,
       ariaLabel: t('label.usage'),
       label: t('label.usage'),
-      name: 'status',
+      name: 'type',
       options: statusOptions,
       className: classes.inputInternalPosition,
       helperText: t('translation_memories.helper_text'),
@@ -130,35 +129,26 @@ const TranslationMemoryForm: FC = () => {
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      console.log(values)
-
-      //TODO add endpoint for creating a translation memory
-
       try {
-        // const { id } = await createOrder(payload)
-        const id = '99c8bbac-b9bf-4b3b-835a-bc0865ea2168'
+        const data = await createTranslationMemory(values)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
           content: t('success.translation_memory_created'),
         })
-        navigate(`/memories/${id}`)
+        navigate(`/memories/${data?.tag?.id}`)
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
             const typedKey = key as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
-            if (startsWith(typedKey, 'user')) {
-              setError('name', { type: 'backend', message: errorString })
-            } else {
-              setError(typedKey, { type: 'backend', message: errorString })
-            }
+            setError(typedKey, { type: 'backend', message: errorString })
           })
         }
       }
     },
-    [t, navigate, setError]
+    [createTranslationMemory, t, navigate, setError]
   )
 
   return (
