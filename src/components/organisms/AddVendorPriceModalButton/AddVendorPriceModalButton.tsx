@@ -75,7 +75,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
   const languagePairFormFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Selections,
-      name: 'src_lang_classifier_value_id',
+      name: 'new.src_lang_classifier_value_id',
       ariaLabel: t('vendors.source_language'),
       label: `${t('vendors.source_language')}*`,
       placeholder: t('button.choose'),
@@ -88,7 +88,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
     },
     {
       inputType: InputTypes.Selections,
-      name: 'dst_lang_classifier_value_id',
+      name: 'new.dst_lang_classifier_value_id',
       ariaLabel: t('vendors.destination_language'),
       label: `${t('vendors.destination_language')}*`,
       placeholder: t('button.choose'),
@@ -111,7 +111,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
         inputType: InputTypes.Checkbox,
         ariaLabel: name || '',
         label: name,
-        name: `skill_id.${id}_${index}`,
+        name: `new.skill_id.${id}_${index}`,
         className: classes.skillsField,
         rules: {
           required: false,
@@ -145,12 +145,12 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
       //     )
       // )
 
-      // const payload: CreatePricesPayload = {
-      //   data: [...transformedArray],
-      // }
+      const payload: CreatePricesPayload = {
+        // data: [...transformedArray],
+      }
 
       try {
-        // await createPrices(payload)
+        await createPrices(payload)
 
         showNotification({
           type: NotificationTypes.Success,
@@ -206,15 +206,7 @@ const AddVendorPriceModalButton: FC<AddVendorPriceModalButtonProps> = ({
 
   const formValues = useWatch({ control })
 
-  const srcLanguageId = formValues.src_lang_classifier_value_id || ''
-  const dstLanguageIds = formValues.dst_lang_classifier_value_id || []
-
-  const dstLanguageValues: string[] = map(dstLanguageIds, (dstLanguage) => {
-    const language = find(languageFilter, { value: dstLanguage }) as
-      | { value: string; label: string }
-      | undefined
-    return language ? language.label : ''
-  })
+  console.log('formValues', formValues)
 
   const handleAddPriceModal = () => {
     showModal(ModalTypes.FormProgress, {

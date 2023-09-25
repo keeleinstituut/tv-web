@@ -3,8 +3,12 @@ import {
   FormValues,
   PriceObject,
 } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import Button, {
+  AppearanceTypes,
+  IconPositioningTypes,
+} from 'components/molecules/Button/Button'
 import { ReactComponent as Edit } from 'assets/icons/edit.svg'
+import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
 import { useTranslation } from 'react-i18next'
 import {
   filter,
@@ -13,6 +17,7 @@ import {
   join,
   keys,
   map,
+  reduce,
   reject,
   replace,
   toNumber,
@@ -47,7 +52,11 @@ import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
 import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/VendorPriceListButtons'
-import { FieldProps, FormInput, InputTypes } from '../DynamicForm/DynamicForm'
+import DynamicForm, {
+  FieldProps,
+  FormInput,
+  InputTypes,
+} from '../DynamicForm/DynamicForm'
 import { DropdownSizeTypes } from '../SelectionControlsInput/SelectionControlsInput'
 import { Root } from '@radix-ui/react-form'
 import VendorPriceListSecondStep from '../VendorPriceListSecondStep/VendorPriceListSecondStep'
@@ -57,7 +66,7 @@ import { ClassifierValueType } from 'types/classifierValues'
 type EditVendorPriceModalButtonProps = {
   control: Control<FormValues>
   handleSubmit: UseFormHandleSubmit<FormValues>
-  vendorId?: string
+  vendorId: string
   resetForm: () => void
   setError: UseFormSetError<FormValues>
   languageDirectionKey: string
@@ -85,17 +94,29 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
   })
 
   const isSubmitting = useFormState({ control }).isSubmitting
+  const newLanguagePair = languageDirectionKey === 'new'
 
   const onEditPricesSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      console.log('values!!!!!', values)
-
-      const priceObject = values[languageDirectionKey].priceObject
+      const {
+        priceObject,
+        src_lang_classifier_value_id,
+        dst_lang_classifier_value_id,
+      } = values[languageDirectionKey]
 
       const filteredSelectedSkills = filter(priceObject, 'isSelected')
 
       const filteredUpdateSkills = filter(priceObject, 'id')
       const filteredNewSkills = reject(filteredSelectedSkills, 'id')
+
+      // const priceFormat = {
+      //   character_fee: toNumber(replace(toString(character_fee), '€', '')),
+      //   hour_fee: toNumber(replace(toString(hour_fee), '€', '')),
+      //   minimal_fee: toNumber(replace(toString(minimal_fee), '€', '')),
+      //   minute_fee: toNumber(replace(toString(minute_fee), '€', '')),
+      //   page_fee: toNumber(replace(toString(page_fee), '€', '')),
+      //   word_fee: toNumber(replace(toString(word_fee), '€', '')),
+      // }
 
       const updatePricesData = map(
         filteredUpdateSkills as unknown as PriceObject[],
@@ -137,11 +158,9 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
             skill_id,
             vendor_id: vendorId || '',
             src_lang_classifier_value_id:
-              values[languageDirectionKey]?.src_lang_classifier_value_id?.id ||
-              '',
+              src_lang_classifier_value_id?.id || '',
             dst_lang_classifier_value_id:
-              values[languageDirectionKey]?.dst_lang_classifier_value_id?.id ||
-              '',
+              dst_lang_classifier_value_id?.id || '',
             character_fee: toNumber(replace(toString(character_fee), '€', '')),
             hour_fee: toNumber(replace(toString(hour_fee), '€', '')),
             minimal_fee: toNumber(replace(toString(minimal_fee), '€', '')),
@@ -151,9 +170,6 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
           }
         }
       )
-
-      console.log('updatePricesData', updatePricesData)
-      console.log('newPricesData', newPricesData)
 
       const updatePricesPayload = {
         data: updatePricesData,
@@ -200,10 +216,45 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
 
   const formValues = useWatch({ control })
 
+  // console.log('formValues', formValues)
+
   const srcLanguage =
     formValues[languageDirectionKey]?.src_lang_classifier_value_id?.name || ''
   const dstLanguage =
     formValues[languageDirectionKey]?.dst_lang_classifier_value_id?.name || ''
+
+  const languagePairFormFields: FieldProps<FormValues>[] = [
+    {
+      inputType: InputTypes.Selections,
+      name: `${languageDirectionKey}.src_lang_classifier_value_id.id`,
+      ariaLabel: t('vendors.source_language'),
+      label: `${t('vendors.source_language')}*`,
+      placeholder: t('button.choose'),
+      options: languageFilter,
+      rules: {
+        required: true,
+      },
+      usePortal: true,
+      className: classes.languagePairSelection,
+      disabled: !newLanguagePair,
+    },
+    {
+      inputType: InputTypes.Selections,
+      name: `${languageDirectionKey}.dst_lang_classifier_value_id.id`,
+      ariaLabel: t('vendors.destination_language'),
+      label: `${t('vendors.destination_language')}*`,
+      placeholder: t('button.choose'),
+      options: languageFilter,
+      multiple: newLanguagePair,
+      buttons: true,
+      rules: {
+        required: true,
+      },
+      usePortal: true,
+      className: classes.languagePairSelection,
+      disabled: !newLanguagePair,
+    },
+  ]
 
   const skillsFormFields: FieldProps<FormValues>[] = map(
     skillsData,
@@ -222,7 +273,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
     }
   )
 
-  const handleEditMultiplePriceModal = () => {
+  const handleEditPriceModal = () => {
     showModal(ModalTypes.FormProgress, {
       formData: [
         {
@@ -230,34 +281,11 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
           title: t('vendors.choose_language_pairs'),
           helperText: t('vendors.language_pairs_helper_text'),
           modalContent: (
-            <Root className={classes.languageLabelContainer}>
-              <FormInput
-                name={
-                  `${languageDirectionKey}.src_lang_classifier_value_id.id` as Path<FormValues>
-                }
-                ariaLabel={`${languageDirectionKey}.src_lang_classifier_value_id.name`}
-                disabled
-                control={control}
-                options={languageFilter}
-                inputType={InputTypes.Selections}
-                dropdownSize={DropdownSizeTypes.L}
-                label={`${t('vendors.source_language')}*`}
-                className={classes.languagePairSelection}
-              />
-              <FormInput
-                name={
-                  `${languageDirectionKey}.dst_lang_classifier_value_id.id` as Path<FormValues>
-                }
-                ariaLabel={`${languageDirectionKey}.dst_lang_classifier_value_id.name`}
-                control={control}
-                options={languageFilter}
-                inputType={InputTypes.Selections}
-                dropdownSize={DropdownSizeTypes.L}
-                disabled
-                label={`${t('vendors.destination_language')}*`}
-                className={classes.languagePairSelection}
-              />
-            </Root>
+            <DynamicForm
+              fields={languagePairFormFields}
+              control={control}
+              className={classes.languageLabelContainer}
+            />
           ),
         },
         {
@@ -301,11 +329,13 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
   return (
     <Button
       appearance={AppearanceTypes.Text}
-      icon={Edit}
+      icon={newLanguagePair ? AddIcon : Edit}
       ariaLabel={t('vendors.edit_language_pair')}
-      className={classes.editIcon}
-      onClick={handleEditMultiplePriceModal}
+      className={newLanguagePair ? classes.languageButton : classes.editIcon}
+      onClick={handleEditPriceModal}
       hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
+      children={newLanguagePair && t('vendors.add_language_directions')}
+      iconPositioning={newLanguagePair ? IconPositioningTypes.Left : undefined}
     />
   )
 }

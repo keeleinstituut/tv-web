@@ -12,7 +12,6 @@ import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import EditVendorPriceModalButton from 'components/organisms/EditVendorPriceModalButton/EditVendorPriceModalButton'
-import AddVendorPriceModalButton from 'components/organisms/AddVendorPriceModalButton/AddVendorPriceModalButton'
 import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButton/DeleteVendorPriceButton'
 import { OrderDirection } from 'types/vendors'
 
@@ -23,10 +22,7 @@ export type FormValues = {
     src_lang_classifier_value_id?: { name: string; id: string }
     dst_lang_classifier_value_id?: { name: string; id: string }
     skill_id?: { [key: string]: boolean }
-    vendor_id?: string
     priceObject?: { [key in string]: PriceObject[] }
-  } & {
-    [key in string]: number | string | undefined
   }
 }
 
@@ -164,7 +160,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
                   value.subRows[0].source_language_classifier_value,
                 dst_lang_classifier_value_id:
                   value.subRows[0].destination_language_classifier_value,
-                vendor_id: vendor_id,
                 priceObject: reduce(
                   skillsData,
                   (result, skillData) => {
@@ -196,11 +191,36 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         },
         {}
       ),
-    [groupedLanguagePairData, skillsData, vendor_id]
+    [groupedLanguagePairData, skillsData]
   )
 
+  const newPriceObject = {
+    new: {
+      priceObject: reduce(
+        skillsData,
+        (result, skillData) => {
+          return {
+            ...result,
+            [skillData.id]: {
+              isSelected: false,
+              skill_id: skillData.id,
+              skill: skillData,
+              character_fee: `${0}€`,
+              hour_fee: `${0}€`,
+              minimal_fee: `${0}€`,
+              minute_fee: `${0}€`,
+              page_fee: `${0}€`,
+              word_fee: `${0}€`,
+            },
+          }
+        },
+        {}
+      ),
+    },
+  }
+
   const { handleSubmit, control, reset, setError } = useForm<FormValues>({
-    values: defaultFormValues,
+    values: { ...defaultFormValues, ...newPriceObject },
     mode: 'onChange',
   })
 
@@ -300,10 +320,11 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           title={
             <div className={classes.pricesDataTableHeader}>
               <h4>{t('vendors.vendor_price_list_title')}</h4>
-              <AddVendorPriceModalButton
-                vendorId={vendor_id}
+              <EditVendorPriceModalButton
+                languageDirectionKey="new"
                 control={control}
                 handleSubmit={handleSubmit}
+                vendorId={vendor_id}
                 resetForm={resetForm}
                 setError={setError}
               />

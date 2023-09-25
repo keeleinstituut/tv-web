@@ -40,7 +40,7 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
     [
       useWatch({
         control,
-        name: 'src_lang_classifier_value_id',
+        name: 'new.src_lang_classifier_value_id',
       }),
     ] as unknown as string[],
     languageOptions
@@ -53,6 +53,13 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
     }) as unknown as string[],
     languageOptions
   )
+
+  const language = useWatch({
+    control,
+  })
+
+  console.log('language', language.new?.src_lang_classifier_value_id)
+  console.log('sourceLanguageLabels', sourceLanguageLabels)
 
   const srcLanguageLabel = srcLanguageValue
     ? srcLanguageValue

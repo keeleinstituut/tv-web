@@ -14,7 +14,7 @@ const VendorPriceListThirdStep: FC<VendorPriceListThirdStepProps> = ({
   control,
   languageOptions,
 }) => {
-  // const selectedSkills = useWatch({ control, name: 'skill_id' })
+  const selectedSkills = useWatch({ control, name: 'skill_id' })
 
   return (
     <>

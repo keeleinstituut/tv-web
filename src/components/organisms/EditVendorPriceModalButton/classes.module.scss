@@ -32,3 +32,8 @@
 .skillsDynamicForm > .skillsField:nth-child(n + 7) {
   grid-column: 2 / 3;
 }
+
+.languageButton {
+  align-self: center;
+  padding-left: spacing(6);
+}
