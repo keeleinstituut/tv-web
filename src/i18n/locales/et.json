@@ -43,7 +43,7 @@
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
-    "add_remove_vendor": "Lisa/eemalda toestaja",
+    "add_remove_vendor": "Lisa/eemalda toestajad",
     "view": "Vaata",
     "search": "Otsi",
     "updated": "UUENDATUD",
@@ -120,12 +120,12 @@
     "roles": "Vali roll(id)",
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
+    "search_by_name": "Otsi nime järgi siit...",
     "pick": "Vali",
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid",
-    "search_by_name": "Otsi nime alusel",
     "search_by_id": "Otsi tellimuse ID siit..."
   },
   "button": {
@@ -360,7 +360,8 @@
     "analysis_based_discount": "Analüüsipõhine soodustus",
     "repetitions": "Kordused",
     "match_type": "Vaste tüüp",
-    "percent_from_price": "% hinnast"
+    "percent_from_price": "% hinnast",
+    "vendor": "Teostaja"
   },
   "file": {
     "drop_files": "Pane failid siia...",
@@ -389,6 +390,7 @@
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "vendors_created_removed": "Teostajad edukalt lisatud/eemaldatud",
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
