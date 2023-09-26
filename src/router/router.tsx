@@ -245,10 +245,6 @@ const router = createBrowserRouter([
     element: <Components />,
   },
   {
-    path: 'price-list',
-    element: <GeneralPriceList />,
-  },
-  {
     path: '/',
     element: <AuthWrapper />,
     children: [
