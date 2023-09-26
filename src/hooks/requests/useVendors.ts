@@ -10,6 +10,8 @@ import {
   UpdatedPrices,
   GetSkillsPayload,
   VendorResponse,
+  DeleteVendorsPayload,
+  CreateVendorPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -73,7 +75,7 @@ export const useCreateVendors = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: createVendor, isLoading } = useMutation({
     mutationKey: ['vendors'],
-    mutationFn: async (payload: GetVendorsPayload) => {
+    mutationFn: async (payload: CreateVendorPayload) => {
       return apiClient.post(endpoints.VENDORS_BULK, {
         data: payload,
       })
@@ -102,7 +104,7 @@ export const useDeleteVendors = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteVendors, isLoading } = useMutation({
     mutationKey: ['vendors'],
-    mutationFn: async (payload: GetVendorsPayload) => {
+    mutationFn: async (payload: DeleteVendorsPayload) => {
       return apiClient.delete(endpoints.VENDORS_BULK, {
         id: payload,
       })
