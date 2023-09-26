@@ -30,6 +30,24 @@ export const useFetchTags = (initialFilters?: GetTagsPayload) => {
     tagsFilters,
   }
 }
+export const useFetchSkills = () => {
+  const { isLoading, isError, data } = useQuery<TagsResponse>({
+    queryKey: ['skills'],
+    queryFn: () => apiClient.get(endpoints.SKILLS),
+  })
+  console.log('data', data)
+
+  // const tagsFilters = map(tags, ({ id, name }) => {
+  //   return { value: id, label: name }
+  // })
+
+  return {
+    skills: { [TagTypes.Skills]: data?.data },
+    isLoading: isLoading,
+    isError: isError,
+    // tagsFilters,
+  }
+}
 
 export const useBulkCreate = () => {
   const queryClient = useQueryClient()

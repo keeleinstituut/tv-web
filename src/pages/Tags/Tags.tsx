@@ -8,7 +8,11 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button'
-import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
+import {
+  useFetchTags,
+  useBulkCreate,
+  useFetchSkills,
+} from 'hooks/requests/useTags'
 import {
   fromPairs,
   groupBy,
@@ -39,13 +43,23 @@ const Tags: FC = () => {
   const { t } = useTranslation()
   const { tagInputValidator } = useValidators()
   const { userPrivileges } = useAuth()
+  const { skills } = useFetchSkills()
 
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
+  console.log('tags', tags)
+  console.log('skills', skills)
 
-  const groupedData = groupBy(tags, 'type')
+  const groupedData = omit(groupBy(tags, 'type'), 'Oskused')
 
-  const sortedData = fromPairs(sortBy(toPairs(groupedData), 0))
+  console.log('grp', groupedData)
+
+  const sortedData = {
+    ...skills,
+    ...fromPairs(sortBy(toPairs(groupedData), 0)),
+  }
+
+  console.log('sortid', sortedData)
 
   const tagCategoryOptions = map(omit(TagTypes, 'Skills'), (type) => {
     return {
