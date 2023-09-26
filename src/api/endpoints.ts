@@ -15,6 +15,7 @@ export const endpoints = {
   DEACTIVATE_USER: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/deactivate`,
   ACTIVATE_USER: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/activate`,
   VENDORS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}vendors`,
+  VENDORS_BULK: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}vendors/bulk`,
   SKILLS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}skills`,
   PRICES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}prices`,
   CLASSIFIER_VALUES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}classifier-values`,

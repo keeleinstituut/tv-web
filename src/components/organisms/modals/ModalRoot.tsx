@@ -16,6 +16,7 @@ import { EditableListModalProps } from './EditableListModal/EditableListModal'
 import { ConfirmSendToCatModalProps } from './ConfirmSendToCatModal/ConfirmSendToCatModal'
 import { CatAnalysisModalProps } from './CatAnalysisModal/CatAnalysisModal'
 import { DateTimeRangeFormModalProps } from './DateTimeRangeFormModal/DateTimeRangeFormModal'
+import { VendorsEditModalProps } from './VendorsEditModal/VendorsEditModal'
 import { SelectVendorModalProps } from './SelectVendorModal/SelectVendorModal'
 import { AddVolumeModalProps } from './AddVolumeModal/AddVolumeModal'
 import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
@@ -46,6 +47,9 @@ const DateTimeRangeFormModal = lazy(
   () => import('./DateTimeRangeFormModal/DateTimeRangeFormModal')
 )
 
+const VendorsEditModal = lazy(
+  () => import('./VendorsEditModal/VendorsEditModal')
+)
 const SelectVendorModal = lazy(
   () => import('./SelectVendorModal/SelectVendorModal')
 )
@@ -68,6 +72,7 @@ export enum ModalTypes {
   ConfirmSendToCat = 'confirmSendToCat',
   CatAnalysis = 'catAnalysis',
   DateTimeRangeFormModal = 'dateTimeRangeFormModal',
+  VendorsEdit = 'vendorsEdit',
   SelectVendor = 'selectVendor',
   AddVolume = 'addVolume',
   VolumeChange = 'volumeChange',
@@ -86,6 +91,7 @@ type ModalPropTypes =
   | Omit<ConfirmSendToCatModalProps, 'closeModal'>
   | Omit<CatAnalysisModalProps, 'closeModal'>
   | Omit<DateTimeRangeFormModalProps, 'closeModal'>
+  | Omit<VendorsEditModalProps, 'closeModal'>
   | Omit<SelectVendorModalProps, 'closeModal'>
   | Omit<AddVolumeModalProps, 'closeModal'>
   | Omit<VolumeChangeModalProps, 'closeModal'>
@@ -102,6 +108,7 @@ const MODALS = {
   confirmSendToCat: ConfirmSendToCatModal,
   catAnalysis: CatAnalysisModal,
   dateTimeRangeFormModal: DateTimeRangeFormModal,
+  vendorsEdit: VendorsEditModal,
   selectVendor: SelectVendorModal,
   addVolume: AddVolumeModal,
   volumeChange: VolumeChangeModal,

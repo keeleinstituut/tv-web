@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom'
 
 type PaginationProps<TData> = {
   hidden?: boolean
+  hidePaginationSelectionInput?: boolean
   table: Table<PaginationState> | Table<TData>
   pageSizeOptions?: { label: string; value: string }[]
 }
@@ -25,6 +26,7 @@ const TablePagination = <TData,>({
   hidden,
   table,
   pageSizeOptions,
+  hidePaginationSelectionInput = false,
 }: PaginationProps<TData>) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -109,6 +111,7 @@ const TablePagination = <TData,>({
         />
       </div>
       <SelectionControlsInput
+        hidden={hidePaginationSelectionInput}
         className={classes.pageSizeWrapper}
         name={t('label.pagination_result_count')}
         ariaLabel={t('label.pagination_result_count')}
