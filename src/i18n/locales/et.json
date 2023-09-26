@@ -313,9 +313,9 @@
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
     "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
+    "edit_category_tag": "{{modalTitle}} siltide muutmine",
     "remove_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva kustutada?",
     "deactivation_date_content": "Hetkel on määratud deaktiveerimise kuupäevaks {{date}} ",
-    "edit_category_tag": "{{type}} siltide muutmine",
     "edit_departments": "Üksuste muutmine",
     "confirm_send_to_cat_title": "Kas oled kindel, et soovid lähtefailid tõlketööriista saata?",
     "confirm_send_to_cat_description": "Faile saab tõlketööriista saata vaid ühe korra ja hiljem faile juurde lisada ei saa. Hiljem lisandunud failid tuleks töösse panna uue tellimusega. Lisaks veendu, et oled valinud ka soovitud tõlkemälud. Hiljem lisatud tõlkemäludega mahuanalüüsi teha ei saa.",
@@ -439,6 +439,12 @@
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
     "select_tag_category": "Vali sildi kategooria",
+    "modal": {
+      "Tõlkemälud": "Tõlkemälu",
+      "Teostaja": "Teostaja",
+      "Tellimus": "Tellimuse",
+      "Oskused": "Oskuse"
+    },
     "type": {
       "Tõlkemälud": "Tõlkemälud",
       "Teostaja": "Teostaja",
