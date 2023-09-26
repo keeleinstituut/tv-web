@@ -17,12 +17,12 @@ import {
 import classes from './classes.module.scss'
 import { filter } from 'lodash'
 
-type EditPricesTableProps = {
+type VendorPricesTableProps = {
   control: Control<FormValues>
   languageDirectionKey: string
 }
 
-const EditVendorPricesTable: FC<EditPricesTableProps> = ({
+const VendorPricesTable: FC<VendorPricesTableProps> = ({
   control,
   languageDirectionKey,
 }) => {
@@ -168,4 +168,4 @@ const EditVendorPricesTable: FC<EditPricesTableProps> = ({
   )
 }
 
-export default EditVendorPricesTable
+export default VendorPricesTable

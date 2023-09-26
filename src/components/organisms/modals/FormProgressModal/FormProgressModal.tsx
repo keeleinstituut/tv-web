@@ -111,7 +111,9 @@ const FormProgressModal: FC<FormProgressProps> = ({
             steps={steps}
             setActiveStep={setActiveStep}
           />
-        ) : undefined
+        ) : (
+          <div />
+        )
       }
       className={classes.progressBarHelperText}
       size={ModalSizeTypes.Big}

@@ -63,7 +63,7 @@ import VendorPriceListSecondStep from '../VendorPriceListSecondStep/VendorPriceL
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 
-type EditVendorPriceModalButtonProps = {
+type VendorPriceManagementButtonProps = {
   control: Control<FormValues>
   handleSubmit: UseFormHandleSubmit<FormValues>
   vendorId: string
@@ -73,7 +73,7 @@ type EditVendorPriceModalButtonProps = {
   skillId?: string
 }
 
-const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
+const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
   control,
   handleSubmit,
   vendorId,
@@ -108,15 +108,6 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
 
       const filteredUpdateSkills = filter(priceObject, 'id')
       const filteredNewSkills = reject(filteredSelectedSkills, 'id')
-
-      // const priceFormat = {
-      //   character_fee: toNumber(replace(toString(character_fee), '€', '')),
-      //   hour_fee: toNumber(replace(toString(hour_fee), '€', '')),
-      //   minimal_fee: toNumber(replace(toString(minimal_fee), '€', '')),
-      //   minute_fee: toNumber(replace(toString(minute_fee), '€', '')),
-      //   page_fee: toNumber(replace(toString(page_fee), '€', '')),
-      //   word_fee: toNumber(replace(toString(word_fee), '€', '')),
-      // }
 
       const updatePricesData = map(
         filteredUpdateSkills as unknown as PriceObject[],
@@ -187,11 +178,18 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
           await createPrices(newPricesPayload)
         }
 
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.language_pairs_prices_updated'),
-        })
+        newLanguagePair
+          ? showNotification({
+              type: NotificationTypes.Success,
+              title: t('notification.announcement'),
+              content: t('success.language_pairs_prices_added'),
+            })
+          : showNotification({
+              type: NotificationTypes.Success,
+              title: t('notification.announcement'),
+              content: t('success.language_pairs_prices_updated'),
+            })
+
         resetForm()
         closeModal()
       } catch (errorData) {
@@ -207,6 +205,38 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
             // const priceObject = replace(typedKey, payloadKey, valuesKey)
 
             // setError(priceObject, { type: 'backend', message: errorString })
+
+            // const payloadKey = keys(payload)[0]
+            // const dstLangClassifierResult = replace(
+            //   typedKey,
+            //   `${payloadKey}.0.`,
+            //   ''
+            // )
+            // const srcLangClassifierResult = replace(
+            //   typedKey,
+            //   `${payloadKey}.0.`,
+            //   ''
+            // )
+            // const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
+
+            // if (includes(typedKey, dstLangClassifierResult)) {
+            //   setError(dstLangClassifierResult, {
+            //     type: 'backend',
+            //     message: errorString,
+            //   })
+            // }
+            // if (includes(typedKey, srcLangClassifierResult)) {
+            //   setError(srcLangClassifierResult, {
+            //     type: 'backend',
+            //     message: errorString,
+            //   })
+            // }
+            // if (includes(typedKey, vendorIdResult)) {
+            //   setError(vendorIdResult, {
+            //     type: 'backend',
+            //     message: errorString,
+            //   })
+            // }
           })
         }
       }
@@ -215,8 +245,6 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
   )
 
   const formValues = useWatch({ control })
-
-  // console.log('formValues', formValues)
 
   const srcLanguage =
     formValues[languageDirectionKey]?.src_lang_classifier_value_id?.name || ''
@@ -299,6 +327,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
               customSkillsDynamicFormClass={classes.skillsDynamicForm}
               srcLanguageValue={srcLanguage}
               dstLanguageValues={[dstLanguage]}
+              languageOptions={languageFilter}
             />
           ),
         },
@@ -312,6 +341,7 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
               languageDirectionKey={languageDirectionKey}
               srcLanguageValue={srcLanguage}
               dstLanguageValues={[dstLanguage]}
+              languageOptions={languageFilter}
             />
           ),
           isLoading: isSubmitting,
@@ -340,4 +370,4 @@ const EditVendorPriceModalButton: FC<EditVendorPriceModalButtonProps> = ({
   )
 }
 
-export default EditVendorPriceModalButton
+export default VendorPriceManagementButton

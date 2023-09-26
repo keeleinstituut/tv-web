@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form'
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
 import { VendorFormProps } from '../VendorForm/VendorForm'
-import EditVendorPriceModalButton from 'components/organisms/EditVendorPriceModalButton/EditVendorPriceModalButton'
+import VendorPriceManagementButton from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
 import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButton/DeleteVendorPriceButton'
 import { OrderDirection } from 'types/vendors'
 
@@ -282,7 +282,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
         return (
           <div className={classes.iconsContainer}>
-            <EditVendorPriceModalButton
+            <VendorPriceManagementButton
               languageDirectionKey={languageDirectionKey}
               skillId={skillId}
               control={control}
@@ -320,7 +320,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           title={
             <div className={classes.pricesDataTableHeader}>
               <h4>{t('vendors.vendor_price_list_title')}</h4>
-              <EditVendorPriceModalButton
+              <VendorPriceManagementButton
                 languageDirectionKey="new"
                 control={control}
                 handleSubmit={handleSubmit}
