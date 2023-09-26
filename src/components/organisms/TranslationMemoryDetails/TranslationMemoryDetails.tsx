@@ -17,6 +17,11 @@ import FileImport, {
   ProjectFileTypes,
 } from 'components/organisms/FileImport/FileImport'
 import { showModal, ModalTypes } from '../modals/ModalRoot'
+import {
+  useExportTMX,
+  useFetchTranslationMemory,
+  useImportTMX,
+} from 'hooks/requests/useTranslationMemories'
 
 type TranslationMemoryDetailsTypes = {
   memoryId?: string
@@ -27,24 +32,26 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
+  const { translationMemory } = useFetchTranslationMemory({ id: memoryId })
+  const { importTMX } = useImportTMX()
+  const { exportTMX } = useExportTMX()
 
   // const isUserClientOfProject = institutionUserId === client_user_institution_id
 
+  console.log('translationMemory', translationMemory)
+
   const handleImportSegments = async (uploadedFile: File) => {
     console.log('Import', uploadedFile)
-    const fileReader = new FileReader()
-    if (uploadedFile) {
-      fileReader.onload = async (event) => {
-        if (event?.target?.result) {
-          console.log('event', event?.target?.result)
-        }
-        //console.log('test', fileReader.readAsText(uploadedFile))
-      }
+
+    try {
+      await importTMX(uploadedFile)
+    } catch (error) {
+      console.log('error', error)
     }
-    //TODO add endpoint and errors
   }
 
   const handleExportFile = () => {
+    exportTMX({ slang: '', tlang: '' })
     console.log('Export file')
   }
 
@@ -92,7 +99,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           // hidden={!includes(userPrivileges, Privileges.DeleteTm)}
         />
       </div>
-      <TranslationMemoryEditForm />
+      <TranslationMemoryEditForm data={translationMemory} />
     </Container>
   )
 }

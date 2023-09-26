@@ -16,8 +16,10 @@ import TranslationMemorySubOrdersTable from 'components/organisms/tables/Transla
 const TranslationMemoryPage: FC = () => {
   const { t } = useTranslation()
 
-  const { orderId } = useParams()
+  const { memoryId } = useParams()
   const { institutionUserId } = useAuth()
+
+  console.log('tmId', memoryId)
 
   // useOrderPageRedirect({
   //   client_user_institution_id,
@@ -30,13 +32,14 @@ const TranslationMemoryPage: FC = () => {
   // if (isLoading) return <Loader loading={isLoading} />
 
   //Todo change the title
+
   return (
     <>
       <div className={classes.titleRow}>
         <h1>{t('translation_memories.new_translation_memory_title')}</h1>
         <Tooltip helpSectionKey="translationMemory" />
       </div>
-      <TranslationMemoryDetails memoryId={orderId} />
+      <TranslationMemoryDetails memoryId={memoryId} />
       <TranslationMemorySubOrdersTable />
     </>
   )

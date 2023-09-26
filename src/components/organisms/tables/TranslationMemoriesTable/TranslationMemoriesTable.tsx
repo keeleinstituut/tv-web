@@ -28,8 +28,10 @@ import { TagTypes } from 'types/tags'
 import { TranslationMemoryStatus } from 'types/translationMemories'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
+import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemories'
 
 type TranslationMemoriesTableRow = {
+  name: string
   id: string
   status: string
   tags: string[]
@@ -46,14 +48,9 @@ interface FormValues {
 const TranslationMemoriesTable: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
+  const { translationMemories } = useFetchTranslationMemories()
 
-  const {
-    orders,
-    paginationData,
-    handleFilterChange,
-    handleSortingChange,
-    handlePaginationChange,
-  } = useFetchOrders()
+  console.log('translationMemories', translationMemories)
 
   const { tagsFilters: tagsOptions } = useFetchTags({
     type: TagTypes.TranslationMemories,
@@ -71,35 +68,38 @@ const TranslationMemoriesTable: FC = () => {
   }))
 
   // TODO: remove default values, once we have actual data
-  const orderRows = useMemo(
+  const tmRows = useMemo(
     () =>
       map(
-        orders,
+        translationMemories,
         ({
-          sub_projects,
-          tags = ['asutusesiseseks kasutuseks', 'turundus'],
+          // sub_projects,
+          // tags ,
           id,
+          name,
+          type,
         }) => {
           return {
             id,
-            name: 'TõlkeMälu',
-            status: 'INTERNAL',
-            tags,
+            name,
+            status: type,
+            tags: ['asutusesiseseks kasutuseks', 'turundus'],
             translation_domain: 'Piirivalve',
-            language_directions: uniq(
-              map(
-                sub_projects,
-                ({
-                  source_language_classifier_value,
-                  destination_language_classifier_value,
-                }) =>
-                  `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
-              )
-            ),
+            language_directions: [],
+            // uniq(
+            //   map(
+            //     // sub_projects,
+            //     ({
+            //       source_language_classifier_value,
+            //       destination_language_classifier_value,
+            //     }) =>
+            //       `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
+            //   )
+            // ),
           }
         }
       ),
-    [orders]
+    [translationMemories]
   )
   console.log(tagsFilters)
   const { control, handleSubmit, watch } = useForm<FormValues>({
@@ -120,13 +120,9 @@ const TranslationMemoriesTable: FC = () => {
   }, [handleSubmit, watch])
 
   const columns = [
-    columnHelper.accessor('id', {
+    columnHelper.accessor('name', {
       header: () => t('translation_memories.memory_title'),
       cell: ({ getValue, row }) => {
-        const orderExtId = getValue()
-
-        const order = find(orderRows, { id: orderExtId })
-        console.log('order', order)
         return (
           <Button
             appearance={AppearanceTypes.Text}
@@ -137,9 +133,9 @@ const TranslationMemoriesTable: FC = () => {
             disabled={
               !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
             }
-            href={`/memories/${orderExtId}`}
+            href={`/memories/${row.original.id}`}
           >
-            {order?.name}
+            {getValue()}
           </Button>
         )
       },
@@ -206,23 +202,22 @@ const TranslationMemoriesTable: FC = () => {
       <div className={classes.legend}>
         {map(TranslationMemoryStatus, (status) => {
           return (
-            <>
+            <div key={status}>
               <span className={classNames(classes.dot, classes[status])} />
               <span className={classes.statusName}>
                 {t(`translation_memories.status.${status}`)}
               </span>
-            </>
+            </div>
           )
         })}
       </div>
       <DataTable
-        data={orderRows}
+        data={tmRows}
         columns={columns}
         tableSize={TableSizeTypes.M}
-        paginationData={paginationData}
-        onPaginationChange={handlePaginationChange}
-        onFiltersChange={handleFilterChange}
-        onSortingChange={handleSortingChange}
+        // paginationData={paginationData}
+        // onPaginationChange={handlePaginationChange}
+        // onFiltersChange={handleFilterChange}
         headComponent={
           <div className={classes.topSection}>
             <FormInput

@@ -111,7 +111,9 @@
     "enter_discount_percentage": "Sisesta allahindluse protsent",
     "total": "Kokku",
     "assign_source_file": "Määra lähtefail",
-    "search_by_id": "Otsi tellimuse ID siit..."
+    "search_by_id": "Otsi tellimuse ID siit...",
+    "last_imported": "Viimati imporditud",
+    "chunk_amount_old": "Segmentide arv"
   },
   "placeholder": {
     "email": "example@mail.com",

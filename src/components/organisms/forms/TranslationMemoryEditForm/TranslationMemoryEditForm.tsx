@@ -14,11 +14,17 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
 import DetailsRow from 'components/atoms/DetailsRow/DetailsRow'
-import { TranslationMemoryStatus } from 'types/translationMemories'
+import {
+  TranslationMemoryStatus,
+  TranslationMemoryType,
+} from 'types/translationMemories'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
+import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
+import { ReactComponent as SuccessIcon } from 'assets/icons/success.svg'
+import { ReactComponent as ErrorIcon } from 'assets/icons/error_outline.svg'
 
 interface FormValues {
   name: string
@@ -29,10 +35,12 @@ interface FormValues {
 }
 
 type TranslationMemoryEditFormTypes = {
-  data: object
+  data: any
 }
 
-const TranslationMemoryEditForm: FC = () => {
+const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
+  data,
+}) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
@@ -158,15 +166,15 @@ const TranslationMemoryEditForm: FC = () => {
     },
     [t, resetForm, setError]
   )
-  const data = {
-    id: '1244',
-    language_direction: 'et-EE >en-GB',
-    chunk_amount: '1923',
-    owner: 'SG',
-    created_time: 'dd.mm.yyyy',
-    last_imported: 'dd.m.yyyy.hh.mm',
-    chunk_amount_old: 'xxxxx',
-  }
+  // const data = {
+  //   id: '1244',
+  //   language_direction: 'et-EE >en-GB',
+  //   chunk_amount: '1923',
+  //   owner: 'SG',
+  //   created_time: 'dd.mm.yyyy',
+  //   last_imported: 'dd.m.yyyy.hh.mm',
+  //   chunk_amount_old: 'xxxxx',
+  // }
 
   return (
     <>
@@ -177,7 +185,7 @@ const TranslationMemoryEditForm: FC = () => {
               //label={t(`label.${key}`)}
               label={key}
               key={key}
-              hidden={!value}
+              //hidden={!value}
               labelClass={classes.labelClass}
               valueClass={
                 key === 'language_direction' ? classes.tag : classes.valueClass
@@ -185,6 +193,18 @@ const TranslationMemoryEditForm: FC = () => {
               value={value}
             />
           ))}
+          <span className={classes.labelClass}>{t('label.last_imported')}</span>
+          <SmallTooltip
+            tooltipContent={'Viga viga'}
+            icon={ErrorIcon}
+            // hidden={}
+            //className={classNames(classes.bar, isVacation && classes.vacation)}
+            contentClassName={classes.content}
+          />
+          <span className={classes.labelClass}>
+            {t('label.chunk_amount_old')}
+          </span>
+          <span>value</span>
         </div>
         <DynamicForm
           fields={fields}

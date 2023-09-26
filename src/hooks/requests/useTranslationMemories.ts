@@ -149,10 +149,10 @@ export const useImportTMX = () => {
     error,
   } = useMutation({
     mutationKey: ['tmx'],
-    mutationFn: async (data: ImportTMXPayload) => {
-      formData.append('file', data.file, 'file.tmx')
-      const payload = { tag: data.tag, file: formData }
-      return apiClient.put(endpoints.IMPORT_TMX, payload)
+    mutationFn: async (data: File) => {
+      formData.append('file', data, data.name)
+      formData.append('tag', data.name)
+      return apiClient.put(endpoints.IMPORT_TMX, formData)
     },
   })
 
