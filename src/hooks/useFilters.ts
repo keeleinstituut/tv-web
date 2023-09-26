@@ -12,7 +12,6 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
   )
   const handleOnSearch = useCallback(
     (value?: FilterFunctionType) => {
-      console.log('value', value)
       const sortingKeys = keys(value)
       if (!value?.fullname) {
         const filtersWithOutSorting = filters ? omit(filters, sortingKeys) : {}

@@ -89,7 +89,7 @@ const DataTable = <TData,>(
     pageSizeOptions,
     hidePagination = false,
     headComponent,
-    hidePaginationSelectionInput,
+    hidePaginationSelectionInput = false,
     tableWrapperClassName,
     hidden,
   }: DataTableProps<TData>,

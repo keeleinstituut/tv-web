@@ -71,7 +71,7 @@ export const useCreateVendors = () => {
   const { mutateAsync: createVendor, isLoading } = useMutation({
     mutationKey: ['vendors'],
     mutationFn: async (payload: CreateVendorPayload) => {
-      return apiClient.post(endpoints.CREATE_VENDORS, {
+      return apiClient.post(endpoints.VENDORS_BULK, {
         data: payload,
       })
     },
@@ -100,7 +100,7 @@ export const useDeleteVendors = () => {
   const { mutateAsync: deleteVendors, isLoading } = useMutation({
     mutationKey: ['vendors'],
     mutationFn: async (payload: DeleteVendorsPayload) => {
-      return apiClient.delete(endpoints.DELETE_VENDORS, {
+      return apiClient.delete(endpoints.VENDORS_BULK, {
         id: payload,
       })
     },
