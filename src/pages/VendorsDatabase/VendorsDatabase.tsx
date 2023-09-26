@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { isEmpty, includes } from 'lodash'
 import { Root } from '@radix-ui/react-form'
@@ -10,6 +10,7 @@ import { Privileges } from 'types/privileges'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
+import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 
 const VendorsDatabase: FC = () => {
   const { t } = useTranslation()
@@ -24,6 +25,10 @@ const VendorsDatabase: FC = () => {
     handlePaginationChange,
   } = useVendorsFetch()
 
+  const handleOpenVendorsEditModal = useCallback(() => {
+    showModal(ModalTypes.VendorsEdit, {})
+  }, [])
+
   return (
     <>
       <div className={classes.vendorsDatabaseHeader}>
@@ -31,6 +36,7 @@ const VendorsDatabase: FC = () => {
         <Tooltip helpSectionKey="vendorsDatabase" />
         <Button
           href="/vendors"
+          onClick={handleOpenVendorsEditModal}
           appearance={AppearanceTypes.Secondary}
           hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
         >

@@ -93,6 +93,7 @@ const RolesTabs: FC = () => {
         onAddPress={addTemporaryTab}
         addLabel={t('button.add_new_role')}
         addDisabled={!includes(userPrivileges, Privileges.AddRole)}
+        editDisabled={!includes(userPrivileges, Privileges.EditRole)}
       />
       {map([...existingRoles, ...temporaryRoles], (role) => {
         if (!role?.id) return null

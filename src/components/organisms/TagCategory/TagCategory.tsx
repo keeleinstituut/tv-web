@@ -58,10 +58,12 @@ const TagCategory: FC<TagCategoryTypes> = ({ tagsList, type, isEditable }) => {
     [type, updateTags]
   )
 
+  const modalTitle = t(`tag.modal.${type}`)
+
   const handleCategoryEdit = () => {
     showModal(ModalTypes.EditableListModal, {
       editableData: tagsList,
-      title: t('modal.edit_category_tag', { type }),
+      title: t('modal.edit_category_tag', { modalTitle }),
       handleOnSubmit: handleOnSubmitTags,
       type,
       inputValidator: tagInputValidator,

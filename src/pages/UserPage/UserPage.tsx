@@ -14,6 +14,7 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
+import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
@@ -324,7 +325,12 @@ const UserPage: FC = () => {
         </div>
       </div>
 
-      <div hidden={!isUserDeactivated} className={classes.deactivationDate}>
+      <div
+        className={classNames(
+          classes.deactivationDate,
+          !isUserDeactivated && classes.hidden
+        )}
+      >
         <span>{deactivatedText}</span>
         <Button
           appearance={AppearanceTypes.Text}

@@ -146,7 +146,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       event_start_at,
       type_classifier_value,
       client_institution_user,
-      translation_manager_user_institution_id = '',
+      manager_institution_user,
       reference_number = '',
       source_files,
       help_files,
@@ -172,7 +172,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       client_user_institution_id: isNew
         ? institutionUserId
         : client_institution_user?.id,
-      translation_manager_user_institution_id,
+      translation_manager_user_institution_id: manager_institution_user?.id,
       reference_number,
       source_files: isNew ? [] : source_files,
       help_files: isNew ? [] : help_files,

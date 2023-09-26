@@ -43,7 +43,7 @@
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
-    "add_remove_vendor": "Lisa/eemalda toestaja",
+    "add_remove_vendor": "Lisa/eemalda toestajad",
     "view": "Vaata",
     "search": "Otsi",
     "updated": "UUENDATUD",
@@ -119,16 +119,16 @@
     "personal_identification_code": "12345678910",
     "name": "Minu Nimi",
     "phone": "+372 555 5555",
-    "department": "Harju Maakohus",
+    "department": "Vali üksus",
     "roles": "Vali roll(id)",
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
+    "search_by_name": "Otsi nime järgi siit...",
     "pick": "Vali",
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid",
-    "search_by_name": "Otsi nime alusel",
     "search_by_id": "Otsi tellimuse ID siit..."
   },
   "button": {
@@ -316,9 +316,9 @@
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
     "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
+    "edit_category_tag": "{{modalTitle}} siltide muutmine",
     "remove_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva kustutada?",
     "deactivation_date_content": "Hetkel on määratud deaktiveerimise kuupäevaks {{date}} ",
-    "edit_category_tag": "{{type}} siltide muutmine",
     "edit_departments": "Üksuste muutmine",
     "confirm_send_to_cat_title": "Kas oled kindel, et soovid lähtefailid tõlketööriista saata?",
     "confirm_send_to_cat_description": "Faile saab tõlketööriista saata vaid ühe korra ja hiljem faile juurde lisada ei saa. Hiljem lisandunud failid tuleks töösse panna uue tellimusega. Lisaks veendu, et oled valinud ka soovitud tõlkemälud. Hiljem lisatud tõlkemäludega mahuanalüüsi teha ei saa.",
@@ -364,7 +364,8 @@
     "repetitions": "Kordused",
     "match_type": "Vaste tüüp",
     "percent_from_price": "% hinnast",
-    "price_list": "Koondhinnakiri"
+    "price_list": "Koondhinnakiri",
+    "vendor": "Teostaja"
   },
   "file": {
     "drop_files": "Pane failid siia...",
@@ -393,6 +394,7 @@
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "vendors_created_removed": "Teostajad edukalt lisatud/eemaldatud",
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
@@ -441,6 +443,12 @@
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
     "select_tag_category": "Vali sildi kategooria",
+    "modal": {
+      "Tõlkemälud": "Tõlkemälu",
+      "Teostaja": "Teostaja",
+      "Tellimus": "Tellimuse",
+      "Oskused": "Oskuse"
+    },
     "type": {
       "Tõlkemälud": "Tõlkemälud",
       "Teostaja": "Teostaja",
