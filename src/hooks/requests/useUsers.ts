@@ -27,6 +27,7 @@ export const useFetchUsers = (
 ) => {
   const {
     filters,
+    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
@@ -48,6 +49,7 @@ export const useFetchUsers = (
     isError,
     users,
     paginationData,
+    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,

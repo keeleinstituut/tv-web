@@ -16,6 +16,7 @@ import { EditableListModalProps } from './EditableListModal/EditableListModal'
 import { EditVendorPriceListModalProps } from './EditVendorPriceListModal/EditVendorPriceListModal'
 import { ConfirmSendToCatModalProps } from './ConfirmSendToCatModal/ConfirmSendToCatModal'
 import { CatAnalysisModalProps } from './CatAnalysisModal/CatAnalysisModal'
+import { VendorsEditModalProps } from './VendorsEditModal/VendorsEditModal'
 import { SelectVendorModalProps } from './SelectVendorModal/SelectVendorModal'
 import { AddVolumeModalProps } from './AddVolumeModal/AddVolumeModal'
 import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
@@ -46,6 +47,9 @@ const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
 const CatAnalysisModal = lazy(
   () => import('./CatAnalysisModal/CatAnalysisModal')
 )
+const VendorsEditModal = lazy(
+  () => import('./VendorsEditModal/VendorsEditModal')
+)
 const SelectVendorModal = lazy(
   () => import('./SelectVendorModal/SelectVendorModal')
 )
@@ -68,6 +72,7 @@ export enum ModalTypes {
   EditableVendorPriceList = 'editableVendorPriceList',
   ConfirmSendToCat = 'confirmSendToCat',
   CatAnalysis = 'catAnalysis',
+  VendorsEdit = 'vendorsEdit',
   SelectVendor = 'selectVendor',
   AddVolume = 'addVolume',
   VolumeChange = 'volumeChange',
@@ -86,6 +91,7 @@ type ModalPropTypes =
   | Omit<EditVendorPriceListModalProps, 'closeModal'>
   | Omit<ConfirmSendToCatModalProps, 'closeModal'>
   | Omit<CatAnalysisModalProps, 'closeModal'>
+  | Omit<VendorsEditModalProps, 'closeModal'>
   | Omit<SelectVendorModalProps, 'closeModal'>
   | Omit<AddVolumeModalProps, 'closeModal'>
   | Omit<VolumeChangeModalProps, 'closeModal'>
@@ -102,6 +108,7 @@ const MODALS = {
   editableVendorPriceList: EditVendorPriceListModal,
   confirmSendToCat: ConfirmSendToCatModal,
   catAnalysis: CatAnalysisModal,
+  vendorsEdit: VendorsEditModal,
   selectVendor: SelectVendorModal,
   addVolume: AddVolumeModal,
   volumeChange: VolumeChangeModal,

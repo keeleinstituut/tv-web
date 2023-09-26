@@ -69,6 +69,77 @@ export const useUpdateVendor = ({ id }: { id?: string }) => {
   }
 }
 
+export const useCreateVendors = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: createVendor, isLoading } = useMutation({
+    mutationKey: ['vendors'],
+    mutationFn: async (payload: GetVendorsPayload) => {
+      return apiClient.post(endpoints.VENDORS_BULK, {
+        data: payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['vendors'], (oldData?: VendorsDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
+      queryClient.refetchQueries({
+        queryKey: ['translationUsers'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    createVendor,
+    isLoading,
+  }
+}
+
+export const useDeleteVendors = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deleteVendors, isLoading } = useMutation({
+    mutationKey: ['vendors'],
+    mutationFn: async (payload: GetVendorsPayload) => {
+      return apiClient.delete(endpoints.VENDORS_BULK, {
+        id: payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['vendors'], (oldData?: VendorsDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
+      queryClient.refetchQueries({
+        queryKey: ['translationUsers'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    deleteVendors,
+    isLoading,
+  }
+}
+
+export const useVendorFetch = ({ id }: { id?: string }) => {
+  const { isLoading, isError, data } = useQuery<VendorResponse>({
+    enabled: !!id,
+    queryKey: ['vendors', id],
+    queryFn: () => apiClient.get(`${endpoints.VENDORS}/${id}`),
+  })
+  return {
+    isLoading,
+    isError,
+    vendor: data?.data,
+  }
+}
+
 export const useFetchSkills = () => {
   const { isLoading, isError, data } = useQuery<GetSkillsPayload>({
     queryKey: ['skills'],
@@ -86,19 +157,6 @@ export const useFetchSkills = () => {
     isError,
     skills,
     skillsFilters,
-  }
-}
-
-export const useVendorFetch = ({ id }: { id?: string }) => {
-  const { isLoading, isError, data } = useQuery<VendorResponse>({
-    enabled: !!id,
-    queryKey: ['vendors', id],
-    queryFn: () => apiClient.get(`${endpoints.VENDORS}/${id}`),
-  })
-  return {
-    isLoading,
-    isError,
-    vendor: data?.data,
   }
 }
 

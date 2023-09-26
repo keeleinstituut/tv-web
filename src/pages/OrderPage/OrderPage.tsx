@@ -79,13 +79,13 @@ const OrderPage: FC = () => {
     status,
     sub_projects,
     client_institution_user,
-    translation_manager_user_institution_id,
+    manager_institution_user,
     deadline_at,
   } = order || {}
 
   useOrderPageRedirect({
     client_user_institution_id: client_institution_user?.id,
-    translation_manager_user_institution_id,
+    translation_manager_user_institution_id: manager_institution_user?.id,
     isLoading,
   })
 

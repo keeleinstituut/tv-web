@@ -64,6 +64,7 @@ type DataTableProps<TData extends RowData> = {
     | ((originalRow: TData, index: number) => TData[] | undefined)
     | undefined
   hidePagination?: boolean
+  hidePaginationSelectionInput?: boolean
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -88,6 +89,7 @@ const DataTable = <TData,>(
     hidePagination = false,
     headComponent,
     className,
+    hidePaginationSelectionInput = false,
     tableWrapperClassName,
     hidden,
   }: DataTableProps<TData>,
@@ -173,6 +175,7 @@ const DataTable = <TData,>(
           hidden={hidePagination}
           table={table}
           pageSizeOptions={pageSizeOptions}
+          hidePaginationSelectionInput={hidePaginationSelectionInput}
         />
       </Container>
     </TableContext.Provider>

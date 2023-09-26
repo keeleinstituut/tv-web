@@ -24,6 +24,7 @@ export type Vendor = {
   tags: Tag[]
   skills: SkillsData[]
   comment: string
+  institution_user_id: string
 } & DiscountPercentages
 
 export type DiscountPercentages = {
@@ -171,3 +172,6 @@ export enum OrderDirection {
   Asc = 'asc',
   Desc = 'desc',
 }
+export type CreateVendorPayload = { institution_user_id: string }[]
+
+export type DeleteVendorsPayload = string[]
