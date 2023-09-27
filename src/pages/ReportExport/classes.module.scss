@@ -1,0 +1,35 @@
+@import 'styles/variables';
+
+.reportHeader {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  align-items: center;
+  grid-gap: spacing(4);
+}
+
+.reportContainer {
+  grid-template-columns: auto auto auto;
+  margin-top: spacing(6);
+  padding: spacing(6) spacing(8);
+  grid-gap: spacing(2);
+}
+
+.dateRangeSection {
+  display: grid;
+  border-left: 1px solid $color-background-dark;
+  padding-left: spacing(4);
+}
+
+.statusSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.exportButton {
+  margin-top: spacing(4);
+}
+
+.reportDescription {
+  max-width: spacing(57);
+}
