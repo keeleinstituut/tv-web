@@ -1,0 +1,22 @@
+@import 'styles/variables';
+
+.dateTimeContainer {
+  display: flex;
+  height: max-content;
+
+  .bold {
+    font-weight: bold;
+    margin-right: spacing(2);
+  }
+  .blue {
+    color: $color-primary;
+    margin-right: spacing(4);
+  }
+  .editButton {
+    padding: spacing(0.3);
+    svg {
+      width: 21px;
+      height: 20px;
+    }
+  }
+}

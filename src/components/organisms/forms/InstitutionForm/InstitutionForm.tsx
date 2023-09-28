@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, ReactElement, useCallback, useMemo, useState } from 'react'
 import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
@@ -26,12 +26,19 @@ interface FormValues {
   phone?: string | null
 }
 
-const InstitutionForm: FC<InstitutionType> = ({
+type InstitutionPropTypes = {
+  workingTimes?: ReactElement
+  vacationDays?: ReactElement
+} & InstitutionType
+
+const InstitutionForm: FC<InstitutionPropTypes> = ({
   id,
   name,
   short_name,
   email,
   phone,
+  workingTimes,
+  vacationDays,
 }) => {
   // hooks
   const { t } = useTranslation()
@@ -104,7 +111,7 @@ const InstitutionForm: FC<InstitutionType> = ({
         validate: emailValidator,
       },
     },
-    // TODO: add masking for phone number input, once we merge timeinput
+
     {
       inputType: InputTypes.Text,
       ariaLabel: t('label.phone'),
@@ -162,7 +169,10 @@ const InstitutionForm: FC<InstitutionType> = ({
           formId="Institution"
         />
 
-        {/* TODO Add workdays and vacation days */}
+        <div className={classes.dateTimeContainer}>
+          {workingTimes}
+          {vacationDays}
+        </div>
       </div>
       <Button
         children={t('button.update')}

@@ -1,4 +1,4 @@
-import { isArray, isEmpty } from 'lodash'
+import { isArray, isEmpty, isObject } from 'lodash'
 import { useTranslation } from 'react-i18next'
 
 const emailIsCorrect = (email: string) =>
@@ -31,13 +31,13 @@ const useValidators = () => {
   // TODO: improve typescript for react-hook-form validate
   // Currently the validator has to work for all input field types
   // instead of just the one we are validating
-  const emailValidator = (value?: string | string[] | null) => {
-    if (isArray(value)) return 'error'
+  const emailValidator = (value?: string | string[] | null | object) => {
+    if (isArray(value) || isObject(value)) return 'error'
     return !value || emailIsCorrect(value) ? true : t('error.invalid_email')
   }
 
-  const phoneValidator = (value?: string | string[] | null) => {
-    if (isArray(value)) return 'error'
+  const phoneValidator = (value?: string | string[] | null | object) => {
+    if (isArray(value) || isObject(value)) return 'error'
     return !value || phoneIsCorrect(value) ? true : t('error.invalid_phone')
   }
 
@@ -72,6 +72,23 @@ const useValidators = () => {
     return true
   }
 
+  type valueType = {
+    days?: string[]
+    time_range?: { start?: string; end?: string }
+  } | null
+
+  const dateTimeValidator = (value?: valueType) => {
+    if (
+      !value?.days ||
+      !value?.time_range ||
+      !value?.time_range?.start ||
+      !value?.time_range?.end
+    ) {
+      return t('error.required')
+    }
+    return true
+  }
+
   return {
     emailValidator,
     phoneValidator,
@@ -79,6 +96,7 @@ const useValidators = () => {
     rolesValidator,
     tagInputValidator,
     discountValidator,
+    dateTimeValidator,
   }
 }
 
