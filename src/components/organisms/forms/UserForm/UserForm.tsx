@@ -38,7 +38,7 @@ interface FormValues {
   roles?: string[]
 }
 
-type UserFormProps = UserType
+type UserFormProps = { isUserAccount?: boolean } & UserType
 
 const UserForm: FC<UserFormProps> = ({
   id,
@@ -48,7 +48,9 @@ const UserForm: FC<UserFormProps> = ({
   department,
   roles,
   status,
+  isUserAccount = false,
 }) => {
+  console.log('department', department)
   // hooks
   // TODO: department still needs to be handled
   const { personal_identification_code, forename, surname } = user
@@ -171,6 +173,7 @@ const UserForm: FC<UserFormProps> = ({
       className: classes.inputInternalPosition,
       options: departmentOptions,
       disabled: isFormDisabled,
+      hidden: isUserAccount,
     },
     {
       inputType: InputTypes.Selections,
@@ -186,6 +189,7 @@ const UserForm: FC<UserFormProps> = ({
       rules: {
         required: true,
       },
+      hidden: isUserAccount,
     },
   ]
 
