@@ -30,6 +30,6 @@
   margin-top: spacing(4);
 }
 
-.reportDescription {
-  max-width: spacing(57);
+.reportDateRange > :first-child {
+  text-align: start;
 }

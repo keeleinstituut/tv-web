@@ -7,7 +7,7 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useForm } from 'react-hook-form'
+import { Path, useForm } from 'react-hook-form'
 import { includes } from 'lodash'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
@@ -72,17 +72,15 @@ const ReportExport: FC = () => {
     },
   ]
 
-  //TODO: Add date range after range task merged
   const reportDateRangeFields: FieldProps<FormValues>[] = [
     {
-      inputType: InputTypes.Date,
-      name: 'orders_report_date',
-      ariaLabel: t('orders_report.date_range'),
+      inputType: InputTypes.DateRange,
       label: `${t('orders_report.date_range')}`,
-      placeholder: 'pp.kk.aaaa',
+      name: 'orders_report_date' as Path<FormValues>,
       rules: {
         required: false,
       },
+      className: classes.reportDateRange,
       // disabled: !includes(
       //   userPrivileges,
       //   Privileges.ExportInstitutionGeneralReport
@@ -102,9 +100,7 @@ const ReportExport: FC = () => {
       </div>
 
       <Container className={classes.reportContainer}>
-        <p className={classes.reportDescription}>
-          {t('orders_report.description')}
-        </p>
+        <p>{t('orders_report.description')}</p>
         <div className={classes.dateRangeSection}>
           <DynamicForm fields={reportDateRangeFields} control={control} />
         </div>
