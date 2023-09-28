@@ -43,7 +43,7 @@
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
-    "add_remove_vendor": "Lisa/eemalda toestaja",
+    "add_remove_vendor": "Lisa/eemalda toestajad",
     "view": "Vaata",
     "search": "Otsi",
     "updated": "UUENDATUD",
@@ -125,12 +125,13 @@
     "roles": "Vali roll(id)",
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
+    "search_by_name": "Otsi nime järgi siit...",
     "pick": "Vali",
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid",
-    "search_by_name": "Otsi nime alusel",
+    "pick_days": "Vali päev(ad)",
     "search_by_id": "Otsi tellimuse ID siit..."
   },
   "button": {
@@ -261,6 +262,17 @@
     "institution_data": "Asutuse andmed",
     "created_at": "Konto loodud {{ time }}",
     "updated_at": "Konto andmed muudetud {{ time }}",
+    "working_times": "Tööajad",
+    "working_days": "Tööpäevad",
+    "days": {
+      "monday": "Esmaspäev",
+      "tuesday": "Teisipäev",
+      "wednesday": "Kolmapäev",
+      "thursday": "Neljapäev",
+      "friday": "Reede",
+      "saturday": "Laupäev",
+      "sunday": "Pühapäev"
+    },
     "departments": "Üksused"
   },
   "privileges": {
@@ -323,9 +335,9 @@
     "archive_user_account": "Kas oled kindel, et soovid konto arhiveerida?",
     "archive_user_content": "Konto arhiveerimisel kasutaja deaktiveeritakse ja eemaldatakse kasutajate haldamise nimekirjast. Kontot ei saa pärast arhiveerimist uuesti aktiveerida.",
     "edit_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva muuta?",
+    "edit_category_tag": "{{modalTitle}} siltide muutmine",
     "remove_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva kustutada?",
     "deactivation_date_content": "Hetkel on määratud deaktiveerimise kuupäevaks {{date}} ",
-    "edit_category_tag": "{{type}} siltide muutmine",
     "edit_departments": "Üksuste muutmine",
     "confirm_send_to_cat_title": "Kas oled kindel, et soovid lähtefailid tõlketööriista saata?",
     "confirm_send_to_cat_description": "Faile saab tõlketööriista saata vaid ühe korra ja hiljem faile juurde lisada ei saa. Hiljem lisandunud failid tuleks töösse panna uue tellimusega. Lisaks veendu, et oled valinud ka soovitud tõlkemälud. Hiljem lisatud tõlkemäludega mahuanalüüsi teha ei saa.",
@@ -349,7 +361,8 @@
     "pick_volume_by_cat_helper": "Soovi korral saad süsteemist automaatselt genereeritud väärtused käsitsi üle kirjutada.",
     "pick_volume_manually_helper": "Vali töömahu arvestamise ühik ja määra kogus. Soovi korral saad süsteemist automaatselt genereeritud hinna väärtuse käsitsi üle kirjutada.",
     "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
-    "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?"
+    "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?",
+    "set_working_times_title": "Tööaegade määramine"
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -370,7 +383,8 @@
     "analysis_based_discount": "Analüüsipõhine soodustus",
     "repetitions": "Kordused",
     "match_type": "Vaste tüüp",
-    "percent_from_price": "% hinnast"
+    "percent_from_price": "% hinnast",
+    "vendor": "Teostaja"
   },
   "file": {
     "drop_files": "Pane failid siia...",
@@ -400,6 +414,7 @@
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "vendors_created_removed": "Teostajad edukalt lisatud/eemaldatud",
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
@@ -448,6 +463,12 @@
     "tag_name": "Nimetus",
     "tag_input": "Sisesta siia",
     "select_tag_category": "Vali sildi kategooria",
+    "modal": {
+      "Tõlkemälud": "Tõlkemälu",
+      "Teostaja": "Teostaja",
+      "Tellimus": "Tellimuse",
+      "Oskused": "Oskuse"
+    },
     "type": {
       "Tõlkemälud": "Tõlkemälud",
       "Teostaja": "Teostaja",
