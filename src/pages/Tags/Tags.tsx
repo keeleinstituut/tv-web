@@ -47,19 +47,13 @@ const Tags: FC = () => {
 
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
-  console.log('tags', tags)
-  console.log('skills', skills)
 
-  const groupedData = omit(groupBy(tags, 'type'), 'Oskused')
-
-  console.log('grp', groupedData)
+  const groupedData = groupBy(tags, 'type')
 
   const sortedData = {
     ...skills,
     ...fromPairs(sortBy(toPairs(groupedData), 0)),
   }
-
-  console.log('sortid', sortedData)
 
   const tagCategoryOptions = map(omit(TagTypes, 'Skills'), (type) => {
     return {
