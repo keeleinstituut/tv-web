@@ -149,6 +149,7 @@
     "save_and_send_notifications": "Salvesta ja saada teavitused",
     "save": "Salvesta",
     "add_csv": "Lisa .csv",
+    "download_csv": "Laadi alla .csv",
     "choose": "Vali",
     "close": "Sulge",
     "add_new_csv": "Lisa uus .csv",
@@ -543,5 +544,23 @@
       "IN_PROGRESS": "Teostamisel",
       "DONE": "Teostatud"
     }
+  },
+  "logs": {
+    "filters": "Filtrid",
+    "date_range": "Kuupäevavahemik",
+    "time_range": "Ajavahemik",
+    "select_department": "Vali üksus",
+    "select_activity": "Vali tegevus",
+    "hour": "1 tund",
+    "last_24h": "viimased 24h",
+    "last_7days": "viimased 7 päeva",
+    "last_30days": "viimased 30 päeva",
+    "clean_fields": "Puhasta väljad",
+    "filter": "Filtreeri",
+    "user": "Kasutaja",
+    "date_change": "Muudatse aeg",
+    "activity": "Tegevus",
+    "department_account_id": "Asutuse konto ID",
+    "result": "Tulemus"
   }
 }
