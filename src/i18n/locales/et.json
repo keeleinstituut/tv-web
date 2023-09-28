@@ -126,6 +126,7 @@
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid",
+    "pick_days": "Vali päev(ad)",
     "search_by_id": "Otsi tellimuse ID siit..."
   },
   "button": {
@@ -252,6 +253,17 @@
     "institution_data": "Asutuse andmed",
     "created_at": "Konto loodud {{ time }}",
     "updated_at": "Konto andmed muudetud {{ time }}",
+    "working_times": "Tööajad",
+    "working_days": "Tööpäevad",
+    "days": {
+      "monday": "Esmaspäev",
+      "tuesday": "Teisipäev",
+      "wednesday": "Kolmapäev",
+      "thursday": "Neljapäev",
+      "friday": "Reede",
+      "saturday": "Laupäev",
+      "sunday": "Pühapäev"
+    },
     "departments": "Üksused"
   },
   "privileges": {
@@ -340,7 +352,8 @@
     "pick_volume_by_cat_helper": "Soovi korral saad süsteemist automaatselt genereeritud väärtused käsitsi üle kirjutada.",
     "pick_volume_manually_helper": "Vali töömahu arvestamise ühik ja määra kogus. Soovi korral saad süsteemist automaatselt genereeritud hinna väärtuse käsitsi üle kirjutada.",
     "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
-    "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?"
+    "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?",
+    "set_working_times_title": "Tööaegade määramine"
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
