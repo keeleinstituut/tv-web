@@ -50,7 +50,6 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
   const { userPrivileges } = useAuth()
 
   const { t } = useTranslation()
-  console.log('props', data)
 
   const formattedWorkTime = compact(
     map(DayTypes, (day) => {

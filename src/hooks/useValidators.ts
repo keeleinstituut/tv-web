@@ -72,9 +72,14 @@ const useValidators = () => {
     return true
   }
 
-  const dateTimeValidator = (value?: any) => {
+  type valueType = {
+    days?: string[]
+    time_range?: { start?: string; end?: string }
+  } | null
+
+  const dateTimeValidator = (value?: valueType) => {
     if (
-      !value.days ||
+      !value?.days ||
       !value?.time_range ||
       !value?.time_range?.start ||
       !value?.time_range?.end

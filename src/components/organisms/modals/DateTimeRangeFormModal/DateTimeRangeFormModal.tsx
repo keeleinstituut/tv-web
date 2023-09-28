@@ -91,7 +91,6 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
   const {
     handleSubmit,
     control,
-    watch,
     reset,
     unregister,
     setError,
@@ -103,8 +102,6 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
       keepErrors: false,
     },
   })
-
-  const watchFieldArray = watch()
 
   const editableFields: FieldProps<FormValues>[] = map(
     editableData,
@@ -159,8 +156,6 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
     setInputFields(withoutDeleteFields)
     unregister(prevDeletedValue)
   }, [prevDeletedValue])
-
-  console.log('updated', watchFieldArray)
 
   const resetForm = useCallback(() => {
     reset()

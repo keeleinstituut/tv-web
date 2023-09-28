@@ -38,6 +38,7 @@ const InstitutionSettings: FC = () => {
           workingTimes={
             <WorkingTimes name={name} id={institutionId} data={institution} />
           }
+          //TODO: add vacation days component as prop
           //vacationDays={<div>Puhkepäevad:</div>}
         />
       </Container>
