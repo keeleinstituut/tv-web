@@ -1,3 +1,5 @@
+import { DiscountPercentages } from './vendors'
+
 export interface InstitutionType {
   created_at?: string
   updated_at?: string
@@ -21,4 +23,8 @@ export interface InstitutionPostType {
   short_name?: string | null
   phone?: string | null
   email?: string | null
+}
+
+export interface InstitutionDiscountsDataType {
+  data: DiscountPercentages
 }

@@ -217,6 +217,7 @@ export const protectedRoutes: FullRouteObject[] = [
         label: i18n.t('menu.technical_settings'),
         element: <TechnicalSettings />,
         Icon: TechnicalIcon,
+        privileges: [Privileges.ViewInstitutionPriceRate],
       },
     ],
   },
