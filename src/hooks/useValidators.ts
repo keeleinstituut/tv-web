@@ -15,6 +15,7 @@ const picIsCorrect = (pic: string) =>
   )
 
 const hasValueOver50Chars = (tagInput: string) => tagInput?.length > 50
+const hasValueOver100Chars = (tagInput: string) => tagInput?.length > 100
 
 const alphanumericCharHyphenSpaceCheck = (tagInput: string) =>
   /^[a-zA-Z0-9ŠšŽžÕõÄäÖöÜü -]+$/.test(tagInput)
@@ -63,6 +64,12 @@ const useValidators = () => {
     }
     return true
   }
+  const nameInputValidator = (value?: string | null) => {
+    if (!value || hasValueOver100Chars(value)) {
+      return t('error.name_input_length')
+    }
+    return true
+  }
 
   const discountValidator = (value?: string | null) => {
     if (value && !numberBetweenZeroAndHundred(value)) {
@@ -97,6 +104,7 @@ const useValidators = () => {
     tagInputValidator,
     discountValidator,
     dateTimeValidator,
+    nameInputValidator,
   }
 }
 
