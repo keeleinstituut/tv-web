@@ -1,0 +1,55 @@
+@import 'styles/variables';
+
+.dataTable {
+  margin-top: spacing(4);
+  padding-top: spacing(1);
+}
+
+.dataTableMainRow {
+  tr {
+    background-color: $color-background;
+  }
+}
+
+.header {
+  font-size: $font-size-14;
+}
+
+.row {
+  display: grid;
+  grid-auto-flow: column;
+  width: max-content;
+  gap: 10px;
+  align-items: center;
+}
+
+.shrinkedIcon {
+  height: 14px;
+  width: 14px;
+}
+
+.expandedIcon svg path {
+  fill: $color-expanded-icon;
+}
+
+.paginationLabel label {
+  color: $color-input-main;
+  font-size: $font-size-14;
+  display: inline-block;
+  padding-right: spacing(2.5);
+}
+
+.tableClassName {
+  th {
+    border-bottom: 1px solid $color-border;
+  }
+  tbody {
+    tr {
+      &:last-child {
+        td {
+          border-bottom: 1px solid $color-border;
+        }
+      }
+    }
+  }
+}

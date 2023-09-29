@@ -16,6 +16,7 @@ import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
 import classNames from 'classnames'
 import ToggleTabs from 'components/molecules/ToggleTabs/ToggleTabs'
+import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
 
 export enum DateTabs {
   Hour = 'hour',
@@ -52,7 +53,7 @@ const Logs: FC = () => {
     },
   ]
 
-  const selectionsFields: FieldProps<FormValues>[] = [
+  const selectionFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Selections,
       name: 'logs_department',
@@ -153,10 +154,14 @@ const Logs: FC = () => {
 
         <div className={classes.logsContainer}>
           <DynamicForm fields={dateFields} control={control} />
-          <DynamicForm fields={selectionsFields} control={control} />
+          <DynamicForm fields={selectionFields} control={control} />
 
           <div>
-            <ToggleTabs tabs={dateTabs} activeTab={activeTab} />
+            <ToggleTabs
+              tabs={dateTabs}
+              activeTab={activeTab}
+              className={classes.dateTabs}
+            />
             <Root>
               <FormInput
                 name="logs_search"
@@ -180,6 +185,9 @@ const Logs: FC = () => {
           appearance={AppearanceTypes.Secondary}
         />
       </div>
+      <Root>
+        <LogsTable />
+      </Root>
     </>
   )
 }

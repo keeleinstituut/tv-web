@@ -20,6 +20,7 @@ type PaginationProps<TData> = {
   hidePaginationSelectionInput?: boolean
   table: Table<PaginationState> | Table<TData>
   pageSizeOptions?: { label: string; value: string }[]
+  paginationLabelClassName?: string
 }
 
 const TablePagination = <TData,>({
@@ -27,6 +28,7 @@ const TablePagination = <TData,>({
   table,
   pageSizeOptions,
   hidePaginationSelectionInput = false,
+  paginationLabelClassName,
 }: PaginationProps<TData>) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -125,6 +127,7 @@ const TablePagination = <TData,>({
         placeholder={toString(getState().pagination.pageSize)}
         dropdownSize={DropdownSizeTypes.XS}
         selectIcon={SelectArrow}
+        paginationLabelClassName={paginationLabelClassName}
       />
     </div>
   )

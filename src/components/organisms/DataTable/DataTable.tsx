@@ -65,6 +65,20 @@ type DataTableProps<TData extends RowData> = {
     | undefined
   hidePagination?: boolean
   hidePaginationSelectionInput?: boolean
+  paginationLabelClassName?: string
+  getRowStyles?: (row: {
+    parentId?: string
+    getIsExpanded?: () => boolean
+    index?: number
+  }) =>
+    | {
+        background: string
+        fontSize?: undefined
+      }
+    | {
+        fontSize: number
+        background?: undefined
+      }
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -92,6 +106,8 @@ const DataTable = <TData,>(
     hidePaginationSelectionInput = false,
     tableWrapperClassName,
     hidden,
+    paginationLabelClassName,
+    getRowStyles,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -157,7 +173,12 @@ const DataTable = <TData,>(
             />
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
+                <tr
+                  key={row.id}
+                  style={
+                    typeof getRowStyles === 'function' ? getRowStyles(row) : {}
+                  }
+                >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id}>
                       {flexRender(
@@ -176,6 +197,7 @@ const DataTable = <TData,>(
           table={table}
           pageSizeOptions={pageSizeOptions}
           hidePaginationSelectionInput={hidePaginationSelectionInput}
+          paginationLabelClassName={paginationLabelClassName}
         />
       </Container>
     </TableContext.Provider>
