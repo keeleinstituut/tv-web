@@ -38,7 +38,7 @@ interface FormValues {
   roles?: string[]
 }
 
-type UserFormProps = { isUserAccount?: boolean } & UserType
+type UserFormProps = { isUserAccount?: boolean } & Partial<UserType>
 
 const UserForm: FC<UserFormProps> = ({
   id,
@@ -50,10 +50,9 @@ const UserForm: FC<UserFormProps> = ({
   status,
   isUserAccount = false,
 }) => {
-  console.log('department', department)
   // hooks
   // TODO: department still needs to be handled
-  const { personal_identification_code, forename, surname } = user
+  const { personal_identification_code, forename, surname } = user || {}
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator } = useValidators()
