@@ -4,8 +4,8 @@
 .toggleTabsRow {
   display: flex;
   align-items: center;
-  .toggleTab {
-    background-color: $color-border;
+
+  .toggleTabs {
     border-color: $color-border;
     border-radius: 0;
     border: 1px solid $color-border;
@@ -17,10 +17,6 @@
     &:last-child {
       border-top-right-radius: 20px;
       border-bottom-right-radius: 20px;
-    }
-
-    span {
-      color: $color-text-dark;
     }
 
     &.activeToggleTab {
@@ -35,5 +31,11 @@
       box-shadow: inset 0 0 0 2px $color-navigation-icon;
     }
   }
+  .toggleTab {
+    background-color: $color-border;
 
+    span {
+      color: $color-text-dark;
+    }
+  }
 }

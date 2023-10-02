@@ -1,4 +1,4 @@
-import { forwardRef, useCallback } from 'react'
+import { FC, SVGProps, forwardRef, useCallback } from 'react'
 import { FieldError } from 'react-hook-form'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
@@ -14,6 +14,7 @@ export interface TimeRangePickerProps {
   className?: string
   errorZIndex?: number
   showSeconds?: boolean
+  icon?: FC<SVGProps<SVGSVGElement>>
 }
 
 const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
@@ -28,6 +29,7 @@ const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
       className,
       errorZIndex,
       showSeconds,
+      icon,
     } = props
 
     const onChangeStartTime = useCallback(
@@ -68,6 +70,7 @@ const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
             errorZIndex={errorZIndex}
             error={!value?.start || error?.message ? error : undefined}
             showSeconds={showSeconds}
+            icon={icon}
           />
           <span className={classes.line} />
           <TimePickerInput
@@ -78,6 +81,7 @@ const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
             errorZIndex={errorZIndex}
             error={!value?.end ? error : undefined}
             showSeconds={showSeconds}
+            icon={icon}
           />
         </div>
       </div>

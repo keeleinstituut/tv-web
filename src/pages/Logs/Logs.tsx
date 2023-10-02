@@ -17,6 +17,7 @@ import { Root } from '@radix-ui/react-form'
 import classNames from 'classnames'
 import ToggleTabs from 'components/molecules/ToggleTabs/ToggleTabs'
 import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
+import { ReactComponent as Alarm } from 'assets/icons/alarm.svg'
 
 export enum DateTabs {
   Hour = 'hour',
@@ -50,6 +51,7 @@ const Logs: FC = () => {
       name: 'date_range' as Path<FormValues>,
       className: classNames(classes.inputSection, classes.dateInput),
       showSeconds: true,
+      icon: Alarm,
     },
   ]
 
@@ -160,7 +162,9 @@ const Logs: FC = () => {
             <ToggleTabs
               tabs={dateTabs}
               activeTab={activeTab}
-              className={classes.dateTabs}
+              className={classes.dateTabsRow}
+              dateTabsClassName={classes.dateTabs}
+              setActiveTab={setActiveTab}
             />
             <Root>
               <FormInput

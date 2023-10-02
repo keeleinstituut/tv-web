@@ -55,3 +55,16 @@
 .downloadButton {
   padding-top: spacing(8);
 }
+
+.dateTabsRow {
+  display: flex;
+  align-items: center;
+}
+
+.dateTabs {
+  background-color: $color-text-light;
+
+  span {
+    color: $color-text;
+  }
+}

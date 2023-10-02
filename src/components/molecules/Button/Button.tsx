@@ -38,7 +38,11 @@ export type IconProps = {
   hidden?: boolean
 }
 
-const Icon: FC<IconProps> = ({ icon: IconComponent, className, ariaLabel }) => {
+export const Icon: FC<IconProps> = ({
+  icon: IconComponent,
+  className,
+  ariaLabel,
+}) => {
   if (!IconComponent) return null
   return <IconComponent className={className} aria-label={ariaLabel} />
 }
