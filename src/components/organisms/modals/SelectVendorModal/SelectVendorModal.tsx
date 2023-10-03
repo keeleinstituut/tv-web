@@ -62,7 +62,7 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
       <TextInput
         name={'search'}
         ariaLabel={t('label.search_by_name')}
-        placeholder={t('placeholder.search_by_name')}
+        placeholder={t('label.search_by_name')}
         value={searchValue}
         onChange={handleSearchVendors}
         className={classes.searchInput}

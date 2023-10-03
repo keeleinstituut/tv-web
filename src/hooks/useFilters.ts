@@ -10,6 +10,18 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
   const [filters, setFilters] = useState<TFilters | object>(
     initialFilters || {}
   )
+  const handleOnSearch = useCallback(
+    (value?: FilterFunctionType) => {
+      const sortingKeys = keys(value)
+      if (!value?.fullname) {
+        const filtersWithOutSorting = filters ? omit(filters, sortingKeys) : {}
+        setFilters({ ...filtersWithOutSorting })
+      } else {
+        setFilters({ ...filters, ...value })
+      }
+    },
+    [filters]
+  )
 
   const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {
@@ -44,6 +56,7 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
 
   return {
     filters,
+    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,

@@ -4,6 +4,8 @@ import {
   UpdateVendorPayload,
   GetSkillsPayload,
   VendorResponse,
+  CreateVendorPayload,
+  DeleteVendorsPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -60,6 +62,64 @@ export const useUpdateVendor = ({ id }: { id?: string }) => {
 
   return {
     updateVendor,
+    isLoading,
+  }
+}
+
+export const useCreateVendors = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: createVendor, isLoading } = useMutation({
+    mutationKey: ['vendors'],
+    mutationFn: async (payload: CreateVendorPayload) => {
+      return apiClient.post(endpoints.VENDORS_BULK, {
+        data: payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['vendors'], (oldData?: VendorsDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
+      queryClient.refetchQueries({
+        queryKey: ['translationUsers'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    createVendor,
+    isLoading,
+  }
+}
+
+export const useDeleteVendors = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deleteVendors, isLoading } = useMutation({
+    mutationKey: ['vendors'],
+    mutationFn: async (payload: DeleteVendorsPayload) => {
+      return apiClient.delete(endpoints.VENDORS_BULK, {
+        id: payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['vendors'], (oldData?: VendorsDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
+      queryClient.refetchQueries({
+        queryKey: ['translationUsers'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    deleteVendors,
     isLoading,
   }
 }
