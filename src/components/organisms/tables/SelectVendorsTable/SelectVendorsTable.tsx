@@ -127,6 +127,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           hour_fee,
           minimal_fee,
           skill_id,
+          vendor_id,
           vendor: {
             tags,
             skills,
@@ -161,7 +162,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           })
 
           return {
-            selected: id,
+            selected: vendor_id,
             alert_icon: !includes(taskSkills, skill_id) || !priceLanguageMatch,
             name: `${user?.forename} ${user?.surname}`,
             languageDirection,
