@@ -23,6 +23,9 @@ const alphanumericCharHyphenSpaceCheck = (tagInput: string) =>
 const hyphenSpaceAsFirstCharCheck = (tagInput: string) =>
   /^(?![- ])[a-zA-Z0-9ŠšŽžÕõÄäÖöÜü -]+$/.test(tagInput)
 
+const alphaCharCheck = (tagInput: string) =>
+  /^(?![- ])[a-zA-Z -]*$/.test(tagInput)
+
 const numberBetweenZeroAndHundred = (number: string) =>
   /^(100(\.0+)?|\d{1,2}(\.\d+)?)$/.test(number)
 
@@ -67,6 +70,9 @@ const useValidators = () => {
   const nameInputValidator = (value?: string | null) => {
     if (!value || hasValueOver100Chars(value)) {
       return t('error.name_input_length')
+    }
+    if (!alphaCharCheck(value)) {
+      return t('error.name_input_char_error')
     }
     return true
   }

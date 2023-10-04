@@ -72,7 +72,7 @@ const TextInput = forwardRef<
     'aria-label': ariaLabel,
     disabled,
     ...rest,
-    size: hasInputValueSize && size(toString(value)),
+    size: hasInputValueSize ? size(toString(value)) : undefined,
   }
   return (
     <Field
