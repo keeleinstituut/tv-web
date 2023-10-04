@@ -467,6 +467,7 @@
   },
   "orders": {
     "orders_tile": "Tellimused",
+    "order": "Tellimus",
     "new_order_title": "Tellimuse lisamine",
     "client_details": "Tellija andmed",
     "manager_details": "Tõlkekorraldaja andmed",
