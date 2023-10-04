@@ -11,7 +11,7 @@ const Breadcrumbs: FC = () => {
   const breadcrumbs = useBreadcrumbs(protectedRoutesForReactRouter)
 
   return (
-    <nav className={classes.breadcrumbs}>
+    <div className={classes.breadcrumbs}>
       {breadcrumbs.map(({ match, breadcrumb, location }, index) => {
         const routePages = includes(match.pathname, '/settings') ? 3 : 2
         const showRoute =
@@ -21,9 +21,8 @@ const Breadcrumbs: FC = () => {
 
         if (!showRoute) return null
         return (
-          <>
+          <nav key={match.pathname} className={classes.nav}>
             <Link
-              key={match.pathname}
               to={match.pathname}
               className={
                 match.pathname === location.pathname
@@ -35,14 +34,17 @@ const Breadcrumbs: FC = () => {
             </Link>
 
             <ArrowRight
-              key={index}
-              className={classes.arrow}
+              className={
+                match.pathname === location.pathname
+                  ? classes.hidden
+                  : classes.arrow
+              }
               aria-label={'arrow'}
             />
-          </>
+          </nav>
         )
       })}
-    </nav>
+    </div>
   )
 }
 
