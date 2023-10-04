@@ -28,6 +28,7 @@ export type FormValues = {
 
 export type PriceObject = {
   id: string
+  isSelected: boolean
   character_fee: number | string
   word_fee: number | string
   page_fee: number | string
@@ -279,6 +280,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
         const skillId = row.original.skill_id || ''
         const subRowsIds = map(row.original.subRows, ({ id }) => id)
         const languagePairIds = skillId ? [row.original.id] : subRowsIds
+        const defaultLanguagePairValues =
+          defaultFormValues[languageDirectionKey]
 
         return (
           <div className={classes.iconsContainer}>
@@ -290,6 +293,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               vendorId={vendor_id}
               resetForm={resetForm}
               setError={setError}
+              defaultLanguagePairValues={defaultLanguagePairValues}
             />
             <DeleteVendorPriceButton
               languagePairIds={languagePairIds}

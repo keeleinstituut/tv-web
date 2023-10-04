@@ -17,7 +17,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
-import { filter, find, includes, map } from 'lodash'
+import { compact, filter, find, includes, isEmpty, map } from 'lodash'
 
 export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
   const {
@@ -193,8 +193,10 @@ export const useCreatePrices = (vendor_id: string | undefined) => {
   const queryClient = useQueryClient()
   const { mutateAsync: createPrices, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: CreatePricesPayload) =>
-      apiClient.post(endpoints.EDIT_PRICES, { data: payload.data }),
+    mutationFn: async (payload: CreatePricesPayload) => {
+      console.log('payload', payload)
+      return apiClient.post(endpoints.EDIT_PRICES, { data: payload.data })
+    },
 
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
@@ -252,8 +254,11 @@ export const useDeletePrices = (vendor_id: string | undefined) => {
   const queryClient = useQueryClient()
   const { mutateAsync: deletePrices, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: DeletePricesPayload) =>
-      apiClient.delete(endpoints.EDIT_PRICES, { id: payload.id }),
+    mutationFn: async (payload: DeletePricesPayload) => {
+      console.log('payload', payload)
+
+      return apiClient.delete(endpoints.EDIT_PRICES, { id: payload.id })
+    },
 
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
@@ -277,4 +282,86 @@ export const useDeletePrices = (vendor_id: string | undefined) => {
     deletePrices,
     isLoading,
   }
+}
+
+const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
+  new Promise(async (resolve, reject) => {
+    const results: any = await Promise.allSettled(
+      map(payload.data, ({ state, prices }) => {
+        const deletedPricesIds = map(prices, ({ id }) => id)
+
+        if (state === 'DELETED') {
+          return apiClient.delete(endpoints.EDIT_PRICES, {
+            id: deletedPricesIds,
+          })
+        }
+        if (state === 'NEW') {
+          return apiClient.post(endpoints.EDIT_PRICES, { data: prices })
+        }
+        if (state === 'UPDATED') {
+          return apiClient.put(endpoints.EDIT_PRICES, { data: prices })
+        }
+      })
+    )
+
+    const fulfilled = compact(
+      map(results, ({ status, value }, key) => {
+        if (status === 'fulfilled') {
+          if (value) {
+            return {
+              key,
+              value,
+            }
+          }
+        }
+      })
+    )
+
+    const errors = compact(
+      map(results, ({ status, reason, value }, key) => {
+        // console.log('status', status)
+        // console.log('reason', reason)
+        // console.log('value', value)
+        // console.log('key', key)
+        if (status === 'rejected') {
+          const { message, errors: err } = reason || {}
+          const name = `skillPrice.${key}`
+          const error = {
+            // errors: { [name]: err?.name || [] },
+            errors: reason,
+            message: message || '',
+            name: key,
+          }
+          // return error
+          return reason
+        }
+      })
+    )
+
+    if (isEmpty(errors)) {
+      resolve(results)
+    } else {
+      // reject([...errors, { values: fulfilled }])
+      reject(...errors)
+    }
+  })
+
+export const useParallelMutationDepartment = (
+  vendor_id: string | undefined
+) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: parallelUpdating, isLoading } = useMutation({
+    mutationKey: ['prices', vendor_id],
+    mutationFn: async (payload: any) => {
+      return requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed(payload)
+    },
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['departments'], type: 'active' })
+    },
+    onError: () => {
+      queryClient.refetchQueries({ queryKey: ['departments'], type: 'active' })
+    },
+  })
+
+  return { parallelUpdating, isLoading }
 }

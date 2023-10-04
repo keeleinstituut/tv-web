@@ -12,14 +12,16 @@ import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
 import { useTranslation } from 'react-i18next'
 import {
   filter,
+  find,
+  flatMap,
   includes,
   isEmpty,
   join,
   keys,
   map,
-  reduce,
   reject,
   replace,
+  some,
   toNumber,
   toString,
 } from 'lodash'
@@ -44,13 +46,13 @@ import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import {
   useCreatePrices,
+  useDeletePrices,
   useFetchSkills,
+  useParallelMutationDepartment,
   useUpdatePrices,
 } from 'hooks/requests/useVendors'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
-
-import classes from './classes.module.scss'
 import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/VendorPriceListButtons'
 import DynamicForm, {
   FieldProps,
@@ -63,6 +65,9 @@ import VendorPriceListSecondStep from '../VendorPriceListSecondStep/VendorPriceL
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 
+import classes from './classes.module.scss'
+import { DataStateTypes } from '../modals/EditableListModal/EditableListModal'
+
 type VendorPriceManagementButtonProps = {
   control: Control<FormValues>
   handleSubmit: UseFormHandleSubmit<FormValues>
@@ -71,6 +76,33 @@ type VendorPriceManagementButtonProps = {
   setError: UseFormSetError<FormValues>
   languageDirectionKey: string
   skillId?: string
+  defaultLanguagePairValues?: {
+    src_lang_classifier_value_id?: {
+      name: string
+      id: string
+    }
+    dst_lang_classifier_value_id?: {
+      name: string
+      id: string
+    }
+    skill_id?: {
+      [key: string]: boolean
+    }
+    priceObject?: { [x: string]: PriceObject[] }
+  }
+}
+
+export type PriceObject2 = {
+  id: string
+  isSelected: boolean
+  character_fee: number | string
+  word_fee: number | string
+  page_fee: number | string
+  minute_fee: number | string
+  hour_fee: number | string
+  minimal_fee: number | string
+  skill_id: string
+  skill: { id: string; name: string }
 }
 
 const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
@@ -81,12 +113,16 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
   setError,
   languageDirectionKey,
   skillId,
+  defaultLanguagePairValues,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
   const { updatePrices } = useUpdatePrices(vendorId)
   const { createPrices } = useCreatePrices(vendorId)
+  const { parallelUpdating } = useParallelMutationDepartment(vendorId)
+  const { deletePrices, isLoading: isDeletingPrices } =
+    useDeletePrices(vendorId)
 
   const { skills: skillsData } = useFetchSkills()
   const { classifierValuesFilters: languageFilter } = useClassifierValuesFetch({
@@ -103,6 +139,155 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         src_lang_classifier_value_id,
         dst_lang_classifier_value_id,
       } = values[languageDirectionKey]
+
+      const defaultPricesValues: any =
+        defaultLanguagePairValues?.priceObject || {}
+
+      const pricesValues: any = values[languageDirectionKey]?.priceObject || {}
+
+      const deletedSkillsObjects = filter(defaultPricesValues, (value, key) => {
+        return (
+          value.isSelected === true &&
+          pricesValues[key] &&
+          pricesValues[key].isSelected === false
+        )
+      })
+
+      const addedSkillsObjects = filter(defaultPricesValues, (value, key) => {
+        return (
+          value.isSelected === false &&
+          pricesValues[key] &&
+          pricesValues[key].isSelected === true
+        )
+      })
+
+      const hasPriceChanged = (defaultObj: any, valueObj: any): boolean => {
+        const propertiesToCheck = [
+          'word_fee',
+          'page_fee',
+          'minute_fee',
+          'minimal_fee',
+          'hour_fee',
+          'character_fee',
+        ]
+
+        return some(
+          propertiesToCheck,
+          (property) => defaultObj[property] !== valueObj[property]
+        )
+      }
+
+      const updatedSkillsObjects = filter(pricesValues, (defaultItem) => {
+        const valueItem = find(defaultPricesValues, { id: defaultItem.id })
+        return (
+          valueItem &&
+          valueItem.isSelected &&
+          hasPriceChanged(defaultItem, valueItem)
+        )
+      })
+
+      console.log('pricesValues', pricesValues)
+
+      const modifiedPayload = () => {
+        let results: string | any[] = []
+
+        if (deletedSkillsObjects.length > 0) {
+          results = [
+            ...results,
+            {
+              prices: deletedSkillsObjects,
+              state: DataStateTypes.DELETED,
+            },
+          ]
+        }
+        if (addedSkillsObjects.length > 0) {
+          results = [
+            ...results,
+            {
+              prices: map(
+                addedSkillsObjects as unknown as PriceObject[],
+                (skillData) => ({
+                  skill_id: skillData.skill_id,
+                  vendor_id: vendorId || '',
+                  src_lang_classifier_value_id:
+                    src_lang_classifier_value_id?.id || '',
+                  dst_lang_classifier_value_id:
+                    dst_lang_classifier_value_id?.id,
+                  character_fee: toNumber(
+                    replace(toString(skillData.character_fee), '€', '')
+                  ),
+                  hour_fee: toNumber(
+                    replace(toString(skillData.hour_fee), '€', '')
+                  ),
+                  minimal_fee: toNumber(
+                    replace(toString(skillData.minimal_fee), '€', '')
+                  ),
+                  minute_fee: toNumber(
+                    replace(toString(skillData.minute_fee), '€', '')
+                  ),
+                  page_fee: toNumber(
+                    replace(toString(skillData.page_fee), '€', '')
+                  ),
+                  word_fee: toNumber(
+                    replace(toString(skillData.word_fee), '€', '')
+                  ),
+                })
+              ),
+              state: DataStateTypes.NEW,
+            },
+          ]
+        }
+        if (updatedSkillsObjects.length > 0) {
+          results = [
+            ...results,
+            {
+              prices: map(
+                updatedSkillsObjects as unknown as PriceObject[],
+                ({
+                  character_fee,
+                  hour_fee,
+                  minimal_fee,
+                  minute_fee,
+                  page_fee,
+                  word_fee,
+                  id,
+                }) => {
+                  return {
+                    id,
+                    character_fee: toNumber(
+                      replace(toString(character_fee), '€', '')
+                    ),
+                    hour_fee: toNumber(replace(toString(hour_fee), '€', '')),
+                    minimal_fee: toNumber(
+                      replace(toString(minimal_fee), '€', '')
+                    ),
+                    minute_fee: toNumber(
+                      replace(toString(minute_fee), '€', '')
+                    ),
+                    page_fee: toNumber(replace(toString(page_fee), '€', '')),
+                    word_fee: toNumber(replace(toString(word_fee), '€', '')),
+                  }
+                }
+              ),
+              state: DataStateTypes.UPDATED,
+            },
+          ]
+        }
+
+        if (results.length === 0) {
+          results = [
+            ...results,
+            {
+              prices: pricesValues,
+              state: DataStateTypes.OLD,
+            },
+          ]
+        }
+
+        return results
+      }
+
+      const result = modifiedPayload()
 
       const filteredSelectedSkills = filter(priceObject, 'isSelected')
 
@@ -132,51 +317,61 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         }
       )
 
-      const newPricesData = map(
-        filteredNewSkills as unknown as PriceObject[],
-        ({
-          character_fee,
-          hour_fee,
-          minimal_fee,
-          minute_fee,
-          page_fee,
-          word_fee,
-          id,
-          skill_id,
-        }) => {
-          return {
-            id,
-            skill_id,
-            vendor_id: vendorId || '',
-            src_lang_classifier_value_id:
-              src_lang_classifier_value_id?.id || '',
-            dst_lang_classifier_value_id:
-              dst_lang_classifier_value_id?.id || '',
-            character_fee: toNumber(replace(toString(character_fee), '€', '')),
-            hour_fee: toNumber(replace(toString(hour_fee), '€', '')),
-            minimal_fee: toNumber(replace(toString(minimal_fee), '€', '')),
-            minute_fee: toNumber(replace(toString(minute_fee), '€', '')),
-            page_fee: toNumber(replace(toString(page_fee), '€', '')),
-            word_fee: toNumber(replace(toString(word_fee), '€', '')),
-          }
+      const newPricesData = flatMap(
+        dst_lang_classifier_value_id?.id,
+        (dst_id) => {
+          return map(
+            filteredNewSkills as unknown as PriceObject[],
+            (skillData) => ({
+              skill_id: skillData.skill_id,
+              vendor_id: vendorId || '',
+              src_lang_classifier_value_id:
+                src_lang_classifier_value_id?.id || '',
+              dst_lang_classifier_value_id: dst_id,
+              character_fee: toNumber(
+                replace(toString(skillData.character_fee), '€', '')
+              ),
+              hour_fee: toNumber(
+                replace(toString(skillData.hour_fee), '€', '')
+              ),
+              minimal_fee: toNumber(
+                replace(toString(skillData.minimal_fee), '€', '')
+              ),
+              minute_fee: toNumber(
+                replace(toString(skillData.minute_fee), '€', '')
+              ),
+              page_fee: toNumber(
+                replace(toString(skillData.page_fee), '€', '')
+              ),
+              word_fee: toNumber(
+                replace(toString(skillData.word_fee), '€', '')
+              ),
+            })
+          )
         }
       )
 
+      console.log('RESULT', result)
+
       const updatePricesPayload = {
-        data: updatePricesData,
+        data: result,
       }
+
       const newPricesPayload = {
         data: newPricesData,
       }
 
       try {
-        if (!isEmpty(updatePricesPayload.data)) {
-          await updatePrices(updatePricesPayload)
-        }
+        // await promiseAll
+        await parallelUpdating(updatePricesPayload)
 
-        if (!isEmpty(newPricesPayload.data)) {
-          await createPrices(newPricesPayload)
-        }
+        // if (!isEmpty(updatePricesPayload.data)) {
+        //   await updatePrices(updatePricesPayload)
+        // }
+
+        // if (!isEmpty(newPricesPayload.data)) {
+        //   await createPrices(newPricesPayload)
+        // }
 
         newLanguagePair
           ? showNotification({
@@ -193,6 +388,8 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         resetForm()
         closeModal()
       } catch (errorData) {
+        console.log('ERRORDATA', errorData)
+
         const typedErrorData = errorData as ValidationError
 
         if (typedErrorData.errors) {
@@ -200,6 +397,10 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
             const typedKey = key as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
             const valuesKey = keys(values)[0]
+
+            console.log('typedKey', typedKey)
+            console.log('errorString', errorString)
+            console.log('errorsArray', errorsArray)
 
             // const payloadKey = keys(payload)[0]
             // const priceObject = replace(typedKey, payloadKey, valuesKey)
