@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { FC } from 'react'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
-import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
+// import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 import useAuth from 'hooks/useAuth'
 import { useFetchUser } from 'hooks/requests/useUsers'
 import Loader from 'components/atoms/Loader/Loader'
@@ -23,11 +23,12 @@ const UserDetails: FC = () => {
       <div className={classes.titleRow}>
         <h1 className={classes.title}>{t('user.account')}</h1>
 
-        <WorkingTimes
+        {/* NOTE: edit personal working times and vacation days will come later with new endpoints */}
+        {/* <WorkingTimes
           name={user?.institution.name || ''}
           id={user?.institution.id || ''}
           data={user?.institution}
-        />
+        /> */}
       </div>
       <UserForm {...user} id={userId} isUserAccount />
       <p className={classes.dateText}>
