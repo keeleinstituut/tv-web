@@ -64,3 +64,9 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+.dateTimeContainer {
+  display: grid;
+  height: max-content;
+  grid-gap: spacing(4);
+}
