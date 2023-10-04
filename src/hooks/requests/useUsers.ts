@@ -71,7 +71,11 @@ export const useFetchInfiniteProjectPerson = (
     useInfiniteQuery<UsersDataType>({
       queryKey: [personToFetch, filters],
       queryFn: ({ pageParam = 1 }) =>
-        apiClient.get(endpointToUse, { ...filters, page: pageParam, project_role: projectRoleFilter }),
+        apiClient.get(endpointToUse, {
+          ...filters,
+          page: pageParam,
+          project_role: projectRoleFilter,
+        }),
       getNextPageParam: (lastPage) => (lastPage.meta?.current_page || 0) + 1,
       keepPreviousData: true,
     })
