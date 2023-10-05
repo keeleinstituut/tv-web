@@ -291,14 +291,17 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
         const deletedPricesIds = map(prices, ({ id }) => id)
 
         if (state === 'DELETED') {
+          console.log('DELETED sees')
           return apiClient.delete(endpoints.EDIT_PRICES, {
             id: deletedPricesIds,
           })
         }
         if (state === 'NEW') {
+          console.log('NEW sees')
           return apiClient.post(endpoints.EDIT_PRICES, { data: prices })
         }
         if (state === 'UPDATED') {
+          console.log('UPDATED sees')
           return apiClient.put(endpoints.EDIT_PRICES, { data: prices })
         }
       })
@@ -319,21 +322,21 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
 
     const errors = compact(
       map(results, ({ status, reason, value }, key) => {
-        // console.log('status', status)
-        // console.log('reason', reason)
-        // console.log('value', value)
-        // console.log('key', key)
+        console.log('status', status)
+        console.log('reason', reason)
+        console.log('value', value)
+        console.log('key', key)
         if (status === 'rejected') {
           const { message, errors: err } = reason || {}
           const name = `skillPrice.${key}`
           const error = {
             // errors: { [name]: err?.name || [] },
-            errors: reason,
+            errors: reason.errors,
             message: message || '',
-            name: key,
+            // name: key,
           }
-          // return error
-          return reason
+          return error
+          // return reason
         }
       })
     )
@@ -341,8 +344,8 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
     if (isEmpty(errors)) {
       resolve(results)
     } else {
-      // reject([...errors, { values: fulfilled }])
-      reject(...errors)
+      reject([...errors, { values: fulfilled }])
+      // reject(...errors)
     }
   })
 
@@ -353,6 +356,7 @@ export const useParallelMutationDepartment = (
   const { mutateAsync: parallelUpdating, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
     mutationFn: async (payload: any) => {
+      console.log('PAYLOAD', payload)
       return requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed(payload)
     },
     onSuccess: () => {

@@ -140,6 +140,10 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         dst_lang_classifier_value_id,
       } = values[languageDirectionKey]
 
+      const filteredSelectedSkills = filter(priceObject, 'isSelected')
+
+      console.log('VALUES', values)
+
       const defaultPricesValues: any =
         defaultLanguagePairValues?.priceObject || {}
 
@@ -186,10 +190,10 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         )
       })
 
-      console.log('pricesValues', pricesValues)
+      // console.log('pricesValues', pricesValues)
 
       const modifiedPayload = () => {
-        let results: string | any[] = []
+        let results: string | unknown[] = []
 
         if (deletedSkillsObjects.length > 0) {
           results = [
@@ -206,33 +210,49 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
             {
               prices: map(
                 addedSkillsObjects as unknown as PriceObject[],
-                (skillData) => ({
-                  skill_id: skillData.skill_id,
-                  vendor_id: vendorId || '',
-                  src_lang_classifier_value_id:
-                    src_lang_classifier_value_id?.id || '',
-                  dst_lang_classifier_value_id:
-                    dst_lang_classifier_value_id?.id,
-                  character_fee: toNumber(
-                    replace(toString(skillData.character_fee), '€', '')
-                  ),
-                  hour_fee: toNumber(
-                    replace(toString(skillData.hour_fee), '€', '')
-                  ),
-                  minimal_fee: toNumber(
-                    replace(toString(skillData.minimal_fee), '€', '')
-                  ),
-                  minute_fee: toNumber(
-                    replace(toString(skillData.minute_fee), '€', '')
-                  ),
-                  page_fee: toNumber(
-                    replace(toString(skillData.page_fee), '€', '')
-                  ),
-                  word_fee: toNumber(
-                    replace(toString(skillData.word_fee), '€', '')
-                  ),
-                })
+                (skillData) => {
+                  return {
+                    skill_id: skillData.skill_id,
+                    vendor_id: vendorId || '',
+                    src_lang_classifier_value_id:
+                      src_lang_classifier_value_id?.id || '',
+                    dst_lang_classifier_value_id:
+                      dst_lang_classifier_value_id?.id,
+                    character_fee: skillData.character_fee,
+                    hour_fee: skillData.hour_fee,
+                    minimal_fee: skillData.minimal_fee,
+                    minute_fee: skillData.minute_fee,
+                    page_fee: skillData.page_fee,
+                    word_fee: skillData.word_fee,
+                  }
+                }
               ),
+              state: DataStateTypes.NEW,
+            },
+          ]
+        }
+        if (addedSkillsObjects.length === 0 && newLanguagePair) {
+          results = [
+            ...results,
+            {
+              prices: flatMap(dst_lang_classifier_value_id?.id, (dst_id) => {
+                return map(
+                  filteredSelectedSkills as unknown as PriceObject[],
+                  (skillData) => ({
+                    skill_id: skillData.skill_id,
+                    vendor_id: vendorId || '',
+                    src_lang_classifier_value_id:
+                      src_lang_classifier_value_id?.id || '',
+                    dst_lang_classifier_value_id: dst_id,
+                    character_fee: skillData.character_fee,
+                    hour_fee: skillData.hour_fee,
+                    minimal_fee: skillData.minimal_fee,
+                    minute_fee: skillData.minute_fee,
+                    page_fee: skillData.page_fee,
+                    word_fee: skillData.word_fee,
+                  })
+                )
+              }),
               state: DataStateTypes.NEW,
             },
           ]
@@ -254,18 +274,12 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
                 }) => {
                   return {
                     id,
-                    character_fee: toNumber(
-                      replace(toString(character_fee), '€', '')
-                    ),
-                    hour_fee: toNumber(replace(toString(hour_fee), '€', '')),
-                    minimal_fee: toNumber(
-                      replace(toString(minimal_fee), '€', '')
-                    ),
-                    minute_fee: toNumber(
-                      replace(toString(minute_fee), '€', '')
-                    ),
-                    page_fee: toNumber(replace(toString(page_fee), '€', '')),
-                    word_fee: toNumber(replace(toString(word_fee), '€', '')),
+                    character_fee,
+                    hour_fee,
+                    minimal_fee,
+                    minute_fee,
+                    page_fee,
+                    word_fee,
                   }
                 }
               ),
@@ -289,80 +303,11 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
 
       const result = modifiedPayload()
 
-      const filteredSelectedSkills = filter(priceObject, 'isSelected')
-
-      const filteredUpdateSkills = filter(priceObject, 'id')
-      const filteredNewSkills = reject(filteredSelectedSkills, 'id')
-
-      const updatePricesData = map(
-        filteredUpdateSkills as unknown as PriceObject[],
-        ({
-          character_fee,
-          hour_fee,
-          minimal_fee,
-          minute_fee,
-          page_fee,
-          word_fee,
-          id,
-        }) => {
-          return {
-            id,
-            character_fee: toNumber(replace(toString(character_fee), '€', '')),
-            hour_fee: toNumber(replace(toString(hour_fee), '€', '')),
-            minimal_fee: toNumber(replace(toString(minimal_fee), '€', '')),
-            minute_fee: toNumber(replace(toString(minute_fee), '€', '')),
-            page_fee: toNumber(replace(toString(page_fee), '€', '')),
-            word_fee: toNumber(replace(toString(word_fee), '€', '')),
-          }
-        }
-      )
-
-      const newPricesData = flatMap(
-        dst_lang_classifier_value_id?.id,
-        (dst_id) => {
-          return map(
-            filteredNewSkills as unknown as PriceObject[],
-            (skillData) => ({
-              skill_id: skillData.skill_id,
-              vendor_id: vendorId || '',
-              src_lang_classifier_value_id:
-                src_lang_classifier_value_id?.id || '',
-              dst_lang_classifier_value_id: dst_id,
-              character_fee: toNumber(
-                replace(toString(skillData.character_fee), '€', '')
-              ),
-              hour_fee: toNumber(
-                replace(toString(skillData.hour_fee), '€', '')
-              ),
-              minimal_fee: toNumber(
-                replace(toString(skillData.minimal_fee), '€', '')
-              ),
-              minute_fee: toNumber(
-                replace(toString(skillData.minute_fee), '€', '')
-              ),
-              page_fee: toNumber(
-                replace(toString(skillData.page_fee), '€', '')
-              ),
-              word_fee: toNumber(
-                replace(toString(skillData.word_fee), '€', '')
-              ),
-            })
-          )
-        }
-      )
-
-      console.log('RESULT', result)
-
       const updatePricesPayload = {
         data: result,
       }
 
-      const newPricesPayload = {
-        data: newPricesData,
-      }
-
       try {
-        // await promiseAll
         await parallelUpdating(updatePricesPayload)
 
         // if (!isEmpty(updatePricesPayload.data)) {
@@ -388,7 +333,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         resetForm()
         closeModal()
       } catch (errorData) {
-        console.log('ERRORDATA', errorData)
+        console.log('ERRORDATA**', errorData)
 
         const typedErrorData = errorData as ValidationError
 
@@ -543,6 +488,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
               srcLanguageValue={srcLanguage}
               dstLanguageValues={[dstLanguage]}
               languageOptions={languageFilter}
+              skillId={skillId}
             />
           ),
           isLoading: isSubmitting,

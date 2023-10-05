@@ -1,6 +1,15 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { chain, find, isEmpty, map, reduce, some, toString } from 'lodash'
+import {
+  chain,
+  find,
+  isEmpty,
+  map,
+  reduce,
+  some,
+  toString,
+  values,
+} from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -92,7 +101,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     handlePaginationChange,
   } = useAllPricesFetch({
     vendor_id,
-    order_direction: OrderDirection.Asc,
   })
 
   const priceListCreated = dayjs(
@@ -129,12 +137,12 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
             }) => {
               return {
                 language_direction_key: `${items[0].source_language_classifier_value.id}_${items[0].destination_language_classifier_value.id}`,
-                character_fee: `${toString(character_fee)}€`,
-                hour_fee: `${toString(hour_fee)}€`,
-                minimal_fee: `${toString(minimal_fee)}€`,
-                minute_fee: `${toString(minute_fee)}€`,
-                page_fee: `${toString(page_fee)}€`,
-                word_fee: `${toString(word_fee)}€`,
+                character_fee,
+                hour_fee,
+                minimal_fee,
+                minute_fee,
+                page_fee,
+                word_fee,
                 skill_id,
                 skill,
                 source_language_classifier_value,
@@ -175,12 +183,12 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
                         }),
                         skill_id: skillData.id,
                         skill: skillData,
-                        character_fee: skillPrice?.character_fee || `${0}€`,
-                        hour_fee: skillPrice?.hour_fee || `${0}€`,
-                        minimal_fee: skillPrice?.minimal_fee || `${0}€`,
-                        minute_fee: skillPrice?.minute_fee || `${0}€`,
-                        page_fee: skillPrice?.page_fee || `${0}€`,
-                        word_fee: skillPrice?.word_fee || `${0}€`,
+                        character_fee: skillPrice?.character_fee || `${0}`,
+                        hour_fee: skillPrice?.hour_fee || `${0}`,
+                        minimal_fee: skillPrice?.minimal_fee || `${0}`,
+                        minute_fee: skillPrice?.minute_fee || `${0}`,
+                        page_fee: skillPrice?.page_fee || `${0}`,
+                        word_fee: skillPrice?.word_fee || `${0}`,
                         id: skillPrice?.id,
                       },
                     }
@@ -206,12 +214,12 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               isSelected: false,
               skill_id: skillData.id,
               skill: skillData,
-              character_fee: `${0}€`,
-              hour_fee: `${0}€`,
-              minimal_fee: `${0}€`,
-              minute_fee: `${0}€`,
-              page_fee: `${0}€`,
-              word_fee: `${0}€`,
+              character_fee: `${0}`,
+              hour_fee: `${0}`,
+              minimal_fee: `${0}`,
+              minute_fee: `${0}`,
+              page_fee: `${0}`,
+              word_fee: `${0}`,
             },
           }
         },
@@ -222,7 +230,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
   const { handleSubmit, control, reset, setError } = useForm<FormValues>({
     values: { ...defaultFormValues, ...newPriceObject },
-    mode: 'onChange',
+    // mode: 'onChange',
+    mode: 'onTouched',
   })
 
   const resetForm = useCallback(() => {
@@ -251,26 +260,38 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     }),
     columnHelper.accessor('character_fee', {
       header: () => t('vendors.character_fee'),
+      cell: ({ getValue }) =>
+        getValue() !== undefined ? `${getValue()}€` : null,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('word_fee', {
       header: () => t('vendors.word_fee'),
+      cell: ({ getValue }) =>
+        getValue() !== undefined ? `${getValue()}€` : null,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('page_fee', {
       header: () => t('vendors.page_fee'),
+      cell: ({ getValue }) =>
+        getValue() !== undefined ? `${getValue()}€` : null,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('minute_fee', {
       header: () => t('vendors.minute_fee'),
+      cell: ({ getValue }) =>
+        getValue() !== undefined ? `${getValue()}€` : null,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('hour_fee', {
       header: () => t('vendors.hour_fee'),
+      cell: ({ getValue }) =>
+        getValue() !== undefined ? `${getValue()}€` : null,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('minimal_fee', {
       header: () => t('vendors.minimal_fee'),
+      cell: ({ getValue }) =>
+        getValue() !== undefined ? `${getValue()}€` : null,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('id', {

@@ -11,6 +11,7 @@ type VendorPriceListEditContentProps = {
   dstLanguageValues?: string[]
   languageDirectionKey: string
   languageOptions?: { value: string; label: string }[]
+  skillId?: string
 }
 
 const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
@@ -19,6 +20,7 @@ const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
   dstLanguageValues,
   languageDirectionKey,
   languageOptions,
+  skillId,
 }) => {
   return (
     <>
@@ -32,6 +34,7 @@ const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
         <VendorPricesTable
           control={control}
           languageDirectionKey={languageDirectionKey}
+          skillId={skillId}
         />
       </Root>
     </>

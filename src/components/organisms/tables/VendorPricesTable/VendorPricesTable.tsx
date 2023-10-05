@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -16,19 +16,34 @@ import {
 
 import classes from './classes.module.scss'
 import { filter } from 'lodash'
+import useValidators from 'hooks/useValidators'
 
 type VendorPricesTableProps = {
   control: Control<FormValues>
   languageDirectionKey: string
+  skillId?: string
+  typedKey?: string
 }
 
 const VendorPricesTable: FC<VendorPricesTableProps> = ({
   control,
   languageDirectionKey,
+  skillId,
+  typedKey,
 }) => {
   const { t } = useTranslation()
 
+  const { priceValidator } = useValidators()
+
   const columnHelper = createColumnHelper<PriceObject>()
+
+  const rules = {
+    required: true,
+    validate: (value: unknown) => {
+      const typedValue = value as string
+      return priceValidator(typedValue)
+    },
+  }
 
   const columns = [
     columnHelper.accessor('skill', {
@@ -50,6 +65,8 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.character_fee')}
             className={classes.pricesInput}
+            rules={rules}
+            errorZIndex={100}
           />
         )
       },
@@ -66,6 +83,8 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.word_fee')}
             className={classes.pricesInput}
+            rules={rules}
+            errorZIndex={100}
           />
         )
       },
@@ -82,6 +101,8 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.page_fee')}
             className={classes.pricesInput}
+            rules={rules}
+            errorZIndex={100}
           />
         )
       },
@@ -98,6 +119,8 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minute_fee')}
             className={classes.pricesInput}
+            rules={rules}
+            errorZIndex={100}
           />
         )
       },
@@ -114,6 +137,8 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.hour_fee')}
             className={classes.pricesInput}
+            rules={rules}
+            errorZIndex={100}
           />
         )
       },
@@ -130,6 +155,8 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minimal_fee')}
             className={classes.pricesInput}
+            rules={rules}
+            errorZIndex={100}
           />
         )
       },
@@ -142,7 +169,10 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
   const languageDirectionObject =
     languageDirectionPrices[languageDirectionKey] || {}
 
-  const filteredData = filter(languageDirectionObject.priceObject, 'isSelected')
+  const filteredData = filter(
+    languageDirectionObject.priceObject,
+    skillId ? languageDirectionObject?.priceObject?.[skillId] : 'isSelected'
+  )
 
   const paginationData = {
     per_page: filteredData?.length,
