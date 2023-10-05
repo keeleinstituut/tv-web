@@ -158,11 +158,11 @@ const Tags: FC = () => {
             tagsList={tagsList}
             type={type}
             isEditable={
-              type !== TagTypes.Skills ||
-              !includes(
-                userPrivileges,
-                Privileges.EditTag || Privileges.AddTag || Privileges.DeleteTag
-              )
+              type !== TagTypes.Skills
+                ? includes(userPrivileges, Privileges.DeleteTag) ||
+                  includes(userPrivileges, Privileges.AddTag) ||
+                  includes(userPrivileges, Privileges.EditTag)
+                : false
             }
           />
         ))}
