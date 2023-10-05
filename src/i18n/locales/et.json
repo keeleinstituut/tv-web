@@ -210,7 +210,7 @@
     "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina",
     "discount_number": "Soodustus võib olla vahemikus 0-100",
     "cant_merge_files": "Teostajate vahel jagatud faile ei ole võimalik kokku liita",
-    "invalid_price": "Lubatud on ainult numbrid ja üks punkt"
+    "invalid_price": "Lubatud on ainult numbrid ja punkt"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"

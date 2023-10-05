@@ -1,15 +1,6 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  chain,
-  find,
-  isEmpty,
-  map,
-  reduce,
-  some,
-  toString,
-  values,
-} from 'lodash'
+import { chain, find, isEmpty, map, reduce, some } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -22,7 +13,6 @@ import dayjs from 'dayjs'
 import { VendorFormProps } from '../VendorForm/VendorForm'
 import VendorPriceManagementButton from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
 import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButton/DeleteVendorPriceButton'
-import { OrderDirection } from 'types/vendors'
 
 import classes from './classes.module.scss'
 

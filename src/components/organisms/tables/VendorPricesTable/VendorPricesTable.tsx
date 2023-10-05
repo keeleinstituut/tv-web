@@ -22,14 +22,12 @@ type VendorPricesTableProps = {
   control: Control<FormValues>
   languageDirectionKey: string
   skillId?: string
-  typedKey?: string
 }
 
 const VendorPricesTable: FC<VendorPricesTableProps> = ({
   control,
   languageDirectionKey,
   skillId,
-  typedKey,
 }) => {
   const { t } = useTranslation()
 

@@ -11,19 +11,19 @@ import { ReactComponent as Edit } from 'assets/icons/edit.svg'
 import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
 import { useTranslation } from 'react-i18next'
 import {
+  compact,
   filter,
   find,
   flatMap,
   includes,
-  isEmpty,
+  isArray,
   join,
   keys,
   map,
-  reject,
   replace,
   some,
+  split,
   toNumber,
-  toString,
 } from 'lodash'
 import {
   ModalTypes,
@@ -54,13 +54,7 @@ import {
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/VendorPriceListButtons'
-import DynamicForm, {
-  FieldProps,
-  FormInput,
-  InputTypes,
-} from '../DynamicForm/DynamicForm'
-import { DropdownSizeTypes } from '../SelectionControlsInput/SelectionControlsInput'
-import { Root } from '@radix-ui/react-form'
+import DynamicForm, { FieldProps, InputTypes } from '../DynamicForm/DynamicForm'
 import VendorPriceListSecondStep from '../VendorPriceListSecondStep/VendorPriceListSecondStep'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
@@ -118,11 +112,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
-  const { updatePrices } = useUpdatePrices(vendorId)
-  const { createPrices } = useCreatePrices(vendorId)
   const { parallelUpdating } = useParallelMutationDepartment(vendorId)
-  const { deletePrices, isLoading: isDeletingPrices } =
-    useDeletePrices(vendorId)
 
   const { skills: skillsData } = useFetchSkills()
   const { classifierValuesFilters: languageFilter } = useClassifierValuesFetch({
@@ -190,133 +180,68 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         )
       })
 
-      // console.log('pricesValues', pricesValues)
-
       const modifiedPayload = () => {
-        let results: string | unknown[] = []
-
-        if (deletedSkillsObjects.length > 0) {
-          results = [
-            ...results,
-            {
-              prices: deletedSkillsObjects,
-              state: DataStateTypes.DELETED,
-            },
-          ]
-        }
-        if (addedSkillsObjects.length > 0) {
-          results = [
-            ...results,
-            {
-              prices: map(
-                addedSkillsObjects as unknown as PriceObject[],
-                (skillData) => {
-                  return {
+        const newStateData = (
+          skills: any[],
+          dstId = dst_lang_classifier_value_id?.id || ''
+        ) =>
+          compact(
+            map(skills, (skillData) =>
+              skillData
+                ? {
                     skill_id: skillData.skill_id,
                     vendor_id: vendorId || '',
                     src_lang_classifier_value_id:
                       src_lang_classifier_value_id?.id || '',
-                    dst_lang_classifier_value_id:
-                      dst_lang_classifier_value_id?.id,
+                    dst_lang_classifier_value_id: dstId,
                     character_fee: skillData.character_fee,
                     hour_fee: skillData.hour_fee,
                     minimal_fee: skillData.minimal_fee,
                     minute_fee: skillData.minute_fee,
                     page_fee: skillData.page_fee,
                     word_fee: skillData.word_fee,
+                    ...(skillData.id && { id: skillData.id }),
                   }
-                }
-              ),
-              state: DataStateTypes.NEW,
-            },
-          ]
-        }
-        if (addedSkillsObjects.length === 0 && newLanguagePair) {
-          results = [
-            ...results,
-            {
-              prices: flatMap(dst_lang_classifier_value_id?.id, (dst_id) => {
-                return map(
-                  filteredSelectedSkills as unknown as PriceObject[],
-                  (skillData) => ({
-                    skill_id: skillData.skill_id,
-                    vendor_id: vendorId || '',
-                    src_lang_classifier_value_id:
-                      src_lang_classifier_value_id?.id || '',
-                    dst_lang_classifier_value_id: dst_id,
-                    character_fee: skillData.character_fee,
-                    hour_fee: skillData.hour_fee,
-                    minimal_fee: skillData.minimal_fee,
-                    minute_fee: skillData.minute_fee,
-                    page_fee: skillData.page_fee,
-                    word_fee: skillData.word_fee,
-                  })
-                )
-              }),
-              state: DataStateTypes.NEW,
-            },
-          ]
-        }
-        if (updatedSkillsObjects.length > 0) {
-          results = [
-            ...results,
-            {
-              prices: map(
-                updatedSkillsObjects as unknown as PriceObject[],
-                ({
-                  character_fee,
-                  hour_fee,
-                  minimal_fee,
-                  minute_fee,
-                  page_fee,
-                  word_fee,
-                  id,
-                }) => {
-                  return {
-                    id,
-                    character_fee,
-                    hour_fee,
-                    minimal_fee,
-                    minute_fee,
-                    page_fee,
-                    word_fee,
-                  }
-                }
-              ),
-              state: DataStateTypes.UPDATED,
-            },
-          ]
-        }
+                : undefined
+            )
+          )
 
-        if (results.length === 0) {
-          results = [
-            ...results,
-            {
-              prices: pricesValues,
-              state: DataStateTypes.OLD,
+        const results = compact([
+          deletedSkillsObjects.length > 0 && {
+            prices: deletedSkillsObjects,
+            state: DataStateTypes.DELETED,
+          },
+          addedSkillsObjects.length > 0 && {
+            prices: newStateData(addedSkillsObjects),
+            state: DataStateTypes.NEW,
+          },
+          !addedSkillsObjects.length &&
+            newLanguagePair && {
+              prices: flatMap(dst_lang_classifier_value_id?.id, (dst_id) =>
+                newStateData(filteredSelectedSkills, dst_id)
+              ),
+              state: DataStateTypes.NEW,
             },
-          ]
-        }
+          updatedSkillsObjects.length > 0 && {
+            prices: map(updatedSkillsObjects, ({ id, ...rest }) => ({
+              id,
+              ...rest,
+            })),
+            state: DataStateTypes.UPDATED,
+          },
+        ])
 
         return results
       }
 
-      const result = modifiedPayload()
+      const payload = modifiedPayload()
 
       const updatePricesPayload = {
-        data: result,
+        data: payload,
       }
 
       try {
         await parallelUpdating(updatePricesPayload)
-
-        // if (!isEmpty(updatePricesPayload.data)) {
-        //   await updatePrices(updatePricesPayload)
-        // }
-
-        // if (!isEmpty(newPricesPayload.data)) {
-        //   await createPrices(newPricesPayload)
-        // }
 
         newLanguagePair
           ? showNotification({
@@ -335,56 +260,172 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
       } catch (errorData) {
         console.log('ERRORDATA**', errorData)
 
-        const typedErrorData = errorData as ValidationError
+        // const typedErrorData = errorData as ValidationError
 
-        if (typedErrorData.errors) {
-          map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
-            const errorString = join(errorsArray, ',')
-            const valuesKey = keys(values)[0]
+        const errorArray = isArray(errorData) ? errorData : [errorData]
+        map(errorArray, (error) => {
+          const typedErrorData = error as ValidationError
+          if (typedErrorData.errors) {
+            map(typedErrorData.errors, (errorsArray, key) => {
+              const typedKey = key as FieldPath<FormValues>
+              const tKey = split(typedKey, '.')[1]
+              const errorString = join(errorsArray, ',')
+              // if (tKey) {
+              //   const inputName = payload[toNumber(tKey)].id || `new_${tKey}`
+              //   setError(
+              //     inputName,
+              //     { type: 'backend', message: errorString },
+              //     { shouldFocus: true }
+              //   )
+              // }
 
-            console.log('typedKey', typedKey)
-            console.log('errorString', errorString)
-            console.log('errorsArray', errorsArray)
+              console.log('errorsArray', errorsArray)
+              console.log('typedKey', typedKey)
+              console.log('errorString', errorString)
 
-            // const payloadKey = keys(payload)[0]
-            // const priceObject = replace(typedKey, payloadKey, valuesKey)
+              const payloadKey = keys(payload)[0]
+              const dstLangClassifierResult = replace(
+                typedKey,
+                `${payloadKey}.0.`,
+                ''
+              )
 
-            // setError(priceObject, { type: 'backend', message: errorString })
+              console.log('dstLangClassifierResult', dstLangClassifierResult)
 
-            // const payloadKey = keys(payload)[0]
-            // const dstLangClassifierResult = replace(
-            //   typedKey,
-            //   `${payloadKey}.0.`,
-            //   ''
-            // )
-            // const srcLangClassifierResult = replace(
-            //   typedKey,
-            //   `${payloadKey}.0.`,
-            //   ''
-            // )
-            // const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
+              const srcLangClassifierResult = replace(
+                typedKey,
+                `${payloadKey}.0.`,
+                ''
+              )
+              const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
 
-            // if (includes(typedKey, dstLangClassifierResult)) {
-            //   setError(dstLangClassifierResult, {
-            //     type: 'backend',
-            //     message: errorString,
-            //   })
-            // }
-            // if (includes(typedKey, srcLangClassifierResult)) {
-            //   setError(srcLangClassifierResult, {
-            //     type: 'backend',
-            //     message: errorString,
-            //   })
-            // }
-            // if (includes(typedKey, vendorIdResult)) {
-            //   setError(vendorIdResult, {
-            //     type: 'backend',
-            //     message: errorString,
-            //   })
-            // }
+              if (includes(typedKey, dstLangClassifierResult)) {
+                setError(dstLangClassifierResult, {
+                  type: 'backend',
+                  message: 'bu1',
+                })
+              }
+              if (includes(typedKey, srcLangClassifierResult)) {
+                setError(srcLangClassifierResult, {
+                  type: 'backend',
+                  message: 'bu2',
+                })
+              }
+              if (includes(typedKey, vendorIdResult)) {
+                setError(vendorIdResult, {
+                  type: 'backend',
+                  message: 'bu3',
+                })
+              }
+            })
+          }
+        })
+
+        if (errorData) {
+          map(errorData, ({ errors }) => {
+            console.log('errors', errors)
+
+            const typedErrorData = errors as ValidationError
+
+            if (typedErrorData) {
+              map(typedErrorData, (errorsArray, key) => {
+                const typedKey = key as FieldPath<FormValues>
+                // const errorString = join(errorsArray ? errorsArray : '', ',')
+                const valuesKey = keys(values)[0]
+
+                console.log('typedKey', typedKey)
+                // console.log('errorString', errorString)
+                console.log('errorsArray', errorsArray)
+                console.log('valuesKey', valuesKey)
+
+                // const priceObject = replace(typedKey, payloadKey, valuesKey)
+
+                // setError(priceObject, { type: 'backend', message: errorString })
+
+                const payloadKey = keys(payload)[0]
+                const dstLangClassifierResult = replace(
+                  typedKey,
+                  `${payloadKey}.0.`,
+                  ''
+                )
+                const srcLangClassifierResult = replace(
+                  typedKey,
+                  `${payloadKey}.0.`,
+                  ''
+                )
+                const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
+
+                if (includes(typedKey, dstLangClassifierResult)) {
+                  setError(dstLangClassifierResult, {
+                    type: 'backend',
+                    message: 'bu1',
+                  })
+                }
+                if (includes(typedKey, srcLangClassifierResult)) {
+                  setError(srcLangClassifierResult, {
+                    type: 'backend',
+                    message: 'bu2',
+                  })
+                }
+                if (includes(typedKey, vendorIdResult)) {
+                  setError(vendorIdResult, {
+                    type: 'backend',
+                    message: 'bu3',
+                  })
+                }
+              })
+            }
           })
         }
+
+        // if (typedErrorData.errors) {
+        //   map(typedErrorData.errors, (errorsArray, key) => {
+        //     const typedKey = key as FieldPath<FormValues>
+        //     const errorString = join(errorsArray, ',')
+        //     const valuesKey = keys(values)[0]
+
+        //     console.log('typedKey', typedKey)
+        //     console.log('errorString', errorString)
+        //     console.log('errorsArray', errorsArray)
+
+        //     // const payloadKey = keys(payload)[0]
+        //     // const priceObject = replace(typedKey, payloadKey, valuesKey)
+
+        //     // setError(priceObject, { type: 'backend', message: errorString })
+
+        //     // const payloadKey = keys(payload)[0]
+        //     // const dstLangClassifierResult = replace(
+        //     //   typedKey,
+        //     //   `${payloadKey}.0.`,
+        //     //   ''
+        //     // )
+        //     // const srcLangClassifierResult = replace(
+        //     //   typedKey,
+        //     //   `${payloadKey}.0.`,
+        //     //   ''
+        //     // )
+        //     // const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
+
+        //     // if (includes(typedKey, dstLangClassifierResult)) {
+        //     //   setError(dstLangClassifierResult, {
+        //     //     type: 'backend',
+        //     //     message: errorString,
+        //     //   })
+        //     // }
+        //     // if (includes(typedKey, srcLangClassifierResult)) {
+        //     //   setError(srcLangClassifierResult, {
+        //     //     type: 'backend',
+        //     //     message: errorString,
+        //     //   })
+        //     // }
+        //     // if (includes(typedKey, vendorIdResult)) {
+        //     //   setError(vendorIdResult, {
+        //     //     type: 'backend',
+        //     //     message: errorString,
+        //     //   })
+        //     // }
+        //   })
+        // }
       }
     },
     [resetForm, t]
