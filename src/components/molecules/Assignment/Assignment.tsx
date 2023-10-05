@@ -269,6 +269,7 @@ const Assignment: FC<AssignmentProps> = ({
       <div>
         <TaskCandidatesSection
           {...{
+            id,
             feature,
             assigned_vendor_id,
             candidates,

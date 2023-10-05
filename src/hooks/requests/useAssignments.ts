@@ -43,6 +43,46 @@ export const useAssignmentAddVendor = ({ id }: { id?: string }) => {
   }
 }
 
+export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deleteAssignmentVendor, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { vendor_id: string }) =>
+      apiClient.delete(
+        `${endpoints.ASSIGNMENTS}/${id}/delete-candidate`,
+        payload
+      ),
+    onSuccess: ({ data }: { data: AssignmentType }) => {
+      const { sub_project_id } = data
+      queryClient.setQueryData(
+        ['suborders', sub_project_id],
+        (oldData?: SubOrderResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+
+          const newAssignments = previousData.assignments.map((item) => {
+            if (item.id === data.id) {
+              return data
+            }
+            return item
+          })
+
+          const newData = {
+            ...previousData,
+            assignments: newAssignments,
+          }
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    deleteAssignmentVendor,
+    isLoading,
+  }
+}
+
 export const useAssignmentUpdate = ({ id }: { id?: string }) => {
   // const queryClient = useQueryClient()
   const { mutateAsync: updateAssignment, isLoading } = useMutation({
