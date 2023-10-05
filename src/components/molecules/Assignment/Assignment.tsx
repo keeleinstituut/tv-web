@@ -229,7 +229,7 @@ const Assignment: FC<AssignmentProps> = ({
   const selectedVendorsIds = map(candidates, 'vendor_id')
   const handleOpenVendorsModal = useCallback(() => {
     showModal(ModalTypes.SelectVendor, {
-      taskId: id,
+      assignmentId: id,
       selectedVendorsIds,
       // TODO: not sure where these taskSkills will come from
       taskSkills: [],

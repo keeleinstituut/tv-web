@@ -19,7 +19,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
+import { useAssignmentAddVendor } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import Loader from 'components/atoms/Loader/Loader'
@@ -109,7 +109,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
   destination_language_classifier_value_id,
 }) => {
   const { t } = useTranslation()
-  const { updateAssignment, isLoading } = useAssignmentUpdate({
+  const { addAssignmentVendor, isLoading } = useAssignmentAddVendor({
     id: assignmentId,
   })
   const {
@@ -162,18 +162,18 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
   const handleAddSelectedVendors: SubmitHandler<FormValues> = useCallback(
     async ({ selected }) => {
       const newVendorIds = keys(pickBy(selected, (val) => !!val))
-      const unRemovedVendorIds = filter(selectedVendorsIds, (id) => {
-        // vendor was removed, if it exists in the "selected" object with a value of false
-        const wasVendorRemoved = find(
-          selected,
-          (value, key) => key === id && !value
-        )
-        return !wasVendorRemoved
-      })
+      // const unRemovedVendorIds = filter(selectedVendorsIds, (id) => {
+      //   // vendor was removed, if it exists in the "selected" object with a value of false
+      //   const wasVendorRemoved = find(
+      //     selected,
+      //     (value, key) => key === id && !value
+      //   )
+      //   return !wasVendorRemoved
+      // })
       try {
         // TODO: not sure about this at all
-        await updateAssignment({
-          candidates_ids: [...unRemovedVendorIds, ...newVendorIds],
+        await addAssignmentVendor({
+          candidates: [...newVendorIds],
         })
         showNotification({
           type: NotificationTypes.Success,
@@ -186,7 +186,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         showValidationErrorMessage(errorData)
       }
     },
-    [selectedVendorsIds, t, updateAssignment]
+    [t, addAssignmentVendor]
   )
 
   return (
