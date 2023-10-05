@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { includes } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
@@ -14,17 +14,17 @@ import Container from 'components/atoms/Container/Container'
 import TranslationMemoryEditForm from 'components/organisms/forms/TranslationMemoryEditForm/TranslationMemoryEditForm'
 import FileImport, {
   InputFileTypes,
-  ProjectFileTypes,
 } from 'components/organisms/FileImport/FileImport'
 import { showModal, ModalTypes } from '../modals/ModalRoot'
 import {
+  useDeleteTranslationMemory,
   useExportTMX,
   useFetchTranslationMemory,
   useImportTMX,
 } from 'hooks/requests/useTranslationMemories'
 
 type TranslationMemoryDetailsTypes = {
-  memoryId?: string
+  memoryId: string
 }
 
 const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
@@ -32,7 +32,8 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { translationMemory } = useFetchTranslationMemory({ id: memoryId })
+  const { translationMemory = {} } = useFetchTranslationMemory({ id: memoryId })
+  const { deleteTranslationMemory } = useDeleteTranslationMemory()
   const { importTMX } = useImportTMX()
   const { exportTMX } = useExportTMX()
 
@@ -57,7 +58,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
 
   const handleDeleteMemory = () => {
     showModal(ModalTypes.ConfirmationModal, {
-      handleProceed: () => console.log('yes'),
+      handleProceed: () => deleteTranslationMemory(memoryId),
       modalContent: (
         <h1 className={classes.modalText}>
           {t('translation_memories.delete_confirmation_text')}
@@ -80,14 +81,14 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           inputFileTypes={[InputFileTypes.Tmx]}
           onChange={handleImportSegments}
           allowMultiple={false}
-          // disabled={!includes(userPrivileges, Privileges.ImportTm)}
+          disabled={!includes(userPrivileges, Privileges.ImportTm)}
         />
         <Button
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           onClick={handleExportFile}
           children={t('button.export')}
-          //disabled={!includes(userPrivileges, Privileges.ExportTm)}
+          disabled={!includes(userPrivileges, Privileges.ExportTm)}
         />
         <Button
           appearance={AppearanceTypes.Text}
@@ -96,7 +97,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           children={t('button.delete_translation_memory')}
           className={classes.deleteButton}
           onClick={handleDeleteMemory}
-          // hidden={!includes(userPrivileges, Privileges.DeleteTm)}
+          hidden={!includes(userPrivileges, Privileges.DeleteTm)}
         />
       </div>
       <TranslationMemoryEditForm data={translationMemory} />
