@@ -23,6 +23,7 @@ export interface AssignmentType {
   candidates: Candidate[]
   assigned_vendor_id?: string
   assignee_id?: string
+  sub_project_id: string
   // TODO: no idea whether it will be skill_ids or sth else
   skill_id: string
   // TODO: no idea if this field will come from here
@@ -33,7 +34,7 @@ export interface AssignmentType {
 
 // TODO: no idea if this is the correct format
 export interface AssignmentPayload {
-  candidates_ids?: string[]
+  candidates?: string[]
   finished_at?: string | null
   volumes?: VolumeValue[]
 }
