@@ -6,12 +6,12 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
-import { join, map } from 'lodash'
+import { filter, join, map, omit, split } from 'lodash'
 import classes from './classes.module.scss'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
-import { TranslationMemoryStatus } from 'types/translationMemories'
+import { TMType } from 'types/translationMemories'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
@@ -22,8 +22,8 @@ interface FormValues {
   name: string
   slang: string
   tlang: string
-  translation_domain?: string
-  type: TranslationMemoryStatus
+  tv_domain?: string
+  type: TMType
 }
 
 const TranslationMemoryForm: FC = () => {
@@ -31,9 +31,8 @@ const TranslationMemoryForm: FC = () => {
   const navigate = useNavigate()
   const { createTranslationMemory } = useCreateTranslationMemory()
 
-  const { classifierValuesFilters: languageOptions } = useClassifierValuesFetch(
-    { type: ClassifierValueType.Language }
-  )
+  const { classifierValuesFilters: languageOptions, classifierValues } =
+    useClassifierValuesFetch({ type: ClassifierValueType.Language })
   const { classifierValuesFilters: domainOptions } = useClassifierValuesFetch({
     type: ClassifierValueType.TranslationDomain,
   })
@@ -48,10 +47,10 @@ const TranslationMemoryForm: FC = () => {
     setValue,
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
-    defaultValues: { type: TranslationMemoryStatus.Internal },
+    defaultValues: { type: TMType.Internal },
   })
 
-  const statusOptions = map(TranslationMemoryStatus, (status) => ({
+  const statusOptions = map(TMType, (status) => ({
     label: t(`translation_memories.status.${status}`),
     value: status,
   }))
@@ -59,9 +58,9 @@ const TranslationMemoryForm: FC = () => {
   const statusValue = watch('type')
 
   useEffect(() => {
-    if (statusValue !== TranslationMemoryStatus.Internal) {
+    if (statusValue !== TMType.Internal) {
       showModal(ModalTypes.ConfirmationModal, {
-        handleCancel: () => setValue('type', TranslationMemoryStatus.Internal),
+        handleCancel: () => setValue('type', TMType.Internal),
         title: t('translation_memories.confirmation_text'),
         cancelButtonContent: t('button.cancel'),
         helperText: t('translation_memories.confirmation_help_text'),
@@ -86,7 +85,7 @@ const TranslationMemoryForm: FC = () => {
       ariaLabel: t('label.translation_domain'),
       placeholder: t('placeholder.pick'),
       label: t('label.translation_domain'),
-      name: 'translation_domain',
+      name: 'tv_domain',
       options: domainOptions,
       className: classes.inputInternalPosition,
     },
@@ -129,8 +128,17 @@ const TranslationMemoryForm: FC = () => {
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
+      const slangValue = filter(classifierValues, { id: values.slang })[0].value
+      const sortSlang = split(slangValue, '-')[0]
+      const tlangValue = filter(classifierValues, { id: values.tlang })[0].value
+      const sortTlang = split(tlangValue, '-')[0]
+
+      const payload = {
+        ...{ lang_pair: `${sortSlang}_${sortTlang}` },
+        ...omit(values, ['slang', 'tlang']),
+      }
       try {
-        const data = await createTranslationMemory(values)
+        const data = await createTranslationMemory(payload)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -148,7 +156,7 @@ const TranslationMemoryForm: FC = () => {
         }
       }
     },
-    [createTranslationMemory, t, navigate, setError]
+    [classifierValues, createTranslationMemory, t, navigate, setError]
   )
 
   return (
