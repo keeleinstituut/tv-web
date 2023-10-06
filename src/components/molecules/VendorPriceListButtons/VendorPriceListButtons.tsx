@@ -15,6 +15,7 @@ type ButtonsProps = {
     label: string
   }[]
   activeStep?: number
+  languageDirectionKey?: string
 }
 
 const VendorPriceListButtons: FC<ButtonsProps> = ({
@@ -23,37 +24,71 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
   handleQuit,
   steps,
   activeStep,
+  languageDirectionKey = '',
 }) => {
   const { t } = useTranslation()
-  const isSrcLanguageSelected = !!useWatch({
+  const { isSubmitting } = useFormState({ control })
+
+  const formValues = useWatch({
     control,
-    name: 'src_lang_classifier_value_id',
   })
 
-  const destinationLanguages = useWatch({
+  const isAddingNewLanguagePair = !!formValues.new?.src_lang_classifier_value_id
+  const editLanguagePairData = formValues?.[languageDirectionKey]
+
+  const isNewSrcLanguageSelected = !!useWatch({
     control,
-    name: 'dst_lang_classifier_value_id',
+    name: 'new.src_lang_classifier_value_id.id',
   })
 
-  const isDstLanguageSelected =
-    !!destinationLanguages && !isEmpty(destinationLanguages)
+  const isEditSrcLanguageSelected =
+    !!editLanguagePairData?.src_lang_classifier_value_id?.id
 
-  const skills = useWatch({
+  const newDestinationLanguages = useWatch({
     control,
-    name: 'skill_id',
+    name: 'new.dst_lang_classifier_value_id.id',
   })
 
-  // const hasTrueValueSkill = some(skills, (value) => value === true)
-  // const isSkillSelected = !!skills && hasTrueValueSkill
-  const formState = useFormState({ control })
-  const isSubmitting = useFormState({ control }).isSubmitting
+  const editDestinationLanguages =
+    editLanguagePairData?.dst_lang_classifier_value_id?.id
 
-  const isLanguageSelected = isSrcLanguageSelected && isDstLanguageSelected
-  // const isSkillValid =
-  //   activeStep === 2 || activeStep === 3 ? isSkillSelected : true
-  const isFormValid = size(steps) === activeStep ? formState.isValid : true
-  // const isButtonDisabled = !(isLanguageSelected && isSkillValid && isFormValid)
-  const isButtonDisabled = !(isLanguageSelected && isFormValid)
+  const isNewDstLanguageSelected =
+    !!newDestinationLanguages && !isEmpty(newDestinationLanguages)
+
+  const isEditDstLanguageSelected =
+    !!editDestinationLanguages && !isEmpty(editDestinationLanguages)
+
+  const newSkills =
+    useWatch({
+      control,
+    }).new?.priceObject || []
+
+  const editSkills = editLanguagePairData?.priceObject || []
+  const newSkillsValues = (newSkills as { isSelected?: boolean }[]) || []
+  const editSkillsValues = (editSkills as { isSelected?: boolean }[]) || []
+  const hasTrueNewValueSkill = some(newSkillsValues, 'isSelected')
+  const hasTrueEditValueSkill = some(editSkillsValues, 'isSelected')
+
+  const isNewLanguageSelected =
+    isNewSrcLanguageSelected && isNewDstLanguageSelected
+
+  const isEditLanguageSelected =
+    isEditSrcLanguageSelected && isEditDstLanguageSelected
+
+  const isNewSkillValid =
+    activeStep === 2 || activeStep === 3 ? hasTrueNewValueSkill : true
+
+  const isEditSkillValid =
+    activeStep === 2 || activeStep === 3 ? hasTrueEditValueSkill : true
+
+  const isNewValueButtonDisabled = !(isNewLanguageSelected && isNewSkillValid)
+  const isEditValueButtonDisabled = !(
+    isEditLanguageSelected && isEditSkillValid
+  )
+
+  const isButtonDisabled = isAddingNewLanguagePair
+    ? isNewValueButtonDisabled
+    : isEditValueButtonDisabled
 
   return (
     <div className={classes.buttonsContainer}>
@@ -62,7 +97,7 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
       </Button>
       <Button
         appearance={AppearanceTypes.Primary}
-        // disabled={isButtonDisabled}
+        disabled={isButtonDisabled}
         onClick={handleProceed}
         loading={isSubmitting}
       >

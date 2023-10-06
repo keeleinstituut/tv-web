@@ -291,17 +291,14 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
         const deletedPricesIds = map(prices, ({ id }) => id)
 
         if (state === 'DELETED') {
-          console.log('DELETED sees')
           return apiClient.delete(endpoints.EDIT_PRICES, {
             id: deletedPricesIds,
           })
         }
         if (state === 'NEW') {
-          console.log('NEW sees')
           return apiClient.post(endpoints.EDIT_PRICES, { data: prices })
         }
         if (state === 'UPDATED') {
-          console.log('UPDATED sees')
           return apiClient.put(endpoints.EDIT_PRICES, { data: prices })
         }
       })
@@ -321,22 +318,14 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
     )
 
     const errors = compact(
-      map(results, ({ status, reason, value }, key) => {
-        console.log('status', status)
-        console.log('reason', reason)
-        console.log('value', value)
-        console.log('key', key)
+      map(results, ({ status, reason }) => {
         if (status === 'rejected') {
-          const { message, errors: err } = reason || {}
-          const name = `skillPrice.${key}`
+          const { message } = reason || {}
           const error = {
-            // errors: { [name]: err?.name || [] },
             errors: reason.errors,
             message: message || '',
-            // name: key,
           }
           return error
-          // return reason
         }
       })
     )
@@ -345,7 +334,6 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
       resolve(results)
     } else {
       reject([...errors, { values: fulfilled }])
-      // reject(...errors)
     }
   })
 
@@ -360,10 +348,10 @@ export const useParallelMutationDepartment = (
       return requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed(payload)
     },
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['departments'], type: 'active' })
+      queryClient.refetchQueries({ queryKey: ['allPrices'] })
     },
     onError: () => {
-      queryClient.refetchQueries({ queryKey: ['departments'], type: 'active' })
+      queryClient.refetchQueries({ queryKey: ['allPrices'] })
     },
   })
 

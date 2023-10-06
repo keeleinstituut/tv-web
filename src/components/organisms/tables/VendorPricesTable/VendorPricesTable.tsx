@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -13,10 +13,10 @@ import {
   FormValues,
   PriceObject,
 } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import { filter, size } from 'lodash'
+import useValidators from 'hooks/useValidators'
 
 import classes from './classes.module.scss'
-import { filter } from 'lodash'
-import useValidators from 'hooks/useValidators'
 
 type VendorPricesTableProps = {
   control: Control<FormValues>
@@ -43,6 +43,18 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     },
   }
 
+  const languageDirectionPrices = useWatch({ control })
+
+  const languageDirectionObject =
+    languageDirectionPrices[languageDirectionKey] || {}
+
+  const filteredData = filter(
+    languageDirectionObject.priceObject,
+    skillId ? languageDirectionObject?.priceObject?.[skillId] : 'isSelected'
+  )
+
+  const numberOfRows = size(filteredData)
+
   const columns = [
     columnHelper.accessor('skill', {
       header: () => t('vendors.skill'),
@@ -55,6 +67,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     columnHelper.accessor('character_fee', {
       header: () => t('vendors.character_fee'),
       cell: ({ row }) => {
+        const errorZIndex = numberOfRows - row.index + 6
         return (
           <FormInput
             key={row?.index}
@@ -64,7 +77,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             ariaLabel={t('vendors.character_fee')}
             className={classes.pricesInput}
             rules={rules}
-            errorZIndex={100}
+            errorZIndex={errorZIndex}
           />
         )
       },
@@ -73,6 +86,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     columnHelper.accessor('word_fee', {
       header: () => t('vendors.word_fee'),
       cell: ({ row }) => {
+        const errorZIndex = numberOfRows - row.index + 6
         return (
           <FormInput
             key={row?.index}
@@ -82,7 +96,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             ariaLabel={t('vendors.word_fee')}
             className={classes.pricesInput}
             rules={rules}
-            errorZIndex={100}
+            errorZIndex={errorZIndex}
           />
         )
       },
@@ -91,6 +105,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     columnHelper.accessor('page_fee', {
       header: () => t('vendors.page_fee'),
       cell: ({ row }) => {
+        const errorZIndex = numberOfRows - row.index + 6
         return (
           <FormInput
             key={row?.index}
@@ -100,7 +115,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             ariaLabel={t('vendors.page_fee')}
             className={classes.pricesInput}
             rules={rules}
-            errorZIndex={100}
+            errorZIndex={errorZIndex}
           />
         )
       },
@@ -109,6 +124,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     columnHelper.accessor('minute_fee', {
       header: () => t('vendors.minute_fee'),
       cell: ({ row }) => {
+        const errorZIndex = numberOfRows - row.index + 6
         return (
           <FormInput
             key={row?.index}
@@ -118,7 +134,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             ariaLabel={t('vendors.minute_fee')}
             className={classes.pricesInput}
             rules={rules}
-            errorZIndex={100}
+            errorZIndex={errorZIndex}
           />
         )
       },
@@ -127,6 +143,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     columnHelper.accessor('hour_fee', {
       header: () => t('vendors.hour_fee'),
       cell: ({ row }) => {
+        const errorZIndex = numberOfRows - row.index + 6
         return (
           <FormInput
             key={row?.index}
@@ -136,7 +153,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             ariaLabel={t('vendors.hour_fee')}
             className={classes.pricesInput}
             rules={rules}
-            errorZIndex={100}
+            errorZIndex={errorZIndex}
           />
         )
       },
@@ -145,6 +162,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     columnHelper.accessor('minimal_fee', {
       header: () => t('vendors.minimal_fee'),
       cell: ({ row }) => {
+        const errorZIndex = numberOfRows - row.index + 6
         return (
           <FormInput
             key={row?.index}
@@ -154,23 +172,13 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
             ariaLabel={t('vendors.minimal_fee')}
             className={classes.pricesInput}
             rules={rules}
-            errorZIndex={100}
+            errorZIndex={errorZIndex}
           />
         )
       },
       footer: (info) => info.column.id,
     }),
   ] as ColumnDef<PriceObject | unknown>[]
-
-  const languageDirectionPrices = useWatch({ control })
-
-  const languageDirectionObject =
-    languageDirectionPrices[languageDirectionKey] || {}
-
-  const filteredData = filter(
-    languageDirectionObject.priceObject,
-    skillId ? languageDirectionObject?.priceObject?.[skillId] : 'isSelected'
-  )
 
   const paginationData = {
     per_page: filteredData?.length,

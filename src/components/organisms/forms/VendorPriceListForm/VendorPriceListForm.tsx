@@ -220,7 +220,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
   const { handleSubmit, control, reset, setError } = useForm<FormValues>({
     values: { ...defaultFormValues, ...newPriceObject },
-    // mode: 'onChange',
     mode: 'onTouched',
   })
 

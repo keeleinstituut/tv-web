@@ -5,7 +5,7 @@ import ModalBase, {
 } from 'components/organisms/ModalBase/ModalBase'
 import React, { FC, ReactElement, useEffect, useState } from 'react'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
-import { filter, find, isEmpty, keys, map, size } from 'lodash'
+import { filter, find, findKey, isEmpty, map, size } from 'lodash'
 import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 import { Control, useFormState } from 'react-hook-form'
 
@@ -40,27 +40,22 @@ const FormProgressModal: FC<FormProgressProps> = ({
 }) => {
   const [activeStep, setActiveStep] = useState(1)
 
-  const formState = useFormState({ control })
-  const formErrors = formState.errors
-  const valuesKey = keys(formErrors)[0]
+  const formStateErrors = useFormState({ control }).errors
+
+  const targetKey = findKey(formStateErrors?.new, (key) => key)
 
   const isErrorOnFirstStep =
-    valuesKey === 'src_lang_classifier_value_id' ||
-    valuesKey === 'dst_lang_classifier_value_id' ||
-    valuesKey === 'vendor_id'
-  const isErrorOnSecondStep = valuesKey === 'skill_id'
+    targetKey === 'src_lang_classifier_value_id' ||
+    targetKey === 'dst_lang_classifier_value_id'
 
   useEffect(() => {
     if (isErrorOnFirstStep) {
       setActiveStep(1)
     }
-    if (isErrorOnSecondStep) {
-      setActiveStep(2)
-    }
     if (isModalOpen) {
       setActiveStep(1)
     }
-  }, [isErrorOnFirstStep, isErrorOnSecondStep, isModalOpen])
+  }, [isErrorOnFirstStep, isModalOpen])
 
   const filteredData = filter(formData, 'showOnly')
 

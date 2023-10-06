@@ -16,14 +16,9 @@ import {
   find,
   flatMap,
   includes,
-  isArray,
   join,
-  keys,
   map,
-  replace,
   some,
-  split,
-  toNumber,
 } from 'lodash'
 import {
   ModalTypes,
@@ -45,11 +40,8 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import {
-  useCreatePrices,
-  useDeletePrices,
   useFetchSkills,
   useParallelMutationDepartment,
-  useUpdatePrices,
 } from 'hooks/requests/useVendors'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
@@ -84,19 +76,6 @@ type VendorPriceManagementButtonProps = {
     }
     priceObject?: { [x: string]: PriceObject[] }
   }
-}
-
-export type PriceObject2 = {
-  id: string
-  isSelected: boolean
-  character_fee: number | string
-  word_fee: number | string
-  page_fee: number | string
-  minute_fee: number | string
-  hour_fee: number | string
-  minimal_fee: number | string
-  skill_id: string
-  skill: { id: string; name: string }
 }
 
 const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
@@ -258,177 +237,52 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         resetForm()
         closeModal()
       } catch (errorData) {
-        console.log('ERRORDATA**', errorData)
-
-        // const typedErrorData = errorData as ValidationError
-
-        const errorArray = isArray(errorData) ? errorData : [errorData]
-        map(errorArray, (error) => {
-          const typedErrorData = error as ValidationError
-          if (typedErrorData.errors) {
-            map(typedErrorData.errors, (errorsArray, key) => {
-              const typedKey = key as FieldPath<FormValues>
-              const tKey = split(typedKey, '.')[1]
-              const errorString = join(errorsArray, ',')
-              // if (tKey) {
-              //   const inputName = payload[toNumber(tKey)].id || `new_${tKey}`
-              //   setError(
-              //     inputName,
-              //     { type: 'backend', message: errorString },
-              //     { shouldFocus: true }
-              //   )
-              // }
-
-              console.log('errorsArray', errorsArray)
-              console.log('typedKey', typedKey)
-              console.log('errorString', errorString)
-
-              const payloadKey = keys(payload)[0]
-              const dstLangClassifierResult = replace(
-                typedKey,
-                `${payloadKey}.0.`,
-                ''
-              )
-
-              console.log('dstLangClassifierResult', dstLangClassifierResult)
-
-              const srcLangClassifierResult = replace(
-                typedKey,
-                `${payloadKey}.0.`,
-                ''
-              )
-              const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
-
-              if (includes(typedKey, dstLangClassifierResult)) {
-                setError(dstLangClassifierResult, {
-                  type: 'backend',
-                  message: 'bu1',
-                })
-              }
-              if (includes(typedKey, srcLangClassifierResult)) {
-                setError(srcLangClassifierResult, {
-                  type: 'backend',
-                  message: 'bu2',
-                })
-              }
-              if (includes(typedKey, vendorIdResult)) {
-                setError(vendorIdResult, {
-                  type: 'backend',
-                  message: 'bu3',
-                })
-              }
-            })
-          }
-        })
-
         if (errorData) {
           map(errorData, ({ errors }) => {
-            console.log('errors', errors)
-
             const typedErrorData = errors as ValidationError
 
             if (typedErrorData) {
-              map(typedErrorData, (errorsArray, key) => {
-                const typedKey = key as FieldPath<FormValues>
-                // const errorString = join(errorsArray ? errorsArray : '', ',')
-                const valuesKey = keys(values)[0]
+              map(
+                typedErrorData as unknown as Record<string, unknown[]>,
+                (errorsArray: unknown[], key) => {
+                  const typedKey = key as FieldPath<FormValues>
+                  const errorString = join(errorsArray ? errorsArray : '', ',')
 
-                console.log('typedKey', typedKey)
-                // console.log('errorString', errorString)
-                console.log('errorsArray', errorsArray)
-                console.log('valuesKey', valuesKey)
-
-                // const priceObject = replace(typedKey, payloadKey, valuesKey)
-
-                // setError(priceObject, { type: 'backend', message: errorString })
-
-                const payloadKey = keys(payload)[0]
-                const dstLangClassifierResult = replace(
-                  typedKey,
-                  `${payloadKey}.0.`,
-                  ''
-                )
-                const srcLangClassifierResult = replace(
-                  typedKey,
-                  `${payloadKey}.0.`,
-                  ''
-                )
-                const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
-
-                if (includes(typedKey, dstLangClassifierResult)) {
-                  setError(dstLangClassifierResult, {
-                    type: 'backend',
-                    message: 'bu1',
-                  })
+                  if (includes(typedKey, 'dst_lang_classifier_value_id')) {
+                    setError(
+                      `${languageDirectionKey}.dst_lang_classifier_value_id.id`,
+                      {
+                        type: 'backend',
+                        message: errorString,
+                      }
+                    )
+                  }
+                  if (includes(typedKey, 'src_lang_classifier_value_id')) {
+                    setError(
+                      `${languageDirectionKey}.src_lang_classifier_value_id.id`,
+                      {
+                        type: 'backend',
+                        message: errorString,
+                      }
+                    )
+                  }
                 }
-                if (includes(typedKey, srcLangClassifierResult)) {
-                  setError(srcLangClassifierResult, {
-                    type: 'backend',
-                    message: 'bu2',
-                  })
-                }
-                if (includes(typedKey, vendorIdResult)) {
-                  setError(vendorIdResult, {
-                    type: 'backend',
-                    message: 'bu3',
-                  })
-                }
-              })
+              )
             }
           })
         }
-
-        // if (typedErrorData.errors) {
-        //   map(typedErrorData.errors, (errorsArray, key) => {
-        //     const typedKey = key as FieldPath<FormValues>
-        //     const errorString = join(errorsArray, ',')
-        //     const valuesKey = keys(values)[0]
-
-        //     console.log('typedKey', typedKey)
-        //     console.log('errorString', errorString)
-        //     console.log('errorsArray', errorsArray)
-
-        //     // const payloadKey = keys(payload)[0]
-        //     // const priceObject = replace(typedKey, payloadKey, valuesKey)
-
-        //     // setError(priceObject, { type: 'backend', message: errorString })
-
-        //     // const payloadKey = keys(payload)[0]
-        //     // const dstLangClassifierResult = replace(
-        //     //   typedKey,
-        //     //   `${payloadKey}.0.`,
-        //     //   ''
-        //     // )
-        //     // const srcLangClassifierResult = replace(
-        //     //   typedKey,
-        //     //   `${payloadKey}.0.`,
-        //     //   ''
-        //     // )
-        //     // const vendorIdResult = replace(typedKey, `${payloadKey}.0.`, '')
-
-        //     // if (includes(typedKey, dstLangClassifierResult)) {
-        //     //   setError(dstLangClassifierResult, {
-        //     //     type: 'backend',
-        //     //     message: errorString,
-        //     //   })
-        //     // }
-        //     // if (includes(typedKey, srcLangClassifierResult)) {
-        //     //   setError(srcLangClassifierResult, {
-        //     //     type: 'backend',
-        //     //     message: errorString,
-        //     //   })
-        //     // }
-        //     // if (includes(typedKey, vendorIdResult)) {
-        //     //   setError(vendorIdResult, {
-        //     //     type: 'backend',
-        //     //     message: errorString,
-        //     //   })
-        //     // }
-        //   })
-        // }
       }
     },
-    [resetForm, t]
+    [
+      defaultLanguagePairValues?.priceObject,
+      languageDirectionKey,
+      newLanguagePair,
+      parallelUpdating,
+      resetForm,
+      setError,
+      t,
+      vendorId,
+    ]
   )
 
   const formValues = useWatch({ control })
@@ -539,7 +393,12 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
       ],
       submitForm: handleSubmit(onEditPricesSubmit),
       resetForm: resetForm(),
-      buttonComponent: <VendorPriceListButtons control={control} />,
+      buttonComponent: (
+        <VendorPriceListButtons
+          control={control}
+          languageDirectionKey={languageDirectionKey}
+        />
+      ),
       control: control,
     })
   }
