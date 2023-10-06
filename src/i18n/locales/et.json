@@ -113,7 +113,9 @@
     "assign_source_file": "Määra lähtefail",
     "search_by_id": "Otsi tellimuse ID siit...",
     "last_imported": "Viimati imporditud",
-    "chunk_amount_old": "Segmentide arv"
+    "chunk_amount_old": "Segmentide arv",
+    "id": "ID",
+    "owner": "Omanik"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -126,6 +128,7 @@
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
     "search_by_name": "Otsi nime järgi siit...",
+    "search_by_tm_name": "Otsi mälu nimetuse järgi siit...",
     "pick": "Vali",
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
@@ -429,7 +432,9 @@
     "main_user_privilege_change": "Peakasutaja privileege ei saa muuta",
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
     "warning": "Hoiatus",
-    "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida"
+    "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida",
+    "tm_import_failed": "Tõlkemälu segmendi üleslaadimine ebaõnnestus",
+    "tm_export_failed": "Tõlkemälu segmendi allalaadimine ebaõnnestus"
   },
   "helper": {
     "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga.",

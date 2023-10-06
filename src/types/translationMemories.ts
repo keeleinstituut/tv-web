@@ -1,7 +1,6 @@
-import { Tag } from './tags'
-import { DepartmentType } from './departments'
+import { PaginationFunctionType } from './collective'
 
-export enum TranslationMemoryStatus {
+export enum TMType {
   Internal = 'INTERNAL',
   Shared = 'SHARED',
   Public = 'PUBLIC',
@@ -11,33 +10,37 @@ export interface TranslationMemoryType {
   id: string
   institution_id: string
   name: string
-  type?: TranslationMemoryStatus
-  tags?: Tag[]
-  translation_domain?: string
-}
-
-export interface TranslationMemoryPostType {
-  id: string
-  name: string
-  type?: TranslationMemoryStatus
+  type?: TMType
+  tv_tags?: string[]
+  tv_domain?: string
+  comment?: string
+  created_at: string
+  lang_pair: string
 }
 
 export interface TranslationMemoryDataType {
-  data: TranslationMemoryType[]
+  tags?: TranslationMemoryType[]
+  data?: TranslationMemoryType[]
 }
 
-export interface TranslationMemoryPayload {
-  slang: string
-  tlang: string
+export interface TranslationMemoryPostType {
   name: string
-  type: TranslationMemoryStatus
-  translation_domain?: string
+  type?: TMType
+  tv_tags?: string[]
+  tv_domain?: string
+  comment?: string
 }
+
+export type TranslationMemoryPayload = {
+  lang_pair?: string
+  name?: string
+  type?: TMType
+  tv_domain?: string
+} & PaginationFunctionType
 
 export interface ImportTMXPayload {
   file: File
   tag: string
-  lang_pair?: string
 }
 
 export interface ExportTMXPayload {

@@ -1,9 +1,9 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, uniq, includes, find } from 'lodash'
+import { map, includes, find } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -14,44 +14,45 @@ import classNames from 'classnames'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import {
   FormInput,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useFetchOrders } from 'hooks/requests/useOrders'
 import Tag from 'components/atoms/Tag/Tag'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
-import { TranslationMemoryStatus } from 'types/translationMemories'
+import { TMType } from 'types/translationMemories'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemories'
+import TextInput from 'components/molecules/TextInput/TextInput'
 
 type TranslationMemoriesTableRow = {
   name: string
   id: string
-  status: string
-  tags: string[]
-  translation_domain: string
-  language_directions: string[]
+  type?: string
+  tv_tags?: string[]
+  tv_domain?: string
+  lang_pair?: string
 }
 
 const columnHelper = createColumnHelper<TranslationMemoriesTableRow>()
 interface FormValues {
-  status?: TranslationMemoryStatus[]
-  own_orders: boolean
+  [type: string]: TMType[]
 }
 
 const TranslationMemoriesTable: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { translationMemories } = useFetchTranslationMemories()
-
-  console.log('translationMemories', translationMemories)
-
+  const {
+    translationMemories = [],
+    handleFilterChange,
+    handleOnSearch,
+  } = useFetchTranslationMemories()
+  const [searchValue, setSearchValue] = useState<string>('')
   const { tagsFilters: tagsOptions } = useFetchTags({
     type: TagTypes.TranslationMemories,
   })
@@ -60,64 +61,30 @@ const TranslationMemoriesTable: FC = () => {
     type: ClassifierValueType.TranslationDomain,
   })
 
-  const tagsFilters = ['asutusesiseseks kasutuseks', 'turundus']
-
-  const statusFilters = map(TranslationMemoryStatus, (status) => ({
+  const statusFilters = map(TMType, (status) => ({
     label: t(`translation_memories.status.${status}`),
     value: status,
   }))
 
-  // TODO: remove default values, once we have actual data
-  const tmRows = useMemo(
-    () =>
-      map(
-        translationMemories,
-        ({
-          // sub_projects,
-          // tags ,
-          id,
-          name,
-          type,
-        }) => {
-          return {
-            id,
-            name,
-            status: type,
-            tags: ['asutusesiseseks kasutuseks', 'turundus'],
-            translation_domain: 'Piirivalve',
-            language_directions: [],
-            // uniq(
-            //   map(
-            //     // sub_projects,
-            //     ({
-            //       source_language_classifier_value,
-            //       destination_language_classifier_value,
-            //     }) =>
-            //       `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
-            //   )
-            // ),
-          }
-        }
-      ),
-    [translationMemories]
-  )
-  console.log(tagsFilters)
-  const { control, handleSubmit, watch } = useForm<FormValues>({
+  const { control, watch } = useForm<FormValues>({
     mode: 'onChange',
     resetOptions: {
       keepErrors: true,
     },
   })
+  const handleSearch = useCallback(
+    (event: { target: { value: string } }) => {
+      setSearchValue(event.target.value)
+      handleOnSearch({ name: event.target.value })
+    },
+    [handleOnSearch]
+  )
 
-  // TODO: use function to pass in filters and sorting to our order fetch hook
-  // Not sure yet, what keys these will have and how the params will be passed
-  const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data)
-
+  const [type] = watch(['type'])
   useEffect(() => {
-    // Submit form every time it changes
-    const subscription = watch(() => handleSubmit(onSubmit)())
-    return () => subscription.unsubscribe()
-  }, [handleSubmit, watch])
+    type && handleFilterChange({ type: type })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type])
 
   const columns = [
     columnHelper.accessor('name', {
@@ -142,56 +109,63 @@ const TranslationMemoriesTable: FC = () => {
       footer: (info) => info.column.id,
       size: 240,
     }),
-    columnHelper.accessor('status', {
+    columnHelper.accessor('type', {
       header: () => '',
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
-        const status = getValue() || 'INTERNAL'
-        return <span className={classNames(classes.dot, classes[status])} />
+        const type = getValue() || 'INTERNAL'
+        return <span className={classNames(classes.dot, classes[type])} />
       },
       size: 20,
     }),
-    columnHelper.accessor('tags', {
+    columnHelper.accessor('tv_tags', {
       header: () => t('label.tags'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         return (
           <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
-            ))}
+            {map(getValue(), (value) => {
+              const tagName = find(tagsOptions, { value })?.label || ''
+              return <Tag label={tagName} value key={value} />
+            })}
           </div>
         )
       },
       size: 520,
       meta: {
-        filterOption: { tags: tagsOptions },
+        filterOption: { tv_tags: tagsOptions },
         showSearch: true,
       },
     }),
-    columnHelper.accessor('translation_domain', {
+    columnHelper.accessor('tv_domain', {
       header: () => t('label.translation_domain'),
       footer: (info) => info.column.id,
+
+      cell: ({ getValue }) => {
+        const domainName = find(domainOptions, { value: getValue() })?.label
+        return <span>{domainName}</span>
+      },
       size: 375,
       meta: {
-        filterOption: { tags: domainOptions },
-        showSearch: true,
+        filterOption: { tv_domain: domainOptions },
+        showSearch: false,
       },
     }),
-    columnHelper.accessor('language_directions', {
+    columnHelper.accessor('lang_pair', {
       header: () => t('label.language_directions'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
+        const value = getValue() || ''
         return (
           <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
-            ))}
+            <Tag label={value} value />
           </div>
         )
       },
+      size: 100,
       meta: {
-        filterOption: { tags: statusFilters },
+        //TODO: add lang_pair filter
+        filterOption: { lang_pair: statusFilters },
         showSearch: true,
       },
     }),
@@ -200,7 +174,7 @@ const TranslationMemoriesTable: FC = () => {
   return (
     <Root>
       <div className={classes.legend}>
-        {map(TranslationMemoryStatus, (status) => {
+        {map(TMType, (status) => {
           return (
             <div key={status}>
               <span className={classNames(classes.dot, classes[status])} />
@@ -212,19 +186,29 @@ const TranslationMemoriesTable: FC = () => {
         })}
       </div>
       <DataTable
-        data={tmRows}
+        data={translationMemories}
         columns={columns}
         tableSize={TableSizeTypes.M}
         // paginationData={paginationData}
         // onPaginationChange={handlePaginationChange}
-        // onFiltersChange={handleFilterChange}
+        onFiltersChange={handleFilterChange}
         headComponent={
           <div className={classes.topSection}>
             <FormInput
-              name="status"
+              name="type"
               control={control}
               options={statusFilters}
               inputType={InputTypes.TagsSelect}
+            />
+            <TextInput
+              name="name"
+              ariaLabel={t('label.search')}
+              placeholder={t('placeholder.search_by_tm_name')}
+              value={searchValue}
+              onChange={handleSearch}
+              className={classes.searchInput}
+              inputContainerClassName={classes.searchInnerContainer}
+              isSearch
             />
           </div>
         }

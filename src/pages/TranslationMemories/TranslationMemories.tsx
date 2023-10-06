@@ -7,14 +7,10 @@ import useAuth from 'hooks/useAuth'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
-import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemories'
 
 const TranslationMemories: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  // const { translationMemories } = useFetchTranslationMemories()
-
-  // console.log('translationMemories', translationMemories)
 
   return (
     <>
@@ -24,7 +20,7 @@ const TranslationMemories: FC = () => {
         <Button
           children={t('button.add_translation_memory')}
           href="/memories/new-memory"
-          // hidden={!includes(userPrivileges, Privileges.CreateTm)}
+          hidden={!includes(userPrivileges, Privileges.CreateTm)}
         />
       </div>
       <TranslationMemoriesTable />

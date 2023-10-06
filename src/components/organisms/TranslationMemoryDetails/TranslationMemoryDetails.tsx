@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { includes } from 'lodash'
+import { includes, split } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
@@ -22,6 +22,8 @@ import {
   useFetchTranslationMemory,
   useImportTMX,
 } from 'hooks/requests/useTranslationMemories'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showNotification } from '../NotificationRoot/NotificationRoot'
 
 type TranslationMemoryDetailsTypes = {
   memoryId: string
@@ -32,28 +34,48 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { translationMemory = {} } = useFetchTranslationMemory({ id: memoryId })
+  const { translationMemory } = useFetchTranslationMemory({ id: memoryId })
   const { deleteTranslationMemory } = useDeleteTranslationMemory()
   const { importTMX } = useImportTMX()
   const { exportTMX } = useExportTMX()
 
+  const { lang_pair } = translationMemory || {}
   // const isUserClientOfProject = institutionUserId === client_user_institution_id
 
   console.log('translationMemory', translationMemory)
 
   const handleImportSegments = async (uploadedFile: File) => {
-    console.log('Import', uploadedFile)
-
+    const payload = {
+      file: uploadedFile,
+      tag: memoryId,
+    }
     try {
-      await importTMX(uploadedFile)
+      await importTMX(payload)
     } catch (error) {
-      console.log('error', error)
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('notification.tm_import_failed'),
+      })
     }
   }
 
-  const handleExportFile = () => {
-    exportTMX({ slang: '', tlang: '' })
+  const handleExportFile = async () => {
+    const langPair = split(lang_pair, '_')
+    console.log('langPair', langPair)
+
     console.log('Export file')
+    const payload = { slang: langPair[0], tlang: langPair[1] }
+
+    try {
+      await exportTMX(payload)
+    } catch (error) {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('notification.tm_export_failed'),
+      })
+    }
   }
 
   const handleDeleteMemory = () => {
@@ -100,7 +122,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           hidden={!includes(userPrivileges, Privileges.DeleteTm)}
         />
       </div>
-      <TranslationMemoryEditForm data={translationMemory} />
+      <TranslationMemoryEditForm data={translationMemory || {}} />
     </Container>
   )
 }

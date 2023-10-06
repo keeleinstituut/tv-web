@@ -1,4 +1,4 @@
-import { keys, omit, isEqual } from 'lodash'
+import { keys, omit, isEqual, isEmpty, pickBy } from 'lodash'
 import { useCallback, useState } from 'react'
 import {
   FilterFunctionType,
@@ -12,10 +12,11 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
   )
   const handleOnSearch = useCallback(
     (value?: FilterFunctionType) => {
-      const sortingKeys = keys(value)
-      if (!value?.fullname) {
-        const filtersWithOutSorting = filters ? omit(filters, sortingKeys) : {}
-        setFilters({ ...filtersWithOutSorting })
+      const emptyValues = pickBy(value, isEmpty)
+      const emptyKeys = keys(emptyValues)
+      if (!isEmpty(emptyKeys)) {
+        const filtersWithOutSearch = filters ? omit(filters, emptyKeys) : {}
+        setFilters({ ...filtersWithOutSearch })
       } else {
         setFilters({ ...filters, ...value })
       }

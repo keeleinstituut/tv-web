@@ -12,15 +12,26 @@ import {
   TranslationMemoryType,
 } from 'types/translationMemories'
 import { downloadFile } from 'helpers'
-import { filter } from 'lodash'
+import useFilters from 'hooks/useFilters'
 
 dayjs.extend(customParseFormat)
 
-export const useFetchTranslationMemories = () => {
+export const useFetchTranslationMemories = (
+  initialFilters?: TranslationMemoryPayload
+) => {
+  const {
+    filters,
+    handleOnSearch,
+    handleFilterChange,
+    //handlePaginationChange,
+  } = useFilters<TranslationMemoryPayload>(initialFilters)
+
+  console.log('Filters', filters)
   const { isLoading, isError, isFetching, data } =
-    useQuery<TranslationMemoryType>({
-      queryKey: ['translationMemories'],
-      queryFn: () => apiClient.get(endpoints.TRANSLATION_MEMORIES),
+    useQuery<TranslationMemoryDataType>({
+      queryKey: ['translationMemories', filters],
+      queryFn: () => apiClient.get(endpoints.TRANSLATION_MEMORIES, filters),
+      keepPreviousData: true,
     })
 
   console.log('data', data)
@@ -35,7 +46,10 @@ export const useFetchTranslationMemories = () => {
     isError,
     translationMemories,
     isFetching,
-    //paginationData,
+    // paginationData,
+    handleOnSearch,
+    handleFilterChange,
+    // handlePaginationChange,
   }
 }
 
@@ -49,7 +63,7 @@ export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
   return {
     isLoading,
     isError,
-    translationMemory: data || {},
+    translationMemory: data,
     isFetching,
   }
 }
@@ -75,6 +89,10 @@ export const useUpdateTranslationMemory = ({ id }: { id?: string }) => {
           return { data: newData }
         }
       )
+      queryClient.refetchQueries({
+        queryKey: ['translationMemories'],
+        type: 'active',
+      })
     },
   })
 
@@ -111,27 +129,26 @@ export const useCreateTranslationMemory = () => {
   }
 }
 
-export const useDeleteTranslationMemory = ({ id }: { id?: string }) => {
+export const useDeleteTranslationMemory = () => {
   const queryClient = useQueryClient()
   const { mutate: deleteTranslationMemory, isLoading } = useMutation({
-    mutationKey: ['translationMemories', id],
-    mutationFn: () =>
+    mutationKey: ['translationMemories'],
+    mutationFn: (id: string) =>
       apiClient.delete(`${endpoints.TRANSLATION_MEMORIES}/${id}`),
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['translationMemories'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: TranslationMemoryDataType) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const deletedData = filter(
-            previousData,
-            ({ id: previousId }) => previousId !== id
-          )
-          return { data: deletedData }
+          const newData = { ...previousData, ...data }
+          return { data: newData }
         }
       )
+      // queryClient.refetchQueries({
+      //   queryKey: ['translationMemories'],
+      //   type: 'active',
+      // })
     },
   })
 
@@ -149,9 +166,9 @@ export const useImportTMX = () => {
     error,
   } = useMutation({
     mutationKey: ['tmx'],
-    mutationFn: async (data: File) => {
-      formData.append('file', data, data.name)
-      formData.append('tag', data.name)
+    mutationFn: async (data: ImportTMXPayload) => {
+      formData.append('file', data.file)
+      formData.append('tag', data.tag)
       return apiClient.put(endpoints.IMPORT_TMX, formData)
     },
   })
