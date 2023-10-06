@@ -173,7 +173,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
       try {
         // TODO: not sure about this at all
         await addAssignmentVendor({
-          candidates: [...newVendorIds],
+          data: newVendorIds.map((id) => ({ vendor_id: id })),
         })
         showNotification({
           type: NotificationTypes.Success,

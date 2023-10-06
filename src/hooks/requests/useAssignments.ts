@@ -10,8 +10,8 @@ export const useAssignmentAddVendor = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: addAssignmentVendor, isLoading } = useMutation({
     mutationKey: ['suborders', id],
-    mutationFn: (payload: AssignmentPayload) =>
-      apiClient.put(`${endpoints.ASSIGNMENTS}/${id}/add-candidates`, payload),
+    mutationFn: (payload: { data: AssignmentPayload[] }) =>
+      apiClient.post(`${endpoints.ASSIGNMENTS}/${id}/candidates/bulk`, payload),
     onSuccess: ({ data }: { data: AssignmentType }) => {
       const { sub_project_id } = data
       queryClient.setQueryData(
@@ -47,9 +47,9 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteAssignmentVendor, isLoading } = useMutation({
     mutationKey: ['suborders', id],
-    mutationFn: (payload: { vendor_id: string }) =>
+    mutationFn: (payload: { data: AssignmentPayload[] }) =>
       apiClient.delete(
-        `${endpoints.ASSIGNMENTS}/${id}/delete-candidate`,
+        `${endpoints.ASSIGNMENTS}/${id}/candidates/bulk`,
         payload
       ),
     onSuccess: ({ data }: { data: AssignmentType }) => {

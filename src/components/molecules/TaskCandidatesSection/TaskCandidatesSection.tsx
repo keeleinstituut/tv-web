@@ -81,8 +81,8 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   )
 
   const handleDelete = useCallback(
-    (candidateId: string) => {
-      deleteAssignmentVendor({ vendor_id: candidateId })
+    (vendor_id: string) => {
+      deleteAssignmentVendor({ data: [{ vendor_id }] })
     },
     [deleteAssignmentVendor]
   )

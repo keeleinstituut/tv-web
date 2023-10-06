@@ -34,7 +34,7 @@ export interface AssignmentType {
 
 // TODO: no idea if this is the correct format
 export interface AssignmentPayload {
-  candidates?: string[]
+  vendor_id?: string
   finished_at?: string | null
   volumes?: VolumeValue[]
 }
