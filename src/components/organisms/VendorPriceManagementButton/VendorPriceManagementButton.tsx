@@ -15,9 +15,11 @@ import {
   filter,
   find,
   flatMap,
+  get,
   includes,
   join,
   map,
+  pickBy,
   some,
 } from 'lodash'
 import {
@@ -74,7 +76,7 @@ type VendorPriceManagementButtonProps = {
     skill_id?: {
       [key: string]: boolean
     }
-    priceObject?: { [x: string]: PriceObject[] }
+    priceObject?: { [x: string]: PriceObject }
   }
 }
 
@@ -111,12 +113,8 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
 
       const filteredSelectedSkills = filter(priceObject, 'isSelected')
 
-      console.log('VALUES', values)
-
-      const defaultPricesValues: any =
-        defaultLanguagePairValues?.priceObject || {}
-
-      const pricesValues: any = values[languageDirectionKey]?.priceObject || {}
+      const defaultPricesValues = defaultLanguagePairValues?.priceObject || {}
+      const pricesValues = values[languageDirectionKey]?.priceObject || {}
 
       const deletedSkillsObjects = filter(defaultPricesValues, (value, key) => {
         return (
@@ -134,7 +132,10 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         )
       })
 
-      const hasPriceChanged = (defaultObj: any, valueObj: any): boolean => {
+      const hasPriceChanged = (
+        defaultObj: PriceObject,
+        valueObj: PriceObject
+      ): boolean => {
         const propertiesToCheck = [
           'word_fee',
           'page_fee',
@@ -144,13 +145,14 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
           'character_fee',
         ]
 
-        return some(
-          propertiesToCheck,
-          (property) => defaultObj[property] !== valueObj[property]
-        )
+        return some(propertiesToCheck, (property) => {
+          const defaultValue = get(defaultObj, property)
+          const valueValue = get(valueObj, property)
+          return defaultValue !== valueValue
+        })
       }
 
-      const updatedSkillsObjects = filter(pricesValues, (defaultItem) => {
+      const updatedSkillsObjects = pickBy(pricesValues, (defaultItem) => {
         const valueItem = find(defaultPricesValues, { id: defaultItem.id })
         return (
           valueItem &&
@@ -161,25 +163,25 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
 
       const modifiedPayload = () => {
         const newStateData = (
-          skills: any[],
+          skillData: PriceObject[],
           dstId = dst_lang_classifier_value_id?.id || ''
         ) =>
           compact(
-            map(skills, (skillData) =>
-              skillData
+            map(skillData, (skill) =>
+              skill
                 ? {
-                    skill_id: skillData.skill_id,
+                    skill_id: skill.skill_id,
                     vendor_id: vendorId || '',
                     src_lang_classifier_value_id:
                       src_lang_classifier_value_id?.id || '',
                     dst_lang_classifier_value_id: dstId,
-                    character_fee: skillData.character_fee,
-                    hour_fee: skillData.hour_fee,
-                    minimal_fee: skillData.minimal_fee,
-                    minute_fee: skillData.minute_fee,
-                    page_fee: skillData.page_fee,
-                    word_fee: skillData.word_fee,
-                    ...(skillData.id && { id: skillData.id }),
+                    character_fee: skill.character_fee,
+                    hour_fee: skill.hour_fee,
+                    minimal_fee: skill.minimal_fee,
+                    minute_fee: skill.minute_fee,
+                    page_fee: skill.page_fee,
+                    word_fee: skill.word_fee,
+                    ...(skill.id && { id: skill.id }),
                   }
                 : undefined
             )
@@ -201,7 +203,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
               ),
               state: DataStateTypes.NEW,
             },
-          updatedSkillsObjects.length > 0 && {
+          Object.keys(updatedSkillsObjects).length > 0 && {
             prices: map(updatedSkillsObjects, ({ id, ...rest }) => ({
               id,
               ...rest,

@@ -3,21 +3,22 @@ import {
   GetVendorsPayload,
   UpdateVendorPayload,
   PricesDataType,
-  UpdatePricesPayload,
   GetPricesPayload,
-  CreatePricesPayload,
   DeletePricesPayload,
   UpdatedPrices,
   GetSkillsPayload,
   VendorResponse,
   DeleteVendorsPayload,
   CreateVendorPayload,
+  UpdatePricesPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
-import { compact, filter, find, includes, isEmpty, map } from 'lodash'
+import { compact, filter, includes, isEmpty, map } from 'lodash'
+import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
+import { PriceObject } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
   const {
@@ -189,77 +190,12 @@ export const useAllPricesFetch = (initialFilters?: GetPricesPayload) => {
   }
 }
 
-export const useCreatePrices = (vendor_id: string | undefined) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: createPrices, isLoading } = useMutation({
-    mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: CreatePricesPayload) => {
-      console.log('payload', payload)
-      return apiClient.post(endpoints.EDIT_PRICES, { data: payload.data })
-    },
-
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['prices', vendor_id],
-        (oldData?: UpdatedPrices) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = [...previousData, ...data]
-
-          return { data: newData }
-        }
-      )
-      queryClient.refetchQueries({ queryKey: ['allPrices'] })
-    },
-  })
-
-  return {
-    createPrices,
-    isLoading,
-  }
-}
-
-export const useUpdatePrices = (vendor_id: string | undefined) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: updatePrices, isLoading } = useMutation({
-    mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: UpdatePricesPayload) =>
-      apiClient.put(endpoints.EDIT_PRICES, { data: payload.data }),
-
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['prices', vendor_id],
-        (oldData?: UpdatedPrices) => {
-          const { data: previousData } = oldData || {}
-
-          const newData = map(previousData, (item) => {
-            const matchingItem = find(data, { id: item.id })
-            return matchingItem || item
-          })
-
-          return { data: newData }
-        }
-      )
-      queryClient.refetchQueries({ queryKey: ['allPrices'] })
-    },
-  })
-
-  return {
-    updatePrices,
-    isLoading,
-  }
-}
-
 export const useDeletePrices = (vendor_id: string | undefined) => {
   const queryClient = useQueryClient()
   const { mutateAsync: deletePrices, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: DeletePricesPayload) => {
-      console.log('payload', payload)
-
-      return apiClient.delete(endpoints.EDIT_PRICES, { id: payload.id })
-    },
-
+    mutationFn: async (payload: DeletePricesPayload) =>
+      apiClient.delete(endpoints.EDIT_PRICES, { id: payload.id }),
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['prices', vendor_id],
@@ -284,49 +220,61 @@ export const useDeletePrices = (vendor_id: string | undefined) => {
   }
 }
 
-const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
+const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
+  payload: UpdatePricesPayload
+) =>
   new Promise(async (resolve, reject) => {
     const results: any = await Promise.allSettled(
-      map(payload.data, ({ state, prices }) => {
-        const deletedPricesIds = map(prices, ({ id }) => id)
+      map(
+        payload.data,
+        ({
+          state,
+          prices,
+        }: {
+          state: DataStateTypes
+          prices: PriceObject[]
+        }) => {
+          const deletedPricesIds = map(prices, ({ id }) => id)
 
-        if (state === 'DELETED') {
-          return apiClient.delete(endpoints.EDIT_PRICES, {
-            id: deletedPricesIds,
-          })
+          if (state === 'DELETED')
+            apiClient.delete(endpoints.EDIT_PRICES, {
+              id: deletedPricesIds,
+            })
+          if (state === 'NEW')
+            apiClient.post(endpoints.EDIT_PRICES, { data: prices })
+          if (state === 'UPDATED')
+            apiClient.put(endpoints.EDIT_PRICES, { data: prices })
         }
-        if (state === 'NEW') {
-          return apiClient.post(endpoints.EDIT_PRICES, { data: prices })
-        }
-        if (state === 'UPDATED') {
-          return apiClient.put(endpoints.EDIT_PRICES, { data: prices })
-        }
-      })
+      )
     )
 
     const fulfilled = compact(
       map(results, ({ status, value }, key) => {
         if (status === 'fulfilled') {
-          if (value) {
+          if (typeof value === 'object' && value !== null) {
             return {
               key,
               value,
             }
           }
         }
+        return null
       })
     )
 
     const errors = compact(
       map(results, ({ status, reason }) => {
         if (status === 'rejected') {
-          const { message } = reason || {}
-          const error = {
-            errors: reason.errors,
-            message: message || '',
+          if (typeof reason === 'object' && reason !== null) {
+            const { message } = reason || {}
+            const error = {
+              errors: reason.errors,
+              message: message || '',
+            }
+            return error
           }
-          return error
         }
+        return null
       })
     )
 
@@ -343,10 +291,8 @@ export const useParallelMutationDepartment = (
   const queryClient = useQueryClient()
   const { mutateAsync: parallelUpdating, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: any) => {
-      console.log('PAYLOAD', payload)
-      return requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed(payload)
-    },
+    mutationFn: async (payload: UpdatePricesPayload) =>
+      requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed(payload),
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ['allPrices'] })
     },
