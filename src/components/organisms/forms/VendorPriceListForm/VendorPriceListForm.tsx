@@ -21,19 +21,19 @@ export type FormValues = {
     src_lang_classifier_value_id?: { name: string; id: string }
     dst_lang_classifier_value_id?: { name: string; id: string }
     skill_id?: { [key: string]: boolean }
-    priceObject?: { [key in string]: PriceObject[] }
+    priceObject?: { [key in string]: PriceObject }
   }
 }
 
 export type PriceObject = {
   id: string
-  isSelected: boolean
-  character_fee: number | string
-  word_fee: number | string
-  page_fee: number | string
-  minute_fee: number | string
-  hour_fee: number | string
-  minimal_fee: number | string
+  isSelected?: boolean
+  character_fee: number
+  word_fee: number
+  page_fee: number
+  minute_fee: number
+  hour_fee: number
+  minimal_fee: number
   skill_id: string
   skill: { id: string; name: string }
   language_direction?: string

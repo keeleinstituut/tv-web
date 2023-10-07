@@ -10,6 +10,7 @@ import {
   VendorResponse,
   DeleteVendorsPayload,
   CreateVendorPayload,
+  UpdatePricesPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -217,9 +218,10 @@ export const useDeletePrices = (vendor_id: string | undefined) => {
   }
 }
 
-const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
+const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
+  payload: UpdatePricesPayload
+) =>
   new Promise(async (resolve, reject) => {
-    console.log('payload', payload)
     const results: any = await Promise.allSettled(
       map(payload.data, ({ state, prices }) => {
         const deletedPricesIds = map(prices, ({ id }) => id)
@@ -229,11 +231,9 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
             id: deletedPricesIds,
           })
         }
-
         if (state === 'NEW') {
           return apiClient.post(endpoints.EDIT_PRICES, { data: prices })
         }
-
         if (state === 'UPDATED') {
           return apiClient.put(endpoints.EDIT_PRICES, { data: prices })
         }
@@ -279,7 +279,7 @@ export const useParallelMutationDepartment = (
   const queryClient = useQueryClient()
   const { mutateAsync: parallelUpdating, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: any) =>
+    mutationFn: async (payload: UpdatePricesPayload) =>
       requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed(payload),
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ['allPrices'] })

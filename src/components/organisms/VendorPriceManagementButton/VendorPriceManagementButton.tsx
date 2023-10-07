@@ -12,13 +12,15 @@ import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
 import { useTranslation } from 'react-i18next'
 import {
   compact,
+  concat,
   filter,
   find,
   flatMap,
   includes,
+  isEqual,
   join,
   map,
-  some,
+  reduce,
 } from 'lodash'
 import {
   ModalTypes,
@@ -50,9 +52,10 @@ import DynamicForm, { FieldProps, InputTypes } from '../DynamicForm/DynamicForm'
 import VendorPriceListSecondStep from '../VendorPriceListSecondStep/VendorPriceListSecondStep'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
+import { DataStateTypes } from '../modals/EditableListModal/EditableListModal'
+import { UpdatePricesPayload } from 'types/vendors'
 
 import classes from './classes.module.scss'
-import { DataStateTypes } from '../modals/EditableListModal/EditableListModal'
 
 type VendorPriceManagementButtonProps = {
   control: Control<FormValues>
@@ -74,8 +77,28 @@ type VendorPriceManagementButtonProps = {
     skill_id?: {
       [key: string]: boolean
     }
-    priceObject?: { [x: string]: PriceObject[] }
+    priceObject?: { [x: string]: PriceObject }
   }
+}
+
+export type SkillPrice = {
+  id?: string | undefined
+  isSelected?: boolean
+  character_fee: number
+  word_fee: number
+  page_fee: number
+  minute_fee: number
+  hour_fee: number
+  minimal_fee: number
+  skill_id: string
+  skill?: { id: string; name: string }
+}
+
+type DefaultPricesValues = {
+  [x: string]: PriceObject
+}
+type NewPricesValues = {
+  [x: string]: SkillPrice
 }
 
 const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
@@ -90,9 +113,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-
   const { parallelUpdating } = useParallelMutationDepartment(vendorId)
-
   const { skills: skillsData } = useFetchSkills()
   const { classifierValuesFilters: languageFilter } = useClassifierValuesFetch({
     type: ClassifierValueType.Language,
@@ -109,17 +130,21 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
         dst_lang_classifier_value_id,
       } = values[languageDirectionKey]
 
-      const filteredSelectedSkills = filter(priceObject, 'isSelected')
+      const filteredSelectedSkills: PriceObject[] = filter(
+        priceObject,
+        'isSelected'
+      )
 
       const filteredEditSkills = filter(
         filteredSelectedSkills,
-        (item: any) => item.id === undefined
+        (item) => item.id === undefined
       )
 
-      const defaultPricesValues: any =
+      const defaultPricesValues: DefaultPricesValues =
         defaultLanguagePairValues?.priceObject || {}
 
-      const pricesValues: any = values[languageDirectionKey]?.priceObject || {}
+      const pricesValues: NewPricesValues =
+        values[languageDirectionKey]?.priceObject || {}
 
       const deletedSkillsObjects = filter(
         defaultPricesValues,
@@ -137,34 +162,32 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
           pricesValues[key].isSelected === true
       )
 
-      const hasPriceChanged = (defaultObj: any, valueObj: any): boolean => {
-        const propertiesToCheck = [
-          'word_fee',
-          'page_fee',
-          'minute_fee',
-          'minimal_fee',
-          'hour_fee',
-          'character_fee',
-        ]
-
-        return some(
-          propertiesToCheck,
-          (property) => defaultObj[property] !== valueObj[property]
-        )
+      const hasPriceChanged = (
+        defaultObj: SkillPrice,
+        valueObj: SkillPrice
+      ): boolean => {
+        return !isEqual(defaultObj, valueObj)
       }
 
-      const updatedSkillsObjects = filter(pricesValues, (defaultItem) => {
-        const valueItem = find(defaultPricesValues, { id: defaultItem.id })
-        return (
-          valueItem &&
-          valueItem.isSelected &&
-          hasPriceChanged(defaultItem, valueItem)
-        )
-      })
+      const updatedSkillsObjects = reduce(
+        pricesValues,
+        (result, defaultItem) => {
+          const valueItem = find(defaultPricesValues, { id: defaultItem.id })
+          if (
+            valueItem &&
+            valueItem.isSelected &&
+            hasPriceChanged(defaultItem, valueItem)
+          ) {
+            return concat(result, [{ id: defaultItem.id, ...defaultItem }])
+          }
+          return result
+        },
+        [] as SkillPrice[]
+      )
 
       const modifiedPayload = () => {
         const newStateData = (
-          skillData: any[],
+          skillData: PriceObject[],
           dstId = dst_lang_classifier_value_id?.id || ''
         ) =>
           compact(
@@ -217,7 +240,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
       }
       const payload = modifiedPayload()
 
-      const updatePricesPayload = {
+      const updatePricesPayload: UpdatePricesPayload = {
         data: payload,
       }
 
@@ -288,8 +311,6 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
   )
 
   const formValues = useWatch({ control })
-
-  // console.log('formValues', formValues)
 
   const srcLanguage =
     formValues[languageDirectionKey]?.src_lang_classifier_value_id?.name || ''
