@@ -21,7 +21,7 @@ export type FormValues = {
     src_lang_classifier_value_id?: { name: string; id: string }
     dst_lang_classifier_value_id?: { name: string; id: string }
     skill_id?: { [key: string]: boolean }
-    priceObject?: { [key in string]: PriceObject }
+    priceObject?: { [key in string]: PriceObject[] }
   }
 }
 

@@ -10,15 +10,12 @@ import {
   VendorResponse,
   DeleteVendorsPayload,
   CreateVendorPayload,
-  UpdatePricesPayload,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
 import { compact, filter, includes, isEmpty, map } from 'lodash'
-import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
-import { PriceObject } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
   const {
@@ -220,61 +217,52 @@ export const useDeletePrices = (vendor_id: string | undefined) => {
   }
 }
 
-const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
-  payload: UpdatePricesPayload
-) =>
+const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (payload: any) =>
   new Promise(async (resolve, reject) => {
+    console.log('payload', payload)
     const results: any = await Promise.allSettled(
-      map(
-        payload.data,
-        ({
-          state,
-          prices,
-        }: {
-          state: DataStateTypes
-          prices: PriceObject[]
-        }) => {
-          const deletedPricesIds = map(prices, ({ id }) => id)
+      map(payload.data, ({ state, prices }) => {
+        const deletedPricesIds = map(prices, ({ id }) => id)
 
-          if (state === 'DELETED')
-            apiClient.delete(endpoints.EDIT_PRICES, {
-              id: deletedPricesIds,
-            })
-          if (state === 'NEW')
-            apiClient.post(endpoints.EDIT_PRICES, { data: prices })
-          if (state === 'UPDATED')
-            apiClient.put(endpoints.EDIT_PRICES, { data: prices })
+        if (state === 'DELETED') {
+          return apiClient.delete(endpoints.EDIT_PRICES, {
+            id: deletedPricesIds,
+          })
         }
-      )
+
+        if (state === 'NEW') {
+          return apiClient.post(endpoints.EDIT_PRICES, { data: prices })
+        }
+
+        if (state === 'UPDATED') {
+          return apiClient.put(endpoints.EDIT_PRICES, { data: prices })
+        }
+      })
     )
 
     const fulfilled = compact(
       map(results, ({ status, value }, key) => {
         if (status === 'fulfilled') {
-          if (typeof value === 'object' && value !== null) {
+          if (value) {
             return {
               key,
               value,
             }
           }
         }
-        return null
       })
     )
 
     const errors = compact(
       map(results, ({ status, reason }) => {
         if (status === 'rejected') {
-          if (typeof reason === 'object' && reason !== null) {
-            const { message } = reason || {}
-            const error = {
-              errors: reason.errors,
-              message: message || '',
-            }
-            return error
+          const { message } = reason || {}
+          const error = {
+            errors: reason.errors,
+            message: message || '',
           }
+          return error
         }
-        return null
       })
     )
 
@@ -291,7 +279,7 @@ export const useParallelMutationDepartment = (
   const queryClient = useQueryClient()
   const { mutateAsync: parallelUpdating, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: UpdatePricesPayload) =>
+    mutationFn: async (payload: any) =>
       requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed(payload),
     onSuccess: () => {
       queryClient.refetchQueries({ queryKey: ['allPrices'] })

@@ -15,11 +15,9 @@ import {
   filter,
   find,
   flatMap,
-  get,
   includes,
   join,
   map,
-  pickBy,
   some,
 } from 'lodash'
 import {
@@ -76,7 +74,7 @@ type VendorPriceManagementButtonProps = {
     skill_id?: {
       [key: string]: boolean
     }
-    priceObject?: { [x: string]: PriceObject }
+    priceObject?: { [x: string]: PriceObject[] }
   }
 }
 
@@ -113,29 +111,33 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
 
       const filteredSelectedSkills = filter(priceObject, 'isSelected')
 
-      const defaultPricesValues = defaultLanguagePairValues?.priceObject || {}
-      const pricesValues = values[languageDirectionKey]?.priceObject || {}
+      const filteredEditSkills = filter(
+        filteredSelectedSkills,
+        (item: any) => item.id === undefined
+      )
 
-      const deletedSkillsObjects = filter(defaultPricesValues, (value, key) => {
-        return (
+      const defaultPricesValues: any =
+        defaultLanguagePairValues?.priceObject || {}
+
+      const pricesValues: any = values[languageDirectionKey]?.priceObject || {}
+
+      const deletedSkillsObjects = filter(
+        defaultPricesValues,
+        (value, key) =>
           value.isSelected === true &&
           pricesValues[key] &&
           pricesValues[key].isSelected === false
-        )
-      })
+      )
 
-      const addedSkillsObjects = filter(defaultPricesValues, (value, key) => {
-        return (
+      const addedSkillsObjects = filter(
+        defaultPricesValues,
+        (value, key) =>
           value.isSelected === false &&
           pricesValues[key] &&
           pricesValues[key].isSelected === true
-        )
-      })
+      )
 
-      const hasPriceChanged = (
-        defaultObj: PriceObject,
-        valueObj: PriceObject
-      ): boolean => {
+      const hasPriceChanged = (defaultObj: any, valueObj: any): boolean => {
         const propertiesToCheck = [
           'word_fee',
           'page_fee',
@@ -145,14 +147,13 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
           'character_fee',
         ]
 
-        return some(propertiesToCheck, (property) => {
-          const defaultValue = get(defaultObj, property)
-          const valueValue = get(valueObj, property)
-          return defaultValue !== valueValue
-        })
+        return some(
+          propertiesToCheck,
+          (property) => defaultObj[property] !== valueObj[property]
+        )
       }
 
-      const updatedSkillsObjects = pickBy(pricesValues, (defaultItem) => {
+      const updatedSkillsObjects = filter(pricesValues, (defaultItem) => {
         const valueItem = find(defaultPricesValues, { id: defaultItem.id })
         return (
           valueItem &&
@@ -163,7 +164,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
 
       const modifiedPayload = () => {
         const newStateData = (
-          skillData: PriceObject[],
+          skillData: any[],
           dstId = dst_lang_classifier_value_id?.id || ''
         ) =>
           compact(
@@ -193,7 +194,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
             state: DataStateTypes.DELETED,
           },
           addedSkillsObjects.length > 0 && {
-            prices: newStateData(addedSkillsObjects),
+            prices: newStateData(filteredEditSkills),
             state: DataStateTypes.NEW,
           },
           !addedSkillsObjects.length &&
@@ -203,7 +204,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
               ),
               state: DataStateTypes.NEW,
             },
-          Object.keys(updatedSkillsObjects).length > 0 && {
+          updatedSkillsObjects.length > 0 && {
             prices: map(updatedSkillsObjects, ({ id, ...rest }) => ({
               id,
               ...rest,
@@ -214,7 +215,6 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
 
         return results
       }
-
       const payload = modifiedPayload()
 
       const updatePricesPayload = {
@@ -288,6 +288,8 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
   )
 
   const formValues = useWatch({ control })
+
+  // console.log('formValues', formValues)
 
   const srcLanguage =
     formValues[languageDirectionKey]?.src_lang_classifier_value_id?.name || ''

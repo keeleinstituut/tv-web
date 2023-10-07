@@ -125,29 +125,29 @@ export type PricesType = Omit<
   | 'vendor'
 >
 
-export type UpdatePricesPayload = {
-  data: (
-    | {
-        prices: PriceObject[]
-        state: DataStateTypes
-      }
-    | {
-        prices: {
-          id?: string | undefined
-          skill_id: string
-          vendor_id: string
-          src_lang_classifier_value_id: string
-          dst_lang_classifier_value_id: string
-          word_fee: string | number
-          page_fee: number | string
-          minute_fee: number | string
-          hour_fee: number | string
-          minimal_fee: number | string
-        }[]
-        state: DataStateTypes
-      }
-  )[]
-}
+// export type UpdatePricesPayload = {
+//   data: (
+//     | {
+//         prices: PriceObject[]
+//         state: DataStateTypes
+//       }
+//     | {
+//         prices: {
+//           id?: string | undefined
+//           skill_id: string
+//           vendor_id: string
+//           src_lang_classifier_value_id: string
+//           dst_lang_classifier_value_id: string
+//           word_fee: string | number
+//           page_fee: number | string
+//           minute_fee: number | string
+//           hour_fee: number | string
+//           minimal_fee: number | string
+//         }[]
+//         state: DataStateTypes
+//       }
+//   )[]
+// }
 
 export type DeletePricesPayload = {
   id?: string[]
