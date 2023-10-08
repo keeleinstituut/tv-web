@@ -74,7 +74,7 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
           name,
           status,
           price,
-          delete_button: vendor_id,
+          delete_button: vendor.id,
         }
       }),
     [candidates, getCandidateStatus]
