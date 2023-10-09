@@ -10,6 +10,8 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
   const [filters, setFilters] = useState<TFilters | object>(
     initialFilters || {}
   )
+  const [tmSearchValue, setTmSearchValue] = useState<TFilters | object>({})
+
   const handleOnSearch = useCallback(
     (value?: FilterFunctionType) => {
       const emptyValues = pickBy(value, isEmpty)
@@ -17,8 +19,10 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
       if (!isEmpty(emptyKeys)) {
         const filtersWithOutSearch = filters ? omit(filters, emptyKeys) : {}
         setFilters({ ...filtersWithOutSearch })
+        setTmSearchValue({})
       } else {
         setFilters({ ...filters, ...value })
+        setTmSearchValue({ ...value })
       }
     },
     [filters]
@@ -57,6 +61,7 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
 
   return {
     filters,
+    tmSearchValue,
     handleOnSearch,
     handleFilterChange,
     handleSortingChange,

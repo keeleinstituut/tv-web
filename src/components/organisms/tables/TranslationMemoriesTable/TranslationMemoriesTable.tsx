@@ -29,6 +29,7 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemories'
 import TextInput from 'components/molecules/TextInput/TextInput'
+import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 
 type TranslationMemoriesTableRow = {
   name: string
@@ -61,6 +62,9 @@ const TranslationMemoriesTable: FC = () => {
     type: ClassifierValueType.TranslationDomain,
   })
 
+  const { languageDirectionFilters, loadMore } = useLanguageDirections({
+    per_page: 40,
+  })
   const statusFilters = map(TMType, (status) => ({
     label: t(`translation_memories.status.${status}`),
     value: status,
@@ -82,8 +86,7 @@ const TranslationMemoriesTable: FC = () => {
 
   const [types] = watch(['types'])
   useEffect(() => {
-    console.log(types)
-    map(types, (type) => handleFilterChange({ type: type }))
+    handleFilterChange({ type: types })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [types])
 
@@ -165,9 +168,11 @@ const TranslationMemoriesTable: FC = () => {
       },
       size: 100,
       meta: {
-        //TODO: add lang_pair filter
-        filterOption: { lang_pair: statusFilters },
-        showSearch: true,
+        filterOption: { lang_pair: languageDirectionFilters },
+        // filterValue: [matchingLanguageString],
+        onEndReached: loadMore,
+        // onSearch: handleSearch,
+        //showSearch: true,
       },
     }),
   ] as ColumnDef<TranslationMemoriesTableRow>[]
