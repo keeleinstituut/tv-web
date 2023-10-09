@@ -10,7 +10,7 @@ import DataTable, {
 import { useForm } from 'react-hook-form'
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
-import { VendorFormProps } from '../VendorForm/VendorForm'
+import { VendorFormProps } from 'components/organisms/forms/VendorForm/VendorForm'
 import VendorPriceManagementButton from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
 import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButton/DeleteVendorPriceButton'
 

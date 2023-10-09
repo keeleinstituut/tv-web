@@ -48,11 +48,14 @@ import {
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/VendorPriceListButtons'
-import DynamicForm, { FieldProps, InputTypes } from '../DynamicForm/DynamicForm'
-import VendorPriceListSecondStep from '../VendorPriceListSecondStep/VendorPriceListSecondStep'
+import DynamicForm, {
+  FieldProps,
+  InputTypes,
+} from 'components/organisms/DynamicForm/DynamicForm'
+import VendorPriceListSecondStep from 'components/organisms/VendorPriceListSecondStep/VendorPriceListSecondStep'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
-import { DataStateTypes } from '../modals/EditableListModal/EditableListModal'
+import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
 import { UpdatePricesPayload } from 'types/vendors'
 
 import classes from './classes.module.scss'

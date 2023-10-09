@@ -32,7 +32,6 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
   const { t } = useTranslation()
   if (!message && type !== 'required') return null
   const messageToShow = message || t('error.required')
-
   return (
     <div
       className={classNames(classes.errorContainer, className)}

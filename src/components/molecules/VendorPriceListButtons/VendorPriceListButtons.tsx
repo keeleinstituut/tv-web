@@ -2,7 +2,7 @@ import { FormValues } from 'components/organisms/forms/VendorPriceListForm/Vendo
 import { FC } from 'react'
 import { Control, useFormState, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import Button, { AppearanceTypes } from '../Button/Button'
+import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { size, isEmpty, some } from 'lodash'
 
 import classes from './classes.module.scss'
