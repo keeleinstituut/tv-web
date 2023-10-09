@@ -40,6 +40,7 @@
     "type": "Tüüp",
     "tags": "Sildid",
     "order_tags": "Tellimuse sildid",
+    "vendor_tags": "Teostaja sildid",
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",

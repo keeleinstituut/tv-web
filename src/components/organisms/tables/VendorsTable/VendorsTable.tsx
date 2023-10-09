@@ -126,19 +126,13 @@ const VendorsTable: FC<VendorsTableProps> = ({
     columnHelper.accessor('name', {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
-      meta: {
-        sortingOption: ['asc', 'desc'],
-      },
     }),
     columnHelper.accessor('companyName', {
       header: () => t('label.company_name'),
       footer: (info) => info.column.id,
-      meta: {
-        sortingOption: ['asc', 'desc'],
-      },
     }),
     columnHelper.accessor('tags', {
-      header: () => t('label.order_tags'),
+      header: () => t('label.vendor_tags'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         return (
@@ -168,7 +162,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
         </Button>
       ),
     }),
-  ] as ColumnDef<OrderTableRow>[] // Seems like an package issue https://github.com/TanStack/table/issues/4382
+  ] as ColumnDef<OrderTableRow>[]
 
   if (hidden) return null
 
