@@ -362,7 +362,8 @@
       "ACTIVE": "Aktiivne",
       "DEACTIVATED": "Deaktiveeritud",
       "ARCHIVED": "Arhiveeritud"
-    }
+    },
+    "account": "Minu andmed"
   },
   "users": {
     "add_users": "Kasutajate lisamine",
