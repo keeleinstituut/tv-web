@@ -8,24 +8,27 @@
 }
 .memoryDetails {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 150px auto;
   grid-column-gap: spacing(10);
   justify-items: left;
   align-items: center;
   width: max-content;
+  grid-row-gap: spacing(4);
 }
 .labelClass {
   justify-self: end;
 }
 
-.valueClass,
-.labelClass {
-  margin-bottom: spacing(4);
-  &:nth-last-child(-n + 4) {
-    color: $color-input-main;
-    margin-bottom: 0;
-  }
+.grayColor {
+  grid-row-gap: spacing(0);
+  color: $color-input-main;
+  grid-column: 1/-1;
 }
+
+.hidden {
+  visibility: hidden;
+}
+
 .tag {
   @include bodyTextSmallStyle;
   color: $color-primary;

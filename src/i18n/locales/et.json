@@ -414,6 +414,10 @@
     "vendor_updated": "Teostaja uuendatud",
     "order_updated": "Tellimus on edukalt uuendatud",
     "translation_memory_created": "Tõlkemälu on edukalt lisatud",
+    "translation_memory_updated": "Tõlkemälu on edukalt uuendatud",
+    "translation_memory_import": "Tõlkemälu on edukalt üles laetud",
+    "translation_memory_export": "Tõlkemälu on edukalt alla laetud",
+    "translation_memory_deleted": "Tõlkemälu on edukalt kustutatud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
@@ -434,7 +438,8 @@
     "warning": "Hoiatus",
     "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida",
     "tm_import_failed": "Tõlkemälu segmendi üleslaadimine ebaõnnestus",
-    "tm_export_failed": "Tõlkemälu segmendi allalaadimine ebaõnnestus"
+    "tm_export_failed": "Tõlkemälu segmendi allalaadimine ebaõnnestus",
+    "tm_delete_failed": "Tõlkemälu kustutamine ebaõnnestus"
   },
   "helper": {
     "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga.",
@@ -555,9 +560,9 @@
     "confirmation_help_text": "Kui otsustad määrata tõlkemälu kasutamise tüübiks 'Avalik' või 'Asutuse üleseks jagamiseks', siis seda mälu ja selles olevaid tõlkesegmente näevad ja saavad tõlkimisel kasutad ka asutusevälised kasutajad.",
     "delete_confirmation_text": "Kas oled kindel, et soovid tõlkemälu kustutada?",
     "status": {
-      "INTERNAL": "Asutuse sisene",
-      "SHARED": "Asutustega jagamiseks",
-      "PUBLIC": "Avalik"
+      "private": "Asutuse sisene",
+      "shared": "Asutustega jagamiseks",
+      "public": "Avalik"
     }
   },
   "task": {

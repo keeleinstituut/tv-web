@@ -1,9 +1,9 @@
 import { PaginationFunctionType } from './collective'
 
 export enum TMType {
-  Internal = 'INTERNAL',
-  Shared = 'SHARED',
-  Public = 'PUBLIC',
+  Internal = 'private',
+  Shared = 'shared',
+  Public = 'public',
 }
 
 export interface TranslationMemoryType {
@@ -16,6 +16,8 @@ export interface TranslationMemoryType {
   comment?: string
   created_at: string
   lang_pair: string
+  chunk_amount?: string
+  import_at?: string
 }
 
 export interface TranslationMemoryDataType {
@@ -46,4 +48,5 @@ export interface ImportTMXPayload {
 export interface ExportTMXPayload {
   slang: string
   tlang: string
+  tag: string
 }

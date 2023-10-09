@@ -143,14 +143,13 @@ export const protectedRoutes: FullRouteObject[] = [
     label: i18n.t('menu.translation_memories'),
     Icon: MemoriesIcon,
     privileges: [
-      Privileges.AddUser,
-      // Privileges.CreateTm,
-      // Privileges.ViewTm,
-      // Privileges.ImportTm,
-      // Privileges.ExportTm,
-      // Privileges.EditTmMetadata,
+      Privileges.CreateTm,
+      Privileges.ViewTm,
+      Privileges.ImportTm,
+      Privileges.ExportTm,
+      Privileges.EditTmMetadata,
+      Privileges.DeleteTm,
     ],
-    //privileges: [Privileges.ViewTm],
     children: [
       {
         path: '',

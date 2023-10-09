@@ -145,10 +145,10 @@ export const useDeleteTranslationMemory = () => {
           return { data: newData }
         }
       )
-      // queryClient.refetchQueries({
-      //   queryKey: ['translationMemories'],
-      //   type: 'active',
-      // })
+      queryClient.refetchQueries({
+        queryKey: ['translationMemories'],
+        type: 'active',
+      })
     },
   })
 

@@ -26,6 +26,7 @@ import { TagTypes } from 'types/tags'
 import { useInstitutionFetch } from 'hooks/requests/useInstitutions'
 import dayjs from 'dayjs'
 import { useUpdateTranslationMemory } from 'hooks/requests/useTranslationMemories'
+import classNames from 'classnames'
 
 interface FormValues {
   name: string
@@ -36,6 +37,7 @@ interface FormValues {
 }
 type TranslationMemoryEditFormTypes = {
   data: Partial<TranslationMemoryType>
+  isTmOwnedByUserInstitution?: boolean
 }
 
 type DetailsTypes = {
@@ -48,6 +50,7 @@ type DetailsTypes = {
 
 const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
   data,
+  isTmOwnedByUserInstitution,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
@@ -90,10 +93,10 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
     control,
     handleSubmit,
     reset,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting, isValid, isDirty },
     setError,
   } = useForm<FormValues>({
-    reValidateMode: 'onSubmit',
+    mode: 'onChange',
     values: defaultValues,
   })
 
@@ -113,6 +116,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       rules: {
         required: true,
       },
+      disabled: !isTmOwnedByUserInstitution,
     },
     {
       inputType: InputTypes.Selections,
@@ -124,6 +128,10 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       options: tagOptions,
       multiple: true,
       buttons: true,
+      disabled:
+        !includes(userPrivileges, Privileges.AddTag) ||
+        !includes(userPrivileges, Privileges.EditTag) ||
+        !isTmOwnedByUserInstitution,
     },
     {
       inputType: InputTypes.Selections,
@@ -132,7 +140,11 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       name: 'type',
       options: statusOptions,
       className: classes.inputInternalPosition,
+      rules: {
+        required: true,
+      },
       helperText: t('translation_memories.helper_text'),
+      disabled: !isTmOwnedByUserInstitution,
     },
     {
       inputType: InputTypes.Text,
@@ -143,6 +155,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       name: 'comment',
       type: 'comment',
       className: classes.inputInternalPosition,
+      disabled: !isTmOwnedByUserInstitution,
     },
     {
       inputType: InputTypes.Selections,
@@ -152,6 +165,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       name: 'tv_domain',
       options: domainOptions,
       className: classes.inputInternalPosition,
+      disabled: !isTmOwnedByUserInstitution,
     },
   ]
 
@@ -166,7 +180,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.institution_updated'),
+          content: t('success.translation_memory_updated'),
         })
         resetForm()
       } catch (errorData) {
@@ -203,20 +217,30 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
               />
             )
           )}
-          <span className={classes.labelClass}>{t('label.last_imported')}</span>
-          <span>xxxx</span>
-          {/* Note: this info coming later */}
-          {/* <SmallTooltip
+          <div
+            className={classNames(
+              classes.memoryDetails,
+              classes.grayColor,
+              !data?.chunk_amount && classes.hidden
+            )}
+          >
+            <span className={classes.labelClass}>
+              {t('label.last_imported')}
+            </span>
+            <span>xxxx</span>
+            {/* Note: importing and segments info coming later */}
+            {/* <SmallTooltip
             tooltipContent={'Viga viga'}
             icon={ErrorIcon}
             // hidden={}
             //className={classNames(classes.bar, isVacation && classes.vacation)}
             contentClassName={classes.content}
           /> */}
-          <span className={classes.labelClass}>
-            {t('label.chunk_amount_old')}
-          </span>
-          <span>xxxx</span>
+            <span className={classes.labelClass}>
+              {t('label.chunk_amount_old')}
+            </span>
+            <span>xxxx</span>
+          </div>
         </div>
         <DynamicForm
           fields={fields}
@@ -227,9 +251,11 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
         />
       </div>
       <FormButtons
-        isResetDisabled={false}
+        isResetDisabled={!isDirty}
         isSubmitDisabled={
-          !isValid && !includes(userPrivileges, Privileges.EditTmMetadata)
+          !isDirty ||
+          !isValid ||
+          !includes(userPrivileges, Privileges.EditTmMetadata)
         }
         loading={isSubmitting}
         resetForm={resetForm}

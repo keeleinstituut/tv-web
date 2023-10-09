@@ -19,30 +19,38 @@ import { showModal, ModalTypes } from '../modals/ModalRoot'
 import {
   useDeleteTranslationMemory,
   useExportTMX,
-  useFetchTranslationMemory,
   useImportTMX,
 } from 'hooks/requests/useTranslationMemories'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from '../NotificationRoot/NotificationRoot'
+import { TranslationMemoryType } from 'types/translationMemories'
+import { useNavigate } from 'react-router-dom'
 
 type TranslationMemoryDetailsTypes = {
+  translationMemory: Partial<TranslationMemoryType>
+  isTmOwnedByUserInstitution?: boolean
   memoryId: string
 }
 
 const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
+  translationMemory,
+  isTmOwnedByUserInstitution,
   memoryId,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { translationMemory } = useFetchTranslationMemory({ id: memoryId })
   const { deleteTranslationMemory } = useDeleteTranslationMemory()
   const { importTMX } = useImportTMX()
   const { exportTMX } = useExportTMX()
+  const navigate = useNavigate()
 
   const { lang_pair } = translationMemory || {}
-  // const isUserClientOfProject = institutionUserId === client_user_institution_id
 
-  console.log('translationMemory', translationMemory)
+  console.log(
+    'translationMemory',
+    translationMemory,
+    isTmOwnedByUserInstitution
+  )
 
   const handleImportSegments = async (uploadedFile: File) => {
     const payload = {
@@ -51,6 +59,11 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
     }
     try {
       await importTMX(payload)
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.translation_memory_import'),
+      })
     } catch (error) {
       showNotification({
         type: NotificationTypes.Error,
@@ -65,10 +78,19 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
     console.log('langPair', langPair)
 
     console.log('Export file')
-    const payload = { slang: langPair[0], tlang: langPair[1] }
+    const payload = {
+      slang: langPair[0],
+      tlang: langPair[1],
+      tag: memoryId,
+    }
 
     try {
       await exportTMX(payload)
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.translation_memory_export'),
+      })
     } catch (error) {
       showNotification({
         type: NotificationTypes.Error,
@@ -80,7 +102,23 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
 
   const handleDeleteMemory = () => {
     showModal(ModalTypes.ConfirmationModal, {
-      handleProceed: () => deleteTranslationMemory(memoryId),
+      handleProceed: async () => {
+        try {
+          await deleteTranslationMemory(memoryId)
+          showNotification({
+            type: NotificationTypes.Success,
+            title: t('notification.announcement'),
+            content: t('success.translation_memory_deleted'),
+          })
+          navigate('/memories')
+        } catch (error) {
+          showNotification({
+            type: NotificationTypes.Error,
+            title: t('notification.error'),
+            content: t('notification.tm_delete_failed'),
+          })
+        }
+      },
       modalContent: (
         <h1 className={classes.modalText}>
           {t('translation_memories.delete_confirmation_text')}
@@ -103,14 +141,20 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           inputFileTypes={[InputFileTypes.Tmx]}
           onChange={handleImportSegments}
           allowMultiple={false}
-          disabled={!includes(userPrivileges, Privileges.ImportTm)}
+          disabled={
+            !includes(userPrivileges, Privileges.ImportTm) ||
+            !isTmOwnedByUserInstitution
+          }
         />
         <Button
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           onClick={handleExportFile}
           children={t('button.export')}
-          disabled={!includes(userPrivileges, Privileges.ExportTm)}
+          disabled={
+            !includes(userPrivileges, Privileges.ExportTm) ||
+            !isTmOwnedByUserInstitution
+          }
         />
         <Button
           appearance={AppearanceTypes.Text}
@@ -119,10 +163,16 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           children={t('button.delete_translation_memory')}
           className={classes.deleteButton}
           onClick={handleDeleteMemory}
-          hidden={!includes(userPrivileges, Privileges.DeleteTm)}
+          hidden={
+            !includes(userPrivileges, Privileges.DeleteTm) ||
+            !isTmOwnedByUserInstitution
+          }
         />
       </div>
-      <TranslationMemoryEditForm data={translationMemory || {}} />
+      <TranslationMemoryEditForm
+        data={translationMemory || {}}
+        isTmOwnedByUserInstitution={isTmOwnedByUserInstitution}
+      />
     </Container>
   )
 }

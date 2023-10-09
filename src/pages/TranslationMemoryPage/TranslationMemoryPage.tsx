@@ -5,34 +5,33 @@ import { useTranslation } from 'react-i18next'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import TranslationMemoryDetails from 'components/organisms/TranslationMemoryDetails/TranslationMemoryDetails'
 import TranslationMemorySubOrdersTable from 'components/organisms/tables/TranslationMemorySubOrdersTable/TranslationMemorySubOrdersTable'
+import { useFetchTranslationMemory } from 'hooks/requests/useTranslationMemories'
+import useAuth from 'hooks/useAuth'
 
 const TranslationMemoryPage: FC = () => {
   const { t } = useTranslation()
   const { memoryId = '' } = useParams()
-  //const { institutionUserId } = useAuth()
+  const { userInfo } = useAuth()
+  const { selectedInstitution } = userInfo?.tolkevarav || {}
+  const { translationMemory } = useFetchTranslationMemory({ id: memoryId })
 
-  //console.log('tmId', memoryId)
-
-  // useOrderPageRedirect({
-  //   client_user_institution_id,
-  //   translation_manager_user_institution_id,
-  //   isLoading,
-  // })
-
-  // const isUserClientOfProject = institutionUserId === client_user_institution_id
+  const isTmOwnedByUserInstitution =
+    selectedInstitution?.id === translationMemory?.institution_id
 
   // if (isLoading) return <Loader loading={isLoading} />
-
-  //Todo change the title
 
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>{t('translation_memories.new_translation_memory_title')}</h1>
+        <h1>{translationMemory?.name}</h1>
         <Tooltip helpSectionKey="translationMemory" />
       </div>
-      <TranslationMemoryDetails memoryId={memoryId} />
-      <TranslationMemorySubOrdersTable />
+      <TranslationMemoryDetails
+        translationMemory={translationMemory || {}}
+        memoryId={memoryId}
+        isTmOwnedByUserInstitution={isTmOwnedByUserInstitution}
+      />
+      {/* <TranslationMemorySubOrdersTable hidden={!isTmOwnedByUserInstitution} /> */}
     </>
   )
 }

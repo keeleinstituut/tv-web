@@ -41,7 +41,7 @@ type TranslationMemoriesTableRow = {
 
 const columnHelper = createColumnHelper<TranslationMemoriesTableRow>()
 interface FormValues {
-  [type: string]: TMType[]
+  [types: string]: TMType[]
 }
 
 const TranslationMemoriesTable: FC = () => {
@@ -80,11 +80,12 @@ const TranslationMemoriesTable: FC = () => {
     [handleOnSearch]
   )
 
-  const [type] = watch(['type'])
+  const [types] = watch(['types'])
   useEffect(() => {
-    type && handleFilterChange({ type: type })
+    console.log(types)
+    map(types, (type) => handleFilterChange({ type: type }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type])
+  }, [types])
 
   const columns = [
     columnHelper.accessor('name', {
@@ -195,7 +196,7 @@ const TranslationMemoriesTable: FC = () => {
         headComponent={
           <div className={classes.topSection}>
             <FormInput
-              name="type"
+              name="types"
               control={control}
               options={statusFilters}
               inputType={InputTypes.TagsSelect}

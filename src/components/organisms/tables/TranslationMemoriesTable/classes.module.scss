@@ -32,13 +32,13 @@
   display: inline-block;
   background-color: #bbb;
 
-  &.INTERNAL {
+  &.private {
     background-color: $color-highlight;
   }
-  &.SHARED {
+  &.shared {
     background-color: $color-success;
   }
-  &.PUBLIC {
+  &.public {
     background-color: $color-secondary;
   }
 }
