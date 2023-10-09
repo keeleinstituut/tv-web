@@ -45,6 +45,7 @@ export const ProjectFileTypes = [
   InputFileTypes.OpenDocument,
   InputFileTypes.Excel,
   InputFileTypes.SpreadSheet,
+  InputFileTypes.Csv,
   // InputFileTypes.Outlook,
   // InputFileTypes.Asice,
   // InputFileTypes.Zip,

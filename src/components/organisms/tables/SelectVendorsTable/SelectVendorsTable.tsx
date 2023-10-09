@@ -51,7 +51,6 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   data?: Price[]
   paginationData?: ResponseMetaTypes
   hidden?: boolean
-  taskSkills?: string[]
   filters?: GetPricesPayload
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
@@ -59,6 +58,7 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   source_language_classifier_value_id?: string
   destination_language_classifier_value_id?: string
   control: Control<TFormValues>
+  taskSkills?: string[]
 }
 
 interface PricesTableRow {
@@ -88,14 +88,19 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   handleSortingChange,
   handlePaginationChange,
   taskSkills = [],
-  source_language_classifier_value_id,
-  destination_language_classifier_value_id,
   control,
 }: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
   const { tagsFilters = [] } = useFetchTags()
   const { skillsFilters = [] } = useFetchSkills()
-  const matchingLanguageString = `${source_language_classifier_value_id}>${destination_language_classifier_value_id}`
+
+  const {
+    src_lang_classifier_value_id,
+    dst_lang_classifier_value_id,
+    skill_id,
+  } = filters || {}
+
+  const matchingLanguageString = `${src_lang_classifier_value_id}>${dst_lang_classifier_value_id}`
 
   const {
     languageDirectionFilters,
@@ -122,6 +127,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           hour_fee,
           minimal_fee,
           skill_id,
+          vendor_id,
           vendor: {
             tags,
             skills,
@@ -132,11 +138,11 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
 
           const tagNames = map(tags, 'name')
           const skill = find(skills, { id: skill_id })?.name
+          const typedSrc = (src_lang_classifier_value_id || '') as string
+          const typedDst = (dst_lang_classifier_value_id || '') as string
           const priceLanguageMatch =
-            source_language_classifier_value.id ===
-              source_language_classifier_value_id &&
-            destination_language_classifier_value.id ===
-              destination_language_classifier_value_id
+            source_language_classifier_value.id === typedSrc &&
+            destination_language_classifier_value.id === typedDst
 
           // TODO: missing currently
           // const working_times = []
@@ -156,7 +162,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           })
 
           return {
-            selected: id,
+            selected: vendor_id,
             alert_icon: !includes(taskSkills, skill_id) || !priceLanguageMatch,
             name: `${user?.forename} ${user?.surname}`,
             languageDirection,
@@ -174,8 +180,8 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       ),
     [
       data,
-      destination_language_classifier_value_id,
-      source_language_classifier_value_id,
+      dst_lang_classifier_value_id,
+      src_lang_classifier_value_id,
       taskSkills,
     ]
   )
@@ -270,7 +276,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       },
       meta: {
         filterOption: { skill_id: skillsFilters },
-        filterValue: taskSkills,
+        filterValue: skill_id,
         showSearch: true,
       },
     }),

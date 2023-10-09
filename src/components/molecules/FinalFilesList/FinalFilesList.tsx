@@ -1,13 +1,19 @@
 import { useCallback, useMemo, Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, filter } from 'lodash'
+import { map, filter, isEmpty, compact, includes } from 'lodash'
 import {
   InputTypes,
   FormInput,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
-import { Control, FieldValues, Path, useController } from 'react-hook-form'
+import {
+  Control,
+  FieldValues,
+  Path,
+  useController,
+  useWatch,
+} from 'react-hook-form'
 import classNames from 'classnames'
 import FileImport, {
   ProjectFileTypes,
@@ -23,6 +29,7 @@ import { SourceFile, SubProjectFeatures } from 'types/orders'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
+import { showValidationErrorMessage } from 'api/errorHandler'
 
 // TODO: very similar to OrderFilesList, these 2 can be unified
 
@@ -33,6 +40,7 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
   tooltipContent?: string
   isEditable?: boolean
   className?: string
+  isLoading?: boolean
 }
 
 interface FileRow {
@@ -53,13 +61,21 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   tooltipContent,
   isEditable,
   className,
+  isLoading,
 }: FinalFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
+    formState: { dirtyFields },
   } = useController<TFormValues, Path<TFormValues>>({
     name: name as Path<TFormValues>,
     control,
   })
+
+  const sharedFiles = useWatch({
+    control,
+    name: 'shared_with_client' as Path<TFormValues>,
+  })
+
   const typedValue = value as (File | SourceFile)[]
   const { t } = useTranslation()
 
@@ -89,9 +105,34 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     [onChange, typedValue]
   )
 
-  const handleSendFilesToClient = useCallback(() => {
+  // TODO: following needs to be checked, not sure what the endpoint will be
+  // Or what the data structure needed for that endpoint will be
+  const handleSendFilesToClient = useCallback(async () => {
+    if (sharedFiles && !isEmpty(sharedFiles)) {
+      try {
+        const indexesToShare = compact(
+          map(sharedFiles, (value, index) => {
+            if (value) return index
+            return null
+          })
+        )
+        const sharedFileIds = map(
+          filter(typedValue, (_, index) => includes(indexesToShare, index)),
+          'id'
+        )
+        // await sendFilesToClient(sharedFileIds)
+        // showNotification({
+        //   type: NotificationTypes.Success,
+        //   title: t('notification.announcement'),
+        //   content: t('success.files_sent_to_client'),
+        // })
+      } catch (errorData) {
+        // TODO: depending on the errors, we might show them under checkboxes instead
+        showValidationErrorMessage(errorData)
+      }
+    }
     // TODO: handle sending files to client here, based on checked values
-  }, [])
+  }, [sharedFiles, typedValue])
 
   const columns = [
     columnHelper.accessor('shared_with_client', {
@@ -226,6 +267,8 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         appearance={AppearanceTypes.Primary}
         className={classes.saveButton}
         onClick={handleSendFilesToClient}
+        disabled={!dirtyFields?.shared_with_client}
+        loading={isLoading}
       >
         {t('button.save_changes')}
       </Button>

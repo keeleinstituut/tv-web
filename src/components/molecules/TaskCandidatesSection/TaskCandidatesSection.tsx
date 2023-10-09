@@ -13,9 +13,11 @@ import { AssignmentStatus, AssignmentType } from 'types/assignments'
 
 import classes from './classes.module.scss'
 import { SubProjectFeatures } from 'types/orders'
+import { useAssignmentRemoveVendor } from 'hooks/requests/useAssignments'
 
 type TaskCandidatesSectionProps = Pick<
   AssignmentType,
+  | 'id'
   | 'assigned_vendor_id'
   | 'candidates'
   | 'assignee_id'
@@ -36,6 +38,7 @@ interface CandidateRow {
 const columnHelper = createColumnHelper<CandidateRow>()
 
 const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
+  id,
   assigned_vendor_id,
   candidates,
   assignee_id,
@@ -56,6 +59,10 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
     [assigned_vendor_id, assignee_id, finished_at]
   )
 
+  const { deleteAssignmentVendor } = useAssignmentRemoveVendor({
+    id,
+  })
+
   const tableRows = useMemo(
     () =>
       map(candidates, ({ vendor, price, vendor_id, id }) => {
@@ -67,15 +74,18 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
           name,
           status,
           price,
-          delete_button: id,
+          delete_button: vendor.id,
         }
       }),
     [candidates, getCandidateStatus]
   )
 
-  const handleDelete = useCallback((candidateId: string) => {
-    // TODO: remove candidate with id: candidateId from this task
-  }, [])
+  const handleDelete = useCallback(
+    (vendor_id: string) => {
+      deleteAssignmentVendor({ data: [{ vendor_id }] })
+    },
+    [deleteAssignmentVendor]
+  )
 
   const columns = [
     columnHelper.accessor('name', {
