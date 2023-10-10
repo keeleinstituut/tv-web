@@ -124,6 +124,16 @@ const Tags: FC = () => {
     [createTags, t]
   )
 
+  const isEditable = (type: TagTypes) => {
+    if (type === TagTypes.Skills) {
+      return false
+    }
+    return (
+      includes(userPrivileges, Privileges.DeleteTag) ||
+      includes(userPrivileges, Privileges.AddTag) ||
+      includes(userPrivileges, Privileges.EditTag)
+    )
+  }
   useEffect(() => {
     reset({})
   }, [isSubmitSuccessful, reset])
@@ -168,13 +178,7 @@ const Tags: FC = () => {
             key={type}
             tagsList={tagsList}
             type={type}
-            isEditable={
-              type !== TagTypes.Skills ||
-              !includes(
-                userPrivileges,
-                Privileges.EditTag || Privileges.AddTag || Privileges.DeleteTag
-              )
-            }
+            isEditable={isEditable(type)}
           />
         ))}
       </div>
