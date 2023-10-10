@@ -103,8 +103,8 @@ const VendorsTable: FC<VendorsTableProps> = ({
       cell: ({ getValue }) => {
         return (
           <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
+            {map(getValue(), (value, index) => (
+              <Tag label={value} value key={index} />
             ))}
           </div>
         )

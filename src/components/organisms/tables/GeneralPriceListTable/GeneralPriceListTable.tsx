@@ -102,23 +102,20 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
       // language_direction will be an array of strings
       const { language_direction, ...rest } = filters || {}
       const typedLanguageDirection = language_direction as string[]
-      const newFilters: FilterFunctionType = {
+
+      const langPair = map(
+        typedLanguageDirection,
+        (languageDirectionString) => {
+          const [src, dst] = split(languageDirectionString, '>')
+          return { src, dst }
+        }
+      )
+
+      const newFilters = {
+        lang_pair: langPair,
         ...rest,
-        ...(language_direction
-          ? {
-              source_languages: map(
-                typedLanguageDirection,
-                (languageDirectionString) =>
-                  split(languageDirectionString, '-')[0]
-              ),
-              destination_languages: map(
-                typedLanguageDirection,
-                (languageDirectionString) =>
-                  split(languageDirectionString, '-')[0]
-              ),
-            }
-          : {}),
       }
+
       if (handleFilterChange) {
         handleFilterChange(newFilters)
       }
