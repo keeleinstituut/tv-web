@@ -33,7 +33,7 @@ const GeneralPriceList: FC<GeneralPriceListProps> = ({
     handlePaginationChange,
   } = useAllPricesFetch()
 
-  const [searchValue, setSearchValue] = useState<string>()
+  const [searchValue, setSearchValue] = useState<string>('')
 
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
