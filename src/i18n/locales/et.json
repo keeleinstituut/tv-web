@@ -43,7 +43,7 @@
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
-    "add_remove_vendor": "Lisa/eemalda toestajad",
+    "add_remove_vendor": "Lisa/eemalda teostajad",
     "view": "Vaata",
     "search": "Otsi",
     "updated": "UUENDATUD",
@@ -361,7 +361,8 @@
       "ACTIVE": "Aktiivne",
       "DEACTIVATED": "Deaktiveeritud",
       "ARCHIVED": "Arhiveeritud"
-    }
+    },
+    "account": "Minu andmed"
   },
   "users": {
     "add_users": "Kasutajate lisamine",
