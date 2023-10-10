@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import Container from 'components/atoms/Container/Container'
@@ -57,7 +57,7 @@ const Tags: FC = () => {
   const {
     control,
     handleSubmit,
-    formState: { isDirty },
+    formState: { isDirty, isSubmitSuccessful },
     reset,
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
@@ -109,12 +109,11 @@ const Tags: FC = () => {
           title: t('notification.announcement'),
           content: t('success.tag_added'),
         })
-        reset()
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
     },
-    [createTags, reset, t]
+    [createTags, t]
   )
 
   const isEditable = (type: TagTypes) => {
@@ -127,6 +126,9 @@ const Tags: FC = () => {
       includes(userPrivileges, Privileges.EditTag)
     )
   }
+  useEffect(() => {
+    reset({})
+  }, [isSubmitSuccessful, reset])
 
   if (isFetchingTags) {
     return <Loader loading />

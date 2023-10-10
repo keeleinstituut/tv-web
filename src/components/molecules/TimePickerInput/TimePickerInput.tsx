@@ -68,7 +68,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
           className={classNames(
             classes.timeInput,
             disabled && classes.disabledTimeInput,
-            error && classes.errorMessage
+            error && classes.error
           )}
           type="text"
           value={value ? value : ''}

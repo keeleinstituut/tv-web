@@ -1,6 +1,7 @@
 import { InstitutionType } from './institutions'
 import { Privileges } from './privileges'
 import { RolePayload } from './roles'
+import { Vendor } from './vendors'
 import {
   ResponseMetaTypes,
   PaginationFunctionType,
@@ -34,7 +35,7 @@ export interface UserType {
   updated_at?: string
   deactivation_date?: string
   archived_at?: string
-  department?: Department
+  department?: Department | null
   id: string
   // TODO: department type not clear yet, needs to be added here
   email?: string
@@ -43,6 +44,7 @@ export interface UserType {
   roles: RolePayload[]
   status: UserStatus
   user: UserDetailsType
+  vendor?: Vendor
 }
 
 export interface UserPostType {
@@ -71,6 +73,7 @@ export type UserPayloadType = PaginationFunctionType &
     // TODO: not sure if these fields will be called name and privileges or something else
     name?: string
     privileges?: Privileges[]
+    fullname?: string
   }
 
 export interface UsersDataType {
