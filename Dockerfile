@@ -36,7 +36,7 @@ set -e
 
 cd \$APP_ROOT
 echo "Creating production build"
-yarn build > /dev/null 2>&1
+yarn build
 echo "Finished production build"
 
 echo "Starting..."
