@@ -8,6 +8,7 @@
 
 .tag {
   border: 1px solid $color-border;
+  border-right: 0;
 
   &:last-child {
     border-top-right-radius: 4px;

@@ -6,6 +6,7 @@
   color: $color-input-main;
   font-weight: $font-weight-bold;
   padding: spacing(0.625) spacing(1);
+  margin-bottom: 8px;
 
   &.border {
     box-shadow: 1px 0 0 0 $color-background-dark;
