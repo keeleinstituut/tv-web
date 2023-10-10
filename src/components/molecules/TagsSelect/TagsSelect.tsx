@@ -45,6 +45,7 @@ const TagsSelect: FC<TagsSelectProps> = ({
         value={isEmpty(currentValue)}
         onChange={() => handleChange('all')}
         withBorder
+        className={classes.tag}
       />
       {map(compact(options), ({ label, value: optionValue }) => (
         <Tag
@@ -53,6 +54,7 @@ const TagsSelect: FC<TagsSelectProps> = ({
           key={optionValue}
           onChange={() => handleChange(optionValue)}
           withBorder
+          className={classes.tag}
         />
       ))}
     </div>
