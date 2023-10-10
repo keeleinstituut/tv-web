@@ -98,6 +98,10 @@ export const useUpdateInstitutionDiscounts = () => {
           return { data: newData }
         }
       )
+      queryClient.refetchQueries({
+        queryKey: ['institution-discounts'],
+        type: 'active',
+      })
     },
   })
   return {

@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
@@ -8,7 +8,7 @@ import { DiscountPercentages } from 'types/vendors'
 import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { map, join, includes, reduce } from 'lodash'
+import { map, join, includes } from 'lodash'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import {
@@ -22,21 +22,6 @@ const TechnicalSettings: FC = () => {
   const { institutionDiscounts } = useFetchInstitutionDiscounts()
   const { updateInstitutionDiscounts } = useUpdateInstitutionDiscounts()
 
-  const defaultValues = useMemo(
-    () =>
-      reduce(
-        institutionDiscounts,
-        (result, priceDiscount, key) => {
-          return {
-            ...result,
-            [key]: priceDiscount || '0',
-          }
-        },
-        {}
-      ),
-    [institutionDiscounts]
-  )
-
   const {
     control,
     handleSubmit,
@@ -45,7 +30,7 @@ const TechnicalSettings: FC = () => {
     setError,
   } = useForm<DiscountPercentages>({
     mode: 'onTouched',
-    defaultValues: defaultValues,
+    values: institutionDiscounts,
   })
 
   const onSubmit: SubmitHandler<DiscountPercentages> = useCallback(
