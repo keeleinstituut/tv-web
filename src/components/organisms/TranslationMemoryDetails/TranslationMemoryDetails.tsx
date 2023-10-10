@@ -46,12 +46,6 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
 
   const { lang_pair } = translationMemory || {}
 
-  console.log(
-    'translationMemory',
-    translationMemory,
-    isTmOwnedByUserInstitution
-  )
-
   const handleImportSegments = async (uploadedFile: File) => {
     const payload = {
       file: uploadedFile,
