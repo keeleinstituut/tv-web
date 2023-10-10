@@ -75,15 +75,11 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
 
   const handleExportFile = async () => {
     const langPair = split(lang_pair, '_')
-    console.log('langPair', langPair)
-
-    console.log('Export file')
     const payload = {
       slang: langPair[0],
       tlang: langPair[1],
       tag: memoryId,
     }
-
     try {
       await exportTMX(payload)
       showNotification({

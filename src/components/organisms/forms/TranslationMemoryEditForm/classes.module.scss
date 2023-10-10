@@ -5,18 +5,24 @@
   display: grid;
   grid-template-columns: max-content auto;
   grid-gap: spacing(25);
+
+  @media (max-width: $medium_large_desktop) {
+    grid-gap: spacing(0);
+  }
 }
 .memoryDetails {
   display: grid;
-  grid-template-columns: 150px auto;
+  grid-template-columns: 140px auto;
   grid-column-gap: spacing(10);
   justify-items: left;
   align-items: center;
   width: max-content;
   grid-row-gap: spacing(4);
+  height: max-content;
 }
 .labelClass {
   justify-self: end;
+  height: 24px;
 }
 
 .grayColor {
@@ -36,7 +42,6 @@
   font-weight: $font-weight-bold;
   padding: spacing(0.625) spacing(1);
   border-radius: 4px;
-  margin-bottom: spacing(4);
 }
 
 .deleteButton {
@@ -62,6 +67,10 @@
   justify-self: start;
   display: grid;
   grid-template-columns: 1fr 1fr;
+
+  @media (max-width: $medium_desktop) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .inputInternalPosition {

@@ -33,14 +33,11 @@ export const useFetchTranslationMemories = (
   const queryString = join(
     flatten(
       map(filterWithoutSearch, (values, key) =>
-        map(values, (value) => `${key}=${value}`)
+        map(values, (value) => (value !== 'all' ? `${key}=${value}` : ''))
       )
     ),
     '&'
   )
-
-  console.log('queryString', queryString, tmSearchValue)
-  console.log('Filters', filters)
   const { isLoading, isError, isFetching, data } =
     useQuery<TranslationMemoryDataType>({
       queryKey: ['translationMemories', filters],
@@ -51,8 +48,7 @@ export const useFetchTranslationMemories = (
         ),
       keepPreviousData: true,
     })
-
-  console.log('data', data)
+  //TODO: Pagination is not done from BE side. This comes later
 
   const {
     // meta: paginationData,

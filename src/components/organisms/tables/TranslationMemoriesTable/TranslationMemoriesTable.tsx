@@ -62,9 +62,12 @@ const TranslationMemoriesTable: FC = () => {
     type: ClassifierValueType.TranslationDomain,
   })
 
-  const { languageDirectionFilters, loadMore } = useLanguageDirections({
-    per_page: 40,
-  })
+  const { languageDirectionFilters, loadMore, handleSearch } =
+    useLanguageDirections({
+      per_page: 40,
+      isLangPair: true,
+    })
+
   const statusFilters = map(TMType, (status) => ({
     label: t(`translation_memories.status.${status}`),
     value: status,
@@ -76,7 +79,7 @@ const TranslationMemoriesTable: FC = () => {
       keepErrors: true,
     },
   })
-  const handleSearch = useCallback(
+  const handleSearchByName = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
       handleOnSearch({ name: event.target.value })
@@ -169,10 +172,9 @@ const TranslationMemoriesTable: FC = () => {
       size: 100,
       meta: {
         filterOption: { lang_pair: languageDirectionFilters },
-        // filterValue: [matchingLanguageString],
         onEndReached: loadMore,
-        // onSearch: handleSearch,
-        //showSearch: true,
+        onSearch: handleSearch,
+        showSearch: true,
       },
     }),
   ] as ColumnDef<TranslationMemoriesTableRow>[]
@@ -211,7 +213,7 @@ const TranslationMemoriesTable: FC = () => {
               ariaLabel={t('label.search')}
               placeholder={t('placeholder.search_by_tm_name')}
               value={searchValue}
-              onChange={handleSearch}
+              onChange={handleSearchByName}
               className={classes.searchInput}
               inputContainerClassName={classes.searchInnerContainer}
               isSearch
