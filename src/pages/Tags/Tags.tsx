@@ -117,6 +117,17 @@ const Tags: FC = () => {
     [createTags, reset, t]
   )
 
+  const isEditable = (type: TagTypes) => {
+    if (type === TagTypes.Skills) {
+      return false
+    }
+    return (
+      includes(userPrivileges, Privileges.DeleteTag) ||
+      includes(userPrivileges, Privileges.AddTag) ||
+      includes(userPrivileges, Privileges.EditTag)
+    )
+  }
+
   if (isFetchingTags) {
     return <Loader loading />
   }
@@ -157,13 +168,7 @@ const Tags: FC = () => {
             key={type}
             tagsList={tagsList}
             type={type}
-            isEditable={
-              type !== TagTypes.Skills
-                ? includes(userPrivileges, Privileges.DeleteTag) ||
-                  includes(userPrivileges, Privileges.AddTag) ||
-                  includes(userPrivileges, Privileges.EditTag)
-                : false
-            }
+            isEditable={isEditable(type)}
           />
         ))}
       </div>
