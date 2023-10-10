@@ -58,7 +58,6 @@ const VendorsDatabase: FC = () => {
         <Loader loading={isLoading && isEmpty(vendors)} />
         <VendorsTable
           data={vendors}
-          hidden={isEmpty(vendors)}
           {...{
             paginationData,
             handleFilterChange,

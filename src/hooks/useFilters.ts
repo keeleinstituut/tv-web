@@ -1,4 +1,4 @@
-import { keys, omit, isEqual } from 'lodash'
+import { keys, omit, isEqual, pickBy } from 'lodash'
 import { useCallback, useState } from 'react'
 import {
   FilterFunctionType,
@@ -25,7 +25,7 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
 
   const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {
-      setFilters({ ...filters, ...value })
+      setFilters(pickBy({ ...filters, ...value }, (val) => !!val))
     },
     [filters]
   )
