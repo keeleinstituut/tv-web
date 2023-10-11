@@ -68,6 +68,7 @@ export const useFetchTranslationMemories = (
 export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
   const { isLoading, isError, isFetching, data } =
     useQuery<TranslationMemoryType>({
+      enabled: !!id,
       queryKey: ['translationMemories', id],
       queryFn: () => apiClient.get(`${endpoints.TRANSLATION_MEMORIES}/${id}`),
     })

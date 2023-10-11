@@ -7,6 +7,8 @@ import { deepOmit } from 'helpers'
 import i18n from 'i18n/i18n'
 import { createBrowserRouter, RouteObject } from 'react-router-dom'
 import { Privileges } from 'types/privileges'
+import BreadcrumbsTitle from 'components/molecules/Breadcrumbs/BreadcrumbsTitle'
+import { BreadcrumbComponentType } from 'use-react-router-breadcrumbs'
 
 // import pages
 import Dashboard from 'pages/Dashboard/Dashboard'
@@ -50,12 +52,16 @@ import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 
-export type FullRouteObject = Omit<RouteObject, 'children'> & {
+export type FullRouteObject<ParamKey extends string = string> = Omit<
+  RouteObject,
+  'children'
+> & {
   label?: string
   Icon?: FC<SVGProps<SVGSVGElement>>
   children?: FullRouteObject[]
   isInterTitle?: boolean
   privileges?: Privileges[]
+  breadcrumb?: BreadcrumbComponentType<ParamKey> | string | null
 }
 
 export const protectedRoutes: FullRouteObject[] = [
@@ -83,11 +89,13 @@ export const protectedRoutes: FullRouteObject[] = [
             path: '',
             element: <Orders />,
             privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: i18n.t('orders.orders_tile'),
           },
           {
             path: 'new-order',
             element: <NewOrder />,
             privileges: [Privileges.CreateProject],
+            breadcrumb: i18n.t('orders.new_order_title'),
           },
         ],
       },
@@ -96,6 +104,7 @@ export const protectedRoutes: FullRouteObject[] = [
         label: i18n.t('menu.sub_orders'),
         element: <SubOrders />,
         privileges: [Privileges.ViewPersonalProject],
+        breadcrumb: i18n.t('orders.sub_orders_tile'),
       },
       {
         path: 'my-tasks',
@@ -106,6 +115,7 @@ export const protectedRoutes: FullRouteObject[] = [
             path: '',
             element: <MyTasks />,
             privileges: [Privileges.ViewPersonalTask],
+            breadcrumb: i18n.t('menu.my_tasks'),
           },
           {
             path: ':taskId',
@@ -118,6 +128,7 @@ export const protectedRoutes: FullRouteObject[] = [
         path: ':orderId',
         element: <OrderPage />,
         privileges: [Privileges.ViewPersonalProject],
+        breadcrumb: BreadcrumbsTitle,
       },
     ],
   },
@@ -131,11 +142,13 @@ export const protectedRoutes: FullRouteObject[] = [
         path: '',
         element: <VendorsDatabase />,
         privileges: [Privileges.ViewVendorDb],
+        breadcrumb: i18n.t('menu.vendors_database'),
       },
       {
         path: ':vendorId',
         element: <VendorPage />,
         privileges: [Privileges.EditVendorDb],
+        breadcrumb: BreadcrumbsTitle,
       },
       {
         path: 'price-list',
@@ -160,16 +173,19 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: '',
         element: <TranslationMemories />,
+        breadcrumb: i18n.t('menu.translation_memories'),
       },
       {
         path: 'new-memory',
         element: <NewTranslationMemory />,
         privileges: [Privileges.AddUser],
+        breadcrumb: i18n.t('translation_memories.new_translation_memory_title'),
       },
       {
         path: ':memoryId',
         element: <TranslationMemoryPage />,
         privileges: [Privileges.AddUser],
+        breadcrumb: BreadcrumbsTitle,
       },
     ],
   },
@@ -192,16 +208,19 @@ export const protectedRoutes: FullRouteObject[] = [
             path: '',
             element: <UsersManagement />,
             privileges: [Privileges.ViewUser],
+            breadcrumb: i18n.t('menu.user_management'),
           },
           {
             path: ':userId',
             element: <UserPage />,
             privileges: [Privileges.ViewUser],
+            breadcrumb: BreadcrumbsTitle,
           },
           {
             path: 'add',
             element: <AddUsersPage />,
             privileges: [Privileges.AddUser],
+            breadcrumb: i18n.t('users.add_users'),
           },
         ],
       },
@@ -259,7 +278,7 @@ export const protectedRoutes: FullRouteObject[] = [
   },
 ]
 
-const protectedRoutesForReactRouter: RouteObject[] = map(
+export const protectedRoutesForReactRouter: RouteObject[] = map(
   protectedRoutes,
   (route) => deepOmit<FullRouteObject, RouteObject>(route, ['label'])
 )
