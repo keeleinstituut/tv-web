@@ -24,6 +24,7 @@ import {
 import classes from './classes.module.scss'
 import { ClassifierValueType } from 'types/classifierValues'
 import { Vendor } from 'types/vendors'
+import { TagTypes } from 'types/tags'
 
 type VendorsTableProps = {
   data?: Vendor[]
@@ -45,7 +46,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
   const { t } = useTranslation()
 
   const { rolesFilters = [] } = useRolesFetch()
-  const { tagsFilters = [] } = useFetchTags()
+  const { tagsFilters = [] } = useFetchTags({ type: TagTypes.Vendor })
   const { classifierValuesFilters = [] } = useClassifierValuesFetch({
     type: ClassifierValueType.Language,
   }) // TODO: save them to local state when API available?
