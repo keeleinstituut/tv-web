@@ -39,10 +39,12 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
   helperText,
   handleCancel,
   size,
+  ...rest
 }) => {
   const { t } = useTranslation()
   return (
     <ModalBase
+      {...rest}
       title={title}
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}

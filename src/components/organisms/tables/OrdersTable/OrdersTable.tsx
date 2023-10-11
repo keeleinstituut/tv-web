@@ -39,7 +39,7 @@ type OrderTableRow = {
   type: string
   status: OrderStatus
   tags: string[]
-  cost: string
+  price: string
   language_directions: string[]
 }
 
@@ -86,7 +86,7 @@ const OrdersTable: FC = () => {
           type_classifier_value,
           status,
           tags,
-          cost,
+          price,
         }) => {
           return {
             ext_id,
@@ -95,7 +95,7 @@ const OrdersTable: FC = () => {
             type: type_classifier_value?.value || '',
             status,
             tags,
-            cost,
+            price,
             language_directions: uniq(
               map(
                 sub_projects,
@@ -199,7 +199,7 @@ const OrdersTable: FC = () => {
       footer: (info) => info.column.id,
       cell: ({ getValue }) => <OrderStatusTag status={getValue()} />,
     }),
-    columnHelper.accessor('cost', {
+    columnHelper.accessor('price', {
       header: () => t('label.cost'),
       footer: (info) => info.column.id,
       meta: {

@@ -1,17 +1,13 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import {
   map,
   includes,
-  filter,
-  toLower,
   some,
-  find,
   compact,
   isEmpty,
   split,
   join,
   toNumber,
-  reduce,
   debounce,
 } from 'lodash'
 import ModalBase, {
@@ -63,20 +59,20 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const initialFilters = {
     statuses: [UserStatus.Active],
   }
-  const { users, paginationData, handlePaginationChange, handleOnSearch } =
+  const { users, paginationData, handlePaginationChange, handleFilterChange } =
     useFetchUsers(initialFilters, true)
 
   const resetSearch = () => {
     setSearchValue('')
-    handleOnSearch({ fullname: '' })
+    handleFilterChange({ fullname: '' })
   }
 
   const handleSearch = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      handleOnSearch({ fullname: event.target.value })
+      debounce(handleFilterChange, 300)({ fullname: event.target.value })
     },
-    [handleOnSearch]
+    [handleFilterChange]
   )
 
   const usersData = useMemo(() => {

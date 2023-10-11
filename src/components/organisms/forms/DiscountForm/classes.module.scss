@@ -15,11 +15,12 @@
   }
 
   .discountHeader {
-    display: flex;
+    display: grid;
     padding: spacing(3);
-    justify-content: space-between;
+    grid-template-columns: 55% 45%;
+    margin-top: spacing(3);
     border-bottom: 1px solid $color-border-secondary;
-    color: $color-border-secondary
+    color: $color-border-secondary;
   }
 
   .formButtons {
@@ -42,5 +43,8 @@
 
   .inputContainer:last-of-type {
     border: 0;
+  }
+  .formButtons {
+    margin: spacing(4) spacing(4) 0 0;
   }
 }

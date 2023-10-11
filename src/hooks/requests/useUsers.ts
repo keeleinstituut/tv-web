@@ -27,7 +27,6 @@ export const useFetchUsers = (
 ) => {
   const {
     filters,
-    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
@@ -49,7 +48,6 @@ export const useFetchUsers = (
     isError,
     users,
     paginationData,
-    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
@@ -71,7 +69,11 @@ export const useFetchInfiniteProjectPerson = (
     useInfiniteQuery<UsersDataType>({
       queryKey: [personToFetch, filters],
       queryFn: ({ pageParam = 1 }) =>
-        apiClient.get(endpointToUse, { ...filters, page: pageParam, project_role: projectRoleFilter }),
+        apiClient.get(endpointToUse, {
+          ...filters,
+          page: pageParam,
+          project_role: projectRoleFilter,
+        }),
       getNextPageParam: (lastPage) => (lastPage.meta?.current_page || 0) + 1,
       keepPreviousData: true,
     })
@@ -94,6 +96,7 @@ export const useFetchInfiniteProjectPerson = (
 
 export const useFetchUser = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<UserDataType>({
+    enabled: !!id,
     queryKey: ['users', id],
     queryFn: () => apiClient.get(`${endpoints.USERS}/${id}`),
   })

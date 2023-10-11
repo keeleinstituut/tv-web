@@ -16,9 +16,11 @@ import {
 export const useLanguageDirections = ({
   per_page = 40,
   initialSelectedValues = [],
+  isLangPair = false,
 }: {
   per_page?: number
   initialSelectedValues?: string[]
+  isLangPair?: boolean
 }) => {
   const { classifierValuesFilters: languageFilters, isLoading } =
     useClassifierValuesFetch({
@@ -29,12 +31,12 @@ export const useLanguageDirections = ({
   const [searchString, handleSearch] = useState('')
   const [selectedValues, setSelectedValues] = useState(initialSelectedValues)
 
-  const allOptions = useMemo(() => {
+  const options = useMemo(() => {
     if (!isLoading) {
       return flatMap(languageFilters, ({ value, label }) =>
         map(languageFilters, ({ value: innerValue, label: innerLabel }) => ({
           label: `${label} > ${innerLabel}`,
-          value: `${value}>${innerValue}`,
+          value: `${value}_${innerValue}`,
         }))
       )
     }
@@ -42,6 +44,26 @@ export const useLanguageDirections = ({
     // We only need to wait for request to stop loading
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
+
+  const LangPairOptions = useMemo(() => {
+    if (!isLoading) {
+      return flatMap(languageFilters, ({ value, label }) =>
+        map(languageFilters, ({ value: innerValue, label: innerLabel }) => {
+          const shortLabel = label.match(/\[(.*?)-/)
+          const shortInner = innerLabel.match(/\[(.*?)-/)
+          return {
+            label: `${shortLabel?.[1]}_${shortInner?.[1]}`,
+            value: `${shortLabel?.[1]}_${shortInner?.[1]}`,
+          }
+        })
+      )
+    }
+    return []
+    // We only need to wait for request to stop loading
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading])
+
+  const allOptions = isLangPair ? LangPairOptions : options
 
   const searchRegexp = useMemo(() => {
     const escapedSearchString = toLower(searchString).replace(

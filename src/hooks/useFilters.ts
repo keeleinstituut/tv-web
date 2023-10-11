@@ -1,4 +1,4 @@
-import { keys, omit, isEqual } from 'lodash'
+import { keys, omit, isEqual, pickBy } from 'lodash'
 import { useCallback, useState } from 'react'
 import {
   FilterFunctionType,
@@ -10,22 +10,10 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
   const [filters, setFilters] = useState<TFilters | object>(
     initialFilters || {}
   )
-  const handleOnSearch = useCallback(
-    (value?: FilterFunctionType) => {
-      const sortingKeys = keys(value)
-      if (!value?.fullname) {
-        const filtersWithOutSorting = filters ? omit(filters, sortingKeys) : {}
-        setFilters({ ...filtersWithOutSorting })
-      } else {
-        setFilters({ ...filters, ...value })
-      }
-    },
-    [filters]
-  )
 
   const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {
-      setFilters({ ...filters, ...value })
+      setFilters(pickBy({ ...filters, ...value }, (val) => !!val))
     },
     [filters]
   )
@@ -56,7 +44,6 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
 
   return {
     filters,
-    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,

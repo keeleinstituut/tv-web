@@ -6,7 +6,7 @@
   color: $color-input-main;
   font-weight: $font-weight-bold;
   padding: spacing(0.625) spacing(1);
-
+  margin-bottom: 8px;
 
   &.border {
     box-shadow: 1px 0 0 0 $color-background-dark;
@@ -17,7 +17,7 @@
     background-color: $color-tag;
     border-radius: 4px;
     color: $color-primary;
-
+    z-index: 1;
 
     &.border {
       box-shadow: 0 0 0 1px $color-primary;
