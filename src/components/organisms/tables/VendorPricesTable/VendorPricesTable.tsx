@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control, useWatch } from 'react-hook-form'
+import { Control, useFormState } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import {
   FormInput,
@@ -13,7 +13,7 @@ import {
   FormValues,
   PriceObject,
 } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
-import { filter, map, size, values } from 'lodash'
+import { filter, size } from 'lodash'
 import useValidators from 'hooks/useValidators'
 
 import classes from './classes.module.scss'
@@ -43,17 +43,18 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     },
   }
 
+  const languageDirectionsPrices = useFormState({
+    control,
+  }).defaultValues
+
   const languageDirectionPrices =
-    useWatch({
-      control,
-      name: [languageDirectionKey][0],
-    }).priceObject || {}
+    languageDirectionsPrices?.[languageDirectionKey]?.priceObject
 
   const allSelectedPrices = filter(languageDirectionPrices, 'isSelected')
 
   const oneSkillPrices = filter(
     allSelectedPrices,
-    ({ skill_id }) => skill_id === skillId
+    (skill) => skill?.skill_id === skillId
   )
 
   const filteredData = skillId ? oneSkillPrices : allSelectedPrices
