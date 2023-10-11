@@ -105,7 +105,7 @@ export type DeletePricesPayload = {
 }
 export interface PricesData extends Price {
   vendor: Vendor
-  skill?: SkillsData
+  skill: SkillsData
 }
 
 export type UpdatedPrices = {
