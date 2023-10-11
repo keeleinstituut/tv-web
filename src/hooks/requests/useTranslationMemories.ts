@@ -13,7 +13,7 @@ import {
 } from 'types/translationMemories'
 import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
-import { map, flatten, join, omit } from 'lodash'
+import { map, flatten, join, omit, pick } from 'lodash'
 
 dayjs.extend(customParseFormat)
 
@@ -22,13 +22,12 @@ export const useFetchTranslationMemories = (
 ) => {
   const {
     filters,
-    tmSearchValue,
-    handleOnSearch,
     handleFilterChange,
     //handlePaginationChange,
   } = useFilters<TranslationMemoryPayload>(initialFilters)
 
   const filterWithoutSearch = omit(filters, 'name')
+  const searchValue = pick(filters, 'name')
 
   const queryString = join(
     flatten(
@@ -44,7 +43,7 @@ export const useFetchTranslationMemories = (
       queryFn: () =>
         apiClient.get(
           `${endpoints.TRANSLATION_MEMORIES}?${queryString}`,
-          tmSearchValue
+          searchValue
         ),
       keepPreviousData: true,
     })
@@ -61,7 +60,6 @@ export const useFetchTranslationMemories = (
     translationMemories,
     isFetching,
     // paginationData,
-    handleOnSearch,
     handleFilterChange,
     // handlePaginationChange,
   }

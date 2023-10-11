@@ -1,4 +1,4 @@
-import { keys, omit, isEqual, isEmpty, pickBy } from 'lodash'
+import { keys, omit, isEqual, pickBy } from 'lodash'
 import { useCallback, useState } from 'react'
 import {
   FilterFunctionType,
@@ -10,27 +10,10 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
   const [filters, setFilters] = useState<TFilters | object>(
     initialFilters || {}
   )
-  const [tmSearchValue, setTmSearchValue] = useState<TFilters | object>({})
-
-  const handleOnSearch = useCallback(
-    (value?: FilterFunctionType) => {
-      const emptyValues = pickBy(value, isEmpty)
-      const emptyKeys = keys(emptyValues)
-      if (!isEmpty(emptyKeys)) {
-        const filtersWithOutSearch = filters ? omit(filters, emptyKeys) : {}
-        setFilters({ ...filtersWithOutSearch })
-        setTmSearchValue({})
-      } else {
-        setFilters({ ...filters, ...value })
-        setTmSearchValue({ ...value })
-      }
-    },
-    [filters]
-  )
 
   const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {
-      setFilters({ ...filters, ...value })
+      setFilters(pickBy({ ...filters, ...value }, (val) => !!val))
     },
     [filters]
   )
@@ -61,8 +44,6 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
 
   return {
     filters,
-    tmSearchValue,
-    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,

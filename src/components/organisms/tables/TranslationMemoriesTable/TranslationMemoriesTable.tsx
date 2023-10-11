@@ -48,11 +48,8 @@ interface FormValues {
 const TranslationMemoriesTable: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const {
-    translationMemories = [],
-    handleFilterChange,
-    handleOnSearch,
-  } = useFetchTranslationMemories()
+  const { translationMemories = [], handleFilterChange } =
+    useFetchTranslationMemories()
   const [searchValue, setSearchValue] = useState<string>('')
   const { tagsFilters: tagsOptions } = useFetchTags({
     type: TagTypes.TranslationMemories,
@@ -82,9 +79,9 @@ const TranslationMemoriesTable: FC = () => {
   const handleSearchByName = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      handleOnSearch({ name: event.target.value })
+      handleFilterChange({ name: event.target.value })
     },
-    [handleOnSearch]
+    [handleFilterChange]
   )
 
   const [types] = watch(['types'])

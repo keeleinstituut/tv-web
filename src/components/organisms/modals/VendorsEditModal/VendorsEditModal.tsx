@@ -63,20 +63,20 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const initialFilters = {
     statuses: [UserStatus.Active],
   }
-  const { users, paginationData, handlePaginationChange, handleOnSearch } =
+  const { users, paginationData, handlePaginationChange, handleFilterChange } =
     useFetchUsers(initialFilters, true)
 
   const resetSearch = () => {
     setSearchValue('')
-    handleOnSearch({ fullname: '' })
+    handleFilterChange({ fullname: '' })
   }
 
   const handleSearch = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      handleOnSearch({ fullname: event.target.value })
+      handleFilterChange({ fullname: event.target.value })
     },
-    [handleOnSearch]
+    [handleFilterChange]
   )
 
   const usersData = useMemo(() => {
