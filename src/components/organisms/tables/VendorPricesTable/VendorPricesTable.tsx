@@ -13,7 +13,7 @@ import {
   FormValues,
   PriceObject,
 } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
-import { filter, size } from 'lodash'
+import { filter, map, size, values } from 'lodash'
 import useValidators from 'hooks/useValidators'
 
 import classes from './classes.module.scss'
@@ -43,15 +43,20 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     },
   }
 
-  const languageDirectionPrices = useWatch({ control })
+  const languageDirectionPrices =
+    useWatch({
+      control,
+      name: [languageDirectionKey][0],
+    }).priceObject || {}
 
-  const languageDirectionObject =
-    languageDirectionPrices[languageDirectionKey] || {}
+  const allSelectedPrices = filter(languageDirectionPrices, 'isSelected')
 
-  const filteredData = filter(
-    languageDirectionObject.priceObject,
-    skillId ? languageDirectionObject?.priceObject?.[skillId] : 'isSelected'
+  const oneSkillPrices = filter(
+    allSelectedPrices,
+    ({ skill_id }) => skill_id === skillId
   )
+
+  const filteredData = skillId ? oneSkillPrices : allSelectedPrices
 
   const numberOfRows = size(filteredData)
 
