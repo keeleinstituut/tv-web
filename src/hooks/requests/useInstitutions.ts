@@ -26,6 +26,7 @@ export const useInstitutionsFetch = () => {
 
 export const useInstitutionFetch = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<InstitutionDataType>({
+    enabled: !!id,
     queryKey: ['institutions', id],
     queryFn: () => apiClient.get(`${endpoints.INSTITUTIONS}/${id}`),
   })
