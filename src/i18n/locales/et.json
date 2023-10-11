@@ -200,6 +200,7 @@
     "download_analysis": "Laadi analüüs alla",
     "split_file": "Jaga fail tükkideks",
     "confirm": "Kinnita",
+    "confirm_changes": "Kinnita muudatused",
     "download_xliff": "Laadi alla XLIFF",
     "download_ready_translation": "Laadi alla valmis tõlge",
     "join_files": "Ühenda failid kokku",
@@ -226,7 +227,9 @@
     "tag_input_char_error": "Lubatud on tähed (a-z), numbrid (0-9), tühik ja sidekriips",
     "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina",
     "discount_number": "Soodustus võib olla vahemikus 0-100",
-    "cant_merge_files": "Teostajate vahel jagatud faile ei ole võimalik kokku liita"
+    "cant_merge_files": "Teostajate vahel jagatud faile ei ole võimalik kokku liita",
+    "name_input_length": "Nime maksimaalne pikkus võib olla kuni 100 tähemärki",
+    "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -432,7 +435,8 @@
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
-    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!"
+    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
+    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud"
   },
   "notification": {
     "announcement": "Teade",

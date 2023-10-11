@@ -27,6 +27,7 @@ export const endpoints = {
   TRANSLATION_MEMORIES: `${process.env.REACT_APP_TRANSLATION_MEMORY_API_BASE}tags`,
   IMPORT_TMX: `${process.env.REACT_APP_TRANSLATION_MEMORY_API_BASE}tm/import`,
   EXPORT_TMX: `${process.env.REACT_APP_TRANSLATION_MEMORY_API_BASE}tm/export`,
+  DISCOUNTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}institution-discounts`,
 }
 
 export const authEndpoints = {
