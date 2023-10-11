@@ -127,10 +127,9 @@ export interface ListSubOrderDetail {
   updated_at: string
   features: SubProjectFeatures[]
   project: ListOrder
-  // Not sure about the existence of following:
   status?: SubOrderStatus
   deadline_at: string
-  cost?: string
+  price?: string
 }
 
 export interface SubOrderDetail extends ListSubOrderDetail {
@@ -160,7 +159,7 @@ export interface ListOrder {
   sub_projects: ListSubOrderDetail[]
   status: OrderStatus
   tags: string[]
-  cost: string
+  price: string
 }
 
 export interface DetailedOrder extends ListOrder {
