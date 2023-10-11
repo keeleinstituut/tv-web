@@ -48,6 +48,7 @@ import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
+import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 
 export type FullRouteObject = Omit<RouteObject, 'children'> & {
   label?: string
@@ -135,6 +136,11 @@ export const protectedRoutes: FullRouteObject[] = [
         path: ':vendorId',
         element: <VendorPage />,
         privileges: [Privileges.EditVendorDb],
+      },
+      {
+        path: 'price-list',
+        element: <GeneralPriceList />,
+        privileges: [Privileges.ViewGeneralPricelist],
       },
     ],
   },
