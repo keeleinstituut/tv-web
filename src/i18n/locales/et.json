@@ -187,6 +187,7 @@
     "download_analysis": "Laadi analüüs alla",
     "split_file": "Jaga fail tükkideks",
     "confirm": "Kinnita",
+    "confirm_changes": "Kinnita muudatused",
     "download_xliff": "Laadi alla XLIFF",
     "download_ready_translation": "Laadi alla valmis tõlge",
     "join_files": "Ühenda failid kokku",
@@ -416,7 +417,8 @@
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
-    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!"
+    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
+    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud"
   },
   "notification": {
     "announcement": "Teade",
