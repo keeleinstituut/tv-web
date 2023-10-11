@@ -15,7 +15,12 @@ export interface ResponseMetaTypes {
   total: number
 }
 export interface FilterFunctionType {
-  [filterKey: string]: string | number | string[] | boolean
+  [filterKey: string]:
+    | string
+    | number
+    | string[]
+    | boolean
+    | { src: string; dst: string }[]
 }
 export interface SortingFunctionType {
   sort_order?: 'asc' | 'desc' | undefined

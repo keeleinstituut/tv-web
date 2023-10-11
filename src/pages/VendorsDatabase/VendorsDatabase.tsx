@@ -79,7 +79,6 @@ const VendorsDatabase: FC = () => {
         />
         <VendorsTable
           data={vendors}
-          hidden={isEmpty(vendors)}
           {...{
             paginationData,
             handleFilterChange,
