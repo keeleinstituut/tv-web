@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, includes, find } from 'lodash'
+import { map, includes, find, debounce } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -79,7 +79,7 @@ const TranslationMemoriesTable: FC = () => {
   const handleSearchByName = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      handleFilterChange({ name: event.target.value })
+      debounce(handleFilterChange, 300)({ fullname: event.target.value })
     },
     [handleFilterChange]
   )

@@ -1,17 +1,13 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import {
   map,
   includes,
-  filter,
-  toLower,
   some,
-  find,
   compact,
   isEmpty,
   split,
   join,
   toNumber,
-  reduce,
   debounce,
 } from 'lodash'
 import ModalBase, {
@@ -74,7 +70,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const handleSearch = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      handleFilterChange({ fullname: event.target.value })
+      debounce(handleFilterChange, 300)({ fullname: event.target.value })
     },
     [handleFilterChange]
   )
