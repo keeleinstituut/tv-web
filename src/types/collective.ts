@@ -14,6 +14,7 @@ export interface ResponseMetaTypes {
   to?: number
   total: number
 }
+
 export interface FilterFunctionType {
   [filterKey: string]:
     | string

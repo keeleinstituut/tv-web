@@ -53,6 +53,12 @@ const VendorsDatabase: FC = () => {
         >
           {t('label.add_remove_vendor')}
         </Button>
+        <Button
+          href="/vendors/price-list"
+          hidden={!includes(userPrivileges, Privileges.ViewGeneralPricelist)}
+        >
+          {t('label.view_general_price_list')}
+        </Button>
         {/* <Button
         appearance={AppearanceTypes.Secondary}
         className={classNames({

@@ -93,7 +93,10 @@
     "page_fee": "Lehekülg",
     "minute_fee": "Minut",
     "hour_fee": "Tund",
+    "view_general_price_list": "Vaata koondhinnakirja",
     "minimal_fee": "Minimaalne",
+    "min_fee": "Min tasu",
+    "search_by_name_here": "Otsi nime järgi siit...",
     "vendor_comments": "Teostaja märkused",
     "volume": "Maht",
     "pick_volume_type": "Vali mahu lisamise viis",
@@ -376,6 +379,7 @@
     "repetitions": "Kordused",
     "match_type": "Vaste tüüp",
     "percent_from_price": "% hinnast",
+    "price_list": "Koondhinnakiri",
     "vendor": "Teostaja"
   },
   "file": {
