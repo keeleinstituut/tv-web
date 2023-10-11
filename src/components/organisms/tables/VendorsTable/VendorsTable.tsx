@@ -22,6 +22,7 @@ import {
 } from 'types/collective'
 import classes from './classes.module.scss'
 import { Vendor } from 'types/vendors'
+import { TagTypes } from 'types/tags'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 
 type VendorsTableProps = {
@@ -44,7 +45,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
   const { t } = useTranslation()
 
   const { rolesFilters = [] } = useRolesFetch()
-  const { tagsFilters = [] } = useFetchTags()
+  const { tagsFilters = [] } = useFetchTags({ type: TagTypes.Vendor })
   const { languageDirectionFilters, loadMore, handleSearch } =
     useLanguageDirections({})
 
