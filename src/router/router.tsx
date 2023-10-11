@@ -173,16 +173,19 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: '',
         element: <TranslationMemories />,
+        breadcrumb: i18n.t('menu.translation_memories'),
       },
       {
         path: 'new-memory',
         element: <NewTranslationMemory />,
         privileges: [Privileges.AddUser],
+        breadcrumb: i18n.t('translation_memories.new_translation_memory_title'),
       },
       {
         path: ':memoryId',
         element: <TranslationMemoryPage />,
         privileges: [Privileges.AddUser],
+        breadcrumb: BreadcrumbsTitle,
       },
     ],
   },
