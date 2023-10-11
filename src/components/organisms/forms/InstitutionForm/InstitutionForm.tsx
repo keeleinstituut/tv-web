@@ -44,7 +44,7 @@ const InstitutionForm: FC<InstitutionPropTypes> = ({
   const { t } = useTranslation()
   const [isUpdatingData, setIsUpdatingData] = useState(false)
   const { userPrivileges } = useAuth()
-  const { emailValidator, phoneValidator } = useValidators()
+  const { emailValidator, phoneValidator, nameInputValidator } = useValidators()
   const { updateInstitution, isLoading } = useInstitutionUpdate({
     id,
   })
@@ -66,6 +66,7 @@ const InstitutionForm: FC<InstitutionPropTypes> = ({
     setError,
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
+    mode: 'onTouched',
     values: defaultValues,
   })
 
@@ -79,21 +80,24 @@ const InstitutionForm: FC<InstitutionPropTypes> = ({
       className: classNames(classes.inputInternalPosition, {
         [classes.updateInput]: isUpdatingData,
       }),
+      hasInputValueSize: true,
       rules: {
         required: true,
+        validate: nameInputValidator,
       },
     },
     {
       inputType: InputTypes.Text,
       ariaLabel: t('label.institution_short'),
-      label: t('label.institution_short'),
+      label: `${t('label.institution_short')}*`,
       disabled: !isUpdatingData,
       name: 'short_name',
       className: classNames(classes.inputInternalPosition, {
         [classes.updateInput]: isUpdatingData,
       }),
       rules: {
-        required: false,
+        required: true,
+        validate: nameInputValidator,
       },
     },
     {

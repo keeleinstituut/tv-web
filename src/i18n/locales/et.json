@@ -213,7 +213,9 @@
     "tag_input_char_error": "Lubatud on tähed (a-z), numbrid (0-9), tühik ja sidekriips",
     "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina",
     "discount_number": "Soodustus võib olla vahemikus 0-100",
-    "cant_merge_files": "Teostajate vahel jagatud faile ei ole võimalik kokku liita"
+    "cant_merge_files": "Teostajate vahel jagatud faile ei ole võimalik kokku liita",
+    "name_input_length": "Nime maksimaalne pikkus võib olla kuni 100 tähemärki",
+    "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
