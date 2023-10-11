@@ -16,6 +16,8 @@ import MyTasks from 'pages/MyTasks/MyTasks'
 import VendorsDatabase from 'pages/VendorsDatabase/VendorsDatabase'
 import VendorPage from 'pages/VendorPage/VendorPage'
 import TranslationMemories from 'pages/TranslationMemories/TranslationMemories'
+import TranslationMemoryPage from 'pages/TranslationMemoryPage/TranslationMemoryPage'
+import NewTranslationMemory from 'pages/NewTranslationMemory/NewTranslationMemory'
 import UsersManagement from 'pages/UsersManagement/UsersManagement'
 import AddUsersPage from 'pages/AddUsersPage/AddUsersPage'
 import UserPage from 'pages/UserPage/UserPage'
@@ -46,6 +48,7 @@ import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
+import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 
 export type FullRouteObject = Omit<RouteObject, 'children'> & {
   label?: string
@@ -134,14 +137,41 @@ export const protectedRoutes: FullRouteObject[] = [
         element: <VendorPage />,
         privileges: [Privileges.EditVendorDb],
       },
+      {
+        path: 'price-list',
+        element: <GeneralPriceList />,
+        privileges: [Privileges.ViewGeneralPricelist],
+      },
     ],
   },
   {
     path: 'memories',
     label: i18n.t('menu.translation_memories'),
-    element: <TranslationMemories />,
     Icon: MemoriesIcon,
-    privileges: [Privileges.ViewTm],
+    privileges: [
+      Privileges.CreateTm,
+      Privileges.ViewTm,
+      Privileges.ImportTm,
+      Privileges.ExportTm,
+      Privileges.EditTmMetadata,
+      Privileges.DeleteTm,
+    ],
+    children: [
+      {
+        path: '',
+        element: <TranslationMemories />,
+      },
+      {
+        path: 'new-memory',
+        element: <NewTranslationMemory />,
+        privileges: [Privileges.AddUser],
+      },
+      {
+        path: ':memoryId',
+        element: <TranslationMemoryPage />,
+        privileges: [Privileges.AddUser],
+      },
+    ],
   },
   {
     path: 'user-details',
@@ -217,6 +247,7 @@ export const protectedRoutes: FullRouteObject[] = [
         label: i18n.t('menu.technical_settings'),
         element: <TechnicalSettings />,
         Icon: TechnicalIcon,
+        privileges: [Privileges.ViewInstitutionPriceRate],
       },
     ],
   },

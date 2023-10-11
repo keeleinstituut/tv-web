@@ -40,10 +40,11 @@
     "type": "Tüüp",
     "tags": "Sildid",
     "order_tags": "Tellimuse sildid",
+    "vendor_tags": "Teostaja sildid",
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
-    "add_remove_vendor": "Lisa/eemalda toestajad",
+    "add_remove_vendor": "Lisa/eemalda teostajad",
     "view": "Vaata",
     "search": "Otsi",
     "updated": "UUENDATUD",
@@ -60,10 +61,12 @@
     "file_type": "Failitüüp",
     "added": "Lisatud",
     "sub_order_id": "Alamtellimuse ID",
+    "related_suborders": "Seotud alamtellimused",
     "associated_reference_number": "Seotud viide",
     "comment": "Kommentaar",
     "cancelled_at": "Tühistamise aeg",
     "created_at": "Loomise aeg",
+    "created": "Loodud",
     "rejected_at": "Tühistamise aeg",
     "corrected_at": "Korrektuuride tegemise aeg",
     "accepted_at": "Vastuvõtmise aeg",
@@ -79,6 +82,7 @@
     "chunks": "Segmendid",
     "match_type": "Vaste tüüp",
     "cat_split_amount": "Tükkide arv",
+    "usage": "Kasutus",
     "translation_tool": "Tõlke tööriist",
     "machine_translation": "Masintõlge",
     "yes": "Jah",
@@ -92,7 +96,10 @@
     "page_fee": "Lehekülg",
     "minute_fee": "Minut",
     "hour_fee": "Tund",
+    "view_general_price_list": "Vaata koondhinnakirja",
     "minimal_fee": "Minimaalne",
+    "min_fee": "Min tasu",
+    "search_by_name_here": "Otsi nime järgi siit...",
     "vendor_comments": "Teostaja märkused",
     "volume": "Maht",
     "pick_volume_type": "Vali mahu lisamise viis",
@@ -108,7 +115,11 @@
     "enter_discount_percentage": "Sisesta allahindluse protsent",
     "total": "Kokku",
     "assign_source_file": "Määra lähtefail",
-    "search_by_id": "Otsi tellimuse ID siit..."
+    "search_by_id": "Otsi tellimuse ID siit...",
+    "last_imported": "Viimati imporditud",
+    "chunk_amount_old": "Segmentide arv",
+    "id": "ID",
+    "owner": "Omanik"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -121,6 +132,7 @@
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
     "search_by_name": "Otsi nime järgi siit...",
+    "search_by_tm_name": "Otsi mälu nimetuse järgi siit...",
     "pick": "Vali",
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
@@ -172,8 +184,13 @@
     "add_file": "Lisa fail",
     "submit_order": "Esita tellimus",
     "delete": "Kustuta",
-    "add_new_file": "Lisa uus fail",
     "edit": "Redigeeri",
+    "add_translation_memory": "Lisa tõlkemälu",
+    "create_translation_memory": "Loo tõlkemälu",
+    "export": "Ekspordi",
+    "import_tmx": "Impordi .tmx",
+    "delete_translation_memory": "Kustuta tõlkemälu",
+    "add_new_file": "Lisa uus fail",
     "generate_for_translation": "Genereeri tõlkimiseks",
     "create_empty_tm": "Loo tühimälu",
     "add_tm": "Lisa tõlkemälud",
@@ -183,6 +200,7 @@
     "download_analysis": "Laadi analüüs alla",
     "split_file": "Jaga fail tükkideks",
     "confirm": "Kinnita",
+    "confirm_changes": "Kinnita muudatused",
     "download_xliff": "Laadi alla XLIFF",
     "download_ready_translation": "Laadi alla valmis tõlge",
     "join_files": "Ühenda failid kokku",
@@ -209,7 +227,9 @@
     "tag_input_char_error": "Lubatud on tähed (a-z), numbrid (0-9), tühik ja sidekriips",
     "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina",
     "discount_number": "Soodustus võib olla vahemikus 0-100",
-    "cant_merge_files": "Teostajate vahel jagatud faile ei ole võimalik kokku liita"
+    "cant_merge_files": "Teostajate vahel jagatud faile ei ole võimalik kokku liita",
+    "name_input_length": "Nime maksimaalne pikkus võib olla kuni 100 tähemärki",
+    "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -375,6 +395,7 @@
     "repetitions": "Kordused",
     "match_type": "Vaste tüüp",
     "percent_from_price": "% hinnast",
+    "price_list": "Koondhinnakiri",
     "vendor": "Teostaja"
   },
   "file": {
@@ -401,6 +422,11 @@
     "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
     "order_updated": "Tellimus on edukalt uuendatud",
+    "translation_memory_created": "Tõlkemälu on edukalt lisatud",
+    "translation_memory_updated": "Tõlkemälu on edukalt uuendatud",
+    "translation_memory_import": "Tõlkemälu on edukalt üles laetud",
+    "translation_memory_export": "Tõlkemälu on edukalt alla laetud",
+    "translation_memory_deleted": "Tõlkemälu on edukalt kustutatud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
@@ -409,7 +435,8 @@
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
-    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!"
+    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
+    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud"
   },
   "notification": {
     "announcement": "Teade",
@@ -419,7 +446,10 @@
     "main_user_privilege_change": "Peakasutaja privileege ei saa muuta",
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
     "warning": "Hoiatus",
-    "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida"
+    "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida",
+    "tm_import_failed": "Tõlkemälu segmendi üleslaadimine ebaõnnestus",
+    "tm_export_failed": "Tõlkemälu segmendi allalaadimine ebaõnnestus",
+    "tm_delete_failed": "Tõlkemälu kustutamine ebaõnnestus"
   },
   "helper": {
     "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga.",
@@ -529,6 +559,21 @@
     "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja",
     "no_changes_made": "Andmetes puuduvad muudatused",
     "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobiva(d) teostaja(d) valinud."
+  },
+  "translation_memories": {
+    "memory_title": "Mälu nimetus",
+    "memory_name": "Mälu nimi",
+    "memory_details": "Tõlkemälu andmed",
+    "new_translation_memory_title": "Tõlkemälu loomine",
+    "helper_text": "Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.",
+    "confirmation_text": "Kas oled kindel, et soovid tõlkemälu muuta avalikuks?",
+    "confirmation_help_text": "Kui otsustad määrata tõlkemälu kasutamise tüübiks 'Avalik' või 'Asutuse üleseks jagamiseks', siis seda mälu ja selles olevaid tõlkesegmente näevad ja saavad tõlkimisel kasutad ka asutusevälised kasutajad.",
+    "delete_confirmation_text": "Kas oled kindel, et soovid tõlkemälu kustutada?",
+    "status": {
+      "private": "Asutuse sisene",
+      "shared": "Asutustega jagamiseks",
+      "public": "Avalik"
+    }
   },
   "task": {
     "vendor_title": "Teostaja {{number}}",
