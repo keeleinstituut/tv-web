@@ -1,8 +1,7 @@
-import { FC, useMemo } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useFetchTags } from 'hooks/requests/useTags'
-import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -12,7 +11,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import { map, join, compact } from 'lodash'
+import { map, join, compact, split } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
@@ -22,8 +21,9 @@ import {
   PaginationFunctionType,
 } from 'types/collective'
 import classes from './classes.module.scss'
-import { ClassifierValueType } from 'types/classifierValues'
 import { Vendor } from 'types/vendors'
+import { TagTypes } from 'types/tags'
+import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 
 type VendorsTableProps = {
   data?: Vendor[]
@@ -45,10 +45,9 @@ const VendorsTable: FC<VendorsTableProps> = ({
   const { t } = useTranslation()
 
   const { rolesFilters = [] } = useRolesFetch()
-  const { tagsFilters = [] } = useFetchTags()
-  const { classifierValuesFilters = [] } = useClassifierValuesFetch({
-    type: ClassifierValueType.Language,
-  }) // TODO: save them to local state when API available?
+  const { tagsFilters = [] } = useFetchTags({ type: TagTypes.Vendor })
+  const { languageDirectionFilters, loadMore, handleSearch } =
+    useLanguageDirections({})
 
   type OrderTableRow = {
     id?: string
@@ -97,21 +96,50 @@ const VendorsTable: FC<VendorsTableProps> = ({
     )
   }, [data])
 
+  const handleModifiedFilterChange = useCallback(
+    (filters?: FilterFunctionType) => {
+      // language_direction will be an array of strings
+      const { language_direction, ...rest } = filters || {}
+      const typedLanguageDirection = language_direction as string[]
+
+      const langPair = map(
+        typedLanguageDirection,
+        (languageDirectionString) => {
+          const [src, dst] = split(languageDirectionString, '>')
+          return { src, dst }
+        }
+      )
+
+      const newFilters = {
+        lang_pair: langPair,
+        ...rest,
+      }
+
+      if (handleFilterChange) {
+        handleFilterChange(newFilters)
+      }
+    },
+    [handleFilterChange]
+  )
+
   const columns = [
     columnHelper.accessor('languageDirections', {
       header: () => t('label.language_directions'),
       cell: ({ getValue }) => {
         return (
-          <div className={classes.languageRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
+          <div className={classes.tagsRow}>
+            {map(getValue(), (value, index) => (
+              <Tag label={value} value key={index} />
             ))}
           </div>
         )
       },
       footer: (info) => info.column.id,
       meta: {
-        sortingOption: ['asc', 'desc'], // TODO: when API available
+        filterOption: { language_direction: languageDirectionFilters },
+        onEndReached: loadMore,
+        onSearch: handleSearch,
+        showSearch: true,
       },
     }),
     columnHelper.accessor('roles', {
@@ -126,19 +154,13 @@ const VendorsTable: FC<VendorsTableProps> = ({
     columnHelper.accessor('name', {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
-      meta: {
-        sortingOption: ['asc', 'desc'],
-      },
     }),
     columnHelper.accessor('companyName', {
       header: () => t('label.company_name'),
       footer: (info) => info.column.id,
-      meta: {
-        sortingOption: ['asc', 'desc'],
-      },
     }),
     columnHelper.accessor('tags', {
-      header: () => t('label.order_tags'),
+      header: () => t('label.vendor_tags'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         return (
@@ -168,7 +190,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
         </Button>
       ),
     }),
-  ] as ColumnDef<OrderTableRow>[] // Seems like an package issue https://github.com/TanStack/table/issues/4382
+  ] as ColumnDef<OrderTableRow>[]
 
   if (hidden) return null
 
@@ -179,7 +201,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
       tableSize={TableSizeTypes.M}
       paginationData={paginationData}
       onPaginationChange={handlePaginationChange}
-      onFiltersChange={handleFilterChange}
+      onFiltersChange={handleModifiedFilterChange}
       onSortingChange={handleSortingChange}
     />
   )

@@ -40,6 +40,7 @@
     "type": "Tüüp",
     "tags": "Sildid",
     "order_tags": "Tellimuse sildid",
+    "vendor_tags": "Teostaja sildid",
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
@@ -92,7 +93,10 @@
     "page_fee": "Lehekülg",
     "minute_fee": "Minut",
     "hour_fee": "Tund",
+    "view_general_price_list": "Vaata koondhinnakirja",
     "minimal_fee": "Minimaalne",
+    "min_fee": "Min tasu",
+    "search_by_name_here": "Otsi nime järgi siit...",
     "vendor_comments": "Teostaja märkused",
     "volume": "Maht",
     "pick_volume_type": "Vali mahu lisamise viis",
@@ -405,6 +409,7 @@
     "price_list_updated_at": "Hinnakirja andmeid muudetud {{priceListUpdated}}",
     "price_list_change": "Hinnakirja muutmine",
     "price_list_change_description": "Määra oskusele ühikupõhised hinnad. Juhul, kui mõnda arvestusühikut selle teostaja puhul ei kasutata või puudub kokkulepitud hind, siis võib jätta selle ühiku hinnaks nulli.",
+    "price_list": "Koondhinnakiri",
     "vendor": "Teostaja"
   },
   "file": {
