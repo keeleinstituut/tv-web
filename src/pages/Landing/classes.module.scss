@@ -8,7 +8,11 @@
   align-items: center;
   background-color: $color-white;
 
-  @media (max-width: $tablet) {
+  @media (max-width: $small_desktop) {
+    padding: 0 spacing(16);
+  }
+
+  @media (max-width: $mobile) {
     padding: 0 spacing(4);
   }
 }
