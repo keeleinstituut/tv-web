@@ -1,24 +1,25 @@
 import { FC } from 'react'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
-import { useTranslation } from 'react-i18next'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import TranslationMemoryDetails from 'components/organisms/TranslationMemoryDetails/TranslationMemoryDetails'
 import TranslationMemorySubOrdersTable from 'components/organisms/tables/TranslationMemorySubOrdersTable/TranslationMemorySubOrdersTable'
 import { useFetchTranslationMemory } from 'hooks/requests/useTranslationMemories'
 import useAuth from 'hooks/useAuth'
+import Loader from 'components/atoms/Loader/Loader'
 
 const TranslationMemoryPage: FC = () => {
-  const { t } = useTranslation()
   const { memoryId = '' } = useParams()
   const { userInfo } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
-  const { translationMemory } = useFetchTranslationMemory({ id: memoryId })
+  const { translationMemory, isLoading } = useFetchTranslationMemory({
+    id: memoryId,
+  })
 
   const isTmOwnedByUserInstitution =
     selectedInstitution?.id === translationMemory?.institution_id
 
-  // if (isLoading) return <Loader loading={isLoading} />
+  if (isLoading) return <Loader loading={isLoading} />
 
   return (
     <>
@@ -31,7 +32,10 @@ const TranslationMemoryPage: FC = () => {
         memoryId={memoryId}
         isTmOwnedByUserInstitution={isTmOwnedByUserInstitution}
       />
-      {/* <TranslationMemorySubOrdersTable hidden={!isTmOwnedByUserInstitution} /> */}
+      <TranslationMemorySubOrdersTable
+        memoryId={memoryId}
+        hidden={!isTmOwnedByUserInstitution}
+      />
     </>
   )
 }

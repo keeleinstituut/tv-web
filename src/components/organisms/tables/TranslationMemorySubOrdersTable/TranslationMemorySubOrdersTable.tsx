@@ -1,20 +1,16 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { Root } from '@radix-ui/react-form'
-import { map, includes } from 'lodash'
+import { map } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
-import classNames from 'classnames'
 import classes from './classes.module.scss'
 
 import { useFetchSubOrders } from 'hooks/requests/useOrders'
 import { SubOrderStatus } from 'types/orders'
-
 import dayjs from 'dayjs'
-import { Privileges } from 'types/privileges'
-import useAuth from 'hooks/useAuth'
 
 type SubOrderTableRow = {
   id: string
@@ -23,11 +19,18 @@ type SubOrderTableRow = {
 }
 
 const columnHelper = createColumnHelper<SubOrderTableRow>()
+interface TmSubOrdersTypes {
+  hidden: boolean
+  memoryId: string
+}
 
-const TranslationMemorySubOrdersTable: FC = () => {
+const TranslationMemorySubOrdersTable: FC<TmSubOrdersTypes> = ({
+  hidden,
+  memoryId,
+}) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
 
+  //TODO: add correct endpoint if BE is ready
   const { subOrders, paginationData, handlePaginationChange } =
     useFetchSubOrders()
 
@@ -75,6 +78,8 @@ const TranslationMemorySubOrdersTable: FC = () => {
     }),
   ] as ColumnDef<SubOrderTableRow>[]
 
+  if (hidden) return null
+
   return (
     <Root>
       <DataTable
@@ -82,7 +87,7 @@ const TranslationMemorySubOrdersTable: FC = () => {
         columns={columns}
         tableSize={TableSizeTypes.M}
         title={t('label.related_suborders')}
-        // paginationData={paginationData}
+        paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
         className={classes.subOrderContainer}
       />
