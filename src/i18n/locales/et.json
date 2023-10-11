@@ -61,7 +61,7 @@
     "file_type": "Failitüüp",
     "added": "Lisatud",
     "sub_order_id": "Alamtellimuse ID",
-    "related_suborders": "Seotud alamtellimuse",
+    "related_suborders": "Seotud alamtellimused",
     "associated_reference_number": "Seotud viide",
     "comment": "Kommentaar",
     "cancelled_at": "Tühistamise aeg",
