@@ -168,6 +168,7 @@ export const useAllPricesFetch = (initialFilters?: GetPricesPayload) => {
   const { isLoading, isError, data } = useQuery<PricesDataType>({
     queryKey: ['allPrices', filters],
     queryFn: () => apiClient.get(endpoints.PRICES, filters),
+    keepPreviousData: true,
   })
 
   const { meta: paginationData, data: prices } = data || {}

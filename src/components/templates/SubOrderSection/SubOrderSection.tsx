@@ -49,14 +49,14 @@ const Column: FC<PropsWithChildren<ColumnProps>> = ({ label, children }) => (
 interface LeftComponentProps {
   languageDirection?: string
   ext_id: string
-  cost?: string
+  price?: string
   deadline_at?: string
 }
 
 const LeftComponent: FC<LeftComponentProps> = ({
   languageDirection,
   ext_id,
-  cost,
+  price,
   deadline_at,
 }) => {
   const { t } = useTranslation()
@@ -69,7 +69,7 @@ const LeftComponent: FC<LeftComponentProps> = ({
         <span className={classes.valueText}>{ext_id}</span>
       </Column>
       <Column label={t('label.cost')}>
-        <span className={classes.boldValueText}>{cost || '-'}</span>
+        <span className={classes.boldValueText}>{price || '-'}</span>
       </Column>
       <Column label={t('label.deadline_at')}>
         <span className={classes.valueText}>
@@ -86,7 +86,7 @@ type SubOrderProps = Pick<
   | 'ext_id'
   | 'source_language_classifier_value'
   | 'destination_language_classifier_value'
-  | 'cost'
+  | 'price'
   | 'status'
   | 'deadline_at'
 > & {
@@ -98,7 +98,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
   ext_id,
   source_language_classifier_value,
   destination_language_classifier_value,
-  cost,
+  price,
   status,
   projectDeadline,
   deadline_at,
@@ -237,7 +237,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
         </>
       }
       leftComponent={
-        <LeftComponent {...{ ext_id, deadline_at, cost, languageDirection }} />
+        <LeftComponent {...{ ext_id, deadline_at, price, languageDirection }} />
       }
     >
       <Tabs

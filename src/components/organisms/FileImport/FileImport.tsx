@@ -35,6 +35,7 @@ export enum InputFileTypes {
   Html = 'text/html',
   Xml = 'application/xml',
   TextXml = 'text/xml',
+  Tmx = 'application/xml',
   Other = 'application/octet-stream',
 }
 
@@ -82,6 +83,7 @@ export const acceptFileExtensions = {
   [InputFileTypes.Html]: ['.html', '.htm'],
   [InputFileTypes.Xml]: ['.xml'],
   [InputFileTypes.TextXml]: ['.xml'],
+  [InputFileTypes.Tmx]: ['.tmx'],
   [InputFileTypes.Other]: ['.akt', '.xst'],
 }
 
@@ -156,6 +158,7 @@ interface SharedImportProps {
   className?: string
   files?: File[]
   hidden?: boolean
+  size?: SizeTypes
 }
 
 type SingleSelectProps = {
@@ -184,6 +187,7 @@ const FileImport: FC<FileImportProps> = ({
   className,
   files,
   hidden,
+  size,
   ...rest
 }) => {
   const [localFiles, setFiles] = useState<File[]>(files || [])
@@ -262,7 +266,7 @@ const FileImport: FC<FileImportProps> = ({
       <Button
         onClick={toggleDragAndDrop}
         icon={!localFiles?.length || isFilesListHidden ? Attach : undefined}
-        size={SizeTypes.M}
+        size={size || SizeTypes.M}
         ariaLabel={t('label.attach_file')}
         iconPositioning={IconPositioningTypes.Right}
         appearance={

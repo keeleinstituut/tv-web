@@ -1,10 +1,10 @@
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useDownloadUsers, useFetchUsers } from 'hooks/requests/useUsers'
 import { useTranslation } from 'react-i18next'
-import { FC } from 'react'
+import { FC, useCallback, useState } from 'react'
 import AddedUsersTable from 'components/organisms/tables/AddedUsersTable/AddedUsersTable'
 import classes from './classes.module.scss'
-import { isEmpty, includes } from 'lodash'
+import { isEmpty, includes, debounce } from 'lodash'
 import classNames from 'classnames'
 import { Root } from '@radix-ui/react-form'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
@@ -12,6 +12,7 @@ import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import { UserStatus } from 'types/users'
 import Loader from 'components/atoms/Loader/Loader'
+import TextInput from 'components/molecules/TextInput/TextInput'
 
 const UsersManagement: FC = () => {
   const initialFilters = {
@@ -32,6 +33,16 @@ const UsersManagement: FC = () => {
   const handleDownloadFile = () => {
     downloadCSV()
   }
+
+  const [searchValue, setSearchValue] = useState<string>('')
+
+  const handleSearchUsers = useCallback(
+    (event: { target: { value: string } }) => {
+      setSearchValue(event.target.value)
+      debounce(handleFilterChange, 300)({ fullname: event.target.value })
+    },
+    [handleFilterChange]
+  )
 
   return (
     <>
@@ -61,6 +72,16 @@ const UsersManagement: FC = () => {
       </div>
       {/* TODO: remove this form root wrapper, once we refactor CheckBox */}
       <Root>
+        <TextInput
+          name={'search'}
+          ariaLabel={t('placeholder.search_by_name')}
+          placeholder={t('placeholder.search_by_name')}
+          value={searchValue}
+          onChange={handleSearchUsers}
+          className={classes.searchInput}
+          inputContainerClassName={classes.generalUsersListInput}
+          isSearch
+        />
         <Loader loading={isUsersLoading && isEmpty(users)} />
         <AddedUsersTable
           data={users}

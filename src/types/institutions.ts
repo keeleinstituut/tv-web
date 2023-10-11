@@ -1,3 +1,5 @@
+import { DiscountPercentages } from './vendors'
+
 export interface InstitutionType {
   created_at?: string
   updated_at?: string
@@ -61,4 +63,8 @@ export enum DayTypes {
   friday = 'friday',
   saturday = 'saturday',
   sunday = 'sunday',
+}
+
+export interface InstitutionDiscountsDataType {
+  data: DiscountPercentages
 }

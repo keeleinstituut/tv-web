@@ -38,7 +38,7 @@ type SubOrderTableRow = {
   deadline_at: string
   type: string
   status?: SubOrderStatus
-  cost?: string
+  price?: string
   language_directions: string[]
 }
 
@@ -79,7 +79,7 @@ const SubOrdersTable: FC = () => {
           destination_language_classifier_value,
           status,
           project,
-          cost,
+          price,
         }) => {
           return {
             ext_id,
@@ -87,7 +87,7 @@ const SubOrdersTable: FC = () => {
             deadline_at,
             type: project?.type_classifier_value?.value || '',
             status,
-            cost,
+            price,
             language_directions: [
               `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
             ],
@@ -168,7 +168,7 @@ const SubOrdersTable: FC = () => {
       footer: (info) => info.column.id,
       cell: ({ getValue }) => <OrderStatusTag status={getValue()} />,
     }),
-    columnHelper.accessor('cost', {
+    columnHelper.accessor('price', {
       header: () => t('label.cost'),
       footer: (info) => info.column.id,
       meta: {
