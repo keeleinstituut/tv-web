@@ -19,6 +19,7 @@
   border-bottom-left-radius: $border-radius-5;
   position: relative;
   white-space: nowrap;
+  cursor: pointer;
 
   .stepNumber {
     color: $color-input-main;

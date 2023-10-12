@@ -99,6 +99,7 @@ const Tags: FC = () => {
       },
       className: classes.tagInputField,
       disabled: !includes(userPrivileges, Privileges.AddTag),
+      hideTags: true,
     },
   ]
 
