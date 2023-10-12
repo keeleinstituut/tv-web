@@ -1,0 +1,36 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.breadcrumbs {
+  display: flex;
+  margin-top: $header-height;
+  padding: spacing(3) spacing(6);
+
+  .nav {
+    display: flex;
+    align-items: center;
+
+    a {
+      @include subtitleSmallTextStyle;
+    }
+
+    .active {
+      color: $color-input-main;
+    }
+
+    .notActive {
+      color: $color-primary;
+    }
+
+    .arrow {
+      margin: 0 spacing(2);
+
+      g path {
+        fill: $color-input-main;
+      }
+    }
+    .hidden {
+      display: none;
+    }
+  }
+}

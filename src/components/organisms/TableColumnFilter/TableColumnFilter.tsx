@@ -68,11 +68,11 @@ const TableColumnFilter = ({
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         className={classes.dropDown}
+        showSearch={showSearch}
         wrapperRef={wrapperRef}
         clickAwayInputRef={dropdownRef}
         onEndReached={onEndReached}
         onSearch={onSearch}
-        showSearch={showSearch}
         usePortal
       />
     </div>

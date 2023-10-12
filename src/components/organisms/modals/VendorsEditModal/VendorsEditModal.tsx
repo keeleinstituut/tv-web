@@ -8,6 +8,7 @@ import {
   split,
   join,
   toNumber,
+  debounce,
 } from 'lodash'
 import ModalBase, {
   ButtonPositionTypes,
@@ -58,20 +59,20 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const initialFilters = {
     statuses: [UserStatus.Active],
   }
-  const { users, paginationData, handlePaginationChange, handleOnSearch } =
+  const { users, paginationData, handlePaginationChange, handleFilterChange } =
     useFetchUsers(initialFilters, true)
 
   const resetSearch = () => {
     setSearchValue('')
-    handleOnSearch({ fullname: '' })
+    handleFilterChange({ fullname: '' })
   }
 
   const handleSearch = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      handleOnSearch({ fullname: event.target.value })
+      debounce(handleFilterChange, 300)({ fullname: event.target.value })
     },
-    [handleOnSearch]
+    [handleFilterChange]
   )
 
   const usersData = useMemo(() => {
