@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control, useWatch } from 'react-hook-form'
+import { Control, UseFormGetValues } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import {
   FormInput,
@@ -22,12 +22,14 @@ type VendorPricesTableProps = {
   control: Control<FormValues>
   languageDirectionKey: string
   skillId?: string
+  getValues: UseFormGetValues<FormValues>
 }
 
 const VendorPricesTable: FC<VendorPricesTableProps> = ({
   control,
   languageDirectionKey,
   skillId,
+  getValues,
 }) => {
   const { t } = useTranslation()
 
@@ -43,11 +45,9 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     },
   }
 
-  const languageDirectionPrices =
-    useWatch({
-      control,
-      name: [languageDirectionKey][0],
-    }).priceObject || {}
+  const languageDirectionPrices = getValues(
+    [languageDirectionKey][0]
+  ).priceObject
 
   const allSelectedPrices = filter(languageDirectionPrices, 'isSelected')
 

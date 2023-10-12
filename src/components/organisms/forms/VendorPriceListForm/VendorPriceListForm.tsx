@@ -218,10 +218,11 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     },
   }
 
-  const { handleSubmit, control, reset, setError } = useForm<FormValues>({
-    values: { ...defaultFormValues, ...newPriceObject },
-    mode: 'onTouched',
-  })
+  const { handleSubmit, control, reset, setError, getValues } =
+    useForm<FormValues>({
+      values: { ...defaultFormValues, ...newPriceObject },
+      mode: 'onTouched',
+    })
 
   const resetForm = useCallback(() => {
     reset()
@@ -304,6 +305,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               resetForm={resetForm}
               setError={setError}
               defaultLanguagePairValues={defaultLanguagePairValues}
+              getValues={getValues}
             />
             <DeleteVendorPriceButton
               languagePairIds={languagePairIds}
@@ -341,6 +343,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
                 vendorId={vendor_id}
                 resetForm={resetForm}
                 setError={setError}
+                getValues={getValues}
               />
             </div>
           }

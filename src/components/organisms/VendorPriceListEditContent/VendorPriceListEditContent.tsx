@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Control } from 'react-hook-form'
+import { Control, UseFormGetValues } from 'react-hook-form'
 import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
 import { Root } from '@radix-ui/react-form'
@@ -12,6 +12,7 @@ type VendorPriceListEditContentProps = {
   languageDirectionKey: string
   languageOptions?: { value: string; label: string }[]
   skillId?: string
+  getValues: UseFormGetValues<FormValues>
 }
 
 const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
@@ -21,6 +22,7 @@ const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
   languageDirectionKey,
   languageOptions,
   skillId,
+  getValues,
 }) => {
   return (
     <>
@@ -35,6 +37,7 @@ const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
           control={control}
           languageDirectionKey={languageDirectionKey}
           skillId={skillId}
+          getValues={getValues}
         />
       </Root>
     </>

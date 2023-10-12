@@ -33,10 +33,10 @@ import {
   FieldPath,
   Path,
   SubmitHandler,
+  UseFormGetValues,
   UseFormHandleSubmit,
   UseFormSetError,
   useFormState,
-  useWatch,
 } from 'react-hook-form'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { ValidationError } from 'api/errorHandler'
@@ -82,6 +82,7 @@ type VendorPriceManagementButtonProps = {
     }
     priceObject?: { [x: string]: PriceObject }
   }
+  getValues: UseFormGetValues<FormValues>
 }
 
 export type SkillPrice = {
@@ -113,6 +114,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
   languageDirectionKey,
   skillId,
   defaultLanguagePairValues,
+  getValues,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
@@ -313,7 +315,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
     ]
   )
 
-  const formValues = useWatch({ control })
+  const formValues = getValues()
 
   const srcLanguage =
     formValues[languageDirectionKey]?.src_lang_classifier_value_id?.name || ''
@@ -412,6 +414,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
               dstLanguageValues={[dstLanguage]}
               languageOptions={languageFilter}
               skillId={skillId}
+              getValues={getValues}
             />
           ),
           isLoading: isSubmitting,
