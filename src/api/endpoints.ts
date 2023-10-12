@@ -18,6 +18,7 @@ export const endpoints = {
   VENDORS_BULK: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}vendors/bulk`,
   SKILLS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}skills`,
   PRICES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}prices`,
+  EDIT_PRICES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}prices/bulk`,
   CLASSIFIER_VALUES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}classifier-values`,
   PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}projects`,
   SUB_PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}subprojects`,
