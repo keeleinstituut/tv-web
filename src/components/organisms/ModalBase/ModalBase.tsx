@@ -86,7 +86,7 @@ const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
             </Button>
           ))}
       </div>
-      {buttonComponent && buttonComponent}
+      {buttonComponent ?? null}
     </>
   )
 }
