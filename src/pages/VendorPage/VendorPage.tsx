@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import VendorForm from 'components/organisms/forms/VendorForm/VendorForm'
 import { useVendorsFetch } from 'hooks/requests/useVendors'
 import { Vendor } from 'types/vendors'
+import VendorPriceListForm from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 
 const VendorPage: FC = () => {
   const { vendorId } = useParams()
@@ -12,7 +13,12 @@ const VendorPage: FC = () => {
 
   if (!vendor || isLoading) return null
 
-  return <VendorForm vendor={vendor} />
+  return (
+    <>
+      <VendorForm vendor={vendor} />
+      <VendorPriceListForm vendor={vendor} />
+    </>
+  )
 }
 
 export default VendorPage

@@ -1,6 +1,6 @@
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { isEmpty, includes } from 'lodash'
+import { isEmpty, includes, debounce } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import Loader from 'components/atoms/Loader/Loader'
 import useAuth from 'hooks/useAuth'
@@ -11,6 +11,7 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
+import TextInput from 'components/molecules/TextInput/TextInput'
 
 const VendorsDatabase: FC = () => {
   const { t } = useTranslation()
@@ -29,6 +30,16 @@ const VendorsDatabase: FC = () => {
     showModal(ModalTypes.VendorsEdit, {})
   }, [])
 
+  const [searchValue, setSearchValue] = useState<string>('')
+
+  const handleSearchVendors = useCallback(
+    (event: { target: { value: string } }) => {
+      setSearchValue(event.target.value)
+      debounce(handleFilterChange, 300)({ fullname: event.target.value })
+    },
+    [handleFilterChange]
+  )
+
   return (
     <>
       <div className={classes.vendorsDatabaseHeader}>
@@ -41,6 +52,12 @@ const VendorsDatabase: FC = () => {
           hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
         >
           {t('label.add_remove_vendor')}
+        </Button>
+        <Button
+          href="/vendors/price-list"
+          hidden={!includes(userPrivileges, Privileges.ViewGeneralPricelist)}
+        >
+          {t('label.view_general_price_list')}
         </Button>
         {/* <Button
         appearance={AppearanceTypes.Secondary}
@@ -56,9 +73,18 @@ const VendorsDatabase: FC = () => {
       </div>
       <Root>
         <Loader loading={isLoading && isEmpty(vendors)} />
+        <TextInput
+          name={'search'}
+          ariaLabel={t('placeholder.search_by_name')}
+          placeholder={t('placeholder.search_by_name')}
+          value={searchValue}
+          onChange={handleSearchVendors}
+          className={classes.searchInput}
+          inputContainerClassName={classes.generalVendorsListInput}
+          isSearch
+        />
         <VendorsTable
           data={vendors}
-          hidden={isEmpty(vendors)}
           {...{
             paginationData,
             handleFilterChange,

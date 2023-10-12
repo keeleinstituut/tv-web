@@ -8,7 +8,11 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button'
-import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
+import {
+  useFetchTags,
+  useBulkCreate,
+  useFetchSkills,
+} from 'hooks/requests/useTags'
 import {
   fromPairs,
   groupBy,
@@ -39,13 +43,17 @@ const Tags: FC = () => {
   const { t } = useTranslation()
   const { tagInputValidator } = useValidators()
   const { userPrivileges } = useAuth()
+  const { skills } = useFetchSkills()
 
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()
 
   const groupedData = groupBy(tags, 'type')
 
-  const sortedData = fromPairs(sortBy(toPairs(groupedData), 0))
+  const sortedData = {
+    ...skills,
+    ...fromPairs(sortBy(toPairs(groupedData), 0)),
+  }
 
   const tagCategoryOptions = map(omit(TagTypes, 'Skills'), (type) => {
     return {
@@ -91,6 +99,7 @@ const Tags: FC = () => {
       },
       className: classes.tagInputField,
       disabled: !includes(userPrivileges, Privileges.AddTag),
+      hideTags: true,
     },
   ]
 
@@ -116,6 +125,16 @@ const Tags: FC = () => {
     [createTags, t]
   )
 
+  const isEditable = (type: TagTypes) => {
+    if (type === TagTypes.Skills) {
+      return false
+    }
+    return (
+      includes(userPrivileges, Privileges.DeleteTag) ||
+      includes(userPrivileges, Privileges.AddTag) ||
+      includes(userPrivileges, Privileges.EditTag)
+    )
+  }
   useEffect(() => {
     reset({})
   }, [isSubmitSuccessful, reset])
@@ -160,13 +179,7 @@ const Tags: FC = () => {
             key={type}
             tagsList={tagsList}
             type={type}
-            isEditable={
-              type !== TagTypes.Skills ||
-              !includes(
-                userPrivileges,
-                Privileges.EditTag || Privileges.AddTag || Privileges.DeleteTag
-              )
-            }
+            isEditable={isEditable(type)}
           />
         ))}
       </div>

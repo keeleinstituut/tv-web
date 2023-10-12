@@ -1,0 +1,37 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.pricesDataTableHeader {
+  display: flex;
+}
+
+.iconsContainer {
+  display: flex;
+}
+
+.dateText {
+  @include bodyTextSmallStyle;
+  color: $color-input-main;
+  &:first-of-type {
+    margin-top: spacing(2);
+  }
+}
+
+.vendorPricesContainer {
+  margin-top: spacing(9);
+}
+
+.hiddenVendorPrices > div {
+  display: none;
+}
+
+.languageTag {
+  background-color: $color-tag;
+  border-radius: $border-radius-4;
+  color: $color-primary;
+  @include bodyTextSmallStyle;
+  font-weight: $font-weight-bold;
+  padding: spacing(0.6) spacing(1);
+  width: fit-content;
+  display: inline-block;
+}

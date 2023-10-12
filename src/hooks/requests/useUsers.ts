@@ -27,7 +27,6 @@ export const useFetchUsers = (
 ) => {
   const {
     filters,
-    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
@@ -49,7 +48,6 @@ export const useFetchUsers = (
     isError,
     users,
     paginationData,
-    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
@@ -98,6 +96,7 @@ export const useFetchInfiniteProjectPerson = (
 
 export const useFetchUser = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<UserDataType>({
+    enabled: !!id,
     queryKey: ['users', id],
     queryFn: () => apiClient.get(`${endpoints.USERS}/${id}`),
   })

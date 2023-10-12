@@ -18,6 +18,7 @@ export const endpoints = {
   VENDORS_BULK: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}vendors/bulk`,
   SKILLS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}skills`,
   PRICES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}prices`,
+  EDIT_PRICES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}prices/bulk`,
   CLASSIFIER_VALUES: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}classifier-values`,
   PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}projects`,
   SUB_PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}subprojects`,
@@ -25,6 +26,10 @@ export const endpoints = {
   ASSIGNMENTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}assignments`,
   PROJECT_TM: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/project-managers-assignable-by-client`,
   PROJECT_CLIENT: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/assignable-clients`,
+  TRANSLATION_MEMORIES: `${process.env.REACT_APP_TRANSLATION_MEMORY_API_BASE}tags`,
+  IMPORT_TMX: `${process.env.REACT_APP_TRANSLATION_MEMORY_API_BASE}tm/import`,
+  EXPORT_TMX: `${process.env.REACT_APP_TRANSLATION_MEMORY_API_BASE}tm/export`,
+  DISCOUNTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}institution-discounts`,
 }
 
 export const authEndpoints = {

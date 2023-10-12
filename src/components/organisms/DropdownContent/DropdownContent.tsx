@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   FC,
+  useEffect,
 } from 'react'
 import classNames from 'classnames'
 import { includes, map, isEmpty, debounce, filter } from 'lodash'
@@ -123,6 +124,11 @@ const DropdownContentComponent = forwardRef<
     const regexPattern = new RegExp(searchValue, 'i')
     return filter(options, ({ label }) => regexPattern.test(label))
   }, [onSearch, options, searchValue])
+
+  useEffect(() => {
+    setSelectedValue(initialValue)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value])
 
   const handleSingleSelect = (selectedOption: string) => {
     onChange(selectedOption ? selectedOption : '')

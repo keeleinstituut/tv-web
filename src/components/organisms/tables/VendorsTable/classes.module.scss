@@ -8,11 +8,14 @@
   margin-top: spacing(4);
 }
 
-.tagsRow {
+.tagsRow,
+.languageRow {
   display: flex;
   :not(:first-child) {
     margin-left: spacing(2);
   }
+  max-width: spacing(44);
+  overflow: hidden;
 }
 
 .deadline {
@@ -21,4 +24,14 @@
   &.error {
     color: $color-error;
   }
+}
+
+.tagsRow {
+  width: 266px;
+  overflow: hidden;
+}
+
+.languageRow {
+  width: 160px;
+  overflow: hidden;
 }
