@@ -125,19 +125,18 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           page_fee,
           minute_fee,
           hour_fee,
+          skill,
           minimal_fee,
           skill_id,
           vendor_id,
           vendor: {
             tags,
-            skills,
             institution_user: { user },
           },
         }) => {
           const languageDirection = `${source_language_classifier_value.value} > ${destination_language_classifier_value.value}`
 
           const tagNames = map(tags, 'name')
-          const skill = find(skills, { id: skill_id })?.name
           const typedSrc = (src_lang_classifier_value_id || '') as string
           const typedDst = (dst_lang_classifier_value_id || '') as string
           const priceLanguageMatch =
@@ -168,7 +167,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
             languageDirection,
             working_and_vacation_times,
             tags: tagNames,
-            skill,
+            skill: skill.name,
             character_fee,
             word_fee,
             page_fee,
@@ -268,9 +267,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         return (
           <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
-            ))}
+            <Tag label={getValue() ?? ''} value key={getValue()} />
           </div>
         )
       },
