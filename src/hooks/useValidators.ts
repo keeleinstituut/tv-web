@@ -15,6 +15,7 @@ const picIsCorrect = (pic: string) =>
   )
 
 const hasValueOver50Chars = (tagInput: string) => tagInput?.length > 50
+const hasValueOver100Chars = (tagInput: string) => tagInput?.length > 100
 
 const alphanumericCharHyphenSpaceCheck = (tagInput: string) =>
   /^[a-zA-Z0-9ŠšŽžÕõÄäÖöÜü -]+$/.test(tagInput)
@@ -22,8 +23,14 @@ const alphanumericCharHyphenSpaceCheck = (tagInput: string) =>
 const hyphenSpaceAsFirstCharCheck = (tagInput: string) =>
   /^(?![- ])[a-zA-Z0-9ŠšŽžÕõÄäÖöÜü -]+$/.test(tagInput)
 
+const alphaCharCheck = (tagInput: string) =>
+  /^(?![- ])[a-zA-Z -]*$/.test(tagInput)
+
 const numberBetweenZeroAndHundred = (number: string) =>
   /^(100(\.0+)?|\d{1,2}(\.\d+)?)$/.test(number)
+
+const allowAllNumbersWithDot = (number: string) =>
+  /^(\d+(\.\d+)?|\.\d+)$/.test(number)
 
 const useValidators = () => {
   const { t } = useTranslation()
@@ -63,10 +70,27 @@ const useValidators = () => {
     }
     return true
   }
+  const nameInputValidator = (value?: string | null) => {
+    if (!value || hasValueOver100Chars(value)) {
+      return t('error.name_input_length')
+    }
+    if (!alphaCharCheck(value)) {
+      return t('error.name_input_char_error')
+    }
+    return true
+  }
 
   const discountValidator = (value?: string | null) => {
     if (value && !numberBetweenZeroAndHundred(value)) {
       return t('error.discount_number')
+    }
+
+    return true
+  }
+
+  const priceValidator = (value?: string | null) => {
+    if (value && !allowAllNumbersWithDot(value)) {
+      return t('error.invalid_price')
     }
 
     return true
@@ -97,6 +121,8 @@ const useValidators = () => {
     tagInputValidator,
     discountValidator,
     dateTimeValidator,
+    priceValidator,
+    nameInputValidator,
   }
 }
 

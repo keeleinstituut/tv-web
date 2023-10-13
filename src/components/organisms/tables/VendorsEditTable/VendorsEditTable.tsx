@@ -68,9 +68,7 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
           </>
         )
       },
-      meta: {
-        size: 90,
-      },
+      size: 90,
     }),
   ] as ColumnDef<VendorUser>[]
 

@@ -36,7 +36,6 @@ type FilterTypes = {
 
 type ColumnMeta = {
   meta?: {
-    size?: number | string
     filterOption?: FilterTypes
     sortingOption?: SortingFunctionType['sort_order'][]
     filterValue?: string | string[]
@@ -157,8 +156,8 @@ const TableHeaderGroup = <TData,>({
               <th
                 key={header.id}
                 style={{
-                  width: (header.column.columnDef as CustomColumnDef<TData>)
-                    .meta?.size,
+                  width:
+                    header.getSize() !== 150 ? header.getSize() : undefined,
                 }}
               >
                 <HeaderItem

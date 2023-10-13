@@ -59,6 +59,7 @@ export interface ModalProps extends ModalFooterProps {
   handleClose?: () => void
   progressBar?: ReactElement
   className?: string
+  buttonComponent?: ReactElement
   helperText?: string | ReactElement
   innerWrapperClassName?: string
   headComponent?: ReactElement
@@ -67,21 +68,26 @@ export interface ModalProps extends ModalFooterProps {
 export interface ModalFooterProps {
   buttonsPosition?: ButtonPositionTypes
   buttons?: ModalButtonProps[]
+  buttonComponent?: ReactElement
 }
 
 const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
   buttonsPosition = 'right',
   buttons,
+  buttonComponent,
 }) => {
-  if (!buttons) return null
   return (
-    <div className={classes[buttonsPosition]}>
-      {map(buttons, (button, index) => (
-        <Button key={index} {...button}>
-          {button?.children}
-        </Button>
-      ))}
-    </div>
+    <>
+      <div className={classes[buttonsPosition]}>
+        {buttons &&
+          map(buttons, (button, index) => (
+            <Button key={index} {...button}>
+              {button?.children}
+            </Button>
+          ))}
+      </div>
+      {buttonComponent ?? null}
+    </>
   )
 }
 
@@ -100,6 +106,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
   progressBar,
   className,
   helperText,
+  buttonComponent,
   innerWrapperClassName,
   headComponent,
 }) => {
@@ -158,7 +165,11 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
                 {children}
               </div>
             </Dialog.Overlay>
-            <ModalFooter buttonsPosition={buttonsPosition} buttons={buttons} />
+            <ModalFooter
+              buttonsPosition={buttonsPosition}
+              buttons={buttons}
+              buttonComponent={buttonComponent}
+            />
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

@@ -6,14 +6,17 @@
   grid-template-columns: max-content auto;
   grid-gap: spacing(21);
 }
+
 .form {
   width: max-content;
 
   .inputInternalPosition {
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: 130px auto;
+    grid-gap: spacing(10);
 
     label {
-      margin-right: spacing(10);
+      justify-self: end;
     }
 
     &:disabled,
@@ -24,7 +27,6 @@
     input,
     :disabled,
     :hover {
-      width: max-content;
       border: none;
       background-color: $color-white;
     }
@@ -68,5 +70,6 @@
 .dateTimeContainer {
   display: grid;
   height: max-content;
-  grid-gap: spacing(4);
+  grid-auto-rows: 40px;
+  align-items: center;
 }

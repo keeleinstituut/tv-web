@@ -28,7 +28,7 @@ type FormValues = {
   tags?: string[]
 } & DiscountPercentages
 
-type VendorFormProps = {
+export type VendorFormProps = {
   vendor: Vendor
 }
 

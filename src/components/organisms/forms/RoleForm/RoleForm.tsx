@@ -139,7 +139,8 @@ const RoleForm: FC<RoleFormProps> = ({
     ariaLabel: t(`privileges.${key}`),
     label: t(`privileges.${key}`),
     name: `privileges.${key}`,
-    disabled: !includes(userPrivileges, Privileges.EditRole),
+    disabled:
+      !isTemporaryRole && !includes(userPrivileges, Privileges.EditRole),
     onClick: is_root ? handleMainUserPrivilegeClick : undefined,
   }))
 
@@ -272,7 +273,9 @@ const RoleForm: FC<RoleFormProps> = ({
           isSubmitDisabled={isSubmitDisabled}
           loading={isLoading || isCreating || isSubmitting}
           resetForm={resetForm}
-          hidden={!includes(userPrivileges, Privileges.EditRole)}
+          hidden={
+            !isTemporaryRole && !includes(userPrivileges, Privileges.EditRole)
+          }
           className={classes.formButtons}
         />
       </DynamicForm>

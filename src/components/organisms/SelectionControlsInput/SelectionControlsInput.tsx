@@ -93,9 +93,13 @@ const SelectionControlsInput = forwardRef<
     setIsOpen(false)
   }, [clickAwayInputRef, ...(wrapperRef?.current ? [wrapperRef] : [])])
 
-  const selectedOptionObjects = filter(options, (option) => {
-    return !!find(value, (singleValue) => singleValue === option?.value)
-  })
+  const selectedOptionObjects = filter(
+    options,
+    (option) =>
+      !!find(value, (singleValue) =>
+        multiple ? singleValue === option?.value : value === option?.value
+      )
+  )
 
   const singleValue: DropDownOptions | undefined = find(options, {
     value,
@@ -189,17 +193,15 @@ const SelectionControlsInput = forwardRef<
         {...{ ...dropdownProps, wrapperRef, clickAwayInputRef, usePortal }}
       />
       <div className={classNames(!hideTags && classes.tagsContainer)}>
-        {map(selectedOptionObjects, ({ label }, index) => {
-          return (
-            <Tag
-              hidden={hideTags}
-              className={classes.tag}
-              value
-              key={index}
-              label={label}
-            />
-          )
-        })}
+        {map(selectedOptionObjects, ({ label }, index) => (
+          <Tag
+            hidden={hideTags}
+            className={classes.tag}
+            value
+            key={index}
+            label={label}
+          />
+        ))}
       </div>
     </InputWrapper>
   )
