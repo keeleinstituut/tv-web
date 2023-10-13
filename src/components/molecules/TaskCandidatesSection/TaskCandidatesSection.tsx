@@ -14,6 +14,8 @@ import { AssignmentStatus, AssignmentType } from 'types/assignments'
 import classes from './classes.module.scss'
 import { SubProjectFeatures } from 'types/orders'
 import { useAssignmentRemoveVendor } from 'hooks/requests/useAssignments'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from '../Notification/Notification'
 
 type TaskCandidatesSectionProps = Pick<
   AssignmentType,
@@ -81,10 +83,15 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   )
 
   const handleDelete = useCallback(
-    (vendor_id: string) => {
-      deleteAssignmentVendor({ data: [{ vendor_id }] })
+    async (vendor_id: string) => {
+      await deleteAssignmentVendor({ data: [{ vendor_id }] })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.vendors_removed_from_task'),
+      })
     },
-    [deleteAssignmentVendor]
+    [deleteAssignmentVendor, t]
   )
 
   const columns = [
