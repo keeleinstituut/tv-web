@@ -39,7 +39,7 @@ const FreeDaysHeader = () => {
     <div className={classes.row}>
       <span>{t('label.free_days')}</span>
       <SmallTooltip
-        tooltipContent={'random'}
+        tooltipContent={t('tooltip.vacation_days')}
         className={classes.headerTooltip}
       />
     </div>
