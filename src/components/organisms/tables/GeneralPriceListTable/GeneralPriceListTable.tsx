@@ -106,7 +106,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
       const langPair = map(
         typedLanguageDirection,
         (languageDirectionString) => {
-          const [src, dst] = split(languageDirectionString, '>')
+          const [src, dst] = split(languageDirectionString, '_')
           return { src, dst }
         }
       )
