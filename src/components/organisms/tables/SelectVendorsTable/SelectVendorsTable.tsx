@@ -94,14 +94,14 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   const { tagsFilters = [] } = useFetchTags()
   const { skillsFilters = [] } = useFetchSkills()
 
-  const {
-    src_lang_classifier_value_id,
-    dst_lang_classifier_value_id,
-    skill_id,
-  } = filters || {}
+  const { lang_pair, skill_id } = filters || {}
 
-  const matchingLanguageString = `${src_lang_classifier_value_id}>${dst_lang_classifier_value_id}`
+  const srcLangId = lang_pair?.[0]?.src || ''
+  const dstLangId = lang_pair?.[0]?.dst || ''
 
+  const matchingLanguageString = `${srcLangId}_${dstLangId}`
+
+  // To populate dropdown
   const {
     languageDirectionFilters,
     loadMore,
@@ -137,8 +137,8 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           const languageDirection = `${source_language_classifier_value.value} > ${destination_language_classifier_value.value}`
 
           const tagNames = map(tags, 'name')
-          const typedSrc = (src_lang_classifier_value_id || '') as string
-          const typedDst = (dst_lang_classifier_value_id || '') as string
+          const typedSrc = (srcLangId || '') as string
+          const typedDst = (dstLangId || '') as string
           const priceLanguageMatch =
             source_language_classifier_value.id === typedSrc &&
             destination_language_classifier_value.id === typedDst
@@ -177,12 +177,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           }
         }
       ),
-    [
-      data,
-      dst_lang_classifier_value_id,
-      src_lang_classifier_value_id,
-      taskSkills,
-    ]
+    [data, dstLangId, srcLangId, taskSkills]
   )
 
   const handleModifiedFilterChange = useCallback(
@@ -190,20 +185,16 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       // language_direction will be an array of strings
       const { language_direction, ...rest } = filters || {}
       const typedLanguageDirection = language_direction as string[]
+
+      const langPairs = map(typedLanguageDirection, (direction) => {
+        const [src, dst] = direction.split('_')
+        return { src, dst }
+      })
       const newFilters: FilterFunctionType = {
         ...rest,
         ...(language_direction
           ? {
-              source_languages: map(
-                typedLanguageDirection,
-                (languageDirectionString) =>
-                  split(languageDirectionString, '>')[0]
-              ),
-              destination_languages: map(
-                typedLanguageDirection,
-                (languageDirectionString) =>
-                  split(languageDirectionString, '>')[1]
-              ),
+              lang_pair: langPairs,
             }
           : {}),
       }
@@ -255,7 +246,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       footer: (info) => info.column.id,
       meta: {
         filterOption: { language_direction: languageDirectionFilters },
-        filterValue: [matchingLanguageString],
+        filterValue: map(lang_pair, ({ src, dst }) => `${src}_${dst}`),
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,

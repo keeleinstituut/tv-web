@@ -50,8 +50,7 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
     setSearchValue('')
     handleFilterChange({
       institution_user_name: '',
-      src_lang_classifier_value_id: [],
-      dst_lang_classifier_value_id: [],
+      lang_pair: [],
       skill_id: [],
     })
   }, [handleFilterChange])
@@ -121,9 +120,11 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
     handlePaginationChange,
     isLoading: isLoadingPrices,
   } = useAllPricesFetch({
-    src_lang_classifier_value_id: [source_language_classifier_value_id || ''],
-    dst_lang_classifier_value_id: [
-      destination_language_classifier_value_id || '',
+    lang_pair: [
+      {
+        src: source_language_classifier_value_id,
+        dst: destination_language_classifier_value_id,
+      },
     ],
     skill_id: taskSkills,
   })

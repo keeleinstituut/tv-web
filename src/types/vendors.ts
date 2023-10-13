@@ -119,6 +119,7 @@ export type PricesDataType = {
 
 export interface GetPricesPayload {
   vendor_id?: string
+  lang_pair?: { src?: string; dst?: string }[]
   institution_user_name?: string
   src_lang_classifier_value_id?: string[]
   dst_lang_classifier_value_id?: string[]
