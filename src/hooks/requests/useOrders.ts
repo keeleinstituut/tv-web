@@ -197,3 +197,32 @@ export const useSubOrderWorkflow = ({ id }: { id?: string }) => {
     isLoading,
   }
 }
+
+export const useToggleMtEngine = ({
+  sub_project_id,
+}: {
+  sub_project_id?: string
+}) => {
+  // const queryClient = useQueryClient()
+  const { mutateAsync: toggleMtEngine, isLoading } = useMutation({
+    mutationKey: ['mt_engine', sub_project_id],
+    mutationFn: async (payload: any) => {
+      return apiClient.put(`${endpoints.MT_ENGINE}/${sub_project_id}`, {
+        ...payload,
+      })
+    },
+    // onSuccess: ({ data }) => {
+    //   queryClient.setQueryData(['vendors', id], (oldData?: any) => {
+    //     const { data: previousData } = oldData || {}
+    //     if (!previousData) return oldData
+    //     const newData = { ...previousData, ...data }
+    //     return { data: newData }
+    //   })
+    // },
+  })
+
+  return {
+    toggleMtEngine,
+    isLoading,
+  }
+}

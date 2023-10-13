@@ -89,6 +89,8 @@ const OrderPage: FC = () => {
     isLoading,
   })
 
+  console.log('order', order)
+
   const isUserClientOfProject =
     institutionUserId === client_institution_user?.id
 
