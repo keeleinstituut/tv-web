@@ -35,6 +35,7 @@ interface AssignmentProps extends AssignmentType {
   catSupported?: boolean
   // cat_jobs?: CatJob[]
   cat_analyzis?: CatAnalysis[]
+  volumes?: VolumeValue[]
 }
 
 interface FormValues {

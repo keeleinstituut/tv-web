@@ -21,6 +21,7 @@ export interface AssignmentType {
   feature: SubProjectFeatures
   id: string
   candidates: Candidate[]
+  volumes?: VolumeValue[]
   assigned_vendor_id?: string
   assignee_id?: string
   sub_project_id: string
@@ -37,4 +38,11 @@ export interface AssignmentPayload {
   vendor_id?: string
   finished_at?: string | null
   volumes?: VolumeValue[]
+}
+
+export interface VolumePayload {
+  assignment_id: string
+  unit_type: string
+  unit_quantity: number
+  unit_fee: number
 }
