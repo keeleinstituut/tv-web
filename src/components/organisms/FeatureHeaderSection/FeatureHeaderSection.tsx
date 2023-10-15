@@ -13,7 +13,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { showNotification } from '../NotificationRoot/NotificationRoot'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useToggleMtEngine } from 'hooks/requests/useOrders'
 
