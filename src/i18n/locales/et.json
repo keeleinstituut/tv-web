@@ -469,7 +469,8 @@
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
     "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
-    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud"
+    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
+    "machine_translation": "Masintõlke lisamise eelistus muudetud."
   },
   "notification": {
     "announcement": "Teade",

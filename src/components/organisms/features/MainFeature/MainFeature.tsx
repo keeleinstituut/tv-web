@@ -20,14 +20,14 @@ type MainFeatureProps = Pick<
   projectDeadline?: string
   feature: SubProjectFeatures
   mt_enabled?: boolean
-  project_id?: string
+  id?: string
 }
 
 const MainFeature: FC<MainFeatureProps> = ({
   catSupported,
   feature,
   mt_enabled,
-  project_id,
+  id,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -58,7 +58,7 @@ const MainFeature: FC<MainFeatureProps> = ({
             feature === SubProjectFeatures.JobOverview ? undefined : addVendor,
           catSupported,
           mt_enabled,
-          project_id,
+          id,
         }}
       />
       <FeatureAssignments
