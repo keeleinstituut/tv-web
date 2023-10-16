@@ -62,6 +62,7 @@ const Assignment: FC<AssignmentProps> = ({
   catSupported,
   // cat_jobs,
   cat_analyzis,
+  volumes = [],
 }) => {
   const { t } = useTranslation()
   // TODO: no idea if this is how it will work
@@ -108,8 +109,9 @@ const Assignment: FC<AssignmentProps> = ({
   const defaultValues = useMemo(
     () => ({
       deadline_at: { date: '11/07/2025', time: '11:00' },
+      volume: volumes,
     }),
-    []
+    [volumes]
   )
 
   const { control } = useForm<FormValues>({
@@ -197,6 +199,7 @@ const Assignment: FC<AssignmentProps> = ({
         vendorPrices,
         vendorDiscounts,
         vendorName,
+        value: volumes,
         assignmentId: id,
         // cat_jobs,
         cat_analyzis,
@@ -215,6 +218,7 @@ const Assignment: FC<AssignmentProps> = ({
     ],
     [
       t,
+      volumes,
       projectDeadline,
       shouldShowStartTimeFields,
       catSupported,

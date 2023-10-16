@@ -25,9 +25,28 @@ interface VolumeRowProps extends VolumeValue {
   handleEdit: (index: number) => void
 }
 
+const apiTypeToKey = (apiType: string) => {
+  switch (apiType) {
+    case 'CHARACTERS':
+      return 'character_fee'
+    case 'WORDS':
+      return 'word_fee'
+    case 'PAGES':
+      return 'page_fee'
+    case 'MINUTES':
+      return 'minute_fee'
+    case 'HOURS':
+      return 'hour_fee'
+    case 'MINIMALS':
+      return 'minimal_fee'
+    default:
+      return 'minimal_fee'
+  }
+}
+
 const VolumeRow: FC<VolumeRowProps> = ({
-  amount,
-  unit,
+  unit_quantity,
+  unit_type,
   isCat,
   index,
   handleDelete,
@@ -42,7 +61,7 @@ const VolumeRow: FC<VolumeRowProps> = ({
   }, [handleDelete, index])
   return (
     <div className={classes.row}>
-      <span>{`${amount} ${t(`label.${unit}`)}${
+      <span>{`${unit_quantity} ${t(`label.${apiTypeToKey(unit_type)}`)}${
         isCat ? ` ${t('task.open_in_cat')}` : ''
       }`}</span>
       <BaseButton onClick={onEditClick} className={classes.editButton}>
