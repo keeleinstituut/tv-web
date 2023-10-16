@@ -12,6 +12,7 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
+import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 
 export enum FeatureTabs {
   Vendors = 'vendor',
@@ -100,15 +101,21 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
         machineTranslation={machineTranslation}
         setMachineTranslation={setMachineTranslation}
       />
-      <Button
-        appearance={AppearanceTypes.Text}
-        className={classes.addButton}
-        iconPositioning={IconPositioningTypes.Left}
-        icon={Add}
-        children={t('button.add_new_vendor')}
-        onClick={addVendor}
-        hidden={activeTab === FeatureTabs.Xliff || !isSplittingAllowed}
-      />
+      <div className={classes.splitSection}>
+        <Button
+          appearance={AppearanceTypes.Text}
+          className={classes.addButton}
+          iconPositioning={IconPositioningTypes.Left}
+          icon={Add}
+          children={t('button.add_new_vendor')}
+          onClick={addVendor}
+          hidden={activeTab === FeatureTabs.Xliff || !isSplittingAllowed}
+        />
+        <SmallTooltip
+          className={classes.smallTooltip}
+          tooltipContent={t('tooltip.split_task')}
+        />
+      </div>
     </div>
   )
 }

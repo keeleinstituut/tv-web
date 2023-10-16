@@ -30,4 +30,13 @@
       margin-bottom: spacing(2);
     }
   }
+
+  .splitSection {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .smallTooltip {
+    padding-left: spacing(2);
+  }
 }
