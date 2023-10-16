@@ -41,6 +41,7 @@ export interface AssignmentPayload {
 }
 
 export interface VolumePayload {
+  id?: string
   assignment_id: string
   unit_type: string
   unit_quantity: number

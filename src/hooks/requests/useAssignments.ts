@@ -1,7 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { AssignmentPayload, AssignmentType } from 'types/assignments'
+import {
+  AssignmentPayload,
+  AssignmentType,
+  VolumePayload,
+} from 'types/assignments'
 import { SubOrderResponse } from 'types/orders'
 
 // TODO: not sure what endpoint to use and what data structure to use
@@ -79,6 +83,48 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
 
   return {
     deleteAssignmentVendor,
+    isLoading,
+  }
+}
+
+export const useAssignmentAddVolume = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: addAssignmentVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { data: VolumePayload }) =>
+      apiClient.post(`${endpoints.VOLUMES}`, payload),
+    onSuccess: ({ data }: { data: VolumePayload }) => {
+      console.log('haha')
+
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    addAssignmentVolume,
+    isLoading,
+  }
+}
+
+export const useAssignmentRemoveVolume = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: removeAssignmentVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { data: VolumePayload }) =>
+      apiClient.delete(`${endpoints.VOLUMES}/${payload.data.id}`),
+    onSuccess: ({ data }: { data: VolumePayload }) => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    removeAssignmentVolume,
     isLoading,
   }
 }
