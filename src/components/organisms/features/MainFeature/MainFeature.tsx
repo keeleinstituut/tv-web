@@ -7,6 +7,7 @@ import FeatureHeaderSection, {
 } from 'components/organisms/FeatureHeaderSection/FeatureHeaderSection'
 import FeatureAssignments from 'components/molecules/FeatureAssignments/FeatureAssignments'
 import FeatureCatJobs from 'components/molecules/FeatureCatJobs/FeatureCatJobs'
+import { useSplitAssignment } from 'hooks/requests/useOrders'
 
 type MainFeatureProps = Pick<
   SubOrderDetail,
@@ -37,11 +38,32 @@ const MainFeature: FC<MainFeatureProps> = ({
       id: FeatureTabs.Xliff,
     },
   ]
-  const [activeTab, setActiveTab] = useState<string>(FeatureTabs.Vendors)
 
-  const addVendor = useCallback(() => {
-    // DO sth
-  }, [])
+  const [activeTab, setActiveTab] = useState<string>(FeatureTabs.Vendors)
+  const { splitAssignment, isLoading } = useSplitAssignment()
+
+  // const addVendor = useCallback(() => {
+  //   // DO sth
+  // }, [])
+
+  const addVendor = useCallback(async () => {
+    const payload = {
+      sub_project_id: '9a1fd624-0808-4c9b-9226-bb9db07d07ce',
+      feature: 'job_overview',
+    }
+
+    try {
+      await splitAssignment(payload)
+
+      // showNotification({
+      //   type: NotificationTypes.Success,
+      //   title: t('notification.announcement'),
+      //   content: t('success.machine_translation'),
+      // })
+    } catch (errorData) {
+      // showValidationErrorMessage(errorData)
+    }
+  }, [splitAssignment])
 
   return (
     <Root>

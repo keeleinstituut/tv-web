@@ -197,3 +197,18 @@ export const useSubOrderWorkflow = ({ id }: { id?: string }) => {
     isLoading,
   }
 }
+
+export const useSplitAssignment = () => {
+  const { mutateAsync: splitAssignment, isLoading } = useMutation({
+    mutationKey: ['split_assignment'],
+    mutationFn: (payload: any) =>
+      apiClient.post(endpoints.ASSIGNMENTS, {
+        ...payload,
+      }),
+  })
+
+  return {
+    splitAssignment,
+    isLoading,
+  }
+}
