@@ -36,6 +36,7 @@ interface AssignmentProps extends AssignmentType {
   // cat_jobs?: CatJob[]
   cat_analyzis?: CatAnalysis[]
   volumes?: VolumeValue[]
+  subOrderId?: string
 }
 
 interface FormValues {
@@ -51,6 +52,7 @@ const Assignment: FC<AssignmentProps> = ({
   index,
   candidates,
   id,
+  subOrderId,
   assigned_vendor_id,
   assignee_id,
   feature,
@@ -201,6 +203,7 @@ const Assignment: FC<AssignmentProps> = ({
         vendorName,
         value: volumes,
         assignmentId: id,
+        subOrderId,
         // cat_jobs,
         cat_analyzis,
         // onlyDisplay: !isEditable,
@@ -218,14 +221,15 @@ const Assignment: FC<AssignmentProps> = ({
     ],
     [
       t,
-      volumes,
       projectDeadline,
       shouldShowStartTimeFields,
       catSupported,
       vendorPrices,
       vendorDiscounts,
       vendorName,
+      volumes,
       id,
+      subOrderId,
       cat_analyzis,
       isVendorView,
     ]

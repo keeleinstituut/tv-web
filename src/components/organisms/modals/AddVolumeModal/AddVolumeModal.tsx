@@ -10,12 +10,12 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { VolumeChangeModalProps } from 'components/organisms/modals/VolumeChangeModal/VolumeChangeModal'
 import { CatAnalysis } from 'types/orders'
-import { VolumeValue } from 'types/volumes'
+import { VolumePayload } from 'types/assignments'
 
 // TODO: this is WIP code for suborder view
 
 export interface AddVolumeModalProps extends VolumeChangeModalProps {
-  onSave?: (newVolume: VolumeValue) => void
+  onSave?: (newVolume: VolumePayload) => void
   catSupported?: boolean
   cat_analyzis?: CatAnalysis[]
 }

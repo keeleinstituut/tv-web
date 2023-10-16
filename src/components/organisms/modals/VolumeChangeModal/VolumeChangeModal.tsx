@@ -27,15 +27,16 @@ import {
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
 import { Root } from '@radix-ui/react-form'
 import { CatAnalysis } from 'types/orders'
-import { VolumeValue } from 'types/volumes'
+import { VolumePayload } from 'types/assignments'
 
 import classes from './classes.module.scss'
 
 export interface VolumeChangeModalProps {
-  onSave?: (newVolume: VolumeValue) => void
+  onSave?: (newVolume: VolumePayload) => void
+  assignmentId?: string
   isCat?: boolean
   isModalOpen?: boolean
-  volumeId?: string
+  id?: string
   vendorPrices?: Price
   vendorDiscounts?: DiscountPercentages
   vendorName?: string
@@ -78,11 +79,12 @@ type FormValues = {
 const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   onSave,
   isCat,
-  volumeId,
+  id,
   vendorName,
   vendorPrices,
   vendorDiscounts,
   matchingCatAnalysis,
+  assignmentId,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -246,20 +248,25 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
-    async ({ amount, unit, ...rest }) => {
-      const chunkId = matchingCatAnalysis?.chunk_id
-      const volumePayload: VolumeValue = {
-        amount,
-        unit,
-        ...(chunkId ? { chunkId } : {}),
-        ...(volumeId ? { volumeId } : {}),
-        isCat: !!isCat,
-      }
+    async ({ amount, unit, cost_price, ...rest }) => {
+      // const chunkId = matchingCatAnalysis?.chunk_id
+      // const volumePayload: VolumeValue = {
+      //   amount,
+      //   unit,
+      //   ...(chunkId ? { chunkId } : {}),
+      //   ...(volumeId ? { volumeId } : {}),
+      //   isCat: !!isCat,
+      // }
       if (onSave) {
-        onSave(volumePayload)
+        onSave({
+          assignment_id: assignmentId ?? '',
+          unit_fee: cost_price,
+          unit_quantity: amount,
+          unit_type: 'CHARACTERS',
+        })
       }
     },
-    [isCat, matchingCatAnalysis?.chunk_id, onSave, volumeId]
+    [assignmentId, onSave]
   )
 
   return (

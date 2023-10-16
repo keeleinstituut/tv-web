@@ -16,12 +16,13 @@ import { Price } from 'types/price'
 import { DiscountPercentages } from 'types/vendors'
 import { CatAnalysis } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
+import { useAssignmentAddVolume } from 'hooks/requests/useAssignments'
 
 // TODO: not sure about this data structure
 
 interface VolumeRowProps extends VolumeValue {
   index: number
-  handleDelete: (index: number) => void
+  handleDelete: (index: number, id: string) => void
   handleEdit: (index: number) => void
 }
 
@@ -51,14 +52,15 @@ const VolumeRow: FC<VolumeRowProps> = ({
   index,
   handleDelete,
   handleEdit,
+  id,
 }) => {
   const { t } = useTranslation()
   const onEditClick = useCallback(() => {
     handleEdit(index)
   }, [handleEdit, index])
   const onDeleteClick = useCallback(() => {
-    handleDelete(index)
-  }, [handleDelete, index])
+    handleDelete(index, id)
+  }, [handleDelete, index, id])
   return (
     <div className={classes.row}>
       <span>{`${unit_quantity} ${t(`label.${apiTypeToKey(unit_type)}`)}${
@@ -89,6 +91,7 @@ export interface AddVolumeInputProps {
   vendorName?: string
   cat_analyzis?: CatAnalysis[]
   assignmentId?: string
+  subOrderId?: string
 }
 
 const AddVolumeInput: FC<AddVolumeInputProps> = ({
@@ -103,35 +106,29 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   vendorName,
   cat_analyzis,
   assignmentId,
+  subOrderId,
   disabled,
   loading,
 }) => {
   const { t } = useTranslation()
 
+  const { addAssignmentVolume } = useAssignmentAddVolume({ id: assignmentId })
+
   const handleDelete = useCallback(
-    (index: number) => {
+    (index: number, id: string) => {
       const newVolumes = filter(
         value,
         (_, volumeIndex) => index !== volumeIndex
       )
-      // Random guess that delete will actually be update to all assignment volumes
-      // This might not be the case, but works like this in some other cases
       showModal(ModalTypes.ConfirmDeleteVolume, {
         newVolumes,
+        subOrderId,
+        volumeId: id,
         callback: () => onChange(newVolumes),
         assignmentId,
       })
-
-      // TODO: delete volume at index
     },
-    [onChange, value, assignmentId]
-  )
-
-  const addNewVolume = useCallback(
-    (volumePayload: VolumeValue) => {
-      onChange([...value, volumePayload])
-    },
-    [onChange, value]
+    [value, subOrderId, assignmentId, onChange]
   )
 
   const editVolume = useCallback(
@@ -165,7 +162,8 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   const handleAdd = useCallback(() => {
     // TODO: open add/edit modal with add mode
     showModal(ModalTypes.AddVolume, {
-      onSave: addNewVolume,
+      onSave: addAssignmentVolume,
+      assignmentId,
       catSupported,
       vendorPrices,
       vendorDiscounts,
@@ -173,7 +171,8 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       cat_analyzis,
     })
   }, [
-    addNewVolume,
+    addAssignmentVolume,
+    assignmentId,
     catSupported,
     vendorPrices,
     vendorDiscounts,

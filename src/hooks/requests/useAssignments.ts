@@ -109,12 +109,16 @@ export const useAssignmentAddVolume = ({ id }: { id?: string }) => {
   }
 }
 
-export const useAssignmentRemoveVolume = ({ id }: { id?: string }) => {
+export const useAssignmentRemoveVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
   const queryClient = useQueryClient()
   const { mutateAsync: removeAssignmentVolume, isLoading } = useMutation({
     mutationKey: ['suborders', id],
-    mutationFn: (payload: { data: VolumePayload }) =>
-      apiClient.delete(`${endpoints.VOLUMES}/${payload.data.id}`),
+    mutationFn: (payload: { volumeId?: string }) =>
+      apiClient.delete(`${endpoints.VOLUMES}/${payload.volumeId}`),
     onSuccess: ({ data }: { data: VolumePayload }) => {
       queryClient.refetchQueries({
         queryKey: ['suborders', id],
