@@ -1,9 +1,9 @@
+import { GetPricesPayload } from 'types/price'
 import {
   VendorsDataType,
   GetVendorsPayload,
   UpdateVendorPayload,
   PricesDataType,
-  GetPricesPayload,
   DeletePricesPayload,
   UpdatedPrices,
   GetSkillsPayload,

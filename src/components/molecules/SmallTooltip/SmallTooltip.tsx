@@ -8,10 +8,10 @@ import classNames from 'classnames'
 
 import classes from './classes.module.scss'
 import useTableContext from 'hooks/useTableContext'
+import useModalContext from 'hooks/useModalContext'
 
 interface TooltipContentProps {
   tooltipContent?: string
-  containerRef?: RefObject<HTMLDivElement>
   wrapperRef?: RefObject<HTMLDivElement>
   isVisible?: boolean
   horizontalScrollContainerId?: string
@@ -19,21 +19,24 @@ interface TooltipContentProps {
 }
 
 const TooltipContent: FC<TooltipContentProps> = ({
-  containerRef,
   tooltipContent,
   isVisible,
   wrapperRef,
   className,
 }) => {
-  const { horizontalWrapperId } = useTableContext()
+  const { horizontalWrapperId, tableRef } = useTableContext()
+  const { modalContentId } = useModalContext()
   const contentRef = useRef(null)
-  const { left, top } = useElementPosition({ ref: wrapperRef }) || {}
+  const { left = 0, top = 0 } =
+    useElementPosition({ ref: wrapperRef, forceRecalculate: isVisible }) || {}
 
-  const [inViewport, ratio] = useInViewport(contentRef, { root: containerRef })
+  const [inViewport, ratio = 0] = useInViewport(contentRef, {
+    root: tableRef as RefObject<HTMLDivElement> | undefined,
+  })
   const useBottomPosition = useMemo(
-    () => ratio && ratio < 1 && inViewport,
-    // inViewport changes, when we hover the element and it becomes visible
-    // We don't want to update this state during any other time
+    () => (ratio || ratio === 0) && ratio < 1 && inViewport && !modalContentId,
+    //   // inViewport changes, when we hover the element and it becomes visible
+    //   // We don't want to update this state during any other time
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [inViewport]
   )
@@ -49,15 +52,15 @@ const TooltipContent: FC<TooltipContentProps> = ({
           className
         )}
         style={{
-          left: (left || 0) - 24,
-          top: (top || 0) - 8,
+          left: left - 26,
+          top: top - 8,
           bottom: 'unset',
           transform: 'translateY(-100%)',
         }}
       >
         {tooltipContent}
       </p>,
-      document.getElementById('root') || document.body
+      document.getElementById(modalContentId || 'root') || document.body
     )
   }
   return (
