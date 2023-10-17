@@ -59,6 +59,7 @@ const ToggleButtonsSection: FC<ToggleButtonsSectionProps> = ({
 interface FeatureHeaderSectionProps extends ToggleTabsProps {
   catSupported?: boolean
   addVendor?: () => void
+  loading?: boolean
 }
 
 const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
@@ -67,6 +68,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   catSupported,
   tabs,
   addVendor,
+  loading,
 }) => {
   const { t } = useTranslation()
   // TODO: not sure yet what this will do
@@ -109,6 +111,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
           icon={Add}
           children={t('button.add_new_vendor')}
           onClick={addVendor}
+          loading={loading}
           hidden={activeTab === FeatureTabs.Xliff || !isSplittingAllowed}
         />
         <SmallTooltip

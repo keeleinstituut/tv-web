@@ -7,7 +7,13 @@ import FeatureHeaderSection, {
 } from 'components/organisms/FeatureHeaderSection/FeatureHeaderSection'
 import FeatureAssignments from 'components/molecules/FeatureAssignments/FeatureAssignments'
 import FeatureCatJobs from 'components/molecules/FeatureCatJobs/FeatureCatJobs'
-import { useSplitAssignment } from 'hooks/requests/useOrders'
+import {
+  useSplitAssignment,
+  useSplitCatAssignment,
+} from 'hooks/requests/useOrders'
+import { showValidationErrorMessage } from 'api/errorHandler'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 type MainFeatureProps = Pick<
   SubOrderDetail,
@@ -20,11 +26,14 @@ type MainFeatureProps = Pick<
   catSupported?: boolean
   projectDeadline?: string
   feature: SubProjectFeatures
+  isFirstTaskJobRevision?: boolean
 }
 
 const MainFeature: FC<MainFeatureProps> = ({
   catSupported,
   feature,
+  assignments,
+  isFirstTaskJobRevision,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -40,30 +49,43 @@ const MainFeature: FC<MainFeatureProps> = ({
   ]
 
   const [activeTab, setActiveTab] = useState<string>(FeatureTabs.Vendors)
-  const { splitAssignment, isLoading } = useSplitAssignment()
-
-  // const addVendor = useCallback(() => {
-  //   // DO sth
-  // }, [])
+  const { splitAssignment, isLoading: isSplittingAssignment } =
+    useSplitAssignment()
+  const { splitCatAssignment, isLoading: isSplittingCatAssignment } =
+    useSplitCatAssignment()
 
   const addVendor = useCallback(async () => {
-    const payload = {
-      sub_project_id: '9a1fd624-0808-4c9b-9226-bb9db07d07ce',
-      feature: 'job_overview',
+    const withoutCatPayload = {
+      sub_project_id: assignments[0].sub_project_id,
+      feature: feature,
+    }
+
+    const withCatPayload = {
+      sub_project_id: assignments[0].sub_project_id,
+      chunks_count: 0,
     }
 
     try {
-      await splitAssignment(payload)
+      catSupported
+        ? await splitCatAssignment(withCatPayload)
+        : await splitAssignment(withoutCatPayload)
 
-      // showNotification({
-      //   type: NotificationTypes.Success,
-      //   title: t('notification.announcement'),
-      //   content: t('success.machine_translation'),
-      // })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.split_assignment'),
+      })
     } catch (errorData) {
-      // showValidationErrorMessage(errorData)
+      showValidationErrorMessage(errorData)
     }
-  }, [splitAssignment])
+  }, [
+    assignments,
+    catSupported,
+    feature,
+    splitAssignment,
+    splitCatAssignment,
+    t,
+  ])
 
   return (
     <Root>
@@ -73,16 +95,24 @@ const MainFeature: FC<MainFeatureProps> = ({
           activeTab,
           tabs: featureTabs,
           addVendor:
-            feature === SubProjectFeatures.JobOverview ? undefined : addVendor,
+            feature === SubProjectFeatures.JobOverview || isFirstTaskJobRevision
+              ? undefined
+              : addVendor,
           catSupported,
+          loading: isSplittingAssignment || isSplittingCatAssignment,
         }}
       />
       <FeatureAssignments
+        assignments={assignments}
         hidden={activeTab === FeatureTabs.Xliff}
         catSupported={catSupported}
         {...rest}
       />
-      <FeatureCatJobs hidden={activeTab === FeatureTabs.Vendors} {...rest} />
+      <FeatureCatJobs
+        assignments={assignments}
+        hidden={activeTab === FeatureTabs.Vendors}
+        {...rest}
+      />
     </Root>
   )
 }

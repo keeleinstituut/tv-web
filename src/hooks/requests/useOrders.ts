@@ -8,6 +8,7 @@ import {
   SubOrdersPayloadType,
   CatProjectPayload,
   SubOrderPayload,
+  SubProjectFeatures,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -225,16 +226,42 @@ export const useSubOrderWorkflow = ({ id }: { id?: string }) => {
 }
 
 export const useSplitAssignment = () => {
+  const queryClient = useQueryClient()
   const { mutateAsync: splitAssignment, isLoading } = useMutation({
     mutationKey: ['split_assignment'],
-    mutationFn: (payload: any) =>
+    mutationFn: (payload: {
+      sub_project_id: string
+      feature: SubProjectFeatures
+    }) =>
       apiClient.post(endpoints.ASSIGNMENTS, {
         ...payload,
       }),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['suborders'] })
+    },
   })
 
   return {
     splitAssignment,
+    isLoading,
+  }
+}
+
+export const useSplitCatAssignment = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: splitCatAssignment, isLoading } = useMutation({
+    mutationKey: ['split_cat_assignment'],
+    mutationFn: (payload: { sub_project_id: string; chunks_count: number }) =>
+      apiClient.post(endpoints.CAT_ASSIGNMENTS, {
+        ...payload,
+      }),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['suborders'] })
+    },
+  })
+
+  return {
+    splitCatAssignment,
     isLoading,
   }
 }

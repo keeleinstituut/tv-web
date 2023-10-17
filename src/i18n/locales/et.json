@@ -472,7 +472,9 @@
     "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
     "final_files_changed": "Valmisfailid muudetud",
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
-    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud"
+    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
+    "split_assignment": "Ülesanne jagatud"
+
   },
   "notification": {
     "announcement": "Teade",
