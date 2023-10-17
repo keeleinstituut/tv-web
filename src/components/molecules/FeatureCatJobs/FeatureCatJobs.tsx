@@ -114,7 +114,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
   return (
     <>
       <div>
-        {map([...assignments, ...assignments], (assignment, index) => {
+        {map([...assignments], (assignment, index) => {
           return (
             <FeatureCatJob
               key={assignment.id}
@@ -132,13 +132,13 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
           appearance={AppearanceTypes.Secondary}
           children={t('button.cancel')}
           onClick={resetForm}
-          hidden={!isEditable || isEmpty(cat_jobs)}
+          // hidden={!isEditable || isEmpty(cat_jobs)}
           disabled={isSubmitting || isLoading}
         />
         <Button
           children={isEditable ? t('button.save') : t('button.change')}
           disabled={!isValid && isEditable}
-          hidden={isEmpty(cat_jobs)}
+          // hidden={isEmpty(cat_jobs)}
           loading={isSubmitting || isLoading}
           onClick={
             isEditable ? handleSubmit(onSubmit) : () => setIsEditable(true)
