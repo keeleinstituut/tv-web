@@ -17,6 +17,7 @@ import { DiscountPercentages } from 'types/vendors'
 import { CatAnalysis } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
 import { useAssignmentAddVolume } from 'hooks/requests/useAssignments'
+import { VolumePayload } from 'types/assignments'
 
 // TODO: not sure about this data structure
 
@@ -112,7 +113,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const { addAssignmentVolume } = useAssignmentAddVolume({ id: assignmentId })
+  const { addAssignmentVolume } = useAssignmentAddVolume({ subOrderId })
 
   const handleDelete = useCallback(
     (index: number, id: string) => {
@@ -160,9 +161,14 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   )
 
   const handleAdd = useCallback(() => {
+    const onSave = async (args: { data: VolumePayload }) => {
+      const { data: response } = await addAssignmentVolume(args)
+      onChange([...value, response])
+    }
+
     // TODO: open add/edit modal with add mode
     showModal(ModalTypes.AddVolume, {
-      onSave: addAssignmentVolume,
+      onSave,
       assignmentId,
       catSupported,
       vendorPrices,
@@ -171,13 +177,15 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       cat_analyzis,
     })
   }, [
-    addAssignmentVolume,
     assignmentId,
     catSupported,
     vendorPrices,
     vendorDiscounts,
     vendorName,
     cat_analyzis,
+    addAssignmentVolume,
+    onChange,
+    value,
   ])
   // Might need event handler wrappers here
   if (hidden) return null

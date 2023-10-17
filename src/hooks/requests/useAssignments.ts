@@ -7,6 +7,7 @@ import {
   VolumePayload,
 } from 'types/assignments'
 import { SubOrderResponse } from 'types/orders'
+import { VolumeValue } from 'types/volumes'
 
 // TODO: not sure what endpoint to use and what data structure to use
 
@@ -87,15 +88,17 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
   }
 }
 
-export const useAssignmentAddVolume = ({ id }: { id?: string }) => {
+export const useAssignmentAddVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
   const queryClient = useQueryClient()
   const { mutateAsync: addAssignmentVolume, isLoading } = useMutation({
     mutationKey: ['suborders', id],
     mutationFn: (payload: { data: VolumePayload }) =>
       apiClient.post(`${endpoints.VOLUMES}`, payload),
-    onSuccess: ({ data }: { data: VolumePayload }) => {
-      console.log('haha')
-
+    onSuccess: ({ data }: { data: VolumeValue }) => {
       queryClient.refetchQueries({
         queryKey: ['suborders', id],
         type: 'active',
