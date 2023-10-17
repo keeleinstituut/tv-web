@@ -117,17 +117,6 @@ export type PricesDataType = {
   meta?: ResponseMetaTypes
 }
 
-export interface GetPricesPayload {
-  vendor_id?: string
-  institution_user_name?: string
-  src_lang_classifier_value_id?: string[]
-  dst_lang_classifier_value_id?: string[]
-  skill_id?: string[]
-  limit?: number
-  order_by?: string
-  order_direction?: string
-}
-
 export enum OrderBy {
   CharacterFee = 'character_fee',
   WordFee = 'word_fee',

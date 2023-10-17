@@ -1,21 +1,19 @@
 import { useState, useCallback, useEffect, RefObject } from 'react'
 import useTableContext from './useTableContext'
+import useModalContext from './useModalContext'
 
 const useElementPosition = <RefType extends HTMLElement>({
   ref,
-  verticalContainerId,
   forceRecalculate,
-  containingElementId,
 }: {
   ref?: RefObject<RefType>
-  verticalContainerId?: string
   forceRecalculate?: boolean
-  containingElementId?: string
 }) => {
   // Get table and modal id's from context
   const { horizontalWrapperId } = useTableContext()
-  const parentElement = containingElementId
-    ? document.getElementById(containingElementId)
+  const { modalContentId } = useModalContext()
+  const parentElement = modalContentId
+    ? document.getElementById(modalContentId)
     : null
 
   const {
@@ -65,9 +63,7 @@ const useElementPosition = <RefType extends HTMLElement>({
     // Most of the pages will only be vertically scrollable
     // and the scroll will happen inside the mainScroll container
     // So for easier use there is no need to pass anything other than ref to this hook
-    const verticalScrollContainer = verticalContainerId
-      ? document.getElementById(verticalContainerId)
-      : document.getElementById('mainScroll')
+    const verticalScrollContainer = document.getElementById('mainScroll')
     const horizontalScrollContainer = horizontalWrapperId
       ? document.getElementById(horizontalWrapperId)
       : null
@@ -88,7 +84,7 @@ const useElementPosition = <RefType extends HTMLElement>({
       )
       window.removeEventListener('resize', recalculatePosition)
     }
-  }, [horizontalWrapperId, recalculatePosition, ref, verticalContainerId])
+  }, [horizontalWrapperId, recalculatePosition, ref])
 
   return { left, top, right }
 }

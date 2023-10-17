@@ -242,6 +242,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         hidden={!catSupported || !!cat_project_created}
         openSendToCatModal={openSendToCatModal}
         className={classes.generateSection}
+        disabled={isEmpty(value)}
       />
     </div>
   )
