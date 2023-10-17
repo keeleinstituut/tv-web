@@ -117,6 +117,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
         <SmallTooltip
           className={classes.smallTooltip}
           tooltipContent={t('tooltip.split_task')}
+          hidden={activeTab === FeatureTabs.Xliff || !isSplittingAllowed}
         />
       </div>
     </div>
