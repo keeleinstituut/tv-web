@@ -114,7 +114,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
   return (
     <>
       <div>
-        {map([...assignments, ...assignments], (assignment, index) => {
+        {map([...assignments], (assignment, index) => {
           return (
             <FeatureCatJob
               key={assignment.id}
