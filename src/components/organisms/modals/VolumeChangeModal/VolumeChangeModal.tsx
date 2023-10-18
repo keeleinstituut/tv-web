@@ -45,7 +45,7 @@ export interface VolumeChangeModalProps {
 
 enum CatAnalysisVolumes {
   Tm101 = 'tm_101',
-  Tmrepetitions = 'tm_repetitions',
+  Tmrepetitions = 'repetitions',
   Tm100 = 'tm_100',
   Tm9599 = 'tm_95_99',
   Tm8594 = 'tm_85_94',
