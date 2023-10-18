@@ -89,10 +89,13 @@ export interface SourceFile {
 }
 
 export interface CatJob {
-  xliff_download_url: string
-  translate_url: string
-  translation_download_url: string
-  chunk_id: string
+  xliff_download_url?: string
+  translate_url?: string
+  translation_download_url?: string
+  progress_percentage?: string
+  name: string
+  id: number | string
+  volume_analysis?: CatAnalysis[]
 }
 
 export enum TranslationMemoryPercentageNames {}
@@ -100,8 +103,8 @@ export enum TranslationMemoryPercentageNames {}
 export interface CatAnalysis {
   raw_word_count: number
   total: number
+  repetitions: number
   tm_101: number
-  tm_repetitions: number
   tm_100: number
   tm_95_99: number
   tm_85_94: number
@@ -109,7 +112,7 @@ export interface CatAnalysis {
   tm_50_74: number
   tm_0_49: number
   chunk_id: string
-  file_name: string
+  file_names: string[]
 }
 
 export interface ListSubOrderDetail {

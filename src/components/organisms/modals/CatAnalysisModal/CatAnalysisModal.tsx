@@ -70,7 +70,7 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
     ...map(cat_analyzis, (chunk) => [
       chunk.total,
       chunk.tm_101,
-      chunk.tm_repetitions,
+      chunk.repetitions,
       chunk.tm_100,
       chunk.tm_95_99,
       chunk.tm_85_94,

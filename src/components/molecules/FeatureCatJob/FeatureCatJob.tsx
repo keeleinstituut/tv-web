@@ -48,9 +48,9 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
 
   const tableRows = useMemo(
     () =>
-      map(cat_jobs, ({ chunk_id }) => ({
-        selected: chunk_id,
-        chunk_id,
+      map(cat_jobs, ({ id }) => ({
+        selected: id.toString(),
+        chunk_id: id.toString(),
       })),
     [cat_jobs]
   )

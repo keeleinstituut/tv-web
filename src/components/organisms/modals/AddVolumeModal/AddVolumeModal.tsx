@@ -83,16 +83,16 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
       {
         inputType: InputTypes.RadioGroup,
         name: 'chunkId',
-        options: map(cat_analyzis, ({ chunk_id }) => ({
-          value: chunk_id,
-          label: chunk_id,
+        options: map(cat_analysis?.jobs, ({ id }) => ({
+          value: id.toString(),
+          label: id.toString(),
         })),
         rules: {
           required: true,
         },
       },
     ],
-    [cat_analyzis]
+    [cat_analysis?.jobs]
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
