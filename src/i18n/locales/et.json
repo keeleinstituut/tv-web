@@ -396,7 +396,7 @@
     "add_language_directions": "Lisa keelesuund",
     "add_language_pairs": "Vali keelepaarid",
     "add_skills": "Lisa oskused",
-    "add_price_list":"Lisa hinnakiri",
+    "add_price_list": "Lisa hinnakiri",
     "choose_language_pairs": "Teostajale keelepaaride valimine",
     "choose_skills": "Teostajale oskuste valimine",
     "set_price_list": "Keelepaaridele hinnakirja määramine",
@@ -407,7 +407,7 @@
     "destination_language": "Sihtkeel",
     "prices": "Hinnad",
     "eur": "EUR",
-    "skill":"Oskus",
+    "skill": "Oskus",
     "character_fee": "Tähemärk",
     "word_fee": "Sõna",
     "page_fee": "Lehekülg",
@@ -455,6 +455,7 @@
     "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
     "order_updated": "Tellimus on edukalt uuendatud",
+    "translation_memories_created": "Tõlkemälud on edukalt lisatud",
     "translation_memory_created": "Tõlkemälu on edukalt lisatud",
     "translation_memory_updated": "Tõlkemälu on edukalt uuendatud",
     "translation_memory_import": "Tõlkemälu on edukalt üles laetud",
@@ -630,6 +631,4 @@
       "DONE": "Teostatud"
     }
   }
-  
-
 }

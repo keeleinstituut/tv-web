@@ -1,26 +1,23 @@
-import Tag from 'components/atoms/Tag/Tag'
-import { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'
-import DataTable, {
-  TableSizeTypes,
-} from 'components/organisms/DataTable/DataTable'
+import { AppearanceTypes } from 'components/molecules/Button/Button'
 import ModalBase, {
   TitleFontTypes,
   ButtonPositionTypes,
   ModalSizeTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import { t } from 'i18next'
-import { join, map, pickBy, size } from 'lodash'
+import { map, pickBy, reduce, size } from 'lodash'
 import { closeModal } from '../ModalRoot'
-import { FC, useCallback, useEffect } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { ConfirmationModalBaseProps } from '../ConfirmationModalBase/ConfirmationModalBase'
 import TranslationMemoriesTable from 'components/organisms/tables/TranslationMemoriesTable/TranslationMemoriesTable'
 import classes from './classes.module.scss'
 import { useForm } from 'react-hook-form'
-import { TMType } from 'types/translationMemories'
-import { watch } from 'fs'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { useUpdateSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
+import {
+  useFetchSubOrderTmKeys,
+  useUpdateSubOrderTmKeys,
+} from 'hooks/requests/useTranslationMemories'
 import { showValidationErrorMessage } from 'api/errorHandler'
 
 interface FormValues {
@@ -35,11 +32,38 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
   subOrderId,
 }) => {
   const { updateSubOrderTmKeys } = useUpdateSubOrderTmKeys()
-  const { control, watch, getValues } = useForm<FormValues>({
+  const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
+
+  const defaultFormValues = useMemo(
+    () =>
+      reduce(
+        subOrderTmKeys,
+        (result, value) => {
+          if (!value.key) {
+            return result
+          }
+          return {
+            ...result,
+            [value.key]: true,
+          }
+        },
+        {}
+      ),
+    [subOrderTmKeys]
+  )
+
+  const {
+    control,
+    watch,
+    getValues,
+    reset,
+    formState: { isSubmitting, isSubmitSuccessful },
+  } = useForm<FormValues>({
     mode: 'onChange',
     resetOptions: {
       keepErrors: true,
     },
+    defaultValues: defaultFormValues,
   })
 
   const isButtonDisabled = size(pickBy(watch(), (val) => !!val)) > 9
@@ -54,9 +78,15 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
     }
   }, [isButtonDisabled])
 
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset()
+    }
+  }, [isSubmitSuccessful, reset])
+
   const handleUpdateTmKeys = useCallback(async () => {
     const values = pickBy(getValues(), (val) => !!val)
-    console.log('values', values)
+
     const payload = {
       sub_project_id: subOrderId || '',
       tm_keys: map(values, (_, key) => {
@@ -66,13 +96,13 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
         }
       }),
     }
-    console.log('pay', payload)
+
     try {
       await updateSubOrderTmKeys(payload)
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
-        content: t('success.files_sent_to_cat'),
+        content: t('success.translation_memories_created'),
       })
       closeModal()
     } catch (errorData) {
@@ -93,7 +123,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
         {
           appearance: AppearanceTypes.Secondary,
           onClick: () => {
-            // resetForm()
+            reset()
             closeModal()
           },
           children: t('button.quit'),
@@ -102,7 +132,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
           appearance: AppearanceTypes.Primary,
           form: 'tm_select',
           children: t('button.add'),
-          // loading: isSubmitting,
+          loading: isSubmitting,
           onClick: handleUpdateTmKeys,
           type: 'submit',
           disabled: isButtonDisabled,

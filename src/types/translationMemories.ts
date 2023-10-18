@@ -16,7 +16,7 @@ export interface TranslationMemoryType {
   comment?: string
   created_at: string
   lang_pair: string
-  chunk_amount?: string
+  chunk_amount?: string | number
   import_at?: string
 }
 
@@ -65,6 +65,6 @@ export interface SubOrderTmKeysPayload {
   sub_project_id: string
   tm_keys: {
     key: string
-    is_writable: boolean
+    is_writable?: boolean
   }[]
 }

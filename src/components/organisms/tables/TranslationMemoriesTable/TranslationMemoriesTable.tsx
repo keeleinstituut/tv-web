@@ -114,7 +114,6 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
                   ariaLabel={t('label.file_type')}
                   control={tmKeyControl}
                   inputType={InputTypes.Checkbox}
-                  // className={classes.fitContent}
                 />
               )
             },
