@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { CatAnalysis, SourceFile } from 'types/orders'
+import { CatAnalysis } from 'types/orders'
 import { chain, map, zip, join, reduce } from 'lodash'
 import ModalBase, {
   ButtonPositionTypes,
@@ -22,7 +22,6 @@ import Tag from 'components/atoms/Tag/Tag'
 
 export interface CatAnalysisModalProps {
   cat_analyzis?: CatAnalysis[]
-  source_files?: SourceFile[]
   isModalOpen?: boolean
   source_language_classifier_value?: LanguageClassifierValue
   destination_language_classifier_value?: LanguageClassifierValue
@@ -50,7 +49,6 @@ const columnHelper = createColumnHelper<TableRow>()
 const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
   cat_analyzis,
   isModalOpen,
-  source_files,
   source_language_classifier_value,
   destination_language_classifier_value,
 }) => {

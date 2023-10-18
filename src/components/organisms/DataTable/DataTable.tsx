@@ -50,7 +50,7 @@ type DataTableProps<TData extends RowData> = {
   data: TData[]
   columns: ColumnDef<TData>[]
   tableSize: TableSizeTypes
-  title?: string
+  title?: string | ReactElement
   headComponent?: ReactElement
   paginationData?: ResponseMetaTypes
   onPaginationChange?: (value?: PaginationFunctionType) => void
@@ -86,10 +86,10 @@ const DataTable = <TData,>(
     onPaginationChange,
     meta,
     getSubRows,
-    className,
     pageSizeOptions,
     hidePagination = false,
     headComponent,
+    className,
     hidePaginationSelectionInput = false,
     tableWrapperClassName,
     hidden,

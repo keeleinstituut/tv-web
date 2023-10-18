@@ -151,6 +151,7 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   // cat_features: SubProjectFeatures[]
   cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
+  // TODO: not sure if the name will be intermediate_files
   source_files: SourceFile[]
   final_files: SourceFile[]
   assignments: AssignmentType[]
@@ -224,7 +225,8 @@ export interface SubOrderResponse {
 
 // TODO: not sure yet
 export interface SubOrderPayload {
-  id: string
+  deadline_at?: string
+  final_files?: (File | SourceFile)[]
 }
 
 export interface CatToolJobsResponse {

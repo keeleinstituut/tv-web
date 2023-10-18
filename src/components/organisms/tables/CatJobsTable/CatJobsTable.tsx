@@ -28,7 +28,7 @@ interface CatJobsTableProps {
   hidden?: boolean
   cat_jobs?: CatJob[]
   cat_analyzis?: CatAnalysis[]
-  source_files?: SourceFile[]
+  intermediate_files?: SourceFile[]
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
 }
@@ -47,7 +47,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   hidden,
   cat_jobs,
   cat_analyzis,
-  source_files,
+  intermediate_files,
   source_language_classifier_value,
   destination_language_classifier_value,
 }) => {
@@ -56,14 +56,14 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
       cat_analyzis,
-      source_files,
+      intermediate_files,
       source_language_classifier_value,
       destination_language_classifier_value,
     })
   }, [
     cat_analyzis,
     destination_language_classifier_value,
-    source_files,
+    intermediate_files,
     source_language_classifier_value,
   ])
 

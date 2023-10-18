@@ -8,6 +8,7 @@ import {
   SubOrdersPayloadType,
   CatProjectPayload,
   CatToolJobsResponse,
+  SubOrderPayload,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -123,6 +124,31 @@ export const useUpdateOrder = ({ id }: { id?: string }) => {
 
   return {
     updateOrder,
+    isLoading,
+  }
+}
+
+export const useUpdateSubOrder = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateSubOrder, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: SubOrderPayload) =>
+      apiClient.put(`${endpoints.SUB_PROJECTS}/${id}`, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['suborders', id],
+        (oldData?: SubOrderResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    updateSubOrder,
     isLoading,
   }
 }

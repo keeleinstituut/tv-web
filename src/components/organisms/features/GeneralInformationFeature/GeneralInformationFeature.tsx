@@ -1,6 +1,7 @@
-import { FC, useCallback, useMemo } from 'react'
-import { map, keys, filter, compact, isEmpty } from 'lodash'
+import { FC, useCallback, useEffect, useMemo } from 'react'
+import { map, keys, filter, compact, isEmpty, isEqual } from 'lodash'
 import {
+  useUpdateSubOrder,
   useFetchSubOrderCatToolJobs,
   useSubOrderSendToCat,
 } from 'hooks/requests/useOrders'
@@ -32,6 +33,7 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { showValidationErrorMessage } from 'api/errorHandler'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
+import { getLocalDateOjectFromUtcDateString } from 'helpers'
 
 // TODO: this is WIP code for suborder view
 
@@ -50,12 +52,14 @@ type GeneralInformationFeatureProps = Pick<
 }
 
 interface FormValues {
-  deadline_at: string
+  deadline_at: { date?: string; time?: string }
   source_files: SourceFile[]
+  final_files: SourceFile[]
   cat_jobs: CatJob[]
   // TODO: no idea about these fields
   // source_files_checked: number[]
-  shared_with_client: number[]
+  intermediate_files_checked: number[]
+  shared_with_client: boolean[]
   write_to_memory: object
 }
 
@@ -71,6 +75,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   destination_language_classifier_value,
 }) => {
   const { t } = useTranslation()
+  const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: subOrderId })
   const { sendToCat } = useSubOrderSendToCat()
   const { catToolJobs } = useFetchSubOrderCatToolJobs({ id: subOrderId })
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
@@ -82,27 +87,75 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const defaultValues = useMemo(
     () => ({
-      deadline_at,
+      deadline_at: deadline_at
+        ? getLocalDateOjectFromUtcDateString(deadline_at)
+        : { date: '', time: '' },
       source_files: map(source_files, (file) => ({
         ...file,
         ...{ isChecked: false },
       })),
+      final_files,
       cat_jobs,
       // TODO: no idea about these fields
-      // source_files_checked: [],
+      intermediate_files_checked: [],
       shared_with_client: [],
       write_to_memory: {},
     }),
-    [cat_jobs, deadline_at, source_files]
+    [cat_jobs, deadline_at, final_files, source_files]
   )
 
-  const { control, getValues, watch } = useForm<FormValues>({
+  const { control, getValues, watch, setValue } = useForm<FormValues>({
     reValidateMode: 'onChange',
-    values: defaultValues,
+    defaultValues: defaultValues,
   })
 
+  const newFinalFiles = watch('final_files')
+
+  // TODO: currently just used this for uploading final_files
+  // However not sure if we can use similar logic for all the fields
+  // if we can, then we should create 1 useEffect for the entire form and send the payload
+  // Whenever any field changes, except for shared_with_client, which will have their own button
+  useEffect(() => {
+    const attemptFilesUpload = async () => {
+      try {
+        // TODO: not sure if this is the correct endpoint and if we can send both the old and new files together like this
+        const { data } = await updateSubOrder({
+          final_files: newFinalFiles,
+        })
+        const savedFinalFiles = data?.final_files
+        setValue('final_files', savedFinalFiles, { shouldDirty: false })
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.final_files_changed'),
+        })
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
+    }
+    if (!isEmpty(newFinalFiles) && !isEqual(newFinalFiles, final_files)) {
+      attemptFilesUpload()
+    }
+  }, [final_files, newFinalFiles, setValue, t, updateSubOrder])
+
   console.log(watch())
+
   const handleSendToCat = useCallback(async () => {
+    // const chosenSourceFiles = getValues('intermediate_files_checked')
+    // const translationMemories = getValues('write_to_memory')
+    // const sourceFiles = getValues('intermediate_files')
+
+    // const selectedIntermediateFiles = map(
+    //   chosenSourceFiles,
+    //   (index) => sourceFiles[index]
+    // )
+    // // TODO: not sure how or what to send
+    // const payload: CatProjectPayload = {
+    //   intermediate_file_ids: compact(map(selectedIntermediateFiles, 'id')),
+    //   translation_memory_ids: keys(
+    //     filter(translationMemories, (value) => !!value)
+    //   ),
+
     const translationMemories = getValues('write_to_memory')
     const sourceFiles = getValues('source_files')
 
@@ -154,7 +207,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       />
       <div className={classes.grid}>
         <SourceFilesList
-          name="source_files"
+          name="intermediate_files"
           title={t('orders.source_files')}
           tooltipContent={t('tooltip.source_files_helper')}
           // className={classes.filesSection}
@@ -167,18 +220,19 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         />
         <FinalFilesList
           // TODO: not sure what the field name will be
-          name="ready_files"
+          name="final_files"
           title={t('orders.ready_files_from_vendors')}
           // className={classes.filesSection}
           control={control}
           isEditable
+          isLoading={isLoading}
           // isEditable={isEditable}
         />
         <CatJobsTable
           className={classes.catJobs}
           //hidden={!catSupported || !cat_project_created || isEmpty(cat_jobs)}
           cat_jobs={cat_jobs}
-          source_files={source_files}
+          intermediate_files={source_files}
           cat_analyzis={cat_analyzis}
           source_language_classifier_value={source_language_classifier_value}
           destination_language_classifier_value={

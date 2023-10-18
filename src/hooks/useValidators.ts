@@ -29,6 +29,9 @@ const alphaCharCheck = (tagInput: string) =>
 const numberBetweenZeroAndHundred = (number: string) =>
   /^(100(\.0+)?|\d{1,2}(\.\d+)?)$/.test(number)
 
+const allowAllNumbersWithDot = (number: string) =>
+  /^(\d+(\.\d+)?|\.\d+)$/.test(number)
+
 const useValidators = () => {
   const { t } = useTranslation()
 
@@ -85,6 +88,14 @@ const useValidators = () => {
     return true
   }
 
+  const priceValidator = (value?: string | null) => {
+    if (value && !allowAllNumbersWithDot(value)) {
+      return t('error.invalid_price')
+    }
+
+    return true
+  }
+
   type valueType = {
     days?: string[]
     time_range?: { start?: string; end?: string }
@@ -110,6 +121,7 @@ const useValidators = () => {
     tagInputValidator,
     discountValidator,
     dateTimeValidator,
+    priceValidator,
     nameInputValidator,
   }
 }

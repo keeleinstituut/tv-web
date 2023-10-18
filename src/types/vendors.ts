@@ -6,6 +6,8 @@ import {
 import { UserType } from './users'
 import { Price } from './price'
 import { Tag } from './tags'
+import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
+import { SkillPrice } from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
 
 export type SkillsData = {
   id: string
@@ -91,6 +93,44 @@ export type UpdateVendorPayload = {
   comment?: string
 }
 
+export type PayloadItem = {
+  prices: SkillPrice[]
+  state: DataStateTypes
+}
+
+export type UpdatePricesPayload = { data: PayloadItem[] }
+
+export type DeletePricesPayload = {
+  id?: string[]
+}
+export interface PricesData extends Price {
+  vendor: Vendor
+  skill: SkillsData
+}
+
+export type UpdatedPrices = {
+  data?: PricesData[]
+}
+
+export type PricesDataType = {
+  data: PricesData[]
+  meta?: ResponseMetaTypes
+}
+
+export enum OrderBy {
+  CharacterFee = 'character_fee',
+  WordFee = 'word_fee',
+  PageFee = 'page_fee',
+  MinuteFee = 'minute_fee',
+  HourFee = 'hour_fee',
+  MinimalFee = 'minimal_fee',
+  CreatedAt = 'created_at',
+}
+
+export enum OrderDirection {
+  Asc = 'asc',
+  Desc = 'desc',
+}
 export type CreateVendorPayload = { institution_user_id: string }[]
 
 export type DeleteVendorsPayload = string[]

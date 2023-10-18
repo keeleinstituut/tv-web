@@ -28,8 +28,8 @@ const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
           <Assignment
             key={assignment.id}
             index={index}
-            {...assignment}
             {...rest}
+            {...assignment}
           />
         )
       })}

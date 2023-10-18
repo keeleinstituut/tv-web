@@ -15,11 +15,11 @@
       background-color: $color-primary;
     }
   }
+}
 
-  .content {
-    padding: 0 spacing(1);
-    width: fit-content;
-    white-space: nowrap;
-    left: -33px;
-  }
+.content {
+  padding: spacing(1);
+  width: fit-content;
+  white-space: nowrap;
+  margin-left: -9px;
 }
