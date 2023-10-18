@@ -170,6 +170,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     showModal(ModalTypes.AddVolume, {
       onSave,
       assignmentId,
+      subOrderId,
       catSupported,
       vendorPrices,
       vendorDiscounts,
@@ -178,6 +179,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     })
   }, [
     assignmentId,
+    subOrderId,
     catSupported,
     vendorPrices,
     vendorDiscounts,

@@ -18,6 +18,7 @@ export interface AddVolumeModalProps extends VolumeChangeModalProps {
   onSave?: (newVolume: VolumePayload) => void
   catSupported?: boolean
   cat_analyzis?: CatAnalysis[]
+  subOrderId?: string
 }
 
 interface FormValues {
@@ -30,6 +31,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
   catSupported,
   isModalOpen,
   cat_analyzis,
+  subOrderId,
   ...rest
 }) => {
   const { t } = useTranslation()
