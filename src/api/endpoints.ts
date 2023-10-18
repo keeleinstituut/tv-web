@@ -2,6 +2,7 @@ export const endpoints = {
   ROLES: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}roles`,
   INSTITUTIONS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institutions`,
   PRIVILEGES: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}privileges`,
+  CAT_TOOL: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool`,
   USERS: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users`,
   TRANSLATION_USERS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}institution-users`,
   VALIDATE_CSV: `${process.env.REACT_APP_AUTHORIZATION_API_BASE}institution-users/validate-import-csv`,

@@ -11,6 +11,7 @@ import DynamicForm, {
 import { VolumeChangeModalProps } from 'components/organisms/modals/VolumeChangeModal/VolumeChangeModal'
 import { CatAnalysis } from 'types/orders'
 import { VolumePayload } from 'types/assignments'
+import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
 
 // TODO: this is WIP code for suborder view
 
@@ -35,6 +36,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation()
+  const { cat_analysis } = useCatAnalysisFetch({ subOrderId })
 
   const {
     control,
