@@ -135,7 +135,7 @@ export interface ListSubOrderDetail {
 export interface SubOrderDetail extends ListSubOrderDetail {
   // Others from what Markus used:
   cat_project_created: string
-  cat_features: SubProjectFeatures[]
+  features: SubProjectFeatures[]
   cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
   // TODO: not sure if the name will be intermediate_files
