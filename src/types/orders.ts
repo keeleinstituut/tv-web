@@ -112,7 +112,7 @@ export interface CatAnalysis {
   tm_50_74: number
   tm_0_49: number
   chunk_id: string
-  file_names: string[]
+  files_names: string[]
 }
 
 export interface ListSubOrderDetail {

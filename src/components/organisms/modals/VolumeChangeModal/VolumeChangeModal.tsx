@@ -286,7 +286,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         isCat ? (
           <>
             {t('modal.picked_analysis_for')}{' '}
-            <b>[{matchingCatAnalysis?.chunk_id}]</b>
+            <b>{JSON.stringify(matchingCatAnalysis?.files_names)}</b>
             <br />
             {t('modal.pick_volume_by_cat_helper')}
           </>

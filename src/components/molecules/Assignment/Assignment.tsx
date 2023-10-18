@@ -105,7 +105,9 @@ const Assignment: FC<AssignmentProps> = ({
     vendor?.prices,
   ])
 
-  const vendorName = `${vendor?.institution_user?.user?.forename} ${vendor?.institution_user?.user?.surname}`
+  const { forename, surname } = vendor?.institution_user?.user || {}
+
+  const vendorName = !!forename ? `${forename} ${surname}` : ''
 
   // TODO: we should be able to get some of these values from somewhere
   const defaultValues = useMemo(
