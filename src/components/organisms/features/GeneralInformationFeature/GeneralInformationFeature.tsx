@@ -1,6 +1,9 @@
 import { FC, useCallback, useMemo } from 'react'
 import { map, keys, filter, compact, isEmpty } from 'lodash'
-import { useSubOrderSendToCat } from 'hooks/requests/useOrders'
+import {
+  useFetchSubOrderCatToolJobs,
+  useSubOrderSendToCat,
+} from 'hooks/requests/useOrders'
 import {
   CatJob,
   CatProjectPayload,
@@ -28,12 +31,12 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
+import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
 
 // TODO: this is WIP code for suborder view
 
 type GeneralInformationFeatureProps = Pick<
   SubOrderDetail,
-  | 'cat_project_created'
   | 'cat_jobs'
   | 'cat_analyzis'
   | 'source_files'
@@ -51,14 +54,13 @@ interface FormValues {
   source_files: SourceFile[]
   cat_jobs: CatJob[]
   // TODO: no idea about these fields
-  source_files_checked: number[]
+  // source_files_checked: number[]
   shared_with_client: number[]
   write_to_memory: object
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   catSupported,
-  cat_project_created,
   cat_jobs,
   subOrderId,
   cat_analyzis,
@@ -69,42 +71,53 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   destination_language_classifier_value,
 }) => {
   const { t } = useTranslation()
-  const { sendToCat } = useSubOrderSendToCat({ id: subOrderId })
+  const { sendToCat } = useSubOrderSendToCat()
+  const { catToolJobs } = useFetchSubOrderCatToolJobs({ id: subOrderId })
+  const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
+
+  console.log('data', catToolJobs)
+  console.log('catSupported', catSupported)
+  const cat_project_created = !isEmpty(catToolJobs)
+  console.log('cat_project_created', cat_project_created)
 
   const defaultValues = useMemo(
     () => ({
       deadline_at,
-      source_files,
+      source_files: map(source_files, (file) => ({
+        ...file,
+        ...{ isChecked: false },
+      })),
       cat_jobs,
       // TODO: no idea about these fields
-      source_files_checked: [],
+      // source_files_checked: [],
       shared_with_client: [],
       write_to_memory: {},
     }),
     [cat_jobs, deadline_at, source_files]
   )
 
-  const { control, getValues } = useForm<FormValues>({
+  const { control, getValues, watch } = useForm<FormValues>({
     reValidateMode: 'onChange',
     values: defaultValues,
   })
 
+  console.log(watch())
   const handleSendToCat = useCallback(async () => {
-    const chosenSourceFiles = getValues('source_files_checked')
     const translationMemories = getValues('write_to_memory')
     const sourceFiles = getValues('source_files')
 
-    const selectedSourceFiles = map(
-      chosenSourceFiles,
-      (index) => sourceFiles[index]
-    )
+    const selectedSourceFiles = filter(sourceFiles, 'isChecked')
+    console.log(selectedSourceFiles)
+
     // TODO: not sure how or what to send
     const payload: CatProjectPayload = {
-      source_file_ids: compact(map(selectedSourceFiles, 'id')),
-      translation_memory_ids: keys(
-        filter(translationMemories, (value) => !!value)
-      ),
+      sub_project_id: subOrderId,
+      source_files_ids: compact(map(selectedSourceFiles, 'id')),
+      // translation_memory_ids: keys(
+      //   filter(translationMemories, (value) => !!value)
+      // ),
     }
+    console.log('pay', payload)
     try {
       await sendToCat(payload)
       showNotification({
@@ -147,7 +160,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           // className={classes.filesSection}
           control={control}
           catSupported={catSupported}
-          cat_project_created={cat_project_created}
+          //cat_project_created={cat_project_created}
           openSendToCatModal={openSendToCatModal}
           isEditable
           // isEditable={isEditable}
@@ -163,7 +176,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         />
         <CatJobsTable
           className={classes.catJobs}
-          hidden={!catSupported || !cat_project_created || isEmpty(cat_jobs)}
+          //hidden={!catSupported || !cat_project_created || isEmpty(cat_jobs)}
           cat_jobs={cat_jobs}
           source_files={source_files}
           cat_analyzis={cat_analyzis}
@@ -174,9 +187,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}
-          hidden={!catSupported}
+          // hidden={!catSupported}
           control={control}
           isEditable
+          subOrderId={subOrderId}
+          subOrderTmKeys={subOrderTmKeys}
         />
       </div>
     </Root>

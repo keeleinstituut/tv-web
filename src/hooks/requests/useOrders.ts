@@ -7,6 +7,7 @@ import {
   SubOrderResponse,
   SubOrdersPayloadType,
   CatProjectPayload,
+  CatToolJobsResponse,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -169,17 +170,36 @@ export const useFetchSubOrders = () => {
   }
 }
 
-export const useSubOrderSendToCat = ({ id }: { id?: string }) => {
+export const useSubOrderSendToCat = () => {
   const { mutateAsync: sendToCat, isLoading } = useMutation({
     mutationKey: ['send_cat'],
     mutationFn: (payload: CatProjectPayload) =>
-      apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/send-to-cat`, {
-        ...payload,
-      }),
+      apiClient.post(endpoints.CAT_TOOL_SETUP, payload),
   })
 
   return {
     sendToCat,
+    isLoading,
+  }
+}
+
+export const useFetchSubOrderCatToolJobs = ({ id }: { id?: string }) => {
+  const { isLoading, isError, data, status, error } =
+    useQuery<CatToolJobsResponse>({
+      queryKey: ['suborders-cat-projects', id],
+      queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
+      // onSettled(data, error) {
+      //   console.log('err', error)
+      //   console.log('dd', data)
+      // },
+      // onSuccess: (data) => {
+      //   console.log('err', data?.status === 401)
+      //   console.log('dd', data)
+      // },
+    })
+  console.log('status', status, error)
+  return {
+    catToolJobs: data?.data,
     isLoading,
   }
 }

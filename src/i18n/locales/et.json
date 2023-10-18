@@ -56,7 +56,7 @@
     "special_instructions": "Erijuhised tellimuse kohta",
     "start_date": "Algus",
     "start_time": "Alguse kellaaeg",
-    "source_language": "Algkeel",
+    "source_language": "Lähtekeel",
     "destination_language": "Sihtkeel",
     "file_type": "Failitüüp",
     "added": "Lisatud",
@@ -552,7 +552,9 @@
       "tm_50_74": "50-74%",
       "tm_0_49": "0-49%"
     },
-    "analyzed_word_count": "Analüüsitud sõnu kokku: {{wordCount}}"
+    "analyzed_word_count": "Analüüsitud sõnu kokku: {{wordCount}}",
+    "selecting_tm": "Tõlkemälude valimine",
+    "selecting_tm_amount": "Alamtellimusele saab lisada kuni 10 tõlkemälu."
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",

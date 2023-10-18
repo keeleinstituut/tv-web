@@ -86,6 +86,19 @@ export interface SourceFile {
   custom_properties: string[]
   generated_conversions: string[]
   responsive_images: string[]
+  isChecked?: boolean
+}
+
+export interface CatFile {
+  name: string
+  id: string | number
+  uuid: string
+  file_name: string
+  custom_properties: { type: string }
+  size: number
+  collection_name: string
+  created_at: string
+  updated_at: string
 }
 
 export interface CatJob {
@@ -135,12 +148,14 @@ export interface ListSubOrderDetail {
 export interface SubOrderDetail extends ListSubOrderDetail {
   // Others from what Markus used:
   cat_project_created: string
-  cat_features: SubProjectFeatures[]
+  // cat_features: SubProjectFeatures[]
   cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
   source_files: SourceFile[]
   final_files: SourceFile[]
   assignments: AssignmentType[]
+  cat_files: CatFile[]
+  mt_enabled: boolean
 }
 
 export interface ListOrder {
@@ -212,10 +227,21 @@ export interface SubOrderPayload {
   id: string
 }
 
+export interface CatToolJobsResponse {
+  data: CatToolJobs[]
+}
 // TODO: not sure what should be sent for CatProjectPayload
 export interface CatProjectPayload {
-  source_file_ids: string[]
-  translation_memory_ids: string[]
+  sub_project_id: string
+  source_files_ids: string[]
+  translation_memory_ids?: string[]
+}
+
+export interface CatToolJobs {
+  id: string
+  name: string
+  progress_percentage: number | string
+  translate_url: string
 }
 export interface NewOrderPayload {
   client_user_institution_id: string

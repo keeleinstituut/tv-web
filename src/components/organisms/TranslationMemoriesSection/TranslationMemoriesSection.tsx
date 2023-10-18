@@ -20,15 +20,30 @@ import Button, {
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import Tag from 'components/atoms/Tag/Tag'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-
+import { showModal, ModalTypes } from '../modals/ModalRoot'
+import {
+  useFetchSubOrderTmKeys,
+  useFetchTranslationMemories,
+} from 'hooks/requests/useTranslationMemories'
+import { SubOrderTmKeys } from 'types/translationMemories'
+import { pick, map, includes, filter } from 'lodash'
 interface TranslationMemoryButtonProps {
   hidden?: boolean
+  subOrderId?: string
 }
 
 const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
   hidden,
+  subOrderId,
 }) => {
   const { t } = useTranslation()
+
+  const addNewTm = () => {
+    showModal(ModalTypes.AddTranslationMemories, {
+      subOrderId: subOrderId,
+    })
+  }
+
   if (hidden) return null
   return (
     <>
@@ -42,7 +57,7 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
         children={t('button.add_tm')}
         size={SizeTypes.S}
         className={classes.mainButton}
-        // onClick={addNewTm}
+        onClick={addNewTm}
       />
     </>
   )
@@ -53,6 +68,8 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
   hidden?: boolean
   isEditable?: boolean
   control?: Control<TFormValues>
+  subOrderId?: string
+  subOrderTmKeys?: SubOrderTmKeys[]
 }
 
 interface FileRow {
@@ -70,9 +87,19 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   hidden,
   isEditable,
   control,
+  subOrderId,
+  subOrderTmKeys,
 }: TranslationMemoriesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
+  const { translationMemories = [], handleFilterChange } =
+    useFetchTranslationMemories()
 
+  const tmIds = map(subOrderTmKeys, 'id')
+  const filtered = filter(translationMemories, ({ id }) => includes(tmIds, id))
+
+  console.log('33', tmIds, filtered)
+  console.log('subOrderTmKeys', subOrderTmKeys)
+  // const selectedTranslationMemories = map(translationMemories, ({id}) => )
   // TODO: we need to map translation memories here for table data
   const filesData = useMemo(
     () => [
@@ -160,7 +187,12 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   return (
     <ExpandableContentContainer
       className={classNames(classes.expandableContainer, className)}
-      rightComponent={<TranslationMemoryButtons hidden={!isEditable} />}
+      rightComponent={
+        <TranslationMemoryButtons
+          hidden={!isEditable}
+          subOrderId={subOrderId}
+        />
+      }
       initialIsExpanded={isEditable}
       wrapContent
       leftComponent={

@@ -6,6 +6,8 @@ import customParseFormat from 'dayjs/plugin/customParseFormat'
 import {
   ExportTMXPayload,
   ImportTMXPayload,
+  SubOrderTmKeysPayload,
+  SubOrderTmKeysResponse,
   TranslationMemoryDataType,
   TranslationMemoryPayload,
   TranslationMemoryPostType,
@@ -28,7 +30,6 @@ export const useFetchTranslationMemories = (
 
   const filterWithoutSearch = omit(filters, 'name')
   const searchValue = pick(filters, 'name')
-
   const queryString = join(
     flatten(
       map(filterWithoutSearch, (values, key) =>
@@ -209,5 +210,71 @@ export const useExportTMX = () => {
   return {
     isLoading,
     exportTMX,
+  }
+}
+
+export const useFetchSubOrderTmKeys = ({ id }: { id?: string }) => {
+  const { isLoading, isError, isFetching, data } =
+    useQuery<SubOrderTmKeysResponse>({
+      enabled: !!id,
+      queryKey: ['subOrder-tm-keys', id],
+      queryFn: () => apiClient.get(`${endpoints.TM_KEYS}/${id}`),
+    })
+
+  return {
+    isLoading,
+    isError,
+    subOrderTmKeys: data?.data || [],
+    isFetching,
+  }
+}
+
+export const useFetchSubOrdersByTmKey = ({ id }: { id?: string }) => {
+  const { isLoading, isError, isFetching, data } =
+    useQuery<TranslationMemoryType>({
+      enabled: !!id,
+      queryKey: ['tm-subOrders', id],
+      queryFn: () => apiClient.get(`${endpoints.TM_SUB_PROJECTS}/${id}`),
+    })
+
+  return {
+    isLoading,
+    isError,
+    tmSubOrders: data,
+    isFetching,
+  }
+}
+
+export const useUpdateSubOrderTmKeys = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateSubOrderTmKeys, isLoading } = useMutation({
+    mutationKey: ['subOrder-tm-keys'],
+    mutationFn: async (payload: SubOrderTmKeysPayload) => {
+      return apiClient.post(endpoints.UPDATE_TM_KEYS, {
+        ...payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['subOrder-tm-keys'],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: SubOrderTmKeysResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+      queryClient.refetchQueries({
+        queryKey: ['subOrder-tm-keys'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    updateSubOrderTmKeys,
+    isLoading,
   }
 }

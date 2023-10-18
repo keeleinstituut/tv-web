@@ -101,10 +101,11 @@ const SourceFilesList = <TFormValues extends FieldValues>({
           columnHelper.accessor('check', {
             header: '',
             footer: (info) => info.column.id,
-            cell: ({ getValue }) => {
+            cell: ({ getValue, row }) => {
+              console.log(row)
               return (
                 <FormInput
-                  name={`${name}_checked.${getValue()}` as Path<TFormValues>}
+                  name={`${name}.${row.id}.isChecked` as Path<TFormValues>}
                   ariaLabel={t('label.file_type')}
                   control={control}
                   inputType={InputTypes.Checkbox}
@@ -148,6 +149,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
           file instanceof File ? URL.createObjectURL(file) : ''
         const fileUrl =
           'original_url' in file ? file.original_url : localFileUrl
+        console.log('fileUrl', fileUrl, file, localFileUrl)
         return (
           <BaseButton
             className={classNames(classes.iconButton, classes.downloadButton)}
@@ -239,7 +241,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         }
       />
       <GenerateForTranslationSection
-        hidden={!catSupported || !!cat_project_created}
+        // hidden={!catSupported || !!cat_project_created}
         openSendToCatModal={openSendToCatModal}
         className={classes.generateSection}
       />

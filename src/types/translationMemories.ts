@@ -50,3 +50,21 @@ export interface ExportTMXPayload {
   tlang: string
   tag: string
 }
+
+export interface SubOrderTmKeys {
+  id: string
+  sub_project_id: string
+  key: string
+  is_writable: boolean
+}
+
+export interface SubOrderTmKeysResponse {
+  data: SubOrderTmKeys[]
+}
+export interface SubOrderTmKeysPayload {
+  sub_project_id: string
+  tm_keys: {
+    key: string
+    is_writable: boolean
+  }[]
+}

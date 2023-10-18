@@ -153,7 +153,7 @@ const Feature: FC<any> = (props) => {
 const GeneralInformation: FC<any> = (props) => {
   const { subOrder, feature } = props
   const catSupported = includes(subOrder.cat_features, feature)
-  const { sendToCat } = useSubOrderSendToCat({ id: subOrder.id })
+  const { sendToCat } = useSubOrderSendToCat()
 
   return (
     <>

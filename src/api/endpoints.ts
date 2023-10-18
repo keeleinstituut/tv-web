@@ -28,6 +28,13 @@ export const endpoints = {
   IMPORT_TMX: `${process.env.REACT_APP_TRANSLATION_MEMORY_API_BASE}tm/import`,
   EXPORT_TMX: `${process.env.REACT_APP_TRANSLATION_MEMORY_API_BASE}tm/export`,
   DISCOUNTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}institution-discounts`,
+  CAT_TOOL_JOBS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/jobs`,
+  CAT_TOOL_SETUP: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/setup`,
+  CAT_TOOL_SPLIT: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/split`,
+  CAT_TOOL_MERGE: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/merge`,
+  TM_KEYS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tm-keys`,
+  TM_SUB_PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tm-keys/subprojects`,
+  UPDATE_TM_KEYS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tm-keys/sync`,
 }
 
 export const authEndpoints = {

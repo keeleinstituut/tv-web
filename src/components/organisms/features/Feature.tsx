@@ -38,8 +38,8 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
       {...subOrder}
       catSupported={
         feature === SubProjectFeatures.GeneralInformation
-          ? !isEmpty(subOrder.cat_features)
-          : includes(subOrder.cat_features, feature)
+          ? !isEmpty(subOrder.features)
+          : includes(subOrder.features, feature)
       }
       subOrderId={subOrder.id}
       feature={feature}

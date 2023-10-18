@@ -67,26 +67,27 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     source_language_classifier_value,
   ])
 
-  const filesData = useMemo(
-    () =>
-      map(
-        cat_jobs,
-        ({ xliff_download_url, translate_url, chunk_id }, index) => {
-          // const name = xliff_download_url
-          //   .substring(xliff_download_url.lastIndexOf('/' + 1))
-          //   .replace('/', '')
-          // TODO: currently randomly assuming that cat_jobs will have chunk_id, which will match cat_analyzis
-          return {
-            chunk_id,
-            percentage: '50%',
-            translate_url,
-            dots_button: index,
-          }
-        }
-      ),
-    [cat_jobs]
-  )
+  const filesData = useMemo(() => {
+    // map(
+    //   cat_jobs,
+    //   ({ xliff_download_url, translate_url, chunk_id }, index) => {
+    // const name = xliff_download_url
+    //   .substring(xliff_download_url.lastIndexOf('/' + 1))
+    //   .replace('/', '')
+    // TODO: currently randomly assuming that cat_jobs will have chunk_id, which will match cat_analyzis
+    return [
+      {
+        chunk_id: 'xxxx',
+        percentage: '50%',
+        translate_url: 'https',
+        dots_button: 0,
+      },
+    ]
+    //   }
+    // )
+  }, [cat_jobs])
 
+  console.log('filesData', filesData)
   const handleMerge = useCallback((chunk_id?: string) => {
     // TODO: call some merge endpoint
     console.warn('PROCEED merging files')
@@ -152,10 +153,12 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('dots_button', {
-      header: '',
-      cell: ({ getValue }) => {
+      cell: '',
+      header: (prop) => {
+        console.log('prop', prop)
         const { xliff_download_url, translation_download_url, chunk_id } =
-          cat_jobs?.[getValue()] || {}
+          cat_jobs?.[0] || {}
+        // cat_jobs?.[getValue()] || {}
         // TODO: continue from here, need to add actual functionality to these buttons
         return (
           <SimpleDropdown
@@ -221,7 +224,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           </div>
         }
       />
-      <Button
+      {/* <Button
         appearance={AppearanceTypes.Text}
         onClick={handleOpenCatAnalysisModal}
         iconPositioning={IconPositioningTypes.Left}
@@ -233,7 +236,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         icon={ArrowRight}
       >
         {t('button.look_at_cat_analysis')}
-      </Button>
+      </Button> */}
     </div>
   )
 }
