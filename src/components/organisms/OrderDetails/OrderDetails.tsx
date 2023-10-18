@@ -116,12 +116,14 @@ interface OrderDetailsProps {
   mode?: OrderDetailModes
   order?: DetailedOrder
   isUserClientOfProject?: boolean
+  className?: string
 }
 
 const OrderDetails: FC<OrderDetailsProps> = ({
   mode,
   order,
   isUserClientOfProject,
+  className,
 }) => {
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
@@ -358,6 +360,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
           {t('orders.order_details_expandable')}
         </h2>
       }
+      className={className}
     >
       <Root
         className={classNames(

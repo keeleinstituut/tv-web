@@ -627,6 +627,10 @@
       "IN_PROGRESS": "Teostamisel",
       "DONE": "Teostatud"
     }
+  },
+  "my_tasks": {
+    "title": "Minu ülesanded",
+    "assignment_id": "Ülesande ID"
   }
   
 

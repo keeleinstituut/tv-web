@@ -134,7 +134,7 @@ const TasksTable: FC = () => {
 
   const columns = [
     columnHelper.accessor('id', {
-      header: () => 'ID',
+      header: () => t('my_tasks.assignment_id'),
       footer: (info) => info.column.id,
       cell: ({ getValue, row }) => {
         const id = getValue() as string
@@ -279,8 +279,9 @@ const TasksTable: FC = () => {
         onPaginationChange={handlePaginationChange}
         onFiltersChange={handleFilterChange}
         onSortingChange={handleSortingChange}
+        className={classes.topSection}
         headComponent={
-          <div className={classes.topSection}>
+          <div>
             {/* <FormInput
               name="status"
               control={control}

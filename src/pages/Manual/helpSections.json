@@ -33,5 +33,10 @@
     "title": "[Asutuse ülesed süsteemi sätted] kohtspikker",
     "content": "<p>Asutuse ülestes sätetes saab hallata tõlkeanalüüsipõhist soodustuste tabelit. Analüüsipõhise soodustuse protsendid võetakse üle vaikeväärtusena teostajate hinnakirjadesse. Kui asutuse analüüsipõhine soodustuse tabel on kinnitatud, siis võib selle alusel luua teostajatele hinnakirjad. \nMärkus. Kui muuta asutuse üleseid soodustuse protsente pärast teostajate hinnakirjade loomist, siis see ei kirjuta tagasiulatuvalt teostajatele juba loodud hinnakirja soodustusportsente üle.</p>",
     "tooltipContent": "<p>Asutuse ülestes sätetes saab hallata tõlkeanalüüsipõhist soodustuste tabelit. Analüüsipõhise soodustuse protsendid võetakse üle vaikeväärtusena teostajate hinnakirjadesse. Kui asutuse analüüsipõhine soodustuse tabel on kinnitatud, siis võib selle alusel luua teostajatele hinnakirjad. \nMärkus. Kui muuta asutuse üleseid soodustuse protsente pärast teostajate hinnakirjade loomist, siis see ei kirjuta tagasiulatuvalt teostajatele juba loodud hinnakirja soodustusportsente üle.</p>"
+  },
+  "myTasks": {
+    "title": "[Minu ülesanded] kohtspikker",
+    "content": "<p>Minu ülesannete lehel kuvatakse kõiki sisseloginunud kasutajaga seotud ülesandeid. Võimalik on vaadata aktiivseid ülesandeid ja ka tehtud ülesannete ajalugu. Lisaks saab ülesandeid filtreerida keelesuuna ja tüübi järgi.</p>",
+    "tooltipContent": "<p>Minu ülesannete lehel kuvatakse kõiki sisseloginunud kasutajaga seotud ülesandeid. Võimalik on vaadata aktiivseid ülesandeid ja ka tehtud ülesannete ajalugu. Lisaks saab ülesandeid filtreerida keelesuuna ja tüübi järgi.</p>"
   }
 }

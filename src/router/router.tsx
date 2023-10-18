@@ -103,24 +103,24 @@ export const protectedRoutes: FullRouteObject[] = [
         path: 'sub-orders',
         label: i18n.t('menu.sub_orders'),
         element: <SubOrders />,
-        privileges: [Privileges.ViewPersonalProject],
+        // privileges: [Privileges.ViewPersonalProject],
         breadcrumb: i18n.t('orders.sub_orders_tile'),
       },
       {
         path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
-        privileges: [Privileges.ViewPersonalTask],
+        // privileges: [Privileges.ViewPersonalTask],
         children: [
           {
             path: '',
             element: <MyTasks />,
-            privileges: [Privileges.ViewPersonalTask],
+            // privileges: [Privileges.ViewPersonalTask],
             breadcrumb: i18n.t('menu.my_tasks'),
           },
           {
             path: ':taskId',
             element: <TaskPage />,
-            privileges: [Privileges.ViewPersonalTask],
+            // privileges: [Privileges.ViewPersonalTask],
           },
         ],
       },

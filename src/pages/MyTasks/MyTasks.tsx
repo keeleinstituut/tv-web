@@ -1,9 +1,12 @@
 import { FC, useState } from 'react'
-import classes from './classes.module.scss'
 import TasksTable from 'components/organisms/tables/TasksTable/TasksTable'
 import { chain } from 'lodash'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import { TabStyle } from 'components/molecules/Tab/Tab'
+import { useTranslation } from 'react-i18next'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
+
+import classes from './classes.module.scss'
 
 // TODO: WIP - implement this page
 
@@ -12,6 +15,8 @@ interface ObjectType {
 }
 
 const MyTasks: FC = () => {
+  const { t } = useTranslation()
+
   const [tabNames, setTabNames] = useState<ObjectType>({})
   const [activeTab, setActiveTab] = useState<string>()
 
@@ -25,20 +30,13 @@ const MyTasks: FC = () => {
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>My Tasks</h1>
-        {/* TODO: add tooltip */}
+        <h1>{t('my_tasks.title')}</h1>
+        <Tooltip helpSectionKey="myTasks" />
       </div>
-      {/* <Tabs
-        setActiveTab={setActiveTab}
-        activeTab={activeTab}
-        tabs={availableTabs}
-        tabStyle={TabStyle.Primary}
-        className={classes.tabsContainer}
-        addDisabled
-        editDisabled
-      /> */}
+
       <Tabs
         setActiveTab={setActiveTab}
+        activeTab={activeTab}
         tabStyle={TabStyle.Primary}
         tabs={chain([
           'Minu ülesanded',
@@ -57,8 +55,10 @@ const MyTasks: FC = () => {
         onChangeName={function (id: string, newValue: string): void {
           throw new Error('Function not implemented.')
         }}
-        addDisabled={true}
+        addDisabled
         tabNames={tabNames}
+        className={classes.tabsContainer}
+        editDisabled
       />
 
       <Component />
