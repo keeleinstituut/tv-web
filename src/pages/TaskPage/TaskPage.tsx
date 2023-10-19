@@ -174,7 +174,7 @@ const GeneralInformation: FC<any> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {map(subOrder.intermediate_files, (file) => {
+              {map(subOrder.source_files, (file) => {
                 return (
                   <tr key={file.id}>
                     <td>{file.file_name}</td>

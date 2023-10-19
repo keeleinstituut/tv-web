@@ -197,15 +197,30 @@ export const useFetchSubOrders = () => {
 }
 
 export const useSubOrderSendToCat = () => {
-  const { mutateAsync: sendToCat, isLoading } = useMutation({
+  const {
+    mutateAsync: sendToCat,
+    isLoading,
+    status,
+    isError,
+    isSuccess,
+  } = useMutation({
     mutationKey: ['send_cat'],
     mutationFn: (payload: CatProjectPayload) =>
       apiClient.post(endpoints.CAT_TOOL_SETUP, payload),
+    onSettled(data, error) {
+      console.log('To err', error)
+      console.log('TO dd', data)
+    },
+    onSuccess: (data) => {
+      console.log('TO dd', data)
+    },
   })
+  console.log('TO status', status, isError, isLoading)
 
   return {
     sendToCat,
-    isLoading,
+    isCatProjectCreated: isSuccess,
+    isCatProjectLoading: isLoading,
   }
 }
 
@@ -214,16 +229,15 @@ export const useFetchSubOrderCatToolJobs = ({ id }: { id?: string }) => {
     useQuery<CatToolJobsResponse>({
       queryKey: ['suborders-cat-projects', id],
       queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
-      // onSettled(data, error) {
-      //   console.log('err', error)
-      //   console.log('dd', data)
-      // },
-      // onSuccess: (data) => {
-      //   console.log('err', data?.status === 401)
-      //   console.log('dd', data)
-      // },
+      onSettled(data, error) {
+        console.log('GT err', error)
+        console.log('GT dd', data)
+      },
+      onSuccess: (data) => {
+        console.log('GT dd', data)
+      },
     })
-  console.log('status', status, error)
+  console.log('GT status', status, error, isError, isLoading)
   return {
     catToolJobs: data?.data,
     isLoading,

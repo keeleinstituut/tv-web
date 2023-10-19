@@ -12,6 +12,7 @@ interface GenerateForTranslationSectionProps {
   className?: string
   openSendToCatModal?: () => void
   disabled?: boolean
+  isLoading?: boolean
 }
 
 const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
@@ -19,6 +20,7 @@ const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
   className,
   openSendToCatModal,
   disabled,
+  isLoading,
 }) => {
   const { t } = useTranslation()
   if (hidden) return null
@@ -31,6 +33,7 @@ const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
         className={classes.generateButton}
         onClick={openSendToCatModal}
         disabled={disabled}
+        loading={isLoading}
       >
         {t('button.generate_for_translation')}
       </Button>

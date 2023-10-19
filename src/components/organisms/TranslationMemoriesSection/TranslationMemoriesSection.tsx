@@ -146,7 +146,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.translation_memories_created'),
+          content: t('success.translation_memory_deleted'),
         })
         closeModal()
       } catch (errorData) {
@@ -179,10 +179,11 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         </>
       ),
       footer: (info) => info.column.id,
-      cell: ({ row }) => {
+      cell: ({ row, getValue }) => {
         const isAllowedToWrite =
-          selectedInstitution?.id === row?.original?.institution_id &&
-          isEqual(subOrderLangPair, row?.original?.language_direction)
+          getValue() ||
+          (selectedInstitution?.id === row?.original?.institution_id &&
+            isEqual(subOrderLangPair, row?.original?.language_direction))
 
         if (!isAllowedToWrite) {
           return (

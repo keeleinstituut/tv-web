@@ -35,9 +35,10 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   hiddenIfNoValue?: boolean
   isEditable?: boolean
   className?: string
-  catSupported?: boolean
-  cat_project_created?: string
   openSendToCatModal?: () => void
+  canGenerateProject?: boolean
+  isCatProjectLoading?: boolean
+  isGenerateProjectButtonDisabled?: boolean
 }
 
 interface FileRow {
@@ -58,9 +59,10 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   hiddenIfNoValue,
   isEditable,
   className,
-  catSupported,
-  cat_project_created,
+  canGenerateProject,
   openSendToCatModal,
+  isCatProjectLoading,
+  isGenerateProjectButtonDisabled,
 }: SourceFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -88,6 +90,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
 
   const handleDelete = useCallback(
     (index?: number) => {
+      //TODO: add deleting file from project endpoint
       if (index === 0 || index) {
         onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
       }
@@ -96,13 +99,12 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   )
 
   const columns = [
-    ...(catSupported
+    ...(canGenerateProject
       ? [
           columnHelper.accessor('check', {
             header: '',
             footer: (info) => info.column.id,
             cell: ({ getValue, row }) => {
-              console.log(row)
               return (
                 <FormInput
                   name={`${name}.${row.id}.isChecked` as Path<TFormValues>}
@@ -149,7 +151,6 @@ const SourceFilesList = <TFormValues extends FieldValues>({
           file instanceof File ? URL.createObjectURL(file) : ''
         const fileUrl =
           'original_url' in file ? file.original_url : localFileUrl
-        console.log('fileUrl', fileUrl, file, localFileUrl)
         return (
           <BaseButton
             className={classNames(classes.iconButton, classes.downloadButton)}
@@ -241,10 +242,11 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         }
       />
       <GenerateForTranslationSection
-        // hidden={!catSupported || !!cat_project_created}
+        hidden={!canGenerateProject}
         openSendToCatModal={openSendToCatModal}
         className={classes.generateSection}
-        disabled={isEmpty(value)}
+        disabled={isGenerateProjectButtonDisabled}
+        isLoading={isCatProjectLoading}
       />
     </div>
   )

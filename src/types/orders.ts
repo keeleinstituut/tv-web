@@ -151,7 +151,6 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   // cat_features: SubProjectFeatures[]
   cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
-  // TODO: not sure if the name will be source_files
   source_files: SourceFile[]
   final_files: SourceFile[]
   assignments: AssignmentType[]

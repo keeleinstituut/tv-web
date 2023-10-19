@@ -9,7 +9,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { CatAnalysis, CatJob, SourceFile } from 'types/orders'
+import { CatAnalysis, CatFile, CatJob, SourceFile } from 'types/orders'
 
 import classes from './classes.module.scss'
 import Button, {
@@ -27,8 +27,9 @@ interface CatJobsTableProps {
   className?: string
   hidden?: boolean
   cat_jobs?: CatJob[]
+  cat_files: CatFile[]
   cat_analyzis?: CatAnalysis[]
-  intermediate_files?: SourceFile[]
+  source_files?: SourceFile[]
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
 }
@@ -46,8 +47,9 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   className,
   hidden,
   cat_jobs,
+  cat_files,
   cat_analyzis,
-  intermediate_files,
+  source_files,
   source_language_classifier_value,
   destination_language_classifier_value,
 }) => {
@@ -56,14 +58,14 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
       cat_analyzis,
-      intermediate_files,
+      source_files,
       source_language_classifier_value,
       destination_language_classifier_value,
     })
   }, [
     cat_analyzis,
     destination_language_classifier_value,
-    intermediate_files,
+    source_files,
     source_language_classifier_value,
   ])
 
@@ -87,7 +89,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     // )
   }, [cat_jobs])
 
-  console.log('filesData', filesData)
+  //console.log('filesData', filesData)
   const handleMerge = useCallback((chunk_id?: string) => {
     // TODO: call some merge endpoint
     console.warn('PROCEED merging files')
@@ -155,7 +157,6 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     columnHelper.accessor('dots_button', {
       cell: '',
       header: (prop) => {
-        console.log('prop', prop)
         const { xliff_download_url, translation_download_url, chunk_id } =
           cat_jobs?.[0] || {}
         // cat_jobs?.[getValue()] || {}

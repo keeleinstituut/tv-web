@@ -57,7 +57,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
     watch,
     getValues,
     reset,
-    formState: { isSubmitting, isSubmitSuccessful },
+    formState: { isSubmitting },
   } = useForm<FormValues>({
     mode: 'onChange',
     resetOptions: {
@@ -79,10 +79,8 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
   }, [isButtonDisabled])
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset()
-    }
-  }, [isSubmitSuccessful, reset])
+    reset(defaultFormValues)
+  }, [defaultFormValues, reset])
 
   const handleUpdateTmKeys = useCallback(async () => {
     const values = pickBy(getValues(), (val) => !!val)

@@ -1,11 +1,23 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
-import { map, keys, filter, compact, isEmpty, isEqual } from 'lodash'
+import {
+  map,
+  keys,
+  filter,
+  compact,
+  isEmpty,
+  isEqual,
+  split,
+  some,
+  find,
+  size,
+} from 'lodash'
 import {
   useUpdateSubOrder,
   useFetchSubOrderCatToolJobs,
   useSubOrderSendToCat,
 } from 'hooks/requests/useOrders'
 import {
+  CatFile,
   CatJob,
   CatProjectPayload,
   SourceFile,
@@ -39,6 +51,7 @@ import { getLocalDateOjectFromUtcDateString } from 'helpers'
 
 type GeneralInformationFeatureProps = Pick<
   SubOrderDetail,
+  | 'cat_files'
   | 'cat_jobs'
   | 'cat_analyzis'
   | 'source_files'
@@ -56,9 +69,8 @@ interface FormValues {
   source_files: SourceFile[]
   final_files: SourceFile[]
   cat_jobs: CatJob[]
+  cat_files: CatFile[]
   // TODO: no idea about these fields
-  // source_files_checked: number[]
-  intermediate_files_checked: number[]
   shared_with_client: boolean[]
   write_to_memory: object
 }
@@ -66,6 +78,7 @@ interface FormValues {
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   catSupported,
   cat_jobs,
+  cat_files,
   subOrderId,
   cat_analyzis,
   source_files,
@@ -76,14 +89,15 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 }) => {
   const { t } = useTranslation()
   const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: subOrderId })
-  const { sendToCat } = useSubOrderSendToCat()
+  const { sendToCat, isCatProjectCreated, isCatProjectLoading } =
+    useSubOrderSendToCat()
   const { catToolJobs } = useFetchSubOrderCatToolJobs({ id: subOrderId })
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
 
-  console.log('data', catToolJobs)
-  console.log('catSupported', catSupported)
-  const cat_project_created = !isEmpty(catToolJobs)
-  console.log('cat_project_created', cat_project_created)
+  console.log('data catToolJobs', catToolJobs)
+  // console.log('catSupported', catSupported)
+  // const cat_project_created = !isEmpty(catToolJobs)
+  // console.log('cat_project_created', cat_project_created)
 
   const defaultValues = useMemo(
     () => ({
@@ -96,10 +110,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       })),
       final_files,
       cat_jobs,
-      // TODO: no idea about these fields
-      intermediate_files_checked: [],
-      shared_with_client: [],
       write_to_memory: {},
+      // TODO: no idea about these fields
+      shared_with_client: [],
     }),
     [cat_jobs, deadline_at, final_files, source_files]
   )
@@ -108,7 +121,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
-
+  // console.log('second watch', watch())
   const newFinalFiles = watch('final_files')
 
   // TODO: currently just used this for uploading final_files
@@ -138,39 +151,15 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     }
   }, [final_files, newFinalFiles, setValue, t, updateSubOrder])
 
-  console.log(watch())
-
   const handleSendToCat = useCallback(async () => {
-    // const chosenSourceFiles = getValues('intermediate_files_checked')
-    // const translationMemories = getValues('write_to_memory')
-    // const sourceFiles = getValues('intermediate_files')
-
-    // const selectedIntermediateFiles = map(
-    //   chosenSourceFiles,
-    //   (index) => sourceFiles[index]
-    // )
-    // // TODO: not sure how or what to send
-    // const payload: CatProjectPayload = {
-    //   intermediate_file_ids: compact(map(selectedIntermediateFiles, 'id')),
-    //   translation_memory_ids: keys(
-    //     filter(translationMemories, (value) => !!value)
-    //   ),
-
-    const translationMemories = getValues('write_to_memory')
     const sourceFiles = getValues('source_files')
-
     const selectedSourceFiles = filter(sourceFiles, 'isChecked')
-    console.log(selectedSourceFiles)
 
-    // TODO: not sure how or what to send
     const payload: CatProjectPayload = {
       sub_project_id: subOrderId,
       source_files_ids: compact(map(selectedSourceFiles, 'id')),
-      // translation_memory_ids: keys(
-      //   filter(translationMemories, (value) => !!value)
-      // ),
     }
-    console.log('pay', payload)
+
     try {
       await sendToCat(payload)
       showNotification({
@@ -182,7 +171,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [getValues, sendToCat, t])
+  }, [getValues, sendToCat, subOrderId, t])
 
   const openSendToCatModal = useCallback(
     () =>
@@ -191,6 +180,22 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       }),
     [handleSendToCat]
   )
+
+  const subOrderLangPair = useMemo(() => {
+    const slangShort = split(source_language_classifier_value?.value, '-')[0]
+    const tlangShort = split(
+      destination_language_classifier_value?.value,
+      '-'
+    )[0]
+    return `${slangShort}_${tlangShort}`
+  }, [destination_language_classifier_value, source_language_classifier_value])
+
+  const canGenerateProject =
+    !isCatProjectCreated && isEmpty(cat_files) && catSupported
+
+  const isGenerateProjectButtonDisabled =
+    !some(watch('source_files'), 'isChecked') ||
+    !some(watch('write_to_memory'), (val) => !!val)
 
   return (
     <Root>
@@ -207,14 +212,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       />
       <div className={classes.grid}>
         <SourceFilesList
-          name="intermediate_files"
+          name="source_files"
           title={t('orders.source_files')}
           tooltipContent={t('tooltip.source_files_helper')}
-          // className={classes.filesSection}
           control={control}
-          catSupported={catSupported}
-          //cat_project_created={cat_project_created}
           openSendToCatModal={openSendToCatModal}
+          canGenerateProject={canGenerateProject}
+          isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
+          isCatProjectLoading={isCatProjectLoading}
           isEditable
           // isEditable={isEditable}
         />
@@ -230,9 +235,10 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         />
         <CatJobsTable
           className={classes.catJobs}
-          //hidden={!catSupported || !cat_project_created || isEmpty(cat_jobs)}
+          hidden={canGenerateProject}
           cat_jobs={cat_jobs}
-          intermediate_files={source_files}
+          cat_files={cat_files}
+          source_files={source_files}
           cat_analyzis={cat_analyzis}
           source_language_classifier_value={source_language_classifier_value}
           destination_language_classifier_value={
@@ -241,11 +247,12 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}
-          // hidden={!catSupported}
+          hidden={!catSupported}
           control={control}
           isEditable
           subOrderId={subOrderId}
           subOrderTmKeys={subOrderTmKeys}
+          subOrderLangPair={subOrderLangPair}
         />
       </div>
     </Root>
