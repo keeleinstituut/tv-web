@@ -1,5 +1,5 @@
-import { SubProjectFeatures } from './orders'
-import { Vendor } from './vendors'
+import { CatAnalysis, SubProjectFeatures } from './orders'
+import { DiscountPercentages, Vendor } from './vendors'
 import { VolumeValue } from './volumes'
 
 export enum AssignmentStatus {
@@ -40,10 +40,26 @@ export interface AssignmentPayload {
   volumes?: VolumeValue[]
 }
 
-export interface VolumePayload {
+export enum VolumeUnits {
+  CHARACTERS = 'CHARACTERS',
+  WORDS = 'WORDS',
+  PAGES = 'PAGES',
+  MINUTES = 'MINUTES',
+  HOURS = 'HOURS',
+}
+
+export interface ManualVolumePayload {
   id?: string
   assignment_id: string
-  unit_type: string
+  unit_type: VolumeUnits
   unit_quantity: number
   unit_fee: number
+}
+
+export interface CatVolumePayload {
+  assignment_id: string
+  cat_tool_job_id: string
+  unit_fee: number
+  custom_volume_analysis: CatAnalysis
+  discounts: DiscountPercentages
 }

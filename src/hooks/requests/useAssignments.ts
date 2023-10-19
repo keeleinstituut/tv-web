@@ -4,7 +4,7 @@ import { endpoints } from 'api/endpoints'
 import {
   AssignmentPayload,
   AssignmentType,
-  VolumePayload,
+  ManualVolumePayload,
 } from 'types/assignments'
 import { SubOrderResponse } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
@@ -96,7 +96,7 @@ export const useAssignmentAddVolume = ({
   const queryClient = useQueryClient()
   const { mutateAsync: addAssignmentVolume, isLoading } = useMutation({
     mutationKey: ['suborders', id],
-    mutationFn: (payload: { data: VolumePayload }) =>
+    mutationFn: (payload: { data: ManualVolumePayload }) =>
       apiClient.post(`${endpoints.VOLUMES}`, payload),
     onSuccess: ({ data }: { data: VolumeValue }) => {
       queryClient.refetchQueries({
@@ -122,7 +122,7 @@ export const useAssignmentRemoveVolume = ({
     mutationKey: ['suborders', id],
     mutationFn: (payload: { volumeId?: string }) =>
       apiClient.delete(`${endpoints.VOLUMES}/${payload.volumeId}`),
-    onSuccess: ({ data }: { data: VolumePayload }) => {
+    onSuccess: ({ data }: { data: ManualVolumePayload }) => {
       queryClient.refetchQueries({
         queryKey: ['suborders', id],
         type: 'active',

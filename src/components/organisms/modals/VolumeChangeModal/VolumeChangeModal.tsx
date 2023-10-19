@@ -27,12 +27,12 @@ import {
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
 import { Root } from '@radix-ui/react-form'
 import { CatAnalysis } from 'types/orders'
-import { VolumePayload } from 'types/assignments'
+import { ManualVolumePayload } from 'types/assignments'
 
 import classes from './classes.module.scss'
 
 export interface VolumeChangeModalProps {
-  onSave?: (newVolume: VolumePayload) => void
+  onSave?: (newVolume: ManualVolumePayload) => void
   assignmentId?: string
   isCat?: boolean
   isModalOpen?: boolean
