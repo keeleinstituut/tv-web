@@ -7,10 +7,7 @@ import FeatureHeaderSection, {
 } from 'components/organisms/FeatureHeaderSection/FeatureHeaderSection'
 import FeatureAssignments from 'components/molecules/FeatureAssignments/FeatureAssignments'
 import FeatureCatJobs from 'components/molecules/FeatureCatJobs/FeatureCatJobs'
-import {
-  useSplitAssignment,
-  useSplitCatAssignment,
-} from 'hooks/requests/useOrders'
+import { useSplitAssignment } from 'hooks/requests/useOrders'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -33,7 +30,7 @@ const MainFeature: FC<MainFeatureProps> = ({
   catSupported,
   feature,
   assignments,
-  isFirstTaskJobRevision,
+  isFirstTaskJobRevision = false,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -49,26 +46,16 @@ const MainFeature: FC<MainFeatureProps> = ({
   ]
 
   const [activeTab, setActiveTab] = useState<string>(FeatureTabs.Vendors)
-  const { splitAssignment, isLoading: isSplittingAssignment } =
-    useSplitAssignment()
-  const { splitCatAssignment, isLoading: isSplittingCatAssignment } =
-    useSplitCatAssignment()
+  const { splitAssignment, isLoading } = useSplitAssignment()
 
   const addVendor = useCallback(async () => {
-    const withoutCatPayload = {
+    const payload = {
       sub_project_id: assignments[0].sub_project_id,
       feature: feature,
     }
 
-    const withCatPayload = {
-      sub_project_id: assignments[0].sub_project_id,
-      chunks_count: 0,
-    }
-
     try {
-      catSupported
-        ? await splitCatAssignment(withCatPayload)
-        : await splitAssignment(withoutCatPayload)
+      await splitAssignment(payload)
 
       showNotification({
         type: NotificationTypes.Success,
@@ -78,14 +65,17 @@ const MainFeature: FC<MainFeatureProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [
-    assignments,
-    catSupported,
-    feature,
-    splitAssignment,
-    splitCatAssignment,
-    t,
-  ])
+  }, [assignments, feature, splitAssignment, t])
+
+  const shouldAddVendor = (
+    feature: SubProjectFeatures,
+    isFirstTaskJobRevision: boolean
+  ) => {
+    return (
+      feature === SubProjectFeatures.JobOverview ||
+      (feature === SubProjectFeatures.JobRevision && !isFirstTaskJobRevision)
+    )
+  }
 
   return (
     <Root>
@@ -94,12 +84,11 @@ const MainFeature: FC<MainFeatureProps> = ({
           setActiveTab,
           activeTab,
           tabs: featureTabs,
-          addVendor:
-            feature === SubProjectFeatures.JobOverview || isFirstTaskJobRevision
-              ? undefined
-              : addVendor,
+          addVendor: shouldAddVendor(feature, isFirstTaskJobRevision)
+            ? undefined
+            : addVendor,
           catSupported,
-          loading: isSplittingAssignment || isSplittingCatAssignment,
+          isLoading,
         }}
       />
       <FeatureAssignments

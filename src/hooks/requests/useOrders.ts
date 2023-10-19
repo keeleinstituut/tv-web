@@ -246,22 +246,3 @@ export const useSplitAssignment = () => {
     isLoading,
   }
 }
-
-export const useSplitCatAssignment = () => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: splitCatAssignment, isLoading } = useMutation({
-    mutationKey: ['split_cat_assignment'],
-    mutationFn: (payload: { sub_project_id: string; chunks_count: number }) =>
-      apiClient.post(endpoints.CAT_ASSIGNMENTS, {
-        ...payload,
-      }),
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['suborders'] })
-    },
-  })
-
-  return {
-    splitCatAssignment,
-    isLoading,
-  }
-}
