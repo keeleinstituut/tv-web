@@ -4,6 +4,7 @@ import { endpoints } from 'api/endpoints'
 import {
   AssignmentPayload,
   AssignmentType,
+  CatVolumePayload,
   ManualVolumePayload,
 } from 'types/assignments'
 import { SubOrderResponse } from 'types/orders'
@@ -97,7 +98,7 @@ export const useAssignmentAddVolume = ({
   const { mutateAsync: addAssignmentVolume, isLoading } = useMutation({
     mutationKey: ['suborders', id],
     mutationFn: (payload: { data: ManualVolumePayload }) =>
-      apiClient.post(`${endpoints.VOLUMES}`, payload),
+      apiClient.post(`${endpoints.VOLUMES}`, payload.data),
     onSuccess: ({ data }: { data: VolumeValue }) => {
       queryClient.refetchQueries({
         queryKey: ['suborders', id],
@@ -108,6 +109,30 @@ export const useAssignmentAddVolume = ({
 
   return {
     addAssignmentVolume,
+    isLoading,
+  }
+}
+
+export const useAssignmentAddCatVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: addAssignmentCatVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { data: CatVolumePayload }) =>
+      apiClient.post(`${endpoints.VOLUMES}/cat-tool`, payload.data),
+    onSuccess: ({ data }: { data: VolumeValue }) => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    addAssignmentCatVolume,
     isLoading,
   }
 }

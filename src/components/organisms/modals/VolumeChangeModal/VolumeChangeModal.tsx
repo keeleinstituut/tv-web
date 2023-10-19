@@ -10,6 +10,7 @@ import {
   mapKeys,
   reduce,
   toNumber,
+  zipObject,
 } from 'lodash'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -27,13 +28,21 @@ import {
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
 import { Root } from '@radix-ui/react-form'
 import { CatAnalysis } from 'types/orders'
-import { ManualVolumePayload } from 'types/assignments'
+import {
+  CatVolumePayload,
+  ManualVolumePayload,
+  VolumeUnits,
+} from 'types/assignments'
 
 import classes from './classes.module.scss'
 
 export interface VolumeChangeModalProps {
-  onSave?: (newVolume: ManualVolumePayload) => void
+  onSave?: (
+    isCat: boolean,
+    newVolume: ManualVolumePayload | CatVolumePayload
+  ) => void
   assignmentId?: string
+  catJobId?: string
   isCat?: boolean
   isModalOpen?: boolean
   id?: string
@@ -85,6 +94,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   vendorDiscounts,
   matchingCatAnalysis,
   assignmentId,
+  catJobId,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -262,16 +272,37 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       //   ...(volumeId ? { volumeId } : {}),
       //   isCat: !!isCat,
       // }
+      // @ts-expect-error type mismatch
+      const payload: ManualVolumePayload | CatVolumePayload = !isCat
+        ? {
+            assignment_id: assignmentId ?? '',
+            unit_fee: cost_price,
+            unit_quantity: amount,
+            unit_type: VolumeUnits.CHARACTERS,
+          }
+        : {
+            assignment_id: assignmentId ?? '',
+            unit_fee: cost_price,
+            discounts: zipObject<DiscountPercentages>(
+              values(DiscountPercentageNames),
+              amountDiscounts
+            ),
+            custom_volume_analysis: matchingCatAnalysis,
+            cat_tool_job_id: catJobId ?? '',
+            // custom_volume_analysis: amountDiscounts,
+          }
       if (onSave) {
-        onSave({
-          assignment_id: assignmentId ?? '',
-          unit_fee: cost_price,
-          unit_quantity: amount,
-          unit_type: 'CHARACTERS',
-        })
+        onSave(!!isCat, payload)
       }
     },
-    [assignmentId, onSave]
+    [
+      isCat,
+      assignmentId,
+      amountDiscounts,
+      matchingCatAnalysis,
+      catJobId,
+      onSave,
+    ]
   )
 
   return (

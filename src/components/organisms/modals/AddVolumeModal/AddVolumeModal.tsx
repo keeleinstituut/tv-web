@@ -10,13 +10,11 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { VolumeChangeModalProps } from 'components/organisms/modals/VolumeChangeModal/VolumeChangeModal'
 import { CatAnalysis } from 'types/orders'
-import { ManualVolumePayload } from 'types/assignments'
 import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
 
 // TODO: this is WIP code for suborder view
 
 export interface AddVolumeModalProps extends VolumeChangeModalProps {
-  onSave?: (newVolume: ManualVolumePayload) => void
   catSupported?: boolean
   cat_analyzis?: CatAnalysis[]
   subOrderId?: string
@@ -100,6 +98,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
       showModal(ModalTypes.VolumeChange, {
         onSave,
         isCat: values?.addType === 'cat',
+        catJobId: values?.chunkId,
         matchingCatAnalysis: find(cat_analysis?.jobs, { id: values?.chunkId })
           ?.volume_analysis,
         ...rest,

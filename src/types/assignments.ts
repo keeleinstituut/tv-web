@@ -60,6 +60,6 @@ export interface CatVolumePayload {
   assignment_id: string
   cat_tool_job_id: string
   unit_fee: number
-  custom_volume_analysis: CatAnalysis
+  custom_volume_analysis?: CatAnalysis
   discounts: DiscountPercentages
 }

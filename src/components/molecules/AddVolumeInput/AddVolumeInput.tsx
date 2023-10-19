@@ -16,8 +16,11 @@ import { Price } from 'types/price'
 import { DiscountPercentages } from 'types/vendors'
 import { CatAnalysis } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
-import { useAssignmentAddVolume } from 'hooks/requests/useAssignments'
-import { ManualVolumePayload } from 'types/assignments'
+import {
+  useAssignmentAddCatVolume,
+  useAssignmentAddVolume,
+} from 'hooks/requests/useAssignments'
+import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
 
 // TODO: not sure about this data structure
 
@@ -114,6 +117,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   const { t } = useTranslation()
 
   const { addAssignmentVolume } = useAssignmentAddVolume({ subOrderId })
+  const { addAssignmentCatVolume } = useAssignmentAddCatVolume({ subOrderId })
 
   const handleDelete = useCallback(
     (index: number, id: string) => {
@@ -161,9 +165,23 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   )
 
   const handleAdd = useCallback(() => {
-    const onSave = async (args: { data: ManualVolumePayload }) => {
-      const { data: response } = await addAssignmentVolume(args)
-      onChange([...value, response])
+    const onSave = async (
+      isCat: boolean,
+      args: ManualVolumePayload | CatVolumePayload
+    ) => {
+      let res: VolumeValue
+      if (isCat) {
+        const { data: response } = await addAssignmentCatVolume({
+          data: args as CatVolumePayload,
+        })
+        res = response
+      } else {
+        const { data: response } = await addAssignmentVolume({
+          data: args as ManualVolumePayload,
+        })
+        res = response
+      }
+      onChange([...value, res])
     }
 
     // TODO: open add/edit modal with add mode
@@ -186,6 +204,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     vendorName,
     cat_analyzis,
     addAssignmentVolume,
+    addAssignmentCatVolume,
     onChange,
     value,
   ])

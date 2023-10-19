@@ -25,7 +25,7 @@ const TotalPrice = <TFormValues extends FieldValues>({
 }: TotalPriceProps<TFormValues>) => {
   const amountValue = useWatch({ control, name: 'amount' as Path<TFormValues> })
 
-  return <DisplayValue value={amountValue.toFixed(2)} />
+  return <DisplayValue value={amountValue?.toFixed(2)} />
 }
 
 interface RowPriceProps<TFormValues extends FieldValues> {
@@ -50,8 +50,8 @@ const RowPrice = <TFormValues extends FieldValues>({
     () =>
       (
         ((100 - toNumber(discountValue ?? 0)) / 100) *
-        toNumber(amountValue)
-      ).toFixed(2),
+        toNumber(amountValue ?? 0)
+      )?.toFixed(2),
     [amountValue, discountValue]
   )
 
