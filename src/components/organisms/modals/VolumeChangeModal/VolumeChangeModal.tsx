@@ -122,18 +122,23 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
 
   const [unit, cost_price, amount] = watch(['unit', 'cost_price', 'amount'])
 
+  const amountDiscounts = watch(values(DiscountPercentageNames))
   const amountValues = watch(values(DiscountPercentagesAmountNames))
 
   const totalAmount = useMemo(
     () =>
       reduce(
         amountValues,
-        (sum, n) => {
-          return sum + toNumber(n)
+        (sum, n, i) => {
+          return (
+            sum +
+            ((100 - toNumber(amountDiscounts[i] ?? 0)) / 100) *
+              toNumber(amountValues[i])
+          )
         },
         0
       ),
-    [amountValues]
+    [amountDiscounts, amountValues]
   )
 
   useEffect(() => {

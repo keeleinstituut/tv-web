@@ -7,7 +7,7 @@ import {
 import { Control, FieldValues, Path } from 'react-hook-form/dist/types'
 import { DiscountPercentageNames } from 'types/vendors'
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
-import { map } from 'lodash'
+import { map, toNumber } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
@@ -25,7 +25,37 @@ const TotalPrice = <TFormValues extends FieldValues>({
 }: TotalPriceProps<TFormValues>) => {
   const amountValue = useWatch({ control, name: 'amount' as Path<TFormValues> })
 
-  return <DisplayValue value={amountValue} />
+  return <DisplayValue value={amountValue.toFixed(2)} />
+}
+
+interface RowPriceProps<TFormValues extends FieldValues> {
+  control: Control<TFormValues>
+  name: string
+}
+
+const RowPrice = <TFormValues extends FieldValues>({
+  control,
+  name,
+}: RowPriceProps<TFormValues>) => {
+  const amountValue = useWatch({
+    control,
+    name: (name + '_amount') as Path<TFormValues>,
+  })
+  const discountValue = useWatch({
+    control,
+    name: name as Path<TFormValues>,
+  })
+
+  const value = useMemo(
+    () =>
+      (
+        ((100 - toNumber(discountValue ?? 0)) / 100) *
+        toNumber(amountValue)
+      ).toFixed(2),
+    [amountValue, discountValue]
+  )
+
+  return <DisplayValue value={value} />
 }
 
 interface VolumeCatPriceTableProps<TFormValues extends FieldValues> {
@@ -107,6 +137,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
             control={control}
             inputType={InputTypes.Text}
             className={classes.input}
+            type="number"
           />
         )
       },
@@ -117,17 +148,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         const discountPercentageKey = getValue()
         if (discountPercentageKey === 'kokku') return t('table.total')
-        return (
-          <FormInput
-            name={`${discountPercentageKey}` as Path<TFormValues>}
-            ariaLabel={t('label.enter_discount_percentage')}
-            placeholder={'0,00'}
-            control={control}
-            inputType={InputTypes.Text}
-            className={classes.input}
-            onlyDisplay
-          />
-        )
+        return <RowPrice control={control} name={discountPercentageKey} />
       },
     }),
     columnHelper.accessor('amount', {
