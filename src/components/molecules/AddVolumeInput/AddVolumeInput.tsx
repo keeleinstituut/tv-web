@@ -30,7 +30,7 @@ interface VolumeRowProps extends VolumeValue {
   handleEdit: (index: number) => void
 }
 
-const apiTypeToKey = (apiType: string) => {
+export const apiTypeToKey = (apiType: string) => {
   switch (apiType) {
     case 'CHARACTERS':
       return 'character_fee'
@@ -46,6 +46,25 @@ const apiTypeToKey = (apiType: string) => {
       return 'minimal_fee'
     default:
       return 'minimal_fee'
+  }
+}
+
+export const keyToApiType = (key: string) => {
+  switch (key) {
+    case 'character_fee':
+      return 'CHARACTERS'
+    case 'word_fee':
+      return 'WORDS'
+    case 'page_fee':
+      return 'PAGES'
+    case 'minute_fee':
+      return 'MINUTES'
+    case 'hour_fee':
+      return 'HOURS'
+    case 'minimal_fee':
+      return 'MINIMALS'
+    default:
+      return 'MINIMALS'
   }
 }
 

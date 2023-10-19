@@ -35,6 +35,7 @@ import {
 } from 'types/assignments'
 
 import classes from './classes.module.scss'
+import { keyToApiType } from 'components/molecules/AddVolumeInput/AddVolumeInput'
 
 export interface VolumeChangeModalProps {
   onSave?: (
@@ -278,7 +279,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
             assignment_id: assignmentId ?? '',
             unit_fee: cost_price,
             unit_quantity: amount,
-            unit_type: VolumeUnits.CHARACTERS,
+            unit_type: keyToApiType(unit),
           }
         : {
             assignment_id: assignmentId ?? '',
