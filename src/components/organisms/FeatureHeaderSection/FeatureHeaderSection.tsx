@@ -91,7 +91,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
           setActiveTab,
           tabs,
           className: classes.featureTabs,
-          hidden: !catSupported,
+          // hidden: !catSupported,
         }}
       />
       <ToggleButtonsSection

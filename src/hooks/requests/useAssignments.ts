@@ -111,3 +111,29 @@ export const useAssignmentUpdate = ({ id }: { id?: string }) => {
     isLoading,
   }
 }
+
+export const useLinkCatToolJobs = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: linkCatToolJobs, isLoading } = useMutation({
+    mutationKey: ['link_cat_tool_jobs'],
+    mutationFn: (payload: {
+      linking: {
+        cat_tool_job_id: string
+        assignment_id: string
+      }[]
+      feature: string
+      sub_project_id: string
+    }) =>
+      apiClient.post(endpoints.LINK_CAT_TOOL_JOBS, {
+        ...payload,
+      }),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['assignments'] })
+    },
+  })
+
+  return {
+    linkCatToolJobs,
+    isLoading,
+  }
+}

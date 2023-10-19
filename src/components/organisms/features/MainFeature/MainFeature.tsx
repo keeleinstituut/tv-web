@@ -24,6 +24,7 @@ type MainFeatureProps = Pick<
 const MainFeature: FC<MainFeatureProps> = ({
   catSupported,
   feature,
+  assignments,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -58,9 +59,14 @@ const MainFeature: FC<MainFeatureProps> = ({
       <FeatureAssignments
         hidden={activeTab === FeatureTabs.Xliff}
         catSupported={catSupported}
+        assignments={assignments}
         {...rest}
       />
-      <FeatureCatJobs hidden={activeTab === FeatureTabs.Vendors} {...rest} />
+      <FeatureCatJobs
+        hidden={activeTab === FeatureTabs.Vendors}
+        {...rest}
+        assignments={assignments}
+      />
     </Root>
   )
 }

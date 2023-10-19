@@ -3,7 +3,7 @@ import { map, isEmpty } from 'lodash'
 import { CatJob } from 'types/orders'
 import { AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
-import { Control, FieldValues, Path } from 'react-hook-form'
+import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import {
   FormInput,
   InputTypes,
@@ -23,11 +23,12 @@ interface FeatureCatJobProps<TFormValues extends FieldValues>
   cat_jobs?: CatJob[]
   control: Control<TFormValues>
   isEditable?: boolean
+  ext_id?: string
 }
 
 interface TableRow {
   selected: string
-  chunk_id: string
+  cat_job: { id: string; name: string }
 }
 
 const columnHelper = createColumnHelper<TableRow>()
@@ -43,14 +44,15 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
   finished_at,
   cat_jobs,
   isEditable,
+  ext_id,
 }: FeatureCatJobProps<TFormValues>) => {
   const { t } = useTranslation()
 
   const tableRows = useMemo(
     () =>
-      map(cat_jobs, ({ chunk_id }) => ({
-        selected: chunk_id,
-        chunk_id,
+      map(cat_jobs, ({ id, name }) => ({
+        selected: id,
+        cat_job: { id, name },
       })),
     [cat_jobs]
   )
@@ -71,9 +73,10 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         )
       },
     }),
-    columnHelper.accessor('chunk_id', {
+    columnHelper.accessor('cat_job', {
       header: () => t('label.xliff_name'),
       footer: (info) => info.column.id,
+      cell: ({ row }) => <p>{row.original.cat_job.name}</p>,
     }),
   ] as ColumnDef<TableRow>[]
 
@@ -83,7 +86,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         {t('task.vendor_title', { number: index + 1 })}(
         {t(`orders.features.${feature}`)})
       </h3>
-      <span className={classes.assignmentId}>{id}</span>
+      <span className={classes.assignmentId}>{ext_id}</span>
       <div className={classes.titleRow}>
         <h4>{t('orders.source_files_in_translation_tool')}</h4>
 

@@ -35,6 +35,7 @@ interface AssignmentProps extends AssignmentType {
   catSupported?: boolean
   // cat_jobs?: CatJob[]
   cat_analyzis?: CatAnalysis[]
+  ext_id?: string
 }
 
 interface FormValues {
@@ -61,6 +62,7 @@ const Assignment: FC<AssignmentProps> = ({
   catSupported,
   // cat_jobs,
   cat_analyzis,
+  ext_id,
 }) => {
   const { t } = useTranslation()
   // TODO: no idea if this is how it will work
@@ -250,7 +252,7 @@ const Assignment: FC<AssignmentProps> = ({
           {t('task.vendor_title', { number: index + 1 })}(
           {t(`orders.features.${feature}`)})
         </h3>
-        <span className={classes.assignmentId}>{id}</span>
+        <span className={classes.assignmentId}>{ext_id}</span>
         <Button
           size={SizeTypes.S}
           className={classes.addButton}
