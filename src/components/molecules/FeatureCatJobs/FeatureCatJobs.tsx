@@ -88,10 +88,8 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
     formState: { isSubmitting, isValid },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
-    defaultValues: defaultValues,
+    values: defaultValues,
   })
-
-  console.log('useWatch({control})', useWatch({ control }))
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (assignmentChunks) => {
@@ -105,20 +103,21 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
       // }
       // TODO: map these to whatever structure BE wants and send them
 
-      console.log('assignmentChunks', assignmentChunks)
+      const filteredTrueValuesChunks = pickBy(assignmentChunks, (value) => {
+        const assignment: boolean = values(value as unknown)[0] as boolean
+        return assignment === true
+      })
 
       const payload = {
-        linking: [
-          {
-            cat_tool_job_id: '9a662210-912c-4f38-a54a-8656a983138e',
-            assignment_id: '9a67988d-34be-4a93-aa34-6aea9f2dcb32',
-          },
-        ],
+        linking: map(filteredTrueValuesChunks, (assignment, key) => {
+          return {
+            cat_tool_job_id: Object.keys(assignment)[0],
+            assignment_id: key,
+          }
+        }),
         feature: assignments[0].feature,
         sub_project_id: assignments[0].sub_project_id,
       }
-
-      console.log('payload', payload)
 
       try {
         await linkCatToolJobs(payload)
@@ -131,16 +130,13 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         showValidationErrorMessage(errorData)
       }
     },
-    [t]
+    [assignments, linkCatToolJobs, t]
   )
 
   const resetForm = useCallback(() => {
     setIsEditable(false)
     reset(defaultValues)
   }, [reset, defaultValues])
-
-  console.log('assignments', assignments)
-  console.log('cat_jobs', cat_jobs)
 
   if (hidden) return null
   return (
