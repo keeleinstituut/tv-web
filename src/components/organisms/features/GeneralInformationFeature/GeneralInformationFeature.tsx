@@ -40,7 +40,7 @@ type GeneralInformationFeatureProps = Pick<
   | 'cat_project_created'
   | 'cat_jobs'
   | 'cat_analyzis'
-  | 'intermediate_files'
+  | 'cat_files'
   | 'final_files'
   | 'deadline_at'
   | 'source_language_classifier_value'
@@ -52,7 +52,7 @@ type GeneralInformationFeatureProps = Pick<
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
-  intermediate_files: SourceFile[]
+  cat_files: SourceFile[]
   final_files: SourceFile[]
   cat_jobs: CatJob[]
   // TODO: no idea about these fields
@@ -67,7 +67,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   cat_jobs,
   subOrderId,
   cat_analyzis,
-  intermediate_files,
+  cat_files,
   final_files,
   deadline_at,
   source_language_classifier_value,
@@ -82,7 +82,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       deadline_at: deadline_at
         ? getLocalDateOjectFromUtcDateString(deadline_at)
         : { date: '', time: '' },
-      intermediate_files,
+      cat_files,
       final_files,
       cat_jobs,
       // TODO: no idea about these fields
@@ -90,7 +90,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       shared_with_client: [],
       write_to_memory: {},
     }),
-    [cat_jobs, deadline_at, final_files, intermediate_files]
+    [cat_jobs, deadline_at, final_files, cat_files]
   )
 
   const { control, getValues, watch, setValue } = useForm<FormValues>({
@@ -130,7 +130,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   const handleSendToCat = useCallback(async () => {
     const chosenSourceFiles = getValues('intermediate_files_checked')
     const translationMemories = getValues('write_to_memory')
-    const sourceFiles = getValues('intermediate_files')
+    const sourceFiles = getValues('cat_files')
 
     const selectedIntermediateFiles = map(
       chosenSourceFiles,
@@ -201,10 +201,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           // isEditable={isEditable}
         />
         <CatJobsTable
+          subOrderId={subOrderId}
           className={classes.catJobs}
           hidden={!catSupported || !cat_project_created || isEmpty(cat_jobs)}
           cat_jobs={cat_jobs}
-          intermediate_files={intermediate_files}
+          cat_files={cat_files}
           cat_analyzis={cat_analyzis}
           source_language_classifier_value={source_language_classifier_value}
           destination_language_classifier_value={

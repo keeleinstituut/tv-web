@@ -27,14 +27,16 @@ interface CatJobsTableProps {
   className?: string
   hidden?: boolean
   cat_jobs?: CatJob[]
+  subOrderId: string
   cat_analyzis?: CatAnalysis[]
-  intermediate_files?: SourceFile[]
+  cat_files?: SourceFile[]
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
 }
 
 interface CatJobRow {
   id: string | number
+  name: string
   percentage: string
   translate_url: string | undefined
   dots_button: number
@@ -47,7 +49,8 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   hidden,
   cat_jobs,
   cat_analyzis,
-  intermediate_files,
+  subOrderId,
+  cat_files,
   source_language_classifier_value,
   destination_language_classifier_value,
 }) => {
@@ -56,30 +59,39 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
       cat_analyzis,
-      intermediate_files,
+      subOrderId,
+      cat_files,
       source_language_classifier_value,
       destination_language_classifier_value,
     })
   }, [
     cat_analyzis,
-    destination_language_classifier_value,
-    intermediate_files,
+    subOrderId,
+    cat_files,
     source_language_classifier_value,
+    destination_language_classifier_value,
   ])
 
   const filesData = useMemo(
     () =>
-      map(cat_jobs, ({ xliff_download_url, translate_url, id }, index) => {
-        // const name = xliff_download_url
-        //   .substring(xliff_download_url.lastIndexOf('/' + 1))
-        //   .replace('/', '')
-        return {
-          id,
-          percentage: '50%',
-          translate_url,
-          dots_button: index,
+      map(
+        cat_jobs,
+        (
+          { xliff_download_url, translate_url, id, progress_percentage, name },
+          index
+        ) => {
+          // const name = xliff_download_url
+          //   .substring(xliff_download_url.lastIndexOf('/' + 1))
+          //   .replace('/', '')
+          return {
+            id,
+            name,
+            percentage: progress_percentage + '%',
+            translate_url,
+            dots_button: index,
+          }
         }
-      }),
+      ),
     [cat_jobs]
   )
 
@@ -123,7 +135,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const isCatAnalysisInProgress = isEmpty(cat_analyzis)
 
   const columns = [
-    columnHelper.accessor('id', {
+    columnHelper.accessor('name', {
       header: () => t('label.xliff_name'),
       footer: (info) => info.column.id,
     }),
