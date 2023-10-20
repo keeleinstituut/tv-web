@@ -38,6 +38,17 @@ export type TranslationMemoryPayload = {
   name?: string
   type?: TMType
   tv_domain?: string
+}
+export interface TmStatsType {
+  lang_pairs?: { [lang_pair: string]: object }
+  tag?: { [tm_key: string]: number }
+}
+
+export type TranslationMemoryFilters = {
+  lang_pair?: string | string[]
+  name?: string
+  type?: TMType | TMType[]
+  tv_domain?: string | string[]
 } & PaginationFunctionType
 
 export interface ImportTMXPayload {
@@ -62,9 +73,9 @@ export interface SubOrderTmKeysResponse {
   data: SubOrderTmKeys[]
 }
 export interface SubOrderTmKeysPayload {
+  id?: string
   sub_project_id: string
   tm_keys: {
     key: string
-    is_writable?: boolean
   }[]
 }

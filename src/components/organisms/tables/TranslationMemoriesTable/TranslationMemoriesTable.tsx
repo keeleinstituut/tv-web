@@ -24,7 +24,7 @@ import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
-import { TMType } from 'types/translationMemories'
+import { TMType, TranslationMemoryFilters } from 'types/translationMemories'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemories'
@@ -42,21 +42,23 @@ type TranslationMemoriesTableRow = {
 
 const columnHelper = createColumnHelper<TranslationMemoriesTableRow>()
 interface FormValues {
-  [types: string]: TMType[] | boolean
+  [types: string]: TMType[]
 }
 interface TranslationMemoriesTableTypes {
   isSelectingModal?: boolean
   tmKeyControl?: Control
+  initialFilters?: TranslationMemoryFilters
 }
 
 const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   isSelectingModal = false,
   tmKeyControl,
+  initialFilters,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { translationMemories = [], handleFilterChange } =
-    useFetchTranslationMemories()
+    useFetchTranslationMemories(initialFilters)
   const [searchValue, setSearchValue] = useState<string>('')
 
   const { tagsFilters: tagsOptions } = useFetchTags({
@@ -78,7 +80,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     value: status,
   }))
 
-  const { control, getValues } = useForm<FormValues>({
+  const { control, watch } = useForm<FormValues>({
     mode: 'onChange',
     resetOptions: {
       keepErrors: true,
@@ -94,7 +96,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     [handleFilterChange]
   )
 
-  const [types] = getValues(['types'])
+  const [types] = watch(['types'])
 
   useEffect(() => {
     handleFilterChange({ type: types })
@@ -188,6 +190,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
       size: 375,
       meta: {
         filterOption: { tv_domain: domainOptions },
+        filterValue: initialFilters?.tv_domain,
         showSearch: false,
       },
     }),

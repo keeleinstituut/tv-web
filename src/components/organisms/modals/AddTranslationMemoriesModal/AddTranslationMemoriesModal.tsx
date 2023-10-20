@@ -5,31 +5,35 @@ import ModalBase, {
   ModalSizeTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import { t } from 'i18next'
-import { map, pickBy, reduce, size } from 'lodash'
+import { join, map, pickBy, reduce, reverse, size, split } from 'lodash'
 import { closeModal } from '../ModalRoot'
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { ConfirmationModalBaseProps } from '../ConfirmationModalBase/ConfirmationModalBase'
 import TranslationMemoriesTable from 'components/organisms/tables/TranslationMemoriesTable/TranslationMemoriesTable'
 import classes from './classes.module.scss'
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import {
   useFetchSubOrderTmKeys,
   useUpdateSubOrderTmKeys,
 } from 'hooks/requests/useTranslationMemories'
-import { showValidationErrorMessage } from 'api/errorHandler'
+import { ClassifierValue } from 'types/classifierValues'
 
 interface FormValues {
   [key: string]: boolean
 }
 type AddTranslationMemoriesType = {
   subOrderId?: string
+  subOrderLangPair?: string
+  projectDomain?: ClassifierValue
 } & ConfirmationModalBaseProps
 
 const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
   isModalOpen,
   subOrderId,
+  subOrderLangPair = '',
+  projectDomain,
 }) => {
   const { updateSubOrderTmKeys } = useUpdateSubOrderTmKeys()
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
@@ -55,9 +59,9 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
   const {
     control,
     watch,
-    getValues,
     reset,
     formState: { isSubmitting },
+    handleSubmit,
   } = useForm<FormValues>({
     mode: 'onChange',
     resetOptions: {
@@ -82,31 +86,33 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
     reset(defaultFormValues)
   }, [defaultFormValues, reset])
 
-  const handleUpdateTmKeys = useCallback(async () => {
-    const values = pickBy(getValues(), (val) => !!val)
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const checkedValues = pickBy(values, (val) => !!val)
 
-    const payload = {
-      sub_project_id: subOrderId || '',
-      tm_keys: map(values, (_, key) => {
-        return {
-          key: key,
-          is_writable: true,
-        }
-      }),
-    }
+      const payload = {
+        sub_project_id: subOrderId || '',
+        tm_keys: map(checkedValues, (_, key) => {
+          return {
+            key: key || '',
+          }
+        }),
+      }
 
-    try {
-      await updateSubOrderTmKeys(payload)
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.translation_memories_created'),
-      })
-      closeModal()
-    } catch (errorData) {
-      showValidationErrorMessage(errorData)
-    }
-  }, [getValues, subOrderId, updateSubOrderTmKeys])
+      try {
+        await updateSubOrderTmKeys(payload)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.translation_memories_created'),
+        })
+        closeModal()
+      } catch (errorData) {
+        // error message comes from api errorHandles
+      }
+    },
+    [subOrderId, updateSubOrderTmKeys]
+  )
 
   return (
     <ModalBase
@@ -131,7 +137,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
           form: 'tm_select',
           children: t('button.add'),
           loading: isSubmitting,
-          onClick: handleUpdateTmKeys,
+          onClick: handleSubmit(onSubmit),
           type: 'submit',
           disabled: isButtonDisabled,
         },
@@ -140,6 +146,13 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
       <TranslationMemoriesTable
         isSelectingModal={true}
         tmKeyControl={control}
+        initialFilters={{
+          lang_pair: [
+            subOrderLangPair,
+            join(reverse(split(subOrderLangPair, '_')), '_'),
+          ],
+          tv_domain: [projectDomain?.id || ''],
+        }}
       />
     </ModalBase>
   )

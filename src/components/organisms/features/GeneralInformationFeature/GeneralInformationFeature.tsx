@@ -1,15 +1,13 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import {
   map,
-  keys,
   filter,
   compact,
   isEmpty,
   isEqual,
   split,
   some,
-  find,
-  size,
+  reduce,
 } from 'lodash'
 import {
   useUpdateSubOrder,
@@ -46,6 +44,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
+import { ClassifierValue } from 'types/classifierValues'
 
 // TODO: this is WIP code for suborder view
 
@@ -62,6 +61,7 @@ type GeneralInformationFeatureProps = Pick<
 > & {
   catSupported?: boolean
   subOrderId: string
+  projectDomain?: ClassifierValue
 }
 
 interface FormValues {
@@ -72,7 +72,7 @@ interface FormValues {
   cat_files: CatFile[]
   // TODO: no idea about these fields
   shared_with_client: boolean[]
-  write_to_memory: object
+  write_to_memory: { [key: string]: boolean }
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
@@ -86,6 +86,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   deadline_at,
   source_language_classifier_value,
   destination_language_classifier_value,
+  projectDomain,
 }) => {
   const { t } = useTranslation()
   const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: subOrderId })
@@ -97,7 +98,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   console.log('data catToolJobs', catToolJobs)
   // console.log('catSupported', catSupported)
   // const cat_project_created = !isEmpty(catToolJobs)
-  // console.log('cat_project_created', cat_project_created)
 
   const defaultValues = useMemo(
     () => ({
@@ -110,19 +110,30 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       })),
       final_files,
       cat_jobs,
-      write_to_memory: {},
+      write_to_memory: reduce(
+        subOrderTmKeys,
+        (result, { key, is_writable }) => {
+          if (!key) return result
+          return { ...result, [key]: is_writable }
+        },
+        {}
+      ),
       // TODO: no idea about these fields
       shared_with_client: [],
     }),
-    [cat_jobs, deadline_at, final_files, source_files]
+    [cat_jobs, deadline_at, final_files, source_files, subOrderTmKeys]
   )
 
-  const { control, getValues, watch, setValue } = useForm<FormValues>({
+  const { control, getValues, watch, setValue, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
-  // console.log('second watch', watch())
+  console.log('second watch', watch())
   const newFinalFiles = watch('final_files')
+
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
   // TODO: currently just used this for uploading final_files
   // However not sure if we can use similar logic for all the fields
@@ -191,7 +202,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   }, [destination_language_classifier_value, source_language_classifier_value])
 
   const canGenerateProject =
-    !isCatProjectCreated && isEmpty(cat_files) && catSupported
+    !isCatProjectCreated && isEmpty(cat_jobs) && catSupported
 
   const isGenerateProjectButtonDisabled =
     !some(watch('source_files'), 'isChecked') ||
@@ -235,7 +246,8 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         />
         <CatJobsTable
           className={classes.catJobs}
-          hidden={canGenerateProject}
+          subOrderId={subOrderId}
+          hidden={canGenerateProject || isEmpty(cat_jobs)}
           cat_jobs={cat_jobs}
           cat_files={cat_files}
           source_files={source_files}
@@ -253,6 +265,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           subOrderId={subOrderId}
           subOrderTmKeys={subOrderTmKeys}
           subOrderLangPair={subOrderLangPair}
+          projectDomain={projectDomain}
         />
       </div>
     </Root>

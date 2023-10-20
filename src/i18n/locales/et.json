@@ -592,7 +592,9 @@
     },
     "analyzed_word_count": "Analüüsitud sõnu kokku: {{wordCount}}",
     "selecting_tm": "Tõlkemälude valimine",
-    "selecting_tm_amount": "Alamtellimusele saab lisada kuni 10 tõlkemälu."
+    "selecting_tm_amount": "Alamtellimusele saab lisada kuni 10 tõlkemälu.",
+    "public_confirmation": "Kinnitan, et soovin salvestada tõlked avalikku mällu.",
+    "public_confirmation_help_text": "Mälu tähisega „Avalik“ on jagatud kõikide Tõlkevärava kasutajatega, seda mälu ja sellesse salvestatud tõlkesegmente näevad ja saavad tõlkimisel kasutada ka asutusevälised kasutajad."
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",

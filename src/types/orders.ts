@@ -102,8 +102,12 @@ export interface CatFile {
 }
 
 export interface CatJob {
-  xliff_download_url: string
+  id: string
+  name: string
+  progress_percentage: string
   translate_url: string
+  // This are not in data
+  xliff_download_url: string
   translation_download_url: string
   chunk_id: string
 }

@@ -8,7 +8,9 @@ import {
   ImportTMXPayload,
   SubOrderTmKeysPayload,
   SubOrderTmKeysResponse,
+  TmStatsType,
   TranslationMemoryDataType,
+  TranslationMemoryFilters,
   TranslationMemoryPayload,
   TranslationMemoryPostType,
   TranslationMemoryType,
@@ -20,13 +22,13 @@ import { map, flatten, join, omit, pick } from 'lodash'
 dayjs.extend(customParseFormat)
 
 export const useFetchTranslationMemories = (
-  initialFilters?: TranslationMemoryPayload
+  initialFilters?: TranslationMemoryFilters
 ) => {
   const {
     filters,
     handleFilterChange,
     //handlePaginationChange,
-  } = useFilters<TranslationMemoryPayload>(initialFilters)
+  } = useFilters<TranslationMemoryFilters>(initialFilters)
 
   const filterWithoutSearch = omit(filters, 'name')
   const searchValue = pick(filters, 'name')
@@ -79,6 +81,17 @@ export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
     isError,
     translationMemory: data,
     isFetching,
+  }
+}
+
+export const useFetchTmChunkAmounts = () => {
+  const { data } = useQuery<TmStatsType>({
+    queryKey: ['translationMemories-stats'],
+    queryFn: () => apiClient.get(endpoints.TM_STATS),
+  })
+  console.log('stats', data)
+  return {
+    tmChunkAmounts: data?.tag,
   }
 }
 
@@ -275,6 +288,40 @@ export const useUpdateSubOrderTmKeys = () => {
 
   return {
     updateSubOrderTmKeys,
+    isLoading,
+  }
+}
+export const useToggleTmWritable = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: toggleTmWritable, isLoading } = useMutation({
+    mutationKey: ['tm-writable'],
+    mutationFn: async (payload: SubOrderTmKeysPayload) => {
+      return apiClient.put(
+        `${endpoints.TOGGLE_TM_WRITABLE}/${payload.id}`,
+        omit(payload, 'id')
+      )
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['tm-writable'],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: SubOrderTmKeysResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+      queryClient.refetchQueries({
+        queryKey: ['subOrder-tm-keys'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    toggleTmWritable,
     isLoading,
   }
 }

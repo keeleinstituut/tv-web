@@ -1,6 +1,6 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, join, initial, split, isEmpty } from 'lodash'
+import { map, isEmpty } from 'lodash'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { ReactComponent as HorizontalDots } from 'assets/icons/horizontal_dots.svg'
 import classNames from 'classnames'
@@ -12,16 +12,16 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { CatAnalysis, CatFile, CatJob, SourceFile } from 'types/orders'
 
 import classes from './classes.module.scss'
-import Button, {
-  AppearanceTypes,
-  IconPositioningTypes,
-  SizeTypes,
-} from 'components/molecules/Button/Button'
+import Button, { SizeTypes } from 'components/molecules/Button/Button'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import {
+  useDownloadTranslatedFile,
+  useDownloadXliffFile,
+} from 'hooks/requests/useOrders'
 
 interface CatJobsTableProps {
   className?: string
@@ -32,13 +32,15 @@ interface CatJobsTableProps {
   source_files?: SourceFile[]
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
+  subOrderId: string
 }
 
 interface CatJobRow {
-  chunk_id: string
-  percentage: string
-  translate_url: string
-  dots_button: number
+  dots_button?: number
+  id?: string
+  name?: string
+  progress_percentage?: string
+  translate_url?: string
 }
 
 const columnHelper = createColumnHelper<CatJobRow>()
@@ -52,9 +54,12 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   source_files,
   source_language_classifier_value,
   destination_language_classifier_value,
+  subOrderId,
 }) => {
   const { t } = useTranslation()
-
+  const { downloadXliff } = useDownloadXliffFile()
+  const { downloadTranslatedFile } = useDownloadTranslatedFile()
+  console.log('subOrderId', subOrderId)
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
       cat_analyzis,
@@ -77,14 +82,9 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     //   .substring(xliff_download_url.lastIndexOf('/' + 1))
     //   .replace('/', '')
     // TODO: currently randomly assuming that cat_jobs will have chunk_id, which will match cat_analyzis
-    return [
-      {
-        chunk_id: 'xxxx',
-        percentage: '50%',
-        translate_url: 'https',
-        dots_button: 0,
-      },
-    ]
+    return map(cat_jobs, ({ id, name, progress_percentage, translate_url }) => {
+      return { id, name, progress_percentage, translate_url, dots_button: 0 }
+    })
     //   }
     // )
   }, [cat_jobs])
@@ -130,11 +130,11 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const isCatAnalysisInProgress = isEmpty(cat_analyzis)
 
   const columns = [
-    columnHelper.accessor('chunk_id', {
+    columnHelper.accessor('name', {
       header: () => t('label.xliff_name'),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('percentage', {
+    columnHelper.accessor('progress_percentage', {
       header: () => t('label.chunks'),
       footer: (info) => info.column.id,
     }),
@@ -157,8 +157,13 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     columnHelper.accessor('dots_button', {
       cell: '',
       header: (prop) => {
-        const { xliff_download_url, translation_download_url, chunk_id } =
-          cat_jobs?.[0] || {}
+        console.log('pro', prop)
+        const {
+          id = '',
+          name,
+          progress_percentage,
+          translate_url,
+        } = cat_jobs?.[0] || {}
         // cat_jobs?.[getValue()] || {}
         // TODO: continue from here, need to add actual functionality to these buttons
         return (
@@ -171,28 +176,22 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
                 label: t('button.split_file'),
                 onClick: () => {
                   showModal(ModalTypes.CatSplit, {
-                    chunk_id,
+                    id,
                   })
                 },
               },
               {
                 label: t('button.download_xliff'),
-                href: xliff_download_url,
-                download: `${join(initial(split(xliff_download_url, '.')))}`,
-                target: '_blank',
+                onClick: () => downloadXliff(subOrderId),
               },
               {
                 label: t('button.download_ready_translation'),
-                href: translation_download_url,
-                download: `${join(
-                  initial(split(translation_download_url, '.'))
-                )}`,
-                target: '_blank',
+                onClick: () => downloadTranslatedFile(subOrderId),
               },
               {
                 label: t('button.join_files'),
                 onClick: () => {
-                  handleCatMergeClick(chunk_id)
+                  handleCatMergeClick(id)
                 },
               },
             ]}

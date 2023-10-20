@@ -15,6 +15,7 @@ import useFilters from 'hooks/useFilters'
 import { findIndex, includes } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
+import { downloadFile } from 'helpers'
 
 export const useFetchOrders = () => {
   const {
@@ -241,6 +242,44 @@ export const useFetchSubOrderCatToolJobs = ({ id }: { id?: string }) => {
   return {
     catToolJobs: data?.data,
     isLoading,
+  }
+}
+export const useDownloadXliffFile = () => {
+  const { mutateAsync: downloadXliff, isLoading } = useMutation({
+    mutationKey: ['xliff'],
+    mutationFn: (sub_project_id: string) =>
+      apiClient.get(`${endpoints.DOWNLOAD_XLIFF}/${sub_project_id}`),
+    onSuccess: (data) => {
+      console.log('data', data)
+      downloadFile({
+        data,
+        fileName: 'xliff.xml',
+        fileType: 'text/xml',
+      })
+    },
+  })
+  return {
+    isLoading,
+    downloadXliff,
+  }
+}
+export const useDownloadTranslatedFile = () => {
+  const { mutateAsync: downloadTranslatedFile, isLoading } = useMutation({
+    mutationKey: ['translated'],
+    mutationFn: (sub_project_id: string) =>
+      apiClient.get(`${endpoints.DOWNLOAD_TRANSLATED}/${sub_project_id}`),
+    onSuccess: (data) => {
+      console.log('data', data)
+      downloadFile({
+        data,
+        fileName: 'translatedFile.xml',
+        fileType: 'text/xml',
+      })
+    },
+  })
+  return {
+    isLoading,
+    downloadTranslatedFile,
   }
 }
 

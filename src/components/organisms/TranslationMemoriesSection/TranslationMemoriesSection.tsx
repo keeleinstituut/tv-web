@@ -22,30 +22,39 @@ import Tag from 'components/atoms/Tag/Tag'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { showModal, ModalTypes, closeModal } from '../modals/ModalRoot'
 import {
+  useFetchTmChunkAmounts,
   useFetchTranslationMemories,
+  useToggleTmWritable,
   useUpdateSubOrderTmKeys,
 } from 'hooks/requests/useTranslationMemories'
-import { SubOrderTmKeys } from 'types/translationMemories'
+import { SubOrderTmKeys, TMType } from 'types/translationMemories'
 import { map, includes, filter, find, isEqual, pull } from 'lodash'
 import useAuth from 'hooks/useAuth'
 
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from '../NotificationRoot/NotificationRoot'
+import { ClassifierValue } from 'types/classifierValues'
 interface TranslationMemoryButtonProps {
   hidden?: boolean
   subOrderId?: string
+  subOrderLangPair?: string
+  projectDomain?: ClassifierValue
 }
 
 const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
   hidden,
   subOrderId,
+  subOrderLangPair,
+  projectDomain,
 }) => {
   const { t } = useTranslation()
 
   const addNewTm = () => {
     showModal(ModalTypes.AddTranslationMemories, {
       subOrderId: subOrderId,
+      subOrderLangPair: subOrderLangPair,
+      projectDomain: projectDomain,
     })
   }
 
@@ -76,6 +85,7 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
   subOrderId?: string
   subOrderTmKeys?: SubOrderTmKeys[]
   subOrderLangPair?: string
+  projectDomain?: ClassifierValue
 }
 
 interface FileRow {
@@ -86,6 +96,8 @@ interface FileRow {
   delete_button?: string
   id?: string
   institution_id?: string
+  tm_key_id?: string
+  type?: TMType
 }
 
 const columnHelper = createColumnHelper<FileRow>()
@@ -98,13 +110,17 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   subOrderId,
   subOrderTmKeys,
   subOrderLangPair,
+  projectDomain,
 }: TranslationMemoriesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { translationMemories = [] } = useFetchTranslationMemories()
   const { updateSubOrderTmKeys } = useUpdateSubOrderTmKeys()
+  const { toggleTmWritable } = useToggleTmWritable()
+  const { tmChunkAmounts } = useFetchTmChunkAmounts()
   const { userInfo } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
 
+  //console.log('tmkey', subOrderTmKeys)
   const tmIds = map(subOrderTmKeys, 'key')
   const filteredData = filter(translationMemories, ({ id }) =>
     includes(tmIds, id)
@@ -112,24 +128,26 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
 
   const selectedTMs = useMemo(
     () =>
-      map(filteredData, (tm, key) => {
+      map(filteredData, (tm) => {
         return {
           id: tm.id,
           language_direction: tm?.lang_pair,
           name: tm?.name,
           main_write: find(subOrderTmKeys, { key: tm.id })?.is_writable,
-          chunk_amount: tm?.chunk_amount || 123,
+          chunk_amount: tmChunkAmounts?.[tm.id] || 0,
           delete_button: tm?.id,
           institution_id: tm?.institution_id,
+          tm_key_id: find(subOrderTmKeys, { key: tm.id })?.id,
+          type: tm.type,
         }
       }),
 
-    [filteredData, subOrderTmKeys]
+    [filteredData, subOrderTmKeys, tmChunkAmounts]
   )
 
   const handleDelete = useCallback(
-    async (id?: string, tmKeys?: string[]) => {
-      const array = tmKeys || []
+    async ({ id }: { id?: string }) => {
+      const array = tmIds || []
       const notDeletedTmsKeys = pull(array, id)
 
       const payload = {
@@ -137,7 +155,6 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         tm_keys: map(notDeletedTmsKeys, (key) => {
           return {
             key: key || '',
-            is_writable: true,
           }
         }),
       }
@@ -150,10 +167,43 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         })
         closeModal()
       } catch (errorData) {
+        // error message comes from api errorHandles
+      }
+    },
+    [subOrderId, t, updateSubOrderTmKeys, tmIds]
+  )
+
+  const handleToggleTmWritable = useCallback(
+    async ({
+      key,
+      id,
+      is_writable,
+    }: {
+      key: string
+      id: string
+      is_writable: boolean
+    }) => {
+      const payload = {
+        id: id,
+        sub_project_id: subOrderId || '',
+        tm_keys: [{ key }],
+        is_writable,
+      }
+      console.log('toggle payload', payload)
+
+      try {
+        await toggleTmWritable(payload)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.translation_memory_updated'),
+        })
+        closeModal()
+      } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
     },
-    [subOrderId, t, updateSubOrderTmKeys]
+    [subOrderId, t, toggleTmWritable]
   )
 
   const columns = [
@@ -181,9 +231,15 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       footer: (info) => info.column.id,
       cell: ({ row, getValue }) => {
         const isAllowedToWrite =
-          getValue() ||
-          (selectedInstitution?.id === row?.original?.institution_id &&
-            isEqual(subOrderLangPair, row?.original?.language_direction))
+          selectedInstitution?.id === row?.original?.institution_id &&
+          isEqual(subOrderLangPair, row?.original?.language_direction)
+
+        const values = {
+          key: row.original.id || '',
+          id: row.original.tm_key_id || '',
+          is_writable: !getValue() || false,
+        }
+        const type = row.original.type || ''
 
         if (!isAllowedToWrite) {
           return (
@@ -199,6 +255,19 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
             ariaLabel={t('label.main_write')}
             control={control}
             inputType={InputTypes.Checkbox}
+            onClick={() =>
+              isEqual(type, TMType.Public)
+                ? showModal(ModalTypes.ConfirmationModal, {
+                    handleProceed: () => handleToggleTmWritable(values),
+                    title: t('translation_memory.public_confirmation'),
+                    cancelButtonContent: t('button.quit'),
+                    submitButtonContent: t('button.confirm'),
+                    helperText: t(
+                      'translation_memory.public_confirmation_help_text'
+                    ),
+                  })
+                : handleToggleTmWritable(values)
+            }
           />
         )
       },
@@ -213,7 +282,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         return (
           <BaseButton
             className={classes.iconButton}
-            onClick={() => handleDelete(getValue(), tmIds)}
+            onClick={() => handleDelete({ id: getValue() })}
           >
             <Delete />
           </BaseButton>
@@ -232,6 +301,8 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         <TranslationMemoryButtons
           hidden={!isEditable}
           subOrderId={subOrderId}
+          subOrderLangPair={subOrderLangPair}
+          projectDomain={projectDomain}
         />
       }
       initialIsExpanded={isEditable}

@@ -28,6 +28,7 @@ import useHashState from 'hooks/useHashState'
 import Button from 'components/molecules/Button/Button'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { ClassifierValue } from 'types/classifierValues'
 
 // TODO: this is WIP code for suborder view
 
@@ -91,6 +92,7 @@ type SubOrderProps = Pick<
   | 'deadline_at'
 > & {
   projectDeadline?: string
+  projectDomain?: ClassifierValue
 }
 
 const SubOrderSection: FC<SubOrderProps> = ({
@@ -102,6 +104,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
   status,
   projectDeadline,
   deadline_at,
+  projectDomain,
 }) => {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<string | undefined>(
@@ -254,6 +257,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
       <Feature
         subOrder={subOrder}
         projectDeadline={projectDeadline}
+        projectDomain={projectDomain}
         feature={activeTab as SubProjectFeatures}
         index={findIndex(allTabs, (tab) => {
           return tab.id === activeTab
