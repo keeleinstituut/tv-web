@@ -17,7 +17,10 @@ import DataTable, {
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import Tag from 'components/atoms/Tag/Tag'
-import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
+import {
+  useCatAnalysisFetch,
+  useDownloadCatAnalysisFetch,
+} from 'hooks/requests/useAnalysis'
 
 // TODO: this is WIP code for suborder view
 
@@ -57,6 +60,7 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
   destination_language_classifier_value,
 }) => {
   const { cat_analysis } = useCatAnalysisFetch({ subOrderId })
+  const { downloadAnalysis } = useDownloadCatAnalysisFetch({ subOrderId })
   const cat_analyzis = [...(cat_analysis?.jobs ?? [])]
 
   const { t } = useTranslation()
@@ -152,9 +156,10 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           className: classes.linkButton,
           icon: DownloadFilled,
           size: SizeTypes.M,
-          href: downloadUrl,
+          onClick: downloadAnalysis,
+          // href: downloadUrl,
           target: '_blank',
-          download: name,
+          // download: name,
         },
         {
           appearance: AppearanceTypes.Secondary,

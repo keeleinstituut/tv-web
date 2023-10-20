@@ -1,6 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
+import { downloadFile } from 'helpers'
 import { CatAnalysis, SourceFile } from 'types/orders'
 
 export interface AnalysisResponse {
@@ -21,6 +22,31 @@ export const useCatAnalysisFetch = ({
 
   return {
     cat_analysis: data?.data,
+    isLoading,
+  }
+}
+
+export const useDownloadCatAnalysisFetch = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
+  const { isLoading, isSuccess, mutateAsync } = useMutation({
+    mutationKey: ['cat_analysis', id],
+    mutationFn: () =>
+      apiClient.get(`${endpoints.CAT_TOOL}/download-volume-analysis/${id}`),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'analysis.txt',
+        fileType: 'text/plain',
+      })
+    },
+  })
+
+  return {
+    downloadAnalysis: mutateAsync,
+    isSuccess,
     isLoading,
   }
 }
