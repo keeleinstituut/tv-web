@@ -9,6 +9,7 @@ import {
   CatProjectPayload,
   CatToolJobsResponse,
   SubOrderPayload,
+  CatJobsPayload,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -228,7 +229,7 @@ export const useSubOrderSendToCat = () => {
 export const useFetchSubOrderCatToolJobs = ({ id }: { id?: string }) => {
   const { isLoading, isError, data, status, error } =
     useQuery<CatToolJobsResponse>({
-      queryKey: ['suborders-cat-projects', id],
+      queryKey: ['cat-jobs', id],
       queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
       onSettled(data, error) {
         console.log('GT err', error)
@@ -244,6 +245,56 @@ export const useFetchSubOrderCatToolJobs = ({ id }: { id?: string }) => {
     isLoading,
   }
 }
+
+export const useSplitCatJobs = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: splitCatJobs, isLoading } = useMutation({
+    mutationKey: ['cat-jobs'],
+    mutationFn: (payload: CatJobsPayload) =>
+      apiClient.post(endpoints.CAT_TOOL_SPLIT, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['cat-jobs'],
+        (oldData?: CatToolJobsResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    splitCatJobs,
+    isLoading,
+  }
+}
+export const useMergeCatJobs = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: mergeCatJobs, isLoading } = useMutation({
+    mutationKey: ['cat-jobs'],
+    mutationFn: (payload: CatJobsPayload) =>
+      apiClient.post(endpoints.CAT_TOOL_MERGE, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['cat-jobs'],
+        (oldData?: CatToolJobsResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    mergeCatJobs,
+    isLoading,
+  }
+}
+
 export const useDownloadXliffFile = () => {
   const { mutateAsync: downloadXliff, isLoading } = useMutation({
     mutationKey: ['xliff'],

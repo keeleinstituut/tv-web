@@ -59,7 +59,9 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile()
   const { downloadTranslatedFile } = useDownloadTranslatedFile()
+
   console.log('subOrderId', subOrderId)
+
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
       cat_analyzis,
@@ -89,37 +91,28 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     // )
   }, [cat_jobs])
 
-  //console.log('filesData', filesData)
-  const handleMerge = useCallback((chunk_id?: string) => {
-    // TODO: call some merge endpoint
-    console.warn('PROCEED merging files')
-  }, [])
-
-  const handleCatMergeClick = useCallback(
-    (chunk_id?: string) => {
-      // TODO: not sure how to check for this
-      // Currently it seems that we should
-      // 1. Create an array of all cat_jobs that had the same source chunk
-      // 2. Check whether any of the other tabs that (that are catSupported?) have any of these files selected
-      // in their "xliff" tab for sending to vendors ?
-      // 3. If they are, then we need to check if any of these sub tasks have been sent to vendors
-      // Possibly there will be a check against BE instead
-      // If it's just a check against BE, then we might move this logic inside the modal
-      const areSplitFilesSentToVendors = true
-      if (areSplitFilesSentToVendors) {
-        showNotification({
-          type: NotificationTypes.Error,
-          title: t('notification.error'),
-          content: t('error.cant_merge_files'),
-        })
-      } else {
-        showModal(ModalTypes.CatMerge, {
-          handleMerge: () => handleMerge(chunk_id),
-        })
-      }
-    },
-    [handleMerge, t]
-  )
+  const handleCatMergeClick = useCallback(() => {
+    // TODO: not sure how to check for this
+    // Currently it seems that we should
+    // 1. Create an array of all cat_jobs that had the same source chunk
+    // 2. Check whether any of the other tabs that (that are catSupported?) have any of these files selected
+    // in their "xliff" tab for sending to vendors ?
+    // 3. If they are, then we need to check if any of these sub tasks have been sent to vendors
+    // Possibly there will be a check against BE instead
+    // If it's just a check against BE, then we might move this logic inside the modal
+    const areSplitFilesSentToVendors = true
+    if (areSplitFilesSentToVendors) {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('error.cant_merge_files'),
+      })
+    } else {
+      showModal(ModalTypes.CatMerge, {
+        subOrderId,
+      })
+    }
+  }, [subOrderId, t])
 
   // TODO: not sure how to show this currently
   // This will mean loading state only when none of the files have been analyzed
@@ -156,16 +149,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     }),
     columnHelper.accessor('dots_button', {
       cell: '',
-      header: (prop) => {
-        console.log('pro', prop)
-        const {
-          id = '',
-          name,
-          progress_percentage,
-          translate_url,
-        } = cat_jobs?.[0] || {}
-        // cat_jobs?.[getValue()] || {}
-        // TODO: continue from here, need to add actual functionality to these buttons
+      header: () => {
         return (
           <SimpleDropdown
             icon={HorizontalDots}
@@ -176,7 +160,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
                 label: t('button.split_file'),
                 onClick: () => {
                   showModal(ModalTypes.CatSplit, {
-                    id,
+                    subOrderId,
                   })
                 },
               },
@@ -190,9 +174,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
               },
               {
                 label: t('button.join_files'),
-                onClick: () => {
-                  handleCatMergeClick(id)
-                },
+                onClick: handleCatMergeClick,
               },
             ]}
           />
