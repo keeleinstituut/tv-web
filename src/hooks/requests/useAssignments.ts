@@ -113,6 +113,30 @@ export const useAssignmentAddVolume = ({
   }
 }
 
+export const useAssignmentEditVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: editAssignmentVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { data: ManualVolumePayload; volumeId: string }) =>
+      apiClient.put(`${endpoints.VOLUMES}/${payload.volumeId}`, payload.data),
+    onSuccess: ({ data }: { data: VolumeValue }) => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    editAssignmentVolume,
+    isLoading,
+  }
+}
+
 export const useAssignmentAddCatVolume = ({
   subOrderId: id,
 }: {

@@ -19,6 +19,7 @@ import { VolumeValue } from 'types/volumes'
 import {
   useAssignmentAddCatVolume,
   useAssignmentAddVolume,
+  useAssignmentEditVolume,
 } from 'hooks/requests/useAssignments'
 import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
 
@@ -137,6 +138,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
 
   const { addAssignmentVolume } = useAssignmentAddVolume({ subOrderId })
   const { addAssignmentCatVolume } = useAssignmentAddCatVolume({ subOrderId })
+  const { editAssignmentVolume } = useAssignmentEditVolume({ subOrderId })
 
   const handleDelete = useCallback(
     (index: number, id: string) => {
@@ -155,32 +157,49 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     [value, subOrderId, assignmentId, onChange]
   )
 
-  const editVolume = useCallback(
-    (volumePayload: VolumeValue, index: number) => {
-      const volumesCopy = [...value]
-      volumesCopy[index] = volumePayload
-      onChange(volumesCopy)
-    },
-    [onChange, value]
-  )
-
   const handleEdit = useCallback(
     (index: number) => {
       const matchingVolume = value[index]
-      const matchingCatAnalysis = find(cat_analyzis, {
-        chunk_id: matchingVolume.chunkId,
-      })
+      const onSave = async (
+        isCat: boolean,
+        args: ManualVolumePayload | CatVolumePayload
+      ) => {
+        let res: VolumeValue
+        if (isCat) {
+          const { data: response } = await addAssignmentCatVolume({
+            data: args as CatVolumePayload,
+          })
+          res = response
+        } else {
+          const { data: response } = await editAssignmentVolume({
+            volumeId: matchingVolume.id,
+            data: args as ManualVolumePayload,
+          })
+          res = response
+        }
+        onChange(
+          value.map((volume) =>
+            volume.id === matchingVolume.id ? res : volume
+          )
+        )
+      }
       showModal(ModalTypes.VolumeChange, {
-        onSave: (volumePayload: VolumeValue) =>
-          editVolume(volumePayload, index),
+        onSave,
         vendorPrices,
         vendorDiscounts,
         vendorName,
-        matchingCatAnalysis,
         ...matchingVolume,
       })
     },
-    [value, cat_analyzis, editVolume, vendorPrices, vendorDiscounts, vendorName]
+    [
+      value,
+      vendorPrices,
+      vendorDiscounts,
+      vendorName,
+      onChange,
+      addAssignmentCatVolume,
+      editAssignmentVolume,
+    ]
   )
 
   const handleAdd = useCallback(() => {
