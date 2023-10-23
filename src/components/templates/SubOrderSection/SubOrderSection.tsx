@@ -113,7 +113,6 @@ const SubOrderSection: FC<SubOrderProps> = ({
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
   const { subOrder, isLoading } = useFetchSubOrder({ id }) || {}
-  console.log('subOrder', subOrder)
 
   const { startSubOrderWorkflow, isLoading: isStartingWorkflow } =
     useSubOrderWorkflow({ id })

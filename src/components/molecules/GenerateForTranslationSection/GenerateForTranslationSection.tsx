@@ -13,6 +13,7 @@ interface GenerateForTranslationSectionProps {
   openSendToCatModal?: () => void
   disabled?: boolean
   isLoading?: boolean
+  isProjectInProgress?: boolean
 }
 
 const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
@@ -21,12 +22,16 @@ const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
   openSendToCatModal,
   disabled,
   isLoading,
+  isProjectInProgress = false,
 }) => {
   const { t } = useTranslation()
   if (hidden) return null
+  const helperText = isProjectInProgress
+    ? t('orders.generating_project_in_progress')
+    : t('orders.generate_for_translation_helper')
   return (
     <div className={classNames(classes.container, className)}>
-      <p>{t('orders.generate_for_translation_helper')}</p>
+      <p>{helperText}</p>
       <Button
         appearance={AppearanceTypes.Primary}
         size={SizeTypes.S}

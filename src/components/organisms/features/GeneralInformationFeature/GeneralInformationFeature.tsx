@@ -70,15 +70,14 @@ interface FormValues {
   final_files: SourceFile[]
   cat_jobs: CatJob[]
   cat_files: CatFile[]
+  write_to_memory: { [key: string]: boolean }
   // TODO: no idea about these fields
   shared_with_client: boolean[]
-  write_to_memory: { [key: string]: boolean }
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   catSupported,
   cat_jobs,
-  cat_files,
   subOrderId,
   cat_analyzis,
   source_files,
@@ -90,14 +89,12 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 }) => {
   const { t } = useTranslation()
   const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: subOrderId })
-  const { sendToCat, isCatProjectCreated, isCatProjectLoading } =
+  const { sendToCat, isCatProjectLoading, isCatProjectCreated } =
     useSubOrderSendToCat()
   const { catToolJobs } = useFetchSubOrderCatToolJobs({ id: subOrderId })
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
 
   console.log('data catToolJobs', catToolJobs)
-  // console.log('catSupported', catSupported)
-  // const cat_project_created = !isEmpty(catToolJobs)
 
   const defaultValues = useMemo(
     () => ({
@@ -110,30 +107,35 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       })),
       final_files,
       cat_jobs,
-      write_to_memory: reduce(
-        subOrderTmKeys,
-        (result, { key, is_writable }) => {
-          if (!key) return result
-          return { ...result, [key]: is_writable }
-        },
-        {}
-      ),
+      write_to_memory: {},
       // TODO: no idea about these fields
       shared_with_client: [],
     }),
-    [cat_jobs, deadline_at, final_files, source_files, subOrderTmKeys]
+    [cat_jobs, deadline_at, final_files, source_files]
   )
 
-  const { control, getValues, watch, setValue, reset } = useForm<FormValues>({
+  const { control, getValues, watch, setValue } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
-  console.log('second watch', watch())
+
   const newFinalFiles = watch('final_files')
 
   useEffect(() => {
-    reset(defaultValues)
-  }, [defaultValues, reset])
+    if (subOrderTmKeys) {
+      setValue(
+        'write_to_memory',
+        reduce(
+          subOrderTmKeys,
+          (result, { key, is_writable }) => {
+            if (!key) return result
+            return { ...result, [key]: is_writable }
+          },
+          {}
+        )
+      )
+    }
+  }, [setValue, subOrderTmKeys])
 
   // TODO: currently just used this for uploading final_files
   // However not sure if we can use similar logic for all the fields
@@ -202,7 +204,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   }, [destination_language_classifier_value, source_language_classifier_value])
 
   const canGenerateProject =
-    !isCatProjectCreated && isEmpty(cat_jobs) && catSupported
+    isEmpty(cat_jobs) && catSupported && !isCatProjectCreated
 
   const isGenerateProjectButtonDisabled =
     !some(watch('source_files'), 'isChecked') ||
@@ -249,13 +251,13 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           subOrderId={subOrderId}
           hidden={canGenerateProject || isEmpty(cat_jobs)}
           cat_jobs={cat_jobs}
-          cat_files={cat_files}
           source_files={source_files}
           cat_analyzis={cat_analyzis}
           source_language_classifier_value={source_language_classifier_value}
           destination_language_classifier_value={
             destination_language_classifier_value
           }
+          canSendToVendors={false}
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}

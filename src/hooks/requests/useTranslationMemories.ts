@@ -89,7 +89,6 @@ export const useFetchTmChunkAmounts = () => {
     queryKey: ['translationMemories-stats'],
     queryFn: () => apiClient.get(endpoints.TM_STATS),
   })
-  console.log('stats', data)
   return {
     tmChunkAmounts: data?.tag,
   }

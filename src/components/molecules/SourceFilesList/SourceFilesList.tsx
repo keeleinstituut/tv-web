@@ -247,6 +247,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         className={classes.generateSection}
         disabled={isGenerateProjectButtonDisabled}
         isLoading={isCatProjectLoading}
+        isProjectInProgress={false} //TODO add status
       />
     </div>
   )

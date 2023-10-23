@@ -41,6 +41,7 @@ const CatSplitModal: FC<CatSplitModalProps> = ({
         title: t('notification.announcement'),
         content: t('success.file_split_success'),
       })
+      setSplitsAmount(2)
       closeModal()
     } catch (errorData) {
       showValidationErrorMessage(errorData)

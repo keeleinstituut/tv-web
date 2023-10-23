@@ -9,7 +9,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { CatAnalysis, CatFile, CatJob, SourceFile } from 'types/orders'
+import { CatAnalysis, CatJob, SourceFile } from 'types/orders'
 
 import classes from './classes.module.scss'
 import Button, { SizeTypes } from 'components/molecules/Button/Button'
@@ -27,12 +27,12 @@ interface CatJobsTableProps {
   className?: string
   hidden?: boolean
   cat_jobs?: CatJob[]
-  cat_files: CatFile[]
   cat_analyzis?: CatAnalysis[]
   source_files?: SourceFile[]
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
   subOrderId: string
+  canSendToVendors?: boolean
 }
 
 interface CatJobRow {
@@ -49,18 +49,16 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   className,
   hidden,
   cat_jobs,
-  cat_files,
   cat_analyzis,
   source_files,
   source_language_classifier_value,
   destination_language_classifier_value,
   subOrderId,
+  canSendToVendors,
 }) => {
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile()
   const { downloadTranslatedFile } = useDownloadTranslatedFile()
-
-  console.log('subOrderId', subOrderId)
 
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
@@ -77,31 +75,31 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   ])
 
   const filesData = useMemo(() => {
-    // map(
-    //   cat_jobs,
-    //   ({ xliff_download_url, translate_url, chunk_id }, index) => {
-    // const name = xliff_download_url
-    //   .substring(xliff_download_url.lastIndexOf('/' + 1))
-    //   .replace('/', '')
-    // TODO: currently randomly assuming that cat_jobs will have chunk_id, which will match cat_analyzis
     return map(cat_jobs, ({ id, name, progress_percentage, translate_url }) => {
       return { id, name, progress_percentage, translate_url, dots_button: 0 }
     })
-    //   }
-    // )
   }, [cat_jobs])
+
+  const handleCatSplitClick = useCallback(() => {
+    // TODO: not sure how to check for this
+    // the option comes after camunda is ready
+    if (canSendToVendors) {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('error.cant_split_files'),
+      })
+    } else {
+      showModal(ModalTypes.CatSplit, {
+        subOrderId,
+      })
+    }
+  }, [canSendToVendors, subOrderId, t])
 
   const handleCatMergeClick = useCallback(() => {
     // TODO: not sure how to check for this
-    // Currently it seems that we should
-    // 1. Create an array of all cat_jobs that had the same source chunk
-    // 2. Check whether any of the other tabs that (that are catSupported?) have any of these files selected
-    // in their "xliff" tab for sending to vendors ?
-    // 3. If they are, then we need to check if any of these sub tasks have been sent to vendors
-    // Possibly there will be a check against BE instead
-    // If it's just a check against BE, then we might move this logic inside the modal
-    const areSplitFilesSentToVendors = true
-    if (areSplitFilesSentToVendors) {
+    // the option comes after camunda is ready
+    if (canSendToVendors) {
       showNotification({
         type: NotificationTypes.Error,
         title: t('notification.error'),
@@ -112,7 +110,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         subOrderId,
       })
     }
-  }, [subOrderId, t])
+  }, [canSendToVendors, subOrderId, t])
 
   // TODO: not sure how to show this currently
   // This will mean loading state only when none of the files have been analyzed
@@ -158,11 +156,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             options={[
               {
                 label: t('button.split_file'),
-                onClick: () => {
-                  showModal(ModalTypes.CatSplit, {
-                    subOrderId,
-                  })
-                },
+                onClick: handleCatSplitClick,
               },
               {
                 label: t('button.download_xliff'),

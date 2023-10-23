@@ -120,7 +120,6 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   const { userInfo } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
 
-  //console.log('tmkey', subOrderTmKeys)
   const tmIds = map(subOrderTmKeys, 'key')
   const filteredData = filter(translationMemories, ({ id }) =>
     includes(tmIds, id)

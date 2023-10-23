@@ -203,21 +203,16 @@ export const useSubOrderSendToCat = () => {
     mutateAsync: sendToCat,
     isLoading,
     status,
-    isError,
     isSuccess,
   } = useMutation({
     mutationKey: ['send_cat'],
     mutationFn: (payload: CatProjectPayload) =>
       apiClient.post(endpoints.CAT_TOOL_SETUP, payload),
-    onSettled(data, error) {
-      console.log('To err', error)
-      console.log('TO dd', data)
-    },
-    onSuccess: (data) => {
-      console.log('TO dd', data)
-    },
+    // onSuccess: (data) => {
+    //   console.log('send TO cat data', data)
+    // },
   })
-  console.log('TO status', status, isError, isLoading)
+  console.log('TO status, isSuccess', status, isSuccess)
 
   return {
     sendToCat,
@@ -227,19 +222,15 @@ export const useSubOrderSendToCat = () => {
 }
 
 export const useFetchSubOrderCatToolJobs = ({ id }: { id?: string }) => {
-  const { isLoading, isError, data, status, error } =
-    useQuery<CatToolJobsResponse>({
-      queryKey: ['cat-jobs', id],
-      queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
-      onSettled(data, error) {
-        console.log('GT err', error)
-        console.log('GT dd', data)
-      },
-      onSuccess: (data) => {
-        console.log('GT dd', data)
-      },
-    })
-  console.log('GT status', status, error, isError, isLoading)
+  const { isLoading, data, status } = useQuery<CatToolJobsResponse>({
+    enabled: !!id,
+    queryKey: ['cat-jobs', id],
+    queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
+    onSuccess: (data) => {
+      console.log('GeT from cat data', data)
+    },
+  })
+  console.log('GT status', status, isLoading)
   return {
     catToolJobs: data?.data,
     isLoading,
@@ -301,7 +292,6 @@ export const useDownloadXliffFile = () => {
     mutationFn: (sub_project_id: string) =>
       apiClient.get(`${endpoints.DOWNLOAD_XLIFF}/${sub_project_id}`),
     onSuccess: (data) => {
-      console.log('data', data)
       downloadFile({
         data,
         fileName: 'xliff.xml',
@@ -320,7 +310,6 @@ export const useDownloadTranslatedFile = () => {
     mutationFn: (sub_project_id: string) =>
       apiClient.get(`${endpoints.DOWNLOAD_TRANSLATED}/${sub_project_id}`),
     onSuccess: (data) => {
-      console.log('data', data)
       downloadFile({
         data,
         fileName: 'translatedFile.xml',
