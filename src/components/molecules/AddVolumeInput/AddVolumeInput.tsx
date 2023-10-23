@@ -12,7 +12,7 @@ import Button, {
 import { filter, map, find } from 'lodash'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-import { Price } from 'types/price'
+import { Price, PriceUnits } from 'types/price'
 import { DiscountPercentages } from 'types/vendors'
 import { CatAnalysis } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
@@ -33,19 +33,19 @@ interface VolumeRowProps extends VolumeValue {
 export const apiTypeToKey = (apiType: string) => {
   switch (apiType) {
     case 'CHARACTERS':
-      return 'character_fee'
+      return PriceUnits.CharacterFee
     case 'WORDS':
-      return 'word_fee'
+      return PriceUnits.WordFee
     case 'PAGES':
-      return 'page_fee'
+      return PriceUnits.PageFee
     case 'MINUTES':
-      return 'minute_fee'
+      return PriceUnits.MinuteFee
     case 'HOURS':
-      return 'hour_fee'
+      return PriceUnits.HourFee
     case 'MINIMALS':
-      return 'minimal_fee'
+      return PriceUnits.MinimalFee
     default:
-      return 'minimal_fee'
+      return PriceUnits.MinimalFee
   }
 }
 
