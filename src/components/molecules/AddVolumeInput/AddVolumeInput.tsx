@@ -164,6 +164,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
         isCat: boolean,
         args: ManualVolumePayload | CatVolumePayload
       ) => {
+        delete args.assignment_id
         let res: VolumeValue
         if (isCat) {
           const { data: response } = await addAssignmentCatVolume({

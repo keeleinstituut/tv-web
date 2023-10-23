@@ -35,7 +35,10 @@ import {
 } from 'types/assignments'
 
 import classes from './classes.module.scss'
-import { keyToApiType } from 'components/molecules/AddVolumeInput/AddVolumeInput'
+import {
+  apiTypeToKey,
+  keyToApiType,
+} from 'components/molecules/AddVolumeInput/AddVolumeInput'
 
 export interface VolumeChangeModalProps {
   onSave?: (
@@ -51,6 +54,9 @@ export interface VolumeChangeModalProps {
   vendorDiscounts?: DiscountPercentages
   vendorName?: string
   matchingCatAnalysis?: CatAnalysis
+  unit_fee?: number
+  unit_type?: string
+  unit_quantity?: number
 }
 
 enum CatAnalysisVolumes {
@@ -96,6 +102,9 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   matchingCatAnalysis,
   assignmentId,
   catJobId,
+  unit_fee,
+  unit_quantity,
+  unit_type,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -130,6 +139,15 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       ...catAnalysisAmounts,
     },
   })
+
+  // Populate the modal when edit is opened
+  useEffect(() => {
+    setValue('amount', unit_quantity ?? 0)
+    setValue('cost_price', unit_fee ?? 0)
+    if (unit_type) {
+      setValue('unit', apiTypeToKey(unit_type ?? ''))
+    }
+  }, [setValue, unit_fee, unit_quantity, unit_type])
 
   const [unit, cost_price, amount] = watch(['unit', 'cost_price', 'amount'])
 
