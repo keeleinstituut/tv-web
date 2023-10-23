@@ -132,7 +132,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   // 2. If the items start appearing 1 at a time to cat_analyzis, then this check won't work
   // 3. IT also might not work, if we split or merge cat_jobs (The previous array will exist)
   // 4. If they do appear 1 at a time, should we already show the table ? (size(cat_analyzis) < size(cat_jobs))
-  const isCatAnalysisInProgress = isEmpty(cat_analyzis)
+  const isCatAnalysisInProgress = false //isEmpty(cat_analyzis)
 
   const columns = [
     columnHelper.accessor('name', {
