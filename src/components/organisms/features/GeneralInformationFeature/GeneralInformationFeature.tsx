@@ -203,7 +203,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         <CatJobsTable
           subOrderId={subOrderId}
           className={classes.catJobs}
-          hidden={!catSupported || !cat_project_created || isEmpty(cat_jobs)}
+          hidden={!catSupported || isEmpty(cat_jobs)}
           cat_jobs={cat_jobs}
           cat_files={cat_files}
           cat_analyzis={cat_analyzis}

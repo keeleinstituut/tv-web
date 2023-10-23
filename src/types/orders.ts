@@ -143,6 +143,7 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   cat_analyzis: CatAnalysis[]
   cat_files: SourceFile[]
   final_files: SourceFile[]
+  source_files: SourceFile[]
   assignments: AssignmentType[]
 }
 
