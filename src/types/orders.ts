@@ -147,6 +147,7 @@ export interface ListSubOrderDetail {
   status?: SubOrderStatus
   deadline_at: string
   price?: string
+  tv_domain?: string
 }
 
 export interface SubOrderDetail extends ListSubOrderDetail {

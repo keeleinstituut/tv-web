@@ -18,6 +18,7 @@ import {
 import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
 import { map, flatten, join, omit, pick } from 'lodash'
+import { SubOrdersResponse } from 'types/orders'
 
 dayjs.extend(customParseFormat)
 
@@ -225,6 +226,28 @@ export const useExportTMX = () => {
   }
 }
 
+export const useFetchTranslationMemorySubOrders = ({ id }: { id?: string }) => {
+  const { filters, handlePaginationChange } =
+    useFilters<TranslationMemoryFilters>()
+
+  const { isLoading, isError, isFetching, data } = useQuery<SubOrdersResponse>({
+    enabled: !!id,
+    queryKey: ['tm-subOrders', id],
+    queryFn: () => apiClient.get(`${endpoints.TM_SUB_PROJECTS}/${id}`, filters),
+  })
+
+  const { meta: paginationData, data: subOrders } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    subOrders,
+    isFetching,
+    paginationData,
+    handlePaginationChange,
+  }
+}
+
 export const useFetchSubOrderTmKeys = ({ id }: { id?: string }) => {
   const { isLoading, isError, isFetching, data } =
     useQuery<SubOrderTmKeysResponse>({
@@ -237,22 +260,6 @@ export const useFetchSubOrderTmKeys = ({ id }: { id?: string }) => {
     isLoading,
     isError,
     subOrderTmKeys: data?.data || [],
-    isFetching,
-  }
-}
-
-export const useFetchSubOrdersByTmKey = ({ id }: { id?: string }) => {
-  const { isLoading, isError, isFetching, data } =
-    useQuery<TranslationMemoryType>({
-      enabled: !!id,
-      queryKey: ['tm-subOrders', id],
-      queryFn: () => apiClient.get(`${endpoints.TM_SUB_PROJECTS}/${id}`),
-    })
-
-  return {
-    isLoading,
-    isError,
-    tmSubOrders: data,
     isFetching,
   }
 }
