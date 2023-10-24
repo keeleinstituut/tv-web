@@ -138,7 +138,8 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   cat_features: SubProjectFeatures[]
   cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
-  source_files: SourceFile[]
+  // TODO: not sure if the name will be intermediate_files
+  intermediate_files: SourceFile[]
   final_files: SourceFile[]
   assignments: AssignmentType[]
 }
@@ -209,12 +210,13 @@ export interface SubOrderResponse {
 
 // TODO: not sure yet
 export interface SubOrderPayload {
-  id: string
+  deadline_at?: string
+  final_files?: (File | SourceFile)[]
 }
 
 // TODO: not sure what should be sent for CatProjectPayload
 export interface CatProjectPayload {
-  source_file_ids: string[]
+  intermediate_file_ids: string[]
   translation_memory_ids: string[]
 }
 export interface NewOrderPayload {
