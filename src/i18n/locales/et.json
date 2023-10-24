@@ -303,6 +303,7 @@
     "EXPORT_TM": "Asutuse tõlkemälu eksport",
     "DELETE_TM": "Asutuse tõlkemälu eemaldamine",
     "EDIT_TM_METADATA": "Asutuse tõlkemälu andmete muutmine",
+    "EDIT_TM": "Asutuse tõlkemälu muutmine",
     "VIEW_TM": "Asutuse tõlkemälude vaatamine",
     "CREATE_PROJECT": "Tellimuse lisamine",
     "MANAGE_PROJECT": "Tõlketellimuse korraldamine",
@@ -396,7 +397,7 @@
     "add_language_directions": "Lisa keelesuund",
     "add_language_pairs": "Vali keelepaarid",
     "add_skills": "Lisa oskused",
-    "add_price_list":"Lisa hinnakiri",
+    "add_price_list": "Lisa hinnakiri",
     "choose_language_pairs": "Teostajale keelepaaride valimine",
     "choose_skills": "Teostajale oskuste valimine",
     "set_price_list": "Keelepaaridele hinnakirja määramine",
@@ -407,7 +408,7 @@
     "destination_language": "Sihtkeel",
     "prices": "Hinnad",
     "eur": "EUR",
-    "skill":"Oskus",
+    "skill": "Oskus",
     "character_fee": "Tähemärk",
     "word_fee": "Sõna",
     "page_fee": "Lehekülg",
@@ -629,6 +630,4 @@
       "DONE": "Teostatud"
     }
   }
-  
-
 }
