@@ -20,7 +20,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { SourceFile } from 'types/orders'
+import { SourceFile, CatProjectStatus } from 'types/orders'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
@@ -39,6 +39,7 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   canGenerateProject?: boolean
   isCatProjectLoading?: boolean
   isGenerateProjectButtonDisabled?: boolean
+  catSetupStatus?: CatProjectStatus
 }
 
 interface FileRow {
@@ -63,6 +64,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   openSendToCatModal,
   isCatProjectLoading,
   isGenerateProjectButtonDisabled,
+  catSetupStatus,
 }: SourceFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -247,7 +249,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         className={classes.generateSection}
         disabled={isGenerateProjectButtonDisabled}
         isLoading={isCatProjectLoading}
-        isProjectInProgress={false} //TODO add status
+        catSetupStatus={catSetupStatus}
       />
     </div>
   )

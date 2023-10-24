@@ -199,41 +199,27 @@ export const useFetchSubOrders = () => {
 }
 
 export const useSubOrderSendToCat = () => {
-  const {
-    mutateAsync: sendToCat,
-    isLoading,
-    status,
-    isSuccess,
-  } = useMutation({
+  const { mutateAsync: sendToCat, isLoading } = useMutation({
     mutationKey: ['send_cat'],
     mutationFn: (payload: CatProjectPayload) =>
       apiClient.post(endpoints.CAT_TOOL_SETUP, payload),
-    // onSuccess: (data) => {
-    //   console.log('send TO cat data', data)
-    // },
   })
-  console.log('TO status, isSuccess', status, isSuccess)
-
   return {
     sendToCat,
-    isCatProjectCreated: isSuccess,
     isCatProjectLoading: isLoading,
   }
 }
 
 export const useFetchSubOrderCatToolJobs = ({ id }: { id?: string }) => {
-  const { isLoading, data, status } = useQuery<CatToolJobsResponse>({
+  const { data } = useQuery<CatToolJobsResponse>({
     enabled: !!id,
     queryKey: ['cat-jobs', id],
     queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
-    onSuccess: (data) => {
-      console.log('GeT from cat data', data)
-    },
   })
-  console.log('GT status', status, isLoading)
   return {
-    catToolJobs: data?.data,
-    isLoading,
+    catToolJobs: data?.data?.cat_jobs,
+    catSetupStatus: data?.data?.setup_status,
+    catAnalyzeStatus: data?.data?.analyzing_status,
   }
 }
 

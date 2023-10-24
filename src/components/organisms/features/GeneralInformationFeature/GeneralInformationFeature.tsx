@@ -8,6 +8,7 @@ import {
   split,
   some,
   reduce,
+  includes,
 } from 'lodash'
 import {
   useUpdateSubOrder,
@@ -18,6 +19,7 @@ import {
   CatFile,
   CatJob,
   CatProjectPayload,
+  CatProjectStatus,
   SourceFile,
   SubOrderDetail,
 } from 'types/orders'
@@ -34,7 +36,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
-
 import classes from './classes.module.scss'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
@@ -89,9 +90,10 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 }) => {
   const { t } = useTranslation()
   const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: subOrderId })
-  const { sendToCat, isCatProjectLoading, isCatProjectCreated } =
-    useSubOrderSendToCat()
-  const { catToolJobs } = useFetchSubOrderCatToolJobs({ id: subOrderId })
+  const { sendToCat, isCatProjectLoading } = useSubOrderSendToCat()
+  const { catToolJobs, catSetupStatus } = useFetchSubOrderCatToolJobs({
+    id: subOrderId,
+  })
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
 
   console.log('data catToolJobs', catToolJobs)
@@ -204,11 +206,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   }, [destination_language_classifier_value, source_language_classifier_value])
 
   const canGenerateProject =
-    isEmpty(cat_jobs) && catSupported && !isCatProjectCreated
+    catSupported &&
+    isEmpty(catToolJobs) &&
+    !includes(CatProjectStatus.Done, catSetupStatus)
 
   const isGenerateProjectButtonDisabled =
     !some(watch('source_files'), 'isChecked') ||
-    !some(watch('write_to_memory'), (val) => !!val)
+    !some(watch('write_to_memory'), (val) => !!val) ||
+    !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
   return (
     <Root>
@@ -233,6 +238,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           canGenerateProject={canGenerateProject}
           isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
           isCatProjectLoading={isCatProjectLoading}
+          catSetupStatus={catSetupStatus}
           isEditable
           // isEditable={isEditable}
         />

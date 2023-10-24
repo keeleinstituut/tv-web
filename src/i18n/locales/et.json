@@ -577,6 +577,7 @@
     "ready_files_from_vendors": "Valmisfailid teostajatelt",
     "generate_for_translation_helper": "Failide tõlketööriistas tõlkimiseks toimi järgmiselt: vali tõlkemälu(d); märgi linnukestega failid, mida soovid tõlkida; klõpsa nupule „Genereeri tõlkimiseks“.",
     "generating_project_in_progress": "Failide genereerimine on töös",
+    "generating_project_failed": "Failide genereerimine ebaõnnestus",
     "source_files_in_translation_tool": "Lähtefailid tõlketööriistas"
   },
   "translation_memory": {

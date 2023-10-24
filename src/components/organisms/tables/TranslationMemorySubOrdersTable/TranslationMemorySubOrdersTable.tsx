@@ -7,9 +7,6 @@ import { Root } from '@radix-ui/react-form'
 import { map } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import classes from './classes.module.scss'
-
-import { useFetchSubOrders } from 'hooks/requests/useOrders'
-import { SubOrderStatus } from 'types/orders'
 import dayjs from 'dayjs'
 import { useFetchTranslationMemorySubOrders } from 'hooks/requests/useTranslationMemories'
 
@@ -39,13 +36,16 @@ const TranslationMemorySubOrdersTable: FC<TmSubOrdersTypes> = ({
 
   const orderRows = useMemo(
     () =>
-      map(subOrders, ({ created_at, ext_id, tv_domain }) => {
-        return {
-          id: ext_id,
-          translation_domain: tv_domain || '',
-          created_at,
+      map(
+        subOrders,
+        ({ created_at, ext_id, translation_domain_classifier_value }) => {
+          return {
+            id: ext_id,
+            translation_domain: translation_domain_classifier_value?.name || '',
+            created_at,
+          }
         }
-      }),
+      ),
     [subOrders]
   )
 

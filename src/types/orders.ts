@@ -46,6 +46,12 @@ export enum WorkflowTemplateID {
   SampleProject = 'Sample-project',
 }
 
+export enum CatProjectStatus {
+  Done = 'DONE',
+  NotStarted = 'NOT_STARTED',
+  InProgress = 'IN_PROGRESS',
+  Failed = 'FAILED',
+}
 export interface Link {
   url: null | string
   label: string
@@ -147,7 +153,7 @@ export interface ListSubOrderDetail {
   status?: SubOrderStatus
   deadline_at: string
   price?: string
-  tv_domain?: string
+  translation_domain_classifier_value?: ClassifierValue
 }
 
 export interface SubOrderDetail extends ListSubOrderDetail {
@@ -234,7 +240,11 @@ export interface SubOrderPayload {
 }
 
 export interface CatToolJobsResponse {
-  data: CatToolJobs[]
+  data: {
+    setup_status: CatProjectStatus
+    analyzing_status: CatProjectStatus
+    cat_jobs: CatToolJobs[]
+  }
 }
 // TODO: not sure what should be sent for CatProjectPayload
 export interface CatProjectPayload {

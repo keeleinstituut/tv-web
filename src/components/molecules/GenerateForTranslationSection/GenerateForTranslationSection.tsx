@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
@@ -6,6 +6,7 @@ import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
+import { CatProjectStatus } from 'types/orders'
 
 interface GenerateForTranslationSectionProps {
   hidden?: boolean
@@ -14,6 +15,7 @@ interface GenerateForTranslationSectionProps {
   disabled?: boolean
   isLoading?: boolean
   isProjectInProgress?: boolean
+  catSetupStatus?: CatProjectStatus
 }
 
 const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
@@ -22,13 +24,25 @@ const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
   openSendToCatModal,
   disabled,
   isLoading,
-  isProjectInProgress = false,
+  catSetupStatus,
 }) => {
   const { t } = useTranslation()
+
+  const helperText = useMemo(() => {
+    switch (catSetupStatus) {
+      case CatProjectStatus.InProgress: {
+        return t('orders.generating_project_in_progress')
+      }
+      case CatProjectStatus.Failed: {
+        return t('orders.generating_project_failed')
+      }
+      default: {
+        return t('orders.generate_for_translation_helper')
+      }
+    }
+  }, [catSetupStatus, t])
+
   if (hidden) return null
-  const helperText = isProjectInProgress
-    ? t('orders.generating_project_in_progress')
-    : t('orders.generate_for_translation_helper')
   return (
     <div className={classNames(classes.container, className)}>
       <p>{helperText}</p>
