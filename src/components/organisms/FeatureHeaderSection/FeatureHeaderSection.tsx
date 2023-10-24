@@ -80,7 +80,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   // TODO: not sure yet what this will do
   // It should decide whether machine translation is allowed or not, but not sure what that changes in other views
 
-  const { toggleMtEngine } = useToggleMtEngine({ id: id })
+  const { toggleMtEngine } = useToggleMtEngine({ subProjectId: id })
 
   // TODO: not sure what this check will be yet
   // First part will be "Task data entry template variable "PM task entry": "false"" - Not sure what this will look like from BE yet

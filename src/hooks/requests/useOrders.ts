@@ -198,14 +198,18 @@ export const useSubOrderWorkflow = ({ id }: { id?: string }) => {
   }
 }
 
-export const useToggleMtEngine = ({ id }: { id?: string }) => {
+export const useToggleMtEngine = ({
+  subProjectId,
+}: {
+  subProjectId?: string
+}) => {
   const queryClient = useQueryClient()
   const { mutateAsync: toggleMtEngine, isLoading } = useMutation({
-    mutationKey: ['mt_engine', id],
+    mutationKey: ['mt_engine', subProjectId],
     mutationFn: async (payload: { mt_enabled: boolean }) =>
-      apiClient.put(`${endpoints.MT_ENGINE}/${id}`, payload),
+      apiClient.put(`${endpoints.MT_ENGINE}/${subProjectId}`, payload),
     onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['suborders', id] })
+      queryClient.refetchQueries({ queryKey: ['suborders', subProjectId] })
     },
   })
 
