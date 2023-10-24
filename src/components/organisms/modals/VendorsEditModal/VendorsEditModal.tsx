@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   map,
   includes,
@@ -89,9 +89,21 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     )
   }, [users])
 
-  const { control, handleSubmit, reset, setError } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { isSubmitSuccessful },
+  } = useForm<FormValues>({
     mode: 'onChange',
   })
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset({})
+    }
+  }, [isSubmitSuccessful, reset])
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const newVendorsPayload = compact(
