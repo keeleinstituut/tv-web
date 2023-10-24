@@ -10,7 +10,7 @@ import useFilters from 'hooks/useFilters'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 
-export const useFetchtasks = () => {
+export const useFetchTasks = () => {
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filters,

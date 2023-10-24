@@ -18,7 +18,10 @@ const MyTasks: FC = () => {
   const { t } = useTranslation()
 
   const [tabNames, setTabNames] = useState<ObjectType>({})
-  const [activeTab, setActiveTab] = useState<string>()
+
+  const [activeTab, setActiveTab] = useState<string | undefined>(
+    'Minu ülesanded'
+  )
 
   let Component: FC = () => null
   switch (activeTab) {

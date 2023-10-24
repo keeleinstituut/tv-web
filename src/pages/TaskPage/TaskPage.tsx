@@ -25,7 +25,7 @@ const TaskPage: FC = () => {
   const { t } = useTranslation()
   const { taskId } = useParams()
   const { order, isLoading } = useFetchOrder({
-    id: '9a6612a1-db71-4761-bafb-a77f68ac811b',
+    id: '9a719d6d-22c3-4338-9983-392edd4623e6',
   })
 
   console.log('order', order)
@@ -72,6 +72,7 @@ interface ObjectType {
 
 const SubOrder: FC<any> = (props) => {
   const { id } = props
+  const { t } = useTranslation()
 
   const [tabNames, setTabNames] = useState<ObjectType>({})
   const [activeTab, setActiveTab] = useState<string>()
@@ -80,14 +81,15 @@ const SubOrder: FC<any> = (props) => {
 
   if (isLoading) return <Loader loading={isLoading} />
 
-  const keelesuunad = `${subOrder?.destination_language_classifier_value.value} > ${subOrder?.source_language_classifier_value.value}`
+  const languageDirection = `${subOrder?.destination_language_classifier_value.value} > ${subOrder?.source_language_classifier_value.value}`
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h1>{id}</h1>
         <span>
-          keelesuunad: <Tag label={keelesuunad} value />
+          {t('label.language_direction')}
+          <Tag label={languageDirection} value />
         </span>
         <span>alamtellimuse ID: {subOrder?.ext_id}</span>
       </div>

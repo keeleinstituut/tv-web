@@ -26,7 +26,7 @@ import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
 import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
-import { useFetchtasks } from 'hooks/requests/useTasks'
+import { useFetchTasks } from 'hooks/requests/useTasks'
 
 // TODO: this is WIP code for tasks list view
 
@@ -71,7 +71,7 @@ const TasksTable: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchtasks()
+  } = useFetchTasks()
 
   // TODO: remove default values, once we have actual data
   const orderRows = useMemo(
