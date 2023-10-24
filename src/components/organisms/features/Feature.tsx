@@ -33,6 +33,11 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
     return <></>
   }
 
+  const filteredAssignments = filter(
+    subOrder.assignments,
+    ({ job_definition }) => feature === job_definition.job_key
+  )
+
   return (
     <Component
       {...subOrder}
@@ -43,7 +48,7 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
       }
       subOrderId={subOrder.id}
       feature={feature}
-      assignments={filter(subOrder.assignments, { feature })}
+      assignments={filteredAssignments}
     />
   )
 }
