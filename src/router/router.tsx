@@ -167,6 +167,7 @@ export const protectedRoutes: FullRouteObject[] = [
       Privileges.ImportTm,
       Privileges.ExportTm,
       Privileges.EditTmMetadata,
+      Privileges.EditTm,
       Privileges.DeleteTm,
     ],
     children: [
@@ -178,14 +179,22 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: 'new-memory',
         element: <NewTranslationMemory />,
-        privileges: [Privileges.AddUser],
+        privileges: [Privileges.CreateTm],
         breadcrumb: i18n.t('translation_memories.new_translation_memory_title'),
       },
       {
         path: ':memoryId',
         element: <TranslationMemoryPage />,
-        privileges: [Privileges.AddUser],
         breadcrumb: BreadcrumbsTitle,
+        privileges: [
+          Privileges.CreateTm,
+          Privileges.ViewTm,
+          Privileges.ImportTm,
+          Privileges.ExportTm,
+          Privileges.EditTmMetadata,
+          Privileges.EditTm,
+          Privileges.DeleteTm,
+        ],
       },
     ],
   },
