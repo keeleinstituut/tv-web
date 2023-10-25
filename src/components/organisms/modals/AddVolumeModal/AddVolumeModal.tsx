@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next'
 import { ModalTypes, closeModal, showModal } from '../ModalRoot'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { map, find } from 'lodash'
+import { map, find, filter, includes } from 'lodash'
 import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { VolumeChangeModalProps } from 'components/organisms/modals/VolumeChangeModal/VolumeChangeModal'
-import { CatAnalysis } from 'types/orders'
+import { CatAnalysis, CatJob } from 'types/orders'
 import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
 
 // TODO: this is WIP code for suborder view
@@ -18,6 +18,7 @@ export interface AddVolumeModalProps extends VolumeChangeModalProps {
   catSupported?: boolean
   cat_analyzis?: CatAnalysis[]
   subOrderId?: string
+  assignmentCatJobs?: CatJob[]
 }
 
 interface FormValues {
@@ -31,6 +32,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
   isModalOpen,
   cat_analyzis,
   subOrderId,
+  assignmentCatJobs,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -76,21 +78,40 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
     [options, t]
   )
 
+  const subprojectCatJobs = useMemo(
+    () =>
+      map(cat_analysis?.cat_jobs, ({ id }) => ({
+        value: id.toString(),
+        label: id.toString(),
+      })),
+    [cat_analysis?.cat_jobs]
+  )
+
+  const assignmentCatJobIds = useMemo(
+    () => map(assignmentCatJobs, ({ id }) => id),
+    [assignmentCatJobs]
+  )
+
+  const catJobOptions = useMemo(
+    () =>
+      filter(subprojectCatJobs, ({ value }) =>
+        includes(assignmentCatJobIds, value)
+      ),
+    [assignmentCatJobIds, subprojectCatJobs]
+  )
+
   const chunkField: FieldProps<FormValues>[] = useMemo(
     () => [
       {
         inputType: InputTypes.RadioGroup,
         name: 'chunkId',
-        options: map(cat_analysis?.jobs, ({ id }) => ({
-          value: id.toString(),
-          label: id.toString(),
-        })),
+        options: catJobOptions,
         rules: {
           required: true,
         },
       },
     ],
-    [cat_analysis?.jobs]
+    [catJobOptions]
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
@@ -99,12 +120,13 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
         onSave,
         isCat: values?.addType === 'cat',
         catJobId: values?.chunkId,
-        matchingCatAnalysis: find(cat_analysis?.jobs, { id: values?.chunkId })
-          ?.volume_analysis,
+        matchingCatAnalysis: find(cat_analysis?.cat_jobs, {
+          id: values?.chunkId,
+        })?.volume_analysis,
         ...rest,
       })
     },
-    [cat_analysis, onSave, rest]
+    [cat_analysis?.cat_jobs, onSave, rest]
   )
 
   return (

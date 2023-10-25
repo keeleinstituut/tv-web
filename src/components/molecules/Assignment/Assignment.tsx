@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo } from 'react'
 import { map, find, pick, values } from 'lodash'
-import { CatAnalysis, SubProjectFeatures } from 'types/orders'
+import { CatAnalysis, CatJob, SubProjectFeatures } from 'types/orders'
 import { AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import Button, {
@@ -33,7 +33,7 @@ interface AssignmentProps extends AssignmentType {
   projectDeadline?: string
   isVendorView?: boolean
   catSupported?: boolean
-  // cat_jobs?: CatJob[]
+  cat_jobs?: CatJob[]
   cat_analyzis?: CatAnalysis[]
   volumes?: VolumeValue[]
   subOrderId?: string
@@ -62,7 +62,7 @@ const Assignment: FC<AssignmentProps> = ({
   finished_at,
   isVendorView,
   catSupported,
-  // cat_jobs,
+  cat_jobs,
   cat_analyzis,
   volumes = [],
 }) => {
@@ -203,6 +203,7 @@ const Assignment: FC<AssignmentProps> = ({
         isTextarea: true,
         catSupported,
         vendorPrices,
+        assignmentCatJobs: cat_jobs,
         vendorDiscounts,
         vendorName,
         value: volumes,

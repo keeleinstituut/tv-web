@@ -61,7 +61,7 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
 }) => {
   const { cat_analysis } = useCatAnalysisFetch({ subOrderId })
   const { downloadAnalysis } = useDownloadCatAnalysisFetch({ subOrderId })
-  const cat_analyzis = [...(cat_analysis?.jobs ?? [])]
+  const cat_analyzis = [...(cat_analysis?.cat_jobs ?? [])]
 
   const { t } = useTranslation()
   const totalWordCount = chain(cat_analyzis).map('total').sum().value()

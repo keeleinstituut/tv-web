@@ -5,8 +5,10 @@ import { downloadFile } from 'helpers'
 import { CatAnalysis, SourceFile } from 'types/orders'
 
 export interface AnalysisResponse {
-  files: SourceFile[]
-  jobs: { id: string; name: string; volume_analysis: CatAnalysis }[]
+  cat_files: SourceFile[]
+  cat_jobs: { id: string; name: string; volume_analysis: CatAnalysis }[]
+  analyzing_status: string
+  setup_status: string
 }
 
 export const useCatAnalysisFetch = ({

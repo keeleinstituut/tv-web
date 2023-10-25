@@ -14,7 +14,7 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Price, PriceUnits } from 'types/price'
 import { DiscountPercentages } from 'types/vendors'
-import { CatAnalysis } from 'types/orders'
+import { CatAnalysis, CatJob } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
 import {
   useAssignmentAddCatVolume,
@@ -116,6 +116,7 @@ export interface AddVolumeInputProps {
   cat_analyzis?: CatAnalysis[]
   assignmentId?: string
   subOrderId?: string
+  assignmentCatJobs?: CatJob[]
 }
 
 const AddVolumeInput: FC<AddVolumeInputProps> = ({
@@ -131,6 +132,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   cat_analyzis,
   assignmentId,
   subOrderId,
+  assignmentCatJobs,
   disabled,
   loading,
 }) => {
@@ -233,6 +235,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       vendorDiscounts,
       vendorName,
       cat_analyzis,
+      assignmentCatJobs,
     })
   }, [
     assignmentId,
@@ -242,6 +245,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     vendorDiscounts,
     vendorName,
     cat_analyzis,
+    assignmentCatJobs,
     addAssignmentVolume,
     addAssignmentCatVolume,
     onChange,
