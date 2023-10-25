@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, uniq, includes, find, omit } from 'lodash'
+import { map, uniq, includes, find } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -122,12 +122,10 @@ const OrdersTable: FC = () => {
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     (payload) => {
       handleFilterChange({
-        ...omit(payload, 'only_show_personal_projects'),
-        ...{
-          only_show_personal_projects: payload?.only_show_personal_projects
-            ? 1
-            : 0,
-        },
+        ...payload,
+        only_show_personal_projects: payload?.only_show_personal_projects
+          ? 1
+          : 0,
       })
     },
     [handleFilterChange]
