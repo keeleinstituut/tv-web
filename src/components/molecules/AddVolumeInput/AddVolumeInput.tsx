@@ -23,6 +23,9 @@ import {
 } from 'hooks/requests/useAssignments'
 import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
 import { DiscountPercentages } from 'types/vendors'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from '../Notification/Notification'
+import i18n from 'i18n/i18n'
 
 // TODO: not sure about this data structure
 
@@ -169,24 +172,37 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       ) => {
         delete args.assignment_id
         let res: VolumeValue
-        if (isCat) {
-          const { data: response } = await editAssignmentCatVolume({
-            volumeId: matchingVolume.id,
-            data: args as CatVolumePayload,
+        try {
+          if (isCat) {
+            const { data: response } = await editAssignmentCatVolume({
+              volumeId: matchingVolume.id,
+              data: args as CatVolumePayload,
+            })
+            res = response
+          } else {
+            const { data: response } = await editAssignmentVolume({
+              volumeId: matchingVolume.id,
+              data: args as ManualVolumePayload,
+            })
+            res = response
+          }
+          showNotification({
+            type: NotificationTypes.Success,
+            title: i18n.t('notification.announcement'),
+            content: i18n.t('success.volume_edited'),
           })
-          res = response
-        } else {
-          const { data: response } = await editAssignmentVolume({
-            volumeId: matchingVolume.id,
-            data: args as ManualVolumePayload,
-          })
-          res = response
-        }
-        onChange(
-          value.map((volume) =>
-            volume.id === matchingVolume.id ? res : volume
+          onChange(
+            value.map((volume) =>
+              volume.id === matchingVolume.id ? res : volume
+            )
           )
-        )
+        } catch (error) {
+          showNotification({
+            type: NotificationTypes.Error,
+            title: i18n.t('notification.error'),
+            // content: typedErrorData.message,
+          })
+        }
       }
       showModal(ModalTypes.VolumeChange, {
         onSave,
@@ -212,24 +228,36 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       args: ManualVolumePayload | CatVolumePayload
     ) => {
       let res: VolumeValue
-      if (isCat) {
-        const { data: response } = await addAssignmentCatVolume({
-          data: {
-            ...(args as CatVolumePayload),
-            discounts: pickBy(
-              (args as CatVolumePayload).discounts,
-              identity
-            ) as DiscountPercentages,
-          },
+      try {
+        if (isCat) {
+          const { data: response } = await addAssignmentCatVolume({
+            data: {
+              ...(args as CatVolumePayload),
+              discounts: pickBy(
+                (args as CatVolumePayload).discounts,
+                identity
+              ) as DiscountPercentages,
+            },
+          })
+          res = response
+        } else {
+          const { data: response } = await addAssignmentVolume({
+            data: args as ManualVolumePayload,
+          })
+          res = response
+        }
+        showNotification({
+          type: NotificationTypes.Success,
+          title: i18n.t('notification.announcement'),
+          content: i18n.t('success.volume_added'),
         })
-        res = response
-      } else {
-        const { data: response } = await addAssignmentVolume({
-          data: args as ManualVolumePayload,
+        onChange([...value, res])
+      } catch (error) {
+        showNotification({
+          type: NotificationTypes.Error,
+          title: i18n.t('notification.error'),
         })
-        res = response
       }
-      onChange([...value, res])
     }
 
     // TODO: open add/edit modal with add mode
