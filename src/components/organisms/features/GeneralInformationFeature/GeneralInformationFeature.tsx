@@ -166,7 +166,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   }, [final_files, newFinalFiles, setValue, t, updateSubOrder])
 
   const handleSendToCat = useCallback(async () => {
-    // const sourceFiles = getValues('cat_files')
     const sourceFiles = getValues('source_files')
     const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
@@ -214,8 +213,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     !some(watch('source_files'), 'isChecked') ||
     !some(watch('write_to_memory'), (val) => !!val) ||
     !includes(CatProjectStatus.NotStarted, catSetupStatus)
-
-  console.log(cat_jobs, catToolJobs)
 
   return (
     <Root>
