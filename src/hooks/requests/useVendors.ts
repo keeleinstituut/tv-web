@@ -1,9 +1,9 @@
+import { GetPricesPayload } from 'types/price'
 import {
   VendorsDataType,
   GetVendorsPayload,
   UpdateVendorPayload,
   PricesDataType,
-  GetPricesPayload,
   DeletePricesPayload,
   UpdatedPrices,
   GetSkillsPayload,
@@ -90,6 +90,7 @@ export const useCreateVendors = () => {
         queryKey: ['translationUsers'],
         type: 'active',
       })
+      queryClient.refetchQueries({ queryKey: ['vendors'] })
     },
   })
 
@@ -119,6 +120,7 @@ export const useDeleteVendors = () => {
         queryKey: ['translationUsers'],
         type: 'active',
       })
+      queryClient.refetchQueries({ queryKey: ['vendors'] })
     },
   })
 

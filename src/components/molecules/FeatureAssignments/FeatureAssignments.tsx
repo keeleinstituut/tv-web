@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { map } from 'lodash'
 import { SubOrderDetail } from 'types/orders'
 import Assignment from 'components/molecules/Assignment/Assignment'
+import { VolumeValue } from 'types/volumes'
 
 type FeatureAssignmentsProps = Pick<
   SubOrderDetail,
@@ -13,6 +14,7 @@ type FeatureAssignmentsProps = Pick<
   hidden?: boolean
   projectDeadline?: string
   catSupported?: boolean
+  volumes?: VolumeValue[]
 }
 
 const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
@@ -28,8 +30,8 @@ const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
           <Assignment
             key={assignment.id}
             index={index}
-            {...assignment}
             {...rest}
+            {...assignment}
           />
         )
       })}

@@ -108,6 +108,9 @@ const SubOrdersTable: FC = () => {
     (payload) => {
       handleFilterChange({
         ...payload,
+        only_show_personal_projects: payload?.only_show_personal_projects
+          ? 1
+          : 0,
       })
     },
     [handleFilterChange]
@@ -179,6 +182,10 @@ const SubOrdersTable: FC = () => {
       header: () => t('label.deadline_at'),
       footer: (info) => info.column.id,
       cell: ({ getValue, row }) => {
+        const deadlineString = getValue()
+        if (!deadlineString) {
+          return null
+        }
         const deadlineDate = dayjs(getValue())
         const currentDate = dayjs()
         const diff = deadlineDate.diff(currentDate)

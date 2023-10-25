@@ -81,11 +81,12 @@ const OrderPage: FC = () => {
     client_institution_user,
     manager_institution_user,
     deadline_at,
+    translation_domain_classifier_value,
   } = order || {}
 
   useOrderPageRedirect({
-    client_user_institution_id: client_institution_user?.id,
-    translation_manager_user_institution_id: manager_institution_user?.id,
+    client_institution_user_id: client_institution_user?.id,
+    manager_institution_user_id: manager_institution_user?.id,
     isLoading,
   })
 
@@ -113,6 +114,7 @@ const OrderPage: FC = () => {
           {...subOrder}
           key={subOrder.id}
           projectDeadline={deadline_at}
+          projectDomain={translation_domain_classifier_value}
         />
       ))}
     </>

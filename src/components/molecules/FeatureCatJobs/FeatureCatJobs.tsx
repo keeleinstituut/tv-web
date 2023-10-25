@@ -50,14 +50,14 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
             [id]: {
               ...reduce(
                 cat_jobs,
-                (result, { chunk_id }) => {
-                  if (!chunk_id) return result
+                (result, { id }) => {
+                  if (!id) return result
                   const isChunkSelected = assigned_chunks
-                    ? includes(assigned_chunks, chunk_id)
+                    ? includes(assigned_chunks, id)
                     : index === 0
                   return {
                     ...result,
-                    [chunk_id]: isChunkSelected,
+                    [id]: isChunkSelected,
                   }
                 },
                 {}
@@ -114,7 +114,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
   return (
     <>
       <div>
-        {map([...assignments, ...assignments], (assignment, index) => {
+        {map([...assignments], (assignment, index) => {
           return (
             <FeatureCatJob
               key={assignment.id}

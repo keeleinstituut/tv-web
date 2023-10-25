@@ -36,10 +36,10 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
   index,
   control,
   id,
-  feature,
+  job_definition,
   candidates,
   assigned_vendor_id,
-  assignee_id,
+  assignee,
   finished_at,
   cat_jobs,
   isEditable,
@@ -48,9 +48,9 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
 
   const tableRows = useMemo(
     () =>
-      map(cat_jobs, ({ chunk_id }) => ({
-        selected: chunk_id,
-        chunk_id,
+      map(cat_jobs, ({ id }) => ({
+        selected: id.toString(),
+        chunk_id: id.toString(),
       })),
     [cat_jobs]
   )
@@ -81,7 +81,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
     <div className={classes.container}>
       <h3>
         {t('task.vendor_title', { number: index + 1 })}(
-        {t(`orders.features.${feature}`)})
+        {t(`orders.features.${job_definition.job_key}`)})
       </h3>
       <span className={classes.assignmentId}>{id}</span>
       <div className={classes.titleRow}>

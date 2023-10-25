@@ -93,7 +93,6 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
               hidden={!includes(rowsWithExistingUsers, row.index)}
               tooltipContent={t('tooltip.user_already_exists')}
               className={classes.tooltipPosition}
-              containerRef={containerRef}
             />
           </div>
         )
@@ -196,7 +195,6 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
       //paginationData={pagination}
       //onPaginationChange={onPaginationChange}
       tableSize={TableSizeTypes.M}
-      ref={containerRef}
       pageSizeOptions={[
         { label: '10', value: '10' },
         { label: '50', value: '50' },
