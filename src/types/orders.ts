@@ -55,10 +55,14 @@ export interface Link {
 interface ProjectTypeConfig {
   id: string
   workflow_process_definition_id: string
-  features: SubProjectFeatures[]
   created_at: string
   updated_at: string
+  type_classifier_value_id: string
+  is_start_date_supported: boolean
+  cat_tool_enabled: boolean
+  job_definitions: JobDefinition[]
 }
+
 interface TypeClassifierValue extends ClassifierValue {
   type: ClassifierValueType.ProjectType
   project_type_config: ProjectTypeConfig
@@ -126,7 +130,6 @@ export interface ListSubOrderDetail {
   destination_language_classifier_value_id: string
   created_at: string
   updated_at: string
-  features: SubProjectFeatures[]
   project: ListOrder
   status?: SubOrderStatus
   deadline_at: string
@@ -137,12 +140,21 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   // Others from what Markus used:
   cat_project_created: string
   cat_features: SubProjectFeatures[]
+  job_definitions: JobDefinition[]
   cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
   // TODO: not sure if the name will be intermediate_files
   intermediate_files: SourceFile[]
   final_files: SourceFile[]
   assignments: AssignmentType[]
+}
+
+export interface JobDefinition {
+  id: string
+  job_key: SubProjectFeatures
+  skill_id: string
+  multi_assignments_enabled: boolean
+  linking_with_cat_tool_jobs_enabled: boolean
 }
 
 export interface ListOrder {
