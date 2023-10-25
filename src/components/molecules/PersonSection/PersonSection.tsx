@@ -145,8 +145,8 @@ const PersonSection = <TFormValues extends FieldValues>({
 
   const fieldName =
     type === PersonSectionTypes.Client
-      ? 'client_user_institution_id'
-      : 'translation_manager_user_institution_id'
+      ? 'client_institution_user_id'
+      : 'manager_institution_user_id'
 
   const fieldLabel =
     type === PersonSectionTypes.Client ? t('label.name') : t('label.manager')
@@ -191,6 +191,7 @@ const PersonSection = <TFormValues extends FieldValues>({
         hidden={isLoading}
         onlyDisplay={!isEditable}
         className={classNames(!isEditable && !isNew && classes.boldText)}
+        hideTags={true}
       />
       {selectedUserDetails && (
         <UserDetails

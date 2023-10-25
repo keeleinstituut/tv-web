@@ -6,8 +6,11 @@
   grid-template-columns: max-content auto;
   grid-gap: spacing(25);
 
-  @media (max-width: $medium_large_desktop) {
+  @media (max-width: $medium_desktop) {
     grid-gap: spacing(0);
+  }
+  @media (max-width: $small_desktop) {
+    grid-template-columns: 1fr;
   }
 }
 .memoryDetails {
@@ -20,7 +23,12 @@
   grid-row-gap: spacing(4);
   height: max-content;
 }
+.valueClass {
+  max-width: 220px;
+}
+
 .labelClass {
+  align-self: start;
   justify-self: end;
   height: 24px;
 }
@@ -68,7 +76,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
 
-  @media (max-width: $medium_desktop) {
+  @media (max-width: calc($medium_desktop - 100px)) and (min-width: $small_desktop) {
     grid-template-columns: 1fr;
   }
 }

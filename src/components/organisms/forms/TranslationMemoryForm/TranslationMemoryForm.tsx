@@ -6,7 +6,7 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
-import { filter, join, map, omit, split } from 'lodash'
+import { filter, includes, join, map, omit, split } from 'lodash'
 import classes from './classes.module.scss'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -58,7 +58,7 @@ const TranslationMemoryForm: FC = () => {
   const statusValue = watch('type')
 
   useEffect(() => {
-    if (statusValue !== TMType.Internal) {
+    if (includes([TMType.Shared, TMType.Public], statusValue)) {
       showModal(ModalTypes.ConfirmationModal, {
         handleCancel: () => setValue('type', TMType.Internal),
         title: t('translation_memories.confirmation_text'),
@@ -170,7 +170,7 @@ const TranslationMemoryForm: FC = () => {
         isResetDisabled={!isDirty}
         isSubmitDisabled={!isDirty || !isValid}
         loading={isSubmitting}
-        resetForm={reset}
+        resetForm={() => reset({})}
         className={classes.formButtons}
         submitButtonName={t('button.create_translation_memory')}
       />
