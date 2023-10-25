@@ -231,7 +231,7 @@ export const useSplitAssignment = () => {
     mutationKey: ['split_assignment'],
     mutationFn: (payload: {
       sub_project_id: string
-      feature: SubProjectFeatures
+      job_key: SubProjectFeatures
     }) =>
       apiClient.post(endpoints.ASSIGNMENTS, {
         ...payload,

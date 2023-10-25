@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { includes, filter, isEmpty, get, map } from 'lodash'
+import { includes, filter, isEmpty, map } from 'lodash'
 import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
 import MainFeature from './MainFeature/MainFeature'
@@ -33,8 +33,6 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
     return <></>
   }
 
-  const isFirstTaskJobRevision =
-    get(subOrder.assignments[0], 'feature') === 'job_revision'
   const filteredAssignments = filter(
     subOrder.assignments,
     ({ job_definition }) => feature === job_definition.job_key
@@ -60,7 +58,6 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
       }
       subOrderId={subOrder.id}
       feature={feature}
-      isFirstTaskJobRevision={isFirstTaskJobRevision}
       assignments={filteredAssignments}
     />
   )

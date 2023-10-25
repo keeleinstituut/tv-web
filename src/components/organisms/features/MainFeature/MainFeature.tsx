@@ -11,6 +11,7 @@ import { useSplitAssignment } from 'hooks/requests/useOrders'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { get } from 'lodash'
 
 type MainFeatureProps = Pick<
   SubOrderDetail,
@@ -23,7 +24,6 @@ type MainFeatureProps = Pick<
   catSupported?: boolean
   projectDeadline?: string
   feature: SubProjectFeatures
-  isFirstTaskJobRevision?: boolean
   mt_enabled?: boolean
   id?: string
 }
@@ -32,7 +32,6 @@ const MainFeature: FC<MainFeatureProps> = ({
   catSupported,
   feature,
   assignments,
-  isFirstTaskJobRevision = false,
   mt_enabled,
   id,
   ...rest
@@ -55,7 +54,7 @@ const MainFeature: FC<MainFeatureProps> = ({
   const addVendor = useCallback(async () => {
     const payload = {
       sub_project_id: assignments[0].sub_project_id,
-      feature: feature,
+      job_key: feature,
     }
 
     try {
@@ -71,13 +70,20 @@ const MainFeature: FC<MainFeatureProps> = ({
     }
   }, [assignments, feature, splitAssignment, t])
 
-  const shouldAddVendor = (
+  const isFirstTaskJobRevision =
+    get(assignments[0], 'feature') === 'job_revision'
+
+  const isMultiAssignmentsEnabled =
+    assignments[0].job_definition.multi_assignments_enabled
+
+  const cannotAddVendor = (
     feature: SubProjectFeatures,
     isFirstTaskJobRevision: boolean
   ) => {
     return (
       feature === SubProjectFeatures.JobOverview ||
-      (feature === SubProjectFeatures.JobRevision && !isFirstTaskJobRevision)
+      (feature === SubProjectFeatures.JobRevision && !isFirstTaskJobRevision) ||
+      !isMultiAssignmentsEnabled
     )
   }
 
@@ -88,7 +94,7 @@ const MainFeature: FC<MainFeatureProps> = ({
           setActiveTab,
           activeTab,
           tabs: featureTabs,
-          addVendor: shouldAddVendor(feature, isFirstTaskJobRevision)
+          addVendor: cannotAddVendor(feature, isFirstTaskJobRevision)
             ? undefined
             : addVendor,
           catSupported,

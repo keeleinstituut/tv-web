@@ -5,7 +5,16 @@ import Tag from 'components/atoms/Tag/Tag'
 import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import Feature from 'components/organisms/features/Feature'
-import { compact, includes, map, toLower, find, findIndex } from 'lodash'
+import {
+  compact,
+  includes,
+  map,
+  toLower,
+  find,
+  findIndex,
+  uniqBy,
+  sortBy,
+} from 'lodash'
 import { ListSubOrderDetail, SubProjectFeatures } from 'types/orders'
 import { useTranslation } from 'react-i18next'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
@@ -103,8 +112,6 @@ const SubOrderSection: FC<SubOrderProps> = ({
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
   const { subOrder, isLoading } = useFetchSubOrder({ id }) || {}
 
-  console.log('subOrder', subOrder)
-
   const { startSubOrderWorkflow, isLoading: isStartingWorkflow } =
     useSubOrderWorkflow({ id })
 
@@ -136,10 +143,13 @@ const SubOrderSection: FC<SubOrderProps> = ({
     ({ assignee }) => !assignee
   )
 
-  const tabs = map(
-    assignments,
-    (assignment) => assignment.job_definition.job_key
-  )
+  const tabs = map(assignments, ({ job_definition }) => {
+    return {
+      id: job_definition.id,
+      job_key: job_definition.job_key,
+      cat_tool_enabled: job_definition.linking_with_cat_tool_jobs_enabled,
+    }
+  })
 
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
@@ -162,17 +172,35 @@ const SubOrderSection: FC<SubOrderProps> = ({
     }
   }, [startSubOrderWorkflow, t])
 
-  // TODO: not sure if GeneralInformation should be considered a feature here or just added
+  const uniqueAssignments = uniqBy(tabs, 'id')
+
   const availableTabs = compact(
-    map(tabs, (feature) => {
+    map(uniqueAssignments, (feature) => {
       if (feature) {
+        const catToolName = feature.cat_tool_enabled ? '(CAT)' : ''
         return {
-          id: feature,
-          // TODO: need to add (CAT) to end of some feature names
-          name: `${t(`orders.features.${feature}`)}`,
+          key: feature.id,
+          id: feature.job_key,
+          name: `${t(`orders.features.${feature.job_key}`)}${catToolName}`,
         }
       }
     })
+  )
+
+  const orderMapping: {
+    job_translation: number
+    job_revision: number
+    job_overview: number
+    [key: string]: number
+  } = {
+    job_translation: 1,
+    job_revision: 2,
+    job_overview: 3,
+  }
+
+  const sortedAvailableTabs = sortBy(
+    availableTabs,
+    (tab) => orderMapping[tab.id]
   )
 
   const allTabs = [
@@ -180,7 +208,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
       id: 'general_information',
       name: t('orders.features.general_information'),
     },
-    ...availableTabs,
+    ...sortedAvailableTabs,
   ]
 
   if (isLoading) return <Loader loading={isLoading} />

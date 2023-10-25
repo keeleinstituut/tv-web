@@ -83,8 +83,6 @@ const OrderPage: FC = () => {
     deadline_at,
   } = order || {}
 
-  // console.log('order', order)
-
   useOrderPageRedirect({
     client_user_institution_id: client_institution_user?.id,
     translation_manager_user_institution_id: manager_institution_user?.id,
