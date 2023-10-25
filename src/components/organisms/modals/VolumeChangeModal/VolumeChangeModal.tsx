@@ -312,7 +312,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
             custom_volume_analysis: zipObject<CatAnalysisVolumes>(
               values(CatAnalysisVolumes),
               // @ts-expect-error type mismatch
-              map(amountValues, (v) => Number(v))
+              map(amountValues, (v) => Number(v)).reverse() // because the enum itself is in the reverse order
             ),
             cat_tool_job_id: catJobId ?? '',
           }
