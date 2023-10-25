@@ -14,15 +14,17 @@ import { AssignmentStatus, AssignmentType } from 'types/assignments'
 import classes from './classes.module.scss'
 import { SubProjectFeatures } from 'types/orders'
 import { useAssignmentRemoveVendor } from 'hooks/requests/useAssignments'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from '../Notification/Notification'
 
 type TaskCandidatesSectionProps = Pick<
   AssignmentType,
   | 'id'
   | 'assigned_vendor_id'
   | 'candidates'
-  | 'assignee_id'
+  | 'assignee'
   | 'finished_at'
-  | 'feature'
+  | 'job_definition'
 > & {
   className?: string
 }
@@ -41,22 +43,22 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   id,
   assigned_vendor_id,
   candidates,
-  assignee_id,
+  assignee,
   finished_at,
   className,
-  feature,
+  job_definition,
 }) => {
   const { t } = useTranslation()
 
   const getCandidateStatus = useCallback(
     (vendor_id: string) => {
-      if (!assignee_id) return AssignmentStatus.ForwardedToVendor
+      if (!assignee?.id) return AssignmentStatus.ForwardedToVendor
       if (assigned_vendor_id === vendor_id && finished_at)
         return AssignmentStatus.Done
       if (assigned_vendor_id === vendor_id) return AssignmentStatus.InProgress
       return AssignmentStatus.NotAssigned
     },
-    [assigned_vendor_id, assignee_id, finished_at]
+    [assigned_vendor_id, assignee?.id, finished_at]
   )
 
   const { deleteAssignmentVendor } = useAssignmentRemoveVendor({
@@ -81,10 +83,15 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   )
 
   const handleDelete = useCallback(
-    (vendor_id: string) => {
-      deleteAssignmentVendor({ data: [{ vendor_id }] })
+    async (vendor_id: string) => {
+      await deleteAssignmentVendor({ data: [{ vendor_id }] })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.vendors_removed_from_task'),
+      })
     },
-    [deleteAssignmentVendor]
+    [deleteAssignmentVendor, t]
   )
 
   const columns = [
@@ -111,7 +118,7 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
         return (
           <BaseButton
             className={classes.iconButton}
-            hidden={feature === SubProjectFeatures.JobOverview}
+            hidden={job_definition.job_key === SubProjectFeatures.JobOverview}
             onClick={() => handleDelete(getValue())}
           >
             <Delete />

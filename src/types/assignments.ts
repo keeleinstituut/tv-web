@@ -1,5 +1,6 @@
-import { CatAnalysis, SubProjectFeatures } from './orders'
+import { CatAnalysis } from './orders'
 import { DiscountPercentages, Vendor } from './vendors'
+import { CatJob, JobDefinition } from './orders'
 import { VolumeValue } from './volumes'
 
 export enum AssignmentStatus {
@@ -18,12 +19,13 @@ interface Candidate {
 }
 
 export interface AssignmentType {
-  feature: SubProjectFeatures
+  job_definition: JobDefinition
   id: string
   candidates: Candidate[]
   volumes?: VolumeValue[]
+  jobs?: CatJob[]
   assigned_vendor_id?: string
-  assignee_id?: string
+  assignee?: Vendor
   sub_project_id: string
   // TODO: no idea whether it will be skill_ids or sth else
   skill_id: string

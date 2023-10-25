@@ -463,12 +463,14 @@
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "vendors_removed_from_task": "Teostajad edukalt eemaldatud ülesande külge!",
     "vendors_created_removed": "Teostajad edukalt lisatud/eemaldatud",
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
     "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
+    "machine_translation": "Masintõlke lisamise eelistus muudetud.",
     "final_files_changed": "Valmisfailid muudetud",
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
     "institution_discounts": "Asutuse hinnakiri on edukalt muudetud"
@@ -507,6 +509,7 @@
     "main_write_helper": "„Peamine/Kirjuta“ mällu salvestatakse selle alamtellimuse tõlkesegmendid.",
     "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail).",
     "selected_translation_memory": "Valitud masintõlkemootor: {{memory}}",
+    "vacation_days": "Rohelisega on tähistatud tööpäevad ja sinisega puhkepäevad ja puhkus.",
     "clear_price_filters": "Teostajate valimise tabel on eelfiltreeritud alamtellimuse keelesuuna ja ülesande oskuse järgi. Vajutades “Eemalda kõik filtrid” kuvame kogu teostajate andmebaasi hinnakirja",
     "skill_language_mismatch": "Oskus ja keelesuund ei vasta ülesandele, antud hinnakirja ei rakendata"
   },

@@ -54,8 +54,8 @@ const Assignment: FC<AssignmentProps> = ({
   id,
   subOrderId,
   assigned_vendor_id,
-  assignee_id,
-  feature,
+  assignee,
+  job_definition,
   source_language_classifier_value_id,
   destination_language_classifier_value_id,
   projectDeadline,
@@ -82,6 +82,8 @@ const Assignment: FC<AssignmentProps> = ({
     () => pick(vendor, values(DiscountPercentageNames)),
     [vendor]
   ) as DiscountPercentages
+
+  const feature = job_definition.job_key
 
   const vendorPrices = useMemo(() => {
     const matchingPrices = find(vendor?.prices, (price) => {
@@ -281,10 +283,10 @@ const Assignment: FC<AssignmentProps> = ({
         <TaskCandidatesSection
           {...{
             id,
-            feature,
+            job_definition,
             assigned_vendor_id,
             candidates,
-            assignee_id,
+            assignee_id: assignee?.id,
             finished_at,
           }}
         />
