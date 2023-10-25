@@ -12,6 +12,7 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
+import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -63,6 +64,7 @@ const ToggleButtonsSection: FC<ToggleButtonsSectionProps> = ({
 interface FeatureHeaderSectionProps extends ToggleTabsProps {
   catSupported?: boolean
   addVendor?: () => void
+  isLoading?: boolean
   mt_enabled?: boolean
   id?: string
 }
@@ -73,6 +75,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   catSupported,
   tabs,
   addVendor,
+  isLoading,
   mt_enabled = true,
   id,
 }) => {
@@ -103,6 +106,9 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
     }
   }, [mt_enabled, t, toggleMtEngine])
 
+  const isSplitButtonHidden =
+    activeTab === FeatureTabs.Xliff || !isSplittingAllowed
+
   return (
     <div
       className={classNames(
@@ -126,15 +132,23 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
         machineTranslation={mt_enabled}
         setMachineTranslation={toggleInputChange}
       />
-      <Button
-        appearance={AppearanceTypes.Text}
-        className={classes.addButton}
-        iconPositioning={IconPositioningTypes.Left}
-        icon={Add}
-        children={t('button.add_new_vendor')}
-        onClick={addVendor}
-        hidden={activeTab === FeatureTabs.Xliff || !isSplittingAllowed}
-      />
+      <div className={classes.splitSection}>
+        <Button
+          appearance={AppearanceTypes.Text}
+          className={classes.addButton}
+          iconPositioning={IconPositioningTypes.Left}
+          icon={Add}
+          children={t('button.add_new_vendor')}
+          onClick={addVendor}
+          loading={isLoading}
+          hidden={isSplitButtonHidden}
+        />
+        <SmallTooltip
+          className={classes.smallTooltip}
+          tooltipContent={t('tooltip.split_task')}
+          hidden={isSplitButtonHidden}
+        />
+      </div>
     </div>
   )
 }

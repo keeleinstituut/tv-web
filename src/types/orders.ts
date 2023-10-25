@@ -248,3 +248,7 @@ export interface NewOrderPayload {
   // TODO: Following are currently missing
   comments?: string
 }
+export interface SplitOrderPayload {
+  sub_project_id: string
+  job_key: SubProjectFeatures
+}

@@ -2,12 +2,8 @@
 
 .sectionHeader {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto;
   align-items: start;
-  padding-bottom: spacing(4);
-  margin-bottom: spacing(4);
-  border-bottom: 1px solid $color-border-secondary;
 
   &.hidden {
     display: none;
@@ -29,5 +25,14 @@
     button:first-child {
       margin-bottom: spacing(2);
     }
+  }
+
+  .splitSection {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .smallTooltip {
+    padding-left: spacing(2);
   }
 }
