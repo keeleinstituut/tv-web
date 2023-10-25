@@ -106,6 +106,9 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
     }
   }, [mt_enabled, t, toggleMtEngine])
 
+  const isSplitButtonHidden =
+    activeTab === FeatureTabs.Xliff || !isSplittingAllowed
+
   return (
     <div
       className={classNames(
@@ -138,12 +141,12 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
           children={t('button.add_new_vendor')}
           onClick={addVendor}
           loading={isLoading}
-          hidden={activeTab === FeatureTabs.Xliff || !isSplittingAllowed}
+          hidden={isSplitButtonHidden}
         />
         <SmallTooltip
           className={classes.smallTooltip}
           tooltipContent={t('tooltip.split_task')}
-          hidden={activeTab === FeatureTabs.Xliff || !isSplittingAllowed}
+          hidden={isSplitButtonHidden}
         />
       </div>
     </div>

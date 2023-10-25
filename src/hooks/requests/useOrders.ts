@@ -8,7 +8,7 @@ import {
   SubOrdersPayloadType,
   CatProjectPayload,
   SubOrderPayload,
-  SubProjectFeatures,
+  SplitOrderPayload,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -229,10 +229,7 @@ export const useSplitAssignment = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: splitAssignment, isLoading } = useMutation({
     mutationKey: ['split_assignment'],
-    mutationFn: (payload: {
-      sub_project_id: string
-      job_key: SubProjectFeatures
-    }) =>
+    mutationFn: (payload: SplitOrderPayload) =>
       apiClient.post(endpoints.ASSIGNMENTS, {
         ...payload,
       }),
