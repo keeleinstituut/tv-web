@@ -24,6 +24,8 @@ type MainFeatureProps = Pick<
   projectDeadline?: string
   feature: SubProjectFeatures
   isFirstTaskJobRevision?: boolean
+  mt_enabled?: boolean
+  id?: string
 }
 
 const MainFeature: FC<MainFeatureProps> = ({
@@ -31,6 +33,8 @@ const MainFeature: FC<MainFeatureProps> = ({
   feature,
   assignments,
   isFirstTaskJobRevision = false,
+  mt_enabled,
+  id,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -89,6 +93,8 @@ const MainFeature: FC<MainFeatureProps> = ({
             : addVendor,
           catSupported,
           isLoading,
+          mt_enabled,
+          id,
         }}
       />
       <FeatureAssignments

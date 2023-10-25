@@ -470,6 +470,7 @@
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
     "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
+    "machine_translation": "Masintõlke lisamise eelistus muudetud.",
     "final_files_changed": "Valmisfailid muudetud",
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
     "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",

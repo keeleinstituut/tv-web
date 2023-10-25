@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { includes, filter, isEmpty, get } from 'lodash'
+import { includes, filter, isEmpty, get, map } from 'lodash'
 import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
 import MainFeature from './MainFeature/MainFeature'
@@ -35,19 +35,33 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
 
   const isFirstTaskJobRevision =
     get(subOrder.assignments[0], 'feature') === 'job_revision'
+  const filteredAssignments = filter(
+    subOrder.assignments,
+    ({ job_definition }) => feature === job_definition.job_key
+  )
+
+  const cat_assignments = filter(
+    subOrder.assignments,
+    ({ job_definition }) => job_definition.linking_with_cat_tool_jobs_enabled
+  )
+
+  const cat_features = map(
+    cat_assignments,
+    ({ job_definition }) => job_definition.job_key
+  )
 
   return (
     <Component
       {...subOrder}
       catSupported={
         feature === SubProjectFeatures.GeneralInformation
-          ? !isEmpty(subOrder.features)
-          : includes(subOrder.features, feature)
+          ? !isEmpty(cat_features)
+          : includes(cat_features, feature)
       }
       subOrderId={subOrder.id}
       feature={feature}
-      assignments={filter(subOrder.assignments, { feature })}
       isFirstTaskJobRevision={isFirstTaskJobRevision}
+      assignments={filteredAssignments}
     />
   )
 }
