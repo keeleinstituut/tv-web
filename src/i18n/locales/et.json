@@ -477,7 +477,9 @@
     "machine_translation": "Masintõlke lisamise eelistus muudetud.",
     "final_files_changed": "Valmisfailid muudetud",
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
-    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud"
+    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
+    "split_assignment": "Ülesanne jagatud"
+
   },
   "notification": {
     "announcement": "Teade",
@@ -515,7 +517,8 @@
     "selected_translation_memory": "Valitud masintõlkemootor: {{memory}}",
     "vacation_days": "Rohelisega on tähistatud tööpäevad ja sinisega puhkepäevad ja puhkus.",
     "clear_price_filters": "Teostajate valimise tabel on eelfiltreeritud alamtellimuse keelesuuna ja ülesande oskuse järgi. Vajutades “Eemalda kõik filtrid” kuvame kogu teostajate andmebaasi hinnakirja",
-    "skill_language_mismatch": "Oskus ja keelesuund ei vasta ülesandele, antud hinnakirja ei rakendata"
+    "skill_language_mismatch": "Oskus ja keelesuund ei vasta ülesandele, antud hinnakirja ei rakendata",
+    "split_task": "Soovi korral saab ülesande jagada mitme teostaja vahel. Klõpsates nupule „+ jaga ülesanne“, lisatakse ülesandele juurde veel üks teostaja."
   },
   "tag": {
     "tag_management": "Sildid",

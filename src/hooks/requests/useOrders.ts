@@ -10,6 +10,7 @@ import {
   CatToolJobsResponse,
   SubOrderPayload,
   CatJobsPayload,
+  SplitOrderPayload,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -323,6 +324,25 @@ export const useSubOrderWorkflow = ({ id }: { id?: string }) => {
 
   return {
     startSubOrderWorkflow,
+    isLoading,
+  }
+}
+
+export const useSplitAssignment = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: splitAssignment, isLoading } = useMutation({
+    mutationKey: ['split_assignment'],
+    mutationFn: (payload: SplitOrderPayload) =>
+      apiClient.post(endpoints.ASSIGNMENTS, {
+        ...payload,
+      }),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['suborders'] })
+    },
+  })
+
+  return {
+    splitAssignment,
     isLoading,
   }
 }

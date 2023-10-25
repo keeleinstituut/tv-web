@@ -286,3 +286,7 @@ export interface CatJobsPayload {
   sub_project_id: string
   chunks_count?: number
 }
+export interface SplitOrderPayload {
+  sub_project_id: string
+  job_key: SubProjectFeatures
+}
