@@ -65,6 +65,7 @@ type DataTableProps<TData extends RowData> = {
     | undefined
   hidePagination?: boolean
   hidePaginationSelectionInput?: boolean
+  columnOrder?: string[] | undefined
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -92,6 +93,7 @@ const DataTable = <TData,>(
     hidePaginationSelectionInput = false,
     tableWrapperClassName,
     hidden,
+    columnOrder,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -120,6 +122,7 @@ const DataTable = <TData,>(
     pageCount: last_page, // Provide the total number of pages
     state: {
       expanded,
+      columnOrder,
       ...{ pagination },
     },
     meta,

@@ -20,7 +20,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { SourceFile } from 'types/orders'
+import { SourceFile, CatProjectStatus } from 'types/orders'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
@@ -35,9 +35,11 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   hiddenIfNoValue?: boolean
   isEditable?: boolean
   className?: string
-  catSupported?: boolean
-  cat_project_created?: string
   openSendToCatModal?: () => void
+  canGenerateProject?: boolean
+  isCatProjectLoading?: boolean
+  isGenerateProjectButtonDisabled?: boolean
+  catSetupStatus?: CatProjectStatus
 }
 
 interface FileRow {
@@ -58,9 +60,11 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   hiddenIfNoValue,
   isEditable,
   className,
-  catSupported,
-  cat_project_created,
+  canGenerateProject,
   openSendToCatModal,
+  isCatProjectLoading,
+  isGenerateProjectButtonDisabled,
+  catSetupStatus,
 }: SourceFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -88,6 +92,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
 
   const handleDelete = useCallback(
     (index?: number) => {
+      //TODO: add deleting file from project endpoint
       if (index === 0 || index) {
         onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
       }
@@ -96,15 +101,15 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   )
 
   const columns = [
-    ...(catSupported
+    ...(canGenerateProject
       ? [
           columnHelper.accessor('check', {
             header: '',
             footer: (info) => info.column.id,
-            cell: ({ getValue }) => {
+            cell: ({ getValue, row }) => {
               return (
                 <FormInput
-                  name={`${name}_checked.${getValue()}` as Path<TFormValues>}
+                  name={`${name}.${row.id}.isChecked` as Path<TFormValues>}
                   ariaLabel={t('label.file_type')}
                   control={control}
                   inputType={InputTypes.Checkbox}
@@ -239,10 +244,12 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         }
       />
       <GenerateForTranslationSection
-        hidden={!catSupported || !!cat_project_created}
+        hidden={!canGenerateProject}
         openSendToCatModal={openSendToCatModal}
         className={classes.generateSection}
-        disabled={isEmpty(value)}
+        disabled={isGenerateProjectButtonDisabled}
+        isLoading={isCatProjectLoading}
+        catSetupStatus={catSetupStatus}
       />
     </div>
   )

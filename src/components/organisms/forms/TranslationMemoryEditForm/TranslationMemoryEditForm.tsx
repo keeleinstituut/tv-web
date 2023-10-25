@@ -43,7 +43,7 @@ type TranslationMemoryEditFormTypes = {
 type DetailsTypes = {
   id: string
   language_direction: string
-  chunk_amount?: string
+  chunk_amount?: string | number
   owner: string
   created_at: string
 }
@@ -71,8 +71,8 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
     () => ({
       id: data?.id || '',
       language_direction: data?.lang_pair || '',
-      chunk_amount: '',
-      owner: institution?.name || 'SG',
+      chunk_amount: data.chunk_amount || 0,
+      owner: institution?.name || '',
       created_at: dayjs(date).format('DD.MM.YYYY') || '',
     }),
     [data, institution, date]

@@ -1,12 +1,24 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
-import { map, keys, filter, compact, isEmpty, isEqual } from 'lodash'
 import {
-  useSubOrderSendToCat,
+  map,
+  filter,
+  compact,
+  isEmpty,
+  isEqual,
+  split,
+  some,
+  reduce,
+  includes,
+} from 'lodash'
+import {
   useUpdateSubOrder,
+  useFetchSubOrderCatToolJobs,
+  useSubOrderSendToCat,
 } from 'hooks/requests/useOrders'
 import {
   CatJob,
   CatProjectPayload,
+  CatProjectStatus,
   SourceFile,
   SubOrderDetail,
 } from 'types/orders'
@@ -23,7 +35,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
-
 import classes from './classes.module.scss'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
@@ -31,16 +42,18 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
+import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
+import { ClassifierValue } from 'types/classifierValues'
 
 // TODO: this is WIP code for suborder view
 
 type GeneralInformationFeatureProps = Pick<
   SubOrderDetail,
-  | 'cat_project_created'
+  | 'cat_files'
   | 'cat_jobs'
   | 'cat_analyzis'
-  | 'cat_files'
+  | 'source_files'
   | 'final_files'
   | 'deadline_at'
   | 'source_language_classifier_value'
@@ -48,34 +61,40 @@ type GeneralInformationFeatureProps = Pick<
 > & {
   catSupported?: boolean
   subOrderId: string
+  projectDomain?: ClassifierValue
 }
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
   cat_files: SourceFile[]
+  source_files: SourceFile[]
   final_files: SourceFile[]
   cat_jobs: CatJob[]
+  write_to_memory: { [key: string]: boolean }
   // TODO: no idea about these fields
-  intermediate_files_checked: number[]
   shared_with_client: boolean[]
-  write_to_memory: object
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   catSupported,
-  cat_project_created,
   cat_jobs,
   subOrderId,
   cat_analyzis,
   cat_files,
+  source_files,
   final_files,
   deadline_at,
   source_language_classifier_value,
   destination_language_classifier_value,
+  projectDomain,
 }) => {
   const { t } = useTranslation()
-  const { sendToCat } = useSubOrderSendToCat({ id: subOrderId })
   const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: subOrderId })
+  const { sendToCat, isCatProjectLoading } = useSubOrderSendToCat()
+  const { catToolJobs, catSetupStatus } = useFetchSubOrderCatToolJobs({
+    id: subOrderId,
+  })
+  const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
 
   const defaultValues = useMemo(
     () => ({
@@ -83,14 +102,17 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         ? getLocalDateOjectFromUtcDateString(deadline_at)
         : { date: '', time: '' },
       cat_files,
+      source_files: map(source_files, (file) => ({
+        ...file,
+        isChecked: false,
+      })),
       final_files,
-      cat_jobs,
-      // TODO: no idea about these fields
-      intermediate_files_checked: [],
-      shared_with_client: [],
+      cat_jobs: catToolJobs,
       write_to_memory: {},
+      // TODO: no idea about these fields
+      shared_with_client: [],
     }),
-    [cat_jobs, deadline_at, final_files, cat_files]
+    [catToolJobs, deadline_at, final_files, cat_files, source_files]
   )
 
   const { control, getValues, watch, setValue } = useForm<FormValues>({
@@ -99,6 +121,22 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   })
 
   const newFinalFiles = watch('final_files')
+
+  useEffect(() => {
+    if (subOrderTmKeys) {
+      setValue(
+        'write_to_memory',
+        reduce(
+          subOrderTmKeys,
+          (result, { key, is_writable }) => {
+            if (!key) return result
+            return { ...result, [key]: is_writable }
+          },
+          {}
+        )
+      )
+    }
+  }, [setValue, subOrderTmKeys])
 
   // TODO: currently just used this for uploading final_files
   // However not sure if we can use similar logic for all the fields
@@ -128,21 +166,15 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   }, [final_files, newFinalFiles, setValue, t, updateSubOrder])
 
   const handleSendToCat = useCallback(async () => {
-    const chosenSourceFiles = getValues('intermediate_files_checked')
-    const translationMemories = getValues('write_to_memory')
-    const sourceFiles = getValues('cat_files')
+    // const sourceFiles = getValues('cat_files')
+    const sourceFiles = getValues('source_files')
+    const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
-    const selectedIntermediateFiles = map(
-      chosenSourceFiles,
-      (index) => sourceFiles[index]
-    )
-    // TODO: not sure how or what to send
     const payload: CatProjectPayload = {
-      intermediate_file_ids: compact(map(selectedIntermediateFiles, 'id')),
-      translation_memory_ids: keys(
-        filter(translationMemories, (value) => !!value)
-      ),
+      sub_project_id: subOrderId,
+      source_files_ids: compact(map(selectedSourceFiles, 'id')),
     }
+
     try {
       await sendToCat(payload)
       showNotification({
@@ -154,7 +186,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [getValues, sendToCat, t])
+  }, [getValues, sendToCat, subOrderId, t])
 
   const openSendToCatModal = useCallback(
     () =>
@@ -163,6 +195,27 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       }),
     [handleSendToCat]
   )
+
+  const subOrderLangPair = useMemo(() => {
+    const slangShort = split(source_language_classifier_value?.value, '-')[0]
+    const tlangShort = split(
+      destination_language_classifier_value?.value,
+      '-'
+    )[0]
+    return `${slangShort}_${tlangShort}`
+  }, [destination_language_classifier_value, source_language_classifier_value])
+
+  const canGenerateProject =
+    catSupported &&
+    isEmpty(catToolJobs) &&
+    !includes(CatProjectStatus.Done, catSetupStatus)
+
+  const isGenerateProjectButtonDisabled =
+    !some(watch('source_files'), 'isChecked') ||
+    !some(watch('write_to_memory'), (val) => !!val) ||
+    !includes(CatProjectStatus.NotStarted, catSetupStatus)
+
+  console.log(cat_jobs, catToolJobs)
 
   return (
     <Root>
@@ -179,14 +232,15 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       />
       <div className={classes.grid}>
         <SourceFilesList
-          name="intermediate_files"
+          name="source_files"
           title={t('orders.source_files')}
           tooltipContent={t('tooltip.source_files_helper')}
-          // className={classes.filesSection}
           control={control}
-          catSupported={catSupported}
-          cat_project_created={cat_project_created}
           openSendToCatModal={openSendToCatModal}
+          canGenerateProject={canGenerateProject}
+          isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
+          isCatProjectLoading={isCatProjectLoading}
+          catSetupStatus={catSetupStatus}
           isEditable
           // isEditable={isEditable}
         />
@@ -203,20 +257,27 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         <CatJobsTable
           subOrderId={subOrderId}
           className={classes.catJobs}
-          hidden={!catSupported || isEmpty(cat_jobs)}
-          cat_jobs={cat_jobs}
+          hidden={!catSupported || isEmpty(catToolJobs)}
+          // hidden={canGenerateProject || isEmpty(catToolJobs)}
+          cat_jobs={catToolJobs}
           cat_files={cat_files}
+          source_files={source_files}
           cat_analyzis={cat_analyzis}
           source_language_classifier_value={source_language_classifier_value}
           destination_language_classifier_value={
             destination_language_classifier_value
           }
+          canSendToVendors={true} //TODO add check when camunda is ready
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}
           hidden={!catSupported}
           control={control}
           isEditable
+          subOrderId={subOrderId}
+          subOrderTmKeys={subOrderTmKeys}
+          subOrderLangPair={subOrderLangPair}
+          projectDomain={projectDomain}
         />
       </div>
     </Root>

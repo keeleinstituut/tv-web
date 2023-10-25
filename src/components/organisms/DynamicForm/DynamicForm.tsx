@@ -16,7 +16,8 @@ import {
 import { FormEventHandler, ReactElement } from 'react'
 
 export type InputFieldProps<Type extends FieldValues> =
-  UseControllerProps<Type> & InputPropsWithoutControllerProps
+  UseControllerProps<Type> &
+    InputPropsWithoutControllerProps & { hidden?: boolean }
 
 interface ComponentInForm {
   component: Array<ReactElement> | ReactElement | string
@@ -43,8 +44,10 @@ export function FormInput<Type extends FieldValues>({
   shouldUnregister,
   defaultValue,
   control,
+  hidden,
   ...rest
 }: InputFieldProps<Type>) {
+  if (hidden) return null
   return (
     <Controller
       name={name}

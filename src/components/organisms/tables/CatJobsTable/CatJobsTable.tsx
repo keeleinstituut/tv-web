@@ -1,6 +1,6 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, join, initial, split, isEmpty } from 'lodash'
+import { map, isEmpty } from 'lodash'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { ReactComponent as HorizontalDots } from 'assets/icons/horizontal_dots.svg'
 import classNames from 'classnames'
@@ -12,16 +12,16 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { CatAnalysis, CatJob, SourceFile } from 'types/orders'
 
 import classes from './classes.module.scss'
-import Button, {
-  AppearanceTypes,
-  IconPositioningTypes,
-  SizeTypes,
-} from 'components/molecules/Button/Button'
+import Button, { SizeTypes } from 'components/molecules/Button/Button'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import {
+  useDownloadTranslatedFile,
+  useDownloadXliffFile,
+} from 'hooks/requests/useOrders'
 
 interface CatJobsTableProps {
   className?: string
@@ -30,16 +30,18 @@ interface CatJobsTableProps {
   subOrderId: string
   cat_analyzis?: CatAnalysis[]
   cat_files?: SourceFile[]
+  source_files?: SourceFile[]
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
+  canSendToVendors?: boolean
 }
 
 interface CatJobRow {
-  id: string | number
-  name: string
-  percentage: string
-  translate_url: string | undefined
-  dots_button: number
+  dots_button?: number
+  id?: string | number
+  name?: string
+  progress_percentage?: string
+  translate_url?: string
 }
 
 const columnHelper = createColumnHelper<CatJobRow>()
@@ -51,16 +53,21 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   cat_analyzis,
   subOrderId,
   cat_files,
+  source_files,
   source_language_classifier_value,
   destination_language_classifier_value,
+  canSendToVendors,
 }) => {
   const { t } = useTranslation()
+  const { downloadXliff } = useDownloadXliffFile()
+  const { downloadTranslatedFile } = useDownloadTranslatedFile()
 
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
       cat_analyzis,
       subOrderId,
       cat_files,
+      source_files,
       source_language_classifier_value,
       destination_language_classifier_value,
     })
@@ -68,63 +75,44 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     cat_analyzis,
     subOrderId,
     cat_files,
-    source_language_classifier_value,
     destination_language_classifier_value,
+    source_files,
+    source_language_classifier_value,
   ])
 
-  const filesData = useMemo(
-    () =>
-      map(
-        cat_jobs,
-        (
-          { xliff_download_url, translate_url, id, progress_percentage, name },
-          index
-        ) => {
-          // const name = xliff_download_url
-          //   .substring(xliff_download_url.lastIndexOf('/' + 1))
-          //   .replace('/', '')
-          return {
-            id,
-            name,
-            percentage: progress_percentage + '%',
-            translate_url,
-            dots_button: index,
-          }
-        }
-      ),
-    [cat_jobs]
-  )
+  const filesData = useMemo(() => {
+    return map(cat_jobs, ({ id, name, progress_percentage, translate_url }) => {
+      return { id, name, progress_percentage, translate_url, dots_button: 0 }
+    })
+  }, [cat_jobs])
 
-  const handleMerge = useCallback((chunk_id?: string) => {
-    // TODO: call some merge endpoint
-    console.warn('PROCEED merging files')
-  }, [])
+  const handleCatSplitClick = useCallback(() => {
+    if (canSendToVendors) {
+      showModal(ModalTypes.CatSplit, {
+        subOrderId,
+      })
+    } else {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('error.cant_split_files'),
+      })
+    }
+  }, [canSendToVendors, subOrderId, t])
 
-  const handleCatMergeClick = useCallback(
-    (chunk_id?: string) => {
-      // TODO: not sure how to check for this
-      // Currently it seems that we should
-      // 1. Create an array of all cat_jobs that had the same source chunk
-      // 2. Check whether any of the other tabs that (that are catSupported?) have any of these files selected
-      // in their "xliff" tab for sending to vendors ?
-      // 3. If they are, then we need to check if any of these sub tasks have been sent to vendors
-      // Possibly there will be a check against BE instead
-      // If it's just a check against BE, then we might move this logic inside the modal
-      const areSplitFilesSentToVendors = true
-      if (areSplitFilesSentToVendors) {
-        showNotification({
-          type: NotificationTypes.Error,
-          title: t('notification.error'),
-          content: t('error.cant_merge_files'),
-        })
-      } else {
-        showModal(ModalTypes.CatMerge, {
-          handleMerge: () => handleMerge(chunk_id),
-        })
-      }
-    },
-    [handleMerge, t]
-  )
+  const handleCatMergeClick = useCallback(() => {
+    if (canSendToVendors) {
+      showModal(ModalTypes.CatMerge, {
+        subOrderId,
+      })
+    } else {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('error.cant_merge_files'),
+      })
+    }
+  }, [canSendToVendors, subOrderId, t])
 
   // TODO: not sure how to show this currently
   // This will mean loading state only when none of the files have been analyzed
@@ -139,7 +127,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
       header: () => t('label.xliff_name'),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('percentage', {
+    columnHelper.accessor('progress_percentage', {
       header: () => t('label.chunks'),
       footer: (info) => info.column.id,
     }),
@@ -160,11 +148,8 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('dots_button', {
-      header: '',
-      cell: ({ getValue }) => {
-        const { xliff_download_url, translation_download_url, id } =
-          cat_jobs?.[getValue()] || {}
-        // TODO: continue from here, need to add actual functionality to these buttons
+      cell: '',
+      header: () => {
         return (
           <SimpleDropdown
             icon={HorizontalDots}
@@ -173,31 +158,19 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             options={[
               {
                 label: t('button.split_file'),
-                onClick: () => {
-                  showModal(ModalTypes.CatSplit, {
-                    id,
-                  })
-                },
+                onClick: handleCatSplitClick,
               },
               {
                 label: t('button.download_xliff'),
-                href: xliff_download_url,
-                download: `${join(initial(split(xliff_download_url, '.')))}`,
-                target: '_blank',
+                onClick: () => downloadXliff(subOrderId),
               },
               {
                 label: t('button.download_ready_translation'),
-                href: translation_download_url,
-                download: `${join(
-                  initial(split(translation_download_url, '.'))
-                )}`,
-                target: '_blank',
+                onClick: () => downloadTranslatedFile(subOrderId),
               },
               {
                 label: t('button.join_files'),
-                onClick: () => {
-                  handleCatMergeClick(id?.toString())
-                },
+                onClick: handleCatMergeClick,
               },
             ]}
           />
@@ -229,7 +202,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           </div>
         }
       />
-      <Button
+      {/* <Button
         appearance={AppearanceTypes.Text}
         onClick={handleOpenCatAnalysisModal}
         iconPositioning={IconPositioningTypes.Left}
@@ -241,7 +214,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         icon={ArrowRight}
       >
         {t('button.look_at_cat_analysis')}
-      </Button>
+      </Button> */}
     </div>
   )
 }

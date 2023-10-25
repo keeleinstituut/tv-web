@@ -191,7 +191,7 @@ const PersonSection = <TFormValues extends FieldValues>({
         hidden={isLoading}
         onlyDisplay={!isEditable}
         className={classNames(!isEditable && !isNew && classes.boldText)}
-        hideTags={true}
+        hideTags
       />
       {selectedUserDetails && (
         <UserDetails

@@ -7,10 +7,8 @@ import { Root } from '@radix-ui/react-form'
 import { map } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import classes from './classes.module.scss'
-
-import { useFetchSubOrders } from 'hooks/requests/useOrders'
-import { SubOrderStatus } from 'types/orders'
 import dayjs from 'dayjs'
+import { useFetchTranslationMemorySubOrders } from 'hooks/requests/useTranslationMemories'
 
 type SubOrderTableRow = {
   id: string
@@ -29,25 +27,20 @@ const TranslationMemorySubOrdersTable: FC<TmSubOrdersTypes> = ({
   memoryId,
 }) => {
   const { t } = useTranslation()
-
-  //TODO: add correct endpoint if BE is ready
   const { subOrders, paginationData, handlePaginationChange } =
-    useFetchSubOrders()
+    useFetchTranslationMemorySubOrders({
+      id: memoryId,
+    })
 
-  // TODO: remove hardcoded default values, once we have actual data
   const orderRows = useMemo(
     () =>
       map(
         subOrders,
-        ({
-          deadline_at,
-          ext_id,
-          status = SubOrderStatus.ForwardedToVendor,
-        }) => {
+        ({ created_at, ext_id, translation_domain_classifier_value }) => {
           return {
             id: ext_id,
-            translation_domain: status,
-            created_at: deadline_at,
+            translation_domain: translation_domain_classifier_value?.name || '',
+            created_at,
           }
         }
       ),
