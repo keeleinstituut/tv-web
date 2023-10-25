@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { filter } from 'lodash'
+import { includes, filter, isEmpty, map } from 'lodash'
 import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
 import MainFeature from './MainFeature/MainFeature'
@@ -35,17 +35,33 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder, projectDomain }) => {
     return <></>
   }
 
+  const filteredAssignments = filter(
+    subOrder.assignments,
+    ({ job_definition }) => feature === job_definition.job_key
+  )
+
+  const cat_assignments = filter(
+    subOrder.assignments,
+    ({ job_definition }) => job_definition.linking_with_cat_tool_jobs_enabled
+  )
+
+  const cat_features = map(
+    cat_assignments,
+    ({ job_definition }) => job_definition.job_key
+  )
+
   return (
     <Component
       {...subOrder}
       catSupported={
-        subOrder?.project?.type_classifier_value?.project_type_config
-          ?.cat_tool_enabled
+        feature === SubProjectFeatures.GeneralInformation
+          ? !isEmpty(cat_features)
+          : includes(cat_features, feature)
       }
       subOrderId={subOrder.id}
       projectDomain={projectDomain}
       feature={feature}
-      assignments={filter(subOrder.assignments, { feature })}
+      assignments={filteredAssignments}
     />
   )
 }
