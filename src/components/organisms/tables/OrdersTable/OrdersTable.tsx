@@ -94,7 +94,7 @@ const OrdersTable: FC = () => {
             deadline_at,
             type: type_classifier_value?.value || '',
             status,
-            tags,
+            tags: map(tags, (value) => value?.name || ''),
             price,
             language_directions: uniq(
               map(
@@ -122,8 +122,12 @@ const OrdersTable: FC = () => {
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     (payload) => {
       handleFilterChange({
-        // TODO: won't omit this later
         ...omit(payload, 'only_show_personal_projects'),
+        ...{
+          only_show_personal_projects: payload?.only_show_personal_projects
+            ? 1
+            : 0,
+        },
       })
     },
     [handleFilterChange]
