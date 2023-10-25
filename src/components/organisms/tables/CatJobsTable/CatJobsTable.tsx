@@ -81,33 +81,29 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   }, [cat_jobs])
 
   const handleCatSplitClick = useCallback(() => {
-    // TODO: not sure how to check for this
-    // the option comes after camunda is ready
-    if (!canSendToVendors) {
+    if (canSendToVendors) {
+      showModal(ModalTypes.CatSplit, {
+        subOrderId,
+      })
+    } else {
       showNotification({
         type: NotificationTypes.Error,
         title: t('notification.error'),
         content: t('error.cant_split_files'),
       })
-    } else {
-      showModal(ModalTypes.CatSplit, {
-        subOrderId,
-      })
     }
   }, [canSendToVendors, subOrderId, t])
 
   const handleCatMergeClick = useCallback(() => {
-    // TODO: not sure how to check for this
-    // the option comes after camunda is ready
-    if (!canSendToVendors) {
+    if (canSendToVendors) {
+      showModal(ModalTypes.CatMerge, {
+        subOrderId,
+      })
+    } else {
       showNotification({
         type: NotificationTypes.Error,
         title: t('notification.error'),
         content: t('error.cant_merge_files'),
-      })
-    } else {
-      showModal(ModalTypes.CatMerge, {
-        subOrderId,
       })
     }
   }, [canSendToVendors, subOrderId, t])

@@ -32,8 +32,6 @@ const TranslationMemorySubOrdersTable: FC<TmSubOrdersTypes> = ({
       id: memoryId,
     })
 
-  console.log(subOrders)
-
   const orderRows = useMemo(
     () =>
       map(

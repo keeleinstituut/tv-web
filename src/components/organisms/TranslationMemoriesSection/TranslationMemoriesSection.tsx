@@ -188,8 +188,6 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         tm_keys: [{ key }],
         is_writable,
       }
-      console.log('toggle payload', payload)
-
       try {
         await toggleTmWritable(payload)
         showNotification({

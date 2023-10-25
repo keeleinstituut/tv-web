@@ -111,17 +111,6 @@ export interface CatFile {
   updated_at: string
 }
 
-export interface CatJob {
-  id: string
-  name: string
-  progress_percentage: string
-  translate_url: string
-  // This are not in data
-  xliff_download_url: string
-  translation_download_url: string
-  chunk_id: string
-}
-
 export enum TranslationMemoryPercentageNames {}
 
 export interface CatAnalysis {
@@ -255,7 +244,7 @@ export interface CatToolJobsResponse {
   data: {
     setup_status: CatProjectStatus
     analyzing_status: CatProjectStatus
-    cat_jobs: CatToolJobs[]
+    cat_jobs: CatJob[]
   }
 }
 // TODO: not sure what should be sent for CatProjectPayload
@@ -265,11 +254,15 @@ export interface CatProjectPayload {
   translation_memory_ids?: string[]
 }
 
-export interface CatToolJobs {
+export interface CatJob {
   id: string
   name: string
-  progress_percentage: number | string
+  progress_percentage: string
   translate_url: string
+  // This are not in data
+  xliff_download_url: string
+  translation_download_url: string
+  chunk_id: string
 }
 export interface NewOrderPayload {
   client_user_institution_id: string

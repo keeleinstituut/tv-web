@@ -96,8 +96,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   })
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
 
-  console.log('data catToolJobs', catToolJobs)
-
   const defaultValues = useMemo(
     () => ({
       deadline_at: deadline_at
@@ -212,7 +210,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const isGenerateProjectButtonDisabled =
     !some(watch('source_files'), 'isChecked') ||
-    // !some(watch('write_to_memory'), (val) => !!val) ||
+    !some(watch('write_to_memory'), (val) => !!val) ||
     !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
   return (
@@ -255,15 +253,15 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         <CatJobsTable
           className={classes.catJobs}
           subOrderId={subOrderId}
-          hidden={canGenerateProject || isEmpty(cat_jobs)}
-          cat_jobs={cat_jobs}
+          hidden={canGenerateProject || isEmpty(catToolJobs)}
+          cat_jobs={catToolJobs}
           source_files={source_files}
           cat_analyzis={cat_analyzis}
           source_language_classifier_value={source_language_classifier_value}
           destination_language_classifier_value={
             destination_language_classifier_value
           }
-          canSendToVendors={false}
+          canSendToVendors={true}
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}
