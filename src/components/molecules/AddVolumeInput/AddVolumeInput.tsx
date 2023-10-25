@@ -200,7 +200,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       vendorPrices,
       vendorName,
       onChange,
-      addAssignmentCatVolume,
+      editAssignmentCatVolume,
       editAssignmentVolume,
     ]
   )
