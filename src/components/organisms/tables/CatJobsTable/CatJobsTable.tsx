@@ -12,7 +12,11 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { CatAnalysis, CatJob, SourceFile } from 'types/orders'
 
 import classes from './classes.module.scss'
-import Button, { SizeTypes } from 'components/molecules/Button/Button'
+import Button, {
+  AppearanceTypes,
+  IconPositioningTypes,
+  SizeTypes,
+} from 'components/molecules/Button/Button'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
 import { LanguageClassifierValue } from 'types/classifierValues'
@@ -202,7 +206,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           </div>
         }
       />
-      {/* <Button
+      <Button
         appearance={AppearanceTypes.Text}
         onClick={handleOpenCatAnalysisModal}
         iconPositioning={IconPositioningTypes.Left}
@@ -214,7 +218,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         icon={ArrowRight}
       >
         {t('button.look_at_cat_analysis')}
-      </Button> */}
+      </Button>
     </div>
   )
 }
