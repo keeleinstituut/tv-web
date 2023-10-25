@@ -127,8 +127,6 @@ const SubOrderSection: FC<SubOrderProps> = ({
 
   const { assignments = [] } = subOrder || {}
 
-  console.log('subOrder', subOrder)
-
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
   const hasAnyUnassignedFeatures = !find(
@@ -136,7 +134,8 @@ const SubOrderSection: FC<SubOrderProps> = ({
     ({ assignee }) => !assignee
   )
 
-  const tabs = assignments.map(
+  const tabs = map(
+    assignments,
     (assignment) => assignment.job_definition.job_key
   )
 

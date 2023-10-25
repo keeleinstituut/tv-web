@@ -38,13 +38,21 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
     ({ job_definition }) => feature === job_definition.job_key
   )
 
+  console.log('subOrder', subOrder)
+  console.log('feature', feature)
+
+  console.log('filteredAssignments', filteredAssignments)
+
+  const catJobsEnabled =
+    filteredAssignments[0].job_definition.linking_with_cat_tool_jobs_enabled
+
   return (
     <Component
       {...subOrder}
       catSupported={
         feature === SubProjectFeatures.GeneralInformation
-          ? !isEmpty(subOrder.cat_features)
-          : includes(subOrder.cat_features, feature)
+          ? !isEmpty(catJobsEnabled)
+          : catJobsEnabled
       }
       subOrderId={subOrder.id}
       feature={feature}

@@ -21,7 +21,6 @@ const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
   ...rest
 }) => {
   if (hidden) return null
-  console.log('assignments', assignments)
   return (
     <>
       {map(assignments, (assignment, index) => {

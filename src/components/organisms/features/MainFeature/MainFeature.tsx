@@ -31,8 +31,6 @@ const MainFeature: FC<MainFeatureProps> = ({
   assignments,
   ...rest
 }) => {
-  console.log('feature main', feature)
-
   const { t } = useTranslation()
   const featureTabs = [
     {
