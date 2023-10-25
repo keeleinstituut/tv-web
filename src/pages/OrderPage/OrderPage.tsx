@@ -84,8 +84,8 @@ const OrderPage: FC = () => {
   } = order || {}
 
   useOrderPageRedirect({
-    client_user_institution_id: client_institution_user?.id,
-    translation_manager_user_institution_id: manager_institution_user?.id,
+    client_institution_user_id: client_institution_user?.id,
+    manager_institution_user_id: manager_institution_user?.id,
     isLoading,
   })
 
