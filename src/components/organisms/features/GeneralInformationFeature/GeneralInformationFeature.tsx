@@ -103,7 +103,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         : { date: '', time: '' },
       source_files: map(source_files, (file) => ({
         ...file,
-        ...{ isChecked: false },
+        isChecked: false,
       })),
       final_files,
       cat_jobs,
