@@ -111,19 +111,19 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         return assignment === true
       })
 
-      // const payload = {
-      //   linking: map(filteredTrueValuesChunks, (assignment, key) => {
-      //     return {
-      //       cat_tool_job_id: Object.keys(assignment)[0],
-      //       assignment_id: key,
-      //     }
-      //   }),
-      //   feature: assignments[0].feature,
-      //   sub_project_id: assignments[0].sub_project_id,
-      // }
+      const payload = {
+        linking: map(filteredTrueValuesChunks, (assignment, key) => {
+          return {
+            cat_tool_job_id: Object.keys(assignment)[0],
+            assignment_id: key,
+          }
+        }),
+        job_key: assignments[0].job_definition.job_key,
+        sub_project_id: assignments[0].sub_project_id,
+      }
 
       try {
-        // await linkCatToolJobs(payload)
+        await linkCatToolJobs(payload)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),

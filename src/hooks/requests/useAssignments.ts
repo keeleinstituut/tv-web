@@ -121,7 +121,7 @@ export const useLinkCatToolJobs = () => {
         cat_tool_job_id: string
         assignment_id: string
       }[]
-      feature: string
+      job_key: string
       sub_project_id: string
     }) =>
       apiClient.post(endpoints.LINK_CAT_TOOL_JOBS, {
