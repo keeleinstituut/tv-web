@@ -212,7 +212,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const isGenerateProjectButtonDisabled =
     !some(watch('source_files'), 'isChecked') ||
-    !some(watch('write_to_memory'), (val) => !!val) ||
+    // !some(watch('write_to_memory'), (val) => !!val) ||
     !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
   return (

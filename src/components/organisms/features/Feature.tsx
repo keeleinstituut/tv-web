@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { includes, filter, isEmpty } from 'lodash'
+import { filter } from 'lodash'
 import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
 import MainFeature from './MainFeature/MainFeature'
@@ -39,9 +39,8 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder, projectDomain }) => {
     <Component
       {...subOrder}
       catSupported={
-        feature === SubProjectFeatures.GeneralInformation
-          ? !isEmpty(subOrder.features)
-          : includes(subOrder.features, feature)
+        subOrder?.project?.type_classifier_value?.project_type_config
+          ?.cat_tool_enabled
       }
       subOrderId={subOrder.id}
       projectDomain={projectDomain}

@@ -199,10 +199,14 @@ export const useFetchSubOrders = () => {
 }
 
 export const useSubOrderSendToCat = () => {
+  const queryClient = useQueryClient()
   const { mutateAsync: sendToCat, isLoading } = useMutation({
     mutationKey: ['send_cat'],
     mutationFn: (payload: CatProjectPayload) =>
       apiClient.post(endpoints.CAT_TOOL_SETUP, payload),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['cat-jobs'], type: 'active' })
+    },
   })
   return {
     sendToCat,

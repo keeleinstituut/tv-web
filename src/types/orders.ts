@@ -64,6 +64,7 @@ interface ProjectTypeConfig {
   features: SubProjectFeatures[]
   created_at: string
   updated_at: string
+  cat_tool_enabled: boolean
 }
 interface TypeClassifierValue extends ClassifierValue {
   type: ClassifierValueType.ProjectType

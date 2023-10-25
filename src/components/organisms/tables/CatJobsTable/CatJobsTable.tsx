@@ -83,7 +83,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const handleCatSplitClick = useCallback(() => {
     // TODO: not sure how to check for this
     // the option comes after camunda is ready
-    if (canSendToVendors) {
+    if (!canSendToVendors) {
       showNotification({
         type: NotificationTypes.Error,
         title: t('notification.error'),
@@ -99,7 +99,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const handleCatMergeClick = useCallback(() => {
     // TODO: not sure how to check for this
     // the option comes after camunda is ready
-    if (canSendToVendors) {
+    if (!canSendToVendors) {
       showNotification({
         type: NotificationTypes.Error,
         title: t('notification.error'),
