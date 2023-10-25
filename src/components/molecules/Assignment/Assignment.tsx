@@ -230,6 +230,7 @@ const Assignment: FC<AssignmentProps> = ({
       shouldShowStartTimeFields,
       catSupported,
       vendorPrices,
+      cat_jobs,
       vendorDiscounts,
       vendorName,
       volumes,

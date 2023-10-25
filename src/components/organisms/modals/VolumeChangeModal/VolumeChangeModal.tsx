@@ -51,9 +51,9 @@ export interface VolumeChangeModalProps {
   isModalOpen?: boolean
   id?: string
   vendorPrices?: Price
-  vendorDiscounts?: DiscountPercentages
+  discounts?: DiscountPercentages
   vendorName?: string
-  matchingCatAnalysis?: CatAnalysis
+  volume_analysis?: CatAnalysis
   unit_fee?: number
   unit_type?: string
   unit_quantity?: number
@@ -98,8 +98,8 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   id,
   vendorName,
   vendorPrices,
-  vendorDiscounts,
-  matchingCatAnalysis,
+  discounts,
+  volume_analysis,
   assignmentId,
   catJobId,
   unit_fee,
@@ -110,7 +110,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   const { t } = useTranslation()
 
   const catAnalysisAmounts = useMemo(() => {
-    const relevantValues = pick(matchingCatAnalysis, values(CatAnalysisVolumes))
+    const relevantValues = pick(volume_analysis, values(CatAnalysisVolumes))
     const keyedByDiscount = mapKeys(
       relevantValues,
       (_, key) =>
@@ -119,7 +119,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         }_amount`
     )
     return keyedByDiscount
-  }, [matchingCatAnalysis]) as DiscountPercentages
+  }, [volume_analysis]) as DiscountPercentages
 
   const {
     control,
@@ -135,7 +135,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       unit: isCat ? PriceUnits.WordFee : undefined,
       cost_price: isCat ? vendorPrices?.word_fee : undefined,
       vendor: vendorName || undefined,
-      ...vendorDiscounts,
+      ...discounts,
       ...catAnalysisAmounts,
     },
   })
@@ -147,7 +147,11 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     if (unit_type) {
       setValue('unit', apiTypeToKey(unit_type ?? ''))
     }
-  }, [setValue, unit_fee, unit_quantity, unit_type])
+
+    // if (isCat) {
+    //   setValue('discount_percentage_0_49')
+    // }
+  }, [setValue, unit_fee, unit_quantity, unit_type, isCat])
 
   const [unit, cost_price, amount] = watch(['unit', 'cost_price', 'amount'])
 
@@ -283,7 +287,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async ({ amount, unit, cost_price, ...rest }) => {
-      // const chunkId = matchingCatAnalysis?.chunk_id
+      // const chunkId = volume_analysis?.chunk_id
       // const volumePayload: VolumeValue = {
       //   amount,
       //   unit,
@@ -306,7 +310,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
               values(DiscountPercentageNames),
               amountDiscounts
             ),
-            custom_volume_analysis: matchingCatAnalysis,
+            custom_volume_analysis: volume_analysis,
             cat_tool_job_id: catJobId ?? '',
             // custom_volume_analysis: amountDiscounts,
           }
@@ -314,14 +318,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         onSave(!!isCat, payload)
       }
     },
-    [
-      isCat,
-      assignmentId,
-      amountDiscounts,
-      matchingCatAnalysis,
-      catJobId,
-      onSave,
-    ]
+    [isCat, assignmentId, amountDiscounts, volume_analysis, catJobId, onSave]
   )
 
   return (
@@ -341,7 +338,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         isCat ? (
           <>
             {t('modal.picked_analysis_for')}{' '}
-            <b>{JSON.stringify(matchingCatAnalysis?.files_names)}</b>
+            <b>{JSON.stringify(volume_analysis?.files_names)}</b>
             <br />
             {t('modal.pick_volume_by_cat_helper')}
           </>

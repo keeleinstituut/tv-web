@@ -120,7 +120,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
         onSave,
         isCat: values?.addType === 'cat',
         catJobId: values?.chunkId,
-        matchingCatAnalysis: find(cat_analysis?.cat_jobs, {
+        volume_analysis: find(cat_analysis?.cat_jobs, {
           id: values?.chunkId,
         })?.volume_analysis,
         ...rest,

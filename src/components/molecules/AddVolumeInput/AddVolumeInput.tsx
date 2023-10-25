@@ -111,7 +111,6 @@ export interface AddVolumeInputProps {
   loading?: boolean
   catSupported?: boolean
   vendorPrices?: Price
-  vendorDiscounts?: DiscountPercentages
   vendorName?: string
   cat_analyzis?: CatAnalysis[]
   assignmentId?: string
@@ -127,7 +126,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   value = [],
   catSupported,
   vendorPrices,
-  vendorDiscounts,
   vendorName,
   cat_analyzis,
   assignmentId,
@@ -162,6 +160,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   const handleEdit = useCallback(
     (index: number) => {
       const matchingVolume = value[index]
+      const isCat = !!matchingVolume.cat_job
       const onSave = async (
         isCat: boolean,
         args: ManualVolumePayload | CatVolumePayload
@@ -188,8 +187,8 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       }
       showModal(ModalTypes.VolumeChange, {
         onSave,
+        isCat,
         vendorPrices,
-        vendorDiscounts,
         vendorName,
         ...matchingVolume,
       })
@@ -197,7 +196,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     [
       value,
       vendorPrices,
-      vendorDiscounts,
       vendorName,
       onChange,
       addAssignmentCatVolume,
@@ -232,7 +230,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       subOrderId,
       catSupported,
       vendorPrices,
-      vendorDiscounts,
       vendorName,
       cat_analyzis,
       assignmentCatJobs,
@@ -242,7 +239,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     subOrderId,
     catSupported,
     vendorPrices,
-    vendorDiscounts,
     vendorName,
     cat_analyzis,
     assignmentCatJobs,
