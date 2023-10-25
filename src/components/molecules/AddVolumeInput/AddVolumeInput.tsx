@@ -9,16 +9,16 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { filter, map, find } from 'lodash'
+import { filter, map } from 'lodash'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Price, PriceUnits } from 'types/price'
-import { DiscountPercentages } from 'types/vendors'
 import { CatAnalysis, CatJob } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
 import {
   useAssignmentAddCatVolume,
   useAssignmentAddVolume,
+  useAssignmentEditCatVolume,
   useAssignmentEditVolume,
 } from 'hooks/requests/useAssignments'
 import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
@@ -139,6 +139,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   const { addAssignmentVolume } = useAssignmentAddVolume({ subOrderId })
   const { addAssignmentCatVolume } = useAssignmentAddCatVolume({ subOrderId })
   const { editAssignmentVolume } = useAssignmentEditVolume({ subOrderId })
+  const { editAssignmentCatVolume } = useAssignmentEditCatVolume({ subOrderId })
 
   const handleDelete = useCallback(
     (index: number, id: string) => {
@@ -168,7 +169,8 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
         delete args.assignment_id
         let res: VolumeValue
         if (isCat) {
-          const { data: response } = await addAssignmentCatVolume({
+          const { data: response } = await editAssignmentCatVolume({
+            volumeId: matchingVolume.id,
             data: args as CatVolumePayload,
           })
           res = response

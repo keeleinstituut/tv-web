@@ -161,6 +161,33 @@ export const useAssignmentAddCatVolume = ({
   }
 }
 
+export const useAssignmentEditCatVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: editAssignmentCatVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { data: CatVolumePayload; volumeId: string }) =>
+      apiClient.put(
+        `${endpoints.VOLUMES}/cat-tool/${payload.volumeId}`,
+        payload.data
+      ),
+    onSuccess: ({ data }: { data: VolumeValue }) => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    editAssignmentCatVolume,
+    isLoading,
+  }
+}
+
 export const useAssignmentRemoveVolume = ({
   subOrderId: id,
 }: {
