@@ -80,9 +80,9 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
 
   const subprojectCatJobs = useMemo(
     () =>
-      map(cat_analysis?.cat_jobs, ({ id }) => ({
+      map(cat_analysis?.cat_jobs, ({ id, name }) => ({
         value: id.toString(),
-        label: id.toString(),
+        label: name,
       })),
     [cat_analysis?.cat_jobs]
   )
