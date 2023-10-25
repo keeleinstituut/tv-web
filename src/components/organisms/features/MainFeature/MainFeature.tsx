@@ -31,9 +31,9 @@ type MainFeatureProps = Pick<
 const MainFeature: FC<MainFeatureProps> = ({
   catSupported,
   feature,
-  assignments,
   mt_enabled,
   id,
+  assignments,
   ...rest
 }) => {
   const { t } = useTranslation()

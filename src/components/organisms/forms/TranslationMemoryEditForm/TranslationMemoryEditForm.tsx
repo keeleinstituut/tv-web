@@ -255,7 +255,8 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
         isSubmitDisabled={
           !isDirty ||
           !isValid ||
-          !includes(userPrivileges, Privileges.EditTmMetadata)
+          !includes(userPrivileges, Privileges.EditTmMetadata) ||
+          !includes(userPrivileges, Privileges.EditTm)
         }
         loading={isSubmitting}
         resetForm={resetForm}

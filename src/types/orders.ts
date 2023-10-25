@@ -10,6 +10,7 @@ import {
 } from './classifierValues'
 import { AssignmentType } from './assignments'
 import { UserType } from './users'
+import { Tag } from './tags'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -171,7 +172,7 @@ export interface ListOrder {
   updated_at: string
   sub_projects: ListSubOrderDetail[]
   status: OrderStatus
-  tags: string[]
+  tags: Tag[]
   price: string
 }
 
@@ -232,8 +233,8 @@ export interface CatProjectPayload {
   translation_memory_ids: string[]
 }
 export interface NewOrderPayload {
-  client_user_institution_id: string
-  translation_manager_user_institution_id: string
+  client_institution_user_id: string
+  manager_institution_user_id: string
   deadline_at: string
   source_files: File[]
   reference_number?: string
