@@ -67,6 +67,10 @@ const ConfirmDeleteVolumeModal = lazy(
   () => import('./ConfirmDeleteVolumeModal/ConfirmDeleteVolumeModal')
 )
 
+const AddTranslationMemoriesModal = lazy(
+  () => import('./AddTranslationMemoriesModal/AddTranslationMemoriesModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -84,6 +88,7 @@ export enum ModalTypes {
   AddVolume = 'addVolume',
   VolumeChange = 'volumeChange',
   ConfirmDeleteVolume = 'confirmDeleteVolume',
+  AddTranslationMemories = 'addTranslationMemories',
 }
 
 // Add other modal props types here as well
@@ -122,6 +127,7 @@ const MODALS = {
   addVolume: AddVolumeModal,
   volumeChange: VolumeChangeModal,
   confirmDeleteVolume: ConfirmDeleteVolumeModal,
+  addTranslationMemories: AddTranslationMemoriesModal,
 }
 
 interface RefType {

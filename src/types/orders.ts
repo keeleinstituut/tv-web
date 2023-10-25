@@ -47,6 +47,12 @@ export enum WorkflowTemplateID {
   SampleProject = 'Sample-project',
 }
 
+export enum CatProjectStatus {
+  Done = 'DONE',
+  NotStarted = 'NOT_STARTED',
+  InProgress = 'IN_PROGRESS',
+  Failed = 'FAILED',
+}
 export interface Link {
   url: null | string
   label: string
@@ -91,13 +97,19 @@ export interface SourceFile {
   custom_properties: string[]
   generated_conversions: string[]
   responsive_images: string[]
+  isChecked?: boolean
 }
 
-export interface CatJob {
-  xliff_download_url: string
-  translate_url: string
-  translation_download_url: string
-  chunk_id: string
+export interface CatFile {
+  name: string
+  id: string | number
+  uuid: string
+  file_name: string
+  custom_properties: { type: string }
+  size: number
+  collection_name: string
+  created_at: string
+  updated_at: string
 }
 
 export enum TranslationMemoryPercentageNames {}
@@ -134,6 +146,7 @@ export interface ListSubOrderDetail {
   status?: SubOrderStatus
   deadline_at: string
   price?: string
+  translation_domain_classifier_value?: ClassifierValue
 }
 
 export interface SubOrderDetail extends ListSubOrderDetail {
@@ -143,10 +156,11 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   job_definitions: JobDefinition[]
   cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
-  // TODO: not sure if the name will be intermediate_files
-  intermediate_files: SourceFile[]
+  source_files: SourceFile[]
   final_files: SourceFile[]
   assignments: AssignmentType[]
+  cat_files: CatFile[]
+  mt_enabled: boolean
 }
 
 export interface JobDefinition {
@@ -227,10 +241,29 @@ export interface SubOrderPayload {
   final_files?: (File | SourceFile)[]
 }
 
+export interface CatToolJobsResponse {
+  data: {
+    setup_status: CatProjectStatus
+    analyzing_status: CatProjectStatus
+    cat_jobs: CatJob[]
+  }
+}
 // TODO: not sure what should be sent for CatProjectPayload
 export interface CatProjectPayload {
-  intermediate_file_ids: string[]
-  translation_memory_ids: string[]
+  sub_project_id: string
+  source_files_ids: string[]
+  translation_memory_ids?: string[]
+}
+
+export interface CatJob {
+  id: string
+  name: string
+  progress_percentage: string
+  translate_url: string
+  // This are not in data
+  xliff_download_url: string
+  translation_download_url: string
+  chunk_id: string
 }
 export interface NewOrderPayload {
   client_institution_user_id: string
@@ -247,6 +280,11 @@ export interface NewOrderPayload {
   event_start_at?: string
   // TODO: Following are currently missing
   comments?: string
+}
+
+export interface CatJobsPayload {
+  sub_project_id: string
+  chunks_count?: number
 }
 export interface SplitOrderPayload {
   sub_project_id: string

@@ -7,7 +7,9 @@ import {
   SubOrderResponse,
   SubOrdersPayloadType,
   CatProjectPayload,
+  CatToolJobsResponse,
   SubOrderPayload,
+  CatJobsPayload,
   SplitOrderPayload,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -15,6 +17,7 @@ import useFilters from 'hooks/useFilters'
 import { findIndex, includes } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
+import { downloadFile } from 'helpers'
 
 export const useFetchOrders = () => {
   const {
@@ -196,18 +199,118 @@ export const useFetchSubOrders = () => {
   }
 }
 
-export const useSubOrderSendToCat = ({ id }: { id?: string }) => {
+export const useSubOrderSendToCat = () => {
+  const queryClient = useQueryClient()
   const { mutateAsync: sendToCat, isLoading } = useMutation({
     mutationKey: ['send_cat'],
     mutationFn: (payload: CatProjectPayload) =>
-      apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/send-to-cat`, {
-        ...payload,
-      }),
+      apiClient.post(endpoints.CAT_TOOL_SETUP, payload),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['cat-jobs'], type: 'active' })
+    },
+  })
+  return {
+    sendToCat,
+    isCatProjectLoading: isLoading,
+  }
+}
+
+export const useFetchSubOrderCatToolJobs = ({ id }: { id?: string }) => {
+  const { data } = useQuery<CatToolJobsResponse>({
+    enabled: !!id,
+    queryKey: ['cat-jobs', id],
+    queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
+  })
+  return {
+    catToolJobs: data?.data?.cat_jobs,
+    catSetupStatus: data?.data?.setup_status,
+    catAnalyzeStatus: data?.data?.analyzing_status,
+  }
+}
+
+export const useSplitCatJobs = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: splitCatJobs, isLoading } = useMutation({
+    mutationKey: ['cat-jobs'],
+    mutationFn: (payload: CatJobsPayload) =>
+      apiClient.post(endpoints.CAT_TOOL_SPLIT, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['cat-jobs'],
+        (oldData?: CatToolJobsResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+    },
   })
 
   return {
-    sendToCat,
+    splitCatJobs,
     isLoading,
+  }
+}
+export const useMergeCatJobs = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: mergeCatJobs, isLoading } = useMutation({
+    mutationKey: ['cat-jobs'],
+    mutationFn: (payload: CatJobsPayload) =>
+      apiClient.post(endpoints.CAT_TOOL_MERGE, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['cat-jobs'],
+        (oldData?: CatToolJobsResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    mergeCatJobs,
+    isLoading,
+  }
+}
+
+export const useDownloadXliffFile = () => {
+  const { mutateAsync: downloadXliff, isLoading } = useMutation({
+    mutationKey: ['xliff'],
+    mutationFn: (sub_project_id: string) =>
+      apiClient.get(`${endpoints.DOWNLOAD_XLIFF}/${sub_project_id}`),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'xliff.xml',
+        fileType: 'text/xml',
+      })
+    },
+  })
+  return {
+    isLoading,
+    downloadXliff,
+  }
+}
+export const useDownloadTranslatedFile = () => {
+  const { mutateAsync: downloadTranslatedFile, isLoading } = useMutation({
+    mutationKey: ['translated'],
+    mutationFn: (sub_project_id: string) =>
+      apiClient.get(`${endpoints.DOWNLOAD_TRANSLATED}/${sub_project_id}`),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'translatedFile.xml',
+        fileType: 'text/xml',
+      })
+    },
+  })
+  return {
+    isLoading,
+    downloadTranslatedFile,
   }
 }
 
