@@ -6,7 +6,7 @@ export interface VolumeValue {
   amount: number
   unit: PriceUnits
   chunkId?: string
-  isCat?: boolean
+  cat_job?: boolean
   discount: DiscountPercentages
   id: string
   assignment_id: string

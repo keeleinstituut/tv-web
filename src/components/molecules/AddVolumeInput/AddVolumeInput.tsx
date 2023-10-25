@@ -72,7 +72,7 @@ export const keyToApiType = (key: string) => {
 const VolumeRow: FC<VolumeRowProps> = ({
   unit_quantity,
   unit_type,
-  isCat,
+  cat_job,
   index,
   handleDelete,
   handleEdit,
@@ -87,9 +87,9 @@ const VolumeRow: FC<VolumeRowProps> = ({
   }, [handleDelete, index, id])
   return (
     <div className={classes.row}>
-      <span>{`${unit_quantity} ${t(`label.${apiTypeToKey(unit_type)}`)}${
-        isCat ? ` ${t('task.open_in_cat')}` : ''
-      }`}</span>
+      <span>{`${Number(unit_quantity)} ${t(
+        `label.${apiTypeToKey(unit_type)}`
+      )}${cat_job ? ` ${t('task.open_in_cat')}` : ''}`}</span>
       <BaseButton onClick={onEditClick} className={classes.editButton}>
         <Edit className={classes.editIcon} />
       </BaseButton>
