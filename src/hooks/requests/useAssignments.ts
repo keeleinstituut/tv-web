@@ -1,8 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { AssignmentPayload, AssignmentType } from 'types/assignments'
+import {
+  AssignmentPayload,
+  AssignmentType,
+  CatVolumePayload,
+  ManualVolumePayload,
+} from 'types/assignments'
 import { SubOrderResponse } from 'types/orders'
+import { VolumeValue } from 'types/volumes'
 
 // TODO: not sure what endpoint to use and what data structure to use
 
@@ -79,6 +85,129 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
 
   return {
     deleteAssignmentVendor,
+    isLoading,
+  }
+}
+
+export const useAssignmentAddVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: addAssignmentVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { data: ManualVolumePayload }) =>
+      apiClient.post(`${endpoints.VOLUMES}`, payload.data),
+    onSuccess: ({ data }: { data: VolumeValue }) => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    addAssignmentVolume,
+    isLoading,
+  }
+}
+
+export const useAssignmentEditVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: editAssignmentVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { data: ManualVolumePayload; volumeId: string }) =>
+      apiClient.put(`${endpoints.VOLUMES}/${payload.volumeId}`, payload.data),
+    onSuccess: ({ data }: { data: VolumeValue }) => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    editAssignmentVolume,
+    isLoading,
+  }
+}
+
+export const useAssignmentAddCatVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: addAssignmentCatVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { data: CatVolumePayload }) =>
+      apiClient.post(`${endpoints.VOLUMES}/cat-tool`, payload.data),
+    onSuccess: ({ data }: { data: VolumeValue }) => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    addAssignmentCatVolume,
+    isLoading,
+  }
+}
+
+export const useAssignmentEditCatVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: editAssignmentCatVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { data: CatVolumePayload; volumeId: string }) =>
+      apiClient.put(
+        `${endpoints.VOLUMES}/cat-tool/${payload.volumeId}`,
+        payload.data
+      ),
+    onSuccess: ({ data }: { data: VolumeValue }) => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    editAssignmentCatVolume,
+    isLoading,
+  }
+}
+
+export const useAssignmentRemoveVolume = ({
+  subOrderId: id,
+}: {
+  subOrderId?: string
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: removeAssignmentVolume, isLoading } = useMutation({
+    mutationKey: ['suborders', id],
+    mutationFn: (payload: { volumeId?: string }) =>
+      apiClient.delete(`${endpoints.VOLUMES}/${payload.volumeId}`),
+    onSuccess: ({ data }: { data: ManualVolumePayload }) => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders', id],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    removeAssignmentVolume,
     isLoading,
   }
 }

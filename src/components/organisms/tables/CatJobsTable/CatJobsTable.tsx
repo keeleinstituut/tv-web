@@ -12,7 +12,11 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { CatAnalysis, CatJob, SourceFile } from 'types/orders'
 
 import classes from './classes.module.scss'
-import Button, { SizeTypes } from 'components/molecules/Button/Button'
+import Button, {
+  AppearanceTypes,
+  IconPositioningTypes,
+  SizeTypes,
+} from 'components/molecules/Button/Button'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
 import { LanguageClassifierValue } from 'types/classifierValues'
@@ -27,17 +31,18 @@ interface CatJobsTableProps {
   className?: string
   hidden?: boolean
   cat_jobs?: CatJob[]
+  subOrderId: string
   cat_analyzis?: CatAnalysis[]
+  cat_files?: SourceFile[]
   source_files?: SourceFile[]
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
-  subOrderId: string
   canSendToVendors?: boolean
 }
 
 interface CatJobRow {
   dots_button?: number
-  id?: string
+  id?: string | number
   name?: string
   progress_percentage?: string
   translate_url?: string
@@ -50,10 +55,11 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   hidden,
   cat_jobs,
   cat_analyzis,
+  subOrderId,
+  cat_files,
   source_files,
   source_language_classifier_value,
   destination_language_classifier_value,
-  subOrderId,
   canSendToVendors,
 }) => {
   const { t } = useTranslation()
@@ -63,12 +69,16 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
       cat_analyzis,
+      subOrderId,
+      cat_files,
       source_files,
       source_language_classifier_value,
       destination_language_classifier_value,
     })
   }, [
     cat_analyzis,
+    subOrderId,
+    cat_files,
     destination_language_classifier_value,
     source_files,
     source_language_classifier_value,
@@ -114,7 +124,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   // 2. If the items start appearing 1 at a time to cat_analyzis, then this check won't work
   // 3. IT also might not work, if we split or merge cat_jobs (The previous array will exist)
   // 4. If they do appear 1 at a time, should we already show the table ? (size(cat_analyzis) < size(cat_jobs))
-  const isCatAnalysisInProgress = isEmpty(cat_analyzis)
+  const isCatAnalysisInProgress = false //isEmpty(cat_analyzis)
 
   const columns = [
     columnHelper.accessor('name', {
@@ -196,7 +206,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           </div>
         }
       />
-      {/* <Button
+      <Button
         appearance={AppearanceTypes.Text}
         onClick={handleOpenCatAnalysisModal}
         iconPositioning={IconPositioningTypes.Left}
@@ -208,7 +218,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         icon={ArrowRight}
       >
         {t('button.look_at_cat_analysis')}
-      </Button> */}
+      </Button>
     </div>
   )
 }

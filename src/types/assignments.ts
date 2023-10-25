@@ -1,5 +1,6 @@
+import { CatAnalysis } from './orders'
+import { DiscountPercentages, Vendor } from './vendors'
 import { CatJob, JobDefinition } from './orders'
-import { Vendor } from './vendors'
 import { VolumeValue } from './volumes'
 
 export enum AssignmentStatus {
@@ -21,8 +22,8 @@ export interface AssignmentType {
   job_definition: JobDefinition
   id: string
   candidates: Candidate[]
-  volumes: VolumeValue[]
-  jobs: CatJob[]
+  volumes?: VolumeValue[]
+  jobs?: CatJob[]
   assigned_vendor_id?: string
   assignee?: Vendor
   sub_project_id: string
@@ -39,4 +40,28 @@ export interface AssignmentPayload {
   vendor_id?: string
   finished_at?: string | null
   volumes?: VolumeValue[]
+}
+
+export enum VolumeUnits {
+  CHARACTERS = 'CHARACTERS',
+  WORDS = 'WORDS',
+  PAGES = 'PAGES',
+  MINUTES = 'MINUTES',
+  HOURS = 'HOURS',
+}
+
+export interface ManualVolumePayload {
+  id?: string
+  assignment_id?: string
+  unit_type: VolumeUnits
+  unit_quantity: number
+  unit_fee: number
+}
+
+export interface CatVolumePayload {
+  assignment_id?: string
+  cat_tool_job_id: string
+  unit_fee: number
+  custom_volume_analysis?: CatAnalysis
+  discounts: DiscountPercentages
 }

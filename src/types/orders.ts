@@ -100,16 +100,14 @@ export interface SourceFile {
   isChecked?: boolean
 }
 
-export interface CatFile {
+export interface CatJob {
+  xliff_download_url?: string
+  translate_url?: string
+  translation_download_url?: string
+  progress_percentage?: string
   name: string
-  id: string | number
-  uuid: string
-  file_name: string
-  custom_properties: { type: string }
-  size: number
-  collection_name: string
-  created_at: string
-  updated_at: string
+  id: number | string
+  volume_analysis?: CatAnalysis[]
 }
 
 export enum TranslationMemoryPercentageNames {}
@@ -117,8 +115,8 @@ export enum TranslationMemoryPercentageNames {}
 export interface CatAnalysis {
   raw_word_count: number
   total: number
+  repetitions: number
   tm_101: number
-  tm_repetitions: number
   tm_100: number
   tm_95_99: number
   tm_85_94: number
@@ -126,7 +124,7 @@ export interface CatAnalysis {
   tm_50_74: number
   tm_0_49: number
   chunk_id: string
-  file_name: string
+  files_names: string[]
 }
 
 export interface ListSubOrderDetail {
@@ -156,10 +154,10 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   job_definitions: JobDefinition[]
   cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
-  source_files: SourceFile[]
+  cat_files: SourceFile[]
   final_files: SourceFile[]
+  source_files: SourceFile[]
   assignments: AssignmentType[]
-  cat_files: CatFile[]
   mt_enabled: boolean
 }
 
@@ -255,16 +253,6 @@ export interface CatProjectPayload {
   translation_memory_ids?: string[]
 }
 
-export interface CatJob {
-  id: string
-  name: string
-  progress_percentage: string
-  translate_url: string
-  // This are not in data
-  xliff_download_url: string
-  translation_download_url: string
-  chunk_id: string
-}
 export interface NewOrderPayload {
   client_institution_user_id: string
   manager_institution_user_id: string

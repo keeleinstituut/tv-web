@@ -16,7 +16,6 @@ import {
   useSubOrderSendToCat,
 } from 'hooks/requests/useOrders'
 import {
-  CatFile,
   CatJob,
   CatProjectPayload,
   CatProjectStatus,
@@ -67,10 +66,10 @@ type GeneralInformationFeatureProps = Pick<
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
+  cat_files: SourceFile[]
   source_files: SourceFile[]
   final_files: SourceFile[]
   cat_jobs: CatJob[]
-  cat_files: CatFile[]
   write_to_memory: { [key: string]: boolean }
   // TODO: no idea about these fields
   shared_with_client: boolean[]
@@ -81,6 +80,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   cat_jobs,
   subOrderId,
   cat_analyzis,
+  cat_files,
   source_files,
   final_files,
   deadline_at,
@@ -101,17 +101,18 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       deadline_at: deadline_at
         ? getLocalDateOjectFromUtcDateString(deadline_at)
         : { date: '', time: '' },
+      cat_files,
       source_files: map(source_files, (file) => ({
         ...file,
         isChecked: false,
       })),
       final_files,
-      cat_jobs,
+      cat_jobs: catToolJobs,
       write_to_memory: {},
       // TODO: no idea about these fields
       shared_with_client: [],
     }),
-    [cat_jobs, deadline_at, final_files, source_files]
+    [catToolJobs, deadline_at, final_files, cat_files, source_files]
   )
 
   const { control, getValues, watch, setValue } = useForm<FormValues>({
@@ -251,10 +252,12 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           // isEditable={isEditable}
         />
         <CatJobsTable
-          className={classes.catJobs}
           subOrderId={subOrderId}
-          hidden={canGenerateProject || isEmpty(catToolJobs)}
+          className={classes.catJobs}
+          hidden={!catSupported || isEmpty(catToolJobs)}
+          // hidden={canGenerateProject || isEmpty(catToolJobs)}
           cat_jobs={catToolJobs}
+          cat_files={cat_files}
           source_files={source_files}
           cat_analyzis={cat_analyzis}
           source_language_classifier_value={source_language_classifier_value}

@@ -3,21 +3,22 @@ import { useTranslation } from 'react-i18next'
 import { ModalTypes, closeModal, showModal } from '../ModalRoot'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { map, find } from 'lodash'
+import { map, find, filter, includes } from 'lodash'
 import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { VolumeChangeModalProps } from 'components/organisms/modals/VolumeChangeModal/VolumeChangeModal'
-import { CatAnalysis } from 'types/orders'
-import { VolumeValue } from 'types/volumes'
+import { CatAnalysis, CatJob } from 'types/orders'
+import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
 
 // TODO: this is WIP code for suborder view
 
 export interface AddVolumeModalProps extends VolumeChangeModalProps {
-  onSave?: (newVolume: VolumeValue) => void
   catSupported?: boolean
   cat_analyzis?: CatAnalysis[]
+  subOrderId?: string
+  assignmentCatJobs?: CatJob[]
 }
 
 interface FormValues {
@@ -30,9 +31,12 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
   catSupported,
   isModalOpen,
   cat_analyzis,
+  subOrderId,
+  assignmentCatJobs,
   ...rest
 }) => {
   const { t } = useTranslation()
+  const { cat_analysis } = useCatAnalysisFetch({ subOrderId })
 
   const {
     control,
@@ -74,21 +78,40 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
     [options, t]
   )
 
+  const subprojectCatJobs = useMemo(
+    () =>
+      map(cat_analysis?.cat_jobs, ({ id, name }) => ({
+        value: id.toString(),
+        label: name,
+      })),
+    [cat_analysis?.cat_jobs]
+  )
+
+  const assignmentCatJobIds = useMemo(
+    () => map(assignmentCatJobs, ({ id }) => id),
+    [assignmentCatJobs]
+  )
+
+  const catJobOptions = useMemo(
+    () =>
+      filter(subprojectCatJobs, ({ value }) =>
+        includes(assignmentCatJobIds, value)
+      ),
+    [assignmentCatJobIds, subprojectCatJobs]
+  )
+
   const chunkField: FieldProps<FormValues>[] = useMemo(
     () => [
       {
         inputType: InputTypes.RadioGroup,
         name: 'chunkId',
-        options: map(cat_analyzis, ({ chunk_id }) => ({
-          value: chunk_id,
-          label: chunk_id,
-        })),
+        options: catJobOptions,
         rules: {
           required: true,
         },
       },
     ],
-    [cat_analyzis]
+    [catJobOptions]
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
@@ -96,11 +119,14 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
       showModal(ModalTypes.VolumeChange, {
         onSave,
         isCat: values?.addType === 'cat',
-        matchingCatAnalysis: find(cat_analyzis, { chunk_id: values?.chunkId }),
+        catJobId: values?.chunkId,
+        volume_analysis: find(cat_analysis?.cat_jobs, {
+          id: values?.chunkId,
+        })?.volume_analysis,
         ...rest,
       })
     },
-    [cat_analyzis, onSave, rest]
+    [cat_analysis?.cat_jobs, onSave, rest]
   )
 
   return (
