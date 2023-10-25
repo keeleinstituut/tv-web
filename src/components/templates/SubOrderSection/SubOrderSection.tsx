@@ -13,6 +13,7 @@ import {
   find,
   filter,
   findIndex,
+  toString,
 } from 'lodash'
 import { ListSubOrderDetail, SubProjectFeatures } from 'types/orders'
 import { useTranslation } from 'react-i18next'
@@ -135,6 +136,8 @@ const SubOrderSection: FC<SubOrderProps> = ({
 
   const { features = [], assignments = [] } = subOrder || {}
 
+  console.log('subOrder', subOrder)
+
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
   // TODO: possibly we can just check the entire assignments list and see if any of them has no assigned_vendor_id
@@ -171,12 +174,12 @@ const SubOrderSection: FC<SubOrderProps> = ({
 
   // TODO: not sure if GeneralInformation should be considered a feature here or just added
   const availableTabs = compact(
-    map(features, (feature) => {
-      if (feature) {
+    map(assignments, ({ job_definition }) => {
+      if (job_definition.job_key) {
         return {
-          id: feature,
+          id: job_definition.job_key,
           // TODO: need to add (CAT) to end of some feature names
-          name: `${t(`orders.features.${feature}`)}`,
+          name: `${t(`orders.features.${job_definition.job_key}`)}`,
         }
       }
     })

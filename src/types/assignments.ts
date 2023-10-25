@@ -17,6 +17,13 @@ interface Candidate {
   id: string
 }
 
+interface Feature {
+  id: string
+  job_key: SubProjectFeatures
+  linking_with_cat_tool_jobs_enabled: boolean
+  multi_assignments_enabled: boolean
+}
+
 export interface AssignmentType {
   feature: SubProjectFeatures
   id: string
@@ -24,6 +31,7 @@ export interface AssignmentType {
   assigned_vendor_id?: string
   assignee_id?: string
   sub_project_id: string
+  job_definition: Feature
   // TODO: no idea whether it will be skill_ids or sth else
   skill_id: string
   // TODO: no idea if this field will come from here
