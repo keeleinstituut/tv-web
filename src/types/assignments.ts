@@ -1,4 +1,4 @@
-import { SubProjectFeatures } from './orders'
+import { CatJob, JobDefinition } from './orders'
 import { Vendor } from './vendors'
 import { VolumeValue } from './volumes'
 
@@ -25,11 +25,13 @@ interface Feature {
 }
 
 export interface AssignmentType {
-  feature: SubProjectFeatures
+  job_definition: JobDefinition
   id: string
   candidates: Candidate[]
+  volumes: VolumeValue[]
+  jobs: CatJob[]
   assigned_vendor_id?: string
-  assignee_id?: string
+  assignee?: Vendor
   sub_project_id: string
   job_definition: Feature
   // TODO: no idea whether it will be skill_ids or sth else

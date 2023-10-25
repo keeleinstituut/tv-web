@@ -5,16 +5,7 @@ import Tag from 'components/atoms/Tag/Tag'
 import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import Feature from 'components/organisms/features/Feature'
-import {
-  compact,
-  includes,
-  map,
-  toLower,
-  find,
-  filter,
-  findIndex,
-  toString,
-} from 'lodash'
+import { compact, includes, map, toLower, find, findIndex } from 'lodash'
 import { ListSubOrderDetail, SubProjectFeatures } from 'types/orders'
 import { useTranslation } from 'react-i18next'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
@@ -134,22 +125,20 @@ const SubOrderSection: FC<SubOrderProps> = ({
     }
   }, [currentHash, ext_id, attemptScroll, isExpanded])
 
-  const { features = [], assignments = [] } = subOrder || {}
+  const { assignments = [] } = subOrder || {}
 
   console.log('subOrder', subOrder)
 
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
-  // TODO: possibly we can just check the entire assignments list and see if any of them has no assigned_vendor_id
-  // However not sure right now, if the "assignments" list will contain entries for unassigned tasks
-  const hasAnyUnassignedFeatures = !find(features, (feature) => {
-    const correspondingAssignments = filter(assignments, { feature })
-    // TODO: potentially also have to return true, if correspondingAssignments is empty
-    return find(
-      correspondingAssignments,
-      ({ assigned_vendor_id }) => !assigned_vendor_id
-    )
-  })
+  const hasAnyUnassignedFeatures = !find(
+    assignments,
+    ({ assignee }) => !assignee
+  )
+
+  const tabs = assignments.map(
+    (assignment) => assignment.job_definition.job_key
+  )
 
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
@@ -174,12 +163,12 @@ const SubOrderSection: FC<SubOrderProps> = ({
 
   // TODO: not sure if GeneralInformation should be considered a feature here or just added
   const availableTabs = compact(
-    map(assignments, ({ job_definition }) => {
-      if (job_definition.job_key) {
+    map(tabs, (feature) => {
+      if (feature) {
         return {
-          id: job_definition.job_key,
+          id: feature,
           // TODO: need to add (CAT) to end of some feature names
-          name: `${t(`orders.features.${job_definition.job_key}`)}`,
+          name: `${t(`orders.features.${feature}`)}`,
         }
       }
     })
