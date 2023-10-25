@@ -29,6 +29,7 @@ const MainFeature: FC<MainFeatureProps> = ({
   assignments,
   mt_enabled,
   id,
+  cat_jobs,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -70,8 +71,9 @@ const MainFeature: FC<MainFeatureProps> = ({
       />
       <FeatureCatJobs
         hidden={activeTab === FeatureTabs.Vendors}
-        {...rest}
         assignments={assignments}
+        cat_jobs={cat_jobs}
+        {...rest}
       />
     </Root>
   )

@@ -3,7 +3,7 @@ import { map, isEmpty } from 'lodash'
 import { CatJob } from 'types/orders'
 import { AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
-import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
+import { Control, FieldValues, Path } from 'react-hook-form'
 import {
   FormInput,
   InputTypes,
@@ -20,7 +20,7 @@ import classes from './classes.module.scss'
 interface FeatureCatJobProps<TFormValues extends FieldValues>
   extends AssignmentType {
   index: number
-  cat_jobs?: CatJob[]
+  subOrderCatJob?: CatJob[]
   control: Control<TFormValues>
   isEditable?: boolean
   ext_id?: string
@@ -42,7 +42,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
   assigned_vendor_id,
   assignee,
   finished_at,
-  cat_jobs,
+  subOrderCatJob,
   isEditable,
   ext_id,
 }: FeatureCatJobProps<TFormValues>) => {
@@ -50,11 +50,11 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
 
   const tableRows = useMemo(
     () =>
-      map(cat_jobs, ({ id, name }) => ({
+      map(subOrderCatJob, ({ id, name }) => ({
         selected: id,
         cat_job: { id, name },
       })),
-    [cat_jobs]
+    [subOrderCatJob]
   )
 
   const columns = [
@@ -97,7 +97,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
       <p
         className={classNames(
           classes.emptyTableText,
-          isEmpty(cat_jobs) && classes.visible
+          isEmpty(subOrderCatJob) && classes.visible
         )}
       >
         {t('task.files_not_generated')}
@@ -107,7 +107,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         columns={columns}
         tableSize={TableSizeTypes.M}
         className={classes.tableContainer}
-        hidden={isEmpty(cat_jobs)}
+        hidden={isEmpty(subOrderCatJob)}
         hidePagination
       />
     </div>

@@ -48,6 +48,8 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
     ({ job_definition }) => job_definition.job_key
   )
 
+  console.log('subOrder', subOrder)
+
   return (
     <Component
       {...subOrder}

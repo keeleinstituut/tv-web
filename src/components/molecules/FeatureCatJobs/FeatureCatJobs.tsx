@@ -24,7 +24,6 @@ import { useLinkCatToolJobs } from 'hooks/requests/useAssignments'
 type FeatureCatJobsProps = Pick<SubOrderDetail, 'assignments' | 'cat_jobs'> & {
   hidden?: boolean
 }
-
 interface FormValues {
   [key: string]: string
 }
@@ -91,6 +90,10 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
     values: defaultValues,
   })
 
+  const formValues = useWatch({ control })
+
+  console.log('formValues', formValues)
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (assignmentChunks) => {
       // Current structure of assignmentChunks is following:
@@ -108,19 +111,19 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         return assignment === true
       })
 
-      const payload = {
-        linking: map(filteredTrueValuesChunks, (assignment, key) => {
-          return {
-            cat_tool_job_id: Object.keys(assignment)[0],
-            assignment_id: key,
-          }
-        }),
-        feature: assignments[0].feature,
-        sub_project_id: assignments[0].sub_project_id,
-      }
+      // const payload = {
+      //   linking: map(filteredTrueValuesChunks, (assignment, key) => {
+      //     return {
+      //       cat_tool_job_id: Object.keys(assignment)[0],
+      //       assignment_id: key,
+      //     }
+      //   }),
+      //   feature: assignments[0].feature,
+      //   sub_project_id: assignments[0].sub_project_id,
+      // }
 
       try {
-        await linkCatToolJobs(payload)
+        // await linkCatToolJobs(payload)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -148,7 +151,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
               key={assignment.id}
               index={index}
               control={control}
-              cat_jobs={cat_jobs}
+              subOrderCatJob={cat_jobs}
               isEditable={isEditable}
               {...assignment}
             />
