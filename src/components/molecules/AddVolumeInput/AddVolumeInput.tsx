@@ -9,7 +9,7 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { filter, map } from 'lodash'
+import { filter, identity, map, pickBy } from 'lodash'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Price, PriceUnits } from 'types/price'
@@ -22,6 +22,7 @@ import {
   useAssignmentEditVolume,
 } from 'hooks/requests/useAssignments'
 import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
+import { DiscountPercentages } from 'types/vendors'
 
 // TODO: not sure about this data structure
 
@@ -213,7 +214,13 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       let res: VolumeValue
       if (isCat) {
         const { data: response } = await addAssignmentCatVolume({
-          data: args as CatVolumePayload,
+          data: {
+            ...(args as CatVolumePayload),
+            discounts: pickBy(
+              (args as CatVolumePayload).discounts,
+              identity
+            ) as DiscountPercentages,
+          },
         })
         res = response
       } else {
