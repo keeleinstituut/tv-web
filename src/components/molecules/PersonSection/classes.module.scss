@@ -8,7 +8,7 @@
 .column {
   display: grid;
   grid-template-columns: auto auto;
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: repeat(6, max-content);
   grid-column-gap: spacing(2.5);
   grid-row-gap: spacing(4);
   justify-items: left;
@@ -47,7 +47,7 @@
 
     h2 {
       margin-bottom: spacing(2);
-      align-self: start
+      align-self: start;
     }
   }
 }
