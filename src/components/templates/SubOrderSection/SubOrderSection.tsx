@@ -134,7 +134,8 @@ const SubOrderSection: FC<SubOrderProps> = ({
     ({ assignee }) => !assignee
   )
 
-  const tabs = assignments.map(
+  const tabs = map(
+    assignments,
     (assignment) => assignment.job_definition.job_key
   )
 
