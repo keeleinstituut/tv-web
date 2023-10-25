@@ -126,6 +126,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { isValid, isSubmitting },
   } = useForm<FormValues>({
     mode: 'onChange',
@@ -142,16 +143,21 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
 
   // Populate the modal when edit is opened
   useEffect(() => {
+    reset({
+      // TODO: might need to deal with task_type
+      task_type: 'Tõlkimine',
+      unit: isCat ? PriceUnits.WordFee : undefined,
+      cost_price: isCat ? vendorPrices?.word_fee : undefined,
+      vendor: vendorName || undefined,
+      ...discounts,
+      ...catAnalysisAmounts,
+    })
     setValue('amount', unit_quantity ?? 0)
     setValue('cost_price', unit_fee ?? 0)
     if (unit_type) {
       setValue('unit', apiTypeToKey(unit_type ?? ''))
     }
-
-    // if (isCat) {
-    //   setValue('discount_percentage_0_49')
-    // }
-  }, [setValue, unit_fee, unit_quantity, unit_type, isCat])
+  }, [id])
 
   const [unit, cost_price, amount] = watch(['unit', 'cost_price', 'amount'])
 
