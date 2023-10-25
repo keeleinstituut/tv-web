@@ -15,6 +15,7 @@ export enum Privileges {
   ExportTm = 'EXPORT_TM',
   DeleteTm = 'DELETE_TM',
   EditTmMetadata = 'EDIT_TM_METADATA',
+  EditTm = 'EDIT_TM',
   ViewTm = 'VIEW_TM',
   CreateProject = 'CREATE_PROJECT',
   ManageProject = 'MANAGE_PROJECT',

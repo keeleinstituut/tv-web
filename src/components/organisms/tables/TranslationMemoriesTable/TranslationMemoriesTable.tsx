@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, includes, find, debounce } from 'lodash'
+import { map, find, debounce } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -20,7 +20,6 @@ import {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import Tag from 'components/atoms/Tag/Tag'
-import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
@@ -133,12 +132,6 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
               icon={ArrowRight}
               ariaLabel={t('label.to_order_view')}
               iconPositioning={IconPositioningTypes.Left}
-              disabled={
-                !includes(
-                  userPrivileges,
-                  Privileges.ViewInstitutionProjectDetail
-                )
-              }
               hidden={isSelectingModal}
               href={`/memories/${row.original.id}`}
             >
@@ -168,7 +161,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           <div className={classes.tagsRow}>
             {map(getValue(), (value) => {
               const tagName = find(tagsOptions, { value })?.label || ''
-              return <Tag label={tagName} value key={value} />
+              return !!tagName && <Tag label={tagName} value key={value} />
             })}
           </div>
         )
