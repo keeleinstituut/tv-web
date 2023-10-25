@@ -261,7 +261,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           destination_language_classifier_value={
             destination_language_classifier_value
           }
-          canSendToVendors={true}
+          canSendToVendors={true} //TODO add check when camunda is ready
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}
