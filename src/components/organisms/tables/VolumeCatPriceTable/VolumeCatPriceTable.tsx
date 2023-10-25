@@ -5,9 +5,12 @@ import {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { Control, FieldValues, Path } from 'react-hook-form/dist/types'
-import { DiscountPercentageNames } from 'types/vendors'
+import {
+  DiscountPercentageNames,
+  DiscountPercentagesAmountNames,
+} from 'types/vendors'
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
-import { map, toNumber } from 'lodash'
+import { map, sum, toNumber, values } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
@@ -23,9 +26,14 @@ interface TotalPriceProps<TFormValues extends FieldValues> {
 const TotalPrice = <TFormValues extends FieldValues>({
   control,
 }: TotalPriceProps<TFormValues>) => {
-  const amountValue = useWatch({ control, name: 'amount' as Path<TFormValues> })
+  const amountValues = useWatch({
+    control,
+    name: values(DiscountPercentagesAmountNames) as Path<TFormValues>[],
+  })
 
-  return <DisplayValue value={amountValue?.toFixed(2)} />
+  const value = sum(map(amountValues, (v) => Number(v)))
+
+  return <DisplayValue value={value} />
 }
 
 interface RowPriceProps<TFormValues extends FieldValues> {
@@ -37,6 +45,10 @@ const RowPrice = <TFormValues extends FieldValues>({
   control,
   name,
 }: RowPriceProps<TFormValues>) => {
+  const unitPrice = useWatch({
+    control,
+    name: 'cost_price' as Path<TFormValues>,
+  })
   const amountValue = useWatch({
     control,
     name: (name + '_amount') as Path<TFormValues>,
@@ -48,11 +60,10 @@ const RowPrice = <TFormValues extends FieldValues>({
 
   const value = useMemo(
     () =>
-      (
-        ((100 - toNumber(discountValue ?? 0)) / 100) *
-        toNumber(amountValue ?? 0)
-      )?.toFixed(2),
-    [amountValue, discountValue]
+      ((100 - toNumber(discountValue ?? 0)) / 100) *
+      toNumber(amountValue ?? 0) *
+      toNumber(unitPrice ?? 0),
+    [amountValue, discountValue, unitPrice]
   )
 
   return <DisplayValue value={value} />

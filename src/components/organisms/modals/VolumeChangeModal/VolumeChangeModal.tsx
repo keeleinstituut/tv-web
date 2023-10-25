@@ -155,7 +155,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
 
   const [unit, cost_price, amount] = watch(['unit', 'cost_price', 'amount'])
 
-  const amountDiscounts = watch(values(DiscountPercentageNames))
+  const amountDiscounts = watch(values(DiscountPercentageNames)) as string[]
   const amountValues = watch(values(DiscountPercentagesAmountNames))
 
   const totalAmount = useMemo(
@@ -287,38 +287,34 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async ({ amount, unit, cost_price, ...rest }) => {
-      // const chunkId = volume_analysis?.chunk_id
-      // const volumePayload: VolumeValue = {
-      //   amount,
-      //   unit,
-      //   ...(chunkId ? { chunkId } : {}),
-      //   ...(volumeId ? { volumeId } : {}),
-      //   isCat: !!isCat,
-      // }
       // @ts-expect-error type mismatch
       const payload: ManualVolumePayload | CatVolumePayload = !isCat
         ? {
             assignment_id: assignmentId ?? '',
-            unit_fee: cost_price,
-            unit_quantity: amount,
+            unit_fee: Number(cost_price),
+            unit_quantity: Number(amount),
             unit_type: keyToApiType(unit),
           }
         : {
             assignment_id: assignmentId ?? '',
-            unit_fee: cost_price,
+            unit_fee: Number(cost_price),
             discounts: zipObject<DiscountPercentages>(
               values(DiscountPercentageNames),
-              amountDiscounts
+              // @ts-expect-error type mismatch
+              map(amountDiscounts, (v) => Number(v))
             ),
-            custom_volume_analysis: volume_analysis,
+            custom_volume_analysis: zipObject<CatAnalysisVolumes>(
+              values(CatAnalysisVolumes),
+              // @ts-expect-error type mismatch
+              map(amountValues, (v) => Number(v))
+            ),
             cat_tool_job_id: catJobId ?? '',
-            // custom_volume_analysis: amountDiscounts,
           }
       if (onSave) {
         onSave(!!isCat, payload)
       }
     },
-    [isCat, assignmentId, amountDiscounts, volume_analysis, catJobId, onSave]
+    [isCat, assignmentId, amountDiscounts, amountValues, catJobId, onSave]
   )
 
   return (
