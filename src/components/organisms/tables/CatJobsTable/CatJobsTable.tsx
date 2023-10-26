@@ -1,6 +1,6 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, isEmpty } from 'lodash'
+import { map } from 'lodash'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { ReactComponent as HorizontalDots } from 'assets/icons/horizontal_dots.svg'
 import classNames from 'classnames'
@@ -41,7 +41,6 @@ interface CatJobsTableProps {
 }
 
 interface CatJobRow {
-  percentage: string
   dots_button?: number
   id?: string | number
   name?: string

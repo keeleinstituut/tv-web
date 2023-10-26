@@ -16,19 +16,17 @@ import classNames from 'classnames'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 
 import classes from './classes.module.scss'
-
 interface FeatureCatJobProps<TFormValues extends FieldValues>
   extends AssignmentType {
   index: number
-  subOrderCatJob?: CatJob[]
+  subOrderCatJobs?: CatJob[]
+  // cat_jobs?: CatJob[]
   control: Control<TFormValues>
   isEditable?: boolean
-  ext_id?: string
 }
-
 interface TableRow {
   selected: string
-  cat_job: { id: string; name: string }
+  chunk_id: string
 }
 
 const columnHelper = createColumnHelper<TableRow>()
@@ -38,23 +36,22 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
   control,
   id,
   job_definition,
-  candidates,
-  assigned_vendor_id,
-  assignee,
-  finished_at,
-  subOrderCatJob,
+  // candidates,
+  // assigned_vendor_id,
+  // assignee,
+  // finished_at,
+  subOrderCatJobs,
   isEditable,
-  ext_id,
 }: FeatureCatJobProps<TFormValues>) => {
   const { t } = useTranslation()
 
   const tableRows = useMemo(
     () =>
-      map(cat_jobs, ({ id }) => ({
+      map(subOrderCatJobs, ({ id }) => ({
         selected: id.toString(),
         chunk_id: id.toString(),
       })),
-    [subOrderCatJob]
+    [subOrderCatJobs]
   )
 
   const columns = [
@@ -73,10 +70,9 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         )
       },
     }),
-    columnHelper.accessor('cat_job', {
+    columnHelper.accessor('chunk_id', {
       header: () => t('label.xliff_name'),
       footer: (info) => info.column.id,
-      cell: ({ row }) => <p>{row.original.cat_job.name}</p>,
     }),
   ] as ColumnDef<TableRow>[]
 
@@ -86,7 +82,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         {t('task.vendor_title', { number: index + 1 })}(
         {t(`orders.features.${job_definition.job_key}`)})
       </h3>
-      <span className={classes.assignmentId}>{ext_id}</span>
+      <span className={classes.assignmentId}>{id}</span>
       <div className={classes.titleRow}>
         <h4>{t('orders.source_files_in_translation_tool')}</h4>
 
@@ -97,7 +93,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
       <p
         className={classNames(
           classes.emptyTableText,
-          isEmpty(subOrderCatJob) && classes.visible
+          isEmpty(subOrderCatJobs) && classes.visible
         )}
       >
         {t('task.files_not_generated')}
@@ -107,7 +103,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         columns={columns}
         tableSize={TableSizeTypes.M}
         className={classes.tableContainer}
-        hidden={isEmpty(subOrderCatJob)}
+        hidden={isEmpty(subOrderCatJobs)}
         hidePagination
       />
     </div>

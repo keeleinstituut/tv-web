@@ -151,9 +151,17 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
               key={assignment.id}
               index={index}
               control={control}
-              subOrderCatJob={cat_jobs}
+              // subOrderCatJob={cat_jobs}
+              subOrderCatJobs={cat_jobs}
               isEditable={isEditable}
-              {...assignment}
+              // {...assignment}
+              id={assignment.id}
+              job_definition={assignment.job_definition}
+              candidates={[]}
+              sub_project_id={''}
+              skill_id={''}
+              finished_at={''}
+              assigned_chunks={[]}
             />
           )
         })}
