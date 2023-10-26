@@ -10,6 +10,7 @@ import {
   mapKeys,
   reduce,
   toNumber,
+  zipObject,
 } from 'lodash'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -27,24 +28,40 @@ import {
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
 import { Root } from '@radix-ui/react-form'
 import { CatAnalysis } from 'types/orders'
-import { VolumeValue } from 'types/volumes'
+import {
+  CatVolumePayload,
+  ManualVolumePayload,
+  VolumeUnits,
+} from 'types/assignments'
 
 import classes from './classes.module.scss'
+import {
+  apiTypeToKey,
+  keyToApiType,
+} from 'components/molecules/AddVolumeInput/AddVolumeInput'
 
 export interface VolumeChangeModalProps {
-  onSave?: (newVolume: VolumeValue) => void
+  onSave?: (
+    isCat: boolean,
+    newVolume: ManualVolumePayload | CatVolumePayload
+  ) => void
+  assignmentId?: string
+  catJobId?: string
   isCat?: boolean
   isModalOpen?: boolean
-  volumeId?: string
+  id?: string
   vendorPrices?: Price
-  vendorDiscounts?: DiscountPercentages
+  discounts?: DiscountPercentages
   vendorName?: string
-  matchingCatAnalysis?: CatAnalysis
+  volume_analysis?: CatAnalysis
+  unit_fee?: number
+  unit_type?: string
+  unit_quantity?: number
 }
 
 enum CatAnalysisVolumes {
   Tm101 = 'tm_101',
-  Tmrepetitions = 'tm_repetitions',
+  Tmrepetitions = 'repetitions',
   Tm100 = 'tm_100',
   Tm9599 = 'tm_95_99',
   Tm8594 = 'tm_85_94',
@@ -78,17 +95,22 @@ type FormValues = {
 const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   onSave,
   isCat,
-  volumeId,
+  id,
   vendorName,
   vendorPrices,
-  vendorDiscounts,
-  matchingCatAnalysis,
+  discounts,
+  volume_analysis,
+  assignmentId,
+  catJobId,
+  unit_fee,
+  unit_quantity,
+  unit_type,
   ...rest
 }) => {
   const { t } = useTranslation()
 
   const catAnalysisAmounts = useMemo(() => {
-    const relevantValues = pick(matchingCatAnalysis, values(CatAnalysisVolumes))
+    const relevantValues = pick(volume_analysis, values(CatAnalysisVolumes))
     const keyedByDiscount = mapKeys(
       relevantValues,
       (_, key) =>
@@ -97,13 +119,14 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         }_amount`
     )
     return keyedByDiscount
-  }, [matchingCatAnalysis]) as DiscountPercentages
+  }, [volume_analysis]) as DiscountPercentages
 
   const {
     control,
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { isValid, isSubmitting },
   } = useForm<FormValues>({
     mode: 'onChange',
@@ -113,25 +136,48 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       unit: isCat ? PriceUnits.WordFee : undefined,
       cost_price: isCat ? vendorPrices?.word_fee : undefined,
       vendor: vendorName || undefined,
-      ...vendorDiscounts,
+      ...discounts,
       ...catAnalysisAmounts,
     },
   })
 
+  // Populate the modal when edit is opened
+  useEffect(() => {
+    reset({
+      // TODO: might need to deal with task_type
+      task_type: 'Tõlkimine',
+      unit: isCat ? PriceUnits.WordFee : undefined,
+      cost_price: isCat ? vendorPrices?.word_fee : undefined,
+      vendor: vendorName || undefined,
+      ...discounts,
+      ...catAnalysisAmounts,
+    })
+    setValue('amount', unit_quantity ?? 0)
+    setValue('cost_price', unit_fee ?? 0)
+    if (unit_type) {
+      setValue('unit', apiTypeToKey(unit_type ?? ''))
+    }
+  }, [id])
+
   const [unit, cost_price, amount] = watch(['unit', 'cost_price', 'amount'])
 
+  const amountDiscounts = watch(values(DiscountPercentageNames)) as string[]
   const amountValues = watch(values(DiscountPercentagesAmountNames))
 
   const totalAmount = useMemo(
     () =>
       reduce(
         amountValues,
-        (sum, n) => {
-          return sum + toNumber(n)
+        (sum, n, i) => {
+          return (
+            sum +
+            ((100 - toNumber(amountDiscounts[i] ?? 0)) / 100) *
+              toNumber(amountValues[i])
+          )
         },
         0
       ),
-    [amountValues]
+    [amountDiscounts, amountValues]
   )
 
   useEffect(() => {
@@ -246,20 +292,35 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
-    async ({ amount, unit, ...rest }) => {
-      const chunkId = matchingCatAnalysis?.chunk_id
-      const volumePayload: VolumeValue = {
-        amount,
-        unit,
-        ...(chunkId ? { chunkId } : {}),
-        ...(volumeId ? { volumeId } : {}),
-        isCat: !!isCat,
-      }
+    async ({ amount, unit, cost_price, ...rest }) => {
+      // @ts-expect-error type mismatch
+      const payload: ManualVolumePayload | CatVolumePayload = !isCat
+        ? {
+            assignment_id: assignmentId ?? '',
+            unit_fee: Number(cost_price),
+            unit_quantity: Number(amount),
+            unit_type: keyToApiType(unit),
+          }
+        : {
+            assignment_id: assignmentId ?? '',
+            unit_fee: Number(cost_price),
+            discounts: zipObject<DiscountPercentages>(
+              values(DiscountPercentageNames),
+              // @ts-expect-error type mismatch
+              map(amountDiscounts, (v) => Number(v))
+            ),
+            custom_volume_analysis: zipObject<CatAnalysisVolumes>(
+              values(CatAnalysisVolumes),
+              // @ts-expect-error type mismatch
+              map(amountValues, (v) => Number(v)).reverse() // because the enum itself is in the reverse order
+            ),
+            cat_tool_job_id: catJobId ?? '',
+          }
       if (onSave) {
-        onSave(volumePayload)
+        onSave(!!isCat, payload)
       }
     },
-    [isCat, matchingCatAnalysis?.chunk_id, onSave, volumeId]
+    [isCat, assignmentId, amountDiscounts, amountValues, catJobId, onSave]
   )
 
   return (
@@ -279,7 +340,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         isCat ? (
           <>
             {t('modal.picked_analysis_for')}{' '}
-            <b>[{matchingCatAnalysis?.chunk_id}]</b>
+            <b>{JSON.stringify(volume_analysis?.files_names)}</b>
             <br />
             {t('modal.pick_volume_by_cat_helper')}
           </>
