@@ -255,7 +255,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           subOrderId={subOrderId}
           className={classes.catJobs}
           hidden={!catSupported || isEmpty(catToolJobs)}
-          // hidden={canGenerateProject || isEmpty(catToolJobs)}
           cat_jobs={catToolJobs}
           cat_files={cat_files}
           source_files={source_files}
