@@ -63,12 +63,11 @@ const TextInput = forwardRef<
   }
   // Might need event handler wrappers here
   if (hidden) return null
-
   const inputProps = {
     ...(placeholder ? { placeholder } : {}),
     className: classes.inputField,
     ref,
-    value: value || '',
+    value: value ?? '',
     'aria-label': ariaLabel,
     disabled,
     ...rest,
