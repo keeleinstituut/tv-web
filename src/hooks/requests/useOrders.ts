@@ -234,16 +234,8 @@ export const useSplitCatJobs = () => {
     mutationKey: ['cat-jobs'],
     mutationFn: (payload: CatJobsPayload) =>
       apiClient.post(endpoints.CAT_TOOL_SPLIT, payload),
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['cat-jobs'],
-        (oldData?: CatToolJobsResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = { ...previousData, ...data }
-          return { data: newData }
-        }
-      )
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['cat-jobs'], type: 'active' })
     },
   })
 
@@ -258,16 +250,8 @@ export const useMergeCatJobs = () => {
     mutationKey: ['cat-jobs'],
     mutationFn: (payload: CatJobsPayload) =>
       apiClient.post(endpoints.CAT_TOOL_MERGE, payload),
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['cat-jobs'],
-        (oldData?: CatToolJobsResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = { ...previousData, ...data }
-          return { data: newData }
-        }
-      )
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['cat-jobs'], type: 'active' })
     },
   })
 
