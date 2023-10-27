@@ -10,6 +10,7 @@ type FeatureAssignmentsProps = Pick<
   | 'source_language_classifier_value_id'
   | 'destination_language_classifier_value_id'
   | 'cat_analyzis'
+  | 'project'
 > & {
   hidden?: boolean
   projectDeadline?: string

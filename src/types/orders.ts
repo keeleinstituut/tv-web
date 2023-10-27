@@ -59,7 +59,7 @@ export interface Link {
   active: boolean
 }
 
-interface ProjectTypeConfig {
+export interface ProjectTypeConfig {
   id: string
   workflow_process_definition_id: string
   created_at: string

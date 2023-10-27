@@ -20,6 +20,7 @@ type MainFeatureProps = Pick<
   | 'destination_language_classifier_value_id'
   | 'cat_analyzis'
   | 'cat_jobs'
+  | 'project'
 > & {
   catSupported?: boolean
   projectDeadline?: string

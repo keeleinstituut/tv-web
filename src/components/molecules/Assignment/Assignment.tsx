@@ -1,6 +1,11 @@
 import { FC, useCallback, useMemo } from 'react'
 import { map, find, pick, values } from 'lodash'
-import { CatAnalysis, CatJob, SubProjectFeatures } from 'types/orders'
+import {
+  CatAnalysis,
+  CatJob,
+  ListOrder,
+  SubProjectFeatures,
+} from 'types/orders'
 import { AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import Button, {
@@ -37,6 +42,7 @@ interface AssignmentProps extends AssignmentType {
   cat_analyzis?: CatAnalysis[]
   volumes?: VolumeValue[]
   subOrderId?: string
+  project: ListOrder
 }
 
 interface FormValues {
@@ -65,6 +71,7 @@ const Assignment: FC<AssignmentProps> = ({
   cat_jobs,
   cat_analyzis,
   volumes = [],
+  project,
 }) => {
   const { t } = useTranslation()
   // TODO: no idea if this is how it will work
@@ -159,7 +166,8 @@ const Assignment: FC<AssignmentProps> = ({
   }, [t])
 
   // TODO: shouldShowStartTimeFields no info about where to take this from yet
-  const shouldShowStartTimeFields = true
+  const shouldShowStartTimeFields =
+    project?.type_classifier_value?.project_type_config?.is_start_date_supported
 
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
