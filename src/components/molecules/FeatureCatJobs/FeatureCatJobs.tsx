@@ -46,8 +46,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
                 catJobs,
                 (result, { id }) => {
                   if (!id) return result
-                  const isChunkSelected =
-                    (isEmpty(cat_jobs) && index === 0) || !isEmpty(cat_jobs)
+                  const isChunkSelected = index === 0 || !isEmpty(cat_jobs)
 
                   return {
                     ...result,
