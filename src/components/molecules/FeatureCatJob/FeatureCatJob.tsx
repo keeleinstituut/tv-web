@@ -16,18 +16,18 @@ import classNames from 'classnames'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 
 import classes from './classes.module.scss'
-
 interface FeatureCatJobProps<TFormValues extends FieldValues>
   extends AssignmentType {
   index: number
+  subOrderCatJobs?: CatJob[]
   cat_jobs?: CatJob[]
   control: Control<TFormValues>
   isEditable?: boolean
+  ext_id?: string
 }
-
 interface TableRow {
   selected: string
-  chunk_id: string
+  chunk_id: { id: string | number; name: string }
 }
 
 const columnHelper = createColumnHelper<TableRow>()
@@ -41,18 +41,21 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
   assigned_vendor_id,
   assignee,
   finished_at,
-  cat_jobs,
+  subOrderCatJobs,
   isEditable,
+  ext_id,
 }: FeatureCatJobProps<TFormValues>) => {
   const { t } = useTranslation()
 
   const tableRows = useMemo(
     () =>
-      map(cat_jobs, ({ id }) => ({
-        selected: id.toString(),
-        chunk_id: id.toString(),
-      })),
-    [cat_jobs]
+      map(subOrderCatJobs, ({ id, name }) => {
+        return {
+          selected: id.toString(),
+          chunk_id: { name, id },
+        }
+      }),
+    [subOrderCatJobs]
   )
 
   const columns = [
@@ -74,6 +77,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
     columnHelper.accessor('chunk_id', {
       header: () => t('label.xliff_name'),
       footer: (info) => info.column.id,
+      cell: ({ row }) => <p>{row.original.chunk_id.name}</p>,
     }),
   ] as ColumnDef<TableRow>[]
 
@@ -83,7 +87,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         {t('task.vendor_title', { number: index + 1 })}(
         {t(`orders.features.${job_definition.job_key}`)})
       </h3>
-      <span className={classes.assignmentId}>{id}</span>
+      <span className={classes.assignmentId}>{ext_id}</span>
       <div className={classes.titleRow}>
         <h4>{t('orders.source_files_in_translation_tool')}</h4>
 
@@ -94,7 +98,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
       <p
         className={classNames(
           classes.emptyTableText,
-          isEmpty(cat_jobs) && classes.visible
+          isEmpty(subOrderCatJobs) && classes.visible
         )}
       >
         {t('task.files_not_generated')}
@@ -104,7 +108,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         columns={columns}
         tableSize={TableSizeTypes.M}
         className={classes.tableContainer}
-        hidden={isEmpty(cat_jobs)}
+        hidden={isEmpty(subOrderCatJobs)}
         hidePagination
       />
     </div>
