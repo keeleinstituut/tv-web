@@ -20,6 +20,7 @@ type MainFeatureProps = Pick<
   | 'destination_language_classifier_value_id'
   | 'cat_analyzis'
   | 'cat_jobs'
+  | 'project'
 > & {
   catSupported?: boolean
   projectDeadline?: string
@@ -33,6 +34,7 @@ const MainFeature: FC<MainFeatureProps> = ({
   feature,
   mt_enabled,
   id,
+  cat_jobs,
   assignments,
   ...rest
 }) => {
@@ -110,8 +112,9 @@ const MainFeature: FC<MainFeatureProps> = ({
         {...rest}
       />
       <FeatureCatJobs
-        assignments={assignments}
         hidden={activeTab === FeatureTabs.Vendors}
+        assignments={assignments}
+        subOrderCatJobs={cat_jobs}
         {...rest}
       />
     </Root>

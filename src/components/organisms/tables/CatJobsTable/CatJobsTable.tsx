@@ -1,6 +1,6 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, isEmpty } from 'lodash'
+import { map, size } from 'lodash'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { ReactComponent as HorizontalDots } from 'assets/icons/horizontal_dots.svg'
 import classNames from 'classnames'
@@ -105,7 +105,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   }, [canSendToVendors, subOrderId, t])
 
   const handleCatMergeClick = useCallback(() => {
-    if (canSendToVendors) {
+    if (canSendToVendors && size(cat_jobs) > 1) {
       showModal(ModalTypes.CatMerge, {
         subOrderId,
       })
@@ -116,7 +116,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         content: t('error.cant_merge_files'),
       })
     }
-  }, [canSendToVendors, subOrderId, t])
+  }, [canSendToVendors, cat_jobs, subOrderId, t])
 
   // TODO: not sure how to show this currently
   // This will mean loading state only when none of the files have been analyzed

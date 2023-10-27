@@ -1,6 +1,11 @@
 import { FC, useCallback, useMemo } from 'react'
 import { map, find, pick, values } from 'lodash'
-import { CatAnalysis, CatJob, SubProjectFeatures } from 'types/orders'
+import {
+  CatAnalysis,
+  CatJob,
+  ListOrder,
+  SubProjectFeatures,
+} from 'types/orders'
 import { AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import Button, {
@@ -35,8 +40,10 @@ interface AssignmentProps extends AssignmentType {
   catSupported?: boolean
   cat_jobs?: CatJob[]
   cat_analyzis?: CatAnalysis[]
+  ext_id?: string
   volumes?: VolumeValue[]
   subOrderId?: string
+  project: ListOrder
 }
 
 interface FormValues {
@@ -64,7 +71,9 @@ const Assignment: FC<AssignmentProps> = ({
   catSupported,
   cat_jobs,
   cat_analyzis,
+  ext_id,
   volumes = [],
+  project,
 }) => {
   const { t } = useTranslation()
   // TODO: no idea if this is how it will work
@@ -159,7 +168,8 @@ const Assignment: FC<AssignmentProps> = ({
   }, [t])
 
   // TODO: shouldShowStartTimeFields no info about where to take this from yet
-  const shouldShowStartTimeFields = true
+  const shouldShowStartTimeFields =
+    project?.type_classifier_value?.project_type_config?.is_start_date_supported
 
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
@@ -265,7 +275,7 @@ const Assignment: FC<AssignmentProps> = ({
           {t('task.vendor_title', { number: index + 1 })}(
           {t(`orders.features.${feature}`)})
         </h3>
-        <span className={classes.assignmentId}>{id}</span>
+        <span className={classes.assignmentId}>{ext_id}</span>
         <Button
           size={SizeTypes.S}
           className={classes.addButton}
