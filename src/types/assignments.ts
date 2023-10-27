@@ -23,7 +23,7 @@ export interface AssignmentType {
   id: string
   candidates: Candidate[]
   volumes?: VolumeValue[]
-  jobs?: CatJob[]
+  cat_jobs?: CatJob[]
   assigned_vendor_id?: string
   assignee?: Vendor
   sub_project_id: string

@@ -1,15 +1,6 @@
 import { FC, useCallback, useMemo, useState } from 'react'
-import {
-  map,
-  reduce,
-  includes,
-  isEmpty,
-  chunk,
-  pickBy,
-  values,
-  filter,
-} from 'lodash'
-import { SubOrderDetail } from 'types/orders'
+import { map, reduce, isEmpty, flatMap } from 'lodash'
+import { CatJob, SubOrderDetail } from 'types/orders'
 import FeatureCatJob from 'components/molecules/FeatureCatJob/FeatureCatJob'
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
 
@@ -21,8 +12,9 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useLinkCatToolJobs } from 'hooks/requests/useAssignments'
 
-type FeatureCatJobsProps = Pick<SubOrderDetail, 'assignments' | 'cat_jobs'> & {
+type FeatureCatJobsProps = Pick<SubOrderDetail, 'assignments'> & {
   hidden?: boolean
+  subOrderCatJobs: CatJob[]
 }
 interface FormValues {
   [key: string]: string
@@ -31,7 +23,7 @@ interface FormValues {
 const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
   assignments,
   hidden,
-  cat_jobs,
+  subOrderCatJobs,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -39,32 +31,24 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
 
   const { linkCatToolJobs, isLoading } = useLinkCatToolJobs()
 
-  // TODO: useForm and submit/edit buttons should be here
-  // Value structure after this reduce will be:
-  // {
-  //   [assignment_id]: {
-  //     [chunk_id]: true,
-  //     ...
-  //   },
-  //   ...
-  // }
-  // TODO: we somehow need to get the new values in here as well
   const defaultValues = useMemo(
     () =>
       reduce(
         assignments,
-        (result, { id, assigned_chunks }, index) => {
+        (result, { id, cat_jobs }, index) => {
           if (!id) return result
+          const catJobs = isEmpty(cat_jobs) ? subOrderCatJobs : cat_jobs
+
           return {
             ...result,
             [id]: {
               ...reduce(
-                cat_jobs,
+                catJobs,
                 (result, { id }) => {
                   if (!id) return result
-                  const isChunkSelected = assigned_chunks
-                    ? includes(assigned_chunks, id)
-                    : index === 0
+                  const isChunkSelected =
+                    (isEmpty(cat_jobs) && index === 0) || !isEmpty(cat_jobs)
+
                   return {
                     ...result,
                     [id]: isChunkSelected,
@@ -77,7 +61,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         },
         {}
       ),
-    [assignments, cat_jobs]
+    [assignments, subOrderCatJobs]
   )
 
   const {
@@ -94,30 +78,32 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
 
   console.log('formValues', formValues)
 
+  const resetForm = useCallback(() => {
+    setIsEditable(false)
+    reset(defaultValues)
+  }, [reset, defaultValues])
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (assignmentChunks) => {
-      // Current structure of assignmentChunks is following:
-      // {
-      //   [assignment_id]: {
-      //     [chunk_id]: true,
-      //     ...
-      //   },
-      //   ...
-      // }
-      // TODO: map these to whatever structure BE wants and send them
-
-      const filteredTrueValuesChunks = pickBy(assignmentChunks, (value) => {
-        const assignment: boolean = values(value as unknown)[0] as boolean
-        return assignment === true
-      })
+      const linking: {
+        cat_tool_job_id: string
+        assignment_id: string
+      }[] = flatMap(
+        Object.entries(assignmentChunks),
+        ([assignment_id, catToolJob]) =>
+          flatMap(Object.entries(catToolJob), ([cat_tool_job_id, value]) => {
+            if (value) {
+              return {
+                cat_tool_job_id,
+                assignment_id,
+              }
+            }
+            return []
+          })
+      )
 
       const payload = {
-        linking: map(filteredTrueValuesChunks, (assignment, key) => {
-          return {
-            cat_tool_job_id: Object.keys(assignment)[0],
-            assignment_id: key,
-          }
-        }),
+        linking: linking,
         job_key: assignments[0].job_definition.job_key,
         sub_project_id: assignments[0].sub_project_id,
       }
@@ -129,17 +115,13 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
           title: t('notification.announcement'),
           content: t('success.files_assigned_to_vendors'),
         })
+        resetForm()
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
     },
-    [assignments, linkCatToolJobs, t]
+    [assignments, linkCatToolJobs, resetForm, t]
   )
-
-  const resetForm = useCallback(() => {
-    setIsEditable(false)
-    reset(defaultValues)
-  }, [reset, defaultValues])
 
   if (hidden) return null
   return (
@@ -151,17 +133,9 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
               key={assignment.id}
               index={index}
               control={control}
-              // subOrderCatJob={cat_jobs}
-              subOrderCatJobs={cat_jobs}
+              subOrderCatJobs={subOrderCatJobs}
               isEditable={isEditable}
-              // {...assignment}
-              id={assignment.id}
-              job_definition={assignment.job_definition}
-              candidates={[]}
-              sub_project_id={''}
-              skill_id={''}
-              finished_at={''}
-              assigned_chunks={[]}
+              {...assignment}
             />
           )
         })}
@@ -171,13 +145,13 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
           appearance={AppearanceTypes.Secondary}
           children={t('button.cancel')}
           onClick={resetForm}
-          hidden={!isEditable || isEmpty(cat_jobs)}
+          hidden={!isEditable || isEmpty(subOrderCatJobs)}
           disabled={isSubmitting || isLoading}
         />
         <Button
           children={isEditable ? t('button.save') : t('button.change')}
           disabled={!isValid && isEditable}
-          hidden={isEmpty(cat_jobs)}
+          hidden={isEmpty(subOrderCatJobs)}
           loading={isSubmitting || isLoading}
           onClick={
             isEditable ? handleSubmit(onSubmit) : () => setIsEditable(true)

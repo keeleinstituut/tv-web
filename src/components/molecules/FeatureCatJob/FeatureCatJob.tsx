@@ -20,7 +20,7 @@ interface FeatureCatJobProps<TFormValues extends FieldValues>
   extends AssignmentType {
   index: number
   subOrderCatJobs?: CatJob[]
-  // cat_jobs?: CatJob[]
+  cat_jobs?: CatJob[]
   control: Control<TFormValues>
   isEditable?: boolean
 }
@@ -36,10 +36,10 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
   control,
   id,
   job_definition,
-  // candidates,
-  // assigned_vendor_id,
-  // assignee,
-  // finished_at,
+  candidates,
+  assigned_vendor_id,
+  assignee,
+  finished_at,
   subOrderCatJobs,
   isEditable,
 }: FeatureCatJobProps<TFormValues>) => {

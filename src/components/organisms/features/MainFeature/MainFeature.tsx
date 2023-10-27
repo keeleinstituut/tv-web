@@ -113,7 +113,7 @@ const MainFeature: FC<MainFeatureProps> = ({
       <FeatureCatJobs
         hidden={activeTab === FeatureTabs.Vendors}
         assignments={assignments}
-        cat_jobs={cat_jobs}
+        subOrderCatJobs={cat_jobs}
         {...rest}
       />
     </Root>
