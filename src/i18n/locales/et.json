@@ -263,7 +263,11 @@
     "checked": "Valitud"
   },
   "header": {
-    "my_role": "Minu roll:"
+    "my_role": "Minu roll:",
+    "language": "Keel:"
+  },
+  "language_option": {
+    "estonian": "EST"
   },
   "roles": {
     "roles_management": "Rollihaldus",
