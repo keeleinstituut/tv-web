@@ -30,6 +30,7 @@ export const useFetchOrders = () => {
   const { isLoading, isError, data } = useQuery<OrdersResponse>({
     queryKey: ['orders', filters],
     queryFn: () => apiClient.get(`${endpoints.PROJECTS}`, filters),
+    keepPreviousData: true,
   })
 
   const { meta: paginationData, data: orders } = data || {}
