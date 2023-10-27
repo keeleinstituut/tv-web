@@ -2,15 +2,15 @@ import { FC, useCallback, useMemo, useState } from 'react'
 import { map, reduce, isEmpty, flatMap } from 'lodash'
 import { CatJob, SubOrderDetail } from 'types/orders'
 import FeatureCatJob from 'components/molecules/FeatureCatJob/FeatureCatJob'
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
-
-import classes from './classes.module.scss'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useLinkCatToolJobs } from 'hooks/requests/useAssignments'
+
+import classes from './classes.module.scss'
 
 type FeatureCatJobsProps = Pick<SubOrderDetail, 'assignments'> & {
   hidden?: boolean
@@ -71,12 +71,8 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
     formState: { isSubmitting, isValid },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
-    values: defaultValues,
+    defaultValues: defaultValues,
   })
-
-  const formValues = useWatch({ control })
-
-  console.log('formValues', formValues)
 
   const resetForm = useCallback(() => {
     setIsEditable(false)
@@ -115,12 +111,12 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
           title: t('notification.announcement'),
           content: t('success.files_assigned_to_vendors'),
         })
-        resetForm()
+        setIsEditable(false)
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
     },
-    [assignments, linkCatToolJobs, resetForm, t]
+    [assignments, linkCatToolJobs, t]
   )
 
   if (hidden) return null

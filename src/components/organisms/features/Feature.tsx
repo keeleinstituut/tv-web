@@ -50,8 +50,6 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder, projectDomain }) => {
     ({ job_definition }) => job_definition.job_key
   )
 
-  console.log('subOrder', subOrder)
-
   return (
     <Component
       {...subOrder}

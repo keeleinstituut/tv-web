@@ -23,10 +23,11 @@ interface FeatureCatJobProps<TFormValues extends FieldValues>
   cat_jobs?: CatJob[]
   control: Control<TFormValues>
   isEditable?: boolean
+  ext_id?: string
 }
 interface TableRow {
   selected: string
-  chunk_id: string
+  chunk_id: { id: string | number; name: string }
 }
 
 const columnHelper = createColumnHelper<TableRow>()
@@ -42,15 +43,18 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
   finished_at,
   subOrderCatJobs,
   isEditable,
+  ext_id,
 }: FeatureCatJobProps<TFormValues>) => {
   const { t } = useTranslation()
 
   const tableRows = useMemo(
     () =>
-      map(subOrderCatJobs, ({ id }) => ({
-        selected: id.toString(),
-        chunk_id: id.toString(),
-      })),
+      map(subOrderCatJobs, ({ id, name }) => {
+        return {
+          selected: id.toString(),
+          chunk_id: { name, id },
+        }
+      }),
     [subOrderCatJobs]
   )
 
@@ -73,6 +77,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
     columnHelper.accessor('chunk_id', {
       header: () => t('label.xliff_name'),
       footer: (info) => info.column.id,
+      cell: ({ row }) => <p>{row.original.chunk_id.name}</p>,
     }),
   ] as ColumnDef<TableRow>[]
 
@@ -82,7 +87,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         {t('task.vendor_title', { number: index + 1 })}(
         {t(`orders.features.${job_definition.job_key}`)})
       </h3>
-      <span className={classes.assignmentId}>{id}</span>
+      <span className={classes.assignmentId}>{ext_id}</span>
       <div className={classes.titleRow}>
         <h4>{t('orders.source_files_in_translation_tool')}</h4>
 
