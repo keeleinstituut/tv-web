@@ -4,13 +4,11 @@ import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
 import MainFeature from './MainFeature/MainFeature'
 import { ClassifierValue } from 'types/classifierValues'
-// TODO: this is WIP code for suborder view
 
 interface FeatureProps {
   subOrder?: SubOrderDetail
   feature?: SubProjectFeatures
   index?: number
-  projectDeadline?: string
   projectDomain?: ClassifierValue
 }
 

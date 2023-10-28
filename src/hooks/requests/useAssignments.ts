@@ -213,26 +213,37 @@ export const useAssignmentRemoveVolume = ({
 }
 
 export const useAssignmentUpdate = ({ id }: { id?: string }) => {
-  // const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
   const { mutateAsync: updateAssignment, isLoading } = useMutation({
-    mutationKey: ['assignments', id],
+    mutationKey: ['subOrders', id],
     mutationFn: (payload: AssignmentPayload) =>
-      apiClient.put(`${endpoints.TASKS}/${id}`, payload),
-    // TODO: might need to modify the assignment under subOrder: { assignments } in onSuccess
-    // onSuccess: ({ data }) => {
-    //   queryClient.setQueryData(
-    //     ['institutions', id],
-    //     // TODO: possibly will start storing all arrays as objects
-    //     // if we do, then this should be rewritten
-    //     (oldData?: InstitutionsDataType) => {
-    //       const { data: previousData } = oldData || {}
-    //       if (!previousData) return oldData
-    //       const newData = { ...previousData, ...data }
-    //       return { data: newData }
-    //     }
-    //   )
-    //   queryClient.refetchQueries({ queryKey: ['institutions'], type: 'active' })
-    // },
+      apiClient.put(`${endpoints.ASSIGNMENTS}/${id}`, payload),
+    onSuccess: ({ data }: { data: AssignmentType }) => {
+      queryClient.setQueryData(
+        ['suborders', data.sub_project_id],
+        (oldData?: SubOrderResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+
+          const newAssignments = previousData.assignments.map((item) => {
+            if (item.id === data.id) {
+              return data
+            }
+            return item
+          })
+
+          const newData = {
+            ...previousData,
+            assignments: newAssignments,
+          }
+          return { data: newData }
+        }
+      )
+      queryClient.refetchQueries({
+        queryKey: ['suborders'],
+        type: 'active',
+      })
+    },
   })
 
   return {

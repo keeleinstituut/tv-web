@@ -1,12 +1,12 @@
-import { FC, useCallback, useMemo } from 'react'
-import { map, find, pick, values } from 'lodash'
+import { FC, useCallback, useEffect, useMemo } from 'react'
+import { map, find, pick, values, isEqual } from 'lodash'
 import {
   CatAnalysis,
   CatJob,
   ListOrder,
   SubProjectFeatures,
 } from 'types/orders'
-import { AssignmentType } from 'types/assignments'
+import { AssignmentPayload, AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import Button, {
   AppearanceTypes,
@@ -21,6 +21,7 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 import { DiscountPercentageNames, DiscountPercentages } from 'types/vendors'
 import { Price } from 'types/price'
 import TaskCandidatesSection from 'components/molecules/TaskCandidatesSection/TaskCandidatesSection'
@@ -31,11 +32,12 @@ import { NotificationTypes } from '../Notification/Notification'
 import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
 import { getBEDate } from 'helpers'
 
+dayjs.extend(utc)
+
 interface AssignmentProps extends AssignmentType {
   index: number
   source_language_classifier_value_id: string
   destination_language_classifier_value_id: string
-  projectDeadline?: string
   isVendorView?: boolean
   catSupported?: boolean
   cat_jobs?: CatJob[]
@@ -43,13 +45,14 @@ interface AssignmentProps extends AssignmentType {
   volumes?: VolumeValue[]
   subOrderId?: string
   project: ListOrder
+  deadline_at?: string
 }
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
   event_start_at?: { date?: string; time?: string }
-  // TODO: Not sure about the structure of following fields
   comments?: string
+  // TODO: Not sure about the structure of following fields
   volume?: VolumeValue[]
   vendor_comments?: string
 }
@@ -64,7 +67,6 @@ const Assignment: FC<AssignmentProps> = ({
   job_definition,
   source_language_classifier_value_id,
   destination_language_classifier_value_id,
-  projectDeadline,
   finished_at,
   isVendorView,
   catSupported,
@@ -72,12 +74,21 @@ const Assignment: FC<AssignmentProps> = ({
   cat_analyzis,
   volumes = [],
   project,
+  comments,
+  deadline_at,
 }) => {
   const { t } = useTranslation()
-  // TODO: no idea if this is how it will work
   const { updateAssignment, isLoading } = useAssignmentUpdate({ id })
-
   const { vendor } = find(candidates, { vendor_id: assigned_vendor_id }) || {}
+  const {
+    deadline_at: projectDeadline,
+    event_start_at: projectStartTime,
+    type_classifier_value,
+  } = project || {}
+
+  const shouldShowStartTimeFields =
+    type_classifier_value?.project_type_config?.is_start_date_supported
+
   // TODO: vendor price find is not finished yet.
   // There is a high possibility that the field names will be unified for source and destination language
   // We are also missing assignment task id at the moment
@@ -85,6 +96,7 @@ const Assignment: FC<AssignmentProps> = ({
   // TODO: check if all other tasks/features in this subOrder have been finished
   // Possibly we can determine this my checking the status of the suborder, or by going over all assignments
   const allPreviousTasksFinished = false
+
   const vendorDiscounts = useMemo(
     () => pick(vendor, values(DiscountPercentageNames)),
     [vendor]
@@ -115,29 +127,46 @@ const Assignment: FC<AssignmentProps> = ({
   ])
 
   const { forename, surname } = vendor?.institution_user?.user || {}
-
   const vendorName = !!forename ? `${forename} ${surname}` : ''
 
-  // TODO: we should be able to get some of these values from somewhere
   const defaultValues = useMemo(
     () => ({
-      deadline_at: { date: '11/07/2025', time: '11:00' },
+      deadline_at: {
+        date: dayjs.utc(deadline_at || projectDeadline).format('DD/MM/YYYY'),
+        time: dayjs.utc(deadline_at || projectDeadline).format('HH:mm:ss'),
+      },
+      ...(shouldShowStartTimeFields
+        ? {
+            event_start_at: {
+              date: dayjs(projectStartTime).format('DD/MM/YYYY'),
+              time: dayjs(projectStartTime).format('HH:mm'),
+            },
+          }
+        : {}),
       volume: volumes,
+      comments,
     }),
-    [volumes]
+    [
+      comments,
+      deadline_at,
+      projectDeadline,
+      projectStartTime,
+      shouldShowStartTimeFields,
+      volumes,
+    ]
   )
 
-  const { control } = useForm<FormValues>({
+  const { control, getValues } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
 
   const handleMarkTaskAsFinished = useCallback(async () => {
     try {
-      await updateAssignment({
-        // TODO: not sure if this is
-        finished_at: getBEDate(),
-      })
+      // await updateAssignment({
+      //   // TODO: not sure if this is
+      //   finished_at: getBEDate(),
+      // })
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
@@ -146,7 +175,7 @@ const Assignment: FC<AssignmentProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [t, updateAssignment])
+  }, [t])
 
   const sendToPreviousAssignment = useCallback(async () => {
     try {
@@ -165,9 +194,74 @@ const Assignment: FC<AssignmentProps> = ({
     }
   }, [t])
 
-  // TODO: shouldShowStartTimeFields no info about where to take this from yet
-  const shouldShowStartTimeFields =
-    project?.type_classifier_value?.project_type_config?.is_start_date_supported
+  const handleUpdateAssignment = useCallback(
+    async (payload: AssignmentPayload) => {
+      try {
+        await updateAssignment(payload)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.assignment_updated'),
+        })
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
+    },
+    [t, updateAssignment]
+  )
+
+  const textAreaElement =
+    document?.getElementById(`textarea_${id}`) || document.body
+
+  const formattedDeadline = useMemo(
+    () => getBEDate(deadline_at || projectDeadline),
+    [deadline_at, projectDeadline]
+  )
+
+  const handleAddComment = useCallback(
+    (event: Event) => {
+      const comment = getValues('comments')
+      const isCommentChanged = !isEqual(comment, comments)
+
+      if (textAreaElement.contains(event.target as Node) && isCommentChanged) {
+        handleUpdateAssignment({
+          deadline_at: formattedDeadline,
+          comments: getValues('comments'),
+        })
+      }
+    },
+
+    [
+      comments,
+      formattedDeadline,
+      getValues,
+      handleUpdateAssignment,
+      textAreaElement,
+    ]
+  )
+  const handleAddDateTime = useCallback(
+    (value: { date: string; time: string }) => {
+      const { date, time } = value
+      const dateTime = dayjs.utc(`${date} ${time}`, 'DD/MM/YYYY HH:mm')
+      const formattedDateTime = dateTime.format('YYYY-MM-DDTHH:mm:ss[Z]')
+      const isDeadLineChanged = !isEqual(formattedDeadline, formattedDateTime)
+
+      if (isDeadLineChanged) {
+        handleUpdateAssignment({
+          deadline_at: formattedDateTime,
+        })
+      }
+    },
+
+    [formattedDeadline, handleUpdateAssignment]
+  )
+
+  useEffect(() => {
+    textAreaElement.addEventListener('blur', handleAddComment)
+    return () => {
+      textAreaElement.removeEventListener('blur', handleAddComment)
+    }
+  }, [handleAddComment, textAreaElement])
 
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
@@ -179,6 +273,7 @@ const Assignment: FC<AssignmentProps> = ({
         name: 'deadline_at',
         minDate: new Date(),
         maxDate: dayjs(projectDeadline).toDate(),
+        onDateTimeChange: handleAddDateTime,
         // onlyDisplay: !isEditable,
       },
       {
@@ -194,6 +289,7 @@ const Assignment: FC<AssignmentProps> = ({
       },
       {
         inputType: InputTypes.Text,
+        id: `textarea_${id}`,
         label: `${t('label.special_instructions')}`,
         ariaLabel: t('label.special_instructions'),
         placeholder: t('placeholder.write_here'),
@@ -235,6 +331,7 @@ const Assignment: FC<AssignmentProps> = ({
     [
       t,
       projectDeadline,
+      handleAddDateTime,
       shouldShowStartTimeFields,
       catSupported,
       vendorPrices,
