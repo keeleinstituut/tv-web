@@ -42,6 +42,7 @@ interface AssignmentProps extends AssignmentType {
   catSupported?: boolean
   cat_jobs?: CatJob[]
   cat_analyzis?: CatAnalysis[]
+  ext_id?: string
   volumes?: VolumeValue[]
   subOrderId?: string
   project: ListOrder
@@ -72,6 +73,7 @@ const Assignment: FC<AssignmentProps> = ({
   catSupported,
   cat_jobs,
   cat_analyzis,
+  ext_id,
   volumes = [],
   project,
   comments,
@@ -370,7 +372,7 @@ const Assignment: FC<AssignmentProps> = ({
           {t('task.vendor_title', { number: index + 1 })}(
           {t(`orders.features.${feature}`)})
         </h3>
-        <span className={classes.assignmentId}>{id}</span>
+        <span className={classes.assignmentId}>{ext_id}</span>
         <Button
           size={SizeTypes.S}
           className={classes.addButton}

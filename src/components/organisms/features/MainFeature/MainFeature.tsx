@@ -34,6 +34,7 @@ const MainFeature: FC<MainFeatureProps> = ({
   feature,
   mt_enabled,
   id,
+  cat_jobs,
   assignments,
   ...rest
 }) => {
@@ -111,8 +112,9 @@ const MainFeature: FC<MainFeatureProps> = ({
         {...rest}
       />
       <FeatureCatJobs
-        assignments={assignments}
         hidden={activeTab === FeatureTabs.Vendors}
+        assignments={assignments}
+        subOrderCatJobs={cat_jobs}
         {...rest}
       />
     </Root>
