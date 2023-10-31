@@ -63,7 +63,7 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
               control={control}
               defaultValue={info.row.original.vendor_id}
               inputType={InputTypes.Text}
-              hidden={true}
+              className={classes.vendorId}
             />
           </>
         )
