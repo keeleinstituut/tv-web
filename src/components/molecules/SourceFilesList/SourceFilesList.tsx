@@ -24,6 +24,7 @@ import { SourceFile, CatProjectStatus } from 'types/orders'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
+import { useAddFile, useDeleteFile } from 'hooks/requests/useAssignments'
 
 // TODO: very similar to OrderFilesList, these 2 can be unified
 
@@ -34,6 +35,7 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   tooltipContent?: string
   hiddenIfNoValue?: boolean
   isEditable?: boolean
+  subOrderId: string
   className?: string
   openSendToCatModal?: () => void
   canGenerateProject?: boolean
@@ -63,6 +65,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   canGenerateProject,
   openSendToCatModal,
   isCatProjectLoading,
+  subOrderId,
   isGenerateProjectButtonDisabled,
   catSetupStatus,
 }: SourceFilesListProps<TFormValues>) => {
@@ -72,6 +75,17 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
+  const { addFile } = useAddFile({
+    reference_object_id: subOrderId,
+    reference_object_type: 'suborder',
+    collection: 'source',
+  })
+  const { deleteFile } = useDeleteFile({
+    reference_object_id: subOrderId,
+    reference_object_type: 'suborder',
+    collection: 'source',
+  })
+
   const typedValue = value as (File | SourceFile)[]
   const { t } = useTranslation()
 
@@ -90,14 +104,24 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     [typedValue]
   )
 
+  const handleAdd = useCallback(
+    (files: File[]) => {
+      addFile(files)
+      onChange(files)
+    },
+    [onChange, addFile]
+  )
+
   const handleDelete = useCallback(
     (index?: number) => {
-      //TODO: add deleting file from project endpoint
       if (index === 0 || index) {
+        // TODO Local file won't have an id, how to handle it?
+        // @ts-expect-error local
+        deleteFile(typedValue[index]?.id)
         onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
       }
     },
-    [onChange, typedValue]
+    [onChange, deleteFile, typedValue]
   )
 
   const columns = [
@@ -237,7 +261,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
               files={value}
               inputFileTypes={ProjectFileTypes}
               className={classes.fileImportButton}
-              onChange={onChange}
+              onChange={handleAdd}
               allowMultiple
             />
           </div>

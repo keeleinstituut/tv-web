@@ -238,6 +238,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
           isCatProjectLoading={isCatProjectLoading}
           catSetupStatus={catSetupStatus}
+          subOrderId={subOrderId}
           isEditable
           // isEditable={isEditable}
         />

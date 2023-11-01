@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
+import { forEach, map } from 'lodash'
 import {
   AssignmentPayload,
   AssignmentType,
@@ -263,6 +264,77 @@ export const useLinkCatToolJobs = () => {
 
   return {
     linkCatToolJobs,
+    isLoading,
+  }
+}
+
+export const useAddFile = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection: string
+}) => {
+  const { mutateAsync: addFile, isLoading } = useMutation({
+    mutationKey: ['files', config.reference_object_id],
+    mutationFn: (payload: File[]) => {
+      const { reference_object_id, reference_object_type, collection } = config
+      // const form = new FormData()
+
+      // forEach(payload, (file, i) => {
+      //   form.append(`files[${i}][content]`, file)
+      //   form.append(`files[${i}][reference_object_id]`, reference_object_id)
+      //   form.append(`files[${i}][reference_object_type]`, reference_object_type)
+      //   form.append(`files[${i}][collection]`, collection)
+      // })
+
+      // console.log(payload)
+
+      const files = map(payload, (file) => ({
+        content: file,
+        reference_object_id,
+        reference_object_type,
+        collection,
+      }))
+
+      return apiClient.instance.postForm(endpoints.MEDIA_BULK, {
+        files,
+      })
+    },
+  })
+  return {
+    addFile,
+    isLoading,
+  }
+}
+
+export const useDeleteFile = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection: string
+}) => {
+  const { mutateAsync: deleteFile, isLoading } = useMutation({
+    mutationKey: ['files', config.reference_object_id],
+    mutationFn: (payload: string) => {
+      const { reference_object_id, reference_object_type, collection } = config
+
+      const files =
+        //map(payload, (id) => (
+        [
+          {
+            id: payload,
+            reference_object_id,
+            reference_object_type,
+            collection,
+          },
+        ]
+      //))
+
+      return apiClient.delete(endpoints.MEDIA_BULK, {
+        files,
+      })
+    },
+  })
+  return {
+    deleteFile,
     isLoading,
   }
 }
