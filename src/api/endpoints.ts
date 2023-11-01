@@ -41,6 +41,7 @@ export const endpoints = {
   CAT_TOOL_SPLIT: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/split`,
   CAT_TOOL_MERGE: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/merge`,
   MEDIA_BULK: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}media/bulk`,
+  MEDIA_DOWNLOAD: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}media/download`,
   DOWNLOAD_XLIFF: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/download-xliff`,
   DOWNLOAD_TRANSLATED: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/download-translated`,
   TM_KEYS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tm-keys`,

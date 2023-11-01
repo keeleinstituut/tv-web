@@ -24,7 +24,11 @@ import { SourceFile, CatProjectStatus } from 'types/orders'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
-import { useAddFile, useDeleteFile } from 'hooks/requests/useAssignments'
+import {
+  useAddFiles,
+  useDeleteFile,
+  useDownloadFile,
+} from 'hooks/requests/useAssignments'
 
 // TODO: very similar to OrderFilesList, these 2 can be unified
 
@@ -80,8 +84,9 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     reference_object_type: 'subproject',
     collection: 'source',
   })
+  const { downloadFile } = useDownloadFile({
     reference_object_id: subOrderId,
-    reference_object_type: 'suborder',
+    reference_object_type: 'subproject',
     collection: 'source',
   })
   const { deleteFile } = useDeleteFile({
@@ -90,7 +95,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     collection: 'source',
   })
 
-  const typedValue = value as (File | SourceFile)[]
+  const typedValue = value as SourceFile[]
   const { t } = useTranslation()
 
   const filesData = useMemo(
@@ -108,6 +113,13 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     [typedValue]
   )
 
+  const handleDownload = useCallback(
+    (index: number) => {
+      downloadFile(typedValue[index])
+    },
+    [downloadFile, typedValue]
+  )
+
   const handleAdd = useCallback(
     async (files: (File | SourceFile)[]) => {
       const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
@@ -121,9 +133,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   const handleDelete = useCallback(
     (index?: number) => {
       if (index === 0 || index) {
-        // TODO Local file won't have an id, how to handle it?
-        // @ts-expect-error local
-        deleteFile(typedValue[index]?.id)
+        deleteFile(typedValue[index].id)
         onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
       }
     },
@@ -157,6 +167,8 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         const rowIndex = row.original.download_button
         const relatedFile = typedValue[rowIndex]
         const mimeType =
+          //@ts-expect-error mime_type is not present in actual SourceFile also,
+          // this should be looked into
           'mime_type' in relatedFile ? relatedFile.mime_type : relatedFile.type
         const isPdf = includes(mimeType, 'pdf')
         return (
