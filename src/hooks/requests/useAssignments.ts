@@ -268,25 +268,16 @@ export const useLinkCatToolJobs = () => {
   }
 }
 
-export const useAddFile = (config: {
+export const useAddFiles = (config: {
   reference_object_id: string
   reference_object_type: string
   collection: string
 }) => {
-  const { mutateAsync: addFile, isLoading } = useMutation({
+  const { mutateAsync: addFiles, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
     mutationFn: (payload: File[]) => {
       const { reference_object_id, reference_object_type, collection } = config
       // const form = new FormData()
-
-      // forEach(payload, (file, i) => {
-      //   form.append(`files[${i}][content]`, file)
-      //   form.append(`files[${i}][reference_object_id]`, reference_object_id)
-      //   form.append(`files[${i}][reference_object_type]`, reference_object_type)
-      //   form.append(`files[${i}][collection]`, collection)
-      // })
-
-      // console.log(payload)
 
       const files = map(payload, (file) => ({
         content: file,
@@ -301,7 +292,7 @@ export const useAddFile = (config: {
     },
   })
   return {
-    addFile,
+    addFiles,
     isLoading,
   }
 }

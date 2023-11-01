@@ -75,14 +75,18 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
-  const { addFile } = useAddFile({
+  const { addFiles } = useAddFiles({
+    reference_object_id: subOrderId,
+    reference_object_type: 'subproject',
+    collection: 'source',
+  })
     reference_object_id: subOrderId,
     reference_object_type: 'suborder',
     collection: 'source',
   })
   const { deleteFile } = useDeleteFile({
     reference_object_id: subOrderId,
-    reference_object_type: 'suborder',
+    reference_object_type: 'subproject',
     collection: 'source',
   })
 
@@ -105,11 +109,13 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   )
 
   const handleAdd = useCallback(
-    (files: File[]) => {
-      addFile(files)
-      onChange(files)
+    async (files: (File | SourceFile)[]) => {
+      const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
+      const { data } = await addFiles(filteredFiles)
+      console.log(data.data)
+      onChange([...value, ...data.data])
     },
-    [onChange, addFile]
+    [onChange, addFiles, value]
   )
 
   const handleDelete = useCallback(
@@ -172,17 +178,11 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     columnHelper.accessor('download_button', {
       header: '',
       cell: ({ getValue }) => {
-        const file = typedValue?.[getValue()]
-        const localFileUrl =
-          file instanceof File ? URL.createObjectURL(file) : ''
-        const fileUrl =
-          'original_url' in file ? file.original_url : localFileUrl
         return (
           <BaseButton
             className={classNames(classes.iconButton, classes.downloadButton)}
-            href={fileUrl}
             target="_blank"
-            download={file.name}
+            onClick={() => handleDownload(getValue())}
           >
             <Download />
           </BaseButton>
