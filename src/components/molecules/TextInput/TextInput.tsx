@@ -68,7 +68,7 @@ const TextInput = forwardRef<
     ...(placeholder ? { placeholder } : {}),
     className: classes.inputField,
     ref,
-    value: value || '',
+    value: value ?? '',
     'aria-label': ariaLabel,
     disabled,
     ...rest,
