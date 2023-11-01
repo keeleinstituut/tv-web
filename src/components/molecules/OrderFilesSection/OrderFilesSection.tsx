@@ -8,11 +8,13 @@ import { HelperFileTypes } from 'types/classifierValues'
 interface OrderFilesSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isEditable?: boolean
+  orderId?: string
 }
 
 const OrderFilesSection = <TFormValues extends FieldValues>({
   control,
   isEditable,
+  orderId,
 }: OrderFilesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const fileTypeFilters = map(HelperFileTypes, (filterValue) => ({
@@ -24,6 +26,7 @@ const OrderFilesSection = <TFormValues extends FieldValues>({
     <div className={classes.container}>
       <h2>{isEditable ? '' : t('orders.files')}</h2>
       <OrderFilesList
+        orderId={orderId}
         name="source_files"
         title={t('orders.source_files')}
         tooltipContent={t('tooltip.file_format_helper')}
@@ -31,6 +34,7 @@ const OrderFilesSection = <TFormValues extends FieldValues>({
         isEditable={isEditable}
       />
       <OrderFilesList
+        orderId={orderId}
         title={t('orders.help_files')}
         control={control}
         name="help_files"
@@ -39,6 +43,7 @@ const OrderFilesSection = <TFormValues extends FieldValues>({
       />
       {/* TODO: currently not sure where these come from */}
       <OrderFilesList
+        orderId={orderId}
         title={t('orders.feedback_files')}
         control={control}
         name="feedback_files"
