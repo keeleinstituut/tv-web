@@ -1,13 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
+import { downloadFile as downloadHelper } from 'helpers'
+import { map } from 'lodash'
 import {
   AssignmentPayload,
   AssignmentType,
   CatVolumePayload,
   ManualVolumePayload,
 } from 'types/assignments'
-import { SubOrderResponse } from 'types/orders'
+import { SourceFile, SubOrderResponse } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
 
 // TODO: not sure what endpoint to use and what data structure to use
@@ -264,5 +266,134 @@ export const useLinkCatToolJobs = () => {
   return {
     linkCatToolJobs,
     isLoading,
+  }
+}
+
+export const useAddFiles = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection: string
+}) => {
+  const { mutateAsync: addFiles, isLoading } = useMutation({
+    mutationKey: ['files', config.reference_object_id],
+    mutationFn: (payload: File[]) => {
+      const { reference_object_id, reference_object_type, collection } = config
+      // const form = new FormData()
+
+      const files = map(payload, (file) => ({
+        content: file,
+        reference_object_id,
+        reference_object_type,
+        collection,
+      }))
+
+      return apiClient.instance.postForm(endpoints.MEDIA_BULK, {
+        files,
+      })
+    },
+  })
+  return {
+    addFiles,
+    isLoading,
+  }
+}
+
+export const useDeleteFile = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection: string
+}) => {
+  const { mutateAsync: deleteFile, isLoading } = useMutation({
+    mutationKey: ['files', config.reference_object_id],
+    mutationFn: (payload: string) => {
+      const { reference_object_id, reference_object_type, collection } = config
+
+      const files =
+        //map(payload, (id) => (
+        [
+          {
+            id: payload,
+            reference_object_id,
+            reference_object_type,
+            collection,
+          },
+        ]
+      //))
+
+      return apiClient.delete(endpoints.MEDIA_BULK, {
+        files,
+      })
+    },
+  })
+  return {
+    deleteFile,
+    isLoading,
+  }
+}
+
+export const useDownloadFile = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection: string
+}) => {
+  const { mutateAsync: downloadFile, isLoading } = useMutation({
+    mutationKey: ['files', config.reference_object_id],
+    mutationFn: (payload: SourceFile) => {
+      const { reference_object_id, reference_object_type, collection } = config
+
+      const file = {
+        id: payload.id,
+        reference_object_id,
+        reference_object_type,
+        collection,
+      }
+
+      return apiClient.get(endpoints.MEDIA_DOWNLOAD, {
+        ...file,
+      })
+    },
+    onSuccess: (data, { file_name, mime_type }) => {
+      downloadHelper({
+        data,
+        fileName: file_name,
+        fileType: mime_type ?? '',
+      })
+    },
+  })
+  return {
+    downloadFile,
+    isLoading,
+  }
+}
+
+export const useHandleFiles = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection: string
+}) => {
+  const { collection, reference_object_id, reference_object_type } = config
+  const { addFiles, isLoading: isAddLoading } = useAddFiles({
+    reference_object_id,
+    reference_object_type,
+    collection,
+  })
+  const { downloadFile, isLoading: isDownloadLoading } = useDownloadFile({
+    reference_object_id,
+    reference_object_type,
+    collection,
+  })
+  const { deleteFile, isLoading: isDeleteLoading } = useDeleteFile({
+    reference_object_id,
+    reference_object_type,
+    collection,
+  })
+
+  return {
+    addFiles,
+    downloadFile,
+    deleteFile,
+    isAddLoading,
+    isDeleteLoading,
+    isDownloadLoading,
   }
 }

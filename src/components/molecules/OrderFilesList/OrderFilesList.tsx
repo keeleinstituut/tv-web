@@ -25,6 +25,7 @@ import DataTable, {
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from '../SmallTooltip/SmallTooltip'
 import { SourceFile } from 'types/orders'
+import { useHandleFiles } from 'hooks/requests/useAssignments'
 interface OrderFilesListProps<TFormValues extends FieldValues> {
   title: string
   typeOptions?: DropDownOptions[]
@@ -33,6 +34,7 @@ interface OrderFilesListProps<TFormValues extends FieldValues> {
   tooltipContent?: string
   hiddenIfNoValue?: boolean
   isEditable?: boolean
+  orderId?: string
 }
 
 interface FileRow {
@@ -52,6 +54,7 @@ const OrderFilesList = <TFormValues extends FieldValues>({
   tooltipContent,
   hiddenIfNoValue,
   isEditable,
+  orderId,
 }: OrderFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -59,8 +62,14 @@ const OrderFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
-  const typedValue = value as (File | SourceFile)[]
+  const typedValue = value as SourceFile[]
   const { t } = useTranslation()
+
+  const { deleteFile, downloadFile } = useHandleFiles({
+    reference_object_id: orderId ?? '',
+    reference_object_type: 'project',
+    collection: 'source',
+  })
 
   const filesData = useMemo(
     () =>
@@ -79,10 +88,18 @@ const OrderFilesList = <TFormValues extends FieldValues>({
   const handleDelete = useCallback(
     (index?: number) => {
       if (index === 0 || index) {
+        deleteFile(typedValue[index].id)
         onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
       }
     },
-    [onChange, typedValue]
+    [onChange, deleteFile, typedValue]
+  )
+
+  const handleDownload = useCallback(
+    (index: number) => {
+      downloadFile(typedValue[index])
+    },
+    [downloadFile, typedValue]
   )
 
   const columns = [
@@ -148,7 +165,7 @@ const OrderFilesList = <TFormValues extends FieldValues>({
             <Fragment key={fileUrl || index}>
               <label>{file.name}</label>
               <span>{updatedAt}</span>
-              <BaseButton href={fileUrl} target="_blank" download={file.name}>
+              <BaseButton onClick={() => handleDownload(index)}>
                 <DownloadFilled />
               </BaseButton>
             </Fragment>
