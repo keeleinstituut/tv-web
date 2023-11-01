@@ -142,28 +142,28 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   // However not sure if we can use similar logic for all the fields
   // if we can, then we should create 1 useEffect for the entire form and send the payload
   // Whenever any field changes, except for shared_with_client, which will have their own button
-  useEffect(() => {
-    const attemptFilesUpload = async () => {
-      try {
-        // TODO: not sure if this is the correct endpoint and if we can send both the old and new files together like this
-        const { data } = await updateSubOrder({
-          final_files: newFinalFiles,
-        })
-        const savedFinalFiles = data?.final_files
-        setValue('final_files', savedFinalFiles, { shouldDirty: false })
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.final_files_changed'),
-        })
-      } catch (errorData) {
-        showValidationErrorMessage(errorData)
-      }
-    }
-    if (!isEmpty(newFinalFiles) && !isEqual(newFinalFiles, final_files)) {
-      attemptFilesUpload()
-    }
-  }, [final_files, newFinalFiles, setValue, t, updateSubOrder])
+  // useEffect(() => {
+  //   const attemptFilesUpload = async () => {
+  //     try {
+  //       // TODO: not sure if this is the correct endpoint and if we can send both the old and new files together like this
+  //       // const { data } = await updateSubOrder({
+  //       //   final_files: newFinalFiles,
+  //       // })
+  //       // const savedFinalFiles = data?.final_files
+  //       // setValue('final_files', savedFinalFiles, { shouldDirty: false })
+  //       showNotification({
+  //         type: NotificationTypes.Success,
+  //         title: t('notification.announcement'),
+  //         content: t('success.final_files_changed'),
+  //       })
+  //     } catch (errorData) {
+  //       showValidationErrorMessage(errorData)
+  //     }
+  //   }
+  //   if (!isEmpty(newFinalFiles) && !isEqual(newFinalFiles, final_files)) {
+  //     attemptFilesUpload()
+  //   }
+  // }, [final_files, newFinalFiles, setValue, t, updateSubOrder])
 
   const handleSendToCat = useCallback(async () => {
     const sourceFiles = getValues('source_files')
@@ -243,13 +243,13 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           // isEditable={isEditable}
         />
         <FinalFilesList
-          // TODO: not sure what the field name will be
           name="final_files"
           title={t('orders.ready_files_from_vendors')}
           // className={classes.filesSection}
           control={control}
           isEditable
           isLoading={isLoading}
+          subOrderId={subOrderId}
           // isEditable={isEditable}
         />
         <CatJobsTable

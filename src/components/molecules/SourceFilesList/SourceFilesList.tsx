@@ -24,11 +24,7 @@ import { SourceFile, CatProjectStatus } from 'types/orders'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
-import {
-  useAddFiles,
-  useDeleteFile,
-  useDownloadFile,
-} from 'hooks/requests/useAssignments'
+import { useHandleFiles } from 'hooks/requests/useAssignments'
 
 // TODO: very similar to OrderFilesList, these 2 can be unified
 
@@ -79,17 +75,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
-  const { addFiles } = useAddFiles({
-    reference_object_id: subOrderId,
-    reference_object_type: 'subproject',
-    collection: 'source',
-  })
-  const { downloadFile } = useDownloadFile({
-    reference_object_id: subOrderId,
-    reference_object_type: 'subproject',
-    collection: 'source',
-  })
-  const { deleteFile } = useDeleteFile({
+  const { addFiles, deleteFile, downloadFile } = useHandleFiles({
     reference_object_id: subOrderId,
     reference_object_type: 'subproject',
     collection: 'source',

@@ -365,3 +365,35 @@ export const useDownloadFile = (config: {
     isLoading,
   }
 }
+
+export const useHandleFiles = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection: string
+}) => {
+  const { collection, reference_object_id, reference_object_type } = config
+  const { addFiles, isLoading: isAddLoading } = useAddFiles({
+    reference_object_id,
+    reference_object_type,
+    collection,
+  })
+  const { downloadFile, isLoading: isDownloadLoading } = useDownloadFile({
+    reference_object_id,
+    reference_object_type,
+    collection,
+  })
+  const { deleteFile, isLoading: isDeleteLoading } = useDeleteFile({
+    reference_object_id,
+    reference_object_type,
+    collection,
+  })
+
+  return {
+    addFiles,
+    downloadFile,
+    deleteFile,
+    isAddLoading,
+    isDeleteLoading,
+    isDownloadLoading,
+  }
+}
