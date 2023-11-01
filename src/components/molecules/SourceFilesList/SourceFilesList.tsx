@@ -24,6 +24,7 @@ import { SourceFile, CatProjectStatus } from 'types/orders'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
+import { useHandleFiles } from 'hooks/requests/useAssignments'
 
 // TODO: very similar to OrderFilesList, these 2 can be unified
 
@@ -34,6 +35,7 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   tooltipContent?: string
   hiddenIfNoValue?: boolean
   isEditable?: boolean
+  subOrderId: string
   className?: string
   openSendToCatModal?: () => void
   canGenerateProject?: boolean
@@ -63,6 +65,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   canGenerateProject,
   openSendToCatModal,
   isCatProjectLoading,
+  subOrderId,
   isGenerateProjectButtonDisabled,
   catSetupStatus,
 }: SourceFilesListProps<TFormValues>) => {
@@ -72,7 +75,13 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
-  const typedValue = value as (File | SourceFile)[]
+  const { addFiles, deleteFile, downloadFile } = useHandleFiles({
+    reference_object_id: subOrderId,
+    reference_object_type: 'subproject',
+    collection: 'source',
+  })
+
+  const typedValue = value as SourceFile[]
   const { t } = useTranslation()
 
   const filesData = useMemo(
@@ -90,14 +99,31 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     [typedValue]
   )
 
+  const handleDownload = useCallback(
+    (index: number) => {
+      downloadFile(typedValue[index])
+    },
+    [downloadFile, typedValue]
+  )
+
+  const handleAdd = useCallback(
+    async (files: (File | SourceFile)[]) => {
+      const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
+      const { data } = await addFiles(filteredFiles)
+      console.log(data.data)
+      onChange([...value, ...data.data])
+    },
+    [onChange, addFiles, value]
+  )
+
   const handleDelete = useCallback(
     (index?: number) => {
-      //TODO: add deleting file from project endpoint
       if (index === 0 || index) {
+        deleteFile(typedValue[index].id)
         onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
       }
     },
-    [onChange, typedValue]
+    [onChange, deleteFile, typedValue]
   )
 
   const columns = [
@@ -127,6 +153,8 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         const rowIndex = row.original.download_button
         const relatedFile = typedValue[rowIndex]
         const mimeType =
+          //@ts-expect-error mime_type is not present in actual SourceFile also,
+          // this should be looked into
           'mime_type' in relatedFile ? relatedFile.mime_type : relatedFile.type
         const isPdf = includes(mimeType, 'pdf')
         return (
@@ -148,17 +176,11 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     columnHelper.accessor('download_button', {
       header: '',
       cell: ({ getValue }) => {
-        const file = typedValue?.[getValue()]
-        const localFileUrl =
-          file instanceof File ? URL.createObjectURL(file) : ''
-        const fileUrl =
-          'original_url' in file ? file.original_url : localFileUrl
         return (
           <BaseButton
             className={classNames(classes.iconButton, classes.downloadButton)}
-            href={fileUrl}
             target="_blank"
-            download={file.name}
+            onClick={() => handleDownload(getValue())}
           >
             <Download />
           </BaseButton>
@@ -237,7 +259,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
               files={value}
               inputFileTypes={ProjectFileTypes}
               className={classes.fileImportButton}
-              onChange={onChange}
+              onChange={handleAdd}
               allowMultiple
             />
           </div>
