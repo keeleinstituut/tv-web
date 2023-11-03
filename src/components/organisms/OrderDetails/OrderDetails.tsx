@@ -394,6 +394,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             isEditable={isEditableBySomeone && isEditable}
           />
           <OrderFilesSection
+            orderId={order?.id}
             control={control}
             isEditable={isEditableBySomeone && isEditable}
           />

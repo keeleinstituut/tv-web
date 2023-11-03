@@ -30,6 +30,7 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
 import { showValidationErrorMessage } from 'api/errorHandler'
+import { useHandleFiles } from 'hooks/requests/useAssignments'
 
 // TODO: very similar to OrderFilesList, these 2 can be unified
 
@@ -41,6 +42,7 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
   isEditable?: boolean
   className?: string
   isLoading?: boolean
+  subOrderId: string
 }
 
 interface FileRow {
@@ -62,6 +64,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   isEditable,
   className,
   isLoading,
+  subOrderId,
 }: FinalFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -76,8 +79,40 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     name: 'shared_with_client' as Path<TFormValues>,
   })
 
-  const typedValue = value as (File | SourceFile)[]
+  const typedValue = value as SourceFile[]
   const { t } = useTranslation()
+
+  const { addFiles, deleteFile, downloadFile } = useHandleFiles({
+    reference_object_id: subOrderId,
+    reference_object_type: 'subproject',
+    collection: 'final',
+  })
+
+  const handleDownload = useCallback(
+    (index: number) => {
+      downloadFile(typedValue[index])
+    },
+    [downloadFile, typedValue]
+  )
+
+  const handleAdd = useCallback(
+    async (files: (File | SourceFile)[]) => {
+      const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
+      const { data } = await addFiles(filteredFiles)
+      onChange([...value, ...data.data])
+    },
+    [onChange, addFiles, value]
+  )
+
+  const handleDelete = useCallback(
+    (index?: number) => {
+      if (index === 0 || index) {
+        deleteFile(typedValue[index].id)
+        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+      }
+    },
+    [onChange, deleteFile, typedValue]
+  )
 
   const filesData = useMemo(
     () =>
@@ -94,15 +129,6 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         feature: SubProjectFeatures.JobRevision,
       })),
     [typedValue]
-  )
-
-  const handleDelete = useCallback(
-    (index?: number) => {
-      if (index === 0 || index) {
-        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
-      }
-    },
-    [onChange, typedValue]
   )
 
   // TODO: following needs to be checked, not sure what the endpoint will be
@@ -177,9 +203,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         return (
           <BaseButton
             className={classNames(classes.iconButton, classes.downloadButton)}
-            href={fileUrl}
-            target="_blank"
-            download={file.name}
+            onClick={() => handleDownload(getValue())}
           >
             <DownloadFilled />
           </BaseButton>
@@ -257,7 +281,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
               files={value}
               inputFileTypes={ProjectFileTypes}
               className={classes.fileImportButton}
-              onChange={onChange}
+              onChange={handleAdd}
               allowMultiple
             />
           </div>
