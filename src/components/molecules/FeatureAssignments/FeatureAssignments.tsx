@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { map } from 'lodash'
 import { SubOrderDetail } from 'types/orders'
 import Assignment from 'components/molecules/Assignment/Assignment'
+import { VolumeValue } from 'types/volumes'
 
 type FeatureAssignmentsProps = Pick<
   SubOrderDetail,
@@ -9,10 +10,12 @@ type FeatureAssignmentsProps = Pick<
   | 'source_language_classifier_value_id'
   | 'destination_language_classifier_value_id'
   | 'cat_analyzis'
+  | 'project'
 > & {
   hidden?: boolean
   projectDeadline?: string
   catSupported?: boolean
+  volumes?: VolumeValue[]
 }
 
 const FeatureAssignments: FC<FeatureAssignmentsProps> = ({

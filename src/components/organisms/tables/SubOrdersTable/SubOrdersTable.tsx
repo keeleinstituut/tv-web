@@ -108,6 +108,9 @@ const SubOrdersTable: FC = () => {
     (payload) => {
       handleFilterChange({
         ...payload,
+        only_show_personal_projects: payload?.only_show_personal_projects
+          ? 1
+          : 0,
       })
     },
     [handleFilterChange]

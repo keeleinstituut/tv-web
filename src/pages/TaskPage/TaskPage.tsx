@@ -93,12 +93,12 @@ const SubOrder: FC<any> = (props) => {
         </span>
         <span>alamtellimuse ID: {subOrder?.ext_id}</span>
       </div>
-      <Tabs
+      {/* <Tabs
         setActiveTab={setActiveTab}
         tabs={chain((Feature as any).supportedFeatures)
           .filter((feature) =>
             includes(
-              ['general_information', ...(subOrder?.features || [])],
+              ['general_information', ...(subOrder?.assignments || [])],
               feature
             )
           )
@@ -116,7 +116,7 @@ const SubOrder: FC<any> = (props) => {
         }}
         addDisabled={true}
         tabNames={tabNames}
-      />
+      /> */}
 
       <Feature subOrder={subOrder} feature={activeTab} />
 
@@ -166,7 +166,7 @@ const Feature: FC<any> = (props) => {
 const GeneralInformation: FC<any> = (props) => {
   const { subOrder, feature } = props
   const catSupported = includes(subOrder.cat_features, feature)
-  const { sendToCat } = useSubOrderSendToCat({ id: subOrder.id })
+  const { sendToCat } = useSubOrderSendToCat()
 
   return (
     <>
@@ -187,7 +187,7 @@ const GeneralInformation: FC<any> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {map(subOrder.intermediate_files, (file) => {
+              {map(subOrder.source_files, (file) => {
                 return (
                   <tr key={file.id}>
                     <td>{file.file_name}</td>

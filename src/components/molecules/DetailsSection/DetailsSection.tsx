@@ -106,7 +106,8 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}`,
-        hidden: !selectedProjectType?.meta?.display_start_time,
+        hidden:
+          !selectedProjectType?.project_type_config?.is_start_date_supported,
         className: classes.customInternalClass,
         name: 'event_start_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
@@ -185,7 +186,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
       isEditable,
       projectTypeFilter,
       domainValuesFilter,
-      selectedProjectType?.meta?.display_start_time,
+      selectedProjectType?.project_type_config?.is_start_date_supported,
       languageFilters,
     ]
   )

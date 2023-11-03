@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, includes, find, debounce } from 'lodash'
+import { map, find, debounce } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -14,17 +14,16 @@ import classNames from 'classnames'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
-import { useForm } from 'react-hook-form'
+import { Control, useForm } from 'react-hook-form'
 import {
   FormInput,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import Tag from 'components/atoms/Tag/Tag'
-import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
-import { TMType } from 'types/translationMemories'
+import { TMType, TranslationMemoryFilters } from 'types/translationMemories'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemories'
@@ -44,13 +43,23 @@ const columnHelper = createColumnHelper<TranslationMemoriesTableRow>()
 interface FormValues {
   [types: string]: TMType[]
 }
+interface TranslationMemoriesTableTypes {
+  isSelectingModal?: boolean
+  tmKeyControl?: Control
+  initialFilters?: TranslationMemoryFilters
+}
 
-const TranslationMemoriesTable: FC = () => {
+const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
+  isSelectingModal = false,
+  tmKeyControl,
+  initialFilters,
+}) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { translationMemories = [], handleFilterChange } =
-    useFetchTranslationMemories()
+    useFetchTranslationMemories(initialFilters)
   const [searchValue, setSearchValue] = useState<string>('')
+
   const { tagsFilters: tagsOptions } = useFetchTags({
     type: TagTypes.TranslationMemories,
   })
@@ -76,38 +85,60 @@ const TranslationMemoriesTable: FC = () => {
       keepErrors: true,
     },
   })
+
   const handleSearchByName = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      debounce(handleFilterChange, 300)({ fullname: event.target.value })
+
+      debounce(handleFilterChange, 300)({ name: event.target.value })
     },
     [handleFilterChange]
   )
 
   const [types] = watch(['types'])
+
   useEffect(() => {
     handleFilterChange({ type: types })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [types])
 
   const columns = [
+    ...(isSelectingModal
+      ? [
+          columnHelper.accessor('id', {
+            header: '',
+            footer: (info) => info.column.id,
+            cell: ({ getValue }) => {
+              return (
+                <FormInput
+                  name={`${getValue()}`}
+                  ariaLabel={t('label.file_type')}
+                  control={tmKeyControl}
+                  inputType={InputTypes.Checkbox}
+                />
+              )
+            },
+          }),
+        ]
+      : []),
     columnHelper.accessor('name', {
       header: () => t('translation_memories.memory_title'),
       cell: ({ getValue, row }) => {
         return (
-          <Button
-            appearance={AppearanceTypes.Text}
-            size={SizeTypes.M}
-            icon={ArrowRight}
-            ariaLabel={t('label.to_order_view')}
-            iconPositioning={IconPositioningTypes.Left}
-            disabled={
-              !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
-            }
-            href={`/memories/${row.original.id}`}
-          >
-            {getValue()}
-          </Button>
+          <>
+            <Button
+              appearance={AppearanceTypes.Text}
+              size={SizeTypes.M}
+              icon={ArrowRight}
+              ariaLabel={t('label.to_order_view')}
+              iconPositioning={IconPositioningTypes.Left}
+              hidden={isSelectingModal}
+              href={`/memories/${row.original.id}`}
+            >
+              {getValue()}
+            </Button>
+            <span hidden={!isSelectingModal}>{getValue()}</span>
+          </>
         )
       },
       footer: (info) => info.column.id,
@@ -130,7 +161,7 @@ const TranslationMemoriesTable: FC = () => {
           <div className={classes.tagsRow}>
             {map(getValue(), (value) => {
               const tagName = find(tagsOptions, { value })?.label || ''
-              return <Tag label={tagName} value key={value} />
+              return !!tagName && <Tag label={tagName} value key={value} />
             })}
           </div>
         )
@@ -152,6 +183,7 @@ const TranslationMemoriesTable: FC = () => {
       size: 375,
       meta: {
         filterOption: { tv_domain: domainOptions },
+        filterValue: initialFilters?.tv_domain,
         showSearch: false,
       },
     }),
@@ -167,18 +199,24 @@ const TranslationMemoriesTable: FC = () => {
         )
       },
       size: 100,
-      meta: {
-        filterOption: { lang_pair: languageDirectionFilters },
-        onEndReached: loadMore,
-        onSearch: handleSearch,
-        showSearch: true,
-      },
+      meta: !isSelectingModal
+        ? {
+            filterOption: { lang_pair: languageDirectionFilters },
+            onEndReached: loadMore,
+            onSearch: handleSearch,
+            showSearch: true,
+          }
+        : {},
     }),
   ] as ColumnDef<TranslationMemoriesTableRow>[]
 
   return (
     <Root>
-      <div className={classes.legend}>
+      <div
+        className={classNames(classes.legend, {
+          [classes.padding]: isSelectingModal,
+        })}
+      >
         {map(TMType, (status) => {
           return (
             <div key={status}>
@@ -193,17 +231,23 @@ const TranslationMemoriesTable: FC = () => {
       <DataTable
         data={translationMemories}
         columns={columns}
+        className={isSelectingModal ? classes.modalTable : undefined}
         tableSize={TableSizeTypes.M}
         // paginationData={paginationData}
         // onPaginationChange={handlePaginationChange}
         onFiltersChange={handleFilterChange}
         headComponent={
-          <div className={classes.topSection}>
+          <div
+            className={classNames(classes.topSection, {
+              [classes.padding]: isSelectingModal,
+            })}
+          >
             <FormInput
               name="types"
               control={control}
               options={statusFilters}
               inputType={InputTypes.TagsSelect}
+              hidden={isSelectingModal}
             />
             <TextInput
               name="name"
@@ -216,6 +260,11 @@ const TranslationMemoriesTable: FC = () => {
               isSearch
             />
           </div>
+        }
+        columnOrder={
+          isSelectingModal
+            ? ['id', 'lang_pair', 'name', 'tv_tags', 'tv_domains']
+            : undefined
         }
       />
     </Root>
