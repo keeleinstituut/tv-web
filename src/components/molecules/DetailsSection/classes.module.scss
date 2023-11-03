@@ -20,7 +20,7 @@
     label {
       text-align: end;
     }
-    input:first-of-type,
+    input:first-of-type:not(.selection),
     textarea {
       width: 274px;
     }
