@@ -68,7 +68,7 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
 
-          const newAssignments = previousData.assignments.map((item) => {
+          const newAssignments = map(previousData.assignments, (item) => {
             if (item.id === data.id) {
               return data
             }
@@ -217,30 +217,10 @@ export const useAssignmentRemoveVolume = ({
 export const useAssignmentUpdate = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateAssignment, isLoading } = useMutation({
-    mutationKey: ['subOrders', id],
+    mutationKey: ['suborders', id],
     mutationFn: (payload: AssignmentPayload) =>
       apiClient.put(`${endpoints.ASSIGNMENTS}/${id}`, payload),
-    onSuccess: ({ data }: { data: AssignmentType }) => {
-      queryClient.setQueryData(
-        ['suborders', data.sub_project_id],
-        (oldData?: SubOrderResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-
-          const newAssignments = previousData.assignments.map((item) => {
-            if (item.id === data.id) {
-              return data
-            }
-            return item
-          })
-
-          const newData = {
-            ...previousData,
-            assignments: newAssignments,
-          }
-          return { data: newData }
-        }
-      )
+    onSuccess: () => {
       queryClient.refetchQueries({
         queryKey: ['suborders'],
         type: 'active',

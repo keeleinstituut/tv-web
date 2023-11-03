@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { map, find, pick, values, isEqual } from 'lodash'
 import {
   CatAnalysis,
@@ -158,7 +158,7 @@ const Assignment: FC<AssignmentProps> = ({
     ]
   )
 
-  const { control, getValues } = useForm<FormValues>({
+  const { control } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
@@ -212,35 +212,25 @@ const Assignment: FC<AssignmentProps> = ({
     [t, updateAssignment]
   )
 
-  const textAreaElement =
-    document?.getElementById(`textarea_${id}`) || document.body
-
   const formattedDeadline = useMemo(
     () => getBEDate(deadline_at || projectDeadline),
     [deadline_at, projectDeadline]
   )
 
   const handleAddComment = useCallback(
-    (event: Event) => {
-      const comment = getValues('comments')
-      const isCommentChanged = !isEqual(comment, comments)
-
-      if (textAreaElement.contains(event.target as Node) && isCommentChanged) {
+    (value: string) => {
+      const isCommentChanged = !isEqual(value, comments)
+      if (isCommentChanged) {
         handleUpdateAssignment({
           deadline_at: formattedDeadline,
-          comments: getValues('comments'),
+          comments: value,
         })
       }
     },
 
-    [
-      comments,
-      formattedDeadline,
-      getValues,
-      handleUpdateAssignment,
-      textAreaElement,
-    ]
+    [comments, formattedDeadline, handleUpdateAssignment]
   )
+
   const handleAddDateTime = useCallback(
     (value: { date: string; time: string }) => {
       const { date, time } = value
@@ -257,13 +247,6 @@ const Assignment: FC<AssignmentProps> = ({
 
     [formattedDeadline, handleUpdateAssignment]
   )
-
-  useEffect(() => {
-    textAreaElement.addEventListener('blur', handleAddComment)
-    return () => {
-      textAreaElement.removeEventListener('blur', handleAddComment)
-    }
-  }, [handleAddComment, textAreaElement])
 
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
@@ -291,16 +274,16 @@ const Assignment: FC<AssignmentProps> = ({
       },
       {
         inputType: InputTypes.Text,
-        id: `textarea_${id}`,
+        id: id,
         label: `${t('label.special_instructions')}`,
         ariaLabel: t('label.special_instructions'),
         placeholder: t('placeholder.write_here'),
         name: 'comments',
         className: classes.inputInternalPosition,
         isTextarea: true,
+        handleOnBlur: handleAddComment,
         // onlyDisplay: !isEditable,
       },
-      // TODO: no idea what the data structure should be
       {
         inputType: InputTypes.AddVolume,
         label: `${t('label.volume')}`,
@@ -335,13 +318,14 @@ const Assignment: FC<AssignmentProps> = ({
       projectDeadline,
       handleAddDateTime,
       shouldShowStartTimeFields,
+      id,
+      handleAddComment,
       catSupported,
       vendorPrices,
       cat_jobs,
       vendorDiscounts,
       vendorName,
       volumes,
-      id,
       subOrderId,
       cat_analyzis,
       isVendorView,

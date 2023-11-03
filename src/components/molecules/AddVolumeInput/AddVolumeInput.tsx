@@ -192,7 +192,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
             content: i18n.t('success.volume_edited'),
           })
           onChange(
-            value.map((volume) =>
+            map(value, (volume) =>
               volume.id === matchingVolume.id ? res : volume
             )
           )

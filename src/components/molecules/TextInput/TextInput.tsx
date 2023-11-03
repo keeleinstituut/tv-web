@@ -28,6 +28,7 @@ export interface TextInputProps
   isTextarea?: boolean
   inputContainerClassName?: string
   hasInputValueSize?: boolean
+  handleOnBlur?: (value: string) => void
 }
 
 const TextInput = forwardRef<
@@ -51,6 +52,7 @@ const TextInput = forwardRef<
     handleDelete,
     inputContainerClassName,
     hasInputValueSize = false,
+    handleOnBlur,
     ...rest
   } = props
   const { t } = useTranslation()
@@ -101,6 +103,9 @@ const TextInput = forwardRef<
             <textarea
               {...(inputProps as unknown as InputHTMLAttributes<HTMLTextAreaElement>)}
               rows={4}
+              onBlur={() =>
+                !!handleOnBlur && handleOnBlur(toString(value) || '')
+              }
             />
           ) : (
             <input
