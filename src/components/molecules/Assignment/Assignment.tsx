@@ -12,6 +12,7 @@ import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
+import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 
 import classes from './classes.module.scss'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
@@ -30,6 +31,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from '../Notification/Notification'
 import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
 import { getBEDate } from 'helpers'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
 interface AssignmentProps extends AssignmentType {
   index: number
@@ -268,13 +270,25 @@ const Assignment: FC<AssignmentProps> = ({
     destination_language_classifier_value_id,
   ])
 
+  const handleDeleteAssignment = () => {
+    console.log('bu')
+  }
+
   return (
     <div className={classes.assignmentContainer}>
       <div>
-        <h3>
+        <h3 className={classes.titleContainer}>
           {t('task.vendor_title', { number: index + 1 })}(
           {t(`orders.features.${feature}`)})
+          <BaseButton
+            className={classes.deleteButton}
+            hidden={index === 0}
+            onClick={handleDeleteAssignment}
+          >
+            <Delete />
+          </BaseButton>
         </h3>
+
         <span className={classes.assignmentId}>{ext_id}</span>
         <Button
           size={SizeTypes.S}
