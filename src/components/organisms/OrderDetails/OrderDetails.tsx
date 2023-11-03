@@ -77,11 +77,15 @@ const FormButtons: FC<FormButtonsProps> = ({
     <div className={classes.formButtons}>
       <Button
         appearance={AppearanceTypes.Secondary}
-        onClick={resetForm}
         children={isNew ? t('button.quit') : t('button.cancel')}
         {...(isNew
           ? { href: '/orders' }
-          : { onClick: () => setIsEditable(false) })}
+          : {
+              onClick: () => {
+                setIsEditable(false)
+                resetForm()
+              },
+            })}
         hidden={!isNew && !isEditable}
         disabled={isSubmitting || isLoading}
       />
