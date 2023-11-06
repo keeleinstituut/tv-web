@@ -1,0 +1,29 @@
+@import 'styles/variables';
+
+.expandableContainer {
+  border-left: spacing(1) solid;
+  &:not(:first-child) {
+    margin-top: spacing(4);
+  }
+  &.registered {
+    border-color: $color-highlight;
+  }
+  &.new {
+    border-color: $color-warning;
+  }
+  &.forwarded_to_vendor {
+    border-color: $color-success;
+  }
+  &.in_progress {
+    border-color: $color-primary;
+  }
+  &.done_task {
+    border-color: $color-success;
+  }
+  &.cancelled {
+    border-color: $color-border;
+  }
+  &.done {
+    border-color: $color-warning;
+  }
+}

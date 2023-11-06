@@ -119,7 +119,8 @@
     "last_imported": "Viimati imporditud",
     "chunk_amount_old": "Segmentide arv",
     "id": "ID",
-    "owner": "Omanik"
+    "owner": "Omanik",
+    "my_notes": "Minu märkused"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -650,6 +651,7 @@
   },
   "my_tasks": {
     "title": "Minu ülesanded",
-    "assignment_id": "Ülesande ID"
+    "assignment_id": "Ülesande ID",
+    "start_time": "Algusaeg"
   }
 }
