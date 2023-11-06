@@ -4,8 +4,17 @@ import {
   useFetchSubOrder,
   useSubOrderSendToCat,
 } from 'hooks/requests/useOrders'
-import { FC, Fragment, useState } from 'react'
-import { includes, find, map, chain, assign, filter } from 'lodash'
+import { FC, Fragment, useCallback, useEffect, useState } from 'react'
+import {
+  includes,
+  find,
+  map,
+  chain,
+  assign,
+  filter,
+  toLower,
+  findIndex,
+} from 'lodash'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -18,6 +27,13 @@ import Tabs from 'components/molecules/Tabs/Tabs'
 import OrderDetails, {
   OrderDetailModes,
 } from 'components/organisms/OrderDetails/OrderDetails'
+import GeneralInformationFeature from 'components/organisms/features/GeneralInformationFeature/GeneralInformationFeature'
+import { ClassifierValueType } from 'types/classifierValues'
+import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
+import classNames from 'classnames'
+import useHashState from 'hooks/useHashState'
+import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
+import { LeftComponent } from 'components/templates/SubOrderSection/SubOrderSection'
 
 // TODO: WIP - implement this page
 
@@ -25,7 +41,7 @@ const TaskPage: FC = () => {
   const { t } = useTranslation()
   const { taskId } = useParams()
   const { order, isLoading } = useFetchOrder({
-    id: '9a719d6d-22c3-4338-9983-392edd4623e6',
+    id: '9a860cf8-2cbe-4467-9ac9-41acf1cab16c',
   })
 
   console.log('order', order)
@@ -48,14 +64,16 @@ const TaskPage: FC = () => {
       <div>
         <br />
         {map(order?.sub_projects, (subOrder) => {
+          console.log('subOrder', subOrder)
           return (
             <div key={subOrder.id}>
-              <SubOrder id={subOrder.id} />
-              <br />
-              <br />
-              <br />
-              <br />
-              <br />
+              <SubOrder
+                id={subOrder.id}
+                ext_id={subOrder.ext_id}
+                status={order?.status}
+                deadline_at={subOrder.deadline_at}
+                price={order?.price}
+              />
             </div>
           )
         })}
@@ -70,59 +88,130 @@ interface ObjectType {
   [key: string]: string
 }
 
-const SubOrder: FC<any> = (props) => {
-  const { id } = props
+const SubOrder: FC<any> = ({ id, ext_id, status, deadline_at, price }) => {
   const { t } = useTranslation()
 
   const [tabNames, setTabNames] = useState<ObjectType>({})
-  const [activeTab, setActiveTab] = useState<string>()
+  // const [activeTab, setActiveTab] = useState<string>()
+
+  const { setHash, currentHash } = useHashState()
+  const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
 
   const { subOrder, isLoading } = useFetchSubOrder({ id })
 
-  if (isLoading) return <Loader loading={isLoading} />
-
   const languageDirection = `${subOrder?.destination_language_classifier_value.value} > ${subOrder?.source_language_classifier_value.value}`
+
+  const activeTab = 'job_revision'
+
+  const allTabs = [
+    {
+      id: 'general_information',
+      name: t('orders.features.general_information'),
+    },
+  ]
+
+  const attemptScroll = useCallback(() => {
+    const matchingElement = document.getElementById(ext_id)
+    if (matchingElement && !isLoading) {
+      matchingElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    } else if (matchingElement && isLoading) setTimeout(attemptScroll, 300)
+  }, [ext_id, isLoading])
+
+  useEffect(() => {
+    if (currentHash && includes(currentHash, ext_id)) {
+      attemptScroll()
+      if (!isExpanded) {
+        setIsExpanded(true)
+      }
+    }
+  }, [currentHash, ext_id, attemptScroll, isExpanded])
+
+  const handleOpenContainer = useCallback(
+    (isExpanded: boolean) => {
+      setHash(isExpanded ? ext_id : '')
+      setIsExpanded(isExpanded)
+    },
+    [ext_id, setHash]
+  )
+
+  if (isLoading) return <Loader loading={isLoading} />
 
   return (
     <>
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {/* <div style={{ display: 'flex', flexDirection: 'column' }}>
         <h1>{id}</h1>
         <span>
           {t('label.language_direction')}
           <Tag label={languageDirection} value />
         </span>
         <span>alamtellimuse ID: {subOrder?.ext_id}</span>
-      </div>
-      {/* <Tabs
-        setActiveTab={setActiveTab}
-        tabs={chain((Feature as any).supportedFeatures)
-          .filter((feature) =>
-            includes(
-              ['general_information', ...(subOrder?.assignments || [])],
-              feature
-            )
-          )
-          .map((feature) => ({
-            id: feature,
-            name: feature,
-          }))
-          .value()}
-        onAddPress={function (): void {
-          throw new Error('Function not implemented.')
-        }}
-        addLabel={''}
-        onChangeName={function (id: string, newValue: string): void {
-          throw new Error('Function not implemented.')
-        }}
-        addDisabled={true}
-        tabNames={tabNames}
-      /> */}
+      </div> */}
 
-      <Feature subOrder={subOrder} feature={activeTab} />
-
-      {/* <pre>
-        {JSON.stringify(subOrder, null, 2)}
-      </pre> */}
+      <ExpandableContentContainer
+        className={classNames(
+          classes.expandableContainer
+          // status && classes[toLower(status)]
+        )}
+        onExpandedChange={handleOpenContainer}
+        id={ext_id}
+        isExpanded={isExpanded}
+        rightComponent={<OrderStatusTag status={status} />}
+        wrapContent
+        leftComponent={
+          <LeftComponent
+            {...{ ext_id, deadline_at, price, languageDirection }}
+          />
+        }
+      >
+        <GeneralInformationFeature
+          deadline_at={''}
+          source_files={[]}
+          cat_files={[]}
+          cat_jobs={[]}
+          cat_analyzis={[]}
+          final_files={[]}
+          source_language_classifier_value={{
+            id: '123',
+            type: ClassifierValueType.Language,
+            value: 'bu',
+            name: 'bubu',
+            synced_at: null,
+            deleted_at: null,
+            project_type_config: {
+              id: '',
+              workflow_process_definition_id: '',
+              created_at: '',
+              updated_at: '',
+              type_classifier_value_id: '',
+              is_start_date_supported: false,
+              cat_tool_enabled: false,
+              job_definitions: [],
+            },
+          }}
+          destination_language_classifier_value={{
+            id: '123',
+            type: ClassifierValueType.Language,
+            value: 'bu',
+            name: 'bubu',
+            synced_at: null,
+            deleted_at: null,
+            project_type_config: {
+              id: '',
+              workflow_process_definition_id: '',
+              created_at: '',
+              updated_at: '',
+              type_classifier_value_id: '',
+              is_start_date_supported: false,
+              cat_tool_enabled: false,
+              job_definitions: [],
+            },
+          }}
+          subOrderId={''}
+        />
+      </ExpandableContentContainer>
     </>
   )
 }

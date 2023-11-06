@@ -55,7 +55,7 @@ interface LeftComponentProps {
   deadline_at?: string
 }
 
-const LeftComponent: FC<LeftComponentProps> = ({
+export const LeftComponent: FC<LeftComponentProps> = ({
   languageDirection,
   ext_id,
   price,
