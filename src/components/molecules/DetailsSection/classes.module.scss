@@ -20,9 +20,19 @@
     label {
       text-align: end;
     }
-    input:first-of-type:not(.selectionInput),
+
+    input:first-of-type,
     textarea {
       width: 274px;
+    }
+  }
+
+  .inputSearch {
+    justify-content: flex-end;
+    margin-bottom: spacing(4);
+
+    label {
+      text-align: end;
     }
   }
 
@@ -42,7 +52,8 @@
 
   &.adjustedLayout {
     .inputInternalPosition,
-    .customInternalClass {
+    .customInternalClass,
+    .inputSearch {
       margin-bottom: spacing(2);
       display: grid;
       grid-template-columns: 1fr 1fr;

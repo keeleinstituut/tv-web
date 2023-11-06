@@ -77,10 +77,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: `${t('label.order_type')}${!isEditable ? '' : '*'}`,
         name: 'type_classifier_value_id' as Path<TFormValues>,
-        className: classNames(
-          classes.customInternalClass,
-          classes.selectionInput
-        ),
+        className: classes.inputSearch,
         options: projectTypeFilter,
         showSearch: true,
         onlyDisplay: !isEditable,
@@ -96,10 +93,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: `${t('label.translation_domain')}${!isEditable ? '' : '*'}`,
         name: 'translation_domain_classifier_value_id' as Path<TFormValues>,
-        className: classNames(
-          classes.customInternalClass,
-          classes.selectionInput
-        ),
+        className: classes.inputSearch,
         options: domainValuesFilter,
         showSearch: true,
         onlyDisplay: !isEditable,
@@ -159,10 +153,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: `${t('label.source_language')}${!isEditable ? '' : '*'}`,
         name: 'source_language_classifier_value_id' as Path<TFormValues>,
-        className: classNames(
-          classes.customInternalClass,
-          classes.selectionInput
-        ),
+        className: classes.inputSearch,
         options: languageFilters,
         showSearch: true,
         onlyDisplay: !isEditable,
@@ -177,10 +168,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: `${t('label.destination_language')}${!isEditable ? '' : '*'}`,
         name: 'destination_language_classifier_value_ids' as Path<TFormValues>,
-        className: classNames(
-          classes.customInternalClass,
-          classes.selectionInput
-        ),
+        className: classes.inputSearch,
         options: languageFilters,
         showSearch: true,
         multiple: true,
@@ -211,7 +199,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: t('label.order_tags'),
         name: 'tags' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
+        className: classes.inputSearch,
         options: tagsFilters,
         showSearch: true,
         multiple: true,
