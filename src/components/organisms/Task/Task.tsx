@@ -8,10 +8,14 @@ import useHashState from 'hooks/useHashState'
 import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
 import { LeftComponent } from 'components/templates/SubOrderSection/SubOrderSection'
 import TaskContent from 'components/organisms/TaskContent/TaskContent'
+import Button from 'components/molecules/Button/Button'
+import { useTranslation } from 'react-i18next'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 import classes from './classes.module.scss'
 
 const Task: FC<any> = ({ id, ext_id, status, deadline_at, price }) => {
+  const { t } = useTranslation()
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
 
@@ -45,6 +49,17 @@ const Task: FC<any> = ({ id, ext_id, status, deadline_at, price }) => {
     },
     [ext_id, setHash]
   )
+
+  const handleOpenCompleteModal = useCallback(() => {
+    showModal(ModalTypes.ConfirmationModal, {
+      title: t('modal.confirm_complete_task'),
+      modalContent: t('modal.confirm_complete_task_details'),
+      cancelButtonContent: t('button.quit'),
+      proceedButtonContent: t('button.complete'),
+      className: classes.completeModal,
+      // TODO: handle proceed
+    })
+  }, [t])
 
   if (isLoading) return <Loader loading={isLoading} />
 
@@ -81,6 +96,12 @@ const Task: FC<any> = ({ id, ext_id, status, deadline_at, price }) => {
           subOrder?.destination_language_classifier_value.value
         }
       />
+      <Button
+        className={classes.finishedButton}
+        onClick={handleOpenCompleteModal}
+      >
+        {t('button.mark_as_finished')}
+      </Button>
     </ExpandableContentContainer>
   )
 }

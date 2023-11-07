@@ -27,6 +27,7 @@ export interface TextInputProps
   loading?: boolean
   isTextarea?: boolean
   inputContainerClassName?: string
+  labelClassName?: string
   hasInputValueSize?: boolean
 }
 
@@ -50,6 +51,7 @@ const TextInput = forwardRef<
     loading,
     handleDelete,
     inputContainerClassName,
+    labelClassName,
     hasInputValueSize = false,
     ...rest
   } = props
@@ -87,7 +89,12 @@ const TextInput = forwardRef<
         className
       )}
     >
-      <Label className={classNames(classes.label, !label && classes.hidden)}>
+      <Label
+        className={classNames(
+          !label && classes.hidden,
+          labelClassName ? labelClassName : classes.label
+        )}
+      >
         {label}
       </Label>
       <div

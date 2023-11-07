@@ -71,9 +71,17 @@ const TasksTable: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchTasks()
+  } = useFetchTasks({ assigned_to_me: 0 })
 
   // TODO: remove default values, once we have actual data
+
+  const orderRows1 = [
+    {
+      id: '123',
+      name: 'name',
+    },
+  ]
+
   const orderRows = useMemo(
     () =>
       map(
@@ -275,10 +283,10 @@ const TasksTable: FC = () => {
         data={orderRows}
         columns={columns}
         tableSize={TableSizeTypes.M}
-        paginationData={paginationData}
-        onPaginationChange={handlePaginationChange}
-        onFiltersChange={handleFilterChange}
-        onSortingChange={handleSortingChange}
+        // paginationData={paginationData}
+        // onPaginationChange={handlePaginationChange}
+        // onFiltersChange={handleFilterChange}
+        // onSortingChange={handleSortingChange}
         className={classes.topSection}
         headComponent={
           <div>

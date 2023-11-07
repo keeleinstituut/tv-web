@@ -6,17 +6,19 @@
   grid-column-gap: spacing(4);
   margin-top: spacing(8);
 
-  .translationMemories {
-    grid-column: 1/3;
-  }
-
   .catJobs {
     margin-top: spacing(6);
   }
 }
 
+.translationMemories {
+  grid-column: 1/3;
+  div button h3 {
+    color: $color-input-main;
+  }
+}
+
 .taskDetailsContainer {
-  display: flex;
   flex-direction: column;
   display: inline-flex;
 }
@@ -25,35 +27,33 @@
   display: flex;
   justify-content: flex-end;
   padding-top: spacing(6);
-}
 
-.taskDetails {
-  text-align: end;
-  max-width: 125px;
-}
+  .taskDetails,
+  .specialInstructions label {
+    text-align: end;
+    max-width: 125px;
+  }
 
-.taskContent {
-  font-weight: $font-weight-bold;
-  width: 274px;
-  padding-left: spacing(2.5);
-}
-
-.specialInstructions {
-  // justify-content: flex-start;
-  // margin-bottom: spacing(4);
-
-  // label {
-  //   text-align: end;
-  // }
-  // input,
-  // textarea {
-  //   width: 274px;
-  //   // height: 80px;
-  //   display: block;
-  // }
-  // justify-content: flex-end;
-
-  label {
+  .taskContent {
     font-weight: $font-weight-bold;
   }
+
+  .taskContent,
+  .specialInstructions textarea {
+    width: 274px;
+  }
+
+  .taskContent,
+  .specialInstructions {
+    margin-left: spacing(2.5);
+  }
+}
+
+.myNotesLabel {
+  margin-right: 0;
+  font-weight: $font-weight-bold;
+}
+
+.myFinalFiles section div h3 {
+  color: $color-primary;
 }

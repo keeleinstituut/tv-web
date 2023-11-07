@@ -35,20 +35,19 @@ import {
   SourceFile,
 } from 'types/orders'
 import { ModalTypes, showModal } from '../modals/ModalRoot'
+import dayjs from 'dayjs'
 
 import classes from './classes.module.scss'
-import dayjs from 'dayjs'
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
   cat_files: SourceFile[]
-  source_files: SourceFile[]
-  final_files: SourceFile[]
+  my_source_files: SourceFile[]
+  my_final_files: SourceFile[]
   cat_jobs: CatJob[]
   write_to_memory: { [key: string]: boolean }
-  // TODO: no idea about these fields
   shared_with_client: boolean[]
-  special_instructions?: string
+  my_notes?: string
 }
 
 const TaskContent: FC<any> = ({
@@ -97,8 +96,6 @@ const TaskContent: FC<any> = ({
     defaultValues: defaultValues,
   })
 
-  const newFinalFiles = watch('final_files')
-
   useEffect(() => {
     if (subOrderTmKeys) {
       setValue(
@@ -116,7 +113,7 @@ const TaskContent: FC<any> = ({
   }, [setValue, subOrderTmKeys])
 
   const handleSendToCat = useCallback(async () => {
-    const sourceFiles = getValues('source_files')
+    const sourceFiles = getValues('my_source_files')
     const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
     const payload: CatProjectPayload = {
@@ -156,49 +153,52 @@ const TaskContent: FC<any> = ({
     isEmpty(catToolJobs) && !includes(CatProjectStatus.Done, catSetupStatus)
 
   const isGenerateProjectButtonDisabled =
-    !some(watch('source_files'), 'isChecked') ||
+    !some(watch('my_source_files'), 'isChecked') ||
     !some(watch('write_to_memory'), (val) => !!val) ||
     !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
   const deadlineTime = dayjs(deadline_at).format('DD.MM.YYYY HH:mm')
+
+  const taskDetails = [
+    {
+      label: t('my_tasks.start_time'),
+      content: deadlineTime,
+      oralTranslation: true,
+    },
+    { label: t('label.deadline_at'), content: deadlineTime },
+    {
+      label: t('label.special_instructions'),
+      content: 'Siin on mingi lisainfo.',
+    },
+    { label: t('label.volume'), content: '4h' },
+  ]
 
   if (isLoading) return <Loader loading={isLoading} />
 
   return (
     <Root>
       <div className={classes.taskDetailsContainer}>
-        <span className={classes.taskContainer}>
-          <p className={classes.taskDetails}>{t('my_tasks.start_time')}</p>
-          <p className={classes.taskContent}>{deadlineTime}</p>
-        </span>
-
-        <span className={classes.taskContainer}>
-          <p className={classes.taskDetails}>{t('label.deadline_at')}</p>
-          <p className={classes.taskContent}>{deadlineTime}</p>
-        </span>
-
-        <span className={classes.taskContainer}>
-          <p className={classes.taskDetails}>
-            {t('label.special_instructions')}
-          </p>
-          <p className={classes.taskContent}>Siin on mingi lisainfo.</p>
-        </span>
-
-        <span className={classes.taskContainer}>
-          <p className={classes.taskDetails}>{t('label.volume')}</p>
-          <p className={classes.taskContent}>4h</p>
-        </span>
-
+        {map(taskDetails, ({ label, content, oralTranslation }, index) => (
+          <span
+            className={classes.taskContainer}
+            key={index}
+            // TODO: add check with BE data for oral translation, hidden={!oralTranslation && ?}
+          >
+            <p className={classes.taskDetails}>{label}</p>
+            <p className={classes.taskContent}>{content}</p>
+          </span>
+        ))}
         <span className={classes.taskContainer}>
           <FormInput
-            name="special_instructions"
+            name="my_notes"
             label={t('label.my_notes')}
             ariaLabel={t('label.my_notes')}
             placeholder={t('placeholder.write_here')}
             inputType={InputTypes.Text}
-            className={classes.specialInstructions}
+            labelClassName={classes.myNotesLabel}
             inputContainerClassName={classes.specialInstructions}
             control={control}
+            isTextarea={true}
           />
         </span>
       </div>
@@ -206,7 +206,7 @@ const TaskContent: FC<any> = ({
         className={classes.translationMemories}
         //   hidden={!catSupported}
         control={control}
-        isEditable
+        isEditable={false}
         subOrderId={id}
         subOrderTmKeys={subOrderTmKeys}
         subOrderLangPair={subOrderLangPair}
@@ -214,9 +214,9 @@ const TaskContent: FC<any> = ({
       />
       <div className={classes.grid}>
         <SourceFilesList
-          name="source_files"
-          title={t('orders.source_files')}
-          tooltipContent={t('tooltip.source_files_helper')}
+          name="my_source_files"
+          title={t('my_tasks.my_source_files')}
+          tooltipContent={t('tooltip.my_source_files_helper')}
           control={control}
           openSendToCatModal={openSendToCatModal}
           canGenerateProject={canGenerateProject}
@@ -225,16 +225,16 @@ const TaskContent: FC<any> = ({
           catSetupStatus={catSetupStatus}
           subOrderId={id}
           isEditable
-          // isEditable={isEditable}
         />
         <FinalFilesList
-          name="final_files"
-          title={t('orders.ready_files_from_vendors')}
+          name="my_final_files"
+          title={t('my_tasks.my_ready_files')}
           control={control}
-          isEditable
+          isEditable={false}
           isLoading={isLoading}
           subOrderId={id}
           // isEditable={isEditable}
+          className={classes.myFinalFiles}
         />
         <CatJobsTable
           subOrderId={id}

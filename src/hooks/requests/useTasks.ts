@@ -10,20 +10,18 @@ import useFilters from 'hooks/useFilters'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 
-export const useFetchTasks = () => {
+export const useFetchTasks = (initialFilters?: any) => {
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<any>()
+  } = useFilters<any>(initialFilters)
 
   const { isLoading, isError, data } = useQuery<any>({
-    queryKey: ['tasks'],
-    queryFn: () => {
-      return apiClient.get(`${endpoints.TASKS}`)
-    },
+    queryKey: ['tasks', filters],
+    queryFn: () => apiClient.get(endpoints.TASKS, filters),
     keepPreviousData: true,
   })
 

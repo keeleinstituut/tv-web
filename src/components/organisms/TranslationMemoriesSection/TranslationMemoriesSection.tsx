@@ -212,7 +212,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       },
     }),
     columnHelper.accessor('name', {
-      header: () => t('label.file_name'),
+      header: () => (isEditable ? t('label.file_name') : t('label.tag_name')),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('main_write', {

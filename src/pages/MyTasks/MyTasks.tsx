@@ -26,7 +26,11 @@ const MyTasks: FC = () => {
   let Component: FC = () => null
   switch (activeTab) {
     case 'Minu ülesanded':
+    case 'Ootel ülesanded':
+    case 'Minu ülesannete ajalugu':
       Component = TasksTable
+      break
+    default:
       break
   }
 

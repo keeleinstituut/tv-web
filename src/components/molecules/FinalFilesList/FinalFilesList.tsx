@@ -162,9 +162,12 @@ const FinalFilesList = <TFormValues extends FieldValues>({
 
   const columns = [
     columnHelper.accessor('shared_with_client', {
-      header: () => <span>{t('label.shared_with_client')}</span>,
+      header: () => (
+        <span hidden={!isEditable}>{t('label.shared_with_client')}</span>
+      ),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
+        if (!isEditable) return null
         return (
           <FormInput
             name={`shared_with_client.${getValue()}` as Path<TFormValues>}
@@ -228,32 +231,32 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   ] as ColumnDef<FileRow>[]
 
   // TODO: possibly not needed
-  if (!isEditable) {
-    return (
-      <div className={classes.altFilesContainer}>
-        <h3>{title}</h3>
-        {map(typedValue, (file, index) => {
-          const localFileUrl =
-            file instanceof File ? URL.createObjectURL(file) : ''
-          const fileUrl =
-            'original_url' in file ? file.original_url : localFileUrl
-          const updatedAt =
-            'updated_at' in file
-              ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
-              : ''
-          return (
-            <Fragment key={fileUrl || index}>
-              <label>{file.name}</label>
-              <span>{updatedAt}</span>
-              <BaseButton href={fileUrl} target="_blank" download={file.name}>
-                <DownloadFilled />
-              </BaseButton>
-            </Fragment>
-          )
-        })}
-      </div>
-    )
-  }
+  // if (!isEditable) {
+  //   return (
+  //     <div className={classes.altFilesContainer}>
+  //       <h3>{title}</h3>
+  //       {map(typedValue, (file, index) => {
+  //         const localFileUrl =
+  //           file instanceof File ? URL.createObjectURL(file) : ''
+  //         const fileUrl =
+  //           'original_url' in file ? file.original_url : localFileUrl
+  //         const updatedAt =
+  //           'updated_at' in file
+  //             ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
+  //             : ''
+  //         return (
+  //           <Fragment key={fileUrl || index}>
+  //             <label>{file.name}</label>
+  //             <span>{updatedAt}</span>
+  //             <BaseButton href={fileUrl} target="_blank" download={file.name}>
+  //               <DownloadFilled />
+  //             </BaseButton>
+  //           </Fragment>
+  //         )
+  //       })}
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className={classNames(classes.container, className)}>

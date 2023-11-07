@@ -18,6 +18,7 @@ const ConfirmationModal: FC<ConfirmationModalBaseProps> = ({
   return (
     <ConfirmationModalBase
       {...rest}
+      className={className}
       closeModal={closeModal}
       handleCancel={handleOnCancel}
     />
