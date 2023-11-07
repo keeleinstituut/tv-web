@@ -486,7 +486,6 @@
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
     "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
     "split_assignment": "Ülesanne jagatud"
-
   },
   "notification": {
     "announcement": "Teade",
@@ -665,6 +664,27 @@
     "date_change": "Muudatuse aeg",
     "activity": "Tegevus",
     "department_account_id": "Asutuse konto ID",
-    "result": "Tulemus"
+    "result": "Tulemus",
+    "event_type": {
+      "LOG_IN": "Sisselogimine",
+      "LOG_OUT": "väljalogimine",
+      "SELECT_INSTITUTION": "Asutuse valimine",
+      "CREATE_OBJECT": "Objekti loomine",
+      "MODIFY_OBJECT": "Objekti muutmine",
+      "REMOVE_OBJECT": "Objecti kustutamine",
+      "COMPLETE_ASSIGNMENT": "Ülesande lõpetamine",
+      "FINISH_PROJECT": "Tellimuse lõpetamine",
+      "APPROVE_ASSIGNMENT_RESULT": "Ülesande tulemuse vastuvõtmine",
+      "REJECT_ASSIGNMENT_RESULT": "Ülesande tulemuse tagasilükkamine",
+      "REWIND_WORKFLOW": "Töövoo tagasikerimine",
+      "DISPATCH_NOTIFICATION": "Teatise saatmine",
+      "DOWNLOAD_PROJECT_FILE": "Tellimuse faili allalaadmine",
+      "EXPORT_INSTITUTION_USERS": "Asutuse kasutaja allalaadimine",
+      "EXPORT_PROJECTS_REPORT": "Tellimuse aruande allalaadimine",
+      "EXPORT_TRANSLATION_MEMORY": "Tõlkemälu allalaadmine",
+      "IMPORT_TRANSLATION_MEMORY": "Tõlkemälu üleslaadimine",
+      "SEARCH_LOGS": "Logide otsimine",
+      "EXPORT_LOGS": "Logide allalaadimine"
+    }
   }
 }

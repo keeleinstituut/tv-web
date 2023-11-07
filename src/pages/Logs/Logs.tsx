@@ -18,6 +18,8 @@ import classNames from 'classnames'
 import ToggleTabs from 'components/molecules/ToggleTabs/ToggleTabs'
 import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
 import { ReactComponent as Alarm } from 'assets/icons/alarm.svg'
+import { useEventTypesFetch } from 'hooks/requests/useAuditLogs'
+import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 
 export enum DateTabs {
   Hour = 'hour',
@@ -37,6 +39,8 @@ export type FormValues = {
 
 const Logs: FC = () => {
   const { t } = useTranslation()
+  const { eventTypeFilters = [] } = useEventTypesFetch()
+  const { departmentFilters = [] } = useDepartmentsFetch()
 
   const dateFields: FieldProps<FormValues>[] = [
     {
@@ -60,16 +64,7 @@ const Logs: FC = () => {
       inputType: InputTypes.Selections,
       name: 'logs_department',
       ariaLabel: t('logs.select_department'),
-      options: [
-        { label: 'Option 1', value: 'Option 1' },
-        { label: 'Option 2', value: 'Option 2' },
-        { label: 'Option 3', value: 'Option 3' },
-        { label: 'Option 4', value: 'Option 4' },
-        { label: 'Option 5', value: 'Option 5' },
-        { label: 'Option 6', value: 'Option 6' },
-        { label: 'Option ieruhiruthr7', value: 'Option 7' },
-        { label: 'Option 8985759867', value: 'Option 8' },
-      ],
+      options: departmentFilters,
       placeholder: t('logs.select_department'),
       multiple: true,
       buttons: true,
@@ -81,16 +76,7 @@ const Logs: FC = () => {
       inputType: InputTypes.Selections,
       name: 'logs_activity',
       ariaLabel: t('logs.select_activity'),
-      options: [
-        { label: 'Option 1', value: 'Option 1' },
-        { label: 'Option 2', value: 'Option 2' },
-        { label: 'Option 3', value: 'Option 3' },
-        { label: 'Option 4', value: 'Option 4' },
-        { label: 'Option 5', value: 'Option 5' },
-        { label: 'Option 6', value: 'Option 6' },
-        { label: 'Option ieruhiruthr7', value: 'Option 7' },
-        { label: 'Option 8985759867', value: 'Option 8' },
-      ],
+      options: eventTypeFilters,
       placeholder: t('logs.select_activity'),
       multiple: true,
       buttons: true,

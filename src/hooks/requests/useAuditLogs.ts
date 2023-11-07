@@ -3,8 +3,13 @@ import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
+import i18n from 'i18n/i18n'
 import { map } from 'lodash'
-import { AuditLogPayloadType, AuditLogsResponseDataType } from 'types/auditLogs'
+import {
+  AuditLogPayloadType,
+  AuditLogsResponseDataType,
+  EventTypes,
+} from 'types/auditLogs'
 
 export const useFetchAuditLogs = (initialFilters?: AuditLogPayloadType) => {
   const { filters, handleFilterChange, handlePaginationChange } =
@@ -48,17 +53,17 @@ export const useExportAuditLogsCSV = () => {
   }
 }
 
-export const useEventTypeFilter = () => {
-  const { isLoading, data } = useQuery<string[]>({
-    queryKey: ['eventTypes'],
-    queryFn: () => apiClient.get(endpoints.EVENT_TYPES),
-  })
+export const useEventTypesFetch = () => {
+  //   const { isLoading, data } = useQuery<string[]>({
+  //     queryKey: ['eventTypes'],
+  //     queryFn: () => apiClient.get(endpoints.EVENT_TYPES),
+  //   })
 
-  const eventTypeFilters = map(data, (type) => {
-    return { value: type, label: type }
+  const eventTypeFilters = map(EventTypes, (type) => {
+    return { value: type, label: i18n.t(`logs.event_type.${type}`) }
   })
   return {
     eventTypeFilters,
-    isLoading,
+    // isLoading,
   }
 }
