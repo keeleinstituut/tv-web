@@ -1,0 +1,333 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { endpoints } from 'api/endpoints'
+import { apiClient } from 'api'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import {
+  ExportTMXPayload,
+  ImportTMXPayload,
+  SubOrderTmKeysPayload,
+  SubOrderTmKeysResponse,
+  TmStatsType,
+  TranslationMemoryDataType,
+  TranslationMemoryFilters,
+  TranslationMemoryPayload,
+  TranslationMemoryPostType,
+  TranslationMemoryType,
+} from 'types/translationMemories'
+import { downloadFile } from 'helpers'
+import useFilters from 'hooks/useFilters'
+import { map, flatten, join, omit, pick } from 'lodash'
+import { SubOrdersResponse } from 'types/orders'
+
+dayjs.extend(customParseFormat)
+
+export const useFetchTranslationMemories = (
+  initialFilters?: TranslationMemoryFilters
+) => {
+  const {
+    filters,
+    handleFilterChange,
+    //handlePaginationChange,
+  } = useFilters<TranslationMemoryFilters>(initialFilters)
+
+  const filterWithoutSearch = omit(filters, 'name')
+  const searchValue = pick(filters, 'name')
+  const queryString = join(
+    flatten(
+      map(filterWithoutSearch, (values, key) =>
+        map(values, (value) => (value !== 'all' ? `${key}=${value}` : ''))
+      )
+    ),
+    '&'
+  )
+  const { isLoading, isError, isFetching, data } =
+    useQuery<TranslationMemoryDataType>({
+      queryKey: ['translationMemories', filters],
+      queryFn: () =>
+        apiClient.get(
+          `${endpoints.TRANSLATION_MEMORIES}?${queryString}`,
+          searchValue
+        ),
+      keepPreviousData: true,
+    })
+  //TODO: Pagination is not done from BE side. This comes later
+
+  const {
+    // meta: paginationData,
+    tags: translationMemories,
+  } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    translationMemories,
+    isFetching,
+    // paginationData,
+    handleFilterChange,
+    // handlePaginationChange,
+  }
+}
+
+export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
+  const { isLoading, isError, isFetching, data } =
+    useQuery<TranslationMemoryType>({
+      enabled: !!id,
+      queryKey: ['translationMemories', id],
+      queryFn: () => apiClient.get(`${endpoints.TRANSLATION_MEMORIES}/${id}`),
+    })
+
+  return {
+    isLoading,
+    isError,
+    translationMemory: data,
+    isFetching,
+  }
+}
+
+export const useFetchTmChunkAmounts = () => {
+  const { data } = useQuery<TmStatsType>({
+    queryKey: ['translationMemories-stats'],
+    queryFn: () => apiClient.get(endpoints.TM_STATS),
+  })
+  return {
+    tmChunkAmounts: data?.tag,
+  }
+}
+
+export const useUpdateTranslationMemory = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateTranslationMemory, isLoading } = useMutation({
+    mutationKey: ['translationMemories', id],
+    mutationFn: async (payload: TranslationMemoryPostType) => {
+      return apiClient.post(`${endpoints.TRANSLATION_MEMORIES}/${id}`, {
+        ...payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['translationMemories', id],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: TranslationMemoryDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+      queryClient.refetchQueries({
+        queryKey: ['translationMemories'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    updateTranslationMemory,
+    isLoading,
+  }
+}
+
+export const useCreateTranslationMemory = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: createTranslationMemory, isLoading } = useMutation({
+    mutationKey: ['translationMemories'],
+    mutationFn: (payload: TranslationMemoryPayload) =>
+      apiClient.post(endpoints.TRANSLATION_MEMORIES, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['translationMemories'],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: TranslationMemoryDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = [...previousData, data]
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    createTranslationMemory,
+    isLoading,
+  }
+}
+
+export const useDeleteTranslationMemory = () => {
+  const queryClient = useQueryClient()
+  const { mutate: deleteTranslationMemory, isLoading } = useMutation({
+    mutationKey: ['translationMemories'],
+    mutationFn: (id: string) =>
+      apiClient.delete(`${endpoints.TRANSLATION_MEMORIES}/${id}`),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['translationMemories'],
+        (oldData?: TranslationMemoryDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+      queryClient.refetchQueries({
+        queryKey: ['translationMemories'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    deleteTranslationMemory,
+    isLoading,
+  }
+}
+
+export const useImportTMX = () => {
+  const formData = new FormData()
+  const {
+    mutateAsync: importTMX,
+    isLoading,
+    error,
+  } = useMutation({
+    mutationKey: ['tmx'],
+    mutationFn: async (data: ImportTMXPayload) => {
+      formData.append('file', data.file)
+      formData.append('tag', data.tag)
+      return apiClient.put(endpoints.IMPORT_TMX, formData)
+    },
+  })
+
+  return {
+    importTMX,
+    isLoading,
+    error,
+  }
+}
+
+export const useExportTMX = () => {
+  const { mutateAsync: exportTMX, isLoading } = useMutation({
+    mutationKey: ['tmx'],
+    mutationFn: async (payload: ExportTMXPayload) =>
+      apiClient.post(endpoints.EXPORT_TMX, payload),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'translation_memory.tmx',
+        fileType: 'application/xml',
+      })
+    },
+  })
+  return {
+    isLoading,
+    exportTMX,
+  }
+}
+
+export const useFetchTranslationMemorySubOrders = ({ id }: { id?: string }) => {
+  const { filters, handlePaginationChange } =
+    useFilters<TranslationMemoryFilters>()
+
+  const { isLoading, isError, isFetching, data } = useQuery<SubOrdersResponse>({
+    enabled: !!id,
+    queryKey: ['tm-subOrders', id],
+    queryFn: () => apiClient.get(`${endpoints.TM_SUB_PROJECTS}/${id}`, filters),
+  })
+
+  const { meta: paginationData, data: subOrders } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    subOrders,
+    isFetching,
+    paginationData,
+    handlePaginationChange,
+  }
+}
+
+export const useFetchSubOrderTmKeys = ({ id }: { id?: string }) => {
+  const { isLoading, isError, isFetching, data } =
+    useQuery<SubOrderTmKeysResponse>({
+      enabled: !!id,
+      queryKey: ['subOrder-tm-keys', id],
+      queryFn: () => apiClient.get(`${endpoints.TM_KEYS}/${id}`),
+    })
+
+  return {
+    isLoading,
+    isError,
+    subOrderTmKeys: data?.data || [],
+    isFetching,
+  }
+}
+
+export const useUpdateSubOrderTmKeys = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateSubOrderTmKeys, isLoading } = useMutation({
+    mutationKey: ['subOrder-tm-keys'],
+    mutationFn: async (payload: SubOrderTmKeysPayload) => {
+      return apiClient.post(endpoints.UPDATE_TM_KEYS, {
+        ...payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['subOrder-tm-keys'],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: SubOrderTmKeysResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+      queryClient.refetchQueries({
+        queryKey: ['subOrder-tm-keys'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    updateSubOrderTmKeys,
+    isLoading,
+  }
+}
+export const useToggleTmWritable = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: toggleTmWritable, isLoading } = useMutation({
+    mutationKey: ['tm-writable'],
+    mutationFn: async (payload: SubOrderTmKeysPayload) => {
+      return apiClient.put(
+        `${endpoints.TOGGLE_TM_WRITABLE}/${payload.id}`,
+        omit(payload, 'id')
+      )
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['tm-writable'],
+        // TODO: possibly will start storing all arrays as objects
+        // if we do, then this should be rewritten
+        (oldData?: SubOrderTmKeysResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+      queryClient.refetchQueries({
+        queryKey: ['subOrder-tm-keys'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    toggleTmWritable,
+    isLoading,
+  }
+}

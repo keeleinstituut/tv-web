@@ -22,7 +22,7 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
   errorZIndex,
   wrapperRef,
 }) => {
-  const isVisible = !message && type !== 'required'
+  const isVisible = !!message || type === 'required'
   const { left, top } =
     useElementPosition({
       ref: wrapperRef,
@@ -30,7 +30,7 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
     }) || {}
 
   const { t } = useTranslation()
-  if (!message && type !== 'required') return null
+  if (!isVisible) return null
   const messageToShow = message || t('error.required')
   return (
     <div

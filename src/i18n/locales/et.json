@@ -40,10 +40,11 @@
     "type": "Tüüp",
     "tags": "Sildid",
     "order_tags": "Tellimuse sildid",
+    "vendor_tags": "Teostaja sildid",
     "user_activation_notification": "Soovin teavitada kasutajat konto aktiveerimisest",
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
-    "add_remove_vendor": "Lisa/eemalda toestajad",
+    "add_remove_vendor": "Lisa/eemalda teostajad",
     "view": "Vaata",
     "search": "Otsi",
     "updated": "UUENDATUD",
@@ -55,15 +56,17 @@
     "special_instructions": "Erijuhised tellimuse kohta",
     "start_date": "Algus",
     "start_time": "Alguse kellaaeg",
-    "source_language": "Algkeel",
+    "source_language": "Lähtekeel",
     "destination_language": "Sihtkeel",
     "file_type": "Failitüüp",
     "added": "Lisatud",
     "sub_order_id": "Alamtellimuse ID",
+    "related_suborders": "Seotud alamtellimused",
     "associated_reference_number": "Seotud viide",
     "comment": "Kommentaar",
     "cancelled_at": "Tühistamise aeg",
     "created_at": "Loomise aeg",
+    "created": "Loodud",
     "rejected_at": "Tühistamise aeg",
     "corrected_at": "Korrektuuride tegemise aeg",
     "accepted_at": "Vastuvõtmise aeg",
@@ -79,6 +82,7 @@
     "chunks": "Segmendid",
     "match_type": "Vaste tüüp",
     "cat_split_amount": "Tükkide arv",
+    "usage": "Kasutus",
     "translation_tool": "Tõlke tööriist",
     "machine_translation": "Masintõlge",
     "yes": "Jah",
@@ -92,7 +96,10 @@
     "page_fee": "Lehekülg",
     "minute_fee": "Minut",
     "hour_fee": "Tund",
+    "view_general_price_list": "Vaata koondhinnakirja",
     "minimal_fee": "Minimaalne",
+    "min_fee": "Min tasu",
+    "search_by_name_here": "Otsi nime järgi siit...",
     "vendor_comments": "Teostaja märkused",
     "volume": "Maht",
     "pick_volume_type": "Vali mahu lisamise viis",
@@ -108,7 +115,11 @@
     "enter_discount_percentage": "Sisesta allahindluse protsent",
     "total": "Kokku",
     "assign_source_file": "Määra lähtefail",
-    "search_by_id": "Otsi tellimuse ID siit..."
+    "search_by_id": "Otsi tellimuse ID siit...",
+    "last_imported": "Viimati imporditud",
+    "chunk_amount_old": "Segmentide arv",
+    "id": "ID",
+    "owner": "Omanik"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -121,6 +132,7 @@
     "empty_list": "Hetkel valikud puuduvad",
     "search": "Otsi...",
     "search_by_name": "Otsi nime järgi siit...",
+    "search_by_tm_name": "Otsi mälu nimetuse järgi siit...",
     "pick": "Vali",
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
@@ -173,8 +185,13 @@
     "add_file": "Lisa fail",
     "submit_order": "Esita tellimus",
     "delete": "Kustuta",
-    "add_new_file": "Lisa uus fail",
     "edit": "Redigeeri",
+    "add_translation_memory": "Lisa tõlkemälu",
+    "create_translation_memory": "Loo tõlkemälu",
+    "export": "Ekspordi",
+    "import_tmx": "Impordi .tmx",
+    "delete_translation_memory": "Kustuta tõlkemälu",
+    "add_new_file": "Lisa uus fail",
     "generate_for_translation": "Genereeri tõlkimiseks",
     "create_empty_tm": "Loo tühimälu",
     "add_tm": "Lisa tõlkemälud",
@@ -184,6 +201,7 @@
     "download_analysis": "Laadi analüüs alla",
     "split_file": "Jaga fail tükkideks",
     "confirm": "Kinnita",
+    "confirm_changes": "Kinnita muudatused",
     "download_xliff": "Laadi alla XLIFF",
     "download_ready_translation": "Laadi alla valmis tõlge",
     "join_files": "Ühenda failid kokku",
@@ -210,7 +228,11 @@
     "tag_input_char_error": "Lubatud on tähed (a-z), numbrid (0-9), tühik ja sidekriips",
     "tag_input_first_char_error": "Tühik või sidekriips pole lubatud esimese tähemärgina",
     "discount_number": "Soodustus võib olla vahemikus 0-100",
-    "cant_merge_files": "Teostajate vahel jagatud faile ei ole võimalik kokku liita"
+    "cant_merge_files": "Teostajate vahel jagatud faile ei ole võimalik kokku liita",
+    "cant_split_files": "Teostajatele jagatud faile ei ole võimalik tükkideks jagada",
+    "invalid_price": "Lubatud on ainult numbrid ja punkt",
+    "name_input_length": "Nime maksimaalne pikkus võib olla kuni 100 tähemärki",
+    "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -242,7 +264,11 @@
     "checked": "Valitud"
   },
   "header": {
-    "my_role": "Minu roll:"
+    "my_role": "Minu roll:",
+    "language": "Keel:"
+  },
+  "language_option": {
+    "estonian": "EST"
   },
   "roles": {
     "roles_management": "Rollihaldus",
@@ -283,6 +309,7 @@
     "EXPORT_TM": "Asutuse tõlkemälu eksport",
     "DELETE_TM": "Asutuse tõlkemälu eemaldamine",
     "EDIT_TM_METADATA": "Asutuse tõlkemälu andmete muutmine",
+    "EDIT_TM": "Asutuse tõlkemälu muutmine",
     "VIEW_TM": "Asutuse tõlkemälude vaatamine",
     "CREATE_PROJECT": "Tellimuse lisamine",
     "MANAGE_PROJECT": "Tõlketellimuse korraldamine",
@@ -362,7 +389,8 @@
       "ACTIVE": "Aktiivne",
       "DEACTIVATED": "Deaktiveeritud",
       "ARCHIVED": "Arhiveeritud"
-    }
+    },
+    "account": "Minu andmed"
   },
   "users": {
     "add_users": "Kasutajate lisamine",
@@ -371,10 +399,40 @@
   },
   "vendors": {
     "vendors_database": "Teostajate andmebaas",
+    "vendor_price_list_title": "Hinnakiri",
+    "add_language_directions": "Lisa keelesuund",
+    "add_language_pairs": "Vali keelepaarid",
+    "add_skills": "Lisa oskused",
+    "add_price_list": "Lisa hinnakiri",
+    "choose_language_pairs": "Teostajale keelepaaride valimine",
+    "choose_skills": "Teostajale oskuste valimine",
+    "set_price_list": "Keelepaaridele hinnakirja määramine",
+    "language_pairs_helper_text": "Valida saab ühe lähtekeele ja ühe või mitu sihtkeelt. Valides rohkem kui ühe sihtkeele tuleb arvestada, et valitud keeltele saad sisestada ühed ja samad hinnad. Kui soovid igale keelepaarile sisestada erinevad ühiku hinnad, siis tuleb iga keelepaar sisestada eraldi.",
+    "skills_helper_text": "Määra teostaja oskused, millele soovid ühikuhinnad lisada.",
+    "price_list_helper_text": "Määra oskusele ühikupõhised hinnad. Juhul, kui mõnda arvestusühikut selle teostaja puhul ei kasutata või puudub kokkulepitud hind, siis võib jätta selle ühiku hinnaks nulli.",
+    "source_language": "Lähtekeel",
+    "destination_language": "Sihtkeel",
+    "prices": "Hinnad",
+    "eur": "EUR",
+    "skill": "Oskus",
+    "character_fee": "Tähemärk",
+    "word_fee": "Sõna",
+    "page_fee": "Lehekülg",
+    "minute_fee": "Minut",
+    "hour_fee": "Tund",
+    "minimal_fee": "Min tasu",
+    "language_direction": "Keelesuund",
+    "edit_language_pair": "Muuda keelesuunda",
+    "delete": "Kustuta keelesuund",
     "analysis_based_discount": "Analüüsipõhine soodustus",
     "repetitions": "Kordused",
     "match_type": "Vaste tüüp",
     "percent_from_price": "% hinnast",
+    "price_list_created": "Hinnakiri loodud {{priceListCreated}}",
+    "price_list_updated_at": "Hinnakirja andmeid muudetud {{priceListUpdated}}",
+    "price_list_change": "Hinnakirja muutmine",
+    "price_list_change_description": "Määra oskusele ühikupõhised hinnad. Juhul, kui mõnda arvestusühikut selle teostaja puhul ei kasutata või puudub kokkulepitud hind, siis võib jätta selle ühiku hinnaks nulli.",
+    "price_list": "Koondhinnakiri",
     "vendor": "Teostaja"
   },
   "file": {
@@ -385,31 +443,50 @@
   },
   "success": {
     "role_created": "Roll „{{roleName}}“ on edukalt loodud ja privileegid lisatud.",
-    "role_updated": "Roll „{{roleName}}“ on edukalt muudetud",
-    "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud",
+    "role_updated": "Roll „{{roleName}}“ on edukalt muudetud.",
+    "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud.",
     "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
-    "institution_updated": "Asutuse andmed on edukalt muudetud",
+    "institution_updated": "Asutuse andmed on edukalt muudetud.",
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
     "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",
     "user_archived": "Kasutaja „{{name}}“ on edukalt arhiveeritud.",
     "tag_added": "Silt on edukalt lisatud.",
+    "order_created": "Tellimus on edukalt loodud.",
+    "language_pairs_prices_added": "Keelepaari(de) hinnakiri on edukalt loodud.",
+    "language_pairs_prices_updated": "Keelepaari(de) hinnakiri on edukalt uuendatud.",
+    "language_pairs_prices_deleted": "Keelepaari(de) hinnakiri on edukalt kustutatud.",
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "department_changed": "Üksus {{name}} edukalt uuendatud",
     "department_updated": "Üksused edukalt uuendatud",
-    "order_created": "Tellimus on edukalt loodud",
     "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
     "order_updated": "Tellimus on edukalt uuendatud",
+    "translation_memories_created": "Tõlkemälud on edukalt lisatud",
+    "translation_memory_created": "Tõlkemälu on edukalt lisatud",
+    "translation_memory_updated": "Tõlkemälu on edukalt uuendatud",
+    "translation_memory_import": "Tõlkemälu on edukalt üles laetud",
+    "translation_memory_export": "Tõlkemälu on edukalt alla laetud",
+    "translation_memory_deleted": "Tõlkemälu on edukalt kustutatud",
+    "volume_added": "Mahu edukalt lisatud",
+    "volume_edited": "Mahu edukalt muudetud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
+    "file_merge_success": "Fail on edukalt ühendatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
+    "vendors_removed_from_task": "Teostajad edukalt eemaldatud ülesande külge!",
     "vendors_created_removed": "Teostajad edukalt lisatud/eemaldatud",
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
-    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!"
+    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
+    "machine_translation": "Masintõlke lisamise eelistus muudetud.",
+    "final_files_changed": "Valmisfailid muudetud",
+    "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
+    "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
+    "split_assignment": "Ülesanne jagatud"
+
   },
   "notification": {
     "announcement": "Teade",
@@ -419,7 +496,10 @@
     "main_user_privilege_change": "Peakasutaja privileege ei saa muuta",
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
     "warning": "Hoiatus",
-    "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida"
+    "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida",
+    "tm_import_failed": "Tõlkemälu segmendi üleslaadimine ebaõnnestus",
+    "tm_export_failed": "Tõlkemälu segmendi allalaadimine ebaõnnestus",
+    "tm_delete_failed": "Tõlkemälu kustutamine ebaõnnestus"
   },
   "helper": {
     "csv_upload_helper": "CSV lisamisel tuleb väljad eraldada semikooloniga.",
@@ -442,8 +522,10 @@
     "main_write_helper": "„Peamine/Kirjuta“ mällu salvestatakse selle alamtellimuse tõlkesegmendid.",
     "source_files_in_translation_tool_helper": "Lähtefail(id), mis on tõlketööriistas tõlkimiseks segmenteeritud (XLIFF fail).",
     "selected_translation_memory": "Valitud masintõlkemootor: {{memory}}",
+    "vacation_days": "Rohelisega on tähistatud tööpäevad ja sinisega puhkepäevad ja puhkus.",
     "clear_price_filters": "Teostajate valimise tabel on eelfiltreeritud alamtellimuse keelesuuna ja ülesande oskuse järgi. Vajutades “Eemalda kõik filtrid” kuvame kogu teostajate andmebaasi hinnakirja",
-    "skill_language_mismatch": "Oskus ja keelesuund ei vasta ülesandele, antud hinnakirja ei rakendata"
+    "skill_language_mismatch": "Oskus ja keelesuund ei vasta ülesandele, antud hinnakirja ei rakendata",
+    "split_task": "Soovi korral saab ülesande jagada mitme teostaja vahel. Klõpsates nupule „+ jaga ülesanne“, lisatakse ülesandele juurde veel üks teostaja."
   },
   "tag": {
     "tag_management": "Sildid",
@@ -468,6 +550,7 @@
   },
   "orders": {
     "orders_tile": "Tellimused",
+    "order": "Tellimus",
     "new_order_title": "Tellimuse lisamine",
     "client_details": "Tellija andmed",
     "manager_details": "Tõlkekorraldaja andmed",
@@ -505,6 +588,8 @@
     "feedback_files": "Tagasiside failid",
     "ready_files_from_vendors": "Valmisfailid teostajatelt",
     "generate_for_translation_helper": "Failide tõlketööriistas tõlkimiseks toimi järgmiselt: vali tõlkemälu(d); märgi linnukestega failid, mida soovid tõlkida; klõpsa nupule „Genereeri tõlkimiseks“.",
+    "generating_project_in_progress": "Failide genereerimine on töös",
+    "generating_project_failed": "Failide genereerimine ebaõnnestus",
     "source_files_in_translation_tool": "Lähtefailid tõlketööriistas"
   },
   "translation_memory": {
@@ -521,7 +606,11 @@
       "tm_50_74": "50-74%",
       "tm_0_49": "0-49%"
     },
-    "analyzed_word_count": "Analüüsitud sõnu kokku: {{wordCount}}"
+    "analyzed_word_count": "Analüüsitud sõnu kokku: {{wordCount}}",
+    "selecting_tm": "Tõlkemälude valimine",
+    "selecting_tm_amount": "Alamtellimusele saab lisada kuni 10 tõlkemälu.",
+    "public_confirmation": "Kinnitan, et soovin salvestada tõlked avalikku mällu.",
+    "public_confirmation_help_text": "Mälu tähisega „Avalik“ on jagatud kõikide Tõlkevärava kasutajatega, seda mälu ja sellesse salvestatud tõlkesegmente näevad ja saavad tõlkimisel kasutada ka asutusevälised kasutajad."
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",
@@ -529,6 +618,21 @@
     "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja",
     "no_changes_made": "Andmetes puuduvad muudatused",
     "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobiva(d) teostaja(d) valinud."
+  },
+  "translation_memories": {
+    "memory_title": "Mälu nimetus",
+    "memory_name": "Mälu nimi",
+    "memory_details": "Tõlkemälu andmed",
+    "new_translation_memory_title": "Tõlkemälu loomine",
+    "helper_text": "Kui valid „Avalik“ või „Asutustega jagamiseks“, siis seda mälu jagatakse ka asutuseväliste kasutajatega.",
+    "confirmation_text": "Kas oled kindel, et soovid tõlkemälu muuta avalikuks?",
+    "confirmation_help_text": "Kui otsustad määrata tõlkemälu kasutamise tüübiks 'Avalik' või 'Asutuse üleseks jagamiseks', siis seda mälu ja selles olevaid tõlkesegmente näevad ja saavad tõlkimisel kasutad ka asutusevälised kasutajad.",
+    "delete_confirmation_text": "Kas oled kindel, et soovid tõlkemälu kustutada?",
+    "status": {
+      "private": "Asutuse sisene",
+      "shared": "Asutustega jagamiseks",
+      "public": "Avalik"
+    }
   },
   "task": {
     "vendor_title": "Teostaja {{number}}",

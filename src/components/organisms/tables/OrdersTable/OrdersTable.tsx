@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, uniq, includes, find, omit } from 'lodash'
+import { map, uniq, includes, find } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -39,7 +39,7 @@ type OrderTableRow = {
   type: string
   status: OrderStatus
   tags: string[]
-  cost: string
+  price: string
   language_directions: string[]
 }
 
@@ -86,7 +86,7 @@ const OrdersTable: FC = () => {
           type_classifier_value,
           status,
           tags,
-          cost,
+          price,
         }) => {
           return {
             ext_id,
@@ -94,8 +94,8 @@ const OrdersTable: FC = () => {
             deadline_at,
             type: type_classifier_value?.value || '',
             status,
-            tags,
-            cost,
+            tags: map(tags, (value) => value?.name || ''),
+            price,
             language_directions: uniq(
               map(
                 sub_projects,
@@ -122,8 +122,10 @@ const OrdersTable: FC = () => {
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     (payload) => {
       handleFilterChange({
-        // TODO: won't omit this later
-        ...omit(payload, 'only_show_personal_projects'),
+        ...payload,
+        only_show_personal_projects: payload?.only_show_personal_projects
+          ? 1
+          : 0,
       })
     },
     [handleFilterChange]
@@ -199,7 +201,7 @@ const OrdersTable: FC = () => {
       footer: (info) => info.column.id,
       cell: ({ getValue }) => <OrderStatusTag status={getValue()} />,
     }),
-    columnHelper.accessor('cost', {
+    columnHelper.accessor('price', {
       header: () => t('label.cost'),
       footer: (info) => info.column.id,
       meta: {

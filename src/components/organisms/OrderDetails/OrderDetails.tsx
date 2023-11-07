@@ -33,6 +33,7 @@ import ExpandableContentContainer from 'components/molecules/ExpandableContentCo
 import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
+import { TagTypes } from 'types/tags'
 
 export enum OrderDetailModes {
   New = 'new',
@@ -97,8 +98,8 @@ const FormButtons: FC<FormButtonsProps> = ({
 interface FormValues {
   deadline_at: { date?: string; time?: string }
   type_classifier_value_id: string
-  client_user_institution_id: string
-  translation_manager_user_institution_id: string
+  client_institution_user_id: string
+  manager_institution_user_id: string
   reference_number?: string
   source_language_classifier_value_id: string
   destination_language_classifier_value_ids: string[]
@@ -110,6 +111,7 @@ interface FormValues {
   // TODO: Not sure about the structure of following
   comments?: string
   ext_id?: string
+  tags?: TagTypes[]
 }
 
 interface OrderDetailsProps {
@@ -169,10 +171,10 @@ const OrderDetails: FC<OrderDetailsProps> = ({
 
     return {
       type_classifier_value_id: type_classifier_value?.id,
-      client_user_institution_id: isNew
+      client_institution_user_id: isNew
         ? institutionUserId
         : client_institution_user?.id,
-      translation_manager_user_institution_id: manager_institution_user?.id,
+      manager_institution_user_id: manager_institution_user?.id,
       reference_number,
       source_files: isNew ? [] : source_files,
       help_files: isNew ? [] : help_files,
@@ -215,10 +217,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     defaultValues: defaultValues,
   })
 
-  const {
-    client_user_institution_id,
-    translation_manager_user_institution_id,
-  } = watch()
+  const { client_institution_user_id, manager_institution_user_id } = watch()
 
   const mapOrderValidationErrors = useCallback(
     (errorData: ValidationError) => {
@@ -278,8 +277,8 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       event_start_at: startObject,
       source_files,
       help_files,
-      client_user_institution_id,
-      translation_manager_user_institution_id,
+      client_institution_user_id,
+      manager_institution_user_id,
       reference_number,
       source_language_classifier_value_id,
       destination_language_classifier_value_ids,
@@ -287,6 +286,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       translation_domain_classifier_value_id,
       comments,
       type_classifier_value_id,
+      tags,
       ...rest
     }) => {
       // TODO: need to go over all of this once it's clear what can be updated and how
@@ -301,14 +301,15 @@ const OrderDetails: FC<OrderDetailsProps> = ({
         deadline_at,
         source_files: source_files as File[],
         help_files: help_files as File[],
-        client_user_institution_id,
-        translation_manager_user_institution_id,
+        client_institution_user_id,
+        manager_institution_user_id,
         reference_number,
         source_language_classifier_value_id,
         destination_language_classifier_value_ids,
         help_file_types,
         translation_domain_classifier_value_id,
         comments,
+        ...(!isNew ? { tags } : {}),
         ...(event_start_at ? { event_start_at } : {}),
       }
       if (isNew) {
@@ -370,7 +371,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
           <PersonSection
             type={PersonSectionTypes.Client}
             control={control}
-            selectedUserId={client_user_institution_id}
+            selectedUserId={client_institution_user_id}
             isNew={isNew}
             isEditable={
               includes(userPrivileges, Privileges.ChangeClient) &&
@@ -381,7 +382,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
           <PersonSection
             type={PersonSectionTypes.Manager}
             control={control}
-            selectedUserId={translation_manager_user_institution_id}
+            selectedUserId={manager_institution_user_id}
             isNew={isNew}
             isEditable={isEditableBySomeone && isEditable}
           />
@@ -393,6 +394,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             isEditable={isEditableBySomeone && isEditable}
           />
           <OrderFilesSection
+            orderId={order?.id}
             control={control}
             isEditable={isEditableBySomeone && isEditable}
           />

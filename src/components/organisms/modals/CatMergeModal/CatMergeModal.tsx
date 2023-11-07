@@ -1,23 +1,40 @@
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import ConfirmationModalBase, {
   ConfirmationModalBaseProps,
 } from 'components/organisms/modals/ConfirmationModalBase/ConfirmationModalBase'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
-
-// TODO: this is WIP code for suborder view
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { useMergeCatJobs } from 'hooks/requests/useOrders'
+import { closeModal } from '../ModalRoot'
 
 export interface CatMergeModalProps
   extends Omit<ConfirmationModalBaseProps, 'handleProceed'> {
-  handleMerge?: () => void
+  subOrderId?: string
 }
 
-const CatMergeModal: FC<CatMergeModalProps> = ({
-  modalContent,
-  handleMerge,
-  ...rest
-}) => {
+const CatMergeModal: FC<CatMergeModalProps> = ({ subOrderId, ...rest }) => {
   const { t } = useTranslation()
+  const { mergeCatJobs } = useMergeCatJobs()
+
+  const handleMerge = useCallback(async () => {
+    const payload = {
+      sub_project_id: subOrderId || '',
+    }
+    try {
+      await mergeCatJobs(payload)
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.file_merge_success'),
+      })
+      closeModal()
+    } catch (errorData) {
+      // error message comes from api errorHandles
+    }
+  }, [mergeCatJobs, subOrderId, t])
+
   return (
     <ConfirmationModalBase
       {...rest}

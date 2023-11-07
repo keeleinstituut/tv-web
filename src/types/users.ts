@@ -35,7 +35,7 @@ export interface UserType {
   updated_at?: string
   deactivation_date?: string
   archived_at?: string
-  department?: Department
+  department?: Department | null
   id: string
   // TODO: department type not clear yet, needs to be added here
   email?: string

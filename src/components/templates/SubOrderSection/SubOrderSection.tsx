@@ -11,8 +11,9 @@ import {
   map,
   toLower,
   find,
-  filter,
   findIndex,
+  uniqBy,
+  sortBy,
 } from 'lodash'
 import { ListSubOrderDetail, SubProjectFeatures } from 'types/orders'
 import { useTranslation } from 'react-i18next'
@@ -28,6 +29,7 @@ import useHashState from 'hooks/useHashState'
 import Button from 'components/molecules/Button/Button'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { ClassifierValue } from 'types/classifierValues'
 
 // TODO: this is WIP code for suborder view
 
@@ -49,14 +51,14 @@ const Column: FC<PropsWithChildren<ColumnProps>> = ({ label, children }) => (
 interface LeftComponentProps {
   languageDirection?: string
   ext_id: string
-  cost?: string
+  price?: string
   deadline_at?: string
 }
 
 const LeftComponent: FC<LeftComponentProps> = ({
   languageDirection,
   ext_id,
-  cost,
+  price,
   deadline_at,
 }) => {
   const { t } = useTranslation()
@@ -69,7 +71,7 @@ const LeftComponent: FC<LeftComponentProps> = ({
         <span className={classes.valueText}>{ext_id}</span>
       </Column>
       <Column label={t('label.cost')}>
-        <span className={classes.boldValueText}>{cost || '-'}</span>
+        <span className={classes.boldValueText}>{price || '-'}</span>
       </Column>
       <Column label={t('label.deadline_at')}>
         <span className={classes.valueText}>
@@ -86,11 +88,12 @@ type SubOrderProps = Pick<
   | 'ext_id'
   | 'source_language_classifier_value'
   | 'destination_language_classifier_value'
-  | 'cost'
+  | 'price'
   | 'status'
   | 'deadline_at'
 > & {
   projectDeadline?: string
+  projectDomain?: ClassifierValue
 }
 
 const SubOrderSection: FC<SubOrderProps> = ({
@@ -98,10 +101,11 @@ const SubOrderSection: FC<SubOrderProps> = ({
   ext_id,
   source_language_classifier_value,
   destination_language_classifier_value,
-  cost,
+  price,
   status,
   projectDeadline,
   deadline_at,
+  projectDomain,
 }) => {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<string | undefined>(
@@ -133,19 +137,21 @@ const SubOrderSection: FC<SubOrderProps> = ({
     }
   }, [currentHash, ext_id, attemptScroll, isExpanded])
 
-  const { features = [], assignments = [] } = subOrder || {}
+  const { assignments = [] } = subOrder || {}
 
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
-  // TODO: possibly we can just check the entire assignments list and see if any of them has no assigned_vendor_id
-  // However not sure right now, if the "assignments" list will contain entries for unassigned tasks
-  const hasAnyUnassignedFeatures = !find(features, (feature) => {
-    const correspondingAssignments = filter(assignments, { feature })
-    // TODO: potentially also have to return true, if correspondingAssignments is empty
-    return find(
-      correspondingAssignments,
-      ({ assigned_vendor_id }) => !assigned_vendor_id
-    )
+  const hasAnyUnassignedFeatures = !find(
+    assignments,
+    ({ assignee }) => !assignee
+  )
+
+  const tabs = map(assignments, ({ job_definition }) => {
+    return {
+      id: job_definition.id,
+      job_key: job_definition.job_key,
+      cat_tool_enabled: job_definition.linking_with_cat_tool_jobs_enabled,
+    }
   })
 
   const handleOpenContainer = useCallback(
@@ -169,17 +175,35 @@ const SubOrderSection: FC<SubOrderProps> = ({
     }
   }, [startSubOrderWorkflow, t])
 
-  // TODO: not sure if GeneralInformation should be considered a feature here or just added
+  const uniqueAssignments = uniqBy(tabs, 'id')
+
   const availableTabs = compact(
-    map(features, (feature) => {
+    map(uniqueAssignments, (feature) => {
       if (feature) {
+        const catToolName = feature.cat_tool_enabled ? '(CAT)' : ''
         return {
-          id: feature,
-          // TODO: need to add (CAT) to end of some feature names
-          name: `${t(`orders.features.${feature}`)}`,
+          key: feature.id,
+          id: feature.job_key,
+          name: `${t(`orders.features.${feature.job_key}`)}${catToolName}`,
         }
       }
     })
+  )
+
+  const orderMapping: {
+    job_translation: number
+    job_revision: number
+    job_overview: number
+    [key: string]: number
+  } = {
+    job_translation: 1,
+    job_revision: 2,
+    job_overview: 3,
+  }
+
+  const sortedAvailableTabs = sortBy(
+    availableTabs,
+    (tab) => orderMapping[tab.id]
   )
 
   const allTabs = [
@@ -187,7 +211,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
       id: 'general_information',
       name: t('orders.features.general_information'),
     },
-    ...availableTabs,
+    ...sortedAvailableTabs,
   ]
 
   if (isLoading) return <Loader loading={isLoading} />
@@ -237,7 +261,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
         </>
       }
       leftComponent={
-        <LeftComponent {...{ ext_id, deadline_at, cost, languageDirection }} />
+        <LeftComponent {...{ ext_id, deadline_at, price, languageDirection }} />
       }
     >
       <Tabs
@@ -253,6 +277,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
       <Feature
         subOrder={subOrder}
         projectDeadline={projectDeadline}
+        projectDomain={projectDomain}
         feature={activeTab as SubProjectFeatures}
         index={findIndex(allTabs, (tab) => {
           return tab.id === activeTab

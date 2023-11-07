@@ -1,0 +1,6 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.progressBarHelperText p {
+  max-width: 45%;
+}

@@ -1,8 +1,9 @@
 import { FC } from 'react'
-import { includes, filter, isEmpty } from 'lodash'
+import { includes, filter, isEmpty, map } from 'lodash'
 import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
 import MainFeature from './MainFeature/MainFeature'
+import { ClassifierValue } from 'types/classifierValues'
 // TODO: this is WIP code for suborder view
 
 interface FeatureProps {
@@ -10,9 +11,10 @@ interface FeatureProps {
   feature?: SubProjectFeatures
   index?: number
   projectDeadline?: string
+  projectDomain?: ClassifierValue
 }
 
-const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
+const Feature: FC<FeatureProps> = ({ feature, subOrder, projectDomain }) => {
   let Component = null
 
   switch (feature) {
@@ -33,17 +35,33 @@ const Feature: FC<FeatureProps> = ({ feature, subOrder }) => {
     return <></>
   }
 
+  const filteredAssignments = filter(
+    subOrder.assignments,
+    ({ job_definition }) => feature === job_definition.job_key
+  )
+
+  const cat_assignments = filter(
+    subOrder.assignments,
+    ({ job_definition }) => job_definition.linking_with_cat_tool_jobs_enabled
+  )
+
+  const cat_features = map(
+    cat_assignments,
+    ({ job_definition }) => job_definition.job_key
+  )
+
   return (
     <Component
       {...subOrder}
       catSupported={
         feature === SubProjectFeatures.GeneralInformation
-          ? !isEmpty(subOrder.cat_features)
-          : includes(subOrder.cat_features, feature)
+          ? !isEmpty(cat_features)
+          : includes(cat_features, feature)
       }
       subOrderId={subOrder.id}
+      projectDomain={projectDomain}
       feature={feature}
-      assignments={filter(subOrder.assignments, { feature })}
+      assignments={filteredAssignments}
     />
   )
 }

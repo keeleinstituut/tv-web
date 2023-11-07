@@ -1,4 +1,4 @@
-import { ReactNode, RefObject, forwardRef } from 'react'
+import { ReactNode, RefObject, forwardRef, useRef } from 'react'
 import { Field, Label } from '@radix-ui/react-form'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
@@ -34,6 +34,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
     },
     ref
   ) {
+    const wrapperRef = useRef(null)
     return (
       <Field
         name={name}
@@ -43,6 +44,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
             ? paginationLabelClassName
             : classes.container
         )}
+        ref={wrapperRef}
       >
         <Label
           htmlFor={name}
@@ -54,7 +56,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
           {children}
           <InputError
             {...omit(error, 'ref')}
-            wrapperRef={ref as RefObject<HTMLElement>}
+            wrapperRef={wrapperRef as RefObject<HTMLElement>}
             className={errorClass}
             errorZIndex={errorZIndex}
           />

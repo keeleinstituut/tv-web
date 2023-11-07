@@ -2,16 +2,12 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   map,
   includes,
-  filter,
-  toLower,
   some,
-  find,
   compact,
   isEmpty,
   split,
   join,
   toNumber,
-  reduce,
   debounce,
 } from 'lodash'
 import ModalBase, {
@@ -63,20 +59,20 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const initialFilters = {
     statuses: [UserStatus.Active],
   }
-  const { users, paginationData, handlePaginationChange, handleOnSearch } =
+  const { users, paginationData, handlePaginationChange, handleFilterChange } =
     useFetchUsers(initialFilters, true)
 
   const resetSearch = () => {
     setSearchValue('')
-    handleOnSearch({ fullname: '' })
+    handleFilterChange({ fullname: '' })
   }
 
   const handleSearch = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      handleOnSearch({ fullname: event.target.value })
+      debounce(handleFilterChange, 300)({ fullname: event.target.value })
     },
-    [handleOnSearch]
+    [handleFilterChange]
   )
 
   const usersData = useMemo(() => {
@@ -93,9 +89,21 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     )
   }, [users])
 
-  const { control, handleSubmit, reset, setError } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { isSubmitSuccessful },
+  } = useForm<FormValues>({
     mode: 'onChange',
   })
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset({})
+    }
+  }, [isSubmitSuccessful, reset])
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const newVendorsPayload = compact(

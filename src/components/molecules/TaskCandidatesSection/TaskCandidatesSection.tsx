@@ -13,14 +13,18 @@ import { AssignmentStatus, AssignmentType } from 'types/assignments'
 
 import classes from './classes.module.scss'
 import { SubProjectFeatures } from 'types/orders'
+import { useAssignmentRemoveVendor } from 'hooks/requests/useAssignments'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from '../Notification/Notification'
 
 type TaskCandidatesSectionProps = Pick<
   AssignmentType,
+  | 'id'
   | 'assigned_vendor_id'
   | 'candidates'
-  | 'assignee_id'
+  | 'assignee'
   | 'finished_at'
-  | 'feature'
+  | 'job_definition'
 > & {
   className?: string
 }
@@ -36,25 +40,30 @@ interface CandidateRow {
 const columnHelper = createColumnHelper<CandidateRow>()
 
 const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
+  id,
   assigned_vendor_id,
   candidates,
-  assignee_id,
+  assignee,
   finished_at,
   className,
-  feature,
+  job_definition,
 }) => {
   const { t } = useTranslation()
 
   const getCandidateStatus = useCallback(
     (vendor_id: string) => {
-      if (!assignee_id) return AssignmentStatus.ForwardedToVendor
+      if (!assignee?.id) return AssignmentStatus.ForwardedToVendor
       if (assigned_vendor_id === vendor_id && finished_at)
         return AssignmentStatus.Done
       if (assigned_vendor_id === vendor_id) return AssignmentStatus.InProgress
       return AssignmentStatus.NotAssigned
     },
-    [assigned_vendor_id, assignee_id, finished_at]
+    [assigned_vendor_id, assignee?.id, finished_at]
   )
+
+  const { deleteAssignmentVendor } = useAssignmentRemoveVendor({
+    id,
+  })
 
   const tableRows = useMemo(
     () =>
@@ -67,15 +76,23 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
           name,
           status,
           price,
-          delete_button: id,
+          delete_button: vendor.id,
         }
       }),
     [candidates, getCandidateStatus]
   )
 
-  const handleDelete = useCallback((candidateId: string) => {
-    // TODO: remove candidate with id: candidateId from this task
-  }, [])
+  const handleDelete = useCallback(
+    async (vendor_id: string) => {
+      await deleteAssignmentVendor({ data: [{ vendor_id }] })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.vendors_removed_from_task'),
+      })
+    },
+    [deleteAssignmentVendor, t]
+  )
 
   const columns = [
     columnHelper.accessor('name', {
@@ -101,7 +118,7 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
         return (
           <BaseButton
             className={classes.iconButton}
-            hidden={feature === SubProjectFeatures.JobOverview}
+            hidden={job_definition.job_key === SubProjectFeatures.JobOverview}
             onClick={() => handleDelete(getValue())}
           >
             <Delete />

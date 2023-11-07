@@ -8,20 +8,20 @@ import useAuth from './useAuth'
 import { Privileges } from 'types/privileges'
 
 const useOrderPageRedirect = ({
-  client_user_institution_id,
-  translation_manager_user_institution_id,
+  client_institution_user_id,
+  manager_institution_user_id,
   isLoading,
 }: {
-  client_user_institution_id?: string
-  translation_manager_user_institution_id?: string
+  client_institution_user_id?: string
+  manager_institution_user_id?: string
   isLoading?: boolean
 }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { institutionUserId, userPrivileges } = useAuth()
-  const isUserClientOfProject = institutionUserId === client_user_institution_id
+  const isUserClientOfProject = institutionUserId === client_institution_user_id
   const isUserTranslationManagerOfProject =
-    institutionUserId === translation_manager_user_institution_id
+    institutionUserId === manager_institution_user_id
 
   const canAnyoneViewProject =
     includes(userPrivileges, Privileges.ViewInstitutionProjectDetail) ||
@@ -29,7 +29,7 @@ const useOrderPageRedirect = ({
       userPrivileges,
       Privileges.ViewInstitutionUnclaimedProjectDetail
     ) &&
-      !translation_manager_user_institution_id)
+      !manager_institution_user_id)
 
   const canUserViewOrder =
     includes(userPrivileges, Privileges.ViewPersonalProject) &&
@@ -38,7 +38,7 @@ const useOrderPageRedirect = ({
       canAnyoneViewProject)
 
   useEffect(() => {
-    if (!isLoading && !client_user_institution_id) {
+    if (!isLoading && !client_institution_user_id) {
       navigate(-1)
       showNotification({
         type: NotificationTypes.Warning,

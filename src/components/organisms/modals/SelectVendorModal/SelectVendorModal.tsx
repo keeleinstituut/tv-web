@@ -19,7 +19,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
+import { useAssignmentAddVendor } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import Loader from 'components/atoms/Loader/Loader'
@@ -32,7 +32,7 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
   handleFilterChange,
 }) => {
   const { t } = useTranslation()
-  const [searchValue, setSearchValue] = useState<string>()
+  const [searchValue, setSearchValue] = useState<string>('')
 
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
@@ -47,7 +47,12 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
   )
 
   const handleClearFilters = useCallback(() => {
-    handleFilterChange()
+    setSearchValue('')
+    handleFilterChange({
+      institution_user_name: '',
+      lang_pair: [],
+      skill_id: [],
+    })
   }, [handleFilterChange])
 
   return (
@@ -103,7 +108,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
   destination_language_classifier_value_id,
 }) => {
   const { t } = useTranslation()
-  const { updateAssignment, isLoading } = useAssignmentUpdate({
+  const { addAssignmentVendor, isLoading } = useAssignmentAddVendor({
     id: assignmentId,
   })
   const {
@@ -115,8 +120,12 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
     handlePaginationChange,
     isLoading: isLoadingPrices,
   } = useAllPricesFetch({
-    src_lang_classifier_value_id: [source_language_classifier_value_id],
-    dst_lang_classifier_value_id: [destination_language_classifier_value_id],
+    lang_pair: [
+      {
+        src: source_language_classifier_value_id,
+        dst: destination_language_classifier_value_id,
+      },
+    ],
     skill_id: taskSkills,
   })
 
@@ -156,18 +165,18 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
   const handleAddSelectedVendors: SubmitHandler<FormValues> = useCallback(
     async ({ selected }) => {
       const newVendorIds = keys(pickBy(selected, (val) => !!val))
-      const unRemovedVendorIds = filter(selectedVendorsIds, (id) => {
-        // vendor was removed, if it exists in the "selected" object with a value of false
-        const wasVendorRemoved = find(
-          selected,
-          (value, key) => key === id && !value
-        )
-        return !wasVendorRemoved
-      })
+      // const unRemovedVendorIds = filter(selectedVendorsIds, (id) => {
+      //   // vendor was removed, if it exists in the "selected" object with a value of false
+      //   const wasVendorRemoved = find(
+      //     selected,
+      //     (value, key) => key === id && !value
+      //   )
+      //   return !wasVendorRemoved
+      // })
       try {
         // TODO: not sure about this at all
-        await updateAssignment({
-          candidates_ids: [...unRemovedVendorIds, ...newVendorIds],
+        await addAssignmentVendor({
+          data: newVendorIds.map((id) => ({ vendor_id: id })),
         })
         showNotification({
           type: NotificationTypes.Success,
@@ -180,7 +189,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         showValidationErrorMessage(errorData)
       }
     },
-    [selectedVendorsIds, t, updateAssignment]
+    [t, addAssignmentVendor]
   )
 
   return (
@@ -211,36 +220,17 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
       }
     >
       <Loader loading={isLoadingPrices} />
+
       <SelectVendorsTable
         data={prices}
         paginationData={paginationData}
         handleFilterChange={handleFilterChange}
         handleSortingChange={handleSortingChange}
         handlePaginationChange={handlePaginationChange}
+        filters={filters}
         taskSkills={taskSkills}
-        source_language_classifier_value_id={
-          source_language_classifier_value_id
-        }
-        destination_language_classifier_value_id={
-          destination_language_classifier_value_id
-        }
         control={control}
         hidden={isLoadingPrices}
-        filters={filters}
-
-        // {...{
-        //   data: prices,
-        //   paginationData,
-        //   handleFilterChange,
-        //   handleSortingChange,
-        //   handlePaginationChange,
-        //   taskSkills,
-        //   source_language_classifier_value_id,
-        //   destination_language_classifier_value_id,
-        //   control,
-        //   hidden: isLoadingPrices,
-        //   filters,
-        // }}
       />
     </ModalBase>
   )

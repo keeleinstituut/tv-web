@@ -1,6 +1,11 @@
 import { FC, useCallback, useMemo } from 'react'
 import { map, find, pick, values } from 'lodash'
-import { CatAnalysis, SubProjectFeatures } from 'types/orders'
+import {
+  CatAnalysis,
+  CatJob,
+  ListOrder,
+  SubProjectFeatures,
+} from 'types/orders'
 import { AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import Button, {
@@ -33,8 +38,12 @@ interface AssignmentProps extends AssignmentType {
   projectDeadline?: string
   isVendorView?: boolean
   catSupported?: boolean
-  // cat_jobs?: CatJob[]
+  cat_jobs?: CatJob[]
   cat_analyzis?: CatAnalysis[]
+  ext_id?: string
+  volumes?: VolumeValue[]
+  subOrderId?: string
+  project: ListOrder
 }
 
 interface FormValues {
@@ -50,17 +59,21 @@ const Assignment: FC<AssignmentProps> = ({
   index,
   candidates,
   id,
+  subOrderId,
   assigned_vendor_id,
-  assignee_id,
-  feature,
+  assignee,
+  job_definition,
   source_language_classifier_value_id,
   destination_language_classifier_value_id,
   projectDeadline,
   finished_at,
   isVendorView,
   catSupported,
-  // cat_jobs,
+  cat_jobs,
   cat_analyzis,
+  ext_id,
+  volumes = [],
+  project,
 }) => {
   const { t } = useTranslation()
   // TODO: no idea if this is how it will work
@@ -78,6 +91,8 @@ const Assignment: FC<AssignmentProps> = ({
     () => pick(vendor, values(DiscountPercentageNames)),
     [vendor]
   ) as DiscountPercentages
+
+  const feature = job_definition.job_key
 
   const vendorPrices = useMemo(() => {
     const matchingPrices = find(vendor?.prices, (price) => {
@@ -101,14 +116,17 @@ const Assignment: FC<AssignmentProps> = ({
     vendor?.prices,
   ])
 
-  const vendorName = `${vendor?.institution_user?.user?.forename} ${vendor?.institution_user?.user?.surname}`
+  const { forename, surname } = vendor?.institution_user?.user || {}
+
+  const vendorName = !!forename ? `${forename} ${surname}` : ''
 
   // TODO: we should be able to get some of these values from somewhere
   const defaultValues = useMemo(
     () => ({
       deadline_at: { date: '11/07/2025', time: '11:00' },
+      volume: volumes,
     }),
-    []
+    [volumes]
   )
 
   const { control } = useForm<FormValues>({
@@ -150,7 +168,8 @@ const Assignment: FC<AssignmentProps> = ({
   }, [t])
 
   // TODO: shouldShowStartTimeFields no info about where to take this from yet
-  const shouldShowStartTimeFields = true
+  const shouldShowStartTimeFields =
+    project?.type_classifier_value?.project_type_config?.is_start_date_supported
 
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
@@ -194,9 +213,12 @@ const Assignment: FC<AssignmentProps> = ({
         isTextarea: true,
         catSupported,
         vendorPrices,
+        assignmentCatJobs: cat_jobs,
         vendorDiscounts,
         vendorName,
+        value: volumes,
         assignmentId: id,
+        subOrderId,
         // cat_jobs,
         cat_analyzis,
         // onlyDisplay: !isEditable,
@@ -218,9 +240,12 @@ const Assignment: FC<AssignmentProps> = ({
       shouldShowStartTimeFields,
       catSupported,
       vendorPrices,
+      cat_jobs,
       vendorDiscounts,
       vendorName,
+      volumes,
       id,
+      subOrderId,
       cat_analyzis,
       isVendorView,
     ]
@@ -229,7 +254,7 @@ const Assignment: FC<AssignmentProps> = ({
   const selectedVendorsIds = map(candidates, 'vendor_id')
   const handleOpenVendorsModal = useCallback(() => {
     showModal(ModalTypes.SelectVendor, {
-      taskId: id,
+      assignmentId: id,
       selectedVendorsIds,
       // TODO: not sure where these taskSkills will come from
       taskSkills: [],
@@ -250,7 +275,7 @@ const Assignment: FC<AssignmentProps> = ({
           {t('task.vendor_title', { number: index + 1 })}(
           {t(`orders.features.${feature}`)})
         </h3>
-        <span className={classes.assignmentId}>{id}</span>
+        <span className={classes.assignmentId}>{ext_id}</span>
         <Button
           size={SizeTypes.S}
           className={classes.addButton}
@@ -269,10 +294,11 @@ const Assignment: FC<AssignmentProps> = ({
       <div>
         <TaskCandidatesSection
           {...{
-            feature,
+            id,
+            job_definition,
             assigned_vendor_id,
             candidates,
-            assignee_id,
+            assignee_id: assignee?.id,
             finished_at,
           }}
         />

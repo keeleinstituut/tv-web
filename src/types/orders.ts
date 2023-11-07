@@ -10,6 +10,7 @@ import {
 } from './classifierValues'
 import { AssignmentType } from './assignments'
 import { UserType } from './users'
+import { Tag } from './tags'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -46,19 +47,29 @@ export enum WorkflowTemplateID {
   SampleProject = 'Sample-project',
 }
 
+export enum CatProjectStatus {
+  Done = 'DONE',
+  NotStarted = 'NOT_STARTED',
+  InProgress = 'IN_PROGRESS',
+  Failed = 'FAILED',
+}
 export interface Link {
   url: null | string
   label: string
   active: boolean
 }
 
-interface ProjectTypeConfig {
+export interface ProjectTypeConfig {
   id: string
   workflow_process_definition_id: string
-  features: SubProjectFeatures[]
   created_at: string
   updated_at: string
+  type_classifier_value_id: string
+  is_start_date_supported: boolean
+  cat_tool_enabled: boolean
+  job_definitions: JobDefinition[]
 }
+
 interface TypeClassifierValue extends ClassifierValue {
   type: ClassifierValueType.ProjectType
   project_type_config: ProjectTypeConfig
@@ -86,13 +97,17 @@ export interface SourceFile {
   custom_properties: string[]
   generated_conversions: string[]
   responsive_images: string[]
+  isChecked?: boolean
 }
 
 export interface CatJob {
-  xliff_download_url: string
-  translate_url: string
-  translation_download_url: string
-  chunk_id: string
+  xliff_download_url?: string
+  translate_url?: string
+  translation_download_url?: string
+  progress_percentage?: string
+  name: string
+  id: number | string
+  volume_analysis?: CatAnalysis[]
 }
 
 export enum TranslationMemoryPercentageNames {}
@@ -100,8 +115,8 @@ export enum TranslationMemoryPercentageNames {}
 export interface CatAnalysis {
   raw_word_count: number
   total: number
+  repetitions: number
   tm_101: number
-  tm_repetitions: number
   tm_100: number
   tm_95_99: number
   tm_85_94: number
@@ -109,7 +124,7 @@ export interface CatAnalysis {
   tm_50_74: number
   tm_0_49: number
   chunk_id: string
-  file_name: string
+  files_names: string[]
 }
 
 export interface ListSubOrderDetail {
@@ -125,23 +140,33 @@ export interface ListSubOrderDetail {
   destination_language_classifier_value_id: string
   created_at: string
   updated_at: string
-  features: SubProjectFeatures[]
   project: ListOrder
-  // Not sure about the existence of following:
   status?: SubOrderStatus
   deadline_at: string
-  cost?: string
+  price?: string
+  translation_domain_classifier_value?: ClassifierValue
 }
 
 export interface SubOrderDetail extends ListSubOrderDetail {
   // Others from what Markus used:
   cat_project_created: string
   cat_features: SubProjectFeatures[]
+  job_definitions: JobDefinition[]
   cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
-  source_files: SourceFile[]
+  cat_files: SourceFile[]
   final_files: SourceFile[]
+  source_files: SourceFile[]
   assignments: AssignmentType[]
+  mt_enabled: boolean
+}
+
+export interface JobDefinition {
+  id: string
+  job_key: SubProjectFeatures
+  skill_id: string
+  multi_assignments_enabled: boolean
+  linking_with_cat_tool_jobs_enabled: boolean
 }
 
 export interface ListOrder {
@@ -159,8 +184,8 @@ export interface ListOrder {
   updated_at: string
   sub_projects: ListSubOrderDetail[]
   status: OrderStatus
-  tags: string[]
-  cost: string
+  tags: Tag[]
+  price: string
 }
 
 export interface DetailedOrder extends ListOrder {
@@ -210,17 +235,27 @@ export interface SubOrderResponse {
 
 // TODO: not sure yet
 export interface SubOrderPayload {
-  id: string
+  deadline_at?: string
+  final_files?: (File | SourceFile)[]
 }
 
+export interface CatToolJobsResponse {
+  data: {
+    setup_status: CatProjectStatus
+    analyzing_status: CatProjectStatus
+    cat_jobs: CatJob[]
+  }
+}
 // TODO: not sure what should be sent for CatProjectPayload
 export interface CatProjectPayload {
-  source_file_ids: string[]
-  translation_memory_ids: string[]
+  sub_project_id: string
+  source_files_ids: string[]
+  translation_memory_ids?: string[]
 }
+
 export interface NewOrderPayload {
-  client_user_institution_id: string
-  translation_manager_user_institution_id: string
+  client_institution_user_id: string
+  manager_institution_user_id: string
   deadline_at: string
   source_files: File[]
   reference_number?: string
@@ -233,4 +268,13 @@ export interface NewOrderPayload {
   event_start_at?: string
   // TODO: Following are currently missing
   comments?: string
+}
+
+export interface CatJobsPayload {
+  sub_project_id: string
+  chunks_count?: number
+}
+export interface SplitOrderPayload {
+  sub_project_id: string
+  job_key: SubProjectFeatures
 }

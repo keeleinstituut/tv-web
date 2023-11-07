@@ -2,7 +2,7 @@ import { RefObject, forwardRef, useRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
-import { omit } from 'lodash'
+import { omit, size, toString } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import InputError from 'components/atoms/InputError/InputError'
 import { InputHTMLAttributes } from 'react'
@@ -27,6 +27,7 @@ export interface TextInputProps
   loading?: boolean
   isTextarea?: boolean
   inputContainerClassName?: string
+  hasInputValueSize?: boolean
 }
 
 const TextInput = forwardRef<
@@ -49,6 +50,7 @@ const TextInput = forwardRef<
     loading,
     handleDelete,
     inputContainerClassName,
+    hasInputValueSize = false,
     ...rest
   } = props
   const { t } = useTranslation()
@@ -66,10 +68,11 @@ const TextInput = forwardRef<
     ...(placeholder ? { placeholder } : {}),
     className: classes.inputField,
     ref,
-    value: value || '',
+    value: value ?? '',
     'aria-label': ariaLabel,
     disabled,
     ...rest,
+    size: hasInputValueSize ? size(toString(value)) : undefined,
   }
   return (
     <Field
