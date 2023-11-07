@@ -25,6 +25,7 @@ const LandingContent: FC<LandingContentProps> = ({ className }) => {
           <Button
             appearance={AppearanceTypes.Secondary}
             children={t('button.check_tutorial')}
+            href={isUserLoggedIn ? '/manual' : undefined}
             className={classes.bigButton}
           />
           <Button
