@@ -1,7 +1,11 @@
-interface LinkTypes {
+export interface LinkTypes {
   url?: string
   label?: string
   active?: boolean
+  first?: string
+  last?: string
+  prev?: string
+  next?: string
 }
 
 export interface ResponseMetaTypes {
