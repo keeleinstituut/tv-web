@@ -18,10 +18,12 @@ import { map } from 'lodash'
 import classes from './classes.module.scss'
 interface ModalContextType {
   modalContentId?: string
+  modalVerticalContentId?: string
 }
 
 export const ModalContext = createContext<ModalContextType>({
   modalContentId: undefined,
+  modalVerticalContentId: undefined,
 })
 
 export enum ModalSizeTypes {
@@ -78,7 +80,9 @@ const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
 }) => {
   return (
     <>
-      <div className={classes[buttonsPosition]}>
+      <div
+        className={classNames(classes.footerButtons, classes[buttonsPosition])}
+      >
         {buttons &&
           map(buttons, (button, index) => (
             <Button key={index} {...button}>
@@ -120,6 +124,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
     <ModalContext.Provider
       value={{
         modalContentId: 'modalContentId',
+        modalVerticalContentId: 'modalVerticalContentId',
       }}
     >
       <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -152,7 +157,10 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
               {title}
             </h1>
             {headComponent}
-            <Dialog.Overlay className={classes.scrollableContent}>
+            <Dialog.Overlay
+              className={classes.scrollableContent}
+              id="modalVerticalContentId"
+            >
               <p hidden={!helperText} className={classes.helperText}>
                 {helperText}
               </p>

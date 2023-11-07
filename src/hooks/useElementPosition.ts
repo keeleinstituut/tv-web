@@ -9,9 +9,8 @@ const useElementPosition = <RefType extends HTMLElement>({
   ref?: RefObject<RefType>
   forceRecalculate?: boolean
 }) => {
-  // Get table and modal id's from context
   const { horizontalWrapperId } = useTableContext()
-  const { modalContentId } = useModalContext()
+  const { modalContentId, modalVerticalContentId } = useModalContext()
   const parentElement = modalContentId
     ? document.getElementById(modalContentId)
     : null
@@ -63,7 +62,9 @@ const useElementPosition = <RefType extends HTMLElement>({
     // Most of the pages will only be vertically scrollable
     // and the scroll will happen inside the mainScroll container
     // So for easier use there is no need to pass anything other than ref to this hook
-    const verticalScrollContainer = document.getElementById('mainScroll')
+    const verticalScrollContainer = modalVerticalContentId
+      ? document.getElementById(modalVerticalContentId)
+      : document.getElementById('mainScroll')
     const horizontalScrollContainer = horizontalWrapperId
       ? document.getElementById(horizontalWrapperId)
       : null
@@ -84,7 +85,7 @@ const useElementPosition = <RefType extends HTMLElement>({
       )
       window.removeEventListener('resize', recalculatePosition)
     }
-  }, [horizontalWrapperId, recalculatePosition, ref])
+  }, [horizontalWrapperId, modalVerticalContentId, recalculatePosition, ref])
 
   return { left, top, right }
 }
