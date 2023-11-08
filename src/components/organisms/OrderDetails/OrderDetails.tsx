@@ -33,6 +33,7 @@ import ExpandableContentContainer from 'components/molecules/ExpandableContentCo
 import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
+import { TagTypes } from 'types/tags'
 
 export enum OrderDetailModes {
   New = 'new',
@@ -114,7 +115,7 @@ interface FormValues {
   // TODO: Not sure about the structure of following
   comments?: string
   ext_id?: string
-  tags?: string[]
+  tags?: TagTypes[]
 }
 
 interface OrderDetailsProps {
@@ -165,8 +166,8 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       rejected_at = '',
       cancelled_at = '',
       created_at = '',
-      tags = [],
     } = order || {}
+
     const source_language_classifier_value_id =
       sub_projects?.[0]?.source_language_classifier_value_id || ''
     const destination_language_classifier_value_ids =
@@ -195,7 +196,6 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       translation_domain_classifier_value_id:
         translation_domain_classifier_value?.id,
       comments,
-      tags: map(tags, 'id'),
       accepted_at: accepted_at ? dayjs(accepted_at).format('DD.MM.YYYY') : '',
       corrected_at: corrected_at
         ? dayjs(corrected_at).format('DD.MM.YYYY')
