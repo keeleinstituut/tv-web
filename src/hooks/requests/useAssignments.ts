@@ -348,9 +348,13 @@ export const useDownloadFile = (config: {
         collection,
       }
 
-      return apiClient.getBlob(endpoints.MEDIA_DOWNLOAD, {
-        ...file,
-      })
+      return apiClient.get(
+        endpoints.MEDIA_DOWNLOAD,
+        {
+          ...file,
+        },
+        { responseType: 'blob' }
+      )
     },
     onSuccess: (data, { file_name }) => {
       downloadHelper({

@@ -266,7 +266,11 @@ export const useDownloadXliffFile = () => {
   const { mutateAsync: downloadXliff, isLoading } = useMutation({
     mutationKey: ['xliff'],
     mutationFn: (sub_project_id: string) =>
-      apiClient.getBlob(`${endpoints.DOWNLOAD_XLIFF}/${sub_project_id}`),
+      apiClient.get(
+        `${endpoints.DOWNLOAD_XLIFF}/${sub_project_id}`,
+        {},
+        { responseType: 'blob' }
+      ),
     onSuccess: (data) => {
       downloadFile({
         data,
@@ -283,7 +287,11 @@ export const useDownloadTranslatedFile = () => {
   const { mutateAsync: downloadTranslatedFile, isLoading } = useMutation({
     mutationKey: ['translated'],
     mutationFn: (sub_project_id: string) =>
-      apiClient.getBlob(`${endpoints.DOWNLOAD_TRANSLATED}/${sub_project_id}`),
+      apiClient.get(
+        `${endpoints.DOWNLOAD_TRANSLATED}/${sub_project_id}`,
+        {},
+        { responseType: 'blob' }
+      ),
     onSuccess: (data) => {
       downloadFile({
         data,

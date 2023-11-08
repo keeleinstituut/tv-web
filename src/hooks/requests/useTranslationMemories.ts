@@ -211,7 +211,7 @@ export const useExportTMX = () => {
   const { mutateAsync: exportTMX, isLoading } = useMutation({
     mutationKey: ['tmx'],
     mutationFn: async (payload: ExportTMXPayload) =>
-      apiClient.postBlob(endpoints.EXPORT_TMX, payload),
+      apiClient.post(endpoints.EXPORT_TMX, payload, { responseType: 'blob' }),
     onSuccess: (data) => {
       downloadFile({
         data,

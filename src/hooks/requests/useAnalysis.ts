@@ -36,7 +36,11 @@ export const useDownloadCatAnalysisFetch = ({
   const { isLoading, isSuccess, mutateAsync } = useMutation({
     mutationKey: ['cat_analysis', id],
     mutationFn: () =>
-      apiClient.getBlob(`${endpoints.CAT_TOOL}/download-volume-analysis/${id}`),
+      apiClient.get(
+        `${endpoints.CAT_TOOL}/download-volume-analysis/${id}`,
+        {},
+        { responseType: 'blob' }
+      ),
     onSuccess: (data) => {
       downloadFile({
         data,

@@ -177,7 +177,8 @@ export const useUsersUpload = () => {
 export const useDownloadUsers = () => {
   const { mutateAsync: downloadCSV, isLoading } = useMutation({
     mutationKey: ['csv'],
-    mutationFn: () => apiClient.getBlob(endpoints.EXPORT_CSV),
+    mutationFn: () =>
+      apiClient.get(endpoints.EXPORT_CSV, {}, { responseType: 'blob' }),
     onSuccess: (data) => {
       downloadFile({
         data,
