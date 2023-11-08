@@ -100,7 +100,9 @@ const Tab: FC<TabType> = ({
     if ((!isEditMode && !editDisabled) || (!isEditMode && isTemporaryRole)) {
       setIsEditMode(!isEditMode)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditMode, editDisabled])
+
   const handleExitEditMode = useCallback(() => {
     if (isEditMode) {
       setIsEditMode(!isEditMode)

@@ -9,25 +9,12 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { filter, identity, map, pickBy } from 'lodash'
+import { filter, map } from 'lodash'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Price, PriceUnits } from 'types/price'
 import { CatAnalysis, CatJob } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
-import {
-  useAssignmentAddCatVolume,
-  useAssignmentAddVolume,
-  useAssignmentEditCatVolume,
-  useAssignmentEditVolume,
-} from 'hooks/requests/useAssignments'
-import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
-import { DiscountPercentages } from 'types/vendors'
-import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { NotificationTypes } from '../Notification/Notification'
-import i18n from 'i18n/i18n'
-
-// TODO: not sure about this data structure
 
 interface VolumeRowProps extends VolumeValue {
   index: number
@@ -48,7 +35,6 @@ export const apiTypeToKey = (apiType: string) => {
     case 'HOURS':
       return PriceUnits.HourFee
     case 'MINIMALS':
-      return PriceUnits.MinimalFee
     default:
       return PriceUnits.MinimalFee
   }
@@ -56,18 +42,17 @@ export const apiTypeToKey = (apiType: string) => {
 
 export const keyToApiType = (key: string) => {
   switch (key) {
-    case 'character_fee':
+    case PriceUnits.CharacterFee:
       return 'CHARACTERS'
-    case 'word_fee':
+    case PriceUnits.WordFee:
       return 'WORDS'
-    case 'page_fee':
+    case PriceUnits.PageFee:
       return 'PAGES'
-    case 'minute_fee':
+    case PriceUnits.MinuteFee:
       return 'MINUTES'
-    case 'hour_fee':
+    case PriceUnits.HourFee:
       return 'HOURS'
-    case 'minimal_fee':
-      return 'MINIMALS'
+    case PriceUnits.MinimalFee:
     default:
       return 'MINIMALS'
   }
@@ -140,11 +125,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const { addAssignmentVolume } = useAssignmentAddVolume({ subOrderId })
-  const { addAssignmentCatVolume } = useAssignmentAddCatVolume({ subOrderId })
-  const { editAssignmentVolume } = useAssignmentEditVolume({ subOrderId })
-  const { editAssignmentCatVolume } = useAssignmentEditCatVolume({ subOrderId })
-
   const handleDelete = useCallback(
     (index: number, id: string) => {
       const newVolumes = filter(
@@ -166,103 +146,34 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     (index: number) => {
       const matchingVolume = value[index]
       const isCat = !!matchingVolume.cat_job
-      const onSave = async (
-        isCat: boolean,
-        args: ManualVolumePayload | CatVolumePayload
-      ) => {
-        delete args.assignment_id
-        let res: VolumeValue
-        try {
-          if (isCat) {
-            const { data: response } = await editAssignmentCatVolume({
-              volumeId: matchingVolume.id,
-              data: args as CatVolumePayload,
-            })
-            res = response
-          } else {
-            const { data: response } = await editAssignmentVolume({
-              volumeId: matchingVolume.id,
-              data: args as ManualVolumePayload,
-            })
-            res = response
-          }
-          showNotification({
-            type: NotificationTypes.Success,
-            title: i18n.t('notification.announcement'),
-            content: i18n.t('success.volume_edited'),
-          })
-          onChange(
-            value.map((volume) =>
-              volume.id === matchingVolume.id ? res : volume
-            )
+
+      const onChangeValue = (updatedVolume: VolumeValue) => {
+        onChange(
+          map(value, (volume) =>
+            volume.id === matchingVolume.id ? updatedVolume : volume
           )
-        } catch (error) {
-          showNotification({
-            type: NotificationTypes.Error,
-            title: i18n.t('notification.error'),
-            // content: typedErrorData.message,
-          })
-        }
+        )
       }
       showModal(ModalTypes.VolumeChange, {
-        onSave,
         isCat,
         vendorPrices,
         vendorName,
+        onChangeValue,
+        subOrderId,
         ...matchingVolume,
       })
     },
-    [
-      value,
-      vendorPrices,
-      vendorName,
-      onChange,
-      editAssignmentCatVolume,
-      editAssignmentVolume,
-    ]
+    [value, vendorPrices, vendorName, onChange, subOrderId]
   )
 
   const handleAdd = useCallback(() => {
-    const onSave = async (
-      isCat: boolean,
-      args: ManualVolumePayload | CatVolumePayload
-    ) => {
-      let res: VolumeValue
-      try {
-        if (isCat) {
-          const { data: response } = await addAssignmentCatVolume({
-            data: {
-              ...(args as CatVolumePayload),
-              discounts: pickBy(
-                (args as CatVolumePayload).discounts,
-                identity
-              ) as DiscountPercentages,
-            },
-          })
-          res = response
-        } else {
-          const { data: response } = await addAssignmentVolume({
-            data: args as ManualVolumePayload,
-          })
-          res = response
-        }
-        showNotification({
-          type: NotificationTypes.Success,
-          title: i18n.t('notification.announcement'),
-          content: i18n.t('success.volume_added'),
-        })
-        onChange([...value, res])
-      } catch (error) {
-        showNotification({
-          type: NotificationTypes.Error,
-          title: i18n.t('notification.error'),
-        })
-      }
+    const onChangeValue = (newVolume: VolumeValue) => {
+      onChange([...value, newVolume])
     }
 
     // TODO: open add/edit modal with add mode
     showModal(ModalTypes.AddVolume, {
-      onSave,
+      onChangeValue,
       assignmentId,
       subOrderId,
       catSupported,
@@ -279,8 +190,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     vendorName,
     cat_analyzis,
     assignmentCatJobs,
-    addAssignmentVolume,
-    addAssignmentCatVolume,
     onChange,
     value,
   ])
