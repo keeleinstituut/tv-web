@@ -14,7 +14,7 @@ import {
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
-import { findIndex, includes } from 'lodash'
+import { includes } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
@@ -115,13 +115,12 @@ export const useUpdateOrder = ({ id }: { id?: string }) => {
     mutationFn: (payload: NewOrderPayload) =>
       apiClient.put(`${endpoints.PROJECTS}/${id}`, payload),
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(['orders'], (oldData?: OrdersResponse) => {
-        const { data: previousData, meta } = oldData || {}
-        if (!previousData || !meta) return oldData
-        const orderIndex = findIndex(previousData, { id })
-        const newArray = [...previousData]
-        newArray[orderIndex] = data
-        return { meta, data: newArray }
+      queryClient.setQueryData(['orders', id], (oldData?: OrdersResponse) => {
+        const { data: previousData } = oldData || {}
+
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
       })
     },
   })
