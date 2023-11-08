@@ -154,6 +154,7 @@ export const protectedRoutes: FullRouteObject[] = [
         path: 'price-list',
         element: <GeneralPriceList />,
         privileges: [Privileges.ViewGeneralPricelist],
+        breadcrumb: i18n.t('vendors.price_list'),
       },
     ],
   },

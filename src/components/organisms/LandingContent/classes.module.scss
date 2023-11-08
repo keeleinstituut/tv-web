@@ -46,7 +46,7 @@
     .buttonsContainer {
       margin-top: spacing(4);
       display: grid;
-      grid-template-columns: auto 96px;
+      grid-template-columns: auto auto;
       grid-gap: spacing(2);
 
       @media (max-width: $medium_mobile) {
