@@ -348,15 +348,14 @@ export const useDownloadFile = (config: {
         collection,
       }
 
-      return apiClient.get(endpoints.MEDIA_DOWNLOAD, {
+      return apiClient.getBlob(endpoints.MEDIA_DOWNLOAD, {
         ...file,
       })
     },
-    onSuccess: (data, { file_name, mime_type }) => {
+    onSuccess: (data, { file_name }) => {
       downloadHelper({
         data,
         fileName: file_name,
-        fileType: mime_type ?? '',
       })
     },
   })

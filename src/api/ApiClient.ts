@@ -86,10 +86,28 @@ class ApiClient {
       params,
     })
 
+  getBlob = async (url: string, params = {}, config = {}) =>
+    this.request({
+      ...config,
+      method: 'get',
+      responseType: 'blob',
+      url,
+      params,
+    })
+
   post = async (url: string, data = {}, config = {}) =>
     this.request({
       ...config,
       method: 'post',
+      url,
+      data,
+    })
+
+  postBlob = async (url: string, data = {}, config = {}) =>
+    this.request({
+      ...config,
+      method: 'post',
+      responseType: 'blob',
       url,
       data,
     })
