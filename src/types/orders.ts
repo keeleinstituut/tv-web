@@ -70,7 +70,7 @@ export interface ProjectTypeConfig {
   job_definitions: JobDefinition[]
 }
 
-interface TypeClassifierValue extends ClassifierValue {
+export interface TypeClassifierValue extends ClassifierValue {
   type: ClassifierValueType.ProjectType
   project_type_config: ProjectTypeConfig
 }

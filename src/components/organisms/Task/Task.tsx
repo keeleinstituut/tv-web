@@ -1,5 +1,4 @@
 import Loader from 'components/atoms/Loader/Loader'
-import { useFetchSubOrder } from 'hooks/requests/useOrders'
 import { FC, useCallback, useEffect, useState } from 'react'
 import { includes, toLower } from 'lodash'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
@@ -13,15 +12,32 @@ import { useTranslation } from 'react-i18next'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 import classes from './classes.module.scss'
+import { DetailedOrder, SourceFile } from 'types/orders'
 
-const Task: FC<any> = ({ id, ext_id, status, deadline_at, price }) => {
+interface TaskProps {
+  ext_id?: string
+  isLoading: boolean
+  source_language_classifier_value?: string
+  destination_language_classifier_value?: string
+  project?: DetailedOrder
+  cat_files?: SourceFile[]
+}
+
+const Task: FC<TaskProps> = ({
+  ext_id = '',
+  isLoading,
+  source_language_classifier_value,
+  destination_language_classifier_value,
+  project,
+  cat_files,
+}) => {
   const { t } = useTranslation()
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
 
-  const { subOrder, isLoading } = useFetchSubOrder({ id })
+  const { price, deadline_at, status } = project || {}
 
-  const languageDirection = `${subOrder?.source_language_classifier_value.value} > ${subOrder?.destination_language_classifier_value.value}`
+  const languageDirection = `${source_language_classifier_value} > ${destination_language_classifier_value}`
 
   const attemptScroll = useCallback(() => {
     const matchingElement = document.getElementById(ext_id)
@@ -84,17 +100,16 @@ const Task: FC<any> = ({ id, ext_id, status, deadline_at, price }) => {
       <TaskContent
         deadline_at={deadline_at}
         source_files={[]}
-        cat_files={[]}
+        cat_files={cat_files}
         cat_jobs={[]}
         cat_analyzis={[]}
         final_files={[]}
         subOrderId={''}
-        source_language_classifier_value={
-          subOrder?.source_language_classifier_value.value
-        }
+        source_language_classifier_value={source_language_classifier_value}
         destination_language_classifier_value={
-          subOrder?.destination_language_classifier_value.value
+          destination_language_classifier_value
         }
+        event_start_at={project?.event_start_at}
       />
       <Button
         className={classes.finishedButton}

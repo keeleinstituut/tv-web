@@ -1,25 +1,18 @@
-import {
-  ListOrder,
-  DetailedOrder,
-  OrdersResponse,
-  OrdersPayloadType,
-  OrderResponse,
-} from 'types/orders'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
+import { GetTasksPayload, TasksDataType } from 'types/tasks'
 
-export const useFetchTasks = (initialFilters?: any) => {
+export const useFetchTasks = (initialFilters?: GetTasksPayload) => {
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<any>(initialFilters)
+  } = useFilters<GetTasksPayload>(initialFilters)
 
-  const { isLoading, isError, data } = useQuery<any>({
+  const { isLoading, isError, data } = useQuery<TasksDataType>({
     queryKey: ['tasks', filters],
     queryFn: () => apiClient.get(endpoints.TASKS, filters),
     keepPreviousData: true,
@@ -38,51 +31,29 @@ export const useFetchTasks = (initialFilters?: any) => {
   }
 }
 
-// export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
-//   const { isLoading, isError, data } = useQuery<OrderResponse>({
-//     queryKey: ['orders', orderId],
-//     queryFn: () => {
-//       return apiClient.get(`${endpoints.PROJECTS}/${orderId}`)
-//     },
-//   })
+export const useFetchHistoryTasks = (initialFilters?: GetTasksPayload) => {
+  const {
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useFilters<GetTasksPayload>(initialFilters)
 
-//   const { data: order } = data || {}
+  const { isLoading, isError, data } = useQuery<any>({
+    queryKey: ['tasks', filters],
+    queryFn: () => apiClient.get(endpoints.HISTORY_TASKS, filters),
+    keepPreviousData: true,
+  })
 
-//   return {
-//     isLoading,
-//     isError,
-//     order,
-//   }
-// }
+  const { meta: paginationData, data: historyTasks } = data || {}
 
-// export const useFetchSubProject = ({ id }: { id?: string }) => {
-//   const { isLoading, isError, data } = useQuery<any>({
-//     queryKey: ['subproject', id],
-//     queryFn: () => {
-//       return apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`)
-//     },
-//   })
-
-//   const { data: subProject } = data || {}
-
-//   return {
-//     isLoading,
-//     isError,
-//     subProject,
-//   }
-// }
-
-// export const useSubProjectSendToCat = ({ id }: any) => {
-//   const { mutateAsync: sendToCat, isLoading } = useMutation({
-//     mutationKey: ['roles'],
-//     mutationFn: (payload: any) =>
-//       apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/send-to-cat`, {
-//         ...payload,
-//       }),
-//   })
-
-//   return {
-//     sendToCat,
-//     isLoading,
-//   }
-// }
+  return {
+    isLoading,
+    isError,
+    historyTasks,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  }
+}

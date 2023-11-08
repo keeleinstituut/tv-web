@@ -8,34 +8,39 @@ import Tooltip from 'components/organisms/Tooltip/Tooltip'
 
 import classes from './classes.module.scss'
 
-interface ObjectType {
-  [key: string]: string
-}
-
 const MyTasks: FC = () => {
   const { t } = useTranslation()
 
-  const [tabNames, setTabNames] = useState<ObjectType>({})
-
   const [activeTab, setActiveTab] = useState<string | undefined>(
-    'Minu ülesanded'
+    t('my_tasks.my_assignments')
   )
 
   let Component: FC = () => null
   switch (activeTab) {
-    case 'Minu ülesanded':
-    case 'Ootel ülesanded':
-    case 'Minu ülesannete ajalugu':
+    case t('my_tasks.my_assignments'):
+    case t('my_tasks.pending_assignments'):
+    case t('my_tasks.my_tasks_history'):
       Component = TasksTable
       break
     default:
       break
   }
 
+  const taskTabs = chain([
+    t('my_tasks.my_assignments'),
+    t('my_tasks.pending_assignments'),
+    t('my_tasks.my_tasks_history'),
+  ])
+    .map((feature) => ({
+      id: feature,
+      name: feature,
+    }))
+    .value()
+
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>{t('my_tasks.title')}</h1>
+        <h1>{t('my_tasks.my_assignments')}</h1>
         <Tooltip helpSectionKey="myTasks" />
       </div>
 
@@ -43,25 +48,8 @@ const MyTasks: FC = () => {
         setActiveTab={setActiveTab}
         activeTab={activeTab}
         tabStyle={TabStyle.Primary}
-        tabs={chain([
-          'Minu ülesanded',
-          'Ootel ülesanded',
-          'Minu ülesannete ajalugu',
-        ])
-          .map((feature) => ({
-            id: feature,
-            name: feature,
-          }))
-          .value()}
-        onAddPress={function (): void {
-          throw new Error('Function not implemented.')
-        }}
-        addLabel={''}
-        onChangeName={function (id: string, newValue: string): void {
-          throw new Error('Function not implemented.')
-        }}
+        tabs={taskTabs}
         addDisabled
-        tabNames={tabNames}
         className={classes.tabsContainer}
         editDisabled
       />

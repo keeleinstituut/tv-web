@@ -56,14 +56,12 @@ const TasksTable: FC = () => {
           reference_number: subProject.project.reference_number,
           language_directions: `${subProject.source_language_classifier_value?.value} > ${subProject.destination_language_classifier_value?.value}`,
           cost: subProject.price,
-          type: subProject.project.type_classifier_value.name,
+          type: subProject.project.type_classifier_value?.name,
           deadline_at: subProject.project.deadline_at,
         }
       }),
     [tasks]
   )
-
-  console.log('tasksData', tasksData)
 
   const columnHelper = createColumnHelper<TaskTableRow>()
 
@@ -72,7 +70,7 @@ const TasksTable: FC = () => {
       header: () => t('my_tasks.assignment_id'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
-        const ext_id = getValue() as { id: string; ext_id: string }
+        const ext_id = getValue()
         return (
           <Button
             appearance={AppearanceTypes.Text}
@@ -98,7 +96,7 @@ const TasksTable: FC = () => {
       header: () => t('label.language_directions'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
-        const label = getValue() as string
+        const label = getValue()
         return (
           <div className={classes.tagsRow}>
             <Tag label={label} value />
@@ -127,7 +125,7 @@ const TasksTable: FC = () => {
       header: () => t('label.deadline_at'),
       footer: (info) => info.column.id,
       cell: ({ getValue, row }) => {
-        const dateValue = getValue() as string
+        const dateValue = getValue()
         const deadlineDate = dayjs(dateValue)
         const currentDate = dayjs()
         const diff = deadlineDate.diff(currentDate)
@@ -162,7 +160,7 @@ const TasksTable: FC = () => {
         sortingOption: ['asc', 'desc'],
       },
     }),
-  ] as ColumnDef<TaskTableRow>[]
+  ] as ColumnDef<any>[]
 
   return (
     <Root>

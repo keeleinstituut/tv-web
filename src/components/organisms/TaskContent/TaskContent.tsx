@@ -60,6 +60,7 @@ const TaskContent: FC<any> = ({
   final_files,
   source_language_classifier_value,
   destination_language_classifier_value,
+  event_start_at,
 }) => {
   const { t } = useTranslation()
 
@@ -157,15 +158,20 @@ const TaskContent: FC<any> = ({
     !some(watch('write_to_memory'), (val) => !!val) ||
     !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
-  const deadlineTime = dayjs(deadline_at).format('DD.MM.YYYY HH:mm')
+  const formattedDate = (date: any) => {
+    return dayjs(date).format('DD.MM.YYYY HH:mm')
+  }
 
   const taskDetails = [
     {
       label: t('my_tasks.start_time'),
-      content: deadlineTime,
+      content: event_start_at ? formattedDate(event_start_at) : '-',
       oralTranslation: true,
     },
-    { label: t('label.deadline_at'), content: deadlineTime },
+    {
+      label: t('label.deadline_at'),
+      content: deadline_at ? formattedDate(deadline_at) : '-',
+    },
     {
       label: t('label.special_instructions'),
       content: 'Siin on mingi lisainfo.',

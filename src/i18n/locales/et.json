@@ -657,7 +657,9 @@
     }
   },
   "my_tasks": {
-    "title": "Minu ülesanded",
+    "my_assignments": "Minu ülesanded",
+    "pending_assignments": "Ootel ülesanded",
+    "my_tasks_history": "Minu ülesannete ajalugu",
     "assignment_id": "Ülesande ID",
     "start_time": "Algusaeg",
     "my_source_files": "Minu lähtefailid",

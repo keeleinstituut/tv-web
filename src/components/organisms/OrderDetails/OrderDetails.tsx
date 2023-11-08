@@ -119,6 +119,7 @@ interface OrderDetailsProps {
   order?: DetailedOrder
   isUserClientOfProject?: boolean
   className?: string
+  isTaskView?: boolean
 }
 
 const OrderDetails: FC<OrderDetailsProps> = ({
@@ -126,6 +127,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   order,
   isUserClientOfProject,
   className,
+  isTaskView,
 }) => {
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
@@ -403,7 +405,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
           />
           <FormButtons
             {...formButtonsProps}
-            hidden={isNew || !isEditableBySomeone}
+            hidden={isNew || !isEditableBySomeone || isTaskView}
           />
         </Container>
         <FormButtons

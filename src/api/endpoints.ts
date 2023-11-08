@@ -26,6 +26,7 @@ export const endpoints = {
   SUB_PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}subprojects`,
   MT_ENGINE: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/toggle-mt-engine`,
   TASKS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}workflow/tasks`,
+  HISTORY_TASKS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}workflow/history/tasks`,
   ASSIGNMENTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}assignments`,
   LINK_CAT_TOOL_JOBS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}assignments/link-cat-tool-jobs`,
   CAT_ASSIGNMENTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}cat-tool/split`,
