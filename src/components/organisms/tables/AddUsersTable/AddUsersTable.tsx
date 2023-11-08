@@ -87,6 +87,7 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
               control={control}
               rowErrors={rowsWithErrors[`row-${row?.index}`]}
               errorZIndex={errorZIndex}
+              type="number"
             />
             <SmallTooltip
               hidden={!includes(rowsWithExistingUsers, row.index)}
