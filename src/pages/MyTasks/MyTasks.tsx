@@ -8,8 +8,6 @@ import Tooltip from 'components/organisms/Tooltip/Tooltip'
 
 import classes from './classes.module.scss'
 
-// TODO: WIP - implement this page
-
 interface ObjectType {
   [key: string]: string
 }

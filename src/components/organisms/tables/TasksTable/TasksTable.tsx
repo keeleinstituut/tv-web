@@ -1,69 +1,43 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, uniq, includes, find } from 'lodash'
+import { includes, map } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import classNames from 'classnames'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import {
-  FormInput,
-  InputTypes,
-} from 'components/organisms/DynamicForm/DynamicForm'
-import { useFetchOrders } from 'hooks/requests/useOrders'
 import { OrderStatus } from 'types/orders'
 import Tag from 'components/atoms/Tag/Tag'
-import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
 import dayjs from 'dayjs'
-import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchTasks } from 'hooks/requests/useTasks'
+import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import classNames from 'classnames'
 
-// TODO: this is WIP code for tasks list view
-
-// TODO: statuses might come from BE instead
-// Currently unclear
-const mockStatuses = [
-  { label: 'Uus', value: 'NEW' },
-  { label: 'Registreeritud', value: 'REGISTERED' },
-  { label: 'Tellijale edastatud', value: 'FORWARDED' },
-  { label: 'Tühistatud', value: 'CANCELLED' },
-  { label: 'Vastuvõetud', value: 'ACCEPTED' },
-  { label: 'Tagasi lükatud', value: 'REJECTED' },
-]
-
-type OrderTableRow = {
-  ext_id: string
+type TaskTableRow = {
+  ext_id: { id: string; ext_id: string }
   reference_number: string
-  deadline_at: string
-  type: string
-  status: OrderStatus
-  tags: string[]
+  language_directions: string
   cost: string
-  language_directions: string[]
+  type: string
+  deadline_at: string
+  status?: OrderStatus
 }
 
-const columnHelper = createColumnHelper<any>()
-
-// TODO: we keep all filtering and sorting options inside form
-// This was we can do a new request easily every time form values change
-interface FormValues {
-  status?: string[]
-  only_show_personal_projects: boolean
-}
+//TODO: fetch assigned to me tasks - {assigned_to_me: 1} and history
 
 const TasksTable: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
+  const { languageDirectionFilters, loadMore, handleSearch } =
+    useLanguageDirections({})
 
   const {
     tasks,
@@ -73,239 +47,134 @@ const TasksTable: FC = () => {
     handlePaginationChange,
   } = useFetchTasks({ assigned_to_me: 0 })
 
-  // TODO: remove default values, once we have actual data
-
-  const orderRows1 = [
-    {
-      id: '123',
-      name: 'name',
-    },
-  ]
-
-  const orderRows = useMemo(
+  const tasksData = useMemo(
     () =>
-      map(
-        tasks,
-        ({
-          id,
-          name,
-          // sub_projects,
-          // deadline_at,
-          // ext_id,
-          // type_classifier_value,
-          // status = OrderStatus.Registered,
-          // tags = ['asutusesiseseks kasutuseks'],
-          // cost = '500€',
-        }) => {
-          return {
-            id,
-            name,
-            //   ext_id,
-            //   reference_number,
-            //   deadline_at,
-            //   type: type_classifier_value?.value || '',
-            //   status,
-            //   tags,
-            //   cost,
-            //   language_directions: uniq(
-            //     map(
-            //       sub_projects,
-            //       ({
-            //         source_language_classifier_value,
-            //         destination_language_classifier_value,
-            //       }) =>
-            //         `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
-            //     )
-            //   ),
-          }
+      map(tasks, ({ id, assignment }) => {
+        const subProject = assignment.subProject
+        return {
+          ext_id: { id: id, ext_id: assignment.ext_id },
+          reference_number: subProject.project.reference_number,
+          language_directions: `${subProject.source_language_classifier_value?.value} > ${subProject.destination_language_classifier_value?.value}`,
+          cost: subProject.price,
+          type: subProject.project.type_classifier_value.name,
+          deadline_at: subProject.project.deadline_at,
         }
-      ),
+      }),
     [tasks]
   )
 
-  const { control, handleSubmit, watch } = useForm<FormValues>({
-    mode: 'onChange',
-    resetOptions: {
-      keepErrors: true,
-    },
-  })
+  console.log('tasksData', tasksData)
 
-  // TODO: use function to pass in filters and sorting to our order fetch hook
-  // Not sure yet, what keys these will have and how the params will be passed
-  const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data)
-
-  useEffect(() => {
-    // Submit form every time it changes
-    const subscription = watch(() => handleSubmit(onSubmit)())
-    return () => subscription.unsubscribe()
-  }, [handleSubmit, watch])
+  const columnHelper = createColumnHelper<TaskTableRow>()
 
   const columns = [
-    columnHelper.accessor('id', {
+    columnHelper.accessor('ext_id', {
       header: () => t('my_tasks.assignment_id'),
       footer: (info) => info.column.id,
-      cell: ({ getValue, row }) => {
-        const id = getValue() as string
+      cell: ({ getValue }) => {
+        const ext_id = getValue() as { id: string; ext_id: string }
         return (
           <Button
             appearance={AppearanceTypes.Text}
             size={SizeTypes.M}
             icon={ArrowRight}
-            ariaLabel={t('label.to_order_view')}
+            ariaLabel={t('label.to_task_view')}
             iconPositioning={IconPositioningTypes.Left}
             // disabled={
             //   !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
             // }
-            href={`/orders/my-tasks/${id}`}
+            href={`/orders/my-tasks/${ext_id.id}`}
           >
-            {id}
+            {ext_id.ext_id}
           </Button>
         )
       },
     }),
-
-    columnHelper.accessor('name', {
-      header: () => 'Name',
+    columnHelper.accessor('reference_number', {
+      header: () => t('label.associated_reference_number'),
       footer: (info) => info.column.id,
     }),
-    // columnHelper.accessor('ext_id', {
-    //   header: () => t('label.order_id'),
-    //   cell: ({ getValue, row }) => {
-    //     const orderExtId = getValue()
-    //     const order = find(orders, { ext_id: orderExtId })
-    //     return (
-    //       <Button
-    //         appearance={AppearanceTypes.Text}
-    //         size={SizeTypes.M}
-    //         icon={ArrowRight}
-    //         ariaLabel={t('label.to_order_view')}
-    //         iconPositioning={IconPositioningTypes.Left}
-    //         // disabled={
-    //         //   !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
-    //         // }
-    //         href={`/orders/${order?.id}`}
-    //       >
-    //         {orderExtId}
-    //       </Button>
-    //     )
-    //   },
-    //   footer: (info) => info.column.id,
-    // }),
-    // columnHelper.accessor('reference_number', {
-    //   header: () => t('label.reference_number'),
-    //   footer: (info) => info.column.id,
-    // }),
-    // columnHelper.accessor('language_directions', {
-    //   header: () => t('label.language_directions'),
-    //   footer: (info) => info.column.id,
-    //   cell: ({ getValue }) => {
-    //     return (
-    //       <div className={classes.tagsRow}>
-    //         {map(getValue(), (value) => (
-    //           <Tag label={value} value key={value} />
-    //         ))}
-    //       </div>
-    //     )
-    //   },
-    // }),
-    // columnHelper.accessor('type', {
-    //   header: () => t('label.type'),
-    //   footer: (info) => info.column.id,
-    // }),
-    // columnHelper.accessor('tags', {
-    //   header: () => t('label.order_tags'),
-    //   footer: (info) => info.column.id,
-    //   cell: ({ getValue }) => {
-    //     return (
-    //       <div className={classes.tagsRow}>
-    //         {map(getValue(), (value) => (
-    //           <Tag label={value} value key={value} />
-    //         ))}
-    //       </div>
-    //     )
-    //   },
-    // }),
-    // columnHelper.accessor('status', {
-    //   header: () => t('label.status'),
-    //   footer: (info) => info.column.id,
-    //   cell: ({ getValue }) => <OrderStatusTag status={getValue()} />,
-    // }),
-    // columnHelper.accessor('cost', {
-    //   header: () => t('label.cost'),
-    //   footer: (info) => info.column.id,
-    //   meta: {
-    //     sortingOption: ['asc', 'desc'],
-    //   },
-    // }),
-    // columnHelper.accessor('deadline_at', {
-    //   header: (asd) => {
-    //     console.warn('asd', asd)
-    //     return t('label.deadline_at')
-    //   },
-    //   footer: (info) => info.column.id,
-    //   cell: ({ getValue, row }) => {
-    //     const deadlineDate = dayjs(getValue())
-    //     const currentDate = dayjs()
-    //     const diff = deadlineDate.diff(currentDate)
-    //     const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
-    //     const rowStatus = row.original.status
-    //     const hasDeadlineError =
-    //       diff < 0 &&
-    //       !includes(
-    //         [
-    //           OrderStatus.Forwarded,
-    //           OrderStatus.Accepted,
-    //           OrderStatus.Cancelled,
-    //           OrderStatus.Corrected,
-    //         ],
-    //         rowStatus
-    //       )
-    //     return (
-    //       <span
-    //         className={classNames(
-    //           classes.deadline,
-    //           hasDeadlineError && classes.error
-    //         )}
-    //       >
-    //         {formattedDate}
-    //       </span>
-    //     )
-    //   },
-    //   meta: {
-    //     sortingOption: ['asc', 'desc'],
-    //   },
-    // }),
-  ] as ColumnDef<any>[]
+    columnHelper.accessor('language_directions', {
+      header: () => t('label.language_directions'),
+      footer: (info) => info.column.id,
+      cell: ({ getValue }) => {
+        const label = getValue() as string
+        return (
+          <div className={classes.tagsRow}>
+            <Tag label={label} value />
+          </div>
+        )
+      },
+      meta: {
+        filterOption: { language_direction: languageDirectionFilters },
+        onEndReached: loadMore,
+        onSearch: handleSearch,
+        showSearch: true,
+      },
+    }),
+    columnHelper.accessor('cost', {
+      header: () => t('label.cost'),
+      footer: (info) => info.column.id,
+    }),
+    columnHelper.accessor('type', {
+      header: () => t('label.type'),
+      footer: (info) => info.column.id,
+      meta: {
+        filterOption: { tag_id: tasks }, // TODO: add correct filtering options
+      },
+    }),
+    columnHelper.accessor('deadline_at', {
+      header: () => t('label.deadline_at'),
+      footer: (info) => info.column.id,
+      cell: ({ getValue, row }) => {
+        const dateValue = getValue() as string
+        const deadlineDate = dayjs(dateValue)
+        const currentDate = dayjs()
+        const diff = deadlineDate.diff(currentDate)
+        const formattedDate = dayjs(dateValue).format('DD.MM.YYYY')
+        const rowStatus = row.original.status
+
+        //TODO: check from wiki hasDeadlineError OrderStatus requirements
+
+        const hasDeadlineError =
+          diff < 0 &&
+          !includes(
+            [
+              OrderStatus.Forwarded,
+              OrderStatus.Accepted,
+              OrderStatus.Cancelled,
+              OrderStatus.Corrected,
+            ],
+            rowStatus
+          )
+        return (
+          <span
+            className={classNames(
+              classes.deadline,
+              hasDeadlineError && classes.error
+            )}
+          >
+            {formattedDate}
+          </span>
+        )
+      },
+      meta: {
+        sortingOption: ['asc', 'desc'],
+      },
+    }),
+  ] as ColumnDef<TaskTableRow>[]
 
   return (
     <Root>
       <DataTable
-        data={orderRows}
+        data={tasksData}
         columns={columns}
         tableSize={TableSizeTypes.M}
-        // paginationData={paginationData}
-        // onPaginationChange={handlePaginationChange}
-        // onFiltersChange={handleFilterChange}
-        // onSortingChange={handleSortingChange}
+        paginationData={paginationData}
+        onPaginationChange={handlePaginationChange}
+        onFiltersChange={handleFilterChange}
+        onSortingChange={handleSortingChange}
         className={classes.topSection}
-        headComponent={
-          <div>
-            {/* <FormInput
-              name="status"
-              control={control}
-              options={mockStatuses}
-              inputType={InputTypes.TagsSelect}
-            />
-            <FormInput
-              name="only_show_personal_projects"
-              label={t('label.show_only_my_orders')}
-              ariaLabel={t('label.show_only_my_orders')}
-              className={classes.checkbox}
-              control={control}
-              inputType={InputTypes.Checkbox}
-            /> */}
-          </div>
-        }
       />
     </Root>
   )

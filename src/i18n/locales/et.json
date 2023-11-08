@@ -31,6 +31,7 @@
     "show_only_my_orders": "Soovin näha vaid oma tellimusi",
     "all": "Kõik",
     "to_order_view": "Tellimuse vaatesse",
+    "to_task_view": "Ülesande vaatesse",
     "order_id": "Tellimuse ID",
     "cost": "Maksumus",
     "deadline_at": "Tähtaeg",
