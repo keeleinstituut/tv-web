@@ -100,7 +100,6 @@ type FormValues = {
   DiscountPercentagesAmounts
 
 const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
-  // onSave,
   isCat,
   id,
   vendorName,
