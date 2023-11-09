@@ -28,6 +28,7 @@ import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
+import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 
 // TODO: statuses might come from BE instead
 // Currently unclear
@@ -67,6 +68,8 @@ const OrdersTable: FC = () => {
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Order,
   })
+  const { languageDirectionFilters, loadMore, handleSearch } =
+    useLanguageDirections({})
 
   const statusFilters = map(OrderStatus, (status) => ({
     label: t(`orders.status.${status}`),
@@ -176,7 +179,10 @@ const OrdersTable: FC = () => {
         )
       },
       meta: {
-        filterOption: { tags: tagsFilters },
+        filterOption: { language_directions: languageDirectionFilters },
+        onEndReached: loadMore,
+        onSearch: handleSearch,
+        showSearch: true,
       },
     }),
     columnHelper.accessor('type', {
@@ -194,6 +200,10 @@ const OrdersTable: FC = () => {
             ))}
           </div>
         )
+      },
+      meta: {
+        filterOption: { tags_ids: tagsFilters },
+        showSearch: true,
       },
     }),
     columnHelper.accessor('status', {
