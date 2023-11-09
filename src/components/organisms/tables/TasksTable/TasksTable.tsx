@@ -1,9 +1,9 @@
-import { FC, useMemo } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { includes, map } from 'lodash'
+import { includes, map, split } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -20,6 +20,9 @@ import useAuth from 'hooks/useAuth'
 import { useFetchTasks } from 'hooks/requests/useTasks'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import classNames from 'classnames'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
+import { FilterFunctionType } from 'types/collective'
 
 type TaskTableRow = {
   ext_id: { id: string; ext_id: string }
@@ -38,6 +41,11 @@ const TasksTable: FC = () => {
   const { userPrivileges } = useAuth()
   const { languageDirectionFilters, loadMore, handleSearch } =
     useLanguageDirections({})
+  const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
+    type: ClassifierValueType.ProjectType,
+  })
+
+  console.log('typeFilters', typeFilters)
 
   const {
     tasks,
@@ -61,6 +69,42 @@ const TasksTable: FC = () => {
         }
       }),
     [tasks]
+  )
+
+  const handleModifiedFilterChange = useCallback(
+    (filters?: FilterFunctionType) => {
+      // language_direction will be an array of strings
+      const { language_direction, type_classifier_value_id, ...rest } =
+        filters || {}
+      const typedLanguageDirection = language_direction as string[]
+
+      console.log('type_classifier_value_id', type_classifier_value_id)
+
+      const langPair = map(
+        typedLanguageDirection,
+        (languageDirectionString) => {
+          const [src, dst] = split(languageDirectionString, '_')
+          return { src, dst }
+        }
+      )
+
+      const newFilters = {
+        lang_pair: langPair,
+        ...rest,
+      }
+
+      const newTypeFilters = {
+        type_classifier_value_id: type_classifier_value_id,
+      }
+
+      console.log('newTypeFilters', newTypeFilters)
+
+      if (handleFilterChange) {
+        handleFilterChange(newTypeFilters)
+        // handleFilterChange(newFilters)
+      }
+    },
+    [handleFilterChange]
   )
 
   const columnHelper = createColumnHelper<TaskTableRow>()
@@ -118,7 +162,7 @@ const TasksTable: FC = () => {
       header: () => t('label.type'),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { tag_id: tasks }, // TODO: add correct filtering options
+        filterOption: { type_classifier_value_id: typeFilters },
       },
     }),
     columnHelper.accessor('deadline_at', {
@@ -170,7 +214,7 @@ const TasksTable: FC = () => {
         tableSize={TableSizeTypes.M}
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
-        onFiltersChange={handleFilterChange}
+        onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         className={classes.topSection}
       />

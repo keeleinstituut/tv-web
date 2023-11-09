@@ -10,8 +10,6 @@ import DataTable, {
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { CatAnalysis, CatJob, SourceFile } from 'types/orders'
-
-import classes from './classes.module.scss'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -27,6 +25,8 @@ import {
   useDownloadXliffFile,
 } from 'hooks/requests/useOrders'
 
+import classes from './classes.module.scss'
+
 interface CatJobsTableProps {
   className?: string
   hidden?: boolean
@@ -35,9 +35,10 @@ interface CatJobsTableProps {
   cat_analyzis?: CatAnalysis[]
   cat_files?: SourceFile[]
   source_files?: SourceFile[]
-  source_language_classifier_value: LanguageClassifierValue
-  destination_language_classifier_value: LanguageClassifierValue
+  source_language_classifier_value?: LanguageClassifierValue
+  destination_language_classifier_value?: LanguageClassifierValue
   canSendToVendors?: boolean
+  isTaskView?: boolean
 }
 
 interface CatJobRow {
@@ -61,6 +62,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   canSendToVendors,
+  isTaskView,
 }) => {
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile()
@@ -128,7 +130,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
 
   const columns = [
     columnHelper.accessor('name', {
-      header: () => t('label.xliff_name'),
+      header: () => (isTaskView ? t('label.file_name') : t('label.xliff_name')),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('progress_percentage', {
@@ -196,12 +198,18 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         hidePagination
         headComponent={
           <div className={classes.titleRow}>
-            <h3>{t('orders.source_files_in_translation_tool')}</h3>
+            <h3>
+              {isTaskView
+                ? t('my_tasks.my_final_files')
+                : t('orders.source_files_in_translation_tool')}
+            </h3>
 
             <SmallTooltip
-              tooltipContent={t(
-                'tooltip.source_files_in_translation_tool_helper'
-              )}
+              tooltipContent={
+                isTaskView
+                  ? t('tooltip.my_ready_files_from_vendors')
+                  : t('tooltip.source_files_in_translation_tool_helper')
+              }
             />
           </div>
         }
@@ -216,6 +224,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           isCatAnalysisInProgress && classes.loader
         )}
         icon={ArrowRight}
+        hidden={isTaskView}
       >
         {t('button.look_at_cat_analysis')}
       </Button>

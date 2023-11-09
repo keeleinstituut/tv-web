@@ -1,4 +1,4 @@
-import { useCallback, useMemo, Fragment } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map, filter, isEmpty, compact, includes } from 'lodash'
 import {
@@ -43,6 +43,7 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
   className?: string
   isLoading?: boolean
   subOrderId: string
+  isTaskView?: boolean
 }
 
 interface FileRow {
@@ -65,6 +66,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   className,
   isLoading,
   subOrderId,
+  isTaskView,
 }: FinalFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -161,73 +163,89 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   }, [sharedFiles, typedValue])
 
   const columns = [
-    columnHelper.accessor('shared_with_client', {
-      header: () => (
-        <span hidden={!isEditable}>{t('label.shared_with_client')}</span>
-      ),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        if (!isEditable) return null
-        return (
-          <FormInput
-            name={`shared_with_client.${getValue()}` as Path<TFormValues>}
-            ariaLabel={t('label.share_with_client')}
-            control={control}
-            inputType={InputTypes.Checkbox}
-            // className={classes.fitContent}
-          />
-        )
-      },
-    }),
+    ...(!isTaskView
+      ? [
+          columnHelper.accessor('shared_with_client', {
+            header: () => t('label.shared_with_client'),
+            footer: (info) => info.column.id,
+            cell: ({ getValue }) => {
+              return (
+                <FormInput
+                  name={`shared_with_client.${getValue()}` as Path<TFormValues>}
+                  ariaLabel={t('label.share_with_client')}
+                  control={control}
+                  inputType={InputTypes.Checkbox}
+                  // className={classes.fitContent}
+                />
+              )
+            },
+          }),
+        ]
+      : []),
     columnHelper.accessor('name', {
       header: () => t('label.file_name'),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('feature', {
-      header: () => t('label.task'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        const selectedFeature = getValue()
-        return t(`orders.features.${selectedFeature}`)
-      },
-    }),
+    ...(!isTaskView
+      ? [
+          columnHelper.accessor('feature', {
+            header: () => t('label.task'),
+            footer: (info) => info.column.id,
+            cell: ({ getValue }) => {
+              const selectedFeature = getValue()
+              return t(`orders.features.${selectedFeature}`)
+            },
+          }),
+        ]
+      : []),
     columnHelper.accessor('created_at', {
       header: () => t('label.added_at'),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('download_button', {
-      header: '',
-      cell: ({ getValue }) => {
-        const file = typedValue?.[getValue()]
-        const localFileUrl =
-          file instanceof File ? URL.createObjectURL(file) : ''
-        const fileUrl =
-          'original_url' in file ? file.original_url : localFileUrl
-        return (
-          <BaseButton
-            className={classNames(classes.iconButton, classes.downloadButton)}
-            onClick={() => handleDownload(getValue())}
-          >
-            <DownloadFilled />
-          </BaseButton>
-        )
-      },
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('delete_button', {
-      header: '',
-      cell: ({ getValue }) => {
-        return (
-          <BaseButton
-            className={classes.iconButton}
-            onClick={() => handleDelete(getValue())}
-          >
-            <Delete />
-          </BaseButton>
-        )
-      },
-      footer: (info) => info.column.id,
-    }),
+    ...(!isTaskView
+      ? [
+          columnHelper.accessor('download_button', {
+            header: '',
+            cell: ({ getValue }) => {
+              const file = typedValue?.[getValue()]
+              const localFileUrl =
+                file instanceof File ? URL.createObjectURL(file) : ''
+              const fileUrl =
+                'original_url' in file ? file.original_url : localFileUrl
+              return (
+                <BaseButton
+                  className={classNames(
+                    classes.iconButton,
+                    classes.downloadButton
+                  )}
+                  onClick={() => handleDownload(getValue())}
+                >
+                  <DownloadFilled />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
+    ...(!isTaskView
+      ? [
+          columnHelper.accessor('delete_button', {
+            header: '',
+            cell: ({ getValue }) => {
+              return (
+                <BaseButton
+                  className={classes.iconButton}
+                  onClick={() => handleDelete(getValue())}
+                >
+                  <Delete />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
   ] as ColumnDef<FileRow>[]
 
   // TODO: possibly not needed
@@ -296,10 +314,11 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         onClick={handleSendFilesToClient}
         disabled={!dirtyFields?.shared_with_client}
         loading={isLoading}
+        hidden={isTaskView}
       >
         {t('button.save_changes')}
       </Button>
-      <span className={classes.saveHelper}>
+      <span className={classes.saveHelper} hidden={isTaskView}>
         {t('helper.save_files_helper')}
       </span>
     </div>

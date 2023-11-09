@@ -1,10 +1,11 @@
+import { LanguageClassifierValue } from './classifierValues'
 import {
   PaginationFunctionType,
   ResponseMetaTypes,
   SortingFunctionType,
 } from './collective'
 import { DetailedOrder, SourceFile, TypeClassifierValue } from './orders'
-import { LanguageClassifierValue } from './price'
+// import { LanguageClassifierValue } from './price'
 
 export type GetTasksPayload = PaginationFunctionType &
   SortingFunctionType & {
@@ -47,12 +48,8 @@ type SubProject = {
   price: number
   project: DetailedOrder
   // project: Project
-  source_language_classifier_value: LanguageClassifierValue & {
-    meta: string
-  }
-  destination_language_classifier_value: LanguageClassifierValue & {
-    meta: string
-  }
+  source_language_classifier_value: LanguageClassifierValue
+  destination_language_classifier_value: LanguageClassifierValue
   cat_files: SourceFile[]
 }
 

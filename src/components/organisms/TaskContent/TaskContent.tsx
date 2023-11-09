@@ -13,7 +13,7 @@ import {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
-import CatJobsTable from '../tables/CatJobsTable/CatJobsTable'
+import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import {
   compact,
   filter,
@@ -29,15 +29,17 @@ import { useForm } from 'react-hook-form'
 import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
 import {
+  CatAnalysis,
   CatJob,
   CatProjectPayload,
   CatProjectStatus,
   SourceFile,
 } from 'types/orders'
-import { ModalTypes, showModal } from '../modals/ModalRoot'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 
 import classes from './classes.module.scss'
+import { LanguageClassifierValue } from 'types/classifierValues'
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
@@ -50,7 +52,20 @@ interface FormValues {
   my_notes?: string
 }
 
-const TaskContent: FC<any> = ({
+interface TaskContentProps {
+  id?: string
+  deadline_at?: string
+  source_files?: SourceFile[]
+  cat_files?: SourceFile[]
+  cat_jobs?: CatJob[]
+  cat_analyzis: CatAnalysis[]
+  final_files: SourceFile[]
+  source_language_classifier_value?: LanguageClassifierValue
+  destination_language_classifier_value?: LanguageClassifierValue
+  event_start_at?: string
+}
+
+const TaskContent: FC<TaskContentProps> = ({
   id,
   deadline_at,
   source_files,
@@ -69,9 +84,12 @@ const TaskContent: FC<any> = ({
   const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: id })
   const { sendToCat, isCatProjectLoading } = useSubOrderSendToCat()
   const { catToolJobs, catSetupStatus } = useFetchSubOrderCatToolJobs({
-    id: id,
+    // id: id,
+    id: '9a8e440e-33fc-453c-9497-e2c5690d4563',
   })
-  const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: id })
+  const { subOrderTmKeys } = useFetchSubOrderTmKeys({
+    id: '9a8e440e-33fc-453c-9497-e2c5690d4563',
+  })
 
   const defaultValues = useMemo(
     () => ({
@@ -118,7 +136,7 @@ const TaskContent: FC<any> = ({
     const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
     const payload: CatProjectPayload = {
-      sub_project_id: id,
+      sub_project_id: id || '',
       source_files_ids: compact(map(selectedSourceFiles, 'id')),
     }
 
@@ -144,8 +162,11 @@ const TaskContent: FC<any> = ({
   )
 
   const subOrderLangPair = useMemo(() => {
-    const slangShort = split(source_language_classifier_value, '-')[0]
-    const tlangShort = split(destination_language_classifier_value, '-')[0]
+    const slangShort = split(source_language_classifier_value?.value, '-')[0]
+    const tlangShort = split(
+      destination_language_classifier_value?.value,
+      '-'
+    )[0]
     return `${slangShort}_${tlangShort}`
   }, [destination_language_classifier_value, source_language_classifier_value])
 
@@ -174,9 +195,14 @@ const TaskContent: FC<any> = ({
     },
     {
       label: t('label.special_instructions'),
+      //TODO: add correct variable for content
       content: 'Siin on mingi lisainfo.',
     },
-    { label: t('label.volume'), content: '4h' },
+    {
+      label: t('label.volume'),
+      //TODO: add correct variable for content
+      content: '4h',
+    },
   ]
 
   if (isLoading) return <Loader loading={isLoading} />
@@ -213,7 +239,8 @@ const TaskContent: FC<any> = ({
         //   hidden={!catSupported}
         control={control}
         isEditable={false}
-        subOrderId={id}
+        // subOrderId={id}
+        subOrderId={'9a8e440e-33fc-453c-9497-e2c5690d4563' || ''}
         subOrderTmKeys={subOrderTmKeys}
         subOrderLangPair={subOrderLangPair}
         //   projectDomain={projectDomain}
@@ -229,32 +256,38 @@ const TaskContent: FC<any> = ({
           isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
           isCatProjectLoading={isCatProjectLoading}
           catSetupStatus={catSetupStatus}
-          subOrderId={id}
+          isTaskView
+          // subOrderId={id || ''}
+          subOrderId={'9a8e440e-33fc-453c-9497-e2c5690d4563' || ''}
           isEditable
         />
         <FinalFilesList
           name="my_final_files"
           title={t('my_tasks.my_ready_files')}
           control={control}
-          isEditable={false}
+          isEditable
           isLoading={isLoading}
-          subOrderId={id}
+          // subOrderId={id || ''}
+          subOrderId={'9a8e440e-33fc-453c-9497-e2c5690d4563' || ''}
           // isEditable={isEditable}
           className={classes.myFinalFiles}
+          isTaskView
         />
         <CatJobsTable
-          subOrderId={id}
+          subOrderId={'9a8e440e-33fc-453c-9497-e2c5690d4563' || ''}
+          // subOrderId={id || ''}
           className={classes.catJobs}
           //   hidden={!catSupported || isEmpty(catToolJobs)}
           cat_jobs={catToolJobs}
           cat_files={cat_files}
           source_files={source_files}
           cat_analyzis={cat_analyzis}
+          canSendToVendors={true} //TODO add check when camunda is ready
           source_language_classifier_value={source_language_classifier_value}
           destination_language_classifier_value={
             destination_language_classifier_value
           }
-          canSendToVendors={true} //TODO add check when camunda is ready
+          isTaskView
         />
       </div>
     </Root>

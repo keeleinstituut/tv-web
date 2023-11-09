@@ -121,7 +121,8 @@
     "chunk_amount_old": "Segmentide arv",
     "id": "ID",
     "owner": "Omanik",
-    "my_notes": "Minu märkused"
+    "my_notes": "Minu märkused",
+    "category": "Katogooria"
   },
   "placeholder": {
     "email": "example@mail.com",

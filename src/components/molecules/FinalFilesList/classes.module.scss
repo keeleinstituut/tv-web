@@ -37,7 +37,7 @@
       height: 16px;
     }
   }
-  
+
   .downloadButton {
     svg {
       path {
@@ -83,7 +83,7 @@
           border: transparent;
           height: 32px;
           max-height: 32px;
-      
+
           &:first-child {
             padding-right: spacing(1);
             width: 78px;
@@ -97,7 +97,6 @@
     }
   }
 
-
   .fitContent {
     width: fit-content;
   }
@@ -110,7 +109,7 @@
   margin-bottom: spacing(4);
 
   .fileImportButton {
-    margin-left: auto
+    margin-left: auto;
   }
 }
 

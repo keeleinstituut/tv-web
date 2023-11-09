@@ -42,6 +42,7 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   isCatProjectLoading?: boolean
   isGenerateProjectButtonDisabled?: boolean
   catSetupStatus?: CatProjectStatus
+  isTaskView?: boolean
 }
 
 interface FileRow {
@@ -68,6 +69,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   subOrderId,
   isGenerateProjectButtonDisabled,
   catSetupStatus,
+  isTaskView,
 }: SourceFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -127,7 +129,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   )
 
   const columns = [
-    ...(canGenerateProject
+    ...(canGenerateProject && !isTaskView
       ? [
           columnHelper.accessor('check', {
             header: '',
@@ -169,6 +171,15 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         )
       },
     }),
+    ...(isTaskView
+      ? [
+          //TODO: add correct data for category
+          columnHelper.accessor('check', {
+            header: () => t('label.category'),
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
     columnHelper.accessor('updated_at', {
       header: () => t('label.updated_at'),
       footer: (info) => info.column.id,
@@ -254,7 +265,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
             />
             <FileImport
               fileButtonText={t('button.add_new_file')}
-              hidden={!isEditable}
+              hidden={!isEditable || isTaskView}
               isFilesListHidden
               files={value}
               inputFileTypes={ProjectFileTypes}
@@ -266,7 +277,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         }
       />
       <GenerateForTranslationSection
-        hidden={!canGenerateProject}
+        hidden={!canGenerateProject || isTaskView}
         openSendToCatModal={openSendToCatModal}
         className={classes.generateSection}
         disabled={isGenerateProjectButtonDisabled}

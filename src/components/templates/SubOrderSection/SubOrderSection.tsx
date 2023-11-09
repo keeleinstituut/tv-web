@@ -53,7 +53,7 @@ interface LeftComponentProps {
   ext_id: string
   price?: string
   deadline_at?: string
-  myTask?: boolean
+  isTaskView?: boolean
 }
 
 export const LeftComponent: FC<LeftComponentProps> = ({
@@ -61,7 +61,7 @@ export const LeftComponent: FC<LeftComponentProps> = ({
   ext_id,
   price,
   deadline_at,
-  myTask,
+  isTaskView,
 }) => {
   const { t } = useTranslation()
   return (
@@ -70,7 +70,9 @@ export const LeftComponent: FC<LeftComponentProps> = ({
         <Tag label={languageDirection || '-'} value />
       </Column>
       <Column
-        label={myTask ? t('my_tasks.assignment_id') : t('label.sub_order_id')}
+        label={
+          isTaskView ? t('my_tasks.assignment_id') : t('label.sub_order_id')
+        }
       >
         <span className={classes.valueText}>{ext_id}</span>
       </Column>

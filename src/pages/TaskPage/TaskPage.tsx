@@ -23,10 +23,9 @@ const TaskPage: FC = () => {
   const task = find(tasks, { id: taskId })
 
   const assignment = task?.assignment
+  const id = task?.id
   const project = assignment?.subProject.project
   const catFiles = assignment?.subProject.cat_files
-
-  console.log('task', task)
 
   // TODO: check is "Tellija" of the order current user
   if (isLoading) return <Loader loading={isLoading} />
@@ -56,12 +55,13 @@ const TaskPage: FC = () => {
         project={project}
         isLoading={isLoading}
         source_language_classifier_value={
-          assignment?.subProject.source_language_classifier_value.value
+          assignment?.subProject.source_language_classifier_value
         }
         destination_language_classifier_value={
-          assignment?.subProject.destination_language_classifier_value.value
+          assignment?.subProject.destination_language_classifier_value
         }
         cat_files={catFiles}
+        id={id}
       />
     </>
   )

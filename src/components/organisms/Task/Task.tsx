@@ -13,14 +13,16 @@ import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 import classes from './classes.module.scss'
 import { DetailedOrder, SourceFile } from 'types/orders'
+import { LanguageClassifierValue } from 'types/classifierValues'
 
 interface TaskProps {
   ext_id?: string
   isLoading: boolean
-  source_language_classifier_value?: string
-  destination_language_classifier_value?: string
+  source_language_classifier_value?: LanguageClassifierValue
+  destination_language_classifier_value?: LanguageClassifierValue
   project?: DetailedOrder
   cat_files?: SourceFile[]
+  id?: string
 }
 
 const Task: FC<TaskProps> = ({
@@ -29,6 +31,7 @@ const Task: FC<TaskProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   project,
+  id,
   cat_files,
 }) => {
   const { t } = useTranslation()
@@ -37,7 +40,7 @@ const Task: FC<TaskProps> = ({
 
   const { price, deadline_at, status } = project || {}
 
-  const languageDirection = `${source_language_classifier_value} > ${destination_language_classifier_value}`
+  const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
   const attemptScroll = useCallback(() => {
     const matchingElement = document.getElementById(ext_id)
@@ -93,7 +96,7 @@ const Task: FC<TaskProps> = ({
       leftComponent={
         <LeftComponent
           {...{ ext_id, deadline_at, price, languageDirection }}
-          myTask
+          isTaskView
         />
       }
     >
@@ -104,7 +107,7 @@ const Task: FC<TaskProps> = ({
         cat_jobs={[]}
         cat_analyzis={[]}
         final_files={[]}
-        subOrderId={''}
+        id={id}
         source_language_classifier_value={source_language_classifier_value}
         destination_language_classifier_value={
           destination_language_classifier_value
