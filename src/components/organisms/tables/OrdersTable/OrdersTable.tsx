@@ -92,7 +92,7 @@ const OrdersTable: FC = () => {
             ext_id,
             reference_number,
             deadline_at,
-            type: type_classifier_value?.value || '',
+            type: type_classifier_value?.name || '',
             status,
             tags: map(tags, (value) => value?.name || ''),
             price,
