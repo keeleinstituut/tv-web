@@ -616,7 +616,7 @@
     "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",
     "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja",
     "no_changes_made": "Andmetes puuduvad muudatused",
-    "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobiva(d) teostaja(d) valinud."
+    "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik muuta tellimuse tüüpi, lähtekeelt ja sihtkeeli. Samuti ei saa antud alamtellimusele teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobivad valikud teinud."
   },
   "translation_memories": {
     "memory_title": "Mälu nimetus",
