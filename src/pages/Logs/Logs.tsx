@@ -1,5 +1,5 @@
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
-import { FC, useState } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import Container from 'components/atoms/Container/Container'
 import Button, {
@@ -11,48 +11,56 @@ import DynamicForm, {
   FormInput,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { Path, useForm } from 'react-hook-form'
+import { Path, SubmitHandler, useForm } from 'react-hook-form'
 import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
 import classNames from 'classnames'
-import ToggleTabs from 'components/molecules/ToggleTabs/ToggleTabs'
 import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
 import { ReactComponent as Alarm } from 'assets/icons/alarm.svg'
-import { useEventTypesFetch } from 'hooks/requests/useAuditLogs'
+import {
+  useEventTypesFetch,
+  useFetchAuditLogs,
+} from 'hooks/requests/useAuditLogs'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
+import { isEmpty, isEqual, size, split, toNumber } from 'lodash'
+import dayjs from 'dayjs'
 
 export enum DateTabs {
-  Hour = 'hour',
-  Last25h = 'last25h',
-  Last7days = 'last7days',
-  Last30days = 'last30days',
+  Hour = '1 hour',
+  Last24h = '24 hour',
+  Last7days = '7 days',
+  Last30days = '30 days',
 }
 
 export type FormValues = {
-  logs_time_range: string
-  logs_date_range: string
-  logs_department: string
-  logs_activity: string
-  logs_last_date: string
-  logs_search: string
+  time_range: { start: string; end: string }
+  date_range: { start: string; end: string }
+  department_id: string
+  activity: string
+  last_date: string
+  search: string
 }
 
 const Logs: FC = () => {
   const { t } = useTranslation()
+  const { handleFilterChange } = useFetchAuditLogs()
   const { eventTypeFilters = [] } = useEventTypesFetch()
   const { departmentFilters = [] } = useDepartmentsFetch()
+  const currentDate = dayjs()
+  const currentTime = currentDate.format('HH:mm:ss')
 
   const dateFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.DateRange,
       label: t('logs.date_range'),
-      name: 'time_range' as Path<FormValues>,
+      name: 'date_range' as Path<FormValues>,
       className: classes.dateInput,
+      maxDate: currentDate.toDate(),
     },
     {
       inputType: InputTypes.TimeRange,
       label: t('logs.time_range'),
-      name: 'date_range' as Path<FormValues>,
+      name: 'time_range' as Path<FormValues>,
       className: classNames(classes.inputSection, classes.dateInput),
       showSeconds: true,
       icon: Alarm,
@@ -62,7 +70,7 @@ const Logs: FC = () => {
   const selectionFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Selections,
-      name: 'logs_department',
+      name: 'department_id',
       ariaLabel: t('logs.select_department'),
       options: departmentFilters,
       placeholder: t('logs.select_department'),
@@ -74,7 +82,7 @@ const Logs: FC = () => {
     },
     {
       inputType: InputTypes.Selections,
-      name: 'logs_activity',
+      name: 'activity',
       ariaLabel: t('logs.select_activity'),
       options: eventTypeFilters,
       placeholder: t('logs.select_activity'),
@@ -94,7 +102,7 @@ const Logs: FC = () => {
     },
     {
       label: t('logs.last_24h'),
-      id: DateTabs.Last25h,
+      id: DateTabs.Last24h,
     },
     {
       label: t('logs.last_7days'),
@@ -105,12 +113,77 @@ const Logs: FC = () => {
       id: DateTabs.Last30days,
     },
   ]
+  console.log(dateTabs)
 
-  const [activeTab, setActiveTab] = useState<string>(DateTabs.Hour)
+  const defaultValue = {
+    date_range: {},
+    time_range: {},
+    last_date: dateTabs[0].id,
+  }
 
-  const { control } = useForm<FormValues>({
-    reValidateMode: 'onSubmit',
-  })
+  const { control, watch, setValue, resetField, reset, handleSubmit } =
+    useForm<FormValues>({
+      reValidateMode: 'onChange',
+      defaultValues: defaultValue,
+    })
+  const { date_range, time_range, last_date, search } = watch()
+  console.log(watch())
+
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    (values) => {
+      console.log('filter', values)
+      const toggleValue = !!values?.last_date
+        ? split(values?.last_date, ' ')
+        : []
+      const number = toNumber(toggleValue[0] ?? 0)
+      const count = isEqual(toggleValue[1], 'hour') ? 'hour' : 'days'
+
+      const startDate = values?.date_range.start || currentDate
+      const startTime = values?.time_range.start || currentTime
+      const endDate = values?.date_range.end || currentDate
+      const endTime = values?.time_range.end || currentTime
+
+      const startDateTime = !!values?.last_date
+        ? currentDate.subtract(number, count)
+        : dayjs.utc(`${startDate} ${startTime}`, 'DD/MM/YYYY HH:mm:ss')
+
+      const endDateTime = !!values?.last_date
+        ? currentDate
+        : dayjs.utc(`${endDate} ${endTime}`, 'DD/MM/YYYY HH:mm:ss')
+
+      const payload = {
+        event_type: values?.activity,
+        text: values?.search,
+        department_id: values?.department_id,
+        start_datetime: startDateTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+        end_datetime: endDateTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+      }
+
+      console.log('payload', payload)
+
+      //handleFilterChange()
+    },
+    [handleFilterChange]
+  )
+
+  useEffect(() => {
+    if (search && size(search) > 2) {
+      handleSubmit(onSubmit)()
+    }
+  }, [handleSubmit, onSubmit, search])
+
+  useEffect(() => {
+    if (!isEmpty(date_range) || !isEmpty(time_range)) {
+      setValue('last_date', '')
+    }
+  }, [date_range, setValue, time_range])
+
+  useEffect(() => {
+    if (!!last_date) {
+      resetField('date_range')
+      resetField('time_range')
+    }
+  }, [last_date, resetField])
 
   return (
     <>
@@ -125,9 +198,9 @@ const Logs: FC = () => {
           <div className={classes.buttonsContainer}>
             <Button
               children={t('logs.clean_fields')}
-              type="submit"
               ariaLabel={t('logs.clean_fields')}
               size={SizeTypes.S}
+              onClick={() => reset()}
               appearance={AppearanceTypes.Secondary}
             />
             <Button
@@ -136,6 +209,7 @@ const Logs: FC = () => {
               ariaLabel={t('logs.filter')}
               size={SizeTypes.S}
               className={classes.filterButton}
+              onClick={handleSubmit(onSubmit)}
             />
           </div>
         </div>
@@ -145,16 +219,17 @@ const Logs: FC = () => {
           <DynamicForm fields={selectionFields} control={control} />
 
           <div>
-            <ToggleTabs
-              tabs={dateTabs}
-              activeTab={activeTab}
-              className={classes.dateTabsRow}
-              dateTabsClassName={classes.dateTabs}
-              setActiveTab={setActiveTab}
-            />
             <Root>
               <FormInput
-                name="logs_search"
+                name="last_date"
+                control={control}
+                tabs={dateTabs}
+                className={classes.dateTabsRow}
+                dateTabsClassName={classes.dateTabs}
+                inputType={InputTypes.ToggleTabs}
+              />
+              <FormInput
+                name="search"
                 ariaLabel={t('placeholder.search')}
                 placeholder={t('placeholder.search')}
                 inputType={InputTypes.Text}
@@ -175,9 +250,9 @@ const Logs: FC = () => {
           appearance={AppearanceTypes.Secondary}
         />
       </div>
-      <Root>
+      {/* <Root>
         <LogsTable />
-      </Root>
+      </Root> */}
     </>
   )
 }

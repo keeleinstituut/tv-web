@@ -50,6 +50,9 @@ import RadioInput, {
 import RadioGroup, {
   RadioGroupProps,
 } from 'components/molecules/RadioGroup/RadioGroup'
+import ToggleTabs, {
+  ToggleTabsProps,
+} from 'components/molecules/ToggleTabs/ToggleTabs'
 
 // Extend all props of an input with the corresponding inputType
 
@@ -67,6 +70,7 @@ export enum InputTypes {
   AddVolume = 'addVolume',
   Radio = 'radioInput',
   RadioGroup = 'radioGroup',
+  ToggleTabs = 'toggleTabs',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -117,6 +121,9 @@ type RadioInputPropsWithType = RadioInputProps & {
 type RadioGroupPropsWithType = RadioGroupProps & {
   inputType: InputTypes.RadioGroup
 }
+type ToggleTabsPropsWithType = ToggleTabsProps & {
+  inputType: InputTypes.ToggleTabs
+}
 
 export type InputPropsByType = (
   | TextInputPropsWithType
@@ -132,6 +139,7 @@ export type InputPropsByType = (
   | AddVolumeInputPropsWithType
   | RadioInputPropsWithType
   | RadioGroupPropsWithType
+  | ToggleTabsPropsWithType
 ) & {
   emptyDisplayText?: string
   onlyDisplay?: boolean
@@ -236,6 +244,13 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
           <RadioGroup
             {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
             ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
+      case InputTypes.ToggleTabs:
+        return (
+          <ToggleTabs
+            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            //ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.TagsSelect:

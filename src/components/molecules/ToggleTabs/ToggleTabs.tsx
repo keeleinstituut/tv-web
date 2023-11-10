@@ -15,6 +15,8 @@ export interface ToggleTabsProps {
   tabs?: ToggleTab[]
   hidden?: boolean
   dateTabsClassName?: string
+  value?: string
+  onChange?: (values: string) => void
 }
 
 const ToggleTabs: FC<ToggleTabsProps> = ({
@@ -24,22 +26,35 @@ const ToggleTabs: FC<ToggleTabsProps> = ({
   tabs = [],
   hidden,
   dateTabsClassName,
+  value,
+  onChange,
 }) => {
   if (isEmpty(tabs) || hidden) return null
+
+  const activeTabValue = activeTab || value
+
+  const handleOnChange = (id: string) => {
+    if (setActiveTab) {
+      setActiveTab(id)
+    }
+    if (onChange) {
+      onChange(id)
+    }
+  }
   return (
     <div className={classNames(classes.toggleTabsRow, className)}>
       {map(tabs, ({ id, label }) => {
         if (!id) return null
         return (
           <Button
-            onClick={() => setActiveTab && setActiveTab(id)}
+            onClick={() => handleOnChange(id)}
             appearance={AppearanceTypes.Secondary}
             children={label}
             key={id}
             className={classNames(
               classes.toggleTabs,
               dateTabsClassName ? dateTabsClassName : classes.toggleTab,
-              activeTab === id && classes.activeToggleTab
+              activeTabValue === id && classes.activeToggleTab
             )}
           />
         )

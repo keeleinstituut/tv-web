@@ -667,11 +667,11 @@
     "result": "Tulemus",
     "event_type": {
       "LOG_IN": "Sisselogimine",
-      "LOG_OUT": "väljalogimine",
+      "LOG_OUT": "Väljalogimine",
       "SELECT_INSTITUTION": "Asutuse valimine",
       "CREATE_OBJECT": "Objekti loomine",
       "MODIFY_OBJECT": "Objekti muutmine",
-      "REMOVE_OBJECT": "Objecti kustutamine",
+      "REMOVE_OBJECT": "Objekti kustutamine",
       "COMPLETE_ASSIGNMENT": "Ülesande lõpetamine",
       "FINISH_PROJECT": "Tellimuse lõpetamine",
       "APPROVE_ASSIGNMENT_RESULT": "Ülesande tulemuse vastuvõtmine",

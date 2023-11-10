@@ -13,8 +13,8 @@ export const useDepartmentsFetch = () => {
   })
   const { data: existingDepartments } = data || {}
 
-  const departmentFilters = map(existingDepartments, ({ name }) => {
-    return { value: name, label: name }
+  const departmentFilters = map(existingDepartments, ({ name, id }) => {
+    return { value: id, label: name }
   })
 
   return {

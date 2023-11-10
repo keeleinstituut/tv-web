@@ -18,15 +18,15 @@ export const useFetchAuditLogs = (initialFilters?: AuditLogPayloadType) => {
   const { isLoading, isError, isFetching, data } =
     useQuery<AuditLogsResponseDataType>({
       queryKey: ['auditLogs', filters],
-      queryFn: () => apiClient.get(endpoints.AUDIT_LOGS, filters),
+      // queryFn: () => apiClient.get(endpoints.AUDIT_LOGS, filters),
       keepPreviousData: true,
     })
-  const { meta: paginationData, data: users } = data || {}
+  const { meta: paginationData, data: logs } = data || {}
 
   return {
     isLoading,
     isError,
-    users,
+    logs,
     paginationData,
     handleFilterChange,
     handlePaginationChange,

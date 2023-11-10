@@ -109,8 +109,8 @@ interface EventParameters {
     user?: Partial<UserDetailsType>
   } | null
   //"MODIFY_OBJECT"
-  pre_modification_subset: object | unknown
-  post_modification_subset: object | unknown
+  pre_modification_subset?: object | unknown
+  post_modification_subset?: object | unknown
   //object_type: 'INSTITUTION'
   //   object_identity_subset: {
   //     id: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
