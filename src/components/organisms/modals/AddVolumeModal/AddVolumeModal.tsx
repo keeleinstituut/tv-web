@@ -24,7 +24,6 @@ interface FormValues {
 }
 
 const AddVolumeModal: FC<AddVolumeModalProps> = ({
-  onSave,
   catSupported,
   isModalOpen,
   subOrderId,
@@ -99,7 +98,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       showModal(ModalTypes.VolumeChange, {
-        onSave,
+        subOrderId,
         isCat: values?.addType === 'cat',
         catJobId: values?.chunkId,
         volume_analysis: find(cat_analysis?.cat_jobs, {
@@ -108,7 +107,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
         ...rest,
       })
     },
-    [cat_analysis?.cat_jobs, onSave, rest]
+    [cat_analysis?.cat_jobs, subOrderId, rest]
   )
 
   return (
