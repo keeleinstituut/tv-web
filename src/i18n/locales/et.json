@@ -232,7 +232,8 @@
     "cant_split_files": "Teostajatele jagatud faile ei ole võimalik tükkideks jagada",
     "invalid_price": "Lubatud on ainult numbrid ja punkt",
     "name_input_length": "Nime maksimaalne pikkus võib olla kuni 100 tähemärki",
-    "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips"
+    "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips",
+    "search_input_length": "Otsingu sõna peab olema vähemalt 3 tähemärki"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -685,6 +686,7 @@
       "IMPORT_TRANSLATION_MEMORY": "Tõlkemälu üleslaadimine",
       "SEARCH_LOGS": "Logide otsimine",
       "EXPORT_LOGS": "Logide allalaadimine"
-    }
+    },
+    "no_results_found": "Tulemusi ei leitud"
   }
 }

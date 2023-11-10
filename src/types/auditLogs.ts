@@ -122,7 +122,7 @@ interface EventParameters {
 }
 
 export interface AuditLogsResponseDataType {
-  data: AuditLogsResponse
+  data: AuditLogsResponse[]
   links: LinkTypes
   meta: ResponseMetaTypes
 }

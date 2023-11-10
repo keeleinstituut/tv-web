@@ -21,12 +21,12 @@ export const useFetchAuditLogs = (initialFilters?: AuditLogPayloadType) => {
       // queryFn: () => apiClient.get(endpoints.AUDIT_LOGS, filters),
       keepPreviousData: true,
     })
-  const { meta: paginationData, data: logs } = data || {}
+  const { meta: paginationData, data: logsData } = data || {}
 
   return {
     isLoading,
     isError,
-    logs,
+    logsData,
     paginationData,
     handleFilterChange,
     handlePaginationChange,
