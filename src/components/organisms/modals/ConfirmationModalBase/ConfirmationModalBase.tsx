@@ -73,8 +73,9 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
           onClick: () => {
             if (handleProceed) {
               handleProceed()
+            } else {
+              closeModal()
             }
-            closeModal()
           },
           children: proceedButtonContent || t('button.yes'),
         },
