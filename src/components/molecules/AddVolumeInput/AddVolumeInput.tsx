@@ -13,7 +13,6 @@ import { filter, identity, map, pickBy } from 'lodash'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Price, PriceUnits } from 'types/price'
-import { CatAnalysis, CatJob } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
 import {
   useAssignmentAddCatVolume,
@@ -116,10 +115,8 @@ export interface AddVolumeInputProps {
   catSupported?: boolean
   vendorPrices?: Price
   vendorName?: string
-  cat_analyzis?: CatAnalysis[]
   assignmentId?: string
   subOrderId?: string
-  assignmentCatJobs?: CatJob[]
 }
 
 const AddVolumeInput: FC<AddVolumeInputProps> = ({
@@ -131,10 +128,8 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   catSupported,
   vendorPrices,
   vendorName,
-  cat_analyzis,
   assignmentId,
   subOrderId,
-  assignmentCatJobs,
   disabled,
   loading,
 }) => {
@@ -268,8 +263,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       catSupported,
       vendorPrices,
       vendorName,
-      cat_analyzis,
-      assignmentCatJobs,
     })
   }, [
     assignmentId,
@@ -277,8 +270,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
     catSupported,
     vendorPrices,
     vendorName,
-    cat_analyzis,
-    assignmentCatJobs,
     addAssignmentVolume,
     addAssignmentCatVolume,
     onChange,
