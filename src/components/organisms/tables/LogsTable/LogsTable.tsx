@@ -13,6 +13,9 @@ import { ReactComponent as ShrinkIcon } from 'assets/icons/shrink.svg'
 import data from 'components/organisms/tables/ExamplesTable/data.json'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
+import { Root } from '@radix-ui/react-form'
+import { AuditLogsResponse } from 'types/auditLogs'
+import { PaginationFunctionType, ResponseMetaTypes } from 'types/collective'
 
 type Person = {
   id: string
@@ -24,11 +27,22 @@ type Person = {
   progress: number
   subRows?: Person[]
 }
+type LogsTableProps = {
+  data?: AuditLogsResponse[]
+  hidden?: boolean
+  paginationData?: ResponseMetaTypes
+  handlePaginationChange?: (value?: PaginationFunctionType) => void
+}
 
 const defaultData: Person[] = data?.data || {}
 const columnHelper = createColumnHelper<Person>()
 
-const LogsTable: FC = () => {
+const LogsTable: FC<LogsTableProps> = ({
+  data,
+  hidden,
+  paginationData,
+  handlePaginationChange,
+}) => {
   const { t } = useTranslation()
   const tableData = defaultData
 
@@ -56,25 +70,19 @@ const LogsTable: FC = () => {
         </div>
       ),
 
-      meta: {
-        sortingOption: [
-          { label: 'Tühjenda filtrid', value: 'clean' },
-          { label: '€ - €€', value: 'asc' },
-          { label: '€€ - €', value: 'desc' },
-        ],
-      },
+      size: 500,
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('id', {
-      header: () => <span className={classes.header}>Tegevus</span>,
-      cell: ({ getValue }) => getValue(),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('id', {
-      header: () => <span className={classes.header}>Väli</span>,
-      cell: ({ getValue }) => getValue(),
-      footer: (info) => info.column.id,
-    }),
+    // columnHelper.accessor('id', {
+    //   header: () => <span className={classes.header}>Tegevus</span>,
+    //   cell: ({ getValue }) => getValue(),
+    //   footer: (info) => info.column.id,
+    // }),
+    // columnHelper.accessor('id', {
+    //   header: () => <span className={classes.header}>Väli</span>,
+    //   cell: ({ getValue }) => getValue(),
+    //   footer: (info) => info.column.id,
+    // }),
     columnHelper.accessor('firstName', {
       header: () => (
         <span className={classes.header}>{t('logs.date_change')}</span>
@@ -101,13 +109,6 @@ const LogsTable: FC = () => {
     columnHelper.accessor('visits', {
       header: () => <span className={classes.header}>{t('logs.result')}</span>,
       cell: ({ getValue }) => getValue(),
-      meta: {
-        sortingOption: [
-          { label: 'Tühjenda filtrid', value: 'clean' },
-          { label: '€ - €€', value: 'asc' },
-          { label: '€€ - €', value: 'desc' },
-        ],
-      },
     }),
   ] as ColumnDef<Person>[]
 
@@ -125,19 +126,23 @@ const LogsTable: FC = () => {
       ? { background: '#F0F0F2' }
       : { fontSize: 14 }
   }
+  if (hidden) return null
 
   return (
-    <DataTable
-      data={tableData}
-      columns={columns}
-      getSubRows={(originalRow) => originalRow.subRows}
-      className={classes.dataTable}
-      tableSize={TableSizeTypes.S}
-      //onSortingChange={onSortingChange}
-      paginationLabelClassName={classes.paginationLabel}
-      getRowStyles={getRowStyles}
-      tableWrapperClassName={classes.tableClassName}
-    />
+    <Root>
+      <DataTable
+        data={tableData}
+        columns={columns}
+        getSubRows={(originalRow) => originalRow.subRows}
+        className={classes.dataTable}
+        tableSize={TableSizeTypes.S}
+        paginationLabelClassName={classes.paginationLabel}
+        getRowStyles={getRowStyles}
+        tableWrapperClassName={classes.tableClassName}
+        paginationData={paginationData}
+        onPaginationChange={handlePaginationChange}
+      />
+    </Root>
   )
 }
 
