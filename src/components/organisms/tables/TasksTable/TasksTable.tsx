@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { includes, map, split } from 'lodash'
+import { includes, isEmpty, map, split } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -11,18 +11,20 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
 import { OrderStatus } from 'types/orders'
 import Tag from 'components/atoms/Tag/Tag'
 import dayjs from 'dayjs'
 import useAuth from 'hooks/useAuth'
-import { useFetchTasks } from 'hooks/requests/useTasks'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import classNames from 'classnames'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { FilterFunctionType } from 'types/collective'
+import Loader from 'components/atoms/Loader/Loader'
+import { TasksTableProps } from 'pages/MyTasks/MyTasks'
+
+import classes from './classes.module.scss'
 
 type TaskTableRow = {
   ext_id: { id: string; ext_id: string }
@@ -36,7 +38,14 @@ type TaskTableRow = {
 
 //TODO: fetch assigned to me tasks - {assigned_to_me: 1} and history
 
-const TasksTable: FC = () => {
+const TasksTable: FC<TasksTableProps> = ({
+  tasks,
+  isLoading,
+  paginationData,
+  handleFilterChange,
+  handleSortingChange,
+  handlePaginationChange,
+}) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { languageDirectionFilters, loadMore, handleSearch } =
@@ -44,16 +53,6 @@ const TasksTable: FC = () => {
   const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
     type: ClassifierValueType.ProjectType,
   })
-
-  console.log('typeFilters', typeFilters)
-
-  const {
-    tasks,
-    paginationData,
-    handleFilterChange,
-    handleSortingChange,
-    handlePaginationChange,
-  } = useFetchTasks({ assigned_to_me: 0 })
 
   const tasksData = useMemo(
     () =>
@@ -100,8 +99,8 @@ const TasksTable: FC = () => {
       console.log('newTypeFilters', newTypeFilters)
 
       if (handleFilterChange) {
-        handleFilterChange(newTypeFilters)
-        // handleFilterChange(newFilters)
+        // handleFilterChange(newTypeFilters)
+        handleFilterChange(newFilters)
       }
     },
     [handleFilterChange]
@@ -205,6 +204,10 @@ const TasksTable: FC = () => {
       },
     }),
   ] as ColumnDef<any>[]
+
+  if (isLoading) return <Loader loading={isLoading} />
+  if (isEmpty(tasks))
+    return <span className={classes.noTasks}>{t('my_tasks.no_tasks_yet')}</span>
 
   return (
     <Root>

@@ -10,10 +10,10 @@ import TaskContent from 'components/organisms/TaskContent/TaskContent'
 import Button from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-
-import classes from './classes.module.scss'
 import { DetailedOrder, SourceFile } from 'types/orders'
 import { LanguageClassifierValue } from 'types/classifierValues'
+
+import classes from './classes.module.scss'
 
 interface TaskProps {
   ext_id?: string
@@ -38,7 +38,7 @@ const Task: FC<TaskProps> = ({
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
 
-  const { price, deadline_at, status } = project || {}
+  const { price, deadline_at, status, event_start_at } = project || {}
 
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
@@ -112,7 +112,7 @@ const Task: FC<TaskProps> = ({
         destination_language_classifier_value={
           destination_language_classifier_value
         }
-        event_start_at={project?.event_start_at}
+        event_start_at={event_start_at}
       />
       <Button
         className={classes.finishedButton}

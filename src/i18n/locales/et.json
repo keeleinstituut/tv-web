@@ -665,6 +665,7 @@
     "start_time": "Algusaeg",
     "my_source_files": "Minu lähtefailid",
     "my_final_files": "Minu lähtefailid tõlketööriistas",
-    "my_ready_files": "Minu valmisfailid" 
+    "my_ready_files": "Minu valmisfailid",
+    "no_tasks_yet": "Siin ei ole veel midagi." 
   }
 }

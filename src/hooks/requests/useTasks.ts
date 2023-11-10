@@ -31,6 +31,25 @@ export const useFetchTasks = (initialFilters?: GetTasksPayload) => {
   }
 }
 
+export const useFetchTask = ({ id }: { id?: string }) => {
+  const { isLoading, isError, data } = useQuery<TasksDataType>({
+    queryKey: ['task', id],
+    queryFn: () => apiClient.get(`${endpoints.TASKS}/${id}`),
+    keepPreviousData: true,
+  })
+
+  console.log('DATA', data)
+
+  const taskData = data?.data || []
+  const task = taskData[0] || {}
+
+  return {
+    isLoading,
+    isError,
+    task,
+  }
+}
+
 export const useFetchHistoryTasks = (initialFilters?: GetTasksPayload) => {
   const {
     filters,
@@ -39,7 +58,7 @@ export const useFetchHistoryTasks = (initialFilters?: GetTasksPayload) => {
     handlePaginationChange,
   } = useFilters<GetTasksPayload>(initialFilters)
 
-  const { isLoading, isError, data } = useQuery<any>({
+  const { isLoading, isError, data } = useQuery<TasksDataType>({
     queryKey: ['tasks', filters],
     queryFn: () => apiClient.get(endpoints.HISTORY_TASKS, filters),
     keepPreviousData: true,
