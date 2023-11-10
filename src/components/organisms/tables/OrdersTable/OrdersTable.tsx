@@ -29,6 +29,7 @@ import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { FilterFunctionType } from 'types/collective'
 
 // TODO: statuses might come from BE instead
 // Currently unclear
@@ -122,6 +123,30 @@ const OrdersTable: FC = () => {
     },
   })
 
+  const handleModifiedFilterChange = useCallback(
+    (filters?: FilterFunctionType) => {
+      const { language_directions, ...rest } = filters || {}
+      const typedLanguageDirection = language_directions as string[]
+
+      const new_value = map(
+        typedLanguageDirection,
+        (languageDirectionString) => {
+          return languageDirectionString.replace('_', ':')
+        }
+      )
+
+      const newFilters = {
+        language_directions: new_value,
+        ...rest,
+      }
+
+      if (handleFilterChange) {
+        handleFilterChange(newFilters)
+      }
+    },
+    [handleFilterChange]
+  )
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     (payload) => {
       handleFilterChange({
@@ -202,7 +227,7 @@ const OrdersTable: FC = () => {
         )
       },
       meta: {
-        filterOption: { tags_ids: tagsFilters },
+        filterOption: { tag_ids: tagsFilters },
         showSearch: true,
       },
     }),
@@ -263,7 +288,7 @@ const OrdersTable: FC = () => {
         tableSize={TableSizeTypes.M}
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
-        onFiltersChange={handleFilterChange}
+        onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         headComponent={
           <div className={classes.topSection}>
