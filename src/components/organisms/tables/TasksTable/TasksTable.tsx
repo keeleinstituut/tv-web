@@ -36,8 +36,6 @@ type TaskTableRow = {
   status?: OrderStatus
 }
 
-//TODO: fetch assigned to me tasks - {assigned_to_me: 1} and history
-
 const TasksTable: FC<TasksTableProps> = ({
   tasks,
   isLoading,
@@ -72,7 +70,6 @@ const TasksTable: FC<TasksTableProps> = ({
 
   const handleModifiedFilterChange = useCallback(
     (filters?: FilterFunctionType) => {
-      // language_direction will be an array of strings
       const { language_direction, type_classifier_value_id, ...rest } =
         filters || {}
       const typedLanguageDirection = language_direction as string[]
@@ -148,6 +145,7 @@ const TasksTable: FC<TasksTableProps> = ({
       },
       meta: {
         filterOption: { language_direction: languageDirectionFilters },
+        multiple: false,
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
@@ -162,6 +160,7 @@ const TasksTable: FC<TasksTableProps> = ({
       footer: (info) => info.column.id,
       meta: {
         filterOption: { type_classifier_value_id: typeFilters },
+        multiple: false,
       },
     }),
     columnHelper.accessor('deadline_at', {

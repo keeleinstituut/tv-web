@@ -42,6 +42,7 @@ type ColumnMeta = {
     onEndReached?: () => void
     onSearch?: (value: string) => void
     showSearch?: boolean
+    multiple?: boolean
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
@@ -68,6 +69,7 @@ const HeaderItem = <TData,>({
   const onEndReached = meta?.onEndReached
   const onSearch = meta?.onSearch
   const showSearch = meta?.showSearch
+  const multiple = meta?.multiple ?? true
 
   const options = values(filterOption)[0] || []
   const sortingOption = meta?.sortingOption || []
@@ -131,7 +133,7 @@ const HeaderItem = <TData,>({
         onChange={handleOnFiltering}
         icon={FilterIcon}
         value={filterValue}
-        multiple
+        multiple={multiple}
         buttons
         ariaLabel={t('button.filter')}
         onEndReached={onEndReached}
