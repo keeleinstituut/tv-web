@@ -1,8 +1,9 @@
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
-import { map, uniq } from 'lodash'
-import { DetailedOrder } from 'types/orders'
+import { filter, find, isEmpty, map, uniq, compact } from 'lodash'
+import { DetailedOrder, SourceFile } from 'types/orders'
 
 import dayjs from 'dayjs'
+import { HelperFileTypes } from 'types/classifierValues'
 
 export const getOrderDefaultValues = ({
   institutionUserId,
@@ -71,5 +72,124 @@ export const getOrderDefaultValues = ({
     rejected_at: rejected_at ? dayjs(rejected_at).format('DD.MM.YYYY') : '',
     cancelled_at: cancelled_at ? dayjs(cancelled_at).format('DD.MM.YYYY') : '',
     created_at: created_at ? dayjs(created_at).format('DD.MM.YYYY') : '',
+  }
+}
+
+export const mapFilesForApi = ({
+  previousHelpFiles,
+  previousSourceFiles,
+  help_files,
+  help_file_types,
+  source_files,
+}: {
+  previousHelpFiles?: SourceFile[]
+  previousSourceFiles?: SourceFile[]
+  help_files?: (SourceFile | File)[]
+  help_file_types?: HelperFileTypes[]
+  source_files?: (SourceFile | File)[]
+}) => {
+  // 1. Get deleted files
+
+  // 1.1. Check for files that existed before, but don't anymore
+
+  const deletedHelpFiles = isEmpty(previousHelpFiles)
+    ? []
+    : filter(previousHelpFiles, ({ id }) => {
+        const fileStillExists = find(
+          help_files,
+          (existingHelpFile) => id === (existingHelpFile as SourceFile)?.id
+        )
+        return !fileStillExists
+      })
+
+  const deletedSourceFiles = isEmpty(previousSourceFiles)
+    ? []
+    : filter(previousSourceFiles, ({ id }) => {
+        const fileStillExists = find(
+          source_files,
+          (existingHelpFile) => id === (existingHelpFile as SourceFile)?.id
+        )
+        return !fileStillExists
+      })
+
+  // 1.2. Add correct collection to deleted files
+  const deletedSourceFilesWithCollection = map(deletedSourceFiles, (file) => ({
+    file,
+    collection: 'source',
+  }))
+  const deletedHelpFilesWithCollection = map(deletedHelpFiles, (file) => ({
+    file,
+    collection: 'help',
+  }))
+
+  // 1.3. Combine deleted files
+
+  const deletedFiles = compact([
+    ...deletedSourceFilesWithCollection,
+    ...deletedHelpFilesWithCollection,
+  ])
+
+  // 2. Get all new files
+
+  // 2.1. Attach type and collection to all help files
+
+  const helpFilesWithType = map(help_files, (file, index) => {
+    const typeForThisFile = help_file_types?.[index]
+    return {
+      file,
+      collection: 'help',
+      ...(typeForThisFile
+        ? {
+            custom_properties: {
+              type: typeForThisFile,
+            },
+          }
+        : {}),
+    }
+  })
+
+  // 2.2. Collect all new files by checking for missing 'id' field
+
+  const newSourceFiles = filter(
+    source_files,
+    (newSourceFile) => !('id' in newSourceFile)
+  )
+
+  const newHelpFiles = filter(
+    helpFilesWithType,
+    (newHelpFile) => !('id' in newHelpFile?.file)
+  )
+
+  // 2.3. Add collection to new source files
+
+  const newSourceFilesWithCollection = map(newSourceFiles, (file) => ({
+    file,
+    collection: 'source',
+  }))
+
+  // 2.4. Combine new files
+
+  const newFiles = compact([...newHelpFiles, ...newSourceFilesWithCollection])
+
+  // 3. Get updated help files
+
+  const updatedFiles = compact(
+    filter(helpFilesWithType, ({ file, custom_properties }) => {
+      const previousHelpFile = find(previousHelpFiles, {
+        id: (file as SourceFile)?.id,
+      })
+      if (!previousHelpFile) return false
+      return (
+        previousHelpFile?.custom_properties?.type !== custom_properties?.type
+      )
+    })
+  )
+
+  // 4. return everything
+
+  return {
+    deletedFiles,
+    newFiles,
+    updatedFiles,
   }
 }

@@ -62,10 +62,10 @@ const OrderFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
-  const typedValue = value as SourceFile[]
+  const typedValue = value as (File | SourceFile)[]
   const { t } = useTranslation()
 
-  const { deleteFile, downloadFile } = useHandleFiles({
+  const { downloadFile } = useHandleFiles({
     reference_object_id: orderId ?? '',
     reference_object_type: 'project',
     collection: name === 'help_files' ? 'help' : 'source',
@@ -88,16 +88,15 @@ const OrderFilesList = <TFormValues extends FieldValues>({
   const handleDelete = useCallback(
     (index?: number) => {
       if (index === 0 || index) {
-        deleteFile(typedValue[index].id)
         onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
       }
     },
-    [onChange, deleteFile, typedValue]
+    [onChange, typedValue]
   )
 
   const handleDownload = useCallback(
     (index: number) => {
-      downloadFile(typedValue[index])
+      downloadFile(typedValue[index] as SourceFile)
     },
     [downloadFile, typedValue]
   )

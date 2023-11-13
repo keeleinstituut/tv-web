@@ -259,11 +259,11 @@ export interface NewOrderPayload {
   client_institution_user_id: string
   manager_institution_user_id: string
   deadline_at: string
-  source_files: File[]
+  source_files: (File | SourceFile)[]
   reference_number?: string
   source_language_classifier_value_id: string
   destination_language_classifier_value_ids: string[]
-  help_files?: File[]
+  help_files?: (File | SourceFile)[]
   help_file_types?: HelperFileTypes[]
   translation_domain_classifier_value_id: string
   type_classifier_value_id: string
@@ -279,4 +279,13 @@ export interface CatJobsPayload {
 export interface SplitOrderPayload {
   sub_project_id: string
   job_key: SubProjectFeatures
+}
+
+export interface PotentialFilePayload {
+  collection?: string
+  type?: string
+  file?: File | SourceFile
+  custom_properties?: {
+    type: HelperFileTypes
+  }
 }

@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import useAuth from 'hooks/useAuth'
@@ -10,7 +10,7 @@ import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
 import OrderFilesSection from 'components/molecules/OrderFilesSection/OrderFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
-import { join, map, includes, isEmpty, pick, keys } from 'lodash'
+import { join, map, includes, isEmpty, pick, keys, compact } from 'lodash'
 import { getUtcDateStringFromLocalDateObject } from 'helpers'
 import {
   DetailedOrder,
@@ -29,8 +29,10 @@ import ExpandableContentContainer from 'components/molecules/ExpandableContentCo
 import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
-import { getOrderDefaultValues } from 'helpers/order'
+import { getOrderDefaultValues, mapFilesForApi } from 'helpers/order'
 import { HelperFileTypes } from 'types/classifierValues'
+import { useHandleBulkFiles } from 'hooks/requests/useAssignments'
+import { useQueryClient } from '@tanstack/react-query'
 
 export enum OrderDetailModes {
   New = 'new',
@@ -124,11 +126,19 @@ interface OrderDetailsProps {
 
 const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const { institutionUserId, userPrivileges } = useAuth()
   const { createOrder, isLoading } = useCreateOrder()
   const { updateOrder, isLoading: isUpdatingOrder } = useUpdateOrder({
     id: order?.id,
   })
+
+  const { deleteBulkFiles, addBulkFiles, updateBulkFiles } = useHandleBulkFiles(
+    {
+      reference_object_id: order?.id ?? '',
+      reference_object_type: 'project',
+    }
+  )
 
   const navigate = useNavigate()
   const isNew = mode === OrderDetailModes.New
@@ -212,19 +222,43 @@ const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
   // TODO: If BE starts sending the full order object as a response to updateOrder
   // Then we can delete this useEffect
   // If not, then we should always fetch the order again after update and use this hooks to reset the form
-  // useEffect(() => {
-  //   reset(defaultValues)
-  //   // Only run when defaultValues change
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [defaultValues])
-
-  console.warn('dirtyFields', dirtyFields)
+  useEffect(() => {
+    reset(defaultValues)
+    // Only run when defaultValues change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues])
 
   const handleUpdateOrderSubmit = useCallback(
     async (payload: NewOrderPayload) => {
-      const actualPayload = pick(payload, keys(dirtyFields))
+      const { help_files, help_file_types, source_files, ...rest } = payload
+      const actualPayload = pick(rest, keys(dirtyFields))
+
+      const { newFiles, deletedFiles, updatedFiles } = mapFilesForApi({
+        previousHelpFiles: order?.help_files,
+        previousSourceFiles: order?.source_files,
+        help_files,
+        help_file_types,
+        source_files,
+      })
+
       try {
-        const updatedOrder = await updateOrder(actualPayload)
+        if (!isEmpty(newFiles)) {
+          await addBulkFiles(newFiles)
+        }
+        if (!isEmpty(deletedFiles)) {
+          await deleteBulkFiles(deletedFiles)
+        }
+        // TODO: BE currently doesn't support updating
+        // if (!isEmpty(updatedFiles)) {
+        //   await updateBulkFiles(updatedFiles)
+        // }
+        await updateOrder(actualPayload)
+        if (order?.id) {
+          queryClient.refetchQueries({
+            queryKey: ['orders', order?.id],
+            type: 'active',
+          })
+        }
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -234,13 +268,13 @@ const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
         // TODO: If BE starts sending the full order object as a response to updateOrder
         // Then this will reset the form with the correct values
         // If not, this should be removed and the useEffect hook above should be used together with refetching the order
-        reset(
-          getOrderDefaultValues({
-            institutionUserId,
-            isNew: false,
-            order: updatedOrder,
-          })
-        )
+        // reset(
+        //   getOrderDefaultValues({
+        //     institutionUserId,
+        //     isNew: false,
+        //     order: updatedOrder,
+        //   })
+        // )
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         mapOrderValidationErrors(typedErrorData)
@@ -248,10 +282,14 @@ const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
     },
     [
       dirtyFields,
+      order?.help_files,
+      order?.source_files,
+      order?.id,
       updateOrder,
       t,
-      reset,
-      institutionUserId,
+      addBulkFiles,
+      deleteBulkFiles,
+      queryClient,
       mapOrderValidationErrors,
     ]
   )
@@ -275,8 +313,8 @@ const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
 
       const payload: NewOrderPayload = {
         deadline_at,
-        source_files: source_files as File[],
-        help_files: help_files as File[],
+        source_files: compact(source_files),
+        help_files: compact(help_files),
         ...rest,
         ...(!isNew ? { tags } : {}),
         ...(event_start_at ? { event_start_at } : {}),
