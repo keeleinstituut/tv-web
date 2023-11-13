@@ -125,23 +125,26 @@ const OrdersTable: FC = () => {
 
   const handleModifiedFilterChange = useCallback(
     (filters?: FilterFunctionType) => {
-      const { language_directions, ...rest } = filters || {}
-      const typedLanguageDirection = language_directions as string[]
+      let currentFilters = filters
+      if (filters && 'language_directions' in filters) {
+        const { language_directions, ...rest } = filters || {}
+        const typedLanguageDirection = language_directions as string[]
 
-      const new_value = map(
-        typedLanguageDirection,
-        (languageDirectionString) => {
-          return languageDirectionString.replace('_', ':')
+        const modifiedLanguageDirections = map(
+          typedLanguageDirection,
+          (languageDirectionString) => {
+            return languageDirectionString.replace('_', ':')
+          }
+        )
+
+        currentFilters = {
+          language_directions: modifiedLanguageDirections,
+          ...rest,
         }
-      )
-
-      const newFilters = {
-        language_directions: new_value,
-        ...rest,
       }
 
       if (handleFilterChange) {
-        handleFilterChange(newFilters)
+        handleFilterChange(currentFilters)
       }
     },
     [handleFilterChange]
