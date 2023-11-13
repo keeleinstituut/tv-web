@@ -101,11 +101,7 @@ const OrderPage: FC = () => {
         <OrderButtons {...{ status, isUserClientOfProject }} />
       </div>
 
-      <OrderDetails
-        mode={OrderDetailModes.Editable}
-        order={order}
-        isUserClientOfProject={isUserClientOfProject}
-      />
+      <OrderDetails mode={OrderDetailModes.Editable} order={order} />
 
       <div className={classes.separator} />
 

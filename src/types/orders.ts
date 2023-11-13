@@ -6,6 +6,7 @@ import {
 import {
   ClassifierValue,
   ClassifierValueType,
+  HelperFileTypes,
   LanguageClassifierValue,
 } from './classifierValues'
 import { AssignmentType } from './assignments'
@@ -94,7 +95,9 @@ export interface SourceFile {
   preview_url: string
   // Type not clear yet:
   manipulations: string[]
-  custom_properties: string[]
+  custom_properties: {
+    type: HelperFileTypes
+  }
   generated_conversions: string[]
   responsive_images: string[]
   isChecked?: boolean
@@ -195,7 +198,6 @@ export interface DetailedOrder extends ListOrder {
   manager_institution_user?: UserType
   translation_domain_classifier_value: ClassifierValue
   // TODO: unclear type for following:
-  help_file_types: string[]
   event_start_at?: string
   accepted_at?: string
   corrected_at?: string
@@ -206,7 +208,7 @@ export interface DetailedOrder extends ListOrder {
 export type OrdersPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
-    only_show_personal_projects?: boolean
+    only_show_personal_projects?: number
     statuses?: string[]
   }
 
@@ -262,7 +264,7 @@ export interface NewOrderPayload {
   source_language_classifier_value_id: string
   destination_language_classifier_value_ids: string[]
   help_files?: File[]
-  help_file_types?: string[]
+  help_file_types?: HelperFileTypes[]
   translation_domain_classifier_value_id: string
   type_classifier_value_id: string
   event_start_at?: string
