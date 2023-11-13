@@ -56,7 +56,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
           {children}
           <InputError
             {...omit(error, 'ref')}
-            wrapperRef={wrapperRef as RefObject<HTMLElement>}
+            wrapperRef={ref as RefObject<HTMLElement>}
             className={errorClass}
             errorZIndex={errorZIndex}
           />

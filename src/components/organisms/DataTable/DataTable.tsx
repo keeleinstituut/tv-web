@@ -121,6 +121,10 @@ const DataTable = <TData,>(
     pageSize: per_page || 10,
   })
 
+  if (last_page === pagination.pageIndex) {
+    setPagination({ pageIndex: last_page - 1, pageSize: per_page || 10 })
+  }
+
   useEffect(() => {
     if (onPaginationChange) {
       onPaginationChange({
