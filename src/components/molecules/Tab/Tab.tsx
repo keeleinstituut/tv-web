@@ -78,12 +78,12 @@ const Tab: FC<TabType> = ({
   }, [])
 
   useEffect(() => {
-    if (!isEditMode && tempName !== name && id && onChangeName) {
+    if (tempName !== name && id && onChangeName) {
       onChangeName(id, tempName)
     }
-    // We only want to run this, when isEditMode changes
+    // We  want to run this, when tempName changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEditMode])
+  }, [tempName])
 
   useEffect(() => {
     if (name !== tempName) {
@@ -94,11 +94,15 @@ const Tab: FC<TabType> = ({
   }, [name])
 
   const isEditModeActive = isActive && isEditMode
+  const isTemporaryRole = startsWith(id, 'temp')
+
   const handleEnterEditMode = useCallback(() => {
-    if (!isEditMode && !editDisabled) {
+    if ((!isEditMode && !editDisabled) || (!isEditMode && isTemporaryRole)) {
       setIsEditMode(!isEditMode)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditMode, editDisabled])
+
   const handleExitEditMode = useCallback(() => {
     if (isEditMode) {
       setIsEditMode(!isEditMode)

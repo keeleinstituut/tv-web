@@ -113,7 +113,7 @@ const FormProgressModal: FC<FormProgressProps> = ({
       className={classes.progressBarHelperText}
       size={ModalSizeTypes.Big}
       helperText={helperText}
-      buttonComponent={<div>{ButtonComponent}</div>}
+      buttonComponent={<>{ButtonComponent}</>}
     >
       <div>{modalContent}</div>
     </ModalBase>

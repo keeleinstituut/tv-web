@@ -68,7 +68,7 @@ const OrderFilesList = <TFormValues extends FieldValues>({
   const { deleteFile, downloadFile } = useHandleFiles({
     reference_object_id: orderId ?? '',
     reference_object_type: 'project',
-    collection: 'source',
+    collection: name === 'help_files' ? 'help' : 'source',
   })
 
   const filesData = useMemo(

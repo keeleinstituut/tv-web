@@ -1,4 +1,9 @@
+@import 'styles/variables';
+
 .buttonsContainer {
   justify-content: space-between;
   display: flex;
+  position: relative;
+  background-color: $color-white;
+  z-index: 13;
 }

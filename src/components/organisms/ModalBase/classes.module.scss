@@ -10,6 +10,11 @@
   z-index: 3;
 }
 
+.footerButtons {
+  position: relative;
+  z-index: 13;
+}
+
 .dialogContent {
   background-color: $color-white;
   border: 2px solid $color-border;

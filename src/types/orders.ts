@@ -226,7 +226,7 @@ export type SubOrdersPayloadType = PaginationFunctionType &
 
 export interface OrdersResponse {
   data: ListOrder[]
-  meta: ResponseMetaTypes
+  meta?: ResponseMetaTypes
 }
 export interface SubOrdersResponse {
   data: ListSubOrderDetail[]

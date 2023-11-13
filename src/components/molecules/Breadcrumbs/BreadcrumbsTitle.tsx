@@ -4,6 +4,7 @@ import { useVendorFetch } from 'hooks/requests/useVendors'
 import { BreadcrumbComponentProps } from 'use-react-router-breadcrumbs'
 import { useTranslation } from 'react-i18next'
 import { useFetchTranslationMemory } from 'hooks/requests/useTranslationMemories'
+import { includes } from 'lodash'
 
 interface idTypes {
   vendorId?: string
@@ -47,7 +48,7 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
     }
   }, [orderId, t, user, userId, vendor, vendorId, memoryId, translationMemory])
 
-  return <span>{name}</span>
+  return <span>{includes(name, undefined) ? '' : name}</span>
 }
 
 export default BreadcrumbsTitle

@@ -94,7 +94,7 @@ const OrdersTable: FC = () => {
             deadline_at,
             type: type_classifier_value?.value || '',
             status,
-            tags: map(tags, (value) => value?.name || ''),
+            tags: map(tags, 'name'),
             price,
             language_directions: uniq(
               map(
