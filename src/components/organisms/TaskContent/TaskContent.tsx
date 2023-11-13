@@ -37,9 +37,11 @@ import {
 } from 'types/orders'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
+import { LanguageClassifierValue } from 'types/classifierValues'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import { ReactComponent as Eye } from 'assets/icons/eye.svg'
 
 import classes from './classes.module.scss'
-import { LanguageClassifierValue } from 'types/classifierValues'
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
@@ -179,9 +181,62 @@ const TaskContent: FC<TaskContentProps> = ({
     !some(watch('write_to_memory'), (val) => !!val) ||
     !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
-  const formattedDate = (date: any) => {
+  const formattedDate = (date: string) => {
     return dayjs(date).format('DD.MM.YYYY HH:mm')
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const volumesTest = [
+    {
+      id: '9a9a997c-69a6-45ab-9447-76f42865d0cb',
+      assignment_id: '9a73d254-822f-4b24-8175-3abce8382918',
+      unit_type: 'WORDS',
+      unit_quantity: '671.00',
+      unit_fee: 5,
+      updated_at: '2023-11-13T15:05:07.000000Z',
+      created_at: '2023-11-13T15:05:07.000000Z',
+      cat_job: {
+        id: '9a742091-5d58-454e-9595-23bebfefc554',
+        name: 'OIU-2023-10--8-af-ZAsq-AL-1-1',
+        ext_id: '30-c76a3b89d220',
+        progress_percentage: '0',
+        translate_url:
+          'https://cat.dev.tolkevarav.eki.ee/translate/OIU-2023-10--8-af-ZAsq-AL-1/af-ZA-sq-AL/30-c76a3b89d220',
+      },
+      volume_analysis: {
+        total: 671,
+        tm_101: 0,
+        repetitions: 0,
+        tm_100: 0,
+        tm_95_99: 0,
+        tm_85_94: 2,
+        tm_75_84: 16,
+        tm_50_74: 0,
+        tm_0_49: 653,
+        files_names: ['Untitled.txt'],
+      },
+      discounts: {
+        discount_percentage_101: 10,
+        discount_percentage_repetitions: 20,
+        discount_percentage_100: 30,
+        discount_percentage_95_99: 40,
+        discount_percentage_85_94: 30,
+        discount_percentage_75_84: 30,
+        discount_percentage_50_74: 0,
+        discount_percentage_0_49: 20,
+      },
+    },
+  ]
+
+  const handleShowVolume = useCallback(() => {
+    showModal(ModalTypes.VolumeChange, {
+      isCat: true,
+      isEditable: false,
+      discounts: volumesTest[0].discounts,
+      unit_fee: volumesTest[0].unit_fee,
+      volume_analysis: volumesTest[0].volume_analysis,
+    })
+  }, [volumesTest])
 
   const taskDetails = [
     {
@@ -201,7 +256,14 @@ const TaskContent: FC<TaskContentProps> = ({
     {
       label: t('label.volume'),
       //TODO: add correct variable for content
-      content: '4h',
+      content: (
+        <>
+          <p>4h</p>
+          <BaseButton onClick={handleShowVolume} className={classes.volumeIcon}>
+            <Eye />
+          </BaseButton>
+        </>
+      ),
     },
   ]
 

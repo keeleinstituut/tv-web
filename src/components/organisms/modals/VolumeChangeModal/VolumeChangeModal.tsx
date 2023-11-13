@@ -64,6 +64,7 @@ export interface VolumeChangeModalProps {
   unit_quantity?: number
   subOrderId?: string
   onChangeValue?: (volume: VolumeValue) => void
+  isEditable?: boolean
 }
 
 enum CatAnalysisVolumes {
@@ -113,6 +114,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   unit_type,
   subOrderId,
   onChangeValue,
+  isEditable = true,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -264,6 +266,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         rules: {
           required: true,
         },
+        onlyDisplay: !isEditable,
       },
       {
         inputType: InputTypes.Text,
@@ -308,7 +311,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         name: 'vendor',
       },
     ],
-    [isCat, priceUnitOptions, t]
+    [isCat, isEditable, priceUnitOptions, t]
   )
 
   // Probably can be improved a bit and unified with onSaveEdit
@@ -455,31 +458,38 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     [isCat, assignmentId, amountDiscounts, amountValues, catJobId, onSave]
   )
 
+  const title = !isEditable
+    ? t('modal.view_cat_volumes')
+    : isCat
+    ? t('modal.pick_volume_by_cat')
+    : t('modal.pick_volume_manually')
+
+  const catHelperText = isCat ? (
+    <>
+      {t('modal.picked_analysis_for')}{' '}
+      <b>{JSON.stringify(volume_analysis?.files_names)}</b>
+      <br />
+      {t('modal.pick_volume_by_cat_helper')}
+    </>
+  ) : (
+    t('modal.pick_volume_manually_helper')
+  )
+
+  const helperText = !isEditable ? '' : catHelperText
+
   return (
     <ConfirmationModalBase
       {...rest}
       handleProceed={handleSubmit(onSubmit)}
       cancelButtonContent={t('button.close')}
       cancelButtonDisabled={isSubmitting}
-      proceedButtonContent={t('button.confirm')}
+      proceedButtonContent={!isEditable ? undefined : t('button.confirm')}
       proceedButtonDisabled={!isValid}
       proceedButtonLoading={isSubmitting}
+      proceedButtonHidden={!isEditable}
       className={classes.modalContainer}
-      title={
-        isCat ? t('modal.pick_volume_by_cat') : t('modal.pick_volume_manually')
-      }
-      helperText={
-        isCat ? (
-          <>
-            {t('modal.picked_analysis_for')}{' '}
-            <b>{JSON.stringify(volume_analysis?.files_names)}</b>
-            <br />
-            {t('modal.pick_volume_by_cat_helper')}
-          </>
-        ) : (
-          t('modal.pick_volume_manually_helper')
-        )
-      }
+      title={title}
+      helperText={helperText}
       closeModal={closeModal}
       modalContent={
         <Root>
@@ -489,7 +499,11 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
             className={classes.formContainer}
             useDivWrapper
           />
-          <VolumeCatPriceTable control={control} hidden={!isCat} />
+          <VolumeCatPriceTable
+            control={control}
+            hidden={!isCat}
+            isEditable={isEditable}
+          />
         </Root>
       }
     />

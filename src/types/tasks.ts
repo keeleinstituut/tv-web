@@ -4,8 +4,8 @@ import {
   ResponseMetaTypes,
   SortingFunctionType,
 } from './collective'
-import { DetailedOrder, SourceFile, TypeClassifierValue } from './orders'
-// import { LanguageClassifierValue } from './price'
+import { DetailedOrder, SourceFile } from './orders'
+import { VolumeValue } from './volumes'
 
 export type GetTasksPayload = PaginationFunctionType &
   SortingFunctionType & {
@@ -21,23 +21,6 @@ type TaskLinkTypes = {
   next: string
 }
 
-type Project = {
-  id: string
-  ext_id: string
-  reference_number: string
-  institution_id: string
-  comments: string
-  workflow_template_id: string
-  workflow_instance_ref: string
-  price: number
-  deadline_at: string
-  event_start_at: number
-  status: string
-  created_at: string
-  updated_at: string
-  type_classifier_value: TypeClassifierValue
-}
-
 type SubProject = {
   id: string
   ext_id: string
@@ -47,7 +30,6 @@ type SubProject = {
   updated_at: string
   price: number
   project: DetailedOrder
-  // project: Project
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
   cat_files: SourceFile[]
@@ -63,11 +45,12 @@ type Assignment = {
   created_at: string
   updated_at: string
   subProject: SubProject
+  volumes?: VolumeValue[]
 }
 
 export type TaskData = {
   id: string
-  assignment: Assignment
+  assignment?: Assignment
 }
 
 export type TasksDataType = {

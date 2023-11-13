@@ -386,7 +386,8 @@
     "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?",
     "set_working_times_title": "Tööaegade määramine",
     "confirm_complete_task": "Kas oled kindel, et soovid ülesande lõpetatuks märkida?",
-    "confirm_complete_task_details": "Pärast lõpetamist failidega enam tegevusi teha ei saa ja ülesanne liigub järgmisesse etappi."
+    "confirm_complete_task_details": "Pärast lõpetamist failidega enam tegevusi teha ei saa ja ülesanne liigub järgmisesse etappi.",
+    "view_cat_volumes": "Vaata CAT analüüsi mahtu"
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -491,7 +492,8 @@
     "final_files_changed": "Valmisfailid muudetud",
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
     "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
-    "split_assignment": "Ülesanne jagatud"
+    "split_assignment": "Ülesanne jagatud",
+    "task_successfully_accepted": "Tellimus on edukalt vastu võetud"
 
   },
   "notification": {

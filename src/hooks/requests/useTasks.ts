@@ -38,8 +38,6 @@ export const useFetchTask = ({ id }: { id?: string }) => {
     keepPreviousData: true,
   })
 
-  console.log('DATA', data)
-
   const taskData = data?.data || []
   const task = taskData[0] || {}
 

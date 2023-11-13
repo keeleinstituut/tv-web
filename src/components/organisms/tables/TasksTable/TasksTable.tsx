@@ -55,14 +55,22 @@ const TasksTable: FC<TasksTableProps> = ({
   const tasksData = useMemo(
     () =>
       map(tasks, ({ id, assignment }) => {
-        const subProject = assignment.subProject
+        const { subProject, ext_id } = assignment || {}
+        const {
+          project,
+          source_language_classifier_value,
+          destination_language_classifier_value,
+          price,
+        } = subProject || {}
+        const { deadline_at, type_classifier_value, reference_number } =
+          project || {}
         return {
-          ext_id: { id: id, ext_id: assignment.ext_id },
-          reference_number: subProject.project.reference_number,
-          language_directions: `${subProject.source_language_classifier_value?.value} > ${subProject.destination_language_classifier_value?.value}`,
-          cost: subProject.price,
-          type: subProject.project.type_classifier_value?.name,
-          deadline_at: subProject.project.deadline_at,
+          ext_id: { id: id, ext_id: ext_id },
+          reference_number: reference_number,
+          language_directions: `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
+          cost: price,
+          type: type_classifier_value?.name,
+          deadline_at: deadline_at,
         }
       }),
     [tasks]
@@ -73,8 +81,6 @@ const TasksTable: FC<TasksTableProps> = ({
       const { language_direction, type_classifier_value_id, ...rest } =
         filters || {}
       const typedLanguageDirection = language_direction as string[]
-
-      console.log('type_classifier_value_id', type_classifier_value_id)
 
       const langPair = map(
         typedLanguageDirection,
@@ -92,8 +98,6 @@ const TasksTable: FC<TasksTableProps> = ({
       const newTypeFilters = {
         type_classifier_value_id: type_classifier_value_id,
       }
-
-      console.log('newTypeFilters', newTypeFilters)
 
       if (handleFilterChange) {
         // handleFilterChange(newTypeFilters)

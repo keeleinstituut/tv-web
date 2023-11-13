@@ -1,5 +1,5 @@
 import Loader from 'components/atoms/Loader/Loader'
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import OrderDetails, {
   OrderDetailModes,
 } from 'components/organisms/OrderDetails/OrderDetails'
@@ -8,6 +8,9 @@ import Button from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { useFetchTask } from 'hooks/requests/useTasks'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
 
@@ -17,33 +20,30 @@ const TaskPage: FC = () => {
 
   const { task, isLoading } = useFetchTask({ id: taskId })
 
-  console.log('task ', task)
+  const { id, assignment } = task || {}
+  const { subProject, ext_id } = assignment || {}
 
-  // const {
-  //   id,
-  //   assignment: { subProject, ext_id },
-  // } = task || {}
+  const {
+    project,
+    cat_files,
+    source_language_classifier_value,
+    destination_language_classifier_value,
+  } = subProject || {}
 
-  const id = task?.id
-  const assignment = task?.assignment
-  const ext_id = task?.assignment?.ext_id
-
-  const subProject = assignment?.subProject
-
-  const project = subProject?.project
-  const cat_files = subProject?.cat_files
-  const source_language_classifier_value =
-    subProject?.source_language_classifier_value
-
-  const destination_language_classifier_value =
-    subProject?.destination_language_classifier_value
-
-  // const {
-  //   project,
-  //   cat_files,
-  //   source_language_classifier_value,
-  //   destination_language_classifier_value,
-  // } = subProject
+  const handleAcceptTask = useCallback(async () => {
+    try {
+      // TODO: add accepting task endpoint
+      // await acceptTask({
+      // })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.task_successfully_accepted'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [t])
 
   // TODO: check is "Tellija" of the order current user
   if (isLoading) return <Loader loading={isLoading} />
@@ -51,10 +51,7 @@ const TaskPage: FC = () => {
     <>
       <div className={classes.taskTitleContainer}>
         <h1 className={classes.titleRow}>{ext_id}</h1>
-        <Button
-          className={classes.acceptButton}
-          // TODO: handle accept task
-        >
+        <Button className={classes.acceptButton} onClick={handleAcceptTask}>
           {t('button.accept')}
         </Button>
       </div>
