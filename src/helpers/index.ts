@@ -37,7 +37,6 @@ interface CsvObjectStructure<ValuesType> {
 interface DownloadFileProps {
   data: BlobPart
   fileName: string
-  fileType: string
 }
 
 export const usersCsvFieldsToKeys = {
@@ -114,13 +113,9 @@ export const objectsToCsvFile = <ValuesType>(
   return file
 }
 
-export const downloadFile = ({
-  data,
-  fileName,
-  fileType,
-}: DownloadFileProps) => {
-  const blob = new Blob([data], { type: fileType })
-  const url = URL.createObjectURL(blob)
+export const downloadFile = ({ data, fileName }: DownloadFileProps) => {
+  const file = new File([data], fileName)
+  const url = URL.createObjectURL(file)
   const a = document.createElement('a')
   a.href = url
   a.download = fileName
