@@ -48,10 +48,10 @@ export enum WorkflowTemplateID {
 }
 
 export enum TypesWithStartTime {
-  ORAL_TRANSLATION = 'ORAL_TRANSLATION',
-  POST_TRANSLATION = 'POST_TRANSLATION',
-  SYNCHRONOUS_TRANSLATION = 'SYNCHRONOUS_TRANSLATION',
-  SIGN_LANGUAGE = 'SIGN_LANGUAGE',
+  OralTranslation = 'ORAL_TRANSLATION',
+  PostTranslation = 'POST_TRANSLATION',
+  SynchronousTranslation = 'SYNCHRONOUS_TRANSLATION',
+  SignLanguage = 'SIGN_LANGUAGE',
 }
 
 export enum CatProjectStatus {
