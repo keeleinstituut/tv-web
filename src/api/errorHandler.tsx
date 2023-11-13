@@ -36,7 +36,7 @@ export const showValidationErrorMessage = (errorData: unknown) => {
 }
 
 const handleError = async (error?: AxiosError) => {
-  // TODO: needs some improvements + better handling of 403 errors
+  // TODO: might need some improvements + better handling of 403 errors
   const { response } = error || {}
   const code = response?.status
   const specificErrors = get(response, 'data.errors', {})
@@ -64,6 +64,8 @@ const handleError = async (error?: AxiosError) => {
     errorContent = i18n.t('error.unknown_error', { code })
   }
 
+  // TODO: 403 needs to be changed to 401, once BE has made the change
+  // Waiting for task: https://github.com/keeleinstituut/tv-tolkevarav/issues/393
   if (code === 403) {
     // Attempt token refresh, log out if it fails
     startRefreshingToken(() => {

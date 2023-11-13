@@ -47,7 +47,7 @@ const RowPrice = <TFormValues extends FieldValues>({
 }: RowPriceProps<TFormValues>) => {
   const unitPrice = useWatch({
     control,
-    name: 'cost_price' as Path<TFormValues>,
+    name: 'unit_fee' as Path<TFormValues>,
   })
   const amountValue = useWatch({
     control,
