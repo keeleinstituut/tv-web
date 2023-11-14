@@ -43,7 +43,6 @@ export const useExportAuditLogsCSV = () => {
       downloadFile({
         data,
         fileName: 'audit_logs.csv',
-        fileType: 'text/csv',
       })
     },
   })

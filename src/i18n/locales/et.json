@@ -687,6 +687,8 @@
       "SEARCH_LOGS": "Logide otsimine",
       "EXPORT_LOGS": "Logide allalaadimine"
     },
-    "no_results_found": "Tulemusi ei leitud"
+    "no_results_found": "Tulemusi ei leitud",
+    "reference": "Viide",
+    "changes": "Muudatused"
   }
 }

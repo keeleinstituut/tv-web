@@ -5,10 +5,9 @@
   padding-top: spacing(1);
 }
 
-.dataTableMainRow {
-  tr {
-    background-color: $color-background;
-  }
+.firstHeader {
+  padding-left: spacing(8);
+  font-size: $font-size-14;
 }
 
 .header {
@@ -23,9 +22,12 @@
   align-items: center;
 }
 
-.shrinkedIcon {
-  height: 14px;
-  width: 14px;
+.shrinkIcon {
+  height: 16px;
+  width: 20px;
+  svg {
+    margin: spacing(0.5);
+  }
 }
 
 .expandedIcon svg path {
