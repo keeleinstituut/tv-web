@@ -99,24 +99,27 @@ const VendorsTable: FC<VendorsTableProps> = ({
   const handleModifiedFilterChange = useCallback(
     (filters?: FilterFunctionType) => {
       // language_direction will be an array of strings
-      const { language_direction, ...rest } = filters || {}
-      const typedLanguageDirection = language_direction as string[]
+      let currentFilters = filters
+      if (filters && 'language_direction' in filters) {
+        const { language_direction, ...rest } = filters || {}
+        const typedLanguageDirection = language_direction as string[]
 
-      const langPair = map(
-        typedLanguageDirection,
-        (languageDirectionString) => {
-          const [src, dst] = split(languageDirectionString, '_')
-          return { src, dst }
+        const langPair = map(
+          typedLanguageDirection,
+          (languageDirectionString) => {
+            const [src, dst] = split(languageDirectionString, '_')
+            return { src, dst }
+          }
+        )
+
+        currentFilters = {
+          lang_pair: langPair,
+          ...rest,
         }
-      )
-
-      const newFilters = {
-        lang_pair: langPair,
-        ...rest,
       }
 
       if (handleFilterChange) {
-        handleFilterChange(newFilters)
+        handleFilterChange(currentFilters)
       }
     },
     [handleFilterChange]
