@@ -348,7 +348,9 @@ const UserPage: FC = () => {
           icon={Delete}
           className={classes.button}
           onClick={handleOnRemoveDeactivationDate}
-          hidden={isActivationButtonHidden}
+          hidden={
+            !isDeactivationDateInTheFuture || status === UserStatus.Archived
+          }
         />
       </div>
 
