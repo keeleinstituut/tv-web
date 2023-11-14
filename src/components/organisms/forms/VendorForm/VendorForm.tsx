@@ -241,11 +241,8 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
 
           <DiscountForm
             {...{
-              isFormDisabled,
               control,
               isSubmitting,
-              isDirty,
-              isValid,
               resetForm,
               vendor,
             }}

@@ -18,7 +18,8 @@ import classNames from 'classnames'
 
 interface DiscountFormProps {
   vendor?: Vendor
-  isFormDisabled: boolean
+  isSubmitDisabled?: boolean
+  isResetDisabled?: boolean
   control: Control<DiscountPercentages, unknown>
   isSubmitting: boolean
   isDirty?: boolean
@@ -34,7 +35,8 @@ interface DiscountFormProps {
 const DiscountForm: FC<DiscountFormProps> = ({
   control,
   isSubmitting,
-  isFormDisabled,
+  isSubmitDisabled,
+  isResetDisabled,
   resetForm,
   addFormButtons = false,
   submitButtonName,
@@ -96,8 +98,8 @@ const DiscountForm: FC<DiscountFormProps> = ({
       />
       <FormButtons
         loading={isSubmitting}
-        isResetDisabled={false}
-        isSubmitDisabled={isFormDisabled}
+        isResetDisabled={isResetDisabled}
+        isSubmitDisabled={isSubmitDisabled}
         resetForm={resetForm}
         hidden={!addFormButtons}
         className={classes.formButtons}

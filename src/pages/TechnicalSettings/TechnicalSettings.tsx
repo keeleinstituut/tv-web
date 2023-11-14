@@ -56,6 +56,10 @@ const TechnicalSettings: FC = () => {
     [updateInstitutionDiscounts, t, setError]
   )
 
+  const resetForm = useCallback(() => {
+    reset(institutionDiscounts)
+  }, [institutionDiscounts, reset])
+
   useEffect(() => {
     reset()
   }, [isSubmitSuccessful, reset])
@@ -69,7 +73,8 @@ const TechnicalSettings: FC = () => {
 
       <DiscountForm
         className={classes.formContainer}
-        isFormDisabled={!isDirty || !isValid}
+        isSubmitDisabled={!isDirty || !isValid}
+        isResetDisabled={!isDirty || isSubmitting}
         addFormButtons={true}
         handleOnSubmit={handleSubmit(onSubmit)}
         isEditDisabled={
@@ -77,7 +82,7 @@ const TechnicalSettings: FC = () => {
         }
         control={control}
         isSubmitting={isSubmitting}
-        resetForm={reset}
+        resetForm={resetForm}
       />
     </>
   )
