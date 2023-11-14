@@ -319,6 +319,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
         ...(!isNew ? { tags } : {}),
         ...(event_start_at ? { event_start_at } : {}),
       }
+
       if (isNew) {
         handleNewOrderSubmit(payload)
       } else {

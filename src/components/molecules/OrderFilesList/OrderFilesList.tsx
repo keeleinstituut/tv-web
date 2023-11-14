@@ -8,7 +8,13 @@ import {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
-import { Control, FieldValues, Path, useController } from 'react-hook-form'
+import {
+  Control,
+  FieldValues,
+  Path,
+  useController,
+  useWatch,
+} from 'react-hook-form'
 import {
   DropDownOptions,
   DropdownSizeTypes,
@@ -26,6 +32,7 @@ import DataTable, {
 import SmallTooltip from '../SmallTooltip/SmallTooltip'
 import { SourceFile } from 'types/orders'
 import { useHandleFiles } from 'hooks/requests/useAssignments'
+import { HelperFileTypes } from 'types/classifierValues'
 interface OrderFilesListProps<TFormValues extends FieldValues> {
   title: string
   typeOptions?: DropDownOptions[]
@@ -62,6 +69,18 @@ const OrderFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
+
+  const {
+    field: { onChange: onChangeHelpFileTypes },
+  } = useController<TFormValues, Path<TFormValues>>({
+    name: 'help_file_types' as Path<TFormValues>,
+    control,
+  })
+
+  const helpFileTypes: HelperFileTypes[] = useWatch({
+    control,
+  }).help_file_types
+
   const typedValue = value as (File | SourceFile)[]
   const { t } = useTranslation()
 
@@ -89,9 +108,14 @@ const OrderFilesList = <TFormValues extends FieldValues>({
     (index?: number) => {
       if (index === 0 || index) {
         onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+        if (name === 'help_files') {
+          onChangeHelpFileTypes(
+            filter(helpFileTypes, (_, typeIndex) => index !== typeIndex)
+          )
+        }
       }
     },
-    [onChange, typedValue]
+    [onChange, typedValue, helpFileTypes, name, onChangeHelpFileTypes]
   )
 
   const handleDownload = useCallback(
@@ -107,7 +131,7 @@ const OrderFilesList = <TFormValues extends FieldValues>({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('help_file_types', {
-      header: name === 'help_files' ? t('label.file_type') : '',
+      header: name === 'help_files' ? `${t('label.file_type')}*` : '',
       cell: ({ column, getValue }) => {
         const errorZIndex = size(filesData) - column.depth
         if (name === 'help_files') {
@@ -116,6 +140,9 @@ const OrderFilesList = <TFormValues extends FieldValues>({
               name={`help_file_types.${getValue()}` as Path<TFormValues>}
               ariaLabel={t('label.file_type')}
               placeholder={t('placeholder.pick')}
+              rules={{
+                required: true,
+              }}
               control={control}
               options={typeOptions || []}
               inputType={InputTypes.Selections}
