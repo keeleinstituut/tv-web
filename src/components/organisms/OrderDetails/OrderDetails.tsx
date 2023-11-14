@@ -10,7 +10,7 @@ import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
 import OrderFilesSection from 'components/molecules/OrderFilesSection/OrderFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
-import { join, map, uniq, includes } from 'lodash'
+import { join, map, uniq, includes, find } from 'lodash'
 import {
   getLocalDateOjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
@@ -33,6 +33,8 @@ import ExpandableContentContainer from 'components/molecules/ExpandableContentCo
 import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
 
 export enum OrderDetailModes {
   New = 'new',
@@ -137,6 +139,12 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   const navigate = useNavigate()
   const isNew = mode === OrderDetailModes.New
   const [isEditable, setIsEditable] = useState(isNew)
+  const { classifierValues: domainValues } = useClassifierValuesFetch({
+    type: ClassifierValueType.TranslationDomain,
+  })
+  const { classifierValues: projectTypes } = useClassifierValuesFetch({
+    type: ClassifierValueType.ProjectType,
+  })
 
   const { status = OrderStatus.Registered } = order || {}
   const hasManagerPrivilege = includes(userPrivileges, Privileges.ManageProject)
@@ -172,8 +180,14 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     const destination_language_classifier_value_ids =
       uniq(map(sub_projects, 'destination_language_classifier_value_id')) || []
 
+    const defaultDomainClassifier = find(domainValues, { value: 'ASP' })
+    const defaultProjectTypeClassifier = find(projectTypes, {
+      value: 'TRANSLATION',
+    })
+
     return {
-      type_classifier_value_id: type_classifier_value?.id,
+      type_classifier_value_id:
+        type_classifier_value?.id || defaultProjectTypeClassifier?.id,
       client_institution_user_id: isNew
         ? institutionUserId
         : client_institution_user?.id,
@@ -184,7 +198,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       ext_id,
       deadline_at: deadline_at
         ? getLocalDateOjectFromUtcDateString(deadline_at)
-        : { date: '', time: '' },
+        : { date: '', time: '23:59:59' },
       event_start_at: event_start_at
         ? getLocalDateOjectFromUtcDateString(event_start_at)
         : { date: '', time: '' },
@@ -193,7 +207,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       // TODO: not clear how BE will send the help_file_types back to FE
       help_file_types,
       translation_domain_classifier_value_id:
-        translation_domain_classifier_value?.id,
+        translation_domain_classifier_value?.id || defaultDomainClassifier?.id,
       comments,
       tags: map(tags, 'id'),
       accepted_at: accepted_at ? dayjs(accepted_at).format('DD.MM.YYYY') : '',
@@ -207,7 +221,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       created_at: created_at ? dayjs(created_at).format('DD.MM.YYYY') : '',
       // TODO: these Need extra mapping
     }
-  }, [institutionUserId, isNew, order])
+  }, [domainValues, institutionUserId, isNew, order, projectTypes])
 
   const {
     control,
