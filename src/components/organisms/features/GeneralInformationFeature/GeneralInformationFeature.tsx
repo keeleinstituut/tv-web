@@ -4,11 +4,11 @@ import {
   filter,
   compact,
   isEmpty,
-  isEqual,
   split,
   some,
   reduce,
   includes,
+  isEqual,
 } from 'lodash'
 import {
   useUpdateSubOrder,

@@ -1,11 +1,6 @@
 import { FC, useCallback, useMemo } from 'react'
 import { map, find, pick, values, isEqual } from 'lodash'
-import {
-  CatAnalysis,
-  CatJob,
-  ListOrder,
-  SubProjectFeatures,
-} from 'types/orders'
+import { ListOrder, SubProjectFeatures } from 'types/orders'
 import { AssignmentPayload, AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import Button, {
@@ -40,8 +35,6 @@ interface AssignmentProps extends AssignmentType {
   destination_language_classifier_value_id: string
   isVendorView?: boolean
   catSupported?: boolean
-  cat_jobs?: CatJob[]
-  cat_analyzis?: CatAnalysis[]
   ext_id?: string
   volumes?: VolumeValue[]
   subOrderId?: string
@@ -71,8 +64,6 @@ const Assignment: FC<AssignmentProps> = ({
   finished_at,
   isVendorView,
   catSupported,
-  cat_jobs,
-  cat_analyzis,
   ext_id,
   volumes = [],
   project,
@@ -292,14 +283,11 @@ const Assignment: FC<AssignmentProps> = ({
         isTextarea: true,
         catSupported,
         vendorPrices,
-        assignmentCatJobs: cat_jobs,
         vendorDiscounts,
         vendorName,
         value: volumes,
         assignmentId: id,
         subOrderId,
-        // cat_jobs,
-        cat_analyzis,
         // onlyDisplay: !isEditable,
       },
       {
@@ -322,12 +310,10 @@ const Assignment: FC<AssignmentProps> = ({
       handleAddComment,
       catSupported,
       vendorPrices,
-      cat_jobs,
       vendorDiscounts,
       vendorName,
       volumes,
       subOrderId,
-      cat_analyzis,
       isVendorView,
     ]
   )
