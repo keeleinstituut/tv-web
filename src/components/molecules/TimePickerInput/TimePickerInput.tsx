@@ -25,6 +25,7 @@ type SharedTimeProps = {
 export type TimePickerInputProps = SharedTimeProps & {
   label?: string
   className?: string
+  setIsModalOpen?: (value: boolean) => void
 }
 
 export type TimeInputProps = SharedTimeProps & {
@@ -119,6 +120,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       name,
       errorZIndex,
       icon,
+      setIsModalOpen,
     } = props
 
     const splittedTimeValue = value?.split(':')
@@ -130,12 +132,14 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
     const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
 
     const toggleTimeColumnVisible = () => {
+      setIsModalOpen && setIsModalOpen(!isTimeColumnOpen)
       setTimeColumnOpen(!isTimeColumnOpen)
     }
 
     const clickAwayInputRef = useRef(null)
 
     useClickAway(() => {
+      setIsModalOpen && setIsModalOpen(false)
       setTimeColumnOpen(false)
     }, [clickAwayInputRef])
 

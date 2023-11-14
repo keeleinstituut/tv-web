@@ -1,10 +1,8 @@
 import TimePickerInput from 'components/molecules/TimePickerInput/TimePickerInput'
-
 import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInput'
-import { Ref, forwardRef, useCallback } from 'react'
+import { Ref, forwardRef, useCallback, useEffect, useState } from 'react'
 import { FieldError } from 'react-hook-form'
 import classNames from 'classnames'
-
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 
@@ -18,6 +16,7 @@ export interface DateTimePickerProps {
   className?: string
   minDate?: Date
   maxDate?: Date
+  onDateTimeChange?: (value: { date: string; time: string }) => void
 }
 
 const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
@@ -32,9 +31,12 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
       className,
       minDate,
       maxDate,
+      onDateTimeChange,
     } = props
 
     const { t } = useTranslation()
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+    const [wasModalOpen, setWasModalOpen] = useState(false)
 
     const onChangeDate = useCallback(
       (newDateValue: string) => {
@@ -43,6 +45,7 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
           date: newDateValue,
         }
         onChange(newValue)
+        setWasModalOpen(true)
       },
       [onChange, value]
     )
@@ -54,9 +57,17 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
           time: newDateValue,
         }
         onChange(newValue)
+        setWasModalOpen(true)
       },
       [onChange, value]
     )
+
+    useEffect(() => {
+      if (onDateTimeChange && wasModalOpen && !isModalOpen) {
+        onDateTimeChange({ date: value?.date || '', time: value?.time || '' })
+        setWasModalOpen(!wasModalOpen)
+      }
+    }, [isModalOpen, onDateTimeChange, value, wasModalOpen])
 
     if (hidden) return null
 
@@ -81,6 +92,7 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             name={`${name}.time`}
             value={value?.time}
             className={classes.timePicker}
+            setIsModalOpen={setIsModalOpen}
             showSeconds
           />
         </div>

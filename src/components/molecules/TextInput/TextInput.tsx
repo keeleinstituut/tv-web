@@ -1,4 +1,4 @@
-import { RefObject, forwardRef, useRef } from 'react'
+import { FocusEvent, RefObject, forwardRef, useCallback, useRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
@@ -28,6 +28,7 @@ export interface TextInputProps
   isTextarea?: boolean
   inputContainerClassName?: string
   hasInputValueSize?: boolean
+  handleOnBlur?: (value: string) => void
 }
 
 const TextInput = forwardRef<
@@ -51,6 +52,8 @@ const TextInput = forwardRef<
     handleDelete,
     inputContainerClassName,
     hasInputValueSize = false,
+    handleOnBlur,
+    onBlur,
     ...rest
   } = props
   const { t } = useTranslation()
@@ -61,8 +64,6 @@ const TextInput = forwardRef<
       handleDelete()
     }
   }
-  // Might need event handler wrappers here
-  if (hidden) return null
 
   const inputProps = {
     ...(placeholder ? { placeholder } : {}),
@@ -74,6 +75,21 @@ const TextInput = forwardRef<
     ...rest,
     size: hasInputValueSize ? size(toString(value)) : undefined,
   }
+  const handleOnBlurAction = useCallback(
+    (e: unknown) => {
+      if (!!handleOnBlur) {
+        handleOnBlur(toString(value) || '')
+      }
+      if (!!onBlur) {
+        const event = e as unknown as FocusEvent<HTMLInputElement, Element>
+        onBlur(event)
+      }
+    },
+    [handleOnBlur, onBlur, value]
+  )
+  // Might need event handler wrappers here
+  if (hidden) return null
+
   return (
     <Field
       name={name}
@@ -101,10 +117,12 @@ const TextInput = forwardRef<
             <textarea
               {...(inputProps as unknown as InputHTMLAttributes<HTMLTextAreaElement>)}
               rows={4}
+              onBlur={(e) => handleOnBlurAction(e)}
             />
           ) : (
             <input
               {...(inputProps as unknown as InputHTMLAttributes<HTMLInputElement>)}
+              onBlur={(e) => handleOnBlurAction(e)}
             />
           )}
         </Control>

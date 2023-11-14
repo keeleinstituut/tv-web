@@ -92,7 +92,6 @@ type SubOrderProps = Pick<
   | 'status'
   | 'deadline_at'
 > & {
-  projectDeadline?: string
   projectDomain?: ClassifierValue
 }
 
@@ -103,7 +102,6 @@ const SubOrderSection: FC<SubOrderProps> = ({
   destination_language_classifier_value,
   price,
   status,
-  projectDeadline,
   deadline_at,
   projectDomain,
 }) => {
@@ -276,7 +274,6 @@ const SubOrderSection: FC<SubOrderProps> = ({
 
       <Feature
         subOrder={subOrder}
-        projectDeadline={projectDeadline}
         projectDomain={projectDomain}
         feature={activeTab as SubProjectFeatures}
         index={findIndex(allTabs, (tab) => {

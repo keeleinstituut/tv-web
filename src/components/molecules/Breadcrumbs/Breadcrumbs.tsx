@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { Link } from 'react-router-dom'
-import { includes, size } from 'lodash'
+import { includes, size, map } from 'lodash'
 import { protectedRoutesForReactRouter } from 'router/router'
 import useBreadcrumbs from 'use-react-router-breadcrumbs'
 
@@ -12,7 +12,7 @@ const Breadcrumbs: FC = () => {
 
   return (
     <div className={classes.breadcrumbs}>
-      {breadcrumbs.map(({ match, breadcrumb, location }, index) => {
+      {map(breadcrumbs, ({ match, breadcrumb, location }, index) => {
         const routePages = includes(match.pathname, '/settings') ? 3 : 2
         const showRoute =
           size(breadcrumbs) > routePages &&
