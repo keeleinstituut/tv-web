@@ -254,6 +254,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
             ariaLabel={t('label.main_write')}
             control={control}
             inputType={InputTypes.Checkbox}
+            disabled={isTaskView}
             onClick={() =>
               isEqual(type, TMType.Public)
                 ? showModal(ModalTypes.ConfirmationModal, {

@@ -20,8 +20,8 @@ const TaskPage: FC = () => {
 
   const { task, isLoading } = useFetchTask({ id: taskId })
 
-  const { id, assignment } = task || {}
-  const { subProject, ext_id } = assignment || {}
+  const { assignment } = task || {}
+  const { subProject, ext_id, sub_project_id } = assignment || {}
 
   const {
     project,
@@ -29,6 +29,8 @@ const TaskPage: FC = () => {
     source_language_classifier_value,
     destination_language_classifier_value,
   } = subProject || {}
+
+  console.log('task', task)
 
   const handleAcceptTask = useCallback(async () => {
     try {
@@ -74,7 +76,7 @@ const TaskPage: FC = () => {
           destination_language_classifier_value
         }
         cat_files={cat_files}
-        id={id}
+        sub_project_id={sub_project_id || ''}
       />
     </>
   )

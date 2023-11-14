@@ -76,6 +76,9 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     control,
   })
 
+  console.log('value', value)
+  console.log('useWatch({control})', useWatch({ control }))
+
   const sharedFiles = useWatch({
     control,
     name: 'shared_with_client' as Path<TFormValues>,
@@ -228,24 +231,20 @@ const FinalFilesList = <TFormValues extends FieldValues>({
           }),
         ]
       : []),
-    ...(!isTaskView
-      ? [
-          columnHelper.accessor('delete_button', {
-            header: '',
-            cell: ({ getValue }) => {
-              return (
-                <BaseButton
-                  className={classes.iconButton}
-                  onClick={() => handleDelete(getValue())}
-                >
-                  <Delete />
-                </BaseButton>
-              )
-            },
-            footer: (info) => info.column.id,
-          }),
-        ]
-      : []),
+    columnHelper.accessor('delete_button', {
+      header: '',
+      cell: ({ getValue }) => {
+        return (
+          <BaseButton
+            className={classes.iconButton}
+            onClick={() => handleDelete(getValue())}
+          >
+            <Delete />
+          </BaseButton>
+        )
+      },
+      footer: (info) => info.column.id,
+    }),
   ] as ColumnDef<FileRow>[]
 
   // TODO: possibly not needed

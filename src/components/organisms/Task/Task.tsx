@@ -22,7 +22,7 @@ interface TaskProps {
   destination_language_classifier_value?: LanguageClassifierValue
   project?: DetailedOrder
   cat_files?: SourceFile[]
-  id?: string
+  sub_project_id: string
 }
 
 const Task: FC<TaskProps> = ({
@@ -31,14 +31,14 @@ const Task: FC<TaskProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   project,
-  id,
   cat_files,
+  sub_project_id,
 }) => {
   const { t } = useTranslation()
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
 
-  const { price, deadline_at, status, event_start_at } = project || {}
+  const { price, deadline_at, status, event_start_at, comments } = project || {}
 
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
@@ -106,14 +106,15 @@ const Task: FC<TaskProps> = ({
         source_files={[]}
         cat_files={cat_files}
         cat_jobs={[]}
-        cat_analyzis={[]}
         final_files={[]}
-        id={id}
         source_language_classifier_value={source_language_classifier_value}
         destination_language_classifier_value={
           destination_language_classifier_value
         }
         event_start_at={event_start_at}
+        comments={comments}
+        isLoading={isLoading}
+        sub_project_id={sub_project_id}
       />
       <Button
         className={classes.finishedButton}

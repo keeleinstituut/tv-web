@@ -1,9 +1,5 @@
 import Loader from 'components/atoms/Loader/Loader'
-import {
-  useFetchSubOrderCatToolJobs,
-  useSubOrderSendToCat,
-  useUpdateSubOrder,
-} from 'hooks/requests/useOrders'
+import { useFetchSubOrderCatToolJobs } from 'hooks/requests/useOrders'
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'
@@ -14,27 +10,12 @@ import {
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import {
-  compact,
-  filter,
-  includes,
-  isEmpty,
-  map,
-  reduce,
-  some,
-  split,
-} from 'lodash'
+import { isEmpty, map, reduce, split } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import { useForm } from 'react-hook-form'
 import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
-import {
-  CatAnalysis,
-  CatJob,
-  CatProjectPayload,
-  CatProjectStatus,
-  SourceFile,
-} from 'types/orders'
+import { CatJob, SourceFile } from 'types/orders'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 import { LanguageClassifierValue } from 'types/classifierValues'
@@ -55,45 +36,45 @@ interface FormValues {
 }
 
 interface TaskContentProps {
-  id?: string
   deadline_at?: string
   source_files?: SourceFile[]
   cat_files?: SourceFile[]
   cat_jobs?: CatJob[]
-  cat_analyzis: CatAnalysis[]
   final_files: SourceFile[]
   source_language_classifier_value?: LanguageClassifierValue
   destination_language_classifier_value?: LanguageClassifierValue
   event_start_at?: string
+  comments?: string
+  isLoading?: boolean
+  sub_project_id: string
 }
 
 const TaskContent: FC<TaskContentProps> = ({
-  id,
   deadline_at,
   source_files,
   cat_files,
   cat_jobs,
-  cat_analyzis,
   final_files,
   source_language_classifier_value,
   destination_language_classifier_value,
   event_start_at,
+  comments,
+  isLoading,
+  sub_project_id,
 }) => {
   const { t } = useTranslation()
 
-  //   const { subOrder, isLoading } = useFetchSubOrder({ id })
-
-  const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: id })
-  const { sendToCat, isCatProjectLoading } = useSubOrderSendToCat()
   const { catToolJobs, catSetupStatus } = useFetchSubOrderCatToolJobs({
-    // id: id,
     id: '9a73d254-71c1-4fd5-a89f-0b41342d1cef',
+    // id: sub_project_id,
   })
 
-  //TODO: add correct subProject id
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({
     id: '9a73d254-71c1-4fd5-a89f-0b41342d1cef',
+    // id: sub_project_id,
   })
+
+  console.log('sub_project_id', sub_project_id)
 
   const defaultValues = useMemo(
     () => ({
@@ -114,7 +95,7 @@ const TaskContent: FC<TaskContentProps> = ({
     [catToolJobs, deadline_at, final_files, cat_files, source_files]
   )
 
-  const { control, getValues, watch, setValue } = useForm<FormValues>({
+  const { control, setValue } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
@@ -135,36 +116,6 @@ const TaskContent: FC<TaskContentProps> = ({
     }
   }, [setValue, subOrderTmKeys])
 
-  const handleSendToCat = useCallback(async () => {
-    const sourceFiles = getValues('my_source_files')
-    const selectedSourceFiles = filter(sourceFiles, 'isChecked')
-
-    const payload: CatProjectPayload = {
-      sub_project_id: id || '',
-      source_files_ids: compact(map(selectedSourceFiles, 'id')),
-    }
-
-    // try {
-    //   await sendToCat(payload)
-    //   showNotification({
-    //     type: NotificationTypes.Success,
-    //     title: t('notification.announcement'),
-    //     content: t('success.files_sent_to_cat'),
-    //   })
-    //   closeModal()
-    // } catch (errorData) {
-    //   showValidationErrorMessage(errorData)
-    // }
-  }, [getValues, id])
-
-  const openSendToCatModal = useCallback(
-    () =>
-      showModal(ModalTypes.ConfirmSendToCat, {
-        handleProceed: handleSendToCat,
-      }),
-    [handleSendToCat]
-  )
-
   const subOrderLangPair = useMemo(() => {
     const slangShort = split(source_language_classifier_value?.value, '-')[0]
     const tlangShort = split(
@@ -173,15 +124,6 @@ const TaskContent: FC<TaskContentProps> = ({
     )[0]
     return `${slangShort}_${tlangShort}`
   }, [destination_language_classifier_value, source_language_classifier_value])
-
-  const canGenerateProject =
-    // catSupported &&
-    isEmpty(catToolJobs) && !includes(CatProjectStatus.Done, catSetupStatus)
-
-  const isGenerateProjectButtonDisabled =
-    !some(watch('my_source_files'), 'isChecked') ||
-    !some(watch('write_to_memory'), (val) => !!val) ||
-    !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
   const formattedDate = (date: string) => {
     return dayjs(date).format('DD.MM.YYYY HH:mm')
@@ -235,10 +177,11 @@ const TaskContent: FC<TaskContentProps> = ({
   const handleShowVolume = useCallback(() => {
     showModal(ModalTypes.VolumeChange, {
       isCat: true,
-      isEditable: false,
+      isTaskView: true,
       discounts: volumesData[0].discounts,
       unit_fee: volumesData[0].unit_fee,
       volume_analysis: volumesData[0].volume_analysis,
+      taskViewPricesClass: classes.taskViewPrices,
     })
   }, [volumesData])
 
@@ -254,15 +197,14 @@ const TaskContent: FC<TaskContentProps> = ({
     },
     {
       label: t('label.special_instructions'),
-      //TODO: add correct variable for content
-      content: 'Siin on mingi lisainfo.',
+      content: comments || '-',
     },
     {
       label: t('label.volume'),
       //TODO: add correct variable for content
       content: (
         <>
-          <p>4h</p>
+          <span>4h</span>
           <BaseButton onClick={handleShowVolume} className={classes.volumeIcon}>
             <Eye />
           </BaseButton>
@@ -302,15 +244,13 @@ const TaskContent: FC<TaskContentProps> = ({
       </div>
       <TranslationMemoriesSection
         className={classes.translationMemories}
-        //   hidden={!catSupported}
+        hidden={isEmpty(subOrderTmKeys)}
         control={control}
         isEditable={false}
-        // subOrderId={id}
-        subOrderId={'9a73d254-71c1-4fd5-a89f-0b41342d1cef' || ''}
+        subOrderId={sub_project_id}
         subOrderTmKeys={subOrderTmKeys}
         subOrderLangPair={subOrderLangPair}
         isTaskView
-        //   projectDomain={projectDomain}
       />
       <div className={classes.grid}>
         <SourceFilesList
@@ -318,37 +258,28 @@ const TaskContent: FC<TaskContentProps> = ({
           title={t('my_tasks.my_source_files')}
           tooltipContent={t('tooltip.my_source_files_helper')}
           control={control}
-          openSendToCatModal={openSendToCatModal}
-          canGenerateProject={canGenerateProject}
-          isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
-          isCatProjectLoading={isCatProjectLoading}
           catSetupStatus={catSetupStatus}
           isTaskView
-          // subOrderId={id || ''}
-          subOrderId={'9a73d254-71c1-4fd5-a89f-0b41342d1cef' || ''}
+          subOrderId={'9a786227-e7b7-47b6-a2ee-a7070ce6f409'}
           isEditable
         />
         <FinalFilesList
-          name="my_final_files"
+          name="final_files"
           title={t('my_tasks.my_ready_files')}
           control={control}
           isEditable
           isLoading={isLoading}
-          // subOrderId={id || ''}
-          subOrderId={'9a8e440e-33fc-453c-9497-e2c5690d4563' || ''}
-          // isEditable={isEditable}
+          subOrderId={sub_project_id}
           className={classes.myFinalFiles}
           isTaskView
         />
         <CatJobsTable
-          subOrderId={'9a8e440e-33fc-453c-9497-e2c5690d4563' || ''}
-          // subOrderId={id || ''}
+          subOrderId={sub_project_id}
           className={classes.catJobs}
-          //   hidden={!catSupported || isEmpty(catToolJobs)}
+          hidden={isEmpty(catToolJobs)}
           cat_jobs={catToolJobs}
           cat_files={cat_files}
           source_files={source_files}
-          cat_analyzis={cat_analyzis}
           canSendToVendors={true} //TODO add check when camunda is ready
           source_language_classifier_value={source_language_classifier_value}
           destination_language_classifier_value={

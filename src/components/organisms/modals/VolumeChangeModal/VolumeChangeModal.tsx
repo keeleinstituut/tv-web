@@ -64,7 +64,8 @@ export interface VolumeChangeModalProps {
   unit_quantity?: number
   subOrderId?: string
   onChangeValue?: (volume: VolumeValue) => void
-  isEditable?: boolean
+  isTaskView?: boolean
+  taskViewPricesClass?: string
 }
 
 enum CatAnalysisVolumes {
@@ -114,7 +115,8 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   unit_type,
   subOrderId,
   onChangeValue,
-  isEditable = true,
+  isTaskView = false,
+  taskViewPricesClass,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -250,7 +252,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         label: t('label.unit'),
         name: 'unit',
         options: priceUnitOptions,
-        onlyDisplay: isCat,
+        onlyDisplay: isCat || isTaskView,
         rules: {
           required: true,
         },
@@ -266,7 +268,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         rules: {
           required: true,
         },
-        onlyDisplay: !isEditable,
+        onlyDisplay: isTaskView,
       },
       {
         inputType: InputTypes.Text,
@@ -281,7 +283,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       {
         inputType: InputTypes.Text,
         className: classes.inputInternalPosition,
-        hidden: isCat,
+        hidden: isCat || isTaskView,
         type: 'number',
         label: t('label.amount'),
         ariaLabel: t('label.amount'),
@@ -311,7 +313,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         name: 'vendor',
       },
     ],
-    [isCat, isEditable, priceUnitOptions, t]
+    [isCat, isTaskView, priceUnitOptions, t]
   )
 
   // Probably can be improved a bit and unified with onSaveEdit
@@ -458,7 +460,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     [isCat, assignmentId, amountDiscounts, amountValues, catJobId, onSave]
   )
 
-  const title = !isEditable
+  const title = isTaskView
     ? t('modal.view_cat_volumes')
     : isCat
     ? t('modal.pick_volume_by_cat')
@@ -475,7 +477,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     t('modal.pick_volume_manually_helper')
   )
 
-  const helperText = !isEditable ? '' : catHelperText
+  const helperText = isTaskView ? '' : catHelperText
 
   return (
     <ConfirmationModalBase
@@ -483,10 +485,10 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       handleProceed={handleSubmit(onSubmit)}
       cancelButtonContent={t('button.close')}
       cancelButtonDisabled={isSubmitting}
-      proceedButtonContent={!isEditable ? undefined : t('button.confirm')}
+      proceedButtonContent={isTaskView ? undefined : t('button.confirm')}
       proceedButtonDisabled={!isValid}
       proceedButtonLoading={isSubmitting}
-      proceedButtonHidden={!isEditable}
+      proceedButtonHidden={isTaskView}
       className={classes.modalContainer}
       title={title}
       helperText={helperText}
@@ -502,7 +504,8 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
           <VolumeCatPriceTable
             control={control}
             hidden={!isCat}
-            isEditable={isEditable}
+            isEditable={!isTaskView}
+            taskViewPricesClass={taskViewPricesClass}
           />
         </Root>
       }
