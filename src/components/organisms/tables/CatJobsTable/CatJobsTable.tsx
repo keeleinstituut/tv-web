@@ -154,9 +154,29 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('dots_button', {
-      cell: '',
+      cell: () => {
+        return isTaskView ? (
+          <SimpleDropdown
+            icon={HorizontalDots}
+            className={classes.dropdown}
+            buttonClassName={classes.dropdownInnerButton}
+            options={[
+              {
+                label: t('button.download_xliff'),
+                onClick: () => downloadXliff(subOrderId),
+              },
+              {
+                label: t('button.download_ready_translation'),
+                onClick: () => downloadTranslatedFile(subOrderId),
+              },
+            ]}
+          />
+        ) : (
+          ''
+        )
+      },
       header: () => {
-        return (
+        return !isTaskView ? (
           <SimpleDropdown
             icon={HorizontalDots}
             className={classes.dropdown}
@@ -180,6 +200,8 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
               },
             ]}
           />
+        ) : (
+          ''
         )
       },
       footer: (info) => info.column.id,
