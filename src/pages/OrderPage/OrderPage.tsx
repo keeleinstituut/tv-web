@@ -17,7 +17,6 @@ import SubOrderSection from 'components/templates/SubOrderSection/SubOrderSectio
 interface OrderButtonProps {
   status?: OrderStatus
   isUserClientOfProject?: boolean
-  //
 }
 
 const OrderButtons: FC<OrderButtonProps> = ({
@@ -80,7 +79,6 @@ const OrderPage: FC = () => {
     sub_projects,
     client_institution_user,
     manager_institution_user,
-    deadline_at,
     translation_domain_classifier_value,
   } = order || {}
 
@@ -109,7 +107,6 @@ const OrderPage: FC = () => {
         <SubOrderSection
           {...subOrder}
           key={subOrder.id}
-          projectDeadline={deadline_at}
           projectDomain={translation_domain_classifier_value}
         />
       ))}

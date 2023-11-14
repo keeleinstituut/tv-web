@@ -28,6 +28,8 @@ import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
+import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { FilterFunctionType } from 'types/collective'
 
 // TODO: statuses might come from BE instead
 // Currently unclear
@@ -77,6 +79,8 @@ const OrdersTable: FC = () => {
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Order,
   })
+  const { languageDirectionFilters, loadMore, handleSearch } =
+    useLanguageDirections({})
 
   const statusFilters = map(OrderStatus, (status) => ({
     label: t(`orders.status.${status}`),
@@ -102,7 +106,7 @@ const OrdersTable: FC = () => {
             ext_id,
             reference_number,
             deadline_at,
-            type: type_classifier_value?.value || '',
+            type: type_classifier_value?.name || '',
             status,
             tags: map(tags, 'name'),
             price,
@@ -131,6 +135,33 @@ const OrdersTable: FC = () => {
       keepErrors: true,
     },
   })
+
+  const handleModifiedFilterChange = useCallback(
+    (filters?: FilterFunctionType) => {
+      let currentFilters = filters
+      if (filters && 'language_directions' in filters) {
+        const { language_directions, ...rest } = filters || {}
+        const typedLanguageDirection = language_directions as string[]
+
+        const modifiedLanguageDirections = map(
+          typedLanguageDirection,
+          (languageDirectionString) => {
+            return languageDirectionString.replace('_', ':')
+          }
+        )
+
+        currentFilters = {
+          language_directions: modifiedLanguageDirections,
+          ...rest,
+        }
+      }
+
+      if (handleFilterChange) {
+        handleFilterChange(currentFilters)
+      }
+    },
+    [handleFilterChange]
+  )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     (payload) => {
@@ -189,7 +220,10 @@ const OrdersTable: FC = () => {
         )
       },
       meta: {
-        filterOption: { tags: tagsFilters },
+        filterOption: { language_directions: languageDirectionFilters },
+        onEndReached: loadMore,
+        onSearch: handleSearch,
+        showSearch: true,
       },
     }),
     columnHelper.accessor('type', {
@@ -207,6 +241,10 @@ const OrdersTable: FC = () => {
             ))}
           </div>
         )
+      },
+      meta: {
+        filterOption: { tag_ids: tagsFilters },
+        showSearch: true,
       },
     }),
     columnHelper.accessor('status', {
@@ -266,7 +304,7 @@ const OrdersTable: FC = () => {
         tableSize={TableSizeTypes.M}
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
-        onFiltersChange={handleFilterChange}
+        onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         headComponent={
           <div className={classes.topSection}>

@@ -13,7 +13,6 @@ type FeatureAssignmentsProps = Pick<
   | 'project'
 > & {
   hidden?: boolean
-  projectDeadline?: string
   catSupported?: boolean
   volumes?: VolumeValue[]
 }

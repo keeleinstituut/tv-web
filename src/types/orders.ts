@@ -48,6 +48,13 @@ export enum WorkflowTemplateID {
   SampleProject = 'Sample-project',
 }
 
+export enum TypesWithStartTime {
+  OralTranslation = 'ORAL_TRANSLATION',
+  PostTranslation = 'POST_TRANSLATION',
+  SynchronousTranslation = 'SYNCHRONOUS_TRANSLATION',
+  SignLanguage = 'SIGN_LANGUAGE',
+}
+
 export enum CatProjectStatus {
   Done = 'DONE',
   NotStarted = 'NOT_STARTED',
@@ -148,6 +155,7 @@ export interface ListSubOrderDetail {
   deadline_at: string
   price?: string
   translation_domain_classifier_value?: ClassifierValue
+  event_start_at?: string
 }
 
 export interface SubOrderDetail extends ListSubOrderDetail {
@@ -189,6 +197,7 @@ export interface ListOrder {
   status: OrderStatus
   tags: Tag[]
   price: string
+  event_start_at?: string
 }
 
 export interface DetailedOrder extends ListOrder {
