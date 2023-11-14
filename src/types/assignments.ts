@@ -12,10 +12,7 @@ export enum AssignmentStatus {
 
 interface Candidate {
   vendor: Vendor
-  vendor_id: string
   price: string
-  candidate: string
-  id: string
 }
 
 export interface AssignmentType {

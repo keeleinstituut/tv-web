@@ -4,7 +4,7 @@ import { useFetchTags } from 'hooks/requests/useTags'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, find, range, includes, split } from 'lodash'
+import { map, range, includes } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
@@ -13,7 +13,7 @@ import {
   ResponseMetaTypes,
   PaginationFunctionType,
 } from 'types/collective'
-import { Control, FieldValues, Path } from 'react-hook-form'
+import { Control, FieldValues, Path, PathValue } from 'react-hook-form'
 import {
   FormInput,
   InputTypes,
@@ -29,6 +29,7 @@ import { Root } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
 import { useFetchSkills } from 'hooks/requests/useVendors'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { TagTypes } from 'types/tags'
 import('dayjs/locale/et')
 
 dayjs.locale('et')
@@ -58,7 +59,8 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   source_language_classifier_value_id?: string
   destination_language_classifier_value_id?: string
   control: Control<TFormValues>
-  taskSkills?: string[]
+  skill_id?: string
+  selectedVendorsIds?: string[]
 }
 
 interface PricesTableRow {
@@ -87,14 +89,17 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
-  taskSkills = [],
+  skill_id: taskSkillId,
   control,
+  selectedVendorsIds,
 }: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
-  const { tagsFilters = [] } = useFetchTags()
+  const { tagsFilters = [] } = useFetchTags({
+    type: TagTypes.Vendor,
+  })
   const { skillsFilters = [] } = useFetchSkills()
 
-  const { lang_pair, skill_id } = filters || {}
+  const { lang_pair, skill_id: selectedSkillFilter, tag_id } = filters || {}
 
   const srcLangId = lang_pair?.[0]?.src || ''
   const dstLangId = lang_pair?.[0]?.dst || ''
@@ -162,7 +167,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
 
           return {
             selected: vendor_id,
-            alert_icon: !includes(taskSkills, skill_id) || !priceLanguageMatch,
+            alert_icon: taskSkillId !== skill_id || !priceLanguageMatch,
             name: `${user?.forename} ${user?.surname}`,
             languageDirection,
             working_and_vacation_times,
@@ -177,7 +182,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           }
         }
       ),
-    [data, dstLangId, srcLangId, taskSkills]
+    [data, dstLangId, srcLangId, taskSkillId]
   )
 
   const handleModifiedFilterChange = useCallback(
@@ -213,12 +218,18 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       header: '',
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
+        const vendorId = getValue()
+        const isSelectedByDefault = includes(selectedVendorsIds, vendorId)
         return (
           <FormInput
             name={`selected.${getValue()}` as Path<TFormValues>}
             ariaLabel={t('label.select_vendor')}
             control={control}
             inputType={InputTypes.Checkbox}
+            disabled={isSelectedByDefault}
+            defaultValue={
+              isSelectedByDefault as PathValue<TFormValues, Path<TFormValues>>
+            }
             // className={classes.fitContent}
           />
         )
@@ -264,7 +275,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       },
       meta: {
         filterOption: { skill_id: skillsFilters },
-        filterValue: skill_id,
+        filterValue: selectedSkillFilter,
         showSearch: true,
       },
     }),
@@ -280,7 +291,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('tags', {
-      header: () => t('label.order_tags'),
+      header: () => t('label.tags'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         return (
@@ -293,6 +304,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       },
       meta: {
         filterOption: { tag_id: tagsFilters },
+        filterValue: tag_id,
       },
     }),
     columnHelper.accessor('character_fee', {

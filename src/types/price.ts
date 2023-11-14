@@ -36,6 +36,7 @@ export interface GetPricesPayload {
   src_lang_classifier_value_id?: Array<string | undefined>
   dst_lang_classifier_value_id?: Array<string | undefined>
   skill_id?: string[]
+  tag_id?: string[]
   limit?: number
   order_by?: string
   order_direction?: string

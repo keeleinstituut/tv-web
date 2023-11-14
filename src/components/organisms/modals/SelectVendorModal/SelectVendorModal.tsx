@@ -1,9 +1,18 @@
-import { FC, useCallback, useState, useMemo } from 'react'
+import { FC, useCallback, useState, useEffect } from 'react'
 import ModalBase, {
   ButtonPositionTypes,
   ModalSizeTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { debounce, find, reduce, isEmpty, pickBy, keys, filter } from 'lodash'
+import {
+  debounce,
+  pickBy,
+  keys,
+  filter,
+  includes,
+  isEmpty,
+  difference,
+  omitBy,
+} from 'lodash'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import Button, {
@@ -52,6 +61,7 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
       institution_user_name: '',
       lang_pair: [],
       skill_id: [],
+      tag_id: [],
     })
   }, [handleFilterChange])
 
@@ -90,7 +100,7 @@ export interface SelectVendorModalProps {
   isModalOpen?: boolean
   assignmentId?: string
   selectedVendorsIds?: string[]
-  taskSkills?: string[]
+  skill_id?: string
   source_language_classifier_value_id?: string
   destination_language_classifier_value_id?: string
 }
@@ -102,7 +112,7 @@ interface FormValues {
 const SelectVendorModal: FC<SelectVendorModalProps> = ({
   assignmentId,
   selectedVendorsIds = [],
-  taskSkills = [],
+  skill_id,
   isModalOpen,
   source_language_classifier_value_id,
   destination_language_classifier_value_id,
@@ -126,53 +136,41 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         dst: destination_language_classifier_value_id,
       },
     ],
-    skill_id: taskSkills,
+    ...(skill_id ? { skill_id: [skill_id] } : {}),
   })
-
-  const selectedValues = useMemo(
-    () =>
-      isEmpty(prices)
-        ? {}
-        : reduce(
-            prices,
-            (result, price) => {
-              if (!price) return result
-              return {
-                ...result,
-                [price.id]: find(selectedVendorsIds, { id: price.vendor.id }),
-              }
-            },
-            {}
-          ),
-    [prices, selectedVendorsIds]
-  )
 
   const {
     control,
     handleSubmit,
+    reset,
+    watch,
     formState: { isSubmitting, isValid },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
     mode: 'onChange',
-    values: {
-      selected: selectedValues,
-    },
-    resetOptions: {
-      keepErrors: true,
-    },
   })
+
+  const selectedValues = watch('selected')
+
+  const checkedVendors = keys(omitBy(selectedValues, (isChecked) => !isChecked))
+
+  const isDirty = !isEmpty(difference(checkedVendors, selectedVendorsIds))
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      reset()
+    }
+    // We only want to reset when modal closes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isModalOpen])
 
   const handleAddSelectedVendors: SubmitHandler<FormValues> = useCallback(
     async ({ selected }) => {
-      const newVendorIds = keys(pickBy(selected, (val) => !!val))
-      // const unRemovedVendorIds = filter(selectedVendorsIds, (id) => {
-      //   // vendor was removed, if it exists in the "selected" object with a value of false
-      //   const wasVendorRemoved = find(
-      //     selected,
-      //     (value, key) => key === id && !value
-      //   )
-      //   return !wasVendorRemoved
-      // })
+      const selectedVendorIds = keys(pickBy(selected, (val) => !!val))
+      const newVendorIds = filter(
+        selectedVendorIds,
+        (id) => !includes(selectedVendorsIds, id)
+      )
       try {
         // TODO: not sure about this at all
         await addAssignmentVendor({
@@ -189,7 +187,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         showValidationErrorMessage(errorData)
       }
     },
-    [t, addAssignmentVendor]
+    [selectedVendorsIds, addAssignmentVendor, t]
   )
 
   return (
@@ -209,7 +207,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
           appearance: AppearanceTypes.Primary,
           onClick: handleSubmit(handleAddSelectedVendors),
           loading: isSubmitting || isLoading,
-          disabled: !isValid,
+          disabled: !isValid || !isDirty,
           children: t('button.add'),
         },
       ]}
@@ -227,8 +225,9 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         handleFilterChange={handleFilterChange}
         handleSortingChange={handleSortingChange}
         handlePaginationChange={handlePaginationChange}
+        selectedVendorsIds={selectedVendorsIds}
         filters={filters}
-        taskSkills={taskSkills}
+        skill_id={skill_id}
         control={control}
         hidden={isLoadingPrices}
       />

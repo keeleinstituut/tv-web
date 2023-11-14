@@ -67,10 +67,10 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
 
   const tableRows = useMemo(
     () =>
-      map(candidates, ({ vendor, price, vendor_id, id }) => {
+      map(candidates, ({ vendor, price }) => {
         const { institution_user } = vendor
         const name = `${institution_user.user.forename} ${institution_user.user.surname}`
-        const status = getCandidateStatus(vendor_id)
+        const status = getCandidateStatus(vendor.id)
 
         return {
           name,
