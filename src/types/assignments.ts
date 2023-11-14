@@ -33,6 +33,7 @@ export interface AssignmentType {
   finished_at: string
   //
   assigned_chunks: string[]
+  comments: string
 }
 
 // TODO: no idea if this is the correct format
@@ -40,6 +41,8 @@ export interface AssignmentPayload {
   vendor_id?: string
   finished_at?: string | null
   volumes?: VolumeValue[]
+  comments?: string
+  deadline_at?: string
 }
 
 export enum VolumeUnits {
