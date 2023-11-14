@@ -47,6 +47,13 @@ export enum WorkflowTemplateID {
   SampleProject = 'Sample-project',
 }
 
+export enum TypesWithStartTime {
+  OralTranslation = 'ORAL_TRANSLATION',
+  PostTranslation = 'POST_TRANSLATION',
+  SynchronousTranslation = 'SYNCHRONOUS_TRANSLATION',
+  SignLanguage = 'SIGN_LANGUAGE',
+}
+
 export enum CatProjectStatus {
   Done = 'DONE',
   NotStarted = 'NOT_STARTED',
