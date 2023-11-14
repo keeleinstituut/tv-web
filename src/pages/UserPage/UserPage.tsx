@@ -271,7 +271,7 @@ const UserPage: FC = () => {
 
   const handleOnRemoveDeactivationDate = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
-      title: t('modal.edit_deactivation_date'),
+      title: t('modal.remove_deactivation_date'),
       modalContent: t('modal.deactivation_date_content', {
         date: formattedDeactivationDate,
       }),
