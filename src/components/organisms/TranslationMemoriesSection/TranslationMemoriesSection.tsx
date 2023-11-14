@@ -86,6 +86,7 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
   subOrderTmKeys?: SubOrderTmKeys[]
   subOrderLangPair?: string
   projectDomain?: ClassifierValue
+  isTaskView?: boolean
 }
 
 interface FileRow {
@@ -111,6 +112,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   subOrderTmKeys,
   subOrderLangPair,
   projectDomain,
+  isTaskView,
 }: TranslationMemoriesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { translationMemories = [] } = useFetchTranslationMemories()
@@ -280,6 +282,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           <BaseButton
             className={classes.iconButton}
             onClick={() => handleDelete({ id: getValue() })}
+            hidden={isTaskView}
           >
             <Delete />
           </BaseButton>

@@ -87,10 +87,12 @@ const TaskContent: FC<TaskContentProps> = ({
   const { sendToCat, isCatProjectLoading } = useSubOrderSendToCat()
   const { catToolJobs, catSetupStatus } = useFetchSubOrderCatToolJobs({
     // id: id,
-    id: '9a8e440e-33fc-453c-9497-e2c5690d4563',
+    id: '9a73d254-71c1-4fd5-a89f-0b41342d1cef',
   })
+
+  //TODO: add correct subProject id
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({
-    id: '9a8e440e-33fc-453c-9497-e2c5690d4563',
+    id: '9a73d254-71c1-4fd5-a89f-0b41342d1cef',
   })
 
   const defaultValues = useMemo(
@@ -185,8 +187,10 @@ const TaskContent: FC<TaskContentProps> = ({
     return dayjs(date).format('DD.MM.YYYY HH:mm')
   }
 
+  //TODO: add correct volume data when available
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const volumesTest = [
+  const volumesData = [
     {
       id: '9a9a997c-69a6-45ab-9447-76f42865d0cb',
       assignment_id: '9a73d254-822f-4b24-8175-3abce8382918',
@@ -232,11 +236,11 @@ const TaskContent: FC<TaskContentProps> = ({
     showModal(ModalTypes.VolumeChange, {
       isCat: true,
       isEditable: false,
-      discounts: volumesTest[0].discounts,
-      unit_fee: volumesTest[0].unit_fee,
-      volume_analysis: volumesTest[0].volume_analysis,
+      discounts: volumesData[0].discounts,
+      unit_fee: volumesData[0].unit_fee,
+      volume_analysis: volumesData[0].volume_analysis,
     })
-  }, [volumesTest])
+  }, [volumesData])
 
   const taskDetails = [
     {
@@ -302,9 +306,10 @@ const TaskContent: FC<TaskContentProps> = ({
         control={control}
         isEditable={false}
         // subOrderId={id}
-        subOrderId={'9a8e440e-33fc-453c-9497-e2c5690d4563' || ''}
+        subOrderId={'9a73d254-71c1-4fd5-a89f-0b41342d1cef' || ''}
         subOrderTmKeys={subOrderTmKeys}
         subOrderLangPair={subOrderLangPair}
+        isTaskView
         //   projectDomain={projectDomain}
       />
       <div className={classes.grid}>
@@ -320,7 +325,7 @@ const TaskContent: FC<TaskContentProps> = ({
           catSetupStatus={catSetupStatus}
           isTaskView
           // subOrderId={id || ''}
-          subOrderId={'9a8e440e-33fc-453c-9497-e2c5690d4563' || ''}
+          subOrderId={'9a73d254-71c1-4fd5-a89f-0b41342d1cef' || ''}
           isEditable
         />
         <FinalFilesList
