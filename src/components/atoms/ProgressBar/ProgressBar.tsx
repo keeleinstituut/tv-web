@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
+import { map } from 'lodash'
 
 export interface Step {
   label: string
@@ -19,7 +20,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
 }) => {
   return (
     <ul className={classes.progressBarSteps}>
-      {steps.map((step, index) => {
+      {map(steps, (step, index) => {
         const { label } = step || {}
 
         return (
