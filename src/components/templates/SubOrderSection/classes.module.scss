@@ -27,25 +27,25 @@
   &:not(:first-child) {
     margin-top: spacing(4);
   }
-  &.registered {
-    border-color: $color-highlight;
-  }
   &.new {
     border-color: $color-warning;
   }
-  &.forwarded_to_vendor {
+  &.registered {
+    border-color: $color-highlight;
+  }
+  &.tasks_submitted_to_vendors {
     border-color: $color-success;
   }
-  &.in_progress {
+  &.tasks_in_progress {
     border-color: $color-primary;
   }
-  &.done_task {
+  &.tasks_completed {
     border-color: $color-success;
   }
   &.cancelled {
     border-color: $color-border;
   }
-  &.done {
+  &.completed {
     border-color: $color-warning;
   }
 

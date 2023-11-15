@@ -71,6 +71,10 @@ const AddTranslationMemoriesModal = lazy(
   () => import('./AddTranslationMemoriesModal/AddTranslationMemoriesModal')
 )
 
+const ConfirmCancelOrderModal = lazy(
+  () => import('./ConfirmCancelOrderModal/ConfirmCancelOrderModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -89,6 +93,7 @@ export enum ModalTypes {
   VolumeChange = 'volumeChange',
   ConfirmDeleteVolume = 'confirmDeleteVolume',
   AddTranslationMemories = 'addTranslationMemories',
+  ConfirmCancelOrder = 'confirmCancelOrder',
 }
 
 // Add other modal props types here as well
@@ -111,23 +116,24 @@ type ModalPropTypes =
   | Omit<ConfirmDeleteVolumeModalProps, 'closeModal'>
 
 const MODALS = {
-  institutionSelect: InstitutionSelectModal,
-  userAndRoleManagement: UserAndRoleManagementModal,
-  tooltip: TooltipModal,
-  formProgress: FormProgressModal,
-  catSplit: CatSplitModal,
-  catMerge: CatMergeModal,
-  editableListModal: EditableListModal,
-  confirmationModal: ConfirmationModal,
-  confirmSendToCat: ConfirmSendToCatModal,
-  catAnalysis: CatAnalysisModal,
-  dateTimeRangeFormModal: DateTimeRangeFormModal,
-  vendorsEdit: VendorsEditModal,
-  selectVendor: SelectVendorModal,
-  addVolume: AddVolumeModal,
-  volumeChange: VolumeChangeModal,
-  confirmDeleteVolume: ConfirmDeleteVolumeModal,
-  addTranslationMemories: AddTranslationMemoriesModal,
+  [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
+  [ModalTypes.UserAndRoleManagement]: UserAndRoleManagementModal,
+  [ModalTypes.Tooltip]: TooltipModal,
+  [ModalTypes.FormProgress]: FormProgressModal,
+  [ModalTypes.CatSplit]: CatSplitModal,
+  [ModalTypes.CatMerge]: CatMergeModal,
+  [ModalTypes.EditableListModal]: EditableListModal,
+  [ModalTypes.ConfirmationModal]: ConfirmationModal,
+  [ModalTypes.ConfirmSendToCat]: ConfirmSendToCatModal,
+  [ModalTypes.CatAnalysis]: CatAnalysisModal,
+  [ModalTypes.DateTimeRangeFormModal]: DateTimeRangeFormModal,
+  [ModalTypes.VendorsEdit]: VendorsEditModal,
+  [ModalTypes.SelectVendor]: SelectVendorModal,
+  [ModalTypes.AddVolume]: AddVolumeModal,
+  [ModalTypes.VolumeChange]: VolumeChangeModal,
+  [ModalTypes.ConfirmDeleteVolume]: ConfirmDeleteVolumeModal,
+  [ModalTypes.AddTranslationMemories]: AddTranslationMemoriesModal,
+  [ModalTypes.ConfirmCancelOrder]: ConfirmCancelOrderModal,
 }
 
 interface RefType {
@@ -168,7 +174,7 @@ const ModalRoot = () => {
     [closeModal, showModal, isModalOpen]
   )
 
-  if (!currentModalKey) return null
+  if (!currentModalKey || !isModalOpen) return null
   const SelectedModal = MODALS[currentModalKey]
 
   return (

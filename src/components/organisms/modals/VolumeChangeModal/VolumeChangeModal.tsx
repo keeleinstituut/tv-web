@@ -11,9 +11,12 @@ import {
   reduce,
   toNumber,
   zipObject,
+  pickBy,
+  identity,
+  join,
 } from 'lodash'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -25,26 +28,28 @@ import {
   DiscountPercentagesAmountNames,
   DiscountPercentagesAmounts,
 } from 'types/vendors'
+import {
+  useAssignmentAddCatVolume,
+  useAssignmentAddVolume,
+  useAssignmentEditCatVolume,
+  useAssignmentEditVolume,
+} from 'hooks/requests/useAssignments'
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
 import { Root } from '@radix-ui/react-form'
 import { CatAnalysis } from 'types/orders'
-import {
-  CatVolumePayload,
-  ManualVolumePayload,
-  VolumeUnits,
-} from 'types/assignments'
+import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
 
 import classes from './classes.module.scss'
 import {
   apiTypeToKey,
   keyToApiType,
 } from 'components/molecules/AddVolumeInput/AddVolumeInput'
+import { VolumeValue } from 'types/volumes'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { ValidationError } from 'api/errorHandler'
 
 export interface VolumeChangeModalProps {
-  onSave?: (
-    isCat: boolean,
-    newVolume: ManualVolumePayload | CatVolumePayload
-  ) => void
   assignmentId?: string
   catJobId?: string
   isCat?: boolean
@@ -57,6 +62,8 @@ export interface VolumeChangeModalProps {
   unit_fee?: number
   unit_type?: string
   unit_quantity?: number
+  subOrderId?: string
+  onChangeValue?: (volume: VolumeValue) => void
 }
 
 enum CatAnalysisVolumes {
@@ -84,16 +91,15 @@ const analysisVolumeByDiscountPercentage = {
 type FormValues = {
   task_type: string
   unit: PriceUnits
-  cost_price: number
+  unit_fee: number
   minimum_price: number
   total_price: string
   vendor: string
-  amount: number
+  unit_quantity: number
 } & DiscountPercentages &
   DiscountPercentagesAmounts
 
 const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
-  onSave,
   isCat,
   id,
   vendorName,
@@ -102,12 +108,19 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   volume_analysis,
   assignmentId,
   catJobId,
-  unit_fee,
-  unit_quantity,
+  unit_fee: initialUnitFee,
+  unit_quantity: initialUnitQuantity,
   unit_type,
+  subOrderId,
+  onChangeValue,
   ...rest
 }) => {
   const { t } = useTranslation()
+
+  const { addAssignmentVolume } = useAssignmentAddVolume({ subOrderId })
+  const { addAssignmentCatVolume } = useAssignmentAddCatVolume({ subOrderId })
+  const { editAssignmentVolume } = useAssignmentEditVolume({ subOrderId })
+  const { editAssignmentCatVolume } = useAssignmentEditCatVolume({ subOrderId })
 
   const catAnalysisAmounts = useMemo(() => {
     const relevantValues = pick(volume_analysis, values(CatAnalysisVolumes))
@@ -127,6 +140,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     watch,
     setValue,
     reset,
+    setError,
     formState: { isValid, isSubmitting },
   } = useForm<FormValues>({
     mode: 'onChange',
@@ -134,7 +148,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       // TODO: might need to deal with task_type
       task_type: 'Tõlkimine',
       unit: isCat ? PriceUnits.WordFee : undefined,
-      cost_price: isCat ? vendorPrices?.word_fee : undefined,
+      unit_fee: isCat ? vendorPrices?.word_fee : undefined,
       vendor: vendorName || undefined,
       ...discounts,
       ...catAnalysisAmounts,
@@ -147,19 +161,25 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       // TODO: might need to deal with task_type
       task_type: 'Tõlkimine',
       unit: isCat ? PriceUnits.WordFee : undefined,
-      cost_price: isCat ? vendorPrices?.word_fee : undefined,
+      unit_fee: isCat ? vendorPrices?.word_fee : undefined,
       vendor: vendorName || undefined,
       ...discounts,
       ...catAnalysisAmounts,
     })
-    setValue('amount', unit_quantity ?? 0)
-    setValue('cost_price', unit_fee ?? 0)
+    setValue('unit_quantity', initialUnitQuantity ?? 0)
+    setValue('unit_fee', initialUnitFee ?? 0)
     if (unit_type) {
       setValue('unit', apiTypeToKey(unit_type ?? ''))
     }
+    // Only reset on id change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
-  const [unit, cost_price, amount] = watch(['unit', 'cost_price', 'amount'])
+  const [unit, unit_fee, unit_quantity] = watch([
+    'unit',
+    'unit_fee',
+    'unit_quantity',
+  ])
 
   const amountDiscounts = watch(values(DiscountPercentageNames)) as string[]
   const amountValues = watch(values(DiscountPercentagesAmountNames))
@@ -182,26 +202,26 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
 
   useEffect(() => {
     if (totalAmount === 0 || totalAmount) {
-      setValue('amount', totalAmount, { shouldValidate: true })
+      setValue('unit_quantity', totalAmount, { shouldValidate: true })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalAmount])
 
   useEffect(() => {
     if (unit && vendorPrices?.[unit]) {
-      setValue('cost_price', vendorPrices?.[unit], { shouldValidate: true })
+      setValue('unit_fee', vendorPrices?.[unit], { shouldValidate: true })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unit])
 
   useEffect(() => {
-    if (cost_price && amount) {
-      setValue('total_price', toString(round(cost_price * amount, 2)), {
+    if (unit_fee && unit_quantity) {
+      setValue('total_price', toString(round(unit_fee * unit_quantity, 2)), {
         shouldValidate: true,
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cost_price, amount])
+  }, [unit_fee, unit_quantity])
 
   const priceUnitOptions = map(PriceUnits, (unit) => ({
     label: t(`label.${unit}`),
@@ -240,7 +260,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         label: t('label.cost_price'),
         ariaLabel: t('label.cost_price'),
         placeholder: '0.00',
-        name: 'cost_price',
+        name: 'unit_fee',
         rules: {
           required: true,
         },
@@ -263,7 +283,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         label: t('label.amount'),
         ariaLabel: t('label.amount'),
         placeholder: '0',
-        name: 'amount',
+        name: 'unit_quantity',
         rules: {
           required: true,
         },
@@ -291,34 +311,146 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     [isCat, priceUnitOptions, t]
   )
 
+  // Probably can be improved a bit and unified with onSaveEdit
+  const onSaveNew = useCallback(
+    async (isCat: boolean, args: ManualVolumePayload | CatVolumePayload) => {
+      let res: VolumeValue
+      try {
+        if (isCat) {
+          const { data: response } = await addAssignmentCatVolume({
+            data: {
+              ...(args as CatVolumePayload),
+              discounts: pickBy(
+                (args as CatVolumePayload).discounts,
+                identity
+              ) as DiscountPercentages,
+            },
+          })
+          res = response
+        } else {
+          const { data: response } = await addAssignmentVolume({
+            data: args as ManualVolumePayload,
+          })
+          res = response
+        }
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.volume_added'),
+        })
+        if (onChangeValue) {
+          onChangeValue(res)
+        }
+        closeModal()
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            setError(typedKey, { type: 'backend', message: errorString })
+          })
+        }
+        // TODO: need to map errors to form
+        showNotification({
+          type: NotificationTypes.Error,
+          title: t('notification.error'),
+        })
+      }
+    },
+    [addAssignmentCatVolume, addAssignmentVolume, onChangeValue, setError, t]
+  )
+
+  const onSaveEdit = useCallback(
+    async (isCat: boolean, args: ManualVolumePayload | CatVolumePayload) => {
+      delete args.assignment_id
+      let res: VolumeValue
+      try {
+        if (isCat) {
+          const { data: response } = await editAssignmentCatVolume({
+            volumeId: id as string,
+            data: args as CatVolumePayload,
+          })
+          res = response
+        } else {
+          const { data: response } = await editAssignmentVolume({
+            volumeId: id as string,
+            data: args as ManualVolumePayload,
+          })
+          res = response
+        }
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.volume_edited'),
+        })
+        if (onChangeValue) {
+          onChangeValue(res)
+        }
+        closeModal()
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            setError(typedKey, { type: 'backend', message: errorString })
+          })
+        }
+        // TODO: need to map errors to form
+        showNotification({
+          type: NotificationTypes.Error,
+          title: t('notification.error'),
+        })
+      }
+    },
+    [
+      editAssignmentCatVolume,
+      editAssignmentVolume,
+      id,
+      onChangeValue,
+      setError,
+      t,
+    ]
+  )
+
+  const onSave = useCallback(
+    async (isCat: boolean, args: ManualVolumePayload | CatVolumePayload) => {
+      if (id) {
+        onSaveEdit(isCat, args)
+      } else {
+        onSaveNew(isCat, args)
+      }
+    },
+    [id, onSaveEdit, onSaveNew]
+  )
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(
-    async ({ amount, unit, cost_price, ...rest }) => {
+    async ({ unit_quantity, unit, unit_fee, ...rest }) => {
       // @ts-expect-error type mismatch
       const payload: ManualVolumePayload | CatVolumePayload = !isCat
         ? {
             assignment_id: assignmentId ?? '',
-            unit_fee: Number(cost_price),
-            unit_quantity: Number(amount),
+            unit_fee: toNumber(unit_fee),
+            unit_quantity: toNumber(unit_quantity),
             unit_type: keyToApiType(unit),
           }
         : {
             assignment_id: assignmentId ?? '',
-            unit_fee: Number(cost_price),
+            unit_fee: toNumber(unit_fee),
             discounts: zipObject<DiscountPercentages>(
               values(DiscountPercentageNames),
               // @ts-expect-error type mismatch
-              map(amountDiscounts, (v) => Number(v))
+              map(amountDiscounts, toNumber)
             ),
             custom_volume_analysis: zipObject<CatAnalysisVolumes>(
               values(CatAnalysisVolumes),
               // @ts-expect-error type mismatch
-              map(amountValues, (v) => Number(v)).reverse() // because the enum itself is in the reverse order
+              map(amountValues, toNumber).reverse() // because the enum itself is in the reverse order
             ),
             cat_tool_job_id: catJobId ?? '',
           }
-      if (onSave) {
-        onSave(!!isCat, payload)
-      }
+      onSave(!!isCat, payload)
     },
     [isCat, assignmentId, amountDiscounts, amountValues, catJobId, onSave]
   )

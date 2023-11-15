@@ -9,7 +9,11 @@ import {
   CatVolumePayload,
   ManualVolumePayload,
 } from 'types/assignments'
-import { SourceFile, SubOrderResponse } from 'types/orders'
+import {
+  PotentialFilePayload,
+  SourceFile,
+  SubOrderResponse,
+} from 'types/orders'
 import { VolumeValue } from 'types/volumes'
 
 // TODO: not sure what endpoint to use and what data structure to use
@@ -68,7 +72,7 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
 
-          const newAssignments = previousData.assignments.map((item) => {
+          const newAssignments = map(previousData.assignments, (item) => {
             if (item.id === data.id) {
               return data
             }
@@ -215,26 +219,17 @@ export const useAssignmentRemoveVolume = ({
 }
 
 export const useAssignmentUpdate = ({ id }: { id?: string }) => {
-  // const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
   const { mutateAsync: updateAssignment, isLoading } = useMutation({
-    mutationKey: ['assignments', id],
+    mutationKey: ['suborders', id],
     mutationFn: (payload: AssignmentPayload) =>
-      apiClient.put(`${endpoints.TASKS}/${id}`, payload),
-    // TODO: might need to modify the assignment under subOrder: { assignments } in onSuccess
-    // onSuccess: ({ data }) => {
-    //   queryClient.setQueryData(
-    //     ['institutions', id],
-    //     // TODO: possibly will start storing all arrays as objects
-    //     // if we do, then this should be rewritten
-    //     (oldData?: InstitutionsDataType) => {
-    //       const { data: previousData } = oldData || {}
-    //       if (!previousData) return oldData
-    //       const newData = { ...previousData, ...data }
-    //       return { data: newData }
-    //     }
-    //   )
-    //   queryClient.refetchQueries({ queryKey: ['institutions'], type: 'active' })
-    // },
+      apiClient.put(`${endpoints.ASSIGNMENTS}/${id}`, payload),
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders'],
+        type: 'active',
+      })
+    },
   })
 
   return {
@@ -331,6 +326,93 @@ export const useDeleteFile = (config: {
   }
 }
 
+export const useDeleteBulkFiles = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection?: string
+}) => {
+  const { mutateAsync: deleteBulkFiles, isLoading } = useMutation({
+    mutationKey: ['files', config.reference_object_id],
+    mutationFn: (payload: PotentialFilePayload[]) => {
+      const { reference_object_id, reference_object_type, collection } = config
+
+      const files = map(payload, ({ file, ...rest }) => ({
+        collection,
+        id: (file as SourceFile)?.id,
+        reference_object_id,
+        reference_object_type,
+        ...rest,
+      }))
+
+      return apiClient.delete(endpoints.MEDIA_BULK, {
+        files,
+      })
+    },
+  })
+  return {
+    deleteBulkFiles,
+    isLoading,
+  }
+}
+
+export const useAddBulkFiles = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection?: string
+}) => {
+  const { mutateAsync: addBulkFiles, isLoading } = useMutation({
+    mutationKey: ['files', config.reference_object_id],
+    mutationFn: (payload: PotentialFilePayload[]) => {
+      const { reference_object_id, reference_object_type, collection } = config
+
+      const files = map(payload, ({ file, ...rest }) => ({
+        collection,
+        content: file,
+        reference_object_id,
+        reference_object_type,
+        ...rest,
+      }))
+
+      return apiClient.instance.postForm(endpoints.MEDIA_BULK, {
+        files,
+      })
+    },
+  })
+  return {
+    addBulkFiles,
+    isLoading,
+  }
+}
+
+export const useUpdateBulkFiles = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection?: string
+}) => {
+  const { mutateAsync: updateBulkFiles, isLoading } = useMutation({
+    mutationKey: ['files', config.reference_object_id],
+    mutationFn: (payload: PotentialFilePayload[]) => {
+      const { reference_object_id, reference_object_type, collection } = config
+
+      const files = map(payload, ({ file, ...rest }) => ({
+        collection,
+        content: file,
+        reference_object_id,
+        reference_object_type,
+        ...rest,
+      }))
+
+      return apiClient.instance.putForm(endpoints.MEDIA_BULK, {
+        files,
+      })
+    },
+  })
+  return {
+    updateBulkFiles,
+    isLoading,
+  }
+}
+
 export const useDownloadFile = (config: {
   reference_object_id: string
   reference_object_type: string
@@ -398,5 +480,41 @@ export const useHandleFiles = (config: {
     isAddLoading,
     isDeleteLoading,
     isDownloadLoading,
+  }
+}
+
+// TODO: should be unified with useHandleFiles, but skipping for now to save time
+export const useHandleBulkFiles = (config: {
+  reference_object_id: string
+  reference_object_type: string
+  collection?: string
+}) => {
+  const { collection, reference_object_id, reference_object_type } = config
+
+  const { addBulkFiles, isLoading: isAddLoading } = useAddBulkFiles({
+    reference_object_id,
+    reference_object_type,
+    collection,
+  })
+
+  const { deleteBulkFiles, isLoading: isDeleteLoading } = useDeleteBulkFiles({
+    reference_object_id,
+    reference_object_type,
+    collection,
+  })
+
+  const { updateBulkFiles, isLoading: isUpdateLoading } = useUpdateBulkFiles({
+    reference_object_id,
+    reference_object_type,
+    collection,
+  })
+
+  return {
+    addBulkFiles,
+    deleteBulkFiles,
+    isAddLoading,
+    isDeleteLoading,
+    updateBulkFiles,
+    isUpdateLoading,
   }
 }

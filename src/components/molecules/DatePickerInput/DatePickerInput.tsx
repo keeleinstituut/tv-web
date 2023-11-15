@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, useRef } from 'react'
 import DatePicker, {
   ReactDatePickerProps,
   registerLocale,
@@ -23,6 +23,7 @@ type DatePickerComponentProps = {
   onChange: (value: string) => void
   minDate?: Date
   maxDate?: Date
+  id?: string
 }
 
 export type DatePickerInputProps = DatePickerComponentProps &
@@ -43,6 +44,7 @@ const DatePickerComponent = ({
   onChange,
   minDate,
   maxDate,
+  id,
   ...rest
 }: DatePickerComponentProps) => {
   const handleDateChange: ReactDatePickerProps['onChange'] = (value) =>
@@ -54,7 +56,7 @@ const DatePickerComponent = ({
   return (
     <>
       <DatePicker
-        id={name}
+        id={id || name}
         selected={value ? new Date(splittedDayValue) : null}
         dateFormat={'dd.MM.yyyy'}
         locale="et-EE"
@@ -78,7 +80,8 @@ const DatePickerComponent = ({
 
 const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
   function DatePickerInput(props, ref) {
-    const { label, name, error, className, errorZIndex, ...rest } = props
+    const { label, name, error, className, errorZIndex, id, ...rest } = props
+    const newRef = useRef(null)
 
     return (
       <InputWrapper
@@ -87,10 +90,10 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         error={error}
         className={className}
         errorZIndex={errorZIndex}
-        ref={ref}
+        ref={newRef}
         wrapperClass={classes.datePickerWrapper}
       >
-        <DatePickerComponent name={name} {...rest} />
+        <DatePickerComponent name={name} id={id} {...rest} />
       </InputWrapper>
     )
   }

@@ -271,7 +271,7 @@ const UserPage: FC = () => {
 
   const handleOnRemoveDeactivationDate = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
-      title: t('modal.edit_deactivation_date'),
+      title: t('modal.remove_deactivation_date'),
       modalContent: t('modal.deactivation_date_content', {
         date: formattedDeactivationDate,
       }),
@@ -348,7 +348,9 @@ const UserPage: FC = () => {
           icon={Delete}
           className={classes.button}
           onClick={handleOnRemoveDeactivationDate}
-          hidden={isActivationButtonHidden}
+          hidden={
+            !isDeactivationDateInTheFuture || status === UserStatus.Archived
+          }
         />
       </div>
 

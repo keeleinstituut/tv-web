@@ -257,8 +257,3 @@ export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
   )
   return allNewPrivileges
 }
-
-export const getBEDate = (dateString?: string) => {
-  if (!dateString) return dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')
-  return dayjs(dateString).format('YYYY-MM-DDTHH:mm:ss[Z]')
-}

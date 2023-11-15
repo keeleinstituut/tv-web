@@ -102,7 +102,7 @@ const DataTable = <TData,>(
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: per_page || 10,
+    pageSize: hidePagination ? 10000 : per_page || 10,
   })
 
   if (last_page === pagination.pageIndex) {

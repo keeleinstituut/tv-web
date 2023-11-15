@@ -11,6 +11,7 @@ import {
   SubOrderPayload,
   CatJobsPayload,
   SplitOrderPayload,
+  CancelOrderPayload,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -19,13 +20,13 @@ import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
 
-export const useFetchOrders = () => {
+export const useFetchOrders = (initialFilters?: OrdersPayloadType) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<OrdersPayloadType>()
+  } = useFilters<OrdersPayloadType>(initialFilters)
 
   const { isLoading, isError, data } = useQuery<OrdersResponse>({
     queryKey: ['orders', filters],
@@ -112,7 +113,7 @@ export const useUpdateOrder = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateOrder, isLoading } = useMutation({
     mutationKey: ['orders', id],
-    mutationFn: (payload: NewOrderPayload) =>
+    mutationFn: (payload: Partial<NewOrderPayload>) =>
       apiClient.put(`${endpoints.PROJECTS}/${id}`, payload),
     onSuccess: ({ data }) => {
       queryClient.setQueryData(['orders', id], (oldData?: OrdersResponse) => {
@@ -305,11 +306,22 @@ export const useDownloadTranslatedFile = () => {
 }
 
 // TODO: no idea what the endpoint will be
-export const useSubOrderWorkflow = ({ id }: { id?: string }) => {
+export const useSubOrderWorkflow = ({
+  id,
+  orderId,
+}: {
+  id?: string
+  orderId?: string
+}) => {
+  const queryClient = useQueryClient()
   const { mutateAsync: startSubOrderWorkflow, isLoading } = useMutation({
-    mutationKey: ['order_workflow'],
+    mutationKey: ['order_workflow', id],
     mutationFn: () =>
       apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/start-workflow`),
+    onSuccess: (data) => {
+      queryClient.refetchQueries({ queryKey: ['suborders', id] })
+      queryClient.refetchQueries({ queryKey: ['orders', orderId] })
+    },
   })
 
   return {
@@ -354,6 +366,23 @@ export const useToggleMtEngine = ({
 
   return {
     toggleMtEngine,
+    isLoading,
+  }
+}
+
+export const useCancelOrder = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: cancelOrder, isLoading } = useMutation({
+    mutationKey: ['orders', id],
+    mutationFn: async (payload: CancelOrderPayload) =>
+      apiClient.post(`${endpoints.PROJECTS}/${id}/cancel`, payload),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['orders', id] })
+    },
+  })
+
+  return {
+    cancelOrder,
     isLoading,
   }
 }

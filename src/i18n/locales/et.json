@@ -119,7 +119,8 @@
     "last_imported": "Viimati imporditud",
     "chunk_amount_old": "Segmentide arv",
     "id": "ID",
-    "owner": "Omanik"
+    "owner": "Omanik",
+    "cancellation_reason": "Tühistamise põhjus"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -139,7 +140,9 @@
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid",
     "pick_days": "Vali päev(ad)",
-    "search_by_id": "Otsi tellimuse ID siit..."
+    "search_by_id": "Otsi tellimuse ID siit...",
+    "comment": "Siin on mingi info",
+    "cancellation_reason": "Placeholder"
   },
   "button": {
     "login": "Logi sisse",
@@ -174,6 +177,7 @@
     "add": "Lisa",
     "proceed": "Edasi",
     "quit": "Loobun",
+    "quit_alt": "Loobu",
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust",
@@ -212,7 +216,8 @@
     "add_volume": "lisa maht",
     "mark_as_finished": "Märgi lõpetatuks",
     "send_to_previous_task": "Saada eelmisesse ülesandesse",
-    "send_sub_project_to_vendors": "Saada alamtellimus teostajatele"
+    "send_sub_project_to_vendors": "Saada alamtellimus teostajatele",
+    "confirm_cancellation": "Jah, tühista"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -379,7 +384,9 @@
     "pick_volume_manually_helper": "Vali töömahu arvestamise ühik ja määra kogus. Soovi korral saad süsteemist automaatselt genereeritud hinna väärtuse käsitsi üle kirjutada.",
     "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
     "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?",
-    "set_working_times_title": "Tööaegade määramine"
+    "set_working_times_title": "Tööaegade määramine",
+    "confirm_order_cancellation_title": "Kas oled kindel, et soovid tellimuse tühistada?",
+    "confirm_order_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus."
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -467,8 +474,8 @@
     "translation_memory_import": "Tõlkemälu on edukalt üles laetud",
     "translation_memory_export": "Tõlkemälu on edukalt alla laetud",
     "translation_memory_deleted": "Tõlkemälu on edukalt kustutatud",
-    "volume_added": "Mahu edukalt lisatud",
-    "volume_edited": "Mahu edukalt muudetud",
+    "volume_added": "Maht edukalt lisatud",
+    "volume_edited": "Maht edukalt muudetud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "file_merge_success": "Fail on edukalt ühendatud",
@@ -478,14 +485,15 @@
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
+    "assignment_updated": "Ülesande andmed edukalt uuendatud",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
-    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
+    "workflow_started": "Kõikidele teostajatele pakkumus saadetud",
     "machine_translation": "Masintõlke lisamise eelistus muudetud.",
     "final_files_changed": "Valmisfailid muudetud",
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
     "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
-    "split_assignment": "Ülesanne jagatud"
-
+    "split_assignment": "Ülesanne jagatud",
+    "order_cancelled": "Tellimus edukalt tühistatud"
   },
   "notification": {
     "announcement": "Teade",
@@ -564,10 +572,12 @@
       "ACCEPTED": "Vastuvõetud",
       "REJECTED": "Tagasi lükatud",
       "CORRECTED": "Parandatud",
-      "FORWARDED_TO_VENDOR": "Teostajale edastatud (ülesanne)",
-      "IN_PROGRESS": "Teostamisel (ülesanne)",
-      "DONE_TASK": "Teostatud (ülesanne)",
-      "DONE": "Teostatud"
+      "TASKS_SUBMITTED_TO_VENDORS": "Teostajale edastatud",
+      "IN_PROGRESS": "Teostamisel",
+      "TASKS_IN_PROGRESS": "Teostamisel",
+      "TASKS_COMPLETED": "Teostatud",
+      "DONE": "Teostatud",
+      "COMPLETED": "Teostatud"
     },
     "sub_orders_tile": "Alamtellimused",
     "features": {
@@ -616,7 +626,7 @@
     "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",
     "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja",
     "no_changes_made": "Andmetes puuduvad muudatused",
-    "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobiva(d) teostaja(d) valinud."
+    "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik muuta tellimuse tüüpi, lähtekeelt ja sihtkeeli. Samuti ei saa antud alamtellimusele teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobivad valikud teinud."
   },
   "translation_memories": {
     "memory_title": "Mälu nimetus",
@@ -645,6 +655,14 @@
       "NOT_ASSIGNED": "-",
       "FORWARDED_TO_VENDOR": "Teostajale edastatud",
       "IN_PROGRESS": "Teostamisel",
+      "DONE": "Teostatud"
+    }
+  },
+  "candidate": {
+    "status": {
+      "NEW": "-",
+      "SUBMITTED_TO_VENDOR": "Teostajale edastatud",
+      "ACCEPTED": "Teostamisel",
       "DONE": "Teostatud"
     }
   }

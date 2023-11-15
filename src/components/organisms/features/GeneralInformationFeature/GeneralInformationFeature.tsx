@@ -4,11 +4,11 @@ import {
   filter,
   compact,
   isEmpty,
-  isEqual,
   split,
   some,
   reduce,
   includes,
+  isEqual,
 } from 'lodash'
 import {
   useUpdateSubOrder,
@@ -45,6 +45,10 @@ import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
 import { ClassifierValue } from 'types/classifierValues'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 // TODO: this is WIP code for suborder view
 
@@ -58,6 +62,7 @@ type GeneralInformationFeatureProps = Pick<
   | 'deadline_at'
   | 'source_language_classifier_value'
   | 'destination_language_classifier_value'
+  | 'project'
 > & {
   catSupported?: boolean
   subOrderId: string
@@ -87,6 +92,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   projectDomain,
+  project,
 }) => {
   const { t } = useTranslation()
   const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: subOrderId })
@@ -98,9 +104,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const defaultValues = useMemo(
     () => ({
-      deadline_at: deadline_at
-        ? getLocalDateOjectFromUtcDateString(deadline_at)
-        : { date: '', time: '' },
+      deadline_at: getLocalDateOjectFromUtcDateString(
+        deadline_at || project.deadline_at
+      ),
       cat_files,
       source_files: map(source_files, (file) => ({
         ...file,
@@ -112,7 +118,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       // TODO: no idea about these fields
       shared_with_client: [],
     }),
-    [catToolJobs, deadline_at, final_files, cat_files, source_files]
+    [
+      deadline_at,
+      project.deadline_at,
+      cat_files,
+      source_files,
+      final_files,
+      catToolJobs,
+    ]
   )
 
   const { control, getValues, watch, setValue } = useForm<FormValues>({
@@ -195,6 +208,21 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     [handleSendToCat]
   )
 
+  const handleChangeDeadline = useCallback(
+    (value: { date: string; time: string }) => {
+      console.warn('deadline changed')
+      const { date, time } = value
+      const dateTime = dayjs.utc(`${date} ${time}`, 'DD/MM/YYYY HH:mm')
+      const formattedDateTime = dateTime.format('YYYY-MM-DDTHH:mm:ss[Z]')
+      // const isDeadLineChanged = !isEqual(formattedDeadline, formattedDateTime)
+
+      updateSubOrder({
+        deadline_at: formattedDateTime,
+      })
+    },
+    [updateSubOrder]
+  )
+
   const subOrderLangPair = useMemo(() => {
     const slangShort = split(source_language_classifier_value?.value, '-')[0]
     const tlangShort = split(
@@ -224,6 +252,8 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           control: control,
           name: 'deadline_at',
           minDate: new Date(),
+          maxDate: dayjs(project.deadline_at).toDate(),
+          onDateTimeChange: handleChangeDeadline,
           // onlyDisplay: !isEditable,
         }}
       />

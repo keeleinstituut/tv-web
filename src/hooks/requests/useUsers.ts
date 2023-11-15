@@ -57,22 +57,23 @@ export const useFetchUsers = (
 
 export const useFetchInfiniteProjectPerson = (
   initialFilters?: UserPayloadType,
-  personToFetch = 'client'
+  personToFetch = 'client',
+  enabled = false
 ) => {
   const { filters, handleFilterChange } =
     useFilters<UserPayloadType>(initialFilters)
 
   const endpointToUse = endpoints.TRANSLATION_USERS
-  const projectRoleFilter = personToFetch === 'client' ? 'client' : 'manager'
 
   const { isLoading, isError, isFetching, fetchNextPage, hasNextPage, data } =
     useInfiniteQuery<UsersDataType>({
+      enabled,
       queryKey: [personToFetch, filters],
       queryFn: ({ pageParam = 1 }) =>
         apiClient.get(endpointToUse, {
           ...filters,
           page: pageParam,
-          project_role: projectRoleFilter,
+          project_role: personToFetch,
         }),
       getNextPageParam: (lastPage) => (lastPage.meta?.current_page || 0) + 1,
       keepPreviousData: true,

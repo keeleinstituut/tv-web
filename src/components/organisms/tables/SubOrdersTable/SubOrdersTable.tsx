@@ -85,7 +85,7 @@ const SubOrdersTable: FC = () => {
             ext_id,
             reference_number: project?.reference_number,
             deadline_at,
-            type: project?.type_classifier_value?.value || '',
+            type: project?.type_classifier_value?.name || '',
             status,
             price,
             language_directions: [
@@ -193,7 +193,10 @@ const SubOrdersTable: FC = () => {
         const rowStatus = row.original.status
         const hasDeadlineError =
           diff < 0 &&
-          !includes([SubOrderStatus.Done, SubOrderStatus.Cancelled], rowStatus)
+          !includes(
+            [SubOrderStatus.Completed, SubOrderStatus.Cancelled],
+            rowStatus
+          )
         return (
           <span
             className={classNames(

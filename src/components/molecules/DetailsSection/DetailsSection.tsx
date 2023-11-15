@@ -5,23 +5,26 @@ import DynamicForm, {
   InputTypes,
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { find } from 'lodash'
+import { find, includes, values } from 'lodash'
 import classNames from 'classnames'
 import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
+import { TypesWithStartTime } from 'types/orders'
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
   isEditable?: boolean
+  workflow_started?: boolean
 }
 
 const DetailsSection = <TFormValues extends FieldValues>({
   control,
   isNew,
   isEditable,
+  workflow_started,
 }: DetailsSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { tagsFilters = [] } = useFetchTags({
@@ -82,6 +85,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         showSearch: true,
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
+        disabled: workflow_started,
         rules: {
           required: true,
         },
@@ -106,8 +110,9 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}`,
-        hidden:
-          !selectedProjectType?.project_type_config?.is_start_date_supported,
+        hidden: isNew
+          ? !includes(values(TypesWithStartTime), selectedProjectType?.value)
+          : !selectedProjectType?.project_type_config?.is_start_date_supported,
         className: classes.customInternalClass,
         name: 'event_start_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
@@ -120,6 +125,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         className: classes.customInternalClass,
         name: 'deadline_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
+        minDate: new Date(),
         emptyDisplayText: '-',
         rules: {
           required: true,
@@ -157,6 +163,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         options: languageFilters,
         showSearch: true,
         onlyDisplay: !isEditable,
+        disabled: workflow_started,
         emptyDisplayText: '-',
         rules: {
           required: true,
@@ -173,6 +180,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         showSearch: true,
         multiple: true,
         buttons: true,
+        disabled: workflow_started,
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
@@ -185,7 +193,9 @@ const DetailsSection = <TFormValues extends FieldValues>({
       t,
       isEditable,
       projectTypeFilter,
+      workflow_started,
       domainValuesFilter,
+      selectedProjectType?.value,
       selectedProjectType?.project_type_config?.is_start_date_supported,
       languageFilters,
     ]
