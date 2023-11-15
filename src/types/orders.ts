@@ -287,3 +287,8 @@ export interface SplitOrderPayload {
   sub_project_id: string
   job_key: SubProjectFeatures
 }
+
+export interface CancelOrderPayload {
+  reason: string
+  comments?: string
+}

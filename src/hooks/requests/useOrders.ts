@@ -11,6 +11,7 @@ import {
   SubOrderPayload,
   CatJobsPayload,
   SplitOrderPayload,
+  CancelOrderPayload,
 } from 'types/orders'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -354,6 +355,23 @@ export const useToggleMtEngine = ({
 
   return {
     toggleMtEngine,
+    isLoading,
+  }
+}
+
+export const useCancelOrder = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: cancelOrder, isLoading } = useMutation({
+    mutationKey: ['orders', id],
+    mutationFn: async (payload: CancelOrderPayload) =>
+      apiClient.post(`${endpoints.PROJECTS}/${id}/cancel`, payload),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['orders', id] })
+    },
+  })
+
+  return {
+    cancelOrder,
     isLoading,
   }
 }
