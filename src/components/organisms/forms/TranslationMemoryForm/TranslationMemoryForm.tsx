@@ -97,6 +97,7 @@ const TranslationMemoryForm: FC = () => {
       name: 'slang',
       className: classes.inputInternalPosition,
       options: languageOptions,
+      showSearch: true,
       multiple: false,
       rules: {
         required: true,
@@ -110,6 +111,7 @@ const TranslationMemoryForm: FC = () => {
       name: 'tlang',
       className: classes.inputInternalPosition,
       options: languageOptions,
+      showSearch: true,
       multiple: false,
       rules: {
         required: true,
