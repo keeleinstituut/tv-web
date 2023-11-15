@@ -128,11 +128,12 @@ const OrderDetails: FC<OrderDetailsProps> = ({
   order,
   isUserClientOfProject,
 }) => {
+  const { workflow_started, id } = order || {}
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
   const { createOrder, isLoading } = useCreateOrder()
   const { updateOrder, isLoading: isUpdatingOrder } = useUpdateOrder({
-    id: order?.id,
+    id,
   })
   const navigate = useNavigate()
   const isNew = mode === OrderDetailModes.New
@@ -396,6 +397,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             control={control}
             isNew={isNew}
             isEditable={isEditableBySomeone && isEditable}
+            workflow_started={workflow_started}
           />
           <OrderFilesSection
             orderId={order?.id}

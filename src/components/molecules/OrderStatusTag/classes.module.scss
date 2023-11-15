@@ -8,9 +8,9 @@
   @include statusTagStyle($color-highlight);
 }
 .submitted_to_client,
-.forwarded_to_vendor,
-.done,
-.done_task {
+.tasks_submitted_to_vendors,
+.completed,
+.tasks_completed {
   @include statusTagStyle($color-success);
 }
 .cancelled {
@@ -22,6 +22,7 @@
 .rejected {
   @include statusTagStyle($color-error);
 }
-.in_progress {
+.tasks_in_progress,
+.corrected {
   @include statusTagStyle($color-primary);
 }

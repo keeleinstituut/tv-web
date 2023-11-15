@@ -110,6 +110,7 @@ const OrderPage: FC = () => {
       {map(sortBy(sub_projects, 'ext_id'), (subOrder) => (
         <SubOrderSection
           {...subOrder}
+          orderId={orderId}
           key={subOrder.id}
           projectDomain={translation_domain_classifier_value}
         />

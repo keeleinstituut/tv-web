@@ -305,11 +305,22 @@ export const useDownloadTranslatedFile = () => {
 }
 
 // TODO: no idea what the endpoint will be
-export const useSubOrderWorkflow = ({ id }: { id?: string }) => {
+export const useSubOrderWorkflow = ({
+  id,
+  orderId,
+}: {
+  id?: string
+  orderId?: string
+}) => {
+  const queryClient = useQueryClient()
   const { mutateAsync: startSubOrderWorkflow, isLoading } = useMutation({
-    mutationKey: ['order_workflow'],
+    mutationKey: ['order_workflow', id],
     mutationFn: () =>
       apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/start-workflow`),
+    onSuccess: (data) => {
+      queryClient.refetchQueries({ queryKey: ['suborders', id] })
+      queryClient.refetchQueries({ queryKey: ['orders', orderId] })
+    },
   })
 
   return {

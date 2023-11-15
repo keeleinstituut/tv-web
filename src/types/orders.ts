@@ -17,23 +17,23 @@ import { Tag } from './tags'
 // TODO: not a full list, logic behind order statuses is not fully clear yet
 
 export enum OrderStatus {
-  Registered = 'REGISTERED',
   New = 'NEW',
-  Forwarded = 'SUBMITTED_TO_CLIENT',
+  Registered = 'REGISTERED',
   Cancelled = 'CANCELLED',
-  Accepted = 'ACCEPTED',
+  Forwarded = 'SUBMITTED_TO_CLIENT',
   Rejected = 'REJECTED',
   Corrected = 'CORRECTED',
+  Accepted = 'ACCEPTED',
 }
 
 export enum SubOrderStatus {
-  Registered = 'REGISTERED',
   New = 'NEW',
-  ForwardedToVendor = 'FORWARDED_TO_VENDOR',
-  InProgress = 'IN_PROGRESS',
-  DoneTask = 'DONE_TASK',
+  Registered = 'REGISTERED',
   Cancelled = 'CANCELLED',
-  Done = 'DONE',
+  TasksSubmittedToVendors = 'TASKS_SUBMITTED_TO_VENDORS',
+  TasksInProgress = 'TASKS_IN_PROGRESS',
+  TasksCompleted = 'TASKS_COMPLETED',
+  Completed = 'COMPLETED',
 }
 
 export enum SubProjectFeatures {
@@ -153,6 +153,7 @@ export interface ListSubOrderDetail {
   price?: string
   translation_domain_classifier_value?: ClassifierValue
   event_start_at?: string
+  active_job_definition?: JobDefinition
 }
 
 export interface SubOrderDetail extends ListSubOrderDetail {
@@ -167,11 +168,13 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   source_files: SourceFile[]
   assignments: AssignmentType[]
   mt_enabled: boolean
+  workflow_started?: boolean
 }
 
 export interface JobDefinition {
   id: string
   job_key: SubProjectFeatures
+  job_name?: string
   skill_id: string
   multi_assignments_enabled: boolean
   linking_with_cat_tool_jobs_enabled: boolean
@@ -210,6 +213,7 @@ export interface DetailedOrder extends ListOrder {
   corrected_at?: string
   rejected_at?: string
   cancelled_at?: string
+  workflow_started?: boolean
 }
 
 export type OrdersPayloadType = PaginationFunctionType &
