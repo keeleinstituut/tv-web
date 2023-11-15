@@ -13,6 +13,7 @@ interface OptionProp {
 export interface TagsSelectProps {
   options?: OptionProp[]
   value?: string[]
+  name: string
   onChange?: (values: string[]) => void
   className?: string
   label?: string

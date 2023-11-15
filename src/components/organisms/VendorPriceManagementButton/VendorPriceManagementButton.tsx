@@ -330,6 +330,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
       label: `${t('vendors.source_language')}*`,
       placeholder: t('button.choose'),
       options: languageFilter,
+      showSearch: true,
       rules: {
         required: true,
       },
@@ -345,6 +346,7 @@ const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
       placeholder: t('button.choose'),
       options: languageFilter,
       multiple: newLanguagePair,
+      showSearch: true,
       buttons: true,
       rules: {
         required: true,

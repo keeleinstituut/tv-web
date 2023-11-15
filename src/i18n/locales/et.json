@@ -119,7 +119,8 @@
     "last_imported": "Viimati imporditud",
     "chunk_amount_old": "Segmentide arv",
     "id": "ID",
-    "owner": "Omanik"
+    "owner": "Omanik",
+    "cancellation_reason": "Tühistamise põhjus"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -139,7 +140,9 @@
     "write_here": "Kirjuta siia..",
     "select_tags": "Vali sildid",
     "pick_days": "Vali päev(ad)",
-    "search_by_id": "Otsi tellimuse ID siit..."
+    "search_by_id": "Otsi tellimuse ID siit...",
+    "comment": "Siin on mingi info",
+    "cancellation_reason": "Placeholder"
   },
   "button": {
     "login": "Logi sisse",
@@ -174,6 +177,7 @@
     "add": "Lisa",
     "proceed": "Edasi",
     "quit": "Loobun",
+    "quit_alt": "Loobu",
     "add_order": "Lisa tellimus",
     "my_details": "Minu andmed",
     "change_institution": "Vaheta asutust",
@@ -212,7 +216,8 @@
     "add_volume": "lisa maht",
     "mark_as_finished": "Märgi lõpetatuks",
     "send_to_previous_task": "Saada eelmisesse ülesandesse",
-    "send_sub_project_to_vendors": "Saada alamtellimus teostajatele"
+    "send_sub_project_to_vendors": "Saada alamtellimus teostajatele",
+    "confirm_cancellation": "Jah, tühista"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -379,7 +384,9 @@
     "pick_volume_manually_helper": "Vali töömahu arvestamise ühik ja määra kogus. Soovi korral saad süsteemist automaatselt genereeritud hinna väärtuse käsitsi üle kirjutada.",
     "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
     "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?",
-    "set_working_times_title": "Tööaegade määramine"
+    "set_working_times_title": "Tööaegade määramine",
+    "confirm_order_cancellation_title": "Kas oled kindel, et soovid tellimuse tühistada?",
+    "confirm_order_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus."
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -485,7 +492,8 @@
     "final_files_changed": "Valmisfailid muudetud",
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
     "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
-    "split_assignment": "Ülesanne jagatud"
+    "split_assignment": "Ülesanne jagatud",
+    "order_cancelled": "Tellimus edukalt tühistatud"
   },
   "notification": {
     "announcement": "Teade",

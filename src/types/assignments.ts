@@ -18,10 +18,7 @@ export enum CandidateStatus {
 
 interface Candidate {
   vendor: Vendor
-  vendor_id: string
   price: string
-  candidate: string
-  id: string
   status: CandidateStatus
 }
 
