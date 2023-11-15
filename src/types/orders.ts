@@ -290,6 +290,10 @@ export interface SplitOrderPayload {
   job_key: SubProjectFeatures
 }
 
+export interface CancelOrderPayload {
+  reason: string
+  comments?: string
+}
 export interface PotentialFilePayload {
   collection?: string
   type?: string
