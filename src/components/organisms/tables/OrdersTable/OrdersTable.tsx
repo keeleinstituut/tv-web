@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, uniq, includes, find } from 'lodash'
+import { map, uniq, includes, find, isEmpty, intersection } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -59,13 +59,23 @@ const OrdersTable: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
+  const onlyPersonalProjectsAllowed = isEmpty(
+    intersection(userPrivileges, [
+      Privileges.ViewInstitutionProjectList,
+      Privileges.ViewInstitutionProjectDetail,
+      Privileges.ViewInstitutionUnclaimedProjectDetail,
+    ])
+  )
+
   const {
     orders,
     paginationData,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchOrders()
+  } = useFetchOrders({
+    only_show_personal_projects: onlyPersonalProjectsAllowed ? 1 : 0,
+  })
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Order,
   })
@@ -118,6 +128,9 @@ const OrdersTable: FC = () => {
 
   const { control, handleSubmit, watch } = useForm<FormValues>({
     mode: 'onChange',
+    defaultValues: {
+      only_show_personal_projects: onlyPersonalProjectsAllowed,
+    },
     resetOptions: {
       keepErrors: true,
     },
@@ -305,6 +318,7 @@ const OrdersTable: FC = () => {
               name="only_show_personal_projects"
               label={t('label.show_only_my_orders')}
               ariaLabel={t('label.show_only_my_orders')}
+              disabled={onlyPersonalProjectsAllowed}
               className={classes.checkbox}
               control={control}
               inputType={InputTypes.Checkbox}

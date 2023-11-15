@@ -74,7 +74,7 @@ const OrderPage: FC = () => {
   const { institutionUserId } = useAuth()
   const { order, isLoading } = useFetchOrder({ id: orderId })
   const {
-    id,
+    ext_id,
     status,
     sub_projects,
     client_institution_user,
@@ -95,15 +95,11 @@ const OrderPage: FC = () => {
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>{id}</h1>
+        <h1>{ext_id}</h1>
         <OrderButtons {...{ status, isUserClientOfProject }} />
       </div>
 
-      <OrderDetails
-        mode={OrderDetailModes.Editable}
-        order={order}
-        isUserClientOfProject={isUserClientOfProject}
-      />
+      <OrderDetails mode={OrderDetailModes.Editable} order={order} />
 
       <div className={classes.separator} />
 
