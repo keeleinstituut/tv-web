@@ -18,7 +18,6 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { Root } from '@radix-ui/react-form'
 import TestingTable from 'components/organisms/tables/ExamplesTable/ExamplesTable'
-import UsersTable from 'components/organisms/tables/UsersTable/UsersTable'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 import ModalBase, {
   ModalSizeTypes,
@@ -344,7 +343,6 @@ const Test: FC = () => {
       <WorkingTimes name={data.name} id={data.id} data={data} />
       <Root>
         <TestingTable />
-        <UsersTable />
       </Root>
 
       <ModalBase

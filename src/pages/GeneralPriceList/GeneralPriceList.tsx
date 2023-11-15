@@ -8,21 +8,7 @@ import { Root } from '@radix-ui/react-form'
 
 import classes from './classes.module.scss'
 
-export interface GeneralPriceListProps {
-  isModalOpen?: boolean
-  taskId?: string
-  selectedVendorsIds?: string[]
-  taskSkills?: string[]
-  source_language_classifier_value_id?: string
-  destination_language_classifier_value_id?: string
-}
-
-const GeneralPriceList: FC<GeneralPriceListProps> = ({
-  selectedVendorsIds = [],
-  taskSkills = [],
-  source_language_classifier_value_id,
-  destination_language_classifier_value_id,
-}) => {
+const GeneralPriceList: FC = () => {
   const { t } = useTranslation()
 
   const {
@@ -70,10 +56,6 @@ const GeneralPriceList: FC<GeneralPriceListProps> = ({
           handleFilterChange,
           handleSortingChange,
           handlePaginationChange,
-          selectedVendorsIds,
-          taskSkills,
-          source_language_classifier_value_id,
-          destination_language_classifier_value_id,
         }}
       />
     </>

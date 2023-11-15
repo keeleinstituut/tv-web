@@ -174,7 +174,7 @@ const ModalRoot = () => {
     [closeModal, showModal, isModalOpen]
   )
 
-  if (!currentModalKey) return null
+  if (!currentModalKey || !isModalOpen) return null
   const SelectedModal = MODALS[currentModalKey]
 
   return (
