@@ -48,9 +48,8 @@ export const endpoints = {
   TM_SUB_PROJECTS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tm-keys/subprojects`,
   UPDATE_TM_KEYS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tm-keys/sync`,
   TOGGLE_TM_WRITABLE: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tm-keys/toggle-writable`,
-  AUDIT_LOGS: '/event-records',
-  EXPORT_AUDIT_LOGS: '/export',
-  EVENT_TYPES: '/event-types',
+  AUDIT_LOGS: `${process.env.REACT_APP_AUDIT_LOG_API_BASE}event-records`,
+  EXPORT_AUDIT_LOGS: `${process.env.REACT_APP_AUDIT_LOG_API_BASE}export`,
 }
 
 export const authEndpoints = {

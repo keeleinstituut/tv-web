@@ -58,10 +58,10 @@ export type AuditLogsResponse = {
   context_department_id: string
   context_institution_id: string
   failure_type: string | unknown | null
-  event_type: string
+  event_type: EventTypes
   event_parameters?: EventParameters | null
 }
-interface EventParameters {
+export type EventParameters = {
   //"REJECT_ASSIGNMENT_RESULT
   assignment_id?: string
   assignment_ext_id?: string
@@ -91,13 +91,12 @@ interface EventParameters {
   workflow_id?: string
   workflow_name?: string
 
-  //Object activities
+  //"DISPATCH_NOTIFICATION"
+  //TODO: null
+} & ObjectParameters
 
-  //"CREATE_OBJECT"
+export type ObjectParameters = {
   object_type?: ObjectTypes
-  object_data?: object | unknown
-  //"REMOVE_OBJECT"
-  // object_type: 'INSTITUTION'
   object_identity_subset?: {
     id?: string
     name?: string
@@ -107,18 +106,10 @@ interface EventParameters {
       user?: Partial<UserDetailsType>
     }
     user?: Partial<UserDetailsType>
-  } | null
-  //"MODIFY_OBJECT"
+  }
+  object_data?: object | unknown
   pre_modification_subset?: object | unknown
   post_modification_subset?: object | unknown
-  //object_type: 'INSTITUTION'
-  //   object_identity_subset: {
-  //     id: '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-  //     name: 'string'
-  //   }
-
-  //"DISPATCH_NOTIFICATION"
-  //TODO: null
 }
 
 export interface AuditLogsResponseDataType {

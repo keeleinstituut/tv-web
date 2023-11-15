@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
@@ -11,26 +11,38 @@ import {
   EventTypes,
 } from 'types/auditLogs'
 
-export const useFetchAuditLogs = (initialFilters?: AuditLogPayloadType) => {
-  const { filters, handleFilterChange, handlePaginationChange } =
-    useFilters<AuditLogPayloadType>(initialFilters)
+export const useFetchAuditLogs = () => {
+  const { filters, handlePaginationChange } = useFilters<AuditLogPayloadType>()
 
-  const { isLoading, isError, isFetching, data } =
-    useQuery<AuditLogsResponseDataType>({
-      queryKey: ['auditLogs', filters],
-      // queryFn: () => apiClient.get(endpoints.AUDIT_LOGS, filters),
-      keepPreviousData: true,
-    })
+  //   const { isLoading, isError, isFetching, data } =
+  //     useQuery<AuditLogsResponseDataType>({
+  //       // enabled: !isEmpty(otherFiltersAdded),
+  //       queryKey: ['auditLogs', filters],
+  //       queryFn: () => apiClient.get(endpoints.AUDIT_LOGS, filters),
+  //       keepPreviousData: true,
+  //     })
+
+  const queryClient = useQueryClient()
+  const {
+    data,
+    mutateAsync: fetchAuditLogs,
+    isLoading,
+  } = useMutation({
+    mutationKey: ['auditLogs'],
+    mutationFn: (payload: AuditLogPayloadType) =>
+      apiClient.get(endpoints.AUDIT_LOGS, { ...payload, ...filters }),
+  })
+
   const { meta: paginationData, data: logsData } = data || {}
+
+  console.log('data', data)
 
   return {
     isLoading,
-    isError,
     logsData,
     paginationData,
-    handleFilterChange,
+    fetchAuditLogs,
     handlePaginationChange,
-    isFetching,
   }
 }
 

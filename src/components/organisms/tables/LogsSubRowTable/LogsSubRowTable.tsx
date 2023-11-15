@@ -7,11 +7,14 @@ import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'
 import classNames from 'classnames'
+import { includes, join, map, omit, pickBy, toLower } from 'lodash'
+import { EventParameters, ObjectParameters } from 'types/auditLogs'
 
 type AuditLog = {
   reference_id?: string
   event_type?: string
-  event_parameters?: object | string | unknown
+  event?: string
+  event_parameters?: EventParameters | null
 }
 
 type LogsSubRowTableProps = {
@@ -24,11 +27,19 @@ const columnHelper = createColumnHelper<AuditLog>()
 const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
   const { t } = useTranslation()
 
+  const { event_type, event_parameters, event } = rowData || {}
+  const isObjectLog = includes(event_type, 'OBJECT')
+  const objectId = `(${toLower(event_parameters?.object_type)}-ID)`
+
   const tableData: AuditLog[] = [
     {
-      reference_id: rowData?.reference_id,
-      event_type: rowData?.event_type,
-      event_parameters: rowData?.event_parameters,
+      reference_id: isObjectLog
+        ? join([event_parameters?.object_identity_subset?.id, objectId], ' ')
+        : '-',
+      event_type: event,
+      event_parameters: isObjectLog
+        ? omit(event_parameters, 'object_type')
+        : pickBy(event_parameters, (val) => !!val),
     },
   ]
 
@@ -42,7 +53,7 @@ const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
       cell: ({ getValue }) => (
         <span className={classes.padding}>{getValue()}</span>
       ),
-      size: 200,
+      size: 120,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('event_type', {
@@ -50,14 +61,36 @@ const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
         <span className={classes.header}>{t('logs.activity')}</span>
       ),
       cell: ({ getValue }) => getValue(),
-      size: 200,
+      size: 100,
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('event_parameters', {
       header: () => <span className={classes.header}>{t('logs.changes')}</span>,
-      cell: ({ getValue }) => (
-        <pre className="pre">{JSON.stringify(getValue(), null, 2)}</pre>
-      ),
+      cell: ({ getValue }) => {
+        if (isObjectLog) {
+          const object = getValue() as ObjectParameters
+          return (
+            <div className={classes.objectContainer}>
+              {map(
+                object,
+                (
+                  value: keyof ObjectParameters,
+                  key: keyof ObjectParameters
+                ) => {
+                  return (
+                    <div>
+                      <span className={classes.header}>{t(`logs.${key}`)}</span>
+                      <pre>{JSON.stringify(value, null, 2)}</pre>
+                    </div>
+                  )
+                }
+              )}
+            </div>
+          )
+        } else {
+          return <pre>{JSON.stringify(getValue(), null, 2)}</pre>
+        }
+      },
       size: 600,
       footer: (info) => info.column.id,
     }),

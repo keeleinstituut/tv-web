@@ -690,6 +690,13 @@
     },
     "no_results_found": "Tulemusi ei leitud",
     "reference": "Viide",
-    "changes": "Muudatused"
+    "changes": "Muudatused",
+    "object_identity_subset": "Muudatuste andmed",
+    "pre_modification_subset": "Enne muutust",
+    "post_modification_subset": "Pärast muutust",
+    "object_data": "Objekti andmed",
+    "object_type": "Object tüüp",
+    "successful": "Edukas",
+    "failed": "Viga"
   }
 }

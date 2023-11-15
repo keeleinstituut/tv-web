@@ -23,6 +23,8 @@ import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 import { isEmpty, isEqual, size, split, toNumber } from 'lodash'
 import dayjs from 'dayjs'
 import useValidators from 'hooks/useValidators'
+import i18n from 'i18n/i18n'
+import { showValidationErrorMessage } from 'api/errorHandler'
 
 export enum DateTabs {
   Hour = '1 hour',
@@ -40,38 +42,49 @@ export type FormValues = {
   search: string
 }
 
+const dateTabs = [
+  {
+    label: i18n.t('logs.hour'),
+    id: DateTabs.Hour,
+  },
+  {
+    label: i18n.t('logs.last_24h'),
+    id: DateTabs.Last24h,
+  },
+  {
+    label: i18n.t('logs.last_7days'),
+    id: DateTabs.Last7days,
+  },
+  {
+    label: i18n.t('logs.last_30days'),
+    id: DateTabs.Last30days,
+  },
+]
+
 const Logs: FC = () => {
   const { t } = useTranslation()
   const { minLengthValidator } = useValidators()
   const {
-    handleFilterChange,
     logsData,
+    fetchAuditLogs,
     paginationData,
     handlePaginationChange,
+    isLoading,
   } = useFetchAuditLogs()
   const { eventTypeFilters = [] } = useEventTypesFetch()
   const { departmentFilters = [] } = useDepartmentsFetch()
   const currentDate = dayjs()
   const currentTime = currentDate.format('HH:mm:ss')
 
-  const dateTabs = [
-    {
-      label: t('logs.hour'),
-      id: DateTabs.Hour,
-    },
-    {
-      label: t('logs.last_24h'),
-      id: DateTabs.Last24h,
-    },
-    {
-      label: t('logs.last_7days'),
-      id: DateTabs.Last7days,
-    },
-    {
-      label: t('logs.last_30days'),
-      id: DateTabs.Last30days,
-    },
-  ]
+  const { control, watch, setValue, resetField, reset, handleSubmit } =
+    useForm<FormValues>({
+      reValidateMode: 'onSubmit',
+      defaultValues: {
+        date_range: {},
+        time_range: {},
+        last_date: dateTabs[0].id,
+      },
+    })
 
   const dateFields: FieldProps<FormValues>[] = [
     {
@@ -98,8 +111,7 @@ const Logs: FC = () => {
       ariaLabel: t('logs.select_department'),
       options: departmentFilters,
       placeholder: t('logs.select_department'),
-      multiple: true,
-      buttons: true,
+      hideTags: true,
     },
     {
       inputType: InputTypes.Selections,
@@ -107,8 +119,7 @@ const Logs: FC = () => {
       ariaLabel: t('logs.select_activity'),
       options: eventTypeFilters,
       placeholder: t('logs.select_activity'),
-      multiple: true,
-      buttons: true,
+      hideTags: true,
       className: classes.inputSection,
     },
   ]
@@ -134,16 +145,6 @@ const Logs: FC = () => {
       },
     },
   ]
-
-  const { control, watch, setValue, resetField, reset, handleSubmit } =
-    useForm<FormValues>({
-      reValidateMode: 'onSubmit',
-      defaultValues: {
-        date_range: {},
-        time_range: {},
-        last_date: dateTabs[0].id,
-      },
-    })
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
@@ -181,17 +182,17 @@ const Logs: FC = () => {
       }
 
       try {
-        await handleFilterChange(payload)
+        await fetchAuditLogs(payload)
         // showNotification({
         //   type: NotificationTypes.Success,
         //   title: t('notification.announcement'),
         //   content: t('success.file_split_success'),
         // })
       } catch (errorData) {
-        // showValidationErrorMessage(errorData)
+        showValidationErrorMessage(errorData)
       }
     },
-    [currentDate, currentTime, handleFilterChange, setValue]
+    [currentDate, currentTime, fetchAuditLogs, setValue]
   )
 
   const { date_range, time_range, last_date, search } = watch()
@@ -200,7 +201,8 @@ const Logs: FC = () => {
     if (search && size(search) > 2) {
       handleSubmit(onSubmit)()
     }
-  }, [handleSubmit, onSubmit, search])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search])
 
   useEffect(() => {
     if (!isEmpty(date_range) || !isEmpty(time_range)) {
@@ -257,12 +259,16 @@ const Logs: FC = () => {
           appearance={AppearanceTypes.Secondary}
         />
       </div>
-      <p className={isEmpty(logsData) ? classes.noResults : classes.hidden}>
+      <p
+        className={
+          isEmpty(logsData) && !isLoading ? classes.noResults : classes.hidden
+        }
+      >
         {t('logs.no_results_found')}
       </p>
       <LogsTable
         data={logsData}
-        //  hidden={isEmpty(logsData)}
+        hidden={isEmpty(logsData)}
         paginationData={paginationData}
         handlePaginationChange={handlePaginationChange}
       />

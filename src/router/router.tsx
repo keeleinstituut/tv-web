@@ -246,7 +246,7 @@ export const protectedRoutes: FullRouteObject[] = [
         label: i18n.t('menu.logs'),
         element: <Logs />,
         Icon: LogsIcon,
-        // privileges: [Privileges.ViewAuditLog],
+        privileges: [Privileges.ViewAuditLog],
       },
       {
         path: 'tags',

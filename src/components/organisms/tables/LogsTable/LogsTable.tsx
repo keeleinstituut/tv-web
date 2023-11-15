@@ -10,25 +10,23 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ExpandIcon } from 'assets/icons/expand.svg'
 import { ReactComponent as ShrinkIcon } from 'assets/icons/shrink.svg'
-import data from 'components/organisms/tables/ExamplesTable/data.json'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'
-import { AuditLogsResponse } from 'types/auditLogs'
+import { AuditLogsResponse, EventParameters } from 'types/auditLogs'
 import { PaginationFunctionType, ResponseMetaTypes } from 'types/collective'
-import { join, map } from 'lodash'
+import { includes, join, map } from 'lodash'
 import dayjs from 'dayjs'
 import LogsSubRowTable from '../LogsSubRowTable/LogsSubRowTable'
 
 type AuditLog = {
   user?: string
   happened_at?: string
-  event_type?: string
+  event_type: string
   institution_id?: string
   result?: string
-  changes?: object | string
   subRows?: AuditLog[]
-  event_parameters?: unknown | object
+  event_parameters?: EventParameters | null
 }
 
 type LogsTableProps = {
@@ -38,7 +36,6 @@ type LogsTableProps = {
   handlePaginationChange?: (value?: PaginationFunctionType) => void
 }
 
-const defaultData = data?.data || {}
 const columnHelper = createColumnHelper<AuditLog>()
 
 const LogsTable: FC<LogsTableProps> = ({
@@ -49,36 +46,46 @@ const LogsTable: FC<LogsTableProps> = ({
 }) => {
   const { t } = useTranslation()
   const tableData: AuditLog[] = map(
-    defaultData,
-    ({ id, firstName, lastName, status }) => {
+    data,
+    ({
+      id,
+      event_type,
+      happened_at,
+      context_institution_id,
+      acting_user_forename,
+      acting_user_surname,
+      acting_user_pic,
+      failure_type,
+      event_parameters,
+    }) => {
+      const name = `${acting_user_forename} ${acting_user_surname}`
+      const hasSubRow = !includes(
+        ['LOG_IN', 'LOG_OUT', 'EXPORT_INSTITUTION_USERS', 'SELECT_INSTITUTION'],
+        event_type
+      )
       return {
-        user: join([id, firstName, lastName], ','),
-        happened_at: 'YYY:MM:DD',
-        event_type: status,
-        institution_id: id,
-        result: status,
-        subRows: [
-          {
-            reference_id: id,
-            event_type: status,
-            event_parameters: {
-              pre_modification_subset: {},
-              post_modification_subset: {},
-              object_type: 'INSTITUTION',
-              object_identity_subset: {
-                id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-                name: 'string',
-              },
-            },
-          },
-        ],
+        user: join([id, name, acting_user_pic], ', '),
+        happened_at: dayjs(happened_at).format('YYYY.MM.DD HH:mm:ss'),
+        event_type: t(`logs.event_type.${event_type}`),
+        institution_id: context_institution_id,
+        result: !failure_type ? t('logs.successful') : t('logs.failed'),
+        ...(hasSubRow
+          ? {
+              subRows: [
+                {
+                  event: t(`logs.event_type.${event_type}`),
+                  event_type,
+                  event_parameters,
+                },
+              ],
+            }
+          : {}),
       }
     }
   )
 
   const columns = [
     columnHelper.accessor('user', {
-      id: 'user',
       header: () => (
         <span className={classes.firstHeader}>{t('logs.user')}</span>
       ),
