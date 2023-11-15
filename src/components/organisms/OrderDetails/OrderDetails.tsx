@@ -127,12 +127,14 @@ interface OrderDetailsProps {
 }
 
 const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
+  const { workflow_started, id } = order || {}
+
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { institutionUserId, userPrivileges } = useAuth()
   const { createOrder, isLoading } = useCreateOrder()
   const { updateOrder, isLoading: isUpdatingOrder } = useUpdateOrder({
-    id: order?.id,
+    id,
   })
 
   const { deleteBulkFiles, addBulkFiles, updateBulkFiles } = useHandleBulkFiles(
@@ -419,6 +421,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
             control={control}
             isNew={isNew}
             isEditable={isRestEditable && isEditEnabled}
+            workflow_started={workflow_started}
           />
           <OrderFilesSection
             orderId={order?.id}

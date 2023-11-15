@@ -9,7 +9,7 @@ import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { AssignmentStatus, AssignmentType } from 'types/assignments'
+import { AssignmentType, CandidateStatus } from 'types/assignments'
 
 import classes from './classes.module.scss'
 import { SubProjectFeatures } from 'types/orders'
@@ -19,19 +19,14 @@ import { NotificationTypes } from '../Notification/Notification'
 
 type TaskCandidatesSectionProps = Pick<
   AssignmentType,
-  | 'id'
-  | 'assigned_vendor_id'
-  | 'candidates'
-  | 'assignee'
-  | 'finished_at'
-  | 'job_definition'
+  'id' | 'assigned_vendor_id' | 'candidates' | 'assignee' | 'job_definition'
 > & {
   className?: string
 }
 
 interface CandidateRow {
   name: string
-  status: AssignmentStatus
+  status: CandidateStatus
   price: string
   // TODO: delete button should be disabled, once the workflow has started
   delete_button: string
@@ -44,22 +39,10 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   assigned_vendor_id,
   candidates,
   assignee,
-  finished_at,
   className,
   job_definition,
 }) => {
   const { t } = useTranslation()
-
-  const getCandidateStatus = useCallback(
-    (vendor_id: string) => {
-      if (!assignee?.id) return AssignmentStatus.ForwardedToVendor
-      if (assigned_vendor_id === vendor_id && finished_at)
-        return AssignmentStatus.Done
-      if (assigned_vendor_id === vendor_id) return AssignmentStatus.InProgress
-      return AssignmentStatus.NotAssigned
-    },
-    [assigned_vendor_id, assignee?.id, finished_at]
-  )
 
   const { deleteAssignmentVendor } = useAssignmentRemoveVendor({
     id,
@@ -67,10 +50,9 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
 
   const tableRows = useMemo(
     () =>
-      map(candidates, ({ vendor, price }) => {
+      map(candidates, ({ vendor, price, status }) => {
         const { institution_user } = vendor
         const name = `${institution_user.user.forename} ${institution_user.user.surname}`
-        const status = getCandidateStatus(vendor.id)
 
         return {
           name,
@@ -79,7 +61,7 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
           delete_button: vendor.id,
         }
       }),
-    [candidates, getCandidateStatus]
+    [candidates]
   )
 
   const handleDelete = useCallback(
@@ -102,7 +84,7 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
     columnHelper.accessor('status', {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
-      cell: ({ getValue }) => t(`task.status.${getValue()}`),
+      cell: ({ getValue }) => t(`candidate.status.${getValue()}`),
     }),
     columnHelper.accessor('price', {
       header: () => t('label.cost'),
@@ -114,11 +96,13 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
     }),
     columnHelper.accessor('delete_button', {
       header: '',
-      cell: ({ getValue }) => {
+      cell: ({ row, getValue }) => {
+        const isEnabled = row.original.status === CandidateStatus.New
         return (
           <BaseButton
             className={classes.iconButton}
             hidden={job_definition.job_key === SubProjectFeatures.JobOverview}
+            disabled={!isEnabled}
             onClick={() => handleDelete(getValue())}
           >
             <Delete />

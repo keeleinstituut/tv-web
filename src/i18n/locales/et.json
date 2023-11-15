@@ -487,7 +487,7 @@
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "assignment_updated": "Ülesande andmed edukalt uuendatud",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
-    "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
+    "workflow_started": "Kõikidele teostajatele pakkumus saadetud",
     "machine_translation": "Masintõlke lisamise eelistus muudetud.",
     "final_files_changed": "Valmisfailid muudetud",
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
@@ -572,10 +572,12 @@
       "ACCEPTED": "Vastuvõetud",
       "REJECTED": "Tagasi lükatud",
       "CORRECTED": "Parandatud",
-      "FORWARDED_TO_VENDOR": "Teostajale edastatud (ülesanne)",
-      "IN_PROGRESS": "Teostamisel (ülesanne)",
-      "DONE_TASK": "Teostatud (ülesanne)",
-      "DONE": "Teostatud"
+      "TASKS_SUBMITTED_TO_VENDORS": "Teostajale edastatud",
+      "IN_PROGRESS": "Teostamisel",
+      "TASKS_IN_PROGRESS": "Teostamisel",
+      "TASKS_COMPLETED": "Teostatud",
+      "DONE": "Teostatud",
+      "COMPLETED": "Teostatud"
     },
     "sub_orders_tile": "Alamtellimused",
     "features": {
@@ -653,6 +655,14 @@
       "NOT_ASSIGNED": "-",
       "FORWARDED_TO_VENDOR": "Teostajale edastatud",
       "IN_PROGRESS": "Teostamisel",
+      "DONE": "Teostatud"
+    }
+  },
+  "candidate": {
+    "status": {
+      "NEW": "-",
+      "SUBMITTED_TO_VENDOR": "Teostajale edastatud",
+      "ACCEPTED": "Teostamisel",
       "DONE": "Teostatud"
     }
   }
