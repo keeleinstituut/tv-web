@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import useAuth from 'hooks/useAuth'
@@ -10,11 +10,8 @@ import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
 import OrderFilesSection from 'components/molecules/OrderFilesSection/OrderFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
-import { join, map, uniq, includes, find } from 'lodash'
-import {
-  getLocalDateOjectFromUtcDateString,
-  getUtcDateStringFromLocalDateObject,
-} from 'helpers'
+import { join, map, includes, isEmpty, pick, keys, compact, find } from 'lodash'
+import { getUtcDateStringFromLocalDateObject } from 'helpers'
 import {
   DetailedOrder,
   NewOrderPayload,
@@ -28,13 +25,16 @@ import { useNavigate } from 'react-router-dom'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ValidationError } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
-import dayjs from 'dayjs'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
+import { getOrderDefaultValues, mapFilesForApi } from 'helpers/order'
+import { HelperFileTypes } from 'types/classifierValues'
+import { useHandleBulkFiles } from 'hooks/requests/useAssignments'
+import { useQueryClient } from '@tanstack/react-query'
 
 export enum OrderDetailModes {
   New = 'new',
@@ -43,24 +43,26 @@ export enum OrderDetailModes {
 
 interface FormButtonsProps {
   resetForm: () => void
-  setIsEditable: (editable: boolean) => void
+  setIsEditEnabled: (editable: boolean) => void
   onSubmit: () => void
   isNew?: boolean
-  isEditable?: boolean
+  isEditEnabled?: boolean
   isSubmitting?: boolean
   isLoading?: boolean
   isValid?: boolean
   hidden?: boolean
+  isDirty?: boolean
 }
 
 const FormButtons: FC<FormButtonsProps> = ({
   resetForm,
   isNew,
-  isEditable,
-  setIsEditable,
+  isEditEnabled,
+  setIsEditEnabled,
   isSubmitting,
   isLoading,
   isValid,
+  isDirty,
   onSubmit,
   hidden,
 }) => {
@@ -68,9 +70,9 @@ const FormButtons: FC<FormButtonsProps> = ({
 
   const submitButtonLabel = useMemo(() => {
     if (isNew) return t('button.submit_order')
-    if (isEditable) return t('button.save')
+    if (isEditEnabled) return t('button.save')
     return t('button.edit')
-  }, [isEditable, isNew, t])
+  }, [isEditEnabled, isNew, t])
 
   if (hidden) return null
 
@@ -83,18 +85,18 @@ const FormButtons: FC<FormButtonsProps> = ({
           ? { href: '/orders' }
           : {
               onClick: () => {
-                setIsEditable(false)
+                setIsEditEnabled(false)
                 resetForm()
               },
             })}
-        hidden={!isNew && !isEditable}
+        hidden={!isNew && !isEditEnabled}
         disabled={isSubmitting || isLoading}
       />
       <Button
         children={submitButtonLabel}
-        disabled={!isValid && isEditable}
+        disabled={(!isValid || !isDirty) && isEditEnabled}
         loading={isSubmitting || isLoading}
-        onClick={isEditable ? onSubmit : () => setIsEditable(true)}
+        onClick={isEditEnabled ? onSubmit : () => setIsEditEnabled(true)}
       />
     </div>
   )
@@ -110,7 +112,7 @@ interface FormValues {
   destination_language_classifier_value_ids: string[]
   source_files: (File | SourceFile | undefined)[]
   help_files: (File | SourceFile | undefined)[]
-  help_file_types: string[]
+  help_file_types: HelperFileTypes[]
   translation_domain_classifier_value_id: string
   event_start_at?: { date?: string; time?: string }
   // TODO: Not sure about the structure of following
@@ -122,23 +124,26 @@ interface FormValues {
 interface OrderDetailsProps {
   mode?: OrderDetailModes
   order?: DetailedOrder
-  isUserClientOfProject?: boolean
 }
 
-const OrderDetails: FC<OrderDetailsProps> = ({
-  mode,
-  order,
-  isUserClientOfProject,
-}) => {
+const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const { institutionUserId, userPrivileges } = useAuth()
   const { createOrder, isLoading } = useCreateOrder()
   const { updateOrder, isLoading: isUpdatingOrder } = useUpdateOrder({
     id: order?.id,
   })
+
+  const { deleteBulkFiles, addBulkFiles, updateBulkFiles } = useHandleBulkFiles(
+    {
+      reference_object_id: order?.id ?? '',
+      reference_object_type: 'project',
+    }
+  )
+
   const navigate = useNavigate()
   const isNew = mode === OrderDetailModes.New
-  const [isEditable, setIsEditable] = useState(isNew)
   const { classifierValues: domainValues } = useClassifierValuesFetch({
     type: ClassifierValueType.TranslationDomain,
   })
@@ -146,97 +151,63 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     type: ClassifierValueType.ProjectType,
   })
 
+  const defaultDomainClassifier = find(domainValues, { value: 'ASP' })
+  const defaultProjectTypeClassifier = find(projectTypes, {
+    value: 'TRANSLATION',
+  })
+
+  const [isEditEnabled, setIsEditEnabled] = useState(isNew)
+
   const { status = OrderStatus.Registered } = order || {}
-  const hasManagerPrivilege = includes(userPrivileges, Privileges.ManageProject)
 
-  const isEditableBySomeone =
-    hasManagerPrivilege ||
-    (isUserClientOfProject && includes(userPrivileges, Privileges.ChangeClient))
-
-  const defaultValues = useMemo(() => {
-    const {
-      deadline_at,
-      event_start_at,
-      type_classifier_value,
-      client_institution_user,
-      manager_institution_user,
-      reference_number = '',
-      source_files,
-      help_files,
-      translation_domain_classifier_value,
-      help_file_types = [],
-      comments = '',
-      ext_id = '',
-      sub_projects,
-      accepted_at = '',
-      corrected_at = '',
-      rejected_at = '',
-      cancelled_at = '',
-      created_at = '',
-      tags = [],
-    } = order || {}
-    const source_language_classifier_value_id =
-      sub_projects?.[0]?.source_language_classifier_value_id || ''
-    const destination_language_classifier_value_ids =
-      uniq(map(sub_projects, 'destination_language_classifier_value_id')) || []
-
-    const defaultDomainClassifier = find(domainValues, { value: 'ASP' })
-    const defaultProjectTypeClassifier = find(projectTypes, {
-      value: 'TRANSLATION',
-    })
-
-    return {
-      type_classifier_value_id:
-        type_classifier_value?.id || defaultProjectTypeClassifier?.id,
-      client_institution_user_id: isNew
-        ? institutionUserId
-        : client_institution_user?.id,
-      manager_institution_user_id: manager_institution_user?.id,
-      reference_number,
-      source_files: isNew ? [] : source_files,
-      help_files: isNew ? [] : help_files,
-      ext_id,
-      deadline_at: deadline_at
-        ? getLocalDateOjectFromUtcDateString(deadline_at)
-        : { date: '', time: '23:59:59' },
-      event_start_at: event_start_at
-        ? getLocalDateOjectFromUtcDateString(event_start_at)
-        : { date: '', time: '' },
-      source_language_classifier_value_id,
-      destination_language_classifier_value_ids,
-      // TODO: not clear how BE will send the help_file_types back to FE
-      help_file_types,
-      translation_domain_classifier_value_id:
-        translation_domain_classifier_value?.id || defaultDomainClassifier?.id,
-      comments,
-      tags: map(tags, 'id'),
-      accepted_at: accepted_at ? dayjs(accepted_at).format('DD.MM.YYYY') : '',
-      corrected_at: corrected_at
-        ? dayjs(corrected_at).format('DD.MM.YYYY')
-        : '',
-      rejected_at: rejected_at ? dayjs(rejected_at).format('DD.MM.YYYY') : '',
-      cancelled_at: cancelled_at
-        ? dayjs(cancelled_at).format('DD.MM.YYYY')
-        : '',
-      created_at: created_at ? dayjs(created_at).format('DD.MM.YYYY') : '',
-      // TODO: these Need extra mapping
-    }
-  }, [domainValues, institutionUserId, isNew, order, projectTypes])
+  const defaultValues = useMemo(
+    () =>
+      getOrderDefaultValues({
+        institutionUserId,
+        isNew,
+        order,
+        defaultDomainClassifier,
+        defaultProjectTypeClassifier,
+      }),
+    [
+      defaultDomainClassifier,
+      defaultProjectTypeClassifier,
+      institutionUserId,
+      isNew,
+      order,
+    ]
+  )
 
   const {
     control,
     watch,
     handleSubmit,
     reset,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting, isValid, dirtyFields },
     setError,
   } = useForm<FormValues>({
-    reValidateMode: 'onSubmit',
+    reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
 
+  const isDirty = !isEmpty(dirtyFields)
+
   const { client_institution_user_id, manager_institution_user_id } = watch()
 
+  // Privilege checks
+  const hasManagerPrivilege = includes(userPrivileges, Privileges.ManageProject)
+  const isUserClientOfProject = client_institution_user_id === institutionUserId
+
+  const isManagerEditable = isNew || hasManagerPrivilege
+  const isClientEditable =
+    (isUserClientOfProject || hasManagerPrivilege) &&
+    includes(userPrivileges, Privileges.ChangeClient)
+  const isRestEditable = isNew || hasManagerPrivilege
+
+  const isSomethingEditable =
+    isManagerEditable || isClientEditable || isRestEditable
+
+  // Validation errors
   const mapOrderValidationErrors = useCallback(
     (errorData: ValidationError) => {
       if (errorData.errors) {
@@ -271,22 +242,83 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     [createOrder, mapOrderValidationErrors, navigate, t]
   )
 
+  const resetForm = useCallback(() => {
+    reset(defaultValues)
+  }, [reset, defaultValues])
+
+  // TODO: If BE starts sending the full order object as a response to updateOrder
+  // Then we can delete this useEffect
+  // If not, then we should always fetch the order again after update and use this hooks to reset the form
+  useEffect(() => {
+    reset(defaultValues)
+    // Only run when defaultValues change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues])
+
   const handleUpdateOrderSubmit = useCallback(
     async (payload: NewOrderPayload) => {
+      const { help_files, help_file_types, source_files, ...rest } = payload
+      const actualPayload = pick(rest, keys(dirtyFields))
+
+      const { newFiles, deletedFiles, updatedFiles } = mapFilesForApi({
+        previousHelpFiles: order?.help_files,
+        previousSourceFiles: order?.source_files,
+        help_files,
+        help_file_types,
+        source_files,
+      })
+
       try {
-        await updateOrder(payload)
+        if (!isEmpty(newFiles)) {
+          await addBulkFiles(newFiles)
+        }
+        if (!isEmpty(deletedFiles)) {
+          await deleteBulkFiles(deletedFiles)
+        }
+        // TODO: BE currently doesn't support updating
+        // if (!isEmpty(updatedFiles)) {
+        //   await updateBulkFiles(updatedFiles)
+        // }
+        await updateOrder(actualPayload)
+        if (order?.id) {
+          queryClient.refetchQueries({
+            queryKey: ['orders', order?.id],
+            type: 'active',
+          })
+        }
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
           content: t('success.order_updated'),
         })
-        setIsEditable(false)
+        setIsEditEnabled(false)
+        // TODO: If BE starts sending the full order object as a response to updateOrder
+        // Then this will reset the form with the correct values
+        // If not, this should be removed and the useEffect hook above should be used together with refetching the order
+        // reset(
+        //   getOrderDefaultValues({
+        //     institutionUserId,
+        //     isNew: false,
+        //     order: updatedOrder,
+        //   })
+        // )
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         mapOrderValidationErrors(typedErrorData)
       }
     },
-    [mapOrderValidationErrors, t, updateOrder]
+    [
+      dirtyFields,
+      order?.help_files,
+      order?.source_files,
+      order?.id,
+      updateOrder,
+      t,
+      addBulkFiles,
+      deleteBulkFiles,
+      queryClient,
+      mapOrderValidationErrors,
+    ]
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
@@ -295,16 +327,8 @@ const OrderDetails: FC<OrderDetailsProps> = ({
       event_start_at: startObject,
       source_files,
       help_files,
-      client_institution_user_id,
-      manager_institution_user_id,
-      reference_number,
-      source_language_classifier_value_id,
-      destination_language_classifier_value_ids,
-      help_file_types,
-      translation_domain_classifier_value_id,
-      comments,
-      type_classifier_value_id,
       tags,
+      ext_id,
       ...rest
     }) => {
       // TODO: need to go over all of this once it's clear what can be updated and how
@@ -315,21 +339,14 @@ const OrderDetails: FC<OrderDetailsProps> = ({
           : null
 
       const payload: NewOrderPayload = {
-        type_classifier_value_id,
         deadline_at,
-        source_files: source_files as File[],
-        help_files: help_files as File[],
-        client_institution_user_id,
-        manager_institution_user_id,
-        reference_number,
-        source_language_classifier_value_id,
-        destination_language_classifier_value_ids,
-        help_file_types,
-        translation_domain_classifier_value_id,
-        comments,
+        source_files: compact(source_files),
+        help_files: compact(help_files),
+        ...rest,
         ...(!isNew ? { tags } : {}),
         ...(event_start_at ? { event_start_at } : {}),
       }
+
       if (isNew) {
         handleNewOrderSubmit(payload)
       } else {
@@ -339,28 +356,26 @@ const OrderDetails: FC<OrderDetailsProps> = ({
     [handleNewOrderSubmit, handleUpdateOrderSubmit, isNew]
   )
 
-  const resetForm = useCallback(() => {
-    reset(defaultValues)
-  }, [reset, defaultValues])
-
   const formButtonsProps = useMemo(
     () => ({
       onSubmit: handleSubmit(onSubmit),
       resetForm,
       isNew,
-      isEditable,
-      setIsEditable,
+      isEditEnabled,
+      setIsEditEnabled,
       isSubmitting,
       isLoading: isLoading || isUpdatingOrder,
       isValid,
+      isDirty,
     }),
     [
       handleSubmit,
-      isEditable,
+      isEditEnabled,
       isLoading,
       isNew,
       isSubmitting,
       isUpdatingOrder,
+      isDirty,
       isValid,
       onSubmit,
       resetForm,
@@ -382,7 +397,7 @@ const OrderDetails: FC<OrderDetailsProps> = ({
         className={classNames(
           classes.wrapper,
           !isNew && classes.existingOrderWrapper,
-          !isEditable && classes.viewModeWrapper
+          !isEditEnabled && classes.viewModeWrapper
         )}
       >
         <Container className={classNames(classes.peopleContainer)}>
@@ -390,40 +405,34 @@ const OrderDetails: FC<OrderDetailsProps> = ({
             type={PersonSectionTypes.Client}
             control={control}
             selectedUserId={client_institution_user_id}
-            isNew={isNew}
-            isEditable={
-              includes(userPrivileges, Privileges.ChangeClient) &&
-              isEditableBySomeone &&
-              isEditable
-            }
+            isEditable={isClientEditable && isEditEnabled}
           />
           <PersonSection
             type={PersonSectionTypes.Manager}
             control={control}
             selectedUserId={manager_institution_user_id}
-            isNew={isNew}
-            isEditable={isEditableBySomeone && isEditable}
+            isEditable={isManagerEditable && isEditEnabled}
           />
         </Container>
         <Container className={classNames(classes.detailsContainer)}>
           <DetailsSection
             control={control}
             isNew={isNew}
-            isEditable={isEditableBySomeone && isEditable}
+            isEditable={isRestEditable && isEditEnabled}
           />
           <OrderFilesSection
             orderId={order?.id}
             control={control}
-            isEditable={isEditableBySomeone && isEditable}
+            isEditable={isRestEditable && isEditEnabled}
           />
           <FormButtons
             {...formButtonsProps}
-            hidden={isNew || !isEditableBySomeone}
+            hidden={isNew || !isSomethingEditable}
           />
         </Container>
         <FormButtons
           {...formButtonsProps}
-          hidden={!isNew || !isEditableBySomeone}
+          hidden={!isNew || !isSomethingEditable}
         />
       </Root>
     </ExpandableContentContainer>

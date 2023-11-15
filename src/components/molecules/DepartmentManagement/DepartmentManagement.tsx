@@ -10,7 +10,7 @@ import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { EditDataType } from 'components/organisms/modals/EditableListModal/EditableListModal'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { includes } from 'lodash'
+import { includes, intersection, isEmpty } from 'lodash'
 
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
@@ -51,12 +51,15 @@ const DepartmentManagement: FC = () => {
     <EditableListContainer
       title={t('institution.departments')}
       data={existingDepartments}
-      isEditable={includes(
-        userPrivileges,
-        Privileges.EditDepartment ||
-          Privileges.AddDepartment ||
-          Privileges.DeleteDepartment
-      )}
+      isEditable={
+        !isEmpty(
+          intersection(userPrivileges, [
+            Privileges.EditDepartment,
+            Privileges.AddDepartment,
+            Privileges.DeleteDepartment,
+          ])
+        )
+      }
       handleEditList={handleEditDepartmentsModal}
     />
   )

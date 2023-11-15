@@ -72,7 +72,8 @@ const Assignment: FC<AssignmentProps> = ({
 }) => {
   const { t } = useTranslation()
   const { updateAssignment, isLoading } = useAssignmentUpdate({ id })
-  const { vendor } = find(candidates, { vendor_id: assigned_vendor_id }) || {}
+  const { vendor } =
+    find(candidates, ({ vendor }) => vendor.id === assigned_vendor_id) || {}
   const {
     deadline_at: projectDeadline,
     event_start_at: projectStartTime,
@@ -96,6 +97,7 @@ const Assignment: FC<AssignmentProps> = ({
   ) as DiscountPercentages
 
   const feature = job_definition.job_key
+  const skill_id = job_definition.skill_id
 
   const vendorPrices = useMemo(() => {
     const matchingPrices = find(vendor?.prices, (price) => {
@@ -318,18 +320,19 @@ const Assignment: FC<AssignmentProps> = ({
     ]
   )
 
-  const selectedVendorsIds = map(candidates, 'vendor_id')
+  const selectedVendorsIds = map(candidates, 'vendor.id')
+
   const handleOpenVendorsModal = useCallback(() => {
     showModal(ModalTypes.SelectVendor, {
       assignmentId: id,
       selectedVendorsIds,
-      // TODO: not sure where these taskSkills will come from
-      taskSkills: [],
+      skill_id,
       source_language_classifier_value_id,
       destination_language_classifier_value_id,
     })
   }, [
     id,
+    skill_id,
     selectedVendorsIds,
     source_language_classifier_value_id,
     destination_language_classifier_value_id,

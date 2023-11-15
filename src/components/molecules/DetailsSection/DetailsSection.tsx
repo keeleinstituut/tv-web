@@ -122,6 +122,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         className: classes.customInternalClass,
         name: 'deadline_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
+        minDate: new Date(),
         emptyDisplayText: '-',
         rules: {
           required: true,

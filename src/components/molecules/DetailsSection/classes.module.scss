@@ -50,6 +50,17 @@
     }
   }
 
+  .grayRow {
+    justify-content: space-between;
+    margin-left: spacing(13);
+    span {
+      color: $color-input-main;
+    }
+    :last-child {
+      font-weight: $font-weight-normal;
+    }
+  }
+
   &.adjustedLayout {
     .inputInternalPosition,
     .customInternalClass,
@@ -63,12 +74,8 @@
       }
 
       &.grayRow {
-        span {
-          color: $color-input-main;
-        }
-        :last-child {
-          font-weight: $font-weight-normal;
-        }
+        justify-content: flex-end;
+        margin-left: 0;
       }
     }
   }
