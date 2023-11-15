@@ -68,7 +68,7 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
 
-          const newAssignments = previousData.assignments.map((item) => {
+          const newAssignments = map(previousData.assignments, (item) => {
             if (item.id === data.id) {
               return data
             }
@@ -215,26 +215,17 @@ export const useAssignmentRemoveVolume = ({
 }
 
 export const useAssignmentUpdate = ({ id }: { id?: string }) => {
-  // const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
   const { mutateAsync: updateAssignment, isLoading } = useMutation({
-    mutationKey: ['assignments', id],
+    mutationKey: ['suborders', id],
     mutationFn: (payload: AssignmentPayload) =>
-      apiClient.put(`${endpoints.TASKS}/${id}`, payload),
-    // TODO: might need to modify the assignment under subOrder: { assignments } in onSuccess
-    // onSuccess: ({ data }) => {
-    //   queryClient.setQueryData(
-    //     ['institutions', id],
-    //     // TODO: possibly will start storing all arrays as objects
-    //     // if we do, then this should be rewritten
-    //     (oldData?: InstitutionsDataType) => {
-    //       const { data: previousData } = oldData || {}
-    //       if (!previousData) return oldData
-    //       const newData = { ...previousData, ...data }
-    //       return { data: newData }
-    //     }
-    //   )
-    //   queryClient.refetchQueries({ queryKey: ['institutions'], type: 'active' })
-    // },
+      apiClient.put(`${endpoints.ASSIGNMENTS}/${id}`, payload),
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders'],
+        type: 'active',
+      })
+    },
   })
 
   return {
@@ -348,15 +339,18 @@ export const useDownloadFile = (config: {
         collection,
       }
 
-      return apiClient.get(endpoints.MEDIA_DOWNLOAD, {
-        ...file,
-      })
+      return apiClient.get(
+        endpoints.MEDIA_DOWNLOAD,
+        {
+          ...file,
+        },
+        { responseType: 'blob' }
+      )
     },
-    onSuccess: (data, { file_name, mime_type }) => {
+    onSuccess: (data, { file_name }) => {
       downloadHelper({
         data,
         fileName: file_name,
-        fileType: mime_type ?? '',
       })
     },
   })

@@ -37,6 +37,7 @@ const interceptor = (error: ErrorInterface) => {
         response.status === 0 ||
         response.status > 500 ||
         // TODO: 403 needs to be changed to 401, once BE has made the change
+        // Waiting for task: https://github.com/keeleinstituut/tv-tolkevarav/issues/393
         response.status === 403)) ||
     error.code === 'ECONNABORTED'
   ) {

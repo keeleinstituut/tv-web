@@ -5,13 +5,14 @@ import DynamicForm, {
   InputTypes,
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { find } from 'lodash'
+import { find, includes, values } from 'lodash'
 import classNames from 'classnames'
 import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
+import { TypesWithStartTime } from 'types/orders'
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
@@ -77,7 +78,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: `${t('label.order_type')}${!isEditable ? '' : '*'}`,
         name: 'type_classifier_value_id' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
+        className: classes.inputSearch,
         options: projectTypeFilter,
         showSearch: true,
         onlyDisplay: !isEditable,
@@ -93,7 +94,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: `${t('label.translation_domain')}${!isEditable ? '' : '*'}`,
         name: 'translation_domain_classifier_value_id' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
+        className: classes.inputSearch,
         options: domainValuesFilter,
         showSearch: true,
         onlyDisplay: !isEditable,
@@ -106,8 +107,9 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}`,
-        hidden:
-          !selectedProjectType?.project_type_config?.is_start_date_supported,
+        hidden: isNew
+          ? !includes(values(TypesWithStartTime), selectedProjectType?.value)
+          : !selectedProjectType?.project_type_config?.is_start_date_supported,
         className: classes.customInternalClass,
         name: 'event_start_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
@@ -153,7 +155,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: `${t('label.source_language')}${!isEditable ? '' : '*'}`,
         name: 'source_language_classifier_value_id' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
+        className: classes.inputSearch,
         options: languageFilters,
         showSearch: true,
         onlyDisplay: !isEditable,
@@ -168,7 +170,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: `${t('label.destination_language')}${!isEditable ? '' : '*'}`,
         name: 'destination_language_classifier_value_ids' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
+        className: classes.inputSearch,
         options: languageFilters,
         showSearch: true,
         multiple: true,
@@ -186,7 +188,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
       isEditable,
       projectTypeFilter,
       domainValuesFilter,
-      selectedProjectType?.project_type_config?.is_start_date_supported,
+      selectedProjectType,
       languageFilters,
     ]
   )
@@ -199,7 +201,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         placeholder: t('placeholder.pick'),
         label: t('label.order_tags'),
         name: 'tags' as Path<TFormValues>,
-        className: classes.inputInternalPosition,
+        className: classes.inputSearch,
         options: tagsFilters,
         showSearch: true,
         multiple: true,

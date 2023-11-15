@@ -154,7 +154,7 @@
     "save_changes": "Salvesta muudatused",
     "delete_this_role": "Kustuta see roll",
     "add_new_order": "Lisa uus tellimus",
-    "add_new_role": "lisa uus roll",
+    "add_new_role": "Lisa uus roll",
     "deactivate_account": "Deaktiveeri konto",
     "archive_account": "Arhiveeri konto",
     "activate_account": "Aktiveeri konto",
@@ -467,8 +467,8 @@
     "translation_memory_import": "Tõlkemälu on edukalt üles laetud",
     "translation_memory_export": "Tõlkemälu on edukalt alla laetud",
     "translation_memory_deleted": "Tõlkemälu on edukalt kustutatud",
-    "volume_added": "Mahu edukalt lisatud",
-    "volume_edited": "Mahu edukalt muudetud",
+    "volume_added": "Maht edukalt lisatud",
+    "volume_edited": "Maht edukalt muudetud",
     "files_sent_to_cat": "Lähtefailid on edukalt tõlketööriista saadetud",
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "file_merge_success": "Fail on edukalt ühendatud",
@@ -478,6 +478,7 @@
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
+    "assignment_updated": "Ülesande andmed edukalt uuendatud",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
     "workflow_started": "Alamtellimuse töövoog edukalt alustatud!",
     "machine_translation": "Masintõlke lisamise eelistus muudetud.",
@@ -485,7 +486,6 @@
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
     "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
     "split_assignment": "Ülesanne jagatud"
-
   },
   "notification": {
     "announcement": "Teade",
@@ -616,7 +616,7 @@
     "order_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",
     "sub_order_tasks_missing_vendors": "Alamtellimuses on ülesandeid millel puudub teostaja",
     "no_changes_made": "Andmetes puuduvad muudatused",
-    "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobiva(d) teostaja(d) valinud."
+    "send_sub_project_to_vendor_warning": "Vajutades „Saada alamtellimus teostajatele“ käivitatakse alamtellimuse töövoog ja saadetakse ülesande pakkumus valitud teostajatele. Pärast seda ei ole võimalik muuta tellimuse tüüpi, lähtekeelt ja sihtkeeli. Samuti ei saa antud alamtellimusele teostajaid juurde lisada või eemaldada. Palun veendu, et oled sobivad valikud teinud."
   },
   "translation_memories": {
     "memory_title": "Mälu nimetus",
