@@ -10,7 +10,7 @@ import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
 import OrderFilesSection from 'components/molecules/OrderFilesSection/OrderFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
-import { join, map, includes, isEmpty, pick, keys, compact } from 'lodash'
+import { join, map, includes, isEmpty, pick, keys, compact, find } from 'lodash'
 import { getUtcDateStringFromLocalDateObject } from 'helpers'
 import {
   DetailedOrder,
@@ -29,6 +29,8 @@ import ExpandableContentContainer from 'components/molecules/ExpandableContentCo
 import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
 import { getOrderDefaultValues, mapFilesForApi } from 'helpers/order'
 import { HelperFileTypes } from 'types/classifierValues'
 import { useHandleBulkFiles } from 'hooks/requests/useAssignments'
@@ -142,13 +144,38 @@ const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
 
   const navigate = useNavigate()
   const isNew = mode === OrderDetailModes.New
+  const { classifierValues: domainValues } = useClassifierValuesFetch({
+    type: ClassifierValueType.TranslationDomain,
+  })
+  const { classifierValues: projectTypes } = useClassifierValuesFetch({
+    type: ClassifierValueType.ProjectType,
+  })
+
+  const defaultDomainClassifier = find(domainValues, { value: 'ASP' })
+  const defaultProjectTypeClassifier = find(projectTypes, {
+    value: 'TRANSLATION',
+  })
+
   const [isEditEnabled, setIsEditEnabled] = useState(isNew)
 
   const { status = OrderStatus.Registered } = order || {}
 
   const defaultValues = useMemo(
-    () => getOrderDefaultValues({ institutionUserId, isNew, order }),
-    [institutionUserId, isNew, order]
+    () =>
+      getOrderDefaultValues({
+        institutionUserId,
+        isNew,
+        order,
+        defaultDomainClassifier,
+        defaultProjectTypeClassifier,
+      }),
+    [
+      defaultDomainClassifier,
+      defaultProjectTypeClassifier,
+      institutionUserId,
+      isNew,
+      order,
+    ]
   )
 
   const {

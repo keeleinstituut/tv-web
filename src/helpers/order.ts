@@ -3,16 +3,20 @@ import { filter, find, isEmpty, map, uniq, compact } from 'lodash'
 import { DetailedOrder, SourceFile } from 'types/orders'
 
 import dayjs from 'dayjs'
-import { HelperFileTypes } from 'types/classifierValues'
+import { ClassifierValue, HelperFileTypes } from 'types/classifierValues'
 
 export const getOrderDefaultValues = ({
   institutionUserId,
   isNew,
   order,
+  defaultDomainClassifier,
+  defaultProjectTypeClassifier,
 }: {
   institutionUserId: string
   isNew: boolean
   order?: DetailedOrder
+  defaultDomainClassifier?: ClassifierValue
+  defaultProjectTypeClassifier?: ClassifierValue
 }) => {
   const {
     deadline_at,
@@ -45,7 +49,8 @@ export const getOrderDefaultValues = ({
   )
 
   return {
-    type_classifier_value_id: type_classifier_value?.id,
+    type_classifier_value_id:
+      type_classifier_value?.id || defaultProjectTypeClassifier?.id,
     client_institution_user_id: isNew
       ? institutionUserId
       : client_institution_user?.id,
@@ -56,7 +61,7 @@ export const getOrderDefaultValues = ({
     ext_id,
     deadline_at: deadline_at
       ? getLocalDateOjectFromUtcDateString(deadline_at)
-      : { date: '', time: '' },
+      : { date: '', time: '23:59:59' },
     event_start_at: event_start_at
       ? getLocalDateOjectFromUtcDateString(event_start_at)
       : { date: '', time: '' },
@@ -64,7 +69,7 @@ export const getOrderDefaultValues = ({
     destination_language_classifier_value_ids,
     help_file_types,
     translation_domain_classifier_value_id:
-      translation_domain_classifier_value?.id,
+      translation_domain_classifier_value?.id || defaultDomainClassifier?.id,
     comments,
     tags: map(tags, 'id'),
     accepted_at: accepted_at ? dayjs(accepted_at).format('DD.MM.YYYY') : '',
