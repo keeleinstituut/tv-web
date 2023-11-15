@@ -391,3 +391,23 @@ export const useHandleFiles = (config: {
     isDownloadLoading,
   }
 }
+
+export const useDeleteAssignment = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deleteAssignment, isLoading } = useMutation({
+    mutationKey: ['vendors'],
+    mutationFn: async (payload: string) =>
+      apiClient.delete(`${endpoints.ASSIGNMENTS}/${payload}`),
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    deleteAssignment,
+    isLoading,
+  }
+}
