@@ -40,8 +40,8 @@ export enum ObjectTypes {
 }
 
 export type AuditLogPayloadType = {
-  start_datetime: string
-  end_datetime: string
+  start_datetime?: string
+  end_datetime?: string
   department_id?: string
   event_type?: string
   text?: string
@@ -74,7 +74,6 @@ export type EventParameters = {
   //IMPORT_TRANSLATION_MEMORY
   translation_memory_id?: string
   translation_memory_name?: string
-
   //"EXPORT_PROJECTS_REPORT"
   query_start_date?: string
   query_end_date?: string
@@ -84,13 +83,9 @@ export type EventParameters = {
   project_id?: string
   project_ext_id?: string
   file_name?: string
-  //"FINISH_PROJECT"
-  //   project_id: 'string'
-  //   project_ext_id: 'string'
   //"REWIND_WORKFLOW"
   workflow_id?: string
   workflow_name?: string
-
   //"DISPATCH_NOTIFICATION"
   //TODO: null
 } & ObjectParameters

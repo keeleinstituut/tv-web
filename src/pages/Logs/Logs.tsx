@@ -17,14 +17,16 @@ import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
 import { ReactComponent as Alarm } from 'assets/icons/alarm.svg'
 import {
   useEventTypesFetch,
+  useExportAuditLogsCSV,
   useFetchAuditLogs,
 } from 'hooks/requests/useAuditLogs'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
-import { isEmpty, isEqual, size, split, toNumber } from 'lodash'
+import { isEmpty, isEqual, pickBy, size, split, toNumber } from 'lodash'
 import dayjs from 'dayjs'
 import useValidators from 'hooks/useValidators'
 import i18n from 'i18n/i18n'
 import { showValidationErrorMessage } from 'api/errorHandler'
+import { AuditLogPayloadType } from 'types/auditLogs'
 
 export enum DateTabs {
   Hour = '1 hour',
@@ -40,6 +42,7 @@ export type FormValues = {
   activity: string
   last_date: string
   search: string
+  payload: object
 }
 
 const dateTabs = [
@@ -66,25 +69,33 @@ const Logs: FC = () => {
   const { minLengthValidator } = useValidators()
   const {
     logsData,
-    fetchAuditLogs,
     paginationData,
+    handleFilterChange,
     handlePaginationChange,
     isLoading,
   } = useFetchAuditLogs()
   const { eventTypeFilters = [] } = useEventTypesFetch()
   const { departmentFilters = [] } = useDepartmentsFetch()
+  const { exportCSV } = useExportAuditLogsCSV()
   const currentDate = dayjs()
   const currentTime = currentDate.format('HH:mm:ss')
 
-  const { control, watch, setValue, resetField, reset, handleSubmit } =
-    useForm<FormValues>({
-      reValidateMode: 'onSubmit',
-      defaultValues: {
-        date_range: {},
-        time_range: {},
-        last_date: dateTabs[0].id,
-      },
-    })
+  const {
+    control,
+    watch,
+    setValue,
+    getValues,
+    resetField,
+    reset,
+    handleSubmit,
+  } = useForm<FormValues>({
+    reValidateMode: 'onSubmit',
+    defaultValues: {
+      date_range: {},
+      time_range: {},
+      last_date: dateTabs[0].id,
+    },
+  })
 
   const dateFields: FieldProps<FormValues>[] = [
     {
@@ -180,19 +191,15 @@ const Logs: FC = () => {
         start_datetime: startDateTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
         end_datetime: endDateTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
       }
+      setValue('payload', payload)
 
       try {
-        await fetchAuditLogs(payload)
-        // showNotification({
-        //   type: NotificationTypes.Success,
-        //   title: t('notification.announcement'),
-        //   content: t('success.file_split_success'),
-        // })
+        await handleFilterChange(payload)
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
     },
-    [currentDate, currentTime, fetchAuditLogs, setValue]
+    [currentDate, currentTime, handleFilterChange, setValue]
   )
 
   const { date_range, time_range, last_date, search } = watch()
@@ -216,6 +223,19 @@ const Logs: FC = () => {
       resetField('time_range')
     }
   }, [last_date, resetField])
+
+  const handleExportLogs = useCallback(async () => {
+    const payload: AuditLogPayloadType = pickBy(
+      getValues('payload'),
+      (val) => !!val
+    )
+
+    try {
+      await exportCSV(payload)
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [exportCSV, getValues])
 
   return (
     <>
@@ -257,6 +277,7 @@ const Logs: FC = () => {
           type="submit"
           ariaLabel={t('button.download_csv')}
           appearance={AppearanceTypes.Secondary}
+          onClick={handleExportLogs}
         />
       </div>
       <p

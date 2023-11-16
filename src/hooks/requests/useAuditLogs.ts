@@ -1,10 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
 import i18n from 'i18n/i18n'
-import { map } from 'lodash'
+import { isEmpty, map, omit } from 'lodash'
 import {
   AuditLogPayloadType,
   AuditLogsResponseDataType,
@@ -12,36 +12,23 @@ import {
 } from 'types/auditLogs'
 
 export const useFetchAuditLogs = () => {
-  const { filters, handlePaginationChange } = useFilters<AuditLogPayloadType>()
+  const { filters, handleFilterChange, handlePaginationChange } =
+    useFilters<AuditLogPayloadType>()
 
-  //   const { isLoading, isError, isFetching, data } =
-  //     useQuery<AuditLogsResponseDataType>({
-  //       // enabled: !isEmpty(otherFiltersAdded),
-  //       queryKey: ['auditLogs', filters],
-  //       queryFn: () => apiClient.get(endpoints.AUDIT_LOGS, filters),
-  //       keepPreviousData: true,
-  //     })
-
-  const queryClient = useQueryClient()
-  const {
-    data,
-    mutateAsync: fetchAuditLogs,
-    isLoading,
-  } = useMutation({
-    mutationKey: ['auditLogs'],
-    mutationFn: (payload: AuditLogPayloadType) =>
-      apiClient.get(endpoints.AUDIT_LOGS, { ...payload, ...filters }),
+  const { isLoading, data } = useQuery<AuditLogsResponseDataType>({
+    enabled: !isEmpty(omit(filters, ['page', 'per_page'])),
+    queryKey: ['auditLogs', filters],
+    queryFn: () => apiClient.get(endpoints.AUDIT_LOGS, filters),
+    keepPreviousData: true,
   })
-
   const { meta: paginationData, data: logsData } = data || {}
-
-  console.log('data', data)
 
   return {
     isLoading,
     logsData,
     paginationData,
-    fetchAuditLogs,
+    handleFilterChange,
+    filters,
     handlePaginationChange,
   }
 }
@@ -65,16 +52,10 @@ export const useExportAuditLogsCSV = () => {
 }
 
 export const useEventTypesFetch = () => {
-  //   const { isLoading, data } = useQuery<string[]>({
-  //     queryKey: ['eventTypes'],
-  //     queryFn: () => apiClient.get(endpoints.EVENT_TYPES),
-  //   })
-
   const eventTypeFilters = map(EventTypes, (type) => {
     return { value: type, label: i18n.t(`logs.event_type.${type}`) }
   })
   return {
     eventTypeFilters,
-    // isLoading,
   }
 }
