@@ -141,3 +141,16 @@
     height: 17px;
   }
 }
+
+.header {
+  color: $color-text-dark;
+}
+
+.fileName {
+  font-weight: $font-weight-bold;
+}
+
+.createdAt {
+  color: $color-input-main;
+  font-size: $font-size-14;
+}

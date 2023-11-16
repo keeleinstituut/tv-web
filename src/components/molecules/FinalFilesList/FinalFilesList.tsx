@@ -186,24 +186,56 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         ]
       : []),
     columnHelper.accessor('name', {
-      header: () => t('label.file_name'),
+      header: () => (
+        <p className={isTaskView ? classes.header : ''}>
+          {t('label.file_name')}
+        </p>
+      ),
       footer: (info) => info.column.id,
+      cell: ({ getValue }) => {
+        const fileName = getValue()
+        return <p className={isTaskView ? classes.fileName : ''}>{fileName}</p>
+      },
     }),
-    ...(!isTaskView
-      ? [
-          columnHelper.accessor('feature', {
-            header: () => t('label.task'),
-            footer: (info) => info.column.id,
-            cell: ({ getValue }) => {
-              const selectedFeature = getValue()
-              return t(`orders.features.${selectedFeature}`)
-            },
-          }),
-        ]
-      : []),
+
+    columnHelper.accessor('feature', {
+      header: () => <p hidden={isTaskView}>{t('label.task')}</p>,
+      footer: (info) => {
+        if (isTaskView) return null
+        return info.column.id
+      },
+      cell: ({ getValue }) => {
+        const selectedFeature = getValue()
+        if (isTaskView) return null
+        return t(`orders.features.${selectedFeature}`)
+      },
+    }),
+
+    // ...(!isTaskView
+    //   ? [
+    //       columnHelper.accessor('feature', {
+    //         header: () => t('label.task'),
+    //         footer: (info) => info.column.id,
+    //         cell: ({ getValue }) => {
+    //           const selectedFeature = getValue()
+    //           return t(`orders.features.${selectedFeature}`)
+    //         },
+    //       }),
+    //     ]
+    //   : []),
     columnHelper.accessor('created_at', {
-      header: () => t('label.added_at'),
+      header: () => (
+        <p className={isTaskView ? classes.header : ''}>
+          {t('label.added_at')}
+        </p>
+      ),
       footer: (info) => info.column.id,
+      cell: ({ getValue }) => {
+        const createdAt = getValue()
+        return (
+          <p className={isTaskView ? classes.createdAt : ''}>{createdAt}</p>
+        )
+      },
     }),
     ...(!isTaskView
       ? [

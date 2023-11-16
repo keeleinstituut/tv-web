@@ -52,6 +52,8 @@ const TasksTable: FC<TasksTableProps> = ({
     type: ClassifierValueType.ProjectType,
   })
 
+  console.log('tasks', tasks)
+
   const tasksData = useMemo(
     () =>
       map(tasks, ({ id, assignment }) => {
@@ -115,6 +117,7 @@ const TasksTable: FC<TasksTableProps> = ({
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         const ext_id = getValue()
+        console.log('ext_id.id', ext_id.id)
         return (
           <Button
             appearance={AppearanceTypes.Text}
