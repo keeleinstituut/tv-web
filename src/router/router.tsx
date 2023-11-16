@@ -147,7 +147,7 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: ':vendorId',
         element: <VendorPage />,
-        privileges: [Privileges.EditVendorDb],
+        privileges: [Privileges.EditVendorDb, Privileges.ViewVendorDb],
         breadcrumb: BreadcrumbsTitle,
       },
       {
