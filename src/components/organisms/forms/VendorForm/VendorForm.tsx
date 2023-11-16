@@ -115,7 +115,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
     }
   })
 
-  const isFormDisabled = !includes(userPrivileges, Privileges.EditVendorDb)
+  const isEditDisabled = !includes(userPrivileges, Privileges.EditVendorDb)
 
   const fields: FieldProps<FormValues>[] = [
     {
@@ -152,7 +152,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       inputType: InputTypes.Text,
       ariaLabel: t('label.company_name'),
       placeholder: t('placeholder.write_here'),
-      disabled: isFormDisabled,
+      disabled: isEditDisabled,
       label: `${t('label.company_name')}`,
       name: 'company_name',
       className: classes.inputInternalPosition,
@@ -170,14 +170,14 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       options: tagOptions,
       multiple: true,
       buttons: true,
-      disabled: isFormDisabled,
+      disabled: isEditDisabled,
     },
     {
       inputType: InputTypes.Text,
       isTextarea: true,
       ariaLabel: t('label.comment'),
       placeholder: t('placeholder.write_here'),
-      disabled: isFormDisabled,
+      disabled: isEditDisabled,
       label: `${t('label.comment')}`,
       name: 'comment',
       type: 'comment',
@@ -246,6 +246,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
               control,
               isSubmitting,
               resetForm,
+              isEditDisabled,
             }}
           />
         </div>
