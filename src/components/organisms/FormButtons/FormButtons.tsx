@@ -6,8 +6,8 @@ import classes from './classes.module.scss'
 
 interface FormButtonProps {
   loading: boolean
-  isResetDisabled?: boolean
-  isSubmitDisabled?: boolean
+  isResetDisabled: boolean
+  isSubmitDisabled: boolean
   hidden?: boolean
   resetForm: () => void
   className?: string

@@ -28,8 +28,8 @@ interface DiscountFormProps {
 const DiscountForm: FC<DiscountFormProps> = ({
   control,
   isSubmitting,
-  isSubmitDisabled,
-  isResetDisabled,
+  isSubmitDisabled = false,
+  isResetDisabled = false,
   resetForm,
   addFormButtons = false,
   submitButtonName,
