@@ -73,3 +73,13 @@
     margin-left: spacing(2);
   }
 }
+
+.deleteButton {
+  padding-left: spacing(2);
+  display: flex;
+  align-items: center;
+}
+
+.titleContainer {
+  display: flex;
+}

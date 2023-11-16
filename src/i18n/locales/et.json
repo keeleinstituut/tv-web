@@ -486,6 +486,7 @@
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "assignment_updated": "Ülesande andmed edukalt uuendatud",
+    "assignment_deleted": "Ülesanne edukalt kustutatud",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
     "workflow_started": "Kõikidele teostajatele pakkumus saadetud",
     "machine_translation": "Masintõlke lisamise eelistus muudetud.",

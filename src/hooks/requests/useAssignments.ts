@@ -483,6 +483,25 @@ export const useHandleFiles = (config: {
   }
 }
 
+export const useDeleteAssignment = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: deleteAssignment, isLoading } = useMutation({
+    mutationKey: ['suborders'],
+    mutationFn: async (payload: string) =>
+      apiClient.delete(`${endpoints.ASSIGNMENTS}/${payload}`),
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: ['suborders'],
+        type: 'active',
+      })
+    },
+  })
+
+  return {
+    deleteAssignment,
+    isLoading,
+  }
+}
 // TODO: should be unified with useHandleFiles, but skipping for now to save time
 export const useHandleBulkFiles = (config: {
   reference_object_id: string
