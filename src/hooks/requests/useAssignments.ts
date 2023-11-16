@@ -486,7 +486,7 @@ export const useHandleFiles = (config: {
 export const useDeleteAssignment = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteAssignment, isLoading } = useMutation({
-    mutationKey: ['vendors'],
+    mutationKey: ['suborders'],
     mutationFn: async (payload: string) =>
       apiClient.delete(`${endpoints.ASSIGNMENTS}/${payload}`),
     onSuccess: () => {
