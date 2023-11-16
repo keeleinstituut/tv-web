@@ -49,7 +49,7 @@ export const endpoints = {
   UPDATE_TM_KEYS: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tm-keys/sync`,
   TOGGLE_TM_WRITABLE: `${process.env.REACT_APP_TRANSLATION_ORDER_API_BASE}tm-keys/toggle-writable`,
   AUDIT_LOGS: `${process.env.REACT_APP_AUDIT_LOG_API_BASE}event-records`,
-  EXPORT_AUDIT_LOGS: `${process.env.REACT_APP_AUDIT_LOG_API_BASE}export`,
+  EXPORT_AUDIT_LOGS: `${process.env.REACT_APP_AUDIT_LOG_API_BASE}event-records/export`,
 }
 
 export const authEndpoints = {
