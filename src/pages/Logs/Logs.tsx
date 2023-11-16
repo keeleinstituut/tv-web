@@ -165,7 +165,7 @@ const Logs: FC = () => {
       const number = toNumber(toggleValue[0] ?? 0)
       const count = isEqual(toggleValue[1], 'hour') ? 'hour' : 'days'
 
-      const formattedCurrentDate = currentDate.format('DD/MM/YYY')
+      const formattedCurrentDate = currentDate.format('DD/MM/YYYY')
       const startDate = values?.date_range.start || formattedCurrentDate
       const startTime = values?.time_range.start || currentTime
       const endDate = values?.date_range.end || formattedCurrentDate
