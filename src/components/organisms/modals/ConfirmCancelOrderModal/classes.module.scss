@@ -1,0 +1,23 @@
+@import 'styles/variables';
+
+.inputInternalPosition {
+  &:first-child {
+    margin-bottom: spacing(3);
+    textarea {
+      width: 274px;
+    }
+  }
+  &:nth-child(2) {
+    textarea {
+      width: 100%;
+    }
+  }
+  label {
+    text-align: end;
+    width: 146px;
+  }
+
+  > div {
+    flex: 1;
+  }
+}

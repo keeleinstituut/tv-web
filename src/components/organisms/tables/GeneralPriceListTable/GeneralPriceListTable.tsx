@@ -23,13 +23,9 @@ interface GeneralPriceListTableProps {
   data?: Price[]
   paginationData?: ResponseMetaTypes
   hidden?: boolean
-  selectedVendorsIds?: string[]
-  taskSkills?: string[]
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
-  source_language_classifier_value_id?: string
-  destination_language_classifier_value_id?: string
 }
 
 interface PricesTableRow {

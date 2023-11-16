@@ -1,6 +1,6 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchOrder } from 'hooks/requests/useOrders'
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { map, includes, sortBy } from 'lodash'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
@@ -14,14 +14,17 @@ import OrderDetails, {
 } from 'components/organisms/OrderDetails/OrderDetails'
 import useOrderPageRedirect from 'hooks/useOrderPageRedirect'
 import SubOrderSection from 'components/templates/SubOrderSection/SubOrderSection'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 interface OrderButtonProps {
   status?: OrderStatus
   isUserClientOfProject?: boolean
+  orderId?: string
 }
 
 const OrderButtons: FC<OrderButtonProps> = ({
   status,
   isUserClientOfProject,
+  orderId,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
@@ -40,6 +43,13 @@ const OrderButtons: FC<OrderButtonProps> = ({
 
   const canCancelOrder =
     isOrderCancellable && (canCancelPersonalOrder || canCancelInstitutionOrder)
+
+  const openConfirmCancelModal = useCallback(() => {
+    showModal(ModalTypes.ConfirmCancelOrder, {
+      orderId,
+    })
+  }, [orderId])
+
   // TODO: mapped buttons:
   // Left:
   // 1. Delegate to other manager (Registreeritud status + )
@@ -60,8 +70,7 @@ const OrderButtons: FC<OrderButtonProps> = ({
         // loading={isArchiving}
         appearance={AppearanceTypes.Primary}
         children={t('button.cancel_order')}
-        disabled
-        // onClick={handleArchiveModal}
+        onClick={openConfirmCancelModal}
         hidden={!canCancelOrder}
       />
     </div>
@@ -74,7 +83,7 @@ const OrderPage: FC = () => {
   const { institutionUserId } = useAuth()
   const { order, isLoading } = useFetchOrder({ id: orderId })
   const {
-    id,
+    ext_id,
     status,
     sub_projects,
     client_institution_user,
@@ -95,21 +104,18 @@ const OrderPage: FC = () => {
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>{id}</h1>
-        <OrderButtons {...{ status, isUserClientOfProject }} />
+        <h1>{ext_id}</h1>
+        <OrderButtons {...{ status, isUserClientOfProject, orderId }} />
       </div>
 
-      <OrderDetails
-        mode={OrderDetailModes.Editable}
-        order={order}
-        isUserClientOfProject={isUserClientOfProject}
-      />
+      <OrderDetails mode={OrderDetailModes.Editable} order={order} />
 
       <div className={classes.separator} />
 
       {map(sortBy(sub_projects, 'ext_id'), (subOrder) => (
         <SubOrderSection
           {...subOrder}
+          orderId={orderId}
           key={subOrder.id}
           projectDomain={translation_domain_classifier_value}
         />
