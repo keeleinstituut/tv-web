@@ -27,12 +27,12 @@ import { TasksTableProps } from 'pages/MyTasks/MyTasks'
 import classes from './classes.module.scss'
 
 type TaskTableRow = {
-  ext_id: { id: string; ext_id: string }
-  reference_number: string
+  ext_id: { id: string; ext_id: string | undefined }
+  reference_number: string | undefined
   language_directions: string
-  cost: string
-  type: string
-  deadline_at: string
+  cost: number | undefined
+  type: string | undefined
+  deadline_at: string | undefined
   status?: OrderStatus
 }
 
@@ -178,6 +178,9 @@ const TasksTable: FC<TasksTableProps> = ({
         const formattedDate = dayjs(dateValue).format('DD.MM.YYYY')
         const rowStatus = row.original.status
 
+        console.log('row', row)
+        console.log('rowStatus', rowStatus)
+
         //TODO: check from wiki hasDeadlineError OrderStatus requirements
 
         const hasDeadlineError =
@@ -206,7 +209,7 @@ const TasksTable: FC<TasksTableProps> = ({
         sortingOption: ['asc', 'desc'],
       },
     }),
-  ] as ColumnDef<any>[]
+  ] as ColumnDef<TaskTableRow>[]
 
   if (isLoading) return <Loader loading={isLoading} />
   if (isEmpty(tasks))
