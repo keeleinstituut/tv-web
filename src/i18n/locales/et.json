@@ -699,7 +699,7 @@
       "EXPORT_LOGS": "Logide allalaadimine"
     },
     "no_results_found": "Tulemusi ei leitud",
-    "reference": "Viide",
+    "reference": "Objekti id",
     "changes": "Muudatused",
     "object_identity_subset": "Muudatuste andmed",
     "pre_modification_subset": "Enne muutust",
