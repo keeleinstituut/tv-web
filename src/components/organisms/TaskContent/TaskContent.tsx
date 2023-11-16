@@ -74,8 +74,6 @@ const TaskContent: FC<TaskContentProps> = ({
     // id: sub_project_id,
   })
 
-  console.log('sub_project_id', sub_project_id)
-
   const defaultValues = useMemo(
     () => ({
       deadline_at: deadline_at

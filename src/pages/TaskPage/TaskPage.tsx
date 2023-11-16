@@ -31,8 +31,6 @@ const TaskPage: FC = () => {
     handlePaginationChange: handleWaitingTasksPaginationChange,
   } = useFetchTasks({ assigned_to_me: 0 })
 
-  console.log('waitingTasks[0]', waitingTasks[4])
-
   const { assignment } = waitingTasks[4] || {}
   const { subProject, ext_id, sub_project_id } = assignment || {}
 
@@ -42,8 +40,6 @@ const TaskPage: FC = () => {
     source_language_classifier_value,
     destination_language_classifier_value,
   } = subProject || {}
-
-  // console.log('task', task)
 
   const handleAcceptTask = useCallback(async () => {
     try {

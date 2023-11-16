@@ -112,7 +112,6 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     async (files: (File | SourceFile)[]) => {
       const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
       const { data } = await addFiles(filteredFiles)
-      console.log(data.data)
       onChange([...value, ...data.data])
     },
     [onChange, addFiles, value]

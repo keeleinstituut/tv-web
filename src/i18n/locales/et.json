@@ -394,7 +394,8 @@
     "confirm_complete_task_details": "Pärast lõpetamist failidega enam tegevusi teha ei saa ja ülesanne liigub järgmisesse etappi.",
     "view_cat_volumes": "Vaata CAT analüüsi mahtu",
     "confirm_order_cancellation_title": "Kas oled kindel, et soovid tellimuse tühistada?",
-    "confirm_order_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus."
+    "confirm_order_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus.",
+    "confirm_deleting_file": "Kas oled kindel, et soovid faili kustutada?"
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",

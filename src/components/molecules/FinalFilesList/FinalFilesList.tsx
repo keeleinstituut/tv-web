@@ -31,6 +31,7 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './classes.module.scss'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { useHandleFiles } from 'hooks/requests/useAssignments'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 // TODO: very similar to OrderFilesList, these 2 can be unified
 
@@ -76,9 +77,6 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     control,
   })
 
-  console.log('value', value)
-  console.log('useWatch({control})', useWatch({ control }))
-
   const sharedFiles = useWatch({
     control,
     name: 'shared_with_client' as Path<TFormValues>,
@@ -109,14 +107,23 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     [onChange, addFiles, value]
   )
 
-  const handleDelete = useCallback(
+  const handleOpenDeleteModal = useCallback(
     (index?: number) => {
-      if (index === 0 || index) {
-        deleteFile(typedValue[index].id)
-        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+      const handleDelete = () => {
+        if (index === 0 || index) {
+          deleteFile(typedValue[index].id)
+          onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+        }
       }
+
+      showModal(ModalTypes.ConfirmationModal, {
+        title: t('modal.confirm_deleting_file'),
+        cancelButtonContent: t('button.quit_alt'),
+        proceedButtonContent: t('button.confirm'),
+        handleProceed: handleDelete,
+      })
     },
-    [onChange, deleteFile, typedValue]
+    [deleteFile, onChange, t, typedValue]
   )
 
   const filesData = useMemo(
@@ -210,19 +217,6 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         return t(`orders.features.${selectedFeature}`)
       },
     }),
-
-    // ...(!isTaskView
-    //   ? [
-    //       columnHelper.accessor('feature', {
-    //         header: () => t('label.task'),
-    //         footer: (info) => info.column.id,
-    //         cell: ({ getValue }) => {
-    //           const selectedFeature = getValue()
-    //           return t(`orders.features.${selectedFeature}`)
-    //         },
-    //       }),
-    //     ]
-    //   : []),
     columnHelper.accessor('created_at', {
       header: () => (
         <p className={isTaskView ? classes.header : ''}>
@@ -269,7 +263,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         return (
           <BaseButton
             className={classes.iconButton}
-            onClick={() => handleDelete(getValue())}
+            onClick={() => handleOpenDeleteModal(getValue())}
           >
             <Delete />
           </BaseButton>
