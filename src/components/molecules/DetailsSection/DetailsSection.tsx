@@ -17,12 +17,14 @@ interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
   isEditable?: boolean
+  workflow_started?: boolean
 }
 
 const DetailsSection = <TFormValues extends FieldValues>({
   control,
   isNew,
   isEditable,
+  workflow_started,
 }: DetailsSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { tagsFilters = [] } = useFetchTags({
@@ -83,6 +85,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         showSearch: true,
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
+        disabled: workflow_started,
         rules: {
           required: true,
         },
@@ -122,6 +125,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         className: classes.customInternalClass,
         name: 'deadline_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
+        minDate: new Date(),
         emptyDisplayText: '-',
         rules: {
           required: true,
@@ -159,6 +163,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         options: languageFilters,
         showSearch: true,
         onlyDisplay: !isEditable,
+        disabled: workflow_started,
         emptyDisplayText: '-',
         rules: {
           required: true,
@@ -175,6 +180,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         showSearch: true,
         multiple: true,
         buttons: true,
+        disabled: workflow_started,
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
@@ -187,8 +193,10 @@ const DetailsSection = <TFormValues extends FieldValues>({
       t,
       isEditable,
       projectTypeFilter,
+      workflow_started,
       domainValuesFilter,
-      selectedProjectType,
+      selectedProjectType?.value,
+      selectedProjectType?.project_type_config?.is_start_date_supported,
       languageFilters,
     ]
   )

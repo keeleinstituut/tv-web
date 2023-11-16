@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, useRef } from 'react'
 import DatePicker, {
   ReactDatePickerProps,
   registerLocale,
@@ -81,6 +81,7 @@ const DatePickerComponent = ({
 const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
   function DatePickerInput(props, ref) {
     const { label, name, error, className, errorZIndex, id, ...rest } = props
+    const newRef = useRef(null)
 
     return (
       <InputWrapper
@@ -89,7 +90,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         error={error}
         className={className}
         errorZIndex={errorZIndex}
-        ref={ref}
+        ref={newRef}
         wrapperClass={classes.datePickerWrapper}
       >
         <DatePickerComponent name={name} id={id} {...rest} />

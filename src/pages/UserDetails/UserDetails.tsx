@@ -23,7 +23,7 @@ const UserDetails: FC = () => {
       <div className={classes.titleRow}>
         <h1 className={classes.title}>{t('user.account')}</h1>
 
-        {/* NOTE: edit personal working times and vacation days will come later with new endpoints */}
+        {/* TODO: edit personal working times and vacation days will come later with new endpoints */}
         {/* <WorkingTimes
           name={user?.institution.name || ''}
           id={user?.institution.id || ''}

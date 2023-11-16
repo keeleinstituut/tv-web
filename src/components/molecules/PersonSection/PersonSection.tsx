@@ -60,7 +60,6 @@ interface PersonSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   selectedUserId?: string
   isEditable?: boolean
-  isNew?: boolean
 }
 
 const PersonSection = <TFormValues extends FieldValues>({
@@ -68,7 +67,6 @@ const PersonSection = <TFormValues extends FieldValues>({
   control,
   selectedUserId,
   isEditable,
-  isNew,
 }: PersonSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
@@ -87,7 +85,8 @@ const PersonSection = <TFormValues extends FieldValues>({
     {
       per_page: 10,
     },
-    type === PersonSectionTypes.Client ? 'client' : 'tm'
+    type === PersonSectionTypes.Client ? 'client' : 'manager',
+    isEditable
   )
   // Pass search as a param and fetch again
   const handleSearchUsers = useCallback(
@@ -190,13 +189,13 @@ const PersonSection = <TFormValues extends FieldValues>({
         loading={isFetching}
         hidden={isLoading}
         onlyDisplay={!isEditable}
-        className={classNames(!isEditable && !isNew && classes.boldText)}
+        className={classNames(!isEditable && classes.boldText)}
         hideTags
       />
       {selectedUserDetails && (
         <UserDetails
           {...visibleUserDetails}
-          valueClass={classNames(!isEditable && !isNew && classes.boldText)}
+          valueClass={classNames(!isEditable && classes.boldText)}
         />
       )}
     </div>

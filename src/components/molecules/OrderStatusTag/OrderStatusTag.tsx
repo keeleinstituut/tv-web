@@ -7,15 +7,18 @@ import { OrderStatus, SubOrderStatus } from 'types/orders'
 
 export interface OrderStatusTagProps {
   status?: OrderStatus | SubOrderStatus
+  jobName?: string
 }
 
-const OrderStatusTag: FC<OrderStatusTagProps> = ({ status }) => {
+const OrderStatusTag: FC<OrderStatusTagProps> = ({ status, jobName }) => {
   const { t } = useTranslation()
+
+  const jobString = jobName ? ` (${jobName})` : ''
 
   if (!status) return null
   return (
     <Tag
-      label={t(`orders.status.${status}`)}
+      label={`${t(`orders.status.${status}`)}${jobString}`}
       className={classes[toLower(status)]}
     />
   )

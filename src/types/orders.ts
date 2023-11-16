@@ -6,6 +6,7 @@ import {
 import {
   ClassifierValue,
   ClassifierValueType,
+  HelperFileTypes,
   LanguageClassifierValue,
 } from './classifierValues'
 import { AssignmentType } from './assignments'
@@ -17,23 +18,23 @@ import { Tag } from './tags'
 // TODO: not a full list, logic behind order statuses is not fully clear yet
 
 export enum OrderStatus {
-  Registered = 'REGISTERED',
   New = 'NEW',
-  Forwarded = 'SUBMITTED_TO_CLIENT',
+  Registered = 'REGISTERED',
   Cancelled = 'CANCELLED',
-  Accepted = 'ACCEPTED',
+  Forwarded = 'SUBMITTED_TO_CLIENT',
   Rejected = 'REJECTED',
   Corrected = 'CORRECTED',
+  Accepted = 'ACCEPTED',
 }
 
 export enum SubOrderStatus {
-  Registered = 'REGISTERED',
   New = 'NEW',
-  ForwardedToVendor = 'FORWARDED_TO_VENDOR',
-  InProgress = 'IN_PROGRESS',
-  DoneTask = 'DONE_TASK',
+  Registered = 'REGISTERED',
   Cancelled = 'CANCELLED',
-  Done = 'DONE',
+  TasksSubmittedToVendors = 'TASKS_SUBMITTED_TO_VENDORS',
+  TasksInProgress = 'TASKS_IN_PROGRESS',
+  TasksCompleted = 'TASKS_COMPLETED',
+  Completed = 'COMPLETED',
 }
 
 export enum SubProjectFeatures {
@@ -101,7 +102,9 @@ export interface SourceFile {
   preview_url: string
   // Type not clear yet:
   manipulations: string[]
-  custom_properties: string[]
+  custom_properties: {
+    type: HelperFileTypes
+  }
   generated_conversions: string[]
   responsive_images: string[]
   isChecked?: boolean
@@ -153,6 +156,7 @@ export interface ListSubOrderDetail {
   price?: string
   translation_domain_classifier_value?: ClassifierValue
   event_start_at?: string
+  active_job_definition?: JobDefinition
 }
 
 export interface SubOrderDetail extends ListSubOrderDetail {
@@ -167,11 +171,13 @@ export interface SubOrderDetail extends ListSubOrderDetail {
   source_files: SourceFile[]
   assignments: AssignmentType[]
   mt_enabled: boolean
+  workflow_started?: boolean
 }
 
 export interface JobDefinition {
   id: string
   job_key: SubProjectFeatures
+  job_name?: string
   skill_id: string
   multi_assignments_enabled: boolean
   linking_with_cat_tool_jobs_enabled: boolean
@@ -204,18 +210,18 @@ export interface DetailedOrder extends ListOrder {
   manager_institution_user?: UserType
   translation_domain_classifier_value: ClassifierValue
   // TODO: unclear type for following:
-  help_file_types: string[]
   event_start_at?: string
   accepted_at?: string
   corrected_at?: string
   rejected_at?: string
   cancelled_at?: string
+  workflow_started?: boolean
 }
 
 export type OrdersPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
-    only_show_personal_projects?: boolean
+    only_show_personal_projects?: number
     statuses?: string[]
   }
 
@@ -266,12 +272,12 @@ export interface NewOrderPayload {
   client_institution_user_id: string
   manager_institution_user_id: string
   deadline_at: string
-  source_files: File[]
+  source_files: (File | SourceFile)[]
   reference_number?: string
   source_language_classifier_value_id: string
   destination_language_classifier_value_ids: string[]
-  help_files?: File[]
-  help_file_types?: string[]
+  help_files?: (File | SourceFile)[]
+  help_file_types?: HelperFileTypes[]
   translation_domain_classifier_value_id: string
   type_classifier_value_id: string
   event_start_at?: string
@@ -286,4 +292,17 @@ export interface CatJobsPayload {
 export interface SplitOrderPayload {
   sub_project_id: string
   job_key: SubProjectFeatures
+}
+
+export interface CancelOrderPayload {
+  reason: string
+  comments?: string
+}
+export interface PotentialFilePayload {
+  collection?: string
+  type?: string
+  file?: File | SourceFile
+  custom_properties?: {
+    type: HelperFileTypes
+  }
 }
