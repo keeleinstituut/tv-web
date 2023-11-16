@@ -252,8 +252,8 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
             ariaLabel={t('label.main_write')}
             control={control}
             inputType={InputTypes.Checkbox}
-            onClick={() =>
-              isEqual(type, TMType.Public)
+            onClick={() => {
+              isEqual(type, TMType.Public) && !getValue()
                 ? showModal(ModalTypes.ConfirmationModal, {
                     handleProceed: () => handleToggleTmWritable(values),
                     title: t('translation_memory.public_confirmation'),
@@ -264,7 +264,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
                     ),
                   })
                 : handleToggleTmWritable(values)
-            }
+            }}
           />
         )
       },
