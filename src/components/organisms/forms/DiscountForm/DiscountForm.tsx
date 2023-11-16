@@ -6,24 +6,17 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { Control } from 'react-hook-form/dist/types'
-import {
-  DiscountPercentageNames,
-  DiscountPercentages,
-  Vendor,
-} from 'types/vendors'
+import { DiscountPercentageNames, DiscountPercentages } from 'types/vendors'
 import useValidators from 'hooks/useValidators'
 import { map } from 'lodash'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
 import classNames from 'classnames'
 
 interface DiscountFormProps {
-  vendor?: Vendor
   isSubmitDisabled?: boolean
   isResetDisabled?: boolean
   control: Control<DiscountPercentages, unknown>
   isSubmitting: boolean
-  isDirty?: boolean
-  isValid?: boolean
   resetForm: () => void
   addFormButtons?: boolean
   submitButtonName?: string

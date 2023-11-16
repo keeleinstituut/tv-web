@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
@@ -22,6 +22,36 @@ const TechnicalSettings: FC = () => {
   const { institutionDiscounts } = useFetchInstitutionDiscounts()
   const { updateInstitutionDiscounts } = useUpdateInstitutionDiscounts()
 
+  const defaultValues = useMemo(
+    () => ({
+      discount_percentage_0_49: String(
+        institutionDiscounts?.discount_percentage_0_49 || '0'
+      ),
+      discount_percentage_50_74: String(
+        institutionDiscounts?.discount_percentage_50_74 || '0'
+      ),
+      discount_percentage_75_84: String(
+        institutionDiscounts?.discount_percentage_75_84 || '0'
+      ),
+      discount_percentage_85_94: String(
+        institutionDiscounts?.discount_percentage_85_94 || '0'
+      ),
+      discount_percentage_95_99: String(
+        institutionDiscounts?.discount_percentage_95_99 || '0'
+      ),
+      discount_percentage_100: String(
+        institutionDiscounts?.discount_percentage_100 || '0'
+      ),
+      discount_percentage_101: String(
+        institutionDiscounts?.discount_percentage_101 || '0'
+      ),
+      discount_percentage_repetitions: String(
+        institutionDiscounts?.discount_percentage_repetitions || '0'
+      ),
+    }),
+    [institutionDiscounts]
+  )
+
   const {
     control,
     handleSubmit,
@@ -30,7 +60,8 @@ const TechnicalSettings: FC = () => {
     setError,
   } = useForm<DiscountPercentages>({
     mode: 'onTouched',
-    values: institutionDiscounts,
+    reValidateMode: 'onSubmit',
+    values: defaultValues,
   })
 
   const onSubmit: SubmitHandler<DiscountPercentages> = useCallback(
@@ -57,12 +88,12 @@ const TechnicalSettings: FC = () => {
   )
 
   const resetForm = useCallback(() => {
-    reset(institutionDiscounts)
-  }, [institutionDiscounts, reset])
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
   useEffect(() => {
-    reset()
-  }, [isSubmitSuccessful, reset])
+    resetForm()
+  }, [isSubmitSuccessful, resetForm])
 
   return (
     <>

@@ -67,14 +67,15 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       comment,
       company_name,
       tags: map(tags, 'id'),
-      discount_percentage_0_49: discount_percentage_0_49 || '0',
-      discount_percentage_50_74: discount_percentage_50_74 || '0',
-      discount_percentage_75_84: discount_percentage_75_84 || '0',
-      discount_percentage_85_94: discount_percentage_85_94 || '0',
-      discount_percentage_95_99: discount_percentage_95_99 || '0',
-      discount_percentage_100: discount_percentage_100 || '0',
-      discount_percentage_101: discount_percentage_101 || '0',
-      discount_percentage_repetitions: discount_percentage_repetitions || '0',
+      discount_percentage_0_49: String(discount_percentage_0_49) || '0',
+      discount_percentage_50_74: String(discount_percentage_50_74) || '0',
+      discount_percentage_75_84: String(discount_percentage_75_84) || '0',
+      discount_percentage_85_94: String(discount_percentage_85_94) || '0',
+      discount_percentage_95_99: String(discount_percentage_95_99) || '0',
+      discount_percentage_100: String(discount_percentage_100) || '0',
+      discount_percentage_101: String(discount_percentage_101) || '0',
+      discount_percentage_repetitions:
+        String(discount_percentage_repetitions) || '0',
     }),
     [
       company_name,
@@ -102,6 +103,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
     formState: { isSubmitting, isDirty, isValid },
     setError,
   } = useForm<FormValues>({
+    mode: 'onTouched',
     reValidateMode: 'onSubmit',
     defaultValues,
   })
@@ -244,7 +246,6 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
               control,
               isSubmitting,
               resetForm,
-              vendor,
             }}
           />
         </div>
