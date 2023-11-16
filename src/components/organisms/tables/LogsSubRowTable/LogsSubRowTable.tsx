@@ -5,7 +5,6 @@ import DataTable, {
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
-import { Root } from '@radix-ui/react-form'
 import classNames from 'classnames'
 import { includes, join, map, omit, pickBy, toLower } from 'lodash'
 import { EventParameters, ObjectParameters } from 'types/auditLogs'
@@ -97,15 +96,13 @@ const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
   ] as ColumnDef<AuditLog>[]
 
   return (
-    <Root>
-      <DataTable
-        data={tableData}
-        columns={columns}
-        className={classes.dataTable}
-        tableSize={TableSizeTypes.S}
-        hidePagination
-      />
-    </Root>
+    <DataTable
+      data={tableData}
+      columns={columns}
+      className={classes.dataTable}
+      tableSize={TableSizeTypes.S}
+      hidePagination
+    />
   )
 }
 
