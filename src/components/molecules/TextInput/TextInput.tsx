@@ -122,8 +122,8 @@ const TextInput = forwardRef<
         <Control asChild>
           {isTextarea ? (
             <textarea
-              {...(inputProps as unknown as InputHTMLAttributes<HTMLTextAreaElement>)}
               rows={4}
+              {...(inputProps as unknown as InputHTMLAttributes<HTMLTextAreaElement>)}
               onBlur={(e) => handleOnBlurAction(e)}
             />
           ) : (

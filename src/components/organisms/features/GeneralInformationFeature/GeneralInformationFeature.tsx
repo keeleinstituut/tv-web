@@ -46,6 +46,9 @@ import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
 import { ClassifierValue } from 'types/classifierValues'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 // TODO: this is WIP code for suborder view
 
@@ -205,6 +208,21 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     [handleSendToCat]
   )
 
+  const handleChangeDeadline = useCallback(
+    (value: { date: string; time: string }) => {
+      console.warn('deadline changed')
+      const { date, time } = value
+      const dateTime = dayjs.utc(`${date} ${time}`, 'DD/MM/YYYY HH:mm')
+      const formattedDateTime = dateTime.format('YYYY-MM-DDTHH:mm:ss[Z]')
+      // const isDeadLineChanged = !isEqual(formattedDeadline, formattedDateTime)
+
+      updateSubOrder({
+        deadline_at: formattedDateTime,
+      })
+    },
+    [updateSubOrder]
+  )
+
   const subOrderLangPair = useMemo(() => {
     const slangShort = split(source_language_classifier_value?.value, '-')[0]
     const tlangShort = split(
@@ -235,6 +253,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           name: 'deadline_at',
           minDate: new Date(),
           maxDate: dayjs(project.deadline_at).toDate(),
+          onDateTimeChange: handleChangeDeadline,
           // onlyDisplay: !isEditable,
         }}
       />

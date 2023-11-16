@@ -14,6 +14,7 @@ import {
   findIndex,
   uniqBy,
   sortBy,
+  isEmpty,
 } from 'lodash'
 import { ListSubOrderDetail, SubProjectFeatures } from 'types/orders'
 import { useTranslation } from 'react-i18next'
@@ -97,8 +98,10 @@ type SubOrderProps = Pick<
   | 'price'
   | 'status'
   | 'deadline_at'
+  | 'active_job_definition'
 > & {
   projectDomain?: ClassifierValue
+  orderId?: string
 }
 
 const SubOrderSection: FC<SubOrderProps> = ({
@@ -110,6 +113,8 @@ const SubOrderSection: FC<SubOrderProps> = ({
   status,
   deadline_at,
   projectDomain,
+  active_job_definition,
+  orderId,
 }) => {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<string | undefined>(
@@ -119,8 +124,11 @@ const SubOrderSection: FC<SubOrderProps> = ({
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
   const { subOrder, isLoading } = useFetchSubOrder({ id }) || {}
 
+  const { assignments = [], workflow_started } = subOrder || {}
+  const { job_name } = active_job_definition || {}
+
   const { startSubOrderWorkflow, isLoading: isStartingWorkflow } =
-    useSubOrderWorkflow({ id })
+    useSubOrderWorkflow({ id, orderId })
 
   const attemptScroll = useCallback(() => {
     const matchingElement = document.getElementById(ext_id)
@@ -141,14 +149,22 @@ const SubOrderSection: FC<SubOrderProps> = ({
     }
   }, [currentHash, ext_id, attemptScroll, isExpanded])
 
-  const { assignments = [] } = subOrder || {}
-
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
-  const hasAnyUnassignedFeatures = !find(
+  const hasAnyFeaturesWithoutCandidates = find(
     assignments,
-    ({ assignee }) => !assignee
+    ({ candidates, job_definition }) =>
+      isEmpty(candidates) &&
+      job_definition?.job_key !== SubProjectFeatures.JobOverview
   )
+
+  const hasAnyAssignmentsWithoutDeadline = find(
+    assignments,
+    ({ deadline_at }) => !deadline_at
+  )
+
+  const canStartWorkflow =
+    !hasAnyAssignmentsWithoutDeadline && !hasAnyFeaturesWithoutCandidates
 
   const tabs = map(assignments, ({ job_definition }) => {
     return {
@@ -157,6 +173,8 @@ const SubOrderSection: FC<SubOrderProps> = ({
       cat_tool_enabled: job_definition.linking_with_cat_tool_jobs_enabled,
     }
   })
+
+  // const onGoingAssignment = find(assignments, ())
 
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
@@ -229,7 +247,7 @@ const SubOrderSection: FC<SubOrderProps> = ({
       onExpandedChange={handleOpenContainer}
       id={ext_id}
       isExpanded={isExpanded}
-      rightComponent={<OrderStatusTag status={status} />}
+      rightComponent={<OrderStatusTag status={status} jobName={job_name} />}
       wrapContent
       bottomComponent={
         <>
@@ -237,26 +255,26 @@ const SubOrderSection: FC<SubOrderProps> = ({
             content={t('warning.sub_order_tasks_missing_vendors')}
             type={NotificationTypes.Warning}
             className={classes.notificationStyle}
-            hidden={!hasAnyUnassignedFeatures || isExpanded}
+            hidden={canStartWorkflow || isExpanded || workflow_started}
           />
           <Notification
             content={t('warning.send_sub_project_to_vendor_warning')}
             hideIcon
             type={
-              hasAnyUnassignedFeatures
+              !canStartWorkflow
                 ? NotificationTypes.Warning
                 : NotificationTypes.Info
             }
             className={classNames(
               classes.notificationStyle,
               classes.startWorkFlowNotification,
-              hasAnyUnassignedFeatures && classes.warning
+              !canStartWorkflow && classes.warning
             )}
             hidden={!isExpanded}
             children={
               <Button
                 children={t('button.send_sub_project_to_vendors')}
-                disabled={!!hasAnyUnassignedFeatures}
+                disabled={!canStartWorkflow || workflow_started}
                 loading={isStartingWorkflow}
                 onClick={handleStartWorkflow}
               />

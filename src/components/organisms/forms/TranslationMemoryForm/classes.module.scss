@@ -22,7 +22,10 @@
     margin-bottom: spacing(4);
     padding-right: spacing(10);
 
-    input {
+    >input {
+      width: 274px;
+    }
+    >div>input {
       width: 274px;
     }
   }

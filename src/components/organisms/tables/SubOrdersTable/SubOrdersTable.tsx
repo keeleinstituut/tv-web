@@ -193,7 +193,10 @@ const SubOrdersTable: FC = () => {
         const rowStatus = row.original.status
         const hasDeadlineError =
           diff < 0 &&
-          !includes([SubOrderStatus.Done, SubOrderStatus.Cancelled], rowStatus)
+          !includes(
+            [SubOrderStatus.Completed, SubOrderStatus.Cancelled],
+            rowStatus
+          )
         return (
           <span
             className={classNames(

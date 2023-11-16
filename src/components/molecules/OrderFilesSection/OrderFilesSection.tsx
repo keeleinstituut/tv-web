@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import classes from './classes.module.scss'
 import { map } from 'lodash'
 import { Control, FieldValues } from 'react-hook-form'
 import OrderFilesList from 'components/molecules/OrderFilesList/OrderFilesList'
@@ -23,7 +22,7 @@ const OrderFilesSection = <TFormValues extends FieldValues>({
   }))
 
   return (
-    <div className={classes.container}>
+    <div>
       <h2>{isEditable ? '' : t('orders.files')}</h2>
       <OrderFilesList
         orderId={orderId}

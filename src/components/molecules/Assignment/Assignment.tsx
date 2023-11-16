@@ -25,7 +25,10 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from '../Notification/Notification'
 import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
-import { getBEDate } from 'helpers'
+import {
+  getLocalDateOjectFromUtcDateString,
+  getUtcDateStringFromLocalDateObject,
+} from 'helpers'
 
 dayjs.extend(utc)
 
@@ -39,7 +42,6 @@ interface AssignmentProps extends AssignmentType {
   volumes?: VolumeValue[]
   subOrderId?: string
   project: ListOrder
-  deadline_at?: string
 }
 
 interface FormValues {
@@ -69,15 +71,13 @@ const Assignment: FC<AssignmentProps> = ({
   project,
   comments,
   deadline_at,
+  event_start_at,
 }) => {
   const { t } = useTranslation()
   const { updateAssignment, isLoading } = useAssignmentUpdate({ id })
-  const { vendor } = find(candidates, { vendor_id: assigned_vendor_id }) || {}
-  const {
-    deadline_at: projectDeadline,
-    event_start_at: projectStartTime,
-    type_classifier_value,
-  } = project || {}
+  const { vendor } =
+    find(candidates, ({ vendor }) => vendor.id === assigned_vendor_id) || {}
+  const { deadline_at: projectDeadline, type_classifier_value } = project || {}
 
   const shouldShowStartTimeFields =
     type_classifier_value?.project_type_config?.is_start_date_supported
@@ -96,6 +96,7 @@ const Assignment: FC<AssignmentProps> = ({
   ) as DiscountPercentages
 
   const feature = job_definition.job_key
+  const skill_id = job_definition.skill_id
 
   const vendorPrices = useMemo(() => {
     const matchingPrices = find(vendor?.prices, (price) => {
@@ -124,29 +125,18 @@ const Assignment: FC<AssignmentProps> = ({
 
   const defaultValues = useMemo(
     () => ({
-      deadline_at: {
-        date: dayjs.utc(deadline_at || projectDeadline).format('DD/MM/YYYY'),
-        time: dayjs.utc(deadline_at || projectDeadline).format('HH:mm:ss'),
-      },
-      ...(shouldShowStartTimeFields
+      ...(deadline_at
+        ? { deadline_at: getLocalDateOjectFromUtcDateString(deadline_at) }
+        : {}),
+      ...(shouldShowStartTimeFields && event_start_at
         ? {
-            event_start_at: {
-              date: dayjs(projectStartTime).format('DD/MM/YYYY'),
-              time: dayjs(projectStartTime).format('HH:mm'),
-            },
+            event_start_at: getLocalDateOjectFromUtcDateString(event_start_at),
           }
         : {}),
       volume: volumes,
       comments,
     }),
-    [
-      comments,
-      deadline_at,
-      projectDeadline,
-      projectStartTime,
-      shouldShowStartTimeFields,
-      volumes,
-    ]
+    [comments, deadline_at, event_start_at, shouldShowStartTimeFields, volumes]
   )
 
   const { control } = useForm<FormValues>({
@@ -203,40 +193,41 @@ const Assignment: FC<AssignmentProps> = ({
     [t, updateAssignment]
   )
 
-  const formattedDeadline = useMemo(
-    () => getBEDate(deadline_at || projectDeadline),
-    [deadline_at, projectDeadline]
-  )
-
   const handleAddComment = useCallback(
     (value: string) => {
       const isCommentChanged = !isEqual(value, comments)
+      const { date, time } = defaultValues?.deadline_at || {}
       if (isCommentChanged) {
         handleUpdateAssignment({
-          deadline_at: formattedDeadline,
+          ...(date
+            ? {
+                deadline_at: getUtcDateStringFromLocalDateObject({
+                  date,
+                  time,
+                }),
+              }
+            : {}),
           comments: value,
         })
       }
     },
 
-    [comments, formattedDeadline, handleUpdateAssignment]
+    [comments, defaultValues?.deadline_at, handleUpdateAssignment]
   )
 
   const handleAddDateTime = useCallback(
     (value: { date: string; time: string }) => {
       const { date, time } = value
-      const dateTime = dayjs.utc(`${date} ${time}`, 'DD/MM/YYYY HH:mm')
-      const formattedDateTime = dateTime.format('YYYY-MM-DDTHH:mm:ss[Z]')
-      const isDeadLineChanged = !isEqual(formattedDeadline, formattedDateTime)
+      const { date: prevDate, time: prevTime } =
+        defaultValues?.deadline_at || {}
+      if (!date || (date === prevDate && time === prevTime)) return false
 
-      if (isDeadLineChanged) {
-        handleUpdateAssignment({
-          deadline_at: formattedDateTime,
-        })
-      }
+      handleUpdateAssignment({
+        deadline_at: getUtcDateStringFromLocalDateObject(value),
+      })
     },
 
-    [formattedDeadline, handleUpdateAssignment]
+    [defaultValues?.deadline_at, handleUpdateAssignment]
   )
 
   const fields: FieldProps<FormValues>[] = useMemo(
@@ -318,18 +309,19 @@ const Assignment: FC<AssignmentProps> = ({
     ]
   )
 
-  const selectedVendorsIds = map(candidates, 'vendor_id')
+  const selectedVendorsIds = map(candidates, 'vendor.id')
+
   const handleOpenVendorsModal = useCallback(() => {
     showModal(ModalTypes.SelectVendor, {
       assignmentId: id,
       selectedVendorsIds,
-      // TODO: not sure where these taskSkills will come from
-      taskSkills: [],
+      skill_id,
       source_language_classifier_value_id,
       destination_language_classifier_value_id,
     })
   }, [
     id,
+    skill_id,
     selectedVendorsIds,
     source_language_classifier_value_id,
     destination_language_classifier_value_id,
