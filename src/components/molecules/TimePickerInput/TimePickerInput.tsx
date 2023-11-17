@@ -85,22 +85,13 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             placeholder: '0',
           })}
         />
-        {icon ? (
-          <Icon
-            icon={icon}
-            className={classNames(
-              classes.timeIcon,
-              disabled && classes.disabledIcon
-            )}
-          />
-        ) : (
-          <Clock
-            className={classNames(
-              classes.timeIcon,
-              disabled && classes.disabledIcon
-            )}
-          />
-        )}
+        <Icon
+          icon={icon || Clock}
+          className={classNames(
+            classes.timeIcon,
+            disabled && classes.disabledIcon
+          )}
+        />
       </>
     )
   }

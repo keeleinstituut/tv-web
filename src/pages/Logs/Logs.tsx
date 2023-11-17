@@ -16,17 +16,16 @@ import classNames from 'classnames'
 import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
 import { ReactComponent as Alarm } from 'assets/icons/alarm.svg'
 import {
-  useEventTypesFetch,
   useExportAuditLogsCSV,
   useFetchAuditLogs,
 } from 'hooks/requests/useAuditLogs'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
-import { isEmpty, isEqual, pickBy, size, split, toNumber } from 'lodash'
+import { isEmpty, isEqual, map, pickBy, size, split, toNumber } from 'lodash'
 import dayjs from 'dayjs'
 import useValidators from 'hooks/useValidators'
 import i18n from 'i18n/i18n'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { AuditLogPayloadType } from 'types/auditLogs'
+import { AuditLogPayloadType, EventTypes } from 'types/auditLogs'
 
 export enum DateTabs {
   Hour = '1 hour',
@@ -74,7 +73,6 @@ const Logs: FC = () => {
     handlePaginationChange,
     isLoading,
   } = useFetchAuditLogs()
-  const { eventTypeFilters = [] } = useEventTypesFetch()
   const { departmentFilters = [] } = useDepartmentsFetch()
   const { exportCSV } = useExportAuditLogsCSV()
   const currentDate = dayjs()
@@ -128,7 +126,10 @@ const Logs: FC = () => {
       inputType: InputTypes.Selections,
       name: 'activity',
       ariaLabel: t('logs.select_activity'),
-      options: eventTypeFilters,
+      options: map(EventTypes, (type) => ({
+        value: type,
+        label: t(`logs.event_type.${type}`),
+      })),
       placeholder: t('logs.select_activity'),
       hideTags: true,
       className: classes.inputSection,
@@ -188,8 +189,8 @@ const Logs: FC = () => {
         event_type: values?.activity,
         text: values?.search,
         department_id: values?.department_id,
-        start_datetime: startDateTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
-        end_datetime: endDateTime.format('YYYY-MM-DDTHH:mm:ss[Z]'),
+        start_datetime: startDateTime.utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
+        end_datetime: endDateTime.utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
       }
       setValue('payload', payload)
 
@@ -237,6 +238,10 @@ const Logs: FC = () => {
     }
   }, [exportCSV, getValues])
 
+  const resetForm = useCallback(() => {
+    reset()
+  }, [reset])
+
   return (
     <>
       <div className={classes.logsHeader}>
@@ -252,7 +257,7 @@ const Logs: FC = () => {
               children={t('logs.clean_fields')}
               ariaLabel={t('logs.clean_fields')}
               size={SizeTypes.S}
-              onClick={() => reset()}
+              onClick={resetForm}
               appearance={AppearanceTypes.Secondary}
             />
             <Button
@@ -277,6 +282,7 @@ const Logs: FC = () => {
           type="submit"
           ariaLabel={t('button.download_csv')}
           appearance={AppearanceTypes.Secondary}
+          disabled={isEmpty(logsData)}
           onClick={handleExportLogs}
         />
       </div>

@@ -13,16 +13,17 @@ import { ReactComponent as ShrinkIcon } from 'assets/icons/shrink.svg'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'
-import { AuditLogsResponse, EventParameters } from 'types/auditLogs'
+import { AuditLogsResponse, EventParameters, EventTypes } from 'types/auditLogs'
 import { PaginationFunctionType, ResponseMetaTypes } from 'types/collective'
 import { includes, join, map } from 'lodash'
 import dayjs from 'dayjs'
 import LogsSubRowTable from '../LogsSubRowTable/LogsSubRowTable'
 
-type AuditLog = {
+export type AuditLog = {
   user?: string
   happened_at?: string
-  event_type: string
+  event?: string
+  event_type?: EventTypes
   institution_id?: string
   result?: string
   subRows?: AuditLog[]
@@ -66,7 +67,7 @@ const LogsTable: FC<LogsTableProps> = ({
       return {
         user: join([id, name, acting_user_pic], ', '),
         happened_at: dayjs(happened_at).format('YYYY.MM.DD HH:mm:ss'),
-        event_type: t(`logs.event_type.${event_type}`),
+        event: t(`logs.event_type.${event_type}`),
         institution_id: context_institution_id,
         result: !failure_type ? t('logs.successful') : t('logs.failed'),
         ...(hasSubRow
@@ -116,7 +117,7 @@ const LogsTable: FC<LogsTableProps> = ({
       cell: ({ getValue }) => <span>{getValue()}</span>,
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('event_type', {
+    columnHelper.accessor('event', {
       header: () => (
         <span className={classes.header}>{t('logs.activity')}</span>
       ),

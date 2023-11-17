@@ -7,21 +7,19 @@ import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import { includes, join, map, omit, pickBy, toLower } from 'lodash'
-import { EventParameters, ObjectParameters } from 'types/auditLogs'
+import { ObjectParameters } from 'types/auditLogs'
+import { AuditLog } from '../LogsTable/LogsTable'
 
-type AuditLog = {
+type SubRowAuditLog = {
   reference_id?: string
-  event_type?: string
-  event?: string
-  event_parameters?: EventParameters | null
-}
+} & Pick<AuditLog, 'event' | 'event_type' | 'event_parameters'>
 
 type LogsSubRowTableProps = {
-  rowData?: AuditLog
+  rowData?: SubRowAuditLog
   hidden?: boolean
 }
 
-const columnHelper = createColumnHelper<AuditLog>()
+const columnHelper = createColumnHelper<SubRowAuditLog>()
 
 const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
   const { t } = useTranslation()
@@ -30,12 +28,12 @@ const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
   const isObjectLog = includes(event_type, 'OBJECT')
   const objectId = `(${toLower(event_parameters?.object_type)}-ID)`
 
-  const tableData: AuditLog[] = [
+  const tableData: SubRowAuditLog[] = [
     {
       reference_id: isObjectLog
         ? join([event_parameters?.object_identity_subset?.id, objectId], ' ')
         : '-',
-      event_type: event,
+      event,
       event_parameters: isObjectLog
         ? omit(event_parameters, 'object_type')
         : pickBy(event_parameters, (val) => !!val),
@@ -55,7 +53,7 @@ const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
       size: 120,
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('event_type', {
+    columnHelper.accessor('event', {
       header: () => (
         <span className={classes.header}>{t('logs.activity')}</span>
       ),
@@ -77,7 +75,7 @@ const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
                   key: keyof ObjectParameters
                 ) => {
                   return (
-                    <div>
+                    <div key={key}>
                       <span className={classes.header}>{t(`logs.${key}`)}</span>
                       <pre>{JSON.stringify(value, null, 2)}</pre>
                     </div>
@@ -93,7 +91,7 @@ const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
       size: 600,
       footer: (info) => info.column.id,
     }),
-  ] as ColumnDef<AuditLog>[]
+  ] as ColumnDef<SubRowAuditLog>[]
 
   return (
     <DataTable

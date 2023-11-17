@@ -67,6 +67,8 @@ interface FeatureHeaderSectionProps extends ToggleTabsProps {
   isLoading?: boolean
   mt_enabled?: boolean
   id?: string
+  activeTab?: string
+  setActiveTab?: (id: string) => void
 }
 
 const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
@@ -119,8 +121,8 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
     >
       <ToggleTabs
         {...{
-          activeTab,
-          setActiveTab,
+          value: activeTab,
+          onChange: setActiveTab,
           tabs,
           className: classes.featureTabs,
           hidden: !catSupported,
