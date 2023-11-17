@@ -248,12 +248,13 @@ const DropdownContentComponent = forwardRef<
       </ul>
       <div
         hidden={!buttons}
-        className={classNames(buttons && classes.buttonsContainer)}
+        className={classNames(buttons && multiple && classes.buttonsContainer)}
       >
         <Button
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           onClick={handleCancel}
+          hidden={!multiple}
         >
           {t('button.cancel')}
         </Button>
@@ -262,6 +263,7 @@ const DropdownContentComponent = forwardRef<
           size={SizeTypes.S}
           onClick={handleOnSave}
           className={classes.dropdownButton}
+          hidden={!multiple}
         >
           {t('button.save')}
         </Button>

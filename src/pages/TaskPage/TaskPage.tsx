@@ -3,7 +3,7 @@ import { FC, useCallback } from 'react'
 import OrderDetails, {
   OrderDetailModes,
 } from 'components/organisms/OrderDetails/OrderDetails'
-import Task from 'components/organisms/Task/Task'
+import TaskDetails from 'components/organisms/TaskDetails/TaskDetails'
 import Button from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
@@ -13,6 +13,7 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
+import { useFetchSubOrder } from 'hooks/requests/useOrders'
 
 const TaskPage: FC = () => {
   const { t } = useTranslation()
@@ -21,6 +22,11 @@ const TaskPage: FC = () => {
   // const { task, isLoading } = useFetchTask({
   //   id: '26768dd7-82d6-11ee-be66-5eb08d05fbe2',
   // })
+
+  const { subOrder, isLoading } =
+    useFetchSubOrder({ id: '9a9dfde2-49cc-420c-b6b3-a4e06c375155' }) || {}
+
+  console.log('subOrder', subOrder)
 
   const {
     tasks: waitingTasks = [],
@@ -31,7 +37,7 @@ const TaskPage: FC = () => {
     handlePaginationChange: handleWaitingTasksPaginationChange,
   } = useFetchTasks({ assigned_to_me: 0 })
 
-  const { assignment } = waitingTasks[4] || {}
+  const { assignment } = waitingTasks[6] || {}
   const { subProject, ext_id, sub_project_id } = assignment || {}
 
   const {
@@ -76,7 +82,7 @@ const TaskPage: FC = () => {
 
       <div className={classes.separator} />
 
-      <Task
+      <TaskDetails
         ext_id={ext_id}
         project={project}
         // isLoading={isLoading}
@@ -86,6 +92,7 @@ const TaskPage: FC = () => {
           destination_language_classifier_value
         }
         cat_files={cat_files}
+        source_files={subOrder?.source_files || []}
         sub_project_id={sub_project_id || ''}
       />
     </>

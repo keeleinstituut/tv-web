@@ -8,7 +8,13 @@ import {
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
 import { ReactComponent as Download } from 'assets/icons/download.svg'
-import { Control, FieldValues, Path, useController } from 'react-hook-form'
+import {
+  Control,
+  FieldValues,
+  Path,
+  useController,
+  useWatch,
+} from 'react-hook-form'
 import classNames from 'classnames'
 import FileImport, {
   ProjectFileTypes,
@@ -77,6 +83,11 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
+
+  console.log('value', value)
+
+  console.log('useWatch({control})', useWatch({ control }))
+
   const { addFiles, deleteFile, downloadFile } = useHandleFiles({
     reference_object_id: subOrderId,
     reference_object_type: 'subproject',

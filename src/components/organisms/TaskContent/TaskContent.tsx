@@ -12,7 +12,7 @@ import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { isEmpty, map, reduce, split } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
 import { CatJob, SourceFile } from 'types/orders'
@@ -37,7 +37,7 @@ interface FormValues {
 
 interface TaskContentProps {
   deadline_at?: string
-  source_files?: SourceFile[]
+  source_files: SourceFile[]
   cat_files?: SourceFile[]
   cat_jobs?: CatJob[]
   final_files: SourceFile[]
@@ -65,12 +65,12 @@ const TaskContent: FC<TaskContentProps> = ({
   const { t } = useTranslation()
 
   const { catToolJobs, catSetupStatus } = useFetchSubOrderCatToolJobs({
-    id: '9a73d254-71c1-4fd5-a89f-0b41342d1cef',
+    id: '9a9dfde2-49cc-420c-b6b3-a4e06c375155',
     // id: sub_project_id,
   })
 
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({
-    id: '9a73d254-71c1-4fd5-a89f-0b41342d1cef',
+    id: '9a9dfde2-49cc-420c-b6b3-a4e06c375155',
     // id: sub_project_id,
   })
 
@@ -93,10 +93,15 @@ const TaskContent: FC<TaskContentProps> = ({
     [catToolJobs, deadline_at, final_files, cat_files, source_files]
   )
 
+  console.log('defaultValues', defaultValues)
+
   const { control, setValue } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
+
+  console.log('useWatch({control})1', useWatch({ control }))
+  // setValue('my_source_files', source_files)
 
   useEffect(() => {
     if (subOrderTmKeys) {
@@ -112,7 +117,10 @@ const TaskContent: FC<TaskContentProps> = ({
         )
       )
     }
-  }, [setValue, subOrderTmKeys])
+    if (source_files) {
+      setValue('my_source_files', source_files)
+    }
+  }, [setValue, source_files, subOrderTmKeys])
 
   const subOrderLangPair = useMemo(() => {
     const slangShort = split(source_language_classifier_value?.value, '-')[0]
@@ -258,7 +266,7 @@ const TaskContent: FC<TaskContentProps> = ({
           control={control}
           catSetupStatus={catSetupStatus}
           isTaskView
-          subOrderId={'9a786227-e7b7-47b6-a2ee-a7070ce6f409'}
+          subOrderId={'9a9dfde2-49cc-420c-b6b3-a4e06c375155'}
           isEditable
         />
         <FinalFilesList

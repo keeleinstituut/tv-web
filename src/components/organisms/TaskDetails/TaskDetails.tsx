@@ -22,16 +22,18 @@ interface TaskProps {
   destination_language_classifier_value?: LanguageClassifierValue
   project?: DetailedOrder
   cat_files?: SourceFile[]
+  source_files: SourceFile[]
   sub_project_id: string
 }
 
-const Task: FC<TaskProps> = ({
+const TaskDetails: FC<TaskProps> = ({
   ext_id = '',
   isLoading,
   source_language_classifier_value,
   destination_language_classifier_value,
   project,
   cat_files,
+  source_files,
   sub_project_id,
 }) => {
   const { t } = useTranslation()
@@ -103,7 +105,7 @@ const Task: FC<TaskProps> = ({
       <TaskContent
         deadline_at={deadline_at}
         //TODO: add files data
-        source_files={[]}
+        source_files={source_files}
         cat_files={cat_files}
         cat_jobs={[]}
         final_files={[]}
@@ -126,4 +128,4 @@ const Task: FC<TaskProps> = ({
   )
 }
 
-export default Task
+export default TaskDetails

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { includes, isEmpty, map, split } from 'lodash'
+import { isEmpty, map } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -80,15 +80,12 @@ const TasksTable: FC<TasksTableProps> = ({
     (filters?: FilterFunctionType) => {
       const { language_direction, type_classifier_value_id, ...rest } =
         filters || {}
-      const typedLanguageDirection = language_direction as string[]
+      const typedLanguageDirection = language_direction as string
 
-      const langPair = map(
-        typedLanguageDirection,
-        (languageDirectionString) => {
-          const [src, dst] = split(languageDirectionString, '_')
-          return { src, dst }
-        }
-      )
+      const langPair = {
+        src: typedLanguageDirection.split('_')[0],
+        dst: typedLanguageDirection.split('_')[1],
+      }
 
       const newFilters = {
         lang_pair: langPair,
@@ -100,8 +97,8 @@ const TasksTable: FC<TasksTableProps> = ({
       }
 
       if (handleFilterChange) {
-        // handleFilterChange(newTypeFilters)
-        handleFilterChange(newFilters)
+        handleFilterChange(newTypeFilters)
+        // handleFilterChange(newFilters)
       }
     },
     [handleFilterChange]
@@ -148,7 +145,7 @@ const TasksTable: FC<TasksTableProps> = ({
         )
       },
       meta: {
-        filterOption: { language_direction: languageDirectionFilters },
+        filterOption: { language_direction: languageDirectionFilters }, //TODO: waiting for BE info, currently not working
         multiple: false,
         onEndReached: loadMore,
         onSearch: handleSearch,
@@ -163,7 +160,7 @@ const TasksTable: FC<TasksTableProps> = ({
       header: () => t('label.type'),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { type_classifier_value_id: typeFilters },
+        filterOption: { type_classifier_value_id: typeFilters }, //TODO: waiting for BE info, currently not working
         multiple: false,
       },
     }),
@@ -176,24 +173,8 @@ const TasksTable: FC<TasksTableProps> = ({
         const currentDate = dayjs()
         const diff = deadlineDate.diff(currentDate)
         const formattedDate = dayjs(dateValue).format('DD.MM.YYYY')
-        const rowStatus = row.original.status
 
-        console.log('row', row)
-        console.log('rowStatus', rowStatus)
-
-        //TODO: check from wiki hasDeadlineError OrderStatus requirements
-
-        const hasDeadlineError =
-          diff < 0 &&
-          !includes(
-            [
-              OrderStatus.Forwarded,
-              OrderStatus.Accepted,
-              OrderStatus.Cancelled,
-              OrderStatus.Corrected,
-            ],
-            rowStatus
-          )
+        const hasDeadlineError = diff < 0
         return (
           <span
             className={classNames(
