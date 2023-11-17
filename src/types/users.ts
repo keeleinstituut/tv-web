@@ -8,7 +8,7 @@ import {
   SortingFunctionType,
 } from 'types/collective'
 
-interface UserDetailsType {
+export interface UserDetailsType {
   created_at?: string
   updated_at?: string
   forename?: string

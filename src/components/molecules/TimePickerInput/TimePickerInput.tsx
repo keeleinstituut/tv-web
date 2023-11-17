@@ -1,4 +1,4 @@
-import { useState, forwardRef, useRef } from 'react'
+import { useState, forwardRef, useRef, FC, SVGProps } from 'react'
 import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
@@ -6,6 +6,7 @@ import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import { useClickAway } from 'ahooks'
 import { withMask } from 'use-mask-input'
 import classNames from 'classnames'
+import { Icon } from '../Button/Button'
 
 import classes from './classes.module.scss'
 
@@ -18,6 +19,7 @@ type SharedTimeProps = {
   name: string
   errorZIndex?: number
   onChange: (value: string) => void
+  icon?: FC<SVGProps<SVGSVGElement>>
 }
 
 export type TimePickerInputProps = SharedTimeProps & {
@@ -44,6 +46,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
       showSeconds,
       name,
       onChange,
+      icon,
     },
     ref
   ) {
@@ -82,7 +85,8 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             placeholder: '0',
           })}
         />
-        <Clock
+        <Icon
+          icon={icon || Clock}
           className={classNames(
             classes.timeIcon,
             disabled && classes.disabledIcon
@@ -106,6 +110,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       className,
       name,
       errorZIndex,
+      icon,
       setIsModalOpen,
     } = props
 
@@ -177,6 +182,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           showSeconds={showSeconds}
           onChange={onChange}
           ref={ref}
+          icon={icon}
         />
         <div
           className={
