@@ -8,7 +8,7 @@ import { DiscountPercentages } from 'types/vendors'
 import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { map, join, includes } from 'lodash'
+import { map, join, includes, mapValues } from 'lodash'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import {
@@ -23,32 +23,7 @@ const TechnicalSettings: FC = () => {
   const { updateInstitutionDiscounts } = useUpdateInstitutionDiscounts()
 
   const defaultValues = useMemo(
-    () => ({
-      discount_percentage_0_49: String(
-        institutionDiscounts?.discount_percentage_0_49 || '0'
-      ),
-      discount_percentage_50_74: String(
-        institutionDiscounts?.discount_percentage_50_74 || '0'
-      ),
-      discount_percentage_75_84: String(
-        institutionDiscounts?.discount_percentage_75_84 || '0'
-      ),
-      discount_percentage_85_94: String(
-        institutionDiscounts?.discount_percentage_85_94 || '0'
-      ),
-      discount_percentage_95_99: String(
-        institutionDiscounts?.discount_percentage_95_99 || '0'
-      ),
-      discount_percentage_100: String(
-        institutionDiscounts?.discount_percentage_100 || '0'
-      ),
-      discount_percentage_101: String(
-        institutionDiscounts?.discount_percentage_101 || '0'
-      ),
-      discount_percentage_repetitions: String(
-        institutionDiscounts?.discount_percentage_repetitions || '0'
-      ),
-    }),
+    () => mapValues(institutionDiscounts, (value) => String(value) || '0'),
     [institutionDiscounts]
   )
 
