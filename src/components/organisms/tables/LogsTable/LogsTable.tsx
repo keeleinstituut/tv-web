@@ -152,7 +152,6 @@ const LogsTable: FC<LogsTableProps> = ({
         subRowComponent={(row) => <LogsSubRowTable rowData={row.original} />}
         tableSize={TableSizeTypes.S}
         className={classes.dataTable}
-        paginationLabelClassName={classes.paginationLabel}
         getRowStyles={getRowStyles}
         tableWrapperClassName={classes.tableClassName}
         paginationData={paginationData}

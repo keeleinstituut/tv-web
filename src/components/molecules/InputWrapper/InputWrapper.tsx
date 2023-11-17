@@ -16,7 +16,6 @@ export type InputWrapperProps = {
   wrapperClass?: string
   errorClass?: string
   errorZIndex?: number
-  paginationLabelClassName?: string
 }
 
 const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
@@ -30,7 +29,6 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
       wrapperClass,
       errorClass,
       errorZIndex,
-      paginationLabelClassName,
     },
     ref
   ) {
@@ -38,12 +36,7 @@ const InputWrapper = forwardRef<HTMLInputElement, InputWrapperProps>(
     return (
       <Field
         name={name}
-        className={classNames(
-          className,
-          paginationLabelClassName
-            ? paginationLabelClassName
-            : classes.container
-        )}
+        className={classNames(className, classes.container)}
         ref={wrapperRef}
       >
         <Label

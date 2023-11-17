@@ -1,4 +1,4 @@
-import { toString } from 'lodash'
+import { range, slice, toString } from 'lodash'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -20,7 +20,6 @@ type PaginationProps<TData> = {
   hidePaginationSelectionInput?: boolean
   table: Table<PaginationState> | Table<TData>
   pageSizeOptions?: { label: string; value: string }[]
-  paginationLabelClassName?: string
 }
 
 const TablePagination = <TData,>({
@@ -28,7 +27,6 @@ const TablePagination = <TData,>({
   table,
   pageSizeOptions,
   hidePaginationSelectionInput = false,
-  paginationLabelClassName,
 }: PaginationProps<TData>) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -51,6 +49,22 @@ const TablePagination = <TData,>({
   ]
 
   const amountOfPages = getPageCount()
+  const pagesArray = range(0, amountOfPages)
+  const pageNumber = getState().pagination.pageIndex
+
+  const startPage =
+    pageNumber < 3 //first three pages
+      ? 0
+      : pageNumber > amountOfPages - 3 // last three pages
+      ? amountOfPages - 5
+      : pageNumber - 2
+
+  const endPage =
+    pageNumber < 3
+      ? 5
+      : pageNumber > amountOfPages - 3
+      ? amountOfPages
+      : pageNumber + 3
 
   if (hidden) return null
 
@@ -76,7 +90,7 @@ const TablePagination = <TData,>({
 
         <nav role="navigation" aria-label={t('label.pagination_navigation')}>
           <ul className={classes.links}>
-            {[...Array(getPageCount())].map((_, index) => (
+            {slice(pagesArray, startPage, endPage).map((index) => (
               <li
                 key={index}
                 className={classNames(classes.list, {
@@ -128,7 +142,6 @@ const TablePagination = <TData,>({
         placeholder={toString(getState().pagination.pageSize)}
         dropdownSize={DropdownSizeTypes.XS}
         selectIcon={SelectArrow}
-        paginationLabelClassName={paginationLabelClassName}
       />
     </div>
   )

@@ -64,7 +64,6 @@ type DataTableProps<TData extends RowData> = {
   getSubRows?: (originalRow: TData, index: number) => TData[] | undefined
   hidePagination?: boolean
   hidePaginationSelectionInput?: boolean
-  paginationLabelClassName?: string
   getRowStyles?: (row: {
     parentId?: string
     getIsExpanded?: () => boolean
@@ -103,7 +102,6 @@ const DataTable = <TData,>(
     hidePaginationSelectionInput = false,
     tableWrapperClassName,
     hidden,
-    paginationLabelClassName,
     getRowStyles,
     columnOrder,
     subRowComponent,
@@ -209,7 +207,6 @@ const DataTable = <TData,>(
           table={table}
           pageSizeOptions={pageSizeOptions}
           hidePaginationSelectionInput={hidePaginationSelectionInput}
-          paginationLabelClassName={paginationLabelClassName}
         />
       </Container>
     </TableContext.Provider>

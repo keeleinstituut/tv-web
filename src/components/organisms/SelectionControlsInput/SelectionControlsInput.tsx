@@ -49,7 +49,6 @@ export interface SelectionControlsInputProps {
   loading?: boolean
   onEndReached?: () => void
   hidden?: boolean
-  paginationLabelClassName?: string
 }
 
 const SelectionControlsInput = forwardRef<
@@ -73,7 +72,6 @@ const SelectionControlsInput = forwardRef<
     selectIcon,
     usePortal,
     hidden,
-    paginationLabelClassName,
     ...rest
   },
   ref
@@ -158,7 +156,6 @@ const SelectionControlsInput = forwardRef<
       ref={shouldUsePortal ? wrapperRef : clickAwayInputRef}
       errorClass={classes.selectionsError}
       errorZIndex={errorZIndex}
-      paginationLabelClassName={paginationLabelClassName}
     >
       <BaseButton
         className={classNames(
