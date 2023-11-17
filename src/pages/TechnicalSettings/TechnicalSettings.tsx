@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
@@ -8,7 +8,7 @@ import { DiscountPercentages } from 'types/vendors'
 import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { map, join, includes } from 'lodash'
+import { map, join, includes, mapValues } from 'lodash'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
 import {
@@ -22,6 +22,11 @@ const TechnicalSettings: FC = () => {
   const { institutionDiscounts } = useFetchInstitutionDiscounts()
   const { updateInstitutionDiscounts } = useUpdateInstitutionDiscounts()
 
+  const defaultValues = useMemo(
+    () => mapValues(institutionDiscounts, (value) => String(value) || '0'),
+    [institutionDiscounts]
+  )
+
   const {
     control,
     handleSubmit,
@@ -30,7 +35,8 @@ const TechnicalSettings: FC = () => {
     setError,
   } = useForm<DiscountPercentages>({
     mode: 'onTouched',
-    values: institutionDiscounts,
+    reValidateMode: 'onSubmit',
+    values: defaultValues,
   })
 
   const onSubmit: SubmitHandler<DiscountPercentages> = useCallback(
@@ -56,9 +62,13 @@ const TechnicalSettings: FC = () => {
     [updateInstitutionDiscounts, t, setError]
   )
 
+  const resetForm = useCallback(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
+
   useEffect(() => {
-    reset()
-  }, [isSubmitSuccessful, reset])
+    resetForm()
+  }, [isSubmitSuccessful, resetForm])
 
   return (
     <>
@@ -69,7 +79,8 @@ const TechnicalSettings: FC = () => {
 
       <DiscountForm
         className={classes.formContainer}
-        isFormDisabled={!isDirty || !isValid}
+        isSubmitDisabled={!isDirty || !isValid}
+        isResetDisabled={!isDirty || isSubmitting}
         addFormButtons={true}
         handleOnSubmit={handleSubmit(onSubmit)}
         isEditDisabled={
@@ -77,7 +88,7 @@ const TechnicalSettings: FC = () => {
         }
         control={control}
         isSubmitting={isSubmitting}
-        resetForm={reset}
+        resetForm={resetForm}
       />
     </>
   )

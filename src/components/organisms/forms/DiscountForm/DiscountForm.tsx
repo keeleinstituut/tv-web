@@ -6,23 +6,17 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { Control } from 'react-hook-form/dist/types'
-import {
-  DiscountPercentageNames,
-  DiscountPercentages,
-  Vendor,
-} from 'types/vendors'
+import { DiscountPercentageNames, DiscountPercentages } from 'types/vendors'
 import useValidators from 'hooks/useValidators'
 import { map } from 'lodash'
 import FormButtons from 'components/organisms/FormButtons/FormButtons'
 import classNames from 'classnames'
 
 interface DiscountFormProps {
-  vendor?: Vendor
-  isFormDisabled: boolean
+  isSubmitDisabled?: boolean
+  isResetDisabled?: boolean
   control: Control<DiscountPercentages, unknown>
   isSubmitting: boolean
-  isDirty?: boolean
-  isValid?: boolean
   resetForm: () => void
   addFormButtons?: boolean
   submitButtonName?: string
@@ -34,7 +28,8 @@ interface DiscountFormProps {
 const DiscountForm: FC<DiscountFormProps> = ({
   control,
   isSubmitting,
-  isFormDisabled,
+  isSubmitDisabled = false,
+  isResetDisabled = false,
   resetForm,
   addFormButtons = false,
   submitButtonName,
@@ -96,10 +91,10 @@ const DiscountForm: FC<DiscountFormProps> = ({
       />
       <FormButtons
         loading={isSubmitting}
-        isResetDisabled={false}
-        isSubmitDisabled={isFormDisabled}
+        isResetDisabled={isResetDisabled}
+        isSubmitDisabled={isSubmitDisabled}
         resetForm={resetForm}
-        hidden={!addFormButtons}
+        hidden={isEditDisabled ? true : !addFormButtons}
         className={classes.formButtons}
         formId="PricePercentage"
         submitButtonName={submitButtonName || t('button.confirm_changes')}
