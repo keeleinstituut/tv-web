@@ -22,6 +22,7 @@ import { SelectVendorModalProps } from './SelectVendorModal/SelectVendorModal'
 import { AddVolumeModalProps } from './AddVolumeModal/AddVolumeModal'
 import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
 import { ConfirmDeleteVolumeModalProps } from './ConfirmDeleteVolumeModal/ConfirmDeleteVolumeModal'
+import { ConfirmRejectProjectModalProps } from './ConfirmRejectProjectModal/ConfirmRejectProjectModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -75,6 +76,10 @@ const ConfirmCancelOrderModal = lazy(
   () => import('./ConfirmCancelOrderModal/ConfirmCancelOrderModal')
 )
 
+const ConfirmRejectProjectModal = lazy(
+  () => import('./ConfirmRejectProjectModal/ConfirmRejectProjectModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -94,6 +99,7 @@ export enum ModalTypes {
   ConfirmDeleteVolume = 'confirmDeleteVolume',
   AddTranslationMemories = 'addTranslationMemories',
   ConfirmCancelOrder = 'confirmCancelOrder',
+  ConfirmRejectProject = 'confirmRejectProject',
 }
 
 // Add other modal props types here as well
@@ -114,6 +120,7 @@ type ModalPropTypes =
   | Omit<AddVolumeModalProps, 'closeModal'>
   | Omit<VolumeChangeModalProps, 'closeModal'>
   | Omit<ConfirmDeleteVolumeModalProps, 'closeModal'>
+  | Omit<ConfirmRejectProjectModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -134,6 +141,7 @@ const MODALS = {
   [ModalTypes.ConfirmDeleteVolume]: ConfirmDeleteVolumeModal,
   [ModalTypes.AddTranslationMemories]: AddTranslationMemoriesModal,
   [ModalTypes.ConfirmCancelOrder]: ConfirmCancelOrderModal,
+  [ModalTypes.ConfirmRejectProject]: ConfirmRejectProjectModal,
 }
 
 interface RefType {

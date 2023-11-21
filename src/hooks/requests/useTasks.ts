@@ -1,29 +1,26 @@
 import {
-  ListOrder,
-  DetailedOrder,
-  OrdersResponse,
-  OrdersPayloadType,
-  OrderResponse,
-} from 'types/orders'
-import { useMutation, useQuery } from '@tanstack/react-query'
+  CompleteTaskPayload,
+  ListTask,
+  TaskResponse,
+  TasksPayloadType,
+  TasksResponse,
+} from 'types/tasks'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 
-export const useFetchtasks = () => {
+export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
   const {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<any>()
+  } = useFilters<TasksPayloadType>(initialFilters)
 
-  const { isLoading, isError, data } = useQuery<any>({
-    queryKey: ['tasks'],
-    queryFn: () => {
-      return apiClient.get(`${endpoints.TASKS}`)
-    },
+  const { isLoading, isError, data } = useQuery<TasksResponse>({
+    queryKey: ['tasks', filters],
+    queryFn: () => apiClient.get(endpoints.TASKS, filters),
     keepPreviousData: true,
   })
 
@@ -40,51 +37,29 @@ export const useFetchtasks = () => {
   }
 }
 
-// export const useFetchOrder = ({ orderId }: { orderId?: string }) => {
-//   const { isLoading, isError, data } = useQuery<OrderResponse>({
-//     queryKey: ['orders', orderId],
-//     queryFn: () => {
-//       return apiClient.get(`${endpoints.PROJECTS}/${orderId}`)
-//     },
-//   })
+export const useCompleteTask = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
 
-//   const { data: order } = data || {}
+  const { mutateAsync: completeTask, isLoading } = useMutation({
+    mutationKey: ['tasks', id],
+    mutationFn: (payload: CompleteTaskPayload) =>
+      apiClient.post(`${endpoints.TASKS}/${id}`, payload),
+    onSuccess: ({ data }: { data: ListTask }) => {
+      // TODO: we should update task with this id + we should also update the parent project and possibly sub-project
+      // Will see if we get all the relevant info in the response
+      queryClient.setQueryData(['tasks', id], (oldData?: TaskResponse) => {
+        const { data: previousData } = oldData || {}
 
-//   return {
-//     isLoading,
-//     isError,
-//     order,
-//   }
-// }
-
-// export const useFetchSubProject = ({ id }: { id?: string }) => {
-//   const { isLoading, isError, data } = useQuery<any>({
-//     queryKey: ['subproject', id],
-//     queryFn: () => {
-//       return apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`)
-//     },
-//   })
-
-//   const { data: subProject } = data || {}
-
-//   return {
-//     isLoading,
-//     isError,
-//     subProject,
-//   }
-// }
-
-// export const useSubProjectSendToCat = ({ id }: any) => {
-//   const { mutateAsync: sendToCat, isLoading } = useMutation({
-//     mutationKey: ['roles'],
-//     mutationFn: (payload: any) =>
-//       apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/send-to-cat`, {
-//         ...payload,
-//       }),
-//   })
-
-//   return {
-//     sendToCat,
-//     isLoading,
-//   }
-// }
+        const newData = {
+          ...(previousData || {}),
+          ...data,
+        }
+        return { data: newData }
+      })
+    },
+  })
+  return {
+    completeTask,
+    isLoading,
+  }
+}

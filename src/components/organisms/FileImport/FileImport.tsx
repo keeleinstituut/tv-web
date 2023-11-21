@@ -91,6 +91,7 @@ interface AddedFilesListProps {
   files: File[]
   handleDelete: (index: number) => void
   error?: string
+  listContainerClassName?: string
 }
 
 // TODO: might use a different custom component instead of this
@@ -99,6 +100,7 @@ const AddedFilesList: FC<AddedFilesListProps> = ({
   files,
   handleDelete,
   error,
+  listContainerClassName,
 }) => {
   const { t } = useTranslation()
   const formatFileSize = (sizeInBytes: number): string => {
@@ -123,12 +125,13 @@ const AddedFilesList: FC<AddedFilesListProps> = ({
       <ul
         className={classNames(
           files?.length && classes.fileContainer,
-          files?.length && error && classes.errorContainer
+          files?.length && error && classes.errorContainer,
+          listContainerClassName
         )}
       >
         {map(files, (file, index) => {
           return (
-            <Fragment key={index}>
+            <li key={index}>
               <File className={classes.icon} />
               <div className={classes.fileDetailsContainer}>
                 <p className={classes.fileName}>{file?.name}</p>
@@ -140,7 +143,7 @@ const AddedFilesList: FC<AddedFilesListProps> = ({
               >
                 <Delete />
               </BaseButton>
-            </Fragment>
+            </li>
           )
         })}
       </ul>
@@ -161,6 +164,7 @@ interface SharedImportProps {
   files?: File[]
   hidden?: boolean
   size?: SizeTypes
+  listContainerClassName?: string
 }
 
 type SingleSelectProps = {
@@ -190,6 +194,7 @@ const FileImport: FC<FileImportProps> = ({
   files,
   hidden,
   size,
+  listContainerClassName,
   ...rest
 }) => {
   const [localFiles, setFiles] = useState<File[]>(files || [])
@@ -249,11 +254,7 @@ const FileImport: FC<FileImportProps> = ({
 
   return (
     <div
-      className={classNames(
-        classes.fileImportContainer,
-        isFilesListHidden && classes.tableStyleContainer,
-        className
-      )}
+      className={classNames(classes.fileImportContainer, className)}
       ref={parentRef}
     >
       <DragAndDrop
@@ -262,7 +263,6 @@ const FileImport: FC<FileImportProps> = ({
         setDragAndDropOpen={setDragAndDropOpen}
         setFiles={handleSetFiles}
         allowMultiple={allowMultiple}
-        isFilesListHidden={isFilesListHidden}
         {...rest}
       />
       <Button
@@ -290,6 +290,7 @@ const FileImport: FC<FileImportProps> = ({
         handleDelete={handleDelete}
         files={localFiles}
         hidden={isFilesListHidden}
+        listContainerClassName={listContainerClassName}
       />
       <p
         hidden={!error || !localFiles?.length}

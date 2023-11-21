@@ -1,0 +1,45 @@
+@import 'styles/variables';
+
+.formWrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: spacing(5);
+
+  .selection,
+  .fileImportButton {
+    width: fit-content
+  }
+
+  .fileImportButton {
+    .filesList {
+      flex-direction: column;
+      align-items:flex-start;
+    }
+  }
+
+  .selection {
+    label {
+      width: 140px;
+      text-align: end;
+    }
+  }
+
+  .commentInput {
+    grid-column: 1/3;
+    display: flex;
+
+    label {
+      width: 140px;
+      text-align: end;
+    }
+
+    > div {
+      flex: 1;
+    }
+
+    textarea {
+      width: 100%;
+    }
+  }
+
+}
