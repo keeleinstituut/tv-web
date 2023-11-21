@@ -51,7 +51,7 @@ export interface DiscountPercentagesAmounts {
   discount_percentage_repetitions_amount: number
 }
 
-// Don't change the order values since there is logic
+// Don't change the order of the values since there is logic
 // in the code base reliant on the order
 export enum DiscountPercentagesAmountNames {
   'DP_0_49_amount' = 'discount_percentage_0_49_amount',
@@ -64,7 +64,7 @@ export enum DiscountPercentagesAmountNames {
   'DP_101_amount' = 'discount_percentage_101_amount',
 }
 
-// Don't change the order values since there is logic
+// Don't change the order of the values since there is logic
 // in the code base reliant on the order
 export enum DiscountPercentageNames {
   'DP_0_49' = 'discount_percentage_0_49',

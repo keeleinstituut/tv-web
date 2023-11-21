@@ -1,5 +1,5 @@
 import { PaginationFunctionType, SortingFunctionType } from './collective'
-import { ProjectTypeConfig } from './orders'
+import { ProjectTypeConfig } from 'types/projects'
 
 export enum ClassifierValueType {
   Language = 'LANGUAGE',

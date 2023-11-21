@@ -19,14 +19,14 @@ export interface ConfirmDeleteVolumeModalProps
   callback?: () => void
   assignmentId?: string
   volumeId?: string
-  subOrderId?: string
+  subProjectId?: string
 }
 
 const ConfirmDeleteVolumeModal: FC<ConfirmDeleteVolumeModalProps> = ({
   newVolumes,
   callback,
   assignmentId,
-  subOrderId,
+  subProjectId,
   closeModal,
   volumeId,
   ...rest
@@ -34,7 +34,7 @@ const ConfirmDeleteVolumeModal: FC<ConfirmDeleteVolumeModalProps> = ({
   const { t } = useTranslation()
   const { updateAssignment } = useAssignmentUpdate({ id: assignmentId })
   const { removeAssignmentVolume } = useAssignmentRemoveVolume({
-    subOrderId,
+    subProjectId,
   })
 
   const handleDeleteVolume = useCallback(async () => {

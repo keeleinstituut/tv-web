@@ -12,7 +12,7 @@ import DataTable, {
 import { AssignmentType, CandidateStatus } from 'types/assignments'
 
 import classes from './classes.module.scss'
-import { SubProjectFeatures } from 'types/orders'
+import { SubProjectFeatures } from 'types/projects'
 import { useAssignmentRemoveVendor } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from '../Notification/Notification'

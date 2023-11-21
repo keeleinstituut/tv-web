@@ -16,7 +16,7 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useToggleMtEngine } from 'hooks/requests/useOrders'
+import { useToggleMtEngine } from 'hooks/requests/useProjects'
 
 export enum FeatureTabs {
   Vendors = 'vendor',

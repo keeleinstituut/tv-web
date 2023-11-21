@@ -1,6 +1,5 @@
-import { CatAnalysis } from './orders'
+import { CatAnalysis, CatJob, JobDefinition } from 'types/projects'
 import { DiscountPercentages, Vendor } from './vendors'
-import { CatJob, JobDefinition } from './orders'
 import { VolumeValue } from './volumes'
 
 export enum AssignmentStatus {

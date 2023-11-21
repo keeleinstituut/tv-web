@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo } from 'react'
 import { map, find, pick, values, isEqual } from 'lodash'
-import { ListOrder, SubProjectFeatures } from 'types/orders'
+import { ListProject, SubProjectFeatures } from 'types/projects'
 import { AssignmentPayload, AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import Button, {
@@ -45,8 +45,8 @@ interface AssignmentProps extends AssignmentType {
   catSupported?: boolean
   ext_id?: string
   volumes?: VolumeValue[]
-  subOrderId?: string
-  project: ListOrder
+  subProjectId?: string
+  project: ListProject
 }
 
 interface FormValues {
@@ -62,7 +62,7 @@ const Assignment: FC<AssignmentProps> = ({
   index,
   candidates,
   id,
-  subOrderId,
+  subProjectId,
   assigned_vendor_id,
   assignee,
   job_definition,
@@ -94,8 +94,8 @@ const Assignment: FC<AssignmentProps> = ({
   // There is a high possibility that the field names will be unified for source and destination language
   // We are also missing assignment task id at the moment
 
-  // TODO: check if all other tasks/features in this subOrder have been finished
-  // Possibly we can determine this my checking the status of the suborder, or by going over all assignments
+  // TODO: check if all other tasks/features in this subProject have been finished
+  // Possibly we can determine this my checking the status of the subProject, or by going over all assignments
   const allPreviousTasksFinished = false
 
   const vendorDiscounts = useMemo(
@@ -299,7 +299,7 @@ const Assignment: FC<AssignmentProps> = ({
         vendorName,
         value: volumes,
         assignmentId: id,
-        subOrderId,
+        subProjectId,
         // onlyDisplay: !isEditable,
       },
       {
@@ -325,7 +325,7 @@ const Assignment: FC<AssignmentProps> = ({
       vendorDiscounts,
       vendorName,
       volumes,
-      subOrderId,
+      subProjectId,
       isVendorView,
     ]
   )
@@ -353,7 +353,7 @@ const Assignment: FC<AssignmentProps> = ({
       <div>
         <h3 className={classes.titleContainer}>
           {t('task.vendor_title', { number: index + 1 })}(
-          {t(`orders.features.${feature}`)})
+          {t(`projects.features.${feature}`)})
           <BaseButton
             className={classes.deleteButton}
             hidden={index === 0}
