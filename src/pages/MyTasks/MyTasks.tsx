@@ -6,7 +6,7 @@ import { TabStyle } from 'components/molecules/Tab/Tab'
 import { useTranslation } from 'react-i18next'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
-import { TaskData } from 'types/tasks'
+import { ListTask } from 'types/tasks'
 import {
   FilterFunctionType,
   PaginationFunctionType,
@@ -17,7 +17,7 @@ import {
 import classes from './classes.module.scss'
 
 export interface TasksTableProps {
-  tasks: TaskData[]
+  tasks: ListTask[]
   paginationData?: ResponseMetaTypes
   handleFilterChange: (value?: FilterFunctionType) => void
   handleSortingChange: (value?: SortingFunctionType) => void

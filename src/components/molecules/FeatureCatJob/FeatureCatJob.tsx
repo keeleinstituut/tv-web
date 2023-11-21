@@ -23,7 +23,7 @@ interface FeatureCatJobProps<TFormValues extends FieldValues>
   cat_jobs?: CatJob[]
   control: Control<TFormValues>
   isEditable?: boolean
-  ext_id?: string
+  ext_id: string
 }
 interface TableRow {
   selected: string

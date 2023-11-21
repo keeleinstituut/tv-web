@@ -4,25 +4,10 @@ import {
   ResponseMetaTypes,
   SortingFunctionType,
 } from './collective'
-import { SourceFile } from './orders'
-import { VolumeValue } from './volumes'
+import { ListOrder, SourceFile } from './orders'
 import { AssignmentType } from 'types/assignments'
 
-export type GetTasksPayload = PaginationFunctionType &
-  SortingFunctionType & {
-    type_classifier_value_id?: string
-    assigned_to_me?: number
-    lang_pair?: { src?: string; dst?: string }[]
-  }
-
-type TaskLinkTypes = {
-  first: string
-  last: string
-  prev: string
-  next: string
-}
-
-type SubProject = {
+export type SubProject = {
   id: string
   ext_id: string
   project_id: string
@@ -30,34 +15,10 @@ type SubProject = {
   created_at: string
   updated_at: string
   price: number
-  // project: DetailedOrder
+  project: ListOrder
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
   cat_files: SourceFile[]
-}
-
-type Assignment = {
-  id: string
-  sub_project_id: string
-  ext_id: string
-  deadline_at: number
-  comments: string
-  assignee_comments: string
-  created_at: string
-  updated_at: string
-  subProject: SubProject
-  volumes?: VolumeValue[]
-}
-
-export type TaskData = {
-  id: string
-  assignment?: Assignment
-}
-
-export type TasksDataType = {
-  data: TaskData[]
-  links?: TaskLinkTypes
-  meta?: ResponseMetaTypes
 }
 
 export enum TaskType {
@@ -71,7 +32,7 @@ export type TasksPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     project_id?: string
     type_classifier_value_id?: string
-    assigned_to_me?: boolean
+    assigned_to_me?: number
     lang_pair?: { src?: string; dst?: string }[]
     task_type?: TaskType
   }

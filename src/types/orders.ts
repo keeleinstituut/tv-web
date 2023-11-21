@@ -201,16 +201,14 @@ export interface ListOrder {
   tags: Tag[]
   price: string
   event_start_at?: string
-}
-
-export interface DetailedProject extends ListOrder {
   help_files: SourceFile[] // might be different type
   source_files: SourceFile[]
   client_institution_user: UserType
   manager_institution_user?: UserType
   translation_domain_classifier_value: ClassifierValue
+}
+export interface DetailedProject extends ListOrder {
   // TODO: unclear type for following:
-  event_start_at?: string
   accepted_at?: string
   corrected_at?: string
   rejected_at?: string

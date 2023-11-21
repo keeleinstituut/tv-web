@@ -2,6 +2,7 @@ import { CatAnalysis } from './orders'
 import { DiscountPercentages, Vendor } from './vendors'
 import { CatJob, JobDefinition } from './orders'
 import { VolumeValue } from './volumes'
+import { SubProject } from './tasks'
 
 export enum AssignmentStatus {
   New = 'NEW',
@@ -34,6 +35,10 @@ export interface AssignmentType {
   deadline_at?: string
   event_start_at?: string
   created_at: string
+  ext_id: string
+  assignee_comments: string
+  updated_at: string
+  subProject: SubProject
   // TODO: no idea whether it will be skill_ids or sth else
   skill_id: string
   // TODO: no idea if this field will come from here

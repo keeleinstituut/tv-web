@@ -23,17 +23,16 @@ import { ClassifierValueType } from 'types/classifierValues'
 import { FilterFunctionType } from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
 import { TasksTableProps } from 'pages/MyTasks/MyTasks'
-import { useFetchTasks } from 'hooks/requests/useTasks'
 
 import classes from './classes.module.scss'
 
 type TaskTableRow = {
-  ext_id: { id: string; ext_id: string | undefined }
-  reference_number: string | undefined
+  ext_id: { id: string; ext_id: string }
+  reference_number: string
   language_directions: string
-  cost: number | undefined
+  cost: number
   type: string | undefined
-  deadline_at: string | undefined
+  deadline_at: string
   status?: OrderStatus
 }
 

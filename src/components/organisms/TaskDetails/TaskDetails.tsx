@@ -10,7 +10,7 @@ import TaskContent from 'components/organisms/TaskContent/TaskContent'
 import Button from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-import { DetailedOrder, SourceFile } from 'types/orders'
+import { ListOrder, SourceFile } from 'types/orders'
 import { LanguageClassifierValue } from 'types/classifierValues'
 
 import classes from './classes.module.scss'
@@ -20,7 +20,7 @@ interface TaskProps {
   isLoading: boolean
   source_language_classifier_value?: LanguageClassifierValue
   destination_language_classifier_value?: LanguageClassifierValue
-  project?: DetailedOrder
+  project?: ListOrder
   cat_files?: SourceFile[]
   source_files: SourceFile[]
   sub_project_id: string

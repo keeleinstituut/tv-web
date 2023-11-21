@@ -9,7 +9,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { GetTasksPayload, TasksDataType } from 'types/tasks'
 
 export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
   const {
@@ -39,7 +38,7 @@ export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
 }
 
 export const useFetchTask = ({ id }: { id?: string }) => {
-  const { isLoading, isError, data } = useQuery<TasksDataType>({
+  const { isLoading, isError, data } = useQuery<TasksResponse>({
     queryKey: ['task', id],
     queryFn: () => apiClient.get(`${endpoints.TASKS}/${id}`),
     keepPreviousData: true,
@@ -55,15 +54,15 @@ export const useFetchTask = ({ id }: { id?: string }) => {
   }
 }
 
-export const useFetchHistoryTasks = (initialFilters?: GetTasksPayload) => {
+export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<GetTasksPayload>(initialFilters)
+  } = useFilters<TasksPayloadType>(initialFilters)
 
-  const { isLoading, isError, data } = useQuery<TasksDataType>({
+  const { isLoading, isError, data } = useQuery<TasksResponse>({
     queryKey: ['tasks', filters],
     queryFn: () => apiClient.get(endpoints.HISTORY_TASKS, filters),
     keepPreviousData: true,
