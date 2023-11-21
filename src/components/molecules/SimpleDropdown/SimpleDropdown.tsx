@@ -47,9 +47,13 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
           // transform: 'translateY(-100%)',
         }}
       >
-        {map(options, ({ label, ...rest }) => (
+        {map(options, ({ label, ...rest }, index) => (
           <li key={label}>
-            <Button appearance={AppearanceTypes.Text} {...rest}>
+            <Button
+              appearance={AppearanceTypes.Text}
+              {...rest}
+              autoFocus={index === 0 && isOpen}
+            >
               {label}
             </Button>
           </li>
@@ -60,9 +64,13 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
   }
   return (
     <ul className={classes.content}>
-      {map(options, ({ label, ...rest }) => (
+      {map(options, ({ label, ...rest }, index) => (
         <li key={label}>
-          <Button appearance={AppearanceTypes.Text} {...rest}>
+          <Button
+            appearance={AppearanceTypes.Text}
+            {...rest}
+            autoFocus={index === 0 && isOpen}
+          >
             {label}
           </Button>
         </li>

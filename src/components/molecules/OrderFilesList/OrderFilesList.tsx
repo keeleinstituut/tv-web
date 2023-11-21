@@ -33,6 +33,7 @@ import SmallTooltip from '../SmallTooltip/SmallTooltip'
 import { SourceFile } from 'types/orders'
 import { useHandleFiles } from 'hooks/requests/useAssignments'
 import { HelperFileTypes } from 'types/classifierValues'
+
 interface OrderFilesListProps<TFormValues extends FieldValues> {
   title: string
   typeOptions?: DropDownOptions[]
@@ -161,7 +162,10 @@ const OrderFilesList = <TFormValues extends FieldValues>({
       header: '',
       cell: ({ getValue }) => {
         return (
-          <BaseButton onClick={() => handleDelete(getValue())}>
+          <BaseButton
+            onClick={() => handleDelete(getValue())}
+            className={classes.deleteButton}
+          >
             <Delete />
           </BaseButton>
         )
@@ -191,7 +195,10 @@ const OrderFilesList = <TFormValues extends FieldValues>({
             <Fragment key={fileUrl || index}>
               <label>{file.name}</label>
               <span>{updatedAt}</span>
-              <BaseButton onClick={() => handleDownload(index)}>
+              <BaseButton
+                onClick={() => handleDownload(index)}
+                className={classes.button}
+              >
                 <DownloadFilled />
               </BaseButton>
             </Fragment>

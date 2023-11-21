@@ -245,7 +245,12 @@ const FinalFilesList = <TFormValues extends FieldValues>({
             <Fragment key={fileUrl || index}>
               <label>{file.name}</label>
               <span>{updatedAt}</span>
-              <BaseButton href={fileUrl} target="_blank" download={file.name}>
+              <BaseButton
+                href={fileUrl}
+                target="_blank"
+                download={file.name}
+                className={classNames(classes.button)}
+              >
                 <DownloadFilled />
               </BaseButton>
             </Fragment>

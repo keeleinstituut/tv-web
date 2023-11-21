@@ -117,6 +117,7 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
               appearance={AppearanceTypes.Primary}
               size={SizeTypes.S}
               className={classes.dropButton}
+              autoFocus
             >
               {t('button.choose')}
             </Button>

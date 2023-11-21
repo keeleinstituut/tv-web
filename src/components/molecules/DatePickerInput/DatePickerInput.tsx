@@ -57,14 +57,14 @@ const DatePickerComponent = ({
     <>
       <DatePicker
         id={id || name}
-        selected={value ? new Date(splittedDayValue) : null}
+        selected={value ? new Date(splittedDayValue) : undefined}
         dateFormat={'dd.MM.yyyy'}
         locale="et-EE"
         placeholderText={placeholder}
         aria-label={ariaLabel}
         disabled={disabled}
-        minDate={minDate ? minDate : null}
-        maxDate={maxDate ? maxDate : null}
+        minDate={minDate ? minDate : undefined}
+        maxDate={maxDate ? maxDate : undefined}
         {...rest}
         onChange={handleDateChange}
       />

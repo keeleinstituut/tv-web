@@ -35,7 +35,6 @@ export enum InputFileTypes {
   Html = 'text/html',
   Xml = 'application/xml',
   TextXml = 'text/xml',
-  Tmx = 'application/xml',
   Other = 'application/octet-stream',
 }
 
@@ -82,9 +81,8 @@ export const acceptFileExtensions = {
   [InputFileTypes.Jpeg]: ['.jpg', '.jpeg'],
   [InputFileTypes.Text]: ['.txt'],
   [InputFileTypes.Html]: ['.html', '.htm'],
-  [InputFileTypes.Xml]: ['.xml'],
+  [InputFileTypes.Xml]: ['.xml', '.tmx'],
   [InputFileTypes.TextXml]: ['.xml'],
-  [InputFileTypes.Tmx]: ['.tmx'],
   [InputFileTypes.Other]: ['.akt', '.xst'],
 }
 
@@ -136,7 +134,10 @@ const AddedFilesList: FC<AddedFilesListProps> = ({
                 <p className={classes.fileName}>{file?.name}</p>
                 <p className={classes.fileSize}>{formatFileSize(file?.size)}</p>
               </div>
-              <BaseButton onClick={() => handleDelete(index)}>
+              <BaseButton
+                onClick={() => handleDelete(index)}
+                className={classes.button}
+              >
                 <Delete />
               </BaseButton>
             </Fragment>
