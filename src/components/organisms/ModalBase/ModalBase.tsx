@@ -85,7 +85,11 @@ const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
       >
         {buttons &&
           map(buttons, (button, index) => (
-            <Button key={index} {...button}>
+            <Button
+              key={index}
+              {...button}
+              autoFocus={button.autoFocus || index === 0}
+            >
               {button?.children}
             </Button>
           ))}
@@ -147,6 +151,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
               appearance={AppearanceTypes.Secondary}
               onClick={handleClose}
               className={classes.topButton}
+              autoFocus={open && topButton}
             >
               {t('button.cancel')}
             </Button>
