@@ -10,7 +10,7 @@ import { useFetchOrder } from 'hooks/requests/useOrders'
 interface idTypes {
   vendorId?: string
   userId?: string
-  orderId?: string
+  projectId?: string
   memoryId?: string
 }
 
@@ -19,11 +19,11 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
 }: BreadcrumbComponentProps<ParamKey>) => {
   const { t } = useTranslation()
 
-  const { vendorId, userId, orderId, memoryId }: idTypes = match?.params
+  const { vendorId, userId, projectId, memoryId }: idTypes = match?.params
 
   const { vendor } = useVendorFetch({ id: vendorId })
   const { user } = useFetchUser({ id: userId })
-  const { order } = useFetchOrder({ id: orderId })
+  const { order } = useFetchOrder({ id: projectId })
   const { translationMemory } = useFetchTranslationMemory({
     id: memoryId,
   })
@@ -38,7 +38,7 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
       case !!userId: {
         return { name: `${user?.user.forename} ${user?.user.surname}` }
       }
-      case !!orderId: {
+      case !!projectId: {
         return { name: `${t('orders.order')} [${order?.ext_id}]` }
       }
       case !!memoryId: {
@@ -51,7 +51,7 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
   }, [
     vendorId,
     userId,
-    orderId,
+    projectId,
     memoryId,
     vendor?.institution_user?.user.forename,
     vendor?.institution_user?.user.surname,

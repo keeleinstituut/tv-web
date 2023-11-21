@@ -1,12 +1,12 @@
 import { FC } from 'react'
 import { includes, filter, isEmpty, map } from 'lodash'
-import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
+import { SubProjectDetail, SubProjectFeatures } from 'types/orders'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
 import MainFeature from './MainFeature/MainFeature'
 import { ClassifierValue } from 'types/classifierValues'
 
 interface FeatureProps {
-  subOrder?: SubOrderDetail
+  subOrder?: SubProjectDetail
   feature?: SubProjectFeatures
   index?: number
   projectDomain?: ClassifierValue

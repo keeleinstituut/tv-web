@@ -1,14 +1,14 @@
 import {
-  OrdersResponse,
-  OrdersPayloadType,
-  OrderResponse,
+  ProjectsResponse,
+  ProjectsPayloadType,
+  ProjectResponse,
   NewOrderPayload,
-  SubOrdersResponse,
-  SubOrderResponse,
-  SubOrdersPayloadType,
+  SubProjectsResponse,
+  SubProjectResponse,
+  SubProjectsPayloadType,
   CatProjectPayload,
   CatToolJobsResponse,
-  SubOrderPayload,
+  SubProjectPayload,
   CatJobsPayload,
   SplitOrderPayload,
   CancelOrderPayload,
@@ -20,15 +20,15 @@ import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
 
-export const useFetchOrders = (initialFilters?: OrdersPayloadType) => {
+export const useFetchOrders = (initialFilters?: ProjectsPayloadType) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<OrdersPayloadType>(initialFilters)
+  } = useFilters<ProjectsPayloadType>(initialFilters)
 
-  const { isLoading, isError, data } = useQuery<OrdersResponse>({
+  const { isLoading, isError, data } = useQuery<ProjectsResponse>({
     queryKey: ['orders', filters],
     queryFn: () => apiClient.get(`${endpoints.PROJECTS}`, filters),
     keepPreviousData: true,
@@ -48,7 +48,8 @@ export const useFetchOrders = (initialFilters?: OrdersPayloadType) => {
 }
 
 export const useFetchOrder = ({ id }: { id?: string }) => {
-  const { isLoading, isError, data } = useQuery<OrderResponse>({
+  const { isLoading, isError, data } = useQuery<ProjectResponse>({
+    enabled: !!id,
     queryKey: ['orders', id],
     queryFn: () => apiClient.get(`${endpoints.PROJECTS}/${id}`),
   })
@@ -94,7 +95,7 @@ export const useCreateOrder = () => {
       return apiClient.post(endpoints.PROJECTS, formData)
     },
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(['orders'], (oldData?: OrdersResponse) => {
+      queryClient.setQueryData(['orders'], (oldData?: ProjectsResponse) => {
         const { data: previousData, meta } = oldData || {}
         if (!previousData || !meta) return oldData
         const newData = [...previousData, data]
@@ -116,7 +117,7 @@ export const useUpdateOrder = ({ id }: { id?: string }) => {
     mutationFn: (payload: Partial<NewOrderPayload>) =>
       apiClient.put(`${endpoints.PROJECTS}/${id}`, payload),
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(['orders', id], (oldData?: OrdersResponse) => {
+      queryClient.setQueryData(['orders', id], (oldData?: ProjectsResponse) => {
         const { data: previousData } = oldData || {}
 
         if (!previousData) return oldData
@@ -136,12 +137,12 @@ export const useUpdateSubOrder = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateSubOrder, isLoading } = useMutation({
     mutationKey: ['suborders', id],
-    mutationFn: (payload: SubOrderPayload) =>
+    mutationFn: (payload: SubProjectPayload) =>
       apiClient.put(`${endpoints.SUB_PROJECTS}/${id}`, payload),
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['suborders', id],
-        (oldData?: SubOrderResponse) => {
+        (oldData?: SubProjectResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
           const newData = { ...previousData, ...data }
@@ -158,7 +159,7 @@ export const useUpdateSubOrder = ({ id }: { id?: string }) => {
 }
 
 export const useFetchSubOrder = ({ id }: { id?: string }) => {
-  const { isLoading, isError, data } = useQuery<SubOrderResponse>({
+  const { isLoading, isError, data } = useQuery<SubProjectResponse>({
     queryKey: ['suborders', id],
     queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`),
   })
@@ -179,9 +180,9 @@ export const useFetchSubOrders = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<SubOrdersPayloadType>()
+  } = useFilters<SubProjectsPayloadType>()
 
-  const { isLoading, isError, data } = useQuery<SubOrdersResponse>({
+  const { isLoading, isError, data } = useQuery<SubProjectsResponse>({
     queryKey: ['suborders', filters],
     queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}`, filters),
     keepPreviousData: true,
@@ -383,6 +384,40 @@ export const useCancelOrder = ({ id }: { id?: string }) => {
 
   return {
     cancelOrder,
+    isLoading,
+  }
+}
+
+export const useAcceptProject = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: acceptProject, isLoading } = useMutation({
+    mutationKey: ['orders', id],
+    mutationFn: async () =>
+      apiClient.post(`${endpoints.PROJECTS}/${id}/accept`),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['orders', id] })
+    },
+  })
+
+  return {
+    acceptProject,
+    isLoading,
+  }
+}
+
+export const useRejectProject = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: rejectProject, isLoading } = useMutation({
+    mutationKey: ['orders', id],
+    mutationFn: async () =>
+      apiClient.post(`${endpoints.PROJECTS}/${id}/reject`),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['orders', id] })
+    },
+  })
+
+  return {
+    rejectProject,
     isLoading,
   }
 }

@@ -31,9 +31,7 @@ interface ObjectWithChildren {
   children?: object[]
 }
 
-interface CsvObjectStructure<ValuesType> {
-  [key: string]: ValuesType
-}
+type CsvObjectStructure<ValuesType> = Record<string, ValuesType>
 interface DownloadFileProps {
   data: BlobPart
   fileName: string

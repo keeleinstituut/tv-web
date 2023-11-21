@@ -1,6 +1,6 @@
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
 import { filter, find, isEmpty, map, uniq, compact } from 'lodash'
-import { DetailedOrder, SourceFile } from 'types/orders'
+import { DetailedProject, SourceFile } from 'types/orders'
 
 import dayjs from 'dayjs'
 import { ClassifierValue, HelperFileTypes } from 'types/classifierValues'
@@ -14,7 +14,7 @@ export const getOrderDefaultValues = ({
 }: {
   institutionUserId: string
   isNew: boolean
-  order?: DetailedOrder
+  order?: DetailedProject
   defaultDomainClassifier?: ClassifierValue
   defaultProjectTypeClassifier?: ClassifierValue
 }) => {

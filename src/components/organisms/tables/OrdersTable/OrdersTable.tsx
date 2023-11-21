@@ -272,7 +272,7 @@ const OrdersTable: FC = () => {
           diff < 0 &&
           !includes(
             [
-              OrderStatus.Forwarded,
+              OrderStatus.SubmittedToClient,
               OrderStatus.Accepted,
               OrderStatus.Cancelled,
               OrderStatus.Corrected,

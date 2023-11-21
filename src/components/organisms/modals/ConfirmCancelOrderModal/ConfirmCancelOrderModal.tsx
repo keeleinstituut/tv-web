@@ -16,7 +16,7 @@ import classes from './classes.module.scss'
 
 export interface ConfirmCancelOrderModalProps
   extends ConfirmationModalBaseProps {
-  orderId?: string
+  projectId?: string
 }
 
 interface FormValues {
@@ -25,12 +25,11 @@ interface FormValues {
 }
 
 const ConfirmCancelOrderModal: FC<ConfirmCancelOrderModalProps> = ({
-  orderId,
+  projectId,
   isModalOpen,
 }) => {
   const { t } = useTranslation()
-  // const { cat_analysis } = useCatAnalysisFetch({ subOrderId })
-  const { cancelOrder, isLoading } = useCancelOrder({ id: orderId })
+  const { cancelOrder, isLoading } = useCancelOrder({ id: projectId })
 
   const {
     control,
@@ -89,8 +88,8 @@ const ConfirmCancelOrderModal: FC<ConfirmCancelOrderModalProps> = ({
       proceedButtonDisabled={!isValid}
       cancelButtonContent={t('button.quit_alt')}
       proceedButtonContent={t('button.confirm_cancellation')}
-      title={t('modal.confirm_order_cancellation_title')}
-      helperText={t('modal.confirm_order_cancellation_helper')}
+      title={t('modal.confirm_project_cancellation_title')}
+      helperText={t('modal.confirm_project_cancellation_helper')}
       proceedButtonLoading={isLoading}
       closeModal={closeModal}
       modalContent={<DynamicForm control={control} fields={formFields} />}
