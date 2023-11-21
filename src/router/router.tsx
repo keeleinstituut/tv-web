@@ -125,7 +125,7 @@ export const protectedRoutes: FullRouteObject[] = [
         ],
       },
       {
-        path: ':orderId',
+        path: ':projectId',
         element: <OrderPage />,
         privileges: [Privileges.ViewPersonalProject],
         breadcrumb: BreadcrumbsTitle,

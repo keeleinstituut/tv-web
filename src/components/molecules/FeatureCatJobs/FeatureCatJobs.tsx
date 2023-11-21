@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo, useState } from 'react'
 import { map, reduce, isEmpty, flatMap } from 'lodash'
-import { CatJob, SubOrderDetail } from 'types/orders'
+import { CatJob, SubProjectDetail } from 'types/orders'
 import FeatureCatJob from 'components/molecules/FeatureCatJob/FeatureCatJob'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -12,7 +12,7 @@ import { useLinkCatToolJobs } from 'hooks/requests/useAssignments'
 
 import classes from './classes.module.scss'
 
-type FeatureCatJobsProps = Pick<SubOrderDetail, 'assignments'> & {
+type FeatureCatJobsProps = Pick<SubProjectDetail, 'assignments'> & {
   hidden?: boolean
   subOrderCatJobs: CatJob[]
 }

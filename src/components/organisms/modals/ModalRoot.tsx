@@ -22,6 +22,7 @@ import { SelectVendorModalProps } from './SelectVendorModal/SelectVendorModal'
 import { AddVolumeModalProps } from './AddVolumeModal/AddVolumeModal'
 import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
 import { ConfirmDeleteVolumeModalProps } from './ConfirmDeleteVolumeModal/ConfirmDeleteVolumeModal'
+import { ConfirmRejectProjectModalProps } from './ConfirmRejectProjectModal/ConfirmRejectProjectModal'
 import { ConfirmDeleteSourceFileModalProps } from './ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal'
 
 const InstitutionSelectModal = lazy(
@@ -76,6 +77,10 @@ const ConfirmCancelOrderModal = lazy(
   () => import('./ConfirmCancelOrderModal/ConfirmCancelOrderModal')
 )
 
+const ConfirmRejectProjectModal = lazy(
+  () => import('./ConfirmRejectProjectModal/ConfirmRejectProjectModal')
+)
+
 const ConfirmDeleteSourceFileModal = lazy(
   () => import('./ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal')
 )
@@ -99,6 +104,7 @@ export enum ModalTypes {
   ConfirmDeleteVolume = 'confirmDeleteVolume',
   AddTranslationMemories = 'addTranslationMemories',
   ConfirmCancelOrder = 'confirmCancelOrder',
+  ConfirmRejectProject = 'confirmRejectProject',
   ConfirmDeleteSourceFile = 'confirmDeleteSourceFile',
 }
 
@@ -120,6 +126,7 @@ type ModalPropTypes =
   | Omit<AddVolumeModalProps, 'closeModal'>
   | Omit<VolumeChangeModalProps, 'closeModal'>
   | Omit<ConfirmDeleteVolumeModalProps, 'closeModal'>
+  | Omit<ConfirmRejectProjectModalProps, 'closeModal'>
   | Omit<ConfirmDeleteSourceFileModalProps, 'closeModal'>
 
 const MODALS = {
@@ -141,6 +148,7 @@ const MODALS = {
   [ModalTypes.ConfirmDeleteVolume]: ConfirmDeleteVolumeModal,
   [ModalTypes.AddTranslationMemories]: AddTranslationMemoriesModal,
   [ModalTypes.ConfirmCancelOrder]: ConfirmCancelOrderModal,
+  [ModalTypes.ConfirmRejectProject]: ConfirmRejectProjectModal,
   [ModalTypes.ConfirmDeleteSourceFile]: ConfirmDeleteSourceFileModal,
 }
 
