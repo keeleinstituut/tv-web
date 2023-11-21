@@ -84,10 +84,6 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     control,
   })
 
-  console.log('value', value)
-
-  console.log('useWatch({control})', useWatch({ control }))
-
   const { addFiles, deleteFile, downloadFile } = useHandleFiles({
     reference_object_id: subOrderId,
     reference_object_type: 'subproject',

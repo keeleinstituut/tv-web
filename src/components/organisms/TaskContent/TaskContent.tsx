@@ -14,7 +14,6 @@ import { isEmpty, map, reduce, split } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import { useForm, useWatch } from 'react-hook-form'
 import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
-import { getLocalDateOjectFromUtcDateString } from 'helpers'
 import { CatJob, SourceFile } from 'types/orders'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
@@ -25,13 +24,10 @@ import { ReactComponent as Eye } from 'assets/icons/eye.svg'
 import classes from './classes.module.scss'
 
 interface FormValues {
-  deadline_at: { date?: string; time?: string }
-  cat_files: SourceFile[]
   my_source_files: SourceFile[]
   my_final_files: SourceFile[]
   cat_jobs: CatJob[]
   write_to_memory: { [key: string]: boolean }
-  shared_with_client: boolean[]
   my_notes?: string
 }
 
@@ -76,10 +72,6 @@ const TaskContent: FC<TaskContentProps> = ({
 
   const defaultValues = useMemo(
     () => ({
-      deadline_at: deadline_at
-        ? getLocalDateOjectFromUtcDateString(deadline_at)
-        : { date: '', time: '' },
-      cat_files,
       source_files: map(source_files, (file) => ({
         ...file,
         isChecked: false,
@@ -87,10 +79,8 @@ const TaskContent: FC<TaskContentProps> = ({
       final_files,
       cat_jobs: catToolJobs,
       write_to_memory: {},
-      // TODO: no idea about these fields
-      shared_with_client: [],
     }),
-    [catToolJobs, deadline_at, final_files, cat_files, source_files]
+    [catToolJobs, final_files, source_files]
   )
 
   console.log('defaultValues', defaultValues)
@@ -101,7 +91,6 @@ const TaskContent: FC<TaskContentProps> = ({
   })
 
   console.log('useWatch({control})1', useWatch({ control }))
-  // setValue('my_source_files', source_files)
 
   useEffect(() => {
     if (subOrderTmKeys) {
@@ -270,7 +259,7 @@ const TaskContent: FC<TaskContentProps> = ({
           isEditable
         />
         <FinalFilesList
-          name="final_files"
+          name="my_final_files"
           title={t('my_tasks.my_ready_files')}
           control={control}
           isEditable

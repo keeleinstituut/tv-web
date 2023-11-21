@@ -155,6 +155,7 @@ const TasksTable: FC<TasksTableProps> = ({
     columnHelper.accessor('cost', {
       header: () => t('label.cost'),
       footer: (info) => info.column.id,
+      cell: ({ getValue }) => (getValue() ? `${getValue()}€` : '-'),
     }),
     columnHelper.accessor('type', {
       header: () => t('label.type'),
