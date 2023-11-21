@@ -387,37 +387,3 @@ export const useCancelOrder = ({ id }: { id?: string }) => {
     isLoading,
   }
 }
-
-export const useAcceptProject = ({ id }: { id?: string }) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: acceptProject, isLoading } = useMutation({
-    mutationKey: ['orders', id],
-    mutationFn: async () =>
-      apiClient.post(`${endpoints.PROJECTS}/${id}/accept`),
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['orders', id] })
-    },
-  })
-
-  return {
-    acceptProject,
-    isLoading,
-  }
-}
-
-export const useRejectProject = ({ id }: { id?: string }) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: rejectProject, isLoading } = useMutation({
-    mutationKey: ['orders', id],
-    mutationFn: async () =>
-      apiClient.post(`${endpoints.PROJECTS}/${id}/reject`),
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['orders', id] })
-    },
-  })
-
-  return {
-    rejectProject,
-    isLoading,
-  }
-}
