@@ -20,7 +20,7 @@ import {
   CatProjectPayload,
   CatProjectStatus,
   SourceFile,
-  SubOrderDetail,
+  SubProjectDetail,
 } from 'types/orders'
 import {
   ModalTypes,
@@ -53,7 +53,7 @@ dayjs.extend(utc)
 // TODO: this is WIP code for suborder view
 
 type GeneralInformationFeatureProps = Pick<
-  SubOrderDetail,
+  SubProjectDetail,
   | 'cat_files'
   | 'cat_jobs'
   | 'cat_analyzis'
@@ -133,7 +133,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     defaultValues: defaultValues,
   })
 
-  const newFinalFiles = watch('final_files')
+  // const newFinalFiles = watch('final_files')
 
   useEffect(() => {
     if (subOrderTmKeys) {
@@ -210,7 +210,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const handleChangeDeadline = useCallback(
     (value: { date: string; time: string }) => {
-      console.warn('deadline changed')
       const { date, time } = value
       const dateTime = dayjs.utc(`${date} ${time}`, 'DD/MM/YYYY HH:mm')
       const formattedDateTime = dateTime.format('YYYY-MM-DDTHH:mm:ss[Z]')

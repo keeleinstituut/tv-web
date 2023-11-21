@@ -48,8 +48,6 @@ export const useInstitutionUpdate = ({ id }: { id?: string | undefined }) => {
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['institutions', id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: InstitutionsDataType) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
@@ -90,8 +88,6 @@ export const useUpdateInstitutionDiscounts = () => {
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['institution-discounts'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: InstitutionDiscountsDataType) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData

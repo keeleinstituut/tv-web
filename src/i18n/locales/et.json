@@ -120,7 +120,9 @@
     "chunk_amount_old": "Segmentide arv",
     "id": "ID",
     "owner": "Omanik",
-    "cancellation_reason": "Tühistamise põhjus"
+    "cancellation_reason": "Tühistamise põhjus",
+    "pick_sub_project": "Vali alamtellimus",
+    "extra_information": "Lisainfo"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -142,7 +144,8 @@
     "pick_days": "Vali päev(ad)",
     "search_by_id": "Otsi tellimuse ID siit...",
     "comment": "Siin on mingi info",
-    "cancellation_reason": "Placeholder"
+    "cancellation_reason": "Placeholder",
+    "extra_information": "Täpsustada mis on valesti..."
   },
   "button": {
     "login": "Logi sisse",
@@ -218,7 +221,10 @@
     "mark_as_finished": "Märgi lõpetatuks",
     "send_to_previous_task": "Saada eelmisesse ülesandesse",
     "send_sub_project_to_vendors": "Saada alamtellimus teostajatele",
-    "confirm_cancellation": "Jah, tühista"
+    "confirm_cancellation": "Jah, tühista",
+    "accept_project": "Võta vastu",
+    "reject_project": "Lükka tagasi",
+    "change_files": "Muuda faile"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -387,8 +393,10 @@
     "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
     "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?",
     "set_working_times_title": "Tööaegade määramine",
-    "confirm_order_cancellation_title": "Kas oled kindel, et soovid tellimuse tühistada?",
-    "confirm_order_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus."
+    "confirm_project_cancellation_title": "Kas oled kindel, et soovid tellimuse tühistada?",
+    "confirm_project_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus.",
+    "confirm_project_rejection_title": "Kas oled kindel, et soovid tellimuse tagasi lükata?",
+    "confirm_project_rejection_helper": "Vali üks või mitu alamtellimust, mille soovid tagasi lükata.\n Palun lisa lühike tagasilükkamise põhjendus ja kirjelda, mida on vaja teisiti teha."
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -496,7 +504,9 @@
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
     "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
     "split_assignment": "Ülesanne jagatud",
-    "order_cancelled": "Tellimus edukalt tühistatud"
+    "order_cancelled": "Tellimus edukalt tühistatud",
+    "project_accepted": "Tellimus vastuvõetud",
+    "project_rejected": "Tellimus tagasi lükatud"
   },
   "notification": {
     "announcement": "Teade",
