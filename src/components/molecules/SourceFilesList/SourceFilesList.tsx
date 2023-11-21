@@ -125,7 +125,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         )
 
         showModal(ModalTypes.ConfirmDeleteSourceFile, {
-          subOrderId: subOrderId,
+          subProjectId: subOrderId,
           sourceFileId: typedValue[index].id,
           callback: () => onChange(newSourceFiles),
         })

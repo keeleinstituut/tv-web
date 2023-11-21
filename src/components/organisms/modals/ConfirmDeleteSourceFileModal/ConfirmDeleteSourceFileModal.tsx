@@ -12,19 +12,19 @@ export interface ConfirmDeleteSourceFileModalProps
   extends ConfirmationModalBaseProps {
   callback?: () => void
   sourceFileId?: string
-  subOrderId?: string
+  subProjectId?: string
 }
 
 const ConfirmDeleteSourceFileModal: FC<ConfirmDeleteSourceFileModalProps> = ({
   callback,
   closeModal,
   sourceFileId,
-  subOrderId,
+  subProjectId,
   ...rest
 }) => {
   const { t } = useTranslation()
   const { deleteFile } = useHandleFiles({
-    reference_object_id: subOrderId ?? '',
+    reference_object_id: subProjectId ?? '',
     reference_object_type: 'subproject',
     collection: 'source',
   })
