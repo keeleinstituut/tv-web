@@ -12,7 +12,7 @@ import {
 import {
   PotentialFilePayload,
   SourceFile,
-  SubOrderResponse,
+  SubProjectResponse,
 } from 'types/orders'
 import { VolumeValue } from 'types/volumes'
 
@@ -28,7 +28,7 @@ export const useAssignmentAddVendor = ({ id }: { id?: string }) => {
       const { sub_project_id } = data
       queryClient.setQueryData(
         ['suborders', sub_project_id],
-        (oldData?: SubOrderResponse) => {
+        (oldData?: SubProjectResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
 
@@ -68,7 +68,7 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
       const { sub_project_id } = data
       queryClient.setQueryData(
         ['suborders', sub_project_id],
-        (oldData?: SubOrderResponse) => {
+        (oldData?: SubProjectResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
 

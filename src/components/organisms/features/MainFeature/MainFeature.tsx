@@ -1,5 +1,5 @@
 import { FC, useCallback, useState } from 'react'
-import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
+import { SubProjectDetail, SubProjectFeatures } from 'types/orders'
 import { Root } from '@radix-ui/react-form'
 import { useTranslation } from 'react-i18next'
 import FeatureHeaderSection, {
@@ -14,7 +14,7 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { get } from 'lodash'
 
 type MainFeatureProps = Pick<
-  SubOrderDetail,
+  SubProjectDetail,
   | 'assignments'
   | 'source_language_classifier_value_id'
   | 'destination_language_classifier_value_id'

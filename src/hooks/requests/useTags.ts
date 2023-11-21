@@ -49,29 +49,24 @@ export const useBulkCreate = () => {
       apiClient.post(endpoints.CREATE_TAGS, payload),
 
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['tags'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: TagsResponse) => {
-          const { data: previousData } = oldData || {}
+      queryClient.setQueryData(['tags'], (oldData?: TagsResponse) => {
+        const { data: previousData } = oldData || {}
 
-          if (!previousData) return oldData
-          const newlyAddedTags = filter(
-            data,
-            ({ id }) => !find(previousData, { id })
-          )
-          const newData = [
-            ...map(previousData, (tag) => {
-              const newTag = find(data, { id: tag.id })
-              return newTag || tag
-            }),
-            ...newlyAddedTags,
-          ]
+        if (!previousData) return oldData
+        const newlyAddedTags = filter(
+          data,
+          ({ id }) => !find(previousData, { id })
+        )
+        const newData = [
+          ...map(previousData, (tag) => {
+            const newTag = find(data, { id: tag.id })
+            return newTag || tag
+          }),
+          ...newlyAddedTags,
+        ]
 
-          return { data: newData }
-        }
-      )
+        return { data: newData }
+      })
     },
   })
 
@@ -89,24 +84,16 @@ export const useBulkUpdate = ({ type }: { type: TagTypes }) => {
       apiClient.post(endpoints.UPDATE_TAGS, payload),
 
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['tags'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: TagsResponse) => {
-          const { data: previousData } = oldData || {}
+      queryClient.setQueryData(['tags'], (oldData?: TagsResponse) => {
+        const { data: previousData } = oldData || {}
 
-          if (!previousData) return oldData
+        if (!previousData) return oldData
 
-          const otherTypeData = filter(
-            previousData,
-            (data) => data.type !== type
-          )
-          const newData = [...otherTypeData, ...data]
+        const otherTypeData = filter(previousData, (data) => data.type !== type)
+        const newData = [...otherTypeData, ...data]
 
-          return { data: newData }
-        }
-      )
+        return { data: newData }
+      })
     },
   })
 

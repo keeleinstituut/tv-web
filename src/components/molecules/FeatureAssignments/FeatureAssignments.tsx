@@ -1,11 +1,11 @@
 import { FC } from 'react'
 import { map } from 'lodash'
-import { SubOrderDetail } from 'types/orders'
+import { SubProjectDetail } from 'types/orders'
 import Assignment from 'components/molecules/Assignment/Assignment'
 import { VolumeValue } from 'types/volumes'
 
 type FeatureAssignmentsProps = Pick<
-  SubOrderDetail,
+  SubProjectDetail,
   | 'assignments'
   | 'source_language_classifier_value_id'
   | 'destination_language_classifier_value_id'

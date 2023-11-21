@@ -52,19 +52,14 @@ export const useUpdateRole = ({ id }: { id?: string }) => {
         ...payload,
       }),
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['roles'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: RolesResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const roleIndex = findIndex(previousData, { id })
-          const newArray = [...previousData]
-          newArray[roleIndex] = data
-          return { data: newArray }
-        }
-      )
+      queryClient.setQueryData(['roles'], (oldData?: RolesResponse) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const roleIndex = findIndex(previousData, { id })
+        const newArray = [...previousData]
+        newArray[roleIndex] = data
+        return { data: newArray }
+      })
     },
   })
 
@@ -85,17 +80,12 @@ export const useCreateRole = () => {
         ...payload,
       }),
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['roles'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: RolesResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = [...previousData, data]
-          return { data: newData }
-        }
-      )
+      queryClient.setQueryData(['roles'], (oldData?: RolesResponse) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = [...previousData, data]
+        return { data: newData }
+      })
     },
   })
 
@@ -110,20 +100,15 @@ export const useDeleteRole = ({ id }: { id?: string }) => {
     mutationKey: ['roles', id],
     mutationFn: () => apiClient.delete(`${endpoints.ROLES}/${id}`),
     onSuccess: () => {
-      queryClient.setQueryData(
-        ['roles'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: RolesResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const deletedData = filter(
-            previousData,
-            ({ id: previousId }) => previousId !== id
-          )
-          return { data: deletedData }
-        }
-      )
+      queryClient.setQueryData(['roles'], (oldData?: RolesResponse) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const deletedData = filter(
+          previousData,
+          ({ id: previousId }) => previousId !== id
+        )
+        return { data: deletedData }
+      })
     },
   })
 

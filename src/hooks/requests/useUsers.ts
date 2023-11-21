@@ -118,17 +118,12 @@ export const useUpdateUser = ({ id }: { id?: string }) => {
       })
     },
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['users', id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: UsersDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = { ...previousData, ...data }
-          return { data: newData }
-        }
-      )
+      queryClient.setQueryData(['users', id], (oldData?: UsersDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
     },
   })
 
@@ -209,8 +204,6 @@ export const useArchiveUser = ({
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['users', institution_user_id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: UsersDataType) => {
           const { data: previousData } = oldData || {}
 
@@ -251,8 +244,6 @@ export const useDeactivateUser = ({
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['users', institution_user_id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: UsersDataType) => {
           const { data: previousData } = oldData || {}
 
@@ -288,8 +279,6 @@ export const useActivateUser = ({
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['users', institution_user_id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: UsersDataType) => {
           const { data: previousData } = oldData || {}
 

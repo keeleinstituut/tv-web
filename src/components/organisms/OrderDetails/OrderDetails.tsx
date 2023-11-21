@@ -13,7 +13,7 @@ import { useCreateOrder, useUpdateOrder } from 'hooks/requests/useOrders'
 import { join, map, includes, isEmpty, pick, keys, compact, find } from 'lodash'
 import { getUtcDateStringFromLocalDateObject } from 'helpers'
 import {
-  DetailedOrder,
+  DetailedProject,
   NewOrderPayload,
   SourceFile,
   OrderStatus,
@@ -123,7 +123,7 @@ interface FormValues {
 
 interface OrderDetailsProps {
   mode?: OrderDetailModes
-  order?: DetailedOrder
+  order?: DetailedProject
 }
 
 const OrderDetails: FC<OrderDetailsProps> = ({ mode, order }) => {
