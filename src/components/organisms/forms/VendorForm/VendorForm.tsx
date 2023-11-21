@@ -67,14 +67,15 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       comment,
       company_name,
       tags: map(tags, 'id'),
-      discount_percentage_0_49: discount_percentage_0_49 || '0',
-      discount_percentage_50_74: discount_percentage_50_74 || '0',
-      discount_percentage_75_84: discount_percentage_75_84 || '0',
-      discount_percentage_85_94: discount_percentage_85_94 || '0',
-      discount_percentage_95_99: discount_percentage_95_99 || '0',
-      discount_percentage_100: discount_percentage_100 || '0',
-      discount_percentage_101: discount_percentage_101 || '0',
-      discount_percentage_repetitions: discount_percentage_repetitions || '0',
+      discount_percentage_0_49: String(discount_percentage_0_49) || '0',
+      discount_percentage_50_74: String(discount_percentage_50_74) || '0',
+      discount_percentage_75_84: String(discount_percentage_75_84) || '0',
+      discount_percentage_85_94: String(discount_percentage_85_94) || '0',
+      discount_percentage_95_99: String(discount_percentage_95_99) || '0',
+      discount_percentage_100: String(discount_percentage_100) || '0',
+      discount_percentage_101: String(discount_percentage_101) || '0',
+      discount_percentage_repetitions:
+        String(discount_percentage_repetitions) || '0',
     }),
     [
       company_name,
@@ -102,6 +103,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
     formState: { isSubmitting, isDirty, isValid },
     setError,
   } = useForm<FormValues>({
+    mode: 'onTouched',
     reValidateMode: 'onSubmit',
     defaultValues,
   })
@@ -113,7 +115,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
     }
   })
 
-  const isFormDisabled = !includes(userPrivileges, Privileges.EditVendorDb)
+  const isEditDisabled = !includes(userPrivileges, Privileges.EditVendorDb)
 
   const fields: FieldProps<FormValues>[] = [
     {
@@ -150,7 +152,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       inputType: InputTypes.Text,
       ariaLabel: t('label.company_name'),
       placeholder: t('placeholder.write_here'),
-      disabled: isFormDisabled,
+      disabled: isEditDisabled,
       label: `${t('label.company_name')}`,
       name: 'company_name',
       className: classes.inputInternalPosition,
@@ -168,14 +170,14 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       options: tagOptions,
       multiple: true,
       buttons: true,
-      disabled: isFormDisabled,
+      disabled: isEditDisabled,
     },
     {
       inputType: InputTypes.Text,
       isTextarea: true,
       ariaLabel: t('label.comment'),
       placeholder: t('placeholder.write_here'),
-      disabled: isFormDisabled,
+      disabled: isEditDisabled,
       label: `${t('label.comment')}`,
       name: 'comment',
       type: 'comment',
@@ -241,13 +243,10 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
 
           <DiscountForm
             {...{
-              isFormDisabled,
               control,
               isSubmitting,
-              isDirty,
-              isValid,
               resetForm,
-              vendor,
+              isEditDisabled,
             }}
           />
         </div>

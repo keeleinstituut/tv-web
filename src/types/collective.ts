@@ -1,7 +1,11 @@
-interface LinkTypes {
+export interface LinkTypes {
   url?: string
   label?: string
   active?: boolean
+  first?: string
+  last?: string
+  prev?: string
+  next?: string
 }
 
 export interface ResponseMetaTypes {
@@ -29,7 +33,7 @@ export interface SortingFunctionType {
 }
 
 export interface PaginationFunctionType {
-  per_page?: 10 | 50 | 100 | number
+  per_page?: 10 | 15 | 50 | 100 | number
   page?: number
   limit?: number
 }

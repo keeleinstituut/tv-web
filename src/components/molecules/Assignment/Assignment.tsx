@@ -7,6 +7,7 @@ import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
+import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 
 import classes from './classes.module.scss'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
@@ -24,7 +25,11 @@ import { VolumeValue } from 'types/volumes'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from '../Notification/Notification'
-import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
+import {
+  useAssignmentUpdate,
+  useDeleteAssignment,
+} from 'hooks/requests/useAssignments'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import {
   getLocalDateOjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
@@ -75,6 +80,9 @@ const Assignment: FC<AssignmentProps> = ({
 }) => {
   const { t } = useTranslation()
   const { updateAssignment, isLoading } = useAssignmentUpdate({ id })
+  const { deleteAssignment, isLoading: isDeletingAssignment } =
+    useDeleteAssignment()
+
   const { vendor } =
     find(candidates, ({ vendor }) => vendor.id === assigned_vendor_id) || {}
   const { deadline_at: projectDeadline, type_classifier_value } = project || {}
@@ -230,6 +238,19 @@ const Assignment: FC<AssignmentProps> = ({
     [defaultValues?.deadline_at, handleUpdateAssignment]
   )
 
+  const handleDeleteAssignment = useCallback(async () => {
+    try {
+      await deleteAssignment(id)
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.assignment_deleted'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [deleteAssignment, id, t])
+
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
       {
@@ -330,10 +351,19 @@ const Assignment: FC<AssignmentProps> = ({
   return (
     <div className={classes.assignmentContainer}>
       <div>
-        <h3>
+        <h3 className={classes.titleContainer}>
           {t('task.vendor_title', { number: index + 1 })}(
           {t(`orders.features.${feature}`)})
+          <BaseButton
+            className={classes.deleteButton}
+            hidden={index === 0}
+            onClick={handleDeleteAssignment}
+            loading={isDeletingAssignment}
+          >
+            <Delete />
+          </BaseButton>
         </h3>
+
         <span className={classes.assignmentId}>{ext_id}</span>
         <Button
           size={SizeTypes.S}

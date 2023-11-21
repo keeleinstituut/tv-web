@@ -255,8 +255,8 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
             control={control}
             inputType={InputTypes.Checkbox}
             disabled={isTaskView}
-            onClick={() =>
-              isEqual(type, TMType.Public)
+            onClick={() => {
+              isEqual(type, TMType.Public) && !getValue()
                 ? showModal(ModalTypes.ConfirmationModal, {
                     handleProceed: () => handleToggleTmWritable(values),
                     title: t('translation_memory.public_confirmation'),
@@ -267,7 +267,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
                     ),
                   })
                 : handleToggleTmWritable(values)
-            }
+            }}
           />
         )
       },

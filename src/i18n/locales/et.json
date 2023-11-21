@@ -167,6 +167,7 @@
     "save_and_send_notifications": "Salvesta ja saada teavitused",
     "save": "Salvesta",
     "add_csv": "Lisa .csv",
+    "download_csv": "Laadi alla .csv",
     "choose": "Vali",
     "close": "Sulge",
     "add_new_csv": "Lisa uus .csv",
@@ -241,7 +242,8 @@
     "cant_split_files": "Teostajatele jagatud faile ei ole võimalik tükkideks jagada",
     "invalid_price": "Lubatud on ainult numbrid ja punkt",
     "name_input_length": "Nime maksimaalne pikkus võib olla kuni 100 tähemärki",
-    "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips"
+    "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips",
+    "search_input_length": "Otsingu sõna peab olema vähemalt 3 tähemärki"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -495,6 +497,7 @@
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",
     "assignment_updated": "Ülesande andmed edukalt uuendatud",
+    "assignment_deleted": "Ülesanne edukalt kustutatud",
     "sent_to_previous_task": "Edukalt eelmisesse ülesandesse saadetud",
     "workflow_started": "Kõikidele teostajatele pakkumus saadetud",
     "machine_translation": "Masintõlke lisamise eelistus muudetud.",
@@ -679,7 +682,56 @@
     "my_source_files": "Minu lähtefailid",
     "my_final_files": "Minu lähtefailid tõlketööriistas",
     "my_ready_files": "Minu valmisfailid",
-    "no_tasks_yet": "Siin ei ole veel midagi." 
+    "no_tasks_yet": "Siin ei ole veel midagi."
+  }, 
+  "logs": {
+    "filters": "Filtrid",
+    "date_range": "Kuupäevavahemik",
+    "time_range": "Ajavahemik",
+    "select_department": "Vali üksus",
+    "select_activity": "Vali tegevus",
+    "hour": "1 tund",
+    "last_24h": "viimased 24h",
+    "last_7days": "viimased 7 päeva",
+    "last_30days": "viimased 30 päeva",
+    "clean_fields": "Puhasta väljad",
+    "filter": "Filtreeri",
+    "user": "Kasutaja",
+    "date_change": "Muudatuse aeg",
+    "activity": "Tegevus",
+    "department_account_id": "Asutuse konto ID",
+    "result": "Tulemus",
+    "event_type": {
+      "LOG_IN": "Sisselogimine",
+      "LOG_OUT": "Väljalogimine",
+      "SELECT_INSTITUTION": "Asutuse valimine",
+      "CREATE_OBJECT": "Objekti loomine",
+      "MODIFY_OBJECT": "Objekti muutmine",
+      "REMOVE_OBJECT": "Objekti kustutamine",
+      "COMPLETE_ASSIGNMENT": "Ülesande lõpetamine",
+      "FINISH_PROJECT": "Tellimuse lõpetamine",
+      "APPROVE_ASSIGNMENT_RESULT": "Ülesande tulemuse vastuvõtmine",
+      "REJECT_ASSIGNMENT_RESULT": "Ülesande tulemuse tagasilükkamine",
+      "REWIND_WORKFLOW": "Töövoo tagasikerimine",
+      "DISPATCH_NOTIFICATION": "Teatise saatmine",
+      "DOWNLOAD_PROJECT_FILE": "Tellimuse faili allalaadmine",
+      "EXPORT_INSTITUTION_USERS": "Asutuse kasutaja allalaadimine",
+      "EXPORT_PROJECTS_REPORT": "Tellimuse aruande allalaadimine",
+      "EXPORT_TRANSLATION_MEMORY": "Tõlkemälu allalaadmine",
+      "IMPORT_TRANSLATION_MEMORY": "Tõlkemälu üleslaadimine",
+      "SEARCH_LOGS": "Logide otsimine",
+      "EXPORT_LOGS": "Logide allalaadimine"
+    },
+    "no_results_found": "Tulemusi ei leitud",
+    "reference": "Objekti id",
+    "changes": "Muudatused",
+    "object_identity_subset": "Muudatuste andmed",
+    "pre_modification_subset": "Enne muutust",
+    "post_modification_subset": "Pärast muutust",
+    "object_data": "Objekti andmed",
+    "object_type": "Object tüüp",
+    "successful": "Edukas",
+    "failed": "Viga"
   },
   "candidate": {
     "status": {

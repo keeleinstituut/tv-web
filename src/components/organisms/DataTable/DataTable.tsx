@@ -29,6 +29,7 @@ import TableHeaderGroup, {
   HeaderGroupFunctions,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { ResponseMetaTypes, PaginationFunctionType } from 'types/collective'
+import { size } from 'lodash'
 
 export enum TableSizeTypes {
   L = 'l',
@@ -60,12 +61,20 @@ type DataTableProps<TData extends RowData> = {
   pageSizeOptions?: { label: string; value: string }[]
   tableWrapperClassName?: string
   hidden?: boolean
-  getSubRows?:
-    | ((originalRow: TData, index: number) => TData[] | undefined)
-    | undefined
+  getSubRows?: (originalRow: TData, index: number) => TData[] | undefined
   hidePagination?: boolean
   hidePaginationSelectionInput?: boolean
+  getRowStyles?: (row: {
+    parentId?: string
+    getIsExpanded?: () => boolean
+    index?: number
+  }) => {
+    background?: string
+    fontSize?: number
+  }
+
   columnOrder?: string[] | undefined
+  subRowComponent?: (row: Row<TData>) => ReactElement
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -93,7 +102,9 @@ const DataTable = <TData,>(
     hidePaginationSelectionInput = false,
     tableWrapperClassName,
     hidden,
+    getRowStyles,
     columnOrder,
+    subRowComponent,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -164,15 +175,28 @@ const DataTable = <TData,>(
             />
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                <tr
+                  key={row.id}
+                  style={
+                    typeof getRowStyles === 'function' ? getRowStyles(row) : {}
+                  }
+                >
+                  {!!row.parentId && subRowComponent ? (
+                    <td colSpan={size(table.getAllColumns())}>
+                      {subRowComponent(row)}
                     </td>
-                  ))}
+                  ) : (
+                    row
+                      .getVisibleCells()
+                      .map((cell) => (
+                        <td key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))
+                  )}
                 </tr>
               ))}
             </tbody>
