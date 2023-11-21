@@ -23,6 +23,7 @@ import { ClassifierValueType } from 'types/classifierValues'
 import { FilterFunctionType } from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
 import { TasksTableProps } from 'pages/MyTasks/MyTasks'
+import { useFetchTasks } from 'hooks/requests/useTasks'
 
 import classes from './classes.module.scss'
 

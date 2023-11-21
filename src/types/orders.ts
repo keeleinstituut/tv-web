@@ -21,7 +21,7 @@ export enum OrderStatus {
   New = 'NEW',
   Registered = 'REGISTERED',
   Cancelled = 'CANCELLED',
-  Forwarded = 'SUBMITTED_TO_CLIENT',
+  SubmittedToClient = 'SUBMITTED_TO_CLIENT',
   Rejected = 'REJECTED',
   Corrected = 'CORRECTED',
   Accepted = 'ACCEPTED',
@@ -137,7 +137,7 @@ export interface CatAnalysis {
   files_names: string[]
 }
 
-export interface ListSubOrderDetail {
+export interface ListSubProjectDetail {
   id: string
   ext_id: string
   project_id: string
@@ -159,7 +159,7 @@ export interface ListSubOrderDetail {
   active_job_definition?: JobDefinition
 }
 
-export interface SubOrderDetail extends ListSubOrderDetail {
+export interface SubProjectDetail extends ListSubProjectDetail {
   // Others from what Markus used:
   cat_project_created: string
   cat_features: SubProjectFeatures[]
@@ -196,14 +196,14 @@ export interface ListOrder {
   deadline_at: string
   created_at: string
   updated_at: string
-  sub_projects: ListSubOrderDetail[]
+  sub_projects: ListSubProjectDetail[]
   status: OrderStatus
   tags: Tag[]
   price: string
   event_start_at?: string
 }
 
-export interface DetailedOrder extends ListOrder {
+export interface DetailedProject extends ListOrder {
   help_files: SourceFile[] // might be different type
   source_files: SourceFile[]
   client_institution_user: UserType
@@ -218,38 +218,38 @@ export interface DetailedOrder extends ListOrder {
   workflow_started?: boolean
 }
 
-export type OrdersPayloadType = PaginationFunctionType &
+export type ProjectsPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
     only_show_personal_projects?: number
     statuses?: string[]
   }
 
-export type SubOrdersPayloadType = PaginationFunctionType &
+export type SubProjectsPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
     only_show_personal_projects?: boolean
     statuses?: string[]
   }
 
-export interface OrdersResponse {
+export interface ProjectsResponse {
   data: ListOrder[]
   meta?: ResponseMetaTypes
 }
-export interface SubOrdersResponse {
-  data: ListSubOrderDetail[]
+export interface SubProjectsResponse {
+  data: ListSubProjectDetail[]
   meta: ResponseMetaTypes
 }
-export interface OrderResponse {
-  data: DetailedOrder
+export interface ProjectResponse {
+  data: DetailedProject
 }
 
-export interface SubOrderResponse {
-  data: SubOrderDetail
+export interface SubProjectResponse {
+  data: SubProjectDetail
 }
 
 // TODO: not sure yet
-export interface SubOrderPayload {
+export interface SubProjectPayload {
   deadline_at?: string
   final_files?: (File | SourceFile)[]
 }

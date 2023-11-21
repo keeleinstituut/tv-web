@@ -18,7 +18,7 @@ import {
 import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
 import { map, flatten, join, omit, pick } from 'lodash'
-import { SubOrdersResponse } from 'types/orders'
+import { SubProjectsResponse } from 'types/orders'
 
 dayjs.extend(customParseFormat)
 
@@ -107,8 +107,6 @@ export const useUpdateTranslationMemory = ({ id }: { id?: string }) => {
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['translationMemories', id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: TranslationMemoryDataType) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
@@ -138,8 +136,6 @@ export const useCreateTranslationMemory = () => {
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['translationMemories'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: TranslationMemoryDataType) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
@@ -229,11 +225,13 @@ export const useFetchTranslationMemorySubOrders = ({ id }: { id?: string }) => {
   const { filters, handlePaginationChange } =
     useFilters<TranslationMemoryFilters>()
 
-  const { isLoading, isError, isFetching, data } = useQuery<SubOrdersResponse>({
-    enabled: !!id,
-    queryKey: ['tm-subOrders', id],
-    queryFn: () => apiClient.get(`${endpoints.TM_SUB_PROJECTS}/${id}`, filters),
-  })
+  const { isLoading, isError, isFetching, data } =
+    useQuery<SubProjectsResponse>({
+      enabled: !!id,
+      queryKey: ['tm-subOrders', id],
+      queryFn: () =>
+        apiClient.get(`${endpoints.TM_SUB_PROJECTS}/${id}`, filters),
+    })
 
   const { meta: paginationData, data: subOrders } = data || {}
 
@@ -275,8 +273,6 @@ export const useUpdateSubOrderTmKeys = () => {
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['subOrder-tm-keys'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: SubOrderTmKeysResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
@@ -309,8 +305,6 @@ export const useToggleTmWritable = () => {
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['tm-writable'],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: SubOrderTmKeysResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData

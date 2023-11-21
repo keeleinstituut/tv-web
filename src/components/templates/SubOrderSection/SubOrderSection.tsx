@@ -16,7 +16,7 @@ import {
   sortBy,
   isEmpty,
 } from 'lodash'
-import { ListSubOrderDetail, SubProjectFeatures } from 'types/orders'
+import { ListSubProjectDetail, SubProjectFeatures } from 'types/orders'
 import { useTranslation } from 'react-i18next'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import classNames from 'classnames'
@@ -31,6 +31,7 @@ import Button from 'components/molecules/Button/Button'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
+import useAuth from 'hooks/useAuth'
 
 // TODO: this is WIP code for suborder view
 
@@ -90,7 +91,7 @@ export const LeftComponent: FC<LeftComponentProps> = ({
 }
 
 type SubOrderProps = Pick<
-  ListSubOrderDetail,
+  ListSubProjectDetail,
   | 'id'
   | 'ext_id'
   | 'source_language_classifier_value'
@@ -117,6 +118,8 @@ const SubOrderSection: FC<SubOrderProps> = ({
   orderId,
 }) => {
   const { t } = useTranslation()
+  // const { userPrivileges } = useAuth()
+  // console.warn('userPrivileges', userPrivileges)
   const [activeTab, setActiveTab] = useState<string | undefined>(
     SubProjectFeatures.GeneralInformation
   )
