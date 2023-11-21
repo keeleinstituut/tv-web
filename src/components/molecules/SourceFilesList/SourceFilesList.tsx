@@ -1,9 +1,9 @@
-import { useCallback, useMemo, Fragment } from 'react'
+import { Fragment, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, filter, isEmpty, includes } from 'lodash'
+import { filter, includes, isEmpty, map } from 'lodash'
 import {
-  InputTypes,
   FormInput,
+  InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
@@ -20,11 +20,12 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { SourceFile, CatProjectStatus } from 'types/orders'
+import { CatProjectStatus, SourceFile } from 'types/orders'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
 import { useHandleFiles } from 'hooks/requests/useAssignments'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 // TODO: very similar to OrderFilesList, these 2 can be unified
 
@@ -75,7 +76,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
-  const { addFiles, deleteFile, downloadFile } = useHandleFiles({
+  const { addFiles, downloadFile } = useHandleFiles({
     reference_object_id: subOrderId,
     reference_object_type: 'subproject',
     collection: 'source',
@@ -118,11 +119,19 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   const handleDelete = useCallback(
     (index?: number) => {
       if (index === 0 || index) {
-        deleteFile(typedValue[index].id)
-        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+        const newSourceFiles = filter(
+          typedValue,
+          (_, fileIndex) => index !== fileIndex
+        )
+
+        showModal(ModalTypes.ConfirmDeleteSourceFile, {
+          subOrderId: subOrderId,
+          sourceFileId: typedValue[index].id,
+          callback: () => onChange(newSourceFiles),
+        })
       }
     },
-    [onChange, deleteFile, typedValue]
+    [onChange, typedValue, subOrderId]
   )
 
   const columns = [

@@ -388,7 +388,8 @@
     "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?",
     "set_working_times_title": "Tööaegade määramine",
     "confirm_order_cancellation_title": "Kas oled kindel, et soovid tellimuse tühistada?",
-    "confirm_order_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus."
+    "confirm_order_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus.",
+    "confirm_delete_source_file": "Kas oled kindel, et soovid faili kustutada?"
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -496,7 +497,8 @@
     "files_sent_to_client": "Valitud valmisfailid on kliendiga jagatud",
     "institution_discounts": "Asutuse hinnakiri on edukalt muudetud",
     "split_assignment": "Ülesanne jagatud",
-    "order_cancelled": "Tellimus edukalt tühistatud"
+    "order_cancelled": "Tellimus edukalt tühistatud",
+    "source_file_deleted": "Lähtefail on edukalt kustutatud"
   },
   "notification": {
     "announcement": "Teade",
