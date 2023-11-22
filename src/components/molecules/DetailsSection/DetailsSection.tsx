@@ -12,7 +12,7 @@ import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
-import { TypesWithStartTime } from 'types/orders'
+import { TypesWithStartTime } from 'types/projects'
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
@@ -28,7 +28,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
 }: DetailsSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { tagsFilters = [] } = useFetchTags({
-    type: TagTypes.Order,
+    type: TagTypes.Project,
   })
   const {
     classifierValuesFilters: projectTypeFilter,
@@ -61,13 +61,15 @@ const DetailsSection = <TFormValues extends FieldValues>({
     () => [
       {
         component: (
-          <h2>{isNew ? t('orders.new_orders') : t('orders.order_details')}</h2>
+          <h2>
+            {isNew ? t('projects.new_projects') : t('projects.project_details')}
+          </h2>
         ),
       },
       {
         inputType: InputTypes.Text,
-        ariaLabel: t('label.order_id'),
-        label: `${t('label.order_id')}`,
+        ariaLabel: t('label.project_id'),
+        label: `${t('label.project_id')}`,
         name: 'ext_id' as Path<TFormValues>,
         className: classes.inputInternalPosition,
         onlyDisplay: true,
@@ -76,9 +78,9 @@ const DetailsSection = <TFormValues extends FieldValues>({
       },
       {
         inputType: InputTypes.Selections,
-        ariaLabel: t('label.order_type'),
+        ariaLabel: t('label.project_type'),
         placeholder: t('placeholder.pick'),
-        label: `${t('label.order_type')}${!isEditable ? '' : '*'}`,
+        label: `${t('label.project_type')}${!isEditable ? '' : '*'}`,
         name: 'type_classifier_value_id' as Path<TFormValues>,
         className: classes.inputSearch,
         options: projectTypeFilter,
@@ -205,9 +207,9 @@ const DetailsSection = <TFormValues extends FieldValues>({
     () => [
       {
         inputType: InputTypes.Selections,
-        ariaLabel: t('label.order_tags'),
+        ariaLabel: t('label.project_tags'),
         placeholder: t('placeholder.pick'),
-        label: t('label.order_tags'),
+        label: t('label.project_tags'),
         name: 'tags' as Path<TFormValues>,
         className: classes.inputSearch,
         options: tagsFilters,

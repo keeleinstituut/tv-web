@@ -11,17 +11,17 @@ import {
   isEqual,
 } from 'lodash'
 import {
-  useUpdateSubOrder,
-  useFetchSubOrderCatToolJobs,
-  useSubOrderSendToCat,
-} from 'hooks/requests/useOrders'
+  useUpdateSubProject,
+  useFetchSubProjectCatToolJobs,
+  useSubProjectSendToCat,
+} from 'hooks/requests/useProjects'
 import {
   CatJob,
   CatProjectPayload,
   CatProjectStatus,
   SourceFile,
   SubProjectDetail,
-} from 'types/orders'
+} from 'types/projects'
 import {
   ModalTypes,
   closeModal,
@@ -42,7 +42,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
+import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
 import { ClassifierValue } from 'types/classifierValues'
 import dayjs from 'dayjs'
@@ -50,7 +50,7 @@ import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(utc)
 
-// TODO: this is WIP code for suborder view
+// TODO: this is WIP code for subProject view
 
 type GeneralInformationFeatureProps = Pick<
   SubProjectDetail,
@@ -65,7 +65,7 @@ type GeneralInformationFeatureProps = Pick<
   | 'project'
 > & {
   catSupported?: boolean
-  subOrderId: string
+  subProjectId: string
   projectDomain?: ClassifierValue
 }
 
@@ -83,7 +83,7 @@ interface FormValues {
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   catSupported,
   cat_jobs,
-  subOrderId,
+  subProjectId,
   cat_analyzis,
   cat_files,
   source_files,
@@ -95,12 +95,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   project,
 }) => {
   const { t } = useTranslation()
-  const { updateSubOrder, isLoading } = useUpdateSubOrder({ id: subOrderId })
-  const { sendToCat, isCatProjectLoading } = useSubOrderSendToCat()
-  const { catToolJobs, catSetupStatus } = useFetchSubOrderCatToolJobs({
-    id: subOrderId,
+  const { updateSubProject, isLoading } = useUpdateSubProject({
+    id: subProjectId,
   })
-  const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
+  const { sendToCat, isCatProjectLoading } = useSubProjectSendToCat()
+  const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
+    id: subProjectId,
+  })
+  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id: subProjectId })
 
   const defaultValues = useMemo(
     () => ({
@@ -136,11 +138,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   // const newFinalFiles = watch('final_files')
 
   useEffect(() => {
-    if (subOrderTmKeys) {
+    if (SubProjectTmKeys) {
       setValue(
         'write_to_memory',
         reduce(
-          subOrderTmKeys,
+          SubProjectTmKeys,
           (result, { key, is_writable }) => {
             if (!key) return result
             return { ...result, [key]: is_writable }
@@ -149,7 +151,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         )
       )
     }
-  }, [setValue, subOrderTmKeys])
+  }, [setValue, SubProjectTmKeys])
 
   // TODO: currently just used this for uploading final_files
   // However not sure if we can use similar logic for all the fields
@@ -159,7 +161,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   //   const attemptFilesUpload = async () => {
   //     try {
   //       // TODO: not sure if this is the correct endpoint and if we can send both the old and new files together like this
-  //       // const { data } = await updateSubOrder({
+  //       // const { data } = await updateSubProject({
   //       //   final_files: newFinalFiles,
   //       // })
   //       // const savedFinalFiles = data?.final_files
@@ -176,14 +178,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   //   if (!isEmpty(newFinalFiles) && !isEqual(newFinalFiles, final_files)) {
   //     attemptFilesUpload()
   //   }
-  // }, [final_files, newFinalFiles, setValue, t, updateSubOrder])
+  // }, [final_files, newFinalFiles, setValue, t, updateSubProject])
 
   const handleSendToCat = useCallback(async () => {
     const sourceFiles = getValues('source_files')
     const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
     const payload: CatProjectPayload = {
-      sub_project_id: subOrderId,
+      sub_project_id: subProjectId,
       source_files_ids: compact(map(selectedSourceFiles, 'id')),
     }
 
@@ -198,7 +200,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [getValues, sendToCat, subOrderId, t])
+  }, [getValues, sendToCat, subProjectId, t])
 
   const openSendToCatModal = useCallback(
     () =>
@@ -215,14 +217,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       const formattedDateTime = dateTime.format('YYYY-MM-DDTHH:mm:ss[Z]')
       // const isDeadLineChanged = !isEqual(formattedDeadline, formattedDateTime)
 
-      updateSubOrder({
+      updateSubProject({
         deadline_at: formattedDateTime,
       })
     },
-    [updateSubOrder]
+    [updateSubProject]
   )
 
-  const subOrderLangPair = useMemo(() => {
+  const subProjectLangPair = useMemo(() => {
     const slangShort = split(source_language_classifier_value?.value, '-')[0]
     const tlangShort = split(
       destination_language_classifier_value?.value,
@@ -259,7 +261,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       <div className={classes.grid}>
         <SourceFilesList
           name="source_files"
-          title={t('orders.source_files')}
+          title={t('projects.source_files')}
           tooltipContent={t('tooltip.source_files_helper')}
           control={control}
           openSendToCatModal={openSendToCatModal}
@@ -267,22 +269,22 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
           isCatProjectLoading={isCatProjectLoading}
           catSetupStatus={catSetupStatus}
-          subOrderId={subOrderId}
+          subProjectId={subProjectId}
           isEditable
           // isEditable={isEditable}
         />
         <FinalFilesList
           name="final_files"
-          title={t('orders.ready_files_from_vendors')}
+          title={t('projects.ready_files_from_vendors')}
           // className={classes.filesSection}
           control={control}
           isEditable
           isLoading={isLoading}
-          subOrderId={subOrderId}
+          subProjectId={subProjectId}
           // isEditable={isEditable}
         />
         <CatJobsTable
-          subOrderId={subOrderId}
+          subProjectId={subProjectId}
           className={classes.catJobs}
           hidden={!catSupported || isEmpty(catToolJobs)}
           cat_jobs={catToolJobs}
@@ -300,9 +302,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           hidden={!catSupported}
           control={control}
           isEditable
-          subOrderId={subOrderId}
-          subOrderTmKeys={subOrderTmKeys}
-          subOrderLangPair={subOrderLangPair}
+          subProjectId={subProjectId}
+          SubProjectTmKeys={SubProjectTmKeys}
+          subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}
         />
       </div>

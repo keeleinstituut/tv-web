@@ -22,6 +22,7 @@ import { SelectVendorModalProps } from './SelectVendorModal/SelectVendorModal'
 import { AddVolumeModalProps } from './AddVolumeModal/AddVolumeModal'
 import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
 import { ConfirmDeleteVolumeModalProps } from './ConfirmDeleteVolumeModal/ConfirmDeleteVolumeModal'
+import { ConfirmCancelProjectModalProps } from './ConfirmCancelProjectModal/ConfirmCancelProjectModal'
 import { ConfirmRejectProjectModalProps } from './ConfirmRejectProjectModal/ConfirmRejectProjectModal'
 
 const InstitutionSelectModal = lazy(
@@ -72,8 +73,8 @@ const AddTranslationMemoriesModal = lazy(
   () => import('./AddTranslationMemoriesModal/AddTranslationMemoriesModal')
 )
 
-const ConfirmCancelOrderModal = lazy(
-  () => import('./ConfirmCancelOrderModal/ConfirmCancelOrderModal')
+const ConfirmCancelProjectModal = lazy(
+  () => import('./ConfirmCancelProjectModal/ConfirmCancelProjectModal')
 )
 
 const ConfirmRejectProjectModal = lazy(
@@ -98,7 +99,7 @@ export enum ModalTypes {
   VolumeChange = 'volumeChange',
   ConfirmDeleteVolume = 'confirmDeleteVolume',
   AddTranslationMemories = 'addTranslationMemories',
-  ConfirmCancelOrder = 'confirmCancelOrder',
+  ConfirmCancelProject = 'confirmCancelProject',
   ConfirmRejectProject = 'confirmRejectProject',
 }
 
@@ -120,6 +121,7 @@ type ModalPropTypes =
   | Omit<AddVolumeModalProps, 'closeModal'>
   | Omit<VolumeChangeModalProps, 'closeModal'>
   | Omit<ConfirmDeleteVolumeModalProps, 'closeModal'>
+  | Omit<ConfirmCancelProjectModalProps, 'closeModal'>
   | Omit<ConfirmRejectProjectModalProps, 'closeModal'>
 
 const MODALS = {
@@ -140,7 +142,7 @@ const MODALS = {
   [ModalTypes.VolumeChange]: VolumeChangeModal,
   [ModalTypes.ConfirmDeleteVolume]: ConfirmDeleteVolumeModal,
   [ModalTypes.AddTranslationMemories]: AddTranslationMemoriesModal,
-  [ModalTypes.ConfirmCancelOrder]: ConfirmCancelOrderModal,
+  [ModalTypes.ConfirmCancelProject]: ConfirmCancelProjectModal,
   [ModalTypes.ConfirmRejectProject]: ConfirmRejectProjectModal,
 }
 

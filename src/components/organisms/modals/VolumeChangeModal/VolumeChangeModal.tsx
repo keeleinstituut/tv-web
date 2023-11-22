@@ -36,7 +36,7 @@ import {
 } from 'hooks/requests/useAssignments'
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
 import { Root } from '@radix-ui/react-form'
-import { CatAnalysis } from 'types/orders'
+import { CatAnalysis } from 'types/projects'
 import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
 
 import classes from './classes.module.scss'
@@ -62,7 +62,7 @@ export interface VolumeChangeModalProps {
   unit_fee?: number
   unit_type?: string
   unit_quantity?: number
-  subOrderId?: string
+  subProjectId?: string
   onChangeValue?: (volume: VolumeValue) => void
 }
 
@@ -111,16 +111,18 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   unit_fee: initialUnitFee,
   unit_quantity: initialUnitQuantity,
   unit_type,
-  subOrderId,
+  subProjectId,
   onChangeValue,
   ...rest
 }) => {
   const { t } = useTranslation()
 
-  const { addAssignmentVolume } = useAssignmentAddVolume({ subOrderId })
-  const { addAssignmentCatVolume } = useAssignmentAddCatVolume({ subOrderId })
-  const { editAssignmentVolume } = useAssignmentEditVolume({ subOrderId })
-  const { editAssignmentCatVolume } = useAssignmentEditCatVolume({ subOrderId })
+  const { addAssignmentVolume } = useAssignmentAddVolume({ subProjectId })
+  const { addAssignmentCatVolume } = useAssignmentAddCatVolume({ subProjectId })
+  const { editAssignmentVolume } = useAssignmentEditVolume({ subProjectId })
+  const { editAssignmentCatVolume } = useAssignmentEditCatVolume({
+    subProjectId,
+  })
 
   const catAnalysisAmounts = useMemo(() => {
     const relevantValues = pick(volume_analysis, values(CatAnalysisVolumes))

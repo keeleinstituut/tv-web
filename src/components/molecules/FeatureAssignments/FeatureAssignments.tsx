@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { map } from 'lodash'
-import { SubProjectDetail } from 'types/orders'
+import { SubProjectDetail } from 'types/projects'
 import Assignment from 'components/molecules/Assignment/Assignment'
 import { VolumeValue } from 'types/volumes'
 

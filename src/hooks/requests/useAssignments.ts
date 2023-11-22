@@ -12,8 +12,9 @@ import {
 import {
   PotentialFilePayload,
   SourceFile,
+  SplitProjectPayload,
   SubProjectResponse,
-} from 'types/orders'
+} from 'types/projects'
 import { VolumeValue } from 'types/volumes'
 
 // TODO: not sure what endpoint to use and what data structure to use
@@ -21,13 +22,13 @@ import { VolumeValue } from 'types/volumes'
 export const useAssignmentAddVendor = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: addAssignmentVendor, isLoading } = useMutation({
-    mutationKey: ['suborders', id],
+    mutationKey: ['subprojects', id],
     mutationFn: (payload: { data: AssignmentPayload[] }) =>
       apiClient.post(`${endpoints.ASSIGNMENTS}/${id}/candidates/bulk`, payload),
     onSuccess: ({ data }: { data: AssignmentType }) => {
       const { sub_project_id } = data
       queryClient.setQueryData(
-        ['suborders', sub_project_id],
+        ['subprojects', sub_project_id],
         (oldData?: SubProjectResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
@@ -58,7 +59,7 @@ export const useAssignmentAddVendor = ({ id }: { id?: string }) => {
 export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteAssignmentVendor, isLoading } = useMutation({
-    mutationKey: ['suborders', id],
+    mutationKey: ['subprojects', id],
     mutationFn: (payload: { data: AssignmentPayload[] }) =>
       apiClient.delete(
         `${endpoints.ASSIGNMENTS}/${id}/candidates/bulk`,
@@ -67,7 +68,7 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
     onSuccess: ({ data }: { data: AssignmentType }) => {
       const { sub_project_id } = data
       queryClient.setQueryData(
-        ['suborders', sub_project_id],
+        ['subprojects', sub_project_id],
         (oldData?: SubProjectResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
@@ -96,18 +97,18 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
 }
 
 export const useAssignmentAddVolume = ({
-  subOrderId: id,
+  subProjectId: id,
 }: {
-  subOrderId?: string
+  subProjectId?: string
 }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: addAssignmentVolume, isLoading } = useMutation({
-    mutationKey: ['suborders', id],
+    mutationKey: ['subprojects', id],
     mutationFn: (payload: { data: ManualVolumePayload }) =>
       apiClient.post(`${endpoints.VOLUMES}`, payload.data),
     onSuccess: ({ data }: { data: VolumeValue }) => {
       queryClient.refetchQueries({
-        queryKey: ['suborders', id],
+        queryKey: ['subprojects', id],
         type: 'active',
       })
     },
@@ -120,18 +121,18 @@ export const useAssignmentAddVolume = ({
 }
 
 export const useAssignmentEditVolume = ({
-  subOrderId: id,
+  subProjectId: id,
 }: {
-  subOrderId?: string
+  subProjectId?: string
 }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: editAssignmentVolume, isLoading } = useMutation({
-    mutationKey: ['suborders', id],
+    mutationKey: ['subprojects', id],
     mutationFn: (payload: { data: ManualVolumePayload; volumeId: string }) =>
       apiClient.put(`${endpoints.VOLUMES}/${payload.volumeId}`, payload.data),
     onSuccess: ({ data }: { data: VolumeValue }) => {
       queryClient.refetchQueries({
-        queryKey: ['suborders', id],
+        queryKey: ['subprojects', id],
         type: 'active',
       })
     },
@@ -144,18 +145,18 @@ export const useAssignmentEditVolume = ({
 }
 
 export const useAssignmentAddCatVolume = ({
-  subOrderId: id,
+  subProjectId: id,
 }: {
-  subOrderId?: string
+  subProjectId?: string
 }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: addAssignmentCatVolume, isLoading } = useMutation({
-    mutationKey: ['suborders', id],
+    mutationKey: ['subprojects', id],
     mutationFn: (payload: { data: CatVolumePayload }) =>
       apiClient.post(`${endpoints.VOLUMES}/cat-tool`, payload.data),
     onSuccess: ({ data }: { data: VolumeValue }) => {
       queryClient.refetchQueries({
-        queryKey: ['suborders', id],
+        queryKey: ['subprojects', id],
         type: 'active',
       })
     },
@@ -168,13 +169,13 @@ export const useAssignmentAddCatVolume = ({
 }
 
 export const useAssignmentEditCatVolume = ({
-  subOrderId: id,
+  subProjectId: id,
 }: {
-  subOrderId?: string
+  subProjectId?: string
 }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: editAssignmentCatVolume, isLoading } = useMutation({
-    mutationKey: ['suborders', id],
+    mutationKey: ['subprojects', id],
     mutationFn: (payload: { data: CatVolumePayload; volumeId: string }) =>
       apiClient.put(
         `${endpoints.VOLUMES}/cat-tool/${payload.volumeId}`,
@@ -182,7 +183,7 @@ export const useAssignmentEditCatVolume = ({
       ),
     onSuccess: ({ data }: { data: VolumeValue }) => {
       queryClient.refetchQueries({
-        queryKey: ['suborders', id],
+        queryKey: ['subprojects', id],
         type: 'active',
       })
     },
@@ -195,18 +196,18 @@ export const useAssignmentEditCatVolume = ({
 }
 
 export const useAssignmentRemoveVolume = ({
-  subOrderId: id,
+  subProjectId: id,
 }: {
-  subOrderId?: string
+  subProjectId?: string
 }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: removeAssignmentVolume, isLoading } = useMutation({
-    mutationKey: ['suborders', id],
+    mutationKey: ['subprojects', id],
     mutationFn: (payload: { volumeId?: string }) =>
       apiClient.delete(`${endpoints.VOLUMES}/${payload.volumeId}`),
     onSuccess: ({ data }: { data: ManualVolumePayload }) => {
       queryClient.refetchQueries({
-        queryKey: ['suborders', id],
+        queryKey: ['subprojects', id],
         type: 'active',
       })
     },
@@ -221,12 +222,12 @@ export const useAssignmentRemoveVolume = ({
 export const useAssignmentUpdate = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateAssignment, isLoading } = useMutation({
-    mutationKey: ['suborders', id],
+    mutationKey: ['subprojects', id],
     mutationFn: (payload: AssignmentPayload) =>
       apiClient.put(`${endpoints.ASSIGNMENTS}/${id}`, payload),
     onSuccess: () => {
       queryClient.refetchQueries({
-        queryKey: ['suborders'],
+        queryKey: ['subprojects'],
         type: 'active',
       })
     },
@@ -234,6 +235,25 @@ export const useAssignmentUpdate = ({ id }: { id?: string }) => {
 
   return {
     updateAssignment,
+    isLoading,
+  }
+}
+
+export const useSplitAssignment = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: splitAssignment, isLoading } = useMutation({
+    mutationKey: ['split_assignment'],
+    mutationFn: (payload: SplitProjectPayload) =>
+      apiClient.post(endpoints.ASSIGNMENTS, {
+        ...payload,
+      }),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: ['subprojects'] })
+    },
+  })
+
+  return {
+    splitAssignment,
     isLoading,
   }
 }
@@ -486,12 +506,12 @@ export const useHandleFiles = (config: {
 export const useDeleteAssignment = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteAssignment, isLoading } = useMutation({
-    mutationKey: ['suborders'],
+    mutationKey: ['subprojects'],
     mutationFn: async (payload: string) =>
       apiClient.delete(`${endpoints.ASSIGNMENTS}/${payload}`),
     onSuccess: () => {
       queryClient.refetchQueries({
-        queryKey: ['suborders'],
+        queryKey: ['subprojects'],
         type: 'active',
       })
     },
