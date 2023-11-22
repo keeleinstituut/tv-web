@@ -21,12 +21,12 @@ type MainFeatureProps = Pick<
   | 'cat_analyzis'
   | 'cat_jobs'
   | 'project'
+  | 'id'
+  | 'mt_enabled'
 > & {
   catSupported?: boolean
   projectDeadline?: string
   feature: SubProjectFeatures
-  mt_enabled?: boolean
-  id?: string
 }
 
 const MainFeature: FC<MainFeatureProps> = ({

@@ -26,9 +26,9 @@ export interface ConfirmRejectProjectModalProps
 }
 
 interface FormValues {
-  sub_projects: string[]
-  comments: string
-  files: File[]
+  sub_project_id: string[]
+  description: string
+  review_file: File[]
 }
 
 const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
@@ -53,13 +53,13 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
     reValidateMode: 'onChange',
   })
 
-  const files = watch('files')
+  const review_file = watch('review_file')
 
   const handleAdd = useCallback(
     async (newFiles: File[]) => {
-      setValue('files', [...files, ...newFiles])
+      setValue('review_file', [...review_file, ...newFiles])
     },
-    [files, setValue]
+    [review_file, setValue]
   )
 
   const formFields: FieldProps<FormValues>[] = useMemo(
@@ -69,7 +69,7 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
         ariaLabel: `${t('label.pick_sub_project')}*`,
         placeholder: t('placeholder.pick'),
         label: `${t('label.pick_sub_project')}*`,
-        name: 'sub_projects',
+        name: 'sub_project_id',
         className: classes.selection,
         options: subProjectsOptions || [],
         rules: {
@@ -83,7 +83,7 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
             fileButtonChangeText={t('button.change_files')}
             inputFileTypes={ProjectFileTypes}
             listContainerClassName={classes.filesList}
-            files={files}
+            files={review_file}
             className={classes.fileImportButton}
             onChange={handleAdd}
             allowMultiple
@@ -95,7 +95,7 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
         label: `${t('label.extra_information')}*`,
         ariaLabel: `${t('label.extra_information')}*`,
         placeholder: t('placeholder.extra_information'),
-        name: 'comments',
+        name: 'description',
         className: classes.commentInput,
         isTextarea: true,
         rules: {
@@ -104,7 +104,7 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
         rows: 3,
       },
     ],
-    [files, handleAdd, subProjectsOptions, t]
+    [review_file, handleAdd, subProjectsOptions, t]
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(

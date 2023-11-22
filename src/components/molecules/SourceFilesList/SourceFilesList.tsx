@@ -24,7 +24,7 @@ import { SourceFile, CatProjectStatus } from 'types/projects'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
-import { useHandleFiles } from 'hooks/requests/useAssignments'
+import { useHandleFiles } from 'hooks/requests/useFiles'
 
 // TODO: very similar to ProjectFilesList, these 2 can be unified
 

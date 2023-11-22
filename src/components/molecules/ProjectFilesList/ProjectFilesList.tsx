@@ -31,7 +31,7 @@ import DataTable, {
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from '../SmallTooltip/SmallTooltip'
 import { SourceFile } from 'types/projects'
-import { useHandleFiles } from 'hooks/requests/useAssignments'
+import { useHandleFiles } from 'hooks/requests/useFiles'
 import { HelperFileTypes } from 'types/classifierValues'
 interface ProjectFilesListProps<TFormValues extends FieldValues> {
   title: string

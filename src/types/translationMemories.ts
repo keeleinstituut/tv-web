@@ -75,6 +75,7 @@ export interface SubProjectTmKeysResponse {
 export interface SubProjectTmKeysPayload {
   id?: string
   sub_project_id: string
+  is_writable?: boolean
   tm_keys: {
     key: string
   }[]

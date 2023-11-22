@@ -172,12 +172,15 @@ export interface SubProjectDetail extends ListSubProjectDetail {
   assignments: AssignmentType[]
   mt_enabled: boolean
   workflow_started?: boolean
+  // TODO: not sure if this is what it will be called
+  final_file_id?: string[]
 }
 
 export interface JobDefinition {
   id: string
   job_key: SubProjectFeatures
   job_name?: string
+  job_short_name?: string
   skill_id: string
   multi_assignments_enabled: boolean
   linking_with_cat_tool_jobs_enabled: boolean

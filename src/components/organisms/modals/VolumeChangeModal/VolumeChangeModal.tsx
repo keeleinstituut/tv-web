@@ -62,7 +62,7 @@ export interface VolumeChangeModalProps {
   unit_fee?: number
   unit_type?: string
   unit_quantity?: number
-  subProjectId?: string
+  sub_project_id?: string
   onChangeValue?: (volume: VolumeValue) => void
 }
 
@@ -111,17 +111,23 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   unit_fee: initialUnitFee,
   unit_quantity: initialUnitQuantity,
   unit_type,
-  subProjectId,
+  sub_project_id,
   onChangeValue,
   ...rest
 }) => {
   const { t } = useTranslation()
 
-  const { addAssignmentVolume } = useAssignmentAddVolume({ subProjectId })
-  const { addAssignmentCatVolume } = useAssignmentAddCatVolume({ subProjectId })
-  const { editAssignmentVolume } = useAssignmentEditVolume({ subProjectId })
+  const { addAssignmentVolume } = useAssignmentAddVolume({
+    subProjectId: sub_project_id,
+  })
+  const { addAssignmentCatVolume } = useAssignmentAddCatVolume({
+    subProjectId: sub_project_id,
+  })
+  const { editAssignmentVolume } = useAssignmentEditVolume({
+    subProjectId: sub_project_id,
+  })
   const { editAssignmentCatVolume } = useAssignmentEditCatVolume({
-    subProjectId,
+    subProjectId: sub_project_id,
   })
 
   const catAnalysisAmounts = useMemo(() => {
