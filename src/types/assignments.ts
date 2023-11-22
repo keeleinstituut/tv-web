@@ -1,4 +1,9 @@
-import { CatAnalysis, CatJob, JobDefinition } from 'types/projects'
+import {
+  CatAnalysis,
+  CatJob,
+  JobDefinition,
+  SubProjectDetail,
+} from 'types/projects'
 import { DiscountPercentages, Vendor } from './vendors'
 import { VolumeValue } from './volumes'
 
@@ -33,6 +38,8 @@ export interface AssignmentType {
   deadline_at?: string
   event_start_at?: string
   created_at: string
+  status: AssignmentStatus
+  subProject?: Partial<SubProjectDetail>
   // TODO: no idea whether it will be skill_ids or sth else
   skill_id: string
   // TODO: no idea if this field will come from here
@@ -73,4 +80,9 @@ export interface CatVolumePayload {
   unit_fee: number
   custom_volume_analysis?: CatAnalysis
   discounts: DiscountPercentages
+}
+
+export interface CompleteAssignmentPayload {
+  accepted?: boolean
+  final_file_id?: string[]
 }

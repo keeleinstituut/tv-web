@@ -60,7 +60,7 @@ const ToggleInput = forwardRef<HTMLInputElement, ToggleInputProps>(
               type="checkbox"
               name={name}
               checked={!!value}
-              onChange={handleChange}
+              readOnly
               ref={ref}
             />
             <span className={classNames(classes.slider)}></span>

@@ -42,7 +42,7 @@ export interface CompleteTaskPayload {
   final_file_id?: string[]
   // TODO: The following are currently missing from API
   // Naming might change
-  sub_projects?: string[]
-  comments?: string
-  files?: File[]
+  sub_project_id?: string[]
+  description?: string
+  review_file?: File[]
 }

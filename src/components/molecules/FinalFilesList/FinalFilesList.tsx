@@ -30,7 +30,7 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { useHandleFiles } from 'hooks/requests/useAssignments'
+import { useHandleFiles } from 'hooks/requests/useFiles'
 
 // TODO: very similar to ProjectFilesList, these 2 can be unified
 

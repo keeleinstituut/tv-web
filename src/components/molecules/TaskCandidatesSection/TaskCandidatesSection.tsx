@@ -19,7 +19,7 @@ import { NotificationTypes } from '../Notification/Notification'
 
 type TaskCandidatesSectionProps = Pick<
   AssignmentType,
-  'id' | 'assigned_vendor_id' | 'candidates' | 'assignee' | 'job_definition'
+  'id' | 'candidates' | 'job_definition'
 > & {
   className?: string
 }
@@ -36,9 +36,7 @@ const columnHelper = createColumnHelper<CandidateRow>()
 
 const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   id,
-  assigned_vendor_id,
   candidates,
-  assignee,
   className,
   job_definition,
 }) => {
@@ -52,7 +50,7 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
     () =>
       map(candidates, ({ vendor, price, status }) => {
         const { institution_user } = vendor
-        const name = `${institution_user.user.forename} ${institution_user.user.surname}`
+        const name = `${institution_user?.user?.forename} ${institution_user?.user?.surname}`
 
         return {
           name,

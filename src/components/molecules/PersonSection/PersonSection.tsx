@@ -59,6 +59,7 @@ interface PersonSectionProps<TFormValues extends FieldValues> {
   type: PersonSectionTypes
   control: Control<TFormValues>
   selectedUserId?: string
+  selectedUser?: UserType
   isEditable?: boolean
 }
 
@@ -66,6 +67,7 @@ const PersonSection = <TFormValues extends FieldValues>({
   type,
   control,
   selectedUserId,
+  selectedUser,
   isEditable,
 }: PersonSectionProps<TFormValues>) => {
   const { t } = useTranslation()
@@ -113,9 +115,14 @@ const PersonSection = <TFormValues extends FieldValues>({
     const shouldAddCurrentUser =
       type === PersonSectionTypes.Client || isCurrentUserPotentialManager
 
-    if (!shouldAddCurrentUser) return users
-    return uniqBy(concat([user], users), 'id')
-  }, [type, user, userPrivileges, users])
+    const usersWithCurrentlySelected = uniqBy(
+      concat([selectedUser], users),
+      'id'
+    )
+
+    if (!shouldAddCurrentUser) return compact(usersWithCurrentlySelected)
+    return compact(uniqBy(concat([user], usersWithCurrentlySelected), 'id'))
+  }, [selectedUser, type, user, userPrivileges, users])
 
   const options = useMemo(() => {
     return compact(
@@ -134,7 +141,6 @@ const PersonSection = <TFormValues extends FieldValues>({
     () => find(usersList, { id: selectedUserId }),
     [selectedUserId, usersList]
   )
-
   const { department, institution, email, phone } = selectedUserDetails || {}
 
   const title =

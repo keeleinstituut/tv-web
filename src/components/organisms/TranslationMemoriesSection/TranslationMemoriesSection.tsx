@@ -27,7 +27,11 @@ import {
   useToggleTmWritable,
   useUpdateSubProjectTmKeys,
 } from 'hooks/requests/useTranslationMemories'
-import { SubProjectTmKeys, TMType } from 'types/translationMemories'
+import {
+  SubProjectTmKeys,
+  SubProjectTmKeysPayload,
+  TMType,
+} from 'types/translationMemories'
 import { map, includes, filter, find, isEqual, pull } from 'lodash'
 import useAuth from 'hooks/useAuth'
 
@@ -173,21 +177,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   )
 
   const handleToggleTmWritable = useCallback(
-    async ({
-      key,
-      id,
-      is_writable,
-    }: {
-      key: string
-      id: string
-      is_writable: boolean
-    }) => {
-      const payload = {
-        id: id,
-        sub_project_id: subProjectId || '',
-        tm_keys: [{ key }],
-        is_writable,
-      }
+    async (payload: SubProjectTmKeysPayload) => {
       try {
         await toggleTmWritable(payload)
         showNotification({
@@ -195,12 +185,11 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           title: t('notification.announcement'),
           content: t('success.translation_memory_updated'),
         })
-        closeModal()
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
     },
-    [subProjectId, t, toggleTmWritable]
+    [t, toggleTmWritable]
   )
 
   const columns = [
@@ -231,11 +220,8 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           selectedInstitution?.id === row?.original?.institution_id &&
           isEqual(subProjectLangPair, row?.original?.language_direction)
 
-        const values = {
-          key: row.original.id || '',
-          id: row.original.tm_key_id || '',
-          is_writable: !getValue() || false,
-        }
+        const key = row.original.id || ''
+
         const type = row.original.type || ''
 
         if (!isAllowedToWrite) {
@@ -248,22 +234,22 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         }
         return (
           <FormInput
-            name={`write_to_memory.${row.original.id}` as Path<TFormValues>}
+            name={`write_to_memory.${key}` as Path<TFormValues>}
             ariaLabel={t('label.main_write')}
             control={control}
             inputType={InputTypes.Checkbox}
             onClick={() => {
+              const payload: SubProjectTmKeysPayload = {
+                id: row.original.tm_key_id || '',
+                sub_project_id: subProjectId || '',
+                tm_keys: [{ key }],
+                is_writable: !getValue() || false,
+              }
               isEqual(type, TMType.Public) && !getValue()
-                ? showModal(ModalTypes.ConfirmationModal, {
-                    handleProceed: () => handleToggleTmWritable(values),
-                    title: t('translation_memory.public_confirmation'),
-                    cancelButtonContent: t('button.quit'),
-                    submitButtonContent: t('button.confirm'),
-                    helperText: t(
-                      'translation_memory.public_confirmation_help_text'
-                    ),
+                ? showModal(ModalTypes.ConfirmTmWritable, {
+                    payload,
                   })
-                : handleToggleTmWritable(values)
+                : handleToggleTmWritable(payload)
             }}
           />
         )

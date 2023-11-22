@@ -396,7 +396,9 @@
     "confirm_project_cancellation_title": "Kas oled kindel, et soovid tellimuse tühistada?",
     "confirm_project_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus.",
     "confirm_project_rejection_title": "Kas oled kindel, et soovid tellimuse tagasi lükata?",
-    "confirm_project_rejection_helper": "Vali üks või mitu alamtellimust, mille soovid tagasi lükata.\n Palun lisa lühike tagasilükkamise põhjendus ja kirjelda, mida on vaja teisiti teha."
+    "confirm_project_rejection_helper": "Vali üks või mitu alamtellimust, mille soovid tagasi lükata.\n Palun lisa lühike tagasilükkamise põhjendus ja kirjelda, mida on vaja teisiti teha.",
+    "pick_files_to_forward": "Vali failid mida soovid edastada",
+    "forward_files_helper": "Vali teostajatelt saadud valmis failid, mile soovid tellijale edasi saata."
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",

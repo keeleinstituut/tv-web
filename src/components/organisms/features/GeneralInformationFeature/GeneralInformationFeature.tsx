@@ -8,7 +8,6 @@ import {
   some,
   reduce,
   includes,
-  isEqual,
 } from 'lodash'
 import {
   useUpdateSubProject,
@@ -16,7 +15,6 @@ import {
   useSubProjectSendToCat,
 } from 'hooks/requests/useProjects'
 import {
-  CatJob,
   CatProjectPayload,
   CatProjectStatus,
   SourceFile,
@@ -55,7 +53,6 @@ dayjs.extend(utc)
 type GeneralInformationFeatureProps = Pick<
   SubProjectDetail,
   | 'cat_files'
-  | 'cat_jobs'
   | 'cat_analyzis'
   | 'source_files'
   | 'final_files'
@@ -63,9 +60,9 @@ type GeneralInformationFeatureProps = Pick<
   | 'source_language_classifier_value'
   | 'destination_language_classifier_value'
   | 'project'
+  | 'id'
 > & {
   catSupported?: boolean
-  subProjectId: string
   projectDomain?: ClassifierValue
 }
 
@@ -74,7 +71,6 @@ interface FormValues {
   cat_files: SourceFile[]
   source_files: SourceFile[]
   final_files: SourceFile[]
-  cat_jobs: CatJob[]
   write_to_memory: { [key: string]: boolean }
   // TODO: no idea about these fields
   shared_with_client: boolean[]
@@ -82,8 +78,7 @@ interface FormValues {
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   catSupported,
-  cat_jobs,
-  subProjectId,
+  id,
   cat_analyzis,
   cat_files,
   source_files,
@@ -96,13 +91,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 }) => {
   const { t } = useTranslation()
   const { updateSubProject, isLoading } = useUpdateSubProject({
-    id: subProjectId,
+    id,
   })
   const { sendToCat, isCatProjectLoading } = useSubProjectSendToCat()
-  const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
-    id: subProjectId,
-  })
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id: subProjectId })
+  const { catToolJobs, catSetupStatus, startPolling } =
+    useFetchSubProjectCatToolJobs({
+      id,
+    })
+  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id })
 
   const defaultValues = useMemo(
     () => ({
@@ -185,7 +181,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
     const payload: CatProjectPayload = {
-      sub_project_id: subProjectId,
+      sub_project_id: id,
       source_files_ids: compact(map(selectedSourceFiles, 'id')),
     }
 
@@ -196,11 +192,12 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         title: t('notification.announcement'),
         content: t('success.files_sent_to_cat'),
       })
+      startPolling()
       closeModal()
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [getValues, sendToCat, subProjectId, t])
+  }, [getValues, sendToCat, startPolling, id, t])
 
   const openSendToCatModal = useCallback(
     () =>
@@ -269,7 +266,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
           isCatProjectLoading={isCatProjectLoading}
           catSetupStatus={catSetupStatus}
-          subProjectId={subProjectId}
+          subProjectId={id}
           isEditable
           // isEditable={isEditable}
         />
@@ -280,11 +277,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           control={control}
           isEditable
           isLoading={isLoading}
-          subProjectId={subProjectId}
+          subProjectId={id}
           // isEditable={isEditable}
         />
         <CatJobsTable
-          subProjectId={subProjectId}
+          subProjectId={id}
           className={classes.catJobs}
           hidden={!catSupported || isEmpty(catToolJobs)}
           cat_jobs={catToolJobs}
@@ -302,7 +299,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           hidden={!catSupported}
           control={control}
           isEditable
-          subProjectId={subProjectId}
+          subProjectId={id}
           SubProjectTmKeys={SubProjectTmKeys}
           subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}

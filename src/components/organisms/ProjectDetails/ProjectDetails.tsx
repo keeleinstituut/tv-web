@@ -33,7 +33,7 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { getProjectDefaultValues, mapFilesForApi } from 'helpers/project'
 import { HelperFileTypes } from 'types/classifierValues'
-import { useHandleBulkFiles } from 'hooks/requests/useAssignments'
+import { useHandleBulkFiles } from 'hooks/requests/useFiles'
 import { useQueryClient } from '@tanstack/react-query'
 
 export enum ProjectDetailModes {
@@ -133,6 +133,8 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
     status = ProjectStatus.Registered,
     help_files,
     source_files,
+    client_institution_user,
+    manager_institution_user,
   } = project || {}
 
   const { t } = useTranslation()
@@ -415,6 +417,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
           <PersonSection
             type={PersonSectionTypes.Client}
             control={control}
+            selectedUser={client_institution_user}
             selectedUserId={client_institution_user_id}
             isEditable={isClientEditable && isEditEnabled}
           />
@@ -422,6 +425,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
             type={PersonSectionTypes.Manager}
             control={control}
             selectedUserId={manager_institution_user_id}
+            selectedUser={manager_institution_user}
             isEditable={isManagerEditable && isEditEnabled}
           />
         </Container>

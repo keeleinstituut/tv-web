@@ -11,6 +11,8 @@ import {
   SubProjectPayload,
   CatJobsPayload,
   CancelProjectPayload,
+  CatProjectStatus,
+  SubProjectDetail,
 } from 'types/projects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -18,6 +20,7 @@ import { includes } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
+import { useCallback, useEffect, useState } from 'react'
 
 export const useFetchProjects = (initialFilters?: ProjectsPayloadType) => {
   const {
@@ -162,6 +165,7 @@ export const useUpdateSubProject = ({ id }: { id?: string }) => {
 
 export const useFetchSubProject = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<SubProjectResponse>({
+    enabled: !!id,
     queryKey: ['subprojects', id],
     queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`),
   })
@@ -204,14 +208,10 @@ export const useFetchSubProjects = () => {
 }
 
 export const useSubProjectSendToCat = () => {
-  const queryClient = useQueryClient()
   const { mutateAsync: sendToCat, isLoading } = useMutation({
     mutationKey: ['send_cat'],
     mutationFn: (payload: CatProjectPayload) =>
       apiClient.post(endpoints.CAT_TOOL_SETUP, payload),
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['cat-jobs'], type: 'active' })
-    },
   })
   return {
     sendToCat,
@@ -220,15 +220,32 @@ export const useSubProjectSendToCat = () => {
 }
 
 export const useFetchSubProjectCatToolJobs = ({ id }: { id?: string }) => {
+  const [shouldRefetch, setShouldRefetch] = useState(false)
   const { data } = useQuery<CatToolJobsResponse>({
     enabled: !!id,
     queryKey: ['cat-jobs', id],
     queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
+    ...(shouldRefetch ? { refetchInterval: 3000 } : {}),
   })
+  useEffect(() => {
+    if (
+      includes(
+        [CatProjectStatus.Done, CatProjectStatus.Failed],
+        data?.data?.setup_status
+      )
+    ) {
+      setShouldRefetch(false)
+    }
+  }, [data?.data?.setup_status, shouldRefetch])
+
+  const startPolling = useCallback(() => {
+    setShouldRefetch(true)
+  }, [])
   return {
     catToolJobs: data?.data?.cat_jobs,
     catSetupStatus: data?.data?.setup_status,
     catAnalyzeStatus: data?.data?.analyzing_status,
+    startPolling,
   }
 }
 
@@ -333,18 +350,26 @@ export const useSubProjectWorkflow = ({
   }
 }
 
-export const useToggleMtEngine = ({
-  subProjectId,
-}: {
-  subProjectId?: string
-}) => {
+export const useToggleMtEngine = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: toggleMtEngine, isLoading } = useMutation({
-    mutationKey: ['mt_engine', subProjectId],
+    mutationKey: ['mt_engine', id],
     mutationFn: async (payload: { mt_enabled: boolean }) =>
-      apiClient.put(`${endpoints.MT_ENGINE}/${subProjectId}`, payload),
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['subprojects', subProjectId] })
+      apiClient.put(`${endpoints.MT_ENGINE}/${id}`, payload),
+    onSuccess: ({ data }: { data: { mt_enabled: boolean } }) => {
+      queryClient.setQueryData(
+        ['subprojects', id],
+        (oldData?: SubProjectResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          return {
+            data: {
+              ...previousData,
+              mt_enabled: data?.mt_enabled,
+            },
+          }
+        }
+      )
     },
   })
 
@@ -369,4 +394,15 @@ export const useCancelProject = ({ id }: { id?: string }) => {
     cancelProject,
     isLoading,
   }
+}
+
+export const useSubProjectCache = (
+  id?: string
+): SubProjectDetail | undefined => {
+  const queryClient = useQueryClient()
+  const subProjectCache: { data: SubProjectDetail } | undefined =
+    queryClient.getQueryData(['subprojects', id])
+  const subProject = subProjectCache?.data
+
+  return subProject
 }

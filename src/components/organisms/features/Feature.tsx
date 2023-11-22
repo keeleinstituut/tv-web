@@ -56,7 +56,6 @@ const Feature: FC<FeatureProps> = ({ feature, subProject, projectDomain }) => {
           ? !isEmpty(cat_features)
           : includes(cat_features, feature)
       }
-      subProjectId={subProject.id}
       projectDomain={projectDomain}
       feature={feature}
       assignments={filteredAssignments}

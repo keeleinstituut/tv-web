@@ -119,7 +119,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
   const { subProject, isLoading } = useFetchSubProject({ id }) || {}
 
   const { assignments = [], workflow_started } = subProject || {}
-  const { job_name } = active_job_definition || {}
+  const { job_short_name } = active_job_definition || {}
 
   const { startSubProjectWorkflow, isLoading: isStartingWorkflow } =
     useSubProjectWorkflow({ id, projectId })
@@ -167,8 +167,6 @@ const SubProjectSection: FC<SubProjectProps> = ({
       cat_tool_enabled: job_definition.linking_with_cat_tool_jobs_enabled,
     }
   })
-
-  // const onGoingAssignment = find(assignments, ())
 
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
@@ -241,7 +239,9 @@ const SubProjectSection: FC<SubProjectProps> = ({
       onExpandedChange={handleOpenContainer}
       id={ext_id}
       isExpanded={isExpanded}
-      rightComponent={<ProjectStatusTag status={status} jobName={job_name} />}
+      rightComponent={
+        <ProjectStatusTag status={status} jobName={job_short_name} />
+      }
       wrapContent
       bottomComponent={
         <>
