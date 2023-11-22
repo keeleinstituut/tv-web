@@ -1,4 +1,4 @@
-import { isArray, isEmpty, isObject } from 'lodash'
+import { isArray, isEmpty, isObject, size } from 'lodash'
 import { useTranslation } from 'react-i18next'
 
 const emailIsCorrect = (email: string) =>
@@ -7,7 +7,7 @@ const emailIsCorrect = (email: string) =>
   )
 
 const phoneIsCorrect = (phone: string) =>
-  /(\+372\s?)[3-7]([0-9]{6,7})/.test(phone)
+  /(\+372\s?)[3-7]([0-9]{6,7})$/.test(phone)
 
 const picIsCorrect = (pic: string) =>
   /^(?:3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-9])[0-9](?:0[1-9]|1[0-2])(?:0[1-9]|[12][0-9]|3[01])\d{4}$/.test(
@@ -95,6 +95,11 @@ const useValidators = () => {
 
     return true
   }
+  const minLengthValidator = (value?: string | string[] | null | object) => {
+    if (!!value && size(value) < 3) {
+      return t('error.search_input_length')
+    }
+  }
 
   type valueType = {
     days?: string[]
@@ -123,6 +128,7 @@ const useValidators = () => {
     dateTimeValidator,
     priceValidator,
     nameInputValidator,
+    minLengthValidator,
   }
 }
 

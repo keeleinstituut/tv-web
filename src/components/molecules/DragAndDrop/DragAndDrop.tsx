@@ -16,6 +16,7 @@ import { useClickAway } from 'ahooks'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import useElementPosition from 'hooks/useElementPosition'
+import useModalContext from 'hooks/useModalContext'
 
 interface DragAndDropContentProps {
   isDragAndDropOpen?: boolean
@@ -23,7 +24,6 @@ interface DragAndDropContentProps {
   allowMultiple?: boolean
   inputFileTypes?: InputFileTypes[]
   parentRef: RefObject<HTMLDivElement>
-  isFilesListHidden?: boolean
   setDragAndDropOpen?: (isOpen: boolean) => void
 }
 
@@ -33,7 +33,6 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
   setFiles,
   allowMultiple,
   parentRef,
-  isFilesListHidden,
   setDragAndDropOpen,
 }) => {
   const containerRef = useRef(null)
@@ -84,8 +83,6 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
     ),
   })
 
-  const topPositionModifier = isFilesListHidden ? 157 : 141
-
   if (!isDragAndDropOpen) return null
   return (
     <div
@@ -95,7 +92,7 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
       style={{
         left: useLeftPosition ? 'unset' : left,
         right: useLeftPosition ? (right || 0) - (left || 0) : 'unset',
-        top: top ? top - topPositionModifier : 0,
+        top: top ? top - 157 : 0,
       }}
     >
       <input
@@ -131,9 +128,10 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
 }
 
 const DragAndDrop: FC<DragAndDropContentProps> = (props) => {
+  const { modalContentId } = useModalContext()
   return createPortal(
     <DragAndDropContent {...props} />,
-    document.getElementById('root') || document.body
+    document.getElementById(modalContentId || 'root') || document.body
   )
 }
 

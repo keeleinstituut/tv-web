@@ -1,12 +1,17 @@
 import { FC, useCallback, useMemo } from 'react'
 import { map, find, pick, values, isEqual } from 'lodash'
-import { ListOrder, SubProjectFeatures } from 'types/orders'
-import { AssignmentPayload, AssignmentType } from 'types/assignments'
+import { ListProject, SubProjectFeatures } from 'types/projects'
+import {
+  AssignmentPayload,
+  AssignmentStatus,
+  AssignmentType,
+} from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
+import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 
 import classes from './classes.module.scss'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
@@ -24,11 +29,16 @@ import { VolumeValue } from 'types/volumes'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from '../Notification/Notification'
-import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
+import {
+  useAssignmentUpdate,
+  useDeleteAssignment,
+} from 'hooks/requests/useAssignments'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import {
   getLocalDateOjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
 } from 'helpers'
+import { useCompleteAssignment } from 'hooks/requests/useAssignments'
 
 dayjs.extend(utc)
 
@@ -40,8 +50,7 @@ interface AssignmentProps extends AssignmentType {
   catSupported?: boolean
   ext_id?: string
   volumes?: VolumeValue[]
-  subOrderId?: string
-  project: ListOrder
+  project: ListProject
 }
 
 interface FormValues {
@@ -57,7 +66,7 @@ const Assignment: FC<AssignmentProps> = ({
   index,
   candidates,
   id,
-  subOrderId,
+  sub_project_id,
   assigned_vendor_id,
   assignee,
   job_definition,
@@ -72,23 +81,23 @@ const Assignment: FC<AssignmentProps> = ({
   comments,
   deadline_at,
   event_start_at,
+  status,
 }) => {
   const { t } = useTranslation()
-  const { updateAssignment, isLoading } = useAssignmentUpdate({ id })
+  const { completeAssignment, isLoading: isCompletingAssignment } =
+    useCompleteAssignment({
+      id,
+    })
+  const { updateAssignment } = useAssignmentUpdate({ id })
+  const { deleteAssignment, isLoading: isDeletingAssignment } =
+    useDeleteAssignment()
+
   const { vendor } =
     find(candidates, ({ vendor }) => vendor.id === assigned_vendor_id) || {}
   const { deadline_at: projectDeadline, type_classifier_value } = project || {}
 
   const shouldShowStartTimeFields =
     type_classifier_value?.project_type_config?.is_start_date_supported
-
-  // TODO: vendor price find is not finished yet.
-  // There is a high possibility that the field names will be unified for source and destination language
-  // We are also missing assignment task id at the moment
-
-  // TODO: check if all other tasks/features in this subOrder have been finished
-  // Possibly we can determine this my checking the status of the suborder, or by going over all assignments
-  const allPreviousTasksFinished = false
 
   const vendorDiscounts = useMemo(
     () => pick(vendor, values(DiscountPercentageNames)),
@@ -144,12 +153,9 @@ const Assignment: FC<AssignmentProps> = ({
     defaultValues: defaultValues,
   })
 
-  const handleMarkTaskAsFinished = useCallback(async () => {
+  const handleMarkAssignmentAsFinished = useCallback(async () => {
     try {
-      // await updateAssignment({
-      //   // TODO: not sure if this is
-      //   finished_at: getBEDate(),
-      // })
+      await completeAssignment({})
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
@@ -158,7 +164,16 @@ const Assignment: FC<AssignmentProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [t])
+  }, [completeAssignment, t])
+
+  const selectedVendorsIds = map(candidates, 'vendor.id')
+
+  const openConfirmAssignmentCompletion = useCallback(() => {
+    showModal(ModalTypes.ConfirmAssignmentCompletion, {
+      sub_project_id,
+      id,
+    })
+  }, [id, sub_project_id])
 
   const sendToPreviousAssignment = useCallback(async () => {
     try {
@@ -230,6 +245,19 @@ const Assignment: FC<AssignmentProps> = ({
     [defaultValues?.deadline_at, handleUpdateAssignment]
   )
 
+  const handleDeleteAssignment = useCallback(async () => {
+    try {
+      await deleteAssignment(id)
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.assignment_deleted'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [deleteAssignment, id, t])
+
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
       {
@@ -278,7 +306,7 @@ const Assignment: FC<AssignmentProps> = ({
         vendorName,
         value: volumes,
         assignmentId: id,
-        subOrderId,
+        sub_project_id,
         // onlyDisplay: !isEditable,
       },
       {
@@ -304,12 +332,10 @@ const Assignment: FC<AssignmentProps> = ({
       vendorDiscounts,
       vendorName,
       volumes,
-      subOrderId,
+      sub_project_id,
       isVendorView,
     ]
   )
-
-  const selectedVendorsIds = map(candidates, 'vendor.id')
 
   const handleOpenVendorsModal = useCallback(() => {
     showModal(ModalTypes.SelectVendor, {
@@ -330,15 +356,25 @@ const Assignment: FC<AssignmentProps> = ({
   return (
     <div className={classes.assignmentContainer}>
       <div>
-        <h3>
+        <h3 className={classes.titleContainer}>
           {t('task.vendor_title', { number: index + 1 })}(
-          {t(`orders.features.${feature}`)})
+          {t(`projects.features.${feature}`)})
+          <BaseButton
+            className={classes.deleteButton}
+            hidden={index === 0}
+            onClick={handleDeleteAssignment}
+            loading={isDeletingAssignment}
+          >
+            <Delete />
+          </BaseButton>
         </h3>
+
         <span className={classes.assignmentId}>{ext_id}</span>
         <Button
           size={SizeTypes.S}
           className={classes.addButton}
           onClick={handleOpenVendorsModal}
+          // TODO: need to add extra conditions here
           disabled={feature === SubProjectFeatures.JobOverview}
         >
           {t('button.choose_from_database')}
@@ -372,13 +408,13 @@ const Assignment: FC<AssignmentProps> = ({
         />
         <Button
           children={t('button.mark_as_finished')}
-          disabled={
-            !!finished_at ||
-            (feature === SubProjectFeatures.JobOverview &&
-              !allPreviousTasksFinished)
+          disabled={status !== AssignmentStatus.InProgress}
+          loading={isCompletingAssignment}
+          onClick={
+            feature !== SubProjectFeatures.JobOverview
+              ? handleMarkAssignmentAsFinished
+              : openConfirmAssignmentCompletion
           }
-          loading={isLoading}
-          onClick={handleMarkTaskAsFinished}
         />
       </div>
     </div>

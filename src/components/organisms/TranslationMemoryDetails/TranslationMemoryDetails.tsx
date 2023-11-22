@@ -128,7 +128,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           fileButtonText={t('button.import_tmx')}
           isFilesListHidden
           size={SizeTypes.S}
-          inputFileTypes={[InputFileTypes.Tmx]}
+          inputFileTypes={[InputFileTypes.Xml]}
           onChange={handleImportSegments}
           allowMultiple={false}
           disabled={

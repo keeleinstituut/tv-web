@@ -1,5 +1,5 @@
 import { FC, useCallback, useState } from 'react'
-import { SubOrderDetail, SubProjectFeatures } from 'types/orders'
+import { SubProjectDetail, SubProjectFeatures } from 'types/projects'
 import { Root } from '@radix-ui/react-form'
 import { useTranslation } from 'react-i18next'
 import FeatureHeaderSection, {
@@ -7,26 +7,26 @@ import FeatureHeaderSection, {
 } from 'components/organisms/FeatureHeaderSection/FeatureHeaderSection'
 import FeatureAssignments from 'components/molecules/FeatureAssignments/FeatureAssignments'
 import FeatureCatJobs from 'components/molecules/FeatureCatJobs/FeatureCatJobs'
-import { useSplitAssignment } from 'hooks/requests/useOrders'
+import { useSplitAssignment } from 'hooks/requests/useAssignments'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { get } from 'lodash'
 
 type MainFeatureProps = Pick<
-  SubOrderDetail,
+  SubProjectDetail,
   | 'assignments'
   | 'source_language_classifier_value_id'
   | 'destination_language_classifier_value_id'
   | 'cat_analyzis'
   | 'cat_jobs'
   | 'project'
+  | 'id'
+  | 'mt_enabled'
 > & {
   catSupported?: boolean
   projectDeadline?: string
   feature: SubProjectFeatures
-  mt_enabled?: boolean
-  id?: string
 }
 
 const MainFeature: FC<MainFeatureProps> = ({
@@ -114,7 +114,7 @@ const MainFeature: FC<MainFeatureProps> = ({
       <FeatureCatJobs
         hidden={activeTab === FeatureTabs.Vendors}
         assignments={assignments}
-        subOrderCatJobs={cat_jobs}
+        subProjectCatJobs={cat_jobs}
         {...rest}
       />
     </Root>

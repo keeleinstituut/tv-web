@@ -1,4 +1,4 @@
-import { toString } from 'lodash'
+import { range, slice, toString } from 'lodash'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -43,11 +43,28 @@ const TablePagination = <TData,>({
 
   const defaultPageSizeOptions = [
     { label: '10', value: '10' },
+    { label: '15', value: '15' },
     { label: '50', value: '50' },
     { label: '100', value: '100' },
   ]
 
   const amountOfPages = getPageCount()
+  const pagesArray = range(0, amountOfPages)
+  const pageNumber = getState().pagination.pageIndex
+
+  const startPage =
+    pageNumber < 3 //first three pages
+      ? 0
+      : pageNumber > amountOfPages - 3 // last three pages
+      ? amountOfPages - 5
+      : pageNumber - 2
+
+  const endPage =
+    pageNumber < 3
+      ? 5
+      : pageNumber > amountOfPages - 3
+      ? amountOfPages
+      : pageNumber + 3
 
   if (hidden) return null
 
@@ -73,7 +90,7 @@ const TablePagination = <TData,>({
 
         <nav role="navigation" aria-label={t('label.pagination_navigation')}>
           <ul className={classes.links}>
-            {[...Array(getPageCount())].map((_, index) => (
+            {slice(pagesArray, startPage, endPage).map((index) => (
               <li
                 key={index}
                 className={classNames(classes.list, {

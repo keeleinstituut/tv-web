@@ -6,7 +6,7 @@ import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
-import { CatProjectStatus } from 'types/orders'
+import { CatProjectStatus } from 'types/projects'
 
 interface GenerateForTranslationSectionProps {
   hidden?: boolean
@@ -31,13 +31,13 @@ const GenerateForTranslationSection: FC<GenerateForTranslationSectionProps> = ({
   const helperText = useMemo(() => {
     switch (catSetupStatus) {
       case CatProjectStatus.InProgress: {
-        return t('orders.generating_project_in_progress')
+        return t('projects.generating_project_in_progress')
       }
       case CatProjectStatus.Failed: {
-        return t('orders.generating_project_failed')
+        return t('projects.generating_project_failed')
       }
       default: {
-        return t('orders.generate_for_translation_helper')
+        return t('projects.generate_for_translation_helper')
       }
     }
   }, [catSetupStatus, t])
