@@ -20,6 +20,8 @@ import dayjs from 'dayjs'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as Eye } from 'assets/icons/eye.svg'
+import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
+import { VolumeValue } from 'types/volumes'
 
 import classes from './classes.module.scss'
 
@@ -43,6 +45,7 @@ interface TaskContentProps {
   comments?: string
   isLoading?: boolean
   sub_project_id: string
+  volumes?: VolumeValue[]
 }
 
 const TaskContent: FC<TaskContentProps> = ({
@@ -57,17 +60,16 @@ const TaskContent: FC<TaskContentProps> = ({
   comments,
   isLoading,
   sub_project_id,
+  volumes = [],
 }) => {
   const { t } = useTranslation()
 
   const { catToolJobs, catSetupStatus } = useFetchSubOrderCatToolJobs({
-    id: '9a9dfde2-49cc-420c-b6b3-a4e06c375155',
-    // id: sub_project_id,
+    id: sub_project_id,
   })
 
   const { subOrderTmKeys } = useFetchSubOrderTmKeys({
-    id: '9a9dfde2-49cc-420c-b6b3-a4e06c375155',
-    // id: sub_project_id,
+    id: sub_project_id,
   })
 
   const defaultValues = useMemo(
@@ -83,14 +85,14 @@ const TaskContent: FC<TaskContentProps> = ({
     [catToolJobs, final_files, source_files]
   )
 
-  console.log('defaultValues', defaultValues)
+  // console.log('defaultValues', defaultValues)
 
   const { control, setValue } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
 
-  console.log('useWatch({control})1', useWatch({ control }))
+  // console.log('useWatch({control})1', useWatch({ control }))
 
   useEffect(() => {
     if (subOrderTmKeys) {
@@ -124,61 +126,41 @@ const TaskContent: FC<TaskContentProps> = ({
     return dayjs(date).format('DD.MM.YYYY HH:mm')
   }
 
-  //TODO: add correct volume data when available
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const volumesData = [
-    {
-      id: '9a9a997c-69a6-45ab-9447-76f42865d0cb',
-      assignment_id: '9a73d254-822f-4b24-8175-3abce8382918',
-      unit_type: 'WORDS',
-      unit_quantity: '671.00',
-      unit_fee: 5,
-      updated_at: '2023-11-13T15:05:07.000000Z',
-      created_at: '2023-11-13T15:05:07.000000Z',
-      cat_job: {
-        id: '9a742091-5d58-454e-9595-23bebfefc554',
-        name: 'OIU-2023-10--8-af-ZAsq-AL-1-1',
-        ext_id: '30-c76a3b89d220',
-        progress_percentage: '0',
-        translate_url:
-          'https://cat.dev.tolkevarav.eki.ee/translate/OIU-2023-10--8-af-ZAsq-AL-1/af-ZA-sq-AL/30-c76a3b89d220',
-      },
-      volume_analysis: {
-        total: 671,
-        tm_101: 0,
-        repetitions: 0,
-        tm_100: 0,
-        tm_95_99: 0,
-        tm_85_94: 2,
-        tm_75_84: 16,
-        tm_50_74: 0,
-        tm_0_49: 653,
-        files_names: ['Untitled.txt'],
-      },
-      discounts: {
-        discount_percentage_101: 10,
-        discount_percentage_repetitions: 20,
-        discount_percentage_100: 30,
-        discount_percentage_95_99: 40,
-        discount_percentage_85_94: 30,
-        discount_percentage_75_84: 30,
-        discount_percentage_50_74: 0,
-        discount_percentage_0_49: 20,
-      },
-    },
-  ]
-
   const handleShowVolume = useCallback(() => {
+    const { discounts, unit_fee, volume_analysis } = volumes[0]
+    const {
+      files_names,
+      repetitions,
+      tm_0_49,
+      tm_50_74,
+      tm_75_84,
+      tm_85_94,
+      tm_95_99,
+      tm_100,
+      tm_101,
+      total,
+    } = volume_analysis
+
     showModal(ModalTypes.VolumeChange, {
       isCat: true,
       isTaskView: true,
-      discounts: volumesData[0].discounts,
-      unit_fee: volumesData[0].unit_fee,
-      volume_analysis: volumesData[0].volume_analysis,
+      discounts,
+      unit_fee,
+      volume_analysis: {
+        files_names,
+        repetitions: repetitions || '0',
+        tm_0_49: tm_0_49 || '0',
+        tm_50_74: tm_50_74 || '0',
+        tm_75_84: tm_75_84 || '0',
+        tm_85_94: tm_85_94 || '0',
+        tm_95_99: tm_95_99 || '0',
+        tm_100: tm_100 || '0',
+        tm_101: tm_101 || '0',
+        total: total || '0',
+      },
       taskViewPricesClass: classes.taskViewPrices,
     })
-  }, [volumesData])
+  }, [volumes])
 
   const taskDetails = [
     {
@@ -196,10 +178,11 @@ const TaskContent: FC<TaskContentProps> = ({
     },
     {
       label: t('label.volume'),
-      //TODO: add correct variable for content
       content: (
         <>
-          <span>4h</span>
+          <span>{`${Number(volumes[0]?.unit_quantity)} ${t(
+            `label.${apiTypeToKey(volumes[0]?.unit_type)}`
+          )}${cat_jobs ? ` ${t('task.open_in_cat')}` : ''}`}</span>
           <BaseButton onClick={handleShowVolume} className={classes.volumeIcon}>
             <Eye />
           </BaseButton>
@@ -255,7 +238,7 @@ const TaskContent: FC<TaskContentProps> = ({
           control={control}
           catSetupStatus={catSetupStatus}
           isTaskView
-          subOrderId={'9a9dfde2-49cc-420c-b6b3-a4e06c375155'}
+          subOrderId={sub_project_id}
           isEditable
         />
         <FinalFilesList

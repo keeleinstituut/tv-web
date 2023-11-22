@@ -83,22 +83,18 @@ const TasksTable: FC<TasksTableProps> = ({
       const typedLanguageDirection = language_direction as string
 
       const langPair = {
-        src: typedLanguageDirection.split('_')[0],
-        dst: typedLanguageDirection.split('_')[1],
+        src: typedLanguageDirection?.split('_')[0],
+        dst: typedLanguageDirection?.split('_')[1],
       }
 
       const newFilters = {
         lang_pair: langPair,
+        type_classifier_value_id: type_classifier_value_id,
         ...rest,
       }
 
-      const newTypeFilters = {
-        type_classifier_value_id: type_classifier_value_id,
-      }
-
       if (handleFilterChange) {
-        handleFilterChange(newTypeFilters)
-        // handleFilterChange(newFilters)
+        handleFilterChange(newFilters)
       }
     },
     [handleFilterChange]

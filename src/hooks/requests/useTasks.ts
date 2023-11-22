@@ -38,14 +38,13 @@ export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
 }
 
 export const useFetchTask = ({ id }: { id?: string }) => {
-  const { isLoading, isError, data } = useQuery<TasksResponse>({
-    queryKey: ['task', id],
+  const { isLoading, isError, data } = useQuery<TaskResponse>({
+    queryKey: ['tasks', id],
     queryFn: () => apiClient.get(`${endpoints.TASKS}/${id}`),
     keepPreviousData: true,
   })
 
-  const taskData = data?.data || []
-  const task = taskData[0] || {}
+  const { data: task } = data || {}
 
   return {
     isLoading,
@@ -104,6 +103,54 @@ export const useCompleteTask = ({ id }: { id?: string }) => {
   })
   return {
     completeTask,
+    isLoading,
+  }
+}
+
+export const useAcceptTask = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+
+  const { mutateAsync: acceptTask, isLoading } = useMutation({
+    mutationKey: ['tasks', id],
+    mutationFn: () => apiClient.post(`${endpoints.TASKS}/${id}/accept`),
+    onSuccess: ({ data }: { data: any }) => {
+      queryClient.setQueryData(['tasks', id], (oldData?: any) => {
+        const { data: previousData } = oldData || {}
+
+        const newData = {
+          ...(previousData || {}),
+          ...data,
+        }
+        return { data: newData }
+      })
+    },
+  })
+  return {
+    acceptTask,
+    isLoading,
+  }
+}
+
+export const useCompleteAssignment = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+
+  const { mutateAsync: completeAssignment, isLoading } = useMutation({
+    mutationKey: ['tasks', id],
+    mutationFn: () => apiClient.post(`${endpoints.TASKS}/${id}/complete`),
+    onSuccess: ({ data }: { data: any }) => {
+      queryClient.setQueryData(['tasks', id], (oldData?: any) => {
+        const { data: previousData } = oldData || {}
+
+        const newData = {
+          ...(previousData || {}),
+          ...data,
+        }
+        return { data: newData }
+      })
+    },
+  })
+  return {
+    completeAssignment,
     isLoading,
   }
 }

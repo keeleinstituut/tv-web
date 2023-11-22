@@ -26,6 +26,7 @@ export interface FilterFunctionType {
     | string[]
     | boolean
     | { src: string; dst: string }[]
+    | { src: string; dst: string }
 }
 export interface SortingFunctionType {
   sort_order?: 'asc' | 'desc' | undefined

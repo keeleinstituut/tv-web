@@ -121,6 +121,7 @@ export const protectedRoutes: FullRouteObject[] = [
             path: ':taskId',
             element: <TaskPage />,
             // privileges: [Privileges.ViewPersonalTask],
+            breadcrumb: BreadcrumbsTitle,
           },
         ],
       },

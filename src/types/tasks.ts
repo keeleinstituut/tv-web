@@ -19,6 +19,7 @@ export type SubProject = {
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
   cat_files: SourceFile[]
+  source_files: SourceFile[]
 }
 
 export enum TaskType {
@@ -61,4 +62,10 @@ export interface CompleteTaskPayload {
   sub_projects?: string[]
   comments?: string
   files?: File[]
+}
+
+export enum TasksTabType {
+  MyTasks = 'my_tasks',
+  PendingTasks = 'pending_tasks',
+  History = 'history',
 }

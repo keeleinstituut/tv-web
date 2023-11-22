@@ -14,6 +14,8 @@ import { ListOrder, SourceFile } from 'types/orders'
 import { LanguageClassifierValue } from 'types/classifierValues'
 
 import classes from './classes.module.scss'
+import { VolumeValue } from 'types/volumes'
+import { useCompleteAssignment } from 'hooks/requests/useTasks'
 
 interface TaskProps {
   ext_id?: string
@@ -24,6 +26,8 @@ interface TaskProps {
   cat_files?: SourceFile[]
   source_files: SourceFile[]
   sub_project_id: string
+  volumes?: VolumeValue[]
+  taskId?: string
 }
 
 const TaskDetails: FC<TaskProps> = ({
@@ -35,10 +39,16 @@ const TaskDetails: FC<TaskProps> = ({
   cat_files,
   source_files,
   sub_project_id,
+  volumes,
+  taskId,
 }) => {
   const { t } = useTranslation()
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
+  const { completeAssignment, isLoading: isCompletingTask } =
+    useCompleteAssignment({
+      id: taskId,
+    })
 
   const { price, deadline_at, status, event_start_at, comments } = project || {}
 
@@ -78,9 +88,9 @@ const TaskDetails: FC<TaskProps> = ({
       cancelButtonContent: t('button.quit'),
       proceedButtonContent: t('button.complete'),
       className: classes.completeModal,
-      // TODO: handle proceed
+      handleProceed: completeAssignment,
     })
-  }, [t])
+  }, [completeAssignment, t])
 
   if (isLoading) return <Loader loading={isLoading} />
 
@@ -117,6 +127,7 @@ const TaskDetails: FC<TaskProps> = ({
         comments={comments}
         isLoading={isLoading}
         sub_project_id={sub_project_id}
+        volumes={volumes}
       />
       <Button
         className={classes.finishedButton}
