@@ -36,6 +36,13 @@
       width: 16px;
       height: 16px;
     }
+
+    &.disabled {
+      cursor: not-allowed;
+      svg path {
+        fill: $color-background-disabled;
+      }
+    }
   }
 
   .downloadButton {

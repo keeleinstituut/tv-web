@@ -26,6 +26,7 @@ interface TaskProps {
   taskId?: string
   comments?: string
   assignee_institution_user_id?: string
+  isHistoryView?: string
 }
 
 const TaskDetails: FC<TaskProps> = ({
@@ -41,6 +42,7 @@ const TaskDetails: FC<TaskProps> = ({
   taskId,
   comments,
   assignee_institution_user_id,
+  isHistoryView,
 }) => {
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
@@ -111,6 +113,7 @@ const TaskDetails: FC<TaskProps> = ({
         volumes={volumes}
         assignee_institution_user_id={assignee_institution_user_id}
         taskId={taskId}
+        isHistoryView={isHistoryView}
       />
     </ExpandableContentContainer>
   )

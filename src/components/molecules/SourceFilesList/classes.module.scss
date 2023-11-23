@@ -23,8 +23,15 @@
       width: 21px;
       height: 20px;
     }
+
+    &.disabled {
+      cursor: not-allowed;
+      svg path {
+        fill: $color-background-disabled;
+      }
+    }
   }
-  
+
   .downloadButton {
     svg {
       path {
@@ -64,7 +71,7 @@
   margin-bottom: spacing(4);
 
   .fileImportButton {
-    margin-left: auto
+    margin-left: auto;
   }
 
   h3 {

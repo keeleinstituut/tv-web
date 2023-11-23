@@ -48,6 +48,7 @@ interface TaskContentProps {
   volumes?: VolumeValue[]
   assignee_institution_user_id?: string
   taskId?: string
+  isHistoryView?: string
 }
 
 const TaskContent: FC<TaskContentProps> = ({
@@ -63,6 +64,7 @@ const TaskContent: FC<TaskContentProps> = ({
   volumes = [],
   assignee_institution_user_id,
   taskId,
+  isHistoryView,
 }) => {
   const { t } = useTranslation()
 
@@ -208,12 +210,17 @@ const TaskContent: FC<TaskContentProps> = ({
             name="my_notes"
             label={t('label.my_notes')}
             ariaLabel={t('label.my_notes')}
-            placeholder={t('placeholder.write_here')}
+            placeholder={
+              !!isHistoryView
+                ? t('placeholder.notes_for_translation_manager')
+                : t('placeholder.write_here')
+            }
             inputType={InputTypes.Text}
             labelClassName={classes.myNotesLabel}
             inputContainerClassName={classes.specialInstructions}
             control={control}
             isTextarea={true}
+            disabled={!!isHistoryView}
           />
         </span>
       </div>
@@ -237,6 +244,7 @@ const TaskContent: FC<TaskContentProps> = ({
           mode={ProjectDetailModes.View}
           subProjectId={sub_project_id}
           isEditable
+          isHistoryView={isHistoryView}
         />
         <FinalFilesList
           name="my_final_files"
@@ -247,6 +255,7 @@ const TaskContent: FC<TaskContentProps> = ({
           subProjectId={sub_project_id}
           className={classes.myFinalFiles}
           mode={ProjectDetailModes.View}
+          isHistoryView={isHistoryView}
         />
         <CatJobsTable
           subProjectId={sub_project_id}
@@ -261,6 +270,7 @@ const TaskContent: FC<TaskContentProps> = ({
             destination_language_classifier_value
           }
           mode={ProjectDetailModes.View}
+          isHistoryView={isHistoryView}
         />
       </div>
       <Button

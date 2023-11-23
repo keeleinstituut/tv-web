@@ -44,6 +44,7 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   isGenerateProjectButtonDisabled?: boolean
   catSetupStatus?: CatProjectStatus
   mode?: ProjectDetailModes
+  isHistoryView?: string
 }
 
 interface FileRow {
@@ -71,6 +72,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   isGenerateProjectButtonDisabled,
   catSetupStatus,
   mode,
+  isHistoryView,
 }: SourceFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -190,9 +192,14 @@ const SourceFilesList = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         return (
           <BaseButton
-            className={classNames(classes.iconButton, classes.downloadButton)}
+            className={classNames(
+              classes.iconButton,
+              classes.downloadButton,
+              !!isHistoryView && classes.disabled
+            )}
             target="_blank"
             onClick={() => handleDownload(getValue())}
+            disabled={!!isHistoryView}
           >
             <Download />
           </BaseButton>
@@ -205,8 +212,12 @@ const SourceFilesList = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         return (
           <BaseButton
-            className={classes.iconButton}
+            className={classNames(
+              classes.iconButton,
+              !!isHistoryView && classes.disabled
+            )}
             onClick={() => handleDelete(getValue())}
+            disabled={!!isHistoryView}
           >
             <Delete />
           </BaseButton>

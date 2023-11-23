@@ -106,6 +106,7 @@ const TaskPage: FC = () => {
         taskId={taskId}
         comments={comments}
         assignee_institution_user_id={assignee_institution_user_id}
+        isHistoryView={isHistoryView}
       />
     </>
   )

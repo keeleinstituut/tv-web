@@ -40,6 +40,7 @@ interface CatJobsTableProps {
   destination_language_classifier_value?: LanguageClassifierValue
   canSendToVendors?: boolean
   mode?: ProjectDetailModes
+  isHistoryView?: string
 }
 
 interface CatJobRow {
@@ -64,6 +65,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   destination_language_classifier_value,
   canSendToVendors,
   mode,
+  isHistoryView,
 }) => {
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile()
@@ -148,6 +150,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             size={SizeTypes.S}
             href={getValue()}
             target="_blank"
+            disabled={!!isHistoryView}
           >
             {t('button.open_in_translation_tool')}
           </Button>
@@ -160,6 +163,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         return mode === 'view' ? (
           <SimpleDropdown
             icon={HorizontalDots}
+            disabled={!!isHistoryView}
             className={classes.dropdown}
             buttonClassName={classes.dropdownInnerButton}
             options={[

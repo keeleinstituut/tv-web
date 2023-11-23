@@ -145,6 +145,7 @@
     "date": "pp.kk.aaaa",
     "time": "hh:mm:ss",
     "write_here": "Kirjuta siia..",
+    "notes_for_translation_manager": "Tõlkekorraldajale jäetud info",
     "select_tags": "Vali sildid",
     "pick_days": "Vali päev(ad)",
     "search_by_id": "Otsi tellimuse ID siit...",

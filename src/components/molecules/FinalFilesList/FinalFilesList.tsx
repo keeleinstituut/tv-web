@@ -46,6 +46,7 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
   isLoading?: boolean
   mode?: ProjectDetailModes
   subProjectId: string
+  isHistoryView?: string
 }
 interface FileRow {
   name: string
@@ -68,6 +69,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   isLoading,
   subProjectId,
   mode,
+  isHistoryView,
 }: FinalFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -249,9 +251,11 @@ const FinalFilesList = <TFormValues extends FieldValues>({
                 <BaseButton
                   className={classNames(
                     classes.iconButton,
-                    classes.downloadButton
+                    classes.downloadButton,
+                    !!isHistoryView && classes.disabled
                   )}
                   onClick={() => handleDownload(getValue())}
+                  disabled={!!isHistoryView}
                 >
                   <DownloadFilled />
                 </BaseButton>
@@ -266,8 +270,12 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         return (
           <BaseButton
-            className={classes.iconButton}
+            className={classNames(
+              classes.iconButton,
+              !!isHistoryView && classes.disabled
+            )}
             onClick={() => handleOpenDeleteModal(getValue())}
+            disabled={!!isHistoryView}
           >
             <Delete />
           </BaseButton>
@@ -333,6 +341,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
               className={classes.fileImportButton}
               onChange={handleAdd}
               allowMultiple
+              disabled={!!isHistoryView}
             />
           </div>
         }
