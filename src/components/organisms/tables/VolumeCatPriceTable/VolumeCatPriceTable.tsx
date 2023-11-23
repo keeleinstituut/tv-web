@@ -1,4 +1,4 @@
-import { useMemo, memo } from 'react'
+import { useMemo, memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FormInput,
@@ -11,7 +11,11 @@ import {
 } from 'types/vendors'
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
 import { map, sum, toNumber, values } from 'lodash'
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  createColumnHelper,
+  PaginationState,
+} from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -93,6 +97,11 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
     label: string
     name: DiscountPercentageNames
   }
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10000,
+  })
 
   const percentages: PercentageRow[] = useMemo(
     () => [
@@ -194,6 +203,8 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
       tableSize={TableSizeTypes.M}
       className={classes.tableContainer}
       hidePagination
+      pagination={pagination}
+      setPagination={setPagination}
       headComponent={
         <h2 className={classes.tableTitle}>
           {t('modal.calculation_by_analysis')}

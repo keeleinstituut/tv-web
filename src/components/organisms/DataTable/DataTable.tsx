@@ -22,6 +22,7 @@ import {
   Row,
   RowData,
   ColumnDef,
+  OnChangeFn,
 } from '@tanstack/react-table'
 import Container from 'components/atoms/Container/Container'
 import TablePagination from 'components/organisms/TablePagination/TablePagination'
@@ -75,6 +76,8 @@ type DataTableProps<TData extends RowData> = {
 
   columnOrder?: string[] | undefined
   subRowComponent?: (row: Row<TData>) => ReactElement
+  pagination: PaginationState
+  setPagination: OnChangeFn<PaginationState>
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -105,22 +108,17 @@ const DataTable = <TData,>(
     getRowStyles,
     columnOrder,
     subRowComponent,
+    pagination,
+    setPagination,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
   const [horizontalWrapperId] = useState(useId())
   const { per_page, last_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: hidePagination ? 10000 : per_page || 10,
-  })
-
-  if (last_page && last_page < pagination.pageIndex) {
-    setPagination({ pageIndex: 0, pageSize: per_page || 10 })
-  }
 
   if (last_page === pagination.pageIndex) {
+    console.log('SPECIAL CASE CALLED')
     setPagination({ pageIndex: last_page - 1, pageSize: per_page || 10 })
   }
 

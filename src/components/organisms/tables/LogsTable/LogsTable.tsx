@@ -1,8 +1,12 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
+import {
+  createColumnHelper,
+  ColumnDef,
+  PaginationState,
+} from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -46,6 +50,10 @@ const LogsTable: FC<LogsTableProps> = ({
   handlePaginationChange,
 }) => {
   const { t } = useTranslation()
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: paginationData ? paginationData.per_page : 10,
+  })
   const tableData: AuditLog[] = map(
     data,
     ({
@@ -157,6 +165,8 @@ const LogsTable: FC<LogsTableProps> = ({
         tableWrapperClassName={classes.tableClassName}
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
+        pagination={pagination}
+        setPagination={setPagination}
       />
     </Root>
   )

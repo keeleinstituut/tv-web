@@ -4,7 +4,11 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, find, debounce } from 'lodash'
-import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
+import {
+  createColumnHelper,
+  ColumnDef,
+  PaginationState,
+} from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -59,6 +63,10 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   const { translationMemories = [], handleFilterChange } =
     useFetchTranslationMemories(initialFilters)
   const [searchValue, setSearchValue] = useState<string>('')
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   const { tagsFilters: tagsOptions } = useFetchTags({
     type: TagTypes.TranslationMemories,
@@ -236,6 +244,8 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
         // paginationData={paginationData}
         // onPaginationChange={handlePaginationChange}
         onFiltersChange={handleFilterChange}
+        pagination={pagination}
+        setPagination={setPagination}
         headComponent={
           <div
             className={classNames(classes.topSection, {

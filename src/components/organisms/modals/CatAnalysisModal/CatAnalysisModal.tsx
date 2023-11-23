@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { CatAnalysis, SourceFile } from 'types/orders'
 import { chain, map, zip, join, reduce } from 'lodash'
 import ModalBase, {
@@ -14,7 +14,11 @@ import { closeModal } from '../ModalRoot'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  createColumnHelper,
+  PaginationState,
+} from '@tanstack/react-table'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import Tag from 'components/atoms/Tag/Tag'
 import {
@@ -62,6 +66,11 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
   const { cat_analysis } = useCatAnalysisFetch({ subOrderId })
   const { downloadAnalysis } = useDownloadCatAnalysisFetch({ subOrderId })
   const cat_analyzis = [...(cat_analysis?.cat_jobs ?? [])]
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10000,
+  })
 
   const { t } = useTranslation()
   const totalWordCount = chain(cat_analyzis).map('total').sum().value()
@@ -181,6 +190,8 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           columns={tableColumns}
           tableSize={TableSizeTypes.M}
           hidePagination
+          pagination={pagination}
+          setPagination={setPagination}
           headComponent={
             <div className={classes.titleRow}>
               <h3>

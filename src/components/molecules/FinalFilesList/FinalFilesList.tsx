@@ -1,4 +1,4 @@
-import { useCallback, useMemo, Fragment } from 'react'
+import { useCallback, useMemo, Fragment, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map, filter, isEmpty, compact, includes } from 'lodash'
 import {
@@ -20,7 +20,11 @@ import FileImport, {
 } from 'components/organisms/FileImport/FileImport'
 import dayjs from 'dayjs'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  createColumnHelper,
+  PaginationState,
+} from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -81,6 +85,11 @@ const FinalFilesList = <TFormValues extends FieldValues>({
 
   const typedValue = value as SourceFile[]
   const { t } = useTranslation()
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10000,
+  })
 
   const { addFiles, deleteFile, downloadFile } = useHandleFiles({
     reference_object_id: subOrderId,
@@ -266,6 +275,8 @@ const FinalFilesList = <TFormValues extends FieldValues>({
           classes.increasedSpecificity
         )}
         hidePagination
+        pagination={pagination}
+        setPagination={setPagination}
         headComponent={
           <div className={classes.titleRow}>
             <h3>{title}</h3>

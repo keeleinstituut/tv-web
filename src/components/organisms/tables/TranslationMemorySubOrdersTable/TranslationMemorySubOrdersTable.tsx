@@ -1,11 +1,15 @@
-import { FC, useMemo } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { Root } from '@radix-ui/react-form'
 import { map } from 'lodash'
-import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
+import {
+  createColumnHelper,
+  ColumnDef,
+  PaginationState,
+} from '@tanstack/react-table'
 import classes from './classes.module.scss'
 import dayjs from 'dayjs'
 import { useFetchTranslationMemorySubOrders } from 'hooks/requests/useTranslationMemories'
@@ -31,6 +35,11 @@ const TranslationMemorySubOrdersTable: FC<TmSubOrdersTypes> = ({
     useFetchTranslationMemorySubOrders({
       id: memoryId,
     })
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: paginationData ? paginationData.per_page : 10,
+  })
 
   const orderRows = useMemo(
     () =>
@@ -83,6 +92,8 @@ const TranslationMemorySubOrdersTable: FC<TmSubOrdersTypes> = ({
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
         className={classes.subOrderContainer}
+        pagination={pagination}
+        setPagination={setPagination}
       />
     </Root>
   )

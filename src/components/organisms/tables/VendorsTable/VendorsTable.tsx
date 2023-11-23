@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useFetchTags } from 'hooks/requests/useTags'
@@ -12,7 +12,11 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { map, join, compact, split } from 'lodash'
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  createColumnHelper,
+  PaginationState,
+} from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
   FilterFunctionType,
@@ -95,6 +99,11 @@ const VendorsTable: FC<VendorsTableProps> = ({
       ) || {}
     )
   }, [data])
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: paginationData ? paginationData.per_page : 10,
+  })
 
   const handleModifiedFilterChange = useCallback(
     (filters?: FilterFunctionType) => {
@@ -206,6 +215,8 @@ const VendorsTable: FC<VendorsTableProps> = ({
       onPaginationChange={handlePaginationChange}
       onFiltersChange={handleModifiedFilterChange}
       onSortingChange={handleSortingChange}
+      pagination={pagination}
+      setPagination={setPagination}
     />
   )
 }

@@ -1,8 +1,12 @@
-import { FC, HTMLProps, useEffect, useRef } from 'react'
+import { FC, HTMLProps, useEffect, useRef, useState } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
+import {
+  createColumnHelper,
+  ColumnDef,
+  PaginationState,
+} from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -46,6 +50,11 @@ const columnHelper = createColumnHelper<Person>()
 
 const ExamplesTable: FC = () => {
   const tableData = defaultData
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10000,
+  })
 
   const columns = [
     columnHelper.accessor('id', {
@@ -186,6 +195,8 @@ const ExamplesTable: FC = () => {
       tableSize={TableSizeTypes.S}
       // onFiltersChange={handleColumnFiltersChange}
       //onSortingChange={onSortingChange}
+      pagination={pagination}
+      setPagination={setPagination}
     />
   )
 }

@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
@@ -6,7 +6,11 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, join, includes } from 'lodash'
-import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
+import {
+  createColumnHelper,
+  ColumnDef,
+  PaginationState,
+} from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -56,6 +60,11 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
 
   const { rolesFilters = [] } = useRolesFetch()
   const { departmentFilters = [] } = useDepartmentsFetch()
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: paginationData ? paginationData.per_page : 10,
+  })
 
   const usersData = useMemo(() => {
     return (
@@ -152,6 +161,13 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
       onPaginationChange={handlePaginationChange}
       onFiltersChange={handleFilterChange}
       onSortingChange={handleSortingChange}
+      pagination={pagination}
+      setPagination={setPagination}
+      pageSizeOptions={[
+        { label: '10', value: '10' },
+        { label: '50', value: '50' },
+        { label: '100', value: '100' },
+      ]}
     />
   )
 }

@@ -1,11 +1,15 @@
-import { useCallback, useMemo, FC } from 'react'
+import { useCallback, useMemo, FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 
 import classNames from 'classnames'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  createColumnHelper,
+  PaginationState,
+} from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -43,6 +47,11 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   job_definition,
 }) => {
   const { t } = useTranslation()
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10000,
+  })
 
   const { deleteAssignmentVendor } = useAssignmentRemoveVendor({
     id,
@@ -121,6 +130,8 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
         tableSize={TableSizeTypes.M}
         className={classes.tableContainer}
         hidePagination
+        pagination={pagination}
+        setPagination={setPagination}
         headComponent={<h4>{t('task.vendors')}</h4>}
       />
     </div>

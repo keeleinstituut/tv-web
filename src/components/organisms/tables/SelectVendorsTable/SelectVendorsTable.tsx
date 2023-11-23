@@ -1,11 +1,15 @@
-import { useCallback, useMemo, memo } from 'react'
+import { useCallback, useMemo, memo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFetchTags } from 'hooks/requests/useTags'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, range, includes } from 'lodash'
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  createColumnHelper,
+  PaginationState,
+} from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
   FilterFunctionType,
@@ -115,6 +119,11 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   } = useLanguageDirections({
     per_page: 40,
     initialSelectedValues: [matchingLanguageString],
+  })
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: paginationData ? paginationData.per_page : 10,
   })
 
   const tableData = useMemo(
@@ -370,6 +379,8 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         className={classes.tableContainer}
+        pagination={pagination}
+        setPagination={setPagination}
       />
     </Root>
   )

@@ -1,9 +1,13 @@
-import { FC, useRef } from 'react'
+import { FC, useRef, useState } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, compact, size, keys, includes } from 'lodash'
-import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
+import {
+  createColumnHelper,
+  ColumnDef,
+  PaginationState,
+} from '@tanstack/react-table'
 import { UserCsvType } from 'types/users'
 import { useTranslation } from 'react-i18next'
 import { Control } from 'react-hook-form'
@@ -42,6 +46,11 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
   const containerRef = useRef(null)
   const { t } = useTranslation()
   const { existingDepartments = [] } = useDepartmentsFetch()
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   const roleOptions = compact(
     map(existingRoles, ({ name }) => {
@@ -200,6 +209,8 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
         { label: '50', value: '50' },
         { label: '100', value: '100' },
       ]}
+      pagination={pagination}
+      setPagination={setPagination}
     />
   )
 }
