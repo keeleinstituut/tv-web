@@ -113,7 +113,7 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
         // TODO: disabled for now, we don't have endpoint for this
         // open confirmation modal from here
         disabled
-        // hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
+        // hidden={!includes(userPrivileges, Privileges.ManageProject)}
       />
       {/* Reject button */}
       <Button

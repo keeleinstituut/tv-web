@@ -122,7 +122,8 @@
     "owner": "Omanik",
     "cancellation_reason": "Tühistamise põhjus",
     "pick_sub_project": "Vali alamtellimus",
-    "extra_information": "Lisainfo"
+    "extra_information": "Lisainfo",
+    "assignee_comments": "Teostaja kommentaar"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -224,7 +225,8 @@
     "confirm_cancellation": "Jah, tühista",
     "accept_project": "Võta vastu",
     "reject_project": "Lükka tagasi",
-    "change_files": "Muuda faile"
+    "change_files": "Muuda faile",
+    "download_all": "Laadi kõik alla"
   },
   "error": {
     "input_title": "Veateade: ",

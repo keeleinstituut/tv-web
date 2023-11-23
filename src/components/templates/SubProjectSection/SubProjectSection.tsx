@@ -6,19 +6,7 @@ import {
 } from 'hooks/requests/useProjects'
 import Tag from 'components/atoms/Tag/Tag'
 import Loader from 'components/atoms/Loader/Loader'
-import Tabs from 'components/molecules/Tabs/Tabs'
-import Feature from 'components/organisms/features/Feature'
-import {
-  compact,
-  includes,
-  map,
-  toLower,
-  find,
-  findIndex,
-  uniqBy,
-  sortBy,
-  isEmpty,
-} from 'lodash'
+import { includes, toLower, find, isEmpty } from 'lodash'
 import { ListSubProjectDetail, SubProjectFeatures } from 'types/projects'
 import { useTranslation } from 'react-i18next'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
@@ -28,13 +16,14 @@ import dayjs from 'dayjs'
 import Notification, {
   NotificationTypes,
 } from 'components/molecules/Notification/Notification'
-import { TabStyle } from 'components/molecules/Tab/Tab'
 import useHashState from 'hooks/useHashState'
 import Button from 'components/molecules/Button/Button'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
 import useAuth from 'hooks/useAuth'
+import SubProjectSectionContent from 'components/organisms/SubProjectSectionContent/SubProjectSectionContent'
+import { Privileges } from 'types/privileges'
 
 interface ColumnProps {
   label?: string
@@ -94,6 +83,8 @@ type SubProjectProps = Pick<
 > & {
   projectDomain?: ClassifierValue
   projectId?: string
+  isUserClientOfProject?: boolean
+  manager_institution_user_id?: string
 }
 
 const SubProjectSection: FC<SubProjectProps> = ({
@@ -109,11 +100,8 @@ const SubProjectSection: FC<SubProjectProps> = ({
   projectId,
 }) => {
   const { t } = useTranslation()
-  // const { userPrivileges } = useAuth()
-  // console.warn('userPrivileges', userPrivileges)
-  const [activeTab, setActiveTab] = useState<string | undefined>(
-    SubProjectFeatures.GeneralInformation
-  )
+  const { userPrivileges } = useAuth()
+
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
   const { subProject, isLoading } = useFetchSubProject({ id }) || {}
@@ -160,14 +148,6 @@ const SubProjectSection: FC<SubProjectProps> = ({
   const canStartWorkflow =
     !hasAnyAssignmentsWithoutDeadline && !hasAnyFeaturesWithoutCandidates
 
-  const tabs = map(assignments, ({ job_definition }) => {
-    return {
-      id: job_definition.id,
-      job_key: job_definition.job_key,
-      cat_tool_enabled: job_definition.linking_with_cat_tool_jobs_enabled,
-    }
-  })
-
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
       setHash(isExpanded ? ext_id : '')
@@ -189,44 +169,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
     }
   }, [startSubProjectWorkflow, t])
 
-  const uniqueAssignments = uniqBy(tabs, 'id')
-
-  const availableTabs = compact(
-    map(uniqueAssignments, (feature) => {
-      if (feature) {
-        const catToolName = feature.cat_tool_enabled ? '(CAT)' : ''
-        return {
-          key: feature.id,
-          id: feature.job_key,
-          name: `${t(`projects.features.${feature.job_key}`)}${catToolName}`,
-        }
-      }
-    })
-  )
-
-  const orderMapping: {
-    job_translation: number
-    job_revision: number
-    job_overview: number
-    [key: string]: number
-  } = {
-    job_translation: 1,
-    job_revision: 2,
-    job_overview: 3,
-  }
-
-  const sortedAvailableTabs = sortBy(
-    availableTabs,
-    (tab) => orderMapping[tab.id]
-  )
-
-  const allTabs = [
-    {
-      id: 'general_information',
-      name: t('projects.features.general_information'),
-    },
-    ...sortedAvailableTabs,
-  ]
+  const isClientView = !includes(userPrivileges, Privileges.ManageProject)
 
   if (isLoading) return <Loader loading={isLoading} />
 
@@ -264,7 +207,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
               classes.startWorkFlowNotification,
               !canStartWorkflow && classes.warning
             )}
-            hidden={!isExpanded}
+            hidden={!isExpanded || isClientView}
             children={
               <Button
                 children={t('button.send_sub_project_to_vendors')}
@@ -280,23 +223,10 @@ const SubProjectSection: FC<SubProjectProps> = ({
         <LeftComponent {...{ ext_id, deadline_at, price, languageDirection }} />
       }
     >
-      <Tabs
-        setActiveTab={setActiveTab}
-        activeTab={activeTab}
-        tabs={allTabs}
-        tabStyle={TabStyle.Primary}
-        className={classes.tabsContainer}
-        addDisabled
-        editDisabled
-      />
-
-      <Feature
-        subProject={subProject}
+      <SubProjectSectionContent
+        id={id}
         projectDomain={projectDomain}
-        feature={activeTab as SubProjectFeatures}
-        index={findIndex(allTabs, (tab) => {
-          return tab.id === activeTab
-        })}
+        isClientView={isClientView}
       />
     </ExpandableContentContainer>
   )
