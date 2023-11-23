@@ -55,9 +55,10 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
     includes(userPrivileges, Privileges.ViewPersonalProject) &&
     isUserClientOfProject
 
-  const canCancelInstitutionProject =
-    status === ProjectStatus.New &&
-    includes(userPrivileges, Privileges.ManageProject)
+  const canCancelInstitutionProject = includes(
+    userPrivileges,
+    Privileges.ManageProject
+  )
 
   const canCancelProject =
     isProjectCancellable &&
@@ -87,7 +88,7 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
 
   const handleAcceptProject = useCallback(async () => {
     try {
-      await completeTask({ accepted: true })
+      await completeTask({ accepted: 1 })
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),

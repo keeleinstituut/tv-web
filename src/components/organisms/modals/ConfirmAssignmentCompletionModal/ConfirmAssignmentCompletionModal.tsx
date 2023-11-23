@@ -11,7 +11,7 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { keys, map, pickBy, reduce } from 'lodash'
+import { isEmpty, keys, map, pickBy, reduce } from 'lodash'
 import { useCompleteAssignment } from 'hooks/requests/useAssignments'
 import { useSubProjectCache } from 'hooks/requests/useProjects'
 
@@ -62,7 +62,6 @@ const ConfirmAssignmentCompletionModal: FC<
       )
       try {
         await completeAssignment({
-          ...values,
           final_file_id: selectedFiles,
           accepted: true,
         })
@@ -99,6 +98,7 @@ const ConfirmAssignmentCompletionModal: FC<
       title={t('modal.pick_files_to_forward')}
       cancelButtonContent={t('button.quit_alt')}
       proceedButtonContent={t('button.send')}
+      proceedButtonDisabled={isEmpty(final_files)}
       handleProceed={handleSubmit(onSubmit)}
       proceedButtonLoading={isCompletingAssignment}
       helperText={t('modal.forward_files_helper')}
