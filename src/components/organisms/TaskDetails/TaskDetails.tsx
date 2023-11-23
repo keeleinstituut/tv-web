@@ -4,21 +4,21 @@ import { includes, toLower } from 'lodash'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import classNames from 'classnames'
 import useHashState from 'hooks/useHashState'
-import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
-import { LeftComponent } from 'components/templates/SubOrderSection/SubOrderSection'
+import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
+import { LeftComponent } from 'components/templates/SubProjectSection/SubProjectSection'
 import TaskContent from 'components/organisms/TaskContent/TaskContent'
-import { ListOrder, SourceFile } from 'types/orders'
+import { ListProject, SourceFile } from 'types/projects'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import { VolumeValue } from 'types/volumes'
 
 import classes from './classes.module.scss'
-
+import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
 interface TaskProps {
   ext_id?: string
   isLoading: boolean
   source_language_classifier_value?: LanguageClassifierValue
   destination_language_classifier_value?: LanguageClassifierValue
-  project?: ListOrder
+  project?: ListProject
   cat_files?: SourceFile[]
   source_files: SourceFile[]
   sub_project_id: string
@@ -87,12 +87,12 @@ const TaskDetails: FC<TaskProps> = ({
       onExpandedChange={handleOpenContainer}
       id={ext_id}
       isExpanded={isExpanded}
-      rightComponent={<OrderStatusTag status={status} />}
+      rightComponent={<ProjectStatusTag status={status} />}
       wrapContent
       leftComponent={
         <LeftComponent
           {...{ ext_id, deadline_at, price, languageDirection }}
-          isTaskView
+          mode={ProjectDetailModes.View}
         />
       }
     >

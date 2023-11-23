@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { isEmpty, map } from 'lodash'
+import { isEmpty, reduce } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -12,7 +12,6 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { Root } from '@radix-ui/react-form'
-import { OrderStatus } from 'types/orders'
 import Tag from 'components/atoms/Tag/Tag'
 import dayjs from 'dayjs'
 import useAuth from 'hooks/useAuth'
@@ -25,15 +24,18 @@ import Loader from 'components/atoms/Loader/Loader'
 import { TasksTableProps } from 'pages/MyTasks/MyTasks'
 
 import classes from './classes.module.scss'
+import { ListTask } from 'types/tasks'
 
 type TaskTableRow = {
-  ext_id: { id: string; ext_id: string }
-  reference_number: string | undefined
+  ext_id: {
+    id: string
+    ext_id: string
+  }
+  reference_number?: string
   language_directions: string
-  cost: number
-  type: string | undefined
-  deadline_at: string | undefined
-  status?: OrderStatus
+  cost?: string
+  type?: string
+  deadline_at?: string
 }
 
 const TasksTable: FC<TasksTableProps> = ({
@@ -43,19 +45,35 @@ const TasksTable: FC<TasksTableProps> = ({
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
+  isHistoryTab,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
+
   const { languageDirectionFilters, loadMore, handleSearch } =
     useLanguageDirections({})
   const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
     type: ClassifierValueType.ProjectType,
   })
 
-  const tasksData = useMemo(
-    () =>
-      map(tasks, ({ id, assignment }) => {
-        const { subProject, ext_id } = assignment || {}
+  const tasksData = useMemo(() => {
+    return reduce<
+      ListTask,
+      {
+        ext_id: { id: string; ext_id: string }
+        reference_number?: string
+        language_directions: string
+        cost?: string
+        type?: string
+        deadline_at?: string
+      }[]
+    >(
+      tasks,
+      (result, { id, assignment }) => {
+        if (!assignment) {
+          return result
+        }
+        const { subProject, ext_id } = assignment
         const {
           project,
           source_language_classifier_value,
@@ -64,7 +82,7 @@ const TasksTable: FC<TasksTableProps> = ({
         } = subProject || {}
         const { deadline_at, type_classifier_value, reference_number } =
           project || {}
-        return {
+        const taskData = {
           ext_id: { id: id, ext_id: ext_id },
           reference_number: reference_number,
           language_directions: `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
@@ -72,9 +90,11 @@ const TasksTable: FC<TasksTableProps> = ({
           type: type_classifier_value?.name,
           deadline_at: deadline_at,
         }
-      }),
-    [tasks]
-  )
+        return [...result, taskData]
+      },
+      []
+    )
+  }, [tasks])
 
   const handleModifiedFilterChange = useCallback(
     (filters?: FilterFunctionType) => {
@@ -110,7 +130,9 @@ const TasksTable: FC<TasksTableProps> = ({
       header: () => t('my_tasks.assignment_id'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
-        const ext_id = getValue()
+        const projectExtIdObject = getValue()
+        const taskId = projectExtIdObject?.id
+        const projectExtId = projectExtIdObject?.ext_id
         return (
           <Button
             appearance={AppearanceTypes.Text}
@@ -121,9 +143,11 @@ const TasksTable: FC<TasksTableProps> = ({
             // disabled={
             //   !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
             // }
-            href={`/orders/my-tasks/${ext_id.id}`}
+            href={`/projects/my-tasks/${taskId}${
+              isHistoryTab ? '/isHistoryView' : ''
+            }     `}
           >
-            {ext_id.ext_id}
+            {projectExtId}
           </Button>
         )
       },

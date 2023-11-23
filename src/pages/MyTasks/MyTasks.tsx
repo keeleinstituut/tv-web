@@ -23,6 +23,7 @@ export interface TasksTableProps {
   handleSortingChange: (value?: SortingFunctionType) => void
   handlePaginationChange: (value?: PaginationFunctionType) => void
   isLoading: boolean
+  isHistoryTab?: boolean
 }
 
 const MyTasks: FC = () => {
@@ -80,6 +81,7 @@ const MyTasks: FC = () => {
         handleFilterChange: handleFilterChange,
         handleSortingChange: handleSortingChange,
         handlePaginationChange: handlePaginationChange,
+        isHistoryTab: false,
       }
       break
     case t('my_tasks.pending_assignments'):
@@ -91,6 +93,7 @@ const MyTasks: FC = () => {
         handleFilterChange: handleWaitingTasksFilterChange,
         handleSortingChange: handleWaitingTasksSortingChange,
         handlePaginationChange: handleWaitingTasksPaginationChange,
+        isHistoryTab: false,
       }
       break
     case t('my_tasks.my_tasks_history'):
@@ -102,6 +105,7 @@ const MyTasks: FC = () => {
         handleFilterChange: handleHistoryFilterChange,
         handleSortingChange: handleHistorySortingChange,
         handlePaginationChange: handleHisoryPaginationChange,
+        isHistoryTab: true,
       }
       break
     default:

@@ -8,13 +8,7 @@ import {
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
 import { ReactComponent as Download } from 'assets/icons/download.svg'
-import {
-  Control,
-  FieldValues,
-  Path,
-  useController,
-  useWatch,
-} from 'react-hook-form'
+import { Control, FieldValues, Path, useController } from 'react-hook-form'
 import classNames from 'classnames'
 import FileImport, {
   ProjectFileTypes,
@@ -31,6 +25,7 @@ import GenerateForTranslationSection from 'components/molecules/GenerateForTrans
 
 import classes from './classes.module.scss'
 import { useHandleFiles } from 'hooks/requests/useFiles'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 
 // TODO: very similar to ProjectFilesList, these 2 can be unified
 
@@ -48,7 +43,7 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   isCatProjectLoading?: boolean
   isGenerateProjectButtonDisabled?: boolean
   catSetupStatus?: CatProjectStatus
-  isTaskView?: boolean
+  mode?: ProjectDetailModes
 }
 
 interface FileRow {
@@ -75,7 +70,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   subProjectId,
   isGenerateProjectButtonDisabled,
   catSetupStatus,
-  isTaskView,
+  mode,
 }: SourceFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -135,7 +130,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   )
 
   const columns = [
-    ...(canGenerateProject && !isTaskView
+    ...(canGenerateProject && mode !== 'view'
       ? [
           columnHelper.accessor('check', {
             header: '',
@@ -177,7 +172,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         )
       },
     }),
-    ...(isTaskView
+    ...(mode === 'view'
       ? [
           //TODO: add correct data for category
           columnHelper.accessor('check', {
@@ -271,7 +266,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
             />
             <FileImport
               fileButtonText={t('button.add_new_file')}
-              hidden={!isEditable || isTaskView}
+              hidden={!isEditable || mode === 'view'}
               isFilesListHidden
               files={value}
               inputFileTypes={ProjectFileTypes}
@@ -283,7 +278,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         }
       />
       <GenerateForTranslationSection
-        hidden={!canGenerateProject || isTaskView}
+        hidden={!canGenerateProject || mode === 'view'}
         openSendToCatModal={openSendToCatModal}
         className={classes.generateSection}
         disabled={isGenerateProjectButtonDisabled}

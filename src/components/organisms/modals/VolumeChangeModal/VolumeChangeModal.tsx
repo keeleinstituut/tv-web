@@ -48,6 +48,7 @@ import { VolumeValue } from 'types/volumes'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 
 export interface VolumeChangeModalProps {
   assignmentId?: string
@@ -64,7 +65,7 @@ export interface VolumeChangeModalProps {
   unit_quantity?: number
   sub_project_id?: string
   onChangeValue?: (volume: VolumeValue) => void
-  isTaskView?: boolean
+  mode?: ProjectDetailModes
   taskViewPricesClass?: string
 }
 
@@ -115,7 +116,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   unit_type,
   sub_project_id,
   onChangeValue,
-  isTaskView = false,
+  mode,
   taskViewPricesClass,
   ...rest
 }) => {
@@ -260,7 +261,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         label: t('label.unit'),
         name: 'unit',
         options: priceUnitOptions,
-        onlyDisplay: isCat || isTaskView,
+        onlyDisplay: isCat || mode === 'view',
         rules: {
           required: true,
         },
@@ -276,7 +277,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         rules: {
           required: true,
         },
-        onlyDisplay: isTaskView,
+        onlyDisplay: mode === 'view',
       },
       {
         inputType: InputTypes.Text,
@@ -291,7 +292,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       {
         inputType: InputTypes.Text,
         className: classes.inputInternalPosition,
-        hidden: isCat || isTaskView,
+        hidden: isCat || mode === 'view',
         type: 'number',
         label: t('label.amount'),
         ariaLabel: t('label.amount'),
@@ -321,7 +322,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         name: 'vendor',
       },
     ],
-    [isCat, isTaskView, priceUnitOptions, t]
+    [isCat, mode, priceUnitOptions, t]
   )
 
   // Probably can be improved a bit and unified with onSaveEdit
@@ -468,11 +469,12 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     [isCat, assignmentId, amountDiscounts, amountValues, catJobId, onSave]
   )
 
-  const title = isTaskView
-    ? t('modal.view_cat_volumes')
-    : isCat
-    ? t('modal.pick_volume_by_cat')
-    : t('modal.pick_volume_manually')
+  const title =
+    mode === 'view'
+      ? t('modal.view_cat_volumes')
+      : isCat
+      ? t('modal.pick_volume_by_cat')
+      : t('modal.pick_volume_manually')
 
   const catHelperText = isCat ? (
     <>
@@ -485,7 +487,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     t('modal.pick_volume_manually_helper')
   )
 
-  const helperText = isTaskView ? '' : catHelperText
+  const helperText = mode === 'view' ? '' : catHelperText
 
   return (
     <ConfirmationModalBase
@@ -493,10 +495,10 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       handleProceed={handleSubmit(onSubmit)}
       cancelButtonContent={t('button.close')}
       cancelButtonDisabled={isSubmitting}
-      proceedButtonContent={isTaskView ? undefined : t('button.confirm')}
+      proceedButtonContent={mode === 'view' ? undefined : t('button.confirm')}
       proceedButtonDisabled={!isValid}
       proceedButtonLoading={isSubmitting}
-      proceedButtonHidden={isTaskView}
+      proceedButtonHidden={mode === 'view'}
       className={classes.modalContainer}
       title={title}
       helperText={helperText}
@@ -512,7 +514,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
           <VolumeCatPriceTable
             control={control}
             hidden={!isCat}
-            isEditable={!isTaskView}
+            isEditable={mode !== 'view'}
             taskViewPricesClass={taskViewPricesClass}
           />
         </Root>

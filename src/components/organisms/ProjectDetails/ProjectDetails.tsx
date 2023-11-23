@@ -39,6 +39,7 @@ import classes from './classes.module.scss'
 export enum ProjectDetailModes {
   New = 'new',
   Editable = 'editable',
+  View = 'view',
 }
 
 interface FormButtonsProps {
@@ -125,14 +126,12 @@ interface ProjectDetailsProps {
   mode?: ProjectDetailModes
   project?: DetailedProject
   className?: string
-  isTaskView?: boolean
 }
 
 const ProjectDetails: FC<ProjectDetailsProps> = ({
   mode,
   project,
   className,
-  isTaskView,
 }) => {
   const {
     workflow_started,
@@ -451,7 +450,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
           />
           <FormButtons
             {...formButtonsProps}
-            hidden={isNew || !isSomethingEditable || isTaskView}
+            hidden={isNew || !isSomethingEditable || mode === 'view'}
           />
         </Container>
         <FormButtons

@@ -4,7 +4,7 @@ import {
   ResponseMetaTypes,
   SortingFunctionType,
 } from './collective'
-import { ListOrder, SourceFile } from './orders'
+import { ListProject, SourceFile } from './projects'
 import { AssignmentType } from 'types/assignments'
 
 export type SubProject = {
@@ -15,7 +15,7 @@ export type SubProject = {
   created_at: string
   updated_at: string
   price: number
-  project: ListOrder
+  project: ListProject
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
   cat_files: SourceFile[]

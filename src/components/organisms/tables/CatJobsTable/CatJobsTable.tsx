@@ -26,6 +26,7 @@ import {
 } from 'hooks/requests/useProjects'
 
 import classes from './classes.module.scss'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 
 interface CatJobsTableProps {
   className?: string
@@ -38,7 +39,7 @@ interface CatJobsTableProps {
   source_language_classifier_value?: LanguageClassifierValue
   destination_language_classifier_value?: LanguageClassifierValue
   canSendToVendors?: boolean
-  isTaskView?: boolean
+  mode?: ProjectDetailModes
 }
 
 interface CatJobRow {
@@ -62,7 +63,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   canSendToVendors,
-  isTaskView,
+  mode,
 }) => {
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile()
@@ -130,7 +131,8 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
 
   const columns = [
     columnHelper.accessor('name', {
-      header: () => (isTaskView ? t('label.file_name') : t('label.xliff_name')),
+      header: () =>
+        mode === 'view' ? t('label.file_name') : t('label.xliff_name'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('progress_percentage', {
@@ -155,7 +157,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     }),
     columnHelper.accessor('dots_button', {
       cell: () => {
-        return isTaskView ? (
+        return mode === 'view' ? (
           <SimpleDropdown
             icon={HorizontalDots}
             className={classes.dropdown}
@@ -176,7 +178,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         )
       },
       header: () => {
-        return !isTaskView ? (
+        return mode !== 'view' ? (
           <SimpleDropdown
             icon={HorizontalDots}
             className={classes.dropdown}
@@ -221,14 +223,14 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         headComponent={
           <div className={classes.titleRow}>
             <h3>
-              {isTaskView
+              {mode === 'view'
                 ? t('my_tasks.my_final_files')
-                : t('orders.source_files_in_translation_tool')}
+                : t('projects.source_files_in_translation_tool')}
             </h3>
 
             <SmallTooltip
               tooltipContent={
-                isTaskView
+                mode === 'view'
                   ? t('tooltip.my_ready_files_from_vendors')
                   : t('tooltip.source_files_in_translation_tool_helper')
               }
@@ -246,7 +248,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           isCatAnalysisInProgress && classes.loader
         )}
         icon={ArrowRight}
-        hidden={isTaskView}
+        hidden={mode === 'view'}
       >
         {t('button.look_at_cat_analysis')}
       </Button>

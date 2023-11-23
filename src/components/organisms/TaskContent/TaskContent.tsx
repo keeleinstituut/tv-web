@@ -1,5 +1,5 @@
 import Loader from 'components/atoms/Loader/Loader'
-import { useFetchSubOrderCatToolJobs } from 'hooks/requests/useOrders'
+import { useFetchSubProjectCatToolJobs } from 'hooks/requests/useProjects'
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'
@@ -12,9 +12,9 @@ import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { isEmpty, split } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
-import { useForm, useFormState, useWatch } from 'react-hook-form'
-import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
-import { SourceFile } from 'types/orders'
+import { useForm, useWatch } from 'react-hook-form'
+import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
+import { SourceFile } from 'types/projects'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 import { LanguageClassifierValue } from 'types/classifierValues'
@@ -27,11 +27,12 @@ import Button from 'components/molecules/Button/Button'
 import { useCompleteAssignment } from 'hooks/requests/useTasks'
 
 import classes from './classes.module.scss'
+import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
 
 interface FormValues {
   my_source_files: SourceFile[]
   my_final_files: SourceFile[]
-  my_notes?: string
+  my_notes: string
 }
 
 interface TaskContentProps {
@@ -65,11 +66,11 @@ const TaskContent: FC<TaskContentProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const { catToolJobs, catSetupStatus } = useFetchSubOrderCatToolJobs({
+  const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
     id: sub_project_id,
   })
 
-  const { subOrderTmKeys } = useFetchSubOrderTmKeys({
+  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({
     id: sub_project_id,
   })
 
@@ -82,9 +83,7 @@ const TaskContent: FC<TaskContentProps> = ({
     reValidateMode: 'onChange',
   })
 
-  // console.log('useWatch({control})', useWatch({ control }))
-
-  // console.log('useFormState({ control })', useFormState({ control }))
+  console.log('useWatch({control})', useWatch({ control }))
 
   useEffect(() => {
     if (source_files) {
@@ -122,7 +121,7 @@ const TaskContent: FC<TaskContentProps> = ({
 
     showModal(ModalTypes.VolumeChange, {
       isCat: true,
-      isTaskView: true,
+      mode: ProjectDetailModes.View,
       discounts,
       unit_fee,
       volume_analysis: {
@@ -220,13 +219,13 @@ const TaskContent: FC<TaskContentProps> = ({
       </div>
       <TranslationMemoriesSection
         className={classes.translationMemories}
-        hidden={isEmpty(subOrderTmKeys)}
+        hidden={isEmpty(SubProjectTmKeys)}
         control={control}
         isEditable={false}
-        subOrderId={sub_project_id}
-        subOrderTmKeys={subOrderTmKeys}
-        subOrderLangPair={subOrderLangPair}
-        isTaskView
+        subProjectId={sub_project_id}
+        SubProjectTmKeys={SubProjectTmKeys}
+        subProjectLangPair={subOrderLangPair}
+        mode={ProjectDetailModes.View}
       />
       <div className={classes.grid}>
         <SourceFilesList
@@ -235,8 +234,8 @@ const TaskContent: FC<TaskContentProps> = ({
           tooltipContent={t('tooltip.my_source_files_helper')}
           control={control}
           catSetupStatus={catSetupStatus}
-          isTaskView
-          subOrderId={sub_project_id}
+          mode={ProjectDetailModes.View}
+          subProjectId={sub_project_id}
           isEditable
         />
         <FinalFilesList
@@ -245,12 +244,12 @@ const TaskContent: FC<TaskContentProps> = ({
           control={control}
           isEditable
           isLoading={isLoading}
-          subOrderId={sub_project_id}
+          subProjectId={sub_project_id}
           className={classes.myFinalFiles}
-          isTaskView
+          mode={ProjectDetailModes.View}
         />
         <CatJobsTable
-          subOrderId={sub_project_id}
+          subProjectId={sub_project_id}
           className={classes.catJobs}
           hidden={isEmpty(catToolJobs)}
           cat_jobs={catToolJobs}
@@ -261,7 +260,7 @@ const TaskContent: FC<TaskContentProps> = ({
           destination_language_classifier_value={
             destination_language_classifier_value
           }
-          isTaskView
+          mode={ProjectDetailModes.View}
         />
       </div>
       <Button

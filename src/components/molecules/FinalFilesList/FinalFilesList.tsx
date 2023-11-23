@@ -32,6 +32,7 @@ import classes from './classes.module.scss'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { useHandleFiles } from 'hooks/requests/useFiles'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 
 // TODO: very similar to ProjectFilesList, these 2 can be unified
 
@@ -43,10 +44,9 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
   isEditable?: boolean
   className?: string
   isLoading?: boolean
-  isTaskView?: boolean
+  mode?: ProjectDetailModes
   subProjectId: string
 }
-
 interface FileRow {
   name: string
   shared_with_client: number
@@ -66,8 +66,8 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   isEditable,
   className,
   isLoading,
-  isTaskView,
   subProjectId,
+  mode,
 }: FinalFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -173,7 +173,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   }, [sharedFiles, typedValue])
 
   const columns = [
-    ...(!isTaskView
+    ...(mode !== 'view'
       ? [
           columnHelper.accessor('shared_with_client', {
             header: () => t('label.shared_with_client'),
@@ -194,32 +194,34 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       : []),
     columnHelper.accessor('name', {
       header: () => (
-        <p className={isTaskView ? classes.header : ''}>
+        <p className={mode === 'view' ? classes.header : ''}>
           {t('label.file_name')}
         </p>
       ),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         const fileName = getValue()
-        return <p className={isTaskView ? classes.fileName : ''}>{fileName}</p>
+        return (
+          <p className={mode === 'view' ? classes.fileName : ''}>{fileName}</p>
+        )
       },
     }),
 
     columnHelper.accessor('feature', {
-      header: () => <p hidden={isTaskView}>{t('label.task')}</p>,
+      header: () => <p hidden={mode === 'view'}>{t('label.task')}</p>,
       footer: (info) => {
-        if (isTaskView) return null
+        if (mode === 'view') return null
         return info.column.id
       },
       cell: ({ getValue }) => {
         const selectedFeature = getValue()
-        if (isTaskView) return null
+        if (mode === 'view') return null
         return t(`projects.features.${selectedFeature}`)
       },
     }),
     columnHelper.accessor('created_at', {
       header: () => (
-        <p className={isTaskView ? classes.header : ''}>
+        <p className={mode === 'view' ? classes.header : ''}>
           {t('label.added_at')}
         </p>
       ),
@@ -227,11 +229,13 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         const createdAt = getValue()
         return (
-          <p className={isTaskView ? classes.createdAt : ''}>{createdAt}</p>
+          <p className={mode === 'view' ? classes.createdAt : ''}>
+            {createdAt}
+          </p>
         )
       },
     }),
-    ...(!isTaskView
+    ...(mode !== 'view'
       ? [
           columnHelper.accessor('download_button', {
             header: '',
@@ -339,11 +343,11 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         onClick={handleSendFilesToClient}
         disabled={!dirtyFields?.shared_with_client}
         loading={isLoading}
-        hidden={isTaskView}
+        hidden={mode === 'view'}
       >
         {t('button.save_changes')}
       </Button>
-      <span className={classes.saveHelper} hidden={isTaskView}>
+      <span className={classes.saveHelper} hidden={mode === 'view'}>
         {t('helper.save_files_helper')}
       </span>
     </div>

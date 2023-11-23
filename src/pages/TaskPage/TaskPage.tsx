@@ -1,25 +1,34 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { FC, useCallback } from 'react'
-import OrderDetails, {
-  OrderDetailModes,
-} from 'components/organisms/OrderDetails/OrderDetails'
+import ProjectDetails, {
+  ProjectDetailModes,
+} from 'components/organisms/ProjectDetails/ProjectDetails'
 import TaskDetails from 'components/organisms/TaskDetails/TaskDetails'
 import Button from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { useAcceptTask, useFetchTask } from 'hooks/requests/useTasks'
+import {
+  useAcceptTask,
+  useFetchHistoryTask,
+  useFetchTask,
+} from 'hooks/requests/useTasks'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { isEmpty } from 'lodash'
+import { ListTask } from 'types/tasks'
+import { useFetchProject } from 'hooks/requests/useProjects'
 
 import classes from './classes.module.scss'
 
 const TaskPage: FC = () => {
   const { t } = useTranslation()
-  const { taskId } = useParams()
+  const { taskId, isHistoryView } = useParams()
 
   const { task, isLoading } = useFetchTask({
+    id: taskId,
+  })
+  const { historyTask, isLoading: isLoadingHistoryTask } = useFetchHistoryTask({
     id: taskId,
   })
 
@@ -27,7 +36,10 @@ const TaskPage: FC = () => {
     id: taskId,
   })
 
-  const { assignment, assignee_institution_user_id } = task || {}
+  const { assignment, assignee_institution_user_id } = (
+    isHistoryView ? historyTask : task || {}
+  ) as ListTask
+
   const { subProject, ext_id, sub_project_id, volumes, comments } =
     assignment || {}
 
@@ -37,7 +49,10 @@ const TaskPage: FC = () => {
     source_files,
     source_language_classifier_value,
     destination_language_classifier_value,
+    project_id,
   } = subProject || {}
+
+  const { project: taskProject } = useFetchProject({ id: project_id })
 
   const handleAcceptTask = useCallback(async () => {
     try {
@@ -51,12 +66,6 @@ const TaskPage: FC = () => {
       showValidationErrorMessage(errorData)
     }
   }, [acceptTask, t])
-
-  const projectDetails = {
-    ...project,
-    sub_projects: [subProject],
-    source_files,
-  }
 
   // TODO: check is "Tellija" of the order current user
   if (isLoading) return <Loader loading={isLoading} />
@@ -74,11 +83,10 @@ const TaskPage: FC = () => {
         </Button>
       </div>
 
-      <OrderDetails
-        mode={OrderDetailModes.Editable}
-        order={projectDetails}
+      <ProjectDetails
+        mode={ProjectDetailModes.View}
+        project={taskProject}
         className={classes.orderDetails}
-        isTaskView
       />
 
       <div className={classes.separator} />
@@ -86,7 +94,7 @@ const TaskPage: FC = () => {
       <TaskDetails
         ext_id={ext_id}
         project={project}
-        isLoading={isLoading}
+        isLoading={isHistoryView ? isLoadingHistoryTask : isLoading}
         source_language_classifier_value={source_language_classifier_value}
         destination_language_classifier_value={
           destination_language_classifier_value

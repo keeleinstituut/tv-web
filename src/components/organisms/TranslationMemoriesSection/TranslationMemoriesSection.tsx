@@ -39,6 +39,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from '../NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
+import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
 interface TranslationMemoryButtonProps {
   hidden?: boolean
   subProjectId?: string
@@ -90,7 +91,7 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
   SubProjectTmKeys?: SubProjectTmKeys[]
   subProjectLangPair?: string
   projectDomain?: ClassifierValue
-  isTaskView?: boolean
+  mode?: ProjectDetailModes
 }
 
 interface FileRow {
@@ -116,7 +117,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   SubProjectTmKeys,
   subProjectLangPair,
   projectDomain,
-  isTaskView,
+  mode,
 }: TranslationMemoriesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { translationMemories = [] } = useFetchTranslationMemories()
@@ -240,7 +241,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
             ariaLabel={t('label.main_write')}
             control={control}
             inputType={InputTypes.Checkbox}
-            disabled={isTaskView}
+            disabled={mode === 'view'}
             onClick={() => {
               const payload: SubProjectTmKeysPayload = {
                 id: row.original.tm_key_id || '',
@@ -269,7 +270,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           <BaseButton
             className={classes.iconButton}
             onClick={() => handleDelete({ id: getValue() })}
-            hidden={isTaskView}
+            hidden={mode === 'view'}
           >
             <Delete />
           </BaseButton>

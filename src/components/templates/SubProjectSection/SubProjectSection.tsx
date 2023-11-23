@@ -34,7 +34,7 @@ import Button from 'components/molecules/Button/Button'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
-import useAuth from 'hooks/useAuth'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 
 interface ColumnProps {
   label?: string
@@ -52,7 +52,7 @@ interface LeftComponentProps {
   ext_id: string
   price?: string
   deadline_at?: string
-  isTaskView?: boolean
+  mode?: ProjectDetailModes
 }
 
 export const LeftComponent: FC<LeftComponentProps> = ({
@@ -60,7 +60,7 @@ export const LeftComponent: FC<LeftComponentProps> = ({
   ext_id,
   price,
   deadline_at,
-  isTaskView,
+  mode,
 }) => {
   const { t } = useTranslation()
 
@@ -71,7 +71,9 @@ export const LeftComponent: FC<LeftComponentProps> = ({
       </Column>
       <Column
         label={
-          isTaskView ? t('my_tasks.assignment_id') : t('label.sub_project_id')
+          mode === 'view'
+            ? t('my_tasks.assignment_id')
+            : t('label.sub_project_id')
         }
       >
         <span className={classes.valueText}>{ext_id}</span>
