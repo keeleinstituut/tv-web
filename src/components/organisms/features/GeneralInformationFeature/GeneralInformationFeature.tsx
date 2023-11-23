@@ -105,7 +105,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   const defaultValues = useMemo(
     () => ({
       deadline_at: getLocalDateOjectFromUtcDateString(
-        deadline_at || project.deadline_at
+        deadline_at || project?.deadline_at || ''
       ),
       cat_files,
       source_files: map(source_files, (file) => ({

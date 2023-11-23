@@ -1,5 +1,5 @@
 import Loader from 'components/atoms/Loader/Loader'
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback } from 'react'
 import OrderDetails, {
   OrderDetailModes,
 } from 'components/organisms/OrderDetails/OrderDetails'
@@ -11,6 +11,7 @@ import { useAcceptTask, useFetchTask } from 'hooks/requests/useTasks'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
+import { isEmpty } from 'lodash'
 
 import classes from './classes.module.scss'
 
@@ -21,12 +22,14 @@ const TaskPage: FC = () => {
   const { task, isLoading } = useFetchTask({
     id: taskId,
   })
+
   const { acceptTask, isLoading: isAcceptingTask } = useAcceptTask({
     id: taskId,
   })
 
-  const { assignment } = task || {}
-  const { subProject, ext_id, sub_project_id, volumes } = assignment || {}
+  const { assignment, assignee_institution_user_id } = task || {}
+  const { subProject, ext_id, sub_project_id, volumes, comments } =
+    assignment || {}
 
   const {
     project,
@@ -49,6 +52,12 @@ const TaskPage: FC = () => {
     }
   }, [acceptTask, t])
 
+  const projectDetails = {
+    ...project,
+    sub_projects: [subProject],
+    source_files,
+  }
+
   // TODO: check is "Tellija" of the order current user
   if (isLoading) return <Loader loading={isLoading} />
   return (
@@ -59,6 +68,7 @@ const TaskPage: FC = () => {
           className={classes.acceptButton}
           onClick={handleAcceptTask}
           loading={isAcceptingTask}
+          hidden={!isEmpty(assignee_institution_user_id)}
         >
           {t('button.accept')}
         </Button>
@@ -66,7 +76,7 @@ const TaskPage: FC = () => {
 
       <OrderDetails
         mode={OrderDetailModes.Editable}
-        order={project}
+        order={projectDetails}
         className={classes.orderDetails}
         isTaskView
       />
@@ -86,6 +96,8 @@ const TaskPage: FC = () => {
         sub_project_id={sub_project_id || ''}
         volumes={volumes}
         taskId={taskId}
+        comments={comments}
+        assignee_institution_user_id={assignee_institution_user_id}
       />
     </>
   )

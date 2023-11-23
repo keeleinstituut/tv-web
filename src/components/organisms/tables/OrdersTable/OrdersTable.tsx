@@ -35,13 +35,13 @@ import { FilterFunctionType } from 'types/collective'
 // Currently unclear
 
 type OrderTableRow = {
-  ext_id: string
-  reference_number: string
-  deadline_at: string
+  ext_id?: string
+  reference_number?: string
+  deadline_at?: string
   type: string
-  status: OrderStatus
+  status?: OrderStatus
   tags: string[]
-  price: string
+  price?: string
   language_directions: string[]
 }
 

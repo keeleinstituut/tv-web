@@ -28,11 +28,11 @@ import classes from './classes.module.scss'
 
 type TaskTableRow = {
   ext_id: { id: string; ext_id: string }
-  reference_number: string
+  reference_number: string | undefined
   language_directions: string
   cost: number
   type: string | undefined
-  deadline_at: string
+  deadline_at: string | undefined
   status?: OrderStatus
 }
 
@@ -81,15 +81,18 @@ const TasksTable: FC<TasksTableProps> = ({
       const { language_direction, type_classifier_value_id, ...rest } =
         filters || {}
       const typedLanguageDirection = language_direction as string
+      const typedClassifierValueId = type_classifier_value_id as string
 
       const langPair = {
-        src: typedLanguageDirection?.split('_')[0],
-        dst: typedLanguageDirection?.split('_')[1],
+        1: {
+          src: typedLanguageDirection?.split('_')[0],
+          dst: typedLanguageDirection?.split('_')[1],
+        },
       }
 
       const newFilters = {
         lang_pair: langPair,
-        type_classifier_value_id: type_classifier_value_id,
+        type_classifier_value_id: [typedClassifierValueId],
         ...rest,
       }
 
@@ -141,7 +144,7 @@ const TasksTable: FC<TasksTableProps> = ({
         )
       },
       meta: {
-        filterOption: { language_direction: languageDirectionFilters }, //TODO: waiting for BE info, currently not working
+        filterOption: { language_direction: languageDirectionFilters },
         multiple: false,
         onEndReached: loadMore,
         onSearch: handleSearch,
@@ -157,7 +160,7 @@ const TasksTable: FC<TasksTableProps> = ({
       header: () => t('label.type'),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { type_classifier_value_id: typeFilters }, //TODO: waiting for BE info, currently not working
+        filterOption: { type_classifier_value_id: typeFilters },
         multiple: false,
       },
     }),

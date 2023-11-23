@@ -6,7 +6,7 @@ import { TabStyle } from 'components/molecules/Tab/Tab'
 import { useTranslation } from 'react-i18next'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
-import { ListTask, TasksTabType } from 'types/tasks'
+import { ListTask } from 'types/tasks'
 import {
   FilterFunctionType,
   PaginationFunctionType,
@@ -23,7 +23,6 @@ export interface TasksTableProps {
   handleSortingChange: (value?: SortingFunctionType) => void
   handlePaginationChange: (value?: PaginationFunctionType) => void
   isLoading: boolean
-  tasksTabType: TasksTabType
 }
 
 const MyTasks: FC = () => {
@@ -69,7 +68,6 @@ const MyTasks: FC = () => {
     handleFilterChange: handleFilterChange,
     handleSortingChange: handleSortingChange,
     handlePaginationChange: handlePaginationChange,
-    tasksTabType: TasksTabType.MyTasks,
   }
 
   switch (activeTab) {
@@ -82,7 +80,6 @@ const MyTasks: FC = () => {
         handleFilterChange: handleFilterChange,
         handleSortingChange: handleSortingChange,
         handlePaginationChange: handlePaginationChange,
-        tasksTabType: TasksTabType.MyTasks,
       }
       break
     case t('my_tasks.pending_assignments'):
@@ -94,7 +91,6 @@ const MyTasks: FC = () => {
         handleFilterChange: handleWaitingTasksFilterChange,
         handleSortingChange: handleWaitingTasksSortingChange,
         handlePaginationChange: handleWaitingTasksPaginationChange,
-        tasksTabType: TasksTabType.PendingTasks,
       }
       break
     case t('my_tasks.my_tasks_history'):
@@ -106,7 +102,6 @@ const MyTasks: FC = () => {
         handleFilterChange: handleHistoryFilterChange,
         handleSortingChange: handleHistorySortingChange,
         handlePaginationChange: handleHisoryPaginationChange,
-        tasksTabType: TasksTabType.History,
       }
       break
     default:

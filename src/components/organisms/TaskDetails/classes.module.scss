@@ -27,18 +27,3 @@
     border-color: $color-warning;
   }
 }
-
-.finishedButton {
-  margin-top: spacing(6);
-  margin-bottom: spacing(4);
-  align-self: flex-end;
-}
-
-.completeModal {
-  h1 {
-    max-width: 70%;
-  }
-  :nth-child(3) {
-    color: $color-primary;
-  }
-}

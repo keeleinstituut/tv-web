@@ -19,6 +19,13 @@ export interface ResponseMetaTypes {
   total: number
 }
 
+type TaskLanguagePair = {
+  [filterKey: number]: {
+    src: string
+    dst: string
+  }
+}
+
 export interface FilterFunctionType {
   [filterKey: string]:
     | string
@@ -27,6 +34,7 @@ export interface FilterFunctionType {
     | boolean
     | { src: string; dst: string }[]
     | { src: string; dst: string }
+    | TaskLanguagePair
 }
 export interface SortingFunctionType {
   sort_order?: 'asc' | 'desc' | undefined

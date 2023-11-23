@@ -7,15 +7,11 @@ import useHashState from 'hooks/useHashState'
 import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
 import { LeftComponent } from 'components/templates/SubOrderSection/SubOrderSection'
 import TaskContent from 'components/organisms/TaskContent/TaskContent'
-import Button from 'components/molecules/Button/Button'
-import { useTranslation } from 'react-i18next'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { ListOrder, SourceFile } from 'types/orders'
 import { LanguageClassifierValue } from 'types/classifierValues'
+import { VolumeValue } from 'types/volumes'
 
 import classes from './classes.module.scss'
-import { VolumeValue } from 'types/volumes'
-import { useCompleteAssignment } from 'hooks/requests/useTasks'
 
 interface TaskProps {
   ext_id?: string
@@ -28,6 +24,8 @@ interface TaskProps {
   sub_project_id: string
   volumes?: VolumeValue[]
   taskId?: string
+  comments?: string
+  assignee_institution_user_id?: string
 }
 
 const TaskDetails: FC<TaskProps> = ({
@@ -41,16 +39,13 @@ const TaskDetails: FC<TaskProps> = ({
   sub_project_id,
   volumes,
   taskId,
+  comments,
+  assignee_institution_user_id,
 }) => {
-  const { t } = useTranslation()
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
-  const { completeAssignment, isLoading: isCompletingTask } =
-    useCompleteAssignment({
-      id: taskId,
-    })
 
-  const { price, deadline_at, status, event_start_at, comments } = project || {}
+  const { price, deadline_at, status, event_start_at } = project || {}
 
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
@@ -81,17 +76,6 @@ const TaskDetails: FC<TaskProps> = ({
     [ext_id, setHash]
   )
 
-  const handleOpenCompleteModal = useCallback(() => {
-    showModal(ModalTypes.ConfirmationModal, {
-      title: t('modal.confirm_complete_task'),
-      modalContent: t('modal.confirm_complete_task_details'),
-      cancelButtonContent: t('button.quit'),
-      proceedButtonContent: t('button.complete'),
-      className: classes.completeModal,
-      handleProceed: completeAssignment,
-    })
-  }, [completeAssignment, t])
-
   if (isLoading) return <Loader loading={isLoading} />
 
   return (
@@ -114,11 +98,8 @@ const TaskDetails: FC<TaskProps> = ({
     >
       <TaskContent
         deadline_at={deadline_at}
-        //TODO: add files data
         source_files={source_files}
         cat_files={cat_files}
-        cat_jobs={[]}
-        final_files={[]}
         source_language_classifier_value={source_language_classifier_value}
         destination_language_classifier_value={
           destination_language_classifier_value
@@ -128,13 +109,9 @@ const TaskDetails: FC<TaskProps> = ({
         isLoading={isLoading}
         sub_project_id={sub_project_id}
         volumes={volumes}
+        assignee_institution_user_id={assignee_institution_user_id}
+        taskId={taskId}
       />
-      <Button
-        className={classes.finishedButton}
-        onClick={handleOpenCompleteModal}
-      >
-        {t('button.mark_as_finished')}
-      </Button>
     </ExpandableContentContainer>
   )
 }

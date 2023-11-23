@@ -80,6 +80,22 @@ export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
   }
 }
 
+export const useFetchHistoryTask = ({ id }: { id?: string }) => {
+  const { isLoading, isError, data } = useQuery<TaskResponse>({
+    queryKey: ['tasks', id],
+    queryFn: () => apiClient.get(`${endpoints.HISTORY_TASKS}/${id}`),
+    keepPreviousData: true,
+  })
+
+  const { data: historyTask } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    historyTask,
+  }
+}
+
 export const useCompleteTask = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
 

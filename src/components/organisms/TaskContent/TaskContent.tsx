@@ -10,11 +10,11 @@ import {
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import { isEmpty, map, reduce, split } from 'lodash'
+import { isEmpty, split } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
-import { useForm, useWatch } from 'react-hook-form'
+import { useForm, useFormState, useWatch } from 'react-hook-form'
 import { useFetchSubOrderTmKeys } from 'hooks/requests/useTranslationMemories'
-import { CatJob, SourceFile } from 'types/orders'
+import { SourceFile } from 'types/orders'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 import { LanguageClassifierValue } from 'types/classifierValues'
@@ -22,14 +22,15 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as Eye } from 'assets/icons/eye.svg'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
 import { VolumeValue } from 'types/volumes'
+import classNames from 'classnames'
+import Button from 'components/molecules/Button/Button'
+import { useCompleteAssignment } from 'hooks/requests/useTasks'
 
 import classes from './classes.module.scss'
 
 interface FormValues {
   my_source_files: SourceFile[]
   my_final_files: SourceFile[]
-  cat_jobs: CatJob[]
-  write_to_memory: { [key: string]: boolean }
   my_notes?: string
 }
 
@@ -37,8 +38,6 @@ interface TaskContentProps {
   deadline_at?: string
   source_files: SourceFile[]
   cat_files?: SourceFile[]
-  cat_jobs?: CatJob[]
-  final_files: SourceFile[]
   source_language_classifier_value?: LanguageClassifierValue
   destination_language_classifier_value?: LanguageClassifierValue
   event_start_at?: string
@@ -46,14 +45,14 @@ interface TaskContentProps {
   isLoading?: boolean
   sub_project_id: string
   volumes?: VolumeValue[]
+  assignee_institution_user_id?: string
+  taskId?: string
 }
 
 const TaskContent: FC<TaskContentProps> = ({
   deadline_at,
   source_files,
   cat_files,
-  cat_jobs,
-  final_files,
   source_language_classifier_value,
   destination_language_classifier_value,
   event_start_at,
@@ -61,6 +60,8 @@ const TaskContent: FC<TaskContentProps> = ({
   isLoading,
   sub_project_id,
   volumes = [],
+  assignee_institution_user_id,
+  taskId,
 }) => {
   const { t } = useTranslation()
 
@@ -72,46 +73,24 @@ const TaskContent: FC<TaskContentProps> = ({
     id: sub_project_id,
   })
 
-  const defaultValues = useMemo(
-    () => ({
-      source_files: map(source_files, (file) => ({
-        ...file,
-        isChecked: false,
-      })),
-      final_files,
-      cat_jobs: catToolJobs,
-      write_to_memory: {},
-    }),
-    [catToolJobs, final_files, source_files]
-  )
-
-  // console.log('defaultValues', defaultValues)
+  const { completeAssignment, isLoading: isCompletingTask } =
+    useCompleteAssignment({
+      id: taskId,
+    })
 
   const { control, setValue } = useForm<FormValues>({
     reValidateMode: 'onChange',
-    defaultValues: defaultValues,
   })
 
-  // console.log('useWatch({control})1', useWatch({ control }))
+  // console.log('useWatch({control})', useWatch({ control }))
+
+  // console.log('useFormState({ control })', useFormState({ control }))
 
   useEffect(() => {
-    if (subOrderTmKeys) {
-      setValue(
-        'write_to_memory',
-        reduce(
-          subOrderTmKeys,
-          (result, { key, is_writable }) => {
-            if (!key) return result
-            return { ...result, [key]: is_writable }
-          },
-          {}
-        )
-      )
-    }
     if (source_files) {
       setValue('my_source_files', source_files)
     }
-  }, [setValue, source_files, subOrderTmKeys])
+  }, [setValue, source_files])
 
   const subOrderLangPair = useMemo(() => {
     const slangShort = split(source_language_classifier_value?.value, '-')[0]
@@ -162,50 +141,69 @@ const TaskContent: FC<TaskContentProps> = ({
     })
   }, [volumes])
 
-  const taskDetails = [
-    {
-      label: t('my_tasks.start_time'),
-      content: event_start_at ? formattedDate(event_start_at) : '-',
-      oralTranslation: true,
-    },
-    {
-      label: t('label.deadline_at'),
-      content: deadline_at ? formattedDate(deadline_at) : '-',
-    },
-    {
-      label: t('label.special_instructions'),
-      content: comments || '-',
-    },
-    {
-      label: t('label.volume'),
-      content: (
-        <>
-          <span>{`${Number(volumes[0]?.unit_quantity)} ${t(
-            `label.${apiTypeToKey(volumes[0]?.unit_type)}`
-          )}${cat_jobs ? ` ${t('task.open_in_cat')}` : ''}`}</span>
-          <BaseButton onClick={handleShowVolume} className={classes.volumeIcon}>
-            <Eye />
-          </BaseButton>
-        </>
-      ),
-    },
-  ]
+  const handleOpenCompleteModal = useCallback(() => {
+    showModal(ModalTypes.ConfirmationModal, {
+      title: t('modal.confirm_complete_task'),
+      modalContent: t('modal.confirm_complete_task_details'),
+      cancelButtonContent: t('button.quit'),
+      proceedButtonContent: t('button.complete'),
+      className: classes.completeModal,
+      handleProceed: completeAssignment,
+      proceedButtonLoading: isCompletingTask,
+    })
+  }, [completeAssignment, isCompletingTask, t])
 
   if (isLoading) return <Loader loading={isLoading} />
 
   return (
     <Root>
       <div className={classes.taskDetailsContainer}>
-        {map(taskDetails, ({ label, content, oralTranslation }, index) => (
-          <span
-            className={classes.taskContainer}
-            key={index}
-            // TODO: add check with BE data for oral translation, hidden={!oralTranslation && ?}
-          >
-            <p className={classes.taskDetails}>{label}</p>
-            <p className={classes.taskContent}>{content}</p>
-          </span>
-        ))}
+        <span
+          className={classNames(
+            classes.taskContainer,
+            !event_start_at && classes.hideContainer
+          )}
+        >
+          <p className={classes.taskDetails}>{t('my_tasks.start_time')}</p>
+          <p className={classes.taskContent}>
+            {event_start_at ? formattedDate(event_start_at) : '-'}
+          </p>
+        </span>
+        <span className={classes.taskContainer}>
+          <p className={classes.taskDetails}>{t('label.deadline_at')}</p>
+          <p className={classes.taskContent}>
+            {deadline_at ? formattedDate(deadline_at) : '-'}
+          </p>
+        </span>
+        <span className={classes.taskContainer}>
+          <p className={classes.taskDetails}>
+            {t('label.special_instructions')}
+          </p>
+          <p className={classes.taskContent}>{comments || '-'}</p>
+        </span>
+        <span
+          className={classNames(
+            classes.taskContainer,
+            !volumes[0] && classes.hideContainer
+          )}
+        >
+          <p className={classes.taskDetails}>{t('label.volume')}</p>
+          <p className={classes.taskContent}>
+            {
+              <>
+                <span>{`${Number(volumes[0]?.unit_quantity)} ${t(
+                  `label.${apiTypeToKey(volumes[0]?.unit_type)}`
+                )}${volumes[0] ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+                <BaseButton
+                  onClick={handleShowVolume}
+                  className={classes.volumeIcon}
+                >
+                  <Eye />
+                </BaseButton>
+              </>
+            }
+          </p>
+        </span>
         <span className={classes.taskContainer}>
           <FormInput
             name="my_notes"
@@ -266,6 +264,13 @@ const TaskContent: FC<TaskContentProps> = ({
           isTaskView
         />
       </div>
+      <Button
+        className={classes.finishedButton}
+        onClick={handleOpenCompleteModal}
+        hidden={!assignee_institution_user_id}
+      >
+        {t('button.mark_as_finished')}
+      </Button>
     </Root>
   )
 }

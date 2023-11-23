@@ -43,6 +43,7 @@ export interface ListTask {
   task_type: TaskType
   project_id: string
   assignment: AssignmentType
+  assignee_institution_user_id?: string
 }
 
 export interface TasksResponse {
@@ -62,10 +63,4 @@ export interface CompleteTaskPayload {
   sub_projects?: string[]
   comments?: string
   files?: File[]
-}
-
-export enum TasksTabType {
-  MyTasks = 'my_tasks',
-  PendingTasks = 'pending_tasks',
-  History = 'history',
 }

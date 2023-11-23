@@ -66,3 +66,22 @@
 .taskViewPrices div table tbody tr td div {
   width: 127px;
 }
+
+.hideContainer {
+  display: none;
+}
+
+.finishedButton {
+  margin-top: spacing(6);
+  margin-bottom: spacing(4);
+  float: inline-end;
+}
+
+.completeModal {
+  h1 {
+    max-width: 70%;
+  }
+  :nth-child(3) {
+    color: $color-primary;
+  }
+}

@@ -27,14 +27,14 @@ import { ValidationError } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import { Privileges } from 'types/privileges'
-
-import classes from './classes.module.scss'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { getOrderDefaultValues, mapFilesForApi } from 'helpers/order'
 import { HelperFileTypes } from 'types/classifierValues'
 import { useHandleBulkFiles } from 'hooks/requests/useAssignments'
 import { useQueryClient } from '@tanstack/react-query'
+
+import classes from './classes.module.scss'
 
 export enum OrderDetailModes {
   New = 'new',
@@ -123,7 +123,6 @@ interface FormValues {
 
 interface OrderDetailsProps {
   mode?: OrderDetailModes
-  // order?: DetailedOrder
   className?: string
   isTaskView?: boolean
   order?: DetailedProject

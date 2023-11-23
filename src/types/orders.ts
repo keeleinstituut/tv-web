@@ -184,28 +184,28 @@ export interface JobDefinition {
 }
 
 export interface ListOrder {
-  id: string
-  ext_id: string
-  reference_number: string
-  institution_id: string
-  type_classifier_value_id: string
+  id?: string
+  ext_id?: string
+  reference_number?: string
+  institution_id?: string
+  type_classifier_value_id?: string
   type_classifier_value?: TypeClassifierValue
-  comments: string
-  workflow_template_id: WorkflowTemplateID
-  workflow_instance_ref: string | null
-  deadline_at: string
-  created_at: string
-  updated_at: string
-  sub_projects: ListSubProjectDetail[]
-  status: OrderStatus
-  tags: Tag[]
-  price: string
+  comments?: string
+  workflow_template_id?: WorkflowTemplateID
+  workflow_instance_ref?: string | null
+  deadline_at?: string
+  created_at?: string
+  updated_at?: string
+  sub_projects: ListSubProjectDetail[] | any
+  status?: OrderStatus
+  tags?: Tag[]
+  price?: string
   event_start_at?: string
-  help_files: SourceFile[] // might be different type
-  source_files: SourceFile[]
-  client_institution_user: UserType
+  help_files?: SourceFile[] // might be different type
+  source_files?: SourceFile[]
+  client_institution_user?: UserType
   manager_institution_user?: UserType
-  translation_domain_classifier_value: ClassifierValue
+  translation_domain_classifier_value?: ClassifierValue
 }
 export interface DetailedProject extends ListOrder {
   // TODO: unclear type for following:
