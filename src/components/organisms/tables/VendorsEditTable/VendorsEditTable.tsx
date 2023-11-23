@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import DataTable, {
@@ -7,6 +7,7 @@ import DataTable, {
 import {
   ColumnDef,
   createColumnHelper,
+  OnChangeFn,
   PaginationState,
 } from '@tanstack/react-table'
 import { FormInput } from 'components/organisms/DynamicForm/DynamicForm'
@@ -19,6 +20,8 @@ export interface VendorsEditProps {
   control: Control
   handlePaginationChange?: (value?: PaginationFunctionType) => void
   paginationData?: ResponseMetaTypes
+  pagination: PaginationState
+  setPagination: OnChangeFn<PaginationState>
 }
 
 export type VendorUser = {
@@ -35,13 +38,10 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
   control,
   paginationData,
   handlePaginationChange,
+  pagination,
+  setPagination,
 }) => {
   const { t } = useTranslation()
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
 
   const tableColumns = [
     columnHelper.accessor('name', {

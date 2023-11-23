@@ -202,9 +202,9 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
       columns={columns}
       tableSize={TableSizeTypes.M}
       className={classes.tableContainer}
-      hidePagination
       pagination={pagination}
       setPagination={setPagination}
+      hidePagination
       headComponent={
         <h2 className={classes.tableTitle}>
           {t('modal.calculation_by_analysis')}

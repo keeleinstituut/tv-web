@@ -1,4 +1,4 @@
-import { useCallback, useMemo, memo, useState } from 'react'
+import { useCallback, useMemo, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFetchTags } from 'hooks/requests/useTags'
 import DataTable, {
@@ -8,6 +8,7 @@ import { map, range, includes } from 'lodash'
 import {
   ColumnDef,
   createColumnHelper,
+  OnChangeFn,
   PaginationState,
 } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
@@ -65,6 +66,8 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   skill_id?: string
   selectedVendorsIds?: string[]
+  pagination: PaginationState
+  setPagination: OnChangeFn<PaginationState>
 }
 
 interface PricesTableRow {
@@ -96,6 +99,8 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   skill_id: taskSkillId,
   control,
   selectedVendorsIds,
+  pagination,
+  setPagination,
 }: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
   const { tagsFilters = [] } = useFetchTags({
@@ -119,11 +124,6 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   } = useLanguageDirections({
     per_page: 40,
     initialSelectedValues: [matchingLanguageString],
-  })
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
   })
 
   const tableData = useMemo(
@@ -378,9 +378,9 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
         onPaginationChange={handlePaginationChange}
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
-        className={classes.tableContainer}
         pagination={pagination}
         setPagination={setPagination}
+        className={classes.tableContainer}
       />
     </Root>
   )

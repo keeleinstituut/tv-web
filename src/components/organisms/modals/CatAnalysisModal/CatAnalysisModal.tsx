@@ -1,6 +1,6 @@
 import { FC, useState } from 'react'
 import { CatAnalysis, SourceFile } from 'types/orders'
-import { chain, map, zip, join, reduce } from 'lodash'
+import { chain, map, zip, reduce } from 'lodash'
 import ModalBase, {
   ButtonPositionTypes,
   ModalSizeTypes,
@@ -189,9 +189,9 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           data={keyedRows as TableRow[]}
           columns={tableColumns}
           tableSize={TableSizeTypes.M}
-          hidePagination
           pagination={pagination}
           setPagination={setPagination}
+          hidePagination
           headComponent={
             <div className={classes.titleRow}>
               <h3>

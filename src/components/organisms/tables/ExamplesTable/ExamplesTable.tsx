@@ -53,7 +53,7 @@ const ExamplesTable: FC = () => {
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10000,
+    pageSize: 10,
   })
 
   const columns = [

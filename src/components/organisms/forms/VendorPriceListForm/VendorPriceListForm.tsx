@@ -343,6 +343,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           }
           paginationData={paginationData}
           onPaginationChange={handlePaginationChange}
+          pagination={pagination}
+          setPagination={setPagination}
           title={
             <div className={classes.pricesDataTableHeader}>
               <h4>{t('vendors.vendor_price_list_title')}</h4>
@@ -357,8 +359,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               />
             </div>
           }
-          pagination={pagination}
-          setPagination={setPagination}
         />
       </Root>
 

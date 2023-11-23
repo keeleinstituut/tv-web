@@ -205,10 +205,10 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
       data={filteredData}
       columns={columns}
       tableSize={TableSizeTypes.L}
-      hidePagination
       paginationData={paginationData}
       pagination={pagination}
       setPagination={setPagination}
+      hidePagination
       title={
         <div className={classes.pricesTitleContainer}>
           <h4 className={classes.pricesTitle}>{t('vendors.prices')}</h4>

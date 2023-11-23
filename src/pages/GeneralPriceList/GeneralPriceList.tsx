@@ -7,6 +7,7 @@ import { debounce } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 
 import classes from './classes.module.scss'
+import { PaginationState } from '@tanstack/react-table'
 
 const GeneralPriceList: FC = () => {
   const { t } = useTranslation()
@@ -21,6 +22,11 @@ const GeneralPriceList: FC = () => {
 
   const [searchValue, setSearchValue] = useState<string>('')
 
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: paginationData ? paginationData.per_page : 10,
+  })
+
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
@@ -28,6 +34,10 @@ const GeneralPriceList: FC = () => {
         handleFilterChange,
         300
       )({ institution_user_name: event.target.value })
+      setPagination({
+        pageIndex: 0,
+        pageSize: paginationData ? paginationData.per_page : 10,
+      })
     },
     [handleFilterChange]
   )
@@ -56,6 +66,8 @@ const GeneralPriceList: FC = () => {
           handleFilterChange,
           handleSortingChange,
           handlePaginationChange,
+          pagination,
+          setPagination,
         }}
       />
     </>

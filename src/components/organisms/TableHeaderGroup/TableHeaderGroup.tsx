@@ -7,6 +7,8 @@ import {
   flexRender,
   Header,
   RowData,
+  OnChangeFn,
+  PaginationState,
 } from '@tanstack/react-table'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import { ReactComponent as FilterIcon } from 'assets/icons/filter.svg'
@@ -24,10 +26,12 @@ import { FilterFunctionType, SortingFunctionType } from 'types/collective'
 export interface HeaderGroupFunctions {
   onSortingChange?: (value?: SortingFunctionType) => void
   onFiltersChange?: (filters?: FilterFunctionType) => void
+  setPagination: OnChangeFn<PaginationState>
 }
 
 type HeaderGroupProps<TData> = {
   table: Table<TData>
+  per_page?: number
 } & HeaderGroupFunctions
 
 type FilterTypes = {
@@ -49,6 +53,7 @@ type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
 type HeaderItemProps<TData> = {
   hidden?: boolean
   header: Header<TData, RowData>
+  per_page?: number
 } & HeaderGroupFunctions
 
 const HeaderItem = <TData,>({
@@ -56,6 +61,8 @@ const HeaderItem = <TData,>({
   header,
   onSortingChange,
   onFiltersChange,
+  setPagination,
+  per_page,
 }: HeaderItemProps<TData>) => {
   const { t } = useTranslation()
   const [step, setStep] = useState<number>(0)
@@ -84,6 +91,10 @@ const HeaderItem = <TData,>({
         sort_order: sortingOption[step],
       }
       onSortingChange(sortingValues)
+      setPagination({
+        pageIndex: 0,
+        pageSize: per_page || 10,
+      })
     }
   }
   const Icon = useMemo(() => {
@@ -105,6 +116,10 @@ const HeaderItem = <TData,>({
 
     if (onFiltersChange) {
       onFiltersChange({ [filterKey]: value })
+      setPagination({
+        pageIndex: 0,
+        pageSize: per_page || 10,
+      })
     }
   }
 
@@ -146,6 +161,8 @@ const TableHeaderGroup = <TData,>({
   table,
   onSortingChange,
   onFiltersChange,
+  setPagination,
+  per_page,
 }: HeaderGroupProps<TData>) => {
   return (
     <thead>
@@ -165,6 +182,8 @@ const TableHeaderGroup = <TData,>({
                   header={header}
                   onSortingChange={onSortingChange}
                   onFiltersChange={onFiltersChange}
+                  setPagination={setPagination}
+                  per_page={per_page}
                 />
               </th>
             )

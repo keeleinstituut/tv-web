@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -6,6 +6,7 @@ import {
   createColumnHelper,
   ColumnDef,
   PaginationState,
+  OnChangeFn,
 } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -39,6 +40,8 @@ type LogsTableProps = {
   hidden?: boolean
   paginationData?: ResponseMetaTypes
   handlePaginationChange?: (value?: PaginationFunctionType) => void
+  pagination: PaginationState
+  setPagination: OnChangeFn<PaginationState>
 }
 
 const columnHelper = createColumnHelper<AuditLog>()
@@ -48,12 +51,10 @@ const LogsTable: FC<LogsTableProps> = ({
   hidden,
   paginationData,
   handlePaginationChange,
+  pagination,
+  setPagination,
 }) => {
   const { t } = useTranslation()
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
   const tableData: AuditLog[] = map(
     data,
     ({

@@ -108,9 +108,9 @@ const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
       columns={columns}
       className={classes.dataTable}
       tableSize={TableSizeTypes.S}
-      hidePagination
       pagination={pagination}
       setPagination={setPagination}
+      hidePagination
     />
   )
 }

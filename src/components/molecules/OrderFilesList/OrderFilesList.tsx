@@ -220,9 +220,9 @@ const OrderFilesList = <TFormValues extends FieldValues>({
         isEmpty(filesData) && classes.hiddenContent
       )}
       tableWrapperClassName={classes.tableWrapperClassName}
-      hidePagination
       pagination={pagination}
       setPagination={setPagination}
+      hidePagination
       headComponent={
         <div className={classes.titleRow}>
           <h3>{title}</h3>

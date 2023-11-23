@@ -118,9 +118,9 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         tableSize={TableSizeTypes.M}
         className={classes.tableContainer}
         hidden={isEmpty(subOrderCatJobs)}
-        hidePagination
         pagination={pagination}
         setPagination={setPagination}
+        hidePagination
       />
     </div>
   )

@@ -32,13 +32,18 @@ import { useAssignmentAddVendor } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import Loader from 'components/atoms/Loader/Loader'
+import { OnChangeFn, PaginationState } from '@tanstack/react-table'
 
 interface ModalHeadSectionProps {
   handleFilterChange: (value?: FilterFunctionType) => void
+  setPagination: OnChangeFn<PaginationState>
+  per_page?: number
 }
 
 const ModalHeadSection: FC<ModalHeadSectionProps> = ({
   handleFilterChange,
+  setPagination,
+  per_page,
 }) => {
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
@@ -51,6 +56,10 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
         300
       )({ institution_user_name: event.target.value })
       // TODO: not sure yet whether filtering param will be name
+      setPagination({
+        pageIndex: 0,
+        pageSize: per_page || 10,
+      })
     },
     [handleFilterChange]
   )
@@ -138,6 +147,12 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
     ],
     ...(skill_id ? { skill_id: [skill_id] } : {}),
   })
+  const { per_page } = paginationData || {}
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: paginationData ? paginationData.per_page : 10,
+  })
 
   const {
     control,
@@ -213,7 +228,11 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
       ]}
       headComponent={
         <Root>
-          <ModalHeadSection handleFilterChange={handleFilterChange} />
+          <ModalHeadSection
+            handleFilterChange={handleFilterChange}
+            setPagination={setPagination}
+            per_page={per_page}
+          />
         </Root>
       }
     >
@@ -225,6 +244,8 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         handleFilterChange={handleFilterChange}
         handleSortingChange={handleSortingChange}
         handlePaginationChange={handlePaginationChange}
+        pagination={pagination}
+        setPagination={setPagination}
         selectedVendorsIds={selectedVendorsIds}
         filters={filters}
         skill_id={skill_id}

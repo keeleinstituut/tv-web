@@ -129,9 +129,9 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
         columns={columns}
         tableSize={TableSizeTypes.M}
         className={classes.tableContainer}
-        hidePagination
         pagination={pagination}
         setPagination={setPagination}
+        hidePagination
         headComponent={<h4>{t('task.vendors')}</h4>}
       />
     </div>

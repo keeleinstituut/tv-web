@@ -202,9 +202,9 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         columns={columns}
         tableSize={TableSizeTypes.M}
         className={classes.filesListContainer}
-        hidePagination
         pagination={pagination}
         setPagination={setPagination}
+        hidePagination
         headComponent={
           <div className={classes.titleRow}>
             <h3>{t('orders.source_files_in_translation_tool')}</h3>

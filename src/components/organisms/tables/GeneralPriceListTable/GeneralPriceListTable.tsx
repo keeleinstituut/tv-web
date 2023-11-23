@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -7,6 +7,7 @@ import { map, split } from 'lodash'
 import {
   ColumnDef,
   createColumnHelper,
+  OnChangeFn,
   PaginationState,
 } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
@@ -30,6 +31,8 @@ interface GeneralPriceListTableProps {
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
+  pagination: PaginationState
+  setPagination: OnChangeFn<PaginationState>
 }
 
 interface PricesTableRow {
@@ -53,16 +56,13 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
+  pagination,
+  setPagination,
 }) => {
   const { t } = useTranslation()
   const { skillsFilters = [] } = useFetchSkills()
   const { languageDirectionFilters, loadMore, handleSearch } =
     useLanguageDirections({})
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
 
   const tableData = useMemo(
     () =>
@@ -218,9 +218,9 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
         onPaginationChange={handlePaginationChange}
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
-        className={classes.tableContainer}
         pagination={pagination}
         setPagination={setPagination}
+        className={classes.tableContainer}
       />
     </Root>
   )

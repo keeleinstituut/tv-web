@@ -117,11 +117,6 @@ const DataTable = <TData,>(
   const { per_page, last_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
 
-  if (last_page === pagination.pageIndex) {
-    console.log('SPECIAL CASE CALLED')
-    setPagination({ pageIndex: last_page - 1, pageSize: per_page || 10 })
-  }
-
   useEffect(() => {
     if (onPaginationChange) {
       onPaginationChange({
@@ -174,6 +169,8 @@ const DataTable = <TData,>(
               table={table}
               onSortingChange={onSortingChange}
               onFiltersChange={onFiltersChange}
+              setPagination={setPagination}
+              per_page={per_page}
             />
             <tbody>
               {table.getRowModel().rows.map((row) => (

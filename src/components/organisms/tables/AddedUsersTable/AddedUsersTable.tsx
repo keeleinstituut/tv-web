@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
@@ -10,6 +10,7 @@ import {
   createColumnHelper,
   ColumnDef,
   PaginationState,
+  OnChangeFn,
 } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -45,6 +46,8 @@ type AddedUsersProps = {
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
+  pagination: PaginationState
+  setPagination: OnChangeFn<PaginationState>
 }
 
 const AddedUsersTable: FC<AddedUsersProps> = ({
@@ -54,17 +57,14 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
+  pagination,
+  setPagination,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
   const { rolesFilters = [] } = useRolesFetch()
   const { departmentFilters = [] } = useDepartmentsFetch()
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
 
   const usersData = useMemo(() => {
     return (

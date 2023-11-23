@@ -322,9 +322,9 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         columns={columns}
         tableSize={TableSizeTypes.M}
         className={classes.translationMemoriesTable}
-        hidePagination
         pagination={pagination}
         setPagination={setPagination}
+        hidePagination
       />
     </ExpandableContentContainer>
   )

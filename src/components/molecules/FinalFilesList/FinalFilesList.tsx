@@ -274,9 +274,9 @@ const FinalFilesList = <TFormValues extends FieldValues>({
           classes.filesListContainer,
           classes.increasedSpecificity
         )}
-        hidePagination
         pagination={pagination}
         setPagination={setPagination}
+        hidePagination
         headComponent={
           <div className={classes.titleRow}>
             <h3>{title}</h3>

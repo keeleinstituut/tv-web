@@ -1,5 +1,5 @@
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
-import { FC, useCallback, useEffect } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Container from 'components/atoms/Container/Container'
 import Button, {
@@ -26,6 +26,7 @@ import useValidators from 'hooks/useValidators'
 import i18n from 'i18n/i18n'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { AuditLogPayloadType, EventTypes } from 'types/auditLogs'
+import { PaginationState } from '@tanstack/react-table'
 
 export enum DateTabs {
   Hour = '1 hour',
@@ -77,6 +78,11 @@ const Logs: FC = () => {
   const { exportCSV } = useExportAuditLogsCSV()
   const currentDate = dayjs()
   const currentTime = currentDate.format('HH:mm:ss')
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: paginationData ? paginationData.per_page : 10,
+  })
 
   const {
     control,
@@ -196,6 +202,10 @@ const Logs: FC = () => {
 
       try {
         await handleFilterChange(payload)
+        setPagination({
+          pageIndex: 0,
+          pageSize: paginationData ? paginationData.per_page : 10,
+        })
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
@@ -298,6 +308,8 @@ const Logs: FC = () => {
         hidden={isEmpty(logsData)}
         paginationData={paginationData}
         handlePaginationChange={handlePaginationChange}
+        pagination={pagination}
+        setPagination={setPagination}
       />
     </>
   )
