@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import TranslationMemoryDetails from 'components/organisms/TranslationMemoryDetails/TranslationMemoryDetails'
-import TranslationMemorySubOrdersTable from 'components/organisms/tables/TranslationMemorySubOrdersTable/TranslationMemorySubOrdersTable'
+import TranslationMemorySubProjectsTable from 'components/organisms/tables/TranslationMemorySubProjectsTable/TranslationMemorySubProjectsTable'
 import {
   useFetchTmChunkAmounts,
   useFetchTranslationMemory,
@@ -41,7 +41,7 @@ const TranslationMemoryPage: FC = () => {
         memoryId={memoryId}
         isTmOwnedByUserInstitution={isTmOwnedByUserInstitution}
       />
-      <TranslationMemorySubOrdersTable
+      <TranslationMemorySubProjectsTable
         memoryId={memoryId}
         hidden={!isTmOwnedByUserInstitution}
       />

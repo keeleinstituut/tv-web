@@ -5,8 +5,8 @@ import { BreadcrumbComponentProps } from 'use-react-router-breadcrumbs'
 import { useTranslation } from 'react-i18next'
 import { useFetchTranslationMemory } from 'hooks/requests/useTranslationMemories'
 import { includes } from 'lodash'
-import { useFetchOrder } from 'hooks/requests/useOrders'
 import { useFetchTask } from 'hooks/requests/useTasks'
+import { useFetchProject } from 'hooks/requests/useProjects'
 
 interface idTypes {
   vendorId?: string
@@ -26,7 +26,7 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
 
   const { vendor } = useVendorFetch({ id: vendorId })
   const { user } = useFetchUser({ id: userId })
-  const { order } = useFetchOrder({ id: projectId })
+  const { project } = useFetchProject({ id: projectId })
   const { translationMemory } = useFetchTranslationMemory({
     id: memoryId,
   })
@@ -45,7 +45,7 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
         return { name: `${user?.user.forename} ${user?.user.surname}` }
       }
       case !!projectId: {
-        return { name: `${t('orders.order')} [${order?.ext_id}]` }
+        return { name: `${t('projects.project')} [${project?.ext_id}]` }
       }
       case !!memoryId: {
         return { name: translationMemory?.name }
@@ -68,7 +68,7 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
     user?.user.forename,
     user?.user.surname,
     t,
-    order?.ext_id,
+    project?.ext_id,
     translationMemory?.name,
     task?.assignment?.ext_id,
   ])

@@ -10,12 +10,9 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { VolumeChangeModalProps } from 'components/organisms/modals/VolumeChangeModal/VolumeChangeModal'
 import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
-
-// TODO: this is WIP code for suborder view
-
 export interface AddVolumeModalProps extends VolumeChangeModalProps {
   catSupported?: boolean
-  subOrderId?: string
+  subProjectId?: string
 }
 
 interface FormValues {
@@ -26,11 +23,11 @@ interface FormValues {
 const AddVolumeModal: FC<AddVolumeModalProps> = ({
   catSupported,
   isModalOpen,
-  subOrderId,
+  subProjectId,
   ...rest
 }) => {
   const { t } = useTranslation()
-  const { cat_analysis } = useCatAnalysisFetch({ subOrderId })
+  const { cat_analysis } = useCatAnalysisFetch({ subProjectId })
 
   const {
     control,
@@ -98,7 +95,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       showModal(ModalTypes.VolumeChange, {
-        subOrderId,
+        subProjectId,
         isCat: values?.addType === 'cat',
         catJobId: values?.chunkId,
         volume_analysis: find(cat_analysis?.cat_jobs, {
@@ -107,7 +104,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
         ...rest,
       })
     },
-    [cat_analysis?.cat_jobs, subOrderId, rest]
+    [cat_analysis?.cat_jobs, subProjectId, rest]
   )
 
   return (

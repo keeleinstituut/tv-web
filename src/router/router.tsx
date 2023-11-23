@@ -12,8 +12,8 @@ import { BreadcrumbComponentType } from 'use-react-router-breadcrumbs'
 
 // import pages
 import Dashboard from 'pages/Dashboard/Dashboard'
-import Orders from 'pages/Orders/Orders'
-import SubOrders from 'pages/SubOrders/SubOrders'
+import Projects from 'pages/Projects/Projects'
+import SubProjects from 'pages/SubProjects/SubProjects'
 import MyTasks from 'pages/MyTasks/MyTasks'
 import VendorsDatabase from 'pages/VendorsDatabase/VendorsDatabase'
 import VendorPage from 'pages/VendorPage/VendorPage'
@@ -25,12 +25,12 @@ import AddUsersPage from 'pages/AddUsersPage/AddUsersPage'
 import UserPage from 'pages/UserPage/UserPage'
 import RolesManagement from 'pages/RolesManagement/RolesManagement'
 import Logs from 'pages/Logs/Logs'
-import NewOrder from 'pages/NewOrder/NewOrder'
+import NewProject from 'pages/NewProject/NewProject'
 import Tags from 'pages/Tags/Tags'
 import ReportExport from 'pages/ReportExport/ReportExport'
 import InstitutionSettings from 'pages/InstitutionSettings/InstitutionSettings'
 import TechnicalSettings from 'pages/TechnicalSettings/TechnicalSettings'
-import OrderPage from 'pages/OrderPage/OrderPage'
+import ProjectPage from 'pages/ProjectPage/ProjectPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
@@ -39,7 +39,7 @@ import Components from 'pages/Components/Components'
 // import icons
 
 import { ReactComponent as HomeIcon } from 'assets/icons/home.svg'
-import { ReactComponent as OrdersIcon } from 'assets/icons/orders.svg'
+import { ReactComponent as ProjectsIcon } from 'assets/icons/projects.svg'
 import { ReactComponent as VendorsIcon } from 'assets/icons/vendors.svg'
 import { ReactComponent as MemoriesIcon } from 'assets/icons/memories.svg'
 import { ReactComponent as UsersIcon } from 'assets/icons/users.svg'
@@ -72,14 +72,14 @@ export const protectedRoutes: FullRouteObject[] = [
     Icon: HomeIcon,
   },
   {
-    path: 'orders',
-    label: i18n.t('menu.orders'),
-    Icon: OrdersIcon,
+    path: 'projects',
+    label: i18n.t('menu.projects'),
+    Icon: ProjectsIcon,
     privileges: [Privileges.ViewPersonalProject, Privileges.ViewPersonalTask],
     children: [
       {
         path: '',
-        label: i18n.t('menu.orders'),
+        label: i18n.t('menu.projects'),
         privileges: [
           Privileges.ViewPersonalProject,
           Privileges.ViewPersonalTask,
@@ -87,24 +87,24 @@ export const protectedRoutes: FullRouteObject[] = [
         children: [
           {
             path: '',
-            element: <Orders />,
+            element: <Projects />,
             privileges: [Privileges.ViewPersonalProject],
-            breadcrumb: i18n.t('orders.orders_tile'),
+            breadcrumb: i18n.t('projects.project_tile'),
           },
           {
-            path: 'new-order',
-            element: <NewOrder />,
+            path: 'new-project',
+            element: <NewProject />,
             privileges: [Privileges.CreateProject],
-            breadcrumb: i18n.t('orders.new_order_title'),
+            breadcrumb: i18n.t('projects.new_project_title'),
           },
         ],
       },
       {
-        path: 'sub-orders',
-        label: i18n.t('menu.sub_orders'),
-        element: <SubOrders />,
-        // privileges: [Privileges.ViewPersonalProject],
-        breadcrumb: i18n.t('orders.sub_orders_tile'),
+        path: 'sub-projects',
+        label: i18n.t('menu.sub_projects'),
+        element: <SubProjects />,
+        privileges: [Privileges.ViewPersonalProject],
+        breadcrumb: i18n.t('projects.sub_project_tile'),
       },
       {
         path: 'my-tasks',
@@ -127,7 +127,7 @@ export const protectedRoutes: FullRouteObject[] = [
       },
       {
         path: ':projectId',
-        element: <OrderPage />,
+        element: <ProjectPage />,
         privileges: [Privileges.ViewPersonalProject],
         breadcrumb: BreadcrumbsTitle,
       },

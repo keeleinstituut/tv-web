@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { map, isEmpty } from 'lodash'
-import { CatJob } from 'types/orders'
+import { CatJob } from 'types/projects'
 import { AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import { Control, FieldValues, Path } from 'react-hook-form'
@@ -19,7 +19,7 @@ import classes from './classes.module.scss'
 interface FeatureCatJobProps<TFormValues extends FieldValues>
   extends AssignmentType {
   index: number
-  subOrderCatJobs?: CatJob[]
+  subProjectCatJobs?: CatJob[]
   cat_jobs?: CatJob[]
   control: Control<TFormValues>
   isEditable?: boolean
@@ -41,7 +41,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
   assigned_vendor_id,
   assignee,
   finished_at,
-  subOrderCatJobs,
+  subProjectCatJobs,
   isEditable,
   ext_id,
 }: FeatureCatJobProps<TFormValues>) => {
@@ -49,13 +49,13 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
 
   const tableRows = useMemo(
     () =>
-      map(subOrderCatJobs, ({ id, name }) => {
+      map(subProjectCatJobs, ({ id, name }) => {
         return {
           selected: id.toString(),
           chunk_id: { name, id },
         }
       }),
-    [subOrderCatJobs]
+    [subProjectCatJobs]
   )
 
   const columns = [
@@ -85,11 +85,11 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
     <div className={classes.container}>
       <h3>
         {t('task.vendor_title', { number: index + 1 })}(
-        {t(`orders.features.${job_definition.job_key}`)})
+        {t(`projects.features.${job_definition.job_key}`)})
       </h3>
       <span className={classes.assignmentId}>{ext_id}</span>
       <div className={classes.titleRow}>
-        <h4>{t('orders.source_files_in_translation_tool')}</h4>
+        <h4>{t('projects.source_files_in_translation_tool')}</h4>
 
         <SmallTooltip
           tooltipContent={t('tooltip.source_files_in_translation_tool_helper')}
@@ -98,7 +98,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
       <p
         className={classNames(
           classes.emptyTableText,
-          isEmpty(subOrderCatJobs) && classes.visible
+          isEmpty(subProjectCatJobs) && classes.visible
         )}
       >
         {t('task.files_not_generated')}
@@ -108,7 +108,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         columns={columns}
         tableSize={TableSizeTypes.M}
         className={classes.tableContainer}
-        hidden={isEmpty(subOrderCatJobs)}
+        hidden={isEmpty(subProjectCatJobs)}
         hidePagination
       />
     </div>

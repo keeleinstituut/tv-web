@@ -16,7 +16,7 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useToggleMtEngine } from 'hooks/requests/useOrders'
+import { useToggleMtEngine } from 'hooks/requests/useProjects'
 
 export enum FeatureTabs {
   Vendors = 'vendor',
@@ -85,7 +85,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   // TODO: not sure yet what this will do
   // It should decide whether machine translation is allowed or not, but not sure what that changes in other views
 
-  const { toggleMtEngine } = useToggleMtEngine({ subProjectId: id })
+  const { toggleMtEngine } = useToggleMtEngine({ id })
 
   // TODO: not sure what this check will be yet
   // First part will be "Task data entry template variable "PM task entry": "false"" - Not sure what this will look like from BE yet
