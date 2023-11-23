@@ -29,14 +29,14 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { SourceFile, SubProjectFeatures } from 'types/orders'
+import { SourceFile, SubProjectFeatures } from 'types/projects'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { useHandleFiles } from 'hooks/requests/useAssignments'
+import { useHandleFiles } from 'hooks/requests/useFiles'
 
-// TODO: very similar to OrderFilesList, these 2 can be unified
+// TODO: very similar to ProjectFilesList, these 2 can be unified
 
 interface FinalFilesListProps<TFormValues extends FieldValues> {
   title: string
@@ -46,7 +46,7 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
   isEditable?: boolean
   className?: string
   isLoading?: boolean
-  subOrderId: string
+  subProjectId: string
 }
 
 interface FileRow {
@@ -68,7 +68,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   isEditable,
   className,
   isLoading,
-  subOrderId,
+  subProjectId,
 }: FinalFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -92,7 +92,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   })
 
   const { addFiles, deleteFile, downloadFile } = useHandleFiles({
-    reference_object_id: subOrderId,
+    reference_object_id: subProjectId,
     reference_object_type: 'subproject',
     collection: 'final',
   })
@@ -194,7 +194,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         const selectedFeature = getValue()
-        return t(`orders.features.${selectedFeature}`)
+        return t(`projects.features.${selectedFeature}`)
       },
     }),
     columnHelper.accessor('created_at', {

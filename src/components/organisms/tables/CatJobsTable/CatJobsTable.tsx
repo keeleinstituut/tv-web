@@ -13,7 +13,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { CatAnalysis, CatJob, SourceFile } from 'types/orders'
+import { CatAnalysis, CatJob, SourceFile } from 'types/projects'
 
 import classes from './classes.module.scss'
 import Button, {
@@ -29,13 +29,13 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import {
   useDownloadTranslatedFile,
   useDownloadXliffFile,
-} from 'hooks/requests/useOrders'
+} from 'hooks/requests/useProjects'
 
 interface CatJobsTableProps {
   className?: string
   hidden?: boolean
   cat_jobs?: CatJob[]
-  subOrderId: string
+  subProjectId: string
   cat_analyzis?: CatAnalysis[]
   cat_files?: SourceFile[]
   source_files?: SourceFile[]
@@ -59,7 +59,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   hidden,
   cat_jobs,
   cat_analyzis,
-  subOrderId,
+  subProjectId,
   cat_files,
   source_files,
   source_language_classifier_value,
@@ -78,7 +78,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
       cat_analyzis,
-      subOrderId,
+      subProjectId,
       cat_files,
       source_files,
       source_language_classifier_value,
@@ -86,7 +86,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     })
   }, [
     cat_analyzis,
-    subOrderId,
+    subProjectId,
     cat_files,
     destination_language_classifier_value,
     source_files,
@@ -102,7 +102,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const handleCatSplitClick = useCallback(() => {
     if (canSendToVendors) {
       showModal(ModalTypes.CatSplit, {
-        subOrderId,
+        subProjectId,
       })
     } else {
       showNotification({
@@ -111,12 +111,12 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         content: t('error.cant_split_files'),
       })
     }
-  }, [canSendToVendors, subOrderId, t])
+  }, [canSendToVendors, subProjectId, t])
 
   const handleCatMergeClick = useCallback(() => {
     if (canSendToVendors && size(cat_jobs) > 1) {
       showModal(ModalTypes.CatMerge, {
-        subOrderId,
+        subProjectId,
       })
     } else {
       showNotification({
@@ -125,7 +125,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         content: t('error.cant_merge_files'),
       })
     }
-  }, [canSendToVendors, cat_jobs, subOrderId, t])
+  }, [canSendToVendors, cat_jobs, subProjectId, t])
 
   // TODO: not sure how to show this currently
   // This will mean loading state only when none of the files have been analyzed
@@ -175,11 +175,11 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
               },
               {
                 label: t('button.download_xliff'),
-                onClick: () => downloadXliff(subOrderId),
+                onClick: () => downloadXliff(subProjectId),
               },
               {
                 label: t('button.download_ready_translation'),
-                onClick: () => downloadTranslatedFile(subOrderId),
+                onClick: () => downloadTranslatedFile(subProjectId),
               },
               {
                 label: t('button.join_files'),
@@ -207,7 +207,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         hidePagination
         headComponent={
           <div className={classes.titleRow}>
-            <h3>{t('orders.source_files_in_translation_tool')}</h3>
+            <h3>{t('projects.source_files_in_translation_tool')}</h3>
 
             <SmallTooltip
               tooltipContent={t(

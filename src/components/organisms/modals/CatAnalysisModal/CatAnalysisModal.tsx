@@ -1,5 +1,5 @@
 import { FC, useState } from 'react'
-import { CatAnalysis, SourceFile } from 'types/orders'
+import { CatAnalysis, SourceFile } from 'types/projects'
 import { chain, map, zip, reduce } from 'lodash'
 import ModalBase, {
   ButtonPositionTypes,
@@ -26,12 +26,10 @@ import {
   useDownloadCatAnalysisFetch,
 } from 'hooks/requests/useAnalysis'
 
-// TODO: this is WIP code for suborder view
-
 export interface CatAnalysisModalProps {
   cat_analyzis?: CatAnalysis[]
   isModalOpen?: boolean
-  subOrderId?: string
+  subProjectId?: string
   source_language_classifier_value?: LanguageClassifierValue
   destination_language_classifier_value?: LanguageClassifierValue
   cat_files?: SourceFile[]
@@ -58,13 +56,13 @@ const columnHelper = createColumnHelper<TableRow>()
 
 const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
   cat_files,
-  subOrderId,
+  subProjectId,
   isModalOpen,
   source_language_classifier_value,
   destination_language_classifier_value,
 }) => {
-  const { cat_analysis } = useCatAnalysisFetch({ subOrderId })
-  const { downloadAnalysis } = useDownloadCatAnalysisFetch({ subOrderId })
+  const { cat_analysis } = useCatAnalysisFetch({ subProjectId })
+  const { downloadAnalysis } = useDownloadCatAnalysisFetch({ subProjectId })
   const cat_analyzis = [...(cat_analysis?.cat_jobs ?? [])]
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -179,7 +177,7 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
     >
       <div className={classes.contentStyle}>
         <span className={classes.sourceFilesText}>
-          {t('orders.source_files')}:{' '}
+          {t('projects.source_files')}:{' '}
           <b>{map(cat_files, ({ name }) => name).toString()}</b>
         </span>
         <p className={classes.helperText}>

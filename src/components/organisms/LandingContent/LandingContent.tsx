@@ -32,9 +32,9 @@ const LandingContent: FC<LandingContentProps> = ({ className }) => {
           <Button
             appearance={AppearanceTypes.Primary}
             children={
-              isUserLoggedIn ? t('button.add_new_order') : t('button.enter')
+              isUserLoggedIn ? t('button.add_new_project') : t('button.enter')
             }
-            href={isUserLoggedIn ? '/orders/new-order' : undefined}
+            href={isUserLoggedIn ? '/projects/new-project' : undefined}
             onClick={isUserLoggedIn ? undefined : login}
             className={classes.button}
           />

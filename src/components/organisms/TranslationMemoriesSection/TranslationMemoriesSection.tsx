@@ -29,9 +29,13 @@ import {
   useFetchTmChunkAmounts,
   useFetchTranslationMemories,
   useToggleTmWritable,
-  useUpdateSubOrderTmKeys,
+  useUpdateSubProjectTmKeys,
 } from 'hooks/requests/useTranslationMemories'
-import { SubOrderTmKeys, TMType } from 'types/translationMemories'
+import {
+  SubProjectTmKeys,
+  SubProjectTmKeysPayload,
+  TMType,
+} from 'types/translationMemories'
 import { map, includes, filter, find, isEqual, pull } from 'lodash'
 import useAuth from 'hooks/useAuth'
 
@@ -41,23 +45,23 @@ import { showNotification } from '../NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
 interface TranslationMemoryButtonProps {
   hidden?: boolean
-  subOrderId?: string
-  subOrderLangPair?: string
+  subProjectId?: string
+  subProjectLangPair?: string
   projectDomain?: ClassifierValue
 }
 
 const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
   hidden,
-  subOrderId,
-  subOrderLangPair,
+  subProjectId,
+  subProjectLangPair,
   projectDomain,
 }) => {
   const { t } = useTranslation()
 
   const addNewTm = () => {
     showModal(ModalTypes.AddTranslationMemories, {
-      subOrderId: subOrderId,
-      subOrderLangPair: subOrderLangPair,
+      subProjectId: subProjectId,
+      subProjectLangPair: subProjectLangPair,
       projectDomain: projectDomain,
     })
   }
@@ -86,9 +90,9 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
   hidden?: boolean
   isEditable?: boolean
   control?: Control<TFormValues>
-  subOrderId?: string
-  subOrderTmKeys?: SubOrderTmKeys[]
-  subOrderLangPair?: string
+  subProjectId?: string
+  SubProjectTmKeys?: SubProjectTmKeys[]
+  subProjectLangPair?: string
   projectDomain?: ClassifierValue
 }
 
@@ -111,20 +115,20 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   hidden,
   isEditable,
   control,
-  subOrderId,
-  subOrderTmKeys,
-  subOrderLangPair,
+  subProjectId,
+  SubProjectTmKeys,
+  subProjectLangPair,
   projectDomain,
 }: TranslationMemoriesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { translationMemories = [] } = useFetchTranslationMemories()
-  const { updateSubOrderTmKeys } = useUpdateSubOrderTmKeys()
+  const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys()
   const { toggleTmWritable } = useToggleTmWritable()
   const { tmChunkAmounts } = useFetchTmChunkAmounts()
   const { userInfo } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
 
-  const tmIds = map(subOrderTmKeys, 'key')
+  const tmIds = map(SubProjectTmKeys, 'key')
   const filteredData = filter(translationMemories, ({ id }) =>
     includes(tmIds, id)
   )
@@ -141,16 +145,16 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           id: tm.id,
           language_direction: tm?.lang_pair,
           name: tm?.name,
-          main_write: find(subOrderTmKeys, { key: tm.id })?.is_writable,
+          main_write: find(SubProjectTmKeys, { key: tm.id })?.is_writable,
           chunk_amount: tmChunkAmounts?.[tm.id] || 0,
           delete_button: tm?.id,
           institution_id: tm?.institution_id,
-          tm_key_id: find(subOrderTmKeys, { key: tm.id })?.id,
+          tm_key_id: find(SubProjectTmKeys, { key: tm.id })?.id,
           type: tm.type,
         }
       }),
 
-    [filteredData, subOrderTmKeys, tmChunkAmounts]
+    [filteredData, SubProjectTmKeys, tmChunkAmounts]
   )
 
   const handleDelete = useCallback(
@@ -159,7 +163,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       const notDeletedTmsKeys = pull(array, id)
 
       const payload = {
-        sub_project_id: subOrderId || '',
+        sub_project_id: subProjectId || '',
         tm_keys: map(notDeletedTmsKeys, (key) => {
           return {
             key: key || '',
@@ -167,7 +171,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         }),
       }
       try {
-        await updateSubOrderTmKeys(payload)
+        await updateSubProjectTmKeys(payload)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -178,25 +182,11 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         // error message comes from api errorHandles
       }
     },
-    [subOrderId, t, updateSubOrderTmKeys, tmIds]
+    [subProjectId, t, updateSubProjectTmKeys, tmIds]
   )
 
   const handleToggleTmWritable = useCallback(
-    async ({
-      key,
-      id,
-      is_writable,
-    }: {
-      key: string
-      id: string
-      is_writable: boolean
-    }) => {
-      const payload = {
-        id: id,
-        sub_project_id: subOrderId || '',
-        tm_keys: [{ key }],
-        is_writable,
-      }
+    async (payload: SubProjectTmKeysPayload) => {
       try {
         await toggleTmWritable(payload)
         showNotification({
@@ -204,12 +194,11 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           title: t('notification.announcement'),
           content: t('success.translation_memory_updated'),
         })
-        closeModal()
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
     },
-    [subOrderId, t, toggleTmWritable]
+    [t, toggleTmWritable]
   )
 
   const columns = [
@@ -238,13 +227,10 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       cell: ({ row, getValue }) => {
         const isAllowedToWrite =
           selectedInstitution?.id === row?.original?.institution_id &&
-          isEqual(subOrderLangPair, row?.original?.language_direction)
+          isEqual(subProjectLangPair, row?.original?.language_direction)
 
-        const values = {
-          key: row.original.id || '',
-          id: row.original.tm_key_id || '',
-          is_writable: !getValue() || false,
-        }
+        const key = row.original.id || ''
+
         const type = row.original.type || ''
 
         if (!isAllowedToWrite) {
@@ -257,22 +243,22 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         }
         return (
           <FormInput
-            name={`write_to_memory.${row.original.id}` as Path<TFormValues>}
+            name={`write_to_memory.${key}` as Path<TFormValues>}
             ariaLabel={t('label.main_write')}
             control={control}
             inputType={InputTypes.Checkbox}
             onClick={() => {
+              const payload: SubProjectTmKeysPayload = {
+                id: row.original.tm_key_id || '',
+                sub_project_id: subProjectId || '',
+                tm_keys: [{ key }],
+                is_writable: !getValue() || false,
+              }
               isEqual(type, TMType.Public) && !getValue()
-                ? showModal(ModalTypes.ConfirmationModal, {
-                    handleProceed: () => handleToggleTmWritable(values),
-                    title: t('translation_memory.public_confirmation'),
-                    cancelButtonContent: t('button.quit'),
-                    submitButtonContent: t('button.confirm'),
-                    helperText: t(
-                      'translation_memory.public_confirmation_help_text'
-                    ),
+                ? showModal(ModalTypes.ConfirmTmWritable, {
+                    payload,
                   })
-                : handleToggleTmWritable(values)
+                : handleToggleTmWritable(payload)
             }}
           />
         )
@@ -306,8 +292,8 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       rightComponent={
         <TranslationMemoryButtons
           hidden={!isEditable}
-          subOrderId={subOrderId}
-          subOrderLangPair={subOrderLangPair}
+          subProjectId={subProjectId}
+          subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}
         />
       }

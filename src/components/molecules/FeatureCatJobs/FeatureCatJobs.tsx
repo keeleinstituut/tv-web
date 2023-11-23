@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo, useState } from 'react'
 import { map, reduce, isEmpty, flatMap } from 'lodash'
-import { CatJob, SubProjectDetail } from 'types/orders'
+import { CatJob, SubProjectDetail } from 'types/projects'
 import FeatureCatJob from 'components/molecules/FeatureCatJob/FeatureCatJob'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +14,7 @@ import classes from './classes.module.scss'
 
 type FeatureCatJobsProps = Pick<SubProjectDetail, 'assignments'> & {
   hidden?: boolean
-  subOrderCatJobs: CatJob[]
+  subProjectCatJobs: CatJob[]
 }
 interface FormValues {
   [key: string]: string
@@ -23,7 +23,7 @@ interface FormValues {
 const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
   assignments,
   hidden,
-  subOrderCatJobs,
+  subProjectCatJobs,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -37,7 +37,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         assignments,
         (result, { id, cat_jobs }, index) => {
           if (!id) return result
-          const catJobs = isEmpty(cat_jobs) ? subOrderCatJobs : cat_jobs
+          const catJobs = isEmpty(cat_jobs) ? subProjectCatJobs : cat_jobs
 
           return {
             ...result,
@@ -60,7 +60,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         },
         {}
       ),
-    [assignments, subOrderCatJobs]
+    [assignments, subProjectCatJobs]
   )
 
   const {
@@ -128,7 +128,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
               key={assignment.id}
               index={index}
               control={control}
-              subOrderCatJobs={subOrderCatJobs}
+              subProjectCatJobs={subProjectCatJobs}
               isEditable={isEditable}
               {...assignment}
             />
@@ -140,13 +140,13 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
           appearance={AppearanceTypes.Secondary}
           children={t('button.cancel')}
           onClick={resetForm}
-          hidden={!isEditable || isEmpty(subOrderCatJobs)}
+          hidden={!isEditable || isEmpty(subProjectCatJobs)}
           disabled={isSubmitting || isLoading}
         />
         <Button
           children={isEditable ? t('button.save') : t('button.change')}
           disabled={!isValid && isEditable}
-          hidden={isEmpty(subOrderCatJobs)}
+          hidden={isEmpty(subProjectCatJobs)}
           loading={isSubmitting || isLoading}
           onClick={
             isEditable ? handleSubmit(onSubmit) : () => setIsEditable(true)

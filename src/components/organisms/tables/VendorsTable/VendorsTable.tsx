@@ -53,7 +53,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
   const { languageDirectionFilters, loadMore, handleSearch } =
     useLanguageDirections({})
 
-  type OrderTableRow = {
+  type ProjectTableRow = {
     id?: string
     languageDirections: string[]
     tags: string[]
@@ -62,7 +62,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
     roles: string[]
   }
 
-  const columnHelper = createColumnHelper<OrderTableRow>()
+  const columnHelper = createColumnHelper<ProjectTableRow>()
 
   const vendorsData = useMemo(() => {
     return (
@@ -194,7 +194,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
           appearance={AppearanceTypes.Text}
           size={SizeTypes.M}
           icon={ArrowRight}
-          ariaLabel={t('label.to_order_view')}
+          ariaLabel={t('label.to_project_view')}
           iconPositioning={IconPositioningTypes.Left}
           href={`/vendors/${getValue()}`}
         >
@@ -202,7 +202,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
         </Button>
       ),
     }),
-  ] as ColumnDef<OrderTableRow>[]
+  ] as ColumnDef<ProjectTableRow>[]
 
   if (hidden) return null
 

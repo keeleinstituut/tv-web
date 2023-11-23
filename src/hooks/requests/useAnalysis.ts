@@ -2,7 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
-import { CatAnalysis, SourceFile } from 'types/orders'
+import { CatAnalysis, SourceFile } from 'types/projects'
 
 export interface AnalysisResponse {
   cat_files: SourceFile[]
@@ -12,9 +12,9 @@ export interface AnalysisResponse {
 }
 
 export const useCatAnalysisFetch = ({
-  subOrderId: id,
+  subProjectId: id,
 }: {
-  subOrderId?: string
+  subProjectId?: string
 }) => {
   const { data, isLoading } = useQuery<{ data: AnalysisResponse }>({
     enabled: !!id,
@@ -29,9 +29,9 @@ export const useCatAnalysisFetch = ({
 }
 
 export const useDownloadCatAnalysisFetch = ({
-  subOrderId: id,
+  subProjectId: id,
 }: {
-  subOrderId?: string
+  subProjectId?: string
 }) => {
   const { isLoading, isSuccess, mutateAsync } = useMutation({
     mutationKey: ['cat_analysis', id],
