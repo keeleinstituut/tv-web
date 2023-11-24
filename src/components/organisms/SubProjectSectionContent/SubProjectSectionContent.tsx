@@ -24,7 +24,11 @@ import DataTable, {
 } from 'components/organisms/DataTable/DataTable'
 import { useHandleFiles } from 'hooks/requests/useFiles'
 import dayjs from 'dayjs'
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  createColumnHelper,
+  PaginationState,
+} from '@tanstack/react-table'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import classNames from 'classnames'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -116,6 +120,11 @@ const FilesSection: FC<FilesSectionProps> = ({ files, id }) => {
     collection: 'source',
   })
 
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10000,
+  })
+
   const handleDownload = useCallback(
     (index: number) => {
       if (files?.[index]) {
@@ -180,6 +189,8 @@ const FilesSection: FC<FilesSectionProps> = ({ files, id }) => {
         classes.filesListContainer,
         classes.increasedSpecificity
       )}
+      pagination={pagination}
+      setPagination={setPagination}
       hidePagination
       headComponent={
         <div className={classes.titleRow}>
