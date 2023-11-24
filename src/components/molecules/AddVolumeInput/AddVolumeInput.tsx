@@ -166,7 +166,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       onChange([...value, newVolume])
     }
 
-    // TODO: open add/edit modal with add mode
     showModal(ModalTypes.AddVolume, {
       onChangeValue,
       assignmentId,

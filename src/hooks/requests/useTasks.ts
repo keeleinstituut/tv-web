@@ -57,7 +57,11 @@ export const useCompleteTask = ({ id }: { id?: string }) => {
         return { data: newData }
       })
 
-      if (data?.task_type === 'CLIENT_REVIEW') {
+      // TODO: might be able to get rid of this
+      if (
+        data?.task_type === 'CLIENT_REVIEW' ||
+        data?.task_type === 'CORRECTING'
+      ) {
         queryClient.refetchQueries({ queryKey: ['projects', data?.project_id] })
       }
     },

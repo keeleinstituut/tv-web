@@ -45,7 +45,7 @@ const ProjectFilesSection = <TFormValues extends FieldValues>({
         projectId={projectId}
         title={t('projects.feedback_files')}
         control={control}
-        name="feedback_files"
+        name="review_files"
         typeOptions={fileTypeFilters}
         hiddenIfNoValue
         isEditable={isEditable}
