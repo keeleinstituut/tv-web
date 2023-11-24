@@ -194,21 +194,14 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     }),
     columnHelper.accessor('download_button', {
       header: '',
-      cell: ({ getValue }) => {
-        const file = typedValue?.[getValue()]
-        const localFileUrl =
-          file instanceof File ? URL.createObjectURL(file) : ''
-        const fileUrl =
-          'original_url' in file ? file.original_url : localFileUrl
-        return (
-          <BaseButton
-            className={classNames(classes.iconButton, classes.downloadButton)}
-            onClick={() => handleDownload(getValue())}
-          >
-            <DownloadFilled />
-          </BaseButton>
-        )
-      },
+      cell: ({ getValue }) => (
+        <BaseButton
+          className={classNames(classes.iconButton, classes.downloadButton)}
+          onClick={() => handleDownload(getValue())}
+        >
+          <DownloadFilled />
+        </BaseButton>
+      ),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('delete_button', {
