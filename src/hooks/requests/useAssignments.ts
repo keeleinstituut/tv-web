@@ -315,13 +315,17 @@ export const useCompleteAssignment = ({ id }: { id?: string }) => {
       ),
     onSuccess: ({ data }: { data: AssignmentType }) => {
       const { sub_project_id } = data
-      // TODO: we should update task with this id + we should also update the parent project and possibly sub-project
-      // Will see if we get all the relevant info in the response
-      queryClient.setQueryData(
-        ['subprojects', sub_project_id],
-        (oldData?: SubProjectResponse) =>
-          getNewSubProjectWithAssignment(data, oldData)
-      )
+      // For now we have to use refetching
+      // We can skip this, once BE responds with new subProject (currently old one is sent)
+      // And the changes to other assignments should also be returned from BE, which currently are not
+      // queryClient.setQueryData(
+      //   ['subprojects', sub_project_id],
+      //   (oldData?: SubProjectResponse) =>
+      //     getNewSubProjectWithAssignment(data, oldData)
+      // )
+      queryClient.refetchQueries({
+        queryKey: ['subprojects', sub_project_id],
+      })
     },
   })
   return {

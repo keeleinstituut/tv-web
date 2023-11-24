@@ -51,6 +51,7 @@ interface AssignmentProps extends AssignmentType {
   ext_id?: string
   volumes?: VolumeValue[]
   project: ListProject
+  subProjectDeadline?: string
 }
 
 interface FormValues {
@@ -82,6 +83,7 @@ const Assignment: FC<AssignmentProps> = ({
   deadline_at,
   event_start_at,
   status,
+  subProjectDeadline,
 }) => {
   const { t } = useTranslation()
   const { completeAssignment, isLoading: isCompletingAssignment } =
@@ -94,7 +96,7 @@ const Assignment: FC<AssignmentProps> = ({
 
   const { vendor } =
     find(candidates, ({ vendor }) => vendor.id === assigned_vendor_id) || {}
-  const { deadline_at: projectDeadline, type_classifier_value } = project || {}
+  const { type_classifier_value } = project || {}
 
   const shouldShowStartTimeFields =
     type_classifier_value?.project_type_config?.is_start_date_supported
@@ -267,7 +269,7 @@ const Assignment: FC<AssignmentProps> = ({
         className: classes.customInternalClass,
         name: 'deadline_at',
         minDate: new Date(),
-        maxDate: dayjs(projectDeadline).toDate(),
+        maxDate: dayjs(subProjectDeadline).toDate(),
         onDateTimeChange: handleAddDateTime,
         // onlyDisplay: !isEditable,
       },
@@ -279,7 +281,7 @@ const Assignment: FC<AssignmentProps> = ({
         className: classes.customInternalClass,
         name: 'event_start_at',
         minDate: new Date(),
-        maxDate: dayjs(projectDeadline).toDate(),
+        maxDate: dayjs(subProjectDeadline).toDate(),
         // onlyDisplay: !isEditable,
       },
       {
@@ -322,7 +324,7 @@ const Assignment: FC<AssignmentProps> = ({
     ],
     [
       t,
-      projectDeadline,
+      subProjectDeadline,
       handleAddDateTime,
       shouldShowStartTimeFields,
       id,
