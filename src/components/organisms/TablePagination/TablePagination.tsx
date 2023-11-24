@@ -56,7 +56,7 @@ const TablePagination = <TData,>({
     pageNumber < 3 //first three pages
       ? 0
       : pageNumber > amountOfPages - 3 // last three pages
-      ? Math.max(0, amountOfPages - 5)
+      ? amountOfPages - 5
       : pageNumber - 2
 
   const endPage =
