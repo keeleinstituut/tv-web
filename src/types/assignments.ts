@@ -6,7 +6,6 @@ import {
 } from 'types/projects'
 import { DiscountPercentages, Vendor } from './vendors'
 import { VolumeValue } from './volumes'
-import { SubProject } from './tasks'
 
 export enum AssignmentStatus {
   New = 'NEW',
@@ -41,16 +40,13 @@ export interface AssignmentType {
   event_start_at?: string
   created_at: string
   ext_id: string
-  assignee_comments: string
   updated_at: string
-  // subProject: SubProject
   status: AssignmentStatus
   subProject?: Partial<SubProjectDetail>
   // TODO: no idea whether it will be skill_ids or sth else
   skill_id: string
   // TODO: no idea if this field will come from here
   finished_at: string
-  //
   assigned_chunks: string[]
   comments: string
 }
