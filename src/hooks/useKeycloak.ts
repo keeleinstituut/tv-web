@@ -178,11 +178,6 @@ const useKeycloak = () => {
       })
 
       if (!isKeycloakUserLoggedIn) {
-        console.warn(
-          'logged out with error',
-          window.location.hash,
-          window.location
-        )
         // Currently will show error with any hash
         // If we add any extra hash parameters later, then this should be changed
         if (

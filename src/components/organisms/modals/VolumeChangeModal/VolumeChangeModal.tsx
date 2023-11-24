@@ -355,7 +355,6 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         }
         closeModal()
       } catch (errorData) {
-        console.warn('errorData', errorData)
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {

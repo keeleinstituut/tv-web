@@ -136,8 +136,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
     manager_institution_user,
   } = project || {}
 
-  console.warn('status', status)
-
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
   const { createProject, isLoading } = useCreateProject()
