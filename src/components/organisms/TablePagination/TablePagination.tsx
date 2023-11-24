@@ -52,7 +52,6 @@ const TablePagination = <TData,>({
   const pagesArray = range(0, amountOfPages)
   const pageNumber = getState().pagination.pageIndex
 
-  console.log('SOURCE', pageNumber, amountOfPages)
   const startPage =
     pageNumber < 3 //first three pages
       ? 0
@@ -67,7 +66,6 @@ const TablePagination = <TData,>({
       ? amountOfPages
       : pageNumber + 3
 
-  console.log(startPage, endPage)
   if (hidden) return null
 
   return (
