@@ -1,0 +1,104 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.filesListContainer {
+  margin-bottom: spacing(10);
+  box-shadow: unset;
+  border: unset;
+
+  .hiddenContent {
+
+    .tableWrapperClassName {
+      display: none;
+    }
+  }
+
+  thead {
+    tr {
+      th {
+        &:first-child {
+          max-width: 99%;
+          padding-left: 0;
+        }
+        &:nth-child(2) {
+          width: 178px;
+        }
+        &:last-child {
+          width: 38px;
+          padding-right: 0;
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      td {
+        &:first-child {
+          padding-left: 0;
+          max-width: calc(100% - 1000px);
+        }
+        &:last-child {
+          padding-right: 0;
+        }
+      }
+    }
+  }
+
+  .fitContent {
+    width: fit-content;
+  }
+}
+
+.titleRow {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: spacing(4);
+
+  .fileImportButton {
+    margin-left: auto
+  }
+
+  h3 {
+    @include h4TextStyle;
+    margin-right: spacing(2);
+  }
+}
+
+.filesTable {
+  flex: 1;
+}
+
+.altFilesContainer {
+  display: grid;
+  grid-template-columns: minmax(194px, max-content) max-content max-content;
+  grid-row-gap: spacing(2);
+  grid-column-gap: spacing(4);
+  align-items: center;
+  margin-bottom: spacing(8);
+
+  h3 {
+    grid-column: 1/4;
+    font-size: $font-size-16;
+    margin-bottom: spacing(2);
+  }
+
+  label {
+    font-size: $font-size-16;
+    font-weight: $font-weight-bold;
+  }
+
+  span {
+    font-size: $font-size-14;
+  }
+
+  button {
+    width: 16px;
+    height: 17px;
+  }
+}
+
+.fileName {
+  margin-right: spacing(2);
+}

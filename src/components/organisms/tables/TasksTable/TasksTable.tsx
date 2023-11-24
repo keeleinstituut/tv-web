@@ -19,10 +19,10 @@ import {
   FormInput,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useFetchOrders } from 'hooks/requests/useOrders'
-import { OrderStatus } from 'types/orders'
+import { useFetchProjects } from 'hooks/requests/useProjects'
+import { ProjectStatus } from 'types/projects'
 import Tag from 'components/atoms/Tag/Tag'
-import OrderStatusTag from 'components/molecules/OrderStatusTag/OrderStatusTag'
+import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
 import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
@@ -41,12 +41,12 @@ const mockStatuses = [
   { label: 'Tagasi lükatud', value: 'REJECTED' },
 ]
 
-type OrderTableRow = {
+type ProjectTableRow = {
   ext_id: string
   reference_number: string
   deadline_at: string
   type: string
-  status: OrderStatus
+  status: ProjectStatus
   tags: string[]
   cost: string
   language_directions: string[]
@@ -74,7 +74,7 @@ const TasksTable: FC = () => {
   } = useFetchTasks()
 
   // TODO: remove default values, once we have actual data
-  const orderRows = useMemo(
+  const projectRows = useMemo(
     () =>
       map(
         tasks,
@@ -85,7 +85,7 @@ const TasksTable: FC = () => {
           // deadline_at,
           // ext_id,
           // type_classifier_value,
-          // status = OrderStatus.Registered,
+          // status = ProjectStatus.Registered,
           // tags = ['asutusesiseseks kasutuseks'],
           // cost = '500€',
         }) => {
@@ -122,7 +122,7 @@ const TasksTable: FC = () => {
     },
   })
 
-  // TODO: use function to pass in filters and sorting to our order fetch hook
+  // TODO: use function to pass in filters and sorting to our project fetch hook
   // Not sure yet, what keys these will have and how the params will be passed
   const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data)
 
@@ -143,12 +143,12 @@ const TasksTable: FC = () => {
             appearance={AppearanceTypes.Text}
             size={SizeTypes.M}
             icon={ArrowRight}
-            ariaLabel={t('label.to_order_view')}
+            ariaLabel={t('label.to_project_view')}
             iconPositioning={IconPositioningTypes.Left}
             // disabled={
             //   !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
             // }
-            href={`/orders/my-tasks/${id}`}
+            href={`/projects/my-tasks/${id}`}
           >
             {id}
           </Button>
@@ -161,23 +161,23 @@ const TasksTable: FC = () => {
       footer: (info) => info.column.id,
     }),
     // columnHelper.accessor('ext_id', {
-    //   header: () => t('label.order_id'),
+    //   header: () => t('label.project_id'),
     //   cell: ({ getValue, row }) => {
-    //     const orderExtId = getValue()
-    //     const order = find(orders, { ext_id: orderExtId })
+    //     const projectExtId = getValue()
+    //     const project = find(projects, { ext_id: projectExtId })
     //     return (
     //       <Button
     //         appearance={AppearanceTypes.Text}
     //         size={SizeTypes.M}
     //         icon={ArrowRight}
-    //         ariaLabel={t('label.to_order_view')}
+    //         ariaLabel={t('label.to_project_view')}
     //         iconPositioning={IconPositioningTypes.Left}
     //         // disabled={
     //         //   !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
     //         // }
-    //         href={`/orders/${order?.id}`}
+    //         href={`/projects/${project?.id}`}
     //       >
-    //         {orderExtId}
+    //         {projectExtId}
     //       </Button>
     //     )
     //   },
@@ -205,7 +205,7 @@ const TasksTable: FC = () => {
     //   footer: (info) => info.column.id,
     // }),
     // columnHelper.accessor('tags', {
-    //   header: () => t('label.order_tags'),
+    //   header: () => t('label.project_tags'),
     //   footer: (info) => info.column.id,
     //   cell: ({ getValue }) => {
     //     return (
@@ -220,7 +220,7 @@ const TasksTable: FC = () => {
     // columnHelper.accessor('status', {
     //   header: () => t('label.status'),
     //   footer: (info) => info.column.id,
-    //   cell: ({ getValue }) => <OrderStatusTag status={getValue()} />,
+    //   cell: ({ getValue }) => <ProjectStatusTag status={getValue()} />,
     // }),
     // columnHelper.accessor('cost', {
     //   header: () => t('label.cost'),
@@ -245,10 +245,10 @@ const TasksTable: FC = () => {
     //       diff < 0 &&
     //       !includes(
     //         [
-    //           OrderStatus.SubmittedToClient,
-    //           OrderStatus.Accepted,
-    //           OrderStatus.Cancelled,
-    //           OrderStatus.Corrected,
+    //           ProjectStatus.SubmittedToClient,
+    //           ProjectStatus.Accepted,
+    //           ProjectStatus.Cancelled,
+    //           ProjectStatus.Corrected,
     //         ],
     //         rowStatus
     //       )
@@ -272,7 +272,7 @@ const TasksTable: FC = () => {
   return (
     <Root>
       <DataTable
-        data={orderRows}
+        data={projectRows}
         columns={columns}
         tableSize={TableSizeTypes.M}
         paginationData={paginationData}
@@ -289,8 +289,8 @@ const TasksTable: FC = () => {
             />
             <FormInput
               name="only_show_personal_projects"
-              label={t('label.show_only_my_orders')}
-              ariaLabel={t('label.show_only_my_orders')}
+              label={t('label.show_only_my_projects')}
+              ariaLabel={t('label.show_only_my_projects')}
               className={classes.checkbox}
               control={control}
               inputType={InputTypes.Checkbox}

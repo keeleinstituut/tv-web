@@ -6,7 +6,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { useTranslation } from 'react-i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useHandleFiles } from 'hooks/requests/useAssignments'
+import { useHandleFiles } from 'hooks/requests/useFiles'
 
 export interface ConfirmDeleteSourceFileModalProps
   extends ConfirmationModalBaseProps {

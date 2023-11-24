@@ -6,10 +6,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { useTranslation } from 'react-i18next'
 
 import { VolumeValue } from 'types/volumes'
-import {
-  useAssignmentRemoveVolume,
-  useAssignmentUpdate,
-} from 'hooks/requests/useAssignments'
+import { useAssignmentRemoveVolume } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
@@ -19,22 +16,21 @@ export interface ConfirmDeleteVolumeModalProps
   callback?: () => void
   assignmentId?: string
   volumeId?: string
-  subOrderId?: string
+  sub_project_id?: string
 }
 
 const ConfirmDeleteVolumeModal: FC<ConfirmDeleteVolumeModalProps> = ({
   newVolumes,
   callback,
   assignmentId,
-  subOrderId,
+  sub_project_id,
   closeModal,
   volumeId,
   ...rest
 }) => {
   const { t } = useTranslation()
-  const { updateAssignment } = useAssignmentUpdate({ id: assignmentId })
   const { removeAssignmentVolume } = useAssignmentRemoveVolume({
-    subOrderId,
+    subProjectId: sub_project_id,
   })
 
   const handleDeleteVolume = useCallback(async () => {

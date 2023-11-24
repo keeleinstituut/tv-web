@@ -6,21 +6,21 @@ import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { useMergeCatJobs } from 'hooks/requests/useOrders'
+import { useMergeCatJobs } from 'hooks/requests/useProjects'
 import { closeModal } from '../ModalRoot'
 
 export interface CatMergeModalProps
   extends Omit<ConfirmationModalBaseProps, 'handleProceed'> {
-  subOrderId?: string
+  subProjectId?: string
 }
 
-const CatMergeModal: FC<CatMergeModalProps> = ({ subOrderId, ...rest }) => {
+const CatMergeModal: FC<CatMergeModalProps> = ({ subProjectId, ...rest }) => {
   const { t } = useTranslation()
   const { mergeCatJobs } = useMergeCatJobs()
 
   const handleMerge = useCallback(async () => {
     const payload = {
-      sub_project_id: subOrderId || '',
+      sub_project_id: subProjectId || '',
     }
     try {
       await mergeCatJobs(payload)
@@ -33,7 +33,7 @@ const CatMergeModal: FC<CatMergeModalProps> = ({ subOrderId, ...rest }) => {
     } catch (errorData) {
       // error message comes from api errorHandles
     }
-  }, [mergeCatJobs, subOrderId, t])
+  }, [mergeCatJobs, subProjectId, t])
 
   return (
     <ConfirmationModalBase

@@ -116,6 +116,10 @@ const DataTable = <TData,>(
     pageSize: hidePagination ? 10000 : per_page || 10,
   })
 
+  if (last_page && last_page < pagination.pageIndex) {
+    setPagination({ pageIndex: 0, pageSize: per_page || 10 })
+  }
+
   if (last_page === pagination.pageIndex) {
     setPagination({ pageIndex: last_page - 1, pageSize: per_page || 10 })
   }

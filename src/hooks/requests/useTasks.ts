@@ -43,7 +43,7 @@ export const useCompleteTask = ({ id }: { id?: string }) => {
   const { mutateAsync: completeTask, isLoading } = useMutation({
     mutationKey: ['tasks', id],
     mutationFn: (payload: CompleteTaskPayload) =>
-      apiClient.post(`${endpoints.TASKS}/${id}`, payload),
+      apiClient.instance.postForm(`${endpoints.TASKS}/${id}/complete`, payload),
     onSuccess: ({ data }: { data: ListTask }) => {
       // TODO: we should update task with this id + we should also update the parent project and possibly sub-project
       // Will see if we get all the relevant info in the response
@@ -56,6 +56,14 @@ export const useCompleteTask = ({ id }: { id?: string }) => {
         }
         return { data: newData }
       })
+
+      // TODO: might be able to get rid of this
+      if (
+        data?.task_type === 'CLIENT_REVIEW' ||
+        data?.task_type === 'CORRECTING'
+      ) {
+        queryClient.refetchQueries({ queryKey: ['projects', data?.project_id] })
+      }
     },
   })
   return {

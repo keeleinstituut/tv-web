@@ -20,14 +20,14 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { CatProjectStatus, SourceFile } from 'types/orders'
+import { SourceFile, CatProjectStatus } from 'types/projects'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
-import { useHandleFiles } from 'hooks/requests/useAssignments'
+import { useHandleFiles } from 'hooks/requests/useFiles'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
-// TODO: very similar to OrderFilesList, these 2 can be unified
+// TODO: very similar to ProjectFilesList, these 2 can be unified
 
 interface SourceFilesListProps<TFormValues extends FieldValues> {
   title: string
@@ -36,7 +36,7 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   tooltipContent?: string
   hiddenIfNoValue?: boolean
   isEditable?: boolean
-  subOrderId: string
+  subProjectId: string
   className?: string
   openSendToCatModal?: () => void
   canGenerateProject?: boolean
@@ -66,7 +66,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   canGenerateProject,
   openSendToCatModal,
   isCatProjectLoading,
-  subOrderId,
+  subProjectId,
   isGenerateProjectButtonDisabled,
   catSetupStatus,
 }: SourceFilesListProps<TFormValues>) => {
@@ -77,7 +77,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     control,
   })
   const { addFiles, downloadFile } = useHandleFiles({
-    reference_object_id: subOrderId,
+    reference_object_id: subProjectId,
     reference_object_type: 'subproject',
     collection: 'source',
   })
@@ -125,13 +125,13 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         )
 
         showModal(ModalTypes.ConfirmDeleteSourceFile, {
-          subProjectId: subOrderId,
+          subProjectId: subProjectId,
           sourceFileId: typedValue[index].id,
           callback: () => onChange(newSourceFiles),
         })
       }
     },
-    [onChange, typedValue, subOrderId]
+    [onChange, typedValue, subProjectId]
   )
 
   const columns = [
