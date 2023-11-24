@@ -234,7 +234,8 @@
     "accept_project": "Võta vastu",
     "reject_project": "Lükka tagasi",
     "change_files": "Muuda faile",
-    "download_all": "Laadi kõik alla"
+    "download_all": "Laadi kõik alla",
+    "mark_project_as_completed": "Märgi tellimus lõpetatuks"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -526,7 +527,8 @@
     "order_cancelled": "Tellimus edukalt tühistatud",
     "project_cancelled": "Tellimus edukalt tühistatud",
     "project_accepted": "Tellimus vastuvõetud",
-    "project_rejected": "Tellimus tagasi lükatud"
+    "project_rejected": "Tellimus tagasi lükatud",
+    "project_corrected": "Tellimus lõpetatuks märgitud"
   },
   "notification": {
     "announcement": "Teade",

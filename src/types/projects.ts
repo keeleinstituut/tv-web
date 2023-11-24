@@ -208,15 +208,17 @@ export interface ListProject {
   source_files?: SourceFile[]
   client_institution_user?: UserType
   manager_institution_user?: UserType
-  translation_domain_classifier_value?: ClassifierValue
 }
 export interface DetailedProject extends ListProject {
+  translation_domain_classifier_value: ClassifierValue
+  event_start_at?: string
+  workflow_started?: boolean
+  review_files?: SourceFile[]
   // TODO: unclear type for following:
   accepted_at?: string
   corrected_at?: string
   rejected_at?: string
   cancelled_at?: string
-  workflow_started?: boolean
 }
 
 export type ProjectsPayloadType = PaginationFunctionType &

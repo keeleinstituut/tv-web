@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo } from 'react'
-import { map, find, pick, values, isEqual } from 'lodash'
+import { map, find, pick, values, isEqual, includes } from 'lodash'
 import { ListProject, SubProjectFeatures } from 'types/projects'
 import {
   AssignmentPayload,
@@ -57,7 +57,6 @@ interface FormValues {
   deadline_at: { date?: string; time?: string }
   event_start_at?: { date?: string; time?: string }
   comments?: string
-  // TODO: Not sure about the structure of following fields
   volume?: VolumeValue[]
   vendor_comments?: string
 }
@@ -178,11 +177,7 @@ const Assignment: FC<AssignmentProps> = ({
 
   const sendToPreviousAssignment = useCallback(async () => {
     try {
-      // TODO: no idea what this does at the moment
-      // await updateAssignment({
-      //   // TODO: not sure if this is
-      //   finished_at: null,
-      // })
+      await completeAssignment({ accepted: false })
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
@@ -191,7 +186,7 @@ const Assignment: FC<AssignmentProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [t])
+  }, [completeAssignment, t])
 
   const handleUpdateAssignment = useCallback(
     async (payload: AssignmentPayload) => {
@@ -371,12 +366,18 @@ const Assignment: FC<AssignmentProps> = ({
         </h3>
 
         <span className={classes.assignmentId}>{ext_id}</span>
+
         <Button
           size={SizeTypes.S}
           className={classes.addButton}
           onClick={handleOpenVendorsModal}
-          // TODO: need to add extra conditions here
-          disabled={feature === SubProjectFeatures.JobOverview}
+          disabled={
+            feature === SubProjectFeatures.JobOverview ||
+            !includes(
+              [AssignmentStatus.New, AssignmentStatus.InProgress],
+              status
+            )
+          }
         >
           {t('button.choose_from_database')}
         </Button>
