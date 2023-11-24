@@ -1,9 +1,9 @@
 import Loader from 'components/atoms/Loader/Loader'
 import {
-  useFetchOrder,
-  useFetchSubOrder,
-  useSubOrderSendToCat,
-} from 'hooks/requests/useOrders'
+  useFetchProject,
+  useFetchSubProject,
+  useSubProjectSendToCat,
+} from 'hooks/requests/useProjects'
 import { FC, Fragment, useState } from 'react'
 import { includes, find, map, chain, assign, filter } from 'lodash'
 import { useParams } from 'react-router-dom'
@@ -12,7 +12,7 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
-import { OrderStatus } from 'types/orders'
+import { ProjectStatus } from 'types/projects'
 import Tag from 'components/atoms/Tag/Tag'
 import Tabs from 'components/molecules/Tabs/Tabs'
 
@@ -21,10 +21,10 @@ import Tabs from 'components/molecules/Tabs/Tabs'
 const TaskPage: FC = () => {
   const { t } = useTranslation()
   const { taskId } = useParams()
-  // const { order, isLoading } = useFetchOrder({ id: orderId })
-  // const { id, status } = order || {}
-  // TODO: check is "Tellija" of the order is current user
-  const isPersonalOrder = true
+  // const { project, isLoading } = useFetchProject({ id: projectId })
+  // const { id, status } = project || {}
+  // TODO: check is "Tellija" of the project is current user
+  const isPersonalProject = true
   // if (isLoading) return <Loader loading={isLoading} />
   return (
     <div>
@@ -34,10 +34,10 @@ const TaskPage: FC = () => {
 
       {/* <div>
         <br />
-        {map(order?.sub_projects, (subOrder) => {
+        {map(project?.sub_projects, (subProject) => {
           return (
-            <div key={subOrder.id}>
-              <SubOrder id={subOrder.id} />
+            <div key={subProject.id}>
+              <SubProject id={subProject.id} />
               <br />
               <br />
               <br />
@@ -57,17 +57,17 @@ interface ObjectType {
   [key: string]: string
 }
 
-const SubOrder: FC<any> = (props) => {
+const SubProject: FC<any> = (props) => {
   const { id } = props
 
   const [tabNames, setTabNames] = useState<ObjectType>({})
   const [activeTab, setActiveTab] = useState<string>()
 
-  const { subOrder, isLoading } = useFetchSubOrder({ id })
+  const { subProject, isLoading } = useFetchSubProject({ id })
 
   if (isLoading) return <Loader loading={isLoading} />
 
-  const keelesuunad = `${subOrder?.destination_language_classifier_value.value} > ${subOrder?.source_language_classifier_value.value}`
+  const keelesuunad = `${subProject?.destination_language_classifier_value.value} > ${subProject?.source_language_classifier_value.value}`
 
   return (
     <>
@@ -76,14 +76,14 @@ const SubOrder: FC<any> = (props) => {
         <span>
           keelesuunad: <Tag label={keelesuunad} value />
         </span>
-        <span>alamtellimuse ID: {subOrder?.ext_id}</span>
+        <span>alamtellimuse ID: {subProject?.ext_id}</span>
       </div>
       {/* <Tabs
         setActiveTab={setActiveTab}
         tabs={chain((Feature as any).supportedFeatures)
           .filter((feature) =>
             includes(
-              ['general_information', ...(subOrder?.assignments || [])],
+              ['general_information', ...(subProject?.assignments || [])],
               feature
             )
           )
@@ -103,17 +103,17 @@ const SubOrder: FC<any> = (props) => {
         tabNames={tabNames}
       /> */}
 
-      <Feature subOrder={subOrder} feature={activeTab} />
+      <Feature subProject={subProject} feature={activeTab} />
 
       {/* <pre>
-        {JSON.stringify(subOrder, null, 2)}
+        {JSON.stringify(subProject, null, 2)}
       </pre> */}
     </>
   )
 }
 
 const Feature: FC<any> = (props) => {
-  // const { subOrder, feature } = props
+  // const { subProject, feature } = props
   // let Component = null
 
   // switch (feature) {
@@ -151,16 +151,16 @@ const Feature: FC<any> = (props) => {
 ]
 
 const GeneralInformation: FC<any> = (props) => {
-  const { subOrder, feature } = props
-  const catSupported = includes(subOrder.cat_features, feature)
-  const { sendToCat } = useSubOrderSendToCat()
+  const { subProject, feature } = props
+  const catSupported = includes(subProject.cat_features, feature)
+  const { sendToCat } = useSubProjectSendToCat()
 
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <span>feature: {feature}</span>
         <span>catSupported: {String(catSupported)}</span>
-        <span>catProjectCreated: {String(subOrder.cat_project_created)}</span>
+        <span>catProjectCreated: {String(subProject.cat_project_created)}</span>
       </div>
       <br />
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -174,7 +174,7 @@ const GeneralInformation: FC<any> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {map(subOrder.source_files, (file) => {
+              {map(subProject.source_files, (file) => {
                 return (
                   <tr key={file.id}>
                     <td>{file.file_name}</td>
@@ -184,7 +184,7 @@ const GeneralInformation: FC<any> = (props) => {
               })}
             </tbody>
           </table>
-          {/* {!subOrder.cat_project_created && (
+          {/* {!subProject.cat_project_created && (
             <Button
               onClick={() =>
                 sendToCat({
@@ -206,7 +206,7 @@ const GeneralInformation: FC<any> = (props) => {
               </tr>
             </thead>
             <tbody>
-              {map(subOrder.final_files, (file) => {
+              {map(subProject.final_files, (file) => {
                 return (
                   <tr key={file.id}>
                     <td>{file.file_name}</td>
@@ -223,9 +223,9 @@ const GeneralInformation: FC<any> = (props) => {
 }
 
 const TranslationFeature: FC<any> = (props) => {
-  const { subOrder, feature } = props
-  const catSupported = includes(subOrder.cat_features, feature)
-  const featureAssignments = filter(subOrder.assignments, (assignment) => {
+  const { subProject, feature } = props
+  const catSupported = includes(subProject.cat_features, feature)
+  const featureAssignments = filter(subProject.assignments, (assignment) => {
     return assignment.feature === feature
   })
 
@@ -251,9 +251,9 @@ const TranslationFeature: FC<any> = (props) => {
 }
 
 // const RevisionFeature: FC<any> = (props) => {
-//   const { subOrder, feature } = props
-//   const catSupported = includes(subOrder.cat_features, feature)
-//   const featureAssignments = filter(subOrder.assignments, (assignment) => {
+//   const { subProject, feature } = props
+//   const catSupported = includes(subProject.cat_features, feature)
+//   const featureAssignments = filter(subProject.assignments, (assignment) => {
 //     return assignment.feature === feature
 //   })
 
@@ -279,9 +279,9 @@ const TranslationFeature: FC<any> = (props) => {
 // }
 
 // const OverviewFeature: FC<any> = (props) => {
-//   const { subOrder, feature } = props
-//   const catSupported = includes(subOrder.cat_features, feature)
-//   const featureAssignments = filter(subOrder.assignments, (assignment) => {
+//   const { subProject, feature } = props
+//   const catSupported = includes(subProject.cat_features, feature)
+//   const featureAssignments = filter(subProject.assignments, (assignment) => {
 //     return assignment.feature === feature
 //   })
 
@@ -376,7 +376,7 @@ const Assignment: FC<any> = (props) => {
               Saada pakkumus
             </Button>
           )}
-          {/* {!subOrder.cat_project_created && (
+          {/* {!subProject.cat_project_created && (
             <Button onClick={() => {}}>genereeri tõlkimiseks</Button>
           )} */}
         </div>

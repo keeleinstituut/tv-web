@@ -9,6 +9,7 @@
 .tag {
   border: 1px solid $color-border;
   border-right: 0;
+  margin-bottom: spacing(2);
 
   &:last-child {
     border-top-right-radius: 4px;

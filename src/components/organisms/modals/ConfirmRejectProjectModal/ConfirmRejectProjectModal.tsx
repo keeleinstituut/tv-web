@@ -4,7 +4,7 @@ import { closeModal } from '../ModalRoot'
 import ConfirmationModalBase, {
   ConfirmationModalBaseProps,
 } from '../ConfirmationModalBase/ConfirmationModalBase'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -17,6 +17,9 @@ import FileImport, {
   ProjectFileTypes,
 } from 'components/organisms/FileImport/FileImport'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import { ValidationError } from 'api/errorHandler'
+import { join, map } from 'lodash'
+import { AxiosError } from 'axios'
 
 export interface ConfirmRejectProjectModalProps
   extends ConfirmationModalBaseProps {
@@ -26,9 +29,9 @@ export interface ConfirmRejectProjectModalProps
 }
 
 interface FormValues {
-  sub_projects: string[]
-  comments: string
-  files: File[]
+  sub_project_id: string[]
+  description: string
+  review_file: File[]
 }
 
 const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
@@ -48,18 +51,19 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
     handleSubmit,
     watch,
     setValue,
+    setError,
     formState: { isValid },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
   })
 
-  const files = watch('files')
+  const review_file = watch('review_file')
 
   const handleAdd = useCallback(
     async (newFiles: File[]) => {
-      setValue('files', [...files, ...newFiles])
+      setValue('review_file', [...(review_file || []), ...newFiles])
     },
-    [files, setValue]
+    [review_file, setValue]
   )
 
   const formFields: FieldProps<FormValues>[] = useMemo(
@@ -69,9 +73,11 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
         ariaLabel: `${t('label.pick_sub_project')}*`,
         placeholder: t('placeholder.pick'),
         label: `${t('label.pick_sub_project')}*`,
-        name: 'sub_projects',
+        name: 'sub_project_id',
         className: classes.selection,
         options: subProjectsOptions || [],
+        multiple: true,
+        buttons: true,
         rules: {
           required: true,
         },
@@ -83,7 +89,7 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
             fileButtonChangeText={t('button.change_files')}
             inputFileTypes={ProjectFileTypes}
             listContainerClassName={classes.filesList}
-            files={files}
+            files={review_file}
             className={classes.fileImportButton}
             onChange={handleAdd}
             allowMultiple
@@ -95,7 +101,7 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
         label: `${t('label.extra_information')}*`,
         ariaLabel: `${t('label.extra_information')}*`,
         placeholder: t('placeholder.extra_information'),
-        name: 'comments',
+        name: 'description',
         className: classes.commentInput,
         isTextarea: true,
         rules: {
@@ -104,20 +110,35 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
         rows: 3,
       },
     ],
-    [files, handleAdd, subProjectsOptions, t]
+    [review_file, handleAdd, subProjectsOptions, t]
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      await completeTask(values)
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.project_rejected'),
-      })
-      closeModal()
+      try {
+        await completeTask({
+          ...values,
+          accepted: 0,
+        })
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.project_rejected'),
+        })
+        closeModal()
+      } catch (error) {
+        const typedError = error as AxiosError
+        const typedErrorData = typedError?.response?.data as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            setError(typedKey, { type: 'backend', message: errorString })
+          })
+        }
+      }
     },
-    [completeTask, t]
+    [completeTask, setError, t]
   )
 
   return (

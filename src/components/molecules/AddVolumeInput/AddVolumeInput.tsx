@@ -101,7 +101,7 @@ export interface AddVolumeInputProps {
   vendorPrices?: Price
   vendorName?: string
   assignmentId?: string
-  subOrderId?: string
+  sub_project_id?: string
 }
 
 const AddVolumeInput: FC<AddVolumeInputProps> = ({
@@ -114,7 +114,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   vendorPrices,
   vendorName,
   assignmentId,
-  subOrderId,
+  sub_project_id,
   disabled,
   loading,
 }) => {
@@ -128,13 +128,13 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       )
       showModal(ModalTypes.ConfirmDeleteVolume, {
         newVolumes,
-        subOrderId,
+        sub_project_id,
         volumeId: id,
         callback: () => onChange(newVolumes),
         assignmentId,
       })
     },
-    [value, subOrderId, assignmentId, onChange]
+    [value, sub_project_id, assignmentId, onChange]
   )
 
   const handleEdit = useCallback(
@@ -154,11 +154,11 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
         vendorPrices,
         vendorName,
         onChangeValue,
-        subOrderId,
+        sub_project_id,
         ...matchingVolume,
       })
     },
-    [value, vendorPrices, vendorName, onChange, subOrderId]
+    [value, vendorPrices, vendorName, onChange, sub_project_id]
   )
 
   const handleAdd = useCallback(() => {
@@ -166,18 +166,17 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       onChange([...value, newVolume])
     }
 
-    // TODO: open add/edit modal with add mode
     showModal(ModalTypes.AddVolume, {
       onChangeValue,
       assignmentId,
-      subOrderId,
+      sub_project_id,
       catSupported,
       vendorPrices,
       vendorName,
     })
   }, [
     assignmentId,
-    subOrderId,
+    sub_project_id,
     catSupported,
     vendorPrices,
     vendorName,

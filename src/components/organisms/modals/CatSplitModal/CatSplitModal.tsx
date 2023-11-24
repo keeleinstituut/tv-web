@@ -12,16 +12,16 @@ import { Root } from '@radix-ui/react-form'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { useSplitCatJobs } from 'hooks/requests/useOrders'
+import { useSplitCatJobs } from 'hooks/requests/useProjects'
 
 export interface CatSplitModalProps
   extends Omit<ConfirmationModalBaseProps, 'handleProceed'> {
-  subOrderId?: string
+  subProjectId?: string
 }
 
 const CatSplitModal: FC<CatSplitModalProps> = ({
   modalContent,
-  subOrderId,
+  subProjectId,
   closeModal,
   ...rest
 }) => {
@@ -31,7 +31,7 @@ const CatSplitModal: FC<CatSplitModalProps> = ({
 
   const handleSplit = useCallback(async () => {
     const payload = {
-      sub_project_id: subOrderId || '',
+      sub_project_id: subProjectId || '',
       chunks_count: splitsAmount,
     }
     try {
@@ -46,7 +46,7 @@ const CatSplitModal: FC<CatSplitModalProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [closeModal, splitCatJobs, splitsAmount, subOrderId, t])
+  }, [closeModal, splitCatJobs, splitsAmount, subProjectId, t])
 
   return (
     <ConfirmationModalBase

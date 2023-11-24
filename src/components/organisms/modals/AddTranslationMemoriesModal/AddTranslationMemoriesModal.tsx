@@ -15,8 +15,8 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import {
-  useFetchSubOrderTmKeys,
-  useUpdateSubOrderTmKeys,
+  useFetchSubProjectTmKeys,
+  useUpdateSubProjectTmKeys,
 } from 'hooks/requests/useTranslationMemories'
 import { ClassifierValue } from 'types/classifierValues'
 
@@ -24,24 +24,24 @@ interface FormValues {
   [key: string]: boolean
 }
 type AddTranslationMemoriesType = {
-  subOrderId?: string
-  subOrderLangPair?: string
+  subProjectId?: string
+  subProjectLangPair?: string
   projectDomain?: ClassifierValue
 } & ConfirmationModalBaseProps
 
 const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
   isModalOpen,
-  subOrderId,
-  subOrderLangPair = '',
+  subProjectId,
+  subProjectLangPair = '',
   projectDomain,
 }) => {
-  const { updateSubOrderTmKeys } = useUpdateSubOrderTmKeys()
-  const { subOrderTmKeys } = useFetchSubOrderTmKeys({ id: subOrderId })
+  const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys()
+  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id: subProjectId })
 
   const defaultFormValues = useMemo(
     () =>
       reduce(
-        subOrderTmKeys,
+        SubProjectTmKeys,
         (result, value) => {
           if (!value.key) {
             return result
@@ -53,7 +53,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
         },
         {}
       ),
-    [subOrderTmKeys]
+    [SubProjectTmKeys]
   )
 
   const {
@@ -91,7 +91,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
       const checkedValues = pickBy(values, (val) => !!val)
 
       const payload = {
-        sub_project_id: subOrderId || '',
+        sub_project_id: subProjectId || '',
         tm_keys: map(checkedValues, (_, key) => {
           return {
             key: key || '',
@@ -100,7 +100,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
       }
 
       try {
-        await updateSubOrderTmKeys(payload)
+        await updateSubProjectTmKeys(payload)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -111,7 +111,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
         // error message comes from api errorHandles
       }
     },
-    [subOrderId, updateSubOrderTmKeys]
+    [subProjectId, updateSubProjectTmKeys]
   )
 
   return (
@@ -148,8 +148,8 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
         tmKeyControl={control}
         initialFilters={{
           lang_pair: [
-            subOrderLangPair,
-            join(reverse(split(subOrderLangPair, '_')), '_'),
+            subProjectLangPair,
+            join(reverse(split(subProjectLangPair, '_')), '_'),
           ],
           tv_domain: [projectDomain?.id || ''],
         }}

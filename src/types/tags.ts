@@ -1,7 +1,7 @@
 export enum TagTypes {
   TranslationMemories = 'Tõlkemälud',
   Vendor = 'Teostaja',
-  Order = 'Tellimus',
+  Project = 'Tellimus',
   Skills = 'Oskused',
 }
 export interface TagsResponse {
