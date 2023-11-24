@@ -32,7 +32,6 @@ import { ClassifierValueType } from 'types/classifierValues'
 import { getProjectDefaultValues, mapFilesForApi } from 'helpers/project'
 import { HelperFileTypes } from 'types/classifierValues'
 import { useHandleBulkFiles } from 'hooks/requests/useFiles'
-import { useQueryClient } from '@tanstack/react-query'
 
 import classes from './classes.module.scss'
 
@@ -144,7 +143,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
   } = project || {}
 
   const { t } = useTranslation()
-  const queryClient = useQueryClient()
   const { institutionUserId, userPrivileges } = useAuth()
   const { createProject, isLoading } = useCreateProject()
   const { updateProject, isLoading: isUpdatingProject } = useUpdateProject({
@@ -298,12 +296,8 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
         // if (!isEmpty(updatedFiles)) {
         //   await updateBulkFiles(updatedFiles)
         // }
-        await updateProject(actualPayload)
-        if (id) {
-          queryClient.refetchQueries({
-            queryKey: ['projects', id],
-            type: 'active',
-          })
+        if (!isEmpty(actualPayload)) {
+          await updateProject(actualPayload)
         }
         showNotification({
           type: NotificationTypes.Success,
@@ -330,12 +324,10 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
       dirtyFields,
       help_files,
       source_files,
-      id,
       updateProject,
       t,
       addBulkFiles,
       deleteBulkFiles,
-      queryClient,
       mapProjectValidationErrors,
     ]
   )

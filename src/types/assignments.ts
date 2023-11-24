@@ -35,6 +35,7 @@ export interface AssignmentType {
   cat_jobs?: CatJob[]
   assigned_vendor_id?: string
   assignee?: Vendor
+  assignee_comments?: string
   sub_project_id: string
   deadline_at?: string
   event_start_at?: string

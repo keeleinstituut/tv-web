@@ -4,7 +4,7 @@ import { closeModal } from '../ModalRoot'
 import ConfirmationModalBase, {
   ConfirmationModalBaseProps,
 } from '../ConfirmationModalBase/ConfirmationModalBase'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -17,6 +17,9 @@ import FileImport, {
   ProjectFileTypes,
 } from 'components/organisms/FileImport/FileImport'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
+import { ValidationError } from 'api/errorHandler'
+import { join, map } from 'lodash'
+import { AxiosError } from 'axios'
 
 export interface ConfirmRejectProjectModalProps
   extends ConfirmationModalBaseProps {
@@ -48,6 +51,7 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
     handleSubmit,
     watch,
     setValue,
+    setError,
     formState: { isValid },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
@@ -57,7 +61,7 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
 
   const handleAdd = useCallback(
     async (newFiles: File[]) => {
-      setValue('review_file', [...review_file, ...newFiles])
+      setValue('review_file', [...(review_file || []), ...newFiles])
     },
     [review_file, setValue]
   )
@@ -72,6 +76,8 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
         name: 'sub_project_id',
         className: classes.selection,
         options: subProjectsOptions || [],
+        multiple: true,
+        buttons: true,
         rules: {
           required: true,
         },
@@ -109,15 +115,30 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      await completeTask(values)
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.project_rejected'),
-      })
-      closeModal()
+      try {
+        await completeTask({
+          ...values,
+          accepted: 0,
+        })
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.project_rejected'),
+        })
+        closeModal()
+      } catch (error) {
+        const typedError = error as AxiosError
+        const typedErrorData = typedError?.response?.data as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as FieldPath<FormValues>
+            const errorString = join(errorsArray, ',')
+            setError(typedKey, { type: 'backend', message: errorString })
+          })
+        }
+      }
     },
-    [completeTask, t]
+    [completeTask, setError, t]
   )
 
   return (

@@ -237,6 +237,18 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         )
       },
     }),
+    columnHelper.accessor('download_button', {
+      header: '',
+      cell: ({ getValue }) => (
+        <BaseButton
+          className={classNames(classes.iconButton, classes.downloadButton)}
+          onClick={() => handleDownload(getValue())}
+        >
+          <DownloadFilled />
+        </BaseButton>
+      ),
+      footer: (info) => info.column.id,
+    }),
     ...(mode !== 'view'
       ? [
           columnHelper.accessor('download_button', {

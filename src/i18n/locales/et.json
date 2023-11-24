@@ -70,7 +70,7 @@
     "cancelled_at": "Tühistamise aeg",
     "created_at": "Loomise aeg",
     "created": "Loodud",
-    "rejected_at": "Tühistamise aeg",
+    "rejected_at": "Tagasilükkamise aeg",
     "corrected_at": "Korrektuuride tegemise aeg",
     "accepted_at": "Vastuvõtmise aeg",
     "updated_at": "Viimati muudetud",
@@ -127,7 +127,8 @@
     "category": "Katogooria",
     "cancellation_reason": "Tühistamise põhjus",
     "pick_sub_project": "Vali alamtellimus",
-    "extra_information": "Lisainfo"
+    "extra_information": "Lisainfo",
+    "assignee_comments": "Teostaja kommentaar"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -232,7 +233,8 @@
     "confirm_cancellation": "Jah, tühista",
     "accept_project": "Võta vastu",
     "reject_project": "Lükka tagasi",
-    "change_files": "Muuda faile"
+    "change_files": "Muuda faile",
+    "download_all": "Laadi kõik alla"
   },
   "error": {
     "input_title": "Veateade: ",
