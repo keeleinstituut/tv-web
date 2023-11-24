@@ -8,6 +8,7 @@ import {
   createRef,
   useImperativeHandle,
   Suspense,
+  useEffect,
 } from 'react'
 import { FormProgressProps } from './FormProgressModal/FormProgressModal'
 import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
@@ -171,6 +172,30 @@ const ModalRoot = () => {
   const closeModal = useCallback(() => {
     setIsOpen(false)
   }, [setIsOpen])
+
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
+
+  const handleButtonClick = (event: Event) => {
+    event.preventDefault()
+
+    if (!document.querySelector('.last-focus') && isModalOpen) {
+      const target = event?.target as HTMLElement
+      target.classList.add('last-focus')
+      setFocusElement(target)
+    }
+    if (document.querySelector('.last-focus') && !isModalOpen) {
+      focusElement?.classList.remove('last-focus')
+      focusElement?.focus()
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('click', handleButtonClick)
+    return () => {
+      document.removeEventListener('click', handleButtonClick)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isModalOpen])
 
   useImperativeHandle(
     modalRef,

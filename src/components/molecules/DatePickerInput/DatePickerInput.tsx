@@ -67,6 +67,7 @@ const DatePickerComponent = ({
         maxDate={maxDate ? maxDate : undefined}
         {...rest}
         onChange={handleDateChange}
+        autoFocus={false}
       />
       <Calender
         className={classNames(

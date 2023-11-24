@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
 
 import classes from './classes.module.scss'
+import { closeModal } from '../modals/ModalRoot'
 interface ModalContextType {
   modalContentId?: string
   modalVerticalContentId?: string
@@ -85,11 +86,7 @@ const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
       >
         {buttons &&
           map(buttons, (button, index) => (
-            <Button
-              key={index}
-              {...button}
-              autoFocus={button.autoFocus || index === 0}
-            >
+            <Button key={index} {...button}>
               {button?.children}
             </Button>
           ))}
@@ -120,10 +117,6 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
 }) => {
   const { t } = useTranslation()
 
-  const handleOpen = (event: { preventDefault: () => void }) => {
-    event.preventDefault()
-  }
-
   return (
     <ModalContext.Provider
       value={{
@@ -136,7 +129,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
         <Dialog.Portal>
           <Dialog.Overlay className={classes.dialogOverlay} />
           <Dialog.Content
-            onOpenAutoFocus={handleOpen}
+            onEscapeKeyDown={closeModal}
             id="modalContentId"
             className={classNames(
               classes.dialogContent,

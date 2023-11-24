@@ -254,6 +254,7 @@ const DropdownContentComponent = forwardRef<
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           onClick={handleCancel}
+          autoFocus={isOpen}
         >
           {t('button.cancel')}
         </Button>
