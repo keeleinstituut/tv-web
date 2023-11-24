@@ -44,10 +44,11 @@ interface TranslationMemoryButtonProps {
   subProjectId?: string
   subProjectLangPair?: string
   projectDomain?: ClassifierValue
+  disabled?: boolean
 }
 
 const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
-  hidden,
+  disabled,
   subProjectId,
   subProjectLangPair,
   projectDomain,
@@ -62,18 +63,20 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
     })
   }
 
-  if (hidden) return null
   return (
     <>
       <Button
         appearance={AppearanceTypes.Secondary}
         size={SizeTypes.S}
+        disabled={disabled}
+        // TODO: empty TM creation endpoint missing currently
         // onClick={createEmptyTm}
         children={t('button.create_empty_tm')}
       />
       <Button
         children={t('button.add_tm')}
         size={SizeTypes.S}
+        disabled={disabled}
         className={classes.mainButton}
         onClick={addNewTm}
       />
@@ -238,6 +241,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
             ariaLabel={t('label.main_write')}
             control={control}
             inputType={InputTypes.Checkbox}
+            disabled={!isEditable}
             onClick={() => {
               const payload: SubProjectTmKeysPayload = {
                 id: row.original.tm_key_id || '',
@@ -259,20 +263,24 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       header: () => t('label.chunk_amount'),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('delete_button', {
-      header: '',
-      cell: ({ getValue }) => {
-        return (
-          <BaseButton
-            className={classes.iconButton}
-            onClick={() => handleDelete({ id: getValue() })}
-          >
-            <Delete />
-          </BaseButton>
-        )
-      },
-      footer: (info) => info.column.id,
-    }),
+    ...(isEditable
+      ? [
+          columnHelper.accessor('delete_button', {
+            header: '',
+            cell: ({ getValue }) => {
+              return (
+                <BaseButton
+                  className={classes.iconButton}
+                  onClick={() => handleDelete({ id: getValue() })}
+                >
+                  <Delete />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
   ] as ColumnDef<FileRow>[]
 
   if (hidden) return null
@@ -282,7 +290,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       className={classNames(classes.expandableContainer, className)}
       rightComponent={
         <TranslationMemoryButtons
-          hidden={!isEditable}
+          disabled={!isEditable}
           subProjectId={subProjectId}
           subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}

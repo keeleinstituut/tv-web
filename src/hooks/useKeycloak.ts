@@ -8,6 +8,7 @@ import {
   Dictionary,
   size,
   isEmpty,
+  includes,
 } from 'lodash'
 import { setAccessToken, apiClient } from 'api'
 import axios from 'axios'
@@ -177,9 +178,17 @@ const useKeycloak = () => {
       })
 
       if (!isKeycloakUserLoggedIn) {
+        console.warn(
+          'logged out with error',
+          window.location.hash,
+          window.location
+        )
         // Currently will show error with any hash
         // If we add any extra hash parameters later, then this should be changed
-        if (window.location.hash && window.location.hash === '#show-error') {
+        if (
+          window.location.hash &&
+          includes(window.location.hash, 'show-error')
+        ) {
           showNotification({
             type: NotificationTypes.Error,
             title: i18n.t('notification.error'),

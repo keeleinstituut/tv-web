@@ -136,6 +136,8 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
     manager_institution_user,
   } = project || {}
 
+  console.warn('status', status)
+
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
   const { createProject, isLoading } = useCreateProject()
@@ -211,7 +213,8 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
   const isRestEditable = isNew || hasManagerPrivilege
 
   const isSomethingEditable =
-    isManagerEditable || isClientEditable || isRestEditable
+    status !== ProjectStatus.Accepted &&
+    (isManagerEditable || isClientEditable || isRestEditable)
 
   // Validation errors
   const mapProjectValidationErrors = useCallback(

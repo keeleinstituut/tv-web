@@ -96,7 +96,6 @@ export interface AddVolumeInputProps {
   label?: JSX.Element | string
   disabled?: boolean
   hidden?: boolean
-  loading?: boolean
   catSupported?: boolean
   vendorPrices?: Price
   vendorName?: string
@@ -116,7 +115,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   assignmentId,
   sub_project_id,
   disabled,
-  loading,
 }) => {
   const { t } = useTranslation()
 
@@ -201,6 +199,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
           appearance={AppearanceTypes.Text}
           className={classes.addButton}
           iconPositioning={IconPositioningTypes.Left}
+          disabled={disabled}
           icon={Add}
           children={t('button.add_volume')}
           onClick={handleAdd}
