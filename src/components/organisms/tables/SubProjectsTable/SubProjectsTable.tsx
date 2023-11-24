@@ -40,7 +40,7 @@ type SubProjectTableRow = {
 const columnHelper = createColumnHelper<SubProjectTableRow>()
 
 interface FormValues {
-  statuses?: SubProjectStatus[]
+  status?: SubProjectStatus[]
   only_show_personal_projects: boolean
   ext_id?: string
 }
@@ -222,7 +222,7 @@ const SubProjectsTable: FC = () => {
         headComponent={
           <div className={classes.topSection}>
             <FormInput
-              name="statuses"
+              name="status"
               control={control}
               options={statusFilters}
               inputType={InputTypes.TagsSelect}
