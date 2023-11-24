@@ -198,7 +198,7 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
               : ''
           return (
             <Fragment key={fileUrl || index}>
-              <label>{file.name}</label>
+              <label className={classes.fileName}>{file.name}</label>
               <span>{updatedAt}</span>
               <BaseButton onClick={() => handleDownload(index)}>
                 <DownloadFilled />

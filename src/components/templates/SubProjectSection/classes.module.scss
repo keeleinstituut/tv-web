@@ -46,7 +46,7 @@
     border-color: $color-border;
   }
   &.completed {
-    border-color: $color-warning;
+    border-color: $color-success;
   }
 
   .startWorkFlowNotification {
@@ -76,10 +76,5 @@
     width: 100%;
     padding: spacing(2) spacing(4);
     margin: spacing(4) 0 spacing(2);
-  }
-
-  .tabsContainer {
-    margin-top: spacing(8);
-    margin-bottom: spacing(4);
   }
 }

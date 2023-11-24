@@ -67,7 +67,7 @@
     "cancelled_at": "Tühistamise aeg",
     "created_at": "Loomise aeg",
     "created": "Loodud",
-    "rejected_at": "Tühistamise aeg",
+    "rejected_at": "Tagasilükkamise aeg",
     "corrected_at": "Korrektuuride tegemise aeg",
     "accepted_at": "Vastuvõtmise aeg",
     "updated_at": "Viimati muudetud",
@@ -122,7 +122,8 @@
     "owner": "Omanik",
     "cancellation_reason": "Tühistamise põhjus",
     "pick_sub_project": "Vali alamtellimus",
-    "extra_information": "Lisainfo"
+    "extra_information": "Lisainfo",
+    "assignee_comments": "Teostaja kommentaar"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -224,7 +225,9 @@
     "confirm_cancellation": "Jah, tühista",
     "accept_project": "Võta vastu",
     "reject_project": "Lükka tagasi",
-    "change_files": "Muuda faile"
+    "change_files": "Muuda faile",
+    "download_all": "Laadi kõik alla",
+    "mark_project_as_completed": "Märgi tellimus lõpetatuks"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -508,7 +511,8 @@
     "split_assignment": "Ülesanne jagatud",
     "project_cancelled": "Tellimus edukalt tühistatud",
     "project_accepted": "Tellimus vastuvõetud",
-    "project_rejected": "Tellimus tagasi lükatud"
+    "project_rejected": "Tellimus tagasi lükatud",
+    "project_corrected": "Tellimus lõpetatuks märgitud"
   },
   "notification": {
     "announcement": "Teade",

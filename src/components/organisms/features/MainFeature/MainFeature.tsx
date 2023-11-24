@@ -23,9 +23,9 @@ type MainFeatureProps = Pick<
   | 'project'
   | 'id'
   | 'mt_enabled'
+  | 'deadline_at'
 > & {
   catSupported?: boolean
-  projectDeadline?: string
   feature: SubProjectFeatures
 }
 
