@@ -199,7 +199,7 @@ export interface ListProject {
   deadline_at?: string
   created_at?: string
   updated_at?: string
-  sub_projects: ListSubProjectDetail[] | any
+  sub_projects: ListSubProjectDetail[]
   status?: ProjectStatus
   tags?: Tag[]
   price?: string

@@ -528,7 +528,8 @@
     "project_cancelled": "Tellimus edukalt tühistatud",
     "project_accepted": "Tellimus vastuvõetud",
     "project_rejected": "Tellimus tagasi lükatud",
-    "project_corrected": "Tellimus lõpetatuks märgitud"
+    "project_corrected": "Tellimus lõpetatuks märgitud",
+    "task_marked_completed":"Ülesanne edukalt lõpetatuks märgitud"
   },
   "notification": {
     "announcement": "Teade",

@@ -6,7 +6,7 @@ import ProjectDetails, {
 import TaskDetails from 'components/organisms/TaskDetails/TaskDetails'
 import Button from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {
   useAcceptTask,
   useFetchHistoryTask,
@@ -24,6 +24,7 @@ import classes from './classes.module.scss'
 const TaskPage: FC = () => {
   const { t } = useTranslation()
   const { taskId, isHistoryView } = useParams()
+  const navigate = useNavigate()
 
   const { task, isLoading } = useFetchTask({
     id: taskId,
@@ -62,10 +63,11 @@ const TaskPage: FC = () => {
         title: t('notification.announcement'),
         content: t('success.task_successfully_accepted'),
       })
+      navigate('/projects/my-tasks')
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [acceptTask, t])
+  }, [acceptTask, navigate, t])
 
   // TODO: check is "Tellija" of the order current user
   if (isLoading) return <Loader loading={isLoading} />

@@ -1,6 +1,6 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchSubProjectCatToolJobs } from 'hooks/requests/useProjects'
-import { FC, useCallback, useEffect, useMemo } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'
 import {
@@ -10,9 +10,9 @@ import {
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import { isEmpty, split } from 'lodash'
+import { isEmpty, map, split } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
-import { useForm, useWatch } from 'react-hook-form'
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import { SourceFile } from 'types/projects'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
@@ -24,14 +24,18 @@ import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput
 import { VolumeValue } from 'types/volumes'
 import classNames from 'classnames'
 import Button from 'components/molecules/Button/Button'
-import { useCompleteAssignment } from 'hooks/requests/useTasks'
+import { useCompleteTask } from 'hooks/requests/useTasks'
+import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showNotification } from '../NotificationRoot/NotificationRoot'
+import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
-import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
+import { useNavigate } from 'react-router-dom'
 
 interface FormValues {
   my_source_files: SourceFile[]
-  my_final_files: SourceFile[]
+  my_final_files?: SourceFile[]
   my_notes: string
 }
 
@@ -67,6 +71,7 @@ const TaskContent: FC<TaskContentProps> = ({
   isHistoryView,
 }) => {
   const { t } = useTranslation()
+  const navigate = useNavigate()
 
   const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
     id: sub_project_id,
@@ -76,22 +81,14 @@ const TaskContent: FC<TaskContentProps> = ({
     id: sub_project_id,
   })
 
-  const { completeAssignment, isLoading: isCompletingTask } =
-    useCompleteAssignment({
-      id: taskId,
-    })
-
-  const { control, setValue } = useForm<FormValues>({
-    reValidateMode: 'onChange',
+  const { completeTask, isLoading: isCompletingTask } = useCompleteTask({
+    id: taskId,
   })
 
-  console.log('useWatch({control})', useWatch({ control }))
-
-  useEffect(() => {
-    if (source_files) {
-      setValue('my_source_files', source_files)
-    }
-  }, [setValue, source_files])
+  const { control, handleSubmit } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+    defaultValues: { my_source_files: source_files, my_final_files: [] },
+  })
 
   const subOrderLangPair = useMemo(() => {
     const slangShort = split(source_language_classifier_value?.value, '-')[0]
@@ -142,6 +139,31 @@ const TaskContent: FC<TaskContentProps> = ({
     })
   }, [volumes])
 
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const finalFilesIds = map(values.my_final_files, ({ id }) => id)
+
+      const payload = {
+        final_file_id: finalFilesIds,
+        accepted: true,
+        comments: values.my_notes,
+      }
+
+      try {
+        await completeTask(payload)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.task_marked_completed'),
+        })
+        navigate('/projects/my-tasks')
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
+    },
+    [completeTask, navigate, t]
+  )
+
   const handleOpenCompleteModal = useCallback(() => {
     showModal(ModalTypes.ConfirmationModal, {
       title: t('modal.confirm_complete_task'),
@@ -149,10 +171,10 @@ const TaskContent: FC<TaskContentProps> = ({
       cancelButtonContent: t('button.quit'),
       proceedButtonContent: t('button.complete'),
       className: classes.completeModal,
-      handleProceed: completeAssignment,
+      handleProceed: handleSubmit(onSubmit),
       proceedButtonLoading: isCompletingTask,
     })
-  }, [completeAssignment, isCompletingTask, t])
+  }, [handleSubmit, isCompletingTask, onSubmit, t])
 
   if (isLoading) return <Loader loading={isLoading} />
 

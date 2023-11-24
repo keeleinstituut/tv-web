@@ -174,15 +174,6 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         )
       },
     }),
-    ...(mode === 'view'
-      ? [
-          //TODO: add correct data for category
-          columnHelper.accessor('check', {
-            header: () => t('label.category'),
-            footer: (info) => info.column.id,
-          }),
-        ]
-      : []),
     columnHelper.accessor('updated_at', {
       header: () => t('label.updated_at'),
       footer: (info) => info.column.id,

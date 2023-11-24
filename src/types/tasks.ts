@@ -56,7 +56,7 @@ export interface TaskResponse {
 }
 
 export interface CompleteTaskPayload {
-  accepted?: number
+  accepted?: number | boolean
   final_file_id?: string[]
   // TODO: The following are currently missing from API
   // Naming might change

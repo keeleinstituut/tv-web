@@ -154,27 +154,3 @@ export const useAcceptTask = ({ id }: { id?: string }) => {
     isLoading,
   }
 }
-
-export const useCompleteAssignment = ({ id }: { id?: string }) => {
-  const queryClient = useQueryClient()
-
-  const { mutateAsync: completeAssignment, isLoading } = useMutation({
-    mutationKey: ['tasks', id],
-    mutationFn: () => apiClient.post(`${endpoints.TASKS}/${id}/complete`),
-    onSuccess: ({ data }: { data: any }) => {
-      queryClient.setQueryData(['tasks', id], (oldData?: any) => {
-        const { data: previousData } = oldData || {}
-
-        const newData = {
-          ...(previousData || {}),
-          ...data,
-        }
-        return { data: newData }
-      })
-    },
-  })
-  return {
-    completeAssignment,
-    isLoading,
-  }
-}
