@@ -26,9 +26,7 @@ export interface TasksTableProps {
   isHistoryTab?: boolean
 }
 
-const MyTasks: FC = () => {
-  const { t } = useTranslation()
-
+const CreateTaskProps = (assignedToMe: number) => {
   const {
     tasks = [],
     isLoading,
@@ -36,16 +34,56 @@ const MyTasks: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchTasks({ assigned_to_me: 1 })
+  } = useFetchTasks({ assigned_to_me: assignedToMe })
+
+  return {
+    tasks,
+    isLoading,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  }
+}
+
+const MyTasks: FC = () => {
+  const { t } = useTranslation()
+
+  // const {
+  //   tasks = [],
+  //   isLoading,
+  //   paginationData,
+  //   handleFilterChange,
+  //   handleSortingChange,
+  //   handlePaginationChange,
+  // } = useFetchTasks({ assigned_to_me: 1 })
+
+  // const {
+  //   tasks: waitingTasks = [],
+  //   isLoading: isLoadingWaitingTasks,
+  //   paginationData: waitingTasksPaginationData,
+  //   handleFilterChange: handleWaitingTasksFilterChange,
+  //   handleSortingChange: handleWaitingTasksSortingChange,
+  //   handlePaginationChange: handleWaitingTasksPaginationChange,
+  // } = useFetchTasks({ assigned_to_me: 0 })
 
   const {
-    tasks: waitingTasks = [],
+    tasks,
+    isLoading,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = CreateTaskProps(1)
+
+  const {
+    tasks: waitingTasks,
     isLoading: isLoadingWaitingTasks,
     paginationData: waitingTasksPaginationData,
     handleFilterChange: handleWaitingTasksFilterChange,
     handleSortingChange: handleWaitingTasksSortingChange,
     handlePaginationChange: handleWaitingTasksPaginationChange,
-  } = useFetchTasks({ assigned_to_me: 0 })
+  } = CreateTaskProps(0)
 
   const {
     historyTasks = [],

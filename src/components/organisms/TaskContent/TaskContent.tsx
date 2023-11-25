@@ -12,7 +12,7 @@ import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { isEmpty, map, split } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import { SourceFile } from 'types/projects'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
@@ -146,7 +146,7 @@ const TaskContent: FC<TaskContentProps> = ({
       const payload = {
         final_file_id: finalFilesIds,
         accepted: true,
-        comments: values.my_notes,
+        description: values.my_notes, // Not yet done by BE, naming might change
       }
 
       try {
@@ -298,7 +298,7 @@ const TaskContent: FC<TaskContentProps> = ({
       <Button
         className={classes.finishedButton}
         onClick={handleOpenCompleteModal}
-        hidden={!assignee_institution_user_id}
+        hidden={!assignee_institution_user_id || !!isHistoryView}
       >
         {t('button.mark_as_finished')}
       </Button>

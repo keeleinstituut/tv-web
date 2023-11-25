@@ -62,7 +62,7 @@ export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
   } = useFilters<TasksPayloadType>(initialFilters)
 
   const { isLoading, isError, data } = useQuery<TasksResponse>({
-    queryKey: ['tasks', filters],
+    queryKey: ['historyTasks', filters],
     queryFn: () => apiClient.get(endpoints.HISTORY_TASKS, filters),
     keepPreviousData: true,
   })
@@ -82,7 +82,7 @@ export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
 
 export const useFetchHistoryTask = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<TaskResponse>({
-    queryKey: ['tasks', id],
+    queryKey: ['historyTasks', id],
     queryFn: () => apiClient.get(`${endpoints.HISTORY_TASKS}/${id}`),
     keepPreviousData: true,
   })
@@ -137,8 +137,8 @@ export const useAcceptTask = ({ id }: { id?: string }) => {
   const { mutateAsync: acceptTask, isLoading } = useMutation({
     mutationKey: ['tasks', id],
     mutationFn: () => apiClient.post(`${endpoints.TASKS}/${id}/accept`),
-    onSuccess: ({ data }: { data: any }) => {
-      queryClient.setQueryData(['tasks', id], (oldData?: any) => {
+    onSuccess: ({ data }: { data: ListTask }) => {
+      queryClient.setQueryData(['tasks', id], (oldData?: TaskResponse) => {
         const { data: previousData } = oldData || {}
 
         const newData = {

@@ -88,7 +88,7 @@ const TaskDetails: FC<TaskProps> = ({
       )}
       onExpandedChange={handleOpenContainer}
       id={ext_id}
-      isExpanded={isExpanded}
+      isExpanded={!assignee_institution_user_id ? false : isExpanded}
       rightComponent={<ProjectStatusTag status={status} />}
       wrapContent
       leftComponent={
@@ -97,6 +97,7 @@ const TaskDetails: FC<TaskProps> = ({
           mode={ProjectDetailModes.View}
         />
       }
+      isExpanedDisabled={!assignee_institution_user_id}
     >
       <TaskContent
         deadline_at={deadline_at}

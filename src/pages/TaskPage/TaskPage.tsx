@@ -16,7 +16,6 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { isEmpty } from 'lodash'
-import { ListTask } from 'types/tasks'
 import { useFetchProject } from 'hooks/requests/useProjects'
 
 import classes from './classes.module.scss'
@@ -37,9 +36,9 @@ const TaskPage: FC = () => {
     id: taskId,
   })
 
-  const { assignment, assignee_institution_user_id } = (
-    isHistoryView ? historyTask : task || {}
-  ) as ListTask
+  const { assignment, assignee_institution_user_id } = isHistoryView
+    ? historyTask || {}
+    : task || {}
 
   const { subProject, ext_id, sub_project_id, volumes, comments } =
     assignment || {}
@@ -69,7 +68,6 @@ const TaskPage: FC = () => {
     }
   }, [acceptTask, navigate, t])
 
-  // TODO: check is "Tellija" of the order current user
   if (isLoading) return <Loader loading={isLoading} />
   return (
     <>

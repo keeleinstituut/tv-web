@@ -14,7 +14,6 @@ import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { Root } from '@radix-ui/react-form'
 import Tag from 'components/atoms/Tag/Tag'
 import dayjs from 'dayjs'
-import useAuth from 'hooks/useAuth'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import classNames from 'classnames'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
@@ -48,7 +47,6 @@ const TasksTable: FC<TasksTableProps> = ({
   isHistoryTab,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
 
   const { languageDirectionFilters, loadMore, handleSearch } =
     useLanguageDirections({})
@@ -140,9 +138,6 @@ const TasksTable: FC<TasksTableProps> = ({
             icon={ArrowRight}
             ariaLabel={t('label.to_task_view')}
             iconPositioning={IconPositioningTypes.Left}
-            // disabled={
-            //   !includes(userPrivileges, Privileges.ViewInstitutionProjectDetail)
-            // }
             href={`/projects/my-tasks/${taskId}${
               isHistoryTab ? '/isHistoryView' : ''
             }     `}
