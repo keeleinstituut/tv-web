@@ -1,4 +1,4 @@
-import { useCallback, useMemo, Fragment } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map, filter, isEmpty, includes } from 'lodash'
 import {
@@ -6,7 +6,6 @@ import {
   FormInput,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
-import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
 import { ReactComponent as Download } from 'assets/icons/download.svg'
 import { Control, FieldValues, Path, useController } from 'react-hook-form'
 import classNames from 'classnames'
@@ -126,7 +125,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   )
 
   const columns = [
-    ...(canGenerateProject
+    ...(canGenerateProject && isEditable
       ? [
           columnHelper.accessor('check', {
             header: '',
@@ -187,52 +186,28 @@ const SourceFilesList = <TFormValues extends FieldValues>({
       },
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('delete_button', {
-      header: '',
-      cell: ({ getValue }) => {
-        return (
-          <BaseButton
-            className={classes.iconButton}
-            onClick={() => handleDelete(getValue())}
-          >
-            <Delete />
-          </BaseButton>
-        )
-      },
-      footer: (info) => info.column.id,
-    }),
+    ...(isEditable
+      ? [
+          columnHelper.accessor('delete_button', {
+            header: '',
+            cell: ({ getValue }) => {
+              return (
+                <BaseButton
+                  className={classes.iconButton}
+                  onClick={() => handleDelete(getValue())}
+                >
+                  <Delete />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
   ] as ColumnDef<FileRow>[]
 
   if (hiddenIfNoValue && isEmpty(value)) {
     return null
-  }
-
-  // TODO: possibly not needed
-  if (!isEditable) {
-    return (
-      <div className={classes.altFilesContainer}>
-        <h3>{title}</h3>
-        {map(typedValue, (file, index) => {
-          const localFileUrl =
-            file instanceof File ? URL.createObjectURL(file) : ''
-          const fileUrl =
-            'original_url' in file ? file.original_url : localFileUrl
-          const updatedAt =
-            'updated_at' in file
-              ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
-              : ''
-          return (
-            <Fragment key={fileUrl || index}>
-              <label>{file.name}</label>
-              <span>{updatedAt}</span>
-              <BaseButton href={fileUrl} target="_blank" download={file.name}>
-                <DownloadFilled />
-              </BaseButton>
-            </Fragment>
-          )
-        })}
-      </div>
-    )
   }
 
   return (
@@ -265,7 +240,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         }
       />
       <GenerateForTranslationSection
-        hidden={!canGenerateProject}
+        hidden={!canGenerateProject || !isEditable}
         openSendToCatModal={openSendToCatModal}
         className={classes.generateSection}
         disabled={isGenerateProjectButtonDisabled}
