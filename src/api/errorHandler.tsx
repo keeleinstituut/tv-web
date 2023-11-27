@@ -77,6 +77,14 @@ const handleError = async (error?: AxiosError) => {
   } else if (code === 422) {
     // Throw only validation errors
     throw error?.response?.data
+  } else if (code === 413) {
+    // TODO: might add specific errors based on endpoint, but this should be fine for now
+    showNotification({
+      type: NotificationTypes.Error,
+      title: i18n.t('notification.error'),
+      content: i18n.t('error.file_size_error'),
+    })
+    throw error
   } else {
     showNotification({
       type: NotificationTypes.Error,

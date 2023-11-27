@@ -247,7 +247,8 @@
     "invalid_price": "Lubatud on ainult numbrid ja punkt",
     "name_input_length": "Nime maksimaalne pikkus võib olla kuni 100 tähemärki",
     "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips",
-    "search_input_length": "Otsingu sõna peab olema vähemalt 3 tähemärki"
+    "search_input_length": "Otsingu sõna peab olema vähemalt 3 tähemärki",
+    "file_size_error": "Fail(id) liiga suur(ed). Kogu suurus ei tohi ületada 100mb"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
