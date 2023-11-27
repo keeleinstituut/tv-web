@@ -38,6 +38,7 @@ interface CatJobsTableProps {
   source_language_classifier_value: LanguageClassifierValue
   destination_language_classifier_value: LanguageClassifierValue
   canSendToVendors?: boolean
+  isEditable?: boolean
 }
 
 interface CatJobRow {
@@ -61,6 +62,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   canSendToVendors,
+  isEditable,
 }) => {
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile()
@@ -143,6 +145,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             className={classes.fitContent}
             size={SizeTypes.S}
             href={getValue()}
+            disabled={!isEditable}
             target="_blank"
           >
             {t('button.open_in_translation_tool')}
@@ -159,6 +162,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             icon={HorizontalDots}
             className={classes.dropdown}
             buttonClassName={classes.dropdownInnerButton}
+            disabled={!isEditable}
             options={[
               {
                 label: t('button.split_file'),

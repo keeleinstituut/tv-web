@@ -28,6 +28,7 @@ interface ToggleButtonsSectionProps {
   hidden?: boolean
   machineTranslation?: boolean
   setMachineTranslation: (newMachineTranslation: boolean) => void
+  disabled?: boolean
 }
 
 const ToggleButtonsSection: FC<ToggleButtonsSectionProps> = ({
@@ -35,6 +36,7 @@ const ToggleButtonsSection: FC<ToggleButtonsSectionProps> = ({
   hidden,
   machineTranslation,
   setMachineTranslation,
+  disabled,
 }) => {
   const { t } = useTranslation()
 
@@ -52,6 +54,7 @@ const ToggleButtonsSection: FC<ToggleButtonsSectionProps> = ({
         onChange={setMachineTranslation}
         name="machineTranslation"
         value={machineTranslation}
+        disabled={disabled}
         // TODO: not sure where the selected memory will come from yet
         tooltipContent={t('tooltip.selected_translation_memory', {
           memory: 'MTee',
@@ -69,6 +72,7 @@ interface FeatureHeaderSectionProps extends ToggleTabsProps {
   id?: string
   activeTab?: string
   setActiveTab?: (id: string) => void
+  isEditable?: boolean
 }
 
 const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
@@ -79,6 +83,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   addVendor,
   isLoading,
   mt_enabled = true,
+  isEditable,
   id,
 }) => {
   const { t } = useTranslation()
@@ -132,6 +137,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
         className={classes.toggleButtons}
         hidden={activeTab === FeatureTabs.Xliff || !catSupported}
         machineTranslation={mt_enabled}
+        disabled={!isEditable}
         setMachineTranslation={toggleInputChange}
       />
       <div className={classes.splitSection}>
