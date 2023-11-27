@@ -33,6 +33,7 @@ import SmallTooltip from '../SmallTooltip/SmallTooltip'
 import { SourceFile } from 'types/projects'
 import { useHandleFiles } from 'hooks/requests/useFiles'
 import { HelperFileTypes } from 'types/classifierValues'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 interface ProjectFilesListProps<TFormValues extends FieldValues> {
   title: string
   typeOptions?: DropDownOptions[]
@@ -107,7 +108,13 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
   const handleDelete = useCallback(
     (index?: number) => {
       if (index === 0 || index) {
-        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+        const newSourceFiles = filter(
+          typedValue,
+          (_, fileIndex) => index !== fileIndex
+        )
+        showModal(ModalTypes.ConfirmDeleteSourceFile, {
+          callback: () => onChange(newSourceFiles),
+        })
         if (name === 'help_files') {
           onChangeHelpFileTypes(
             filter(helpFileTypes, (_, typeIndex) => index !== typeIndex)

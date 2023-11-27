@@ -38,9 +38,9 @@ const ConfirmDeleteSourceFileModal: FC<ConfirmDeleteSourceFileModalProps> = ({
           title: t('notification.announcement'),
           content: t('success.source_file_deleted'),
         })
-        if (callback) {
-          callback()
-        }
+      }
+      if (callback) {
+        callback()
       }
       closeModal()
     } catch (errorData) {
