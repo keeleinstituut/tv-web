@@ -17,6 +17,7 @@ import {
 import {
   CatProjectPayload,
   CatProjectStatus,
+  ProjectStatus,
   SourceFile,
   SubProjectDetail,
 } from 'types/projects'
@@ -100,10 +101,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     })
   const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id })
 
+  const { deadline_at: projectDeadlineAt, status: projectStatus } = project
+
+  const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
+
   const defaultValues = useMemo(
     () => ({
       deadline_at: getLocalDateOjectFromUtcDateString(
-        deadline_at || project.deadline_at
+        deadline_at || projectDeadlineAt
       ),
       cat_files,
       source_files: map(source_files, (file) => ({
@@ -118,7 +123,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     }),
     [
       deadline_at,
-      project.deadline_at,
+      projectDeadlineAt,
       cat_files,
       source_files,
       final_files,
@@ -250,9 +255,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           control: control,
           name: 'deadline_at',
           minDate: new Date(),
-          maxDate: dayjs(project.deadline_at).toDate(),
+          maxDate: dayjs(projectDeadlineAt).toDate(),
           onDateTimeChange: handleChangeDeadline,
-          // onlyDisplay: !isEditable,
+          onlyDisplay: !isSomethingEditable,
         }}
       />
       <div className={classes.grid}>
@@ -267,18 +272,16 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           isCatProjectLoading={isCatProjectLoading}
           catSetupStatus={catSetupStatus}
           subProjectId={id}
-          isEditable
-          // isEditable={isEditable}
+          isEditable={isSomethingEditable}
         />
         <FinalFilesList
           name="final_files"
           title={t('projects.ready_files_from_vendors')}
           // className={classes.filesSection}
           control={control}
-          isEditable
           isLoading={isLoading}
           subProjectId={id}
-          // isEditable={isEditable}
+          isEditable={isSomethingEditable}
         />
         <CatJobsTable
           subProjectId={id}
@@ -293,12 +296,13 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
             destination_language_classifier_value
           }
           canSendToVendors={true} //TODO add check when camunda is ready
+          isEditable={isSomethingEditable}
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}
           hidden={!catSupported}
           control={control}
-          isEditable
+          isEditable={isSomethingEditable}
           subProjectId={id}
           SubProjectTmKeys={SubProjectTmKeys}
           subProjectLangPair={subProjectLangPair}

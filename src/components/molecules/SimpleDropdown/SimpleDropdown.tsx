@@ -78,6 +78,7 @@ interface SimpleDropdownProps
   icon?: FC<SVGProps<SVGSVGElement>>
   className?: string
   buttonClassName?: string
+  disabled?: boolean
 }
 
 const SimpleDropdown: FC<SimpleDropdownProps> = ({
@@ -86,6 +87,7 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
   icon,
   className,
   buttonClassName,
+  disabled,
   ...rest
 }) => {
   const clickAwayInputRef = useRef(null)
@@ -115,6 +117,7 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
         appearance={AppearanceTypes.Text}
         icon={icon || DropdownArrow}
         ariaLabel={title}
+        disabled={disabled}
         className={classNames(classes.iconButton, buttonClassName)}
       >
         {label}

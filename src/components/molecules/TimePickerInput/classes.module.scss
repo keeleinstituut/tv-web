@@ -41,6 +41,7 @@
 
 .disabledTimeInput {
   background-color: $color-background;
+  cursor: not-allowed;
 }
 
 .disabledTimeInput:focus {
