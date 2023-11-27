@@ -36,7 +36,7 @@ const TaskPage: FC = () => {
     id: taskId,
   })
 
-  const { assignment, assignee_institution_user_id } = isHistoryView
+  const { assignment, assignee_institution_user_id, task_type } = isHistoryView
     ? historyTask || {}
     : task || {}
 
@@ -107,6 +107,7 @@ const TaskPage: FC = () => {
         comments={comments}
         assignee_institution_user_id={assignee_institution_user_id}
         isHistoryView={isHistoryView}
+        task_type={task_type}
       />
     </>
   )

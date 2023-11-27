@@ -186,7 +186,7 @@ const TasksTable: FC<TasksTableProps> = ({
     columnHelper.accessor('deadline_at', {
       header: () => t('label.deadline_at'),
       footer: (info) => info.column.id,
-      cell: ({ getValue, row }) => {
+      cell: ({ getValue }) => {
         const dateValue = getValue()
         const deadlineDate = dayjs(dateValue)
         const currentDate = dayjs()

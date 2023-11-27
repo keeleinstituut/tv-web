@@ -27,6 +27,7 @@ interface TaskProps {
   comments?: string
   assignee_institution_user_id?: string
   isHistoryView?: string
+  task_type?: string
 }
 
 const TaskDetails: FC<TaskProps> = ({
@@ -43,6 +44,7 @@ const TaskDetails: FC<TaskProps> = ({
   comments,
   assignee_institution_user_id,
   isHistoryView,
+  task_type,
 }) => {
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
@@ -115,6 +117,7 @@ const TaskDetails: FC<TaskProps> = ({
         assignee_institution_user_id={assignee_institution_user_id}
         taskId={taskId}
         isHistoryView={isHistoryView}
+        task_type={task_type}
       />
     </ExpandableContentContainer>
   )

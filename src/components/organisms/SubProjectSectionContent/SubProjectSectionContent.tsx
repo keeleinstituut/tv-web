@@ -80,7 +80,6 @@ const AssignmentsSection: FC<AssignmentsSectionProps> = ({ assignments }) => {
       })
     )
   )
-  console.warn('assignmentsInfo', assignmentsInfo)
   return (
     <div className={classes.assignmentsContainer}>
       {map(

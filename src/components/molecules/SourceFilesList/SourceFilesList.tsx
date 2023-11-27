@@ -49,6 +49,7 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
 
 interface FileRow {
   name: string
+  category?: string
   updated_at: string
   delete_button?: number
   check: number
@@ -92,16 +93,20 @@ const SourceFilesList = <TFormValues extends FieldValues>({
 
   const filesData = useMemo(
     () =>
-      map(typedValue, (file, index) => ({
-        check: index,
-        name: file.name,
-        updated_at:
-          'updated_at' in file
-            ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
-            : '',
-        download_button: index,
-        delete_button: index,
-      })),
+      map(typedValue, (file, index) => {
+        return {
+          key: index,
+          check: index,
+          name: file.name,
+          updated_at:
+            'updated_at' in file
+              ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
+              : '',
+          category: file.collection_name, // TODO: Add correct data from BE, currently not yet implemented
+          download_button: index,
+          delete_button: index,
+        }
+      }),
     [typedValue]
   )
 
@@ -174,6 +179,14 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         )
       },
     }),
+    ...(mode === 'view'
+      ? [
+          columnHelper.accessor('category', {
+            header: () => t('label.category'), // TODO: Add correct data from BE, currently not yet implemented
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
     columnHelper.accessor('updated_at', {
       header: () => t('label.updated_at'),
       footer: (info) => info.column.id,

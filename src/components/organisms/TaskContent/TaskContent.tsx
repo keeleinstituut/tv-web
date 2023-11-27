@@ -23,7 +23,7 @@ import { ReactComponent as Eye } from 'assets/icons/eye.svg'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
 import { VolumeValue } from 'types/volumes'
 import classNames from 'classnames'
-import Button from 'components/molecules/Button/Button'
+import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useCompleteTask } from 'hooks/requests/useTasks'
 import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -32,6 +32,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 
 import classes from './classes.module.scss'
 import { useNavigate } from 'react-router-dom'
+import { TaskType } from 'types/tasks'
 
 interface FormValues {
   my_source_files: SourceFile[]
@@ -53,6 +54,7 @@ interface TaskContentProps {
   assignee_institution_user_id?: string
   taskId?: string
   isHistoryView?: string
+  task_type?: string
 }
 
 const TaskContent: FC<TaskContentProps> = ({
@@ -69,6 +71,7 @@ const TaskContent: FC<TaskContentProps> = ({
   assignee_institution_user_id,
   taskId,
   isHistoryView,
+  task_type,
 }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -139,14 +142,14 @@ const TaskContent: FC<TaskContentProps> = ({
     })
   }, [volumes])
 
-  const onSubmit: SubmitHandler<FormValues> = useCallback(
+  const handleCompleteTask: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const finalFilesIds = map(values.my_final_files, ({ id }) => id)
 
       const payload = {
         final_file_id: finalFilesIds,
         accepted: true,
-        description: values.my_notes, // Not yet done by BE, naming might change
+        description: values.my_notes, // TODO: Not yet done by BE, naming might change
       }
 
       try {
@@ -164,6 +167,19 @@ const TaskContent: FC<TaskContentProps> = ({
     [completeTask, navigate, t]
   )
 
+  const sendToPreviousAssignment = useCallback(async () => {
+    try {
+      await completeTask({ accepted: false })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.sent_to_previous_task'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [completeTask, t])
+
   const handleOpenCompleteModal = useCallback(() => {
     showModal(ModalTypes.ConfirmationModal, {
       title: t('modal.confirm_complete_task'),
@@ -171,10 +187,22 @@ const TaskContent: FC<TaskContentProps> = ({
       cancelButtonContent: t('button.quit'),
       proceedButtonContent: t('button.complete'),
       className: classes.completeModal,
-      handleProceed: handleSubmit(onSubmit),
+      handleProceed: handleSubmit(handleCompleteTask),
       proceedButtonLoading: isCompletingTask,
     })
-  }, [handleSubmit, isCompletingTask, onSubmit, t])
+  }, [handleSubmit, isCompletingTask, handleCompleteTask, t])
+
+  const handleSendToPreviousAssignmentModal = useCallback(() => {
+    showModal(ModalTypes.ConfirmationModal, {
+      title: t('modal.confirm_send_to_previous_assignment'),
+      modalContent: t('modal.confirm_send_to_previous_assignment_details'),
+      cancelButtonContent: t('button.quit_alt'),
+      proceedButtonContent: t('button.send_back'),
+      className: classes.completeModal,
+      handleProceed: handleSubmit(sendToPreviousAssignment),
+      proceedButtonLoading: isCompletingTask,
+    })
+  }, [handleSubmit, isCompletingTask, sendToPreviousAssignment, t])
 
   if (isLoading) return <Loader loading={isLoading} />
 
@@ -302,6 +330,20 @@ const TaskContent: FC<TaskContentProps> = ({
       >
         {t('button.mark_as_finished')}
       </Button>
+      {task_type === TaskType.Review && (
+        <Button
+          className={classes.previousButton}
+          onClick={handleSendToPreviousAssignmentModal}
+          hidden={
+            !assignee_institution_user_id ||
+            !!isHistoryView ||
+            task_type === TaskType.Review
+          }
+          appearance={AppearanceTypes.Secondary}
+        >
+          {t('button.send_to_previous_assignment')}
+        </Button>
+      )}
     </Root>
   )
 }

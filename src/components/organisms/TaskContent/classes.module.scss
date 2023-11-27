@@ -71,10 +71,15 @@
   display: none;
 }
 
-.finishedButton {
+.finishedButton,
+.previousButton {
   margin-top: spacing(6);
   margin-bottom: spacing(4);
   float: inline-end;
+}
+
+.finishedButton {
+  margin-left: spacing(2);
 }
 
 .completeModal {
