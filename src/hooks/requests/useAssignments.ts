@@ -5,12 +5,9 @@ import { map, find } from 'lodash'
 import {
   AssignmentPayload,
   AssignmentType,
-  CatVolumePayload,
   CompleteAssignmentPayload,
-  ManualVolumePayload,
 } from 'types/assignments'
 import { SplitProjectPayload, SubProjectResponse } from 'types/projects'
-import { VolumeValue } from 'types/volumes'
 
 const getNewSubProjectWithAssignment = (
   assignment: AssignmentType,
@@ -89,129 +86,6 @@ export const useAssignmentRemoveVendor = ({ id }: { id?: string }) => {
   }
 }
 
-export const useAssignmentAddVolume = ({
-  subProjectId: id,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: addAssignmentVolume, isLoading } = useMutation({
-    mutationKey: ['subprojects', id],
-    mutationFn: (payload: { data: ManualVolumePayload }) =>
-      apiClient.post(`${endpoints.VOLUMES}`, payload.data),
-    onSuccess: ({ data }: { data: VolumeValue }) => {
-      queryClient.refetchQueries({
-        queryKey: ['subprojects', id],
-        type: 'active',
-      })
-    },
-  })
-
-  return {
-    addAssignmentVolume,
-    isLoading,
-  }
-}
-
-export const useAssignmentEditVolume = ({
-  subProjectId: id,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: editAssignmentVolume, isLoading } = useMutation({
-    mutationKey: ['subprojects', id],
-    mutationFn: (payload: { data: ManualVolumePayload; volumeId: string }) =>
-      apiClient.put(`${endpoints.VOLUMES}/${payload.volumeId}`, payload.data),
-    onSuccess: ({ data }: { data: VolumeValue }) => {
-      queryClient.refetchQueries({
-        queryKey: ['subprojects', id],
-        type: 'active',
-      })
-    },
-  })
-
-  return {
-    editAssignmentVolume,
-    isLoading,
-  }
-}
-
-export const useAssignmentAddCatVolume = ({
-  subProjectId: id,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: addAssignmentCatVolume, isLoading } = useMutation({
-    mutationKey: ['subprojects', id],
-    mutationFn: (payload: { data: CatVolumePayload }) =>
-      apiClient.post(`${endpoints.VOLUMES}/cat-tool`, payload.data),
-    onSuccess: ({ data }: { data: VolumeValue }) => {
-      queryClient.refetchQueries({
-        queryKey: ['subprojects', id],
-        type: 'active',
-      })
-    },
-  })
-
-  return {
-    addAssignmentCatVolume,
-    isLoading,
-  }
-}
-
-export const useAssignmentEditCatVolume = ({
-  subProjectId: id,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: editAssignmentCatVolume, isLoading } = useMutation({
-    mutationKey: ['subprojects', id],
-    mutationFn: (payload: { data: CatVolumePayload; volumeId: string }) =>
-      apiClient.put(
-        `${endpoints.VOLUMES}/cat-tool/${payload.volumeId}`,
-        payload.data
-      ),
-    onSuccess: ({ data }: { data: VolumeValue }) => {
-      queryClient.refetchQueries({
-        queryKey: ['subprojects', id],
-        type: 'active',
-      })
-    },
-  })
-
-  return {
-    editAssignmentCatVolume,
-    isLoading,
-  }
-}
-
-export const useAssignmentRemoveVolume = ({
-  subProjectId: id,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: removeAssignmentVolume, isLoading } = useMutation({
-    mutationKey: ['subprojects', id],
-    mutationFn: (payload: { volumeId?: string }) =>
-      apiClient.delete(`${endpoints.VOLUMES}/${payload.volumeId}`),
-    onSuccess: ({ data }: { data: ManualVolumePayload }) => {
-      queryClient.refetchQueries({
-        queryKey: ['subprojects', id],
-        type: 'active',
-      })
-    },
-  })
-
-  return {
-    removeAssignmentVolume,
-    isLoading,
-  }
-}
-
 export const useAssignmentUpdate = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateAssignment, isLoading } = useMutation({
@@ -273,7 +147,8 @@ export const useLinkCatToolJobs = () => {
       apiClient.post(endpoints.LINK_CAT_TOOL_JOBS, {
         ...payload,
       }),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.warn('linking cat tools', data)
       queryClient.refetchQueries({ queryKey: ['assignments'] })
     },
   })
@@ -290,7 +165,8 @@ export const useDeleteAssignment = () => {
     mutationKey: ['subprojects'],
     mutationFn: async (payload: string) =>
       apiClient.delete(`${endpoints.ASSIGNMENTS}/${payload}`),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.warn('deleting assignment', data)
       queryClient.refetchQueries({
         queryKey: ['subprojects'],
         type: 'active',
