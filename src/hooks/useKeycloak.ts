@@ -170,12 +170,23 @@ const useKeycloak = () => {
   useEffect(() => {
     setIsLoading(true)
     const initKeycloak = async () => {
-      const isKeycloakUserLoggedIn = await keycloak.init({
-        onLoad: 'check-sso',
-        // checkLoginIframe: false,
-        silentCheckSsoRedirectUri:
-          window.location.origin + '/silent-check-sso.html',
-      })
+      let isKeycloakUserLoggedIn = false
+      try {
+        isKeycloakUserLoggedIn = await keycloak.init({
+          onLoad: 'check-sso',
+          // checkLoginIframe: false,
+          silentCheckSsoRedirectUri:
+            window.location.origin + '/silent-check-sso.html',
+        })
+      } catch (errorData) {
+        const typedError = (errorData as { error?: string })?.error
+        setIsLoading(false)
+        showNotification({
+          type: NotificationTypes.Error,
+          title: i18n.t('notification.error'),
+          content: typedError || i18n.t('error.unknown_authentication_error'),
+        })
+      }
 
       if (!isKeycloakUserLoggedIn) {
         // Currently will show error with any hash
@@ -187,7 +198,7 @@ const useKeycloak = () => {
           showNotification({
             type: NotificationTypes.Error,
             title: i18n.t('notification.error'),
-            content: i18n.t('notification.token_expired_error'),
+            content: i18n.t('error.token_expired_error'),
           })
           navigate(window.location.pathname)
         }
@@ -238,6 +249,7 @@ const useKeycloak = () => {
       }
     }
     initKeycloak()
+
     return () => {
       window.removeEventListener('visibilitychange', onVisibilityChange)
     }

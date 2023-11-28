@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { map, find } from 'lodash'
+import { map, find, filter } from 'lodash'
 import {
   AssignmentPayload,
   AssignmentType,
@@ -32,6 +32,25 @@ const getNewSubProjectWithAssignment = (
   const newData = {
     ...previousData,
     ...(assignment?.subProject || {}),
+    assignments: newAssignments,
+  }
+  return { data: newData }
+}
+
+const getNewSubProjectWithOutAssignment = (
+  assignmentId: string,
+  oldData?: SubProjectResponse
+) => {
+  const { data: previousData } = oldData || {}
+  if (!previousData) return oldData
+
+  const newAssignments = filter(
+    previousData.assignments,
+    ({ id }) => id !== assignmentId
+  )
+
+  const newData = {
+    ...previousData,
     assignments: newAssignments,
   }
   return { data: newData }
@@ -147,9 +166,13 @@ export const useLinkCatToolJobs = () => {
       apiClient.post(endpoints.LINK_CAT_TOOL_JOBS, {
         ...payload,
       }),
-    onSuccess: (data) => {
-      console.warn('linking cat tools', data)
-      queryClient.refetchQueries({ queryKey: ['assignments'] })
+    onSuccess: ({ data }: { data: AssignmentType }) => {
+      const { sub_project_id } = data
+      queryClient.setQueryData(
+        ['subprojects', sub_project_id],
+        (oldData?: SubProjectResponse) =>
+          getNewSubProjectWithAssignment(data, oldData)
+      )
     },
   })
 
@@ -159,18 +182,22 @@ export const useLinkCatToolJobs = () => {
   }
 }
 
-export const useDeleteAssignment = () => {
+export const useDeleteAssignment = ({
+  sub_project_id,
+}: {
+  sub_project_id: string
+}) => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteAssignment, isLoading } = useMutation({
-    mutationKey: ['subprojects'],
-    mutationFn: async (payload: string) =>
-      apiClient.delete(`${endpoints.ASSIGNMENTS}/${payload}`),
-    onSuccess: (data) => {
-      console.warn('deleting assignment', data)
-      queryClient.refetchQueries({
-        queryKey: ['subprojects'],
-        type: 'active',
-      })
+    mutationKey: ['assignments'],
+    mutationFn: async (id: string) =>
+      apiClient.delete(`${endpoints.ASSIGNMENTS}/${id}`),
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(
+        ['subprojects', sub_project_id],
+        (oldData?: SubProjectResponse) =>
+          getNewSubProjectWithOutAssignment(id, oldData)
+      )
     },
   })
 
@@ -191,17 +218,11 @@ export const useCompleteAssignment = ({ id }: { id?: string }) => {
       ),
     onSuccess: ({ data }: { data: AssignmentType }) => {
       const { sub_project_id } = data
-      // For now we have to use refetching
-      // We can skip this, once BE responds with new subProject (currently old one is sent)
-      // And the changes to other assignments should also be returned from BE, which currently are not
-      // queryClient.setQueryData(
-      //   ['subprojects', sub_project_id],
-      //   (oldData?: SubProjectResponse) =>
-      //     getNewSubProjectWithAssignment(data, oldData)
-      // )
-      queryClient.refetchQueries({
-        queryKey: ['subprojects', sub_project_id],
-      })
+      queryClient.setQueryData(
+        ['subprojects', sub_project_id],
+        (oldData?: SubProjectResponse) =>
+          getNewSubProjectWithAssignment(data, oldData)
+      )
     },
   })
   return {

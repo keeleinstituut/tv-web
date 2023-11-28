@@ -25,6 +25,10 @@ export interface CsvValidationError extends Error {
 }
 
 export const showValidationErrorMessage = (errorData: unknown) => {
+  const genericErrorData = errorData as object
+  if ('code' in genericErrorData && genericErrorData?.code !== '422') {
+    return
+  }
   const typedErrorData = errorData as ValidationError
   if (typedErrorData?.message) {
     showNotification({
