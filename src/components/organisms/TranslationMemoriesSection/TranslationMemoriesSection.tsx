@@ -46,6 +46,7 @@ interface TranslationMemoryButtonProps {
   subProjectLangPair?: string
   projectDomain?: ClassifierValue
   disabled?: boolean
+  mode?: ProjectDetailModes
 }
 
 const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
@@ -53,6 +54,7 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
   subProjectId,
   subProjectLangPair,
   projectDomain,
+  mode,
 }) => {
   const { t } = useTranslation()
 
@@ -63,6 +65,8 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
       projectDomain: projectDomain,
     })
   }
+
+  if (mode === ProjectDetailModes.View) return null
 
   return (
     <>
@@ -297,6 +301,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           subProjectId={subProjectId}
           subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}
+          mode={mode}
         />
       }
       initialIsExpanded={isEditable}

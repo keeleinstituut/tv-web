@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -48,6 +48,8 @@ const TasksTable: FC<TasksTableProps> = ({
 }) => {
   const { t } = useTranslation()
 
+  const [filterModified, setFilterModified] = useState<boolean>(false)
+
   const { languageDirectionFilters, loadMore, handleSearch } =
     useLanguageDirections({})
   const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
@@ -96,6 +98,8 @@ const TasksTable: FC<TasksTableProps> = ({
 
   const handleModifiedFilterChange = useCallback(
     (filters?: FilterFunctionType) => {
+      setFilterModified(true)
+
       const { language_direction, type_classifier_value_id, ...rest } =
         filters || {}
       const typedLanguageDirection = language_direction as string
@@ -212,8 +216,10 @@ const TasksTable: FC<TasksTableProps> = ({
     }),
   ] as ColumnDef<TaskTableRow>[]
 
+  const showNoTasksMessage = isEmpty(tasks) && !filterModified
+
   if (isLoading) return <Loader loading={isLoading} />
-  if (isEmpty(tasks))
+  if (showNoTasksMessage)
     return <span className={classes.noTasks}>{t('my_tasks.no_tasks_yet')}</span>
 
   return (

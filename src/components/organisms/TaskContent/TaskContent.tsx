@@ -312,6 +312,7 @@ const TaskContent: FC<TaskContentProps> = ({
           className={classes.catJobs}
           hidden={isEmpty(catToolJobs)}
           cat_jobs={catToolJobs}
+          isEditable
           cat_files={cat_files}
           source_files={source_files}
           canSendToVendors={true} //TODO add check when camunda is ready

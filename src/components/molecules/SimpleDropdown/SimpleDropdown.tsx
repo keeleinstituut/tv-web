@@ -119,7 +119,6 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
         ariaLabel={title}
         disabled={disabled}
         className={classNames(classes.iconButton, buttonClassName)}
-        disabled={disabled}
       >
         {label}
       </Button>
