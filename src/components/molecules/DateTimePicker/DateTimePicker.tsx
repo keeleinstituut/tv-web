@@ -17,6 +17,7 @@ export interface DateTimePickerProps {
   minDate?: Date
   maxDate?: Date
   onDateTimeChange?: (value: { date: string; time: string }) => void
+  disabled?: boolean
 }
 
 const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
@@ -32,6 +33,7 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
       minDate,
       maxDate,
       onDateTimeChange,
+      disabled,
     } = props
 
     const { t } = useTranslation()
@@ -85,6 +87,7 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             error={error}
             minDate={minDate}
             maxDate={maxDate}
+            disabled={disabled}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
           <TimePickerInput
@@ -93,6 +96,7 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             value={value?.time}
             className={classes.timePicker}
             setIsModalOpen={setIsModalOpen}
+            disabled={disabled}
             showSeconds
           />
         </div>

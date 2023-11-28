@@ -1,4 +1,4 @@
-import { useCallback, useMemo, Fragment } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map, filter, isEmpty, compact, includes } from 'lodash'
 import {
@@ -68,7 +68,6 @@ const FinalFilesList = <TFormValues extends FieldValues>({
 }: FinalFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
-    formState: { dirtyFields },
   } = useController<TFormValues, Path<TFormValues>>({
     name: name as Path<TFormValues>,
     control,
@@ -171,6 +170,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
             ariaLabel={t('label.share_with_client')}
             control={control}
             inputType={InputTypes.Checkbox}
+            disabled={!isEditable}
             // className={classes.fitContent}
           />
         )
@@ -204,54 +204,25 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       ),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('delete_button', {
-      header: '',
-      cell: ({ getValue }) => {
-        return (
-          <BaseButton
-            className={classes.iconButton}
-            onClick={() => handleDelete(getValue())}
-          >
-            <Delete />
-          </BaseButton>
-        )
-      },
-      footer: (info) => info.column.id,
-    }),
+    ...(isEditable
+      ? [
+          columnHelper.accessor('delete_button', {
+            header: '',
+            cell: ({ getValue }) => {
+              return (
+                <BaseButton
+                  className={classes.iconButton}
+                  onClick={() => handleDelete(getValue())}
+                >
+                  <Delete />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
   ] as ColumnDef<FileRow>[]
-
-  // TODO: possibly not needed
-  if (!isEditable) {
-    return (
-      <div className={classes.altFilesContainer}>
-        <h3>{title}</h3>
-        {map(typedValue, (file, index) => {
-          const localFileUrl =
-            file instanceof File ? URL.createObjectURL(file) : ''
-          const fileUrl =
-            'original_url' in file ? file.original_url : localFileUrl
-          const updatedAt =
-            'updated_at' in file
-              ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
-              : ''
-          return (
-            <Fragment key={fileUrl || index}>
-              <label>{file.name}</label>
-              <span>{updatedAt}</span>
-              <BaseButton
-                href={fileUrl}
-                target="_blank"
-                download={file.name}
-                className={classNames(classes.button)}
-              >
-                <DownloadFilled />
-              </BaseButton>
-            </Fragment>
-          )
-        })}
-      </div>
-    )
-  }
 
   return (
     <div className={classNames(classes.container, className)}>
@@ -289,7 +260,8 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         appearance={AppearanceTypes.Primary}
         className={classes.saveButton}
         onClick={handleSendFilesToClient}
-        disabled={!dirtyFields?.shared_with_client}
+        // TODO: need to check if they have changed, but currently this doesn't exist
+        disabled={!isEmpty(sharedFiles) || !isEditable}
         loading={isLoading}
       >
         {t('button.save_changes')}

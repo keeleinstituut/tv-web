@@ -1,5 +1,9 @@
 import { FC, useCallback, useState } from 'react'
-import { SubProjectDetail, SubProjectFeatures } from 'types/projects'
+import {
+  ProjectStatus,
+  SubProjectDetail,
+  SubProjectFeatures,
+} from 'types/projects'
 import { Root } from '@radix-ui/react-form'
 import { useTranslation } from 'react-i18next'
 import FeatureHeaderSection, {
@@ -36,9 +40,12 @@ const MainFeature: FC<MainFeatureProps> = ({
   id,
   cat_jobs,
   assignments,
+  project,
   ...rest
 }) => {
+  const { status: projectStatus } = project
   const { t } = useTranslation()
+  const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
   const featureTabs = [
     {
       label: t('button.vendors'),
@@ -83,6 +90,7 @@ const MainFeature: FC<MainFeatureProps> = ({
     isFirstTaskJobRevision: boolean
   ) => {
     return (
+      !isSomethingEditable ||
       feature === SubProjectFeatures.JobOverview ||
       (feature === SubProjectFeatures.JobRevision && !isFirstTaskJobRevision) ||
       !isMultiAssignmentsEnabled
@@ -102,6 +110,7 @@ const MainFeature: FC<MainFeatureProps> = ({
           catSupported,
           isLoading,
           mt_enabled,
+          isEditable: isSomethingEditable,
           id,
         }}
       />
@@ -109,6 +118,8 @@ const MainFeature: FC<MainFeatureProps> = ({
         assignments={assignments}
         hidden={activeTab === FeatureTabs.Xliff}
         catSupported={catSupported}
+        project={project}
+        isEditable={isSomethingEditable}
         {...rest}
       />
       <FeatureCatJobs

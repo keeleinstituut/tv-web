@@ -59,6 +59,7 @@
 
   &.disabled {
     cursor: not-allowed;
+    pointer-events: none;
     background-color: $color-background-disabled;
     border: none;
   }

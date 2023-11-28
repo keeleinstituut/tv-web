@@ -211,7 +211,8 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
   const isRestEditable = isNew || hasManagerPrivilege
 
   const isSomethingEditable =
-    isManagerEditable || isClientEditable || isRestEditable
+    status !== ProjectStatus.Accepted &&
+    (isManagerEditable || isClientEditable || isRestEditable)
 
   // Validation errors
   const mapProjectValidationErrors = useCallback(
