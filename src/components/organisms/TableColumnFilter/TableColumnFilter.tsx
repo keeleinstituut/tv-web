@@ -1,4 +1,12 @@
-import { FC, SVGProps, useState, useRef, useEffect, MouseEvent } from 'react'
+import {
+  FC,
+  SVGProps,
+  useState,
+  useRef,
+  useEffect,
+  MouseEvent,
+  useCallback,
+} from 'react'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -41,9 +49,7 @@ const TableColumnFilter = ({
   const [isOpen, setIsOpen] = useState(false)
   const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
-  const toggleDropdown = <T extends HTMLElement>(
-    event: MouseEvent<T> | KeyboardEvent
-  ) => {
+  const toggleDropdown = (event: MouseEvent | KeyboardEvent) => {
     setIsOpen(!isOpen)
     if (!document.querySelector('.filter-focus') && !isOpen) {
       const target = event?.target as HTMLElement
@@ -51,6 +57,11 @@ const TableColumnFilter = ({
       setFocusElement(target)
     }
   }
+  const escFunction = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setIsOpen(false)
+    }
+  }, [])
 
   useEffect(() => {
     if (document.querySelector('.filter-focus') && !isOpen) {
@@ -58,6 +69,13 @@ const TableColumnFilter = ({
       focusElement?.focus()
     }
   }, [focusElement, isOpen])
+
+  useEffect(() => {
+    document.addEventListener('keydown', escFunction)
+    return () => {
+      document.removeEventListener('keydown', escFunction)
+    }
+  }, [escFunction])
 
   if (hidden) return null
 
