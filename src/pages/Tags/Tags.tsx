@@ -156,7 +156,11 @@ const Tags: FC = () => {
         </div>
 
         <div className={classes.tagsSection}>
-          <DynamicForm fields={tagFields} control={control} />
+          <DynamicForm
+            fields={tagFields}
+            control={control}
+            onSubmit={(e) => e.preventDefault()}
+          />
         </div>
 
         <div className={classes.categorySection}>

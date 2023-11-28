@@ -1,4 +1,4 @@
-import { FC, SVGProps, useState, useRef } from 'react'
+import { FC, SVGProps, useState, useRef, useEffect, MouseEvent } from 'react'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -39,10 +39,25 @@ const TableColumnFilter = ({
   const dropdownRef = useRef(null)
   const wrapperRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
-  const toggleDropdown = () => {
+  const toggleDropdown = <T extends HTMLElement>(
+    event: MouseEvent<T> | KeyboardEvent
+  ) => {
     setIsOpen(!isOpen)
+    if (!document.querySelector('.filter-focus') && !isOpen) {
+      const target = event?.target as HTMLElement
+      target.classList.add('filter-focus')
+      setFocusElement(target)
+    }
   }
+
+  useEffect(() => {
+    if (document.querySelector('.filter-focus') && !isOpen) {
+      focusElement?.classList.remove('filter-focus')
+      focusElement?.focus()
+    }
+  }, [focusElement, isOpen])
 
   if (hidden) return null
 

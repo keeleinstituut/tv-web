@@ -211,7 +211,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   ] as ColumnDef<TranslationMemoriesTableRow>[]
 
   return (
-    <Root>
+    <Root onSubmit={(e) => e.preventDefault()}>
       <div
         className={classNames(classes.legend, {
           [classes.padding]: isSelectingModal,

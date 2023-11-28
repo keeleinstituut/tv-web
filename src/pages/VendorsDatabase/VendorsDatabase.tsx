@@ -71,7 +71,7 @@ const VendorsDatabase: FC = () => {
         {t('button.export_csv')}
       </Button> */}
       </div>
-      <Root>
+      <Root onSubmit={(e) => e.preventDefault()}>
         <Loader loading={isLoading && isEmpty(vendors)} />
         <TextInput
           name={'search'}

@@ -178,6 +178,7 @@ const ModalRoot = () => {
   const [isModalOpen, setIsOpen] = useState(false)
   const [currentModalProps, setCurrentModalProps] = useState<ModalPropTypes>({})
   const [currentModalKey, setCurrentModalKey] = useState<ModalTypes>()
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
   // TODO: figure out how to improve typescript here
   // so that every modal would accepts only their own props
@@ -189,34 +190,42 @@ const ModalRoot = () => {
     },
     [setCurrentModalProps, setIsOpen]
   )
-
-  const closeModal = useCallback(() => {
-    setIsOpen(false)
-  }, [setIsOpen])
-
-  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
-
-  const handleButtonClick = (event: Event) => {
-    event.preventDefault()
-
-    if (!document.querySelector('.last-focus') && isModalOpen) {
-      const target = event?.target as HTMLElement
-      target.classList.add('last-focus')
-      setFocusElement(target)
-    }
-    if (document.querySelector('.last-focus') && !isModalOpen) {
+  const removeFocusClass = useCallback(() => {
+    if (!!focusElement && !!document.querySelector('.last-focus')) {
       focusElement?.classList.remove('last-focus')
       focusElement?.focus()
     }
-  }
+  }, [focusElement])
+
+  const closeModal = useCallback(() => {
+    setIsOpen(false)
+    setTimeout(removeFocusClass, 300)
+    setTimeout(setFocusElement, 500, null)
+  }, [setIsOpen, removeFocusClass])
+
+  const handleButtonClick = useCallback(
+    (event: Event) => {
+      event.preventDefault()
+      if (!document.querySelector('.last-focus') && isModalOpen) {
+        const target = event?.target as HTMLElement
+        target.classList.add('last-focus')
+        setFocusElement(target)
+      }
+    },
+    [isModalOpen]
+  )
 
   useEffect(() => {
-    document.addEventListener('click', handleButtonClick)
+    document.addEventListener('click', function (event) {
+      const target = event?.target as HTMLElement
+      if (target?.nodeName === 'BUTTON') {
+        handleButtonClick(event)
+      }
+    })
     return () => {
       document.removeEventListener('click', handleButtonClick)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isModalOpen])
+  }, [handleButtonClick])
 
   useImperativeHandle(
     modalRef,

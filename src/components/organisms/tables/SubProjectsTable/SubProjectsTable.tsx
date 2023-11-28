@@ -210,7 +210,7 @@ const SubProjectsTable: FC = () => {
   ] as ColumnDef<SubProjectTableRow>[]
 
   return (
-    <Root>
+    <Root onSubmit={(e) => e.preventDefault()}>
       <DataTable
         data={projectRows}
         columns={columns}
