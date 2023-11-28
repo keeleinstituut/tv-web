@@ -29,10 +29,10 @@ import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from '../NotificationRoot/NotificationRoot'
 import { showValidationErrorMessage } from 'api/errorHandler'
-
-import classes from './classes.module.scss'
 import { useNavigate } from 'react-router-dom'
 import { TaskType } from 'types/tasks'
+
+import classes from './classes.module.scss'
 
 interface FormValues {
   my_source_files: SourceFile[]

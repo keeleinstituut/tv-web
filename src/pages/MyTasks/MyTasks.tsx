@@ -26,47 +26,13 @@ export interface TasksTableProps {
   isHistoryTab?: boolean
 }
 
-const CreateTaskProps = (assignedToMe: number) => {
-  const {
-    tasks = [],
-    isLoading,
-    paginationData,
-    handleFilterChange,
-    handleSortingChange,
-    handlePaginationChange,
-  } = useFetchTasks({ assigned_to_me: assignedToMe })
-
-  return {
-    tasks,
-    isLoading,
-    paginationData,
-    handleFilterChange,
-    handleSortingChange,
-    handlePaginationChange,
-  }
+const FetchTasks = (assignedToMe: number) => {
+  return useFetchTasks({ assigned_to_me: assignedToMe })
 }
 
 const MyTasks: FC = () => {
   const { t } = useTranslation()
 
-  // const {
-  //   tasks = [],
-  //   isLoading,
-  //   paginationData,
-  //   handleFilterChange,
-  //   handleSortingChange,
-  //   handlePaginationChange,
-  // } = useFetchTasks({ assigned_to_me: 1 })
-
-  // const {
-  //   tasks: waitingTasks = [],
-  //   isLoading: isLoadingWaitingTasks,
-  //   paginationData: waitingTasksPaginationData,
-  //   handleFilterChange: handleWaitingTasksFilterChange,
-  //   handleSortingChange: handleWaitingTasksSortingChange,
-  //   handlePaginationChange: handleWaitingTasksPaginationChange,
-  // } = useFetchTasks({ assigned_to_me: 0 })
-
   const {
     tasks,
     isLoading,
@@ -74,7 +40,7 @@ const MyTasks: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = CreateTaskProps(1)
+  } = FetchTasks(1)
 
   const {
     tasks: waitingTasks,
@@ -83,7 +49,7 @@ const MyTasks: FC = () => {
     handleFilterChange: handleWaitingTasksFilterChange,
     handleSortingChange: handleWaitingTasksSortingChange,
     handlePaginationChange: handleWaitingTasksPaginationChange,
-  } = CreateTaskProps(0)
+  } = FetchTasks(0)
 
   const {
     historyTasks = [],
@@ -101,7 +67,7 @@ const MyTasks: FC = () => {
   let Component: FC<TasksTableProps> = () => null
 
   let componentProps: TasksTableProps = {
-    tasks: tasks,
+    tasks: tasks || [],
     isLoading: isLoading,
     paginationData: paginationData,
     handleFilterChange: handleFilterChange,
@@ -113,7 +79,7 @@ const MyTasks: FC = () => {
     case t('my_tasks.my_assignments'):
       Component = TasksTable
       componentProps = {
-        tasks: tasks,
+        tasks: tasks || [],
         isLoading: isLoading,
         paginationData: paginationData,
         handleFilterChange: handleFilterChange,
@@ -125,7 +91,7 @@ const MyTasks: FC = () => {
     case t('my_tasks.pending_assignments'):
       Component = TasksTable
       componentProps = {
-        tasks: waitingTasks,
+        tasks: waitingTasks || [],
         isLoading: isLoadingWaitingTasks,
         paginationData: waitingTasksPaginationData,
         handleFilterChange: handleWaitingTasksFilterChange,
@@ -137,7 +103,7 @@ const MyTasks: FC = () => {
     case t('my_tasks.my_tasks_history'):
       Component = TasksTable
       componentProps = {
-        tasks: historyTasks,
+        tasks: historyTasks || [],
         isLoading: isLoadingHistoryTasks,
         paginationData: historyPaginationData,
         handleFilterChange: handleHistoryFilterChange,

@@ -36,15 +36,8 @@ const TaskDetails: FC<TaskProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   project,
-  cat_files,
-  source_files,
-  sub_project_id,
-  volumes,
-  taskId,
-  comments,
   assignee_institution_user_id,
-  isHistoryView,
-  task_type,
+  ...rest
 }) => {
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
@@ -103,21 +96,13 @@ const TaskDetails: FC<TaskProps> = ({
     >
       <TaskContent
         deadline_at={deadline_at}
-        source_files={source_files}
-        cat_files={cat_files}
-        source_language_classifier_value={source_language_classifier_value}
         destination_language_classifier_value={
           destination_language_classifier_value
         }
         event_start_at={event_start_at}
-        comments={comments}
         isLoading={isLoading}
-        sub_project_id={sub_project_id}
-        volumes={volumes}
         assignee_institution_user_id={assignee_institution_user_id}
-        taskId={taskId}
-        isHistoryView={isHistoryView}
-        task_type={task_type}
+        {...rest}
       />
     </ExpandableContentContainer>
   )

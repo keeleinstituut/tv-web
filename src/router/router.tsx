@@ -118,10 +118,18 @@ export const protectedRoutes: FullRouteObject[] = [
             breadcrumb: i18n.t('menu.my_tasks'),
           },
           {
-            path: ':taskId/:isHistoryView?',
+            path: ':taskId',
             element: <TaskPage />,
             // privileges: [Privileges.ViewPersonalTask],
             breadcrumb: BreadcrumbsTitle,
+            children: [
+              {
+                path: ':isHistoryView',
+                element: <TaskPage />,
+                // privileges: [Privileges.ViewPersonalTask],
+                breadcrumb: BreadcrumbsTitle,
+              },
+            ],
           },
         ],
       },

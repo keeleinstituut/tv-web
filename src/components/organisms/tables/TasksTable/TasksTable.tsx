@@ -21,9 +21,9 @@ import { ClassifierValueType } from 'types/classifierValues'
 import { FilterFunctionType } from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
 import { TasksTableProps } from 'pages/MyTasks/MyTasks'
+import { ListTask } from 'types/tasks'
 
 import classes from './classes.module.scss'
-import { ListTask } from 'types/tasks'
 
 type TaskTableRow = {
   ext_id: {
@@ -131,6 +131,7 @@ const TasksTable: FC<TasksTableProps> = ({
         const projectExtIdObject = getValue()
         const taskId = projectExtIdObject?.id
         const projectExtId = projectExtIdObject?.ext_id
+
         return (
           <Button
             appearance={AppearanceTypes.Text}

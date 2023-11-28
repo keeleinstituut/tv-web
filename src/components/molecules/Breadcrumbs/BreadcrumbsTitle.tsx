@@ -5,7 +5,7 @@ import { BreadcrumbComponentProps } from 'use-react-router-breadcrumbs'
 import { useTranslation } from 'react-i18next'
 import { useFetchTranslationMemory } from 'hooks/requests/useTranslationMemories'
 import { includes } from 'lodash'
-import { useFetchTask } from 'hooks/requests/useTasks'
+import { useFetchHistoryTask, useFetchTask } from 'hooks/requests/useTasks'
 import { useFetchProject } from 'hooks/requests/useProjects'
 
 interface idTypes {
@@ -14,6 +14,7 @@ interface idTypes {
   projectId?: string
   memoryId?: string
   taskId?: string
+  isHistoryView?: string
 }
 
 const BreadcrumbsTitle = <ParamKey extends string = string>({
@@ -22,7 +23,7 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
   const { t } = useTranslation()
 
   const { vendorId, userId, projectId, memoryId, taskId }: idTypes =
-    match?.params
+    match?.params || {}
 
   const { vendor } = useVendorFetch({ id: vendorId })
   const { user } = useFetchUser({ id: userId })
@@ -33,6 +34,11 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
   const { task } = useFetchTask({
     id: taskId,
   })
+  const { historyTask } = useFetchHistoryTask({
+    id: taskId,
+  })
+
+  const isHistoryTask = includes(match?.pathname, '/isHistoryView')
 
   const { name } = useMemo(() => {
     switch (true) {
@@ -51,8 +57,13 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
         return { name: translationMemory?.name }
       }
       case !!taskId: {
-        return { name: task?.assignment?.ext_id }
+        return {
+          name: isHistoryTask
+            ? historyTask?.assignment?.ext_id
+            : task?.assignment?.ext_id,
+        }
       }
+
       default: {
         return {}
       }
@@ -70,6 +81,8 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
     t,
     project?.ext_id,
     translationMemory?.name,
+    isHistoryTask,
+    historyTask?.assignment?.ext_id,
     task?.assignment?.ext_id,
   ])
 
