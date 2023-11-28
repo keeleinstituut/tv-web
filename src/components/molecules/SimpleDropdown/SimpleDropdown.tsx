@@ -117,6 +117,7 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
         appearance={AppearanceTypes.Text}
         icon={icon || DropdownArrow}
         ariaLabel={title}
+        disabled={disabled}
         className={classNames(classes.iconButton, buttonClassName)}
         disabled={disabled}
       >

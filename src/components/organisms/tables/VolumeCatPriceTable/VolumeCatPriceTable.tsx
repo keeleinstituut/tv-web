@@ -10,7 +10,7 @@ import {
   DiscountPercentagesAmountNames,
 } from 'types/vendors'
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
-import { map, sum, toNumber, values } from 'lodash'
+import { map, sum, toNumber, values, round } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
@@ -32,7 +32,7 @@ const TotalPrice = <TFormValues extends FieldValues>({
     name: values(DiscountPercentagesAmountNames) as Path<TFormValues>[],
   })
 
-  const value = sum(map(amountValues, (v) => Number(v)))
+  const value = round(sum(map(amountValues, (v) => Number(v))), 3)
 
   return <DisplayValue value={value} />
 }

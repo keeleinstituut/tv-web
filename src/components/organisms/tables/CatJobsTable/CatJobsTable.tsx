@@ -41,6 +41,7 @@ interface CatJobsTableProps {
   canSendToVendors?: boolean
   mode?: ProjectDetailModes
   isHistoryView?: string
+  isEditable?: boolean
 }
 
 interface CatJobRow {
@@ -66,6 +67,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   canSendToVendors,
   mode,
   isHistoryView,
+  isEditable,
 }) => {
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile()
@@ -149,8 +151,8 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             className={classes.fitContent}
             size={SizeTypes.S}
             href={getValue()}
+            disabled={!isEditable || !!isHistoryView}
             target="_blank"
-            disabled={!!isHistoryView}
           >
             {t('button.open_in_translation_tool')}
           </Button>
@@ -187,6 +189,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             icon={HorizontalDots}
             className={classes.dropdown}
             buttonClassName={classes.dropdownInnerButton}
+            disabled={!isEditable}
             options={[
               {
                 label: t('button.split_file'),

@@ -73,7 +73,6 @@ const FinalFilesList = <TFormValues extends FieldValues>({
 }: FinalFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
-    formState: { dirtyFields },
   } = useController<TFormValues, Path<TFormValues>>({
     name: name as Path<TFormValues>,
     control,
@@ -252,7 +251,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
                   onClick={() => handleDownload(getValue())}
                   disabled={!!isHistoryView}
                 >
-                  <DownloadFilled />
+                  <DownloadFilled className={classes.iconButton} />
                 </BaseButton>
               )
             },
@@ -260,24 +259,29 @@ const FinalFilesList = <TFormValues extends FieldValues>({
           }),
         ]
       : []),
-    columnHelper.accessor('delete_button', {
-      header: '',
-      cell: ({ getValue }) => {
-        return (
-          <BaseButton
-            className={classNames(
-              classes.iconButton,
-              !!isHistoryView && classes.disabled
-            )}
-            onClick={() => handleOpenDeleteModal(getValue())}
-            disabled={!!isHistoryView}
-          >
-            <Delete />
-          </BaseButton>
-        )
-      },
-      footer: (info) => info.column.id,
-    }),
+
+    ...(isEditable || mode === 'view'
+      ? [
+          columnHelper.accessor('delete_button', {
+            header: '',
+            cell: ({ getValue }) => {
+              return (
+                <BaseButton
+                  className={classNames(
+                    classes.iconButton,
+                    !!isHistoryView && classes.disabled
+                  )}
+                  onClick={() => handleOpenDeleteModal(getValue())}
+                  disabled={!!isHistoryView}
+                >
+                  <Delete />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
   ] as ColumnDef<FileRow>[]
 
   // TODO: possibly not needed
@@ -345,7 +349,8 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         appearance={AppearanceTypes.Primary}
         className={classes.saveButton}
         onClick={handleSendFilesToClient}
-        disabled={!dirtyFields?.shared_with_client}
+        // TODO: need to check if they have changed, but currently this doesn't exist
+        disabled={!isEmpty(sharedFiles) || !isEditable}
         loading={isLoading}
         hidden={mode === 'view'}
       >

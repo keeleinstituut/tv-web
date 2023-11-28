@@ -29,6 +29,7 @@
   &.disabled {
     cursor: not-allowed;
     input,
+    textarea,
     .label {
       pointer-events: none;
     }

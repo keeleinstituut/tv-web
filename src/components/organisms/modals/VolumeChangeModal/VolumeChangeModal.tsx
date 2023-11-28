@@ -14,6 +14,7 @@ import {
   pickBy,
   identity,
   join,
+  replace,
 } from 'lodash'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
@@ -199,16 +200,19 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
 
   const totalAmount = useMemo(
     () =>
-      reduce(
-        amountValues,
-        (sum, n, i) => {
-          return (
-            sum +
-            ((100 - toNumber(amountDiscounts[i] ?? 0)) / 100) *
-              toNumber(amountValues[i])
-          )
-        },
-        0
+      round(
+        reduce(
+          amountValues,
+          (sum, n, i) => {
+            return (
+              sum +
+              ((100 - toNumber(amountDiscounts[i] ?? 0)) / 100) *
+                toNumber(amountValues[i])
+            )
+          },
+          0
+        ),
+        3
       ),
     [amountDiscounts, amountValues]
   )
@@ -360,7 +364,13 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
+            const errorKey = replace(
+              key,
+              'custom_volume_analysis.',
+              ''
+            ) as CatAnalysisVolumes
+            const typedKey =
+              `${analysisVolumeByDiscountPercentage[errorKey]}_amount` as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
             setError(typedKey, { type: 'backend', message: errorString })
           })
@@ -406,7 +416,13 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
+            const errorKey = replace(
+              key,
+              'custom_volume_analysis.',
+              ''
+            ) as CatAnalysisVolumes
+            const typedKey =
+              `${analysisVolumeByDiscountPercentage[errorKey]}_amount` as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
             setError(typedKey, { type: 'backend', message: errorString })
           })

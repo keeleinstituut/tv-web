@@ -16,6 +16,7 @@ type FeatureAssignmentsProps = Pick<
   hidden?: boolean
   catSupported?: boolean
   volumes?: VolumeValue[]
+  isEditable?: boolean
 }
 
 const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
