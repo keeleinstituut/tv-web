@@ -164,6 +164,7 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
           <BaseButton
             onClick={() => handleDelete(getValue())}
             className={classes.deleteButton}
+            aria-label={t('button.delete')}
           >
             <Delete />
           </BaseButton>
@@ -197,6 +198,7 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
               <BaseButton
                 onClick={() => handleDownload(index)}
                 className={classes.button}
+                aria-label={t('button.download')}
               >
                 <DownloadFilled />
               </BaseButton>

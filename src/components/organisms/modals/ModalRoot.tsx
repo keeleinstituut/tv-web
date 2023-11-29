@@ -205,7 +205,6 @@ const ModalRoot = () => {
 
   const handleButtonClick = useCallback(
     (event: Event) => {
-      event.preventDefault()
       if (!document.querySelector('.last-focus') && isModalOpen) {
         const target = event?.target as HTMLElement
         target.classList.add('last-focus')

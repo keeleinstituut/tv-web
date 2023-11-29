@@ -148,6 +148,7 @@ const AddedFilesList: FC<AddedFilesListProps> = ({
               <BaseButton
                 onClick={() => handleDelete(index)}
                 className={classes.button}
+                aria-label={t('button.delete')}
               >
                 <Delete />
               </BaseButton>

@@ -51,7 +51,7 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
           <>
             <FormInput
               name={`${info.row.original.institution_user_id}.isVendor`}
-              ariaLabel={t('vendors.vendor')}
+              ariaLabel={info.row.original.name || t('vendors.vendor')}
               control={control}
               defaultValue={info.row.original.isVendor}
               inputType={InputTypes.Checkbox}

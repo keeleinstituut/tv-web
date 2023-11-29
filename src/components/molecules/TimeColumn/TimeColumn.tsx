@@ -3,6 +3,7 @@ import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
 
 import classes from './classes.module.scss'
 import classNames from 'classnames'
+import { useTranslation } from 'react-i18next'
 
 export type TimeColumnProps = {
   start: number
@@ -19,6 +20,7 @@ const TimeColumn = ({
   value,
   isTimeColumnOpen,
 }: TimeColumnProps) => {
+  const { t } = useTranslation()
   const controlTop = () => {
     if (value !== end - 1) {
       setValue(value + 1)
@@ -48,6 +50,7 @@ const TimeColumn = ({
           classes.controlTimeTop,
           isTimeColumnOpen && classes.focusTimeColumnButton
         )}
+        aria-label={t('button.increase')}
       >
         <ButtonArrow />
       </BaseButton>
@@ -62,6 +65,7 @@ const TimeColumn = ({
           classes.controlTimeBottom,
           isTimeColumnOpen && classes.focusTimeColumnButton
         )}
+        aria-label={t('button.decrease')}
       >
         <ButtonArrow />
       </BaseButton>

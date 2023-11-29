@@ -108,6 +108,7 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
                   }
                   disabled={!isEnabled}
                   onClick={() => handleDelete(getValue())}
+                  aria-label={t('button.delete')}
                 >
                   <Delete />
                 </BaseButton>

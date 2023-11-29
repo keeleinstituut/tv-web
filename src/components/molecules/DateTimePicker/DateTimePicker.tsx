@@ -80,6 +80,7 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         </label>
         <div className={classes.innerWrapper}>
           <DatePickerInput
+            ariaLabel={t('label.date')}
             onChange={onChangeDate}
             name={`${name}.date`}
             placeholder={t('placeholder.date')}
@@ -91,6 +92,7 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
           <TimePickerInput
+            ariaLabel={t('label.time')}
             onChange={onChangeTime}
             name={`${name}.time`}
             value={value?.time}

@@ -46,7 +46,6 @@ const VendorsDatabase: FC = () => {
         <h1>{t('vendors.vendors_database')}</h1>
         <Tooltip helpSectionKey="vendorsDatabase" />
         <Button
-          href="/vendors"
           onClick={handleOpenVendorsEditModal}
           appearance={AppearanceTypes.Secondary}
           hidden={!includes(userPrivileges, Privileges.EditVendorDb)}
