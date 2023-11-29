@@ -1,14 +1,10 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { Control, UseFormGetValues } from 'react-hook-form'
-import {
-  ColumnDef,
-  createColumnHelper,
-  PaginationState,
-} from '@tanstack/react-table'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import {
   FormInput,
   InputTypes,
@@ -195,19 +191,12 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
     total: filteredData?.length,
   }
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
-
   return (
     <DataTable
       data={filteredData}
       columns={columns}
       tableSize={TableSizeTypes.L}
       paginationData={paginationData}
-      pagination={pagination}
-      setPagination={setPagination}
       hidePagination
       title={
         <div className={classes.pricesTitleContainer}>

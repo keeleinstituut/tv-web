@@ -1,12 +1,8 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import {
-  createColumnHelper,
-  ColumnDef,
-  PaginationState,
-} from '@tanstack/react-table'
+import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
@@ -27,11 +23,6 @@ const columnHelper = createColumnHelper<SubRowAuditLog>()
 
 const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
   const { t } = useTranslation()
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10000,
-  })
 
   const { event_type, event_parameters, event } = rowData || {}
   const isObjectLog = includes(event_type, 'OBJECT')
@@ -108,8 +99,6 @@ const LogsSubRowTable: FC<LogsSubRowTableProps> = ({ rowData }) => {
       columns={columns}
       className={classes.dataTable}
       tableSize={TableSizeTypes.S}
-      pagination={pagination}
-      setPagination={setPagination}
       hidePagination
     />
   )

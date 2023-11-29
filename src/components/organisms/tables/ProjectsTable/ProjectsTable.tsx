@@ -1,14 +1,10 @@
-import { FC, useEffect, useMemo, useCallback, useState, useRef } from 'react'
+import { FC, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, uniq, includes, find, isEmpty, intersection } from 'lodash'
-import {
-  createColumnHelper,
-  ColumnDef,
-  PaginationState,
-} from '@tanstack/react-table'
+import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -90,11 +86,6 @@ const ProjectsTable: FC = () => {
     label: t(`projects.status.${status}`),
     value: status,
   }))
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
 
   // TODO: remove default values, once we have actual data
   const projectRows = useMemo(
@@ -179,10 +170,6 @@ const ProjectsTable: FC = () => {
         only_show_personal_projects: payload?.only_show_personal_projects
           ? 1
           : 0,
-      })
-      setPagination({
-        pageIndex: 0,
-        pageSize: paginationData ? paginationData.per_page : 10,
       })
     },
     [handleFilterChange]
@@ -319,8 +306,6 @@ const ProjectsTable: FC = () => {
         onPaginationChange={handlePaginationChange}
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
-        pagination={pagination}
-        setPagination={setPagination}
         headComponent={
           <div className={classes.topSection}>
             <FormInput

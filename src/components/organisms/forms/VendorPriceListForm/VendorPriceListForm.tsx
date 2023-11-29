@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { chain, find, isEmpty, map, reduce, some } from 'lodash'
 import { Root } from '@radix-ui/react-form'
@@ -8,12 +8,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { useForm } from 'react-hook-form'
-import {
-  ColumnDef,
-  Row,
-  createColumnHelper,
-  PaginationState,
-} from '@tanstack/react-table'
+import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
 import { VendorFormProps } from 'components/organisms/forms/VendorForm/VendorForm'
 import VendorPriceManagementButton from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
@@ -96,11 +91,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     handlePaginationChange,
   } = useAllPricesFetch({
     vendor_id,
-  })
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
   })
 
   const priceListCreated = dayjs(
@@ -343,8 +333,6 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           }
           paginationData={paginationData}
           onPaginationChange={handlePaginationChange}
-          pagination={pagination}
-          setPagination={setPagination}
           title={
             <div className={classes.pricesDataTableHeader}>
               <h4>{t('vendors.vendor_price_list_title')}</h4>

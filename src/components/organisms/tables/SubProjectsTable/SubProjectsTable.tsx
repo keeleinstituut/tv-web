@@ -1,14 +1,10 @@
-import { FC, useEffect, useMemo, useCallback, useState } from 'react'
+import { FC, useEffect, useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, includes, find } from 'lodash'
-import {
-  createColumnHelper,
-  ColumnDef,
-  PaginationState,
-} from '@tanstack/react-table'
+import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -66,11 +62,6 @@ const SubProjectsTable: FC = () => {
     value: status,
   }))
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
-
   // TODO: remove hardcoded default values, once we have actual data
   const projectRows = useMemo(
     () =>
@@ -115,10 +106,6 @@ const SubProjectsTable: FC = () => {
         only_show_personal_projects: payload?.only_show_personal_projects
           ? 1
           : 0,
-      })
-      setPagination({
-        pageIndex: 0,
-        pageSize: paginationData ? paginationData.per_page : 10,
       })
     },
     [handleFilterChange]
@@ -232,8 +219,6 @@ const SubProjectsTable: FC = () => {
         onPaginationChange={handlePaginationChange}
         onFiltersChange={handleFilterChange}
         onSortingChange={handleSortingChange}
-        pagination={pagination}
-        setPagination={setPagination}
         headComponent={
           <div className={classes.topSection}>
             <FormInput

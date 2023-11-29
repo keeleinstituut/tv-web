@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { map, isEmpty } from 'lodash'
 import { CatJob } from 'types/projects'
 import { AssignmentType } from 'types/assignments'
@@ -13,11 +13,7 @@ import DataTable, {
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import classNames from 'classnames'
-import {
-  ColumnDef,
-  createColumnHelper,
-  PaginationState,
-} from '@tanstack/react-table'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 
 import classes from './classes.module.scss'
 interface FeatureCatJobProps<TFormValues extends FieldValues>
@@ -50,11 +46,6 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
   ext_id,
 }: FeatureCatJobProps<TFormValues>) => {
   const { t } = useTranslation()
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10000,
-  })
 
   const tableRows = useMemo(
     () =>
@@ -118,8 +109,6 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
         tableSize={TableSizeTypes.M}
         className={classes.tableContainer}
         hidden={isEmpty(subProjectCatJobs)}
-        pagination={pagination}
-        setPagination={setPagination}
         hidePagination
       />
     </div>

@@ -1,14 +1,10 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, uniq, includes, find } from 'lodash'
-import {
-  createColumnHelper,
-  ColumnDef,
-  PaginationState,
-} from '@tanstack/react-table'
+import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -76,11 +72,6 @@ const TasksTable: FC = () => {
     handleSortingChange,
     handlePaginationChange,
   } = useFetchTasks()
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
 
   // TODO: remove default values, once we have actual data
   const projectRows = useMemo(
@@ -288,8 +279,6 @@ const TasksTable: FC = () => {
         onPaginationChange={handlePaginationChange}
         onFiltersChange={handleFilterChange}
         onSortingChange={handleSortingChange}
-        pagination={pagination}
-        setPagination={setPagination}
         headComponent={
           <div className={classes.topSection}>
             {/* <FormInput

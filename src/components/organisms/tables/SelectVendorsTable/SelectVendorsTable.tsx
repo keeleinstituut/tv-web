@@ -5,12 +5,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, range, includes } from 'lodash'
-import {
-  ColumnDef,
-  createColumnHelper,
-  OnChangeFn,
-  PaginationState,
-} from '@tanstack/react-table'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
   FilterFunctionType,
@@ -66,8 +61,6 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   skill_id?: string
   selectedVendorsIds?: string[]
-  pagination: PaginationState
-  setPagination: OnChangeFn<PaginationState>
 }
 
 interface PricesTableRow {
@@ -99,8 +92,6 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   skill_id: taskSkillId,
   control,
   selectedVendorsIds,
-  pagination,
-  setPagination,
 }: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
   const { tagsFilters = [] } = useFetchTags({
@@ -378,8 +369,6 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
         onPaginationChange={handlePaginationChange}
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
-        pagination={pagination}
-        setPagination={setPagination}
         className={classes.tableContainer}
       />
     </Root>

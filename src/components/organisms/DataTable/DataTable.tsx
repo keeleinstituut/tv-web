@@ -22,7 +22,6 @@ import {
   Row,
   RowData,
   ColumnDef,
-  OnChangeFn,
 } from '@tanstack/react-table'
 import Container from 'components/atoms/Container/Container'
 import TablePagination from 'components/organisms/TablePagination/TablePagination'
@@ -76,8 +75,6 @@ type DataTableProps<TData extends RowData> = {
 
   columnOrder?: string[] | undefined
   subRowComponent?: (row: Row<TData>) => ReactElement
-  pagination: PaginationState
-  setPagination: OnChangeFn<PaginationState>
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -108,14 +105,25 @@ const DataTable = <TData,>(
     getRowStyles,
     columnOrder,
     subRowComponent,
-    pagination,
-    setPagination,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
   const [horizontalWrapperId] = useState(useId())
-  const { per_page, last_page } = paginationData || {}
+  const { per_page, last_page, current_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: hidePagination ? 10000 : per_page || 10,
+  })
+
+  useEffect(() => {
+    if (current_page && current_page - 1 < pagination.pageIndex) {
+      setPagination({
+        pageIndex: 0,
+        pageSize: paginationData ? paginationData.per_page : 10,
+      })
+    }
+  }, [current_page])
 
   useEffect(() => {
     if (onPaginationChange) {
@@ -169,8 +177,6 @@ const DataTable = <TData,>(
               table={table}
               onSortingChange={onSortingChange}
               onFiltersChange={onFiltersChange}
-              setPagination={setPagination}
-              per_page={per_page}
             />
             <tbody>
               {table.getRowModel().rows.map((row) => (

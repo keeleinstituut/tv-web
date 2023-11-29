@@ -31,7 +31,6 @@ import { useCreateVendors, useDeleteVendors } from 'hooks/requests/useVendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
-import { PaginationState } from '@tanstack/react-table'
 
 export interface VendorsEditModalProps {
   isModalOpen?: boolean
@@ -63,11 +62,6 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const { users, paginationData, handlePaginationChange, handleFilterChange } =
     useFetchUsers(initialFilters, true)
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
-
   const resetSearch = () => {
     setSearchValue('')
     handleFilterChange({ fullname: '' })
@@ -77,10 +71,6 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
       debounce(handleFilterChange, 300)({ fullname: event.target.value })
-      setPagination({
-        pageIndex: 0,
-        pageSize: paginationData ? paginationData.per_page : 10,
-      })
     },
     [handleFilterChange]
   )
@@ -214,8 +204,6 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
           {...{
             paginationData,
             handlePaginationChange,
-            pagination,
-            setPagination,
           }}
         />
       </Root>

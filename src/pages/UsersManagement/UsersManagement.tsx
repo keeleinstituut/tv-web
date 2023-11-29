@@ -13,7 +13,6 @@ import { Privileges } from 'types/privileges'
 import { UserStatus } from 'types/users'
 import Loader from 'components/atoms/Loader/Loader'
 import TextInput from 'components/molecules/TextInput/TextInput'
-import { PaginationState } from '@tanstack/react-table'
 
 const UsersManagement: FC = () => {
   const initialFilters = {
@@ -31,11 +30,6 @@ const UsersManagement: FC = () => {
   const { userPrivileges } = useAuth()
   const { downloadCSV, isLoading } = useDownloadUsers()
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: paginationData ? paginationData.per_page : 10,
-  })
-
   const handleDownloadFile = () => {
     downloadCSV()
   }
@@ -46,10 +40,6 @@ const UsersManagement: FC = () => {
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
       debounce(handleFilterChange, 300)({ fullname: event.target.value })
-      setPagination({
-        pageIndex: 0,
-        pageSize: paginationData ? paginationData.per_page : 10,
-      })
     },
     [handleFilterChange]
   )
@@ -99,8 +89,6 @@ const UsersManagement: FC = () => {
           handleFilterChange={handleFilterChange}
           handleSortingChange={handleSortingChange}
           handlePaginationChange={handlePaginationChange}
-          pagination={pagination}
-          setPagination={setPagination}
         />
       </Root>
     </>

@@ -6,12 +6,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { map, join, includes } from 'lodash'
-import {
-  createColumnHelper,
-  ColumnDef,
-  PaginationState,
-  OnChangeFn,
-} from '@tanstack/react-table'
+import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -46,8 +41,6 @@ type AddedUsersProps = {
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
-  pagination: PaginationState
-  setPagination: OnChangeFn<PaginationState>
 }
 
 const AddedUsersTable: FC<AddedUsersProps> = ({
@@ -57,8 +50,6 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
-  pagination,
-  setPagination,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
@@ -161,8 +152,6 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
       onPaginationChange={handlePaginationChange}
       onFiltersChange={handleFilterChange}
       onSortingChange={handleSortingChange}
-      pagination={pagination}
-      setPagination={setPagination}
       pageSizeOptions={[
         { label: '10', value: '10' },
         { label: '50', value: '50' },

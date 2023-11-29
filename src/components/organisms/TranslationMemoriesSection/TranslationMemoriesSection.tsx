@@ -1,4 +1,4 @@
-import { useCallback, useMemo, FC, useState } from 'react'
+import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import {
@@ -9,11 +9,7 @@ import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { Control, FieldValues, Path } from 'react-hook-form'
 import classNames from 'classnames'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import {
-  ColumnDef,
-  createColumnHelper,
-  PaginationState,
-} from '@tanstack/react-table'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -132,11 +128,6 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   const filteredData = filter(translationMemories, ({ id }) =>
     includes(tmIds, id)
   )
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10000,
-  })
 
   const selectedTMs = useMemo(
     () =>
@@ -308,8 +299,6 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         columns={columns}
         tableSize={TableSizeTypes.M}
         className={classes.translationMemoriesTable}
-        pagination={pagination}
-        setPagination={setPagination}
         hidePagination
       />
     </ExpandableContentContainer>

@@ -1,14 +1,10 @@
-import { useCallback, useMemo, FC, useState } from 'react'
+import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map, size } from 'lodash'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { ReactComponent as HorizontalDots } from 'assets/icons/horizontal_dots.svg'
 import classNames from 'classnames'
-import {
-  ColumnDef,
-  createColumnHelper,
-  PaginationState,
-} from '@tanstack/react-table'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -69,11 +65,6 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile()
   const { downloadTranslatedFile } = useDownloadTranslatedFile()
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10000,
-  })
 
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
@@ -202,8 +193,6 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         columns={columns}
         tableSize={TableSizeTypes.M}
         className={classes.filesListContainer}
-        pagination={pagination}
-        setPagination={setPagination}
         hidePagination
         headComponent={
           <div className={classes.titleRow}>

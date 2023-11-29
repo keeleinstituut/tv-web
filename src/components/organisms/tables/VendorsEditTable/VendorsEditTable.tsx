@@ -4,12 +4,7 @@ import classes from './classes.module.scss'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import {
-  ColumnDef,
-  createColumnHelper,
-  OnChangeFn,
-  PaginationState,
-} from '@tanstack/react-table'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { FormInput } from 'components/organisms/DynamicForm/DynamicForm'
 import { InputTypes } from 'components/organisms/DynamicInputComponent/DynamicInputComponent'
 import { Control } from 'react-hook-form'
@@ -20,8 +15,6 @@ export interface VendorsEditProps {
   control: Control
   handlePaginationChange?: (value?: PaginationFunctionType) => void
   paginationData?: ResponseMetaTypes
-  pagination: PaginationState
-  setPagination: OnChangeFn<PaginationState>
 }
 
 export type VendorUser = {
@@ -38,8 +31,6 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
   control,
   paginationData,
   handlePaginationChange,
-  pagination,
-  setPagination,
 }) => {
   const { t } = useTranslation()
 
@@ -90,8 +81,6 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
       hidePaginationSelectionInput
       paginationData={paginationData}
       onPaginationChange={handlePaginationChange}
-      pagination={pagination}
-      setPagination={setPagination}
     />
   )
 }
