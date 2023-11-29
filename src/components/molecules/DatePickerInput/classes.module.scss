@@ -12,6 +12,12 @@
   fill: $color-input-border;
 }
 
+
+
+:global(.react-datepicker__input-container) input:disabled {
+  cursor: not-allowed;
+}
+
 :global(.react-datepicker__input-container) input {
   width: 100%;
   display: block;

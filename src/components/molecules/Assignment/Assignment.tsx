@@ -24,7 +24,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { DiscountPercentageNames, DiscountPercentages } from 'types/vendors'
 import { Price } from 'types/price'
-import TaskCandidatesSection from 'components/molecules/TaskCandidatesSection/TaskCandidatesSection'
+import AssignmentCandidatesSection from 'components/molecules/AssignmentCandidatesSection/AssignmentCandidatesSection'
 import { VolumeValue } from 'types/volumes'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -52,6 +52,7 @@ interface AssignmentProps extends AssignmentType {
   volumes?: VolumeValue[]
   project: ListProject
   subProjectDeadline?: string
+  isEditable?: boolean
 }
 
 interface FormValues {
@@ -83,6 +84,7 @@ const Assignment: FC<AssignmentProps> = ({
   event_start_at,
   status,
   subProjectDeadline,
+  isEditable,
 }) => {
   const { t } = useTranslation()
   const { completeAssignment, isLoading: isCompletingAssignment } =
@@ -266,7 +268,7 @@ const Assignment: FC<AssignmentProps> = ({
         minDate: new Date(),
         maxDate: dayjs(subProjectDeadline).toDate(),
         onDateTimeChange: handleAddDateTime,
-        // onlyDisplay: !isEditable,
+        disabled: !isEditable,
       },
       {
         inputType: InputTypes.DateTime,
@@ -277,7 +279,7 @@ const Assignment: FC<AssignmentProps> = ({
         name: 'event_start_at',
         minDate: new Date(),
         maxDate: dayjs(subProjectDeadline).toDate(),
-        // onlyDisplay: !isEditable,
+        disabled: !isEditable,
       },
       {
         inputType: InputTypes.Text,
@@ -289,7 +291,7 @@ const Assignment: FC<AssignmentProps> = ({
         className: classes.inputInternalPosition,
         isTextarea: true,
         handleOnBlur: handleAddComment,
-        // onlyDisplay: !isEditable,
+        disabled: !isEditable,
       },
       {
         inputType: InputTypes.AddVolume,
@@ -304,7 +306,7 @@ const Assignment: FC<AssignmentProps> = ({
         value: volumes,
         assignmentId: id,
         sub_project_id,
-        // onlyDisplay: !isEditable,
+        disabled: !isEditable,
       },
       {
         inputType: InputTypes.Text,
@@ -314,13 +316,14 @@ const Assignment: FC<AssignmentProps> = ({
         name: 'vendor_comments',
         className: classes.inputInternalPosition,
         isTextarea: true,
-        onlyDisplay: !isVendorView,
+        onlyDisplay: !isVendorView || !isEditable,
       },
     ],
     [
       t,
       subProjectDeadline,
       handleAddDateTime,
+      isEditable,
       shouldShowStartTimeFields,
       id,
       handleAddComment,
@@ -390,7 +393,7 @@ const Assignment: FC<AssignmentProps> = ({
         />
       </div>
       <div>
-        <TaskCandidatesSection
+        <AssignmentCandidatesSection
           {...{
             id,
             job_definition,
@@ -398,6 +401,7 @@ const Assignment: FC<AssignmentProps> = ({
             candidates,
             assignee_id: assignee?.id,
             finished_at,
+            isEditable,
           }}
         />
       </div>
@@ -407,7 +411,7 @@ const Assignment: FC<AssignmentProps> = ({
           children={t('button.send_to_previous_task')}
           onClick={sendToPreviousAssignment}
           hidden={feature !== SubProjectFeatures.JobOverview}
-          // disabled={isLoading}
+          disabled={!isEditable}
         />
         <Button
           children={t('button.mark_as_finished')}
