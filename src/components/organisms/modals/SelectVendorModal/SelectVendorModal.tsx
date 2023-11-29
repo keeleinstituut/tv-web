@@ -138,7 +138,6 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
     ],
     ...(skill_id ? { skill_id: [skill_id] } : {}),
   })
-  const { per_page } = paginationData || {}
 
   const {
     control,
