@@ -6,7 +6,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { useTranslation } from 'react-i18next'
 
 import { VolumeValue } from 'types/volumes'
-import { useAssignmentRemoveVolume } from 'hooks/requests/useAssignments'
+import { useAssignmentRemoveVolume } from 'hooks/requests/useVolumes'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 

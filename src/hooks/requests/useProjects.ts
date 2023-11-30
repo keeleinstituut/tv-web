@@ -13,6 +13,7 @@ import {
   CancelProjectPayload,
   CatProjectStatus,
   SubProjectDetail,
+  ProjectDetail,
 } from 'types/projects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -405,4 +406,13 @@ export const useSubProjectCache = (
   const subProject = subProjectCache?.data
 
   return subProject
+}
+
+export const useProjectCache = (id?: string): ProjectDetail | undefined => {
+  const queryClient = useQueryClient()
+  const projectCache: { data: ProjectDetail } | undefined =
+    queryClient.getQueryData(['projects', id])
+  const project = projectCache?.data
+
+  return project
 }

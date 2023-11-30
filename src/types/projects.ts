@@ -206,7 +206,7 @@ export interface ListProject {
   event_start_at?: string
 }
 
-export interface DetailedProject extends ListProject {
+export interface ProjectDetail extends ListProject {
   help_files: SourceFile[] // might be different type
   source_files: SourceFile[]
   client_institution_user: UserType
@@ -245,7 +245,7 @@ export interface SubProjectsResponse {
   meta: ResponseMetaTypes
 }
 export interface ProjectResponse {
-  data: DetailedProject
+  data: ProjectDetail
 }
 
 export interface SubProjectResponse {

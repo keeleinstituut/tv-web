@@ -88,6 +88,17 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
     status === ProjectStatus.Rejected &&
     correctingTaskExists
 
+  const canReassignProject =
+    includes(
+      [
+        ProjectStatus.Corrected,
+        ProjectStatus.Registered,
+        ProjectStatus.SubmittedToClient,
+        ProjectStatus.Rejected,
+      ],
+      status
+    ) && includes(userPrivileges, Privileges.ManageProject)
+
   // Button functionalities
   const openConfirmCancelModal = useCallback(() => {
     showModal(ModalTypes.ConfirmCancelProject, {
@@ -105,6 +116,12 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
       })),
     })
   }, [projectId, sub_projects, tasks])
+
+  const openReassignmentModal = useCallback(() => {
+    showModal(ModalTypes.ReassignProject, {
+      projectId,
+    })
+  }, [projectId])
 
   const handleAcceptProject = useCallback(async () => {
     try {
@@ -147,8 +164,8 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
         children={t('button.delegate_to_other_manager')}
         // TODO: disabled for now, we don't have endpoint for this
         // open confirmation modal from here
-        disabled
-        // hidden={!includes(userPrivileges, Privileges.ManageProject)}
+        onClick={openReassignmentModal}
+        hidden={!canReassignProject}
       />
       {/* Reject button */}
       <Button

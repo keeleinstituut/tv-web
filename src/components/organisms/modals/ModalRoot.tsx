@@ -27,6 +27,7 @@ import { ConfirmCancelProjectModalProps } from './ConfirmCancelProjectModal/Conf
 import { ConfirmRejectProjectModalProps } from './ConfirmRejectProjectModal/ConfirmRejectProjectModal'
 import { ConfirmTmWritableModalProps } from './ConfirmTmWritableModal/ConfirmTmWritableModal'
 import { ConfirmAssignmentCompletionModalProps } from './ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal'
+import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjectModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -95,6 +96,10 @@ const ConfirmAssignmentCompletionModal = lazy(
     )
 )
 
+const ReassignProjectModal = lazy(
+  () => import('./ReassignProjectModal/ReassignProjectModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -117,6 +122,7 @@ export enum ModalTypes {
   ConfirmRejectProject = 'confirmRejectProject',
   ConfirmTmWritable = 'confirmTmWritable',
   ConfirmAssignmentCompletion = 'confirmAssignmentCompletion',
+  ReassignProject = 'reassignProjectModal',
 }
 
 // Add other modal props types here as well
@@ -141,6 +147,7 @@ type ModalPropTypes =
   | Omit<ConfirmRejectProjectModalProps, 'closeModal'>
   | Omit<ConfirmTmWritableModalProps, 'closeModal'>
   | Omit<ConfirmAssignmentCompletionModalProps, 'closeModal'>
+  | Omit<ReassignProjectModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -164,6 +171,7 @@ const MODALS = {
   [ModalTypes.ConfirmRejectProject]: ConfirmRejectProjectModal,
   [ModalTypes.ConfirmTmWritable]: ConfirmTmWritableModal,
   [ModalTypes.ConfirmAssignmentCompletion]: ConfirmAssignmentCompletionModal,
+  [ModalTypes.ReassignProject]: ReassignProjectModal,
 }
 
 interface RefType {
