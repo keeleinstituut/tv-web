@@ -210,6 +210,7 @@ const DropdownContentComponent = forwardRef<
         className={classes.searchInput}
         loading={loading}
         isSearch
+        autoFocus={showSearch && isOpen}
       />
 
       <ul ref={scrollContainer}>
@@ -229,7 +230,7 @@ const DropdownContentComponent = forwardRef<
                   value={isMultiSelected || false}
                   className={classes.option}
                   onChange={() => handleMultipleSelect(option?.value)}
-                  autoFocus={isOpen && index === 0}
+                  autoFocus={!showSearch && isOpen && index === 0}
                 />
               )}
               <Button
@@ -240,7 +241,7 @@ const DropdownContentComponent = forwardRef<
                 hidden={multiple}
                 appearance={AppearanceTypes.Text}
                 onClick={() => handleSingleSelect(option?.value)}
-                autoFocus={isOpen && index === 0}
+                autoFocus={!showSearch && isOpen && index === 0}
               >
                 {option?.label}
               </Button>
