@@ -8,6 +8,7 @@ import {
   createRef,
   useImperativeHandle,
   Suspense,
+  useEffect,
 } from 'react'
 import { FormProgressProps } from './FormProgressModal/FormProgressModal'
 import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
@@ -185,6 +186,7 @@ const ModalRoot = () => {
   const [isModalOpen, setIsOpen] = useState(false)
   const [currentModalProps, setCurrentModalProps] = useState<ModalPropTypes>({})
   const [currentModalKey, setCurrentModalKey] = useState<ModalTypes>()
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
   // TODO: figure out how to improve typescript here
   // so that every modal would accepts only their own props
@@ -196,10 +198,41 @@ const ModalRoot = () => {
     },
     [setCurrentModalProps, setIsOpen]
   )
+  const removeFocusClass = useCallback(() => {
+    if (!!focusElement && !!document.querySelector('.last-focus')) {
+      focusElement?.classList.remove('last-focus')
+      focusElement?.focus()
+    }
+  }, [focusElement])
 
   const closeModal = useCallback(() => {
     setIsOpen(false)
-  }, [setIsOpen])
+    setTimeout(removeFocusClass, 300)
+    setTimeout(setFocusElement, 500, null)
+  }, [setIsOpen, removeFocusClass])
+
+  const handleButtonClick = useCallback(
+    (event: Event) => {
+      if (!document.querySelector('.last-focus') && isModalOpen) {
+        const target = event?.target as HTMLElement
+        target.classList.add('last-focus')
+        setFocusElement(target)
+      }
+    },
+    [isModalOpen]
+  )
+
+  useEffect(() => {
+    document.addEventListener('click', function (event) {
+      const target = event?.target as HTMLElement
+      if (target?.nodeName === 'BUTTON') {
+        handleButtonClick(event)
+      }
+    })
+    return () => {
+      document.removeEventListener('click', handleButtonClick)
+    }
+  }, [handleButtonClick])
 
   useImperativeHandle(
     modalRef,

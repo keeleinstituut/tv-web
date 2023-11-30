@@ -10,10 +10,11 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
   const [filters, setFilters] = useState<TFilters | object>(
     initialFilters || {}
   )
+  const page = 1
 
   const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {
-      setFilters(pickBy({ ...filters, ...value }, (val) => !!val))
+      setFilters(pickBy({ ...filters, ...value, page }, (val) => !!val))
     },
     [filters]
   )
@@ -23,9 +24,9 @@ const useFilters = <TFilters>(initialFilters?: TFilters) => {
       if (!value?.sort_order) {
         const sortingKeys = keys(value)
         const filtersWithOutSorting = filters ? omit(filters, sortingKeys) : {}
-        setFilters({ ...filtersWithOutSorting })
+        setFilters({ ...filtersWithOutSorting, page })
       } else {
-        setFilters({ ...filters, ...value })
+        setFilters({ ...filters, ...value, page })
       }
     },
     [filters]

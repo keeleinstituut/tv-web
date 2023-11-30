@@ -161,7 +161,11 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
       header: '',
       cell: ({ getValue }) => {
         return (
-          <BaseButton onClick={() => handleDelete(getValue())}>
+          <BaseButton
+            onClick={() => handleDelete(getValue())}
+            className={classes.deleteButton}
+            aria-label={t('button.delete')}
+          >
             <Delete />
           </BaseButton>
         )
@@ -191,7 +195,11 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
             <Fragment key={fileUrl || index}>
               <label className={classes.fileName}>{file.name}</label>
               <span>{updatedAt}</span>
-              <BaseButton onClick={() => handleDownload(index)}>
+              <BaseButton
+                onClick={() => handleDownload(index)}
+                className={classes.button}
+                aria-label={t('button.download')}
+              >
                 <DownloadFilled />
               </BaseButton>
             </Fragment>

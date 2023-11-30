@@ -137,6 +137,7 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
       </span>
       <span className={classes.blue}> {dayTimeRange}</span>
       <Button
+        ariaLabel={t('institution.working_times')}
         appearance={AppearanceTypes.Text}
         size={SizeTypes.S}
         className={classes.editButton}

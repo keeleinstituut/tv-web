@@ -3,32 +3,33 @@
 
 .expandableContainer {
   margin-top: spacing(8);
-  .downloadButton {
-    svg {
-      path {
-        fill: $color-primary;
-      }
+}
+.errorTooltip {
+  svg {
+    path {
+      fill: $color-error;
     }
   }
-  
-  .errorTooltip {
-    svg {
-      path {
-        fill: $color-error;
-      }
-    }
-  }
+}
 
-  .translationMemoriesTable {
-    border: unset;
-    box-shadow: unset;
-  }
+.translationMemoriesTable {
+  border: unset;
+  box-shadow: unset;
+}
 
-  .mainButton {
-    margin-left: spacing(2);
-  }
+.mainButton {
+  margin-left: spacing(2);
 }
 
 .headerTooltip {
   margin-left: spacing(2);
+}
+
+.iconButton {
+  display: flex;
+  padding: spacing(1);
+
+  &:focus {
+    box-shadow: inset 0 0 0 2px $color-error;
+  }
 }

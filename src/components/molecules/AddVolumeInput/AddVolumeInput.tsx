@@ -78,10 +78,18 @@ const VolumeRow: FC<VolumeRowProps> = ({
       <span>{`${Number(unit_quantity)} ${t(
         `label.${apiTypeToKey(unit_type)}`
       )}${cat_job ? ` ${t('task.open_in_cat')}` : ''}`}</span>
-      <BaseButton onClick={onEditClick} className={classes.editButton}>
+      <BaseButton
+        onClick={onEditClick}
+        className={classes.editButton}
+        aria-label={t('button.edit')}
+      >
         <Edit className={classes.editIcon} />
       </BaseButton>
-      <BaseButton onClick={onDeleteClick} className={classes.deleteButton}>
+      <BaseButton
+        onClick={onDeleteClick}
+        className={classes.deleteButton}
+        aria-label={t('button.delete')}
+      >
         <Delete className={classes.deleteIcon} />
       </BaseButton>
     </div>

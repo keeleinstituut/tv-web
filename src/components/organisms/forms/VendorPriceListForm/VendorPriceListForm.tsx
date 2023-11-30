@@ -79,6 +79,8 @@ const LanguageDirectionCell: FC<LanguageDirectionCellProps> = ({ row }) => {
   )
 }
 
+const columnHelper = createColumnHelper<PriceObject>()
+
 const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
 
@@ -232,91 +234,102 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     resetForm()
   }, [resetForm])
 
-  const columnHelper = createColumnHelper<PriceObject>()
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('language_direction', {
+        header: () => t('vendors.language_direction'),
+        cell: ({ row }) => <LanguageDirectionCell row={row} />,
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor('skill_id', {
+        header: () => t('vendors.skill'),
+        cell: ({ getValue }) => {
+          const skillName = skillsData?.find((skill) => skill.id === getValue())
+          return <p>{skillName?.name}</p>
+        },
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor('character_fee', {
+        header: () => t('vendors.character_fee'),
+        cell: ({ getValue }) =>
+          getValue() !== undefined ? `${getValue()}€` : null,
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor('word_fee', {
+        header: () => t('vendors.word_fee'),
+        cell: ({ getValue }) =>
+          getValue() !== undefined ? `${getValue()}€` : null,
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor('page_fee', {
+        header: () => t('vendors.page_fee'),
+        cell: ({ getValue }) =>
+          getValue() !== undefined ? `${getValue()}€` : null,
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor('minute_fee', {
+        header: () => t('vendors.minute_fee'),
+        cell: ({ getValue }) =>
+          getValue() !== undefined ? `${getValue()}€` : null,
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor('hour_fee', {
+        header: () => t('vendors.hour_fee'),
+        cell: ({ getValue }) =>
+          getValue() !== undefined ? `${getValue()}€` : null,
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor('minimal_fee', {
+        header: () => t('vendors.minimal_fee'),
+        cell: ({ getValue }) =>
+          getValue() !== undefined ? `${getValue()}€` : null,
+        footer: (info) => info.column.id,
+      }),
+      columnHelper.accessor('id', {
+        header: () => <></>,
+        cell: ({ row }) => {
+          const languageDirectionKey = row.original.language_direction_key || ''
+          const skillId = row.original.skill_id || ''
+          const subRowsIds = map(row.original.subRows, ({ id }) => id)
+          const languagePairIds = skillId ? [row.original.id] : subRowsIds
+          const defaultLanguagePairValues =
+            defaultFormValues[languageDirectionKey]
 
-  const columns = [
-    columnHelper.accessor('language_direction', {
-      header: () => t('vendors.language_direction'),
-      cell: ({ row }) => <LanguageDirectionCell row={row} />,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('skill_id', {
-      header: () => t('vendors.skill'),
-      cell: ({ getValue }) => {
-        const skillName = skillsData?.find((skill) => skill.id === getValue())
-        return <p>{skillName?.name}</p>
-      },
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('character_fee', {
-      header: () => t('vendors.character_fee'),
-      cell: ({ getValue }) =>
-        getValue() !== undefined ? `${getValue()}€` : null,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('word_fee', {
-      header: () => t('vendors.word_fee'),
-      cell: ({ getValue }) =>
-        getValue() !== undefined ? `${getValue()}€` : null,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('page_fee', {
-      header: () => t('vendors.page_fee'),
-      cell: ({ getValue }) =>
-        getValue() !== undefined ? `${getValue()}€` : null,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('minute_fee', {
-      header: () => t('vendors.minute_fee'),
-      cell: ({ getValue }) =>
-        getValue() !== undefined ? `${getValue()}€` : null,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('hour_fee', {
-      header: () => t('vendors.hour_fee'),
-      cell: ({ getValue }) =>
-        getValue() !== undefined ? `${getValue()}€` : null,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('minimal_fee', {
-      header: () => t('vendors.minimal_fee'),
-      cell: ({ getValue }) =>
-        getValue() !== undefined ? `${getValue()}€` : null,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('id', {
-      header: () => <></>,
-      cell: ({ row }) => {
-        const languageDirectionKey = row.original.language_direction_key || ''
-        const skillId = row.original.skill_id || ''
-        const subRowsIds = map(row.original.subRows, ({ id }) => id)
-        const languagePairIds = skillId ? [row.original.id] : subRowsIds
-        const defaultLanguagePairValues =
-          defaultFormValues[languageDirectionKey]
-
-        return (
-          <div className={classes.iconsContainer}>
-            <VendorPriceManagementButton
-              languageDirectionKey={languageDirectionKey}
-              skillId={skillId}
-              control={control}
-              handleSubmit={handleSubmit}
-              vendorId={vendor_id}
-              resetForm={resetForm}
-              setError={setError}
-              defaultLanguagePairValues={defaultLanguagePairValues}
-              getValues={getValues}
-            />
-            <DeleteVendorPriceButton
-              languagePairIds={languagePairIds}
-              vendorId={vendor_id}
-            />
-          </div>
-        )
-      },
-    }),
+          return (
+            <div className={classes.iconsContainer}>
+              <VendorPriceManagementButton
+                languageDirectionKey={languageDirectionKey}
+                skillId={skillId}
+                control={control}
+                handleSubmit={handleSubmit}
+                vendorId={vendor_id}
+                resetForm={resetForm}
+                setError={setError}
+                defaultLanguagePairValues={defaultLanguagePairValues}
+                getValues={getValues}
+              />
+              <DeleteVendorPriceButton
+                languagePairIds={languagePairIds}
+                vendorId={vendor_id}
+              />
+            </div>
+          )
+        },
+      }),
+    ],
+    [
+      control,
+      defaultFormValues,
+      getValues,
+      handleSubmit,
+      resetForm,
+      setError,
+      skillsData,
+      t,
+      vendor_id,
+    ]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ] as ColumnDef<any>[]
+  ) as ColumnDef<any>[]
 
   return (
     <>

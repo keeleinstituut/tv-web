@@ -58,6 +58,7 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
           children: cancelButtonContent || t('button.no'),
           disabled: cancelButtonDisabled,
           size: SizeTypes.M,
+          autoFocus: true,
           onClick: () => {
             if (handleCancel) {
               handleCancel()

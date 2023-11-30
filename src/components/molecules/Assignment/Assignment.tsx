@@ -366,6 +366,7 @@ const Assignment: FC<AssignmentProps> = ({
             hidden={index === 0}
             onClick={handleDeleteAssignment}
             loading={isDeletingAssignment}
+            aria-label={t('button.delete')}
           >
             <Delete />
           </BaseButton>

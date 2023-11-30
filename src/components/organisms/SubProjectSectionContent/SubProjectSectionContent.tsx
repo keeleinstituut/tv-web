@@ -160,6 +160,7 @@ const FilesSection: FC<FilesSectionProps> = ({ files, id }) => {
         <BaseButton
           className={classes.iconButton}
           onClick={() => handleDownload(getValue())}
+          aria-label={t('button.download')}
         >
           <DownloadFilled />
         </BaseButton>

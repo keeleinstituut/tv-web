@@ -10,4 +10,9 @@
 
 .container {
   display: flex;
+
+  &:focus {
+    border-radius: $border-radius-20;
+    box-shadow: inset 0 0 0 2px $color-navigation-icon;
+  }
 }

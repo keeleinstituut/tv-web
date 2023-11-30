@@ -210,11 +210,12 @@ const DropdownContentComponent = forwardRef<
         className={classes.searchInput}
         loading={loading}
         isSearch
+        autoFocus={showSearch && isOpen}
       />
 
       <ul ref={scrollContainer}>
         <EmptyContent hidden={!isEmpty(visibleOptions)} />
-        {map(visibleOptions, (option) => {
+        {map(visibleOptions, (option, index) => {
           const isMultiSelected =
             selectedValue && includes(selectedValue, option?.value)
           const isSingleSelected = value && includes(value, option?.value)
@@ -229,6 +230,7 @@ const DropdownContentComponent = forwardRef<
                   value={isMultiSelected || false}
                   className={classes.option}
                   onChange={() => handleMultipleSelect(option?.value)}
+                  autoFocus={!showSearch && isOpen && index === 0}
                 />
               )}
               <Button
@@ -239,6 +241,7 @@ const DropdownContentComponent = forwardRef<
                 hidden={multiple}
                 appearance={AppearanceTypes.Text}
                 onClick={() => handleSingleSelect(option?.value)}
+                autoFocus={!showSearch && isOpen && index === 0}
               >
                 {option?.label}
               </Button>

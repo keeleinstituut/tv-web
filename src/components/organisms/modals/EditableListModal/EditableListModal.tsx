@@ -174,6 +174,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
       { name, id },
     ])
     setTimeout(() => resetField(fieldName), 100)
+    document.getElementById('focusButton')?.focus()
   }
 
   useEffect(() => {
@@ -289,6 +290,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
           appearance: AppearanceTypes.Secondary,
           children: t('button.cancel'),
           size: SizeTypes.M,
+          id: 'focusButton',
           onClick: () => {
             resetForm()
             closeModal()
