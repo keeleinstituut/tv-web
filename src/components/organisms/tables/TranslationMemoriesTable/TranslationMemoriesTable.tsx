@@ -20,7 +20,6 @@ import {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import Tag from 'components/atoms/Tag/Tag'
-import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { TMType, TranslationMemoryFilters } from 'types/translationMemories'
@@ -55,7 +54,6 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   initialFilters,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
   const { translationMemories = [], handleFilterChange } =
     useFetchTranslationMemories(initialFilters)
   const [searchValue, setSearchValue] = useState<string>('')
