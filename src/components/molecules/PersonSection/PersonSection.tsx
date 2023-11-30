@@ -95,8 +95,7 @@ const PersonSection = <TFormValues extends FieldValues>({
   // Pass search as a param and fetch again
   const handleSearchUsers = useCallback(
     (newValue: string) => {
-      // TODO: not sure yet whether filtering param will be name
-      handleFilterChange({ name: newValue })
+      handleFilterChange({ fullname: newValue })
     },
     [handleFilterChange]
   )
