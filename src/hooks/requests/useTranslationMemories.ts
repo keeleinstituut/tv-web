@@ -232,9 +232,10 @@ export const useFetchTranslationMemorySubProjects = ({
   const { isLoading, isError, isFetching, data } =
     useQuery<SubProjectsResponse>({
       enabled: !!id,
-      queryKey: ['tm-subProjects', id],
+      queryKey: ['tm-subProjects', id, filters],
       queryFn: () =>
         apiClient.get(`${endpoints.TM_SUB_PROJECTS}/${id}`, filters),
+      keepPreviousData: true,
     })
 
   const { meta: paginationData, data: subProjects } = data || {}
