@@ -209,10 +209,6 @@ export interface ListProject {
   client_institution_user?: UserType
   manager_institution_user?: UserType
 }
-
-export interface ProjectDetail extends ListProject {
-  manager_institution_user?: UserType
-}
 export interface DetailedProject extends ListProject {
   translation_domain_classifier_value: ClassifierValue
   event_start_at?: string
@@ -248,7 +244,7 @@ export interface SubProjectsResponse {
   meta: ResponseMetaTypes
 }
 export interface ProjectResponse {
-  data: ProjectDetail
+  data: DetailedProject
 }
 
 export interface SubProjectResponse {

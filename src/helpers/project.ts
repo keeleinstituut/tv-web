@@ -1,6 +1,6 @@
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
 import { filter, find, isEmpty, map, uniq, compact } from 'lodash'
-import { ProjectDetail, SourceFile } from 'types/projects'
+import { DetailedProject, SourceFile } from 'types/projects'
 
 import dayjs from 'dayjs'
 import { ClassifierValue, HelperFileTypes } from 'types/classifierValues'
@@ -14,7 +14,7 @@ export const getProjectDefaultValues = ({
 }: {
   institutionUserId: string
   isNew: boolean
-  project?: ProjectDetail
+  project?: DetailedProject
   defaultDomainClassifier?: ClassifierValue
   defaultProjectTypeClassifier?: ClassifierValue
 }) => {

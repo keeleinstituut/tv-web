@@ -13,7 +13,6 @@ import { useCreateProject, useUpdateProject } from 'hooks/requests/useProjects'
 import { join, map, includes, isEmpty, pick, keys, compact, find } from 'lodash'
 import { getUtcDateStringFromLocalDateObject } from 'helpers'
 import {
-  ProjectDetail,
   NewProjectPayload,
   SourceFile,
   ProjectStatus,
@@ -126,7 +125,6 @@ interface ProjectDetailsProps {
   mode?: ProjectDetailModes
   project?: DetailedProject
   className?: string
-  // project?: ProjectDetail
 }
 
 const ProjectDetails: FC<ProjectDetailsProps> = ({
