@@ -207,6 +207,7 @@ export interface ListProject {
   help_files?: SourceFile[] // might be different type
   source_files?: SourceFile[]
   client_institution_user?: UserType
+  manager_institution_user?: UserType
 }
 
 export interface ProjectDetail extends ListProject {
