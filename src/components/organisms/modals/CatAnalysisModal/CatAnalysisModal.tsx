@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { CatAnalysis, SourceFile } from 'types/projects'
-import { chain, map, zip, join, reduce } from 'lodash'
+import { chain, map, zip, reduce } from 'lodash'
 import ModalBase, {
   ButtonPositionTypes,
   ModalSizeTypes,

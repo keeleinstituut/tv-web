@@ -43,7 +43,6 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
   isEditable,
 }) => {
   const { t } = useTranslation()
-
   const { deleteAssignmentVendor } = useAssignmentRemoveVendor({
     id,
   })
