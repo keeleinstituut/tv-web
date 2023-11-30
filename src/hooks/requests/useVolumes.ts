@@ -52,6 +52,41 @@ const getNewSubProjectWithAssignment = (
   return { data: newData }
 }
 
+const getNewSubProjectWithoutVolume = (
+  volumeId?: string,
+  oldData?: SubProjectResponse
+) => {
+  const { data: previousData } = oldData || {}
+  if (!previousData) return oldData
+
+  const existingAssignment = find(previousData.assignments, (volumes) =>
+    find(volumes, { id: volumeId })
+  )
+
+  const typedExistingAssignment = existingAssignment as AssignmentType
+
+  const newVolumes = filter(
+    typedExistingAssignment?.volumes,
+    ({ id }) => id !== volumeId
+  )
+
+  const newAssignments = map(previousData.assignments, (item) => {
+    if (item.id === typedExistingAssignment?.id) {
+      return {
+        ...item,
+        volumes: newVolumes,
+      }
+    }
+    return item
+  })
+
+  const newData = {
+    ...previousData,
+    assignments: newAssignments,
+  }
+  return { data: newData }
+}
+
 export const useAssignmentAddVolume = ({
   subProjectId: id,
 }: {
@@ -168,37 +203,8 @@ export const useAssignmentRemoveVolume = ({
     onSuccess: (_, { volumeId }) => {
       queryClient.setQueryData(
         ['subprojects', id],
-        (oldData?: SubProjectResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-
-          const existingAssignment = find(previousData.assignments, (volumes) =>
-            find(volumes, { id: volumeId })
-          )
-
-          const typedExistingAssignment = existingAssignment as AssignmentType
-
-          const newVolumes = filter(
-            typedExistingAssignment?.volumes,
-            ({ id }) => id !== volumeId
-          )
-
-          const newAssignments = map(previousData.assignments, (item) => {
-            if (item.id === typedExistingAssignment?.id) {
-              return {
-                ...item,
-                volumes: newVolumes,
-              }
-            }
-            return item
-          })
-
-          const newData = {
-            ...previousData,
-            assignments: newAssignments,
-          }
-          return { data: newData }
-        }
+        (oldData?: SubProjectResponse) =>
+          getNewSubProjectWithoutVolume(volumeId, oldData)
       )
     },
   })
