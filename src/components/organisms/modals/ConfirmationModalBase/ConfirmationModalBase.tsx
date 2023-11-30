@@ -75,7 +75,6 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
           onClick: () => {
             if (handleProceed) {
               handleProceed()
-              closeModal()
             } else {
               closeModal()
             }

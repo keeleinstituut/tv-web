@@ -443,7 +443,9 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
           />
           <FormButtons
             {...formButtonsProps}
-            hidden={isNew || !isSomethingEditable || mode === 'view'}
+            hidden={
+              isNew || !isSomethingEditable || mode === ProjectDetailModes.View
+            }
           />
         </Container>
         <FormButtons

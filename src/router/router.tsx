@@ -75,15 +75,12 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'projects',
     label: i18n.t('menu.projects'),
     Icon: ProjectsIcon,
-    privileges: [Privileges.ViewPersonalProject, Privileges.ViewPersonalTask],
+    privileges: [Privileges.ViewPersonalProject],
     children: [
       {
         path: '',
         label: i18n.t('menu.projects'),
-        privileges: [
-          Privileges.ViewPersonalProject,
-          Privileges.ViewPersonalTask,
-        ],
+        privileges: [Privileges.ViewPersonalProject],
         children: [
           {
             path: '',
@@ -109,24 +106,20 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
-        privileges: [Privileges.ViewPersonalTask],
         children: [
           {
             path: '',
             element: <MyTasks />,
-            privileges: [Privileges.ViewPersonalTask],
             breadcrumb: i18n.t('menu.my_tasks'),
           },
           {
             path: ':taskId',
             element: <TaskPage />,
-            privileges: [Privileges.ViewPersonalTask],
             breadcrumb: BreadcrumbsTitle,
             children: [
               {
                 path: ':isHistoryView',
                 element: <TaskPage />,
-                privileges: [Privileges.ViewPersonalTask],
                 breadcrumb: BreadcrumbsTitle,
               },
             ],

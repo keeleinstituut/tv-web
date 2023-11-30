@@ -15,7 +15,11 @@ import TranslationMemoriesSection from 'components/organisms/TranslationMemories
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import { SourceFile } from 'types/projects'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import {
+  ModalTypes,
+  showModal,
+  closeModal,
+} from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
@@ -25,9 +29,9 @@ import { VolumeValue } from 'types/volumes'
 import classNames from 'classnames'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useCompleteTask } from 'hooks/requests/useTasks'
-import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { showNotification } from '../NotificationRoot/NotificationRoot'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { useNavigate } from 'react-router-dom'
 import { TaskType } from 'types/tasks'
@@ -55,6 +59,7 @@ interface TaskContentProps {
   taskId?: string
   isHistoryView?: string
   task_type?: string
+  final_files?: SourceFile[]
 }
 
 const TaskContent: FC<TaskContentProps> = ({
@@ -72,6 +77,7 @@ const TaskContent: FC<TaskContentProps> = ({
   taskId,
   isHistoryView,
   task_type,
+  final_files = [],
 }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -84,22 +90,29 @@ const TaskContent: FC<TaskContentProps> = ({
     id: sub_project_id,
   })
 
-  const { completeTask, isLoading: isCompletingTask } = useCompleteTask({
+  const { completeTask } = useCompleteTask({
     id: taskId,
   })
 
-  const { control, handleSubmit } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<FormValues>({
     reValidateMode: 'onChange',
-    defaultValues: { my_source_files: source_files, my_final_files: [] },
+    defaultValues: {
+      my_source_files: [...source_files, ...final_files],
+      my_final_files: [],
+    },
   })
 
   const subOrderLangPair = useMemo(() => {
-    const slangShort = split(source_language_classifier_value?.value, '-')[0]
-    const tlangShort = split(
+    const srcLangShort = split(source_language_classifier_value?.value, '-')[0]
+    const dstLangShort = split(
       destination_language_classifier_value?.value,
       '-'
     )[0]
-    return `${slangShort}_${tlangShort}`
+    return `${srcLangShort}_${dstLangShort}`
   }, [destination_language_classifier_value, source_language_classifier_value])
 
   const formattedDate = (date: string) => {
@@ -160,6 +173,7 @@ const TaskContent: FC<TaskContentProps> = ({
           content: t('success.task_marked_completed'),
         })
         navigate('/projects/my-tasks')
+        closeModal()
       } catch (errorData) {
         showValidationErrorMessage(errorData)
       }
@@ -175,10 +189,12 @@ const TaskContent: FC<TaskContentProps> = ({
         title: t('notification.announcement'),
         content: t('success.sent_to_previous_task'),
       })
+      navigate('/projects/my-tasks')
+      closeModal()
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [completeTask, t])
+  }, [completeTask, navigate, t])
 
   const handleOpenCompleteModal = useCallback(() => {
     showModal(ModalTypes.ConfirmationModal, {
@@ -188,9 +204,9 @@ const TaskContent: FC<TaskContentProps> = ({
       proceedButtonContent: t('button.complete'),
       className: classes.completeModal,
       handleProceed: handleSubmit(handleCompleteTask),
-      proceedButtonLoading: isCompletingTask,
+      proceedButtonLoading: isSubmitting,
     })
-  }, [handleSubmit, isCompletingTask, handleCompleteTask, t])
+  }, [handleSubmit, isSubmitting, handleCompleteTask, t])
 
   const handleSendToPreviousAssignmentModal = useCallback(() => {
     showModal(ModalTypes.ConfirmationModal, {
@@ -200,9 +216,9 @@ const TaskContent: FC<TaskContentProps> = ({
       proceedButtonContent: t('button.send_back'),
       className: classes.completeModal,
       handleProceed: handleSubmit(sendToPreviousAssignment),
-      proceedButtonLoading: isCompletingTask,
+      proceedButtonLoading: isSubmitting,
     })
-  }, [handleSubmit, isCompletingTask, sendToPreviousAssignment, t])
+  }, [handleSubmit, isSubmitting, sendToPreviousAssignment, t])
 
   if (isLoading) return <Loader loading={isLoading} />
 
@@ -240,19 +256,15 @@ const TaskContent: FC<TaskContentProps> = ({
         >
           <p className={classes.taskDetails}>{t('label.volume')}</p>
           <p className={classes.taskContent}>
-            {
-              <>
-                <span>{`${Number(volumes[0]?.unit_quantity)} ${t(
-                  `label.${apiTypeToKey(volumes[0]?.unit_type)}`
-                )}${volumes[0] ? ` ${t('task.open_in_cat')}` : ''}`}</span>
-                <BaseButton
-                  onClick={handleShowVolume}
-                  className={classes.volumeIcon}
-                >
-                  <Eye />
-                </BaseButton>
-              </>
-            }
+            <span>{`${Number(volumes[0]?.unit_quantity)} ${t(
+              `label.${apiTypeToKey(volumes[0]?.unit_type)}`
+            )}${volumes[0] ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+            <BaseButton
+              onClick={handleShowVolume}
+              className={classes.volumeIcon}
+            >
+              <Eye />
+            </BaseButton>
           </p>
         </span>
         <span className={classes.taskContainer}>

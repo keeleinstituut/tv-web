@@ -265,7 +265,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         label: t('label.unit'),
         name: 'unit',
         options: priceUnitOptions,
-        onlyDisplay: isCat || mode === 'view',
+        onlyDisplay: isCat || mode === ProjectDetailModes.View,
         rules: {
           required: true,
         },
@@ -281,7 +281,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         rules: {
           required: true,
         },
-        onlyDisplay: mode === 'view',
+        onlyDisplay: mode === ProjectDetailModes.View,
       },
       {
         inputType: InputTypes.Text,
@@ -296,7 +296,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       {
         inputType: InputTypes.Text,
         className: classes.inputInternalPosition,
-        hidden: isCat || mode === 'view',
+        hidden: isCat || mode === ProjectDetailModes.View,
         type: 'number',
         label: t('label.amount'),
         ariaLabel: t('label.amount'),
@@ -486,7 +486,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   )
 
   const title =
-    mode === 'view'
+    mode === ProjectDetailModes.View
       ? t('modal.view_cat_volumes')
       : isCat
       ? t('modal.pick_volume_by_cat')
@@ -503,7 +503,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     t('modal.pick_volume_manually_helper')
   )
 
-  const helperText = mode === 'view' ? '' : catHelperText
+  const helperText = mode === ProjectDetailModes.View ? '' : catHelperText
 
   return (
     <ConfirmationModalBase
@@ -511,10 +511,12 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       handleProceed={handleSubmit(onSubmit)}
       cancelButtonContent={t('button.close')}
       cancelButtonDisabled={isSubmitting}
-      proceedButtonContent={mode === 'view' ? undefined : t('button.confirm')}
+      proceedButtonContent={
+        mode === ProjectDetailModes.View ? undefined : t('button.confirm')
+      }
       proceedButtonDisabled={!isValid}
       proceedButtonLoading={isSubmitting}
-      proceedButtonHidden={mode === 'view'}
+      proceedButtonHidden={mode === ProjectDetailModes.View}
       className={classes.modalContainer}
       title={title}
       helperText={helperText}
@@ -530,7 +532,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
           <VolumeCatPriceTable
             control={control}
             hidden={!isCat}
-            isEditable={mode !== 'view'}
+            isEditable={mode !== ProjectDetailModes.View}
             taskViewPricesClass={taskViewPricesClass}
           />
         </Root>

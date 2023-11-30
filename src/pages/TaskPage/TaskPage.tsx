@@ -40,19 +40,31 @@ const TaskPage: FC = () => {
     ? historyTask || {}
     : task || {}
 
-  const { subProject, ext_id, sub_project_id, volumes, comments } =
-    assignment || {}
+  const {
+    subProject,
+    ext_id,
+    sub_project_id,
+    volumes,
+    comments,
+    deadline_at,
+    event_start_at,
+  } = assignment || {}
 
   const {
     project,
     cat_files,
     source_files,
+    final_files,
     source_language_classifier_value,
     destination_language_classifier_value,
     project_id,
   } = subProject || {}
 
   const { project: taskProject } = useFetchProject({ id: project_id })
+
+  const { sub_projects = [], status } = taskProject || {}
+  const activeJobDefinition = sub_projects?.[0]?.active_job_definition
+  const { job_short_name } = activeJobDefinition || {}
 
   const handleAcceptTask = useCallback(async () => {
     try {
@@ -101,6 +113,7 @@ const TaskPage: FC = () => {
         }
         cat_files={cat_files}
         source_files={source_files || []}
+        final_files={final_files}
         sub_project_id={sub_project_id || ''}
         volumes={volumes}
         taskId={taskId}
@@ -108,6 +121,10 @@ const TaskPage: FC = () => {
         assignee_institution_user_id={assignee_institution_user_id}
         isHistoryView={isHistoryView}
         task_type={task_type}
+        deadline_at={deadline_at}
+        event_start_at={event_start_at}
+        job_short_name={job_short_name}
+        status={status}
       />
     </>
   )

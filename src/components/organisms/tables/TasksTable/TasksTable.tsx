@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { isEmpty, reduce } from 'lodash'
+import { isEmpty, map, reduce } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -40,6 +40,7 @@ type TaskTableRow = {
 const TasksTable: FC<TasksTableProps> = ({
   tasks,
   isLoading,
+  filters,
   paginationData,
   handleFilterChange,
   handleSortingChange,
@@ -55,6 +56,8 @@ const TasksTable: FC<TasksTableProps> = ({
   const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
     type: ClassifierValueType.ProjectType,
   })
+
+  const { lang_pair, type_classifier_value_id } = filters || {}
 
   const tasksData = useMemo(() => {
     return reduce<
@@ -102,11 +105,12 @@ const TasksTable: FC<TasksTableProps> = ({
 
       const { language_direction, type_classifier_value_id, ...rest } =
         filters || {}
+
       const typedLanguageDirection = language_direction as string
       const typedClassifierValueId = type_classifier_value_id as string
 
       const langPair = {
-        1: {
+        0: {
           src: typedLanguageDirection?.split('_')[0],
           dst: typedLanguageDirection?.split('_')[1],
         },
@@ -169,7 +173,8 @@ const TasksTable: FC<TasksTableProps> = ({
       },
       meta: {
         filterOption: { language_direction: languageDirectionFilters },
-        multiple: false,
+        filterValue: map(lang_pair, ({ src, dst }) => `${src}_${dst}`),
+        isMultiple: false,
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
@@ -185,7 +190,8 @@ const TasksTable: FC<TasksTableProps> = ({
       footer: (info) => info.column.id,
       meta: {
         filterOption: { type_classifier_value_id: typeFilters },
-        multiple: false,
+        filterValue: type_classifier_value_id,
+        isMultiple: false,
       },
     }),
     columnHelper.accessor('deadline_at', {

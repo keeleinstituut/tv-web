@@ -136,7 +136,9 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const columns = [
     columnHelper.accessor('name', {
       header: () =>
-        mode === 'view' ? t('label.file_name') : t('label.xliff_name'),
+        mode === ProjectDetailModes.View
+          ? t('label.file_name')
+          : t('label.xliff_name'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('progress_percentage', {
@@ -162,7 +164,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     }),
     columnHelper.accessor('dots_button', {
       cell: () => {
-        return mode === 'view' ? (
+        return mode === ProjectDetailModes.View ? (
           <SimpleDropdown
             icon={HorizontalDots}
             disabled={!!isHistoryView}
@@ -184,7 +186,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         )
       },
       header: () => {
-        return mode !== 'view' ? (
+        return mode !== ProjectDetailModes.View ? (
           <SimpleDropdown
             icon={HorizontalDots}
             className={classes.dropdown}
@@ -230,14 +232,14 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         headComponent={
           <div className={classes.titleRow}>
             <h3>
-              {mode === 'view'
+              {mode === ProjectDetailModes.View
                 ? t('my_tasks.my_final_files')
                 : t('projects.source_files_in_translation_tool')}
             </h3>
 
             <SmallTooltip
               tooltipContent={
-                mode === 'view'
+                mode === ProjectDetailModes.View
                   ? t('tooltip.my_ready_files_from_vendors')
                   : t('tooltip.source_files_in_translation_tool_helper')
               }
@@ -255,7 +257,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           isCatAnalysisInProgress && classes.loader
         )}
         icon={ArrowRight}
-        hidden={mode === 'view'}
+        hidden={mode === ProjectDetailModes.View}
       >
         {t('button.look_at_cat_analysis')}
       </Button>

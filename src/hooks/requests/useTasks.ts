@@ -30,6 +30,7 @@ export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
     isLoading,
     isError,
     tasks,
+    filters,
     paginationData,
     handleFilterChange,
     handleSortingChange,
@@ -39,6 +40,7 @@ export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
 
 export const useFetchTask = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<TaskResponse>({
+    enabled: !!id,
     queryKey: ['tasks', id],
     queryFn: () => apiClient.get(`${endpoints.TASKS}/${id}`),
     keepPreviousData: true,
@@ -72,6 +74,7 @@ export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
   return {
     isLoading,
     isError,
+    filters,
     historyTasks,
     paginationData,
     handleFilterChange,
@@ -82,6 +85,7 @@ export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
 
 export const useFetchHistoryTask = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<TaskResponse>({
+    enabled: !!id,
     queryKey: ['historyTasks', id],
     queryFn: () => apiClient.get(`${endpoints.HISTORY_TASKS}/${id}`),
     keepPreviousData: true,

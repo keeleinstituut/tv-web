@@ -174,7 +174,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   }, [sharedFiles, typedValue])
 
   const columns = [
-    ...(mode !== 'view'
+    ...(mode !== ProjectDetailModes.View
       ? [
           columnHelper.accessor('shared_with_client', {
             header: () => t('label.shared_with_client'),
@@ -195,7 +195,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       : []),
     columnHelper.accessor('name', {
       header: () => (
-        <p className={mode === 'view' ? classes.header : ''}>
+        <p className={mode === ProjectDetailModes.View ? classes.header : ''}>
           {t('label.file_name')}
         </p>
       ),
@@ -203,26 +203,32 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         const fileName = getValue()
         return (
-          <p className={mode === 'view' ? classes.fileName : ''}>{fileName}</p>
+          <p
+            className={mode === ProjectDetailModes.View ? classes.fileName : ''}
+          >
+            {fileName}
+          </p>
         )
       },
     }),
 
     columnHelper.accessor('feature', {
-      header: () => <p hidden={mode === 'view'}>{t('label.task')}</p>,
+      header: () => (
+        <p hidden={mode === ProjectDetailModes.View}>{t('label.task')}</p>
+      ),
       footer: (info) => {
-        if (mode === 'view') return null
+        if (mode === ProjectDetailModes.View) return null
         return info.column.id
       },
       cell: ({ getValue }) => {
         const selectedFeature = getValue()
-        if (mode === 'view') return null
+        if (mode === ProjectDetailModes.View) return null
         return t(`projects.features.${selectedFeature}`)
       },
     }),
     columnHelper.accessor('created_at', {
       header: () => (
-        <p className={mode === 'view' ? classes.header : ''}>
+        <p className={mode === ProjectDetailModes.View ? classes.header : ''}>
           {t('label.added_at')}
         </p>
       ),
@@ -230,13 +236,17 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         const createdAt = getValue()
         return (
-          <p className={mode === 'view' ? classes.createdAt : ''}>
+          <p
+            className={
+              mode === ProjectDetailModes.View ? classes.createdAt : ''
+            }
+          >
             {createdAt}
           </p>
         )
       },
     }),
-    ...(mode !== 'view'
+    ...(mode !== ProjectDetailModes.View
       ? [
           columnHelper.accessor('download_button', {
             header: '',
@@ -260,7 +270,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         ]
       : []),
 
-    ...(isEditable || mode === 'view'
+    ...(isEditable || mode === ProjectDetailModes.View
       ? [
           columnHelper.accessor('delete_button', {
             header: '',
@@ -283,34 +293,6 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         ]
       : []),
   ] as ColumnDef<FileRow>[]
-
-  // TODO: possibly not needed
-  // if (!isEditable) {
-  //   return (
-  //     <div className={classes.altFilesContainer}>
-  //       <h3>{title}</h3>
-  //       {map(typedValue, (file, index) => {
-  //         const localFileUrl =
-  //           file instanceof File ? URL.createObjectURL(file) : ''
-  //         const fileUrl =
-  //           'original_url' in file ? file.original_url : localFileUrl
-  //         const updatedAt =
-  //           'updated_at' in file
-  //             ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
-  //             : ''
-  //         return (
-  //           <Fragment key={fileUrl || index}>
-  //             <label>{file.name}</label>
-  //             <span>{updatedAt}</span>
-  //             <BaseButton href={fileUrl} target="_blank" download={file.name}>
-  //               <DownloadFilled />
-  //             </BaseButton>
-  //           </Fragment>
-  //         )
-  //       })}
-  //     </div>
-  //   )
-  // }
 
   return (
     <div className={classNames(classes.container, className)}>
@@ -352,11 +334,14 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         // TODO: need to check if they have changed, but currently this doesn't exist
         disabled={!isEmpty(sharedFiles) || !isEditable}
         loading={isLoading}
-        hidden={mode === 'view'}
+        hidden={mode === ProjectDetailModes.View}
       >
         {t('button.save_changes')}
       </Button>
-      <span className={classes.saveHelper} hidden={mode === 'view'}>
+      <span
+        className={classes.saveHelper}
+        hidden={mode === ProjectDetailModes.View}
+      >
         {t('helper.save_files_helper')}
       </span>
     </div>

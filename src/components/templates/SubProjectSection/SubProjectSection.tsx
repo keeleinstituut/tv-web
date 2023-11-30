@@ -61,7 +61,7 @@ export const LeftComponent: FC<LeftComponentProps> = ({
       </Column>
       <Column
         label={
-          mode === 'view'
+          mode === ProjectDetailModes.View
             ? t('my_tasks.assignment_id')
             : t('label.sub_project_id')
         }

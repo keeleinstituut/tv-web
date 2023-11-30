@@ -1,6 +1,6 @@
 import { FC, useState } from 'react'
 import TasksTable from 'components/organisms/tables/TasksTable/TasksTable'
-import { chain } from 'lodash'
+import { map } from 'lodash'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import { TabStyle } from 'components/molecules/Tab/Tab'
 import { useTranslation } from 'react-i18next'
@@ -18,6 +18,7 @@ import classes from './classes.module.scss'
 
 export interface TasksTableProps {
   tasks: ListTask[]
+  filters?: any
   paginationData?: ResponseMetaTypes
   handleFilterChange: (value?: FilterFunctionType) => void
   handleSortingChange: (value?: SortingFunctionType) => void
@@ -26,33 +27,32 @@ export interface TasksTableProps {
   isHistoryTab?: boolean
 }
 
-const FetchTasks = (assignedToMe: number) => {
-  return useFetchTasks({ assigned_to_me: assignedToMe })
-}
-
 const MyTasks: FC = () => {
   const { t } = useTranslation()
 
   const {
     tasks,
+    filters,
     isLoading,
     paginationData,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = FetchTasks(1)
+  } = useFetchTasks({ assigned_to_me: 1 })
 
   const {
     tasks: waitingTasks,
+    filters: waitingTasksFilters,
     isLoading: isLoadingWaitingTasks,
     paginationData: waitingTasksPaginationData,
     handleFilterChange: handleWaitingTasksFilterChange,
     handleSortingChange: handleWaitingTasksSortingChange,
     handlePaginationChange: handleWaitingTasksPaginationChange,
-  } = FetchTasks(0)
+  } = useFetchTasks({ assigned_to_me: 0 })
 
   const {
     historyTasks = [],
+    filters: historyTasksFilters,
     isLoading: isLoadingHistoryTasks,
     paginationData: historyPaginationData,
     handleFilterChange: handleHistoryFilterChange,
@@ -64,10 +64,9 @@ const MyTasks: FC = () => {
     t('my_tasks.my_assignments')
   )
 
-  let Component: FC<TasksTableProps> = () => null
-
   let componentProps: TasksTableProps = {
     tasks: tasks || [],
+    filters: filters,
     isLoading: isLoading,
     paginationData: paginationData,
     handleFilterChange: handleFilterChange,
@@ -77,9 +76,9 @@ const MyTasks: FC = () => {
 
   switch (activeTab) {
     case t('my_tasks.my_assignments'):
-      Component = TasksTable
       componentProps = {
         tasks: tasks || [],
+        filters: filters,
         isLoading: isLoading,
         paginationData: paginationData,
         handleFilterChange: handleFilterChange,
@@ -89,9 +88,9 @@ const MyTasks: FC = () => {
       }
       break
     case t('my_tasks.pending_assignments'):
-      Component = TasksTable
       componentProps = {
         tasks: waitingTasks || [],
+        filters: waitingTasksFilters,
         isLoading: isLoadingWaitingTasks,
         paginationData: waitingTasksPaginationData,
         handleFilterChange: handleWaitingTasksFilterChange,
@@ -101,9 +100,9 @@ const MyTasks: FC = () => {
       }
       break
     case t('my_tasks.my_tasks_history'):
-      Component = TasksTable
       componentProps = {
         tasks: historyTasks || [],
+        filters: historyTasksFilters,
         isLoading: isLoadingHistoryTasks,
         paginationData: historyPaginationData,
         handleFilterChange: handleHistoryFilterChange,
@@ -116,16 +115,17 @@ const MyTasks: FC = () => {
       break
   }
 
-  const taskTabs = chain([
-    t('my_tasks.my_assignments'),
-    t('my_tasks.pending_assignments'),
-    t('my_tasks.my_tasks_history'),
-  ])
-    .map((feature) => ({
+  const taskTabs = map(
+    [
+      t('my_tasks.my_assignments'),
+      t('my_tasks.pending_assignments'),
+      t('my_tasks.my_tasks_history'),
+    ],
+    (feature) => ({
       id: feature,
       name: feature,
-    }))
-    .value()
+    })
+  )
 
   return (
     <>
@@ -144,7 +144,7 @@ const MyTasks: FC = () => {
         editDisabled
       />
 
-      <Component {...componentProps} />
+      <TasksTable {...componentProps} />
     </>
   )
 }

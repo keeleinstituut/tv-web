@@ -1,6 +1,5 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import classes from './classes.module.scss'
 import {
   InputTypes,
   FormInput,
@@ -34,12 +33,14 @@ import {
 } from 'types/translationMemories'
 import { map, includes, filter, find, isEqual, pull } from 'lodash'
 import useAuth from 'hooks/useAuth'
-
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from '../NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
-import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
+
+import classes from './classes.module.scss'
+
 interface TranslationMemoryButtonProps {
   hidden?: boolean
   subProjectId?: string
@@ -248,7 +249,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
             ariaLabel={t('label.main_write')}
             control={control}
             inputType={InputTypes.Checkbox}
-            disabled={mode === 'view' || !isEditable}
+            disabled={mode === ProjectDetailModes.View || !isEditable}
             onClick={() => {
               const payload: SubProjectTmKeysPayload = {
                 id: row.original.tm_key_id || '',

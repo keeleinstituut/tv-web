@@ -35,6 +35,7 @@ interface DropdownContentComponentProps extends SelectionControlsInputProps {
   setIsOpen?: Dispatch<SetStateAction<boolean>>
   className?: string
   wrapperRef?: RefObject<HTMLDivElement>
+  isMultiple?: boolean
 }
 
 const EmptyContent = ({ hidden }: { hidden?: boolean }) => {
@@ -69,6 +70,7 @@ const DropdownContentComponent = forwardRef<
     onSearch,
     loading,
     onEndReached,
+    isMultiple,
   },
   ref
 ) {
@@ -132,6 +134,7 @@ const DropdownContentComponent = forwardRef<
 
   const handleSingleSelect = (selectedOption: string) => {
     onChange(selectedOption ? selectedOption : '')
+
     if (setIsOpen) {
       setIsOpen(false)
     }
@@ -248,13 +251,15 @@ const DropdownContentComponent = forwardRef<
       </ul>
       <div
         hidden={!buttons}
-        className={classNames(buttons && multiple && classes.buttonsContainer)}
+        className={classNames(
+          buttons && isMultiple && classes.buttonsContainer
+        )}
       >
         <Button
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           onClick={handleCancel}
-          hidden={!multiple}
+          hidden={!isMultiple}
         >
           {t('button.cancel')}
         </Button>
@@ -263,7 +268,7 @@ const DropdownContentComponent = forwardRef<
           size={SizeTypes.S}
           onClick={handleOnSave}
           className={classes.dropdownButton}
-          hidden={!multiple}
+          hidden={!isMultiple}
         >
           {t('button.save')}
         </Button>
@@ -276,12 +281,14 @@ export interface DropdownContentProps extends DropdownContentComponentProps {
   clickAwayInputRef?: RefObject<HTMLDivElement>
   wrapperRef?: RefObject<HTMLDivElement>
   usePortal?: boolean
+  isMultiple?: boolean
 }
 
 const DropdownContent: FC<DropdownContentProps> = ({
   wrapperRef,
   clickAwayInputRef,
   usePortal,
+  isMultiple,
   ...rest
 }) => {
   const { modalContentId } = useModalContext()
@@ -292,6 +299,7 @@ const DropdownContent: FC<DropdownContentProps> = ({
         {...rest}
         wrapperRef={wrapperRef}
         ref={clickAwayInputRef}
+        isMultiple={isMultiple}
       />,
       document.getElementById(modalContentId || 'root') || document.body
     )

@@ -7,12 +7,12 @@ import useHashState from 'hooks/useHashState'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
 import { LeftComponent } from 'components/templates/SubProjectSection/SubProjectSection'
 import TaskContent from 'components/organisms/TaskContent/TaskContent'
-import { ListProject, SourceFile } from 'types/projects'
+import { ListProject, ProjectStatus, SourceFile } from 'types/projects'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import { VolumeValue } from 'types/volumes'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 
 import classes from './classes.module.scss'
-import { ProjectDetailModes } from '../ProjectDetails/ProjectDetails'
 interface TaskProps {
   ext_id?: string
   isLoading: boolean
@@ -28,6 +28,11 @@ interface TaskProps {
   assignee_institution_user_id?: string
   isHistoryView?: string
   task_type?: string
+  deadline_at?: string
+  event_start_at?: string
+  job_short_name?: string
+  status?: ProjectStatus
+  final_files?: SourceFile[]
 }
 
 const TaskDetails: FC<TaskProps> = ({
@@ -37,12 +42,14 @@ const TaskDetails: FC<TaskProps> = ({
   destination_language_classifier_value,
   project,
   assignee_institution_user_id,
+  job_short_name,
+  status,
   ...rest
 }) => {
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
 
-  const { price, deadline_at, status, event_start_at } = project || {}
+  const { price, deadline_at } = project || {}
 
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
@@ -84,7 +91,9 @@ const TaskDetails: FC<TaskProps> = ({
       onExpandedChange={handleOpenContainer}
       id={ext_id}
       isExpanded={!assignee_institution_user_id ? false : isExpanded}
-      rightComponent={<ProjectStatusTag status={status} />}
+      rightComponent={
+        <ProjectStatusTag status={status} jobName={job_short_name} />
+      }
       wrapContent
       leftComponent={
         <LeftComponent
@@ -92,14 +101,12 @@ const TaskDetails: FC<TaskProps> = ({
           mode={ProjectDetailModes.View}
         />
       }
-      isExpanedDisabled={!assignee_institution_user_id}
+      isExpandedDisabled={!assignee_institution_user_id}
     >
       <TaskContent
-        deadline_at={deadline_at}
         destination_language_classifier_value={
           destination_language_classifier_value
         }
-        event_start_at={event_start_at}
         isLoading={isLoading}
         assignee_institution_user_id={assignee_institution_user_id}
         {...rest}

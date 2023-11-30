@@ -137,7 +137,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
 
   const columns = [
     ...((canGenerateProject && isEditable) ||
-    (canGenerateProject && mode !== 'view')
+    (canGenerateProject && mode !== ProjectDetailModes.View)
       ? [
           columnHelper.accessor('check', {
             header: '',
@@ -179,7 +179,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         )
       },
     }),
-    ...(mode === 'view'
+    ...(mode === ProjectDetailModes.View
       ? [
           columnHelper.accessor('category', {
             header: () => t('label.category'), // TODO: Add correct data from BE, currently not yet implemented
@@ -211,7 +211,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
       },
       footer: (info) => info.column.id,
     }),
-    ...(isEditable || mode === 'view'
+    ...(isEditable || mode === ProjectDetailModes.View
       ? [
           columnHelper.accessor('delete_button', {
             header: '',
@@ -257,7 +257,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
             />
             <FileImport
               fileButtonText={t('button.add_new_file')}
-              hidden={!isEditable || mode === 'view'}
+              hidden={!isEditable || mode === ProjectDetailModes.View}
               isFilesListHidden
               files={value}
               inputFileTypes={ProjectFileTypes}
@@ -269,7 +269,9 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         }
       />
       <GenerateForTranslationSection
-        hidden={!canGenerateProject || mode === 'view' || !isEditable}
+        hidden={
+          !canGenerateProject || mode === ProjectDetailModes.View || !isEditable
+        }
         openSendToCatModal={openSendToCatModal}
         className={classes.generateSection}
         disabled={isGenerateProjectButtonDisabled}

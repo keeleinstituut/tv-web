@@ -513,7 +513,7 @@
     "file_split_success": "Fail on edukalt tükkideks jagatud",
     "file_merge_success": "Fail on edukalt ühendatud",
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
-    "vendors_removed_from_task": "Teostajad edukalt eemaldatud ülesande külge!",
+    "vendors_removed_from_task": "Teostajad edukalt eemaldatud ülesande küljest!",
     "vendors_created_removed": "Teostajad edukalt lisatud/eemaldatud",
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
