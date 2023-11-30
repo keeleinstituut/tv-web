@@ -71,7 +71,7 @@ const UsersManagement: FC = () => {
         </Button>
       </div>
       {/* TODO: remove this form root wrapper, once we refactor CheckBox */}
-      <Root>
+      <Root onSubmit={(e) => e.preventDefault()}>
         <TextInput
           name={'search'}
           ariaLabel={t('placeholder.search_by_name')}

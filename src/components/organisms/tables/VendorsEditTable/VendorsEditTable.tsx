@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import DataTable, {
@@ -34,43 +34,48 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const tableColumns = [
-    columnHelper.accessor('name', {
-      header: () => t('label.name'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        const user = getValue()
-        return <span>{user}</span>
-      },
-    }),
-    columnHelper.accessor('isVendor', {
-      header: () => t('vendors.vendor'),
-      footer: (info) => info.column.id,
-      cell: (info) => {
-        return (
-          <>
-            <FormInput
-              name={`${info.row.original.institution_user_id}.isVendor`}
-              ariaLabel={t('vendors.vendor')}
-              control={control}
-              defaultValue={info.row.original.isVendor}
-              inputType={InputTypes.Checkbox}
-              errorZIndex={100}
-            />
-            <FormInput
-              name={`${info.row.original.institution_user_id}.vendor_id`}
-              ariaLabel={t('vendors.vendor')}
-              control={control}
-              defaultValue={info.row.original.vendor_id}
-              inputType={InputTypes.Text}
-              className={classes.vendorId}
-            />
-          </>
-        )
-      },
-      size: 90,
-    }),
-  ] as ColumnDef<VendorUser>[]
+  const tableColumns = useMemo(
+    () =>
+      [
+        columnHelper.accessor('name', {
+          header: () => t('label.name'),
+          footer: (info) => info.column.id,
+          cell: ({ getValue }) => {
+            const user = getValue()
+            return <span>{user}</span>
+          },
+        }),
+        columnHelper.accessor('isVendor', {
+          header: () => t('vendors.vendor'),
+          footer: (info) => info.column.id,
+          cell: (info) => {
+            return (
+              <>
+                <FormInput
+                  name={`${info.row.original.institution_user_id}.isVendor`}
+                  ariaLabel={info.row.original.name || t('vendors.vendor')}
+                  control={control}
+                  defaultValue={info.row.original.isVendor}
+                  inputType={InputTypes.Checkbox}
+                  errorZIndex={100}
+                />
+                <FormInput
+                  name={`${info.row.original.institution_user_id}.vendor_id`}
+                  ariaLabel={t('vendors.vendor')}
+                  control={control}
+                  defaultValue={info.row.original.vendor_id}
+                  inputType={InputTypes.Text}
+                  className={classes.vendorId}
+                />
+              </>
+            )
+          },
+          size: 90,
+        }),
+      ] as ColumnDef<VendorUser>[],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
 
   return (
     <DataTable
