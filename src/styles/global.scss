@@ -1,6 +1,6 @@
-@use "reset";
-@import "./variables.scss";
-@import "./mixins.scss";
+@use 'reset';
+@import './variables.scss';
+@import './mixins.scss';
 
 body {
   background-color: $color-background-main;
@@ -102,6 +102,9 @@ textarea {
   font-family: 'Roboto', sans-serif;
 }
 
+button > * {
+  pointer-events: none;
+}
 
 a {
   color: inherit;

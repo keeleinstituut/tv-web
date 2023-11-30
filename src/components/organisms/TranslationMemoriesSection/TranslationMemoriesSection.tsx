@@ -280,6 +280,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
                 <BaseButton
                   className={classes.iconButton}
                   onClick={() => handleDelete({ id: getValue() })}
+                  aria-label={t('button.delete')}
                 >
                   <Delete />
                 </BaseButton>

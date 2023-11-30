@@ -14,14 +14,18 @@
   justify-items: left;
   align-items: center;
 
+  &.noRows {
+    grid-template-rows: unset;
+  }
+
   h2 {
     grid-column: 1 / 3;
     @include h3TextStyle;
     color: $color-primary;
   }
 
-  .extraPadding {
-    padding-left: spacing(4);
+  .hidden {
+    display: none;
   }
 
   .boldText {
@@ -49,5 +53,9 @@
       margin-bottom: spacing(2);
       align-self: start;
     }
+  }
+
+  .extraPadding {
+    padding-left: spacing(4);
   }
 }

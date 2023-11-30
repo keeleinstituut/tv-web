@@ -94,7 +94,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     handleSubmit,
     reset,
     setError,
-    formState: { isSubmitSuccessful },
+    formState: { isSubmitSuccessful, isDirty },
   } = useForm<FormValues>({
     mode: 'onChange',
   })
@@ -185,6 +185,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
           children: t('button.confirm'),
           type: 'submit',
           form: 'vendors',
+          disabled: !isDirty,
         },
       ]}
     >

@@ -204,6 +204,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
             target="_blank"
             onClick={() => handleDownload(getValue())}
             disabled={!!isHistoryView}
+            aria-label={t('button.download')}
           >
             <Download />
           </BaseButton>
@@ -224,6 +225,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
                   )}
                   onClick={() => handleDelete(getValue())}
                   disabled={!!isHistoryView}
+                  aria-label={t('button.delete')}
                 >
                   <Delete />
                 </BaseButton>

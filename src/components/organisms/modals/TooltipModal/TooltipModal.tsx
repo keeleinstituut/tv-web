@@ -54,6 +54,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
           appearance: AppearanceTypes.Secondary,
           onClick: closeModal,
           children: t('button.close'),
+          autoFocus: true,
         },
       ]}
     >

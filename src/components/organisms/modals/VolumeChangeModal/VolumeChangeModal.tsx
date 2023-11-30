@@ -34,7 +34,7 @@ import {
   useAssignmentAddVolume,
   useAssignmentEditCatVolume,
   useAssignmentEditVolume,
-} from 'hooks/requests/useAssignments'
+} from 'hooks/requests/useVolumes'
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
 import { Root } from '@radix-ui/react-form'
 import { CatAnalysis } from 'types/projects'

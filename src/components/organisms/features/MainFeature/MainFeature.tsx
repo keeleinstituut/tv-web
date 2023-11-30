@@ -28,6 +28,7 @@ type MainFeatureProps = Pick<
   | 'id'
   | 'mt_enabled'
   | 'deadline_at'
+  | 'workflow_started'
 > & {
   catSupported?: boolean
   feature: SubProjectFeatures
@@ -41,6 +42,7 @@ const MainFeature: FC<MainFeatureProps> = ({
   cat_jobs,
   assignments,
   project,
+  workflow_started,
   ...rest
 }) => {
   const { status: projectStatus } = project
@@ -75,7 +77,7 @@ const MainFeature: FC<MainFeatureProps> = ({
         content: t('success.split_assignment'),
       })
     } catch (errorData) {
-      showValidationErrorMessage(errorData)
+      // DO nothing, error is already handled
     }
   }, [assignments, feature, splitAssignment, t])
 
@@ -93,7 +95,8 @@ const MainFeature: FC<MainFeatureProps> = ({
       !isSomethingEditable ||
       feature === SubProjectFeatures.JobOverview ||
       (feature === SubProjectFeatures.JobRevision && !isFirstTaskJobRevision) ||
-      !isMultiAssignmentsEnabled
+      !isMultiAssignmentsEnabled ||
+      workflow_started
     )
   }
 

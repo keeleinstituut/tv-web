@@ -207,6 +207,9 @@ export interface ListProject {
   help_files?: SourceFile[] // might be different type
   source_files?: SourceFile[]
   client_institution_user?: UserType
+}
+
+export interface ProjectDetail extends ListProject {
   manager_institution_user?: UserType
 }
 export interface DetailedProject extends ListProject {
@@ -244,7 +247,7 @@ export interface SubProjectsResponse {
   meta: ResponseMetaTypes
 }
 export interface ProjectResponse {
-  data: DetailedProject
+  data: ProjectDetail
 }
 
 export interface SubProjectResponse {

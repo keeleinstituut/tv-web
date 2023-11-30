@@ -15,7 +15,7 @@ import TranslationMemoryEditForm from 'components/organisms/forms/TranslationMem
 import FileImport, {
   InputFileTypes,
 } from 'components/organisms/FileImport/FileImport'
-import { showModal, ModalTypes } from '../modals/ModalRoot'
+import { showModal, ModalTypes, closeModal } from '../modals/ModalRoot'
 import {
   useDeleteTranslationMemory,
   useExportTMX,
@@ -95,6 +95,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
       handleProceed: async () => {
         try {
           await deleteTranslationMemory(memoryId)
+          closeModal()
           showNotification({
             type: NotificationTypes.Success,
             title: t('notification.announcement'),

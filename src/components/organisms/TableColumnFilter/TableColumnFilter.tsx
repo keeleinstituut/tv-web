@@ -1,4 +1,12 @@
-import { FC, SVGProps, useState, useRef } from 'react'
+import {
+  FC,
+  SVGProps,
+  useState,
+  useRef,
+  useEffect,
+  MouseEvent,
+  useCallback,
+} from 'react'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -40,10 +48,35 @@ const TableColumnFilter = ({
   const dropdownRef = useRef(null)
   const wrapperRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (event: MouseEvent | KeyboardEvent) => {
     setIsOpen(!isOpen)
+    if (!document.querySelector('.filter-focus') && !isOpen) {
+      const target = event?.target as HTMLElement
+      target.classList.add('filter-focus')
+      setFocusElement(target)
+    }
   }
+  const escFunction = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setIsOpen(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (document.querySelector('.filter-focus') && !isOpen) {
+      focusElement?.classList.remove('filter-focus')
+      focusElement?.focus()
+    }
+  }, [focusElement, isOpen])
+
+  useEffect(() => {
+    document.addEventListener('keydown', escFunction)
+    return () => {
+      document.removeEventListener('keydown', escFunction)
+    }
+  }, [escFunction])
 
   if (hidden) return null
 

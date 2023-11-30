@@ -118,8 +118,14 @@ const SubProjectSection: FC<SubProjectProps> = ({
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
   const { subProject, isLoading } = useFetchSubProject({ id }) || {}
 
-  const { assignments = [], workflow_started } = subProject || {}
-  const { job_short_name } = active_job_definition || {}
+  const {
+    assignments = [],
+    workflow_started,
+    status: localStatus,
+    active_job_definition: localActiveJobDefinition,
+  } = subProject || {}
+  const { job_short_name } =
+    localActiveJobDefinition || active_job_definition || {}
 
   const { startSubProjectWorkflow, isLoading: isStartingWorkflow } =
     useSubProjectWorkflow({ id, projectId })
@@ -183,19 +189,23 @@ const SubProjectSection: FC<SubProjectProps> = ({
 
   const isClientView = !includes(userPrivileges, Privileges.ManageProject)
 
+  // status from outside is to show everything correctly for the list
+  // After it's opened and interacted with, the correct value will come from subproject itself
+  const statusToUse = localStatus || status
+
   if (isLoading) return <Loader loading={isLoading} />
 
   return (
     <ExpandableContentContainer
       className={classNames(
         classes.expandableContainer,
-        status && classes[toLower(status)]
+        statusToUse && classes[toLower(statusToUse)]
       )}
       onExpandedChange={handleOpenContainer}
       id={ext_id}
       isExpanded={isExpanded}
       rightComponent={
-        <ProjectStatusTag status={status} jobName={job_short_name} />
+        <ProjectStatusTag status={statusToUse} jobName={job_short_name} />
       }
       wrapContent
       bottomComponent={

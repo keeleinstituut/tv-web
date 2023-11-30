@@ -1,4 +1,12 @@
-import { FC, useState, useRef, useEffect, useCallback, Fragment } from 'react'
+import {
+  FC,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  Fragment,
+  MouseEvent,
+} from 'react'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -137,7 +145,11 @@ const AddedFilesList: FC<AddedFilesListProps> = ({
                 <p className={classes.fileName}>{file?.name}</p>
                 <p className={classes.fileSize}>{formatFileSize(file?.size)}</p>
               </div>
-              <BaseButton onClick={() => handleDelete(index)}>
+              <BaseButton
+                onClick={() => handleDelete(index)}
+                className={classes.button}
+                aria-label={t('button.delete')}
+              >
                 <Delete />
               </BaseButton>
             </li>
@@ -198,6 +210,7 @@ const FileImport: FC<FileImportProps> = ({
   const parentRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
   const [isDragAndDropOpen, setDragAndDropOpen] = useState<boolean>(false)
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
     // Sync files from outside to local state
@@ -231,9 +244,33 @@ const FileImport: FC<FileImportProps> = ({
     [localFiles, onChangeHandler, onDelete]
   )
 
-  const toggleDragAndDrop = () => {
+  const toggleDragAndDrop = (event: MouseEvent | KeyboardEvent) => {
     setDragAndDropOpen(!isDragAndDropOpen)
+    if (!document.querySelector('.dragNDrop-focus') && !isDragAndDropOpen) {
+      const target = event?.target as HTMLElement
+      target.classList.add('dragNDrop-focus')
+      setFocusElement(target)
+    }
   }
+  const escFunction = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setDragAndDropOpen(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (document.querySelector('.dragNDrop-focus') && !isDragAndDropOpen) {
+      focusElement?.classList.remove('dragNDrop-focus')
+      focusElement?.focus()
+    }
+  }, [focusElement, isDragAndDropOpen])
+
+  useEffect(() => {
+    document.addEventListener('keydown', escFunction)
+    return () => {
+      document.removeEventListener('keydown', escFunction)
+    }
+  }, [escFunction])
 
   const handleSetFiles = useCallback(
     (newFiles: File[]) => {

@@ -65,7 +65,11 @@ const Tooltip: FC<TooltipProps> = ({
   }
 
   return (
-    <BaseButton onClick={handleModalOpen} className={classes.container}>
+    <BaseButton
+      onClick={handleModalOpen}
+      className={classes.container}
+      aria-label={t('label.tooltip')}
+    >
       <Icon icon={icon} ariaLabel={ariaLabel} />
     </BaseButton>
   )

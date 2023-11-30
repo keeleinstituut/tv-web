@@ -29,6 +29,7 @@ export interface ButtonProps extends BaseButtonProps {
   hidden?: boolean
   className?: string
   iconPositioning?: IconPositioningTypes
+  autoFocus?: boolean
 }
 
 export type IconProps = {

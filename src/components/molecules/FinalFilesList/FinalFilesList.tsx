@@ -283,6 +283,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
                   )}
                   onClick={() => handleOpenDeleteModal(getValue())}
                   disabled={!!isHistoryView}
+                  aria-label={t('button.delete')}
                 >
                   <Delete />
                 </BaseButton>
