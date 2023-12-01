@@ -61,6 +61,7 @@ interface PersonSectionProps<TFormValues extends FieldValues> {
   selectedUserId?: string
   selectedUser?: UserType
   isEditable?: boolean
+  hideDetails?: boolean
 }
 
 const PersonSection = <TFormValues extends FieldValues>({
@@ -69,6 +70,7 @@ const PersonSection = <TFormValues extends FieldValues>({
   selectedUserId,
   selectedUser,
   isEditable,
+  hideDetails,
 }: PersonSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
@@ -93,8 +95,7 @@ const PersonSection = <TFormValues extends FieldValues>({
   // Pass search as a param and fetch again
   const handleSearchUsers = useCallback(
     (newValue: string) => {
-      // TODO: not sure yet whether filtering param will be name
-      handleFilterChange({ name: newValue })
+      handleFilterChange({ fullname: newValue })
     },
     [handleFilterChange]
   )
@@ -138,8 +139,8 @@ const PersonSection = <TFormValues extends FieldValues>({
   }, [usersList])
 
   const selectedUserDetails = useMemo(
-    () => find(usersList, { id: selectedUserId }),
-    [selectedUserId, usersList]
+    () => find(usersList, { id: selectedUserId || selectedUser?.id }),
+    [selectedUserId, usersList, selectedUser?.id]
   )
   const { department, institution, email, phone } = selectedUserDetails || {}
 
@@ -170,17 +171,25 @@ const PersonSection = <TFormValues extends FieldValues>({
     <div
       className={classNames(
         classes.column,
-        !isEditable && classes.adjustedLayout
+        !isEditable && classes.adjustedLayout,
+        hideDetails && classes.noRows
       )}
     >
       <h2
         className={classNames(
-          type === PersonSectionTypes.Client && classes.extraPadding
+          type === PersonSectionTypes.Client && classes.extraPadding,
+          hideDetails && classes.hidden
         )}
       >
         {title}
       </h2>
-      <label htmlFor={fieldName} className={classes.labelClass}>
+      <label
+        htmlFor={fieldName}
+        className={classNames(
+          classes.labelClass,
+          hideDetails && classes.hidden
+        )}
+      >
         {fieldLabel}
       </label>
       <FormInput
@@ -198,7 +207,7 @@ const PersonSection = <TFormValues extends FieldValues>({
         className={classNames(!isEditable && classes.boldText)}
         hideTags
       />
-      {selectedUserDetails && (
+      {selectedUserDetails && !hideDetails && (
         <UserDetails
           {...visibleUserDetails}
           valueClass={classNames(!isEditable && classes.boldText)}

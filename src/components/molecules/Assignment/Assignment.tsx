@@ -93,7 +93,9 @@ const Assignment: FC<AssignmentProps> = ({
     })
   const { updateAssignment } = useAssignmentUpdate({ id })
   const { deleteAssignment, isLoading: isDeletingAssignment } =
-    useDeleteAssignment()
+    useDeleteAssignment({
+      sub_project_id,
+    })
 
   const { vendor } =
     find(candidates, ({ vendor }) => vendor.id === assigned_vendor_id) || {}
@@ -364,6 +366,7 @@ const Assignment: FC<AssignmentProps> = ({
             hidden={index === 0}
             onClick={handleDeleteAssignment}
             loading={isDeletingAssignment}
+            aria-label={t('button.delete')}
           >
             <Delete />
           </BaseButton>
@@ -411,7 +414,7 @@ const Assignment: FC<AssignmentProps> = ({
           children={t('button.send_to_previous_task')}
           onClick={sendToPreviousAssignment}
           hidden={feature !== SubProjectFeatures.JobOverview}
-          disabled={!isEditable}
+          disabled={!isEditable || status !== AssignmentStatus.InProgress}
         />
         <Button
           children={t('button.mark_as_finished')}

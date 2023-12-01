@@ -123,7 +123,10 @@
     "cancellation_reason": "Tühistamise põhjus",
     "pick_sub_project": "Vali alamtellimus",
     "extra_information": "Lisainfo",
-    "assignee_comments": "Teostaja kommentaar"
+    "assignee_comments": "Teostaja kommentaar",
+    "tooltip": "Tööriistavihje",
+    "date": "Kuupäev",
+    "time": "Aeg"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -212,6 +215,7 @@
     "confirm_changes": "Kinnita muudatused",
     "download_xliff": "Laadi alla XLIFF",
     "download_ready_translation": "Laadi alla valmis tõlge",
+    "download": "Laadi alla",
     "join_files": "Ühenda failid kokku",
     "vendors": "Teostajad",
     "xliff": "XLIFF",
@@ -227,7 +231,11 @@
     "reject_project": "Lükka tagasi",
     "change_files": "Muuda faile",
     "download_all": "Laadi kõik alla",
-    "mark_project_as_completed": "Märgi tellimus lõpetatuks"
+    "mark_project_as_completed": "Märgi tellimus lõpetatuks",
+    "reassign": "Suuna",
+    "increase": "Suurenda",
+    "decrease": "Vähendama",
+    "expand": "Laienda"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -247,7 +255,10 @@
     "invalid_price": "Lubatud on ainult numbrid ja punkt",
     "name_input_length": "Nime maksimaalne pikkus võib olla kuni 100 tähemärki",
     "name_input_char_error": "Lubatud on tähed (a-z), tühik ja sidekriips",
-    "search_input_length": "Otsingu sõna peab olema vähemalt 3 tähemärki"
+    "search_input_length": "Otsingu sõna peab olema vähemalt 3 tähemärki",
+    "file_size_error": "Fail(id) liiga suur(ed). Kogu suurus ei tohi ületada 100mb",
+    "unknown_authentication_error": "Teadmata viga",
+    "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
@@ -402,7 +413,9 @@
     "confirm_project_rejection_helper": "Vali üks või mitu alamtellimust, mille soovid tagasi lükata.\n Palun lisa lühike tagasilükkamise põhjendus ja kirjelda, mida on vaja teisiti teha.",
     "confirm_delete_source_file": "Kas oled kindel, et soovid faili kustutada?",
     "pick_files_to_forward": "Vali failid mida soovid edastada",
-    "forward_files_helper": "Vali teostajatelt saadud valmis failid, mile soovid tellijale edasi saata."
+    "forward_files_helper": "Vali teostajatelt saadud valmis failid, mile soovid tellijale edasi saata.",
+    "reassign_project_title": "Suuna teisele tõlkekorraldajale",
+    "reassign_project_helper": "Kõik tellimusega seotud süsteemiteated saadetakse edaspidi vaid uuele tõlkekorraldajale. Tellimus kaob sinule määratud tellimuste, alamtellimuste ja ülesannete nimekirjast"
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",
@@ -514,12 +527,12 @@
     "project_accepted": "Tellimus vastuvõetud",
     "project_rejected": "Tellimus tagasi lükatud",
     "source_file_deleted": "Lähtefail on edukalt kustutatud",
-    "project_corrected": "Tellimus lõpetatuks märgitud"
+    "project_corrected": "Tellimus lõpetatuks märgitud",
+    "project_reassigned": "Tellimus edukalt suunatud"
   },
   "notification": {
     "announcement": "Teade",
     "error": "Viga",
-    "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
     "main_user_deletion": "Peakasutaja rolli ei saa kustutada",
     "main_user_privilege_change": "Peakasutaja privileege ei saa muuta",
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",

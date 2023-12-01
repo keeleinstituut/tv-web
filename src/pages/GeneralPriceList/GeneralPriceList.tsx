@@ -36,7 +36,7 @@ const GeneralPriceList: FC = () => {
     <>
       <div>
         <h1>{t('vendors.price_list')}</h1>
-        <Root>
+        <Root onSubmit={(e) => e.preventDefault()}>
           <TextInput
             name={'search'}
             ariaLabel={t('label.search_by_name_here')}

@@ -43,7 +43,6 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
   isEditable,
 }) => {
   const { t } = useTranslation()
-
   const { deleteAssignmentVendor } = useAssignmentRemoveVendor({
     id,
   })
@@ -108,6 +107,7 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
                   }
                   disabled={!isEnabled}
                   onClick={() => handleDelete(getValue())}
+                  aria-label={t('button.delete')}
                 >
                   <Delete />
                 </BaseButton>

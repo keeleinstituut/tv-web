@@ -13,7 +13,7 @@ import { useCreateProject, useUpdateProject } from 'hooks/requests/useProjects'
 import { join, map, includes, isEmpty, pick, keys, compact, find } from 'lodash'
 import { getUtcDateStringFromLocalDateObject } from 'helpers'
 import {
-  DetailedProject,
+  ProjectDetail,
   NewProjectPayload,
   SourceFile,
   ProjectStatus,
@@ -122,7 +122,7 @@ interface FormValues {
 
 interface ProjectDetailsProps {
   mode?: ProjectDetailModes
-  project?: DetailedProject
+  project?: ProjectDetail
 }
 
 const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
@@ -143,12 +143,19 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
     id,
   })
 
-  const { deleteBulkFiles, addBulkFiles, updateBulkFiles } = useHandleBulkFiles(
-    {
-      reference_object_id: project?.id ?? '',
-      reference_object_type: 'project',
-    }
-  )
+  const {
+    deleteBulkFiles,
+    addBulkFiles,
+    updateBulkFiles,
+    isAddLoading,
+    isDeleteLoading,
+  } = useHandleBulkFiles({
+    reference_object_id: project?.id ?? '',
+    reference_object_type: 'project',
+  })
+
+  const isSubmitLoading =
+    isAddLoading || isDeleteLoading || isUpdatingProject || isLoading
 
   const navigate = useNavigate()
   const isNew = mode === ProjectDetailModes.New
@@ -370,17 +377,16 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
       isEditEnabled,
       setIsEditEnabled,
       isSubmitting,
-      isLoading: isLoading || isUpdatingProject,
+      isLoading: isSubmitLoading,
       isValid,
       isDirty,
     }),
     [
       handleSubmit,
       isEditEnabled,
-      isLoading,
+      isSubmitLoading,
       isNew,
       isSubmitting,
-      isUpdatingProject,
       isDirty,
       isValid,
       onSubmit,

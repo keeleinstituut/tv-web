@@ -1,4 +1,13 @@
-import { FC, SVGProps, forwardRef, useMemo, useRef, useState } from 'react'
+import {
+  FC,
+  SVGProps,
+  forwardRef,
+  useMemo,
+  useRef,
+  useState,
+  MouseEvent,
+  useEffect,
+} from 'react'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
@@ -81,13 +90,26 @@ const SelectionControlsInput = forwardRef<
   const { modalContentId } = useModalContext()
   const shouldUsePortal = usePortal || !!modalContentId
   const [isOpen, setIsOpen] = useState(false)
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (event: MouseEvent | KeyboardEvent) => {
     setIsOpen(!isOpen)
+    if (!document.querySelector('.select-focus') && !isOpen) {
+      const target = event?.target as HTMLElement
+      target.classList.add('select-focus')
+      setFocusElement(target)
+    }
   }
 
   const clickAwayInputRef = useRef(null)
   const wrapperRef = useRef(null)
+
+  useEffect(() => {
+    if (document.querySelector('.select-focus') && !isOpen) {
+      focusElement?.classList.remove('select-focus')
+      focusElement?.focus()
+    }
+  }, [focusElement, isOpen])
 
   useClickAway(() => {
     setIsOpen(false)

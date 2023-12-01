@@ -8,6 +8,7 @@ import {
   createRef,
   useImperativeHandle,
   Suspense,
+  useEffect,
 } from 'react'
 import { FormProgressProps } from './FormProgressModal/FormProgressModal'
 import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
@@ -27,6 +28,7 @@ import { ConfirmRejectProjectModalProps } from './ConfirmRejectProjectModal/Conf
 import { ConfirmDeleteSourceFileModalProps } from './ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal'
 import { ConfirmTmWritableModalProps } from './ConfirmTmWritableModal/ConfirmTmWritableModal'
 import { ConfirmAssignmentCompletionModalProps } from './ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal'
+import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjectModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -99,6 +101,10 @@ const ConfirmAssignmentCompletionModal = lazy(
     )
 )
 
+const ReassignProjectModal = lazy(
+  () => import('./ReassignProjectModal/ReassignProjectModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -122,6 +128,7 @@ export enum ModalTypes {
   ConfirmDeleteSourceFile = 'confirmDeleteSourceFile',
   ConfirmTmWritable = 'confirmTmWritable',
   ConfirmAssignmentCompletion = 'confirmAssignmentCompletion',
+  ReassignProject = 'reassignProjectModal',
 }
 
 // Add other modal props types here as well
@@ -147,6 +154,7 @@ type ModalPropTypes =
   | Omit<ConfirmDeleteSourceFileModalProps, 'closeModal'>
   | Omit<ConfirmTmWritableModalProps, 'closeModal'>
   | Omit<ConfirmAssignmentCompletionModalProps, 'closeModal'>
+  | Omit<ReassignProjectModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -171,6 +179,7 @@ const MODALS = {
   [ModalTypes.ConfirmDeleteSourceFile]: ConfirmDeleteSourceFileModal,
   [ModalTypes.ConfirmTmWritable]: ConfirmTmWritableModal,
   [ModalTypes.ConfirmAssignmentCompletion]: ConfirmAssignmentCompletionModal,
+  [ModalTypes.ReassignProject]: ReassignProjectModal,
 }
 
 interface RefType {
@@ -185,6 +194,7 @@ const ModalRoot = () => {
   const [isModalOpen, setIsOpen] = useState(false)
   const [currentModalProps, setCurrentModalProps] = useState<ModalPropTypes>({})
   const [currentModalKey, setCurrentModalKey] = useState<ModalTypes>()
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
   // TODO: figure out how to improve typescript here
   // so that every modal would accepts only their own props
@@ -196,10 +206,41 @@ const ModalRoot = () => {
     },
     [setCurrentModalProps, setIsOpen]
   )
+  const removeFocusClass = useCallback(() => {
+    if (!!focusElement && !!document.querySelector('.last-focus')) {
+      focusElement?.classList.remove('last-focus')
+      focusElement?.focus()
+    }
+  }, [focusElement])
 
   const closeModal = useCallback(() => {
     setIsOpen(false)
-  }, [setIsOpen])
+    setTimeout(removeFocusClass, 300)
+    setTimeout(setFocusElement, 500, null)
+  }, [setIsOpen, removeFocusClass])
+
+  const handleButtonClick = useCallback(
+    (event: Event) => {
+      if (!document.querySelector('.last-focus') && isModalOpen) {
+        const target = event?.target as HTMLElement
+        target.classList.add('last-focus')
+        setFocusElement(target)
+      }
+    },
+    [isModalOpen]
+  )
+
+  useEffect(() => {
+    document.addEventListener('click', function (event) {
+      const target = event?.target as HTMLElement
+      if (target?.nodeName === 'BUTTON') {
+        handleButtonClick(event)
+      }
+    })
+    return () => {
+      document.removeEventListener('click', handleButtonClick)
+    }
+  }, [handleButtonClick])
 
   useImperativeHandle(
     modalRef,

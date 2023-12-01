@@ -297,7 +297,7 @@ const ProjectsTable: FC = () => {
   ] as ColumnDef<ProjectTableRow>[]
 
   return (
-    <Root>
+    <Root onSubmit={(e) => e.preventDefault()}>
       <DataTable
         data={projectRows}
         columns={columns}
