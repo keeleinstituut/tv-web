@@ -35,7 +35,7 @@ interface DropdownContentComponentProps extends SelectionControlsInputProps {
   setIsOpen?: Dispatch<SetStateAction<boolean>>
   className?: string
   wrapperRef?: RefObject<HTMLDivElement>
-  isMultiple?: boolean
+  isCustomSingleDropdown?: boolean
 }
 
 const EmptyContent = ({ hidden }: { hidden?: boolean }) => {
@@ -70,7 +70,7 @@ const DropdownContentComponent = forwardRef<
     onSearch,
     loading,
     onEndReached,
-    isMultiple,
+    isCustomSingleDropdown = false,
   },
   ref
 ) {
@@ -255,14 +255,14 @@ const DropdownContentComponent = forwardRef<
       <div
         hidden={!buttons}
         className={classNames(
-          buttons && isMultiple && classes.buttonsContainer
+          buttons && !isCustomSingleDropdown && classes.buttonsContainer
         )}
       >
         <Button
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           onClick={handleCancel}
-          hidden={!isMultiple}
+          hidden={isCustomSingleDropdown}
         >
           {t('button.cancel')}
         </Button>
@@ -271,7 +271,7 @@ const DropdownContentComponent = forwardRef<
           size={SizeTypes.S}
           onClick={handleOnSave}
           className={classes.dropdownButton}
-          hidden={!isMultiple}
+          hidden={isCustomSingleDropdown}
         >
           {t('button.save')}
         </Button>
@@ -284,14 +284,12 @@ export interface DropdownContentProps extends DropdownContentComponentProps {
   clickAwayInputRef?: RefObject<HTMLDivElement>
   wrapperRef?: RefObject<HTMLDivElement>
   usePortal?: boolean
-  isMultiple?: boolean
 }
 
 const DropdownContent: FC<DropdownContentProps> = ({
   wrapperRef,
   clickAwayInputRef,
   usePortal,
-  isMultiple,
   ...rest
 }) => {
   const { modalContentId } = useModalContext()
@@ -302,7 +300,6 @@ const DropdownContent: FC<DropdownContentProps> = ({
         {...rest}
         wrapperRef={wrapperRef}
         ref={clickAwayInputRef}
-        isMultiple={isMultiple}
       />,
       document.getElementById(modalContentId || 'root') || document.body
     )

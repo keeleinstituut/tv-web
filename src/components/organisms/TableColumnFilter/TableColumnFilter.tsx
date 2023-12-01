@@ -28,7 +28,7 @@ type FilterProps = {
   onEndReached?: () => void
   onSearch?: (value: string) => void
   showSearch?: boolean
-  isMultiple?: boolean
+  isCustomSingleDropdown?: boolean
 }
 
 const TableColumnFilter = ({
@@ -43,7 +43,7 @@ const TableColumnFilter = ({
   onEndReached,
   onSearch,
   showSearch,
-  isMultiple,
+  isCustomSingleDropdown,
 }: FilterProps) => {
   const dropdownRef = useRef(null)
   const wrapperRef = useRef(null)
@@ -96,7 +96,7 @@ const TableColumnFilter = ({
         ariaLabel={ariaLabel}
         options={filterOption}
         value={value}
-        multiple={isMultiple}
+        multiple={!isCustomSingleDropdown}
         buttons={buttons}
         onChange={onChange}
         isOpen={isOpen}
@@ -108,7 +108,7 @@ const TableColumnFilter = ({
         onEndReached={onEndReached}
         onSearch={onSearch}
         usePortal
-        isMultiple={isMultiple}
+        isCustomSingleDropdown={isCustomSingleDropdown}
       />
     </div>
   )

@@ -37,6 +37,8 @@ type TaskTableRow = {
   deadline_at?: string
 }
 
+const columnHelper = createColumnHelper<TaskTableRow>()
+
 const TasksTable: FC<TasksTableProps> = ({
   tasks,
   isLoading,
@@ -57,7 +59,10 @@ const TasksTable: FC<TasksTableProps> = ({
     type: ClassifierValueType.ProjectType,
   })
 
-  const { lang_pair, type_classifier_value_id } = filters || {}
+  const { lang_pair, type_classifier_value_id } = (filters || {}) as {
+    lang_pair?: { src: string; dst: string }
+    type_classifier_value_id?: string
+  }
 
   const tasksData = useMemo(() => {
     return reduce<
@@ -129,98 +134,112 @@ const TasksTable: FC<TasksTableProps> = ({
     [handleFilterChange]
   )
 
-  const columnHelper = createColumnHelper<TaskTableRow>()
+  const columns = useMemo(
+    () =>
+      [
+        columnHelper.accessor('ext_id', {
+          header: () => t('my_tasks.assignment_id'),
+          footer: (info) => info.column.id,
+          cell: ({ getValue }) => {
+            const projectExtIdObject = getValue()
+            const taskId = projectExtIdObject?.id
+            const projectExtId = projectExtIdObject?.ext_id
 
-  const columns = [
-    columnHelper.accessor('ext_id', {
-      header: () => t('my_tasks.assignment_id'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        const projectExtIdObject = getValue()
-        const taskId = projectExtIdObject?.id
-        const projectExtId = projectExtIdObject?.ext_id
+            return (
+              <Button
+                appearance={AppearanceTypes.Text}
+                size={SizeTypes.M}
+                icon={ArrowRight}
+                ariaLabel={t('label.to_task_view')}
+                iconPositioning={IconPositioningTypes.Left}
+                href={`/projects/my-tasks/${taskId}${
+                  isHistoryTab ? '/isHistoryView' : ''
+                }     `}
+              >
+                {projectExtId}
+              </Button>
+            )
+          },
+        }),
+        columnHelper.accessor('reference_number', {
+          header: () => t('label.associated_reference_number'),
+          footer: (info) => info.column.id,
+        }),
+        columnHelper.accessor('language_directions', {
+          header: () => t('label.language_directions'),
+          footer: (info) => info.column.id,
+          cell: ({ getValue }) => {
+            const label = getValue()
+            return (
+              <div className={classes.tagsRow}>
+                <Tag label={label} value />
+              </div>
+            )
+          },
+          meta: {
+            filterOption: { language_direction: languageDirectionFilters },
+            filterValue: map(
+              lang_pair || {},
+              ({ src, dst }) => `${src}_${dst ?? ''}`
+            ),
+            isCustomSingleDropdown: true,
+            onEndReached: loadMore,
+            onSearch: handleSearch,
+            showSearch: true,
+          },
+        }),
+        columnHelper.accessor('cost', {
+          header: () => t('label.cost'),
+          footer: (info) => info.column.id,
+          cell: ({ getValue }) => (getValue() ? `${getValue()}€` : '-'),
+        }),
+        columnHelper.accessor('type', {
+          header: () => t('label.type'),
+          footer: (info) => info.column.id,
+          meta: {
+            filterOption: { type_classifier_value_id: typeFilters },
+            filterValue: type_classifier_value_id,
+            isCustomSingleDropdown: true,
+          },
+        }),
+        columnHelper.accessor('deadline_at', {
+          header: () => t('label.deadline_at'),
+          footer: (info) => info.column.id,
+          cell: ({ getValue }) => {
+            const dateValue = getValue()
+            const deadlineDate = dayjs(dateValue)
+            const currentDate = dayjs()
+            const diff = deadlineDate.diff(currentDate)
+            const formattedDate = dayjs(dateValue).format('DD.MM.YYYY')
 
-        return (
-          <Button
-            appearance={AppearanceTypes.Text}
-            size={SizeTypes.M}
-            icon={ArrowRight}
-            ariaLabel={t('label.to_task_view')}
-            iconPositioning={IconPositioningTypes.Left}
-            href={`/projects/my-tasks/${taskId}${
-              isHistoryTab ? '/isHistoryView' : ''
-            }     `}
-          >
-            {projectExtId}
-          </Button>
-        )
-      },
-    }),
-    columnHelper.accessor('reference_number', {
-      header: () => t('label.associated_reference_number'),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('language_directions', {
-      header: () => t('label.language_directions'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        const label = getValue()
-        return (
-          <div className={classes.tagsRow}>
-            <Tag label={label} value />
-          </div>
-        )
-      },
-      meta: {
-        filterOption: { language_direction: languageDirectionFilters },
-        filterValue: map(lang_pair, ({ src, dst }) => `${src}_${dst}`),
-        isMultiple: false,
-        onEndReached: loadMore,
-        onSearch: handleSearch,
-        showSearch: true,
-      },
-    }),
-    columnHelper.accessor('cost', {
-      header: () => t('label.cost'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => (getValue() ? `${getValue()}€` : '-'),
-    }),
-    columnHelper.accessor('type', {
-      header: () => t('label.type'),
-      footer: (info) => info.column.id,
-      meta: {
-        filterOption: { type_classifier_value_id: typeFilters },
-        filterValue: type_classifier_value_id,
-        isMultiple: false,
-      },
-    }),
-    columnHelper.accessor('deadline_at', {
-      header: () => t('label.deadline_at'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        const dateValue = getValue()
-        const deadlineDate = dayjs(dateValue)
-        const currentDate = dayjs()
-        const diff = deadlineDate.diff(currentDate)
-        const formattedDate = dayjs(dateValue).format('DD.MM.YYYY')
-
-        const hasDeadlineError = diff < 0
-        return (
-          <span
-            className={classNames(
-              classes.deadline,
-              hasDeadlineError && classes.error
-            )}
-          >
-            {formattedDate}
-          </span>
-        )
-      },
-      meta: {
-        sortingOption: ['asc', 'desc'],
-      },
-    }),
-  ] as ColumnDef<TaskTableRow>[]
+            const hasDeadlineError = diff < 0
+            return (
+              <span
+                className={classNames(
+                  classes.deadline,
+                  hasDeadlineError && classes.error
+                )}
+              >
+                {formattedDate}
+              </span>
+            )
+          },
+          meta: {
+            sortingOption: ['asc', 'desc'],
+          },
+        }),
+      ] as ColumnDef<TaskTableRow>[],
+    [
+      t,
+      isHistoryTab,
+      languageDirectionFilters,
+      lang_pair,
+      typeFilters,
+      type_classifier_value_id,
+      loadMore,
+      handleSearch,
+    ]
+  )
 
   const showNoTasksMessage = isEmpty(tasks) && !filterModified
 

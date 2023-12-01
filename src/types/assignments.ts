@@ -49,6 +49,7 @@ export interface AssignmentType {
   finished_at: string
   assigned_chunks: string[]
   comments: string
+  price: string
 }
 
 // TODO: no idea if this is the correct format

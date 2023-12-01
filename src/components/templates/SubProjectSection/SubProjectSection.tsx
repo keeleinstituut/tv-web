@@ -1,10 +1,9 @@
-import { useState, FC, PropsWithChildren, useCallback, useEffect } from 'react'
+import { useState, FC, useCallback, useEffect } from 'react'
 import classes from './classes.module.scss'
 import {
   useFetchSubProject,
   useSubProjectWorkflow,
 } from 'hooks/requests/useProjects'
-import Tag from 'components/atoms/Tag/Tag'
 import Loader from 'components/atoms/Loader/Loader'
 import { includes, toLower, find, isEmpty } from 'lodash'
 import { ListSubProjectDetail, SubProjectFeatures } from 'types/projects'
@@ -12,7 +11,6 @@ import { useTranslation } from 'react-i18next'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import classNames from 'classnames'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
-import dayjs from 'dayjs'
 import Notification, {
   NotificationTypes,
 } from 'components/molecules/Notification/Notification'
@@ -21,66 +19,10 @@ import Button from 'components/molecules/Button/Button'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
-import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import useAuth from 'hooks/useAuth'
 import SubProjectSectionContent from 'components/organisms/SubProjectSectionContent/SubProjectSectionContent'
 import { Privileges } from 'types/privileges'
-
-interface ColumnProps {
-  label?: string
-}
-
-const Column: FC<PropsWithChildren<ColumnProps>> = ({ label, children }) => (
-  <div className={classes.column}>
-    <span className={classes.label}>{label}</span>
-    {children}
-  </div>
-)
-
-interface LeftComponentProps {
-  languageDirection?: string
-  ext_id: string
-  price?: string
-  deadline_at?: string
-  mode?: ProjectDetailModes
-}
-
-export const LeftComponent: FC<LeftComponentProps> = ({
-  languageDirection,
-  ext_id,
-  price,
-  deadline_at,
-  mode,
-}) => {
-  const { t } = useTranslation()
-
-  return (
-    <>
-      <Column label={t('label.language_direction')}>
-        <Tag label={languageDirection || '-'} value />
-      </Column>
-      <Column
-        label={
-          mode === ProjectDetailModes.View
-            ? t('my_tasks.assignment_id')
-            : t('label.sub_project_id')
-        }
-      >
-        <span className={classes.valueText}>{ext_id}</span>
-      </Column>
-      <Column label={t('label.cost')}>
-        <span className={classes.boldValueText}>
-          {price ? `${price}€` : '-'}
-        </span>
-      </Column>
-      <Column label={t('label.deadline_at')}>
-        <span className={classes.valueText}>
-          {deadline_at ? dayjs(deadline_at).format('DD.MM.YYYY HH:mm') : '-'}
-        </span>
-      </Column>
-    </>
-  )
-}
+import ExpandableContentLeftComponent from 'components/molecules/ExpandableContentLeftComponent/ExpandableContentLeftComponent'
 
 type SubProjectProps = Pick<
   ListSubProjectDetail,
@@ -242,7 +184,9 @@ const SubProjectSection: FC<SubProjectProps> = ({
         </>
       }
       leftComponent={
-        <LeftComponent {...{ ext_id, deadline_at, price, languageDirection }} />
+        <ExpandableContentLeftComponent
+          {...{ ext_id, deadline_at, price, languageDirection }}
+        />
       }
     >
       <SubProjectSectionContent

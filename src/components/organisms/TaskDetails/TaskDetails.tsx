@@ -5,14 +5,15 @@ import ExpandableContentContainer from 'components/molecules/ExpandableContentCo
 import classNames from 'classnames'
 import useHashState from 'hooks/useHashState'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
-import { LeftComponent } from 'components/templates/SubProjectSection/SubProjectSection'
 import TaskContent from 'components/organisms/TaskContent/TaskContent'
-import { ListProject, ProjectStatus, SourceFile } from 'types/projects'
+import { ListProject, SourceFile, SubProjectStatus } from 'types/projects'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import { VolumeValue } from 'types/volumes'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
+import ExpandableContentLeftComponent from 'components/molecules/ExpandableContentLeftComponent/ExpandableContentLeftComponent'
 
 import classes from './classes.module.scss'
+
 interface TaskProps {
   ext_id?: string
   isLoading: boolean
@@ -31,8 +32,9 @@ interface TaskProps {
   deadline_at?: string
   event_start_at?: string
   job_short_name?: string
-  status?: ProjectStatus
+  status?: SubProjectStatus
   final_files?: SourceFile[]
+  price?: string
 }
 
 const TaskDetails: FC<TaskProps> = ({
@@ -40,16 +42,15 @@ const TaskDetails: FC<TaskProps> = ({
   isLoading,
   source_language_classifier_value,
   destination_language_classifier_value,
-  project,
   assignee_institution_user_id,
   job_short_name,
   status,
+  deadline_at,
+  price,
   ...rest
 }) => {
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
-
-  const { price, deadline_at } = project || {}
 
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
@@ -96,7 +97,7 @@ const TaskDetails: FC<TaskProps> = ({
       }
       wrapContent
       leftComponent={
-        <LeftComponent
+        <ExpandableContentLeftComponent
           {...{ ext_id, deadline_at, price, languageDirection }}
           mode={ProjectDetailModes.View}
         />

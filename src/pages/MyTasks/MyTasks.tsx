@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import TasksTable from 'components/organisms/tables/TasksTable/TasksTable'
 import { map } from 'lodash'
 import Tabs from 'components/molecules/Tabs/Tabs'
@@ -17,13 +17,13 @@ import {
 import classes from './classes.module.scss'
 
 export interface TasksTableProps {
-  tasks: ListTask[]
-  filters?: TasksPayloadType
-  paginationData?: ResponseMetaTypes
-  handleFilterChange: (value?: FilterFunctionType) => void
-  handleSortingChange: (value?: SortingFunctionType) => void
-  handlePaginationChange: (value?: PaginationFunctionType) => void
-  isLoading: boolean
+  tasks?: ListTask[]
+  filters?: object | TasksPayloadType
+  isLoading?: boolean
+  paginationData?: ResponseMetaTypes | undefined
+  handleFilterChange?: (value?: FilterFunctionType | undefined) => void
+  handleSortingChange?: (value?: SortingFunctionType | undefined) => void
+  handlePaginationChange?: (value?: PaginationFunctionType | undefined) => void
   isHistoryTab?: boolean
 }
 
@@ -64,56 +64,69 @@ const MyTasks: FC = () => {
     t('my_tasks.my_assignments')
   )
 
-  let componentProps: TasksTableProps = {
-    tasks: tasks || [],
-    filters: filters,
-    isLoading: isLoading,
-    paginationData: paginationData,
-    handleFilterChange: handleFilterChange,
-    handleSortingChange: handleSortingChange,
-    handlePaginationChange: handlePaginationChange,
-  }
-
-  switch (activeTab) {
-    case t('my_tasks.my_assignments'):
-      componentProps = {
-        tasks: tasks || [],
-        filters: filters,
-        isLoading: isLoading,
-        paginationData: paginationData,
-        handleFilterChange: handleFilterChange,
-        handleSortingChange: handleSortingChange,
-        handlePaginationChange: handlePaginationChange,
-        isHistoryTab: false,
-      }
-      break
-    case t('my_tasks.pending_assignments'):
-      componentProps = {
-        tasks: waitingTasks || [],
-        filters: waitingTasksFilters,
-        isLoading: isLoadingWaitingTasks,
-        paginationData: waitingTasksPaginationData,
-        handleFilterChange: handleWaitingTasksFilterChange,
-        handleSortingChange: handleWaitingTasksSortingChange,
-        handlePaginationChange: handleWaitingTasksPaginationChange,
-        isHistoryTab: false,
-      }
-      break
-    case t('my_tasks.my_tasks_history'):
-      componentProps = {
-        tasks: historyTasks || [],
-        filters: historyTasksFilters,
-        isLoading: isLoadingHistoryTasks,
-        paginationData: historyPaginationData,
-        handleFilterChange: handleHistoryFilterChange,
-        handleSortingChange: handleHistorySortingChange,
-        handlePaginationChange: handleHisoryPaginationChange,
-        isHistoryTab: true,
-      }
-      break
-    default:
-      break
-  }
+  const componentProps = useMemo(() => {
+    switch (activeTab) {
+      case t('my_tasks.my_assignments'):
+        return {
+          tasks: tasks || [],
+          filters: filters,
+          isLoading: isLoading,
+          paginationData: paginationData,
+          handleFilterChange: handleFilterChange,
+          handleSortingChange: handleSortingChange,
+          handlePaginationChange: handlePaginationChange,
+          isHistoryTab: false,
+        }
+      case t('my_tasks.pending_assignments'):
+        return {
+          tasks: waitingTasks || [],
+          filters: waitingTasksFilters,
+          isLoading: isLoadingWaitingTasks,
+          paginationData: waitingTasksPaginationData,
+          handleFilterChange: handleWaitingTasksFilterChange,
+          handleSortingChange: handleWaitingTasksSortingChange,
+          handlePaginationChange: handleWaitingTasksPaginationChange,
+          isHistoryTab: false,
+        }
+      case t('my_tasks.my_tasks_history'):
+        return {
+          tasks: historyTasks || [],
+          filters: historyTasksFilters,
+          isLoading: isLoadingHistoryTasks,
+          paginationData: historyPaginationData,
+          handleFilterChange: handleHistoryFilterChange,
+          handleSortingChange: handleHistorySortingChange,
+          handlePaginationChange: handleHisoryPaginationChange,
+          isHistoryTab: true,
+        }
+      default:
+        return {}
+    }
+  }, [
+    activeTab,
+    t,
+    tasks,
+    filters,
+    isLoading,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+    waitingTasks,
+    waitingTasksFilters,
+    isLoadingWaitingTasks,
+    waitingTasksPaginationData,
+    handleWaitingTasksFilterChange,
+    handleWaitingTasksSortingChange,
+    handleWaitingTasksPaginationChange,
+    historyTasks,
+    historyTasksFilters,
+    isLoadingHistoryTasks,
+    historyPaginationData,
+    handleHistoryFilterChange,
+    handleHistorySortingChange,
+    handleHisoryPaginationChange,
+  ])
 
   const taskTabs = map(
     [

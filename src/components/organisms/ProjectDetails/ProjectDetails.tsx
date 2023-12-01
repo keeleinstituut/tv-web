@@ -16,7 +16,7 @@ import {
   NewProjectPayload,
   SourceFile,
   ProjectStatus,
-  DetailedProject,
+  ProjectDetail,
 } from 'types/projects'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
@@ -123,7 +123,7 @@ interface FormValues {
 
 interface ProjectDetailsProps {
   mode?: ProjectDetailModes
-  project?: DetailedProject
+  project?: ProjectDetail
   className?: string
 }
 

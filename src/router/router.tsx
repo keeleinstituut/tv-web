@@ -75,7 +75,6 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'projects',
     label: i18n.t('menu.projects'),
     Icon: ProjectsIcon,
-    privileges: [Privileges.ViewPersonalProject],
     children: [
       {
         path: '',

@@ -46,12 +46,12 @@ const TaskPage: FC = () => {
     sub_project_id,
     volumes,
     comments,
-    deadline_at,
     event_start_at,
+    deadline_at,
+    price,
   } = assignment || {}
 
   const {
-    project,
     cat_files,
     source_files,
     final_files,
@@ -62,8 +62,9 @@ const TaskPage: FC = () => {
 
   const { project: taskProject } = useFetchProject({ id: project_id })
 
-  const { sub_projects = [], status } = taskProject || {}
+  const { sub_projects = [] } = taskProject || {}
   const activeJobDefinition = sub_projects?.[0]?.active_job_definition
+  const subProjectStatus = sub_projects?.[0]?.status
   const { job_short_name } = activeJobDefinition || {}
 
   const handleAcceptTask = useCallback(async () => {
@@ -105,7 +106,6 @@ const TaskPage: FC = () => {
 
       <TaskDetails
         ext_id={ext_id}
-        project={project}
         isLoading={isHistoryView ? isLoadingHistoryTask : isLoading}
         source_language_classifier_value={source_language_classifier_value}
         destination_language_classifier_value={
@@ -122,9 +122,10 @@ const TaskPage: FC = () => {
         isHistoryView={isHistoryView}
         task_type={task_type}
         deadline_at={deadline_at}
+        price={price}
         event_start_at={event_start_at}
         job_short_name={job_short_name}
-        status={status}
+        status={subProjectStatus}
       />
     </>
   )

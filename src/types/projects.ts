@@ -187,29 +187,28 @@ export interface JobDefinition {
 }
 
 export interface ListProject {
-  id?: string
-  ext_id?: string
-  reference_number?: string
-  institution_id?: string
-  type_classifier_value_id?: string
-  type_classifier_value?: TypeClassifierValue
-  comments?: string
-  workflow_template_id?: WorkflowTemplateID
-  workflow_instance_ref?: string | null
-  deadline_at?: string
-  created_at?: string
-  updated_at?: string
+  id: string
+  ext_id: string
+  reference_number: string
+  institution_id: string
+  type_classifier_value_id: string
+  type_classifier_value: TypeClassifierValue
+  comments: string
+  workflow_template_id: WorkflowTemplateID
+  workflow_instance_ref: string | null
+  deadline_at: string
+  created_at: string
+  updated_at: string
   sub_projects: ListSubProjectDetail[]
-  status?: ProjectStatus
-  tags?: Tag[]
-  price?: string
-  event_start_at?: string
-  help_files?: SourceFile[] // might be different type
-  source_files?: SourceFile[]
-  client_institution_user?: UserType
-  manager_institution_user?: UserType
+  status: ProjectStatus
+  tags: Tag[]
+  price: string
+  help_files: SourceFile[] // might be different type
+  source_files: SourceFile[]
+  client_institution_user: UserType
+  manager_institution_user: UserType
 }
-export interface DetailedProject extends ListProject {
+export interface ProjectDetail extends ListProject {
   translation_domain_classifier_value: ClassifierValue
   event_start_at?: string
   workflow_started?: boolean
@@ -244,7 +243,7 @@ export interface SubProjectsResponse {
   meta: ResponseMetaTypes
 }
 export interface ProjectResponse {
-  data: DetailedProject
+  data: ProjectDetail
 }
 
 export interface SubProjectResponse {

@@ -1,26 +1,9 @@
-import { LanguageClassifierValue } from './classifierValues'
 import {
   PaginationFunctionType,
   ResponseMetaTypes,
   SortingFunctionType,
 } from './collective'
-import { ListProject, SourceFile } from './projects'
 import { AssignmentType } from 'types/assignments'
-
-export type SubProject = {
-  id: string
-  ext_id: string
-  project_id: string
-  deadline_at: number
-  created_at: string
-  updated_at: string
-  price: number
-  project: ListProject
-  source_language_classifier_value: LanguageClassifierValue
-  destination_language_classifier_value: LanguageClassifierValue
-  cat_files: SourceFile[]
-  source_files: SourceFile[]
-}
 
 export enum TaskType {
   Default = 'DEFAULT',
