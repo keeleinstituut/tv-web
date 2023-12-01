@@ -157,6 +157,7 @@ export interface ListSubProjectDetail {
   translation_domain_classifier_value?: ClassifierValue
   event_start_at?: string
   active_job_definition?: JobDefinition
+  cat_jobs: CatJob[]
 }
 
 export interface SubProjectDetail extends ListSubProjectDetail {
@@ -164,7 +165,6 @@ export interface SubProjectDetail extends ListSubProjectDetail {
   cat_project_created: string
   cat_features: SubProjectFeatures[]
   job_definitions: JobDefinition[]
-  cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
   cat_files: SourceFile[]
   final_files: SourceFile[]

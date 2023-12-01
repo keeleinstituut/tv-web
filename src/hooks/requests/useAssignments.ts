@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { map, find, filter } from 'lodash'
+import { map, find, filter, isArray } from 'lodash'
 import {
   AssignmentPayload,
   AssignmentType,
@@ -10,29 +10,41 @@ import {
 import { SplitProjectPayload, SubProjectResponse } from 'types/projects'
 
 const getNewSubProjectWithAssignment = (
-  assignment: AssignmentType,
+  assignments: AssignmentType | AssignmentType[],
   oldData?: SubProjectResponse
 ) => {
   const { data: previousData } = oldData || {}
   if (!previousData) return oldData
+  const allModifiedAssignments = isArray(assignments)
+    ? assignments
+    : [assignments]
 
-  const existingAssignment = find(previousData.assignments, {
-    id: assignment.id,
-  })
+  const allNewAssignment =
+    filter(
+      allModifiedAssignments,
+      ({ id }) => !find(previousData.assignments, { id })
+    ) || []
 
-  const newAssignments = existingAssignment
-    ? map(previousData.assignments, (item) => {
-        if (item.id === assignment.id) {
-          return assignment
-        }
-        return item
+  const modifiedAssignmentsList = map(
+    previousData.assignments,
+    (assignment) => {
+      const modifiedAssignment = find(allModifiedAssignments, {
+        id: assignment.id,
       })
-    : [...previousData.assignments, assignment]
+      if (!modifiedAssignment) {
+        return assignment
+      }
+      return {
+        ...assignment,
+        ...modifiedAssignment,
+      }
+    }
+  )
 
   const newData = {
     ...previousData,
-    ...(assignment?.subProject || {}),
-    assignments: newAssignments,
+    ...(allModifiedAssignments?.[0]?.subProject || {}),
+    assignments: [...modifiedAssignmentsList, ...allNewAssignment],
   }
   return { data: newData }
 }
@@ -166,8 +178,8 @@ export const useLinkCatToolJobs = () => {
       apiClient.post(endpoints.LINK_CAT_TOOL_JOBS, {
         ...payload,
       }),
-    onSuccess: ({ data }: { data: AssignmentType }) => {
-      const { sub_project_id } = data
+    onSuccess: ({ data }: { data: AssignmentType[] }) => {
+      const { sub_project_id } = data?.[0] || {}
       queryClient.setQueryData(
         ['subprojects', sub_project_id],
         (oldData?: SubProjectResponse) =>

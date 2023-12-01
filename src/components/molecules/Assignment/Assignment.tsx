@@ -98,7 +98,7 @@ const Assignment: FC<AssignmentProps> = ({
     })
 
   const { vendor } =
-    find(candidates, ({ vendor }) => vendor.id === assigned_vendor_id) || {}
+    find(candidates, ({ vendor }) => vendor?.id === assigned_vendor_id) || {}
   const { type_classifier_value } = project || {}
 
   const shouldShowStartTimeFields =

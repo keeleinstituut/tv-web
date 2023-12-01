@@ -50,14 +50,14 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
   const tableRows = useMemo(
     () =>
       map(candidates, ({ vendor, price, status }) => {
-        const { institution_user } = vendor
+        const { institution_user } = vendor || {}
         const name = `${institution_user?.user?.forename} ${institution_user?.user?.surname}`
 
         return {
           name,
           status,
           price,
-          delete_button: vendor.id,
+          delete_button: vendor?.id,
         }
       }),
     [candidates]
