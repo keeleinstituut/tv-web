@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { includes, split } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
@@ -41,7 +41,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
   const { userPrivileges } = useAuth()
   const { deleteTranslationMemory } = useDeleteTranslationMemory()
   const { importTMX } = useImportTMX()
-  const { exportTMX } = useExportTMX()
+  const { exportTMX, isLoading } = useExportTMX()
   const navigate = useNavigate()
 
   const { lang_pair } = translationMemory || {}
@@ -141,6 +141,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           onClick={handleExportFile}
+          loading={isLoading}
           children={t('button.export')}
           disabled={
             !includes(userPrivileges, Privileges.ExportTm) ||

@@ -5,6 +5,7 @@ import i18n from 'i18n/i18n'
 import { get, compact, map, isEmpty } from 'lodash'
 import { keycloak, startRefreshingToken } from 'hooks/useKeycloak'
 import { ReactElement } from 'react'
+import { AxiosRequestConfigWithRetries } from './ApiClient'
 
 interface ValidationErrorDataType {
   [key: string]: string[]
@@ -41,7 +42,13 @@ export const showValidationErrorMessage = (errorData: unknown) => {
 
 const handleError = async (error?: AxiosError) => {
   // TODO: might need some improvements + better handling of 403 errors
-  const { response } = error || {}
+  const { response, config } = error || {}
+  const typedConfig = config as AxiosRequestConfigWithRetries & {
+    hideError?: boolean
+  }
+  if (typedConfig?.hideError) {
+    throw error
+  }
   const code = response?.status
   const specificErrors = get(response, 'data.errors', {})
   const genericErrorMessage = get(response, 'data.message', '')
