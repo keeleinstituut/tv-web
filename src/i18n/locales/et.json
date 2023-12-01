@@ -538,7 +538,7 @@
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
     "warning": "Hoiatus",
     "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida",
-    "tm_import_failed": "Tõlkemälu segmendi üleslaadimine ebaõnnestus",
+    "tm_import_failed": "Failivorming ei ühildu. Lisage fail .tmx-vormingus",
     "tm_export_failed": "Tõlkemälu segmendi allalaadimine ebaõnnestus",
     "tm_delete_failed": "Tõlkemälu kustutamine ebaõnnestus"
   },
