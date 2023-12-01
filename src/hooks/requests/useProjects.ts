@@ -17,7 +17,7 @@ import {
 } from 'types/projects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
-import { includes } from 'lodash'
+import { includes, map } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
@@ -129,6 +129,9 @@ export const useUpdateProject = ({ id }: { id?: string }) => {
           const newData = { ...previousData, ...data }
           return { data: newData }
         }
+      )
+      map(data.sub_projects, (subProject) =>
+        queryClient.refetchQueries({ queryKey: ['subprojects', subProject.id] })
       )
     },
   })
