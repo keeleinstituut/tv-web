@@ -112,9 +112,13 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
           typedValue,
           (_, fileIndex) => index !== fileIndex
         )
-        showModal(ModalTypes.ConfirmDeleteSourceFile, {
-          callback: () => onChange(newSourceFiles),
-        })
+        if (!isEditable) {
+          showModal(ModalTypes.ConfirmDeleteSourceFile, {
+            callback: () => onChange(newSourceFiles),
+          })
+        } else {
+          onChange(newSourceFiles)
+        }
         if (name === 'help_files') {
           onChangeHelpFileTypes(
             filter(helpFileTypes, (_, typeIndex) => index !== typeIndex)
