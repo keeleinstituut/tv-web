@@ -429,6 +429,7 @@
     "confirm_project_cancellation_helper": "Tühistatud tellimus tähistatakse staatusega „Tühistatud“.  Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Peale 3 kuu möödumist tuleb sama töö tellimiseks luua uus tellimus.",
     "confirm_project_rejection_title": "Kas oled kindel, et soovid tellimuse tagasi lükata?",
     "confirm_project_rejection_helper": "Vali üks või mitu alamtellimust, mille soovid tagasi lükata.\n Palun lisa lühike tagasilükkamise põhjendus ja kirjelda, mida on vaja teisiti teha.",
+    "confirm_delete_source_file": "Kas oled kindel, et soovid faili kustutada?",
     "pick_files_to_forward": "Vali failid mida soovid edastada",
     "forward_files_helper": "Vali teostajatelt saadud valmis failid, mile soovid tellijale edasi saata.",
     "reassign_project_title": "Suuna teisele tõlkekorraldajale",
@@ -545,6 +546,7 @@
     "project_cancelled": "Tellimus edukalt tühistatud",
     "project_accepted": "Tellimus vastuvõetud",
     "project_rejected": "Tellimus tagasi lükatud",
+    "source_file_deleted": "Lähtefail on edukalt kustutatud",
     "project_corrected": "Tellimus lõpetatuks märgitud",
     "task_marked_completed":"Ülesanne edukalt lõpetatuks märgitud",
     "project_reassigned": "Tellimus edukalt suunatud"
@@ -557,7 +559,7 @@
     "delete_role": "Kas oled kindel, et soovid rolli kustutada?",
     "warning": "Hoiatus",
     "main_user_archive": "Peakasutaja rolli pole võimalik arhiveerida",
-    "tm_import_failed": "Tõlkemälu segmendi üleslaadimine ebaõnnestus",
+    "tm_import_failed": "Failivorming ei ühildu. Lisage fail .tmx-vormingus",
     "tm_export_failed": "Tõlkemälu segmendi allalaadimine ebaõnnestus",
     "tm_delete_failed": "Tõlkemälu kustutamine ebaõnnestus"
   },
