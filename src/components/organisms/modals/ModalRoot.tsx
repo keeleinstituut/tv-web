@@ -25,6 +25,7 @@ import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
 import { ConfirmDeleteVolumeModalProps } from './ConfirmDeleteVolumeModal/ConfirmDeleteVolumeModal'
 import { ConfirmCancelProjectModalProps } from './ConfirmCancelProjectModal/ConfirmCancelProjectModal'
 import { ConfirmRejectProjectModalProps } from './ConfirmRejectProjectModal/ConfirmRejectProjectModal'
+import { ConfirmDeleteSourceFileModalProps } from './ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal'
 import { ConfirmTmWritableModalProps } from './ConfirmTmWritableModal/ConfirmTmWritableModal'
 import { ConfirmAssignmentCompletionModalProps } from './ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal'
 import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjectModal'
@@ -85,6 +86,10 @@ const ConfirmRejectProjectModal = lazy(
   () => import('./ConfirmRejectProjectModal/ConfirmRejectProjectModal')
 )
 
+const ConfirmDeleteSourceFileModal = lazy(
+  () => import('./ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal')
+)
+
 const ConfirmTmWritableModal = lazy(
   () => import('./ConfirmTmWritableModal/ConfirmTmWritableModal')
 )
@@ -120,6 +125,7 @@ export enum ModalTypes {
   AddTranslationMemories = 'addTranslationMemories',
   ConfirmCancelProject = 'confirmCancelProject',
   ConfirmRejectProject = 'confirmRejectProject',
+  ConfirmDeleteSourceFile = 'confirmDeleteSourceFile',
   ConfirmTmWritable = 'confirmTmWritable',
   ConfirmAssignmentCompletion = 'confirmAssignmentCompletion',
   ReassignProject = 'reassignProjectModal',
@@ -145,6 +151,7 @@ type ModalPropTypes =
   | Omit<ConfirmDeleteVolumeModalProps, 'closeModal'>
   | Omit<ConfirmCancelProjectModalProps, 'closeModal'>
   | Omit<ConfirmRejectProjectModalProps, 'closeModal'>
+  | Omit<ConfirmDeleteSourceFileModalProps, 'closeModal'>
   | Omit<ConfirmTmWritableModalProps, 'closeModal'>
   | Omit<ConfirmAssignmentCompletionModalProps, 'closeModal'>
   | Omit<ReassignProjectModalProps, 'closeModal'>
@@ -169,6 +176,7 @@ const MODALS = {
   [ModalTypes.AddTranslationMemories]: AddTranslationMemoriesModal,
   [ModalTypes.ConfirmCancelProject]: ConfirmCancelProjectModal,
   [ModalTypes.ConfirmRejectProject]: ConfirmRejectProjectModal,
+  [ModalTypes.ConfirmDeleteSourceFile]: ConfirmDeleteSourceFileModal,
   [ModalTypes.ConfirmTmWritable]: ConfirmTmWritableModal,
   [ModalTypes.ConfirmAssignmentCompletion]: ConfirmAssignmentCompletionModal,
   [ModalTypes.ReassignProject]: ReassignProjectModal,

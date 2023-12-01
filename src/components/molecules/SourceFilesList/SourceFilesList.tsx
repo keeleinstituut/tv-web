@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, filter, isEmpty, includes } from 'lodash'
+import { filter, includes, isEmpty, map } from 'lodash'
 import {
   InputTypes,
   FormInput,
@@ -24,6 +24,7 @@ import GenerateForTranslationSection from 'components/molecules/GenerateForTrans
 
 import classes from './classes.module.scss'
 import { useHandleFiles } from 'hooks/requests/useFiles'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 
 // TODO: very similar to ProjectFilesList, these 2 can be unified
 
@@ -74,7 +75,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
     name: name as Path<TFormValues>,
     control,
   })
-  const { addFiles, deleteFile, downloadFile } = useHandleFiles({
+  const { addFiles, downloadFile } = useHandleFiles({
     reference_object_id: subProjectId,
     reference_object_type: 'subproject',
     collection: 'source',
@@ -117,11 +118,19 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   const handleDelete = useCallback(
     (index?: number) => {
       if (index === 0 || index) {
-        deleteFile(typedValue[index].id)
-        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+        const newSourceFiles = filter(
+          typedValue,
+          (_, fileIndex) => index !== fileIndex
+        )
+
+        showModal(ModalTypes.ConfirmDeleteSourceFile, {
+          subProjectId: subProjectId,
+          sourceFileId: typedValue[index].id,
+          callback: () => onChange(newSourceFiles),
+        })
       }
     },
-    [onChange, deleteFile, typedValue]
+    [onChange, typedValue, subProjectId]
   )
 
   const columns = [
