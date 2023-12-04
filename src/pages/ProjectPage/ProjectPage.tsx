@@ -39,13 +39,27 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
     project_id: projectId,
     task_type: TaskType.ClientReview,
   })
+  const { tasks: correctingTasks, isLoading: isLoadingCorrectingTasks } =
+    useFetchTasks({
+      project_id: projectId,
+      task_type: TaskType.Correcting,
+    })
 
   const { completeTask, isLoading: isCompletingTask } = useCompleteTask({
     id: tasks?.[0]?.id,
   })
 
+  const { completeTask: completeCorrectingTask, isLoading: isCorrectingTask } =
+    useCompleteTask({
+      id: correctingTasks?.[0]?.id,
+    })
+
+  // Conditions for buttons:
+
   // There will only be a maximum of 1 CLIENT_REVIEW task per project
   const clientReviewTaskExists = !isLoading && !isEmpty(tasks)
+  const correctingTaskExists =
+    !isLoadingCorrectingTasks && !isEmpty(correctingTasks)
 
   const isProjectCancellable = includes(
     [ProjectStatus.New, ProjectStatus.Registered],
@@ -55,9 +69,10 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
     includes(userPrivileges, Privileges.ViewPersonalProject) &&
     isUserClientOfProject
 
-  const canCancelInstitutionProject =
-    status === ProjectStatus.New &&
-    includes(userPrivileges, Privileges.ManageProject)
+  const canCancelInstitutionProject = includes(
+    userPrivileges,
+    Privileges.ManageProject
+  )
 
   const canCancelProject =
     isProjectCancellable &&
@@ -68,6 +83,23 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
     clientReviewTaskExists &&
     includes([ProjectStatus.Corrected, ProjectStatus.SubmittedToClient], status)
 
+  const canMarkAsCompleted =
+    canCancelInstitutionProject &&
+    status === ProjectStatus.Rejected &&
+    correctingTaskExists
+
+  const canReassignProject =
+    includes(
+      [
+        ProjectStatus.Corrected,
+        ProjectStatus.Registered,
+        ProjectStatus.SubmittedToClient,
+        ProjectStatus.Rejected,
+      ],
+      status
+    ) && includes(userPrivileges, Privileges.ManageProject)
+
+  // Button functionalities
   const openConfirmCancelModal = useCallback(() => {
     showModal(ModalTypes.ConfirmCancelProject, {
       projectId,
@@ -85,9 +117,15 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
     })
   }, [projectId, sub_projects, tasks])
 
+  const openReassignmentModal = useCallback(() => {
+    showModal(ModalTypes.ReassignProject, {
+      projectId,
+    })
+  }, [projectId])
+
   const handleAcceptProject = useCallback(async () => {
     try {
-      await completeTask({ accepted: true })
+      await completeTask({ accepted: 1 })
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
@@ -98,12 +136,27 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
     }
   }, [t, completeTask])
 
+  const markProjectAsCompleted = useCallback(async () => {
+    try {
+      await completeCorrectingTask({})
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.project_corrected'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+    // TODO
+  }, [completeCorrectingTask, t])
+
   // TODO: mapped buttons:
   // Left:
   // 1. Delegate to other manager (Registreeritud status + )
   // Right:
   // 1. Cancel project --
   if (!status) return null
+
   return (
     <div className={classes.buttonsContainer}>
       <Button
@@ -111,8 +164,8 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
         children={t('button.delegate_to_other_manager')}
         // TODO: disabled for now, we don't have endpoint for this
         // open confirmation modal from here
-        disabled
-        // hidden={!includes(userPrivileges, Privileges.DeactivateUser)}
+        onClick={openReassignmentModal}
+        hidden={!canReassignProject}
       />
       {/* Reject button */}
       <Button
@@ -120,6 +173,14 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
         children={t('button.reject_project')}
         onClick={openConfirmRejectModal}
         hidden={!canAcceptProject}
+      />
+      {/* mark as completed button */}
+      <Button
+        appearance={AppearanceTypes.Primary}
+        onClick={markProjectAsCompleted}
+        children={t('button.mark_project_as_completed')}
+        hidden={!canMarkAsCompleted}
+        loading={isCorrectingTask}
       />
       {/* Cancel button */}
       <Button

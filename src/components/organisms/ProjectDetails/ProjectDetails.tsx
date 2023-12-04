@@ -13,10 +13,10 @@ import { useCreateProject, useUpdateProject } from 'hooks/requests/useProjects'
 import { join, map, includes, isEmpty, pick, keys, compact, find } from 'lodash'
 import { getUtcDateStringFromLocalDateObject } from 'helpers'
 import {
-  DetailedProject,
   NewProjectPayload,
   SourceFile,
   ProjectStatus,
+  ProjectDetail,
 } from 'types/projects'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
@@ -27,18 +27,18 @@ import { ValidationError } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import { Privileges } from 'types/privileges'
-
-import classes from './classes.module.scss'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { getProjectDefaultValues, mapFilesForApi } from 'helpers/project'
 import { HelperFileTypes } from 'types/classifierValues'
 import { useHandleBulkFiles } from 'hooks/requests/useFiles'
-import { useQueryClient } from '@tanstack/react-query'
+
+import classes from './classes.module.scss'
 
 export enum ProjectDetailModes {
   New = 'new',
   Editable = 'editable',
+  View = 'view',
 }
 
 interface FormButtonsProps {
@@ -123,10 +123,15 @@ interface FormValues {
 
 interface ProjectDetailsProps {
   mode?: ProjectDetailModes
-  project?: DetailedProject
+  project?: ProjectDetail
+  className?: string
 }
 
-const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
+const ProjectDetails: FC<ProjectDetailsProps> = ({
+  mode,
+  project,
+  className,
+}) => {
   const {
     workflow_started,
     id,
@@ -138,19 +143,25 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
   } = project || {}
 
   const { t } = useTranslation()
-  const queryClient = useQueryClient()
   const { institutionUserId, userPrivileges } = useAuth()
   const { createProject, isLoading } = useCreateProject()
   const { updateProject, isLoading: isUpdatingProject } = useUpdateProject({
     id,
   })
 
-  const { deleteBulkFiles, addBulkFiles, updateBulkFiles } = useHandleBulkFiles(
-    {
-      reference_object_id: project?.id ?? '',
-      reference_object_type: 'project',
-    }
-  )
+  const {
+    deleteBulkFiles,
+    addBulkFiles,
+    updateBulkFiles,
+    isAddLoading,
+    isDeleteLoading,
+  } = useHandleBulkFiles({
+    reference_object_id: project?.id ?? '',
+    reference_object_type: 'project',
+  })
+
+  const isSubmitLoading =
+    isAddLoading || isDeleteLoading || isUpdatingProject || isLoading
 
   const navigate = useNavigate()
   const isNew = mode === ProjectDetailModes.New
@@ -213,7 +224,8 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
   const isRestEditable = isNew || hasManagerPrivilege
 
   const isSomethingEditable =
-    isManagerEditable || isClientEditable || isRestEditable
+    status !== ProjectStatus.Accepted &&
+    (isManagerEditable || isClientEditable || isRestEditable)
 
   // Validation errors
   const mapProjectValidationErrors = useCallback(
@@ -292,12 +304,8 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
         // if (!isEmpty(updatedFiles)) {
         //   await updateBulkFiles(updatedFiles)
         // }
-        await updateProject(actualPayload)
-        if (id) {
-          queryClient.refetchQueries({
-            queryKey: ['projects', id],
-            type: 'active',
-          })
+        if (!isEmpty(actualPayload)) {
+          await updateProject(actualPayload)
         }
         showNotification({
           type: NotificationTypes.Success,
@@ -324,12 +332,10 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
       dirtyFields,
       help_files,
       source_files,
-      id,
       updateProject,
       t,
       addBulkFiles,
       deleteBulkFiles,
-      queryClient,
       mapProjectValidationErrors,
     ]
   )
@@ -377,17 +383,16 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
       isEditEnabled,
       setIsEditEnabled,
       isSubmitting,
-      isLoading: isLoading || isUpdatingProject,
+      isLoading: isSubmitLoading,
       isValid,
       isDirty,
     }),
     [
       handleSubmit,
       isEditEnabled,
-      isLoading,
+      isSubmitLoading,
       isNew,
       isSubmitting,
-      isUpdatingProject,
       isDirty,
       isValid,
       onSubmit,
@@ -405,6 +410,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
           {t('projects.project_details_expandable')}
         </h2>
       }
+      className={className}
     >
       <Root
         className={classNames(
@@ -443,7 +449,9 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
           />
           <FormButtons
             {...formButtonsProps}
-            hidden={isNew || !isSomethingEditable}
+            hidden={
+              isNew || !isSomethingEditable || mode === ProjectDetailModes.View
+            }
           />
         </Container>
         <FormButtons

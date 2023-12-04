@@ -1,6 +1,6 @@
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
 import { filter, find, isEmpty, map, uniq, compact } from 'lodash'
-import { DetailedProject, SourceFile } from 'types/projects'
+import { ProjectDetail, SourceFile } from 'types/projects'
 
 import dayjs from 'dayjs'
 import { ClassifierValue, HelperFileTypes } from 'types/classifierValues'
@@ -14,7 +14,7 @@ export const getProjectDefaultValues = ({
 }: {
   institutionUserId: string
   isNew: boolean
-  project?: DetailedProject
+  project?: ProjectDetail
   defaultDomainClassifier?: ClassifierValue
   defaultProjectTypeClassifier?: ClassifierValue
 }) => {
@@ -27,6 +27,7 @@ export const getProjectDefaultValues = ({
     reference_number = '',
     source_files,
     help_files,
+    review_files,
     translation_domain_classifier_value,
     comments = '',
     ext_id = '',
@@ -58,6 +59,7 @@ export const getProjectDefaultValues = ({
     reference_number,
     source_files: isNew ? [] : source_files,
     help_files: isNew ? [] : help_files,
+    review_files: isNew ? [] : review_files,
     ext_id,
     deadline_at: deadline_at
       ? getLocalDateOjectFromUtcDateString(deadline_at)

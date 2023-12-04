@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo } from 'react'
-import { map, find, pick, values, isEqual } from 'lodash'
+import { map, find, pick, values, isEqual, includes } from 'lodash'
 import { ListProject, SubProjectFeatures } from 'types/projects'
 import {
   AssignmentPayload,
@@ -24,7 +24,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { DiscountPercentageNames, DiscountPercentages } from 'types/vendors'
 import { Price } from 'types/price'
-import TaskCandidatesSection from 'components/molecules/TaskCandidatesSection/TaskCandidatesSection'
+import AssignmentCandidatesSection from 'components/molecules/AssignmentCandidatesSection/AssignmentCandidatesSection'
 import { VolumeValue } from 'types/volumes'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -48,16 +48,16 @@ interface AssignmentProps extends AssignmentType {
   destination_language_classifier_value_id: string
   isVendorView?: boolean
   catSupported?: boolean
-  ext_id?: string
   volumes?: VolumeValue[]
   project: ListProject
+  subProjectDeadline?: string
+  isEditable?: boolean
 }
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
   event_start_at?: { date?: string; time?: string }
   comments?: string
-  // TODO: Not sure about the structure of following fields
   volume?: VolumeValue[]
   vendor_comments?: string
 }
@@ -82,6 +82,8 @@ const Assignment: FC<AssignmentProps> = ({
   deadline_at,
   event_start_at,
   status,
+  subProjectDeadline,
+  isEditable,
 }) => {
   const { t } = useTranslation()
   const { completeAssignment, isLoading: isCompletingAssignment } =
@@ -90,11 +92,13 @@ const Assignment: FC<AssignmentProps> = ({
     })
   const { updateAssignment } = useAssignmentUpdate({ id })
   const { deleteAssignment, isLoading: isDeletingAssignment } =
-    useDeleteAssignment()
+    useDeleteAssignment({
+      sub_project_id,
+    })
 
   const { vendor } =
-    find(candidates, ({ vendor }) => vendor.id === assigned_vendor_id) || {}
-  const { deadline_at: projectDeadline, type_classifier_value } = project || {}
+    find(candidates, ({ vendor }) => vendor?.id === assigned_vendor_id) || {}
+  const { type_classifier_value } = project || {}
 
   const shouldShowStartTimeFields =
     type_classifier_value?.project_type_config?.is_start_date_supported
@@ -177,11 +181,7 @@ const Assignment: FC<AssignmentProps> = ({
 
   const sendToPreviousAssignment = useCallback(async () => {
     try {
-      // TODO: no idea what this does at the moment
-      // await updateAssignment({
-      //   // TODO: not sure if this is
-      //   finished_at: null,
-      // })
+      await completeAssignment({ accepted: false })
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
@@ -190,7 +190,7 @@ const Assignment: FC<AssignmentProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [t])
+  }, [completeAssignment, t])
 
   const handleUpdateAssignment = useCallback(
     async (payload: AssignmentPayload) => {
@@ -267,9 +267,9 @@ const Assignment: FC<AssignmentProps> = ({
         className: classes.customInternalClass,
         name: 'deadline_at',
         minDate: new Date(),
-        maxDate: dayjs(projectDeadline).toDate(),
+        maxDate: dayjs(subProjectDeadline).toDate(),
         onDateTimeChange: handleAddDateTime,
-        // onlyDisplay: !isEditable,
+        disabled: !isEditable,
       },
       {
         inputType: InputTypes.DateTime,
@@ -279,8 +279,8 @@ const Assignment: FC<AssignmentProps> = ({
         className: classes.customInternalClass,
         name: 'event_start_at',
         minDate: new Date(),
-        maxDate: dayjs(projectDeadline).toDate(),
-        // onlyDisplay: !isEditable,
+        maxDate: dayjs(subProjectDeadline).toDate(),
+        disabled: !isEditable,
       },
       {
         inputType: InputTypes.Text,
@@ -292,7 +292,7 @@ const Assignment: FC<AssignmentProps> = ({
         className: classes.inputInternalPosition,
         isTextarea: true,
         handleOnBlur: handleAddComment,
-        // onlyDisplay: !isEditable,
+        disabled: !isEditable,
       },
       {
         inputType: InputTypes.AddVolume,
@@ -307,7 +307,7 @@ const Assignment: FC<AssignmentProps> = ({
         value: volumes,
         assignmentId: id,
         sub_project_id,
-        // onlyDisplay: !isEditable,
+        disabled: !isEditable,
       },
       {
         inputType: InputTypes.Text,
@@ -317,13 +317,14 @@ const Assignment: FC<AssignmentProps> = ({
         name: 'vendor_comments',
         className: classes.inputInternalPosition,
         isTextarea: true,
-        onlyDisplay: !isVendorView,
+        onlyDisplay: !isVendorView || !isEditable,
       },
     ],
     [
       t,
-      projectDeadline,
+      subProjectDeadline,
       handleAddDateTime,
+      isEditable,
       shouldShowStartTimeFields,
       id,
       handleAddComment,
@@ -364,18 +365,25 @@ const Assignment: FC<AssignmentProps> = ({
             hidden={index === 0}
             onClick={handleDeleteAssignment}
             loading={isDeletingAssignment}
+            aria-label={t('button.delete')}
           >
             <Delete />
           </BaseButton>
         </h3>
 
         <span className={classes.assignmentId}>{ext_id}</span>
+
         <Button
           size={SizeTypes.S}
           className={classes.addButton}
           onClick={handleOpenVendorsModal}
-          // TODO: need to add extra conditions here
-          disabled={feature === SubProjectFeatures.JobOverview}
+          disabled={
+            feature === SubProjectFeatures.JobOverview ||
+            !includes(
+              [AssignmentStatus.New, AssignmentStatus.InProgress],
+              status
+            )
+          }
         >
           {t('button.choose_from_database')}
         </Button>
@@ -387,7 +395,7 @@ const Assignment: FC<AssignmentProps> = ({
         />
       </div>
       <div>
-        <TaskCandidatesSection
+        <AssignmentCandidatesSection
           {...{
             id,
             job_definition,
@@ -395,6 +403,7 @@ const Assignment: FC<AssignmentProps> = ({
             candidates,
             assignee_id: assignee?.id,
             finished_at,
+            isEditable,
           }}
         />
       </div>
@@ -404,7 +413,7 @@ const Assignment: FC<AssignmentProps> = ({
           children={t('button.send_to_previous_task')}
           onClick={sendToPreviousAssignment}
           hidden={feature !== SubProjectFeatures.JobOverview}
-          // disabled={isLoading}
+          disabled={!isEditable || status !== AssignmentStatus.InProgress}
         />
         <Button
           children={t('button.mark_as_finished')}

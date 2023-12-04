@@ -27,7 +27,7 @@ const CatSplitModal: FC<CatSplitModalProps> = ({
 }) => {
   const { t } = useTranslation()
   const [splitsAmount, setSplitsAmount] = useState(2)
-  const { splitCatJobs } = useSplitCatJobs()
+  const { splitCatJobs, isLoading } = useSplitCatJobs()
 
   const handleSplit = useCallback(async () => {
     const payload = {
@@ -54,6 +54,7 @@ const CatSplitModal: FC<CatSplitModalProps> = ({
       handleProceed={handleSplit}
       cancelButtonContent={t('button.quit')}
       proceedButtonContent={t('button.confirm')}
+      proceedButtonLoading={isLoading}
       title={t('modal.cat_split_title')}
       closeModal={closeModal}
       modalContent={

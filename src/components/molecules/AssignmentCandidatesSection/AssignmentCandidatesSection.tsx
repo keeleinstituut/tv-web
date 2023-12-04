@@ -17,11 +17,12 @@ import { useAssignmentRemoveVendor } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from '../Notification/Notification'
 
-type TaskCandidatesSectionProps = Pick<
+type AssignmentCandidatesSectionProps = Pick<
   AssignmentType,
   'id' | 'candidates' | 'job_definition'
 > & {
   className?: string
+  isEditable?: boolean
 }
 
 interface CandidateRow {
@@ -34,14 +35,14 @@ interface CandidateRow {
 
 const columnHelper = createColumnHelper<CandidateRow>()
 
-const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
+const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
   id,
   candidates,
   className,
   job_definition,
+  isEditable,
 }) => {
   const { t } = useTranslation()
-
   const { deleteAssignmentVendor } = useAssignmentRemoveVendor({
     id,
   })
@@ -49,14 +50,14 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   const tableRows = useMemo(
     () =>
       map(candidates, ({ vendor, price, status }) => {
-        const { institution_user } = vendor
+        const { institution_user } = vendor || {}
         const name = `${institution_user?.user?.forename} ${institution_user?.user?.surname}`
 
         return {
           name,
           status,
           price,
-          delete_button: vendor.id,
+          delete_button: vendor?.id,
         }
       }),
     [candidates]
@@ -92,23 +93,30 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
       },
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('delete_button', {
-      header: '',
-      cell: ({ row, getValue }) => {
-        const isEnabled = row.original.status === CandidateStatus.New
-        return (
-          <BaseButton
-            className={classes.iconButton}
-            hidden={job_definition.job_key === SubProjectFeatures.JobOverview}
-            disabled={!isEnabled}
-            onClick={() => handleDelete(getValue())}
-          >
-            <Delete />
-          </BaseButton>
-        )
-      },
-      footer: (info) => info.column.id,
-    }),
+    ...(isEditable
+      ? [
+          columnHelper.accessor('delete_button', {
+            header: '',
+            cell: ({ row, getValue }) => {
+              const isEnabled = row.original.status === CandidateStatus.New
+              return (
+                <BaseButton
+                  className={classes.iconButton}
+                  hidden={
+                    job_definition.job_key === SubProjectFeatures.JobOverview
+                  }
+                  disabled={!isEnabled}
+                  onClick={() => handleDelete(getValue())}
+                  aria-label={t('button.delete')}
+                >
+                  <Delete />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
   ] as ColumnDef<CandidateRow>[]
 
   return (
@@ -125,4 +133,4 @@ const TaskCandidatesSection: FC<TaskCandidatesSectionProps> = ({
   )
 }
 
-export default TaskCandidatesSection
+export default AssignmentCandidatesSection

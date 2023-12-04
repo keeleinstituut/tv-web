@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -20,7 +20,6 @@ import {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import Tag from 'components/atoms/Tag/Tag'
-import useAuth from 'hooks/useAuth'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { TMType, TranslationMemoryFilters } from 'types/translationMemories'
@@ -55,7 +54,6 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   initialFilters,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
   const { translationMemories = [], handleFilterChange } =
     useFetchTranslationMemories(initialFilters)
   const [searchValue, setSearchValue] = useState<string>('')
@@ -102,116 +100,121 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [types])
 
-  const columns = [
-    ...(isSelectingModal
-      ? [
-          columnHelper.accessor('id', {
-            header: '',
-            footer: (info) => info.column.id,
-            cell: ({ getValue }) => {
-              return (
-                <FormInput
-                  name={`${getValue()}`}
-                  ariaLabel={t('label.file_type')}
-                  control={tmKeyControl}
-                  inputType={InputTypes.Checkbox}
-                />
-              )
-            },
-          }),
-        ]
-      : []),
-    columnHelper.accessor('name', {
-      header: () => t('translation_memories.memory_title'),
-      cell: ({ getValue, row }) => {
-        return (
-          <>
-            <Button
-              appearance={AppearanceTypes.Text}
-              size={SizeTypes.M}
-              icon={ArrowRight}
-              ariaLabel={t('label.to_project_view')}
-              iconPositioning={IconPositioningTypes.Left}
-              hidden={isSelectingModal}
-              href={`/memories/${row.original.id}`}
-            >
-              {getValue()}
-            </Button>
-            <span hidden={!isSelectingModal}>{getValue()}</span>
-          </>
-        )
-      },
-      footer: (info) => info.column.id,
-      size: 240,
-    }),
-    columnHelper.accessor('type', {
-      header: () => '',
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        const type = getValue() || 'INTERNAL'
-        return <span className={classNames(classes.dot, classes[type])} />
-      },
-      size: 20,
-    }),
-    columnHelper.accessor('tv_tags', {
-      header: () => t('label.tags'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        return (
-          <div className={classes.tagsRow}>
-            {map(getValue(), (value) => {
-              const tagName = find(tagsOptions, { value })?.label || ''
-              return !!tagName && <Tag label={tagName} value key={value} />
-            })}
-          </div>
-        )
-      },
-      size: 520,
-      meta: {
-        filterOption: { tv_tags: tagsOptions },
-        showSearch: true,
-      },
-    }),
-    columnHelper.accessor('tv_domain', {
-      header: () => t('label.translation_domain'),
-      footer: (info) => info.column.id,
-
-      cell: ({ getValue }) => {
-        const domainName = find(domainOptions, { value: getValue() })?.label
-        return <span>{domainName}</span>
-      },
-      size: 375,
-      meta: {
-        filterOption: { tv_domain: domainOptions },
-        filterValue: initialFilters?.tv_domain,
-        showSearch: false,
-      },
-    }),
-    columnHelper.accessor('lang_pair', {
-      header: () => t('label.language_directions'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        const value = getValue() || ''
-        return (
-          <div className={classes.tagsRow}>
-            <Tag label={value} value />
-          </div>
-        )
-      },
-      size: 100,
-      meta: !isSelectingModal
-        ? {
-            filterOption: { lang_pair: languageDirectionFilters },
-            onEndReached: loadMore,
-            onSearch: handleSearch,
+  const columns = useMemo(
+    () =>
+      [
+        ...(isSelectingModal
+          ? [
+              columnHelper.accessor('id', {
+                header: '',
+                footer: (info) => info.column.id,
+                cell: ({ getValue }) => {
+                  return (
+                    <FormInput
+                      name={`${getValue()}`}
+                      ariaLabel={t('label.file_type')}
+                      control={tmKeyControl}
+                      inputType={InputTypes.Checkbox}
+                    />
+                  )
+                },
+              }),
+            ]
+          : []),
+        columnHelper.accessor('name', {
+          header: () => t('translation_memories.memory_title'),
+          cell: ({ getValue, row }) => {
+            return (
+              <>
+                <Button
+                  appearance={AppearanceTypes.Text}
+                  size={SizeTypes.M}
+                  icon={ArrowRight}
+                  ariaLabel={t('label.to_project_view')}
+                  iconPositioning={IconPositioningTypes.Left}
+                  hidden={isSelectingModal}
+                  href={`/memories/${row.original.id}`}
+                >
+                  {getValue()}
+                </Button>
+                <span hidden={!isSelectingModal}>{getValue()}</span>
+              </>
+            )
+          },
+          footer: (info) => info.column.id,
+          size: 240,
+        }),
+        columnHelper.accessor('type', {
+          header: () => '',
+          footer: (info) => info.column.id,
+          cell: ({ getValue }) => {
+            const type = getValue() || 'INTERNAL'
+            return <span className={classNames(classes.dot, classes[type])} />
+          },
+          size: 20,
+        }),
+        columnHelper.accessor('tv_tags', {
+          header: () => t('label.tags'),
+          footer: (info) => info.column.id,
+          cell: ({ getValue }) => {
+            return (
+              <div className={classes.tagsRow}>
+                {map(getValue(), (value) => {
+                  const tagName = find(tagsOptions, { value })?.label || ''
+                  return !!tagName && <Tag label={tagName} value key={value} />
+                })}
+              </div>
+            )
+          },
+          size: 520,
+          meta: {
+            filterOption: { tv_tags: tagsOptions },
             showSearch: true,
-          }
-        : {},
-    }),
-  ] as ColumnDef<TranslationMemoriesTableRow>[]
+          },
+        }),
+        columnHelper.accessor('tv_domain', {
+          header: () => t('label.translation_domain'),
+          footer: (info) => info.column.id,
+
+          cell: ({ getValue }) => {
+            const domainName = find(domainOptions, { value: getValue() })?.label
+            return <span>{domainName}</span>
+          },
+          size: 375,
+          meta: {
+            filterOption: { tv_domain: domainOptions },
+            filterValue: initialFilters?.tv_domain,
+            showSearch: false,
+          },
+        }),
+        columnHelper.accessor('lang_pair', {
+          header: () => t('label.language_directions'),
+          footer: (info) => info.column.id,
+          cell: ({ getValue }) => {
+            const value = getValue() || ''
+            return (
+              <div className={classes.tagsRow}>
+                <Tag label={value} value />
+              </div>
+            )
+          },
+          size: 100,
+          meta: !isSelectingModal
+            ? {
+                filterOption: { lang_pair: languageDirectionFilters },
+                onEndReached: loadMore,
+                onSearch: handleSearch,
+                showSearch: true,
+              }
+            : {},
+        }),
+      ] as ColumnDef<TranslationMemoriesTableRow>[],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
 
   return (
-    <Root>
+    <Root onSubmit={(e) => e.preventDefault()}>
       <div
         className={classNames(classes.legend, {
           [classes.padding]: isSelectingModal,

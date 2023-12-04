@@ -1,4 +1,12 @@
-import { FC, SVGProps, useState, useRef } from 'react'
+import {
+  FC,
+  SVGProps,
+  useState,
+  useRef,
+  useEffect,
+  MouseEvent,
+  useCallback,
+} from 'react'
 import Button, {
   AppearanceTypes,
   SizeTypes,
@@ -20,6 +28,7 @@ type FilterProps = {
   onEndReached?: () => void
   onSearch?: (value: string) => void
   showSearch?: boolean
+  isCustomSingleDropdown?: boolean
 }
 
 const TableColumnFilter = ({
@@ -27,7 +36,6 @@ const TableColumnFilter = ({
   onChange,
   name,
   hidden,
-  multiple,
   icon,
   buttons,
   ariaLabel,
@@ -35,14 +43,40 @@ const TableColumnFilter = ({
   onEndReached,
   onSearch,
   showSearch,
+  isCustomSingleDropdown,
 }: FilterProps) => {
   const dropdownRef = useRef(null)
   const wrapperRef = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (event: MouseEvent | KeyboardEvent) => {
     setIsOpen(!isOpen)
+    if (!document.querySelector('.filter-focus') && !isOpen) {
+      const target = event?.target as HTMLElement
+      target.classList.add('filter-focus')
+      setFocusElement(target)
+    }
   }
+  const escFunction = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setIsOpen(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (document.querySelector('.filter-focus') && !isOpen) {
+      focusElement?.classList.remove('filter-focus')
+      focusElement?.focus()
+    }
+  }, [focusElement, isOpen])
+
+  useEffect(() => {
+    document.addEventListener('keydown', escFunction)
+    return () => {
+      document.removeEventListener('keydown', escFunction)
+    }
+  }, [escFunction])
 
   if (hidden) return null
 
@@ -62,7 +96,7 @@ const TableColumnFilter = ({
         ariaLabel={ariaLabel}
         options={filterOption}
         value={value}
-        multiple={multiple}
+        multiple={!isCustomSingleDropdown}
         buttons={buttons}
         onChange={onChange}
         isOpen={isOpen}
@@ -74,6 +108,7 @@ const TableColumnFilter = ({
         onEndReached={onEndReached}
         onSearch={onSearch}
         usePortal
+        isCustomSingleDropdown={isCustomSingleDropdown}
       />
     </div>
   )

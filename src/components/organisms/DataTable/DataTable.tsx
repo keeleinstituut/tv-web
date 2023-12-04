@@ -109,20 +109,21 @@ const DataTable = <TData,>(
   ref: Ref<HTMLDivElement>
 ) => {
   const [horizontalWrapperId] = useState(useId())
-  const { per_page, last_page } = paginationData || {}
+  const { per_page, last_page, current_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: hidePagination ? 10000 : per_page || 10,
   })
 
-  if (last_page && last_page < pagination.pageIndex) {
-    setPagination({ pageIndex: 0, pageSize: per_page || 10 })
-  }
-
-  if (last_page === pagination.pageIndex) {
-    setPagination({ pageIndex: last_page - 1, pageSize: per_page || 10 })
-  }
+  useEffect(() => {
+    if (current_page && current_page - 1 < pagination.pageIndex) {
+      setPagination({
+        pageIndex: 0,
+        pageSize: paginationData ? paginationData.per_page : 10,
+      })
+    }
+  }, [current_page])
 
   useEffect(() => {
     if (onPaginationChange) {

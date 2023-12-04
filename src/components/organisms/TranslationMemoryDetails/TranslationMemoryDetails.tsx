@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { includes, split } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
@@ -15,7 +15,7 @@ import TranslationMemoryEditForm from 'components/organisms/forms/TranslationMem
 import FileImport, {
   InputFileTypes,
 } from 'components/organisms/FileImport/FileImport'
-import { showModal, ModalTypes } from '../modals/ModalRoot'
+import { showModal, ModalTypes, closeModal } from '../modals/ModalRoot'
 import {
   useDeleteTranslationMemory,
   useExportTMX,
@@ -41,7 +41,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
   const { userPrivileges } = useAuth()
   const { deleteTranslationMemory } = useDeleteTranslationMemory()
   const { importTMX } = useImportTMX()
-  const { exportTMX } = useExportTMX()
+  const { exportTMX, isLoading } = useExportTMX()
   const navigate = useNavigate()
 
   const { lang_pair } = translationMemory || {}
@@ -95,6 +95,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
       handleProceed: async () => {
         try {
           await deleteTranslationMemory(memoryId)
+          closeModal()
           showNotification({
             type: NotificationTypes.Success,
             title: t('notification.announcement'),
@@ -140,6 +141,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           onClick={handleExportFile}
+          loading={isLoading}
           children={t('button.export')}
           disabled={
             !includes(userPrivileges, Privileges.ExportTm) ||

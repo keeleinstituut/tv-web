@@ -10,8 +10,6 @@ import DataTable, {
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { CatAnalysis, CatJob, SourceFile } from 'types/projects'
-
-import classes from './classes.module.scss'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -27,6 +25,9 @@ import {
   useDownloadXliffFile,
 } from 'hooks/requests/useProjects'
 
+import classes from './classes.module.scss'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
+
 interface CatJobsTableProps {
   className?: string
   hidden?: boolean
@@ -35,9 +36,12 @@ interface CatJobsTableProps {
   cat_analyzis?: CatAnalysis[]
   cat_files?: SourceFile[]
   source_files?: SourceFile[]
-  source_language_classifier_value: LanguageClassifierValue
-  destination_language_classifier_value: LanguageClassifierValue
+  source_language_classifier_value?: LanguageClassifierValue
+  destination_language_classifier_value?: LanguageClassifierValue
   canSendToVendors?: boolean
+  mode?: ProjectDetailModes
+  isHistoryView?: string
+  isEditable?: boolean
 }
 
 interface CatJobRow {
@@ -61,6 +65,9 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   canSendToVendors,
+  mode,
+  isHistoryView,
+  isEditable,
 }) => {
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile()
@@ -128,7 +135,10 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
 
   const columns = [
     columnHelper.accessor('name', {
-      header: () => t('label.xliff_name'),
+      header: () =>
+        mode === ProjectDetailModes.View
+          ? t('label.file_name')
+          : t('label.xliff_name'),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('progress_percentage', {
@@ -143,6 +153,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             className={classes.fitContent}
             size={SizeTypes.S}
             href={getValue()}
+            disabled={!isEditable || !!isHistoryView}
             target="_blank"
           >
             {t('button.open_in_translation_tool')}
@@ -152,13 +163,35 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('dots_button', {
-      cell: '',
+      cell: () => {
+        return mode === ProjectDetailModes.View ? (
+          <SimpleDropdown
+            icon={HorizontalDots}
+            disabled={!!isHistoryView}
+            className={classes.dropdown}
+            buttonClassName={classes.dropdownInnerButton}
+            options={[
+              {
+                label: t('button.download_xliff'),
+                onClick: () => downloadXliff(subProjectId),
+              },
+              {
+                label: t('button.download_ready_translation'),
+                onClick: () => downloadTranslatedFile(subProjectId),
+              },
+            ]}
+          />
+        ) : (
+          ''
+        )
+      },
       header: () => {
-        return (
+        return mode !== ProjectDetailModes.View ? (
           <SimpleDropdown
             icon={HorizontalDots}
             className={classes.dropdown}
             buttonClassName={classes.dropdownInnerButton}
+            disabled={!isEditable}
             options={[
               {
                 label: t('button.split_file'),
@@ -178,6 +211,8 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
               },
             ]}
           />
+        ) : (
+          ''
         )
       },
       footer: (info) => info.column.id,
@@ -196,12 +231,18 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         hidePagination
         headComponent={
           <div className={classes.titleRow}>
-            <h3>{t('projects.source_files_in_translation_tool')}</h3>
+            <h3>
+              {mode === ProjectDetailModes.View
+                ? t('my_tasks.my_final_files')
+                : t('projects.source_files_in_translation_tool')}
+            </h3>
 
             <SmallTooltip
-              tooltipContent={t(
-                'tooltip.source_files_in_translation_tool_helper'
-              )}
+              tooltipContent={
+                mode === ProjectDetailModes.View
+                  ? t('tooltip.my_ready_files_from_vendors')
+                  : t('tooltip.source_files_in_translation_tool_helper')
+              }
             />
           </div>
         }
@@ -216,6 +257,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           isCatAnalysisInProgress && classes.loader
         )}
         icon={ArrowRight}
+        hidden={mode === ProjectDetailModes.View}
       >
         {t('button.look_at_cat_analysis')}
       </Button>

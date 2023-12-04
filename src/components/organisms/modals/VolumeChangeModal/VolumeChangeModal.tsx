@@ -14,6 +14,7 @@ import {
   pickBy,
   identity,
   join,
+  replace,
 } from 'lodash'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
@@ -33,7 +34,7 @@ import {
   useAssignmentAddVolume,
   useAssignmentEditCatVolume,
   useAssignmentEditVolume,
-} from 'hooks/requests/useAssignments'
+} from 'hooks/requests/useVolumes'
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
 import { Root } from '@radix-ui/react-form'
 import { CatAnalysis } from 'types/projects'
@@ -48,6 +49,7 @@ import { VolumeValue } from 'types/volumes'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 
 export interface VolumeChangeModalProps {
   assignmentId?: string
@@ -64,6 +66,8 @@ export interface VolumeChangeModalProps {
   unit_quantity?: number
   sub_project_id?: string
   onChangeValue?: (volume: VolumeValue) => void
+  mode?: ProjectDetailModes
+  taskViewPricesClass?: string
 }
 
 enum CatAnalysisVolumes {
@@ -113,6 +117,8 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   unit_type,
   sub_project_id,
   onChangeValue,
+  mode,
+  taskViewPricesClass,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -194,16 +200,19 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
 
   const totalAmount = useMemo(
     () =>
-      reduce(
-        amountValues,
-        (sum, n, i) => {
-          return (
-            sum +
-            ((100 - toNumber(amountDiscounts[i] ?? 0)) / 100) *
-              toNumber(amountValues[i])
-          )
-        },
-        0
+      round(
+        reduce(
+          amountValues,
+          (sum, n, i) => {
+            return (
+              sum +
+              ((100 - toNumber(amountDiscounts[i] ?? 0)) / 100) *
+                toNumber(amountValues[i])
+            )
+          },
+          0
+        ),
+        3
       ),
     [amountDiscounts, amountValues]
   )
@@ -256,7 +265,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         label: t('label.unit'),
         name: 'unit',
         options: priceUnitOptions,
-        onlyDisplay: isCat,
+        onlyDisplay: isCat || mode === ProjectDetailModes.View,
         rules: {
           required: true,
         },
@@ -272,6 +281,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         rules: {
           required: true,
         },
+        onlyDisplay: mode === ProjectDetailModes.View,
       },
       {
         inputType: InputTypes.Text,
@@ -286,7 +296,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       {
         inputType: InputTypes.Text,
         className: classes.inputInternalPosition,
-        hidden: isCat,
+        hidden: isCat || mode === ProjectDetailModes.View,
         type: 'number',
         label: t('label.amount'),
         ariaLabel: t('label.amount'),
@@ -316,7 +326,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         name: 'vendor',
       },
     ],
-    [isCat, priceUnitOptions, t]
+    [isCat, mode, priceUnitOptions, t]
   )
 
   // Probably can be improved a bit and unified with onSaveEdit
@@ -354,7 +364,13 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
+            const errorKey = replace(
+              key,
+              'custom_volume_analysis.',
+              ''
+            ) as CatAnalysisVolumes
+            const typedKey =
+              `${analysisVolumeByDiscountPercentage[errorKey]}_amount` as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
             setError(typedKey, { type: 'backend', message: errorString })
           })
@@ -400,7 +416,13 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
-            const typedKey = key as FieldPath<FormValues>
+            const errorKey = replace(
+              key,
+              'custom_volume_analysis.',
+              ''
+            ) as CatAnalysisVolumes
+            const typedKey =
+              `${analysisVolumeByDiscountPercentage[errorKey]}_amount` as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
             setError(typedKey, { type: 'backend', message: errorString })
           })
@@ -463,31 +485,41 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     [isCat, assignmentId, amountDiscounts, amountValues, catJobId, onSave]
   )
 
+  const title =
+    mode === ProjectDetailModes.View
+      ? t('modal.view_cat_volumes')
+      : isCat
+      ? t('modal.pick_volume_by_cat')
+      : t('modal.pick_volume_manually')
+
+  const catHelperText = isCat ? (
+    <>
+      {t('modal.picked_analysis_for')}{' '}
+      <b>{JSON.stringify(volume_analysis?.files_names)}</b>
+      <br />
+      {t('modal.pick_volume_by_cat_helper')}
+    </>
+  ) : (
+    t('modal.pick_volume_manually_helper')
+  )
+
+  const helperText = mode === ProjectDetailModes.View ? '' : catHelperText
+
   return (
     <ConfirmationModalBase
       {...rest}
       handleProceed={handleSubmit(onSubmit)}
       cancelButtonContent={t('button.close')}
       cancelButtonDisabled={isSubmitting}
-      proceedButtonContent={t('button.confirm')}
+      proceedButtonContent={
+        mode === ProjectDetailModes.View ? undefined : t('button.confirm')
+      }
       proceedButtonDisabled={!isValid}
       proceedButtonLoading={isSubmitting}
+      proceedButtonHidden={mode === ProjectDetailModes.View}
       className={classes.modalContainer}
-      title={
-        isCat ? t('modal.pick_volume_by_cat') : t('modal.pick_volume_manually')
-      }
-      helperText={
-        isCat ? (
-          <>
-            {t('modal.picked_analysis_for')}{' '}
-            <b>{JSON.stringify(volume_analysis?.files_names)}</b>
-            <br />
-            {t('modal.pick_volume_by_cat_helper')}
-          </>
-        ) : (
-          t('modal.pick_volume_manually_helper')
-        )
-      }
+      title={title}
+      helperText={helperText}
       closeModal={closeModal}
       modalContent={
         <Root>
@@ -497,7 +529,12 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
             className={classes.formContainer}
             useDivWrapper
           />
-          <VolumeCatPriceTable control={control} hidden={!isCat} />
+          <VolumeCatPriceTable
+            control={control}
+            hidden={!isCat}
+            isEditable={mode !== ProjectDetailModes.View}
+            taskViewPricesClass={taskViewPricesClass}
+          />
         </Root>
       }
     />

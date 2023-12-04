@@ -13,6 +13,7 @@ import {
   CancelProjectPayload,
   CatProjectStatus,
   SubProjectDetail,
+  ProjectDetail,
 } from 'types/projects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -246,6 +247,7 @@ export const useFetchSubProjectCatToolJobs = ({ id }: { id?: string }) => {
     catSetupStatus: data?.data?.setup_status,
     catAnalyzeStatus: data?.data?.analyzing_status,
     startPolling,
+    isPolling: shouldRefetch,
   }
 }
 
@@ -405,4 +407,13 @@ export const useSubProjectCache = (
   const subProject = subProjectCache?.data
 
   return subProject
+}
+
+export const useProjectCache = (id?: string): ProjectDetail | undefined => {
+  const queryClient = useQueryClient()
+  const projectCache: { data: ProjectDetail } | undefined =
+    queryClient.getQueryData(['projects', id])
+  const project = projectCache?.data
+
+  return project
 }

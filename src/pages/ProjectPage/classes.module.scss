@@ -8,8 +8,8 @@
 
 .buttonsContainer {
   display: flex;
-  >:last-child {
-    margin-left: spacing(2);
+  >:not(:last-child) {
+    margin-right: spacing(2);
   }
 }
 

@@ -11,15 +11,18 @@ type FeatureAssignmentsProps = Pick<
   | 'destination_language_classifier_value_id'
   | 'cat_analyzis'
   | 'project'
+  | 'deadline_at'
 > & {
   hidden?: boolean
   catSupported?: boolean
   volumes?: VolumeValue[]
+  isEditable?: boolean
 }
 
 const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
   assignments,
   hidden,
+  deadline_at,
   ...rest
 }) => {
   if (hidden) return null
@@ -30,6 +33,7 @@ const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
           <Assignment
             key={assignment.id}
             index={index}
+            subProjectDeadline={deadline_at}
             {...rest}
             {...assignment}
           />

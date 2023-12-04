@@ -273,7 +273,13 @@ const Logs: FC = () => {
         <div className={classes.logsContainer}>
           <DynamicForm fields={dateFields} control={control} />
           <DynamicForm fields={selectionFields} control={control} />
-          <DynamicForm fields={toggleSearchFields} control={control} />
+          <DynamicForm
+            fields={toggleSearchFields}
+            control={control}
+            onSubmit={(e) => {
+              e.preventDefault()
+            }}
+          />
         </div>
       </Container>
       <div className={classNames(classes.dateInput, classes.downloadButton)}>

@@ -78,10 +78,18 @@ const VolumeRow: FC<VolumeRowProps> = ({
       <span>{`${Number(unit_quantity)} ${t(
         `label.${apiTypeToKey(unit_type)}`
       )}${cat_job ? ` ${t('task.open_in_cat')}` : ''}`}</span>
-      <BaseButton onClick={onEditClick} className={classes.editButton}>
+      <BaseButton
+        onClick={onEditClick}
+        className={classes.editButton}
+        aria-label={t('button.edit')}
+      >
         <Edit className={classes.editIcon} />
       </BaseButton>
-      <BaseButton onClick={onDeleteClick} className={classes.deleteButton}>
+      <BaseButton
+        onClick={onDeleteClick}
+        className={classes.deleteButton}
+        aria-label={t('button.delete')}
+      >
         <Delete className={classes.deleteIcon} />
       </BaseButton>
     </div>
@@ -96,7 +104,6 @@ export interface AddVolumeInputProps {
   label?: JSX.Element | string
   disabled?: boolean
   hidden?: boolean
-  loading?: boolean
   catSupported?: boolean
   vendorPrices?: Price
   vendorName?: string
@@ -116,7 +123,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   assignmentId,
   sub_project_id,
   disabled,
-  loading,
 }) => {
   const { t } = useTranslation()
 
@@ -166,7 +172,6 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       onChange([...value, newVolume])
     }
 
-    // TODO: open add/edit modal with add mode
     showModal(ModalTypes.AddVolume, {
       onChangeValue,
       assignmentId,
@@ -202,6 +207,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
           appearance={AppearanceTypes.Text}
           className={classes.addButton}
           iconPositioning={IconPositioningTypes.Left}
+          disabled={disabled}
           icon={Add}
           children={t('button.add_volume')}
           onClick={handleAdd}

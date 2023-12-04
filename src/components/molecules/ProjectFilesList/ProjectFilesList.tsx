@@ -33,6 +33,7 @@ import SmallTooltip from '../SmallTooltip/SmallTooltip'
 import { SourceFile } from 'types/projects'
 import { useHandleFiles } from 'hooks/requests/useFiles'
 import { HelperFileTypes } from 'types/classifierValues'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 interface ProjectFilesListProps<TFormValues extends FieldValues> {
   title: string
   typeOptions?: DropDownOptions[]
@@ -107,7 +108,17 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
   const handleDelete = useCallback(
     (index?: number) => {
       if (index === 0 || index) {
-        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+        const newSourceFiles = filter(
+          typedValue,
+          (_, fileIndex) => index !== fileIndex
+        )
+        if (!isEditable) {
+          showModal(ModalTypes.ConfirmDeleteSourceFile, {
+            callback: () => onChange(newSourceFiles),
+          })
+        } else {
+          onChange(newSourceFiles)
+        }
         if (name === 'help_files') {
           onChangeHelpFileTypes(
             filter(helpFileTypes, (_, typeIndex) => index !== typeIndex)
@@ -161,7 +172,11 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
       header: '',
       cell: ({ getValue }) => {
         return (
-          <BaseButton onClick={() => handleDelete(getValue())}>
+          <BaseButton
+            onClick={() => handleDelete(getValue())}
+            className={classes.deleteButton}
+            aria-label={t('button.delete')}
+          >
             <Delete />
           </BaseButton>
         )
@@ -189,9 +204,13 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
               : ''
           return (
             <Fragment key={fileUrl || index}>
-              <label>{file.name}</label>
+              <label className={classes.fileName}>{file.name}</label>
               <span>{updatedAt}</span>
-              <BaseButton onClick={() => handleDownload(index)}>
+              <BaseButton
+                onClick={() => handleDownload(index)}
+                className={classes.button}
+                aria-label={t('button.download')}
+              >
                 <DownloadFilled />
               </BaseButton>
             </Fragment>

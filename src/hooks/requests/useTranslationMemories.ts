@@ -19,6 +19,8 @@ import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
 import { map, flatten, join, omit, pick } from 'lodash'
 import { SubProjectsResponse } from 'types/projects'
+import { useCallback } from 'react'
+import useWaitForLoading from 'hooks/useWaitForLoading'
 
 dayjs.extend(customParseFormat)
 
@@ -204,10 +206,17 @@ export const useImportTMX = () => {
 }
 
 export const useExportTMX = () => {
-  const { mutateAsync: exportTMX, isLoading } = useMutation({
+  const { isLoading, finishLoading, startLoading, waitForLoadingToFinish } =
+    useWaitForLoading()
+
+  const { mutateAsync: attemptFileDownload } = useMutation({
     mutationKey: ['tmx'],
-    mutationFn: async (payload: ExportTMXPayload) =>
-      apiClient.post(endpoints.EXPORT_TMX, payload, { responseType: 'blob' }),
+    mutationFn: async (task_id?: string) =>
+      apiClient.get(
+        `${endpoints.EXPORT_TMX}/file/${task_id}`,
+        {},
+        { responseType: 'blob', hideError: true }
+      ),
     onSuccess: (data) => {
       downloadFile({
         data,
@@ -215,9 +224,41 @@ export const useExportTMX = () => {
       })
     },
   })
+
+  const startFileDownloadPolling = useCallback(
+    async (job_id?: string) => {
+      if (!job_id) return null
+      try {
+        await attemptFileDownload(job_id)
+        finishLoading()
+      } catch (error) {
+        setTimeout(() => startFileDownloadPolling(job_id), 1000)
+      }
+    },
+    [attemptFileDownload, finishLoading]
+  )
+
+  const { mutateAsync: exportTMX } = useMutation({
+    mutationKey: ['tmx'],
+    mutationFn: async (payload: ExportTMXPayload) =>
+      apiClient.post(endpoints.EXPORT_TMX, payload),
+    onSuccess: ({ job_id }: { job_id?: string }) => {
+      startFileDownloadPolling(job_id)
+    },
+  })
+
+  const exportFunction = useCallback(
+    async (payload: ExportTMXPayload) => {
+      startLoading()
+      await exportTMX(payload)
+      await waitForLoadingToFinish()
+    },
+    [exportTMX, startLoading, waitForLoadingToFinish]
+  )
+
   return {
     isLoading,
-    exportTMX,
+    exportTMX: exportFunction,
   }
 }
 
@@ -232,9 +273,10 @@ export const useFetchTranslationMemorySubProjects = ({
   const { isLoading, isError, isFetching, data } =
     useQuery<SubProjectsResponse>({
       enabled: !!id,
-      queryKey: ['tm-subProjects', id],
+      queryKey: ['tm-subProjects', id, filters],
       queryFn: () =>
         apiClient.get(`${endpoints.TM_SUB_PROJECTS}/${id}`, filters),
+      keepPreviousData: true,
     })
 
   const { meta: paginationData, data: subProjects } = data || {}

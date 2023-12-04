@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { map, reduce, isEmpty, flatMap } from 'lodash'
 import { CatJob, SubProjectDetail } from 'types/projects'
 import FeatureCatJob from 'components/molecules/FeatureCatJob/FeatureCatJob'
@@ -67,11 +67,16 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
     control,
     reset,
     handleSubmit,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting, isValid, isDirty },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
+
+  useEffect(() => {
+    reset(defaultValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues])
 
   const resetForm = useCallback(() => {
     setIsEditable(false)
@@ -145,7 +150,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         />
         <Button
           children={isEditable ? t('button.save') : t('button.change')}
-          disabled={!isValid && isEditable}
+          disabled={(!isDirty || !isValid) && isEditable}
           hidden={isEmpty(subProjectCatJobs)}
           loading={isSubmitting || isLoading}
           onClick={

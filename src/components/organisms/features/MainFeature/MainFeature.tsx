@@ -1,5 +1,9 @@
 import { FC, useCallback, useState } from 'react'
-import { SubProjectDetail, SubProjectFeatures } from 'types/projects'
+import {
+  ProjectStatus,
+  SubProjectDetail,
+  SubProjectFeatures,
+} from 'types/projects'
 import { Root } from '@radix-ui/react-form'
 import { useTranslation } from 'react-i18next'
 import FeatureHeaderSection, {
@@ -23,9 +27,10 @@ type MainFeatureProps = Pick<
   | 'project'
   | 'id'
   | 'mt_enabled'
+  | 'deadline_at'
+  | 'workflow_started'
 > & {
   catSupported?: boolean
-  projectDeadline?: string
   feature: SubProjectFeatures
 }
 
@@ -36,9 +41,13 @@ const MainFeature: FC<MainFeatureProps> = ({
   id,
   cat_jobs,
   assignments,
+  project,
+  workflow_started,
   ...rest
 }) => {
+  const { status: projectStatus } = project
   const { t } = useTranslation()
+  const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
   const featureTabs = [
     {
       label: t('button.vendors'),
@@ -68,7 +77,7 @@ const MainFeature: FC<MainFeatureProps> = ({
         content: t('success.split_assignment'),
       })
     } catch (errorData) {
-      showValidationErrorMessage(errorData)
+      // DO nothing, error is already handled
     }
   }, [assignments, feature, splitAssignment, t])
 
@@ -83,9 +92,11 @@ const MainFeature: FC<MainFeatureProps> = ({
     isFirstTaskJobRevision: boolean
   ) => {
     return (
+      !isSomethingEditable ||
       feature === SubProjectFeatures.JobOverview ||
       (feature === SubProjectFeatures.JobRevision && !isFirstTaskJobRevision) ||
-      !isMultiAssignmentsEnabled
+      !isMultiAssignmentsEnabled ||
+      workflow_started
     )
   }
 
@@ -102,6 +113,7 @@ const MainFeature: FC<MainFeatureProps> = ({
           catSupported,
           isLoading,
           mt_enabled,
+          isEditable: isSomethingEditable,
           id,
         }}
       />
@@ -109,6 +121,8 @@ const MainFeature: FC<MainFeatureProps> = ({
         assignments={assignments}
         hidden={activeTab === FeatureTabs.Xliff}
         catSupported={catSupported}
+        project={project}
+        isEditable={isSomethingEditable}
         {...rest}
       />
       <FeatureCatJobs

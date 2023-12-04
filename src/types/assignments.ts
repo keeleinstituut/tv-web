@@ -34,19 +34,22 @@ export interface AssignmentType {
   cat_jobs?: CatJob[]
   assigned_vendor_id?: string
   assignee?: Vendor
+  assignee_comments?: string
   sub_project_id: string
   deadline_at?: string
   event_start_at?: string
   created_at: string
+  ext_id: string
+  updated_at: string
   status: AssignmentStatus
   subProject?: Partial<SubProjectDetail>
   // TODO: no idea whether it will be skill_ids or sth else
   skill_id: string
   // TODO: no idea if this field will come from here
   finished_at: string
-  //
   assigned_chunks: string[]
   comments: string
+  price: string
 }
 
 // TODO: no idea if this is the correct format

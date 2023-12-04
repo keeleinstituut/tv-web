@@ -47,9 +47,13 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
           // transform: 'translateY(-100%)',
         }}
       >
-        {map(options, ({ label, ...rest }) => (
+        {map(options, ({ label, ...rest }, index) => (
           <li key={label}>
-            <Button appearance={AppearanceTypes.Text} {...rest}>
+            <Button
+              appearance={AppearanceTypes.Text}
+              {...rest}
+              autoFocus={index === 0 && isOpen}
+            >
               {label}
             </Button>
           </li>
@@ -60,9 +64,13 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
   }
   return (
     <ul className={classes.content}>
-      {map(options, ({ label, ...rest }) => (
+      {map(options, ({ label, ...rest }, index) => (
         <li key={label}>
-          <Button appearance={AppearanceTypes.Text} {...rest}>
+          <Button
+            appearance={AppearanceTypes.Text}
+            {...rest}
+            autoFocus={index === 0 && isOpen}
+          >
             {label}
           </Button>
         </li>
@@ -78,6 +86,7 @@ interface SimpleDropdownProps
   icon?: FC<SVGProps<SVGSVGElement>>
   className?: string
   buttonClassName?: string
+  disabled?: boolean
 }
 
 const SimpleDropdown: FC<SimpleDropdownProps> = ({
@@ -86,6 +95,7 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
   icon,
   className,
   buttonClassName,
+  disabled,
   ...rest
 }) => {
   const clickAwayInputRef = useRef(null)
@@ -115,6 +125,7 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
         appearance={AppearanceTypes.Text}
         icon={icon || DropdownArrow}
         ariaLabel={title}
+        disabled={disabled}
         className={classNames(classes.iconButton, buttonClassName)}
       >
         {label}
