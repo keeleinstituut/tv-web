@@ -169,7 +169,6 @@ export const protectedRoutes: FullRouteObject[] = [
       Privileges.ImportTm,
       Privileges.ExportTm,
       Privileges.EditTmMetadata,
-      Privileges.EditTm,
       Privileges.DeleteTm,
     ],
     children: [
@@ -194,7 +193,6 @@ export const protectedRoutes: FullRouteObject[] = [
           Privileges.ImportTm,
           Privileges.ExportTm,
           Privileges.EditTmMetadata,
-          Privileges.EditTm,
           Privileges.DeleteTm,
         ],
       },

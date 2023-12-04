@@ -7,7 +7,11 @@ import {
   AssignmentType,
   CompleteAssignmentPayload,
 } from 'types/assignments'
-import { SplitProjectPayload, SubProjectResponse } from 'types/projects'
+import {
+  SplitProjectPayload,
+  SubProjectDetail,
+  SubProjectResponse,
+} from 'types/projects'
 
 const getNewSubProjectWithAssignment = (
   assignments: AssignmentType | AssignmentType[],
@@ -241,4 +245,20 @@ export const useCompleteAssignment = ({ id }: { id?: string }) => {
     completeAssignment,
     isLoading,
   }
+}
+
+export const useAssignmentCache = ({
+  id,
+  sub_project_id,
+}: {
+  id: string
+  sub_project_id: string
+}) => {
+  const queryClient = useQueryClient()
+  const subProjectCache: { data: SubProjectDetail } | undefined =
+    queryClient.getQueryData(['subprojects', sub_project_id])
+  const subProject = subProjectCache?.data
+  const assignment = find(subProject?.assignments, { id })
+
+  return assignment
 }

@@ -133,12 +133,6 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
     ),
   ] as ColumnDef<TableRow>[]
 
-  // TODO: no idea where this download url is suppose to come from
-  const downloadUrl = 'www.ee'
-  const name = downloadUrl
-    .substring(downloadUrl.lastIndexOf('/' + 1))
-    .replace('/', '')
-
   return (
     <ModalBase
       title={t('modal.analysis_title')}

@@ -46,7 +46,7 @@ const ConfirmDeleteSourceFileModal: FC<ConfirmDeleteSourceFileModalProps> = ({
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [callback, closeModal, t, sourceFileId])
+  }, [sourceFileId, callback, closeModal, deleteFile, t])
 
   return (
     <ConfirmationModalBase
