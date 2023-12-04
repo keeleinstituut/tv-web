@@ -11,11 +11,14 @@
   &.new {
     border-color: $color-warning;
   }
-  &.forwarded_to_vendor {
+  &.tasks_submitted_to_vendors {
     border-color: $color-success;
   }
-  &.in_progress {
+  &.tasks_in_progress {
     border-color: $color-primary;
+  }
+  &.tasks_completed {
+    border-color: $color-success;
   }
   &.done_task {
     border-color: $color-success;
@@ -23,7 +26,7 @@
   &.cancelled {
     border-color: $color-border;
   }
-  &.done {
+  &.completed {
     border-color: $color-warning;
   }
 }
