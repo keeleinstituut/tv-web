@@ -15,11 +15,7 @@ import TranslationMemoriesSection from 'components/organisms/TranslationMemories
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import { SourceFile } from 'types/projects'
-import {
-  ModalTypes,
-  showModal,
-  closeModal,
-} from 'components/organisms/modals/ModalRoot'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
@@ -28,12 +24,7 @@ import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput
 import { VolumeValue } from 'types/volumes'
 import classNames from 'classnames'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { useCompleteTask } from 'hooks/requests/useTasks'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
-import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { showValidationErrorMessage } from 'api/errorHandler'
-import { useNavigate } from 'react-router-dom'
 import { TaskType } from 'types/tasks'
 
 import classes from './classes.module.scss'
@@ -80,7 +71,6 @@ const TaskContent: FC<TaskContentProps> = ({
   final_files = [],
 }) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
 
   const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
     id: sub_project_id,
@@ -90,15 +80,7 @@ const TaskContent: FC<TaskContentProps> = ({
     id: sub_project_id,
   })
 
-  const { completeTask } = useCompleteTask({
-    id: taskId,
-  })
-
-  const {
-    control,
-    handleSubmit,
-    formState: { isSubmitting },
-  } = useForm<FormValues>({
+  const { control, handleSubmit } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: {
       my_source_files: [...source_files, ...final_files],
@@ -155,70 +137,29 @@ const TaskContent: FC<TaskContentProps> = ({
     })
   }, [volumes])
 
-  const handleCompleteTask: SubmitHandler<FormValues> = useCallback(
+  const handleOpenCompleteModal: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const finalFilesIds = map(values.my_final_files, ({ id }) => id)
 
-      const payload = {
+      const completionPayload = {
         final_file_id: finalFilesIds,
         accepted: true,
         description: values.my_notes, // TODO: Not yet done by BE, naming might change
       }
 
-      try {
-        await completeTask(payload)
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.task_marked_completed'),
-        })
-        navigate('/projects/my-tasks')
-        closeModal()
-      } catch (errorData) {
-        showValidationErrorMessage(errorData)
-      }
+      showModal(ModalTypes.ConfirmCompleteTask, {
+        taskId,
+        completionPayload,
+      })
     },
-    [completeTask, navigate, t]
+    [taskId]
   )
 
-  const sendToPreviousAssignment = useCallback(async () => {
-    try {
-      await completeTask({ accepted: false })
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.sent_to_previous_task'),
-      })
-      navigate('/projects/my-tasks')
-      closeModal()
-    } catch (errorData) {
-      showValidationErrorMessage(errorData)
-    }
-  }, [completeTask, navigate, t])
-
-  const handleOpenCompleteModal = useCallback(() => {
-    showModal(ModalTypes.ConfirmationModal, {
-      title: t('modal.confirm_complete_task'),
-      modalContent: t('modal.confirm_complete_task_details'),
-      cancelButtonContent: t('button.quit'),
-      proceedButtonContent: t('button.complete'),
-      className: classes.completeModal,
-      handleProceed: handleSubmit(handleCompleteTask),
-      proceedButtonLoading: isSubmitting,
-    })
-  }, [handleSubmit, isSubmitting, handleCompleteTask, t])
-
   const handleSendToPreviousAssignmentModal = useCallback(() => {
-    showModal(ModalTypes.ConfirmationModal, {
-      title: t('modal.confirm_send_to_previous_assignment'),
-      modalContent: t('modal.confirm_send_to_previous_assignment_details'),
-      cancelButtonContent: t('button.quit_alt'),
-      proceedButtonContent: t('button.send_back'),
-      className: classes.completeModal,
-      handleProceed: handleSubmit(sendToPreviousAssignment),
-      proceedButtonLoading: isSubmitting,
+    showModal(ModalTypes.ConfirmSendToPreviousTask, {
+      taskId,
     })
-  }, [handleSubmit, isSubmitting, sendToPreviousAssignment, t])
+  }, [taskId])
 
   if (isLoading) return <Loader loading={isLoading} />
 
@@ -338,7 +279,7 @@ const TaskContent: FC<TaskContentProps> = ({
       </div>
       <Button
         className={classes.finishedButton}
-        onClick={handleOpenCompleteModal}
+        onClick={handleSubmit(handleOpenCompleteModal)}
         hidden={!assignee_institution_user_id || !!isHistoryView}
       >
         {t('button.mark_as_finished')}

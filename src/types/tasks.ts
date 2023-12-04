@@ -41,8 +41,6 @@ export interface TaskResponse {
 export interface CompleteTaskPayload {
   accepted?: number | boolean
   final_file_id?: string[]
-  // TODO: The following are currently missing from API
-  // Naming might change
   sub_project_id?: string[]
   description?: string
   review_file?: File[]
