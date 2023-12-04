@@ -29,7 +29,7 @@ import useAuth from 'hooks/useAuth'
 
 type SubProjectTableRow = {
   ext_id: string
-  reference_number: string
+  reference_number?: string
   deadline_at: string
   type: string
   status?: SubProjectStatus

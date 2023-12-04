@@ -1,8 +1,27 @@
+@import 'styles/variables';
+
 .titleRow {
   display: flex;
   justify-content: space-between;
 }
 
-.buttonsContainer {
+.orderDetails {
+  margin-top: spacing(6);
+}
+
+.separator {
+  height: 1px;
+  width: 100%;
+  margin-top: spacing(3.75);
+  margin-bottom: spacing(4);
+  background-color: $color-border-secondary;
+}
+
+.taskTitleContainer {
   display: flex;
+  justify-content: space-between;
+}
+
+.acceptButton {
+  align-self: center;
 }

@@ -1,6 +1,5 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import classes from './classes.module.scss'
 import {
   InputTypes,
   FormInput,
@@ -34,17 +33,21 @@ import {
 } from 'types/translationMemories'
 import { map, includes, filter, find, isEqual, pull } from 'lodash'
 import useAuth from 'hooks/useAuth'
-
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from '../NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
+
+import classes from './classes.module.scss'
+
 interface TranslationMemoryButtonProps {
   hidden?: boolean
   subProjectId?: string
   subProjectLangPair?: string
   projectDomain?: ClassifierValue
   disabled?: boolean
+  mode?: ProjectDetailModes
 }
 
 const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
@@ -52,6 +55,7 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
   subProjectId,
   subProjectLangPair,
   projectDomain,
+  mode,
 }) => {
   const { t } = useTranslation()
 
@@ -62,6 +66,8 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
       projectDomain: projectDomain,
     })
   }
+
+  if (mode === ProjectDetailModes.View) return null
 
   return (
     <>
@@ -93,6 +99,7 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
   SubProjectTmKeys?: SubProjectTmKeys[]
   subProjectLangPair?: string
   projectDomain?: ClassifierValue
+  mode?: ProjectDetailModes
 }
 
 interface FileRow {
@@ -118,6 +125,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   SubProjectTmKeys,
   subProjectLangPair,
   projectDomain,
+  mode,
 }: TranslationMemoriesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { translationMemories = [] } = useFetchTranslationMemories()
@@ -204,7 +212,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       },
     }),
     columnHelper.accessor('name', {
-      header: () => t('label.file_name'),
+      header: () => (isEditable ? t('label.file_name') : t('label.tag_name')),
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('main_write', {
@@ -241,7 +249,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
             ariaLabel={t('label.main_write')}
             control={control}
             inputType={InputTypes.Checkbox}
-            disabled={!isEditable}
+            disabled={mode === ProjectDetailModes.View || !isEditable}
             onClick={() => {
               const payload: SubProjectTmKeysPayload = {
                 id: row.original.tm_key_id || '',
@@ -295,6 +303,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           subProjectId={subProjectId}
           subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}
+          mode={mode}
         />
       }
       initialIsExpanded={isEditable}

@@ -25,7 +25,6 @@ export enum Privileges {
   ViewInstitutionProjectDetail = 'VIEW_INSTITUTION_PROJECT_DETAIL',
   ViewInstitutionUnclaimedProjectDetail = 'VIEW_INSTITUTION_UNCLAIMED_PROJECT_DETAIL',
   ChangeClient = 'CHANGE_CLIENT',
-  ViewPersonalTask = 'VIEW_PERSONAL_TASK',
   ExportInstitutionGeneralReport = 'EXPORT_INSTITUTION_GENERAL_REPORT',
   AddTag = 'ADD_TAG',
   EditTag = 'EDIT_TAG',

@@ -17,4 +17,5 @@ export interface VolumeValue {
   created_at: string
   job: null | any
   volume_analysis: null | any
+  discounts: DiscountPercentages
 }

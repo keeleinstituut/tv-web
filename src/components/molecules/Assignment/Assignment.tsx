@@ -48,7 +48,6 @@ interface AssignmentProps extends AssignmentType {
   destination_language_classifier_value_id: string
   isVendorView?: boolean
   catSupported?: boolean
-  ext_id?: string
   volumes?: VolumeValue[]
   project: ListProject
   subProjectDeadline?: string

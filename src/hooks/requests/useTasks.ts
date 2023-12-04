@@ -30,10 +30,73 @@ export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
     isLoading,
     isError,
     tasks,
+    filters,
     paginationData,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
+  }
+}
+
+export const useFetchTask = ({ id }: { id?: string }) => {
+  const { isLoading, isError, data } = useQuery<TaskResponse>({
+    enabled: !!id,
+    queryKey: ['tasks', id],
+    queryFn: () => apiClient.get(`${endpoints.TASKS}/${id}`),
+    keepPreviousData: true,
+  })
+
+  const { data: task } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    task,
+  }
+}
+
+export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
+  const {
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useFilters<TasksPayloadType>(initialFilters)
+
+  const { isLoading, isError, data } = useQuery<TasksResponse>({
+    queryKey: ['historyTasks', filters],
+    queryFn: () => apiClient.get(endpoints.HISTORY_TASKS, filters),
+    keepPreviousData: true,
+  })
+
+  const { meta: paginationData, data: historyTasks } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    filters,
+    historyTasks,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  }
+}
+
+export const useFetchHistoryTask = ({ id }: { id?: string }) => {
+  const { isLoading, isError, data } = useQuery<TaskResponse>({
+    enabled: !!id,
+    queryKey: ['historyTasks', id],
+    queryFn: () => apiClient.get(`${endpoints.HISTORY_TASKS}/${id}`),
+    keepPreviousData: true,
+  })
+
+  const { data: historyTask } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    historyTask,
   }
 }
 
@@ -68,6 +131,30 @@ export const useCompleteTask = ({ id }: { id?: string }) => {
   })
   return {
     completeTask,
+    isLoading,
+  }
+}
+
+export const useAcceptTask = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+
+  const { mutateAsync: acceptTask, isLoading } = useMutation({
+    mutationKey: ['tasks', id],
+    mutationFn: () => apiClient.post(`${endpoints.TASKS}/${id}/accept`),
+    onSuccess: ({ data }: { data: ListTask }) => {
+      queryClient.setQueryData(['tasks', id], (oldData?: TaskResponse) => {
+        const { data: previousData } = oldData || {}
+
+        const newData = {
+          ...(previousData || {}),
+          ...data,
+        }
+        return { data: newData }
+      })
+    },
+  })
+  return {
+    acceptTask,
     isLoading,
   }
 }
