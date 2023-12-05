@@ -227,7 +227,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
       },
       footer: (info) => info.column.id,
     }),
-    ...(isEditable || mode === ProjectDetailModes.View
+    ...(isEditable
       ? [
           columnHelper.accessor('delete_button', {
             header: '',

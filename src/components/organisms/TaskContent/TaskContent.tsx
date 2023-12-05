@@ -83,7 +83,10 @@ const TaskContent: FC<TaskContentProps> = ({
   const { control, handleSubmit } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: {
-      my_source_files: [...source_files, ...final_files],
+      my_source_files: [
+        ...source_files,
+        ...map(final_files, (file) => ({ ...file, collection: 'final' })),
+      ],
       my_final_files: [],
     },
   })
@@ -246,7 +249,6 @@ const TaskContent: FC<TaskContentProps> = ({
           catSetupStatus={catSetupStatus}
           mode={ProjectDetailModes.View}
           subProjectId={sub_project_id}
-          isEditable
           isHistoryView={isHistoryView}
         />
         <FinalFilesList
