@@ -548,7 +548,8 @@
     "source_file_deleted": "Lähtefail on edukalt kustutatud",
     "project_corrected": "Tellimus lõpetatuks märgitud",
     "task_marked_completed":"Ülesanne edukalt lõpetatuks märgitud",
-    "project_reassigned": "Tellimus edukalt suunatud"
+    "project_reassigned": "Tellimus edukalt suunatud",
+    "sub_project_files_added": "Failid on edukalt lisatud"
   },
   "notification": {
     "announcement": "Teade",

@@ -26,6 +26,8 @@ import classes from './classes.module.scss'
 import { useHandleFiles } from 'hooks/requests/useFiles'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 // TODO: very similar to ProjectFilesList, these 2 can be unified
 
@@ -121,8 +123,13 @@ const SourceFilesList = <TFormValues extends FieldValues>({
       const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
       const { data } = await addFiles(filteredFiles)
       onChange([...value, ...data.data])
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.sub_project_files_added'),
+      })
     },
-    [onChange, addFiles, value]
+    [addFiles, onChange, value, t]
   )
 
   const handleDelete = useCallback(

@@ -8,6 +8,7 @@ import {
   isEmpty,
   groupBy,
   flatMap,
+  filter,
 } from 'lodash'
 import { FC, useCallback, useMemo, useState } from 'react'
 import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
@@ -89,7 +90,7 @@ const AssignmentsSection: FC<AssignmentsSectionProps> = ({ assignments }) => {
           const fullName = user ? `${user?.forename} ${user?.surname}` : ''
 
           return (
-            <div className={classes.assignmentContainer}>
+            <div className={classes.assignmentContainer} key={title}>
               <h3>{title}</h3>
               <Row label={t('label.name')} value={fullName} />
               <Row label={t('label.phone')} value={phone} />
@@ -131,14 +132,12 @@ const FilesSection: FC<FilesSectionProps> = ({ files, id }) => {
   const filesData = useMemo(
     () =>
       map(files, (file, index) => ({
-        shared_with_client: index,
         name: file.name,
         created_at:
           'created_at' in file
             ? dayjs(file?.created_at).format('DD.MM.YYYY HH:mm')
             : '',
         download_button: index,
-        delete_button: index,
         // TODO: feature missing, not sure what field value will be or where it comes from
         feature: SubProjectFeatures.JobRevision,
       })),
@@ -212,15 +211,6 @@ interface ClientContentProps {
   id?: string
 }
 
-interface ManagerContentProps {
-  id?: string
-  projectDomain?: ClassifierValue
-}
-
-interface SubProjectSectionContentProps extends ManagerContentProps {
-  isClientView?: boolean
-}
-
 const ClientContent: FC<ClientContentProps> = ({ id }) => {
   const subProject = useSubProjectCache(id)
   const { assignments, final_files } = subProject || {}
@@ -228,9 +218,21 @@ const ClientContent: FC<ClientContentProps> = ({ id }) => {
   return (
     <div className={classes.clientContentContainer}>
       <AssignmentsSection assignments={assignments} />
-      <FilesSection files={final_files} id={id} />
+      <FilesSection
+        files={filter(final_files, 'is_project_final_file')}
+        id={id}
+      />
     </div>
   )
+}
+
+interface ManagerContentProps {
+  id?: string
+  projectDomain?: ClassifierValue
+}
+
+interface SubProjectSectionContentProps extends ManagerContentProps {
+  isClientView?: boolean
 }
 
 const ManagerContent: FC<ManagerContentProps> = ({ id, projectDomain }) => {
@@ -243,9 +245,9 @@ const ManagerContent: FC<ManagerContentProps> = ({ id, projectDomain }) => {
 
   const tabs = map(subProject?.assignments, ({ job_definition }) => {
     return {
-      id: job_definition.id,
-      job_key: job_definition.job_key,
-      cat_tool_enabled: job_definition.linking_with_cat_tool_jobs_enabled,
+      id: job_definition?.id,
+      job_key: job_definition?.job_key,
+      cat_tool_enabled: job_definition?.linking_with_cat_tool_jobs_enabled,
     }
   })
 

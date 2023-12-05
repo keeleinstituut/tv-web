@@ -100,6 +100,7 @@ export interface SourceFile {
   updated_at: string
   original_url: string
   preview_url: string
+  is_project_final_file?: boolean
   // Type not clear yet:
   manipulations: string[]
   custom_properties: {
@@ -300,11 +301,13 @@ export interface CancelProjectPayload {
   reason: string
   comments?: string
 }
+
+export interface SendFinalFilesPayload {
+  final_file_id: string[]
+}
 export interface PotentialFilePayload {
   collection?: string
   type?: string
   file?: File | SourceFile
-  custom_properties?: {
-    type: HelperFileTypes
-  }
+  help_file_type?: HelperFileTypes
 }
