@@ -123,8 +123,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     defaultValues: defaultValues,
   })
 
-  // const newFinalFiles = watch('final_files')
-
   useEffect(() => {
     reset(defaultValues)
     // eslint-disable-next-line react-hooks/exhaustive-deps
