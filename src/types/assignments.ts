@@ -20,7 +20,7 @@ export enum CandidateStatus {
   Done = 'DONE',
 }
 
-interface Candidate {
+export interface Candidate {
   vendor: Vendor
   price: string
   status: CandidateStatus

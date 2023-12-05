@@ -101,7 +101,10 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
               const isEnabled = row.original.status === CandidateStatus.New
               return (
                 <BaseButton
-                  className={classes.iconButton}
+                  className={classNames(
+                    classes.iconButton,
+                    !isEnabled && classes.disabledIcon
+                  )}
                   hidden={
                     job_definition.job_key === SubProjectFeatures.JobOverview
                   }

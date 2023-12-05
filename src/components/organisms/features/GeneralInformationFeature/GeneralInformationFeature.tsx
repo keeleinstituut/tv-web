@@ -65,8 +65,6 @@ interface FormValues {
   source_files: SourceFile[]
   final_files: SourceFile[]
   write_to_memory: { [key: string]: boolean }
-  // TODO: no idea about these fields
-  shared_with_client: boolean[]
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
@@ -98,6 +96,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const defaultValues = useMemo(
     () => ({
+      deadline_at: getLocalDateOjectFromUtcDateString(
+        deadline_at || projectDeadlineAt || ''
+      ),
       cat_files,
       source_files: map(source_files, (file) => ({
         ...file,
@@ -106,24 +107,28 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       final_files,
       cat_jobs: catToolJobs,
       write_to_memory: {},
-      // TODO: no idea about these fields
-      shared_with_client: [],
     }),
-    [cat_files, source_files, final_files, catToolJobs]
+    [
+      deadline_at,
+      projectDeadlineAt,
+      cat_files,
+      source_files,
+      final_files,
+      catToolJobs,
+    ]
   )
 
-  const { control, getValues, watch, setValue } = useForm<FormValues>({
+  const { control, getValues, watch, setValue, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
 
   // const newFinalFiles = watch('final_files')
+
   useEffect(() => {
-    const deadline = getLocalDateOjectFromUtcDateString(
-      deadline_at || projectDeadlineAt || ''
-    )
-    setValue('deadline_at', deadline)
-  }, [deadline_at, projectDeadlineAt, setValue])
+    reset(defaultValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues])
 
   useEffect(() => {
     if (SubProjectTmKeys) {
@@ -140,33 +145,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       )
     }
   }, [setValue, SubProjectTmKeys])
-
-  // TODO: currently just used this for uploading final_files
-  // However not sure if we can use similar logic for all the fields
-  // if we can, then we should create 1 useEffect for the entire form and send the payload
-  // Whenever any field changes, except for shared_with_client, which will have their own button
-  // useEffect(() => {
-  //   const attemptFilesUpload = async () => {
-  //     try {
-  //       // TODO: not sure if this is the correct endpoint and if we can send both the old and new files together like this
-  //       // const { data } = await updateSubProject({
-  //       //   final_files: newFinalFiles,
-  //       // })
-  //       // const savedFinalFiles = data?.final_files
-  //       // setValue('final_files', savedFinalFiles, { shouldDirty: false })
-  //       showNotification({
-  //         type: NotificationTypes.Success,
-  //         title: t('notification.announcement'),
-  //         content: t('success.final_files_changed'),
-  //       })
-  //     } catch (errorData) {
-  //       showValidationErrorMessage(errorData)
-  //     }
-  //   }
-  //   if (!isEmpty(newFinalFiles) && !isEqual(newFinalFiles, final_files)) {
-  //     attemptFilesUpload()
-  //   }
-  // }, [final_files, newFinalFiles, setValue, t, updateSubProject])
 
   const openSendToCatModal = useCallback(() => {
     const sourceFiles = getValues('source_files')
@@ -225,7 +203,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           label: `${t('label.deadline_at')}`,
           control: control,
           name: 'deadline_at',
-          minDate: new Date(),
           maxDate: dayjs(projectDeadlineAt).toDate(),
           onDateTimeChange: handleChangeDeadline,
           onlyDisplay: !isSomethingEditable,
@@ -248,7 +225,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         <FinalFilesList
           name="final_files"
           title={t('projects.ready_files_from_vendors')}
-          // className={classes.filesSection}
           control={control}
           isLoading={isLoading}
           subProjectId={id}

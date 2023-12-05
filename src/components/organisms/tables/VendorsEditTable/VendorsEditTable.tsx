@@ -20,7 +20,6 @@ export interface VendorsEditProps {
 export type VendorUser = {
   institution_user_id: string
   name?: string
-  isVendor?: boolean
   vendor_id?: string
 }
 
@@ -45,7 +44,7 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
             return <span>{user}</span>
           },
         }),
-        columnHelper.accessor('isVendor', {
+        columnHelper.accessor('vendor_id', {
           header: () => t('vendors.vendor'),
           footer: (info) => info.column.id,
           cell: (info) => {
@@ -55,7 +54,7 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
                   name={`${info.row.original.institution_user_id}.isVendor`}
                   ariaLabel={info.row.original.name || t('vendors.vendor')}
                   control={control}
-                  defaultValue={info.row.original.isVendor}
+                  defaultValue={!!info.row.original.vendor_id}
                   inputType={InputTypes.Checkbox}
                   errorZIndex={100}
                 />
@@ -73,8 +72,9 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
           size: 90,
         }),
       ] as ColumnDef<VendorUser>[],
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [control, data]
   )
 
   return (
