@@ -44,7 +44,7 @@ export interface UserType {
   roles: RolePayload[]
   status: UserStatus
   user: UserDetailsType
-  vendor?: Vendor
+  vendor?: Vendor | null
 }
 
 export interface UserPostType {
