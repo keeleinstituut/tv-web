@@ -122,7 +122,7 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
   }
 
   const handleEditList = () => {
-    showModal(ModalTypes.DateTimeRangeFormModal, {
+    showModal(ModalTypes.DateTimeRangeForm, {
       data: editableData,
       title: t('modal.set_working_times_title'),
       handleOnSubmit: handleOnSubmit,

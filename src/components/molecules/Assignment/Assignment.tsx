@@ -48,7 +48,6 @@ interface AssignmentProps extends AssignmentType {
   destination_language_classifier_value_id: string
   isVendorView?: boolean
   catSupported?: boolean
-  ext_id?: string
   volumes?: VolumeValue[]
   project: ListProject
   subProjectDeadline?: string
@@ -98,7 +97,7 @@ const Assignment: FC<AssignmentProps> = ({
     })
 
   const { vendor } =
-    find(candidates, ({ vendor }) => vendor.id === assigned_vendor_id) || {}
+    find(candidates, ({ vendor }) => vendor?.id === assigned_vendor_id) || {}
   const { type_classifier_value } = project || {}
 
   const shouldShowStartTimeFields =

@@ -18,6 +18,7 @@ import DataTable, {
 
 import classes from './classes.module.scss'
 import { useWatch } from 'react-hook-form'
+import classNames from 'classnames'
 
 interface TotalPriceProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
@@ -72,6 +73,8 @@ const RowPrice = <TFormValues extends FieldValues>({
 interface VolumeCatPriceTableProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   hidden?: boolean
+  isEditable?: boolean
+  taskViewPricesClass?: string
 }
 
 interface TableRow {
@@ -86,6 +89,8 @@ const columnHelper = createColumnHelper<TableRow>()
 const VolumeCatPriceTable = <TFormValues extends FieldValues>({
   control,
   hidden,
+  isEditable,
+  taskViewPricesClass,
 }: VolumeCatPriceTableProps<TFormValues>) => {
   const { t } = useTranslation()
 
@@ -149,6 +154,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
             inputType={InputTypes.Text}
             className={classes.input}
             type="number"
+            onlyDisplay={!isEditable}
           />
         )
       },
@@ -179,6 +185,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
             inputType={InputTypes.Text}
             className={classes.input}
             type="number"
+            onlyDisplay={!isEditable}
           />
         )
       },
@@ -192,7 +199,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
       data={rows}
       columns={columns}
       tableSize={TableSizeTypes.M}
-      className={classes.tableContainer}
+      className={classNames(classes.tableContainer, taskViewPricesClass)}
       hidePagination
       headComponent={
         <h2 className={classes.tableTitle}>

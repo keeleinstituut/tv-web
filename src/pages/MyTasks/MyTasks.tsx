@@ -1,67 +1,163 @@
-import { FC, useState } from 'react'
-import classes from './classes.module.scss'
+import { FC, useMemo, useState } from 'react'
 import TasksTable from 'components/organisms/tables/TasksTable/TasksTable'
-import { chain } from 'lodash'
+import { map } from 'lodash'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import { TabStyle } from 'components/molecules/Tab/Tab'
+import { useTranslation } from 'react-i18next'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
+import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
+import { ListTask, TasksPayloadType } from 'types/tasks'
+import {
+  FilterFunctionType,
+  PaginationFunctionType,
+  ResponseMetaTypes,
+  SortingFunctionType,
+} from 'types/collective'
 
-// TODO: WIP - implement this page
+import classes from './classes.module.scss'
 
-interface ObjectType {
-  [key: string]: string
+export interface TasksTableProps {
+  tasks?: ListTask[]
+  filters?: object | TasksPayloadType
+  isLoading?: boolean
+  paginationData?: ResponseMetaTypes | undefined
+  handleFilterChange?: (value?: FilterFunctionType | undefined) => void
+  handleSortingChange?: (value?: SortingFunctionType | undefined) => void
+  handlePaginationChange?: (value?: PaginationFunctionType | undefined) => void
+  isHistoryTab?: boolean
 }
 
 const MyTasks: FC = () => {
-  const [tabNames, setTabNames] = useState<ObjectType>({})
-  const [activeTab, setActiveTab] = useState<string>()
+  const { t } = useTranslation()
 
-  let Component: FC = () => null
-  switch (activeTab) {
-    case 'Minu ülesanded':
-      Component = TasksTable
-      break
-  }
+  const {
+    tasks,
+    filters,
+    isLoading,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useFetchTasks({ assigned_to_me: 1 })
+
+  const {
+    tasks: waitingTasks,
+    filters: waitingTasksFilters,
+    isLoading: isLoadingWaitingTasks,
+    paginationData: waitingTasksPaginationData,
+    handleFilterChange: handleWaitingTasksFilterChange,
+    handleSortingChange: handleWaitingTasksSortingChange,
+    handlePaginationChange: handleWaitingTasksPaginationChange,
+  } = useFetchTasks({ assigned_to_me: 0 })
+
+  const {
+    historyTasks = [],
+    filters: historyTasksFilters,
+    isLoading: isLoadingHistoryTasks,
+    paginationData: historyPaginationData,
+    handleFilterChange: handleHistoryFilterChange,
+    handleSortingChange: handleHistorySortingChange,
+    handlePaginationChange: handleHisoryPaginationChange,
+  } = useFetchHistoryTasks()
+
+  const [activeTab, setActiveTab] = useState<string | undefined>(
+    t('my_tasks.my_assignments')
+  )
+
+  const componentProps = useMemo(() => {
+    switch (activeTab) {
+      case t('my_tasks.my_assignments'):
+        return {
+          tasks: tasks || [],
+          filters: filters,
+          isLoading: isLoading,
+          paginationData: paginationData,
+          handleFilterChange: handleFilterChange,
+          handleSortingChange: handleSortingChange,
+          handlePaginationChange: handlePaginationChange,
+          isHistoryTab: false,
+        }
+      case t('my_tasks.pending_assignments'):
+        return {
+          tasks: waitingTasks || [],
+          filters: waitingTasksFilters,
+          isLoading: isLoadingWaitingTasks,
+          paginationData: waitingTasksPaginationData,
+          handleFilterChange: handleWaitingTasksFilterChange,
+          handleSortingChange: handleWaitingTasksSortingChange,
+          handlePaginationChange: handleWaitingTasksPaginationChange,
+          isHistoryTab: false,
+        }
+      case t('my_tasks.my_tasks_history'):
+        return {
+          tasks: historyTasks || [],
+          filters: historyTasksFilters,
+          isLoading: isLoadingHistoryTasks,
+          paginationData: historyPaginationData,
+          handleFilterChange: handleHistoryFilterChange,
+          handleSortingChange: handleHistorySortingChange,
+          handlePaginationChange: handleHisoryPaginationChange,
+          isHistoryTab: true,
+        }
+      default:
+        return {}
+    }
+  }, [
+    activeTab,
+    t,
+    tasks,
+    filters,
+    isLoading,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+    waitingTasks,
+    waitingTasksFilters,
+    isLoadingWaitingTasks,
+    waitingTasksPaginationData,
+    handleWaitingTasksFilterChange,
+    handleWaitingTasksSortingChange,
+    handleWaitingTasksPaginationChange,
+    historyTasks,
+    historyTasksFilters,
+    isLoadingHistoryTasks,
+    historyPaginationData,
+    handleHistoryFilterChange,
+    handleHistorySortingChange,
+    handleHisoryPaginationChange,
+  ])
+
+  const taskTabs = map(
+    [
+      t('my_tasks.my_assignments'),
+      t('my_tasks.pending_assignments'),
+      t('my_tasks.my_tasks_history'),
+    ],
+    (feature) => ({
+      id: feature,
+      name: feature,
+    })
+  )
 
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>My Tasks</h1>
-        {/* TODO: add tooltip */}
+        <h1>{t('my_tasks.my_assignments')}</h1>
+        <Tooltip helpSectionKey="myTasks" />
       </div>
-      {/* <Tabs
-        setActiveTab={setActiveTab}
-        activeTab={activeTab}
-        tabs={availableTabs}
-        tabStyle={TabStyle.Primary}
-        className={classes.tabsContainer}
-        addDisabled
-        editDisabled
-      /> */}
+
       <Tabs
         setActiveTab={setActiveTab}
+        activeTab={activeTab}
         tabStyle={TabStyle.Primary}
-        tabs={chain([
-          'Minu ülesanded',
-          'Ootel ülesanded',
-          'Minu ülesannete ajalugu',
-        ])
-          .map((feature) => ({
-            id: feature,
-            name: feature,
-          }))
-          .value()}
-        onAddPress={function (): void {
-          throw new Error('Function not implemented.')
-        }}
-        addLabel={''}
-        onChangeName={function (id: string, newValue: string): void {
-          throw new Error('Function not implemented.')
-        }}
-        addDisabled={true}
-        tabNames={tabNames}
+        tabs={taskTabs}
+        addDisabled
+        className={classes.tabsContainer}
+        editDisabled
       />
 
-      <Component />
+      <TasksTable {...componentProps} />
     </>
   )
 }

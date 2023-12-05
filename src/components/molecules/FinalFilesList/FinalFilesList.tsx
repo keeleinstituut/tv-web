@@ -30,7 +30,9 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
 import { showValidationErrorMessage } from 'api/errorHandler'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { useHandleFiles } from 'hooks/requests/useFiles'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 
 // TODO: very similar to ProjectFilesList, these 2 can be unified
 
@@ -42,9 +44,10 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
   isEditable?: boolean
   className?: string
   isLoading?: boolean
+  mode?: ProjectDetailModes
   subProjectId: string
+  isHistoryView?: string
 }
-
 interface FileRow {
   name: string
   shared_with_client: number
@@ -65,6 +68,8 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   className,
   isLoading,
   subProjectId,
+  mode,
+  isHistoryView,
 }: FinalFilesListProps<TFormValues>) => {
   const {
     field: { onChange, value },
@@ -103,14 +108,23 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     [onChange, addFiles, value]
   )
 
-  const handleDelete = useCallback(
+  const handleOpenDeleteModal = useCallback(
     (index?: number) => {
-      if (index === 0 || index) {
-        deleteFile(typedValue[index].id)
-        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+      const handleDelete = () => {
+        if (index === 0 || index) {
+          deleteFile(typedValue[index].id)
+          onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+        }
       }
+
+      showModal(ModalTypes.ConfirmationModal, {
+        title: t('modal.confirm_deleting_file'),
+        cancelButtonContent: t('button.quit_alt'),
+        proceedButtonContent: t('button.confirm'),
+        handleProceed: handleDelete,
+      })
     },
-    [onChange, deleteFile, typedValue]
+    [deleteFile, onChange, t, typedValue]
   )
 
   const filesData = useMemo(
@@ -160,60 +174,115 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   }, [sharedFiles, typedValue])
 
   const columns = [
-    columnHelper.accessor('shared_with_client', {
-      header: () => <span>{t('label.shared_with_client')}</span>,
+    ...(mode !== ProjectDetailModes.View
+      ? [
+          columnHelper.accessor('shared_with_client', {
+            header: () => t('label.shared_with_client'),
+            footer: (info) => info.column.id,
+            cell: ({ getValue }) => {
+              return (
+                <FormInput
+                  name={`shared_with_client.${getValue()}` as Path<TFormValues>}
+                  ariaLabel={t('label.share_with_client')}
+                  control={control}
+                  inputType={InputTypes.Checkbox}
+                  // className={classes.fitContent}
+                />
+              )
+            },
+          }),
+        ]
+      : []),
+    columnHelper.accessor('name', {
+      header: () => (
+        <p className={mode === ProjectDetailModes.View ? classes.header : ''}>
+          {t('label.file_name')}
+        </p>
+      ),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
+        const fileName = getValue()
         return (
-          <FormInput
-            name={`shared_with_client.${getValue()}` as Path<TFormValues>}
-            ariaLabel={t('label.share_with_client')}
-            control={control}
-            inputType={InputTypes.Checkbox}
-            disabled={!isEditable}
-            // className={classes.fitContent}
-          />
+          <p
+            className={mode === ProjectDetailModes.View ? classes.fileName : ''}
+          >
+            {fileName}
+          </p>
         )
       },
     }),
-    columnHelper.accessor('name', {
-      header: () => t('label.file_name'),
-      footer: (info) => info.column.id,
-    }),
+
     columnHelper.accessor('feature', {
-      header: () => t('label.task'),
-      footer: (info) => info.column.id,
+      header: () => (
+        <p hidden={mode === ProjectDetailModes.View}>{t('label.task')}</p>
+      ),
+      footer: (info) => {
+        if (mode === ProjectDetailModes.View) return null
+        return info.column.id
+      },
       cell: ({ getValue }) => {
         const selectedFeature = getValue()
+        if (mode === ProjectDetailModes.View) return null
         return t(`projects.features.${selectedFeature}`)
       },
     }),
     columnHelper.accessor('created_at', {
-      header: () => t('label.added_at'),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('download_button', {
-      header: '',
-      cell: ({ getValue }) => (
-        <BaseButton
-          className={classNames(classes.iconButton, classes.downloadButton)}
-          onClick={() => handleDownload(getValue())}
-          aria-label={t('button.download')}
-        >
-          <DownloadFilled />
-        </BaseButton>
+      header: () => (
+        <p className={mode === ProjectDetailModes.View ? classes.header : ''}>
+          {t('label.added_at')}
+        </p>
       ),
       footer: (info) => info.column.id,
+      cell: ({ getValue }) => {
+        const createdAt = getValue()
+        return (
+          <p
+            className={
+              mode === ProjectDetailModes.View ? classes.createdAt : ''
+            }
+          >
+            {createdAt}
+          </p>
+        )
+      },
     }),
-    ...(isEditable
+    ...(mode !== ProjectDetailModes.View
+      ? [
+          columnHelper.accessor('download_button', {
+            header: '',
+            cell: ({ getValue }) => {
+              return (
+                <BaseButton
+                  className={classNames(
+                    classes.iconButton,
+                    classes.downloadButton,
+                    !!isHistoryView && classes.disabled
+                  )}
+                  onClick={() => handleDownload(getValue())}
+                  disabled={!!isHistoryView}
+                >
+                  <DownloadFilled className={classes.iconButton} />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
+
+    ...(isEditable || mode === ProjectDetailModes.View
       ? [
           columnHelper.accessor('delete_button', {
             header: '',
             cell: ({ getValue }) => {
               return (
                 <BaseButton
-                  className={classes.iconButton}
-                  onClick={() => handleDelete(getValue())}
+                  className={classNames(
+                    classes.iconButton,
+                    !!isHistoryView && classes.disabled
+                  )}
+                  onClick={() => handleOpenDeleteModal(getValue())}
+                  disabled={!!isHistoryView}
                   aria-label={t('button.delete')}
                 >
                   <Delete />
@@ -254,6 +323,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
               className={classes.fileImportButton}
               onChange={handleAdd}
               allowMultiple
+              disabled={!!isHistoryView}
             />
           </div>
         }
@@ -265,10 +335,14 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         // TODO: need to check if they have changed, but currently this doesn't exist
         disabled={!isEmpty(sharedFiles) || !isEditable}
         loading={isLoading}
+        hidden={mode === ProjectDetailModes.View}
       >
         {t('button.save_changes')}
       </Button>
-      <span className={classes.saveHelper}>
+      <span
+        className={classes.saveHelper}
+        hidden={mode === ProjectDetailModes.View}
+      >
         {t('helper.save_files_helper')}
       </span>
     </div>

@@ -1,0 +1,10 @@
+@import 'styles/variables';
+
+.completeModal {
+  h1 {
+    max-width: 70%;
+  }
+  :nth-child(3) {
+    color: $color-primary;
+  }
+}

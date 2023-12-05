@@ -78,7 +78,7 @@ export interface ProjectTypeConfig {
   job_definitions: JobDefinition[]
 }
 
-interface TypeClassifierValue extends ClassifierValue {
+export interface TypeClassifierValue extends ClassifierValue {
   type: ClassifierValueType.ProjectType
   project_type_config: ProjectTypeConfig
 }
@@ -157,6 +157,7 @@ export interface ListSubProjectDetail {
   translation_domain_classifier_value?: ClassifierValue
   event_start_at?: string
   active_job_definition?: JobDefinition
+  cat_jobs: CatJob[]
 }
 
 export interface SubProjectDetail extends ListSubProjectDetail {
@@ -164,7 +165,6 @@ export interface SubProjectDetail extends ListSubProjectDetail {
   cat_project_created: string
   cat_features: SubProjectFeatures[]
   job_definitions: JobDefinition[]
-  cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
   cat_files: SourceFile[]
   final_files: SourceFile[]
@@ -192,7 +192,7 @@ export interface ListProject {
   reference_number: string
   institution_id: string
   type_classifier_value_id: string
-  type_classifier_value?: TypeClassifierValue
+  type_classifier_value: TypeClassifierValue
   comments: string
   workflow_template_id: WorkflowTemplateID
   workflow_instance_ref: string | null
@@ -203,14 +203,12 @@ export interface ListProject {
   status: ProjectStatus
   tags: Tag[]
   price: string
-  event_start_at?: string
-}
-
-export interface ProjectDetail extends ListProject {
   help_files: SourceFile[] // might be different type
   source_files: SourceFile[]
   client_institution_user: UserType
-  manager_institution_user?: UserType
+  manager_institution_user: UserType
+}
+export interface ProjectDetail extends ListProject {
   translation_domain_classifier_value: ClassifierValue
   event_start_at?: string
   workflow_started?: boolean

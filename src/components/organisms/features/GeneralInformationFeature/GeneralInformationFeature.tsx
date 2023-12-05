@@ -12,7 +12,6 @@ import {
 import {
   useUpdateSubProject,
   useFetchSubProjectCatToolJobs,
-  useSubProjectSendToCat,
 } from 'hooks/requests/useProjects'
 import {
   CatProjectPayload,
@@ -21,11 +20,7 @@ import {
   SourceFile,
   SubProjectDetail,
 } from 'types/projects'
-import {
-  ModalTypes,
-  closeModal,
-  showModal,
-} from 'components/organisms/modals/ModalRoot'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Root } from '@radix-ui/react-form'
 import {
   FormInput,
@@ -37,9 +32,6 @@ import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesLis
 import classes from './classes.module.scss'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
-import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { showValidationErrorMessage } from 'api/errorHandler'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
@@ -94,8 +86,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   const { updateSubProject, isLoading } = useUpdateSubProject({
     id,
   })
-  const { sendToCat, isCatProjectLoading } = useSubProjectSendToCat()
-  const { catToolJobs, catSetupStatus, startPolling } =
+  const { catToolJobs, catSetupStatus, startPolling, isPolling } =
     useFetchSubProjectCatToolJobs({
       id,
     })
@@ -108,7 +99,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   const defaultValues = useMemo(
     () => ({
       deadline_at: getLocalDateOjectFromUtcDateString(
-        deadline_at || projectDeadlineAt
+        deadline_at || projectDeadlineAt || ''
       ),
       cat_files,
       source_files: map(source_files, (file) => ({
@@ -181,7 +172,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   //   }
   // }, [final_files, newFinalFiles, setValue, t, updateSubProject])
 
-  const handleSendToCat = useCallback(async () => {
+  const openSendToCatModal = useCallback(() => {
     const sourceFiles = getValues('source_files')
     const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
@@ -190,27 +181,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       source_files_ids: compact(map(selectedSourceFiles, 'id')),
     }
 
-    try {
-      await sendToCat(payload)
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.files_sent_to_cat'),
-      })
-      startPolling()
-      closeModal()
-    } catch (errorData) {
-      showValidationErrorMessage(errorData)
-    }
-  }, [getValues, sendToCat, startPolling, id, t])
-
-  const openSendToCatModal = useCallback(
-    () =>
-      showModal(ModalTypes.ConfirmSendToCat, {
-        handleProceed: handleSendToCat,
-      }),
-    [handleSendToCat]
-  )
+    showModal(ModalTypes.ConfirmSendToCat, {
+      sendPayload: payload,
+      callback: startPolling,
+    })
+  }, [getValues, id, startPolling])
 
   const handleChangeDeadline = useCallback(
     (value: { date: string; time: string }) => {
@@ -269,7 +244,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           openSendToCatModal={openSendToCatModal}
           canGenerateProject={canGenerateProject}
           isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
-          isCatProjectLoading={isCatProjectLoading}
+          isCatProjectLoading={isPolling}
           catSetupStatus={catSetupStatus}
           subProjectId={id}
           isEditable={isSomethingEditable}

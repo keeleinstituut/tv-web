@@ -25,9 +25,12 @@ import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
 import { ConfirmDeleteVolumeModalProps } from './ConfirmDeleteVolumeModal/ConfirmDeleteVolumeModal'
 import { ConfirmCancelProjectModalProps } from './ConfirmCancelProjectModal/ConfirmCancelProjectModal'
 import { ConfirmRejectProjectModalProps } from './ConfirmRejectProjectModal/ConfirmRejectProjectModal'
+import { ConfirmDeleteSourceFileModalProps } from './ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal'
 import { ConfirmTmWritableModalProps } from './ConfirmTmWritableModal/ConfirmTmWritableModal'
 import { ConfirmAssignmentCompletionModalProps } from './ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal'
 import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjectModal'
+import { ConfirmCompleteTaskModalProps } from './ConfirmCompleteTaskModal/ConfirmCompleteTaskModal'
+import { ConfirmSendToPreviousTaskModalProps } from './ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -85,6 +88,10 @@ const ConfirmRejectProjectModal = lazy(
   () => import('./ConfirmRejectProjectModal/ConfirmRejectProjectModal')
 )
 
+const ConfirmDeleteSourceFileModal = lazy(
+  () => import('./ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal')
+)
+
 const ConfirmTmWritableModal = lazy(
   () => import('./ConfirmTmWritableModal/ConfirmTmWritableModal')
 )
@@ -100,6 +107,15 @@ const ReassignProjectModal = lazy(
   () => import('./ReassignProjectModal/ReassignProjectModal')
 )
 
+const ConfirmCompleteTaskModal = lazy(
+  () => import('./ConfirmCompleteTaskModal/ConfirmCompleteTaskModal')
+)
+
+const ConfirmSendToPreviousTaskModal = lazy(
+  () =>
+    import('./ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -111,7 +127,7 @@ export enum ModalTypes {
   ConfirmationModal = 'confirmationModal',
   ConfirmSendToCat = 'confirmSendToCat',
   CatAnalysis = 'catAnalysis',
-  DateTimeRangeFormModal = 'dateTimeRangeFormModal',
+  DateTimeRangeForm = 'dateTimeRangeForm',
   VendorsEdit = 'vendorsEdit',
   SelectVendor = 'selectVendor',
   AddVolume = 'addVolume',
@@ -120,9 +136,12 @@ export enum ModalTypes {
   AddTranslationMemories = 'addTranslationMemories',
   ConfirmCancelProject = 'confirmCancelProject',
   ConfirmRejectProject = 'confirmRejectProject',
+  ConfirmDeleteSourceFile = 'confirmDeleteSourceFile',
   ConfirmTmWritable = 'confirmTmWritable',
   ConfirmAssignmentCompletion = 'confirmAssignmentCompletion',
-  ReassignProject = 'reassignProjectModal',
+  ReassignProject = 'reassignProject',
+  ConfirmCompleteTask = 'confirmCompleteTask',
+  ConfirmSendToPreviousTask = 'confirmSendToPreviousTask',
 }
 
 // Add other modal props types here as well
@@ -145,9 +164,12 @@ type ModalPropTypes =
   | Omit<ConfirmDeleteVolumeModalProps, 'closeModal'>
   | Omit<ConfirmCancelProjectModalProps, 'closeModal'>
   | Omit<ConfirmRejectProjectModalProps, 'closeModal'>
+  | Omit<ConfirmDeleteSourceFileModalProps, 'closeModal'>
   | Omit<ConfirmTmWritableModalProps, 'closeModal'>
   | Omit<ConfirmAssignmentCompletionModalProps, 'closeModal'>
   | Omit<ReassignProjectModalProps, 'closeModal'>
+  | Omit<ConfirmCompleteTaskModalProps, 'closeModal'>
+  | Omit<ConfirmSendToPreviousTaskModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -160,7 +182,7 @@ const MODALS = {
   [ModalTypes.ConfirmationModal]: ConfirmationModal,
   [ModalTypes.ConfirmSendToCat]: ConfirmSendToCatModal,
   [ModalTypes.CatAnalysis]: CatAnalysisModal,
-  [ModalTypes.DateTimeRangeFormModal]: DateTimeRangeFormModal,
+  [ModalTypes.DateTimeRangeForm]: DateTimeRangeFormModal,
   [ModalTypes.VendorsEdit]: VendorsEditModal,
   [ModalTypes.SelectVendor]: SelectVendorModal,
   [ModalTypes.AddVolume]: AddVolumeModal,
@@ -169,9 +191,12 @@ const MODALS = {
   [ModalTypes.AddTranslationMemories]: AddTranslationMemoriesModal,
   [ModalTypes.ConfirmCancelProject]: ConfirmCancelProjectModal,
   [ModalTypes.ConfirmRejectProject]: ConfirmRejectProjectModal,
+  [ModalTypes.ConfirmDeleteSourceFile]: ConfirmDeleteSourceFileModal,
   [ModalTypes.ConfirmTmWritable]: ConfirmTmWritableModal,
   [ModalTypes.ConfirmAssignmentCompletion]: ConfirmAssignmentCompletionModal,
   [ModalTypes.ReassignProject]: ReassignProjectModal,
+  [ModalTypes.ConfirmCompleteTask]: ConfirmCompleteTaskModal,
+  [ModalTypes.ConfirmSendToPreviousTask]: ConfirmSendToPreviousTaskModal,
 }
 
 interface RefType {

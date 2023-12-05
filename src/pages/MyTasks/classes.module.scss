@@ -2,7 +2,27 @@
 
 .titleRow {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: spacing(4);
+
+  button {
+    margin-left: spacing(4);
+  }
+}
+
+.tabsContainer {
+  button {
+    text-decoration: none;
+
+    background: $color-white;
+    border-color: $color-white;
+
+    span {
+      font-size: $font-size-14;
+      font-weight: $font-weight-bold;
+    }
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }

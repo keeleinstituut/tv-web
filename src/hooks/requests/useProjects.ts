@@ -250,6 +250,7 @@ export const useFetchSubProjectCatToolJobs = ({ id }: { id?: string }) => {
     catSetupStatus: data?.data?.setup_status,
     catAnalyzeStatus: data?.data?.analyzing_status,
     startPolling,
+    isPolling: shouldRefetch,
   }
 }
 
