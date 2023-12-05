@@ -98,9 +98,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const defaultValues = useMemo(
     () => ({
-      deadline_at: getLocalDateOjectFromUtcDateString(
-        deadline_at || projectDeadlineAt || ''
-      ),
       cat_files,
       source_files: map(source_files, (file) => ({
         ...file,
@@ -112,14 +109,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       // TODO: no idea about these fields
       shared_with_client: [],
     }),
-    [
-      deadline_at,
-      projectDeadlineAt,
-      cat_files,
-      source_files,
-      final_files,
-      catToolJobs,
-    ]
+    [cat_files, source_files, final_files, catToolJobs]
   )
 
   const { control, getValues, watch, setValue } = useForm<FormValues>({
@@ -128,6 +118,12 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   })
 
   // const newFinalFiles = watch('final_files')
+  useEffect(() => {
+    const deadline = getLocalDateOjectFromUtcDateString(
+      deadline_at || projectDeadlineAt || ''
+    )
+    setValue('deadline_at', deadline)
+  }, [deadline_at, projectDeadlineAt, setValue])
 
   useEffect(() => {
     if (SubProjectTmKeys) {
