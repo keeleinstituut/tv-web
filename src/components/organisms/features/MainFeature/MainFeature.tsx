@@ -12,7 +12,6 @@ import FeatureHeaderSection, {
 import FeatureAssignments from 'components/molecules/FeatureAssignments/FeatureAssignments'
 import FeatureCatJobs from 'components/molecules/FeatureCatJobs/FeatureCatJobs'
 import { useSplitAssignment } from 'hooks/requests/useAssignments'
-import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { get } from 'lodash'
@@ -121,9 +120,7 @@ const MainFeature: FC<MainFeatureProps> = ({
         assignments={assignments}
         hidden={activeTab === FeatureTabs.Xliff}
         catSupported={catSupported}
-        project={project}
         isEditable={isSomethingEditable}
-        {...rest}
       />
       <FeatureCatJobs
         hidden={activeTab === FeatureTabs.Vendors}

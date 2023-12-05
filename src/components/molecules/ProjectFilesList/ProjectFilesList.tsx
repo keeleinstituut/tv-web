@@ -126,7 +126,14 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
         }
       }
     },
-    [onChange, typedValue, helpFileTypes, name, onChangeHelpFileTypes]
+    [
+      typedValue,
+      isEditable,
+      name,
+      onChange,
+      onChangeHelpFileTypes,
+      helpFileTypes,
+    ]
   )
 
   const handleDownload = useCallback(
