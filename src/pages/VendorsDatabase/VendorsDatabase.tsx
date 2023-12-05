@@ -21,14 +21,15 @@ const VendorsDatabase: FC = () => {
     vendors,
     paginationData,
     isLoading,
+    filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
   } = useVendorsFetch()
 
   const handleOpenVendorsEditModal = useCallback(() => {
-    showModal(ModalTypes.VendorsEdit, {})
-  }, [])
+    showModal(ModalTypes.VendorsEdit, { vendorsFilters: filters })
+  }, [filters])
 
   const [searchValue, setSearchValue] = useState<string>('')
 
