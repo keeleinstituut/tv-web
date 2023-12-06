@@ -55,7 +55,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
 }) => {
   const { t } = useTranslation()
   const { translationMemories = [], handleFilterChange } =
-    useFetchTranslationMemories(initialFilters)
+    useFetchTranslationMemories({ initialFilters })
   const [searchValue, setSearchValue] = useState<string>('')
 
   const { tagsFilters: tagsOptions } = useFetchTags({
@@ -209,8 +209,17 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
             : {},
         }),
       ] as ColumnDef<TranslationMemoriesTableRow>[],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [
+      domainOptions,
+      handleSearch,
+      initialFilters,
+      isSelectingModal,
+      languageDirectionFilters,
+      loadMore,
+      t,
+      tagsOptions,
+      tmKeyControl,
+    ]
   )
 
   return (

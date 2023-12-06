@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, includes, find } from 'lodash'
+import { map, includes, find, isEmpty, intersection } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -49,13 +49,23 @@ const SubProjectsTable: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
+  const onlyPersonalProjectsAllowed = isEmpty(
+    intersection(userPrivileges, [
+      Privileges.ViewInstitutionProjectList,
+      Privileges.ViewInstitutionProjectDetail,
+      Privileges.ViewInstitutionUnclaimedProjectDetail,
+    ])
+  )
+
   const {
     subProjects,
     paginationData,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchSubProjects()
+  } = useFetchSubProjects({
+    only_show_personal_projects: onlyPersonalProjectsAllowed ? 1 : 0,
+  })
 
   const statusFilters = map(SubProjectStatus, (status) => ({
     label: t(`projects.status.${status}`),
@@ -94,6 +104,9 @@ const SubProjectsTable: FC = () => {
 
   const { control, handleSubmit, watch } = useForm<FormValues>({
     mode: 'onChange',
+    defaultValues: {
+      only_show_personal_projects: onlyPersonalProjectsAllowed,
+    },
     resetOptions: {
       keepErrors: true,
     },
@@ -234,6 +247,7 @@ const SubProjectsTable: FC = () => {
               className={classes.checkbox}
               control={control}
               inputType={InputTypes.Checkbox}
+              disabled={onlyPersonalProjectsAllowed}
             />
             <FormInput
               name="ext_id"

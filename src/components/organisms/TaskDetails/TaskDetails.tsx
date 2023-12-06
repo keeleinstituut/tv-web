@@ -6,49 +6,43 @@ import classNames from 'classnames'
 import useHashState from 'hooks/useHashState'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
 import TaskContent from 'components/organisms/TaskContent/TaskContent'
-import { ListProject, SourceFile, SubProjectStatus } from 'types/projects'
-import { LanguageClassifierValue } from 'types/classifierValues'
-import { VolumeValue } from 'types/volumes'
+import { ListProject, SubProjectStatus } from 'types/projects'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import ExpandableContentLeftComponent from 'components/molecules/ExpandableContentLeftComponent/ExpandableContentLeftComponent'
 
 import classes from './classes.module.scss'
+import { useTaskCache } from 'hooks/requests/useTasks'
 
 interface TaskProps {
   ext_id?: string
   isLoading: boolean
-  source_language_classifier_value?: LanguageClassifierValue
-  destination_language_classifier_value?: LanguageClassifierValue
   project?: ListProject
-  cat_files?: SourceFile[]
-  source_files: SourceFile[]
-  sub_project_id: string
-  volumes?: VolumeValue[]
   taskId?: string
-  comments?: string
   assignee_institution_user_id?: string
   isHistoryView?: string
   task_type?: string
-  deadline_at?: string
-  event_start_at?: string
   job_short_name?: string
   status?: SubProjectStatus
-  final_files?: SourceFile[]
   price?: string
+  isVendor?: boolean
 }
 
 const TaskDetails: FC<TaskProps> = ({
   ext_id = '',
   isLoading,
-  source_language_classifier_value,
-  destination_language_classifier_value,
   assignee_institution_user_id,
   job_short_name,
   status,
-  deadline_at,
   price,
+  taskId,
   ...rest
 }) => {
+  const { assignment } = useTaskCache(taskId) || {}
+  const { deadline_at, subProject } = assignment || {}
+  const {
+    source_language_classifier_value,
+    destination_language_classifier_value,
+  } = subProject || {}
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
 
@@ -91,7 +85,7 @@ const TaskDetails: FC<TaskProps> = ({
       )}
       onExpandedChange={handleOpenContainer}
       id={ext_id}
-      isExpanded={!assignee_institution_user_id ? false : isExpanded}
+      isExpanded={isExpanded}
       rightComponent={
         <ProjectStatusTag status={status} jobName={job_short_name} />
       }
@@ -102,14 +96,11 @@ const TaskDetails: FC<TaskProps> = ({
           mode={ProjectDetailModes.View}
         />
       }
-      isExpandedDisabled={!assignee_institution_user_id}
     >
       <TaskContent
-        destination_language_classifier_value={
-          destination_language_classifier_value
-        }
         isLoading={isLoading}
         assignee_institution_user_id={assignee_institution_user_id}
+        taskId={taskId}
         {...rest}
       />
     </ExpandableContentContainer>

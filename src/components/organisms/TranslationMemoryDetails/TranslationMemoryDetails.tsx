@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC } from 'react'
 import { includes, split } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'

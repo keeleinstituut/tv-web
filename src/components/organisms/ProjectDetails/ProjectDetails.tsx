@@ -115,7 +115,6 @@ interface FormValues {
   help_file_types: HelperFileTypes[]
   translation_domain_classifier_value_id: string
   event_start_at?: { date?: string; time?: string }
-  // TODO: Not sure about the structure of following
   comments?: string
   ext_id?: string
   tags?: string[]
@@ -155,13 +154,18 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
     updateBulkFiles,
     isAddLoading,
     isDeleteLoading,
+    isUpdateLoading,
   } = useHandleBulkFiles({
     reference_object_id: project?.id ?? '',
     reference_object_type: 'project',
   })
 
   const isSubmitLoading =
-    isAddLoading || isDeleteLoading || isUpdatingProject || isLoading
+    isAddLoading ||
+    isDeleteLoading ||
+    isUpdatingProject ||
+    isLoading ||
+    isUpdateLoading
 
   const navigate = useNavigate()
   const isNew = mode === ProjectDetailModes.New
@@ -266,9 +270,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
     reset(defaultValues)
   }, [reset, defaultValues])
 
-  // TODO: If BE starts sending the full project object as a response to updateProject
-  // Then we can delete this useEffect
-  // If not, then we should always fetch the project again after update and use this hooks to reset the form
   useEffect(() => {
     reset(defaultValues)
     // Only run when defaultValues change
@@ -300,10 +301,9 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
         if (!isEmpty(deletedFiles)) {
           await deleteBulkFiles(deletedFiles)
         }
-        // TODO: BE currently doesn't support updating
-        // if (!isEmpty(updatedFiles)) {
-        //   await updateBulkFiles(updatedFiles)
-        // }
+        if (!isEmpty(updatedFiles)) {
+          await updateBulkFiles(updatedFiles)
+        }
         if (!isEmpty(actualPayload)) {
           await updateProject(actualPayload)
         }
@@ -313,16 +313,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
           content: t('success.project_updated'),
         })
         setIsEditEnabled(false)
-        // TODO: If BE starts sending the full project object as a response to updateProject
-        // Then this will reset the form with the correct values
-        // If not, this should be removed and the useEffect hook above should be used together with refetching the project
-        // reset(
-        //   getProjectDefaultValues({
-        //     institutionUserId,
-        //     isNew: false,
-        //     project: updatedProject,
-        //   })
-        // )
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         mapProjectValidationErrors(typedErrorData)
@@ -332,10 +322,11 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
       dirtyFields,
       help_files,
       source_files,
-      updateProject,
       t,
       addBulkFiles,
       deleteBulkFiles,
+      updateBulkFiles,
+      updateProject,
       mapProjectValidationErrors,
     ]
   )
@@ -350,7 +341,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
       ext_id,
       ...rest
     }) => {
-      // TODO: need to go over all of this once it's clear what can be updated and how
       const deadline_at = getUtcDateStringFromLocalDateObject(deadlineObject)
       const event_start_at =
         startObject?.date || startObject?.time

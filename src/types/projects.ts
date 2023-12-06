@@ -12,6 +12,7 @@ import {
 import { AssignmentType } from './assignments'
 import { UserType } from './users'
 import { Tag } from './tags'
+import { SubProjectTmKeys } from './translationMemories'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -100,10 +101,12 @@ export interface SourceFile {
   updated_at: string
   original_url: string
   preview_url: string
+  is_project_final_file?: boolean
   // Type not clear yet:
   manipulations: string[]
   custom_properties: {
-    type: HelperFileTypes
+    type?: HelperFileTypes
+    institution_user_id?: string
   }
   generated_conversions: string[]
   responsive_images: string[]
@@ -150,8 +153,9 @@ export interface ListSubProjectDetail {
   destination_language_classifier_value_id: string
   created_at: string
   updated_at: string
-  project: ListProject
+  project: ProjectDetail
   status?: SubProjectStatus
+  cat_tm_keys?: SubProjectTmKeys[]
   deadline_at: string
   price?: string
   translation_domain_classifier_value?: ClassifierValue
@@ -230,7 +234,7 @@ export type ProjectsPayloadType = PaginationFunctionType &
 export type SubProjectsPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
-    only_show_personal_projects?: boolean
+    only_show_personal_projects?: number
     statuses?: string[]
   }
 
@@ -300,11 +304,13 @@ export interface CancelProjectPayload {
   reason: string
   comments?: string
 }
+
+export interface SendFinalFilesPayload {
+  final_file_id: string[]
+}
 export interface PotentialFilePayload {
   collection?: string
   type?: string
   file?: File | SourceFile
-  custom_properties?: {
-    type: HelperFileTypes
-  }
+  help_file_type?: HelperFileTypes
 }

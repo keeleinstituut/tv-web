@@ -147,9 +147,7 @@ export const mapFilesForApi = ({
       collection: 'help',
       ...(typeForThisFile
         ? {
-            custom_properties: {
-              type: typeForThisFile,
-            },
+            help_file_type: typeForThisFile,
           }
         : {}),
     }
@@ -181,14 +179,12 @@ export const mapFilesForApi = ({
   // 3. Get updated help files
 
   const updatedFiles = compact(
-    filter(helpFilesWithType, ({ file, custom_properties }) => {
+    filter(helpFilesWithType, ({ file, help_file_type }) => {
       const previousHelpFile = find(previousHelpFiles, {
         id: (file as SourceFile)?.id,
       })
       if (!previousHelpFile) return false
-      return (
-        previousHelpFile?.custom_properties?.type !== custom_properties?.type
-      )
+      return previousHelpFile?.custom_properties?.type !== help_file_type
     })
   )
 

@@ -24,9 +24,13 @@ import useWaitForLoading from 'hooks/useWaitForLoading'
 
 dayjs.extend(customParseFormat)
 
-export const useFetchTranslationMemories = (
+export const useFetchTranslationMemories = ({
+  initialFilters,
+  disabled,
+}: {
   initialFilters?: TranslationMemoryFilters
-) => {
+  disabled?: boolean
+}) => {
   const {
     filters,
     handleFilterChange,
@@ -45,6 +49,7 @@ export const useFetchTranslationMemories = (
   )
   const { isLoading, isError, isFetching, data } =
     useQuery<TranslationMemoryDataType>({
+      enabled: !disabled,
       queryKey: ['translationMemories', filters],
       queryFn: () =>
         apiClient.get(
@@ -86,9 +91,13 @@ export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
     isFetching,
   }
 }
-
-export const useFetchTmChunkAmounts = () => {
+export const useFetchTmChunkAmounts = ({
+  disabled,
+}: {
+  disabled?: boolean
+}) => {
   const { data } = useQuery<TmStatsType>({
+    enabled: !disabled,
     queryKey: ['translationMemories-stats'],
     queryFn: () => apiClient.get(endpoints.TM_STATS),
   })
@@ -291,10 +300,16 @@ export const useFetchTranslationMemorySubProjects = ({
   }
 }
 
-export const useFetchSubProjectTmKeys = ({ id }: { id?: string }) => {
+export const useFetchSubProjectTmKeys = ({
+  id,
+  disabled,
+}: {
+  id?: string
+  disabled?: boolean
+}) => {
   const { isLoading, isError, isFetching, data } =
     useQuery<SubProjectTmKeysResponse>({
-      enabled: !!id,
+      enabled: !!id && !disabled,
       queryKey: ['subProject-tm-keys', id],
       queryFn: () => apiClient.get(`${endpoints.TM_KEYS}/${id}`),
     })

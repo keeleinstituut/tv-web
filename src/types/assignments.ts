@@ -20,7 +20,7 @@ export enum CandidateStatus {
   Done = 'DONE',
 }
 
-interface Candidate {
+export interface Candidate {
   vendor: Vendor
   price: string
   status: CandidateStatus
@@ -88,4 +88,8 @@ export interface CatVolumePayload {
 export interface CompleteAssignmentPayload {
   accepted?: boolean
   final_file_id?: string[]
+}
+
+export interface AssigneeCommentPayload {
+  assignee_comments?: string
 }

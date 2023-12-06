@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, filter, isEmpty, compact, includes } from 'lodash'
+import { map, filter } from 'lodash'
 import {
   InputTypes,
   FormInput,
@@ -30,12 +30,16 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import {
+  ModalTypes,
+  closeModal,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
 import { useHandleFiles } from 'hooks/requests/useFiles'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
-
-// TODO: very similar to ProjectFilesList, these 2 can be unified
-
+import { useSendSubProjectFinalFiles } from 'hooks/requests/useProjects'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 interface FinalFilesListProps<TFormValues extends FieldValues> {
   title: string
   name: string
@@ -50,7 +54,7 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
 }
 interface FileRow {
   name: string
-  shared_with_client: number
+  is_project_final_file: number
   feature: SubProjectFeatures
   created_at: string
   delete_button?: number
@@ -71,20 +75,24 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   mode,
   isHistoryView,
 }: FinalFilesListProps<TFormValues>) => {
+  const { t } = useTranslation()
+
   const {
-    field: { onChange, value },
+    field: { onChange },
+    fieldState: { isDirty },
   } = useController<TFormValues, Path<TFormValues>>({
     name: name as Path<TFormValues>,
     control,
   })
 
-  const sharedFiles = useWatch({
+  const value = useWatch({
     control,
-    name: 'shared_with_client' as Path<TFormValues>,
-  })
+  })[name]
+
+  const { sendFinalFiles, isLoading: isSendingFinalFiles } =
+    useSendSubProjectFinalFiles({ id: subProjectId })
 
   const typedValue = value as SourceFile[]
-  const { t } = useTranslation()
 
   const { addFiles, deleteFile, downloadFile } = useHandleFiles({
     reference_object_id: subProjectId,
@@ -114,6 +122,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         if (index === 0 || index) {
           deleteFile(typedValue[index].id)
           onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+          closeModal()
         }
       }
 
@@ -130,7 +139,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   const filesData = useMemo(
     () =>
       map(typedValue, (file, index) => ({
-        shared_with_client: index,
+        is_project_final_file: index,
         name: file.name,
         created_at:
           'created_at' in file
@@ -144,49 +153,38 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     [typedValue]
   )
 
-  // TODO: following needs to be checked, not sure what the endpoint will be
-  // Or what the data structure needed for that endpoint will be
   const handleSendFilesToClient = useCallback(async () => {
-    if (sharedFiles && !isEmpty(sharedFiles)) {
-      try {
-        const indexesToShare = compact(
-          map(sharedFiles, (value, index) => {
-            if (value) return index
-            return null
-          })
-        )
-        const sharedFileIds = map(
-          filter(typedValue, (_, index) => includes(indexesToShare, index)),
-          'id'
-        )
-        // await sendFilesToClient(sharedFileIds)
-        // showNotification({
-        //   type: NotificationTypes.Success,
-        //   title: t('notification.announcement'),
-        //   content: t('success.files_sent_to_client'),
-        // })
-      } catch (errorData) {
-        // TODO: depending on the errors, we might show them under checkboxes instead
-        showValidationErrorMessage(errorData)
-      }
+    try {
+      const filesToShare = filter(typedValue, 'is_project_final_file')
+
+      await sendFinalFiles({
+        final_file_id: map(filesToShare, 'id'),
+      })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.files_sent_to_client'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
     }
-    // TODO: handle sending files to client here, based on checked values
-  }, [sharedFiles, typedValue])
+  }, [sendFinalFiles, t, typedValue])
 
   const columns = [
     ...(mode !== ProjectDetailModes.View
       ? [
-          columnHelper.accessor('shared_with_client', {
+          columnHelper.accessor('is_project_final_file', {
             header: () => t('label.shared_with_client'),
             footer: (info) => info.column.id,
             cell: ({ getValue }) => {
               return (
                 <FormInput
-                  name={`shared_with_client.${getValue()}` as Path<TFormValues>}
+                  name={
+                    `${name}.${getValue()}.is_project_final_file` as Path<TFormValues>
+                  }
                   ariaLabel={t('label.share_with_client')}
                   control={control}
                   inputType={InputTypes.Checkbox}
-                  // className={classes.fitContent}
                 />
               )
             },
@@ -332,9 +330,8 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         appearance={AppearanceTypes.Primary}
         className={classes.saveButton}
         onClick={handleSendFilesToClient}
-        // TODO: need to check if they have changed, but currently this doesn't exist
-        disabled={!isEmpty(sharedFiles) || !isEditable}
-        loading={isLoading}
+        disabled={!isDirty || !isEditable}
+        loading={isLoading || isSendingFinalFiles}
         hidden={mode === ProjectDetailModes.View}
       >
         {t('button.save_changes')}

@@ -132,21 +132,17 @@ const useUpdateBulkFiles = (config: {
 }) => {
   const { mutateAsync: updateBulkFiles, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
-    mutationFn: (payload: PotentialFilePayload[]) => {
-      const { reference_object_id, reference_object_type, collection } = config
-
-      const files = map(payload, ({ file, ...rest }) => ({
-        collection,
-        content: file,
-        reference_object_id,
-        reference_object_type,
-        ...rest,
-      }))
-
-      return apiClient.instance.putForm(endpoints.MEDIA_BULK, {
-        files,
-      })
-    },
+    mutationFn: (payload: PotentialFilePayload[]) =>
+      Promise.allSettled(
+        map(payload, ({ file, help_file_type }) =>
+          apiClient.instance.put(
+            `${endpoints.MEDIA}/${(file as SourceFile)?.id}`,
+            {
+              help_file_type,
+            }
+          )
+        )
+      ),
   })
   return {
     updateBulkFiles,
@@ -161,14 +157,14 @@ const useDownloadFile = (config: {
 }) => {
   const { mutateAsync: downloadFile, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
-    mutationFn: (payload: SourceFile) => {
+    mutationFn: (payload: SourceFile & { collection?: string }) => {
       const { reference_object_id, reference_object_type, collection } = config
 
       const file = {
         id: payload.id,
         reference_object_id,
         reference_object_type,
-        collection,
+        collection: payload?.collection || collection,
       }
 
       return apiClient.get(
