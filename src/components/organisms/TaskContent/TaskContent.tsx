@@ -10,7 +10,7 @@ import {
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import { filter, isEmpty, map, split } from 'lodash'
+import { filter, isEmpty, isEqual, map, split } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
@@ -28,11 +28,12 @@ import { TaskType } from 'types/tasks'
 import classes from './classes.module.scss'
 import { useTaskCache } from 'hooks/requests/useTasks'
 import useAuth from 'hooks/useAuth'
+import { useAssignmentCommentUpdate } from 'hooks/requests/useAssignments'
 
 interface FormValues {
   my_source_files: SourceFile[]
   my_final_files?: SourceFile[]
-  my_notes: string
+  assignee_comments: string
 }
 
 interface TaskContentProps {
@@ -65,6 +66,8 @@ const TaskContent: FC<TaskContentProps> = ({
     event_start_at,
     volumes,
     sub_project_id,
+    assignee_comments,
+    id,
   } = assignment || {}
 
   const {
@@ -85,6 +88,8 @@ const TaskContent: FC<TaskContentProps> = ({
     id: sub_project_id,
     disabled: isVendor,
   })
+
+  const { updateAssigneeComment } = useAssignmentCommentUpdate({ id })
 
   const catJobsToUse = isVendor ? cat_jobs : catToolJobs
   const tmKeysToUse = isVendor ? cat_tm_keys : SubProjectTmKeys
@@ -108,6 +113,7 @@ const TaskContent: FC<TaskContentProps> = ({
         ...(source_files || []),
         ...map(other_final_files, (file) => ({ ...file, collection: 'final' })),
       ],
+      assignee_comments,
       my_final_files,
     },
   })
@@ -161,6 +167,19 @@ const TaskContent: FC<TaskContentProps> = ({
     })
   }, [volumes])
 
+  const handleAddAssigneeComment = useCallback(
+    (value: string) => {
+      const isCommentChanged = !isEqual(value, assignee_comments)
+      if (isCommentChanged) {
+        updateAssigneeComment({
+          assignee_comments: value,
+        })
+      }
+    },
+
+    [assignee_comments, updateAssigneeComment]
+  )
+
   const handleOpenCompleteModal: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const finalFilesIds = map(values.my_final_files, ({ id }) => id)
@@ -168,7 +187,7 @@ const TaskContent: FC<TaskContentProps> = ({
       const completionPayload = {
         final_file_id: finalFilesIds,
         accepted: true,
-        description: values.my_notes, // TODO: Not yet done by BE, naming might change
+        description: values?.assignee_comments,
       }
 
       showModal(ModalTypes.ConfirmCompleteTask, {
@@ -234,7 +253,7 @@ const TaskContent: FC<TaskContentProps> = ({
         </span>
         <span className={classes.taskContainer}>
           <FormInput
-            name="my_notes"
+            name="assignee_comments"
             label={t('label.my_notes')}
             ariaLabel={t('label.my_notes')}
             placeholder={
@@ -243,6 +262,7 @@ const TaskContent: FC<TaskContentProps> = ({
                 : t('placeholder.write_here')
             }
             inputType={InputTypes.Text}
+            handleOnBlur={handleAddAssigneeComment}
             labelClassName={classes.myNotesLabel}
             inputContainerClassName={classes.specialInstructions}
             control={control}
