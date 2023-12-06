@@ -30,6 +30,8 @@ import {
   SubProjectTmKeys,
   SubProjectTmKeysPayload,
   TMType,
+  TmStatsType,
+  TranslationMemoryType,
 } from 'types/translationMemories'
 import { map, includes, filter, find, isEqual, pull } from 'lodash'
 import useAuth from 'hooks/useAuth'
@@ -100,6 +102,11 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
   subProjectLangPair?: string
   projectDomain?: ClassifierValue
   mode?: ProjectDetailModes
+  cat_tm_keys_meta?: {
+    tags: TranslationMemoryType[]
+  }
+  cat_tm_keys_stats?: TmStatsType
+  isVendor?: boolean
 }
 
 interface FileRow {
@@ -126,17 +133,28 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   subProjectLangPair,
   projectDomain,
   mode,
+  cat_tm_keys_meta,
+  cat_tm_keys_stats,
+  isVendor,
 }: TranslationMemoriesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
-  const { translationMemories = [] } = useFetchTranslationMemories()
+  const { translationMemories = [] } = useFetchTranslationMemories({
+    disabled: isVendor,
+  })
   const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys()
   const { toggleTmWritable } = useToggleTmWritable()
-  const { tmChunkAmounts } = useFetchTmChunkAmounts()
+  const { tmChunkAmounts } = useFetchTmChunkAmounts({ disabled: isVendor })
   const { userInfo } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
 
+  const translationMemoriesToUse = isVendor
+    ? cat_tm_keys_meta?.tags
+    : translationMemories
+
+  const chunksToUse = isVendor ? cat_tm_keys_stats?.tag : tmChunkAmounts
+
   const tmIds = map(SubProjectTmKeys, 'key')
-  const filteredData = filter(translationMemories, ({ id }) =>
+  const filteredData = filter(translationMemoriesToUse, ({ id }) =>
     includes(tmIds, id)
   )
 
@@ -148,7 +166,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           language_direction: tm?.lang_pair,
           name: tm?.name,
           main_write: find(SubProjectTmKeys, { key: tm.id })?.is_writable,
-          chunk_amount: tmChunkAmounts?.[tm.id] || 0,
+          chunk_amount: chunksToUse?.[tm.id] || 0,
           delete_button: tm?.id,
           institution_id: tm?.institution_id,
           tm_key_id: find(SubProjectTmKeys, { key: tm.id })?.id,
@@ -156,7 +174,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         }
       }),
 
-    [filteredData, SubProjectTmKeys, tmChunkAmounts]
+    [filteredData, SubProjectTmKeys, chunksToUse]
   )
 
   const handleDelete = useCallback(

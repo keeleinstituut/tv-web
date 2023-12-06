@@ -51,9 +51,15 @@ export const useFetchProjects = (initialFilters?: ProjectsPayloadType) => {
   }
 }
 
-export const useFetchProject = ({ id }: { id?: string }) => {
+export const useFetchProject = ({
+  id,
+  disabled,
+}: {
+  id?: string
+  disabled?: boolean
+}) => {
   const { isLoading, isError, data } = useQuery<ProjectResponse>({
-    enabled: !!id,
+    enabled: !!id && !disabled,
     queryKey: ['projects', id],
     queryFn: () => apiClient.get(`${endpoints.PROJECTS}/${id}`),
   })
@@ -250,10 +256,16 @@ export const useSubProjectSendToCat = () => {
   }
 }
 
-export const useFetchSubProjectCatToolJobs = ({ id }: { id?: string }) => {
+export const useFetchSubProjectCatToolJobs = ({
+  id,
+  disabled,
+}: {
+  id?: string
+  disabled?: boolean
+}) => {
   const [shouldRefetch, setShouldRefetch] = useState(false)
   const { data } = useQuery<CatToolJobsResponse>({
-    enabled: !!id,
+    enabled: !!id && !disabled,
     queryKey: ['cat-jobs', id],
     queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
     ...(shouldRefetch ? { refetchInterval: 3000 } : {}),

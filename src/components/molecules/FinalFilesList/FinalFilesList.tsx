@@ -30,7 +30,11 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import {
+  ModalTypes,
+  closeModal,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
 import { useHandleFiles } from 'hooks/requests/useFiles'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { useSendSubProjectFinalFiles } from 'hooks/requests/useProjects'
@@ -83,7 +87,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
 
   const value = useWatch({
     control,
-  }).final_files
+  })[name]
 
   const { sendFinalFiles, isLoading: isSendingFinalFiles } =
     useSendSubProjectFinalFiles({ id: subProjectId })
@@ -118,6 +122,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         if (index === 0 || index) {
           deleteFile(typedValue[index].id)
           onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+          closeModal()
         }
       }
 
@@ -175,7 +180,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
               return (
                 <FormInput
                   name={
-                    `final_files.${getValue()}.is_project_final_file` as Path<TFormValues>
+                    `${name}.${getValue()}.is_project_final_file` as Path<TFormValues>
                   }
                   ariaLabel={t('label.share_with_client')}
                   control={control}

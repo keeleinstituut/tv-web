@@ -12,6 +12,7 @@ import {
 import { AssignmentType } from './assignments'
 import { UserType } from './users'
 import { Tag } from './tags'
+import { SubProjectTmKeys } from './translationMemories'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -104,7 +105,8 @@ export interface SourceFile {
   // Type not clear yet:
   manipulations: string[]
   custom_properties: {
-    type: HelperFileTypes
+    type?: HelperFileTypes
+    institution_user_id?: string
   }
   generated_conversions: string[]
   responsive_images: string[]
@@ -151,8 +153,9 @@ export interface ListSubProjectDetail {
   destination_language_classifier_value_id: string
   created_at: string
   updated_at: string
-  project: ListProject
+  project: ProjectDetail
   status?: SubProjectStatus
+  cat_tm_keys?: SubProjectTmKeys[]
   deadline_at: string
   price?: string
   translation_domain_classifier_value?: ClassifierValue
