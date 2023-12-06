@@ -12,12 +12,22 @@ type FeatureAssignmentsProps = Pick<SubProjectDetail, 'assignments'> & {
 const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
   assignments,
   hidden,
+  isEditable,
+  catSupported,
 }) => {
   if (hidden) return null
   return (
     <>
       {map(assignments, (assignment, index) => {
-        return <Assignment key={assignment.id} index={index} {...assignment} />
+        return (
+          <Assignment
+            key={assignment.id}
+            index={index}
+            {...assignment}
+            isEditable={isEditable}
+            catSupported={catSupported}
+          />
+        )
       })}
     </>
   )
