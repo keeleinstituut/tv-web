@@ -209,8 +209,17 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
             : {},
         }),
       ] as ColumnDef<TranslationMemoriesTableRow>[],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [
+      domainOptions,
+      handleSearch,
+      initialFilters,
+      isSelectingModal,
+      languageDirectionFilters,
+      loadMore,
+      t,
+      tagsOptions,
+      tmKeyControl,
+    ]
   )
 
   return (
