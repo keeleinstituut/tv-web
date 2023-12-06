@@ -134,7 +134,7 @@ export const useUpdateProject = ({ id }: { id?: string }) => {
       map(data.sub_projects, (subProject) =>
         queryClient.setQueryData(
           ['subprojects', subProject.id],
-          (oldData?: ProjectsResponse) => {
+          (oldData?: SubProjectResponse) => {
             const { data: previousData } = oldData || {}
 
             if (!previousData) return oldData
