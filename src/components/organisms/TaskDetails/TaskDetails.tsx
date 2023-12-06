@@ -91,7 +91,7 @@ const TaskDetails: FC<TaskProps> = ({
       )}
       onExpandedChange={handleOpenContainer}
       id={ext_id}
-      isExpanded={!assignee_institution_user_id ? false : isExpanded}
+      isExpanded={isExpanded}
       rightComponent={
         <ProjectStatusTag status={status} jobName={job_short_name} />
       }
@@ -102,7 +102,6 @@ const TaskDetails: FC<TaskProps> = ({
           mode={ProjectDetailModes.View}
         />
       }
-      isExpandedDisabled={!assignee_institution_user_id}
     >
       <TaskContent
         destination_language_classifier_value={
