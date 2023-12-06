@@ -10,24 +10,24 @@ import {
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import { isEmpty, map, split } from 'lodash'
+import { filter, isEmpty, map, split } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import { SourceFile } from 'types/projects'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
-import { LanguageClassifierValue } from 'types/classifierValues'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as Eye } from 'assets/icons/eye.svg'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
-import { VolumeValue } from 'types/volumes'
 import classNames from 'classnames'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { TaskType } from 'types/tasks'
 
 import classes from './classes.module.scss'
+import { useTaskCache } from 'hooks/requests/useTasks'
+import useAuth from 'hooks/useAuth'
 
 interface FormValues {
   my_source_files: SourceFile[]
@@ -36,58 +36,79 @@ interface FormValues {
 }
 
 interface TaskContentProps {
-  deadline_at?: string
-  source_files: SourceFile[]
-  cat_files?: SourceFile[]
-  source_language_classifier_value?: LanguageClassifierValue
-  destination_language_classifier_value?: LanguageClassifierValue
-  event_start_at?: string
-  comments?: string
   isLoading?: boolean
-  sub_project_id: string
-  volumes?: VolumeValue[]
   assignee_institution_user_id?: string
   taskId?: string
   isHistoryView?: string
   task_type?: string
-  final_files?: SourceFile[]
+  isVendor?: boolean
 }
 
 const TaskContent: FC<TaskContentProps> = ({
-  deadline_at,
-  source_files,
-  cat_files,
-  source_language_classifier_value,
-  destination_language_classifier_value,
-  event_start_at,
-  comments,
   isLoading,
-  sub_project_id,
-  volumes = [],
   assignee_institution_user_id,
   taskId,
   isHistoryView,
   task_type,
-  final_files = [],
+  isVendor,
 }) => {
   const { t } = useTranslation()
+  const { institutionUserId } = useAuth()
+  const { assignment, cat_tm_keys_meta, cat_tm_keys_stats } =
+    useTaskCache(taskId) || {}
+
+  const {
+    subProject,
+    cat_jobs,
+    deadline_at,
+    comments,
+    event_start_at,
+    volumes,
+    sub_project_id,
+  } = assignment || {}
+
+  const {
+    source_language_classifier_value,
+    destination_language_classifier_value,
+    cat_files,
+    source_files,
+    final_files,
+    cat_tm_keys,
+  } = subProject || {}
 
   const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
     id: sub_project_id,
+    disabled: isVendor,
   })
 
   const { SubProjectTmKeys } = useFetchSubProjectTmKeys({
     id: sub_project_id,
+    disabled: isVendor,
   })
+
+  const catJobsToUse = isVendor ? cat_jobs : catToolJobs
+  const tmKeysToUse = isVendor ? cat_tm_keys : SubProjectTmKeys
+
+  const my_final_files = filter(
+    final_files,
+    ({ custom_properties }) =>
+      custom_properties?.institution_user_id === institutionUserId
+  )
+
+  const other_final_files = filter(
+    final_files,
+    ({ custom_properties }) =>
+      custom_properties?.institution_user_id !== institutionUserId
+  )
 
   const { control, handleSubmit } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: {
       my_source_files: [
-        ...source_files,
-        ...map(final_files, (file) => ({ ...file, collection: 'final' })),
+        ...(source_files || []),
+        ...map(other_final_files, (file) => ({ ...file, collection: 'final' })),
       ],
-      my_final_files: [],
+      my_final_files,
     },
   })
 
@@ -105,7 +126,7 @@ const TaskContent: FC<TaskContentProps> = ({
   }
 
   const handleShowVolume = useCallback(() => {
-    const { discounts, unit_fee, volume_analysis } = volumes[0]
+    const { discounts, unit_fee, volume_analysis } = volumes?.[0] || {}
     const {
       files_names,
       repetitions,
@@ -195,14 +216,14 @@ const TaskContent: FC<TaskContentProps> = ({
         <span
           className={classNames(
             classes.taskContainer,
-            !volumes[0] && classes.hideContainer
+            !volumes?.[0] && classes.hideContainer
           )}
         >
           <p className={classes.taskDetails}>{t('label.volume')}</p>
           <p className={classes.taskContent}>
-            <span>{`${Number(volumes[0]?.unit_quantity)} ${t(
-              `label.${apiTypeToKey(volumes[0]?.unit_type)}`
-            )}${volumes[0] ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+            <span>{`${Number(volumes?.[0]?.unit_quantity)} ${t(
+              `label.${apiTypeToKey(volumes?.[0]?.unit_type || '')}`
+            )}${volumes?.[0] ? ` ${t('task.open_in_cat')}` : ''}`}</span>
             <BaseButton
               onClick={handleShowVolume}
               className={classes.volumeIcon}
@@ -226,18 +247,21 @@ const TaskContent: FC<TaskContentProps> = ({
             inputContainerClassName={classes.specialInstructions}
             control={control}
             isTextarea={true}
-            disabled={!!isHistoryView}
+            disabled={!!isHistoryView || !assignee_institution_user_id}
           />
         </span>
       </div>
       <TranslationMemoriesSection
         className={classes.translationMemories}
-        hidden={isEmpty(SubProjectTmKeys)}
+        hidden={isEmpty(tmKeysToUse)}
         control={control}
         isEditable={false}
         subProjectId={sub_project_id}
-        SubProjectTmKeys={SubProjectTmKeys}
+        SubProjectTmKeys={tmKeysToUse}
         subProjectLangPair={subOrderLangPair}
+        cat_tm_keys_meta={cat_tm_keys_meta}
+        cat_tm_keys_stats={cat_tm_keys_stats}
+        isVendor={isVendor}
         mode={ProjectDetailModes.View}
       />
       <div className={classes.grid}>
@@ -248,26 +272,26 @@ const TaskContent: FC<TaskContentProps> = ({
           control={control}
           catSetupStatus={catSetupStatus}
           mode={ProjectDetailModes.View}
-          subProjectId={sub_project_id}
+          subProjectId={sub_project_id || ''}
           isHistoryView={isHistoryView}
         />
         <FinalFilesList
           name="my_final_files"
           title={t('my_tasks.my_ready_files')}
           control={control}
-          isEditable
+          isEditable={!!assignee_institution_user_id}
           isLoading={isLoading}
-          subProjectId={sub_project_id}
+          subProjectId={sub_project_id || ''}
           className={classes.myFinalFiles}
           mode={ProjectDetailModes.View}
           isHistoryView={isHistoryView}
         />
         <CatJobsTable
-          subProjectId={sub_project_id}
+          subProjectId={sub_project_id || ''}
           className={classes.catJobs}
-          hidden={isEmpty(catToolJobs)}
-          cat_jobs={catToolJobs}
-          isEditable
+          hidden={isEmpty(catJobsToUse)}
+          cat_jobs={catJobsToUse}
+          isEditable={!!assignee_institution_user_id}
           cat_files={cat_files}
           source_files={source_files}
           canSendToVendors={true} //TODO add check when camunda is ready

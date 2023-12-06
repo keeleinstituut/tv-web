@@ -78,20 +78,19 @@ const TasksTable: FC<TasksTableProps> = ({
     >(
       tasks,
       (result, { id, assignment }) => {
+        // TODO: add handling for REVIEW, CLIENT_REVIEW and CORRECTION tasks
         if (!assignment) {
           return result
         }
-        const { subProject, ext_id } = assignment
+        const { subProject, ext_id, deadline_at, price } = assignment
         const {
           project,
           source_language_classifier_value,
           destination_language_classifier_value,
-          price,
         } = subProject || {}
-        const { deadline_at, type_classifier_value, reference_number } =
-          project || {}
+        const { type_classifier_value, reference_number } = project || {}
         const taskData = {
-          ext_id: { id: id, ext_id: ext_id },
+          ext_id: { id, ext_id },
           reference_number: reference_number,
           language_directions: `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
           cost: price,

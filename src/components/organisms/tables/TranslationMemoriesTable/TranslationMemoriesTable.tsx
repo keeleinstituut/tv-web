@@ -55,7 +55,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
 }) => {
   const { t } = useTranslation()
   const { translationMemories = [], handleFilterChange } =
-    useFetchTranslationMemories(initialFilters)
+    useFetchTranslationMemories({ initialFilters })
   const [searchValue, setSearchValue] = useState<string>('')
 
   const { tagsFilters: tagsOptions } = useFetchTags({

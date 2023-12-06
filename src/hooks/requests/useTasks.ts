@@ -2,6 +2,7 @@ import {
   CompleteTaskPayload,
   ListTask,
   TaskResponse,
+  TaskType,
   TasksPayloadType,
   TasksResponse,
 } from 'types/tasks'
@@ -9,6 +10,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
+import { useParams } from 'react-router-dom'
 
 export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
   const {
@@ -39,8 +41,9 @@ export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
 }
 
 export const useFetchTask = ({ id }: { id?: string }) => {
+  const { isHistoryView } = useParams()
   const { isLoading, isError, data } = useQuery<TaskResponse>({
-    enabled: !!id,
+    enabled: !!id && !isHistoryView,
     queryKey: ['tasks', id],
     queryFn: () => apiClient.get(`${endpoints.TASKS}/${id}`),
     keepPreviousData: true,
@@ -84,8 +87,9 @@ export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
 }
 
 export const useFetchHistoryTask = ({ id }: { id?: string }) => {
+  const { isHistoryView } = useParams()
   const { isLoading, isError, data } = useQuery<TaskResponse>({
-    enabled: !!id,
+    enabled: !!id && !!isHistoryView,
     queryKey: ['historyTasks', id],
     queryFn: () => apiClient.get(`${endpoints.HISTORY_TASKS}/${id}`),
     keepPreviousData: true,
@@ -122,8 +126,8 @@ export const useCompleteTask = ({ id }: { id?: string }) => {
 
       // TODO: might be able to get rid of this
       if (
-        data?.task_type === 'CLIENT_REVIEW' ||
-        data?.task_type === 'CORRECTING'
+        data?.task_type === TaskType.ClientReview ||
+        data?.task_type === TaskType.Correcting
       ) {
         queryClient.refetchQueries({ queryKey: ['projects', data?.project_id] })
       }
@@ -157,4 +161,16 @@ export const useAcceptTask = ({ id }: { id?: string }) => {
     acceptTask,
     isLoading,
   }
+}
+
+export const useTaskCache = (id?: string): ListTask | undefined => {
+  const { isHistoryView } = useParams()
+  const queryClient = useQueryClient()
+  const taskCache: { data: ListTask } | undefined = queryClient.getQueryData([
+    isHistoryView ? 'historyTasks' : 'tasks',
+    id,
+  ])
+  const task = taskCache?.data
+
+  return task
 }
