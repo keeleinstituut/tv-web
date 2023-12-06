@@ -153,7 +153,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       ariaLabel: t('label.company_name'),
       placeholder: t('placeholder.write_here'),
       disabled: isEditDisabled,
-      label: `${t('label.company_name')}`,
+      label: `${t('label.company_name')}*`,
       name: 'company_name',
       className: classes.inputInternalPosition,
       rules: {
@@ -200,7 +200,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       const payload: UpdateVendorPayload = {
         tags: (isEmpty(tags) ? [] : tags) as string[],
         company_name: company_name ?? '',
-        comment: comment ?? '',
+        comment: comment ?? '-',
         ...discounts,
       }
 
