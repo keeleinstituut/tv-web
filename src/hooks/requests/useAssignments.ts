@@ -3,6 +3,7 @@ import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { map, find, filter, isArray } from 'lodash'
 import {
+  AssigneeCommentPayload,
   AssignmentPayload,
   AssignmentType,
   CompleteAssignmentPayload,
@@ -139,6 +140,19 @@ export const useAssignmentUpdate = ({ id }: { id?: string }) => {
 
   return {
     updateAssignment,
+    isLoading,
+  }
+}
+
+export const useAssignmentCommentUpdate = ({ id }: { id?: string }) => {
+  const { mutateAsync: updateAssigneeComment, isLoading } = useMutation({
+    mutationKey: ['assignments', id],
+    mutationFn: (payload: AssigneeCommentPayload) =>
+      apiClient.put(`${endpoints.ASSIGNMENTS}/${id}/assignee-comment`, payload),
+  })
+
+  return {
+    updateAssigneeComment,
     isLoading,
   }
 }

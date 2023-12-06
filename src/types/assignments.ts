@@ -89,3 +89,7 @@ export interface CompleteAssignmentPayload {
   accepted?: boolean
   final_file_id?: string[]
 }
+
+export interface AssigneeCommentPayload {
+  assignee_comments?: string
+}

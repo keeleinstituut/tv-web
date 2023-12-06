@@ -212,14 +212,16 @@ export const useFetchSubProject = ({ id }: { id?: string }) => {
   }
 }
 
-export const useFetchSubProjects = () => {
+export const useFetchSubProjects = (
+  initialFilters?: SubProjectsPayloadType
+) => {
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<SubProjectsPayloadType>()
+  } = useFilters<SubProjectsPayloadType>(initialFilters)
 
   const { isLoading, isError, data, refetch } = useQuery<SubProjectsResponse>({
     queryKey: ['subprojects'],
