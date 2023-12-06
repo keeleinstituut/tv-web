@@ -131,6 +131,18 @@ export const useUpdateProject = ({ id }: { id?: string }) => {
           return { data: newData }
         }
       )
+      map(data.sub_projects, (subProject) =>
+        queryClient.setQueryData(
+          ['subprojects', subProject.id],
+          (oldData?: SubProjectResponse) => {
+            const { data: previousData } = oldData || {}
+
+            if (!previousData) return oldData
+            const newData = { ...previousData, ...subProject }
+            return { data: newData }
+          }
+        )
+      )
     },
   })
 
@@ -203,12 +215,16 @@ export const useFetchSubProjects = () => {
     handlePaginationChange,
   } = useFilters<SubProjectsPayloadType>()
 
-  const { isLoading, isError, data } = useQuery<SubProjectsResponse>({
-    queryKey: ['subprojects', filters],
+  const { isLoading, isError, data, refetch } = useQuery<SubProjectsResponse>({
+    queryKey: ['subprojects'],
     queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}`, filters),
     keepPreviousData: true,
+    enabled: false,
   })
-
+  useEffect(() => {
+    refetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters])
   const { meta: paginationData, data: subProjects } = data || {}
 
   return {
