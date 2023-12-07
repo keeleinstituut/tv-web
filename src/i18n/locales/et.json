@@ -268,7 +268,8 @@
     "search_input_length": "Otsingu sõna peab olema vähemalt 3 tähemärki",
     "file_size_error": "Fail(id) liiga suur(ed). Kogu suurus ei tohi ületada 100mb",
     "unknown_authentication_error": "Teadmata viga",
-    "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse"
+    "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
+    "token_will_expire_soon": "Sessioon aegub tegevusetuse tõttu {{time_left}} minuti pärast"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
