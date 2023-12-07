@@ -1,15 +1,33 @@
 import { downloadFile as downloadHelper } from 'helpers'
-import { useMutation } from '@tanstack/react-query'
-import { PotentialFilePayload, SourceFile } from 'types/projects'
-import { map } from 'lodash'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  PotentialFilePayload,
+  SourceFile,
+  SubProjectResponse,
+} from 'types/projects'
+import { filter, find, map } from 'lodash'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
+
+// TODO: should type config
+
+export enum CollectionType {
+  Final = 'final',
+  Source = 'source',
+  Help = 'help',
+}
+
+const filesKeys: Record<string, 'final_files' | 'source_files'> = {
+  [CollectionType.Final]: 'final_files',
+  [CollectionType.Source]: 'source_files',
+}
 
 const useAddFiles = (config: {
   reference_object_id: string
   reference_object_type: string
-  collection: string
+  collection: CollectionType
 }) => {
+  const queryClient = useQueryClient()
   const { mutateAsync: addFiles, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
     mutationFn: (payload: File[]) => {
@@ -27,6 +45,31 @@ const useAddFiles = (config: {
         files,
       })
     },
+    onSuccess: ({ data: { data } }: { data: { data: SourceFile[] } }) => {
+      const { reference_object_id, reference_object_type, collection } = config
+      if (
+        reference_object_type === 'subproject' &&
+        collection !== CollectionType.Help
+      ) {
+        const filesKey = filesKeys[collection]
+        queryClient.setQueryData(
+          ['subprojects', reference_object_id],
+          (oldData?: SubProjectResponse) => {
+            const { data: previousData } = oldData || {}
+            if (!previousData) return oldData
+            return {
+              data: {
+                ...previousData,
+                [filesKey]: {
+                  ...previousData[filesKey],
+                  ...data,
+                },
+              },
+            }
+          }
+        )
+      }
+    },
   })
   return {
     addFiles,
@@ -37,8 +80,9 @@ const useAddFiles = (config: {
 const useDeleteFile = (config: {
   reference_object_id: string
   reference_object_type: string
-  collection: string
+  collection: CollectionType
 }) => {
+  const queryClient = useQueryClient()
   const { mutateAsync: deleteFile, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
     mutationFn: (payload: string) => {
@@ -60,6 +104,31 @@ const useDeleteFile = (config: {
         files,
       })
     },
+    onSuccess: ({ data }: { data: SourceFile[] }) => {
+      const { reference_object_id, reference_object_type, collection } = config
+      if (
+        reference_object_type === 'subproject' &&
+        collection !== CollectionType.Help
+      ) {
+        const filesKey = filesKeys[collection]
+        queryClient.setQueryData(
+          ['subprojects', reference_object_id],
+          (oldData?: SubProjectResponse) => {
+            const { data: previousData } = oldData || {}
+            if (!previousData) return oldData
+            return {
+              data: {
+                ...previousData,
+                [filesKey]: filter(
+                  previousData[filesKey],
+                  ({ id }) => !find(data, { id })
+                ),
+              },
+            }
+          }
+        )
+      }
+    },
   })
   return {
     deleteFile,
@@ -70,7 +139,7 @@ const useDeleteFile = (config: {
 const useDeleteBulkFiles = (config: {
   reference_object_id: string
   reference_object_type: string
-  collection?: string
+  collection?: CollectionType
 }) => {
   const { mutateAsync: deleteBulkFiles, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
@@ -99,7 +168,7 @@ const useDeleteBulkFiles = (config: {
 const useAddBulkFiles = (config: {
   reference_object_id: string
   reference_object_type: string
-  collection?: string
+  collection?: CollectionType
 }) => {
   const { mutateAsync: addBulkFiles, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
@@ -128,7 +197,7 @@ const useAddBulkFiles = (config: {
 const useUpdateBulkFiles = (config: {
   reference_object_id: string
   reference_object_type: string
-  collection?: string
+  collection?: CollectionType
 }) => {
   const { mutateAsync: updateBulkFiles, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
@@ -153,11 +222,11 @@ const useUpdateBulkFiles = (config: {
 const useDownloadFile = (config: {
   reference_object_id: string
   reference_object_type: string
-  collection: string
+  collection: CollectionType
 }) => {
   const { mutateAsync: downloadFile, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
-    mutationFn: (payload: SourceFile & { collection?: string }) => {
+    mutationFn: (payload: SourceFile & { collection?: CollectionType }) => {
       const { reference_object_id, reference_object_type, collection } = config
 
       const file = {
@@ -191,7 +260,7 @@ const useDownloadFile = (config: {
 export const useHandleFiles = (config: {
   reference_object_id: string
   reference_object_type: string
-  collection: string
+  collection: CollectionType
 }) => {
   const { collection, reference_object_id, reference_object_type } = config
   const { addFiles, isLoading: isAddLoading } = useAddFiles({
@@ -223,7 +292,7 @@ export const useHandleFiles = (config: {
 export const useHandleBulkFiles = (config: {
   reference_object_id: string
   reference_object_type: string
-  collection?: string
+  collection?: CollectionType
 }) => {
   const { collection, reference_object_id, reference_object_type } = config
 

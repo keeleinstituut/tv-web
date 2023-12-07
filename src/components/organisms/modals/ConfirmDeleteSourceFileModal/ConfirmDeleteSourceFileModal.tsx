@@ -6,7 +6,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { useTranslation } from 'react-i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useHandleFiles } from 'hooks/requests/useFiles'
+import { useHandleFiles, CollectionType } from 'hooks/requests/useFiles'
 
 export interface ConfirmDeleteSourceFileModalProps
   extends ConfirmationModalBaseProps {
@@ -26,7 +26,7 @@ const ConfirmDeleteSourceFileModal: FC<ConfirmDeleteSourceFileModalProps> = ({
   const { deleteFile } = useHandleFiles({
     reference_object_id: subProjectId ?? '',
     reference_object_type: 'subproject',
-    collection: 'source',
+    collection: CollectionType.Source,
   })
 
   const handleDeleteSourceFile = useCallback(async () => {

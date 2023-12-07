@@ -31,7 +31,7 @@ import DataTable, {
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from '../SmallTooltip/SmallTooltip'
 import { SourceFile } from 'types/projects'
-import { useHandleFiles } from 'hooks/requests/useFiles'
+import { CollectionType, useHandleFiles } from 'hooks/requests/useFiles'
 import { HelperFileTypes } from 'types/classifierValues'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 interface ProjectFilesListProps<TFormValues extends FieldValues> {
@@ -88,7 +88,8 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
   const { downloadFile } = useHandleFiles({
     reference_object_id: projectId ?? '',
     reference_object_type: 'project',
-    collection: name === 'help_files' ? 'help' : 'source',
+    collection:
+      name === 'help_files' ? CollectionType.Help : CollectionType.Source,
   })
 
   const filesData = useMemo(

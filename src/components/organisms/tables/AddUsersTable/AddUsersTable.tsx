@@ -39,7 +39,6 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
   rowsWithExistingUsers,
   existingRoles,
 }) => {
-  const containerRef = useRef(null)
   const { t } = useTranslation()
   const { existingDepartments = [] } = useDepartmentsFetch()
 
