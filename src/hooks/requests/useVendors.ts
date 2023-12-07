@@ -251,6 +251,7 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
   payload: UpdatePricesPayload
 ) =>
   new Promise(async (resolve, reject) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const results: any = await Promise.allSettled(
       map(payload.data, ({ state, prices }) => {
         const deletedPricesIds = map(prices, ({ id }) => id)

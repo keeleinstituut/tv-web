@@ -41,7 +41,7 @@ interface FormValues {
   event_start_at?: { date?: string; time?: string }
   comments?: string
   volume?: VolumeValue[]
-  vendor_comments?: string
+  assignee_comments?: string
 }
 
 const AssignmentForm: FC<AssignmentFormProps> = ({
@@ -58,6 +58,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     candidates,
     comments,
     assigned_vendor_id,
+    assignee_comments,
   } = useAssignmentCache({ sub_project_id, id }) || {}
   const {
     destination_language_classifier_value_id,
@@ -84,8 +85,16 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         : {}),
       volume: volumes,
       comments,
+      assignee_comments,
     }),
-    [comments, deadline_at, event_start_at, shouldShowStartTimeFields, volumes]
+    [
+      comments,
+      deadline_at,
+      event_start_at,
+      shouldShowStartTimeFields,
+      volumes,
+      assignee_comments,
+    ]
   )
 
   const { control } = useForm<FormValues>({
@@ -232,10 +241,10 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         label: `${t('label.vendor_comments')}`,
         ariaLabel: t('label.vendor_comments'),
         placeholder: t('placeholder.write_here'),
-        name: 'vendor_comments',
+        name: 'assignee_comments',
         className: classes.inputInternalPosition,
         isTextarea: true,
-        onlyDisplay: !isEditable,
+        onlyDisplay: true,
       },
     ],
     [

@@ -12,6 +12,7 @@ import {
 import {
   useUpdateSubProject,
   useFetchSubProjectCatToolJobs,
+  useProjectCache,
 } from 'hooks/requests/useProjects'
 import {
   CatProjectPayload,
@@ -52,7 +53,7 @@ type GeneralInformationFeatureProps = Pick<
   | 'deadline_at'
   | 'source_language_classifier_value'
   | 'destination_language_classifier_value'
-  | 'project'
+  | 'project_id'
   | 'id'
 > & {
   catSupported?: boolean
@@ -78,9 +79,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   projectDomain,
-  project,
+  project_id,
 }) => {
   const { t } = useTranslation()
+  const { deadline_at: projectDeadlineAt, status: projectStatus } =
+    useProjectCache(project_id) || {}
   const { updateSubProject, isLoading } = useUpdateSubProject({
     id,
   })
@@ -89,8 +92,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       id,
     })
   const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id })
-
-  const { deadline_at: projectDeadlineAt, status: projectStatus } = project
 
   const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
 

@@ -1,6 +1,6 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchSubProjectCatToolJobs } from 'hooks/requests/useProjects'
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'
 import {
@@ -29,6 +29,7 @@ import classes from './classes.module.scss'
 import { useTaskCache } from 'hooks/requests/useTasks'
 import useAuth from 'hooks/useAuth'
 import { useAssignmentCommentUpdate } from 'hooks/requests/useAssignments'
+import { CollectionType } from 'hooks/requests/useFiles'
 
 interface FormValues {
   my_source_files: SourceFile[]
@@ -106,17 +107,30 @@ const TaskContent: FC<TaskContentProps> = ({
       custom_properties?.institution_user_id !== institutionUserId
   )
 
-  const { control, handleSubmit } = useForm<FormValues>({
-    reValidateMode: 'onChange',
-    defaultValues: {
+  const defaultValues = useMemo(
+    () => ({
       my_source_files: [
         ...(source_files || []),
-        ...map(other_final_files, (file) => ({ ...file, collection: 'final' })),
+        ...map(other_final_files, (file) => ({
+          ...file,
+          collection: CollectionType.Final,
+        })),
       ],
       assignee_comments,
       my_final_files,
-    },
+    }),
+    [assignee_comments, my_final_files, other_final_files, source_files]
+  )
+
+  const { control, handleSubmit, reset } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+    defaultValues: defaultValues,
   })
+
+  useEffect(() => {
+    reset(defaultValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues])
 
   const subOrderLangPair = useMemo(() => {
     const srcLangShort = split(source_language_classifier_value?.value, '-')[0]
