@@ -26,6 +26,8 @@ import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatu
 import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
+import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { FilterFunctionType } from 'types/collective'
 
 type SubProjectTableRow = {
   ext_id: string
@@ -34,7 +36,7 @@ type SubProjectTableRow = {
   type: string
   status?: SubProjectStatus
   price?: string
-  language_directions: string[]
+  language_direction: string[]
 }
 
 const columnHelper = createColumnHelper<SubProjectTableRow>()
@@ -60,6 +62,7 @@ const SubProjectsTable: FC = () => {
   const {
     subProjects,
     paginationData,
+    filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
@@ -67,12 +70,23 @@ const SubProjectsTable: FC = () => {
     only_show_personal_projects: onlyPersonalProjectsAllowed ? 1 : 0,
   })
 
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
+
+  useEffect(() => {
+    setSelectedValues(filters?.language_direction || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.language_direction])
+
   const statusFilters = map(SubProjectStatus, (status) => ({
     label: t(`projects.status.${status}`),
     value: status,
   }))
 
-  // TODO: remove hardcoded default values, once we have actual data
   const projectRows = useMemo(
     () =>
       map(
@@ -93,7 +107,7 @@ const SubProjectsTable: FC = () => {
             type: project?.type_classifier_value?.name || '',
             status,
             price,
-            language_directions: [
+            language_direction: [
               `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
             ],
           }
@@ -112,16 +126,43 @@ const SubProjectsTable: FC = () => {
     },
   })
 
+  const handleModifiedFilterChange = useCallback(
+    (filters?: FilterFunctionType) => {
+      let currentFilters = filters
+      if (filters && 'language_direction' in filters) {
+        const { language_direction, ...rest } = filters || {}
+        const typedLanguageDirection = language_direction as string[]
+
+        const modifiedLanguageDirections = map(
+          typedLanguageDirection,
+          (languageDirectionString) => {
+            return languageDirectionString.replace('_', ':')
+          }
+        )
+
+        currentFilters = {
+          language_direction: modifiedLanguageDirections,
+          ...rest,
+        }
+      }
+
+      if (handleFilterChange) {
+        handleFilterChange(currentFilters)
+      }
+    },
+    [handleFilterChange]
+  )
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     (payload) => {
-      handleFilterChange({
+      handleModifiedFilterChange({
         ...payload,
         only_show_personal_projects: payload?.only_show_personal_projects
           ? 1
           : 0,
       })
     },
-    [handleFilterChange]
+    [handleModifiedFilterChange]
   )
 
   useEffect(() => {
@@ -157,7 +198,7 @@ const SubProjectsTable: FC = () => {
       header: () => t('label.associated_reference_number'),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('language_directions', {
+    columnHelper.accessor('language_direction', {
       header: () => t('label.language_directions'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
@@ -168,6 +209,12 @@ const SubProjectsTable: FC = () => {
             ))}
           </div>
         )
+      },
+      meta: {
+        filterOption: { language_direction: languageDirectionFilters },
+        onEndReached: loadMore,
+        onSearch: handleSearch,
+        showSearch: true,
       },
     }),
     columnHelper.accessor('type', {
@@ -230,7 +277,7 @@ const SubProjectsTable: FC = () => {
         tableSize={TableSizeTypes.M}
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
-        onFiltersChange={handleFilterChange}
+        onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         headComponent={
           <div className={classes.topSection}>
