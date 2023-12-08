@@ -20,11 +20,13 @@ import { useFetchProject } from 'hooks/requests/useProjects'
 
 import classes from './classes.module.scss'
 import { TaskType } from 'types/tasks'
+import useAuth from 'hooks/useAuth'
 
 const TaskPage: FC = () => {
   const { t } = useTranslation()
   const { taskId, isHistoryView } = useParams()
   const navigate = useNavigate()
+  const { institutionUserId } = useAuth()
 
   const { task, isLoading } = useFetchTask({
     id: taskId,
@@ -40,6 +42,10 @@ const TaskPage: FC = () => {
   const { assignment, assignee_institution_user_id, task_type } = isHistoryView
     ? historyTask || {}
     : task || {}
+
+  const isTaskAssignedToMe =
+    assignee_institution_user_id &&
+    assignee_institution_user_id === institutionUserId
 
   // Correcting and Review are PM tasks
   // PM should have all the necessary privileges to fetch everything
@@ -88,7 +94,7 @@ const TaskPage: FC = () => {
           className={classes.acceptButton}
           onClick={handleAcceptTask}
           loading={isAcceptingTask}
-          hidden={!isEmpty(assignee_institution_user_id)}
+          hidden={!isTaskAssignedToMe}
         >
           {t('button.accept')}
         </Button>

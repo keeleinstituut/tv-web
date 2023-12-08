@@ -39,7 +39,7 @@ interface FormValues {
 
 interface TaskContentProps {
   isLoading?: boolean
-  assignee_institution_user_id?: string
+  isTaskAssignedToMe?: boolean
   taskId?: string
   isHistoryView?: string
   task_type?: string
@@ -48,7 +48,7 @@ interface TaskContentProps {
 
 const TaskContent: FC<TaskContentProps> = ({
   isLoading,
-  assignee_institution_user_id,
+  isTaskAssignedToMe,
   taskId,
   isHistoryView,
   task_type,
@@ -289,7 +289,7 @@ const TaskContent: FC<TaskContentProps> = ({
             inputContainerClassName={classes.specialInstructions}
             control={control}
             isTextarea={true}
-            disabled={!!isHistoryView || !assignee_institution_user_id}
+            disabled={!!isHistoryView || !isTaskAssignedToMe}
           />
         </span>
       </div>
@@ -321,7 +321,7 @@ const TaskContent: FC<TaskContentProps> = ({
           name="my_final_files"
           title={t('my_tasks.my_ready_files')}
           control={control}
-          isEditable={!!assignee_institution_user_id}
+          isEditable={isTaskAssignedToMe}
           isLoading={isLoading}
           subProjectId={sub_project_id || ''}
           className={classes.myFinalFiles}
@@ -333,7 +333,7 @@ const TaskContent: FC<TaskContentProps> = ({
           className={classes.catJobs}
           hidden={isEmpty(catJobsToUse)}
           cat_jobs={catJobsToUse}
-          isEditable={!!assignee_institution_user_id}
+          isEditable={isTaskAssignedToMe}
           cat_files={cat_files}
           source_files={source_files}
           canSendToVendors={true} //TODO add check when camunda is ready
@@ -348,7 +348,7 @@ const TaskContent: FC<TaskContentProps> = ({
       <Button
         className={classes.finishedButton}
         onClick={handleSubmit(handleOpenCompleteModal)}
-        hidden={!assignee_institution_user_id || !!isHistoryView}
+        hidden={!isTaskAssignedToMe || !!isHistoryView}
       >
         {t('button.mark_as_finished')}
       </Button>
@@ -357,7 +357,7 @@ const TaskContent: FC<TaskContentProps> = ({
           className={classes.previousButton}
           onClick={handleSendToPreviousAssignmentModal}
           hidden={
-            !assignee_institution_user_id ||
+            !isTaskAssignedToMe ||
             !!isHistoryView ||
             task_type === TaskType.Review
           }
