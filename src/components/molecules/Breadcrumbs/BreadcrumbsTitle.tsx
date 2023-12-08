@@ -42,6 +42,13 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
 
   const { name } = useMemo(() => {
     switch (true) {
+      case !!vendorId && !!userId: {
+        return {
+          name: `${user?.user.forename} ${user?.user.surname} ${t(
+            'my_tasks.tasks'
+          )}`,
+        }
+      }
       case !!vendorId: {
         return {
           name: `${vendor?.institution_user?.user.forename} ${vendor?.institution_user?.user.surname}`,

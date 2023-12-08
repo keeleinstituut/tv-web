@@ -11,6 +11,7 @@ import {
   DeleteVendorsPayload,
   CreateVendorPayload,
   UpdatePricesPayload,
+  Vendor,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -167,6 +168,17 @@ export const useVendorFetch = ({ id }: { id?: string }) => {
     isError,
     vendor: data?.data,
   }
+}
+
+export const useVendorCache = (id?: string): Vendor | undefined => {
+  const queryClient = useQueryClient()
+  const vendorCache: { data: Vendor } | undefined = queryClient.getQueryData([
+    'vendors',
+    id,
+  ])
+  const vendor = vendorCache?.data
+
+  return vendor
 }
 
 export const useFetchSkills = () => {

@@ -18,12 +18,27 @@ import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import classNames from 'classnames'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
-import { FilterFunctionType } from 'types/collective'
+import {
+  FilterFunctionType,
+  PaginationFunctionType,
+  ResponseMetaTypes,
+  SortingFunctionType,
+} from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
-import { TasksTableProps } from 'pages/MyTasks/MyTasks'
-import { ListTask } from 'types/tasks'
+import { ListTask, TasksPayloadType } from 'types/tasks'
 
 import classes from './classes.module.scss'
+
+export interface TasksTableProps {
+  tasks?: ListTask[]
+  filters?: object | TasksPayloadType
+  isLoading?: boolean
+  paginationData?: ResponseMetaTypes | undefined
+  handleFilterChange?: (value?: FilterFunctionType | undefined) => void
+  handleSortingChange?: (value?: SortingFunctionType | undefined) => void
+  handlePaginationChange?: (value?: PaginationFunctionType | undefined) => void
+  isHistoryTab?: boolean
+}
 
 type TaskTableRow = {
   ext_id: {
