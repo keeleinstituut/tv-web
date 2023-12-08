@@ -95,16 +95,24 @@ const TaskContent: FC<TaskContentProps> = ({
   const catJobsToUse = isVendor ? cat_jobs : catToolJobs
   const tmKeysToUse = isVendor ? cat_tm_keys : SubProjectTmKeys
 
-  const my_final_files = filter(
-    final_files,
-    ({ custom_properties }) =>
-      custom_properties?.institution_user_id === institutionUserId
+  const my_final_files = useMemo(
+    () =>
+      filter(
+        final_files,
+        ({ custom_properties }) =>
+          custom_properties?.institution_user_id === institutionUserId
+      ),
+    [final_files, institutionUserId]
   )
 
-  const other_final_files = filter(
-    final_files,
-    ({ custom_properties }) =>
-      custom_properties?.institution_user_id !== institutionUserId
+  const other_final_files = useMemo(
+    () =>
+      filter(
+        final_files,
+        ({ custom_properties }) =>
+          custom_properties?.institution_user_id !== institutionUserId
+      ),
+    [final_files, institutionUserId]
   )
 
   const defaultValues = useMemo(
