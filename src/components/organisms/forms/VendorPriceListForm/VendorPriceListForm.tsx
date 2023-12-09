@@ -93,6 +93,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     handlePaginationChange,
   } = useAllPricesFetch({
     vendor_id,
+    sort_by: 'lang_pair',
+    sort_order: 'asc',
   })
 
   const priceListCreated = dayjs(
