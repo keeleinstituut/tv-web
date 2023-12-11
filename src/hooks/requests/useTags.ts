@@ -30,16 +30,6 @@ export const useFetchTags = (initialFilters?: GetTagsPayload) => {
     tagsFilters,
   }
 }
-export const useFetchSkills = () => {
-  const { data } = useQuery<TagsResponse>({
-    queryKey: ['skills'],
-    queryFn: () => apiClient.get(endpoints.SKILLS),
-  })
-
-  return {
-    skills: { [TagTypes.Skills]: data?.data },
-  }
-}
 
 export const useBulkCreate = () => {
   const queryClient = useQueryClient()

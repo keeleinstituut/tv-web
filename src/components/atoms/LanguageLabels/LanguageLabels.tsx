@@ -1,27 +1,25 @@
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { find, isEmpty, map } from 'lodash'
-import { Control, useWatch } from 'react-hook-form'
-import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import { Control, FieldValues, useWatch } from 'react-hook-form'
 import classNames from 'classnames'
 
 import classes from './classes.module.scss'
 
-type LanguageLabelsProps = {
+type LanguageLabelsProps<TFormValues extends FieldValues> = {
   srcLanguageValue?: string
   dstLanguageValues?: string[]
-  control: Control<FormValues>
+  control: Control<TFormValues>
   languageOptions?: { label: string; value: string }[]
   className?: string
 }
 
-const LanguageLabels: FC<LanguageLabelsProps> = ({
+function LanguageLabels<TFormValues extends FieldValues>({
   control,
   languageOptions,
   srcLanguageValue,
   dstLanguageValues,
   className,
-}) => {
+}: LanguageLabelsProps<TFormValues>) {
   const { t } = useTranslation()
 
   const findLabelByValue = (
@@ -40,18 +38,27 @@ const LanguageLabels: FC<LanguageLabelsProps> = ({
     control,
   }).new
 
+  const selectedSrcLanguageId =
+    srcLanguageValue || formValues?.src_lang_classifier_value_id?.id
+
+  const selectedDstLanguageIds = isEmpty(
+    formValues?.dst_lang_classifier_value_id?.id
+  )
+    ? dstLanguageValues
+    : formValues?.dst_lang_classifier_value_id?.id
+
   const srcValue = findLabelByValue(
-    [formValues?.src_lang_classifier_value_id?.id] as unknown as string[],
+    [selectedSrcLanguageId] as unknown as string[],
     languageOptions
   )
 
   const dstValues = findLabelByValue(
-    formValues?.dst_lang_classifier_value_id?.id as unknown as string[],
+    selectedDstLanguageIds as unknown as string[],
     languageOptions
   )
 
-  const srcLanguageLabel = srcLanguageValue ? srcLanguageValue : srcValue
-  const dstLanguageLabels = !isEmpty(dstValues) ? dstValues : dstLanguageValues
+  const srcLanguageLabel = srcValue
+  const dstLanguageLabels = dstValues
 
   return (
     <div className={classNames(className)}>
