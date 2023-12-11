@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -68,16 +68,25 @@ const TasksTable: FC<TasksTableProps> = ({
 
   const [filterModified, setFilterModified] = useState<boolean>(false)
 
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
   const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
     type: ClassifierValueType.ProjectType,
   })
 
   const { lang_pair, type_classifier_value_id } = (filters || {}) as {
-    lang_pair?: { src: string; dst: string }
+    lang_pair?: [{ src: string; dst: string }]
     type_classifier_value_id?: string
   }
+
+  useEffect(() => {
+    setSelectedValues(lang_pair ? lang_pair : [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang_pair])
 
   const tasksData = useMemo(() => {
     return reduce<
@@ -128,12 +137,12 @@ const TasksTable: FC<TasksTableProps> = ({
       const typedLanguageDirection = language_direction as string
       const typedClassifierValueId = type_classifier_value_id as string
 
-      const langPair = {
-        0: {
+      const langPair = [
+        {
           src: typedLanguageDirection?.split('_')[0],
           dst: typedLanguageDirection?.split('_')[1],
         },
-      }
+      ]
 
       const newFilters = {
         lang_pair: langPair,
@@ -193,7 +202,7 @@ const TasksTable: FC<TasksTableProps> = ({
           meta: {
             filterOption: { language_direction: languageDirectionFilters },
             filterValue: map(
-              lang_pair || {},
+              lang_pair || [],
               ({ src, dst }) => `${src}_${dst ?? ''}`
             ),
             isCustomSingleDropdown: true,

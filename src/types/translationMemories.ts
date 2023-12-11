@@ -45,7 +45,7 @@ export interface TmStatsType {
 }
 
 export type TranslationMemoryFilters = {
-  lang_pair?: string | string[]
+  lang_pair?: string[]
   name?: string
   type?: TMType | TMType[]
   tv_domain?: string | string[]

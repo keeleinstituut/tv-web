@@ -73,14 +73,24 @@ const ProjectsTable: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
+    filters,
   } = useFetchProjects({
     only_show_personal_projects: onlyPersonalProjectsAllowed ? 1 : 0,
   })
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
   })
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
+
+  useEffect(() => {
+    setSelectedValues(filters?.language_directions || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.language_directions])
 
   const statusFilters = map(ProjectStatus, (status) => ({
     label: t(`projects.status.${status}`),

@@ -34,7 +34,6 @@ import ProjectPage from 'pages/ProjectPage/ProjectPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
-import Components from 'pages/Components/Components'
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
 
@@ -305,10 +304,6 @@ export const protectedRoutesForReactRouter: RouteObject[] = map(
 )
 
 const router = createBrowserRouter([
-  {
-    path: 'test',
-    element: <Components />,
-  },
   {
     path: '/',
     element: <AuthWrapper />,

@@ -1,0 +1,29 @@
+@import 'styles/variables';
+
+.skillsField {
+  padding-bottom: spacing(4);
+}
+
+
+.skillsDynamicForm {
+  padding-top: spacing(8);
+  display: grid;
+  padding-bottom: spacing(17);
+  grid-template-columns: repeat(5, 1fr);
+  column-gap: spacing(12);
+  grid-auto-flow: column;
+  > .skillsField:nth-child(n + 7) {
+    grid-column: 2 / 3;
+  }
+}
+
+.languagePairSelection {
+  justify-content: flex-end;
+}
+
+.languageLabelContainer {
+  display: inline-grid;
+  grid-gap: spacing(15);
+  padding-top: spacing(4);
+  padding-bottom: spacing(39);
+}

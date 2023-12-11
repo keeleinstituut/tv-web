@@ -12,13 +12,17 @@ import {
   CreateVendorPayload,
   UpdatePricesPayload,
   Vendor,
+  SkillsData,
+  PricesData,
+  PayloadItem,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
-import { compact, filter, find, includes, isEmpty, map } from 'lodash'
+import { compact, filter, find, flatMap, includes, isEmpty, map } from 'lodash'
 import { UsersDataType } from 'types/users'
+import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
 
 export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
   const {
@@ -157,7 +161,7 @@ export const useDeleteVendors = (vendorFilters?: GetVendorsPayload) => {
   }
 }
 
-export const useVendorFetch = ({ id }: { id?: string }) => {
+export const useFetchVendor = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<VendorResponse>({
     enabled: !!id,
     queryKey: ['vendors', id],
@@ -184,7 +188,7 @@ export const useVendorCache = (id?: string): Vendor | undefined => {
 export const useFetchSkills = () => {
   const { isLoading, isError, data } = useQuery<GetSkillsPayload>({
     queryKey: ['skills'],
-    queryFn: () => apiClient.get(`${endpoints.SKILLS}`),
+    queryFn: () => apiClient.get(endpoints.SKILLS),
   })
 
   const { data: skills } = data || {}
@@ -201,7 +205,10 @@ export const useFetchSkills = () => {
   }
 }
 
-export const useAllPricesFetch = (initialFilters?: GetPricesPayload) => {
+export const useAllPricesFetch = ({
+  disabled,
+  ...initialFilters
+}: GetPricesPayload & { disabled?: boolean }) => {
   const {
     filters,
     handlePaginationChange,
@@ -213,6 +220,7 @@ export const useAllPricesFetch = (initialFilters?: GetPricesPayload) => {
     queryKey: ['allPrices', filters],
     queryFn: () => apiClient.get(endpoints.PRICES, filters),
     keepPreviousData: true,
+    enabled: !disabled,
   })
 
   const { meta: paginationData, data: prices } = data || {}
@@ -261,7 +269,8 @@ export const useDeletePrices = (vendor_id: string | undefined) => {
 
 const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
   payload: UpdatePricesPayload
-) =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<any> =>
   new Promise(async (resolve, reject) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const results: any = await Promise.allSettled(
@@ -315,21 +324,69 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
     }
   })
 
-export const useParallelMutationDepartment = (
-  vendor_id: string | undefined
-) => {
+export const useParallelUpdatePrices = ({
+  vendor_id,
+  filters,
+}: {
+  vendor_id?: string
+  filters?: GetPricesPayload
+}) => {
   const queryClient = useQueryClient()
   const { mutateAsync: parallelUpdating, isLoading } = useMutation({
     mutationKey: ['prices', vendor_id],
-    mutationFn: async (payload: UpdatePricesPayload) =>
+    mutationFn: (payload: UpdatePricesPayload) =>
       requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed(payload),
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['allPrices'] })
+    onSuccess: (
+      data: { value?: PricesData[] }[],
+      { data: payloadData }: { data: PayloadItem[] }
+    ) => {
+      const deletedPrices = find(payloadData, {
+        state: DataStateTypes.DELETED,
+      })?.prices
+
+      queryClient.setQueryData(
+        ['allPrices', filters],
+        (oldData?: PricesDataType) => {
+          const { data: previousData, meta: oldMeta } = oldData || {}
+          if (!previousData) return oldData
+          const newValues = flatMap(data, 'value.data')
+          const newPrices = filter(
+            newValues,
+            ({ id }) => !find(previousData, { id })
+          )
+          const updatedPrices = compact(
+            map(previousData, (price) => {
+              const updatedSkill = find(newValues, { id: price?.id })
+              const wasSkillDeleted =
+                deletedPrices && find(deletedPrices, { id: price?.id })
+              if (wasSkillDeleted) return null
+              if (updatedSkill) {
+                return {
+                  ...price,
+                  ...updatedSkill,
+                }
+              }
+              return price
+            })
+          )
+          const newData = [...updatedPrices, ...newPrices]
+          return { data: newData, meta: oldMeta }
+        }
+      )
     },
-    onError: () => {
+    onError: (data) => {
+      // TODO: also need to handle errors
       queryClient.refetchQueries({ queryKey: ['allPrices'] })
     },
   })
 
   return { parallelUpdating, isLoading }
+}
+
+export const useSkillsCache = (): { skills: SkillsData[] | undefined } => {
+  const queryClient = useQueryClient()
+  const skillsCache: { data: SkillsData[] } | undefined =
+    queryClient.getQueryData(['skills'])
+
+  return { skills: skillsCache?.data }
 }

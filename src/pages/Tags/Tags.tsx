@@ -8,11 +8,8 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import Button from 'components/molecules/Button/Button'
-import {
-  useFetchTags,
-  useBulkCreate,
-  useFetchSkills,
-} from 'hooks/requests/useTags'
+import { useFetchTags, useBulkCreate } from 'hooks/requests/useTags'
+import { useFetchSkills } from 'hooks/requests/useVendors'
 import {
   fromPairs,
   groupBy,
@@ -43,7 +40,9 @@ const Tags: FC = () => {
   const { t } = useTranslation()
   const { tagInputValidator } = useValidators()
   const { userPrivileges } = useAuth()
-  const { skills } = useFetchSkills()
+  const { skills: skillsArray } = useFetchSkills()
+
+  const skills = { [TagTypes.Skills]: skillsArray }
 
   const { tags, isLoading: isFetchingTags } = useFetchTags()
   const { createTags, isLoading: isCreatingTags } = useBulkCreate()

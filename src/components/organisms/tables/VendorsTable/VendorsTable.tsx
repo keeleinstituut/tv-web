@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useFetchTags } from 'hooks/requests/useTags'
@@ -21,7 +21,7 @@ import {
   PaginationFunctionType,
 } from 'types/collective'
 import classes from './classes.module.scss'
-import { Vendor } from 'types/vendors'
+import { GetVendorsPayload, Vendor } from 'types/vendors'
 import { TagTypes } from 'types/tags'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 
@@ -29,15 +29,26 @@ type VendorsTableProps = {
   data?: Vendor[]
   paginationData?: ResponseMetaTypes
   hidden?: boolean
+  filters?: GetVendorsPayload
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
+}
+
+type ProjectTableRow = {
+  id?: string
+  languageDirections: string[]
+  tags: string[]
+  name: string
+  companyName: string
+  roles: string[]
 }
 
 const VendorsTable: FC<VendorsTableProps> = ({
   data,
   hidden,
   paginationData,
+  filters,
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
@@ -46,17 +57,17 @@ const VendorsTable: FC<VendorsTableProps> = ({
 
   const { rolesFilters = [] } = useRolesFetch()
   const { tagsFilters = [] } = useFetchTags({ type: TagTypes.Vendor })
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
 
-  type ProjectTableRow = {
-    id?: string
-    languageDirections: string[]
-    tags: string[]
-    name: string
-    companyName: string
-    roles: string[]
-  }
+  useEffect(() => {
+    setSelectedValues(filters?.lang_pair || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.lang_pair])
 
   const columnHelper = createColumnHelper<ProjectTableRow>()
 
@@ -130,7 +141,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
       header: () => t('label.language_directions'),
       cell: ({ getValue }) => {
         return (
-          <div className={classes.tagsRow}>
+          <div className={classes.languageRow}>
             {map(getValue(), (value, index) => (
               <Tag label={value} value key={index} />
             ))}

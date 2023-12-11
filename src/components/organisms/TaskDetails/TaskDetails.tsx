@@ -18,7 +18,7 @@ interface TaskProps {
   isLoading: boolean
   project?: ListProject
   taskId?: string
-  assignee_institution_user_id?: string
+  isTaskAssignedToMe?: boolean
   isHistoryView?: string
   task_type?: string
   job_short_name?: string
@@ -30,7 +30,7 @@ interface TaskProps {
 const TaskDetails: FC<TaskProps> = ({
   ext_id = '',
   isLoading,
-  assignee_institution_user_id,
+  isTaskAssignedToMe,
   job_short_name,
   status,
   price,
@@ -99,7 +99,7 @@ const TaskDetails: FC<TaskProps> = ({
     >
       <TaskContent
         isLoading={isLoading}
-        assignee_institution_user_id={assignee_institution_user_id}
+        isTaskAssignedToMe={isTaskAssignedToMe}
         taskId={taskId}
         {...rest}
       />

@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { useParams } from 'react-router-dom'
 import VendorForm from 'components/organisms/forms/VendorForm/VendorForm'
-import { useVendorFetch } from 'hooks/requests/useVendors'
+import { useFetchVendor } from 'hooks/requests/useVendors'
 import VendorPriceListForm from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 import classes from './classes.module.scss'
 import Button from 'components/molecules/Button/Button'
@@ -13,8 +13,9 @@ import { Privileges } from 'types/privileges'
 const VendorPage: FC = () => {
   const { vendorId } = useParams()
   const { userPrivileges } = useAuth()
-  const { vendor, isLoading } = useVendorFetch({ id: vendorId })
+  const { vendor, isLoading } = useFetchVendor({ id: vendorId })
   const vendorName = `${vendor?.institution_user?.user?.forename} ${vendor?.institution_user?.user?.surname}`
+
   if (!vendor || isLoading) return null
 
   return (

@@ -16,7 +16,6 @@ import ModalBase, {
 } from 'components/organisms/ModalBase/ModalBase'
 import { useTranslation } from 'react-i18next'
 import { AppearanceTypes } from 'components/molecules/Button/Button'
-import { UserStatus } from 'types/users'
 import { Root } from '@radix-ui/react-form'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import VendorsEditTable, {
@@ -55,11 +54,8 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
 }) => {
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
-  const initialFilters = {
-    statuses: [UserStatus.Active],
-  }
   const { users, paginationData, handlePaginationChange, handleFilterChange } =
-    useFetchUsers(initialFilters, true)
+    useFetchUsers({}, true)
 
   const { createVendor } = useCreateVendors(vendorsFilters)
   const { deleteVendors } = useDeleteVendors(vendorsFilters)

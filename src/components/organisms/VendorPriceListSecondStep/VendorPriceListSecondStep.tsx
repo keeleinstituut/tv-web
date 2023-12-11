@@ -1,31 +1,29 @@
-import { FC } from 'react'
 import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
 import DynamicForm, {
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { Control } from 'react-hook-form'
-import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import { Control, FieldValues } from 'react-hook-form'
 
-type VendorPriceListSecondStepProps = {
-  skillsFormFields: FieldProps<FormValues>[]
-  control: Control<FormValues>
+type VendorPriceListSecondStepProps<TFormValues extends FieldValues> = {
+  skillsFormFields: FieldProps<TFormValues>[]
+  control: Control<TFormValues>
   languageOptions?: { label: string; value: string }[]
   customSkillsDynamicFormClass?: string
   srcLanguageValue?: string
   dstLanguageValues?: string[]
 }
 
-const VendorPriceListSecondStep: FC<VendorPriceListSecondStepProps> = ({
+function VendorPriceListSecondStep<TFormValues extends FieldValues>({
   skillsFormFields,
   control,
   languageOptions,
   customSkillsDynamicFormClass,
   srcLanguageValue,
   dstLanguageValues,
-}) => {
+}: VendorPriceListSecondStepProps<TFormValues>) {
   return (
     <>
-      <LanguageLabels
+      <LanguageLabels<TFormValues>
         control={control}
         languageOptions={languageOptions}
         srcLanguageValue={srcLanguageValue}

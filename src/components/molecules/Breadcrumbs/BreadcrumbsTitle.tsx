@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useFetchUser } from 'hooks/requests/useUsers'
-import { useVendorFetch } from 'hooks/requests/useVendors'
+import { useFetchVendor } from 'hooks/requests/useVendors'
 import { BreadcrumbComponentProps } from 'use-react-router-breadcrumbs'
 import { useTranslation } from 'react-i18next'
 import { useFetchTranslationMemory } from 'hooks/requests/useTranslationMemories'
@@ -25,7 +25,7 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
   const { vendorId, userId, projectId, memoryId, taskId }: idTypes =
     match?.params || {}
 
-  const { vendor } = useVendorFetch({ id: vendorId })
+  const { vendor } = useFetchVendor({ id: vendorId })
   const { user } = useFetchUser({ id: userId })
   const { project } = useFetchProject({ id: projectId })
   const { translationMemory } = useFetchTranslationMemory({
