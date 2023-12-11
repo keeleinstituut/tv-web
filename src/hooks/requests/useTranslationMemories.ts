@@ -398,33 +398,25 @@ export const useCreateEmptyTm = ({
     mutationKey: ['subProject-tm-keys', subProjectId],
     mutationFn: () => apiClient.post(`${endpoints.TM_KEYS}/${subProjectId}`),
     onSuccess: ({ data }) => {
+      const { cat_tm_key, cat_tm_meta } = data || {}
       queryClient.setQueryData(
         ['subProject-tm-keys', subProjectId],
         (oldData?: SubProjectTmKeysResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const newData = [...previousData, data]
+          const newData = [...previousData, cat_tm_key]
           return { data: newData }
         }
       )
-      //TODO: if BE sends empty tm tag response data in tm-keys response then the translationMemories refetch is not necessary
-
-      // queryClient.setQueryData(
-      //   ['translationMemories'],
-      //   (oldData?: TranslationMemoryDataType) => {
-      //     const { tags: previousData } = oldData || {}
-      //     console.log('old', previousData, oldData)
-      //     if (!previousData) return oldData
-      //     // const newTm = { id: data.key }
-      //     const newData = [...previousData, data]
-      //     console.log('re new', newData)
-      //     return { data: newData }
-      //   }
-      // )
-      queryClient.refetchQueries({
-        queryKey: ['translationMemories'],
-        type: 'active',
-      })
+      queryClient.setQueryData(
+        ['translationMemories'],
+        (oldData?: TranslationMemoryDataType) => {
+          const { tags: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = [...previousData, cat_tm_meta?.tag]
+          return { tags: newData }
+        }
+      )
     },
   })
 
