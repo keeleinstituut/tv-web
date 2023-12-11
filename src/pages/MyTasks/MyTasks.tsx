@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import TasksTable from 'components/organisms/tables/TasksTable/TasksTable'
 import { map } from 'lodash'
 import Tabs from 'components/molecules/Tabs/Tabs'
@@ -16,6 +16,12 @@ import {
 
 import classes from './classes.module.scss'
 
+export enum TasksTabType {
+  MyTasks = 'my_assignments',
+  PendingAssignments = 'pending_assignments',
+  MyTasksHistory = 'my_tasks_history',
+}
+
 export interface TasksTableProps {
   tasks?: ListTask[]
   filters?: object | TasksPayloadType
@@ -29,6 +35,7 @@ export interface TasksTableProps {
 
 const MyTasks: FC = () => {
   const { t } = useTranslation()
+  const [activeTab, setActiveTab] = useState<TasksTabType>(TasksTabType.MyTasks)
 
   const {
     tasks,
@@ -38,7 +45,10 @@ const MyTasks: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchTasks({ assigned_to_me: 1 })
+  } = useFetchTasks({
+    assigned_to_me: 1,
+    disabled: activeTab !== TasksTabType.MyTasks,
+  })
 
   const {
     tasks: waitingTasks,
@@ -48,7 +58,10 @@ const MyTasks: FC = () => {
     handleFilterChange: handleWaitingTasksFilterChange,
     handleSortingChange: handleWaitingTasksSortingChange,
     handlePaginationChange: handleWaitingTasksPaginationChange,
-  } = useFetchTasks({ assigned_to_me: 0 })
+  } = useFetchTasks({
+    assigned_to_me: 0,
+    disabled: activeTab !== TasksTabType.PendingAssignments,
+  })
 
   const {
     historyTasks = [],
@@ -57,16 +70,14 @@ const MyTasks: FC = () => {
     paginationData: historyPaginationData,
     handleFilterChange: handleHistoryFilterChange,
     handleSortingChange: handleHistorySortingChange,
-    handlePaginationChange: handleHisoryPaginationChange,
-  } = useFetchHistoryTasks()
-
-  const [activeTab, setActiveTab] = useState<string | undefined>(
-    t('my_tasks.my_assignments')
-  )
+    handlePaginationChange: handleHistoryPaginationChange,
+  } = useFetchHistoryTasks({
+    disabled: activeTab !== TasksTabType.MyTasksHistory,
+  })
 
   const componentProps = useMemo(() => {
     switch (activeTab) {
-      case t('my_tasks.my_assignments'):
+      case TasksTabType.MyTasks:
         return {
           tasks: tasks || [],
           filters: filters,
@@ -77,7 +88,7 @@ const MyTasks: FC = () => {
           handlePaginationChange: handlePaginationChange,
           isHistoryTab: false,
         }
-      case t('my_tasks.pending_assignments'):
+      case TasksTabType.PendingAssignments:
         return {
           tasks: waitingTasks || [],
           filters: waitingTasksFilters,
@@ -88,7 +99,7 @@ const MyTasks: FC = () => {
           handlePaginationChange: handleWaitingTasksPaginationChange,
           isHistoryTab: false,
         }
-      case t('my_tasks.my_tasks_history'):
+      case TasksTabType.MyTasksHistory:
         return {
           tasks: historyTasks || [],
           filters: historyTasksFilters,
@@ -96,7 +107,7 @@ const MyTasks: FC = () => {
           paginationData: historyPaginationData,
           handleFilterChange: handleHistoryFilterChange,
           handleSortingChange: handleHistorySortingChange,
-          handlePaginationChange: handleHisoryPaginationChange,
+          handlePaginationChange: handleHistoryPaginationChange,
           isHistoryTab: true,
         }
       default:
@@ -104,7 +115,6 @@ const MyTasks: FC = () => {
     }
   }, [
     activeTab,
-    t,
     tasks,
     filters,
     isLoading,
@@ -125,20 +135,17 @@ const MyTasks: FC = () => {
     historyPaginationData,
     handleHistoryFilterChange,
     handleHistorySortingChange,
-    handleHisoryPaginationChange,
+    handleHistoryPaginationChange,
   ])
 
-  const taskTabs = map(
-    [
-      t('my_tasks.my_assignments'),
-      t('my_tasks.pending_assignments'),
-      t('my_tasks.my_tasks_history'),
-    ],
-    (feature) => ({
-      id: feature,
-      name: feature,
-    })
-  )
+  const taskTabs = map(TasksTabType, (type) => ({
+    id: type,
+    name: t(`my_tasks.${type}`),
+  }))
+
+  const handleActiveTabChange = useCallback((newTab?: string) => {
+    setActiveTab(newTab as TasksTabType)
+  }, [])
 
   return (
     <>
@@ -148,7 +155,7 @@ const MyTasks: FC = () => {
       </div>
 
       <Tabs
-        setActiveTab={setActiveTab}
+        setActiveTab={handleActiveTabChange}
         activeTab={activeTab}
         tabStyle={TabStyle.Primary}
         tabs={taskTabs}
