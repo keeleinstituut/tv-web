@@ -131,7 +131,8 @@
     "assignee_comments": "Teostaja kommentaar",
     "tooltip": "Tööriistavihje",
     "date": "Kuupäev",
-    "time": "Aeg"
+    "time": "Aeg",
+    "progress": "Tehtud"
   },
   "placeholder": {
     "email": "example@mail.com",
@@ -547,7 +548,7 @@
     "project_rejected": "Tellimus tagasi lükatud",
     "source_file_deleted": "Lähtefail on edukalt kustutatud",
     "project_corrected": "Tellimus lõpetatuks märgitud",
-    "task_marked_completed":"Ülesanne edukalt lõpetatuks märgitud",
+    "task_marked_completed": "Ülesanne edukalt lõpetatuks märgitud",
     "project_reassigned": "Tellimus edukalt suunatud",
     "sub_project_files_added": "Failid on edukalt lisatud",
     "final_file_deleted": "Valmisfail on edukalt kustutatud"
@@ -726,7 +727,7 @@
     "my_final_files": "Minu lähtefailid tõlketööriistas",
     "my_ready_files": "Minu valmisfailid",
     "no_tasks_yet": "Siin ei ole veel midagi."
-  }, 
+  },
   "logs": {
     "filters": "Filtrid",
     "date_range": "Kuupäevavahemik",
