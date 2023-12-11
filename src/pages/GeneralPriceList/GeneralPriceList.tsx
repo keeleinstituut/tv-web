@@ -13,6 +13,7 @@ const GeneralPriceList: FC = () => {
 
   const {
     prices,
+    filters,
     paginationData,
     handleFilterChange,
     handleSortingChange,
@@ -56,6 +57,7 @@ const GeneralPriceList: FC = () => {
           handleFilterChange,
           handleSortingChange,
           handlePaginationChange,
+          filters,
         }}
       />
     </>

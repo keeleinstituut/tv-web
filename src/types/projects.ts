@@ -228,6 +228,7 @@ export type ProjectsPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
     only_show_personal_projects?: number
+    language_directions?: string[]
     statuses?: string[]
   }
 
@@ -236,6 +237,7 @@ export type SubProjectsPayloadType = PaginationFunctionType &
     ext_id?: string
     only_show_personal_projects?: number
     statuses?: string[]
+    language_direction?: string[]
   }
 
 export interface ProjectsResponse {
