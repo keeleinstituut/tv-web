@@ -1,5 +1,6 @@
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import landingBackground from 'assets/landing_background.svg'
+import sponsorLogo from 'assets/sponsor-logo.jpg'
 import { useTranslation } from 'react-i18next'
 import useAuth from 'hooks/useAuth'
 import { FC } from 'react'
@@ -17,7 +18,11 @@ const LandingContent: FC<LandingContentProps> = ({ className }) => {
   return (
     <div className={classNames(classes.container, className)}>
       <div className={classes.whiteBackground} />
-      <img src={landingBackground} alt="Landing background" />
+      <img
+        src={landingBackground}
+        className={classes.background}
+        alt="Landing background"
+      />
       <div className={classes.contentContainer}>
         <h1>{t('landing.site_description')}</h1>
 
@@ -40,6 +45,11 @@ const LandingContent: FC<LandingContentProps> = ({ className }) => {
           />
         </div>
       </div>
+      <img
+        src={sponsorLogo}
+        className={classes.logo}
+        alt="Euroopa Regionaalarengu Fond"
+      />
     </div>
   )
 }
