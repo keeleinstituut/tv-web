@@ -61,9 +61,12 @@ const RowPrice = <TFormValues extends FieldValues>({
 
   const value = useMemo(
     () =>
-      ((100 - toNumber(discountValue ?? 0)) / 100) *
-      toNumber(amountValue ?? 0) *
-      toNumber(unitPrice ?? 0),
+      round(
+        ((100 - toNumber(discountValue ?? 0)) / 100) *
+          toNumber(amountValue ?? 0) *
+          toNumber(unitPrice ?? 0),
+        2
+      ),
     [amountValue, discountValue, unitPrice]
   )
 
