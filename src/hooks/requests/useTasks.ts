@@ -11,7 +11,6 @@ import useFilters from 'hooks/useFilters'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { useParams } from 'react-router-dom'
-import { useEffect } from 'react'
 
 export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
   const {
@@ -22,16 +21,10 @@ export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
   } = useFilters<TasksPayloadType>(initialFilters)
 
   const { isLoading, isError, data, refetch } = useQuery<TasksResponse>({
-    queryKey: ['tasks'],
+    queryKey: ['tasks', filters],
     queryFn: () => apiClient.get(endpoints.TASKS, filters),
     keepPreviousData: true,
-    enabled: false,
   })
-
-  useEffect(() => {
-    refetch()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters])
 
   const { meta: paginationData, data: tasks } = data || {}
 
