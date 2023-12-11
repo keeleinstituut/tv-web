@@ -197,7 +197,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       const payload: UpdateVendorPayload = {
         tags: (isEmpty(tags) ? [] : tags) as string[],
         company_name: company_name ?? '',
-        comment: comment ?? '-',
+        comment: comment || '-',
         ...discounts,
       }
 
