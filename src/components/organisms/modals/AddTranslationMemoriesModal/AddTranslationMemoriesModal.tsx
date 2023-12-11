@@ -36,12 +36,14 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
   projectDomain,
 }) => {
   const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys({ subProjectId })
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ subProjectId })
+  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
+    subProjectId,
+  })
 
   const defaultFormValues = useMemo(
     () =>
       reduce(
-        SubProjectTmKeys,
+        subProjectTmKeyObjectsArray,
         (result, value) => {
           if (!value.key) {
             return result
@@ -53,7 +55,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
         },
         {}
       ),
-    [SubProjectTmKeys]
+    [subProjectTmKeyObjectsArray]
   )
 
   const {
@@ -110,7 +112,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
         // error message comes from api errorHandles
       }
     },
-    [subProjectId, updateSubProjectTmKeys]
+    [updateSubProjectTmKeys]
   )
 
   return (

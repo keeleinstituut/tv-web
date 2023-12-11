@@ -315,7 +315,7 @@ export const useFetchSubProjectTmKeys = ({
   return {
     isLoading,
     isError,
-    SubProjectTmKeys: data?.data || [],
+    subProjectTmKeyObjectsArray: data?.data || [],
     isFetching,
   }
 }

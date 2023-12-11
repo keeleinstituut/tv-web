@@ -91,7 +91,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     useFetchSubProjectCatToolJobs({
       id,
     })
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ subProjectId: id })
+  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
+    subProjectId: id,
+  })
 
   const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
 
@@ -130,11 +132,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   }, [defaultValues])
 
   useEffect(() => {
-    if (SubProjectTmKeys) {
+    if (subProjectTmKeyObjectsArray) {
       setValue(
         'write_to_memory',
         reduce(
-          SubProjectTmKeys,
+          subProjectTmKeyObjectsArray,
           (result, { key, is_writable }) => {
             if (!key) return result
             return { ...result, [key]: is_writable }
@@ -143,7 +145,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         )
       )
     }
-  }, [setValue, SubProjectTmKeys])
+  }, [setValue, subProjectTmKeyObjectsArray])
 
   const openSendToCatModal = useCallback(() => {
     const sourceFiles = getValues('source_files')
@@ -250,7 +252,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           control={control}
           isEditable={isSomethingEditable}
           subProjectId={id}
-          SubProjectTmKeys={SubProjectTmKeys}
+          subProjectTmKeyObjectsArray={subProjectTmKeyObjectsArray}
           subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}
         />

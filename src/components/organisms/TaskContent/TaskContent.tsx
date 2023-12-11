@@ -85,7 +85,7 @@ const TaskContent: FC<TaskContentProps> = ({
     disabled: isVendor,
   })
 
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({
+  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
     subProjectId: sub_project_id,
     disabled: isVendor,
   })
@@ -93,7 +93,7 @@ const TaskContent: FC<TaskContentProps> = ({
   const { updateAssigneeComment } = useAssignmentCommentUpdate({ id })
 
   const catJobsToUse = isVendor ? cat_jobs : catToolJobs
-  const tmKeysToUse = isVendor ? cat_tm_keys : SubProjectTmKeys
+  const tmKeysToUse = isVendor ? cat_tm_keys : subProjectTmKeyObjectsArray
 
   const my_final_files = useMemo(
     () =>
@@ -299,7 +299,7 @@ const TaskContent: FC<TaskContentProps> = ({
         control={control}
         isEditable={false}
         subProjectId={sub_project_id}
-        SubProjectTmKeys={tmKeysToUse}
+        subProjectTmKeyObjectsArray={tmKeysToUse}
         subProjectLangPair={subOrderLangPair}
         cat_tm_keys_meta={cat_tm_keys_meta}
         cat_tm_keys_stats={cat_tm_keys_stats}

@@ -109,7 +109,7 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
   isEditable?: boolean
   control?: Control<TFormValues>
   subProjectId?: string
-  SubProjectTmKeys?: SubProjectTmKeys[]
+  subProjectTmKeyObjectsArray?: SubProjectTmKeys[]
   subProjectLangPair?: string
   projectDomain?: ClassifierValue
   mode?: ProjectDetailModes
@@ -140,7 +140,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   isEditable,
   control,
   subProjectId,
-  SubProjectTmKeys,
+  subProjectTmKeyObjectsArray,
   subProjectLangPair,
   projectDomain,
   mode,
@@ -164,7 +164,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
 
   const chunksToUse = isVendor ? cat_tm_keys_stats?.tag : tmChunkAmounts
 
-  const tmIds = map(SubProjectTmKeys, 'key')
+  const tmIds = map(subProjectTmKeyObjectsArray, 'key')
   const filteredData = filter(translationMemoriesToUse, ({ id }) =>
     includes(tmIds, id)
   )
@@ -176,15 +176,16 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           id: tm.id,
           language_direction: tm?.lang_pair,
           name: tm?.name,
-          main_write: find(SubProjectTmKeys, { key: tm.id })?.is_writable,
+          main_write: find(subProjectTmKeyObjectsArray, { key: tm.id })
+            ?.is_writable,
           chunk_amount: chunksToUse?.[tm.id] || 0,
           delete_button: tm?.id,
           institution_id: tm?.institution_id,
-          tm_key_id: find(SubProjectTmKeys, { key: tm.id })?.id,
+          tm_key_id: find(subProjectTmKeyObjectsArray, { key: tm.id })?.id,
           type: tm.type,
         }
       }),
-    [filteredData, SubProjectTmKeys, chunksToUse]
+    [filteredData, subProjectTmKeyObjectsArray, chunksToUse]
   )
 
   const handleDelete = useCallback(
