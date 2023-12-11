@@ -1,14 +1,12 @@
-import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
-import { FC } from 'react'
-import { Control, useFormState, useWatch } from 'react-hook-form'
+import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { size, isEmpty, some } from 'lodash'
 
 import classes from './classes.module.scss'
 
-type ButtonsProps = {
-  control: Control<FormValues>
+type ButtonsProps<TFormValues extends FieldValues> = {
+  control: Control<TFormValues>
   handleQuit?: () => void
   handleProceed?: () => void
   steps?: {
@@ -16,18 +14,19 @@ type ButtonsProps = {
   }[]
   activeStep?: number
   languageDirectionKey?: string
+  isLoading?: boolean
 }
 
-const VendorPriceListButtons: FC<ButtonsProps> = ({
+function VendorPriceListButtons<TFormValues extends FieldValues>({
   control,
   handleProceed,
   handleQuit,
   steps,
   activeStep,
+  isLoading,
   languageDirectionKey = '',
-}) => {
+}: ButtonsProps<TFormValues>) {
   const { t } = useTranslation()
-  const { isSubmitting } = useFormState({ control })
 
   const formValues = useWatch({
     control,
@@ -38,19 +37,19 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
 
   const isNewSrcLanguageSelected = !!useWatch({
     control,
-    name: 'new.src_lang_classifier_value_id.id',
+    name: 'new.src_lang_classifier_value_id' as Path<TFormValues>,
   })
 
   const isEditSrcLanguageSelected =
-    !!editLanguagePairData?.src_lang_classifier_value_id?.id
+    !!editLanguagePairData?.src_lang_classifier_value_id
 
   const newDestinationLanguages = useWatch({
     control,
-    name: 'new.dst_lang_classifier_value_id.id',
+    name: 'new.dst_lang_classifier_value_id' as Path<TFormValues>,
   })
 
   const editDestinationLanguages =
-    editLanguagePairData?.dst_lang_classifier_value_id?.id
+    editLanguagePairData?.dst_lang_classifier_value_id
 
   const isNewDstLanguageSelected =
     !!newDestinationLanguages && !isEmpty(newDestinationLanguages)
@@ -99,7 +98,7 @@ const VendorPriceListButtons: FC<ButtonsProps> = ({
         appearance={AppearanceTypes.Primary}
         disabled={isButtonDisabled}
         onClick={handleProceed}
-        loading={isSubmitting}
+        loading={isLoading}
       >
         {size(steps) === activeStep ? t('button.save') : t('button.proceed')}
       </Button>

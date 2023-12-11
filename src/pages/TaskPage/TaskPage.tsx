@@ -15,7 +15,7 @@ import {
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { includes, isEmpty } from 'lodash'
+import { includes } from 'lodash'
 import { useFetchProject } from 'hooks/requests/useProjects'
 
 import classes from './classes.module.scss'
@@ -113,7 +113,7 @@ const TaskPage: FC = () => {
         taskId={taskId}
         ext_id={ext_id}
         isLoading={isHistoryView ? isLoadingHistoryTask : isLoading}
-        assignee_institution_user_id={assignee_institution_user_id}
+        isTaskAssignedToMe={!!isTaskAssignedToMe}
         isHistoryView={isHistoryView}
         task_type={task_type}
         price={price}

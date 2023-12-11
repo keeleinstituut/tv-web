@@ -1,4 +1,8 @@
-import { ResponseMetaTypes } from 'types/collective'
+import {
+  PaginationFunctionType,
+  ResponseMetaTypes,
+  SortingFunctionType,
+} from 'types/collective'
 import { Vendor } from './vendors'
 
 export enum PriceUnits {
@@ -29,7 +33,8 @@ export interface Price {
   vendor: Vendor
   skill: { id: string; name: string }
 }
-export interface GetPricesPayload {
+
+export interface GetPricesFilters {
   vendor_id?: string
   lang_pair?: { src?: string; dst?: string }[]
   institution_user_name?: string
@@ -37,10 +42,11 @@ export interface GetPricesPayload {
   dst_lang_classifier_value_id?: Array<string | undefined>
   skill_id?: string[]
   tag_id?: string[]
-  limit?: number
-  order_by?: string
-  order_direction?: string
 }
+
+export type GetPricesPayload = SortingFunctionType &
+  PaginationFunctionType &
+  GetPricesFilters
 
 export type PricesDataType = {
   data: Price[]
