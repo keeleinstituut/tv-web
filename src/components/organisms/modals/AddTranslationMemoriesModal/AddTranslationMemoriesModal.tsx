@@ -35,8 +35,8 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
   subProjectLangPair = '',
   projectDomain,
 }) => {
-  const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys()
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id: subProjectId })
+  const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys({ subProjectId })
+  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ subProjectId })
 
   const defaultFormValues = useMemo(
     () =>
@@ -91,7 +91,6 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
       const checkedValues = pickBy(values, (val) => !!val)
 
       const payload = {
-        sub_project_id: subProjectId || '',
         tm_keys: map(checkedValues, (_, key) => {
           return {
             key: key || '',

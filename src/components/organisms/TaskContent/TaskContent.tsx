@@ -86,7 +86,7 @@ const TaskContent: FC<TaskContentProps> = ({
   })
 
   const { SubProjectTmKeys } = useFetchSubProjectTmKeys({
-    id: sub_project_id,
+    subProjectId: sub_project_id,
     disabled: isVendor,
   })
 

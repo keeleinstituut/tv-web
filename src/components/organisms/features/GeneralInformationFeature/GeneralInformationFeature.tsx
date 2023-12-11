@@ -91,7 +91,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     useFetchSubProjectCatToolJobs({
       id,
     })
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id })
+  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ subProjectId: id })
 
   const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
 

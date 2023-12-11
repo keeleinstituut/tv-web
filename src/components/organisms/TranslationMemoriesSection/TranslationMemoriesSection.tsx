@@ -21,6 +21,7 @@ import Tag from 'components/atoms/Tag/Tag'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { showModal, ModalTypes, closeModal } from '../modals/ModalRoot'
 import {
+  useCreateEmptyTm,
   useFetchTmChunkAmounts,
   useFetchTranslationMemories,
   useToggleTmWritable,
@@ -60,6 +61,7 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
   mode,
 }) => {
   const { t } = useTranslation()
+  const { createEmptyTm } = useCreateEmptyTm({ subProjectId })
 
   const addNewTm = () => {
     showModal(ModalTypes.AddTranslationMemories, {
@@ -68,6 +70,16 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
       projectDomain: projectDomain,
     })
   }
+  const createEmptyTranslationMemory = useCallback(() => {
+    showModal(ModalTypes.ConfirmationModal, {
+      handleProceed: () => {
+        createEmptyTm()
+        closeModal()
+      },
+      title: t('translation_memories.create_empty_confirmation_text'),
+      cancelButtonContent: t('button.cancel'),
+    })
+  }, [createEmptyTm, t])
 
   if (mode === ProjectDetailModes.View) return null
 
@@ -77,8 +89,7 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
         appearance={AppearanceTypes.Secondary}
         size={SizeTypes.S}
         disabled={disabled}
-        // TODO: empty TM creation endpoint missing currently
-        // onClick={createEmptyTm}
+        onClick={createEmptyTranslationMemory}
         children={t('button.create_empty_tm')}
       />
       <Button
@@ -141,8 +152,8 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   const { translationMemories = [] } = useFetchTranslationMemories({
     disabled: isVendor,
   })
-  const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys()
-  const { toggleTmWritable } = useToggleTmWritable()
+  const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys({ subProjectId })
+  const { toggleTmWritable } = useToggleTmWritable({ subProjectId })
   const { tmChunkAmounts } = useFetchTmChunkAmounts({ disabled: isVendor })
   const { userInfo } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
@@ -173,7 +184,6 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           type: tm.type,
         }
       }),
-
     [filteredData, SubProjectTmKeys, chunksToUse]
   )
 
@@ -183,7 +193,6 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       const notDeletedTmsKeys = pull(array, id)
 
       const payload = {
-        sub_project_id: subProjectId || '',
         tm_keys: map(notDeletedTmsKeys, (key) => {
           return {
             key: key || '',
@@ -202,7 +211,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         // error message comes from api errorHandles
       }
     },
-    [subProjectId, t, updateSubProjectTmKeys, tmIds]
+    [t, updateSubProjectTmKeys, tmIds]
   )
 
   const handleToggleTmWritable = useCallback(
