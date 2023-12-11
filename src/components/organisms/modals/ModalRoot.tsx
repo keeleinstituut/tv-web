@@ -10,7 +10,6 @@ import {
   Suspense,
   useEffect,
 } from 'react'
-import { FormProgressProps } from './FormProgressModal/FormProgressModal'
 import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
 import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
@@ -31,6 +30,7 @@ import { ConfirmAssignmentCompletionModalProps } from './ConfirmAssignmentComple
 import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjectModal'
 import { ConfirmCompleteTaskModalProps } from './ConfirmCompleteTaskModal/ConfirmCompleteTaskModal'
 import { ConfirmSendToPreviousTaskModalProps } from './ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal'
+import { EditVendorPricesModalProps } from './EditVendorPricesModal/EditVendorPricesModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -38,9 +38,6 @@ const InstitutionSelectModal = lazy(
 const TooltipModal = lazy(() => import('./TooltipModal/TooltipModal'))
 const UserAndRoleManagementModal = lazy(
   () => import('./UserAndRoleManagementModal/UserAndRoleManagementModal')
-)
-const FormProgressModal = lazy(
-  () => import('./FormProgressModal/FormProgressModal')
 )
 const EditableListModal = lazy(
   () => import('./EditableListModal/EditableListModal')
@@ -116,11 +113,14 @@ const ConfirmSendToPreviousTaskModal = lazy(
     import('./ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal')
 )
 
+const EditVendorPricesModal = lazy(
+  () => import('./EditVendorPricesModal/EditVendorPricesModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
   Tooltip = 'tooltip',
-  FormProgress = 'formProgress',
   CatSplit = 'catSplit',
   CatMerge = 'catMerge',
   EditableListModal = 'editableListModal',
@@ -142,6 +142,7 @@ export enum ModalTypes {
   ReassignProject = 'reassignProject',
   ConfirmCompleteTask = 'confirmCompleteTask',
   ConfirmSendToPreviousTask = 'confirmSendToPreviousTask',
+  EditVendorPrices = 'editVendorPrices',
 }
 
 // Add other modal props types here as well
@@ -149,7 +150,6 @@ type ModalPropTypes =
   | Omit<InstitutionSelectModalProps, 'closeModal'>
   | Omit<UserAndRoleManagementModalProps, 'closeModal'>
   | Omit<TooltipModalProps, 'closeModal'>
-  | Omit<FormProgressProps, 'closeModal'>
   | Omit<CatSplitModalProps, 'closeModal'>
   | Omit<CatMergeModalProps, 'closeModal'>
   | Omit<EditableListModalProps, 'closeModal'>
@@ -170,12 +170,12 @@ type ModalPropTypes =
   | Omit<ReassignProjectModalProps, 'closeModal'>
   | Omit<ConfirmCompleteTaskModalProps, 'closeModal'>
   | Omit<ConfirmSendToPreviousTaskModalProps, 'closeModal'>
+  | Omit<EditVendorPricesModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
   [ModalTypes.UserAndRoleManagement]: UserAndRoleManagementModal,
   [ModalTypes.Tooltip]: TooltipModal,
-  [ModalTypes.FormProgress]: FormProgressModal,
   [ModalTypes.CatSplit]: CatSplitModal,
   [ModalTypes.CatMerge]: CatMergeModal,
   [ModalTypes.EditableListModal]: EditableListModal,
@@ -197,6 +197,7 @@ const MODALS = {
   [ModalTypes.ReassignProject]: ReassignProjectModal,
   [ModalTypes.ConfirmCompleteTask]: ConfirmCompleteTaskModal,
   [ModalTypes.ConfirmSendToPreviousTask]: ConfirmSendToPreviousTaskModal,
+  [ModalTypes.EditVendorPrices]: EditVendorPricesModal,
 }
 
 interface RefType {

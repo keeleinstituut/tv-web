@@ -13,11 +13,12 @@ const GeneralPriceList: FC = () => {
 
   const {
     prices,
+    filters,
     paginationData,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useAllPricesFetch()
+  } = useAllPricesFetch({})
 
   const [searchValue, setSearchValue] = useState<string>('')
 
@@ -56,6 +57,7 @@ const GeneralPriceList: FC = () => {
           handleFilterChange,
           handleSortingChange,
           handlePaginationChange,
+          filters,
         }}
       />
     </>

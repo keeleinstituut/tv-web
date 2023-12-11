@@ -90,6 +90,7 @@ const VendorsDatabase: FC = () => {
             handleFilterChange,
             handleSortingChange,
             handlePaginationChange,
+            filters,
           }}
         />
       </Root>

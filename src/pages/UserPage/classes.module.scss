@@ -9,7 +9,7 @@
 
   .buttonsContainer {
     display: flex;
-    :first-child {
+    >:first-child {
       margin-right: spacing(2);
     }
   }

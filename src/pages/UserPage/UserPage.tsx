@@ -316,7 +316,6 @@ const UserPage: FC = () => {
           />
           <Button
             loading={isArchiving}
-            appearance={AppearanceTypes.Secondary}
             children={t('button.archive_account')}
             onClick={handleArchiveModal}
             hidden={!includes(userPrivileges, Privileges.ArchiveUser)}

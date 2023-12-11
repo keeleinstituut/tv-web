@@ -54,8 +54,11 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   initialFilters,
 }) => {
   const { t } = useTranslation()
-  const { translationMemories = [], handleFilterChange } =
-    useFetchTranslationMemories({ initialFilters })
+  const {
+    translationMemories = [],
+    handleFilterChange,
+    filters,
+  } = useFetchTranslationMemories({ initialFilters })
   const [searchValue, setSearchValue] = useState<string>('')
 
   const { tagsFilters: tagsOptions } = useFetchTags({
@@ -66,11 +69,20 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     type: ClassifierValueType.TranslationDomain,
   })
 
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({
-      per_page: 40,
-      isLangPair: true,
-    })
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({
+    per_page: 40,
+    isLangPair: true,
+  })
+
+  useEffect(() => {
+    setSelectedValues(filters?.lang_pair || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.lang_pair])
 
   const statusFilters = map(TMType, (status) => ({
     label: t(`translation_memories.status.${status}`),
