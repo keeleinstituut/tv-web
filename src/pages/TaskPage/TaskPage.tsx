@@ -94,7 +94,7 @@ const TaskPage: FC = () => {
           className={classes.acceptButton}
           onClick={handleAcceptTask}
           loading={isAcceptingTask}
-          hidden={!isTaskAssignedToMe}
+          hidden={!!assignee_institution_user_id}
         >
           {t('button.accept')}
         </Button>
