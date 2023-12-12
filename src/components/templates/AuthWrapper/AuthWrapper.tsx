@@ -15,9 +15,9 @@ const AuthWrapper: FC<PropsWithChildren> = () => {
 
   const handleLogout = useCallback(() => {
     if (keycloak) {
+      keycloak.clearToken()
       keycloak.logout()
       queryClient.clear()
-      keycloak.clearToken()
     }
   }, [keycloak, queryClient])
 
