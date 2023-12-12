@@ -229,7 +229,6 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
 
   return (
     <>
-      <h1 className={classes.title}>{defaultValues.name}</h1>
       <div className={classes.container}>
         <div className={classes.formContainer}>
           <DynamicForm
