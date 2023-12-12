@@ -131,7 +131,8 @@
     "assignee_comments": "Teostaja kommentaar",
     "tooltip": "Tööriistavihje",
     "date": "Kuupäev",
-    "time": "Aeg"
+    "time": "Aeg",
+    "progress": "Tehtud"
   },
   "placeholder": {
     "email": "example@mail.com",
