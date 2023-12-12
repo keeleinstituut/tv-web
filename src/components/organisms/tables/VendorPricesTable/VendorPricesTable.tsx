@@ -1,36 +1,33 @@
-import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { Control, UseFormGetValues } from 'react-hook-form'
+import { Control, FieldValues, Path, UseFormGetValues } from 'react-hook-form'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import {
   FormInput,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import {
-  FormValues,
-  PriceObject,
-} from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import { PriceObject } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
 import { filter, size } from 'lodash'
 import useValidators from 'hooks/useValidators'
 
 import classes from './classes.module.scss'
 
-type VendorPricesTableProps = {
-  control: Control<FormValues>
+type VendorPricesTableProps<TFormValues extends FieldValues> = {
+  control: Control<TFormValues>
   languageDirectionKey: string
   skillId?: string
-  getValues: UseFormGetValues<FormValues>
+  // TODO: we have control, so following should be unnecessary
+  getValues: UseFormGetValues<TFormValues>
 }
 
-const VendorPricesTable: FC<VendorPricesTableProps> = ({
+function VendorPricesTable<TFormValues extends FieldValues>({
   control,
   languageDirectionKey,
   skillId,
   getValues,
-}) => {
+}: VendorPricesTableProps<TFormValues>) {
   const { t } = useTranslation()
 
   const { priceValidator } = useValidators()
@@ -46,7 +43,7 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
   }
 
   const languageDirectionPrices = getValues(
-    [languageDirectionKey][0]
+    [languageDirectionKey][0] as Path<TFormValues>
   ).priceObject
 
   const allSelectedPrices = filter(languageDirectionPrices, 'isSelected')
@@ -76,7 +73,9 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.character_fee`}
+            name={
+              `${languageDirectionKey}.priceObject.${row?.original?.skill_id}.character_fee` as Path<TFormValues>
+            }
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.character_fee')}
@@ -95,7 +94,9 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.word_fee`}
+            name={
+              `${languageDirectionKey}.priceObject.${row?.original?.skill_id}.word_fee` as Path<TFormValues>
+            }
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.word_fee')}
@@ -114,7 +115,9 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.page_fee`}
+            name={
+              `${languageDirectionKey}.priceObject.${row?.original?.skill_id}.page_fee` as Path<TFormValues>
+            }
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.page_fee')}
@@ -133,7 +136,9 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.minute_fee`}
+            name={
+              `${languageDirectionKey}.priceObject.${row?.original?.skill_id}.minute_fee` as Path<TFormValues>
+            }
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minute_fee')}
@@ -152,7 +157,9 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.hour_fee`}
+            name={
+              `${languageDirectionKey}.priceObject.${row?.original?.skill_id}.hour_fee` as Path<TFormValues>
+            }
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.hour_fee')}
@@ -171,7 +178,9 @@ const VendorPricesTable: FC<VendorPricesTableProps> = ({
         return (
           <FormInput
             key={row?.index}
-            name={`${languageDirectionKey}.priceObject.${row?.original?.skill_id}.minimal_fee`}
+            name={
+              `${languageDirectionKey}.priceObject.${row?.original?.skill_id}.minimal_fee` as Path<TFormValues>
+            }
             control={control}
             inputType={InputTypes.Text}
             ariaLabel={t('vendors.minimal_fee')}

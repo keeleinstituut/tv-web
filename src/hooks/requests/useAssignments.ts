@@ -1,14 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { map, find, filter, isArray } from 'lodash'
+import { map, find, filter, isArray, isEmpty } from 'lodash'
 import {
   AssigneeCommentPayload,
   AssignmentPayload,
+  AssignmentStatus,
   AssignmentType,
   CompleteAssignmentPayload,
 } from 'types/assignments'
 import {
+  ProjectsResponse,
   SplitProjectPayload,
   SubProjectDetail,
   SubProjectResponse,
@@ -46,10 +48,25 @@ const getNewSubProjectWithAssignment = (
     }
   )
 
+  const newAssignmentsList = [...modifiedAssignmentsList, ...allNewAssignment]
+
+  const active_job_definition = isEmpty(modifiedAssignmentsList)
+    ? undefined
+    : allModifiedAssignments[0]?.subProject?.active_job_definition
+
   const newData = {
     ...previousData,
     ...(allModifiedAssignments?.[0]?.subProject || {}),
-    assignments: [...modifiedAssignmentsList, ...allNewAssignment],
+    assignments: active_job_definition
+      ? map(newAssignmentsList, (assignment) => {
+          if (assignment?.job_definition?.id !== active_job_definition?.id)
+            return assignment
+          return {
+            ...assignment,
+            status: AssignmentStatus.InProgress,
+          }
+        })
+      : newAssignmentsList,
   }
   return { data: newData }
 }
@@ -247,12 +264,27 @@ export const useCompleteAssignment = ({ id }: { id?: string }) => {
         payload
       ),
     onSuccess: ({ data }: { data: AssignmentType }) => {
+      // TODO: might need to still do the refetch, since the next assignment won't be "IN_PROGRESS" otherwise
       const { sub_project_id } = data
       queryClient.setQueryData(
         ['subprojects', sub_project_id],
         (oldData?: SubProjectResponse) =>
           getNewSubProjectWithAssignment(data, oldData)
       )
+      const changesToProject = data?.subProject?.project
+      if (changesToProject) {
+        // Only storing new status right now, to avoid issues, where some fields can have some missing details in this response
+        queryClient.setQueryData(
+          ['projects', changesToProject.id],
+          (oldData?: ProjectsResponse) => {
+            const { data: previousData } = oldData || {}
+
+            if (!previousData) return oldData
+            const newData = { ...previousData, status: changesToProject.status }
+            return { data: newData }
+          }
+        )
+      }
     },
   })
   return {

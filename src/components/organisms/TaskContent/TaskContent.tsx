@@ -1,6 +1,6 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchSubProjectCatToolJobs } from 'hooks/requests/useProjects'
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'
 import {
@@ -29,6 +29,7 @@ import classes from './classes.module.scss'
 import { useTaskCache } from 'hooks/requests/useTasks'
 import useAuth from 'hooks/useAuth'
 import { useAssignmentCommentUpdate } from 'hooks/requests/useAssignments'
+import { CollectionType } from 'hooks/requests/useFiles'
 
 interface FormValues {
   my_source_files: SourceFile[]
@@ -38,7 +39,7 @@ interface FormValues {
 
 interface TaskContentProps {
   isLoading?: boolean
-  assignee_institution_user_id?: string
+  isTaskAssignedToMe?: boolean
   taskId?: string
   isHistoryView?: string
   task_type?: string
@@ -47,7 +48,7 @@ interface TaskContentProps {
 
 const TaskContent: FC<TaskContentProps> = ({
   isLoading,
-  assignee_institution_user_id,
+  isTaskAssignedToMe,
   taskId,
   isHistoryView,
   task_type,
@@ -94,29 +95,50 @@ const TaskContent: FC<TaskContentProps> = ({
   const catJobsToUse = isVendor ? cat_jobs : catToolJobs
   const tmKeysToUse = isVendor ? cat_tm_keys : SubProjectTmKeys
 
-  const my_final_files = filter(
-    final_files,
-    ({ custom_properties }) =>
-      custom_properties?.institution_user_id === institutionUserId
+  const my_final_files = useMemo(
+    () =>
+      filter(
+        final_files,
+        ({ custom_properties }) =>
+          custom_properties?.institution_user_id === institutionUserId
+      ),
+    [final_files, institutionUserId]
   )
 
-  const other_final_files = filter(
-    final_files,
-    ({ custom_properties }) =>
-      custom_properties?.institution_user_id !== institutionUserId
+  const other_final_files = useMemo(
+    () =>
+      filter(
+        final_files,
+        ({ custom_properties }) =>
+          custom_properties?.institution_user_id !== institutionUserId
+      ),
+    [final_files, institutionUserId]
   )
 
-  const { control, handleSubmit } = useForm<FormValues>({
-    reValidateMode: 'onChange',
-    defaultValues: {
+  const defaultValues = useMemo(
+    () => ({
       my_source_files: [
         ...(source_files || []),
-        ...map(other_final_files, (file) => ({ ...file, collection: 'final' })),
+        ...map(other_final_files, (file) => ({
+          ...file,
+          collection: CollectionType.Final,
+        })),
       ],
       assignee_comments,
       my_final_files,
-    },
+    }),
+    [assignee_comments, my_final_files, other_final_files, source_files]
+  )
+
+  const { control, handleSubmit, reset } = useForm<FormValues>({
+    reValidateMode: 'onChange',
+    defaultValues: defaultValues,
   })
+
+  useEffect(() => {
+    reset(defaultValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues])
 
   const subOrderLangPair = useMemo(() => {
     const srcLangShort = split(source_language_classifier_value?.value, '-')[0]
@@ -242,10 +264,13 @@ const TaskContent: FC<TaskContentProps> = ({
           <p className={classes.taskContent}>
             <span>{`${Number(volumes?.[0]?.unit_quantity)} ${t(
               `label.${apiTypeToKey(volumes?.[0]?.unit_type || '')}`
-            )}${volumes?.[0] ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+            )}${
+              volumes?.[0]?.cat_job ? ` ${t('task.open_in_cat')}` : ''
+            }`}</span>
             <BaseButton
               onClick={handleShowVolume}
               className={classes.volumeIcon}
+              hidden={!volumes?.[0]?.cat_job}
             >
               <Eye />
             </BaseButton>
@@ -267,7 +292,7 @@ const TaskContent: FC<TaskContentProps> = ({
             inputContainerClassName={classes.specialInstructions}
             control={control}
             isTextarea={true}
-            disabled={!!isHistoryView || !assignee_institution_user_id}
+            disabled={!!isHistoryView || !isTaskAssignedToMe}
           />
         </span>
       </div>
@@ -299,7 +324,7 @@ const TaskContent: FC<TaskContentProps> = ({
           name="my_final_files"
           title={t('my_tasks.my_ready_files')}
           control={control}
-          isEditable={!!assignee_institution_user_id}
+          isEditable={isTaskAssignedToMe}
           isLoading={isLoading}
           subProjectId={sub_project_id || ''}
           className={classes.myFinalFiles}
@@ -311,7 +336,7 @@ const TaskContent: FC<TaskContentProps> = ({
           className={classes.catJobs}
           hidden={isEmpty(catJobsToUse)}
           cat_jobs={catJobsToUse}
-          isEditable={!!assignee_institution_user_id}
+          isEditable={isTaskAssignedToMe}
           cat_files={cat_files}
           source_files={source_files}
           canSendToVendors={true} //TODO add check when camunda is ready
@@ -326,7 +351,7 @@ const TaskContent: FC<TaskContentProps> = ({
       <Button
         className={classes.finishedButton}
         onClick={handleSubmit(handleOpenCompleteModal)}
-        hidden={!assignee_institution_user_id || !!isHistoryView}
+        hidden={!isTaskAssignedToMe || !!isHistoryView}
       >
         {t('button.mark_as_finished')}
       </Button>
@@ -335,7 +360,7 @@ const TaskContent: FC<TaskContentProps> = ({
           className={classes.previousButton}
           onClick={handleSendToPreviousAssignmentModal}
           hidden={
-            !assignee_institution_user_id ||
+            !isTaskAssignedToMe ||
             !!isHistoryView ||
             task_type === TaskType.Review
           }

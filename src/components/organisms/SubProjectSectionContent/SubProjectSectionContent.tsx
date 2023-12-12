@@ -23,7 +23,7 @@ import { ClassifierValue } from 'types/classifierValues'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { useHandleFiles } from 'hooks/requests/useFiles'
+import { useHandleFiles, CollectionType } from 'hooks/requests/useFiles'
 import dayjs from 'dayjs'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
@@ -113,7 +113,7 @@ const FilesSection: FC<FilesSectionProps> = ({ files, id }) => {
   const { downloadFile } = useHandleFiles({
     reference_object_id: id || '',
     reference_object_type: 'subproject',
-    collection: 'source',
+    collection: CollectionType.Source,
   })
 
   const handleDownload = useCallback(

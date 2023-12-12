@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -12,7 +12,7 @@ import {
   ResponseMetaTypes,
   PaginationFunctionType,
 } from 'types/collective'
-import { Price } from 'types/price'
+import { GetPricesPayload, Price } from 'types/price'
 import { Root } from '@radix-ui/react-form'
 import { useFetchSkills } from 'hooks/requests/useVendors'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
@@ -23,6 +23,7 @@ interface GeneralPriceListTableProps {
   data?: Price[]
   paginationData?: ResponseMetaTypes
   hidden?: boolean
+  filters?: GetPricesPayload
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
   handlePaginationChange?: (value?: PaginationFunctionType) => void
@@ -46,14 +47,24 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({
   data = [],
   hidden,
   paginationData,
+  filters,
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
 }) => {
   const { t } = useTranslation()
   const { skillsFilters = [] } = useFetchSkills()
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
+
+  useEffect(() => {
+    setSelectedValues(filters?.lang_pair || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.lang_pair])
 
   const tableData = useMemo(
     () =>

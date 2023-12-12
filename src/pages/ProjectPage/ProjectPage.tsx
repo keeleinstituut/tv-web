@@ -1,6 +1,6 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchProject } from 'hooks/requests/useProjects'
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 import { map, includes, sortBy, isEmpty } from 'lodash'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
@@ -35,15 +35,18 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { tasks, isLoading } = useFetchTasks({
+  const { tasks, isLoading, refetch } = useFetchTasks({
     project_id: projectId,
     task_type: TaskType.ClientReview,
   })
-  const { tasks: correctingTasks, isLoading: isLoadingCorrectingTasks } =
-    useFetchTasks({
-      project_id: projectId,
-      task_type: TaskType.Correcting,
-    })
+  const {
+    tasks: correctingTasks,
+    isLoading: isLoadingCorrectingTasks,
+    refetch: refetchCorrectingTasks,
+  } = useFetchTasks({
+    project_id: projectId,
+    task_type: TaskType.Correcting,
+  })
 
   const { completeTask, isLoading: isCompletingTask } = useCompleteTask({
     id: tasks?.[0]?.id,
@@ -53,6 +56,23 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
     useCompleteTask({
       id: correctingTasks?.[0]?.id,
     })
+
+  useEffect(() => {
+    if (
+      includes(
+        [ProjectStatus.Corrected, ProjectStatus.SubmittedToClient],
+        status
+      ) &&
+      isEmpty(tasks)
+    ) {
+      refetch()
+    }
+    if (status === ProjectStatus.Rejected && isEmpty(correctingTasks)) {
+      refetchCorrectingTasks()
+    }
+    // We only run this check, if project status changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status])
 
   // Conditions for buttons:
 

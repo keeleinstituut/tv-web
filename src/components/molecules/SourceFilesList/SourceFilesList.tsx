@@ -23,7 +23,7 @@ import { SourceFile, CatProjectStatus } from 'types/projects'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
-import { useHandleFiles } from 'hooks/requests/useFiles'
+import { CollectionType, useHandleFiles } from 'hooks/requests/useFiles'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -78,7 +78,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   isHistoryView,
 }: SourceFilesListProps<TFormValues>) => {
   const {
-    field: { onChange, value },
+    field: { value },
   } = useController<TFormValues, Path<TFormValues>>({
     name: name as Path<TFormValues>,
     control,
@@ -86,7 +86,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   const { addFiles, downloadFile } = useHandleFiles({
     reference_object_id: subProjectId,
     reference_object_type: 'subproject',
-    collection: 'source',
+    collection: CollectionType.Source,
   })
 
   const typedValue = value as SourceFile[]
@@ -121,33 +121,26 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   const handleAdd = useCallback(
     async (files: (File | SourceFile)[]) => {
       const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
-      const { data } = await addFiles(filteredFiles)
-      onChange([...value, ...data.data])
+      await addFiles(filteredFiles)
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
         content: t('success.sub_project_files_added'),
       })
     },
-    [addFiles, onChange, value, t]
+    [addFiles, t]
   )
 
   const handleDelete = useCallback(
     (index?: number) => {
       if (index === 0 || index) {
-        const newSourceFiles = filter(
-          typedValue,
-          (_, fileIndex) => index !== fileIndex
-        )
-
         showModal(ModalTypes.ConfirmDeleteSourceFile, {
           subProjectId: subProjectId,
           sourceFileId: typedValue[index].id,
-          callback: () => onChange(newSourceFiles),
         })
       }
     },
-    [onChange, typedValue, subProjectId]
+    [typedValue, subProjectId]
   )
 
   const columns = [

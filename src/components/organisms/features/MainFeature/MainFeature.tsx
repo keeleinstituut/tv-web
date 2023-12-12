@@ -15,6 +15,7 @@ import { useSplitAssignment } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { get } from 'lodash'
+import { useProjectCache } from 'hooks/requests/useProjects'
 
 type MainFeatureProps = Pick<
   SubProjectDetail,
@@ -23,7 +24,7 @@ type MainFeatureProps = Pick<
   | 'destination_language_classifier_value_id'
   | 'cat_analyzis'
   | 'cat_jobs'
-  | 'project'
+  | 'project_id'
   | 'id'
   | 'mt_enabled'
   | 'deadline_at'
@@ -40,11 +41,11 @@ const MainFeature: FC<MainFeatureProps> = ({
   id,
   cat_jobs,
   assignments,
-  project,
   workflow_started,
+  project_id,
   ...rest
 }) => {
-  const { status: projectStatus } = project
+  const { status: projectStatus } = useProjectCache(project_id) || {}
   const { t } = useTranslation()
   const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
   const featureTabs = [

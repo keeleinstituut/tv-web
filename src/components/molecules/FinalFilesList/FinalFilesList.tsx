@@ -35,7 +35,7 @@ import {
   closeModal,
   showModal,
 } from 'components/organisms/modals/ModalRoot'
-import { useHandleFiles } from 'hooks/requests/useFiles'
+import { CollectionType, useHandleFiles } from 'hooks/requests/useFiles'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { useSendSubProjectFinalFiles } from 'hooks/requests/useProjects'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -78,7 +78,6 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   const { t } = useTranslation()
 
   const {
-    field: { onChange },
     fieldState: { isDirty },
   } = useController<TFormValues, Path<TFormValues>>({
     name: name as Path<TFormValues>,
@@ -97,7 +96,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   const { addFiles, deleteFile, downloadFile } = useHandleFiles({
     reference_object_id: subProjectId,
     reference_object_type: 'subproject',
-    collection: 'final',
+    collection: CollectionType.Final,
   })
 
   const handleDownload = useCallback(
@@ -110,10 +109,9 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   const handleAdd = useCallback(
     async (files: (File | SourceFile)[]) => {
       const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
-      const { data } = await addFiles(filteredFiles)
-      onChange([...value, ...data.data])
+      await addFiles(filteredFiles)
     },
-    [onChange, addFiles, value]
+    [addFiles]
   )
 
   const handleOpenDeleteModal = useCallback(
@@ -121,7 +119,11 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       const handleDelete = () => {
         if (index === 0 || index) {
           deleteFile(typedValue[index].id)
-          onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+          showNotification({
+            type: NotificationTypes.Success,
+            title: t('notification.announcement'),
+            content: t('success.final_file_deleted'),
+          })
           closeModal()
         }
       }
@@ -133,7 +135,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         handleProceed: handleDelete,
       })
     },
-    [deleteFile, onChange, t, typedValue]
+    [deleteFile, t, typedValue]
   )
 
   const filesData = useMemo(
@@ -184,6 +186,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
                   }
                   ariaLabel={t('label.share_with_client')}
                   control={control}
+                  disabled={!isEditable}
                   inputType={InputTypes.Checkbox}
                 />
               )

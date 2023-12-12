@@ -70,6 +70,7 @@ export const useFetchTranslationMemories = ({
     isError,
     translationMemories,
     isFetching,
+    filters: filters as TranslationMemoryFilters,
     // paginationData,
     handleFilterChange,
     // handlePaginationChange,

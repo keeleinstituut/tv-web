@@ -24,7 +24,6 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
   assignments,
   hidden,
   subProjectCatJobs,
-  ...rest
 }) => {
   const { t } = useTranslation()
   const [isEditable, setIsEditable] = useState(false)
@@ -35,7 +34,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
     () =>
       reduce(
         assignments,
-        (result, { id, cat_jobs }, index) => {
+        (result, { id, cat_jobs }) => {
           if (!id) return result
           const catJobs = isEmpty(cat_jobs) ? subProjectCatJobs : cat_jobs
 
@@ -46,7 +45,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
                 catJobs,
                 (result, { id }) => {
                   if (!id) return result
-                  const isChunkSelected = index === 0 || !isEmpty(cat_jobs)
+                  const isChunkSelected = !isEmpty(cat_jobs)
 
                   return {
                     ...result,
