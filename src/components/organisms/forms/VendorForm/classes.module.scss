@@ -15,6 +15,10 @@
     display: flex;
     margin: spacing(3);
     justify-content: flex-end;
+
+    > :first-child {
+      margin-right: spacing(2);
+    }
   }
 
   .inputInternalPosition {
