@@ -23,14 +23,15 @@ dayjs.extend(customParseFormat)
 
 export const useFetchUsers = (
   initialFilters?: UserPayloadType,
-  useTranslationService?: boolean
+  useTranslationService?: boolean,
+  saveQueryParams?: boolean
 ) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<UserPayloadType>(initialFilters)
+  } = useFilters<UserPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, isFetching, data } = useQuery<UsersDataType>({
     queryKey: [useTranslationService ? 'translationUsers' : 'users', filters],

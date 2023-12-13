@@ -19,17 +19,19 @@ import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
 import { map, flatten, join, omit, pick } from 'lodash'
 import { SubProjectsResponse } from 'types/projects'
+import { PaginationFunctionType } from 'types/collective'
 
 dayjs.extend(customParseFormat)
 
 export const useFetchTranslationMemories = (
-  initialFilters?: TranslationMemoryFilters
+  initialFilters?: TranslationMemoryFilters,
+  saveQueryParams?: boolean
 ) => {
   const {
     filters,
     handleFilterChange,
     //handlePaginationChange,
-  } = useFilters<TranslationMemoryFilters>(initialFilters)
+  } = useFilters<TranslationMemoryFilters>(initialFilters, saveQueryParams)
 
   const filterWithoutSearch = omit(filters, 'name')
   const searchValue = pick(filters, 'name')
@@ -66,6 +68,7 @@ export const useFetchTranslationMemories = (
     // paginationData,
     handleFilterChange,
     // handlePaginationChange,
+    filters,
   }
 }
 
@@ -223,11 +226,15 @@ export const useExportTMX = () => {
 
 export const useFetchTranslationMemorySubProjects = ({
   id,
+  initialFilters,
+  saveQueryParams,
 }: {
   id?: string
+  initialFilters?: PaginationFunctionType
+  saveQueryParams?: boolean
 }) => {
   const { filters, handlePaginationChange } =
-    useFilters<TranslationMemoryFilters>()
+    useFilters<TranslationMemoryFilters>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, isFetching, data } =
     useQuery<SubProjectsResponse>({

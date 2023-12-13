@@ -23,13 +23,16 @@ import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
 import { useCallback, useEffect, useState } from 'react'
 
-export const useFetchProjects = (initialFilters?: ProjectsPayloadType) => {
+export const useFetchProjects = (
+  initialFilters?: ProjectsPayloadType,
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<ProjectsPayloadType>(initialFilters)
+  } = useFilters<ProjectsPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<ProjectsResponse>({
     queryKey: ['projects', filters],
@@ -180,14 +183,17 @@ export const useFetchSubProject = ({ id }: { id?: string }) => {
   }
 }
 
-export const useFetchSubProjects = () => {
+export const useFetchSubProjects = (
+  initialFilters?: SubProjectsPayloadType,
+  saveQueryParams?: boolean
+) => {
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<SubProjectsPayloadType>()
+  } = useFilters<SubProjectsPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<SubProjectsResponse>({
     queryKey: ['subprojects', filters],

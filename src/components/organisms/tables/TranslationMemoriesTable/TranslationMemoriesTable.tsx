@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, find, debounce } from 'lodash'
+import { map, find, debounce, omit } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -28,6 +28,7 @@ import { ClassifierValueType } from 'types/classifierValues'
 import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemories'
 import TextInput from 'components/molecules/TextInput/TextInput'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { useSearchParams } from 'react-router-dom'
 
 type TranslationMemoriesTableRow = {
   name: string
@@ -54,9 +55,28 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   initialFilters,
 }) => {
   const { t } = useTranslation()
+
+  const [searchParams, _] = useSearchParams()
+  const combinedInitialFilters = {
+    ...initialFilters,
+    ...omit(Object.fromEntries(searchParams.entries()), ['page', 'per_page']),
+    tv_tags: searchParams.getAll('tv_tags'),
+    type: searchParams.getAll('type') as TMType[],
+    tv_domain: searchParams.getAll('tv_domain'),
+    lang_pair: searchParams.getAll('lang_pair'),
+  }
+
   const { translationMemories = [], handleFilterChange } =
-    useFetchTranslationMemories(initialFilters)
-  const [searchValue, setSearchValue] = useState<string>('')
+    useFetchTranslationMemories(combinedInitialFilters, true)
+
+  const [searchValue, setSearchValue] = useState<string>(
+    searchParams.get('name') || ''
+  )
+
+  const defaultPaginationData = {
+    per_page: Number(searchParams.get('per_page')),
+    page: Number(searchParams.get('page')),
+  }
 
   const { tagsFilters: tagsOptions } = useFetchTags({
     type: TagTypes.TranslationMemories,
@@ -77,8 +97,16 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     value: status,
   }))
 
+  const defaultFilterValues = useMemo(
+    () => ({
+      types: (searchParams.getAll('type') as TMType[]) || [],
+    }),
+    [searchParams]
+  )
+
   const { control, watch } = useForm<FormValues>({
     mode: 'onChange',
+    defaultValues: defaultFilterValues,
     resetOptions: {
       keepErrors: true,
     },
@@ -170,6 +198,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           meta: {
             filterOption: { tv_tags: tagsOptions },
             showSearch: true,
+            filterValue: combinedInitialFilters?.tv_tags,
           },
         }),
         columnHelper.accessor('tv_domain', {
@@ -183,7 +212,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           size: 375,
           meta: {
             filterOption: { tv_domain: domainOptions },
-            filterValue: initialFilters?.tv_domain,
+            filterValue: combinedInitialFilters?.tv_domain,
             showSearch: false,
           },
         }),
@@ -205,6 +234,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
                 onEndReached: loadMore,
                 onSearch: handleSearch,
                 showSearch: true,
+                filterValue: combinedInitialFilters?.lang_pair,
               }
             : {},
         }),
@@ -239,6 +269,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
         // paginationData={paginationData}
         // onPaginationChange={handlePaginationChange}
         onFiltersChange={handleFilterChange}
+        defaultPaginationData={defaultPaginationData}
         headComponent={
           <div
             className={classNames(classes.topSection, {

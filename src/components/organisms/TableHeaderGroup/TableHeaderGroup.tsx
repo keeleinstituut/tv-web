@@ -42,6 +42,7 @@ type ColumnMeta = {
     onEndReached?: () => void
     onSearch?: (value: string) => void
     showSearch?: boolean
+    currentSorting?: SortingFunctionType['sort_order']
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
@@ -58,12 +59,14 @@ const HeaderItem = <TData,>({
   onFiltersChange,
 }: HeaderItemProps<TData>) => {
   const { t } = useTranslation()
-  const [step, setStep] = useState<number>(0)
-  const [currentSorting, setCurrentSorting] =
-    useState<SortingFunctionType['sort_order']>(undefined)
 
   const { id, column } = header || {}
   const { meta } = column.columnDef as CustomColumnDef<TData>
+
+  const [currentSorting, setCurrentSorting] = useState<
+    SortingFunctionType['sort_order']
+  >(meta?.currentSorting || undefined)
+
   const filterOption = meta?.filterOption || []
   const onEndReached = meta?.onEndReached
   const onSearch = meta?.onSearch
@@ -72,6 +75,10 @@ const HeaderItem = <TData,>({
   const options = values(filterOption)[0] || []
   const sortingOption = meta?.sortingOption || []
   const filterValue = meta?.filterValue
+
+  const [step, setStep] = useState<number>(
+    currentSorting ? sortingOption.indexOf(currentSorting) + 1 : 0
+  )
 
   const handleOnSorting = () => {
     const newStep = size(sortingOption) > step ? step + 1 : 0

@@ -18,13 +18,16 @@ import { apiClient } from 'api'
 import useFilters from 'hooks/useFilters'
 import { compact, filter, includes, isEmpty, map } from 'lodash'
 
-export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
+export const useVendorsFetch = (
+  initialFilters?: GetVendorsPayload,
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<GetVendorsPayload>()
+  } = useFilters<GetVendorsPayload>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<VendorsDataType>({
     queryKey: ['vendors', filters],
@@ -163,13 +166,16 @@ export const useFetchSkills = () => {
   }
 }
 
-export const useAllPricesFetch = (initialFilters?: GetPricesPayload) => {
+export const useAllPricesFetch = (
+  initialFilters?: GetPricesPayload,
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handlePaginationChange,
     handleFilterChange,
     handleSortingChange,
-  } = useFilters<GetPricesPayload>(initialFilters)
+  } = useFilters<GetPricesPayload>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<PricesDataType>({
     queryKey: ['allPrices', filters],

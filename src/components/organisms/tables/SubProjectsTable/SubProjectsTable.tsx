@@ -26,6 +26,7 @@ import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatu
 import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
+import { useSearchParams } from 'react-router-dom'
 
 type SubProjectTableRow = {
   ext_id: string
@@ -49,13 +50,22 @@ const SubProjectsTable: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
+  const [searchParams, _] = useSearchParams()
+  const initialFilters = {
+    ...Object.fromEntries(searchParams.entries()),
+    status: searchParams.getAll('status'),
+    only_show_personal_projects: Number(
+      searchParams.get('only_show_personal_projects') || 0
+    ),
+  }
+
   const {
     subProjects,
     paginationData,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchSubProjects()
+  } = useFetchSubProjects(initialFilters, true)
 
   const statusFilters = map(SubProjectStatus, (status) => ({
     label: t(`projects.status.${status}`),
@@ -92,8 +102,25 @@ const SubProjectsTable: FC = () => {
     [subProjects]
   )
 
+  const defaultPaginationData = {
+    per_page: Number(searchParams.get('per_page')),
+    page: Number(searchParams.get('page')) - 1,
+  }
+
+  const defaultFilterValues = useMemo(
+    () => ({
+      status: searchParams.getAll('status') as SubProjectStatus[],
+      only_show_personal_projects: !!(
+        Number(searchParams.get('only_show_personal_projects')) || 0
+      ),
+      ext_id: searchParams.get('ext_id') || '',
+    }),
+    [searchParams]
+  )
+
   const { control, handleSubmit, watch } = useForm<FormValues>({
     mode: 'onChange',
+    defaultValues: defaultFilterValues,
     resetOptions: {
       keepErrors: true,
     },
@@ -171,6 +198,10 @@ const SubProjectsTable: FC = () => {
       footer: (info) => info.column.id,
       meta: {
         sortingOption: ['asc', 'desc'],
+        currentSorting:
+          searchParams.get('price') == 'deadline_at'
+            ? searchParams.get('sort_order')
+            : '',
       },
     }),
     columnHelper.accessor('deadline_at', {
@@ -205,6 +236,10 @@ const SubProjectsTable: FC = () => {
       },
       meta: {
         sortingOption: ['asc', 'desc'],
+        currentSorting:
+          searchParams.get('sort_by') == 'deadline_at'
+            ? searchParams.get('sort_order')
+            : '',
       },
     }),
   ] as ColumnDef<SubProjectTableRow>[]
@@ -219,6 +254,7 @@ const SubProjectsTable: FC = () => {
         onPaginationChange={handlePaginationChange}
         onFiltersChange={handleFilterChange}
         onSortingChange={handleSortingChange}
+        defaultPaginationData={defaultPaginationData}
         headComponent={
           <div className={classes.topSection}>
             <FormInput

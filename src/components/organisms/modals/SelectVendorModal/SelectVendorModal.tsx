@@ -129,15 +129,18 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
     handleSortingChange,
     handlePaginationChange,
     isLoading: isLoadingPrices,
-  } = useAllPricesFetch({
-    lang_pair: [
-      {
-        src: source_language_classifier_value_id,
-        dst: destination_language_classifier_value_id,
-      },
-    ],
-    ...(skill_id ? { skill_id: [skill_id] } : {}),
-  })
+  } = useAllPricesFetch(
+    {
+      lang_pair: [
+        {
+          src: source_language_classifier_value_id,
+          dst: destination_language_classifier_value_id,
+        },
+      ],
+      ...(skill_id ? { skill_id: [skill_id] } : {}),
+    },
+    false
+  )
 
   const {
     control,

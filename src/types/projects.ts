@@ -232,7 +232,7 @@ export type ProjectsPayloadType = PaginationFunctionType &
 export type SubProjectsPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
-    only_show_personal_projects?: boolean
+    only_show_personal_projects?: number
     statuses?: string[]
   }
 

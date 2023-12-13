@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useFetchTags } from 'hooks/requests/useTags'
@@ -11,43 +11,66 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import { map, join, compact, split } from 'lodash'
+import { map, join, compact, split, isEmpty, debounce } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
-import {
-  FilterFunctionType,
-  SortingFunctionType,
-  ResponseMetaTypes,
-  PaginationFunctionType,
-} from 'types/collective'
+import { FilterFunctionType } from 'types/collective'
 import classes from './classes.module.scss'
 import { Vendor } from 'types/vendors'
 import { TagTypes } from 'types/tags'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { useSearchParams } from 'react-router-dom'
+import TextInput from 'components/molecules/TextInput/TextInput'
+import Loader from 'components/atoms/Loader/Loader'
+import { Root } from '@radix-ui/react-form'
+import { useVendorsFetch } from 'hooks/requests/useVendors'
+import classNames from 'classnames'
 
 type VendorsTableProps = {
   data?: Vendor[]
-  paginationData?: ResponseMetaTypes
   hidden?: boolean
-  handleFilterChange?: (value?: FilterFunctionType) => void
-  handleSortingChange?: (value?: SortingFunctionType) => void
-  handlePaginationChange?: (value?: PaginationFunctionType) => void
 }
 
-const VendorsTable: FC<VendorsTableProps> = ({
-  data,
-  hidden,
-  paginationData,
-  handleFilterChange,
-  handleSortingChange,
-  handlePaginationChange,
-}) => {
+const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
   const { t } = useTranslation()
+
+  const [searchParams, _] = useSearchParams()
+  const initialFilters = {
+    ...Object.fromEntries(searchParams.entries()),
+    role_id: searchParams.getAll('role_id'),
+    tag_id: searchParams.getAll('tag_id'),
+  }
+
+  const {
+    vendors,
+    paginationData,
+    isLoading,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useVendorsFetch(initialFilters, true)
 
   const { rolesFilters = [] } = useRolesFetch()
   const { tagsFilters = [] } = useFetchTags({ type: TagTypes.Vendor })
   const { languageDirectionFilters, loadMore, handleSearch } =
     useLanguageDirections({})
+
+  const [searchValue, setSearchValue] = useState<string>(
+    searchParams.get('fullname') || ''
+  )
+
+  const handleSearchVendors = useCallback(
+    (event: { target: { value: string } }) => {
+      setSearchValue(event.target.value)
+      debounce(handleFilterChange, 300)({ fullname: event.target.value })
+    },
+    [handleFilterChange]
+  )
+
+  const defaultPaginationData = {
+    per_page: Number(searchParams.get('per_page')),
+    page: Number(searchParams.get('page')) - 1,
+  }
 
   type ProjectTableRow = {
     id?: string
@@ -63,7 +86,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
   const vendorsData = useMemo(() => {
     return (
       map(
-        data,
+        vendors,
         ({
           id,
           tags,
@@ -94,7 +117,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
         }
       ) || {}
     )
-  }, [data])
+  }, [vendors])
 
   const handleModifiedFilterChange = useCallback(
     (filters?: FilterFunctionType) => {
@@ -152,6 +175,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
       meta: {
         filterOption: { role_id: rolesFilters },
         showSearch: true,
+        filterValue: initialFilters?.role_id,
       },
     }),
     columnHelper.accessor('name', {
@@ -176,6 +200,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
       },
       meta: {
         filterOption: { tag_id: tagsFilters },
+        filterValue: initialFilters?.tag_id,
       },
     }),
     columnHelper.accessor('id', {
@@ -198,15 +223,33 @@ const VendorsTable: FC<VendorsTableProps> = ({
   if (hidden) return null
 
   return (
-    <DataTable
-      data={vendorsData}
-      columns={columns}
-      tableSize={TableSizeTypes.M}
-      paginationData={paginationData}
-      onPaginationChange={handlePaginationChange}
-      onFiltersChange={handleModifiedFilterChange}
-      onSortingChange={handleSortingChange}
-    />
+    <Root onSubmit={(e) => e.preventDefault()}>
+      <Loader loading={isLoading && isEmpty(vendors)} />
+      <DataTable
+        data={vendorsData}
+        columns={columns}
+        tableSize={TableSizeTypes.M}
+        paginationData={paginationData}
+        onPaginationChange={handlePaginationChange}
+        onFiltersChange={handleModifiedFilterChange}
+        onSortingChange={handleSortingChange}
+        defaultPaginationData={defaultPaginationData}
+        headComponent={
+          <div className={classNames(classes.topSection)}>
+            <TextInput
+              name={'search'}
+              ariaLabel={t('placeholder.search_by_name')}
+              placeholder={t('placeholder.search_by_name')}
+              value={searchValue}
+              onChange={handleSearchVendors}
+              className={classes.searchInput}
+              inputContainerClassName={classes.generalVendorsListInput}
+              isSearch
+            />
+          </div>
+        }
+      />
+    </Root>
   )
 }
 

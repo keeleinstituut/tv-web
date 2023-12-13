@@ -1,4 +1,4 @@
-import { PaginationFunctionType } from './collective'
+import { PaginationFunctionType, SortingFunctionType } from './collective'
 
 export enum TMType {
   Internal = 'private',
@@ -49,7 +49,8 @@ export type TranslationMemoryFilters = {
   name?: string
   type?: TMType | TMType[]
   tv_domain?: string | string[]
-} & PaginationFunctionType
+} & PaginationFunctionType &
+  SortingFunctionType
 
 export interface ImportTMXPayload {
   file: File

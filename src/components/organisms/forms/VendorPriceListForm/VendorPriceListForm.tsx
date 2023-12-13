@@ -15,6 +15,7 @@ import VendorPriceManagementButton from 'components/organisms/VendorPriceManagem
 import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButton/DeleteVendorPriceButton'
 
 import classes from './classes.module.scss'
+import { useSearchParams } from 'react-router-dom'
 
 export type FormValues = {
   [key in string]: {
@@ -83,17 +84,26 @@ const columnHelper = createColumnHelper<PriceObject>()
 
 const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
+  const [searchParams, _] = useSearchParams()
 
   const { skills: skillsData } = useFetchSkills()
   const { id: vendor_id } = vendor
+
+  const initialFilters = {
+    ...Object.fromEntries(searchParams.entries()),
+    vendor_id: vendor_id,
+  }
 
   const {
     prices: pricesData,
     paginationData,
     handlePaginationChange,
-  } = useAllPricesFetch({
-    vendor_id,
-  })
+  } = useAllPricesFetch(initialFilters, true)
+
+  const defaultPaginationData = {
+    per_page: Number(searchParams.get('per_page')),
+    page: Number(searchParams.get('page')) - 1,
+  }
 
   const priceListCreated = dayjs(
     pricesData ? pricesData[0]?.created_at : ''
@@ -360,6 +370,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               />
             </div>
           }
+          defaultPaginationData={defaultPaginationData}
         />
       </Root>
 

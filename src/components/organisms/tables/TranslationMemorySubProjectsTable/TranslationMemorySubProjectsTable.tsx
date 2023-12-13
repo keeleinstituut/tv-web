@@ -9,6 +9,7 @@ import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import classes from './classes.module.scss'
 import dayjs from 'dayjs'
 import { useFetchTranslationMemorySubProjects } from 'hooks/requests/useTranslationMemories'
+import { useSearchParams } from 'react-router-dom'
 
 type SubProjectTableRow = {
   id: string
@@ -27,10 +28,22 @@ const TranslationMemorySubProjectsTable: FC<TmSubProjectsTypes> = ({
   memoryId,
 }) => {
   const { t } = useTranslation()
+  const [searchParams, _] = useSearchParams()
+  const initialFilters = {
+    ...Object.fromEntries(searchParams.entries()),
+  }
+
   const { subProjects, paginationData, handlePaginationChange } =
     useFetchTranslationMemorySubProjects({
       id: memoryId,
+      initialFilters: initialFilters,
+      saveQueryParams: true,
     })
+
+  const defaultPaginationData = {
+    per_page: Number(searchParams.get('per_page')),
+    page: Number(searchParams.get('page')) - 1,
+  }
 
   const projectRows = useMemo(
     () =>
@@ -83,6 +96,7 @@ const TranslationMemorySubProjectsTable: FC<TmSubProjectsTypes> = ({
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
         className={classes.subProjectContainer}
+        defaultPaginationData={defaultPaginationData}
       />
     </Root>
   )

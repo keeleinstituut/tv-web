@@ -1,5 +1,5 @@
-import { FC } from 'react'
-import { Link } from 'react-router-dom'
+import { FC, useEffect, useRef } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { includes, size, map } from 'lodash'
 import { protectedRoutesForReactRouter } from 'router/router'
 import useBreadcrumbs from 'use-react-router-breadcrumbs'
@@ -9,10 +9,21 @@ import classes from './classes.module.scss'
 
 const Breadcrumbs: FC = () => {
   const breadcrumbs = useBreadcrumbs(protectedRoutesForReactRouter)
+  const place = useLocation()
+
+  const ref = useRef({})
+  useEffect(() => {
+    if (place.search) {
+      ref.current = {
+        ...ref.current,
+        ...{ [place.pathname]: place.search },
+      }
+    }
+  })
 
   return (
     <div className={classes.breadcrumbs}>
-      {map(breadcrumbs, ({ match, breadcrumb, location }, index) => {
+      {map(breadcrumbs, ({ match, breadcrumb, location }) => {
         const routePages = includes(match.pathname, '/settings') ? 3 : 2
         const showRoute =
           size(breadcrumbs) > routePages &&
@@ -23,7 +34,11 @@ const Breadcrumbs: FC = () => {
         return (
           <nav key={match.pathname} className={classes.nav}>
             <Link
-              to={match.pathname}
+              to={
+                ref.current.hasOwnProperty(match.pathname)
+                  ? match.pathname.concat((ref.current as any)[match.pathname])
+                  : match.pathname
+              }
               className={
                 match.pathname === location.pathname
                   ? classes.active
