@@ -151,7 +151,6 @@ const useKeycloak = () => {
     setIsLoading(false)
     setAccessToken()
     setIsUserLoggedIn(false)
-    keycloak.clearToken()
     keycloak.logout()
   }, [])
   // Setting this as a helper function, so we can use it as a callBack for modal

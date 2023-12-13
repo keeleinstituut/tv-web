@@ -80,7 +80,6 @@ const handleError = async (error?: AxiosError) => {
   if (code === 403) {
     // Attempt token refresh, log out if it fails
     startRefreshingToken(() => {
-      keycloak.clearToken()
       keycloak.logout({
         redirectUri: `${window.location.href}#show-error`,
       })

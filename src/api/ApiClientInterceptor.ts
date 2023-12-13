@@ -44,7 +44,6 @@ const interceptor = (error: ErrorInterface) => {
     if (response && response.status === 403) {
       // Attempt token refresh, log out if it fails
       startRefreshingToken(() => {
-        keycloak.clearToken()
         keycloak.logout({
           redirectUri: `${window.location.href}#show-error`,
         })
