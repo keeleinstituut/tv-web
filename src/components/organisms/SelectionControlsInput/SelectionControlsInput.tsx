@@ -58,6 +58,7 @@ export interface SelectionControlsInputProps {
   loading?: boolean
   onEndReached?: () => void
   hidden?: boolean
+  rules?: { required?: boolean }
 }
 
 const SelectionControlsInput = forwardRef<
@@ -81,10 +82,16 @@ const SelectionControlsInput = forwardRef<
     selectIcon,
     usePortal,
     hidden,
+    rules,
     ...rest
   },
   ref
 ) {
+  const isRequired = rules?.required
+  const optionsToUse = useMemo(
+    () => (isRequired ? options : [{ label: '', value: '' }, ...options]),
+    [isRequired, options]
+  )
   // TODO: hopefully we can get rid of usePortal completely and only use it inside modals and tables
   // Or possibly instead we should use it always, but would be good to get rid of this prop
   const { modalContentId } = useModalContext()
@@ -116,14 +123,14 @@ const SelectionControlsInput = forwardRef<
   }, [clickAwayInputRef, ...(wrapperRef?.current ? [wrapperRef] : [])])
 
   const selectedOptionObjects = filter(
-    options,
+    optionsToUse,
     (option) =>
       !!find(value, (singleValue) =>
         multiple ? singleValue === option?.value : value === option?.value
       )
   )
 
-  const singleValue: DropDownOptions | undefined = find(options, {
+  const singleValue: DropDownOptions | undefined = find(optionsToUse, {
     value,
   }) as unknown as DropDownOptions
 
@@ -143,7 +150,7 @@ const SelectionControlsInput = forwardRef<
   const dropdownProps = useMemo(
     () => ({
       name,
-      options,
+      options: optionsToUse,
       dropdownSize,
       disabled,
       isOpen,
@@ -154,15 +161,15 @@ const SelectionControlsInput = forwardRef<
       ...rest,
     }),
     [
-      rest,
-      disabled,
+      name,
+      optionsToUse,
       dropdownSize,
-      errorZIndex,
+      disabled,
       isOpen,
       multiple,
-      name,
-      options,
       value,
+      errorZIndex,
+      rest,
     ]
   )
 
