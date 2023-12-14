@@ -264,10 +264,13 @@ const TaskContent: FC<TaskContentProps> = ({
           <p className={classes.taskContent}>
             <span>{`${Number(volumes?.[0]?.unit_quantity)} ${t(
               `label.${apiTypeToKey(volumes?.[0]?.unit_type || '')}`
-            )}${volumes?.[0] ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+            )}${
+              volumes?.[0]?.cat_job ? ` ${t('task.open_in_cat')}` : ''
+            }`}</span>
             <BaseButton
               onClick={handleShowVolume}
               className={classes.volumeIcon}
+              hidden={!volumes?.[0]?.cat_job}
             >
               <Eye />
             </BaseButton>

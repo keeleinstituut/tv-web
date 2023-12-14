@@ -6,26 +6,8 @@ import { TabStyle } from 'components/molecules/Tab/Tab'
 import { useTranslation } from 'react-i18next'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
-import { ListTask, TasksPayloadType } from 'types/tasks'
-import {
-  FilterFunctionType,
-  PaginationFunctionType,
-  ResponseMetaTypes,
-  SortingFunctionType,
-} from 'types/collective'
 
 import classes from './classes.module.scss'
-
-export interface TasksTableProps {
-  tasks?: ListTask[]
-  filters?: object | TasksPayloadType
-  isLoading?: boolean
-  paginationData?: ResponseMetaTypes | undefined
-  handleFilterChange?: (value?: FilterFunctionType | undefined) => void
-  handleSortingChange?: (value?: SortingFunctionType | undefined) => void
-  handlePaginationChange?: (value?: PaginationFunctionType | undefined) => void
-  isHistoryTab?: boolean
-}
 
 const MyTasks: FC = () => {
   const { t } = useTranslation()
@@ -57,7 +39,7 @@ const MyTasks: FC = () => {
     paginationData: historyPaginationData,
     handleFilterChange: handleHistoryFilterChange,
     handleSortingChange: handleHistorySortingChange,
-    handlePaginationChange: handleHisoryPaginationChange,
+    handlePaginationChange: handleHistoryPaginationChange,
   } = useFetchHistoryTasks()
 
   const [activeTab, setActiveTab] = useState<string | undefined>(
@@ -96,7 +78,7 @@ const MyTasks: FC = () => {
           paginationData: historyPaginationData,
           handleFilterChange: handleHistoryFilterChange,
           handleSortingChange: handleHistorySortingChange,
-          handlePaginationChange: handleHisoryPaginationChange,
+          handlePaginationChange: handleHistoryPaginationChange,
           isHistoryTab: true,
         }
       default:
@@ -125,7 +107,7 @@ const MyTasks: FC = () => {
     historyPaginationData,
     handleHistoryFilterChange,
     handleHistorySortingChange,
-    handleHisoryPaginationChange,
+    handleHistoryPaginationChange,
   ])
 
   const taskTabs = map(
