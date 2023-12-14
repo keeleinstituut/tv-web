@@ -89,8 +89,9 @@ const SelectionControlsInput = forwardRef<
 ) {
   const isRequired = rules?.required
   const optionsToUse = useMemo(
-    () => (isRequired ? options : [{ label: '', value: '' }, ...options]),
-    [isRequired, options]
+    () =>
+      isRequired || multiple ? options : [{ label: '', value: '' }, ...options],
+    [isRequired, multiple, options]
   )
   // TODO: hopefully we can get rid of usePortal completely and only use it inside modals and tables
   // Or possibly instead we should use it always, but would be good to get rid of this prop
