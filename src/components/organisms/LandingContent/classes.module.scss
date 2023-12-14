@@ -54,15 +54,22 @@
       }
     }
 
-    h1 {
+    h1,
+    .text {
       text-align: end;
+    }
+
+    .text {
+      margin: spacing(11) 0 spacing(1.5) 0;
+      color: $color-primary;
     }
 
     @media (max-width: $small_desktop) {
       margin: 0;
-      align-items: center;
+      align-items: start;
 
-      h1 {
+      h1,
+      .text {
         text-align: start;
       }
       .buttonsContainer {
@@ -81,6 +88,10 @@
 }
 
 .logo {
-  width: 160px;
-  height: 120px;
+  width: 125px;
+  height: 72px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: spacing(8);
 }
