@@ -86,8 +86,8 @@ const UserForm: FC<UserFormProps> = ({
     formState: { isSubmitting, isDirty, isValid },
     setError,
   } = useForm<FormValues>({
-    mode: 'onTouched',
-    reValidateMode: 'onSubmit',
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
 
