@@ -61,7 +61,7 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
   mode,
 }) => {
   const { t } = useTranslation()
-  const { createEmptyTm } = useCreateEmptyTm({ subProjectId })
+  const { createEmptyTm, isLoading } = useCreateEmptyTm({ subProjectId })
 
   const addNewTm = () => {
     showModal(ModalTypes.AddTranslationMemories, {
@@ -89,6 +89,7 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
         appearance={AppearanceTypes.Secondary}
         size={SizeTypes.S}
         disabled={disabled}
+        loading={isLoading}
         onClick={createEmptyTranslationMemory}
         children={t('button.create_empty_tm')}
       />
