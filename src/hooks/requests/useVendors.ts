@@ -11,6 +11,7 @@ import {
   DeleteVendorsPayload,
   CreateVendorPayload,
   UpdatePricesPayload,
+  Vendor,
   SkillsData,
   PricesData,
   PayloadItem,
@@ -160,7 +161,7 @@ export const useDeleteVendors = (vendorFilters?: GetVendorsPayload) => {
   }
 }
 
-export const useFetchVendors = ({ id }: { id?: string }) => {
+export const useFetchVendor = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<VendorResponse>({
     enabled: !!id,
     queryKey: ['vendors', id],
@@ -171,6 +172,17 @@ export const useFetchVendors = ({ id }: { id?: string }) => {
     isError,
     vendor: data?.data,
   }
+}
+
+export const useVendorCache = (id?: string): Vendor | undefined => {
+  const queryClient = useQueryClient()
+  const vendorCache: { data: Vendor } | undefined = queryClient.getQueryData([
+    'vendors',
+    id,
+  ])
+  const vendor = vendorCache?.data
+
+  return vendor
 }
 
 export const useFetchSkills = () => {

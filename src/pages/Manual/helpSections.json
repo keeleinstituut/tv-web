@@ -43,5 +43,10 @@
     "title": "[Minu ülesanded] kohtspikker",
     "content": "<p>Minu ülesannete lehel kuvatakse kõiki sisseloginunud kasutajaga seotud ülesandeid. Võimalik on vaadata aktiivseid ülesandeid ja ka tehtud ülesannete ajalugu. Lisaks saab ülesandeid filtreerida keelesuuna ja tüübi järgi.</p>",
     "tooltipContent": "<p>Minu ülesannete lehel kuvatakse kõiki sisseloginunud kasutajaga seotud ülesandeid. Võimalik on vaadata aktiivseid ülesandeid ja ka tehtud ülesannete ajalugu. Lisaks saab ülesandeid filtreerida keelesuuna ja tüübi järgi.</p>"
+  },
+  "vendorTasks": {
+    "title": "[Ülesanded] kohtspikker",
+    "content": "<p>Siin kuvatakse selle kasutajaga seotud ülesandeid.</p>",
+    "tooltipContent": "<p>Siin kuvatakse selle kasutajaga seotud ülesandeid.</p>"
   }
 }
