@@ -57,7 +57,7 @@ const UserForm: FC<UserFormProps> = ({
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator } = useValidators()
   const { updateUser, isLoading } = useUpdateUser({ id })
-  const { existingRoles = [] } = useRolesFetch()
+  const { existingRoles = [] } = useRolesFetch({ disabled: isUserAccount })
   const { existingDepartments = [] } = useDepartmentsFetch()
 
   const defaultValues = useMemo(
@@ -106,7 +106,7 @@ const UserForm: FC<UserFormProps> = ({
   })
 
   const isFormDisabled =
-    !includes(userPrivileges, Privileges.EditUser) ||
+    (!includes(userPrivileges, Privileges.EditUser) && !isUserAccount) ||
     status === UserStatus.Archived
 
   // map data for rendering
