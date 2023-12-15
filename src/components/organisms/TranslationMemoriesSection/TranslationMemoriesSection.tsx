@@ -21,6 +21,7 @@ import Tag from 'components/atoms/Tag/Tag'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { showModal, ModalTypes, closeModal } from '../modals/ModalRoot'
 import {
+  useCreateEmptyTm,
   useFetchTmChunkAmounts,
   useFetchTranslationMemories,
   useToggleTmWritable,
@@ -60,6 +61,7 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
   mode,
 }) => {
   const { t } = useTranslation()
+  const { createEmptyTm, isLoading } = useCreateEmptyTm({ subProjectId })
 
   const addNewTm = () => {
     showModal(ModalTypes.AddTranslationMemories, {
@@ -68,6 +70,16 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
       projectDomain: projectDomain,
     })
   }
+  const createEmptyTranslationMemory = useCallback(() => {
+    showModal(ModalTypes.ConfirmationModal, {
+      handleProceed: () => {
+        createEmptyTm()
+        closeModal()
+      },
+      title: t('translation_memories.create_empty_confirmation_text'),
+      cancelButtonContent: t('button.cancel'),
+    })
+  }, [createEmptyTm, t])
 
   if (mode === ProjectDetailModes.View) return null
 
@@ -77,8 +89,8 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
         appearance={AppearanceTypes.Secondary}
         size={SizeTypes.S}
         disabled={disabled}
-        // TODO: empty TM creation endpoint missing currently
-        // onClick={createEmptyTm}
+        loading={isLoading}
+        onClick={createEmptyTranslationMemory}
         children={t('button.create_empty_tm')}
       />
       <Button
@@ -98,7 +110,7 @@ interface TranslationMemoriesSectionProps<TFormValues extends FieldValues> {
   isEditable?: boolean
   control?: Control<TFormValues>
   subProjectId?: string
-  SubProjectTmKeys?: SubProjectTmKeys[]
+  subProjectTmKeyObjectsArray?: SubProjectTmKeys[]
   subProjectLangPair?: string
   projectDomain?: ClassifierValue
   mode?: ProjectDetailModes
@@ -129,7 +141,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   isEditable,
   control,
   subProjectId,
-  SubProjectTmKeys,
+  subProjectTmKeyObjectsArray,
   subProjectLangPair,
   projectDomain,
   mode,
@@ -141,8 +153,8 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   const { translationMemories = [] } = useFetchTranslationMemories({
     disabled: isVendor,
   })
-  const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys()
-  const { toggleTmWritable } = useToggleTmWritable()
+  const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys({ subProjectId })
+  const { toggleTmWritable } = useToggleTmWritable({ subProjectId })
   const { tmChunkAmounts } = useFetchTmChunkAmounts({ disabled: isVendor })
   const { userInfo } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
@@ -153,7 +165,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
 
   const chunksToUse = isVendor ? cat_tm_keys_stats?.tag : tmChunkAmounts
 
-  const tmIds = map(SubProjectTmKeys, 'key')
+  const tmIds = map(subProjectTmKeyObjectsArray, 'key')
   const filteredData = filter(translationMemoriesToUse, ({ id }) =>
     includes(tmIds, id)
   )
@@ -165,16 +177,16 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           id: tm.id,
           language_direction: tm?.lang_pair,
           name: tm?.name,
-          main_write: find(SubProjectTmKeys, { key: tm.id })?.is_writable,
+          main_write: find(subProjectTmKeyObjectsArray, { key: tm.id })
+            ?.is_writable,
           chunk_amount: chunksToUse?.[tm.id] || 0,
           delete_button: tm?.id,
           institution_id: tm?.institution_id,
-          tm_key_id: find(SubProjectTmKeys, { key: tm.id })?.id,
+          tm_key_id: find(subProjectTmKeyObjectsArray, { key: tm.id })?.id,
           type: tm.type,
         }
       }),
-
-    [filteredData, SubProjectTmKeys, chunksToUse]
+    [filteredData, subProjectTmKeyObjectsArray, chunksToUse]
   )
 
   const handleDelete = useCallback(
@@ -183,7 +195,6 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
       const notDeletedTmsKeys = pull(array, id)
 
       const payload = {
-        sub_project_id: subProjectId || '',
         tm_keys: map(notDeletedTmsKeys, (key) => {
           return {
             key: key || '',
@@ -202,7 +213,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
         // error message comes from api errorHandles
       }
     },
-    [subProjectId, t, updateSubProjectTmKeys, tmIds]
+    [t, updateSubProjectTmKeys, tmIds]
   )
 
   const handleToggleTmWritable = useCallback(

@@ -697,6 +697,7 @@
     "confirmation_text": "Kas oled kindel, et soovid tõlkemälu muuta avalikuks?",
     "confirmation_help_text": "Kui otsustad määrata tõlkemälu kasutamise tüübiks 'Avalik' või 'Asutuse üleseks jagamiseks', siis seda mälu ja selles olevaid tõlkesegmente näevad ja saavad tõlkimisel kasutad ka asutusevälised kasutajad.",
     "delete_confirmation_text": "Kas oled kindel, et soovid tõlkemälu kustutada?",
+    "create_empty_confirmation_text": "Kas oled kindel, et soovid luua tühja tõlkemälu?",
     "status": {
       "private": "Asutuse sisene",
       "shared": "Asutustega jagamiseks",
