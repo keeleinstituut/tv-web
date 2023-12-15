@@ -50,14 +50,14 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
   const tableRows = useMemo(
     () =>
       map(candidates, ({ vendor, price, status }) => {
-        const { institution_user } = vendor
+        const { institution_user } = vendor || {}
         const name = `${institution_user?.user?.forename} ${institution_user?.user?.surname}`
 
         return {
           name,
           status,
           price,
-          delete_button: vendor.id,
+          delete_button: vendor?.id,
         }
       }),
     [candidates]
@@ -101,7 +101,10 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
               const isEnabled = row.original.status === CandidateStatus.New
               return (
                 <BaseButton
-                  className={classes.iconButton}
+                  className={classNames(
+                    classes.iconButton,
+                    !isEnabled && classes.disabledIcon
+                  )}
                   hidden={
                     job_definition.job_key === SubProjectFeatures.JobOverview
                   }

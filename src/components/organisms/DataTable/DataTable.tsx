@@ -125,6 +125,7 @@ const DataTable = <TData,>(
         pageSize: paginationData ? paginationData.per_page : 10,
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current_page])
 
   useEffect(() => {

@@ -13,19 +13,19 @@ import { useDeletePrices } from 'hooks/requests/useVendors'
 import classes from './classes.module.scss'
 
 export type DeleteVendorPriceButtonProps = {
-  vendorId?: string
+  vendor_id?: string
   languagePairIds: string[]
 }
 
 const DeleteVendorPriceButton: FC<DeleteVendorPriceButtonProps> = ({
-  vendorId,
+  vendor_id,
   languagePairIds,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
   const { deletePrices, isLoading: isDeletingPrices } =
-    useDeletePrices(vendorId)
+    useDeletePrices(vendor_id)
 
   const onDeletePrices = useCallback(async () => {
     const payload = {

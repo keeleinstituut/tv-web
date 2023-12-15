@@ -18,7 +18,7 @@ const TranslationMemoryPage: FC = () => {
   const { translationMemory, isLoading } = useFetchTranslationMemory({
     id: memoryId,
   })
-  const { tmChunkAmounts } = useFetchTmChunkAmounts()
+  const { tmChunkAmounts } = useFetchTmChunkAmounts({})
 
   const isTmOwnedByUserInstitution =
     selectedInstitution?.id === translationMemory?.institution_id

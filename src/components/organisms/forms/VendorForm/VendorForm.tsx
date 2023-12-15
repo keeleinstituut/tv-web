@@ -153,12 +153,9 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       ariaLabel: t('label.company_name'),
       placeholder: t('placeholder.write_here'),
       disabled: isEditDisabled,
-      label: `${t('label.company_name')}`,
+      label: t('label.company_name'),
       name: 'company_name',
       className: classes.inputInternalPosition,
-      rules: {
-        required: true,
-      },
     },
     {
       inputType: InputTypes.Selections,
@@ -200,7 +197,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       const payload: UpdateVendorPayload = {
         tags: (isEmpty(tags) ? [] : tags) as string[],
         company_name: company_name ?? '',
-        comment: comment ?? '',
+        comment: comment || '-',
         ...discounts,
       }
 
@@ -232,7 +229,6 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
 
   return (
     <>
-      <h1 className={classes.title}>{defaultValues.name}</h1>
       <div className={classes.container}>
         <div className={classes.formContainer}>
           <DynamicForm

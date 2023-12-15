@@ -18,6 +18,7 @@ interface SharedProps {
   loading?: boolean
   disabled?: boolean
   className?: string
+  loaderClass?: string
 }
 
 export type BaseButtonProps = SharedProps &
@@ -41,6 +42,7 @@ const BaseButton = forwardRef<HTMLButtonElement, BaseButtonProps>(
       loading,
       hidden,
       type = 'button',
+      loaderClass,
       ...rest
     } = props
 
@@ -67,7 +69,11 @@ const BaseButton = forwardRef<HTMLButtonElement, BaseButtonProps>(
           tabIndex={0}
           className={className}
         >
-          {loading ? <Loader loading={loading} /> : children}
+          {loading ? (
+            <Loader loading={loading} className={loaderClass} />
+          ) : (
+            children
+          )}
         </Link>
       )
     }
@@ -82,7 +88,11 @@ const BaseButton = forwardRef<HTMLButtonElement, BaseButtonProps>(
         onClick={onClickHandler}
         ref={ref}
       >
-        {loading ? <Loader loading={loading} /> : children}
+        {loading ? (
+          <Loader loading={loading} className={loaderClass} />
+        ) : (
+          children
+        )}
       </button>
     )
   }

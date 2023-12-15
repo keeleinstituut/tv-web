@@ -1,9 +1,9 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { debounce, isEmpty, map, split } from 'lodash'
+import { debounce, initial, isEmpty, map, split } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
@@ -12,7 +12,7 @@ import {
   ResponseMetaTypes,
   PaginationFunctionType,
 } from 'types/collective'
-import { Price } from 'types/price'
+import { GetPricesPayload, Price } from 'types/price'
 import { Root } from '@radix-ui/react-form'
 import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
@@ -22,16 +22,11 @@ import TextInput from 'components/molecules/TextInput/TextInput'
 import classNames from 'classnames'
 import Loader from 'components/atoms/Loader/Loader'
 import { useSearchParams } from 'react-router-dom'
+import { init } from 'i18next'
 
-interface GeneralPriceListTableProps {
-  data?: Price[]
-  paginationData?: ResponseMetaTypes
+type GeneralPriceListTableProps = {
   hidden?: boolean
-  handleFilterChange?: (value?: FilterFunctionType) => void
-  handleSortingChange?: (value?: SortingFunctionType) => void
-  handlePaginationChange?: (value?: PaginationFunctionType) => void
 }
-
 interface PricesTableRow {
   languageDirection: string
   name: string
@@ -49,8 +44,12 @@ const columnHelper = createColumnHelper<PricesTableRow>()
 const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
   const { t } = useTranslation()
   const { skillsFilters = [] } = useFetchSkills()
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
 
   const [searchParams, _] = useSearchParams()
   const initialFilters = {
@@ -65,16 +64,25 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useAllPricesFetch(initialFilters, true)
+    filters,
+  } = useAllPricesFetch({
+    initialFilters: initialFilters as GetPricesPayload,
+    saveQueryParams: true,
+  })
 
-  const [searchValue, setSearchValue] = useState<string>(
-    searchParams.get('institution_user_name') || ''
-  )
+  useEffect(() => {
+    setSelectedValues(filters?.lang_pair || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.lang_pair])
 
   const defaultPaginationData = {
-    per_page: Number(searchParams.get('per_page')),
-    page: Number(searchParams.get('page')) - 1,
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
   }
+
+  const [searchValue, setSearchValue] = useState<string>(
+    filters?.institution_user_name || ''
+  )
 
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
@@ -163,6 +171,11 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
+        filterValue: filters?.lang_pair
+          ? filters.lang_pair.map((item) =>
+              item?.src && item?.dst ? item.src.concat('_', item?.dst) : ''
+            )
+          : [],
       },
     }),
     columnHelper.accessor('skill', {
@@ -171,7 +184,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         filterOption: { skill_id: skillsFilters },
         showSearch: true,
-        filterValue: initialFilters?.skill_id,
+        filterValue: filters?.skill_id || [],
       },
       size: 200,
     }),
@@ -187,9 +200,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          searchParams.get('sort_by') == 'character_fee'
-            ? searchParams.get('sort_order')
-            : '',
+          filters?.sort_by == 'character_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('word_fee', {
@@ -199,9 +210,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          searchParams.get('sort_by') == 'word_fee'
-            ? searchParams.get('sort_order')
-            : '',
+          filters?.sort_by == 'word_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('page_fee', {
@@ -211,9 +220,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          searchParams.get('sort_by') == 'page_fee'
-            ? searchParams.get('sort_order')
-            : '',
+          filters?.sort_by == 'page_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('minute_fee', {
@@ -223,9 +230,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          searchParams.get('sort_by') == 'minute_fee'
-            ? searchParams.get('sort_order')
-            : '',
+          filters?.sort_by == 'minute_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('hour_fee', {
@@ -235,9 +240,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          searchParams.get('sort_by') == 'hour_fee'
-            ? searchParams.get('sort_order')
-            : '',
+          filters?.sort_by == 'hour_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('minimal_fee', {
@@ -247,9 +250,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          searchParams.get('sort_by') == 'minimal_fee'
-            ? searchParams.get('sort_order')
-            : '',
+          filters?.sort_by == 'minimal_fee' ? filters.sort_order : '',
       },
     }),
   ] as ColumnDef<PricesTableRow>[]

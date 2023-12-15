@@ -58,7 +58,10 @@ class ApiClient {
   }
 
   request = async (
-    config: AxiosRequestConfigWithRetries & { retries?: number }
+    config: AxiosRequestConfigWithRetries & {
+      retries?: number
+      hideError?: boolean
+    }
   ) => {
     // this.debug(
     //   `API Request #${this.count} to ${this.baseURL}${config.url}`,

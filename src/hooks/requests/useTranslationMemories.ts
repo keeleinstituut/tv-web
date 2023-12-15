@@ -19,14 +19,21 @@ import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
 import { map, flatten, join, omit, pick } from 'lodash'
 import { SubProjectsResponse } from 'types/projects'
+import { useCallback } from 'react'
+import useWaitForLoading from 'hooks/useWaitForLoading'
 import { PaginationFunctionType } from 'types/collective'
 
 dayjs.extend(customParseFormat)
 
-export const useFetchTranslationMemories = (
-  initialFilters?: TranslationMemoryFilters,
+export const useFetchTranslationMemories = ({
+  initialFilters,
+  disabled,
+  saveQueryParams,
+}: {
+  initialFilters?: TranslationMemoryFilters
+  disabled?: boolean
   saveQueryParams?: boolean
-) => {
+}) => {
   const {
     filters,
     handleFilterChange,
@@ -45,6 +52,7 @@ export const useFetchTranslationMemories = (
   )
   const { isLoading, isError, isFetching, data } =
     useQuery<TranslationMemoryDataType>({
+      enabled: !disabled,
       queryKey: ['translationMemories', filters],
       queryFn: () =>
         apiClient.get(
@@ -65,10 +73,10 @@ export const useFetchTranslationMemories = (
     isError,
     translationMemories,
     isFetching,
+    filters: filters as TranslationMemoryFilters,
     // paginationData,
     handleFilterChange,
     // handlePaginationChange,
-    filters,
   }
 }
 
@@ -87,9 +95,13 @@ export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
     isFetching,
   }
 }
-
-export const useFetchTmChunkAmounts = () => {
+export const useFetchTmChunkAmounts = ({
+  disabled,
+}: {
+  disabled?: boolean
+}) => {
   const { data } = useQuery<TmStatsType>({
+    enabled: !disabled,
     queryKey: ['translationMemories-stats'],
     queryFn: () => apiClient.get(endpoints.TM_STATS),
   })
@@ -207,10 +219,17 @@ export const useImportTMX = () => {
 }
 
 export const useExportTMX = () => {
-  const { mutateAsync: exportTMX, isLoading } = useMutation({
+  const { isLoading, finishLoading, startLoading, waitForLoadingToFinish } =
+    useWaitForLoading()
+
+  const { mutateAsync: attemptFileDownload } = useMutation({
     mutationKey: ['tmx'],
-    mutationFn: async (payload: ExportTMXPayload) =>
-      apiClient.post(endpoints.EXPORT_TMX, payload, { responseType: 'blob' }),
+    mutationFn: async (task_id?: string) =>
+      apiClient.get(
+        `${endpoints.EXPORT_TMX}/file/${task_id}`,
+        {},
+        { responseType: 'blob', hideError: true }
+      ),
     onSuccess: (data) => {
       downloadFile({
         data,
@@ -218,9 +237,41 @@ export const useExportTMX = () => {
       })
     },
   })
+
+  const startFileDownloadPolling = useCallback(
+    async (job_id?: string) => {
+      if (!job_id) return null
+      try {
+        await attemptFileDownload(job_id)
+        finishLoading()
+      } catch (error) {
+        setTimeout(() => startFileDownloadPolling(job_id), 1000)
+      }
+    },
+    [attemptFileDownload, finishLoading]
+  )
+
+  const { mutateAsync: exportTMX } = useMutation({
+    mutationKey: ['tmx'],
+    mutationFn: async (payload: ExportTMXPayload) =>
+      apiClient.post(endpoints.EXPORT_TMX, payload),
+    onSuccess: ({ job_id }: { job_id?: string }) => {
+      startFileDownloadPolling(job_id)
+    },
+  })
+
+  const exportFunction = useCallback(
+    async (payload: ExportTMXPayload) => {
+      startLoading()
+      await exportTMX(payload)
+      await waitForLoadingToFinish()
+    },
+    [exportTMX, startLoading, waitForLoadingToFinish]
+  )
+
   return {
     isLoading,
-    exportTMX,
+    exportTMX: exportFunction,
   }
 }
 
@@ -257,10 +308,16 @@ export const useFetchTranslationMemorySubProjects = ({
   }
 }
 
-export const useFetchSubProjectTmKeys = ({ id }: { id?: string }) => {
+export const useFetchSubProjectTmKeys = ({
+  id,
+  disabled,
+}: {
+  id?: string
+  disabled?: boolean
+}) => {
   const { isLoading, isError, isFetching, data } =
     useQuery<SubProjectTmKeysResponse>({
-      enabled: !!id,
+      enabled: !!id && !disabled,
       queryKey: ['subProject-tm-keys', id],
       queryFn: () => apiClient.get(`${endpoints.TM_KEYS}/${id}`),
     })

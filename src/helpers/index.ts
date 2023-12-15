@@ -1,22 +1,22 @@
 import dayjs from 'dayjs'
 import {
-  omit,
+  compact,
+  flatMap,
+  includes,
+  join,
+  keys,
   map,
+  omit,
+  pickBy,
+  reduce,
+  replace,
   split,
   trim,
-  reduce,
-  values,
-  join,
-  compact,
-  replace,
-  includes,
-  pickBy,
-  keys,
-  flatMap,
   uniqBy,
+  values,
 } from 'lodash'
 import { FullRouteObject } from 'router/router'
-import { PrivilegeKey, PrivilegeType, Privileges } from 'types/privileges'
+import { PrivilegeKey, Privileges, PrivilegeType } from 'types/privileges'
 
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
@@ -259,6 +259,20 @@ export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
     'key'
   )
   return allNewPrivileges
+}
+
+export const parseLanguagePairs = (searchParams: URLSearchParams) => {
+  const langPairs = []
+  for (const [key, value] of Array.from(searchParams)) {
+    if (key.startsWith('lang_pair[')) {
+      langPairs.push(value)
+    }
+  }
+  const formattedLangPairs = []
+  for (let i = 0; i < langPairs.length; i += 2) {
+    formattedLangPairs.push({ src: langPairs[i], dst: langPairs[i + 1] })
+  }
+  return formattedLangPairs
 }
 
 export const formatLanguagePairs = (lang_pairs: LanguagePairType[]) => {

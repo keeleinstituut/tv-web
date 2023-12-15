@@ -13,10 +13,10 @@ import { useCreateProject, useUpdateProject } from 'hooks/requests/useProjects'
 import { join, map, includes, isEmpty, pick, keys, compact, find } from 'lodash'
 import { getUtcDateStringFromLocalDateObject } from 'helpers'
 import {
-  ProjectDetail,
   NewProjectPayload,
   SourceFile,
   ProjectStatus,
+  ProjectDetail,
 } from 'types/projects'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
@@ -27,17 +27,18 @@ import { ValidationError } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import { Privileges } from 'types/privileges'
-
-import classes from './classes.module.scss'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { getProjectDefaultValues, mapFilesForApi } from 'helpers/project'
 import { HelperFileTypes } from 'types/classifierValues'
 import { useHandleBulkFiles } from 'hooks/requests/useFiles'
 
+import classes from './classes.module.scss'
+
 export enum ProjectDetailModes {
   New = 'new',
   Editable = 'editable',
+  View = 'view',
 }
 
 interface FormButtonsProps {
@@ -114,7 +115,6 @@ interface FormValues {
   help_file_types: HelperFileTypes[]
   translation_domain_classifier_value_id: string
   event_start_at?: { date?: string; time?: string }
-  // TODO: Not sure about the structure of following
   comments?: string
   ext_id?: string
   tags?: string[]
@@ -123,9 +123,14 @@ interface FormValues {
 interface ProjectDetailsProps {
   mode?: ProjectDetailModes
   project?: ProjectDetail
+  className?: string
 }
 
-const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
+const ProjectDetails: FC<ProjectDetailsProps> = ({
+  mode,
+  project,
+  className,
+}) => {
   const {
     workflow_started,
     id,
@@ -149,13 +154,18 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
     updateBulkFiles,
     isAddLoading,
     isDeleteLoading,
+    isUpdateLoading,
   } = useHandleBulkFiles({
     reference_object_id: project?.id ?? '',
     reference_object_type: 'project',
   })
 
   const isSubmitLoading =
-    isAddLoading || isDeleteLoading || isUpdatingProject || isLoading
+    isAddLoading ||
+    isDeleteLoading ||
+    isUpdatingProject ||
+    isLoading ||
+    isUpdateLoading
 
   const navigate = useNavigate()
   const isNew = mode === ProjectDetailModes.New
@@ -260,9 +270,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
     reset(defaultValues)
   }, [reset, defaultValues])
 
-  // TODO: If BE starts sending the full project object as a response to updateProject
-  // Then we can delete this useEffect
-  // If not, then we should always fetch the project again after update and use this hooks to reset the form
   useEffect(() => {
     reset(defaultValues)
     // Only run when defaultValues change
@@ -294,10 +301,9 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
         if (!isEmpty(deletedFiles)) {
           await deleteBulkFiles(deletedFiles)
         }
-        // TODO: BE currently doesn't support updating
-        // if (!isEmpty(updatedFiles)) {
-        //   await updateBulkFiles(updatedFiles)
-        // }
+        if (!isEmpty(updatedFiles)) {
+          await updateBulkFiles(updatedFiles)
+        }
         if (!isEmpty(actualPayload)) {
           await updateProject(actualPayload)
         }
@@ -307,16 +313,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
           content: t('success.project_updated'),
         })
         setIsEditEnabled(false)
-        // TODO: If BE starts sending the full project object as a response to updateProject
-        // Then this will reset the form with the correct values
-        // If not, this should be removed and the useEffect hook above should be used together with refetching the project
-        // reset(
-        //   getProjectDefaultValues({
-        //     institutionUserId,
-        //     isNew: false,
-        //     project: updatedProject,
-        //   })
-        // )
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         mapProjectValidationErrors(typedErrorData)
@@ -326,10 +322,11 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
       dirtyFields,
       help_files,
       source_files,
-      updateProject,
       t,
       addBulkFiles,
       deleteBulkFiles,
+      updateBulkFiles,
+      updateProject,
       mapProjectValidationErrors,
     ]
   )
@@ -344,7 +341,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
       ext_id,
       ...rest
     }) => {
-      // TODO: need to go over all of this once it's clear what can be updated and how
       const deadline_at = getUtcDateStringFromLocalDateObject(deadlineObject)
       const event_start_at =
         startObject?.date || startObject?.time
@@ -404,6 +400,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
           {t('projects.project_details_expandable')}
         </h2>
       }
+      className={className}
     >
       <Root
         className={classNames(
@@ -442,7 +439,9 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({ mode, project }) => {
           />
           <FormButtons
             {...formButtonsProps}
-            hidden={isNew || !isSomethingEditable}
+            hidden={
+              isNew || !isSomethingEditable || mode === ProjectDetailModes.View
+            }
           />
         </Container>
         <FormButtons

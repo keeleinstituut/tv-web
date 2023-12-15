@@ -129,8 +129,8 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
     handleSortingChange,
     handlePaginationChange,
     isLoading: isLoadingPrices,
-  } = useAllPricesFetch(
-    {
+  } = useAllPricesFetch({
+    initialFilters: {
       lang_pair: [
         {
           src: source_language_classifier_value_id,
@@ -139,8 +139,8 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
       ],
       ...(skill_id ? { skill_id: [skill_id] } : {}),
     },
-    false
-  )
+    saveQueryParams: false,
+  })
 
   const {
     control,

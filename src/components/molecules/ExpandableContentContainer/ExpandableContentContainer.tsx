@@ -19,6 +19,7 @@ interface ExpandableContentContainerProps {
   onExpandedChange?: (isExpanded: boolean) => void
   id?: string
   initialIsExpanded?: boolean
+  isExpandedDisabled?: boolean
 }
 
 const ExpandableContentContainer: FC<
@@ -35,6 +36,7 @@ const ExpandableContentContainer: FC<
   isExpanded = false,
   initialIsExpanded = false,
   onExpandedChange,
+  isExpandedDisabled,
   id,
 }) => {
   const [isExpandedLocal, setIsExpanded] = useState(initialIsExpanded)
@@ -42,11 +44,15 @@ const ExpandableContentContainer: FC<
   const showAsExpanded = isExpanded || isExpandedLocal
 
   const toggleIsExpanded = useCallback(() => {
-    setIsExpanded(!showAsExpanded)
-    if (onExpandedChange) {
-      onExpandedChange(!showAsExpanded)
+    if (isExpandedDisabled) {
+      setIsExpanded(false)
+    } else {
+      setIsExpanded(!showAsExpanded)
+      if (onExpandedChange) {
+        onExpandedChange(!showAsExpanded)
+      }
     }
-  }, [showAsExpanded, onExpandedChange])
+  }, [isExpandedDisabled, showAsExpanded, onExpandedChange])
 
   const isContentVisible = showAsExpanded || contentAlwaysVisible
 

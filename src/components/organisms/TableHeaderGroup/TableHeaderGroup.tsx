@@ -42,6 +42,7 @@ type ColumnMeta = {
     onEndReached?: () => void
     onSearch?: (value: string) => void
     showSearch?: boolean
+    isCustomSingleDropdown?: boolean
     currentSorting?: SortingFunctionType['sort_order']
   }
 }
@@ -71,6 +72,7 @@ const HeaderItem = <TData,>({
   const onEndReached = meta?.onEndReached
   const onSearch = meta?.onSearch
   const showSearch = meta?.showSearch
+  const isCustomSingleDropdown = meta?.isCustomSingleDropdown
 
   const options = values(filterOption)[0] || []
   const sortingOption = meta?.sortingOption || []
@@ -138,7 +140,7 @@ const HeaderItem = <TData,>({
         onChange={handleOnFiltering}
         icon={FilterIcon}
         value={filterValue}
-        multiple
+        isCustomSingleDropdown={isCustomSingleDropdown}
         buttons
         ariaLabel={t('button.filter')}
         onEndReached={onEndReached}

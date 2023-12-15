@@ -1,38 +1,72 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { map, find, filter } from 'lodash'
+import { map, find, filter, isArray, isEmpty } from 'lodash'
 import {
+  AssigneeCommentPayload,
   AssignmentPayload,
+  AssignmentStatus,
   AssignmentType,
   CompleteAssignmentPayload,
 } from 'types/assignments'
-import { SplitProjectPayload, SubProjectResponse } from 'types/projects'
+import {
+  ProjectsResponse,
+  SplitProjectPayload,
+  SubProjectDetail,
+  SubProjectResponse,
+} from 'types/projects'
 
 const getNewSubProjectWithAssignment = (
-  assignment: AssignmentType,
+  assignments: AssignmentType | AssignmentType[],
   oldData?: SubProjectResponse
 ) => {
   const { data: previousData } = oldData || {}
   if (!previousData) return oldData
+  const allModifiedAssignments = isArray(assignments)
+    ? assignments
+    : [assignments]
 
-  const existingAssignment = find(previousData.assignments, {
-    id: assignment.id,
-  })
+  const allNewAssignment =
+    filter(
+      allModifiedAssignments,
+      ({ id }) => !find(previousData.assignments, { id })
+    ) || []
 
-  const newAssignments = existingAssignment
-    ? map(previousData.assignments, (item) => {
-        if (item.id === assignment.id) {
-          return assignment
-        }
-        return item
+  const modifiedAssignmentsList = map(
+    previousData.assignments,
+    (assignment) => {
+      const modifiedAssignment = find(allModifiedAssignments, {
+        id: assignment.id,
       })
-    : [...previousData.assignments, assignment]
+      if (!modifiedAssignment) {
+        return assignment
+      }
+      return {
+        ...assignment,
+        ...modifiedAssignment,
+      }
+    }
+  )
+
+  const newAssignmentsList = [...modifiedAssignmentsList, ...allNewAssignment]
+
+  const active_job_definition = isEmpty(modifiedAssignmentsList)
+    ? undefined
+    : allModifiedAssignments[0]?.subProject?.active_job_definition
 
   const newData = {
     ...previousData,
-    ...(assignment?.subProject || {}),
-    assignments: newAssignments,
+    ...(allModifiedAssignments?.[0]?.subProject || {}),
+    assignments: active_job_definition
+      ? map(newAssignmentsList, (assignment) => {
+          if (assignment?.job_definition?.id !== active_job_definition?.id)
+            return assignment
+          return {
+            ...assignment,
+            status: AssignmentStatus.InProgress,
+          }
+        })
+      : newAssignmentsList,
   }
   return { data: newData }
 }
@@ -127,6 +161,19 @@ export const useAssignmentUpdate = ({ id }: { id?: string }) => {
   }
 }
 
+export const useAssignmentCommentUpdate = ({ id }: { id?: string }) => {
+  const { mutateAsync: updateAssigneeComment, isLoading } = useMutation({
+    mutationKey: ['assignments', id],
+    mutationFn: (payload: AssigneeCommentPayload) =>
+      apiClient.put(`${endpoints.ASSIGNMENTS}/${id}/assignee-comment`, payload),
+  })
+
+  return {
+    updateAssigneeComment,
+    isLoading,
+  }
+}
+
 export const useSplitAssignment = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: splitAssignment, isLoading } = useMutation({
@@ -166,8 +213,8 @@ export const useLinkCatToolJobs = () => {
       apiClient.post(endpoints.LINK_CAT_TOOL_JOBS, {
         ...payload,
       }),
-    onSuccess: ({ data }: { data: AssignmentType }) => {
-      const { sub_project_id } = data
+    onSuccess: ({ data }: { data: AssignmentType[] }) => {
+      const { sub_project_id } = data?.[0] || {}
       queryClient.setQueryData(
         ['subprojects', sub_project_id],
         (oldData?: SubProjectResponse) =>
@@ -217,16 +264,47 @@ export const useCompleteAssignment = ({ id }: { id?: string }) => {
         payload
       ),
     onSuccess: ({ data }: { data: AssignmentType }) => {
+      // TODO: might need to still do the refetch, since the next assignment won't be "IN_PROGRESS" otherwise
       const { sub_project_id } = data
       queryClient.setQueryData(
         ['subprojects', sub_project_id],
         (oldData?: SubProjectResponse) =>
           getNewSubProjectWithAssignment(data, oldData)
       )
+      const changesToProject = data?.subProject?.project
+      if (changesToProject) {
+        // Only storing new status right now, to avoid issues, where some fields can have some missing details in this response
+        queryClient.setQueryData(
+          ['projects', changesToProject.id],
+          (oldData?: ProjectsResponse) => {
+            const { data: previousData } = oldData || {}
+
+            if (!previousData) return oldData
+            const newData = { ...previousData, status: changesToProject.status }
+            return { data: newData }
+          }
+        )
+      }
     },
   })
   return {
     completeAssignment,
     isLoading,
   }
+}
+
+export const useAssignmentCache = ({
+  id,
+  sub_project_id,
+}: {
+  id: string
+  sub_project_id: string
+}) => {
+  const queryClient = useQueryClient()
+  const subProjectCache: { data: SubProjectDetail } | undefined =
+    queryClient.getQueryData(['subprojects', sub_project_id])
+  const subProject = subProjectCache?.data
+  const assignment = find(subProject?.assignments, { id })
+
+  return assignment
 }

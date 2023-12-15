@@ -18,6 +18,7 @@ import useFilters from 'hooks/useFilters'
 import { flatMap, last } from 'lodash'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { useEffect } from 'react'
 
 dayjs.extend(customParseFormat)
 
@@ -33,16 +34,23 @@ export const useFetchUsers = (
     handlePaginationChange,
   } = useFilters<UserPayloadType>(initialFilters, saveQueryParams)
 
-  const { isLoading, isError, isFetching, data } = useQuery<UsersDataType>({
-    queryKey: [useTranslationService ? 'translationUsers' : 'users', filters],
-    queryFn: () =>
-      apiClient.get(
-        useTranslationService ? endpoints.TRANSLATION_USERS : endpoints.USERS,
-        filters
-      ),
-    keepPreviousData: true,
-  })
+  const { isLoading, isError, isFetching, data, refetch } =
+    useQuery<UsersDataType>({
+      queryKey: [useTranslationService ? 'translationUsers' : 'users'],
+      queryFn: () =>
+        apiClient.get(
+          useTranslationService ? endpoints.TRANSLATION_USERS : endpoints.USERS,
+          filters
+        ),
+      keepPreviousData: true,
+      enabled: false,
+    })
   const { meta: paginationData, data: users } = data || {}
+
+  useEffect(() => {
+    refetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters])
 
   return {
     isLoading,

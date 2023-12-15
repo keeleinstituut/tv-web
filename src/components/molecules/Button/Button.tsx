@@ -74,6 +74,7 @@ const Button: FC<PropsWithChildren<ButtonProps>> = ({
         className
       )}
       disabled={disabled}
+      loaderClass={classes.loader}
       {...rest}
     >
       <span className={classes.buttonText}>{children}</span>

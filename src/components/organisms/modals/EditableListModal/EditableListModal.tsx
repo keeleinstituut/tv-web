@@ -111,7 +111,7 @@ const EditableListModal: FC<EditableListModalProps> = ({
     setValue,
     formState: { isSubmitting, isValid, isDirty, dirtyFields },
   } = useForm<FormValues>({
-    reValidateMode: 'onChange',
+    mode: 'onChange',
     defaultValues: defaultValues,
     resetOptions: {
       keepErrors: true,

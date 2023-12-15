@@ -12,6 +12,7 @@ import {
 import { AssignmentType } from './assignments'
 import { UserType } from './users'
 import { Tag } from './tags'
+import { SubProjectTmKeys } from './translationMemories'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -78,7 +79,7 @@ export interface ProjectTypeConfig {
   job_definitions: JobDefinition[]
 }
 
-interface TypeClassifierValue extends ClassifierValue {
+export interface TypeClassifierValue extends ClassifierValue {
   type: ClassifierValueType.ProjectType
   project_type_config: ProjectTypeConfig
 }
@@ -100,10 +101,12 @@ export interface SourceFile {
   updated_at: string
   original_url: string
   preview_url: string
+  is_project_final_file?: boolean
   // Type not clear yet:
   manipulations: string[]
   custom_properties: {
-    type: HelperFileTypes
+    type?: HelperFileTypes
+    institution_user_id?: string
   }
   generated_conversions: string[]
   responsive_images: string[]
@@ -150,13 +153,15 @@ export interface ListSubProjectDetail {
   destination_language_classifier_value_id: string
   created_at: string
   updated_at: string
-  project: ListProject
+  project: ProjectDetail
   status?: SubProjectStatus
+  cat_tm_keys?: SubProjectTmKeys[]
   deadline_at: string
   price?: string
   translation_domain_classifier_value?: ClassifierValue
   event_start_at?: string
   active_job_definition?: JobDefinition
+  cat_jobs: CatJob[]
 }
 
 export interface SubProjectDetail extends ListSubProjectDetail {
@@ -164,7 +169,6 @@ export interface SubProjectDetail extends ListSubProjectDetail {
   cat_project_created: string
   cat_features: SubProjectFeatures[]
   job_definitions: JobDefinition[]
-  cat_jobs: CatJob[]
   cat_analyzis: CatAnalysis[]
   cat_files: SourceFile[]
   final_files: SourceFile[]
@@ -192,7 +196,7 @@ export interface ListProject {
   reference_number: string
   institution_id: string
   type_classifier_value_id: string
-  type_classifier_value?: TypeClassifierValue
+  type_classifier_value: TypeClassifierValue
   comments: string
   workflow_template_id: WorkflowTemplateID
   workflow_instance_ref: string | null
@@ -203,14 +207,12 @@ export interface ListProject {
   status: ProjectStatus
   tags: Tag[]
   price: string
-  event_start_at?: string
-}
-
-export interface ProjectDetail extends ListProject {
   help_files: SourceFile[] // might be different type
   source_files: SourceFile[]
   client_institution_user: UserType
-  manager_institution_user?: UserType
+  manager_institution_user: UserType
+}
+export interface ProjectDetail extends ListProject {
   translation_domain_classifier_value: ClassifierValue
   event_start_at?: string
   workflow_started?: boolean
@@ -226,14 +228,17 @@ export type ProjectsPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
     only_show_personal_projects?: number
+    language_directions?: string[]
     statuses?: string[]
+    tag_ids?: string[]
   }
 
 export type SubProjectsPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     ext_id?: string
     only_show_personal_projects?: number
-    statuses?: string[]
+    status?: string[]
+    language_direction?: string[]
   }
 
 export interface ProjectsResponse {
@@ -302,11 +307,13 @@ export interface CancelProjectPayload {
   reason: string
   comments?: string
 }
+
+export interface SendFinalFilesPayload {
+  final_file_id: string[]
+}
 export interface PotentialFilePayload {
   collection?: string
   type?: string
   file?: File | SourceFile
-  custom_properties?: {
-    type: HelperFileTypes
-  }
+  help_file_type?: HelperFileTypes
 }

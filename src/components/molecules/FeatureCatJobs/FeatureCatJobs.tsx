@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { map, reduce, isEmpty, flatMap } from 'lodash'
 import { CatJob, SubProjectDetail } from 'types/projects'
 import FeatureCatJob from 'components/molecules/FeatureCatJob/FeatureCatJob'
@@ -24,7 +24,6 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
   assignments,
   hidden,
   subProjectCatJobs,
-  ...rest
 }) => {
   const { t } = useTranslation()
   const [isEditable, setIsEditable] = useState(false)
@@ -35,7 +34,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
     () =>
       reduce(
         assignments,
-        (result, { id, cat_jobs }, index) => {
+        (result, { id, cat_jobs }) => {
           if (!id) return result
           const catJobs = isEmpty(cat_jobs) ? subProjectCatJobs : cat_jobs
 
@@ -46,7 +45,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
                 catJobs,
                 (result, { id }) => {
                   if (!id) return result
-                  const isChunkSelected = index === 0 || !isEmpty(cat_jobs)
+                  const isChunkSelected = !isEmpty(cat_jobs)
 
                   return {
                     ...result,
@@ -67,11 +66,16 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
     control,
     reset,
     handleSubmit,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting, isValid, isDirty },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
+
+  useEffect(() => {
+    reset(defaultValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues])
 
   const resetForm = useCallback(() => {
     setIsEditable(false)
@@ -145,7 +149,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         />
         <Button
           children={isEditable ? t('button.save') : t('button.change')}
-          disabled={!isValid && isEditable}
+          disabled={(!isDirty || !isValid) && isEditable}
           hidden={isEmpty(subProjectCatJobs)}
           loading={isSubmitting || isLoading}
           onClick={

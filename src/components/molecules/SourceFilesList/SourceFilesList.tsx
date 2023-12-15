@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, filter, isEmpty, includes } from 'lodash'
+import { filter, includes, isEmpty, map } from 'lodash'
 import {
   InputTypes,
   FormInput,
@@ -23,7 +23,11 @@ import { SourceFile, CatProjectStatus } from 'types/projects'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
 
 import classes from './classes.module.scss'
-import { useHandleFiles } from 'hooks/requests/useFiles'
+import { CollectionType, useHandleFiles } from 'hooks/requests/useFiles'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 // TODO: very similar to ProjectFilesList, these 2 can be unified
 
@@ -41,10 +45,13 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   isCatProjectLoading?: boolean
   isGenerateProjectButtonDisabled?: boolean
   catSetupStatus?: CatProjectStatus
+  mode?: ProjectDetailModes
+  isHistoryView?: string
 }
 
 interface FileRow {
   name: string
+  category?: string
   updated_at: string
   delete_button?: number
   check: number
@@ -67,17 +74,19 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   subProjectId,
   isGenerateProjectButtonDisabled,
   catSetupStatus,
+  mode,
+  isHistoryView,
 }: SourceFilesListProps<TFormValues>) => {
   const {
-    field: { onChange, value },
+    field: { value },
   } = useController<TFormValues, Path<TFormValues>>({
     name: name as Path<TFormValues>,
     control,
   })
-  const { addFiles, deleteFile, downloadFile } = useHandleFiles({
+  const { addFiles, downloadFile } = useHandleFiles({
     reference_object_id: subProjectId,
     reference_object_type: 'subproject',
-    collection: 'source',
+    collection: CollectionType.Source,
   })
 
   const typedValue = value as SourceFile[]
@@ -85,16 +94,20 @@ const SourceFilesList = <TFormValues extends FieldValues>({
 
   const filesData = useMemo(
     () =>
-      map(typedValue, (file, index) => ({
-        check: index,
-        name: file.name,
-        updated_at:
-          'updated_at' in file
-            ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
-            : '',
-        download_button: index,
-        delete_button: index,
-      })),
+      map(typedValue, (file, index) => {
+        return {
+          key: index,
+          check: index,
+          name: file.name,
+          updated_at:
+            'updated_at' in file
+              ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
+              : '',
+          category: file.collection_name, // TODO: Add correct data from BE, currently not yet implemented
+          download_button: index,
+          delete_button: index,
+        }
+      }),
     [typedValue]
   )
 
@@ -108,24 +121,31 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   const handleAdd = useCallback(
     async (files: (File | SourceFile)[]) => {
       const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
-      const { data } = await addFiles(filteredFiles)
-      onChange([...value, ...data.data])
+      await addFiles(filteredFiles)
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.sub_project_files_added'),
+      })
     },
-    [onChange, addFiles, value]
+    [addFiles, t]
   )
 
   const handleDelete = useCallback(
     (index?: number) => {
       if (index === 0 || index) {
-        deleteFile(typedValue[index].id)
-        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
+        showModal(ModalTypes.ConfirmDeleteSourceFile, {
+          subProjectId: subProjectId,
+          sourceFileId: typedValue[index].id,
+        })
       }
     },
-    [onChange, deleteFile, typedValue]
+    [typedValue, subProjectId]
   )
 
   const columns = [
-    ...(canGenerateProject && isEditable
+    ...((canGenerateProject && isEditable) ||
+    (canGenerateProject && mode !== ProjectDetailModes.View)
       ? [
           columnHelper.accessor('check', {
             header: '',
@@ -167,6 +187,14 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         )
       },
     }),
+    ...(mode === ProjectDetailModes.View
+      ? [
+          columnHelper.accessor('category', {
+            header: () => t('label.category'), // TODO: Add correct data from BE, currently not yet implemented
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
     columnHelper.accessor('updated_at', {
       header: () => t('label.updated_at'),
       footer: (info) => info.column.id,
@@ -176,9 +204,14 @@ const SourceFilesList = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         return (
           <BaseButton
-            className={classNames(classes.iconButton, classes.downloadButton)}
+            className={classNames(
+              classes.iconButton,
+              classes.downloadButton,
+              !!isHistoryView && classes.disabled
+            )}
             target="_blank"
             onClick={() => handleDownload(getValue())}
+            disabled={!!isHistoryView}
             aria-label={t('button.download')}
           >
             <Download />
@@ -194,8 +227,12 @@ const SourceFilesList = <TFormValues extends FieldValues>({
             cell: ({ getValue }) => {
               return (
                 <BaseButton
-                  className={classes.iconButton}
+                  className={classNames(
+                    classes.iconButton,
+                    !!isHistoryView && classes.disabled
+                  )}
                   onClick={() => handleDelete(getValue())}
+                  disabled={!!isHistoryView}
                   aria-label={t('button.delete')}
                 >
                   <Delete />
@@ -230,7 +267,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
             />
             <FileImport
               fileButtonText={t('button.add_new_file')}
-              hidden={!isEditable}
+              hidden={!isEditable || mode === ProjectDetailModes.View}
               isFilesListHidden
               files={value}
               inputFileTypes={ProjectFileTypes}
@@ -242,7 +279,9 @@ const SourceFilesList = <TFormValues extends FieldValues>({
         }
       />
       <GenerateForTranslationSection
-        hidden={!canGenerateProject || !isEditable}
+        hidden={
+          !canGenerateProject || mode === ProjectDetailModes.View || !isEditable
+        }
         openSendToCatModal={openSendToCatModal}
         className={classes.generateSection}
         disabled={isGenerateProjectButtonDisabled}

@@ -82,6 +82,11 @@
   border: 2px solid $color-border-secondary;
   color: $color-text;
 
+  .loader{
+    height: 18px;
+  }
+
+
   svg g path {
     fill: $color-border-secondary;
   }

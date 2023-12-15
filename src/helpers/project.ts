@@ -4,6 +4,7 @@ import { ProjectDetail, SourceFile } from 'types/projects'
 
 import dayjs from 'dayjs'
 import { ClassifierValue, HelperFileTypes } from 'types/classifierValues'
+import { CollectionType } from 'hooks/requests/useFiles'
 
 export const getProjectDefaultValues = ({
   institutionUserId,
@@ -122,11 +123,11 @@ export const mapFilesForApi = ({
   // 1.2. Add correct collection to deleted files
   const deletedSourceFilesWithCollection = map(deletedSourceFiles, (file) => ({
     file,
-    collection: 'source',
+    collection: CollectionType.Source,
   }))
   const deletedHelpFilesWithCollection = map(deletedHelpFiles, (file) => ({
     file,
-    collection: 'help',
+    collection: CollectionType.Help,
   }))
 
   // 1.3. Combine deleted files
@@ -144,12 +145,10 @@ export const mapFilesForApi = ({
     const typeForThisFile = help_file_types?.[index]
     return {
       file,
-      collection: 'help',
+      collection: CollectionType.Help,
       ...(typeForThisFile
         ? {
-            custom_properties: {
-              type: typeForThisFile,
-            },
+            help_file_type: typeForThisFile,
           }
         : {}),
     }
@@ -171,7 +170,7 @@ export const mapFilesForApi = ({
 
   const newSourceFilesWithCollection = map(newSourceFiles, (file) => ({
     file,
-    collection: 'source',
+    collection: CollectionType.Source,
   }))
 
   // 2.4. Combine new files
@@ -181,14 +180,12 @@ export const mapFilesForApi = ({
   // 3. Get updated help files
 
   const updatedFiles = compact(
-    filter(helpFilesWithType, ({ file, custom_properties }) => {
+    filter(helpFilesWithType, ({ file, help_file_type }) => {
       const previousHelpFile = find(previousHelpFiles, {
         id: (file as SourceFile)?.id,
       })
       if (!previousHelpFile) return false
-      return (
-        previousHelpFile?.custom_properties?.type !== custom_properties?.type
-      )
+      return previousHelpFile?.custom_properties?.type !== help_file_type
     })
   )
 

@@ -34,7 +34,8 @@ import ProjectPage from 'pages/ProjectPage/ProjectPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
-import Components from 'pages/Components/Components'
+import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
+import VendorTasks from 'pages/VendorTasks/VendorTasks'
 
 // import icons
 
@@ -50,7 +51,6 @@ import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
-import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,
@@ -75,15 +75,11 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'projects',
     label: i18n.t('menu.projects'),
     Icon: ProjectsIcon,
-    privileges: [Privileges.ViewPersonalProject, Privileges.ViewPersonalTask],
     children: [
       {
         path: '',
         label: i18n.t('menu.projects'),
-        privileges: [
-          Privileges.ViewPersonalProject,
-          Privileges.ViewPersonalTask,
-        ],
+        privileges: [Privileges.ViewPersonalProject],
         children: [
           {
             path: '',
@@ -127,18 +123,23 @@ export const protectedRoutes: FullRouteObject[] = [
       {
         path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
-        privileges: [Privileges.ViewPersonalTask],
         children: [
           {
             path: '',
             element: <MyTasks />,
-            privileges: [Privileges.ViewPersonalTask],
             breadcrumb: i18n.t('menu.my_tasks'),
           },
           {
             path: ':taskId',
             element: <TaskPage />,
-            privileges: [Privileges.ViewPersonalTask],
+            breadcrumb: BreadcrumbsTitle,
+            children: [
+              {
+                path: ':isHistoryView',
+                element: <TaskPage />,
+                breadcrumb: BreadcrumbsTitle,
+              },
+            ],
           },
         ],
       },
@@ -158,9 +159,20 @@ export const protectedRoutes: FullRouteObject[] = [
       },
       {
         path: ':vendorId',
-        element: <VendorPage />,
-        privileges: [Privileges.EditVendorDb, Privileges.ViewVendorDb],
-        breadcrumb: BreadcrumbsTitle,
+        children: [
+          {
+            path: '',
+            element: <VendorPage />,
+            privileges: [Privileges.EditVendorDb, Privileges.ViewVendorDb],
+            breadcrumb: BreadcrumbsTitle,
+          },
+          {
+            path: ':userId',
+            element: <VendorTasks />,
+            privileges: [Privileges.ViewVendorTask],
+            breadcrumb: BreadcrumbsTitle,
+          },
+        ],
       },
       {
         path: 'price-list',
@@ -180,7 +192,6 @@ export const protectedRoutes: FullRouteObject[] = [
       Privileges.ImportTm,
       Privileges.ExportTm,
       Privileges.EditTmMetadata,
-      Privileges.EditTm,
       Privileges.DeleteTm,
     ],
     children: [
@@ -205,7 +216,6 @@ export const protectedRoutes: FullRouteObject[] = [
           Privileges.ImportTm,
           Privileges.ExportTm,
           Privileges.EditTmMetadata,
-          Privileges.EditTm,
           Privileges.DeleteTm,
         ],
       },
@@ -306,10 +316,6 @@ export const protectedRoutesForReactRouter: RouteObject[] = map(
 )
 
 const router = createBrowserRouter([
-  {
-    path: 'test',
-    element: <Components />,
-  },
   {
     path: '/',
     element: <AuthWrapper />,

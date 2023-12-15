@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useFetchTags } from 'hooks/requests/useTags'
@@ -16,7 +16,6 @@ import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import { FilterFunctionType } from 'types/collective'
 import classes from './classes.module.scss'
-import { Vendor } from 'types/vendors'
 import { TagTypes } from 'types/tags'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import { useSearchParams } from 'react-router-dom'
@@ -25,38 +24,61 @@ import Loader from 'components/atoms/Loader/Loader'
 import { Root } from '@radix-ui/react-form'
 import { useVendorsFetch } from 'hooks/requests/useVendors'
 import classNames from 'classnames'
+import { parseLanguagePairs } from 'helpers'
 
 type VendorsTableProps = {
-  data?: Vendor[]
   hidden?: boolean
+}
+
+type ProjectTableRow = {
+  id?: string
+  languageDirections: string[]
+  tags: string[]
+  name: string
+  companyName: string
+  roles: string[]
 }
 
 const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
   const { t } = useTranslation()
 
+  const { rolesFilters = [] } = useRolesFetch()
+  const { tagsFilters = [] } = useFetchTags({ type: TagTypes.Vendor })
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
+
   const [searchParams, _] = useSearchParams()
   const initialFilters = {
-    ...Object.fromEntries(searchParams.entries()),
+    page: Number(searchParams.get('page')),
+    per_page: Number(searchParams.get('per_page')),
     role_id: searchParams.getAll('role_id'),
     tag_id: searchParams.getAll('tag_id'),
+    lang_pair: parseLanguagePairs(searchParams),
+    ...(searchParams.get('fullname')
+      ? { fullname: searchParams.get('fullname')! }
+      : {}),
   }
 
   const {
     vendors,
     paginationData,
+    filters,
     isLoading,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
   } = useVendorsFetch(initialFilters, true)
-
-  const { rolesFilters = [] } = useRolesFetch()
-  const { tagsFilters = [] } = useFetchTags({ type: TagTypes.Vendor })
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  useEffect(() => {
+    setSelectedValues(filters?.lang_pair || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.lang_pair])
 
   const [searchValue, setSearchValue] = useState<string>(
-    searchParams.get('fullname') || ''
+    filters?.fullname || ''
   )
 
   const handleSearchVendors = useCallback(
@@ -68,17 +90,8 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
   )
 
   const defaultPaginationData = {
-    per_page: Number(searchParams.get('per_page')),
-    page: Number(searchParams.get('page')) - 1,
-  }
-
-  type ProjectTableRow = {
-    id?: string
-    languageDirections: string[]
-    tags: string[]
-    name: string
-    companyName: string
-    roles: string[]
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
   }
 
   const columnHelper = createColumnHelper<ProjectTableRow>()
@@ -153,7 +166,7 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
       header: () => t('label.language_directions'),
       cell: ({ getValue }) => {
         return (
-          <div className={classes.tagsRow}>
+          <div className={classes.languageRow}>
             {map(getValue(), (value, index) => (
               <Tag label={value} value key={index} />
             ))}
@@ -166,6 +179,11 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
+        filterValue: filters?.lang_pair
+          ? filters.lang_pair.map((item) =>
+              item?.src && item?.dst ? item.src.concat('_', item?.dst) : ''
+            )
+          : [],
       },
     }),
     columnHelper.accessor('roles', {
@@ -175,7 +193,7 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
       meta: {
         filterOption: { role_id: rolesFilters },
         showSearch: true,
-        filterValue: initialFilters?.role_id,
+        filterValue: filters?.role_id || [],
       },
     }),
     columnHelper.accessor('name', {
@@ -200,7 +218,7 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
       },
       meta: {
         filterOption: { tag_id: tagsFilters },
-        filterValue: initialFilters?.tag_id,
+        filterValue: filters?.tag_id || [],
       },
     }),
     columnHelper.accessor('id', {

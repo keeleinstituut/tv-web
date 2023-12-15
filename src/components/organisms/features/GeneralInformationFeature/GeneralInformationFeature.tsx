@@ -12,7 +12,7 @@ import {
 import {
   useUpdateSubProject,
   useFetchSubProjectCatToolJobs,
-  useSubProjectSendToCat,
+  useProjectCache,
 } from 'hooks/requests/useProjects'
 import {
   CatProjectPayload,
@@ -21,11 +21,7 @@ import {
   SourceFile,
   SubProjectDetail,
 } from 'types/projects'
-import {
-  ModalTypes,
-  closeModal,
-  showModal,
-} from 'components/organisms/modals/ModalRoot'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Root } from '@radix-ui/react-form'
 import {
   FormInput,
@@ -37,9 +33,6 @@ import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesLis
 import classes from './classes.module.scss'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
-import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { showValidationErrorMessage } from 'api/errorHandler'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import { getLocalDateOjectFromUtcDateString } from 'helpers'
@@ -60,7 +53,7 @@ type GeneralInformationFeatureProps = Pick<
   | 'deadline_at'
   | 'source_language_classifier_value'
   | 'destination_language_classifier_value'
-  | 'project'
+  | 'project_id'
   | 'id'
 > & {
   catSupported?: boolean
@@ -73,8 +66,6 @@ interface FormValues {
   source_files: SourceFile[]
   final_files: SourceFile[]
   write_to_memory: { [key: string]: boolean }
-  // TODO: no idea about these fields
-  shared_with_client: boolean[]
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
@@ -88,27 +79,26 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   source_language_classifier_value,
   destination_language_classifier_value,
   projectDomain,
-  project,
+  project_id,
 }) => {
   const { t } = useTranslation()
+  const { deadline_at: projectDeadlineAt, status: projectStatus } =
+    useProjectCache(project_id) || {}
   const { updateSubProject, isLoading } = useUpdateSubProject({
     id,
   })
-  const { sendToCat, isCatProjectLoading } = useSubProjectSendToCat()
-  const { catToolJobs, catSetupStatus, startPolling } =
+  const { catToolJobs, catSetupStatus, startPolling, isPolling } =
     useFetchSubProjectCatToolJobs({
       id,
     })
   const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id })
-
-  const { deadline_at: projectDeadlineAt, status: projectStatus } = project
 
   const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
 
   const defaultValues = useMemo(
     () => ({
       deadline_at: getLocalDateOjectFromUtcDateString(
-        deadline_at || projectDeadlineAt
+        deadline_at || projectDeadlineAt || ''
       ),
       cat_files,
       source_files: map(source_files, (file) => ({
@@ -118,8 +108,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       final_files,
       cat_jobs: catToolJobs,
       write_to_memory: {},
-      // TODO: no idea about these fields
-      shared_with_client: [],
     }),
     [
       deadline_at,
@@ -131,12 +119,15 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     ]
   )
 
-  const { control, getValues, watch, setValue } = useForm<FormValues>({
+  const { control, getValues, watch, setValue, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
 
-  // const newFinalFiles = watch('final_files')
+  useEffect(() => {
+    reset(defaultValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues])
 
   useEffect(() => {
     if (SubProjectTmKeys) {
@@ -154,34 +145,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     }
   }, [setValue, SubProjectTmKeys])
 
-  // TODO: currently just used this for uploading final_files
-  // However not sure if we can use similar logic for all the fields
-  // if we can, then we should create 1 useEffect for the entire form and send the payload
-  // Whenever any field changes, except for shared_with_client, which will have their own button
-  // useEffect(() => {
-  //   const attemptFilesUpload = async () => {
-  //     try {
-  //       // TODO: not sure if this is the correct endpoint and if we can send both the old and new files together like this
-  //       // const { data } = await updateSubProject({
-  //       //   final_files: newFinalFiles,
-  //       // })
-  //       // const savedFinalFiles = data?.final_files
-  //       // setValue('final_files', savedFinalFiles, { shouldDirty: false })
-  //       showNotification({
-  //         type: NotificationTypes.Success,
-  //         title: t('notification.announcement'),
-  //         content: t('success.final_files_changed'),
-  //       })
-  //     } catch (errorData) {
-  //       showValidationErrorMessage(errorData)
-  //     }
-  //   }
-  //   if (!isEmpty(newFinalFiles) && !isEqual(newFinalFiles, final_files)) {
-  //     attemptFilesUpload()
-  //   }
-  // }, [final_files, newFinalFiles, setValue, t, updateSubProject])
-
-  const handleSendToCat = useCallback(async () => {
+  const openSendToCatModal = useCallback(() => {
     const sourceFiles = getValues('source_files')
     const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
@@ -190,27 +154,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       source_files_ids: compact(map(selectedSourceFiles, 'id')),
     }
 
-    try {
-      await sendToCat(payload)
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.files_sent_to_cat'),
-      })
-      startPolling()
-      closeModal()
-    } catch (errorData) {
-      showValidationErrorMessage(errorData)
-    }
-  }, [getValues, sendToCat, startPolling, id, t])
-
-  const openSendToCatModal = useCallback(
-    () =>
-      showModal(ModalTypes.ConfirmSendToCat, {
-        handleProceed: handleSendToCat,
-      }),
-    [handleSendToCat]
-  )
+    showModal(ModalTypes.ConfirmSendToCat, {
+      sendPayload: payload,
+      callback: startPolling,
+    })
+  }, [getValues, id, startPolling])
 
   const handleChangeDeadline = useCallback(
     (value: { date: string; time: string }) => {
@@ -254,7 +202,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           label: `${t('label.deadline_at')}`,
           control: control,
           name: 'deadline_at',
-          minDate: new Date(),
           maxDate: dayjs(projectDeadlineAt).toDate(),
           onDateTimeChange: handleChangeDeadline,
           onlyDisplay: !isSomethingEditable,
@@ -269,7 +216,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           openSendToCatModal={openSendToCatModal}
           canGenerateProject={canGenerateProject}
           isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
-          isCatProjectLoading={isCatProjectLoading}
+          isCatProjectLoading={isPolling}
           catSetupStatus={catSetupStatus}
           subProjectId={id}
           isEditable={isSomethingEditable}
@@ -277,7 +224,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         <FinalFilesList
           name="final_files"
           title={t('projects.ready_files_from_vendors')}
-          // className={classes.filesSection}
           control={control}
           isLoading={isLoading}
           subProjectId={id}

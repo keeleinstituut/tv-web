@@ -116,7 +116,9 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       rules: {
         required: true,
       },
-      disabled: !isTmOwnedByUserInstitution,
+      disabled:
+        !isTmOwnedByUserInstitution ||
+        !includes(userPrivileges, Privileges.EditTmMetadata),
     },
     {
       inputType: InputTypes.Selections,
@@ -129,9 +131,8 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       multiple: true,
       buttons: true,
       disabled:
-        !includes(userPrivileges, Privileges.AddTag) ||
-        !includes(userPrivileges, Privileges.EditTag) ||
-        !isTmOwnedByUserInstitution,
+        !isTmOwnedByUserInstitution ||
+        !includes(userPrivileges, Privileges.EditTmMetadata),
     },
     {
       inputType: InputTypes.Selections,
@@ -144,7 +145,9 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
         required: true,
       },
       helperText: t('translation_memories.helper_text'),
-      disabled: !isTmOwnedByUserInstitution,
+      disabled:
+        !isTmOwnedByUserInstitution ||
+        !includes(userPrivileges, Privileges.EditTmMetadata),
     },
     {
       inputType: InputTypes.Text,
@@ -155,7 +158,9 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       name: 'comment',
       type: 'comment',
       className: classes.inputInternalPosition,
-      disabled: !isTmOwnedByUserInstitution,
+      disabled:
+        !isTmOwnedByUserInstitution ||
+        !includes(userPrivileges, Privileges.EditTmMetadata),
     },
     {
       inputType: InputTypes.Selections,
@@ -165,7 +170,9 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       name: 'tv_domain',
       options: domainOptions,
       className: classes.inputInternalPosition,
-      disabled: !isTmOwnedByUserInstitution,
+      disabled:
+        !isTmOwnedByUserInstitution ||
+        !includes(userPrivileges, Privileges.EditTmMetadata),
     },
   ]
 
@@ -255,8 +262,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
         isSubmitDisabled={
           !isDirty ||
           !isValid ||
-          !includes(userPrivileges, Privileges.EditTmMetadata) ||
-          !includes(userPrivileges, Privileges.EditTm)
+          !includes(userPrivileges, Privileges.EditTmMetadata)
         }
         loading={isSubmitting}
         resetForm={resetForm}

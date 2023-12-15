@@ -14,10 +14,11 @@ import {
   CatProjectStatus,
   SubProjectDetail,
   ProjectDetail,
+  SendFinalFilesPayload,
 } from 'types/projects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
-import { includes } from 'lodash'
+import { find, includes, map } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
@@ -47,15 +48,22 @@ export const useFetchProjects = (
     isError,
     projects,
     paginationData,
+    filters: filters as ProjectsPayloadType,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
   }
 }
 
-export const useFetchProject = ({ id }: { id?: string }) => {
+export const useFetchProject = ({
+  id,
+  disabled,
+}: {
+  id?: string
+  disabled?: boolean
+}) => {
   const { isLoading, isError, data } = useQuery<ProjectResponse>({
-    enabled: !!id,
+    enabled: !!id && !disabled,
     queryKey: ['projects', id],
     queryFn: () => apiClient.get(`${endpoints.PROJECTS}/${id}`),
   })
@@ -133,6 +141,18 @@ export const useUpdateProject = ({ id }: { id?: string }) => {
           return { data: newData }
         }
       )
+      map(data.sub_projects, (subProject) =>
+        queryClient.setQueryData(
+          ['subprojects', subProject.id],
+          (oldData?: SubProjectResponse) => {
+            const { data: previousData } = oldData || {}
+
+            if (!previousData) return oldData
+            const newData = { ...previousData, ...subProject }
+            return { data: newData }
+          }
+        )
+      )
     },
   })
 
@@ -154,7 +174,20 @@ export const useUpdateSubProject = ({ id }: { id?: string }) => {
         (oldData?: SubProjectResponse) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const newData = { ...previousData, ...data }
+          const { assignments } = previousData
+          const newAssignments = map(assignments, (assignment) => {
+            const { id } = assignment
+            const changedAssignment = find(data.assignments, { id })
+            return {
+              ...assignment,
+              ...changedAssignment,
+            }
+          })
+          const newData = {
+            ...previousData,
+            ...data,
+            assignments: newAssignments,
+          }
           return { data: newData }
         }
       )
@@ -195,18 +228,23 @@ export const useFetchSubProjects = (
     handlePaginationChange,
   } = useFilters<SubProjectsPayloadType>(initialFilters, saveQueryParams)
 
-  const { isLoading, isError, data } = useQuery<SubProjectsResponse>({
-    queryKey: ['subprojects', filters],
+  const { isLoading, isError, data, refetch } = useQuery<SubProjectsResponse>({
+    queryKey: ['subprojects'],
     queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}`, filters),
     keepPreviousData: true,
+    enabled: false,
   })
-
+  useEffect(() => {
+    refetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters])
   const { meta: paginationData, data: subProjects } = data || {}
 
   return {
     isLoading,
     isError,
     subProjects,
+    filters: filters as SubProjectsPayloadType,
     paginationData,
     handleFilterChange,
     handleSortingChange,
@@ -226,10 +264,16 @@ export const useSubProjectSendToCat = () => {
   }
 }
 
-export const useFetchSubProjectCatToolJobs = ({ id }: { id?: string }) => {
+export const useFetchSubProjectCatToolJobs = ({
+  id,
+  disabled,
+}: {
+  id?: string
+  disabled?: boolean
+}) => {
   const [shouldRefetch, setShouldRefetch] = useState(false)
   const { data } = useQuery<CatToolJobsResponse>({
-    enabled: !!id,
+    enabled: !!id && !disabled,
     queryKey: ['cat-jobs', id],
     queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
     ...(shouldRefetch ? { refetchInterval: 3000 } : {}),
@@ -253,6 +297,7 @@ export const useFetchSubProjectCatToolJobs = ({ id }: { id?: string }) => {
     catSetupStatus: data?.data?.setup_status,
     catAnalyzeStatus: data?.data?.analyzing_status,
     startPolling,
+    isPolling: shouldRefetch,
   }
 }
 
@@ -332,7 +377,6 @@ export const useDownloadTranslatedFile = () => {
   }
 }
 
-// TODO: no idea what the endpoint will be
 export const useSubProjectWorkflow = ({
   id,
   projectId,
@@ -346,6 +390,11 @@ export const useSubProjectWorkflow = ({
     mutationFn: () =>
       apiClient.post(`${endpoints.SUB_PROJECTS}/${id}/start-workflow`),
     onSuccess: (data) => {
+      // Currently from BE response we are missing:
+      // 1. sub project active_job_definition
+      // 2. assignment candidates
+      // 3. assignment job_definition
+      // Possibly some fields from project
       queryClient.refetchQueries({ queryKey: ['subprojects', id] })
       queryClient.refetchQueries({ queryKey: ['projects', projectId] })
     },
@@ -392,13 +441,45 @@ export const useCancelProject = ({ id }: { id?: string }) => {
     mutationKey: ['projects', id],
     mutationFn: async (payload: CancelProjectPayload) =>
       apiClient.post(`${endpoints.PROJECTS}/${id}/cancel`, payload),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.refetchQueries({ queryKey: ['projects', id] })
     },
   })
 
   return {
     cancelProject,
+    isLoading,
+  }
+}
+
+export const useSendSubProjectFinalFiles = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: sendFinalFiles, isLoading } = useMutation({
+    mutationKey: ['send_final_files', id],
+    mutationFn: async (payload: SendFinalFilesPayload) =>
+      apiClient.post(
+        `${endpoints.SUB_PROJECTS}/${id}/set-project-final-files`,
+        payload
+      ),
+    onSuccess: ({ data }: { data: SubProjectDetail }) => {
+      queryClient.setQueryData(
+        ['subprojects', id],
+        (oldData?: SubProjectResponse) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          return {
+            data: {
+              ...previousData,
+              ...data,
+            },
+          }
+        }
+      )
+    },
+  })
+
+  return {
+    sendFinalFiles,
     isLoading,
   }
 }

@@ -1,7 +1,8 @@
 @import 'styles/variables';
+@import 'styles/mixins';
 
 .topSection {
-  padding: spacing(6) spacing(4);
+  margin-top: spacing(6);
 }
 
 .checkbox {
@@ -21,4 +22,13 @@
   &.error {
     color: $color-error;
   }
+}
+
+.noTasks {
+  @include subtitleSmallTextStyle;
+  color: $color-text;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: spacing(14);
 }

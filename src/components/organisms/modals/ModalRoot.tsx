@@ -10,7 +10,6 @@ import {
   Suspense,
   useEffect,
 } from 'react'
-import { FormProgressProps } from './FormProgressModal/FormProgressModal'
 import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
 import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
@@ -25,9 +24,13 @@ import { VolumeChangeModalProps } from './VolumeChangeModal/VolumeChangeModal'
 import { ConfirmDeleteVolumeModalProps } from './ConfirmDeleteVolumeModal/ConfirmDeleteVolumeModal'
 import { ConfirmCancelProjectModalProps } from './ConfirmCancelProjectModal/ConfirmCancelProjectModal'
 import { ConfirmRejectProjectModalProps } from './ConfirmRejectProjectModal/ConfirmRejectProjectModal'
+import { ConfirmDeleteSourceFileModalProps } from './ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal'
 import { ConfirmTmWritableModalProps } from './ConfirmTmWritableModal/ConfirmTmWritableModal'
 import { ConfirmAssignmentCompletionModalProps } from './ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal'
 import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjectModal'
+import { ConfirmCompleteTaskModalProps } from './ConfirmCompleteTaskModal/ConfirmCompleteTaskModal'
+import { ConfirmSendToPreviousTaskModalProps } from './ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal'
+import { EditVendorPricesModalProps } from './EditVendorPricesModal/EditVendorPricesModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -35,9 +38,6 @@ const InstitutionSelectModal = lazy(
 const TooltipModal = lazy(() => import('./TooltipModal/TooltipModal'))
 const UserAndRoleManagementModal = lazy(
   () => import('./UserAndRoleManagementModal/UserAndRoleManagementModal')
-)
-const FormProgressModal = lazy(
-  () => import('./FormProgressModal/FormProgressModal')
 )
 const EditableListModal = lazy(
   () => import('./EditableListModal/EditableListModal')
@@ -85,6 +85,10 @@ const ConfirmRejectProjectModal = lazy(
   () => import('./ConfirmRejectProjectModal/ConfirmRejectProjectModal')
 )
 
+const ConfirmDeleteSourceFileModal = lazy(
+  () => import('./ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal')
+)
+
 const ConfirmTmWritableModal = lazy(
   () => import('./ConfirmTmWritableModal/ConfirmTmWritableModal')
 )
@@ -100,18 +104,30 @@ const ReassignProjectModal = lazy(
   () => import('./ReassignProjectModal/ReassignProjectModal')
 )
 
+const ConfirmCompleteTaskModal = lazy(
+  () => import('./ConfirmCompleteTaskModal/ConfirmCompleteTaskModal')
+)
+
+const ConfirmSendToPreviousTaskModal = lazy(
+  () =>
+    import('./ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal')
+)
+
+const EditVendorPricesModal = lazy(
+  () => import('./EditVendorPricesModal/EditVendorPricesModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
   Tooltip = 'tooltip',
-  FormProgress = 'formProgress',
   CatSplit = 'catSplit',
   CatMerge = 'catMerge',
   EditableListModal = 'editableListModal',
   ConfirmationModal = 'confirmationModal',
   ConfirmSendToCat = 'confirmSendToCat',
   CatAnalysis = 'catAnalysis',
-  DateTimeRangeFormModal = 'dateTimeRangeFormModal',
+  DateTimeRangeForm = 'dateTimeRangeForm',
   VendorsEdit = 'vendorsEdit',
   SelectVendor = 'selectVendor',
   AddVolume = 'addVolume',
@@ -120,9 +136,13 @@ export enum ModalTypes {
   AddTranslationMemories = 'addTranslationMemories',
   ConfirmCancelProject = 'confirmCancelProject',
   ConfirmRejectProject = 'confirmRejectProject',
+  ConfirmDeleteSourceFile = 'confirmDeleteSourceFile',
   ConfirmTmWritable = 'confirmTmWritable',
   ConfirmAssignmentCompletion = 'confirmAssignmentCompletion',
-  ReassignProject = 'reassignProjectModal',
+  ReassignProject = 'reassignProject',
+  ConfirmCompleteTask = 'confirmCompleteTask',
+  ConfirmSendToPreviousTask = 'confirmSendToPreviousTask',
+  EditVendorPrices = 'editVendorPrices',
 }
 
 // Add other modal props types here as well
@@ -130,7 +150,6 @@ type ModalPropTypes =
   | Omit<InstitutionSelectModalProps, 'closeModal'>
   | Omit<UserAndRoleManagementModalProps, 'closeModal'>
   | Omit<TooltipModalProps, 'closeModal'>
-  | Omit<FormProgressProps, 'closeModal'>
   | Omit<CatSplitModalProps, 'closeModal'>
   | Omit<CatMergeModalProps, 'closeModal'>
   | Omit<EditableListModalProps, 'closeModal'>
@@ -145,22 +164,25 @@ type ModalPropTypes =
   | Omit<ConfirmDeleteVolumeModalProps, 'closeModal'>
   | Omit<ConfirmCancelProjectModalProps, 'closeModal'>
   | Omit<ConfirmRejectProjectModalProps, 'closeModal'>
+  | Omit<ConfirmDeleteSourceFileModalProps, 'closeModal'>
   | Omit<ConfirmTmWritableModalProps, 'closeModal'>
   | Omit<ConfirmAssignmentCompletionModalProps, 'closeModal'>
   | Omit<ReassignProjectModalProps, 'closeModal'>
+  | Omit<ConfirmCompleteTaskModalProps, 'closeModal'>
+  | Omit<ConfirmSendToPreviousTaskModalProps, 'closeModal'>
+  | Omit<EditVendorPricesModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
   [ModalTypes.UserAndRoleManagement]: UserAndRoleManagementModal,
   [ModalTypes.Tooltip]: TooltipModal,
-  [ModalTypes.FormProgress]: FormProgressModal,
   [ModalTypes.CatSplit]: CatSplitModal,
   [ModalTypes.CatMerge]: CatMergeModal,
   [ModalTypes.EditableListModal]: EditableListModal,
   [ModalTypes.ConfirmationModal]: ConfirmationModal,
   [ModalTypes.ConfirmSendToCat]: ConfirmSendToCatModal,
   [ModalTypes.CatAnalysis]: CatAnalysisModal,
-  [ModalTypes.DateTimeRangeFormModal]: DateTimeRangeFormModal,
+  [ModalTypes.DateTimeRangeForm]: DateTimeRangeFormModal,
   [ModalTypes.VendorsEdit]: VendorsEditModal,
   [ModalTypes.SelectVendor]: SelectVendorModal,
   [ModalTypes.AddVolume]: AddVolumeModal,
@@ -169,9 +191,13 @@ const MODALS = {
   [ModalTypes.AddTranslationMemories]: AddTranslationMemoriesModal,
   [ModalTypes.ConfirmCancelProject]: ConfirmCancelProjectModal,
   [ModalTypes.ConfirmRejectProject]: ConfirmRejectProjectModal,
+  [ModalTypes.ConfirmDeleteSourceFile]: ConfirmDeleteSourceFileModal,
   [ModalTypes.ConfirmTmWritable]: ConfirmTmWritableModal,
   [ModalTypes.ConfirmAssignmentCompletion]: ConfirmAssignmentCompletionModal,
   [ModalTypes.ReassignProject]: ReassignProjectModal,
+  [ModalTypes.ConfirmCompleteTask]: ConfirmCompleteTaskModal,
+  [ModalTypes.ConfirmSendToPreviousTask]: ConfirmSendToPreviousTaskModal,
+  [ModalTypes.EditVendorPrices]: EditVendorPricesModal,
 }
 
 interface RefType {

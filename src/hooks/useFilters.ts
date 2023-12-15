@@ -1,4 +1,4 @@
-import { keys, omit, isEqual, pickBy } from 'lodash'
+import { keys, omit, isEqual, pickBy, map, split } from 'lodash'
 import { useCallback, useState } from 'react'
 import { ParamKeyValuePair, useSearchParams } from 'react-router-dom'
 import {
@@ -13,33 +13,41 @@ const useFilters = <TFilters>(
   initialFilters?: TFilters,
   saveParams?: boolean
 ) => {
-  const [filters, setFilters] = useState<TFilters | object>(
-    initialFilters || {}
-  )
+  const [filters, setFilters] = useState<TFilters | object>({
+    per_page: 10,
+    page: 1,
+    ...initialFilters,
+  })
   const page = '1'
   const [_, setSearchParams] = useSearchParams()
+
+  const setModifiedSetSearchParams = useCallback(
+    (value?: any) => {
+      if (
+        value?.lang_pair &&
+        typeof (value.lang_pair as LanguagePairType[] | string[])[0] != 'string'
+      ) {
+        const formatted_lang_pairs = formatLanguagePairs(
+          value.lang_pair as LanguagePairType[]
+        )
+        setSearchParams({
+          ...omit(value, 'lang_pair'),
+          ...formatted_lang_pairs,
+        })
+      } else {
+        setSearchParams(value)
+      }
+    },
+    [setSearchParams]
+  )
 
   const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {
       setFilters(pickBy({ ...filters, ...value, page }, (val) => !!val))
-
       if (saveParams) {
-        if (value?.lang_pair) {
-          const formatted_lang_pairs = formatLanguagePairs(
-            value.lang_pair as LanguagePairType[]
-          )
-          setSearchParams({
-            ...omit(
-              pickBy({ ...filters, ...value, page }, (val) => !!val),
-              'lang_pair'
-            ),
-            ...formatted_lang_pairs,
-          })
-        } else {
-          setSearchParams(
-            pickBy({ ...filters, ...value, page }, (val) => !!val)
-          )
-        }
+        setModifiedSetSearchParams(
+          pickBy({ ...filters, ...value, page }, (val) => !!val)
+        )
       }
     },
     [filters]
@@ -52,12 +60,12 @@ const useFilters = <TFilters>(
         const filtersWithOutSorting = filters ? omit(filters, sortingKeys) : {}
         setFilters({ ...filtersWithOutSorting, page })
         if (saveParams) {
-          setSearchParams({ ...filtersWithOutSorting, page })
+          setModifiedSetSearchParams({ ...filtersWithOutSorting, page })
         }
       } else {
         setFilters({ ...filters, ...value, page })
         if (saveParams) {
-          setSearchParams({ ...filters, ...value, page })
+          setModifiedSetSearchParams({ ...filters, ...value, page })
         }
       }
     },
@@ -71,7 +79,10 @@ const useFilters = <TFilters>(
       if (!isEqual(filters, value)) {
         setFilters({ ...filters, ...value })
         if (saveParams) {
-          setSearchParams({ ...filters, ...value } as ParamKeyValuePair[])
+          setModifiedSetSearchParams({
+            ...filters,
+            ...value,
+          } as ParamKeyValuePair[])
         }
       }
     },

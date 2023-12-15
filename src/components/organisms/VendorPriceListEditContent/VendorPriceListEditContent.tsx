@@ -1,21 +1,19 @@
-import { FC } from 'react'
-import { Control, UseFormGetValues } from 'react-hook-form'
-import { FormValues } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import { Control, FieldValues, UseFormGetValues } from 'react-hook-form'
 import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
 import { Root } from '@radix-ui/react-form'
 import VendorPricesTable from 'components/organisms/tables/VendorPricesTable/VendorPricesTable'
 
-type VendorPriceListEditContentProps = {
-  control: Control<FormValues>
+type VendorPriceListEditContentProps<TFormValues extends FieldValues> = {
+  control: Control<TFormValues>
   srcLanguageValue?: string
   dstLanguageValues?: string[]
   languageDirectionKey: string
   languageOptions?: { value: string; label: string }[]
   skillId?: string
-  getValues: UseFormGetValues<FormValues>
+  getValues: UseFormGetValues<TFormValues>
 }
 
-const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
+function VendorPriceListEditContent<TFormValues extends FieldValues>({
   control,
   srcLanguageValue,
   dstLanguageValues,
@@ -23,17 +21,17 @@ const VendorPriceListEditContent: FC<VendorPriceListEditContentProps> = ({
   languageOptions,
   skillId,
   getValues,
-}) => {
+}: VendorPriceListEditContentProps<TFormValues>) {
   return (
     <>
-      <LanguageLabels
+      <LanguageLabels<TFormValues>
         control={control}
         srcLanguageValue={srcLanguageValue}
         dstLanguageValues={dstLanguageValues}
         languageOptions={languageOptions}
       />
       <Root>
-        <VendorPricesTable
+        <VendorPricesTable<TFormValues>
           control={control}
           languageDirectionKey={languageDirectionKey}
           skillId={skillId}

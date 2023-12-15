@@ -36,13 +36,13 @@ import { useSearchParams } from 'react-router-dom'
 // Currently unclear
 
 type ProjectTableRow = {
-  ext_id: string
-  reference_number: string
-  deadline_at: string
+  ext_id?: string
+  reference_number?: string
+  deadline_at?: string
   type: string
-  status: ProjectStatus
+  status?: ProjectStatus
   tags: string[]
-  price: string
+  price?: string
   language_directions: string[]
 }
 
@@ -85,13 +85,23 @@ const ProjectsTable: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
+    filters,
   } = useFetchProjects(initialFilters, true)
 
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
   })
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
+
+  useEffect(() => {
+    setSelectedValues(filters?.language_directions || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.language_directions])
 
   const statusFilters = map(ProjectStatus, (status) => ({
     label: t(`projects.status.${status}`),
@@ -99,8 +109,8 @@ const ProjectsTable: FC = () => {
   }))
 
   const defaultPaginationData = {
-    per_page: Number(searchParams.get('per_page')),
-    page: Number(searchParams.get('page')) - 1,
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
   }
 
   // TODO: remove default values, once we have actual data
@@ -144,13 +154,13 @@ const ProjectsTable: FC = () => {
 
   const defaultFilterValues = useMemo(
     () => ({
-      statuses: searchParams.getAll('statuses') as ProjectStatus[],
+      statuses: (filters?.statuses as ProjectStatus[]) || [],
       only_show_personal_projects: !!(onlyPersonalProjectsAllowed
         ? 1
-        : Number(searchParams.get('only_show_personal_projects')) || 0),
-      ext_id: searchParams.get('ext_id') || '',
+        : Number(filters?.only_show_personal_projects) || 0),
+      ext_id: filters?.ext_id || '',
     }),
-    [searchParams]
+    [filters]
   )
 
   const { control, handleSubmit, watch } = useForm<FormValues>({
@@ -249,10 +259,9 @@ const ProjectsTable: FC = () => {
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
-        filterValue:
-          searchParams
-            .getAll('language_directions')
-            .map((item) => item.replace(':', '_')) || [],
+        filterValue: filters?.language_directions
+          ? filters?.language_directions.map((item) => item.replace(':', '_'))
+          : [],
       },
     }),
     columnHelper.accessor('type', {
@@ -274,7 +283,7 @@ const ProjectsTable: FC = () => {
       meta: {
         filterOption: { tag_ids: tagsFilters },
         showSearch: true,
-        filterValue: initialFilters?.tag_ids,
+        filterValue: filters?.tag_ids || [],
       },
     }),
     columnHelper.accessor('status', {
@@ -287,10 +296,7 @@ const ProjectsTable: FC = () => {
       footer: (info) => info.column.id,
       meta: {
         sortingOption: ['asc', 'desc'],
-        currentSorting:
-          searchParams.get('sort_by') == 'price'
-            ? searchParams.get('sort_order')
-            : '',
+        currentSorting: filters?.sort_by == 'price' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('deadline_at', {
@@ -327,9 +333,7 @@ const ProjectsTable: FC = () => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          searchParams.get('sort_by') == 'deadline_at'
-            ? searchParams.get('sort_order')
-            : '',
+          filters?.sort_by == 'deadline_at' ? filters.sort_order : '',
       },
     }),
   ] as ColumnDef<ProjectTableRow>[]
