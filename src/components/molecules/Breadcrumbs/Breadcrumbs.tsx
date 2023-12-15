@@ -9,7 +9,6 @@ import classes from './classes.module.scss'
 
 const Breadcrumbs: FC = () => {
   const breadcrumbs = useBreadcrumbs(protectedRoutesForReactRouter)
-  console.log(breadcrumbs)
   const place = useLocation()
 
   const ref = useRef({})

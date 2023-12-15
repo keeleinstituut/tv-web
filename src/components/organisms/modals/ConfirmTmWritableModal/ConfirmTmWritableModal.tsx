@@ -22,7 +22,9 @@ const ConfirmTmWritableModal: FC<ConfirmTmWritableModalProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation()
-  const { toggleTmWritable, isLoading } = useToggleTmWritable()
+  const { toggleTmWritable, isLoading } = useToggleTmWritable({
+    subProjectId: payload?.sub_project_id,
+  })
 
   const handleToggleTmWritable = useCallback(async () => {
     if (!payload) return null

@@ -62,7 +62,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
     isLoading: isUsersLoading,
   } = useFetchUsers(initialFilters, false, true)
 
-  const { rolesFilters = [] } = useRolesFetch()
+  const { rolesFilters = [] } = useRolesFetch({})
   const { departmentFilters = [] } = useDepartmentsFetch()
 
   const defaultPaginationData = {

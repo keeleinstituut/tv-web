@@ -42,7 +42,7 @@ type ProjectTableRow = {
 const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
   const { t } = useTranslation()
 
-  const { rolesFilters = [] } = useRolesFetch()
+  const { rolesFilters = [] } = useRolesFetch({})
   const { tagsFilters = [] } = useFetchTags({ type: TagTypes.Vendor })
   const {
     languageDirectionFilters,
