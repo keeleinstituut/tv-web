@@ -75,13 +75,11 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     saveQueryParams: true,
   })
 
-  const [searchValue, setSearchValue] = useState<string>(
-    searchParams.get('name') || ''
-  )
+  const [searchValue, setSearchValue] = useState<string>(filters?.name || '')
 
   const defaultPaginationData = {
-    per_page: Number(searchParams.get('per_page')),
-    page: Number(searchParams.get('page')),
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
   }
 
   const { tagsFilters: tagsOptions } = useFetchTags({
@@ -114,7 +112,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
 
   const defaultFilterValues = useMemo(
     () => ({
-      types: (searchParams.getAll('type') as TMType[]) || [],
+      types: (filters?.type as TMType[]) || [],
     }),
     [searchParams]
   )
@@ -213,7 +211,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           meta: {
             filterOption: { tv_tags: tagsOptions },
             showSearch: true,
-            filterValue: combinedInitialFilters?.tv_tags,
+            filterValue: filters?.tv_tags || [],
           },
         }),
         columnHelper.accessor('tv_domain', {
@@ -227,7 +225,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           size: 375,
           meta: {
             filterOption: { tv_domain: domainOptions },
-            filterValue: combinedInitialFilters?.tv_domain,
+            filterValue: filters?.tv_domain || [],
             showSearch: false,
           },
         }),
@@ -249,7 +247,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
                 onEndReached: loadMore,
                 onSearch: handleSearch,
                 showSearch: true,
-                filterValue: combinedInitialFilters?.lang_pair,
+                filterValue: filters?.lang_pair || [],
               }
             : {},
         }),

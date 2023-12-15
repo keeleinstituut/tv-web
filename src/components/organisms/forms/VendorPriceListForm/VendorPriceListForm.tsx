@@ -104,8 +104,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   )
 
   const defaultPaginationData = {
-    per_page: Number(searchParams.get('per_page')),
-    page: Number(searchParams.get('page')) - 1,
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
   }
 
   const priceListCreated = dayjs(

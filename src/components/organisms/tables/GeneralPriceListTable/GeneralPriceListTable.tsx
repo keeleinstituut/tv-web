@@ -3,16 +3,11 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { debounce, initial, isEmpty, map, split } from 'lodash'
+import { debounce, isEmpty, map, split } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
-import {
-  FilterFunctionType,
-  SortingFunctionType,
-  ResponseMetaTypes,
-  PaginationFunctionType,
-} from 'types/collective'
-import { GetPricesPayload, Price } from 'types/price'
+import { FilterFunctionType } from 'types/collective'
+import { GetPricesPayload } from 'types/price'
 import { Root } from '@radix-ui/react-form'
 import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
@@ -22,7 +17,7 @@ import TextInput from 'components/molecules/TextInput/TextInput'
 import classNames from 'classnames'
 import Loader from 'components/atoms/Loader/Loader'
 import { useSearchParams } from 'react-router-dom'
-import { init } from 'i18next'
+import { parseLanguagePairs } from 'helpers'
 
 type GeneralPriceListTableProps = {
   hidden?: boolean
@@ -55,6 +50,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
   const initialFilters = {
     ...Object.fromEntries(searchParams.entries()),
     skill_id: searchParams.getAll('skill_id'),
+    lang_pair: parseLanguagePairs(searchParams),
   }
 
   const {
@@ -171,11 +167,10 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
-        filterValue: filters?.lang_pair
-          ? filters.lang_pair.map((item) =>
-              item?.src && item?.dst ? item.src.concat('_', item?.dst) : ''
-            )
-          : [],
+        filterValue: map(
+          filters.lang_pair || [],
+          ({ src, dst }) => `${src}_${dst}`
+        ),
       },
     }),
     columnHelper.accessor('skill', {

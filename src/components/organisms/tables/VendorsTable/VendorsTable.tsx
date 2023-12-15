@@ -179,11 +179,10 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
-        filterValue: filters?.lang_pair
-          ? filters.lang_pair.map((item) =>
-              item?.src && item?.dst ? item.src.concat('_', item?.dst) : ''
-            )
-          : [],
+        filterValue: map(
+          filters.lang_pair || [],
+          ({ src, dst }) => `${src}_${dst}`
+        ),
       },
     }),
     columnHelper.accessor('roles', {

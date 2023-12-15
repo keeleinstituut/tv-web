@@ -56,22 +56,23 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
   const {
     users,
     paginationData,
+    filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
     isLoading: isUsersLoading,
-  } = useFetchUsers(initialFilters, false, true)
+  } = useFetchUsers({ initialFilters: initialFilters, saveQueryParams: true })
 
   const { rolesFilters = [] } = useRolesFetch({})
   const { departmentFilters = [] } = useDepartmentsFetch()
 
   const defaultPaginationData = {
-    per_page: Number(searchParams.get('per_page')),
-    page: Number(searchParams.get('page')) - 1,
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
   }
 
   const [searchValue, setSearchValue] = useState<string>(
-    searchParams.get('fullname') || ''
+    filters?.fullname || ''
   )
 
   const handleSearchUsers = useCallback(
@@ -122,7 +123,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       footer: (info) => info.column.id,
       meta: {
         sortingOption: ['asc', 'desc'],
-        currentSorting: searchParams.get('sort_order'),
+        currentSorting: filters?.sort_by == 'name' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('department', {
@@ -130,7 +131,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       footer: (info) => info.column.id,
       meta: {
         filterOption: { departments: departmentFilters },
-        filterValue: initialFilters?.departments,
+        filterValue: filters?.departments || [],
       },
     }),
     columnHelper.accessor('roles', {
@@ -141,7 +142,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       footer: (info) => info.column.id,
       meta: {
         filterOption: { roles: rolesFilters },
-        filterValue: initialFilters?.roles,
+        filterValue: filters?.roles || [],
       },
     }),
     columnHelper.accessor('status', {
@@ -163,7 +164,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
             { label: t('user.status.ARCHIVED'), value: UserStatus.Archived },
           ],
         },
-        filterValue: initialFilters?.statuses,
+        filterValue: filters?.statuses || [],
       },
     }),
   ] as ColumnDef<TableRow>[]

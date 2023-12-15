@@ -1,4 +1,4 @@
-import { keys, omit, isEqual, pickBy, map, split } from 'lodash'
+import { keys, omit, isEqual, pickBy } from 'lodash'
 import { useCallback, useState } from 'react'
 import { ParamKeyValuePair, useSearchParams } from 'react-router-dom'
 import {
@@ -7,7 +7,7 @@ import {
   PaginationFunctionType,
   SortingFunctionType,
 } from 'types/collective'
-import { formatLanguagePairs } from '../helpers'
+import { stringifyLanguagePairs } from 'helpers'
 
 const useFilters = <TFilters>(
   initialFilters?: TFilters,
@@ -27,7 +27,7 @@ const useFilters = <TFilters>(
         value?.lang_pair &&
         typeof (value.lang_pair as LanguagePairType[] | string[])[0] != 'string'
       ) {
-        const formatted_lang_pairs = formatLanguagePairs(
+        const formatted_lang_pairs = stringifyLanguagePairs(
           value.lang_pair as LanguagePairType[]
         )
         setSearchParams({

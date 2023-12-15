@@ -4,6 +4,7 @@ import { includes, size, map, filter } from 'lodash'
 import { protectedRoutesForReactRouter } from 'router/router'
 import useBreadcrumbs from 'use-react-router-breadcrumbs'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
+import { DynamicObject } from 'helpers'
 
 import classes from './classes.module.scss'
 
@@ -46,7 +47,9 @@ const Breadcrumbs: FC = () => {
             <Link
               to={
                 ref.current.hasOwnProperty(match.pathname)
-                  ? match.pathname.concat((ref.current as any)[match.pathname])
+                  ? match.pathname.concat(
+                      (ref.current as DynamicObject)[match.pathname]
+                    )
                   : match.pathname
               }
               className={

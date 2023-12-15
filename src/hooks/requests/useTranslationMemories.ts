@@ -302,6 +302,7 @@ export const useFetchTranslationMemorySubProjects = ({
     isFetching,
     paginationData,
     handlePaginationChange,
+    filters: filters as PaginationFunctionType,
   }
 }
 

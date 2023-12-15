@@ -33,7 +33,7 @@ const TranslationMemorySubProjectsTable: FC<TmSubProjectsTypes> = ({
     ...Object.fromEntries(searchParams.entries()),
   }
 
-  const { subProjects, paginationData, handlePaginationChange } =
+  const { subProjects, paginationData, handlePaginationChange, filters } =
     useFetchTranslationMemorySubProjects({
       id: memoryId,
       initialFilters: initialFilters,
@@ -41,8 +41,8 @@ const TranslationMemorySubProjectsTable: FC<TmSubProjectsTypes> = ({
     })
 
   const defaultPaginationData = {
-    per_page: Number(searchParams.get('per_page')),
-    page: Number(searchParams.get('page')) - 1,
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
   }
 
   const projectRows = useMemo(

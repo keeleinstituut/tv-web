@@ -275,7 +275,7 @@ export const parseLanguagePairs = (searchParams: URLSearchParams) => {
   return formattedLangPairs
 }
 
-export const formatLanguagePairs = (lang_pairs: LanguagePairType[]) => {
+export const stringifyLanguagePairs = (lang_pairs: LanguagePairType[]) => {
   const formatted_lang_pairs: DynamicObject = {}
   lang_pairs.forEach(function (element: LanguagePairType, index: number) {
     formatted_lang_pairs[`lang_pair[${index}][src]`] = element.src

@@ -49,6 +49,7 @@ export type TranslationMemoryFilters = {
   name?: string
   type?: TMType | TMType[]
   tv_domain?: string | string[]
+  tv_tags?: string[]
 } & PaginationFunctionType &
   SortingFunctionType
 

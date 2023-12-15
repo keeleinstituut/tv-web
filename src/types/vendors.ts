@@ -86,7 +86,8 @@ export interface VendorResponse {
   data: Vendor
 }
 
-export type GetVendorsPayload = PaginationFunctionType &
+export type GetVendorsPayload = Partial<Vendor> &
+  PaginationFunctionType &
   SortingFunctionType & {
     vendor_id?: string
     fullname?: string
