@@ -22,7 +22,7 @@
     z-index: -1;
   }
 
-  img {
+  .background {
     margin-left: spacing(16);
     width: 386px;
     height: 275px;
@@ -54,15 +54,22 @@
       }
     }
 
-    h1 {
+    h1,
+    .text {
       text-align: end;
+    }
+
+    .text {
+      margin: spacing(11) 0 spacing(1.5) 0;
+      color: $color-primary;
     }
 
     @media (max-width: $small_desktop) {
       margin: 0;
-      align-items: center;
+      align-items: start;
 
-      h1 {
+      h1,
+      .text {
         text-align: start;
       }
       .buttonsContainer {
@@ -78,4 +85,13 @@
     justify-content: center;
     padding: spacing(2) spacing(6);
   }
+}
+
+.logo {
+  width: 125px;
+  height: 72px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: spacing(8);
 }

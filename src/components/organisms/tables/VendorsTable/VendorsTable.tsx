@@ -55,7 +55,7 @@ const VendorsTable: FC<VendorsTableProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const { rolesFilters = [] } = useRolesFetch()
+  const { rolesFilters = [] } = useRolesFetch({})
   const { tagsFilters = [] } = useFetchTags({ type: TagTypes.Vendor })
   const {
     languageDirectionFilters,

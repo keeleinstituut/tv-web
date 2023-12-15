@@ -247,7 +247,8 @@
     "increase": "Suurenda",
     "decrease": "Vähendama",
     "expand": "Laienda",
-    "vendor_tasks": "Vaata teostaja ülesandeid"
+    "vendor_tasks": "Vaata teostaja ülesandeid",
+    "click_here": "Vajuta siia"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -273,7 +274,8 @@
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse"
   },
   "landing": {
-    "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks"
+    "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks",
+    "machine_translation_text": "Eesti Keele Instituudi masintõlkekeskkonna kasutamiseks"
   },
   "menu": {
     "landing": "Avaleht",
@@ -697,6 +699,7 @@
     "confirmation_text": "Kas oled kindel, et soovid tõlkemälu muuta avalikuks?",
     "confirmation_help_text": "Kui otsustad määrata tõlkemälu kasutamise tüübiks 'Avalik' või 'Asutuse üleseks jagamiseks', siis seda mälu ja selles olevaid tõlkesegmente näevad ja saavad tõlkimisel kasutad ka asutusevälised kasutajad.",
     "delete_confirmation_text": "Kas oled kindel, et soovid tõlkemälu kustutada?",
+    "create_empty_confirmation_text": "Kas oled kindel, et soovid luua tühja tõlkemälu?",
     "status": {
       "private": "Asutuse sisene",
       "shared": "Asutustega jagamiseks",

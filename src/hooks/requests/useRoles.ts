@@ -7,12 +7,13 @@ import { apiClient } from 'api'
 import { findIndex, filter, map } from 'lodash'
 import useAuth from 'hooks/useAuth'
 
-export const useRolesFetch = () => {
+export const useRolesFetch = ({ disabled }: { disabled?: boolean }) => {
   const {
     isLoading,
     isError,
     data: rolesData,
   } = useQuery<RolesResponse>({
+    enabled: !disabled,
     queryKey: ['roles'],
     queryFn: () => apiClient.get(endpoints.ROLES),
   })
@@ -22,6 +23,7 @@ export const useRolesFetch = () => {
     isError: isPrivilegesError,
     data: privilegesData,
   } = useQuery<PrivilegesResponse>({
+    enabled: !disabled,
     queryKey: ['privileges'],
     queryFn: () => apiClient.get(endpoints.PRIVILEGES),
   })
