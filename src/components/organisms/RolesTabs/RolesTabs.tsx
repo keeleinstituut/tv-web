@@ -24,7 +24,7 @@ const RolesTabs: FC = () => {
     allPrivileges = [],
     isLoading,
     isError,
-  } = useRolesFetch()
+  } = useRolesFetch({})
   const { userPrivileges } = useAuth()
   const [activeTab, setActiveTab] = useState<string>()
   const [tabNames, setTabNames] = useState<ObjectType>({})

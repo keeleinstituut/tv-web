@@ -54,7 +54,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
-  const { rolesFilters = [] } = useRolesFetch()
+  const { rolesFilters = [] } = useRolesFetch({})
   const { departmentFilters = [] } = useDepartmentsFetch()
 
   const usersData = useMemo(() => {
