@@ -107,7 +107,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       })),
       final_files,
       cat_jobs: catToolJobs,
-      write_to_memory: {},
+      write_to_memory: reduce(
+        SubProjectTmKeys,
+        (result, { key, is_writable }) => {
+          if (!key) return result
+          return { ...result, [key]: is_writable }
+        },
+        {}
+      ),
     }),
     [
       deadline_at,
@@ -116,10 +123,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       source_files,
       final_files,
       catToolJobs,
+      SubProjectTmKeys,
     ]
   )
 
-  const { control, getValues, watch, setValue, reset } = useForm<FormValues>({
+  const { control, getValues, watch, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
@@ -128,22 +136,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     reset(defaultValues)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues])
-
-  useEffect(() => {
-    if (SubProjectTmKeys) {
-      setValue(
-        'write_to_memory',
-        reduce(
-          SubProjectTmKeys,
-          (result, { key, is_writable }) => {
-            if (!key) return result
-            return { ...result, [key]: is_writable }
-          },
-          {}
-        )
-      )
-    }
-  }, [setValue, SubProjectTmKeys])
 
   const openSendToCatModal = useCallback(() => {
     const sourceFiles = getValues('source_files')

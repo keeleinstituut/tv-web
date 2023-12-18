@@ -47,24 +47,24 @@ const useAddFiles = (config: {
     },
     onSuccess: ({ data: { data } }: { data: { data: SourceFile[] } }) => {
       const { reference_object_id, reference_object_type, collection } = config
+      console.warn('onSuccess', reference_object_type, collection)
       if (
         reference_object_type === 'subproject' &&
         collection !== CollectionType.Help
       ) {
         const filesKey = filesKeys[collection]
+        console.warn('filesKey', filesKey)
         queryClient.setQueryData(
           ['subprojects', reference_object_id],
           (oldData?: SubProjectResponse) => {
             const { data: previousData } = oldData || {}
             if (!previousData) return oldData
+            const newData = {
+              ...previousData,
+              [filesKey]: [...previousData[filesKey], ...data],
+            }
             return {
-              data: {
-                ...previousData,
-                [filesKey]: {
-                  ...previousData[filesKey],
-                  ...data,
-                },
-              },
+              data: newData,
             }
           }
         )
