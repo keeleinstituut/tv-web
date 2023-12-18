@@ -35,12 +35,12 @@ import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
-import { getLocalDateOjectFromUtcDateString } from 'helpers'
+import {
+  getLocalDateOjectFromUtcDateString,
+  getUtcDateStringFromLocalDateObject,
+} from 'helpers'
 import { ClassifierValue } from 'types/classifierValues'
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-
-dayjs.extend(utc)
 
 // TODO: this is WIP code for subProject view
 
@@ -162,9 +162,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const handleChangeDeadline = useCallback(
     (value: { date: string; time: string }) => {
-      const { date, time } = value
-      const dateTime = dayjs.utc(`${date} ${time}`, 'DD/MM/YYYY HH:mm')
-      const formattedDateTime = dateTime.format('YYYY-MM-DDTHH:mm:ss[Z]')
+      const formattedDateTime = getUtcDateStringFromLocalDateObject(value)
       // const isDeadLineChanged = !isEqual(formattedDeadline, formattedDateTime)
 
       updateSubProject({
