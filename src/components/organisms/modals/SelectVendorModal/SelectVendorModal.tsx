@@ -142,6 +142,8 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         dst: destination_language_classifier_value_id,
       },
     ],
+    per_page: 10,
+    page: 1,
     ...(skill_id ? { skill_id: [skill_id] } : {}),
   })
 

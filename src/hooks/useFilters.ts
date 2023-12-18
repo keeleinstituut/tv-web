@@ -8,8 +8,6 @@ import {
 
 const useFilters = <TFilters>(initialFilters?: TFilters) => {
   const [filters, setFilters] = useState<TFilters | object>({
-    per_page: 10,
-    page: 1,
     ...initialFilters,
   })
   const page = 1

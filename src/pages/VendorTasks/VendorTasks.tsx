@@ -23,7 +23,11 @@ const VendorTasks: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchTasks({ institution_user_id: vendor?.institution_user_id })
+  } = useFetchTasks({
+    institution_user_id: vendor?.institution_user_id,
+    per_page: 10,
+    page: 1,
+  })
 
   return (
     <>

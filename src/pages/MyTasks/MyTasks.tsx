@@ -20,7 +20,7 @@ const MyTasks: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchTasks({ assigned_to_me: 1 })
+  } = useFetchTasks({ assigned_to_me: 1, per_page: 10, page: 1 })
 
   const {
     tasks: waitingTasks,
@@ -30,7 +30,7 @@ const MyTasks: FC = () => {
     handleFilterChange: handleWaitingTasksFilterChange,
     handleSortingChange: handleWaitingTasksSortingChange,
     handlePaginationChange: handleWaitingTasksPaginationChange,
-  } = useFetchTasks({ assigned_to_me: 0 })
+  } = useFetchTasks({ assigned_to_me: 0, per_page: 10, page: 1 })
 
   const {
     historyTasks = [],
@@ -40,7 +40,7 @@ const MyTasks: FC = () => {
     handleFilterChange: handleHistoryFilterChange,
     handleSortingChange: handleHistorySortingChange,
     handlePaginationChange: handleHistoryPaginationChange,
-  } = useFetchHistoryTasks()
+  } = useFetchHistoryTasks({ per_page: 10, page: 1 })
 
   const [activeTab, setActiveTab] = useState<string | undefined>(
     t('my_tasks.my_assignments')

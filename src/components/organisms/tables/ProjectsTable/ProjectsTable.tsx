@@ -76,6 +76,8 @@ const ProjectsTable: FC = () => {
     filters,
   } = useFetchProjects({
     only_show_personal_projects: onlyPersonalProjectsAllowed ? 1 : 0,
+    per_page: 10,
+    page: 1,
   })
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,

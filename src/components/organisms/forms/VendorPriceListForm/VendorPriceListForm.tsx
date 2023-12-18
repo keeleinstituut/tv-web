@@ -86,6 +86,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     vendor_id,
     sort_by: 'lang_pair',
     sort_order: 'asc',
+    per_page: 10,
+    page: 1,
   })
 
   const orderedList = orderBy(

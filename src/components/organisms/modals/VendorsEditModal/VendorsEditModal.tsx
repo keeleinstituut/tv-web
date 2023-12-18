@@ -55,7 +55,13 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
   const { users, paginationData, handlePaginationChange, handleFilterChange } =
-    useFetchUsers({}, true)
+    useFetchUsers(
+      {
+        per_page: 10,
+        page: 1,
+      },
+      true
+    )
 
   const { createVendor } = useCreateVendors(vendorsFilters)
   const { deleteVendors } = useDeleteVendors(vendorsFilters)

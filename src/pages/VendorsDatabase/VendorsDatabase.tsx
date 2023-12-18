@@ -25,7 +25,10 @@ const VendorsDatabase: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useVendorsFetch()
+  } = useVendorsFetch({
+    per_page: 10,
+    page: 1,
+  })
 
   const handleOpenVendorsEditModal = useCallback(() => {
     showModal(ModalTypes.VendorsEdit, { vendorsFilters: filters })

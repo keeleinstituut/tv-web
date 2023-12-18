@@ -68,6 +68,8 @@ const SubProjectsTable: FC = () => {
     handlePaginationChange,
   } = useFetchSubProjects({
     only_show_personal_projects: onlyPersonalProjectsAllowed ? 1 : 0,
+    per_page: 10,
+    page: 1,
   })
 
   const {
