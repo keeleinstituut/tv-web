@@ -28,6 +28,8 @@ import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import { FilterFunctionType } from 'types/collective'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
 
 type SubProjectTableRow = {
   ext_id: string
@@ -86,6 +88,9 @@ const SubProjectsTable: FC = () => {
     label: t(`projects.status.${status}`),
     value: status,
   }))
+  const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
+    type: ClassifierValueType.ProjectType,
+  })
 
   const projectRows = useMemo(
     () =>
@@ -130,7 +135,7 @@ const SubProjectsTable: FC = () => {
     (filters?: FilterFunctionType) => {
       let currentFilters = filters
       if (filters && 'language_direction' in filters) {
-        const { language_direction, ...rest } = filters || {}
+        const { language_direction, ...rest } = currentFilters || {}
         const typedLanguageDirection = language_direction as string[]
 
         const modifiedLanguageDirections = map(
@@ -142,6 +147,16 @@ const SubProjectsTable: FC = () => {
 
         currentFilters = {
           language_direction: modifiedLanguageDirections,
+          ...rest,
+        }
+      }
+
+      if (filters && 'type_classifier_value_id' in filters) {
+        const { type_classifier_value_id, ...rest } = currentFilters || {}
+        const typedTypeClassifierValueId = type_classifier_value_id as string
+
+        currentFilters = {
+          type_classifier_value_id: [typedTypeClassifierValueId],
           ...rest,
         }
       }
@@ -220,6 +235,11 @@ const SubProjectsTable: FC = () => {
     columnHelper.accessor('type', {
       header: () => t('label.type'),
       footer: (info) => info.column.id,
+      meta: {
+        filterOption: { type_classifier_value_id: typeFilters },
+        filterValue: filters.type_classifier_value_id,
+        isCustomSingleDropdown: true,
+      },
     }),
     columnHelper.accessor('status', {
       header: () => t('label.status'),
