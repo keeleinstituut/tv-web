@@ -33,12 +33,21 @@ const VendorsDatabase: FC = () => {
 
   const [searchValue, setSearchValue] = useState<string>('')
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    []
+  )
+
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      debounce(handleFilterChange, 300)({ fullname: event.target.value })
+      debouncedChangeHandler({ fullname: event.target.value })
     },
-    [handleFilterChange]
+    [debouncedChangeHandler]
   )
 
   return (

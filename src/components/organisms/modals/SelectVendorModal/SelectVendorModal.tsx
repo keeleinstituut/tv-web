@@ -43,16 +43,22 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    []
+  )
+
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      debounce(
-        handleFilterChange,
-        300
-      )({ institution_user_name: event.target.value })
+      debouncedChangeHandler({ institution_user_name: event.target.value })
       // TODO: not sure yet whether filtering param will be name
     },
-    [handleFilterChange]
+    [debouncedChangeHandler]
   )
 
   const handleClearFilters = useCallback(() => {
