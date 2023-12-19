@@ -1,0 +1,22 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.manualContainer {
+  display: grid;
+  grid-template-columns: 70fr 30fr;
+  padding: spacing(2) spacing(7) spacing(16) spacing(7);
+
+  .manualContentContainer {
+    grid-column-start: 1;
+    background-color: $color-white;
+    box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.14);
+    padding: spacing(8);
+    margin-top: spacing(4);
+    @include manualStyle($color-text-dark);
+
+    h1,
+    h2 {
+      margin-bottom: spacing(4);
+    }
+  }
+}
