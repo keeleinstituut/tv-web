@@ -30,6 +30,7 @@ import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import { FilterFunctionType } from 'types/collective'
+import { useSearchParams } from 'react-router-dom'
 
 // TODO: statuses might come from BE instead
 // Currently unclear
@@ -50,9 +51,9 @@ const columnHelper = createColumnHelper<ProjectTableRow>()
 // TODO: we keep all filtering and sorting options inside form
 // This was we can do a new request easily every time form values change
 interface FormValues {
-  statuses?: ProjectStatus[]
+  statuses: ProjectStatus[]
   only_show_personal_projects: boolean
-  ext_id?: string
+  ext_id: string
 }
 
 const ProjectsTable: FC = () => {
@@ -67,6 +68,17 @@ const ProjectsTable: FC = () => {
     ])
   )
 
+  const [searchParams, _] = useSearchParams()
+  const initialFilters = {
+    ...Object.fromEntries(searchParams.entries()),
+    statuses: searchParams.getAll('statuses'),
+    tag_ids: searchParams.getAll('tag_ids'),
+    language_directions: searchParams.getAll('language_directions'),
+    only_show_personal_projects: onlyPersonalProjectsAllowed
+      ? 1
+      : Number(searchParams.get('only_show_personal_projects')) || 0,
+  }
+
   const {
     projects,
     paginationData,
@@ -74,9 +86,8 @@ const ProjectsTable: FC = () => {
     handleSortingChange,
     handlePaginationChange,
     filters,
-  } = useFetchProjects({
-    only_show_personal_projects: onlyPersonalProjectsAllowed ? 1 : 0,
-  })
+  } = useFetchProjects(initialFilters, true)
+
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
   })
@@ -96,6 +107,11 @@ const ProjectsTable: FC = () => {
     label: t(`projects.status.${status}`),
     value: status,
   }))
+
+  const defaultPaginationData = {
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
+  }
 
   // TODO: remove default values, once we have actual data
   const projectRows = useMemo(
@@ -136,11 +152,20 @@ const ProjectsTable: FC = () => {
     [projects]
   )
 
+  const defaultFilterValues = useMemo(
+    () => ({
+      statuses: (filters?.statuses as ProjectStatus[]) || [],
+      only_show_personal_projects: !!(onlyPersonalProjectsAllowed
+        ? 1
+        : Number(filters?.only_show_personal_projects) || 0),
+      ext_id: filters?.ext_id || '',
+    }),
+    [filters]
+  )
+
   const { control, handleSubmit, watch } = useForm<FormValues>({
     mode: 'onChange',
-    defaultValues: {
-      only_show_personal_projects: onlyPersonalProjectsAllowed,
-    },
+    defaultValues: defaultFilterValues,
     resetOptions: {
       keepErrors: true,
     },
@@ -234,6 +259,9 @@ const ProjectsTable: FC = () => {
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
+        filterValue: filters?.language_directions
+          ? filters?.language_directions.map((item) => item.replace(':', '_'))
+          : [],
       },
     }),
     columnHelper.accessor('type', {
@@ -255,6 +283,7 @@ const ProjectsTable: FC = () => {
       meta: {
         filterOption: { tag_ids: tagsFilters },
         showSearch: true,
+        filterValue: filters?.tag_ids || [],
       },
     }),
     columnHelper.accessor('status', {
@@ -267,6 +296,7 @@ const ProjectsTable: FC = () => {
       footer: (info) => info.column.id,
       meta: {
         sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by == 'price' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('deadline_at', {
@@ -302,6 +332,8 @@ const ProjectsTable: FC = () => {
       },
       meta: {
         sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by == 'deadline_at' ? filters.sort_order : '',
       },
     }),
   ] as ColumnDef<ProjectTableRow>[]
@@ -316,6 +348,7 @@ const ProjectsTable: FC = () => {
         onPaginationChange={handlePaginationChange}
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
+        defaultPaginationData={defaultPaginationData}
         headComponent={
           <div className={classes.topSection}>
             <FormInput

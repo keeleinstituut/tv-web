@@ -16,7 +16,7 @@ export enum TaskType {
 export type TasksPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     project_id?: string
-    type_classifier_value_id?: string
+    type_classifier_value_id?: string[]
     assigned_to_me?: number
     lang_pair?: { src?: string; dst?: string }[]
     task_type?: TaskType

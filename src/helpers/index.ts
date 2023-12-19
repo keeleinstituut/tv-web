@@ -1,26 +1,27 @@
 import dayjs from 'dayjs'
 import {
-  omit,
+  compact,
+  flatMap,
+  includes,
+  join,
+  keys,
   map,
+  omit,
+  pickBy,
+  reduce,
+  replace,
   split,
   trim,
-  reduce,
-  values,
-  join,
-  compact,
-  replace,
-  includes,
-  pickBy,
-  keys,
-  flatMap,
   uniqBy,
+  values,
 } from 'lodash'
 import { FullRouteObject } from 'router/router'
-import { PrivilegeKey, PrivilegeType, Privileges } from 'types/privileges'
+import { PrivilegeKey, Privileges, PrivilegeType } from 'types/privileges'
 
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import timezone from 'dayjs/plugin/timezone'
+import { LanguagePairType } from 'types/collective'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -29,6 +30,10 @@ dayjs.extend(timezone)
 // TODO: split these into separate helper files, if we have too many
 interface ObjectWithChildren {
   children?: object[]
+}
+
+export interface DynamicObject {
+  [key: string]: any
 }
 
 type CsvObjectStructure<ValuesType> = Record<string, ValuesType>
@@ -254,4 +259,27 @@ export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
     'key'
   )
   return allNewPrivileges
+}
+
+export const parseLanguagePairs = (searchParams: URLSearchParams) => {
+  const langPairs = []
+  for (const [key, value] of Array.from(searchParams)) {
+    if (key.startsWith('lang_pair[')) {
+      langPairs.push(value)
+    }
+  }
+  const formattedLangPairs = []
+  for (let i = 0; i < langPairs.length; i += 2) {
+    formattedLangPairs.push({ src: langPairs[i], dst: langPairs[i + 1] })
+  }
+  return formattedLangPairs
+}
+
+export const stringifyLanguagePairs = (lang_pairs: LanguagePairType[]) => {
+  const formatted_lang_pairs: DynamicObject = {}
+  lang_pairs.forEach(function (element: LanguagePairType, index: number) {
+    formatted_lang_pairs[`lang_pair[${index}][src]`] = element.src
+    formatted_lang_pairs[`lang_pair[${index}][dst]`] = element.dst
+  })
+  return formatted_lang_pairs
 }

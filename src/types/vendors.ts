@@ -89,6 +89,10 @@ export interface VendorResponse {
 export type GetVendorsPayload = Partial<Vendor> &
   PaginationFunctionType &
   SortingFunctionType & {
+    vendor_id?: string
+    fullname?: string
+    role_id?: string[]
+    tag_id?: string[]
     lang_pair?: { src?: string; dst?: string }[]
   }
 
