@@ -1,4 +1,4 @@
-import { useState, forwardRef, useRef, FC, SVGProps } from 'react'
+import { useState, forwardRef, useRef, FC, SVGProps, useEffect } from 'react'
 import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
@@ -9,8 +9,11 @@ import classNames from 'classnames'
 import { Icon } from '../Button/Button'
 
 import classes from './classes.module.scss'
+import TimeDropdown from '../TimeDropdown/TimeDropdown'
+import useModalContext from 'hooks/useModalContext'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
-type SharedTimeProps = {
+export type SharedTimeProps = {
   value?: string
   disabled?: boolean
   ariaLabel?: string
@@ -29,11 +32,8 @@ export type TimePickerInputProps = SharedTimeProps & {
 }
 
 export type TimeInputProps = SharedTimeProps & {
-  toggleTimeColumnVisible: () => void
+  toggleTimeColumnVisible: (event: MouseEvent | KeyboardEvent) => void
 }
-
-const formatTimeString = (time: number) =>
-  time?.toString().length === 1 ? `0${time}` : time?.toString()
 
 const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
   function TimeInput(
@@ -65,10 +65,10 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
         onChange(inputValue)
       }
     }
-
+    console.log(value)
     return (
       <>
-        <input
+        {/* <input
           className={classNames(
             classes.timeInput,
             disabled && classes.disabledTimeInput,
@@ -84,14 +84,42 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
           ref={withMask(showSeconds ? '99:99:99' : '99:99', {
             placeholder: '0',
           })}
-        />
-        <Icon
+        /> */}
+
+        <BaseButton
+          className={classNames(
+            classes.timeInput,
+            disabled && classes.disabledTimeInput,
+            error && classes.error
+          )}
+          id={name}
+          disabled={disabled}
+          // ref={ref}
+          onClick={toggleTimeColumnVisible}
+          aria-label={ariaLabel}
+        >
+          <p
+            ref={withMask(showSeconds ? '99:99:99' : '99:99', {
+              placeholder: '0',
+            })}
+          >
+            {value ? value : placeholder || ''}
+          </p>
+          <Icon
+            icon={icon || Clock}
+            className={classNames(
+              classes.timeIcon,
+              disabled && classes.disabledIcon
+            )}
+          />
+        </BaseButton>
+        {/* <Icon
           icon={icon || Clock}
           className={classNames(
             classes.timeIcon,
             disabled && classes.disabledIcon
           )}
-        />
+        /> */}
       </>
     )
   }
@@ -113,54 +141,36 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       icon,
       setIsModalOpen,
     } = props
-
-    const splittedTimeValue = value?.split(':')
-
-    const hourValue = Number(splittedTimeValue?.[0]) || 0
-    const minuteValue = Number(splittedTimeValue?.[1]) || 0
-    const secondValue = Number(splittedTimeValue?.[2]) || 0
-
+    //console.log('piker valeu', value)
+    const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
     const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
+    const { modalContentId } = useModalContext()
+    const shouldUsePortal = !!modalContentId
 
-    const toggleTimeColumnVisible = () => {
+    const toggleTimeColumnVisible = (event: MouseEvent | KeyboardEvent) => {
       setIsModalOpen && setIsModalOpen(!isTimeColumnOpen)
       setTimeColumnOpen(!isTimeColumnOpen)
+      if (!document.querySelector('.time-focus') && !isTimeColumnOpen) {
+        const target = event?.target as HTMLElement
+        target.classList.add('time-focus')
+        setFocusElement(target)
+      }
     }
 
     const clickAwayInputRef = useRef(null)
+    const wrapperRef = useRef(null)
+
+    useEffect(() => {
+      if (document.querySelector('.time-focus') && !isTimeColumnOpen) {
+        focusElement?.classList.remove('time-focus')
+        focusElement?.focus()
+      }
+    }, [focusElement, isTimeColumnOpen])
 
     useClickAway(() => {
       setIsModalOpen && setIsModalOpen(false)
       setTimeColumnOpen(false)
-    }, [clickAwayInputRef])
-
-    const handleSetHour = (newHour: number) => {
-      const timeWithSeconds = `${formatTimeString(newHour)}:${formatTimeString(
-        minuteValue
-      )}:${formatTimeString(secondValue)}`
-      const formattedTime = `${formatTimeString(newHour)}:${formatTimeString(
-        minuteValue
-      )}`
-      onChange(showSeconds ? timeWithSeconds : formattedTime)
-    }
-
-    const handleSetMinute = (newMinute: number) => {
-      const timeWithSeconds = `${formatTimeString(
-        hourValue
-      )}:${formatTimeString(newMinute)}:${formatTimeString(secondValue)}`
-      const formattedTime = `${formatTimeString(hourValue)}:${formatTimeString(
-        newMinute
-      )}`
-      onChange(showSeconds ? timeWithSeconds : formattedTime)
-    }
-
-    const handleSetSecond = (newSecond: number) => {
-      const timeWithSeconds = `${formatTimeString(
-        hourValue
-      )}:${formatTimeString(minuteValue)}:${formatTimeString(newSecond)}`
-
-      onChange(timeWithSeconds)
-    }
+    }, [clickAwayInputRef, ...(wrapperRef?.current ? [wrapperRef] : [])])
 
     return (
       <InputWrapper
@@ -168,7 +178,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         name={name}
         error={error}
         className={className}
-        ref={clickAwayInputRef}
+        ref={shouldUsePortal ? wrapperRef : clickAwayInputRef}
         wrapperClass={classes.timePickerWrapper}
         errorZIndex={errorZIndex}
       >
@@ -184,37 +194,17 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           ref={ref}
           icon={icon}
         />
-        <div
-          className={
-            !isTimeColumnOpen || disabled
-              ? classes.hiddenContainer
-              : classes.timeColumnContainer
-          }
-        >
-          <TimeColumn
-            start={0}
-            end={24}
-            value={hourValue}
-            setValue={handleSetHour}
-            isTimeColumnOpen={isTimeColumnOpen}
-          />
-          <TimeColumn
-            start={0}
-            end={60}
-            value={minuteValue}
-            setValue={handleSetMinute}
-            isTimeColumnOpen={isTimeColumnOpen}
-          />
-          {showSeconds && (
-            <TimeColumn
-              start={0}
-              end={60}
-              value={secondValue}
-              setValue={handleSetSecond}
-              isTimeColumnOpen={isTimeColumnOpen}
-            />
-          )}
-        </div>
+        <TimeDropdown
+          wrapperRef={wrapperRef}
+          clickAwayInputRef={clickAwayInputRef}
+          isTimeColumnOpen={isTimeColumnOpen}
+          disabled={disabled}
+          onChange={onChange}
+          value={value}
+          showSeconds={showSeconds}
+          name={name}
+          setIsOpen={setTimeColumnOpen}
+        />
       </InputWrapper>
     )
   }

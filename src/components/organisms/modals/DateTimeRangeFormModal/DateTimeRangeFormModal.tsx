@@ -96,7 +96,8 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
     setError,
     formState: { isSubmitting, isValid, isDirty },
   } = useForm<FormValues>({
-    reValidateMode: 'onChange',
+    mode: 'onTouched',
+    //reValidateMode: 'onBlur',
     defaultValues: defaultValues,
     resetOptions: {
       keepErrors: false,

@@ -1,26 +1,27 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-.hiddenContainer {
-  display: none;
-}
+// .hiddenContainer {
+//   display: none;
+// }
 
-.timeColumnContainer {
-  display: flex;
-  border: 1px solid $color-input-border;
-  border-radius: 5px;
-  height: 106px;
-  max-width: 166px;
-  width: fit-content;
-  background-color: $color-white;
-  position: absolute;
-  z-index: 2;
-}
+// .timeColumnContainer {
+//   display: flex;
+//   border: 1px solid $color-input-border;
+//   border-radius: 5px;
+//   height: 106px;
+//   max-width: 166px;
+//   width: fit-content;
+//   background-color: $color-white;
+//   position: absolute;
+//   z-index: 2;
+// }
 
 .timeInput {
   width: 100%;
-  display: block;
-  appearance: none;
+  display: flex;
+  justify-content: space-between;
+  // appearance: none;
   background-color: $color-white;
   border: 1px solid $color-input-border;
   border-radius: 4px;
