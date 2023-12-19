@@ -72,6 +72,7 @@ const SubProjectsTable: FC = () => {
     only_show_personal_projects: Number(
       searchParams.get('only_show_personal_projects') || 0
     ),
+    type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
   }
 
   const {

@@ -81,6 +81,7 @@ const ProjectsTable: FC = () => {
     only_show_personal_projects: onlyPersonalProjectsAllowed
       ? 1
       : Number(searchParams.get('only_show_personal_projects')) || 0,
+    type_classifier_value_ids: searchParams.getAll('type_classifier_value_ids'),
   }
 
   const {
