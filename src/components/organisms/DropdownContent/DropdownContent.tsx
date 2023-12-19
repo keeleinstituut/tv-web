@@ -264,7 +264,7 @@ const DropdownContentComponent = forwardRef<
           onClick={handleCancel}
           hidden={isCustomSingleDropdown}
         >
-          {t('button.cancel')}
+          {t('button.dropdown_cancel')}
         </Button>
         <Button
           appearance={AppearanceTypes.Primary}

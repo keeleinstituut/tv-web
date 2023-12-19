@@ -248,7 +248,8 @@
     "decrease": "Vähendama",
     "expand": "Laienda",
     "vendor_tasks": "Vaata teostaja ülesandeid",
-    "click_here": "Vajuta siia"
+    "click_here": "Vajuta siia",
+    "dropdown_cancel": "Sulge"
   },
   "error": {
     "input_title": "Veateade: ",
