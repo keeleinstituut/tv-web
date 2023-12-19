@@ -52,7 +52,7 @@ const SubmitButton: FC<SubmitButtonProps> = ({ control, ...rest }) => {
 }
 
 const AddUsersTableForm: FC = () => {
-  const { existingRoles = [] } = useRolesFetch()
+  const { existingRoles = [] } = useRolesFetch({})
   const { validateUsers, isLoading } = useValidateUsers()
   const { uploadUsers, isLoading: isUploadLoading } = useUsersUpload()
   const [tableData, setTableData] = useState<UserCsvType[]>([])

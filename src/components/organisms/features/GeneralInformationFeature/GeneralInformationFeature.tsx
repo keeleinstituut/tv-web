@@ -91,7 +91,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     useFetchSubProjectCatToolJobs({
       id,
     })
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id })
+  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
+    subProjectId: id,
+  })
 
   const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
 
@@ -108,7 +110,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       final_files,
       cat_jobs: catToolJobs,
       write_to_memory: reduce(
-        SubProjectTmKeys,
+        subProjectTmKeyObjectsArray,
         (result, { key, is_writable }) => {
           if (!key) return result
           return { ...result, [key]: is_writable }
@@ -123,7 +125,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       source_files,
       final_files,
       catToolJobs,
-      SubProjectTmKeys,
+      subProjectTmKeyObjectsArray,
     ]
   )
 
@@ -240,7 +242,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           control={control}
           isEditable={isSomethingEditable}
           subProjectId={id}
-          SubProjectTmKeys={SubProjectTmKeys}
+          subProjectTmKeyObjectsArray={subProjectTmKeyObjectsArray}
           subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}
         />
