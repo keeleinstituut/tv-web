@@ -36,6 +36,7 @@ import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
+import Terms from 'pages/Terms/Terms'
 
 // import icons
 
@@ -51,6 +52,7 @@ import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
+import { ReactComponent as TermsIcon } from 'assets/icons/terms_icon.svg'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,
@@ -301,6 +303,12 @@ export const protectedRoutes: FullRouteObject[] = [
         privileges: [Privileges.ViewInstitutionPriceRate],
       },
     ],
+  },
+  {
+    path: 'terms',
+    label: i18n.t('menu.sidebar_terms'),
+    element: <Terms />,
+    Icon: TermsIcon,
   },
   {
     path: 'manual',

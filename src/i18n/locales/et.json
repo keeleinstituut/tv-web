@@ -298,7 +298,8 @@
     "sidebar_manual": "Kasutusjuhend",
     "table_of_contents": "SISUKORD",
     "article_created_by": "Artikli koostaja: {{ author }} | {{ authorEmail }}",
-    "last_changed": "Viimati muudetud {{ date }}"
+    "last_changed": "Viimati muudetud {{ date }}",
+    "sidebar_terms": "Kasutustingimused"
   },
   "alt": {
     "header_logo": "Logo",
