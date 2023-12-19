@@ -14,6 +14,7 @@ import VendorPriceManagementButton from 'components/organisms/VendorPriceManagem
 import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButton/DeleteVendorPriceButton'
 
 import classes from './classes.module.scss'
+import { useSearchParams } from 'react-router-dom'
 
 export type PriceObject = {
   id: string
@@ -73,9 +74,15 @@ const columnHelper = createColumnHelper<PriceObject>()
 
 const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
 
   const { skills: skillsData } = useFetchSkills()
   const { id: vendor_id } = vendor
+
+  const initialFilters = {
+    ...Object.fromEntries(searchParams.entries()),
+    vendor_id: vendor_id,
+  }
 
   const {
     prices: pricesData,
@@ -83,11 +90,13 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     handlePaginationChange,
     filters,
   } = useAllPricesFetch({
-    vendor_id,
-    sort_by: 'lang_pair',
-    sort_order: 'asc',
-    per_page: 10,
-    page: 1,
+    initialFilters: {
+      ...initialFilters,
+      ...{ sort_by: 'lang_pair', sort_order: 'asc' },
+      per_page: 10,
+      page: 1,
+    },
+    saveQueryParams: true,
   })
 
   const orderedList = orderBy(
@@ -95,6 +104,11 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     ['dst_lang_classifier_value.name'],
     ['desc']
   )
+
+  const defaultPaginationData = {
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
+  }
 
   const priceListCreated = dayjs(
     orderedList ? orderedList[0]?.created_at : ''
@@ -254,6 +268,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               />
             </div>
           }
+          defaultPaginationData={defaultPaginationData}
         />
       </Root>
 

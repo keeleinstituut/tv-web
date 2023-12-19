@@ -21,21 +21,24 @@ import { map, flatten, join, omit, pick, filter } from 'lodash'
 import { SubProjectsResponse } from 'types/projects'
 import { useCallback, useEffect } from 'react'
 import useWaitForLoading from 'hooks/useWaitForLoading'
+import { PaginationFunctionType } from 'types/collective'
 
 dayjs.extend(customParseFormat)
 
 export const useFetchTranslationMemories = ({
   initialFilters,
   disabled,
+  saveQueryParams,
 }: {
   initialFilters?: TranslationMemoryFilters
   disabled?: boolean
+  saveQueryParams?: boolean
 }) => {
   const {
     filters,
     handleFilterChange,
     //handlePaginationChange,
-  } = useFilters<TranslationMemoryFilters>(initialFilters)
+  } = useFilters<TranslationMemoryFilters>(initialFilters, saveQueryParams)
 
   const filterWithoutSearch = omit(filters, 'name')
   const searchValue = pick(filters, 'name')
@@ -271,11 +274,15 @@ export const useExportTMX = () => {
 
 export const useFetchTranslationMemorySubProjects = ({
   id,
+  initialFilters,
+  saveQueryParams,
 }: {
   id?: string
+  initialFilters?: PaginationFunctionType
+  saveQueryParams?: boolean
 }) => {
   const { filters, handlePaginationChange } =
-    useFilters<TranslationMemoryFilters>()
+    useFilters<TranslationMemoryFilters>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, isFetching, data } =
     useQuery<SubProjectsResponse>({
@@ -295,6 +302,7 @@ export const useFetchTranslationMemorySubProjects = ({
     isFetching,
     paginationData,
     handlePaginationChange,
+    filters: filters as PaginationFunctionType,
   }
 }
 

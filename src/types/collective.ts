@@ -46,3 +46,8 @@ export interface PaginationFunctionType {
   page?: number
   limit?: number
 }
+
+export interface LanguagePairType {
+  src: string
+  dst: string
+}

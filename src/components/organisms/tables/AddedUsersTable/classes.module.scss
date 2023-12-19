@@ -1,3 +1,9 @@
+@import 'styles/variables';
+
+.topSection {
+  padding: spacing(6) spacing(4);
+}
+
 .addedUserLink {
   display: grid;
   grid-auto-flow: column;

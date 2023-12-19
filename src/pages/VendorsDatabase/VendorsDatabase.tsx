@@ -1,57 +1,21 @@
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { isEmpty, includes, debounce } from 'lodash'
-import { Root } from '@radix-ui/react-form'
-import Loader from 'components/atoms/Loader/Loader'
+import { includes } from 'lodash'
 import useAuth from 'hooks/useAuth'
 import VendorsTable from 'components/organisms/tables/VendorsTable/VendorsTable'
-import { useVendorsFetch } from 'hooks/requests/useVendors'
 import { Privileges } from 'types/privileges'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
-import TextInput from 'components/molecules/TextInput/TextInput'
 
 const VendorsDatabase: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
-  const {
-    vendors,
-    paginationData,
-    isLoading,
-    filters,
-    handleFilterChange,
-    handleSortingChange,
-    handlePaginationChange,
-  } = useVendorsFetch({
-    per_page: 10,
-    page: 1,
-  })
-
   const handleOpenVendorsEditModal = useCallback(() => {
-    showModal(ModalTypes.VendorsEdit, { vendorsFilters: filters })
-  }, [filters])
-
-  const [searchValue, setSearchValue] = useState<string>('')
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedChangeHandler = useCallback(
-    debounce(handleFilterChange, 300, {
-      leading: false,
-      trailing: true,
-    }),
-    []
-  )
-
-  const handleSearchVendors = useCallback(
-    (event: { target: { value: string } }) => {
-      setSearchValue(event.target.value)
-      debouncedChangeHandler({ fullname: event.target.value })
-    },
-    [debouncedChangeHandler]
-  )
+    showModal(ModalTypes.VendorsEdit, {})
+  }, [])
 
   return (
     <>
@@ -83,29 +47,7 @@ const VendorsDatabase: FC = () => {
         {t('button.export_csv')}
       </Button> */}
       </div>
-      <Root onSubmit={(e) => e.preventDefault()}>
-        <Loader loading={isLoading && isEmpty(vendors)} />
-        <TextInput
-          name={'search'}
-          ariaLabel={t('placeholder.search_by_name')}
-          placeholder={t('placeholder.search_by_name')}
-          value={searchValue}
-          onChange={handleSearchVendors}
-          className={classes.searchInput}
-          inputContainerClassName={classes.generalVendorsListInput}
-          isSearch
-        />
-        <VendorsTable
-          data={vendors}
-          {...{
-            paginationData,
-            handleFilterChange,
-            handleSortingChange,
-            handlePaginationChange,
-            filters,
-          }}
-        />
-      </Root>
+      <VendorsTable />
     </>
   )
 }

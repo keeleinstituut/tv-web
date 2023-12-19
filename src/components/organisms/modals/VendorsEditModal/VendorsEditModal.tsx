@@ -55,14 +55,16 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
   const { users, paginationData, handlePaginationChange, handleFilterChange } =
-    useFetchUsers(
-      {
+    useFetchUsers({
+      initialFilters: {
         per_page: 10,
         page: 1,
       },
-      true
-    )
+      saveQueryParams: false,
+      useTranslationService: true,
+    })
 
+  // TODO: might need to take these filters from url instead
   const { createVendor } = useCreateVendors(vendorsFilters)
   const { deleteVendors } = useDeleteVendors(vendorsFilters)
 

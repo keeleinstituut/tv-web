@@ -8,9 +8,25 @@ import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
 
 import classes from './classes.module.scss'
+import { useSearchParams } from 'react-router-dom'
+import { parseLanguagePairs } from 'helpers'
 
 const MyTasks: FC = () => {
   const { t } = useTranslation()
+
+  const [searchParams] = useSearchParams()
+  const initialFilters = useMemo(() => {
+    const sort_by = searchParams.get('sort_by')
+    const sort_order = searchParams.get('sort_order') as 'asc' | 'desc'
+    return {
+      page: Number(searchParams.get('page')) || 1,
+      per_page: Number(searchParams.get('per_page')) || 10,
+      ...(sort_by ? { sort_by } : {}),
+      ...(sort_order ? { sort_order } : {}),
+      lang_pair: parseLanguagePairs(searchParams),
+      type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
+    }
+  }, [searchParams])
 
   const {
     tasks,
@@ -20,7 +36,7 @@ const MyTasks: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchTasks({ assigned_to_me: 1, per_page: 10, page: 1 })
+  } = useFetchTasks({ ...initialFilters, assigned_to_me: 1 }, true)
 
   const {
     tasks: waitingTasks,
@@ -30,7 +46,7 @@ const MyTasks: FC = () => {
     handleFilterChange: handleWaitingTasksFilterChange,
     handleSortingChange: handleWaitingTasksSortingChange,
     handlePaginationChange: handleWaitingTasksPaginationChange,
-  } = useFetchTasks({ assigned_to_me: 0, per_page: 10, page: 1 })
+  } = useFetchTasks({ ...initialFilters, assigned_to_me: 0 }, true)
 
   const {
     historyTasks = [],
@@ -40,7 +56,7 @@ const MyTasks: FC = () => {
     handleFilterChange: handleHistoryFilterChange,
     handleSortingChange: handleHistorySortingChange,
     handlePaginationChange: handleHistoryPaginationChange,
-  } = useFetchHistoryTasks({ per_page: 10, page: 1 })
+  } = useFetchHistoryTasks({ per_page: 10, page: 1 }, true)
 
   const [activeTab, setActiveTab] = useState<string | undefined>(
     t('my_tasks.my_assignments')
