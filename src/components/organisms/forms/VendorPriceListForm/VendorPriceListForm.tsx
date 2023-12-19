@@ -74,7 +74,7 @@ const columnHelper = createColumnHelper<PriceObject>()
 
 const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
-  const [searchParams, _] = useSearchParams()
+  const [searchParams] = useSearchParams()
 
   const { skills: skillsData } = useFetchSkills()
   const { id: vendor_id } = vendor
@@ -93,6 +93,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     initialFilters: {
       ...initialFilters,
       ...{ sort_by: 'lang_pair', sort_order: 'asc' },
+      per_page: 10,
+      page: 1,
     },
     saveQueryParams: true,
   })

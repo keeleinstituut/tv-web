@@ -42,7 +42,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
-  const [searchParams, _] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const initialFilters = {
     ...Object.fromEntries(searchParams.entries()),
     statuses: (searchParams.getAll('statuses') as UserStatus[]) || [
@@ -75,12 +75,21 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
     filters?.fullname || ''
   )
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    []
+  )
+
   const handleSearchUsers = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      debounce(handleFilterChange, 300)({ fullname: event.target.value })
+      debouncedChangeHandler({ fullname: event.target.value })
     },
-    [handleFilterChange]
+    [debouncedChangeHandler]
   )
 
   const usersData = useMemo(() => {
@@ -123,7 +132,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       footer: (info) => info.column.id,
       meta: {
         sortingOption: ['asc', 'desc'],
-        currentSorting: filters?.sort_by == 'name' ? filters.sort_order : '',
+        currentSorting: filters?.sort_by === 'name' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('department', {

@@ -269,19 +269,21 @@ const TasksTable: FC<TasksTableProps> = ({
           },
           meta: {
             sortingOption: ['asc', 'desc'],
-            currentSorting: sort_by == 'deadline_at' ? sort_order : '',
+            currentSorting: sort_by === 'deadline_at' ? sort_order : '',
           },
         }),
       ] as ColumnDef<TaskTableRow>[],
     [
-      t,
-      isHistoryTab,
       languageDirectionFilters,
       lang_pair,
-      typeFilters,
-      type_classifier_value_id,
       loadMore,
       handleSearch,
+      typeFilters,
+      type_classifier_value_id,
+      sort_by,
+      sort_order,
+      t,
+      isHistoryTab,
     ]
   )
 

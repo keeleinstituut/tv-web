@@ -51,17 +51,18 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
     setSelectedValues,
   } = useLanguageDirections({})
 
-  const [searchParams, _] = useSearchParams()
-  const initialFilters = {
-    page: Number(searchParams.get('page')),
-    per_page: Number(searchParams.get('per_page')),
-    role_id: searchParams.getAll('role_id'),
-    tag_id: searchParams.getAll('tag_id'),
-    lang_pair: parseLanguagePairs(searchParams),
-    ...(searchParams.get('fullname')
-      ? { fullname: searchParams.get('fullname')! }
-      : {}),
-  }
+  const [searchParams] = useSearchParams()
+  const initialFilters = useMemo(() => {
+    const fullname = searchParams.get('fullname')
+    return {
+      page: Number(searchParams.get('page')) || 1,
+      per_page: Number(searchParams.get('per_page')) || 10,
+      role_id: searchParams.getAll('role_id'),
+      tag_id: searchParams.getAll('tag_id'),
+      lang_pair: parseLanguagePairs(searchParams),
+      ...(fullname ? { fullname } : {}),
+    }
+  }, [searchParams])
 
   const {
     vendors,
@@ -81,12 +82,21 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
     filters?.fullname || ''
   )
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    []
+  )
+
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      debounce(handleFilterChange, 300)({ fullname: event.target.value })
+      debouncedChangeHandler({ fullname: event.target.value })
     },
-    [handleFilterChange]
+    [debouncedChangeHandler]
   )
 
   const defaultPaginationData = {

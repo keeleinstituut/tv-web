@@ -56,7 +56,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
 }) => {
   const { t } = useTranslation()
 
-  const [searchParams, _] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const combinedInitialFilters = {
     ...initialFilters,
     ...omit(Object.fromEntries(searchParams.entries()), ['page', 'per_page']),
@@ -114,7 +114,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     () => ({
       types: (filters?.type as TMType[]) || [],
     }),
-    [searchParams]
+    [filters?.type]
   )
 
   const { control, watch } = useForm<FormValues>({
@@ -125,13 +125,22 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     },
   })
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    []
+  )
+
   const handleSearchByName = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
 
-      debounce(handleFilterChange, 300)({ name: event.target.value })
+      debouncedChangeHandler({ name: event.target.value })
     },
-    [handleFilterChange]
+    [debouncedChangeHandler]
   )
 
   const [types] = watch(['types'])
@@ -254,8 +263,10 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
       ] as ColumnDef<TranslationMemoriesTableRow>[],
     [
       domainOptions,
+      filters?.lang_pair,
+      filters?.tv_domain,
+      filters?.tv_tags,
       handleSearch,
-      initialFilters,
       isSelectingModal,
       languageDirectionFilters,
       loadMore,

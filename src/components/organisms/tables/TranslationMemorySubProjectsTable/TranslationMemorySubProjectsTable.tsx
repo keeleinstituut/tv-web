@@ -28,7 +28,7 @@ const TranslationMemorySubProjectsTable: FC<TmSubProjectsTypes> = ({
   memoryId,
 }) => {
   const { t } = useTranslation()
-  const [searchParams, _] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const initialFilters = {
     ...Object.fromEntries(searchParams.entries()),
   }

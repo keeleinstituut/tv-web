@@ -68,8 +68,10 @@ const ProjectsTable: FC = () => {
     ])
   )
 
-  const [searchParams, _] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const initialFilters = {
+    per_page: 10,
+    page: 1,
     ...Object.fromEntries(searchParams.entries()),
     statuses: searchParams.getAll('statuses'),
     tag_ids: searchParams.getAll('tag_ids'),
@@ -160,7 +162,12 @@ const ProjectsTable: FC = () => {
         : Number(filters?.only_show_personal_projects) || 0),
       ext_id: filters?.ext_id || '',
     }),
-    [filters]
+    [
+      filters?.ext_id,
+      filters?.only_show_personal_projects,
+      filters?.statuses,
+      onlyPersonalProjectsAllowed,
+    ]
   )
 
   const { control, handleSubmit, watch } = useForm<FormValues>({
@@ -296,7 +303,7 @@ const ProjectsTable: FC = () => {
       footer: (info) => info.column.id,
       meta: {
         sortingOption: ['asc', 'desc'],
-        currentSorting: filters?.sort_by == 'price' ? filters.sort_order : '',
+        currentSorting: filters?.sort_by === 'price' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('deadline_at', {
@@ -333,7 +340,7 @@ const ProjectsTable: FC = () => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          filters?.sort_by == 'deadline_at' ? filters.sort_order : '',
+          filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
       },
     }),
   ] as ColumnDef<ProjectTableRow>[]

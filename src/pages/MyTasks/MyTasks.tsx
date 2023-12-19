@@ -14,19 +14,19 @@ import { parseLanguagePairs } from 'helpers'
 const MyTasks: FC = () => {
   const { t } = useTranslation()
 
-  const [searchParams, _] = useSearchParams()
-  const initialFilters = {
-    page: Number(searchParams.get('page')),
-    per_page: Number(searchParams.get('per_page')),
-    ...(searchParams.get('sort_by')
-      ? { sort_by: searchParams.get('sort_by')! }
-      : {}),
-    ...(searchParams.get('sort_order')
-      ? { sort_order: searchParams.get('sort_order')! as 'asc' | 'desc' }
-      : {}),
-    lang_pair: parseLanguagePairs(searchParams),
-    type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
-  }
+  const [searchParams] = useSearchParams()
+  const initialFilters = useMemo(() => {
+    const sort_by = searchParams.get('sort_by')
+    const sort_order = searchParams.get('sort_order') as 'asc' | 'desc'
+    return {
+      page: Number(searchParams.get('page')) || 1,
+      per_page: Number(searchParams.get('per_page')) || 10,
+      ...(sort_by ? { sort_by } : {}),
+      ...(sort_order ? { sort_order } : {}),
+      lang_pair: parseLanguagePairs(searchParams),
+      type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
+    }
+  }, [searchParams])
 
   const {
     tasks,
@@ -56,7 +56,7 @@ const MyTasks: FC = () => {
     handleFilterChange: handleHistoryFilterChange,
     handleSortingChange: handleHistorySortingChange,
     handlePaginationChange: handleHistoryPaginationChange,
-  } = useFetchHistoryTasks({}, true)
+  } = useFetchHistoryTasks({ per_page: 10, page: 1 }, true)
 
   const [activeTab, setActiveTab] = useState<string | undefined>(
     t('my_tasks.my_assignments')

@@ -46,8 +46,10 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
     setSelectedValues,
   } = useLanguageDirections({})
 
-  const [searchParams, _] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const initialFilters = {
+    per_page: 10,
+    page: 1,
     ...Object.fromEntries(searchParams.entries()),
     skill_id: searchParams.getAll('skill_id'),
     lang_pair: parseLanguagePairs(searchParams),
@@ -80,15 +82,21 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
     filters?.institution_user_name || ''
   )
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    []
+  )
+
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      debounce(
-        handleFilterChange,
-        300
-      )({ institution_user_name: event.target.value })
+      debouncedChangeHandler({ institution_user_name: event.target.value })
     },
-    [handleFilterChange]
+    [debouncedChangeHandler]
   )
 
   const tableData = useMemo(
@@ -195,7 +203,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          filters?.sort_by == 'character_fee' ? filters.sort_order : '',
+          filters?.sort_by === 'character_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('word_fee', {
@@ -205,7 +213,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          filters?.sort_by == 'word_fee' ? filters.sort_order : '',
+          filters?.sort_by === 'word_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('page_fee', {
@@ -215,7 +223,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          filters?.sort_by == 'page_fee' ? filters.sort_order : '',
+          filters?.sort_by === 'page_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('minute_fee', {
@@ -225,7 +233,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          filters?.sort_by == 'minute_fee' ? filters.sort_order : '',
+          filters?.sort_by === 'minute_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('hour_fee', {
@@ -235,7 +243,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          filters?.sort_by == 'hour_fee' ? filters.sort_order : '',
+          filters?.sort_by === 'hour_fee' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('minimal_fee', {
@@ -245,7 +253,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          filters?.sort_by == 'minimal_fee' ? filters.sort_order : '',
+          filters?.sort_by === 'minimal_fee' ? filters.sort_order : '',
       },
     }),
   ] as ColumnDef<PricesTableRow>[]

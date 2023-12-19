@@ -60,8 +60,10 @@ const SubProjectsTable: FC = () => {
     ])
   )
 
-  const [searchParams, _] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const initialFilters = {
+    per_page: 10,
+    page: 1,
     ...Object.fromEntries(searchParams.entries()),
     status: searchParams.getAll('status'),
     language_direction: searchParams.getAll('language_direction'),
@@ -258,7 +260,7 @@ const SubProjectsTable: FC = () => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          filters?.sort_by == 'deadline_at' ? filters.sort_order : '',
+          filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('deadline_at', {
@@ -294,7 +296,7 @@ const SubProjectsTable: FC = () => {
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting:
-          filters?.sort_by == 'deadline_at' ? filters.sort_order : '',
+          filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
       },
     }),
   ] as ColumnDef<SubProjectTableRow>[]

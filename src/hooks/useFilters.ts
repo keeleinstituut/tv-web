@@ -14,14 +14,14 @@ const useFilters = <TFilters>(
   saveParams?: boolean
 ) => {
   const [filters, setFilters] = useState<TFilters | object>({
-    per_page: 10,
-    page: 1,
     ...initialFilters,
   })
   const page = '1'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setSearchParams] = useSearchParams()
 
   const setModifiedSetSearchParams = useCallback(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (value?: any) => {
       if (
         value?.lang_pair &&
@@ -50,6 +50,7 @@ const useFilters = <TFilters>(
         )
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [filters]
   )
 
@@ -69,6 +70,7 @@ const useFilters = <TFilters>(
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [filters]
   )
 
@@ -86,6 +88,7 @@ const useFilters = <TFilters>(
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [filters]
   )
 
