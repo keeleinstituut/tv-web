@@ -13,7 +13,7 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { useNavigate } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 type PaginationProps<TData> = {
   hidden?: boolean
@@ -29,7 +29,7 @@ const TablePagination = <TData,>({
   hidePaginationSelectionInput = false,
 }: PaginationProps<TData>) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const {
     previousPage,
     getCanPreviousPage,
@@ -79,8 +79,9 @@ const TablePagination = <TData,>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={() => {
             previousPage()
-            navigate({
-              search: `?page=${getState().pagination.pageIndex}`,
+            setSearchParams((prevParams) => {
+              prevParams.set('page', `${getState().pagination.pageIndex}`)
+              return searchParams
             })
           }}
           disabled={!getCanPreviousPage()}
@@ -99,8 +100,13 @@ const TablePagination = <TData,>({
               >
                 <Button
                   className={classes.pageNumber}
-                  href={`?page=${index + 1}`}
-                  onClick={() => setPageIndex(index)}
+                  onClick={() => {
+                    setPageIndex(index)
+                    setSearchParams((prevParams) => {
+                      prevParams.set('page', `${index + 1}`)
+                      return searchParams
+                    })
+                  }}
                   ariaLabel={t('label.go_to_page') + index}
                   aria-current={getState().pagination.pageIndex === index}
                 >
@@ -118,8 +124,9 @@ const TablePagination = <TData,>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={() => {
             nextPage()
-            navigate({
-              search: `?page=${getState().pagination.pageIndex + 2}`,
+            setSearchParams((prevParams) => {
+              prevParams.set('page', `${getState().pagination.pageIndex + 2}`)
+              return searchParams
             })
           }}
           disabled={!getCanNextPage()}
@@ -137,6 +144,10 @@ const TablePagination = <TData,>({
         value={toString(getState().pagination.pageSize)}
         onChange={(value) => {
           setPageSize(Number(value))
+          setSearchParams((prevParams) => {
+            prevParams.set('per_page', `${Number(value)}`)
+            return searchParams
+          })
         }}
         hideTags
         placeholder={toString(getState().pagination.pageSize)}

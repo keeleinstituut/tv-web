@@ -155,7 +155,9 @@ const PersonSection = <TFormValues extends FieldValues>({
       : 'manager_institution_user_id'
 
   const fieldLabel =
-    type === PersonSectionTypes.Client ? t('label.name') : t('label.manager')
+    type === PersonSectionTypes.Client
+      ? `${t('label.name')}*`
+      : t('label.manager')
 
   const visibleUserDetails = {
     email,
@@ -205,6 +207,9 @@ const PersonSection = <TFormValues extends FieldValues>({
         hidden={isLoading}
         onlyDisplay={!isEditable}
         className={classNames(!isEditable && classes.boldText)}
+        rules={{
+          required: type === PersonSectionTypes.Client,
+        }}
         hideTags
       />
       {selectedUserDetails && !hideDetails && (

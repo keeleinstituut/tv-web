@@ -93,14 +93,32 @@ export const protectedRoutes: FullRouteObject[] = [
             privileges: [Privileges.CreateProject],
             breadcrumb: i18n.t('projects.new_project_title'),
           },
+          {
+            path: ':projectId',
+            element: <ProjectPage />,
+            privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: BreadcrumbsTitle,
+          },
         ],
       },
       {
         path: 'sub-projects',
         label: i18n.t('menu.sub_projects'),
-        element: <SubProjects />,
         privileges: [Privileges.ViewPersonalProject],
-        breadcrumb: i18n.t('projects.sub_project_tile'),
+        children: [
+          {
+            path: '',
+            element: <SubProjects />,
+            privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: i18n.t('projects.sub_project_tile'),
+          },
+          {
+            path: ':projectId',
+            element: <ProjectPage />,
+            privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: BreadcrumbsTitle,
+          },
+        ],
       },
       {
         path: 'my-tasks',
@@ -124,12 +142,6 @@ export const protectedRoutes: FullRouteObject[] = [
             ],
           },
         ],
-      },
-      {
-        path: ':projectId',
-        element: <ProjectPage />,
-        privileges: [Privileges.ViewPersonalProject],
-        breadcrumb: BreadcrumbsTitle,
       },
     ],
   },

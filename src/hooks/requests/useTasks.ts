@@ -12,13 +12,16 @@ import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { useParams } from 'react-router-dom'
 
-export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
+export const useFetchTasks = (
+  initialFilters?: TasksPayloadType,
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<TasksPayloadType>(initialFilters)
+  } = useFilters<TasksPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data, refetch } = useQuery<TasksResponse>({
     queryKey: ['tasks', filters],
@@ -32,7 +35,7 @@ export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
     isLoading,
     isError,
     tasks,
-    filters,
+    filters: filters as TasksPayloadType,
     paginationData,
     handleFilterChange,
     handleSortingChange,
@@ -59,13 +62,16 @@ export const useFetchTask = ({ id }: { id?: string }) => {
   }
 }
 
-export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
+export const useFetchHistoryTasks = (
+  initialFilters?: TasksPayloadType,
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<TasksPayloadType>(initialFilters)
+  } = useFilters<TasksPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<TasksResponse>({
     queryKey: ['historyTasks', filters],
@@ -78,7 +84,7 @@ export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
   return {
     isLoading,
     isError,
-    filters,
+    filters: filters as TasksPayloadType,
     historyTasks,
     paginationData,
     handleFilterChange,

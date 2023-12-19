@@ -75,6 +75,7 @@ type DataTableProps<TData extends RowData> = {
 
   columnOrder?: string[] | undefined
   subRowComponent?: (row: Row<TData>) => ReactElement
+  defaultPaginationData?: PaginationFunctionType
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -105,15 +106,16 @@ const DataTable = <TData,>(
     getRowStyles,
     columnOrder,
     subRowComponent,
+    defaultPaginationData,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
   const [horizontalWrapperId] = useState(useId())
-  const { per_page, last_page, current_page } = paginationData || {}
+  const { last_page, current_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: hidePagination ? 10000 : per_page || 10,
+    pageIndex: defaultPaginationData?.page || 0,
+    pageSize: hidePagination ? 10000 : defaultPaginationData?.per_page || 10,
   })
 
   useEffect(() => {

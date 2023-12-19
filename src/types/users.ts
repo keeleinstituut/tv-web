@@ -67,11 +67,11 @@ export interface UserCsvType {
 export type UserPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     role_id?: string[]
-    // status?: UserStatus[]
     statuses?: UserStatus[]
-    department?: string[]
+    departments?: string[]
     // TODO: not sure if these fields will be called name and privileges or something else
     name?: string
+    roles?: string[]
     privileges?: Privileges[]
     fullname?: string
   }
