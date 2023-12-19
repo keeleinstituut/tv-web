@@ -304,8 +304,8 @@ export interface SplitProjectPayload {
 }
 
 export interface CancelProjectPayload {
-  reason: string
-  comments?: string
+  cancellation_reason: string
+  cancellation_comment?: string
 }
 
 export interface SendFinalFilesPayload {
