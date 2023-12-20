@@ -39,6 +39,7 @@ const getNewSubProjectWithAssignment = (
     if (item.id === volume.assignment_id) {
       return {
         ...item,
+        ...(volume.assignment || {}),
         volumes: newVolumes,
       }
     }

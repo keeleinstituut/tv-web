@@ -1,7 +1,8 @@
+import { AssignmentType } from './assignments'
 import { PriceUnits } from './price'
+import { CatAnalysis } from './projects'
 import { DiscountPercentages } from './vendors'
 
-// TODO: not sure about the structure here
 export interface VolumeValue {
   amount: number
   unit: PriceUnits
@@ -15,7 +16,7 @@ export interface VolumeValue {
   unit_fee: number
   updated_at: string
   created_at: string
-  job: null | any
-  volume_analysis: null | any
+  volume_analysis?: CatAnalysis
   discounts: DiscountPercentages
+  assignment?: AssignmentType
 }
