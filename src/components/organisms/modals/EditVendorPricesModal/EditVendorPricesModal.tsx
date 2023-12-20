@@ -14,6 +14,7 @@ import {
   reduce,
   some,
   split,
+  toNumber,
 } from 'lodash'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 
@@ -125,12 +126,12 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
                   isSelected: false,
                   skill_id: skillData.id,
                   skill: skillData,
-                  character_fee: `${0}`,
-                  hour_fee: `${0}`,
-                  minimal_fee: `${0}`,
-                  minute_fee: `${0}`,
-                  page_fee: `${0}`,
-                  word_fee: `${0}`,
+                  character_fee: '0',
+                  hour_fee: '0',
+                  minimal_fee: '0',
+                  minute_fee: '0',
+                  page_fee: '0',
+                  word_fee: '0',
                 },
               }
             },
@@ -158,12 +159,12 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
                 }),
                 skill_id: skillData.id,
                 skill: skillData,
-                character_fee: skillPrice?.character_fee || `${0}`,
-                hour_fee: skillPrice?.hour_fee || `${0}`,
-                minimal_fee: skillPrice?.minimal_fee || `${0}`,
-                minute_fee: skillPrice?.minute_fee || `${0}`,
-                page_fee: skillPrice?.page_fee || `${0}`,
-                word_fee: skillPrice?.word_fee || `${0}`,
+                character_fee: skillPrice?.character_fee || '0',
+                hour_fee: skillPrice?.hour_fee || '0',
+                minimal_fee: skillPrice?.minimal_fee || '0',
+                minute_fee: skillPrice?.minute_fee || '0',
+                page_fee: skillPrice?.page_fee || '0',
+                word_fee: skillPrice?.word_fee || '0',
                 id: skillPrice?.id,
               },
             }
@@ -273,7 +274,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
             valueItem.isSelected &&
             hasPriceChanged(defaultItem, valueItem)
           ) {
-            return concat(result, [{ id: defaultItem.id, ...defaultItem }])
+            return concat(result, [defaultItem])
           }
           return result
         },
@@ -335,10 +336,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
       const updateSkills = isEmpty(updateAbleSkills)
         ? null
         : {
-            prices: map(updateAbleSkills, ({ id, ...rest }) => ({
-              id,
-              ...rest,
-            })),
+            prices: updateAbleSkills,
             state: DataStateTypes.UPDATED,
           }
 
@@ -384,6 +382,18 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
                   if (includes(typedKey, 'src_lang_classifier_value_id')) {
                     setError(
                       `${languageDirectionKey}.src_lang_classifier_value_id`,
+                      {
+                        type: 'backend',
+                        message: errorString,
+                      }
+                    )
+                  } else {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const [_, arrayIndex, fieldName] = split(key, '.')
+                    const erroredPrices =
+                      updatePricesPayload.data[toNumber(arrayIndex)]?.prices
+                    setError(
+                      `${languageDirectionKey}.priceObject.${erroredPrices?.[0]?.skill_id}.${fieldName}`,
                       {
                         type: 'backend',
                         message: errorString,
