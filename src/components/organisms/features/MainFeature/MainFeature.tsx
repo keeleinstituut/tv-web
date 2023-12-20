@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react'
+import { FC, useCallback, useState, useEffect } from 'react'
 import {
   ProjectStatus,
   SubProjectDetail,
@@ -61,6 +61,10 @@ const MainFeature: FC<MainFeatureProps> = ({
 
   const [activeTab, setActiveTab] = useState<string>(FeatureTabs.Vendors)
   const { splitAssignment, isLoading } = useSplitAssignment()
+
+  useEffect(() => {
+    setActiveTab(FeatureTabs.Vendors)
+  }, [feature])
 
   const addVendor = useCallback(async () => {
     const payload = {
