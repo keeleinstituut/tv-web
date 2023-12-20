@@ -55,8 +55,16 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
   const { users, paginationData, handlePaginationChange, handleFilterChange } =
-    useFetchUsers({}, true)
+    useFetchUsers({
+      initialFilters: {
+        per_page: 10,
+        page: 1,
+      },
+      saveQueryParams: false,
+      useTranslationService: true,
+    })
 
+  // TODO: might need to take these filters from url instead
   const { createVendor } = useCreateVendors(vendorsFilters)
   const { deleteVendors } = useDeleteVendors(vendorsFilters)
 
@@ -65,12 +73,21 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     handleFilterChange({ fullname: '' })
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    []
+  )
+
   const handleSearch = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      debounce(handleFilterChange, 300)({ fullname: event.target.value })
+      debouncedChangeHandler({ fullname: event.target.value })
     },
-    [handleFilterChange]
+    [debouncedChangeHandler]
   )
 
   const usersData = useMemo(() => {

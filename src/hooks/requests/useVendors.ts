@@ -24,13 +24,16 @@ import { compact, filter, find, flatMap, includes, isEmpty, map } from 'lodash'
 import { UsersDataType } from 'types/users'
 import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
 
-export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
+export const useVendorsFetch = (
+  initialFilters?: GetVendorsPayload,
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<GetVendorsPayload>(initialFilters)
+  } = useFilters<GetVendorsPayload>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<VendorsDataType>({
     queryKey: ['vendors', filters],
@@ -44,7 +47,7 @@ export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
     vendors,
     isLoading,
     isError,
-    filters,
+    filters: filters as GetVendorsPayload,
     paginationData,
     handleFilterChange,
     handleSortingChange,
@@ -207,14 +210,19 @@ export const useFetchSkills = () => {
 
 export const useAllPricesFetch = ({
   disabled,
-  ...initialFilters
-}: GetPricesPayload & { disabled?: boolean }) => {
+  saveQueryParams,
+  initialFilters,
+}: {
+  initialFilters?: GetVendorsPayload
+  disabled?: boolean
+  saveQueryParams?: boolean
+}) => {
   const {
     filters,
     handlePaginationChange,
     handleFilterChange,
     handleSortingChange,
-  } = useFilters<GetPricesPayload>(initialFilters)
+  } = useFilters<GetPricesPayload>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<PricesDataType>({
     queryKey: ['allPrices', filters],
@@ -230,7 +238,7 @@ export const useAllPricesFetch = ({
     isError,
     prices,
     paginationData,
-    filters,
+    filters: filters as GetPricesPayload,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,

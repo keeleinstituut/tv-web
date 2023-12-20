@@ -248,7 +248,8 @@
     "decrease": "Vähendama",
     "expand": "Laienda",
     "vendor_tasks": "Vaata teostaja ülesandeid",
-    "click_here": "Vajuta siia"
+    "click_here": "Vajuta siia",
+    "dropdown_cancel": "Sulge"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -297,7 +298,8 @@
     "sidebar_manual": "Kasutusjuhend",
     "table_of_contents": "SISUKORD",
     "article_created_by": "Artikli koostaja: {{ author }} | {{ authorEmail }}",
-    "last_changed": "Viimati muudetud {{ date }}"
+    "last_changed": "Viimati muudetud {{ date }}",
+    "sidebar_terms": "Kasutustingimused"
   },
   "alt": {
     "header_logo": "Logo",

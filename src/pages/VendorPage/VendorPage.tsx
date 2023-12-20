@@ -6,11 +6,12 @@ import VendorPriceListForm from 'components/organisms/forms/VendorPriceListForm/
 import classes from './classes.module.scss'
 import Button from 'components/molecules/Button/Button'
 import useAuth from 'hooks/useAuth'
-import { t } from 'i18next'
 import { includes } from 'lodash'
 import { Privileges } from 'types/privileges'
+import { useTranslation } from 'react-i18next'
 
 const VendorPage: FC = () => {
+  const { t } = useTranslation()
   const { vendorId } = useParams()
   const { userPrivileges } = useAuth()
   const { vendor, isLoading } = useFetchVendor({ id: vendorId })
