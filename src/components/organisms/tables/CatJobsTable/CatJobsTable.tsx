@@ -1,6 +1,6 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, size } from 'lodash'
+import { map, round, size, toNumber } from 'lodash'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { ReactComponent as HorizontalDots } from 'assets/icons/horizontal_dots.svg'
 import classNames from 'classnames'
@@ -142,7 +142,10 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('progress_percentage', {
-      header: () => t('label.chunks'),
+      header: () => t('label.progress'),
+      cell: ({ getValue }) => {
+        return <span>{`${round(toNumber(getValue()))} %`}</span>
+      },
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('translate_url', {

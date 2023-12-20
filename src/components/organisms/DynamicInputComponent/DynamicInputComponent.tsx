@@ -145,6 +145,7 @@ export type InputPropsByType = (
   onlyDisplay?: boolean
   error?: FieldError
   errorZIndex?: number
+  rules?: { required?: boolean }
 }
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
@@ -171,21 +172,36 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.Text:
         return (
           <TextInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Checkbox:
         return (
           <CheckBoxInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Date:
         return (
           <DatePickerInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
@@ -199,21 +215,36 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.Time:
         return (
           <TimePickerInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.DateTime:
         return (
           <DateTimePicker
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.TimeRange:
         return (
           <TimeRangePicker
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
@@ -221,35 +252,60 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.Radio:
         return (
           <RadioInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.DayTimeRange:
         return (
           <DayTimeRangePicker
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.DateRange:
         return (
           <DateRangePicker
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.RadioGroup:
         return (
           <RadioGroup
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.ToggleTabs:
         return (
           <ToggleTabs
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             //ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
@@ -275,6 +331,7 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
               'inputType',
               'onlyDisplay',
               'emptyDisplayText',
+              'rules',
               'error',
             ])}
           />

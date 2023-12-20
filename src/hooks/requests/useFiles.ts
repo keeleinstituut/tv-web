@@ -57,14 +57,12 @@ const useAddFiles = (config: {
           (oldData?: SubProjectResponse) => {
             const { data: previousData } = oldData || {}
             if (!previousData) return oldData
+            const newData = {
+              ...previousData,
+              [filesKey]: [...previousData[filesKey], ...data],
+            }
             return {
-              data: {
-                ...previousData,
-                [filesKey]: {
-                  ...previousData[filesKey],
-                  ...data,
-                },
-              },
+              data: newData,
             }
           }
         )

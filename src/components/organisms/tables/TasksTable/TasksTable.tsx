@@ -18,12 +18,27 @@ import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import classNames from 'classnames'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
-import { FilterFunctionType } from 'types/collective'
+import {
+  FilterFunctionType,
+  PaginationFunctionType,
+  ResponseMetaTypes,
+  SortingFunctionType,
+} from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
-import { TasksTableProps } from 'pages/MyTasks/MyTasks'
-import { ListTask } from 'types/tasks'
+import { ListTask, TasksPayloadType } from 'types/tasks'
 
 import classes from './classes.module.scss'
+
+export interface TasksTableProps {
+  tasks?: ListTask[]
+  filters?: object | TasksPayloadType
+  isLoading?: boolean
+  paginationData?: ResponseMetaTypes | undefined
+  handleFilterChange?: (value?: FilterFunctionType | undefined) => void
+  handleSortingChange?: (value?: SortingFunctionType | undefined) => void
+  handlePaginationChange?: (value?: PaginationFunctionType | undefined) => void
+  isHistoryTab?: boolean
+}
 
 type TaskTableRow = {
   ext_id: {
@@ -63,11 +78,26 @@ const TasksTable: FC<TasksTableProps> = ({
     type: ClassifierValueType.ProjectType,
   })
 
-  const { lang_pair, type_classifier_value_id } = (filters || {}) as {
+  const {
+    lang_pair,
+    type_classifier_value_id,
+    sort_by,
+    sort_order,
+    per_page,
+    page,
+  } = (filters || {}) as {
     lang_pair?: [{ src: string; dst: string }]
     type_classifier_value_id?: string
+    sort_by?: string
+    sort_order?: string
+    per_page?: string
+    page?: string
   }
 
+  const defaultPaginationData = {
+    per_page: Number(per_page),
+    page: Number(page) - 1,
+  }
   useEffect(() => {
     setSelectedValues(lang_pair ? lang_pair : [])
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,16 +152,21 @@ const TasksTable: FC<TasksTableProps> = ({
       const typedLanguageDirection = language_direction as string
       const typedClassifierValueId = type_classifier_value_id as string
 
-      const langPair = [
-        {
-          src: typedLanguageDirection?.split('_')[0],
-          dst: typedLanguageDirection?.split('_')[1],
-        },
-      ]
+      let langPair: { src: string; dst: string }[] = []
+      if (typedLanguageDirection) {
+        langPair = [
+          {
+            src: typedLanguageDirection?.split('_')[0],
+            dst: typedLanguageDirection?.split('_')[1],
+          },
+        ]
+      }
 
       const newFilters = {
         lang_pair: langPair,
-        type_classifier_value_id: [typedClassifierValueId],
+        type_classifier_value_id: typedClassifierValueId
+          ? [typedClassifierValueId]
+          : '',
         ...rest,
       }
 
@@ -234,18 +269,21 @@ const TasksTable: FC<TasksTableProps> = ({
           },
           meta: {
             sortingOption: ['asc', 'desc'],
+            currentSorting: sort_by === 'deadline_at' ? sort_order : '',
           },
         }),
       ] as ColumnDef<TaskTableRow>[],
     [
-      t,
-      isHistoryTab,
       languageDirectionFilters,
       lang_pair,
-      typeFilters,
-      type_classifier_value_id,
       loadMore,
       handleSearch,
+      typeFilters,
+      type_classifier_value_id,
+      sort_by,
+      sort_order,
+      t,
+      isHistoryTab,
     ]
   )
 
@@ -266,6 +304,7 @@ const TasksTable: FC<TasksTableProps> = ({
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         className={classes.topSection}
+        defaultPaginationData={defaultPaginationData}
       />
     </Root>
   )

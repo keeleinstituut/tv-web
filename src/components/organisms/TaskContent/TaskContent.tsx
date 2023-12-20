@@ -85,15 +85,15 @@ const TaskContent: FC<TaskContentProps> = ({
     disabled: isVendor,
   })
 
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({
-    id: sub_project_id,
+  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
+    subProjectId: sub_project_id,
     disabled: isVendor,
   })
 
   const { updateAssigneeComment } = useAssignmentCommentUpdate({ id })
 
   const catJobsToUse = isVendor ? cat_jobs : catToolJobs
-  const tmKeysToUse = isVendor ? cat_tm_keys : SubProjectTmKeys
+  const tmKeysToUse = isVendor ? cat_tm_keys : subProjectTmKeyObjectsArray
 
   const my_final_files = useMemo(
     () =>
@@ -264,10 +264,13 @@ const TaskContent: FC<TaskContentProps> = ({
           <p className={classes.taskContent}>
             <span>{`${Number(volumes?.[0]?.unit_quantity)} ${t(
               `label.${apiTypeToKey(volumes?.[0]?.unit_type || '')}`
-            )}${volumes?.[0] ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+            )}${
+              volumes?.[0]?.cat_job ? ` ${t('task.open_in_cat')}` : ''
+            }`}</span>
             <BaseButton
               onClick={handleShowVolume}
               className={classes.volumeIcon}
+              hidden={!volumes?.[0]?.cat_job}
             >
               <Eye />
             </BaseButton>
@@ -299,7 +302,7 @@ const TaskContent: FC<TaskContentProps> = ({
         control={control}
         isEditable={false}
         subProjectId={sub_project_id}
-        SubProjectTmKeys={tmKeysToUse}
+        subProjectTmKeyObjectsArray={tmKeysToUse}
         subProjectLangPair={subOrderLangPair}
         cat_tm_keys_meta={cat_tm_keys_meta}
         cat_tm_keys_stats={cat_tm_keys_stats}

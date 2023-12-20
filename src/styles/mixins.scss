@@ -107,6 +107,11 @@
     }
   }
 
+  a {
+    color: $color-primary;
+    text-decoration: underline;
+  }
+
   ul {
     display: flex;
     flex-direction: column;

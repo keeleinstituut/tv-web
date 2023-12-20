@@ -22,16 +22,21 @@ import { useEffect } from 'react'
 
 dayjs.extend(customParseFormat)
 
-export const useFetchUsers = (
-  initialFilters?: UserPayloadType,
+export const useFetchUsers = ({
+  useTranslationService,
+  saveQueryParams,
+  initialFilters,
+}: {
+  initialFilters?: UserPayloadType
   useTranslationService?: boolean
-) => {
+  saveQueryParams?: boolean
+}) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<UserPayloadType>(initialFilters)
+  } = useFilters<UserPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, isFetching, data, refetch } =
     useQuery<UsersDataType>({
@@ -60,6 +65,7 @@ export const useFetchUsers = (
     handleSortingChange,
     handlePaginationChange,
     isFetching,
+    filters: filters as UserPayloadType,
   }
 }
 

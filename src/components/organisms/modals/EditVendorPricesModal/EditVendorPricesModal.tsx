@@ -92,10 +92,13 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
   const { parallelUpdating } = useParallelUpdatePrices({ vendor_id, filters })
   const { skills } = useSkillsCache() || {}
   const { prices: pricesData } = useAllPricesFetch({
-    vendor_id,
-    lang_pair: [{ src, dst }],
-    per_page: 50,
+    initialFilters: {
+      vendor_id: vendor_id,
+      lang_pair: [{ src, dst }],
+      per_page: 50,
+    },
     disabled: newLanguagePair,
+    saveQueryParams: false,
   })
   const { classifierValuesFilters: languageFilter } = useClassifierValuesFetch({
     type: ClassifierValueType.Language,

@@ -34,6 +34,9 @@ import ProjectPage from 'pages/ProjectPage/ProjectPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
+import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
+import VendorTasks from 'pages/VendorTasks/VendorTasks'
+import Terms from 'pages/Terms/Terms'
 
 // import icons
 
@@ -49,7 +52,7 @@ import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
-import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
+import { ReactComponent as TermsIcon } from 'assets/icons/terms_icon.svg'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,
@@ -92,14 +95,32 @@ export const protectedRoutes: FullRouteObject[] = [
             privileges: [Privileges.CreateProject],
             breadcrumb: i18n.t('projects.new_project_title'),
           },
+          {
+            path: ':projectId',
+            element: <ProjectPage />,
+            privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: BreadcrumbsTitle,
+          },
         ],
       },
       {
         path: 'sub-projects',
         label: i18n.t('menu.sub_projects'),
-        element: <SubProjects />,
         privileges: [Privileges.ViewPersonalProject],
-        breadcrumb: i18n.t('projects.sub_project_tile'),
+        children: [
+          {
+            path: '',
+            element: <SubProjects />,
+            privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: i18n.t('projects.sub_project_tile'),
+          },
+          {
+            path: ':projectId',
+            element: <ProjectPage />,
+            privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: BreadcrumbsTitle,
+          },
+        ],
       },
       {
         path: 'my-tasks',
@@ -124,12 +145,6 @@ export const protectedRoutes: FullRouteObject[] = [
           },
         ],
       },
-      {
-        path: ':projectId',
-        element: <ProjectPage />,
-        privileges: [Privileges.ViewPersonalProject],
-        breadcrumb: BreadcrumbsTitle,
-      },
     ],
   },
   {
@@ -146,9 +161,20 @@ export const protectedRoutes: FullRouteObject[] = [
       },
       {
         path: ':vendorId',
-        element: <VendorPage />,
-        privileges: [Privileges.EditVendorDb, Privileges.ViewVendorDb],
-        breadcrumb: BreadcrumbsTitle,
+        children: [
+          {
+            path: '',
+            element: <VendorPage />,
+            privileges: [Privileges.EditVendorDb, Privileges.ViewVendorDb],
+            breadcrumb: BreadcrumbsTitle,
+          },
+          {
+            path: ':userId',
+            element: <VendorTasks />,
+            privileges: [Privileges.ViewVendorTask],
+            breadcrumb: BreadcrumbsTitle,
+          },
+        ],
       },
       {
         path: 'price-list',
@@ -277,6 +303,12 @@ export const protectedRoutes: FullRouteObject[] = [
         privileges: [Privileges.ViewInstitutionPriceRate],
       },
     ],
+  },
+  {
+    path: 'terms',
+    label: i18n.t('menu.sidebar_terms'),
+    element: <Terms />,
+    Icon: TermsIcon,
   },
   {
     path: 'manual',

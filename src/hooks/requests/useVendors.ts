@@ -11,6 +11,7 @@ import {
   DeleteVendorsPayload,
   CreateVendorPayload,
   UpdatePricesPayload,
+  Vendor,
   SkillsData,
   PricesData,
   PayloadItem,
@@ -23,13 +24,16 @@ import { compact, filter, find, flatMap, includes, isEmpty, map } from 'lodash'
 import { UsersDataType } from 'types/users'
 import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
 
-export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
+export const useVendorsFetch = (
+  initialFilters?: GetVendorsPayload,
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<GetVendorsPayload>(initialFilters)
+  } = useFilters<GetVendorsPayload>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<VendorsDataType>({
     queryKey: ['vendors', filters],
@@ -43,7 +47,7 @@ export const useVendorsFetch = (initialFilters?: GetVendorsPayload) => {
     vendors,
     isLoading,
     isError,
-    filters,
+    filters: filters as GetVendorsPayload,
     paginationData,
     handleFilterChange,
     handleSortingChange,
@@ -160,7 +164,7 @@ export const useDeleteVendors = (vendorFilters?: GetVendorsPayload) => {
   }
 }
 
-export const useFetchVendors = ({ id }: { id?: string }) => {
+export const useFetchVendor = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<VendorResponse>({
     enabled: !!id,
     queryKey: ['vendors', id],
@@ -171,6 +175,17 @@ export const useFetchVendors = ({ id }: { id?: string }) => {
     isError,
     vendor: data?.data,
   }
+}
+
+export const useVendorCache = (id?: string): Vendor | undefined => {
+  const queryClient = useQueryClient()
+  const vendorCache: { data: Vendor } | undefined = queryClient.getQueryData([
+    'vendors',
+    id,
+  ])
+  const vendor = vendorCache?.data
+
+  return vendor
 }
 
 export const useFetchSkills = () => {
@@ -195,14 +210,19 @@ export const useFetchSkills = () => {
 
 export const useAllPricesFetch = ({
   disabled,
-  ...initialFilters
-}: GetPricesPayload & { disabled?: boolean }) => {
+  saveQueryParams,
+  initialFilters,
+}: {
+  initialFilters?: GetVendorsPayload
+  disabled?: boolean
+  saveQueryParams?: boolean
+}) => {
   const {
     filters,
     handlePaginationChange,
     handleFilterChange,
     handleSortingChange,
-  } = useFilters<GetPricesPayload>(initialFilters)
+  } = useFilters<GetPricesPayload>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<PricesDataType>({
     queryKey: ['allPrices', filters],
@@ -218,7 +238,7 @@ export const useAllPricesFetch = ({
     isError,
     prices,
     paginationData,
-    filters,
+    filters: filters as GetPricesPayload,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,

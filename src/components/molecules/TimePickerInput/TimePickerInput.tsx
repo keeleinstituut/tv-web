@@ -11,7 +11,9 @@ import { Icon } from '../Button/Button'
 import classes from './classes.module.scss'
 import TimeDropdown from '../TimeDropdown/TimeDropdown'
 import useModalContext from 'hooks/useModalContext'
-import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import BaseButton, {
+  BaseButtonProps,
+} from 'components/atoms/BaseButton/BaseButton'
 
 export type SharedTimeProps = {
   value?: string
@@ -32,7 +34,7 @@ export type TimePickerInputProps = SharedTimeProps & {
 }
 
 export type TimeInputProps = SharedTimeProps & {
-  toggleTimeColumnVisible: (event: MouseEvent | KeyboardEvent) => void
+  toggleTimeColumnVisible: BaseButtonProps['onClick']
 }
 
 const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
@@ -147,7 +149,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
     const { modalContentId } = useModalContext()
     const shouldUsePortal = !!modalContentId
 
-    const toggleTimeColumnVisible = (event: MouseEvent | KeyboardEvent) => {
+    const toggleTimeColumnVisible: BaseButtonProps['onClick'] = (event) => {
       setIsModalOpen && setIsModalOpen(!isTimeColumnOpen)
       setTimeColumnOpen(!isTimeColumnOpen)
       if (!document.querySelector('.time-focus') && !isTimeColumnOpen) {

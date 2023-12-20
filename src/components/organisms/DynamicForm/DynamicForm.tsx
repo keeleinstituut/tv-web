@@ -55,7 +55,10 @@ export function FormInput<TFormValues extends FieldValues>({
       shouldUnregister={shouldUnregister}
       defaultValue={defaultValue}
       control={control}
-      render={DynamicInputComponent<TFormValues>(rest)}
+      render={DynamicInputComponent<TFormValues>({
+        ...rest,
+        rules: rules as { required?: boolean } | undefined,
+      })}
     />
   )
 }
