@@ -126,10 +126,12 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
         </div>
       ),
       footer: (info) => info.column.id,
+      size: 500,
     }),
     columnHelper.accessor('name', {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
+      size: 200,
       meta: {
         sortingOption: ['asc', 'desc'],
         currentSorting: filters?.sort_by === 'name' ? filters.sort_order : '',
@@ -138,6 +140,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
     columnHelper.accessor('department', {
       header: () => t('label.department'),
       footer: (info) => info.column.id,
+      size: 200,
       meta: {
         filterOption: { departments: departmentFilters },
         filterValue: filters?.departments || [],
@@ -149,6 +152,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
         return join(info.renderValue(), ', ')
       },
       footer: (info) => info.column.id,
+      size: 200,
       meta: {
         filterOption: { roles: rolesFilters },
         filterValue: filters?.roles || [],
@@ -160,6 +164,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       cell: ({ getValue }) => {
         return t(`user.status.${getValue()}`)
       },
+      size: 100,
       meta: {
         filterOption: {
           statuses: [
