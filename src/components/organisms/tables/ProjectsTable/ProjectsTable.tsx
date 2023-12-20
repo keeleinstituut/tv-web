@@ -31,6 +31,8 @@ import { TagTypes } from 'types/tags'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import { FilterFunctionType } from 'types/collective'
 import { useSearchParams } from 'react-router-dom'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
 
 // TODO: statuses might come from BE instead
 // Currently unclear
@@ -79,6 +81,7 @@ const ProjectsTable: FC = () => {
     only_show_personal_projects: onlyPersonalProjectsAllowed
       ? 1
       : Number(searchParams.get('only_show_personal_projects')) || 0,
+    type_classifier_value_ids: searchParams.getAll('type_classifier_value_ids'),
   }
 
   const {
@@ -92,6 +95,9 @@ const ProjectsTable: FC = () => {
 
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
+  })
+  const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
+    type: ClassifierValueType.ProjectType,
   })
   const {
     languageDirectionFilters,
@@ -182,7 +188,7 @@ const ProjectsTable: FC = () => {
     (filters?: FilterFunctionType) => {
       let currentFilters = filters
       if (filters && 'language_directions' in filters) {
-        const { language_directions, ...rest } = filters || {}
+        const { language_directions, ...rest } = currentFilters || {}
         const typedLanguageDirection = language_directions as string[]
 
         const modifiedLanguageDirections = map(
@@ -194,6 +200,16 @@ const ProjectsTable: FC = () => {
 
         currentFilters = {
           language_directions: modifiedLanguageDirections,
+          ...rest,
+        }
+      }
+
+      if (filters && 'type_classifier_value_ids' in filters) {
+        const { type_classifier_value_ids, ...rest } = currentFilters || {}
+        const typedTypeClassifierValueId = type_classifier_value_ids as string
+
+        currentFilters = {
+          type_classifier_value_ids: [typedTypeClassifierValueId],
           ...rest,
         }
       }
@@ -274,6 +290,11 @@ const ProjectsTable: FC = () => {
     columnHelper.accessor('type', {
       header: () => t('label.type'),
       footer: (info) => info.column.id,
+      meta: {
+        filterOption: { type_classifier_value_ids: typeFilters },
+        filterValue: filters.type_classifier_value_ids,
+        isCustomSingleDropdown: true,
+      },
     }),
     columnHelper.accessor('tags', {
       header: () => t('label.project_tags'),

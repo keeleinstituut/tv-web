@@ -231,6 +231,7 @@ export type ProjectsPayloadType = PaginationFunctionType &
     language_directions?: string[]
     statuses?: string[]
     tag_ids?: string[]
+    type_classifier_value_ids?: string | string[]
   }
 
 export type SubProjectsPayloadType = PaginationFunctionType &
@@ -239,6 +240,7 @@ export type SubProjectsPayloadType = PaginationFunctionType &
     only_show_personal_projects?: number
     status?: string[]
     language_direction?: string[]
+    type_classifier_value_id?: string | string[]
   }
 
 export interface ProjectsResponse {
