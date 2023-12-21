@@ -9,15 +9,10 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { VolumeChangeModalProps } from 'components/organisms/modals/VolumeChangeModal/VolumeChangeModal'
-import { CatAnalysis } from 'types/orders'
-import { VolumeValue } from 'types/volumes'
-
-// TODO: this is WIP code for suborder view
-
+import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
 export interface AddVolumeModalProps extends VolumeChangeModalProps {
-  onSave?: (newVolume: VolumeValue) => void
   catSupported?: boolean
-  cat_analyzis?: CatAnalysis[]
+  sub_project_id?: string
 }
 
 interface FormValues {
@@ -26,13 +21,13 @@ interface FormValues {
 }
 
 const AddVolumeModal: FC<AddVolumeModalProps> = ({
-  onSave,
   catSupported,
   isModalOpen,
-  cat_analyzis,
+  sub_project_id,
   ...rest
 }) => {
   const { t } = useTranslation()
+  const { cat_analysis } = useCatAnalysisFetch({ subProjectId: sub_project_id })
 
   const {
     control,
@@ -74,33 +69,42 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
     [options, t]
   )
 
+  const subprojectCatJobs = useMemo(
+    () =>
+      map(cat_analysis?.cat_jobs, ({ id, name }) => ({
+        value: id.toString(),
+        label: name,
+      })),
+    [cat_analysis?.cat_jobs]
+  )
+
   const chunkField: FieldProps<FormValues>[] = useMemo(
     () => [
       {
         inputType: InputTypes.RadioGroup,
         name: 'chunkId',
-        options: map(cat_analyzis, ({ chunk_id }) => ({
-          value: chunk_id,
-          label: chunk_id,
-        })),
+        options: subprojectCatJobs,
         rules: {
           required: true,
         },
       },
     ],
-    [cat_analyzis]
+    [subprojectCatJobs]
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       showModal(ModalTypes.VolumeChange, {
-        onSave,
+        sub_project_id,
         isCat: values?.addType === 'cat',
-        matchingCatAnalysis: find(cat_analyzis, { chunk_id: values?.chunkId }),
+        catJobId: values?.chunkId,
+        volume_analysis: find(cat_analysis?.cat_jobs, {
+          id: values?.chunkId,
+        })?.volume_analysis,
         ...rest,
       })
     },
-    [cat_analyzis, onSave, rest]
+    [cat_analysis?.cat_jobs, sub_project_id, rest]
   )
 
   return (

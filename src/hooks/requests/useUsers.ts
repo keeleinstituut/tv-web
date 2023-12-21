@@ -18,60 +18,77 @@ import useFilters from 'hooks/useFilters'
 import { flatMap, last } from 'lodash'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { useEffect } from 'react'
 
 dayjs.extend(customParseFormat)
 
-export const useFetchUsers = (
-  initialFilters?: UserPayloadType,
+export const useFetchUsers = ({
+  useTranslationService,
+  saveQueryParams,
+  initialFilters,
+}: {
+  initialFilters?: UserPayloadType
   useTranslationService?: boolean
-) => {
+  saveQueryParams?: boolean
+}) => {
   const {
     filters,
-    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<UserPayloadType>(initialFilters)
+  } = useFilters<UserPayloadType>(initialFilters, saveQueryParams)
 
-  const { isLoading, isError, isFetching, data } = useQuery<UsersDataType>({
-    queryKey: [useTranslationService ? 'translationUsers' : 'users', filters],
-    queryFn: () =>
-      apiClient.get(
-        useTranslationService ? endpoints.TRANSLATION_USERS : endpoints.USERS,
-        filters
-      ),
-    keepPreviousData: true,
-  })
+  const { isLoading, isError, isFetching, data, refetch } =
+    useQuery<UsersDataType>({
+      queryKey: [useTranslationService ? 'translationUsers' : 'users'],
+      queryFn: () =>
+        apiClient.get(
+          useTranslationService ? endpoints.TRANSLATION_USERS : endpoints.USERS,
+          filters
+        ),
+      keepPreviousData: true,
+      enabled: false,
+    })
   const { meta: paginationData, data: users } = data || {}
+
+  useEffect(() => {
+    refetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters])
 
   return {
     isLoading,
     isError,
     users,
     paginationData,
-    handleOnSearch,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
     isFetching,
+    filters: filters as UserPayloadType,
   }
 }
 
 export const useFetchInfiniteProjectPerson = (
   initialFilters?: UserPayloadType,
-  personToFetch = 'client'
+  personToFetch = 'client',
+  enabled = false
 ) => {
   const { filters, handleFilterChange } =
     useFilters<UserPayloadType>(initialFilters)
 
-  const endpointToUse =
-    personToFetch === 'client' ? endpoints.PROJECT_CLIENT : endpoints.PROJECT_TM
+  const endpointToUse = endpoints.TRANSLATION_USERS
 
   const { isLoading, isError, isFetching, fetchNextPage, hasNextPage, data } =
     useInfiniteQuery<UsersDataType>({
+      enabled,
       queryKey: [personToFetch, filters],
       queryFn: ({ pageParam = 1 }) =>
-        apiClient.get(endpointToUse, { ...filters, page: pageParam }),
+        apiClient.get(endpointToUse, {
+          ...filters,
+          page: pageParam,
+          project_role: personToFetch,
+        }),
       getNextPageParam: (lastPage) => (lastPage.meta?.current_page || 0) + 1,
       keepPreviousData: true,
     })
@@ -94,6 +111,7 @@ export const useFetchInfiniteProjectPerson = (
 
 export const useFetchUser = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<UserDataType>({
+    enabled: !!id,
     queryKey: ['users', id],
     queryFn: () => apiClient.get(`${endpoints.USERS}/${id}`),
   })
@@ -114,17 +132,12 @@ export const useUpdateUser = ({ id }: { id?: string }) => {
       })
     },
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['users', id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
-        (oldData?: UsersDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = { ...previousData, ...data }
-          return { data: newData }
-        }
-      )
+      queryClient.setQueryData(['users', id], (oldData?: UsersDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
     },
   })
 
@@ -174,12 +187,12 @@ export const useUsersUpload = () => {
 export const useDownloadUsers = () => {
   const { mutateAsync: downloadCSV, isLoading } = useMutation({
     mutationKey: ['csv'],
-    mutationFn: () => apiClient.get(endpoints.EXPORT_CSV),
+    mutationFn: () =>
+      apiClient.get(endpoints.EXPORT_CSV, {}, { responseType: 'blob' }),
     onSuccess: (data) => {
       downloadFile({
         data,
         fileName: 'users.csv',
-        fileType: 'text/csv',
       })
     },
   })
@@ -205,8 +218,6 @@ export const useArchiveUser = ({
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['users', institution_user_id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: UsersDataType) => {
           const { data: previousData } = oldData || {}
 
@@ -247,8 +258,6 @@ export const useDeactivateUser = ({
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['users', institution_user_id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: UsersDataType) => {
           const { data: previousData } = oldData || {}
 
@@ -284,8 +293,6 @@ export const useActivateUser = ({
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['users', institution_user_id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: UsersDataType) => {
           const { data: previousData } = oldData || {}
 

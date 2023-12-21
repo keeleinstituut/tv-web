@@ -1,7 +1,11 @@
-interface LinkTypes {
+export interface LinkTypes {
   url?: string
   label?: string
   active?: boolean
+  first?: string
+  last?: string
+  prev?: string
+  next?: string
 }
 
 export interface ResponseMetaTypes {
@@ -14,8 +18,23 @@ export interface ResponseMetaTypes {
   to?: number
   total: number
 }
+
+type TaskLanguagePair = {
+  [filterKey: number]: {
+    src: string
+    dst: string
+  }
+}
+
 export interface FilterFunctionType {
-  [filterKey: string]: string | number | string[] | boolean
+  [filterKey: string]:
+    | string
+    | number
+    | string[]
+    | boolean
+    | { src: string; dst: string }[]
+    | { src: string; dst: string }
+    | TaskLanguagePair
 }
 export interface SortingFunctionType {
   sort_order?: 'asc' | 'desc' | undefined
@@ -23,7 +42,12 @@ export interface SortingFunctionType {
 }
 
 export interface PaginationFunctionType {
-  per_page?: 10 | 50 | 100 | number
+  per_page?: 10 | 15 | 50 | number
   page?: number
   limit?: number
+}
+
+export interface LanguagePairType {
+  src: string
+  dst: string
 }

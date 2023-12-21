@@ -5,6 +5,7 @@ import i18n from 'i18n/i18n'
 import { get, compact, map, isEmpty } from 'lodash'
 import { keycloak, startRefreshingToken } from 'hooks/useKeycloak'
 import { ReactElement } from 'react'
+import { AxiosRequestConfigWithRetries } from './ApiClient'
 
 interface ValidationErrorDataType {
   [key: string]: string[]
@@ -25,6 +26,10 @@ export interface CsvValidationError extends Error {
 }
 
 export const showValidationErrorMessage = (errorData: unknown) => {
+  const genericErrorData = errorData as object
+  if ('code' in genericErrorData && genericErrorData?.code !== '422') {
+    return
+  }
   const typedErrorData = errorData as ValidationError
   if (typedErrorData?.message) {
     showNotification({
@@ -36,8 +41,14 @@ export const showValidationErrorMessage = (errorData: unknown) => {
 }
 
 const handleError = async (error?: AxiosError) => {
-  // TODO: needs some improvements + better handling of 403 errors
-  const { response } = error || {}
+  // TODO: might need some improvements + better handling of 403 errors
+  const { response, config } = error || {}
+  const typedConfig = config as AxiosRequestConfigWithRetries & {
+    hideError?: boolean
+  }
+  if (typedConfig?.hideError) {
+    throw error
+  }
   const code = response?.status
   const specificErrors = get(response, 'data.errors', {})
   const genericErrorMessage = get(response, 'data.message', '')
@@ -64,6 +75,8 @@ const handleError = async (error?: AxiosError) => {
     errorContent = i18n.t('error.unknown_error', { code })
   }
 
+  // TODO: 403 needs to be changed to 401, once BE has made the change
+  // Waiting for task: https://github.com/keeleinstituut/tv-tolkevarav/issues/393
   if (code === 403) {
     // Attempt token refresh, log out if it fails
     startRefreshingToken(() => {
@@ -75,6 +88,14 @@ const handleError = async (error?: AxiosError) => {
   } else if (code === 422) {
     // Throw only validation errors
     throw error?.response?.data
+  } else if (code === 413) {
+    // TODO: might add specific errors based on endpoint, but this should be fine for now
+    showNotification({
+      type: NotificationTypes.Error,
+      title: i18n.t('notification.error'),
+      content: i18n.t('error.file_size_error'),
+    })
+    throw error
   } else {
     showNotification({
       type: NotificationTypes.Error,

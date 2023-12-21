@@ -44,7 +44,11 @@ const MenuItems: FC<MenuItemsProps> = ({
       {map(
         menuItems,
         ({ children, path, Icon, isInterTitle, label, privileges }) => {
-          const fullPath = parentPath ? `${parentPath}/${path}` : `/${path}`
+          const fullPath = parentPath
+            ? path
+              ? `${parentPath}/${path}`
+              : `${parentPath}`
+            : `/${path}`
           const hasChildrenToShow = children && find(children, 'label')
           // privileges missing, means that everyone can access the page
           // Otherwise we check if the user has at least one of the privileges needed to access this page

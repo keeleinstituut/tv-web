@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { isEmpty, keys, size, toString, values } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import {
@@ -36,13 +36,14 @@ type FilterTypes = {
 
 type ColumnMeta = {
   meta?: {
-    size?: number | string
     filterOption?: FilterTypes
     sortingOption?: SortingFunctionType['sort_order'][]
     filterValue?: string | string[]
     onEndReached?: () => void
     onSearch?: (value: string) => void
     showSearch?: boolean
+    isCustomSingleDropdown?: boolean
+    currentSorting?: SortingFunctionType['sort_order']
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
@@ -59,20 +60,31 @@ const HeaderItem = <TData,>({
   onFiltersChange,
 }: HeaderItemProps<TData>) => {
   const { t } = useTranslation()
-  const [step, setStep] = useState<number>(0)
-  const [currentSorting, setCurrentSorting] =
-    useState<SortingFunctionType['sort_order']>(undefined)
 
   const { id, column } = header || {}
   const { meta } = column.columnDef as CustomColumnDef<TData>
+
+  const [currentSorting, setCurrentSorting] = useState<
+    SortingFunctionType['sort_order']
+  >(meta?.currentSorting || undefined)
+
+  useEffect(() => {
+    setCurrentSorting(meta?.currentSorting)
+  }, [meta?.currentSorting])
+
   const filterOption = meta?.filterOption || []
   const onEndReached = meta?.onEndReached
   const onSearch = meta?.onSearch
   const showSearch = meta?.showSearch
+  const isCustomSingleDropdown = meta?.isCustomSingleDropdown
 
   const options = values(filterOption)[0] || []
   const sortingOption = meta?.sortingOption || []
   const filterValue = meta?.filterValue
+
+  const [step, setStep] = useState<number>(
+    currentSorting ? sortingOption.indexOf(currentSorting) + 1 : 0
+  )
 
   const handleOnSorting = () => {
     const newStep = size(sortingOption) > step ? step + 1 : 0
@@ -132,7 +144,7 @@ const HeaderItem = <TData,>({
         onChange={handleOnFiltering}
         icon={FilterIcon}
         value={filterValue}
-        multiple
+        isCustomSingleDropdown={isCustomSingleDropdown}
         buttons
         ariaLabel={t('button.filter')}
         onEndReached={onEndReached}
@@ -157,8 +169,8 @@ const TableHeaderGroup = <TData,>({
               <th
                 key={header.id}
                 style={{
-                  width: (header.column.columnDef as CustomColumnDef<TData>)
-                    .meta?.size,
+                  width:
+                    header.getSize() !== 150 ? header.getSize() : undefined,
                 }}
               >
                 <HeaderItem

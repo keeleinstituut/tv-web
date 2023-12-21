@@ -1,17 +1,12 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import {
   map,
   includes,
-  filter,
-  toLower,
-  some,
-  find,
   compact,
   isEmpty,
   split,
   join,
   toNumber,
-  reduce,
   debounce,
 } from 'lodash'
 import ModalBase, {
@@ -21,7 +16,6 @@ import ModalBase, {
 } from 'components/organisms/ModalBase/ModalBase'
 import { useTranslation } from 'react-i18next'
 import { AppearanceTypes } from 'components/molecules/Button/Button'
-import { UserStatus } from 'types/users'
 import { Root } from '@radix-ui/react-form'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import VendorsEditTable, {
@@ -35,6 +29,7 @@ import { useCreateVendors, useDeleteVendors } from 'hooks/requests/useVendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
+import { GetVendorsPayload } from 'types/vendors'
 
 export interface VendorsEditModalProps {
   isModalOpen?: boolean
@@ -42,6 +37,7 @@ export interface VendorsEditModalProps {
   usersData?: VendorUser
   paginationData?: ResponseMetaTypes
   onPaginationChange?: (value?: PaginationFunctionType) => void
+  vendorsFilters?: GetVendorsPayload
 }
 
 type FormValues = {
@@ -54,29 +50,44 @@ type FormValues = {
 const VendorsEditModal: FC<VendorsEditModalProps> = ({
   isModalOpen,
   closeModal,
+  vendorsFilters,
 }) => {
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
-  const { createVendor } = useCreateVendors()
-  const { deleteVendors } = useDeleteVendors()
+  const { users, paginationData, handlePaginationChange, handleFilterChange } =
+    useFetchUsers({
+      initialFilters: {
+        per_page: 10,
+        page: 1,
+      },
+      saveQueryParams: false,
+      useTranslationService: true,
+    })
 
-  const initialFilters = {
-    statuses: [UserStatus.Active],
-  }
-  const { users, paginationData, handlePaginationChange, handleOnSearch } =
-    useFetchUsers(initialFilters, true)
+  // TODO: might need to take these filters from url instead
+  const { createVendor } = useCreateVendors(vendorsFilters)
+  const { deleteVendors } = useDeleteVendors(vendorsFilters)
 
   const resetSearch = () => {
     setSearchValue('')
-    handleOnSearch({ fullname: '' })
+    handleFilterChange({ fullname: '' })
   }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    []
+  )
 
   const handleSearch = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      handleOnSearch({ fullname: event.target.value })
+      debouncedChangeHandler({ fullname: event.target.value })
     },
-    [handleOnSearch]
+    [debouncedChangeHandler]
   )
 
   const usersData = useMemo(() => {
@@ -87,25 +98,25 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
           institution_user_id: id,
           name: name,
           vendor_id: vendor?.id,
-          isVendor: !!vendor,
         }
       }) || {}
     )
   }, [users])
 
-  const { control, handleSubmit, reset, setError } = useForm<FormValues>({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { isDirty },
+  } = useForm<FormValues>({
     mode: 'onChange',
   })
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     const newVendorsPayload = compact(
-      map(data, ({ isVendor }, id) => {
-        const isNotInVendorsList = some(
-          users,
-          (user) => user.id === id && !user.vendor
-        )
-
-        if (isVendor && isNotInVendorsList) {
+      map(data, ({ isVendor, vendor_id }, id) => {
+        if (isVendor && !vendor_id) {
           return {
             institution_user_id: id,
           }
@@ -115,11 +126,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
 
     const deleteVendorsPayload = compact(
       map(data, ({ isVendor, vendor_id }, id) => {
-        const isInVendorsList = some(
-          users,
-          (user) => user.id === id && !!user.vendor
-        )
-        if (!isVendor && isInVendorsList) {
+        if (!isVendor && !!vendor_id) {
           return vendor_id
         }
       })
@@ -131,14 +138,15 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
     ])
 
     try {
-      await allPromise
-      resetSearch()
+      if (!isEmpty(deleteVendorsPayload) || !isEmpty(newVendorsPayload)) {
+        await allPromise
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.vendors_created_removed'),
+        })
+      }
       closeModal()
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.vendors_created_removed'),
-      })
     } catch (errorData) {
       const typedErrorData = errorData as ValidationError
       if (typedErrorData.errors) {
@@ -177,6 +185,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
           children: t('button.confirm'),
           type: 'submit',
           form: 'vendors',
+          disabled: !isDirty,
         },
       ]}
     >

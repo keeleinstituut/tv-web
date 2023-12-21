@@ -1,17 +1,27 @@
-import { FC, useCallback, useMemo } from 'react'
-import { map, keys, filter, compact, isEmpty } from 'lodash'
-import { useSubOrderSendToCat } from 'hooks/requests/useOrders'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import {
-  CatJob,
+  map,
+  filter,
+  compact,
+  isEmpty,
+  split,
+  some,
+  reduce,
+  includes,
+} from 'lodash'
+import {
+  useUpdateSubProject,
+  useFetchSubProjectCatToolJobs,
+  useProjectCache,
+} from 'hooks/requests/useProjects'
+import {
   CatProjectPayload,
+  CatProjectStatus,
+  ProjectStatus,
   SourceFile,
-  SubOrderDetail,
-} from 'types/orders'
-import {
-  ModalTypes,
-  closeModal,
-  showModal,
-} from 'components/organisms/modals/ModalRoot'
+  SubProjectDetail,
+} from 'types/projects'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Root } from '@radix-ui/react-form'
 import {
   FormInput,
@@ -20,111 +30,160 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
-
 import classes from './classes.module.scss'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
-import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { showValidationErrorMessage } from 'api/errorHandler'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
+import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
+import {
+  getLocalDateOjectFromUtcDateString,
+  getUtcDateStringFromLocalDateObject,
+} from 'helpers'
+import { ClassifierValue } from 'types/classifierValues'
+import dayjs from 'dayjs'
 
-// TODO: this is WIP code for suborder view
+// TODO: this is WIP code for subProject view
 
 type GeneralInformationFeatureProps = Pick<
-  SubOrderDetail,
-  | 'cat_project_created'
-  | 'cat_jobs'
+  SubProjectDetail,
+  | 'cat_files'
   | 'cat_analyzis'
   | 'source_files'
   | 'final_files'
   | 'deadline_at'
   | 'source_language_classifier_value'
   | 'destination_language_classifier_value'
+  | 'project_id'
+  | 'id'
 > & {
   catSupported?: boolean
-  subOrderId: string
+  projectDomain?: ClassifierValue
 }
 
 interface FormValues {
-  deadline_at: string
+  deadline_at: { date?: string; time?: string }
+  cat_files: SourceFile[]
   source_files: SourceFile[]
-  cat_jobs: CatJob[]
-  // TODO: no idea about these fields
-  source_files_checked: number[]
-  shared_with_client: number[]
-  write_to_memory: object
+  final_files: SourceFile[]
+  write_to_memory: { [key: string]: boolean }
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   catSupported,
-  cat_project_created,
-  cat_jobs,
-  subOrderId,
+  id,
   cat_analyzis,
+  cat_files,
   source_files,
   final_files,
   deadline_at,
   source_language_classifier_value,
   destination_language_classifier_value,
+  projectDomain,
+  project_id,
 }) => {
   const { t } = useTranslation()
-  const { sendToCat } = useSubOrderSendToCat({ id: subOrderId })
+  const { deadline_at: projectDeadlineAt, status: projectStatus } =
+    useProjectCache(project_id) || {}
+  const { updateSubProject, isLoading } = useUpdateSubProject({
+    id,
+  })
+  const { catToolJobs, catSetupStatus, startPolling, isPolling } =
+    useFetchSubProjectCatToolJobs({
+      id,
+    })
+  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
+    subProjectId: id,
+  })
+
+  const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
 
   const defaultValues = useMemo(
     () => ({
-      deadline_at,
-      source_files,
-      cat_jobs,
-      // TODO: no idea about these fields
-      source_files_checked: [],
-      shared_with_client: [],
-      write_to_memory: {},
+      deadline_at: getLocalDateOjectFromUtcDateString(
+        deadline_at || projectDeadlineAt || ''
+      ),
+      cat_files,
+      source_files: map(source_files, (file) => ({
+        ...file,
+        isChecked: false,
+      })),
+      final_files,
+      cat_jobs: catToolJobs,
+      write_to_memory: reduce(
+        subProjectTmKeyObjectsArray,
+        (result, { key, is_writable }) => {
+          if (!key) return result
+          return { ...result, [key]: is_writable }
+        },
+        {}
+      ),
     }),
-    [cat_jobs, deadline_at, source_files]
+    [
+      deadline_at,
+      projectDeadlineAt,
+      cat_files,
+      source_files,
+      final_files,
+      catToolJobs,
+      subProjectTmKeyObjectsArray,
+    ]
   )
 
-  const { control, getValues } = useForm<FormValues>({
+  const { control, getValues, watch, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
-    values: defaultValues,
+    defaultValues: defaultValues,
   })
 
-  const handleSendToCat = useCallback(async () => {
-    const chosenSourceFiles = getValues('source_files_checked')
-    const translationMemories = getValues('write_to_memory')
+  useEffect(() => {
+    reset(defaultValues)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues])
+
+  const openSendToCatModal = useCallback(() => {
     const sourceFiles = getValues('source_files')
+    const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
-    const selectedSourceFiles = map(
-      chosenSourceFiles,
-      (index) => sourceFiles[index]
-    )
-    // TODO: not sure how or what to send
     const payload: CatProjectPayload = {
-      source_file_ids: compact(map(selectedSourceFiles, 'id')),
-      translation_memory_ids: keys(
-        filter(translationMemories, (value) => !!value)
-      ),
+      sub_project_id: id,
+      source_files_ids: compact(map(selectedSourceFiles, 'id')),
     }
-    try {
-      await sendToCat(payload)
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.files_sent_to_cat'),
-      })
-      closeModal()
-    } catch (errorData) {
-      showValidationErrorMessage(errorData)
-    }
-  }, [getValues, sendToCat, t])
 
-  const openSendToCatModal = useCallback(
-    () =>
-      showModal(ModalTypes.ConfirmSendToCat, {
-        handleProceed: handleSendToCat,
-      }),
-    [handleSendToCat]
+    showModal(ModalTypes.ConfirmSendToCat, {
+      sendPayload: payload,
+      callback: startPolling,
+    })
+  }, [getValues, id, startPolling])
+
+  const handleChangeDeadline = useCallback(
+    (value: { date: string; time: string }) => {
+      const formattedDateTime = getUtcDateStringFromLocalDateObject(value)
+      // const isDeadLineChanged = !isEqual(formattedDeadline, formattedDateTime)
+
+      updateSubProject({
+        deadline_at: formattedDateTime,
+      })
+    },
+    [updateSubProject]
   )
+
+  const subProjectLangPair = useMemo(() => {
+    const slangShort = split(source_language_classifier_value?.value, '-')[0]
+    const tlangShort = split(
+      destination_language_classifier_value?.value,
+      '-'
+    )[0]
+    return `${slangShort}_${tlangShort}`
+  }, [destination_language_classifier_value, source_language_classifier_value])
+
+  const canGenerateProject =
+    catSupported &&
+    isEmpty(catToolJobs) &&
+    !includes(CatProjectStatus.Done, catSetupStatus)
+
+  const isGenerateProjectButtonDisabled =
+    !some(watch('source_files'), 'isChecked') ||
+    !some(watch('write_to_memory'), (val) => !!val) ||
+    !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
   return (
     <Root>
@@ -135,48 +194,57 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           label: `${t('label.deadline_at')}`,
           control: control,
           name: 'deadline_at',
-          minDate: new Date(),
-          // onlyDisplay: !isEditable,
+          maxDate: dayjs(projectDeadlineAt).toDate(),
+          onDateTimeChange: handleChangeDeadline,
+          onlyDisplay: !isSomethingEditable,
         }}
       />
       <div className={classes.grid}>
         <SourceFilesList
           name="source_files"
-          title={t('orders.source_files')}
+          title={t('projects.source_files')}
           tooltipContent={t('tooltip.source_files_helper')}
-          // className={classes.filesSection}
           control={control}
-          catSupported={catSupported}
-          cat_project_created={cat_project_created}
           openSendToCatModal={openSendToCatModal}
-          isEditable
-          // isEditable={isEditable}
+          canGenerateProject={canGenerateProject}
+          isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
+          isCatProjectLoading={isPolling}
+          catSetupStatus={catSetupStatus}
+          subProjectId={id}
+          isEditable={isSomethingEditable}
         />
         <FinalFilesList
-          // TODO: not sure what the field name will be
-          name="ready_files"
-          title={t('orders.ready_files_from_vendors')}
-          // className={classes.filesSection}
+          name="final_files"
+          title={t('projects.ready_files_from_vendors')}
           control={control}
-          isEditable
-          // isEditable={isEditable}
+          isLoading={isLoading}
+          subProjectId={id}
+          isEditable={isSomethingEditable}
         />
         <CatJobsTable
+          subProjectId={id}
           className={classes.catJobs}
-          hidden={!catSupported || !cat_project_created || isEmpty(cat_jobs)}
-          cat_jobs={cat_jobs}
+          hidden={!catSupported || isEmpty(catToolJobs)}
+          cat_jobs={catToolJobs}
+          cat_files={cat_files}
           source_files={source_files}
           cat_analyzis={cat_analyzis}
           source_language_classifier_value={source_language_classifier_value}
           destination_language_classifier_value={
             destination_language_classifier_value
           }
+          canSendToVendors={true} //TODO add check when camunda is ready
+          isEditable={isSomethingEditable}
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}
           hidden={!catSupported}
           control={control}
-          isEditable
+          isEditable={isSomethingEditable}
+          subProjectId={id}
+          subProjectTmKeyObjectsArray={subProjectTmKeyObjectsArray}
+          subProjectLangPair={subProjectLangPair}
+          projectDomain={projectDomain}
         />
       </div>
     </Root>

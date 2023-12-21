@@ -3,9 +3,11 @@ import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import {
   InstitutionDataType,
+  InstitutionDiscountsDataType,
   InstitutionPostType,
   InstitutionsDataType,
 } from 'types/institutions'
+import { DiscountPercentages } from 'types/vendors'
 
 export const useInstitutionsFetch = () => {
   const { isLoading, isError, data } = useQuery<InstitutionsDataType>({
@@ -24,6 +26,7 @@ export const useInstitutionsFetch = () => {
 
 export const useInstitutionFetch = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<InstitutionDataType>({
+    enabled: !!id,
     queryKey: ['institutions', id],
     queryFn: () => apiClient.get(`${endpoints.INSTITUTIONS}/${id}`),
   })
@@ -45,8 +48,6 @@ export const useInstitutionUpdate = ({ id }: { id?: string | undefined }) => {
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['institutions', id],
-        // TODO: possibly will start storing all arrays as objects
-        // if we do, then this should be rewritten
         (oldData?: InstitutionsDataType) => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
@@ -60,6 +61,48 @@ export const useInstitutionUpdate = ({ id }: { id?: string | undefined }) => {
 
   return {
     updateInstitution,
+    isLoading,
+  }
+}
+
+export const useFetchInstitutionDiscounts = () => {
+  const { isLoading, isError, data } = useQuery<InstitutionDiscountsDataType>({
+    queryKey: ['institution-discounts'],
+    queryFn: () => apiClient.get(endpoints.DISCOUNTS),
+  })
+  const { data: institutionDiscounts } = data || {}
+
+  return {
+    institutionDiscounts,
+    isLoading,
+    isError,
+  }
+}
+
+export const useUpdateInstitutionDiscounts = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateInstitutionDiscounts, isLoading } = useMutation({
+    mutationKey: ['institution-discounts'],
+    mutationFn: (payload: DiscountPercentages) =>
+      apiClient.put(endpoints.DISCOUNTS, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['institution-discounts'],
+        (oldData?: InstitutionDiscountsDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...previousData, ...data }
+          return { data: newData }
+        }
+      )
+      queryClient.refetchQueries({
+        queryKey: ['institution-discounts'],
+        type: 'active',
+      })
+    },
+  })
+  return {
+    updateInstitutionDiscounts,
     isLoading,
   }
 }

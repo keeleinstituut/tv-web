@@ -59,16 +59,18 @@ interface PersonSectionProps<TFormValues extends FieldValues> {
   type: PersonSectionTypes
   control: Control<TFormValues>
   selectedUserId?: string
+  selectedUser?: UserType
   isEditable?: boolean
-  isNew?: boolean
+  hideDetails?: boolean
 }
 
 const PersonSection = <TFormValues extends FieldValues>({
   type,
   control,
   selectedUserId,
+  selectedUser,
   isEditable,
-  isNew,
+  hideDetails,
 }: PersonSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
@@ -87,13 +89,13 @@ const PersonSection = <TFormValues extends FieldValues>({
     {
       per_page: 10,
     },
-    type === PersonSectionTypes.Client ? 'client' : 'tm'
+    type === PersonSectionTypes.Client ? 'client' : 'manager',
+    isEditable
   )
   // Pass search as a param and fetch again
   const handleSearchUsers = useCallback(
     (newValue: string) => {
-      // TODO: not sure yet whether filtering param will be name
-      handleFilterChange({ name: newValue })
+      handleFilterChange({ fullname: newValue })
     },
     [handleFilterChange]
   )
@@ -114,9 +116,14 @@ const PersonSection = <TFormValues extends FieldValues>({
     const shouldAddCurrentUser =
       type === PersonSectionTypes.Client || isCurrentUserPotentialManager
 
-    if (!shouldAddCurrentUser) return users
-    return uniqBy(concat([user], users), 'id')
-  }, [type, user, userPrivileges, users])
+    const usersWithCurrentlySelected = uniqBy(
+      concat([selectedUser], users),
+      'id'
+    )
+
+    if (!shouldAddCurrentUser) return compact(usersWithCurrentlySelected)
+    return compact(uniqBy(concat([user], usersWithCurrentlySelected), 'id'))
+  }, [selectedUser, type, user, userPrivileges, users])
 
   const options = useMemo(() => {
     return compact(
@@ -132,24 +139,25 @@ const PersonSection = <TFormValues extends FieldValues>({
   }, [usersList])
 
   const selectedUserDetails = useMemo(
-    () => find(usersList, { id: selectedUserId }),
-    [selectedUserId, usersList]
+    () => find(usersList, { id: selectedUserId || selectedUser?.id }),
+    [selectedUserId, usersList, selectedUser?.id]
   )
-
   const { department, institution, email, phone } = selectedUserDetails || {}
 
   const title =
     type === PersonSectionTypes.Client
-      ? t('orders.client_details')
-      : t('orders.manager_details')
+      ? t('projects.client_details')
+      : t('projects.manager_details')
 
   const fieldName =
     type === PersonSectionTypes.Client
-      ? 'client_user_institution_id'
-      : 'translation_manager_user_institution_id'
+      ? 'client_institution_user_id'
+      : 'manager_institution_user_id'
 
   const fieldLabel =
-    type === PersonSectionTypes.Client ? t('label.name') : t('label.manager')
+    type === PersonSectionTypes.Client
+      ? `${t('label.name')}*`
+      : t('label.manager')
 
   const visibleUserDetails = {
     email,
@@ -165,17 +173,25 @@ const PersonSection = <TFormValues extends FieldValues>({
     <div
       className={classNames(
         classes.column,
-        !isEditable && classes.adjustedLayout
+        !isEditable && classes.adjustedLayout,
+        hideDetails && classes.noRows
       )}
     >
       <h2
         className={classNames(
-          type === PersonSectionTypes.Client && classes.extraPadding
+          type === PersonSectionTypes.Client && classes.extraPadding,
+          hideDetails && classes.hidden
         )}
       >
         {title}
       </h2>
-      <label htmlFor={fieldName} className={classes.labelClass}>
+      <label
+        htmlFor={fieldName}
+        className={classNames(
+          classes.labelClass,
+          hideDetails && classes.hidden
+        )}
+      >
         {fieldLabel}
       </label>
       <FormInput
@@ -190,12 +206,16 @@ const PersonSection = <TFormValues extends FieldValues>({
         loading={isFetching}
         hidden={isLoading}
         onlyDisplay={!isEditable}
-        className={classNames(!isEditable && !isNew && classes.boldText)}
+        className={classNames(!isEditable && classes.boldText)}
+        rules={{
+          required: type === PersonSectionTypes.Client,
+        }}
+        hideTags
       />
-      {selectedUserDetails && (
+      {selectedUserDetails && !hideDetails && (
         <UserDetails
           {...visibleUserDetails}
-          valueClass={classNames(!isEditable && !isNew && classes.boldText)}
+          valueClass={classNames(!isEditable && classes.boldText)}
         />
       )}
     </div>

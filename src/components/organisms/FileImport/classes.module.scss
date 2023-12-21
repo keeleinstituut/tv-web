@@ -13,7 +13,6 @@
 }
 
 .fileButton {
-  margin-top: spacing(4);
   max-width: fit-content;
   order: 2;
 }
@@ -39,6 +38,12 @@
   display: flex;
   align-items: center;
   order: 5;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
 }
 
 .errorContainer {
@@ -80,3 +85,11 @@
   }
 }
 
+.button {
+  display: flex;
+  padding: spacing(1);
+
+  &:focus {
+    box-shadow: inset 0 0 0 2px $color-error;
+  }
+}

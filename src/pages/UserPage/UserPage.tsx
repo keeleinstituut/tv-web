@@ -6,7 +6,7 @@ import {
   useDeactivateUser,
   useFetchUser,
 } from 'hooks/requests/useUsers'
-import { FC, useCallback } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { includes, map } from 'lodash'
 import dayjs from 'dayjs'
@@ -59,7 +59,7 @@ const UserPage: FC = () => {
   const { isLoading, isError, user } = useFetchUser({
     id: userId,
   })
-  const { existingRoles = [] } = useRolesFetch()
+  const { existingRoles = [] } = useRolesFetch({})
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
     institution_user_id: userId,
   })
@@ -80,9 +80,18 @@ const UserPage: FC = () => {
 
   const today = dayjs().format('DD/MM/YYYY')
 
-  const { control, handleSubmit } = useForm<FormValues>({
+  const defaultValues = useMemo(
+    () => ({
+      deactivation_date: deactivationDate
+        ? dayjs(deactivationDate).format('DD/MM/YYYY')
+        : today,
+    }),
+    [deactivationDate, today]
+  )
+
+  const { control, handleSubmit, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
-    defaultValues: { deactivation_date: today },
+    defaultValues,
   })
 
   const formattedDeactivationDate = dayjs(
@@ -235,6 +244,7 @@ const UserPage: FC = () => {
   }
 
   const handleDeactivateModal = (isEditModal: boolean) => {
+    reset(defaultValues)
     showModal(ModalTypes.UserAndRoleManagement, {
       title: isEditModal ? editModalTitle : deactivateModalTitle,
       cancelButtonContent: t('button.cancel'),
@@ -252,6 +262,7 @@ const UserPage: FC = () => {
   }
 
   const handleActivateModal = () => {
+    reset(defaultValues)
     showModal(ModalTypes.UserAndRoleManagement, {
       title: t('modal.activate_user_account'),
       cancelButtonContent: t('button.cancel'),
@@ -271,7 +282,7 @@ const UserPage: FC = () => {
 
   const handleOnRemoveDeactivationDate = () => {
     showModal(ModalTypes.UserAndRoleManagement, {
-      title: t('modal.edit_deactivation_date'),
+      title: t('modal.remove_deactivation_date'),
       modalContent: t('modal.deactivation_date_content', {
         date: formattedDeactivationDate,
       }),
@@ -316,7 +327,6 @@ const UserPage: FC = () => {
           />
           <Button
             loading={isArchiving}
-            appearance={AppearanceTypes.Secondary}
             children={t('button.archive_account')}
             onClick={handleArchiveModal}
             hidden={!includes(userPrivileges, Privileges.ArchiveUser)}
@@ -348,7 +358,9 @@ const UserPage: FC = () => {
           icon={Delete}
           className={classes.button}
           onClick={handleOnRemoveDeactivationDate}
-          hidden={isActivationButtonHidden}
+          hidden={
+            !isDeactivationDateInTheFuture || status === UserStatus.Archived
+          }
         />
       </div>
 

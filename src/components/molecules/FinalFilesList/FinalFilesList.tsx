@@ -1,4 +1,4 @@
-import { useCallback, useMemo, Fragment } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map, filter } from 'lodash'
 import {
@@ -7,7 +7,13 @@ import {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
-import { Control, FieldValues, Path, useController } from 'react-hook-form'
+import {
+  Control,
+  FieldValues,
+  Path,
+  useController,
+  useWatch,
+} from 'react-hook-form'
 import classNames from 'classnames'
 import FileImport, {
   ProjectFileTypes,
@@ -19,13 +25,21 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { SourceFile, SubProjectFeatures } from 'types/orders'
+import { SourceFile, SubProjectFeatures } from 'types/projects'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
-
-// TODO: very similar to OrderFilesList, these 2 can be unified
-
+import { showValidationErrorMessage } from 'api/errorHandler'
+import {
+  ModalTypes,
+  closeModal,
+  showModal,
+} from 'components/organisms/modals/ModalRoot'
+import { CollectionType, useHandleFiles } from 'hooks/requests/useFiles'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
+import { useSendSubProjectFinalFiles } from 'hooks/requests/useProjects'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 interface FinalFilesListProps<TFormValues extends FieldValues> {
   title: string
   name: string
@@ -33,11 +47,14 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
   tooltipContent?: string
   isEditable?: boolean
   className?: string
+  isLoading?: boolean
+  mode?: ProjectDetailModes
+  subProjectId: string
+  isHistoryView?: string
 }
-
 interface FileRow {
   name: string
-  shared_with_client: number
+  is_project_final_file: number
   feature: SubProjectFeatures
   created_at: string
   delete_button?: number
@@ -53,20 +70,78 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   tooltipContent,
   isEditable,
   className,
+  isLoading,
+  subProjectId,
+  mode,
+  isHistoryView,
 }: FinalFilesListProps<TFormValues>) => {
+  const { t } = useTranslation()
+
   const {
-    field: { onChange, value },
+    fieldState: { isDirty },
   } = useController<TFormValues, Path<TFormValues>>({
     name: name as Path<TFormValues>,
     control,
   })
-  const typedValue = value as (File | SourceFile)[]
-  const { t } = useTranslation()
+
+  const value = useWatch({
+    control,
+  })[name]
+
+  const { sendFinalFiles, isLoading: isSendingFinalFiles } =
+    useSendSubProjectFinalFiles({ id: subProjectId })
+
+  const typedValue = value as SourceFile[]
+
+  const { addFiles, deleteFile, downloadFile } = useHandleFiles({
+    reference_object_id: subProjectId,
+    reference_object_type: 'subproject',
+    collection: CollectionType.Final,
+  })
+
+  const handleDownload = useCallback(
+    (index: number) => {
+      downloadFile(typedValue[index])
+    },
+    [downloadFile, typedValue]
+  )
+
+  const handleAdd = useCallback(
+    async (files: (File | SourceFile)[]) => {
+      const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
+      await addFiles(filteredFiles)
+    },
+    [addFiles]
+  )
+
+  const handleOpenDeleteModal = useCallback(
+    (index?: number) => {
+      const handleDelete = () => {
+        if (index === 0 || index) {
+          deleteFile(typedValue[index].id)
+          showNotification({
+            type: NotificationTypes.Success,
+            title: t('notification.announcement'),
+            content: t('success.final_file_deleted'),
+          })
+          closeModal()
+        }
+      }
+
+      showModal(ModalTypes.ConfirmationModal, {
+        title: t('modal.confirm_deleting_file'),
+        cancelButtonContent: t('button.quit_alt'),
+        proceedButtonContent: t('button.confirm'),
+        handleProceed: handleDelete,
+      })
+    },
+    [deleteFile, t, typedValue]
+  )
 
   const filesData = useMemo(
     () =>
       map(typedValue, (file, index) => ({
-        shared_with_client: index,
+        is_project_final_file: index,
         name: file.name,
         created_at:
           'created_at' in file
@@ -80,115 +155,146 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     [typedValue]
   )
 
-  const handleDelete = useCallback(
-    (index?: number) => {
-      if (index === 0 || index) {
-        onChange(filter(typedValue, (_, fileIndex) => index !== fileIndex))
-      }
-    },
-    [onChange, typedValue]
-  )
+  const handleSendFilesToClient = useCallback(async () => {
+    try {
+      const filesToShare = filter(typedValue, 'is_project_final_file')
 
-  const handleSendFilesToClient = useCallback(() => {
-    // TODO: handle sending files to client here, based on checked values
-  }, [])
+      await sendFinalFiles({
+        final_file_id: map(filesToShare, 'id'),
+      })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.files_sent_to_client'),
+      })
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [sendFinalFiles, t, typedValue])
 
   const columns = [
-    columnHelper.accessor('shared_with_client', {
-      header: () => <span>{t('label.shared_with_client')}</span>,
+    ...(mode !== ProjectDetailModes.View
+      ? [
+          columnHelper.accessor('is_project_final_file', {
+            header: () => t('label.shared_with_client'),
+            footer: (info) => info.column.id,
+            cell: ({ getValue }) => {
+              return (
+                <FormInput
+                  name={
+                    `${name}.${getValue()}.is_project_final_file` as Path<TFormValues>
+                  }
+                  ariaLabel={t('label.share_with_client')}
+                  control={control}
+                  disabled={!isEditable}
+                  inputType={InputTypes.Checkbox}
+                />
+              )
+            },
+          }),
+        ]
+      : []),
+    columnHelper.accessor('name', {
+      header: () => (
+        <p className={mode === ProjectDetailModes.View ? classes.header : ''}>
+          {t('label.file_name')}
+        </p>
+      ),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
+        const fileName = getValue()
         return (
-          <FormInput
-            name={`shared_with_client.${getValue()}` as Path<TFormValues>}
-            ariaLabel={t('label.share_with_client')}
-            control={control}
-            inputType={InputTypes.Checkbox}
-            // className={classes.fitContent}
-          />
+          <p
+            className={mode === ProjectDetailModes.View ? classes.fileName : ''}
+          >
+            {fileName}
+          </p>
         )
       },
     }),
-    columnHelper.accessor('name', {
-      header: () => t('label.file_name'),
-      footer: (info) => info.column.id,
-    }),
+
     columnHelper.accessor('feature', {
-      header: () => t('label.task'),
-      footer: (info) => info.column.id,
+      header: () => (
+        <p hidden={mode === ProjectDetailModes.View}>{t('label.task')}</p>
+      ),
+      footer: (info) => {
+        if (mode === ProjectDetailModes.View) return null
+        return info.column.id
+      },
       cell: ({ getValue }) => {
         const selectedFeature = getValue()
-        return t(`orders.features.${selectedFeature}`)
+        if (mode === ProjectDetailModes.View) return null
+        return t(`projects.features.${selectedFeature}`)
       },
     }),
     columnHelper.accessor('created_at', {
-      header: () => t('label.added_at'),
+      header: () => (
+        <p className={mode === ProjectDetailModes.View ? classes.header : ''}>
+          {t('label.added_at')}
+        </p>
+      ),
       footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('download_button', {
-      header: '',
       cell: ({ getValue }) => {
-        const file = typedValue?.[getValue()]
-        const localFileUrl =
-          file instanceof File ? URL.createObjectURL(file) : ''
-        const fileUrl =
-          'original_url' in file ? file.original_url : localFileUrl
+        const createdAt = getValue()
         return (
-          <BaseButton
-            className={classNames(classes.iconButton, classes.downloadButton)}
-            href={fileUrl}
-            target="_blank"
-            download={file.name}
+          <p
+            className={
+              mode === ProjectDetailModes.View ? classes.createdAt : ''
+            }
           >
-            <DownloadFilled />
-          </BaseButton>
+            {createdAt}
+          </p>
         )
       },
-      footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('delete_button', {
-      header: '',
-      cell: ({ getValue }) => {
-        return (
-          <BaseButton
-            className={classes.iconButton}
-            onClick={() => handleDelete(getValue())}
-          >
-            <Delete />
-          </BaseButton>
-        )
-      },
-      footer: (info) => info.column.id,
-    }),
-  ] as ColumnDef<FileRow>[]
+    ...(mode !== ProjectDetailModes.View
+      ? [
+          columnHelper.accessor('download_button', {
+            header: '',
+            cell: ({ getValue }) => {
+              return (
+                <BaseButton
+                  className={classNames(
+                    classes.iconButton,
+                    classes.downloadButton,
+                    !!isHistoryView && classes.disabled
+                  )}
+                  onClick={() => handleDownload(getValue())}
+                  disabled={!!isHistoryView}
+                >
+                  <DownloadFilled className={classes.iconButton} />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
 
-  // TODO: possibly not needed
-  if (!isEditable) {
-    return (
-      <div className={classes.altFilesContainer}>
-        <h3>{title}</h3>
-        {map(typedValue, (file, index) => {
-          const localFileUrl =
-            file instanceof File ? URL.createObjectURL(file) : ''
-          const fileUrl =
-            'original_url' in file ? file.original_url : localFileUrl
-          const updatedAt =
-            'updated_at' in file
-              ? dayjs(file?.updated_at).format('DD.MM.YYYY HH:mm')
-              : ''
-          return (
-            <Fragment key={fileUrl || index}>
-              <label>{file.name}</label>
-              <span>{updatedAt}</span>
-              <BaseButton href={fileUrl} target="_blank" download={file.name}>
-                <DownloadFilled />
-              </BaseButton>
-            </Fragment>
-          )
-        })}
-      </div>
-    )
-  }
+    ...(isEditable || mode === ProjectDetailModes.View
+      ? [
+          columnHelper.accessor('delete_button', {
+            header: '',
+            cell: ({ getValue }) => {
+              return (
+                <BaseButton
+                  className={classNames(
+                    classes.iconButton,
+                    !!isHistoryView && classes.disabled
+                  )}
+                  onClick={() => handleOpenDeleteModal(getValue())}
+                  disabled={!!isHistoryView}
+                  aria-label={t('button.delete')}
+                >
+                  <Delete />
+                </BaseButton>
+              )
+            },
+            footer: (info) => info.column.id,
+          }),
+        ]
+      : []),
+  ] as ColumnDef<FileRow>[]
 
   return (
     <div className={classNames(classes.container, className)}>
@@ -216,8 +322,9 @@ const FinalFilesList = <TFormValues extends FieldValues>({
               files={value}
               inputFileTypes={ProjectFileTypes}
               className={classes.fileImportButton}
-              onChange={onChange}
+              onChange={handleAdd}
               allowMultiple
+              disabled={!!isHistoryView}
             />
           </div>
         }
@@ -226,10 +333,16 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         appearance={AppearanceTypes.Primary}
         className={classes.saveButton}
         onClick={handleSendFilesToClient}
+        disabled={!isDirty || !isEditable}
+        loading={isLoading || isSendingFinalFiles}
+        hidden={mode === ProjectDetailModes.View}
       >
         {t('button.save_changes')}
       </Button>
-      <span className={classes.saveHelper}>
+      <span
+        className={classes.saveHelper}
+        hidden={mode === ProjectDetailModes.View}
+      >
         {t('helper.save_files_helper')}
       </span>
     </div>

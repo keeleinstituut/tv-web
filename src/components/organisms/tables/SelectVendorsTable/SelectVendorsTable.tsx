@@ -4,7 +4,7 @@ import { useFetchTags } from 'hooks/requests/useTags'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, find, range, includes, split } from 'lodash'
+import { map, range, includes } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
@@ -13,7 +13,7 @@ import {
   ResponseMetaTypes,
   PaginationFunctionType,
 } from 'types/collective'
-import { Control, FieldValues, Path } from 'react-hook-form'
+import { Control, FieldValues, Path, PathValue } from 'react-hook-form'
 import {
   FormInput,
   InputTypes,
@@ -29,6 +29,7 @@ import { Root } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
 import { useFetchSkills } from 'hooks/requests/useVendors'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { TagTypes } from 'types/tags'
 import('dayjs/locale/et')
 
 dayjs.locale('et')
@@ -39,7 +40,7 @@ const FreeDaysHeader = () => {
     <div className={classes.row}>
       <span>{t('label.free_days')}</span>
       <SmallTooltip
-        tooltipContent={'random'}
+        tooltipContent={t('tooltip.vacation_days')}
         className={classes.headerTooltip}
       />
     </div>
@@ -51,7 +52,6 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   data?: Price[]
   paginationData?: ResponseMetaTypes
   hidden?: boolean
-  taskSkills?: string[]
   filters?: GetPricesPayload
   handleFilterChange?: (value?: FilterFunctionType) => void
   handleSortingChange?: (value?: SortingFunctionType) => void
@@ -59,6 +59,8 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   source_language_classifier_value_id?: string
   destination_language_classifier_value_id?: string
   control: Control<TFormValues>
+  skill_id?: string
+  selectedVendorsIds?: string[]
 }
 
 interface PricesTableRow {
@@ -87,16 +89,24 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   handleFilterChange,
   handleSortingChange,
   handlePaginationChange,
-  taskSkills = [],
-  source_language_classifier_value_id,
-  destination_language_classifier_value_id,
+  skill_id: taskSkillId,
   control,
+  selectedVendorsIds,
 }: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
-  const { tagsFilters = [] } = useFetchTags()
+  const { tagsFilters = [] } = useFetchTags({
+    type: TagTypes.Vendor,
+  })
   const { skillsFilters = [] } = useFetchSkills()
-  const matchingLanguageString = `${source_language_classifier_value_id}>${destination_language_classifier_value_id}`
 
+  const { lang_pair, skill_id: selectedSkillFilter, tag_id } = filters || {}
+
+  const srcLangId = lang_pair?.[0]?.src || ''
+  const dstLangId = lang_pair?.[0]?.dst || ''
+
+  const matchingLanguageString = `${srcLangId}_${dstLangId}`
+
+  // To populate dropdown
   const {
     languageDirectionFilters,
     loadMore,
@@ -120,23 +130,23 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           page_fee,
           minute_fee,
           hour_fee,
+          skill,
           minimal_fee,
           skill_id,
+          vendor_id,
           vendor: {
             tags,
-            skills,
             institution_user: { user },
           },
         }) => {
           const languageDirection = `${source_language_classifier_value.value} > ${destination_language_classifier_value.value}`
 
           const tagNames = map(tags, 'name')
-          const skill = find(skills, { id: skill_id })?.name
+          const typedSrc = (srcLangId || '') as string
+          const typedDst = (dstLangId || '') as string
           const priceLanguageMatch =
-            source_language_classifier_value.id ===
-              source_language_classifier_value_id &&
-            destination_language_classifier_value.id ===
-              destination_language_classifier_value_id
+            source_language_classifier_value.id === typedSrc &&
+            destination_language_classifier_value.id === typedDst
 
           // TODO: missing currently
           // const working_times = []
@@ -156,13 +166,13 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           })
 
           return {
-            selected: id,
-            alert_icon: !includes(taskSkills, skill_id) || !priceLanguageMatch,
+            selected: vendor_id,
+            alert_icon: taskSkillId !== skill_id || !priceLanguageMatch,
             name: `${user?.forename} ${user?.surname}`,
             languageDirection,
             working_and_vacation_times,
             tags: tagNames,
-            skill,
+            skill: skill.name,
             character_fee,
             word_fee,
             page_fee,
@@ -172,12 +182,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           }
         }
       ),
-    [
-      data,
-      destination_language_classifier_value_id,
-      source_language_classifier_value_id,
-      taskSkills,
-    ]
+    [data, dstLangId, srcLangId, taskSkillId]
   )
 
   const handleModifiedFilterChange = useCallback(
@@ -185,20 +190,16 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       // language_direction will be an array of strings
       const { language_direction, ...rest } = filters || {}
       const typedLanguageDirection = language_direction as string[]
+
+      const langPairs = map(typedLanguageDirection, (direction) => {
+        const [src, dst] = direction.split('_')
+        return { src, dst }
+      })
       const newFilters: FilterFunctionType = {
         ...rest,
         ...(language_direction
           ? {
-              source_languages: map(
-                typedLanguageDirection,
-                (languageDirectionString) =>
-                  split(languageDirectionString, '>')[0]
-              ),
-              destination_languages: map(
-                typedLanguageDirection,
-                (languageDirectionString) =>
-                  split(languageDirectionString, '>')[1]
-              ),
+              lang_pair: langPairs,
             }
           : {}),
       }
@@ -217,12 +218,18 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       header: '',
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
+        const vendorId = getValue()
+        const isSelectedByDefault = includes(selectedVendorsIds, vendorId)
         return (
           <FormInput
             name={`selected.${getValue()}` as Path<TFormValues>}
             ariaLabel={t('label.select_vendor')}
             control={control}
             inputType={InputTypes.Checkbox}
+            disabled={isSelectedByDefault}
+            defaultValue={
+              isSelectedByDefault as PathValue<TFormValues, Path<TFormValues>>
+            }
             // className={classes.fitContent}
           />
         )
@@ -250,7 +257,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       footer: (info) => info.column.id,
       meta: {
         filterOption: { language_direction: languageDirectionFilters },
-        filterValue: [matchingLanguageString],
+        filterValue: map(lang_pair, ({ src, dst }) => `${src}_${dst}`),
         onEndReached: loadMore,
         onSearch: handleSearch,
         showSearch: true,
@@ -262,15 +269,13 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         return (
           <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
-            ))}
+            <Tag label={getValue() ?? ''} value key={getValue()} />
           </div>
         )
       },
       meta: {
         filterOption: { skill_id: skillsFilters },
-        filterValue: taskSkills,
+        filterValue: selectedSkillFilter,
         showSearch: true,
       },
     }),
@@ -286,7 +291,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('tags', {
-      header: () => t('label.order_tags'),
+      header: () => t('label.tags'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         return (
@@ -299,6 +304,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       },
       meta: {
         filterOption: { tag_id: tagsFilters },
+        filterValue: tag_id,
       },
     }),
     columnHelper.accessor('character_fee', {

@@ -95,7 +95,7 @@
   box-shadow: 0 0 0 2px $color;
   padding: spacing(0.5) spacing(4);
   border-radius: 4px;
-  height: 25px;
+  min-height: 25px;
 }
 
 @mixin manualStyle($background-color: $color) {
@@ -105,6 +105,11 @@
     &:last-child {
       padding-bottom: 0;
     }
+  }
+
+  a {
+    color: $color-primary;
+    text-decoration: underline;
   }
 
   ul {

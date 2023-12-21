@@ -5,9 +5,12 @@ import {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { Control, FieldValues, Path } from 'react-hook-form/dist/types'
-import { DiscountPercentageNames } from 'types/vendors'
+import {
+  DiscountPercentageNames,
+  DiscountPercentagesAmountNames,
+} from 'types/vendors'
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
-import { map } from 'lodash'
+import { map, sum, toNumber, values, round } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
@@ -15,6 +18,7 @@ import DataTable, {
 
 import classes from './classes.module.scss'
 import { useWatch } from 'react-hook-form'
+import classNames from 'classnames'
 
 interface TotalPriceProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
@@ -23,14 +27,57 @@ interface TotalPriceProps<TFormValues extends FieldValues> {
 const TotalPrice = <TFormValues extends FieldValues>({
   control,
 }: TotalPriceProps<TFormValues>) => {
-  const amountValue = useWatch({ control, name: 'amount' as Path<TFormValues> })
+  const amountValues = useWatch({
+    control,
+    name: values(DiscountPercentagesAmountNames) as Path<TFormValues>[],
+  })
 
-  return <DisplayValue value={amountValue} />
+  const value = round(sum(map(amountValues, (v) => Number(v))), 3)
+
+  return <DisplayValue value={value} />
+}
+
+interface RowPriceProps<TFormValues extends FieldValues> {
+  control: Control<TFormValues>
+  name: string
+}
+
+const RowPrice = <TFormValues extends FieldValues>({
+  control,
+  name,
+}: RowPriceProps<TFormValues>) => {
+  const unitPrice = useWatch({
+    control,
+    name: 'unit_fee' as Path<TFormValues>,
+  })
+  const amountValue = useWatch({
+    control,
+    name: (name + '_amount') as Path<TFormValues>,
+  })
+  const discountValue = useWatch({
+    control,
+    name: name as Path<TFormValues>,
+  })
+
+  const value = useMemo(
+    () =>
+      round(
+        ((100 - toNumber(discountValue ?? 0)) / 100) *
+          toNumber(amountValue ?? 0) *
+          toNumber(unitPrice ?? 0),
+        2
+      ),
+    [amountValue, discountValue, unitPrice]
+  )
+
+  return <DisplayValue value={value} />
 }
 
 interface VolumeCatPriceTableProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   hidden?: boolean
+  isEditable?: boolean
+  taskViewPricesClass?: string
 }
 
 interface TableRow {
@@ -45,6 +92,8 @@ const columnHelper = createColumnHelper<TableRow>()
 const VolumeCatPriceTable = <TFormValues extends FieldValues>({
   control,
   hidden,
+  isEditable,
+  taskViewPricesClass,
 }: VolumeCatPriceTableProps<TFormValues>) => {
   const { t } = useTranslation()
 
@@ -107,6 +156,8 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
             control={control}
             inputType={InputTypes.Text}
             className={classes.input}
+            type="number"
+            onlyDisplay={!isEditable}
           />
         )
       },
@@ -117,17 +168,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
       cell: ({ getValue }) => {
         const discountPercentageKey = getValue()
         if (discountPercentageKey === 'kokku') return t('table.total')
-        return (
-          <FormInput
-            name={`${discountPercentageKey}` as Path<TFormValues>}
-            ariaLabel={t('label.enter_discount_percentage')}
-            placeholder={'0,00'}
-            control={control}
-            inputType={InputTypes.Text}
-            className={classes.input}
-            onlyDisplay
-          />
-        )
+        return <RowPrice control={control} name={discountPercentageKey} />
       },
     }),
     columnHelper.accessor('amount', {
@@ -147,6 +188,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
             inputType={InputTypes.Text}
             className={classes.input}
             type="number"
+            onlyDisplay={!isEditable}
           />
         )
       },
@@ -160,7 +202,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
       data={rows}
       columns={columns}
       tableSize={TableSizeTypes.M}
-      className={classes.tableContainer}
+      className={classNames(classes.tableContainer, taskViewPricesClass)}
       hidePagination
       headComponent={
         <h2 className={classes.tableTitle}>

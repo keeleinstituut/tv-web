@@ -1,10 +1,6 @@
 @import 'styles/variables';
 @import 'styles/mixins';
 
-.title {
-  padding: spacing(8) 0;
-}
-
 .container {
   display: flex;
   flex-direction: column;
@@ -19,6 +15,10 @@
     display: flex;
     margin: spacing(3);
     justify-content: flex-end;
+
+    > :first-child {
+      margin-right: spacing(2);
+    }
   }
 
   .inputInternalPosition {
@@ -26,10 +26,10 @@
     margin-bottom: spacing(4);
     padding-right: spacing(10);
 
-    input, textarea {
+    input,
+    textarea {
       width: 274px;
     }
-
   }
 }
 

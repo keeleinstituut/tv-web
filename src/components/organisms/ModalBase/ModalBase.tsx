@@ -16,12 +16,15 @@ import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
 
 import classes from './classes.module.scss'
+import { closeModal } from '../modals/ModalRoot'
 interface ModalContextType {
   modalContentId?: string
+  modalVerticalContentId?: string
 }
 
 export const ModalContext = createContext<ModalContextType>({
   modalContentId: undefined,
+  modalVerticalContentId: undefined,
 })
 
 export enum ModalSizeTypes {
@@ -59,6 +62,7 @@ export interface ModalProps extends ModalFooterProps {
   handleClose?: () => void
   progressBar?: ReactElement
   className?: string
+  buttonComponent?: ReactElement
   helperText?: string | ReactElement
   innerWrapperClassName?: string
   headComponent?: ReactElement
@@ -67,21 +71,28 @@ export interface ModalProps extends ModalFooterProps {
 export interface ModalFooterProps {
   buttonsPosition?: ButtonPositionTypes
   buttons?: ModalButtonProps[]
+  buttonComponent?: ReactElement
 }
 
 const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
   buttonsPosition = 'right',
   buttons,
+  buttonComponent,
 }) => {
-  if (!buttons) return null
   return (
-    <div className={classes[buttonsPosition]}>
-      {map(buttons, (button, index) => (
-        <Button key={index} {...button}>
-          {button?.children}
-        </Button>
-      ))}
-    </div>
+    <>
+      <div
+        className={classNames(classes.footerButtons, classes[buttonsPosition])}
+      >
+        {buttons &&
+          map(buttons, (button, index) => (
+            <Button key={index} {...button}>
+              {button?.children}
+            </Button>
+          ))}
+      </div>
+      {buttonComponent ?? null}
+    </>
   )
 }
 
@@ -100,19 +111,17 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
   progressBar,
   className,
   helperText,
+  buttonComponent,
   innerWrapperClassName,
   headComponent,
 }) => {
   const { t } = useTranslation()
 
-  const handleOpen = (event: { preventDefault: () => void }) => {
-    event.preventDefault()
-  }
-
   return (
     <ModalContext.Provider
       value={{
         modalContentId: 'modalContentId',
+        modalVerticalContentId: 'modalVerticalContentId',
       }}
     >
       <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -120,7 +129,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
         <Dialog.Portal>
           <Dialog.Overlay className={classes.dialogOverlay} />
           <Dialog.Content
-            onOpenAutoFocus={handleOpen}
+            onEscapeKeyDown={closeModal}
             id="modalContentId"
             className={classNames(
               classes.dialogContent,
@@ -135,6 +144,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
               appearance={AppearanceTypes.Secondary}
               onClick={handleClose}
               className={classes.topButton}
+              autoFocus={open && topButton}
             >
               {t('button.cancel')}
             </Button>
@@ -145,7 +155,10 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
               {title}
             </h1>
             {headComponent}
-            <Dialog.Overlay className={classes.scrollableContent}>
+            <Dialog.Overlay
+              className={classes.scrollableContent}
+              id="modalVerticalContentId"
+            >
               <p hidden={!helperText} className={classes.helperText}>
                 {helperText}
               </p>
@@ -158,7 +171,11 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
                 {children}
               </div>
             </Dialog.Overlay>
-            <ModalFooter buttonsPosition={buttonsPosition} buttons={buttons} />
+            <ModalFooter
+              buttonsPosition={buttonsPosition}
+              buttons={buttons}
+              buttonComponent={buttonComponent}
+            />
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>

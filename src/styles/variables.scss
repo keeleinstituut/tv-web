@@ -87,11 +87,15 @@ $color-error-light: #fceeee;
 
 $color-tag: #e7f0f6;
 
+$color-expanded-icon: #8f91a8;
+
 $color-navigation-icon: #a2c3dd;
 $color-info-light: #d0e1ee;
 // Input colors
 $color-input-border: #9799a4;
 $color-input-main: #5d6071;
+
+$color-border-sub-project-content: #8BB4D5;
 
 $color-white: #ffffff;
 $color-black: #000000;
@@ -105,3 +109,13 @@ $color-shadow-secondary: rgba(0, 0, 0, 0.2);
 // helpers
 
 $header-height: 100px;
+$breadcrumb-height: 48px;
+
+// BREAKPOINTS
+
+$medium_mobile: 360px;
+$mobile: 500px;
+$tablet: 768px;
+$small_desktop: 1024px;
+$medium_desktop: 1440px;
+$medium_large_desktop: 1640px;

@@ -12,37 +12,41 @@ import { Root } from '@radix-ui/react-form'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-
-// TODO: this is WIP code for suborder view
+import { useSplitCatJobs } from 'hooks/requests/useProjects'
 
 export interface CatSplitModalProps
   extends Omit<ConfirmationModalBaseProps, 'handleProceed'> {
-  chunk_id?: string
+  subProjectId?: string
 }
 
 const CatSplitModal: FC<CatSplitModalProps> = ({
   modalContent,
-  chunk_id,
+  subProjectId,
   closeModal,
   ...rest
 }) => {
   const { t } = useTranslation()
   const [splitsAmount, setSplitsAmount] = useState(2)
+  const { splitCatJobs, isLoading } = useSplitCatJobs()
 
   const handleSplit = useCallback(async () => {
+    const payload = {
+      sub_project_id: subProjectId || '',
+      chunks_count: splitsAmount,
+    }
     try {
-      // TODO: call some split endpoint
-      // splitFile({ chunk_id, amount: splitsAmount })
+      await splitCatJobs(payload)
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
         content: t('success.file_split_success'),
       })
+      setSplitsAmount(2)
       closeModal()
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [closeModal, t])
+  }, [closeModal, splitCatJobs, splitsAmount, subProjectId, t])
 
   return (
     <ConfirmationModalBase
@@ -50,6 +54,7 @@ const CatSplitModal: FC<CatSplitModalProps> = ({
       handleProceed={handleSplit}
       cancelButtonContent={t('button.quit')}
       proceedButtonContent={t('button.confirm')}
+      proceedButtonLoading={isLoading}
       title={t('modal.cat_split_title')}
       closeModal={closeModal}
       modalContent={

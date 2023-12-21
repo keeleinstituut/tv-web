@@ -15,8 +15,9 @@ import {
 } from 'react-hook-form'
 import { FormEventHandler, ReactElement } from 'react'
 
-export type InputFieldProps<Type extends FieldValues> =
-  UseControllerProps<Type> & InputPropsWithoutControllerProps
+export type InputFieldProps<TFormValues extends FieldValues> =
+  UseControllerProps<TFormValues> &
+    InputPropsWithoutControllerProps & { hidden?: boolean }
 
 interface ComponentInForm {
   component: Array<ReactElement> | ReactElement | string
@@ -24,27 +25,29 @@ interface ComponentInForm {
   label?: string
 }
 
-export type FieldProps<Type extends FieldValues> =
-  | InputFieldProps<Type>
+export type FieldProps<TFormValues extends FieldValues> =
+  | InputFieldProps<TFormValues>
   | ComponentInForm
 
-export interface DynamicFormProps<Type extends FieldValues> {
-  fields: FieldProps<Type>[]
-  control: Control<Type>
+export interface DynamicFormProps<TFormValues extends FieldValues> {
+  fields: FieldProps<TFormValues>[]
+  control: Control<TFormValues>
   className?: string
   onSubmit?: FormEventHandler<HTMLFormElement>
   formId?: string
   useDivWrapper?: boolean
 }
 
-export function FormInput<Type extends FieldValues>({
+export function FormInput<TFormValues extends FieldValues>({
   name,
   rules,
   shouldUnregister,
   defaultValue,
   control,
+  hidden,
   ...rest
-}: InputFieldProps<Type>) {
+}: InputFieldProps<TFormValues>) {
+  if (hidden) return null
   return (
     <Controller
       name={name}
@@ -52,12 +55,15 @@ export function FormInput<Type extends FieldValues>({
       shouldUnregister={shouldUnregister}
       defaultValue={defaultValue}
       control={control}
-      render={DynamicInputComponent<Type>(rest)}
+      render={DynamicInputComponent<TFormValues>({
+        ...rest,
+        rules: rules as { required?: boolean } | undefined,
+      })}
     />
   )
 }
 
-function DynamicForm<Type extends FieldValues>({
+function DynamicForm<TFormValues extends FieldValues>({
   control,
   fields,
   className,
@@ -65,7 +71,7 @@ function DynamicForm<Type extends FieldValues>({
   children,
   useDivWrapper,
   formId,
-}: PropsWithChildren<DynamicFormProps<Type>>) {
+}: PropsWithChildren<DynamicFormProps<TFormValues>>) {
   const Wrapper = useDivWrapper ? 'div' : Root
   // TODO: workaround for typescript, find a better solution
   const wrapperProps = {

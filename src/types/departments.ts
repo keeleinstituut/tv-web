@@ -5,7 +5,7 @@ import {
 } from 'components/organisms/modals/EditableListModal/EditableListModal'
 import { ResponseMetaTypes } from 'types/collective'
 export interface DepartmentType {
-  data: any
+  data: unknown
   id: string
   institution_id?: string
   name: string

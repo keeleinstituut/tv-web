@@ -1,24 +1,19 @@
 import { FC } from 'react'
 import { map } from 'lodash'
-import { SubOrderDetail } from 'types/orders'
+import { SubProjectDetail } from 'types/projects'
 import Assignment from 'components/molecules/Assignment/Assignment'
 
-type FeatureAssignmentsProps = Pick<
-  SubOrderDetail,
-  | 'assignments'
-  | 'source_language_classifier_value_id'
-  | 'destination_language_classifier_value_id'
-  | 'cat_analyzis'
-> & {
+type FeatureAssignmentsProps = Pick<SubProjectDetail, 'assignments'> & {
   hidden?: boolean
-  projectDeadline?: string
   catSupported?: boolean
+  isEditable?: boolean
 }
 
 const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
   assignments,
   hidden,
-  ...rest
+  isEditable,
+  catSupported,
 }) => {
   if (hidden) return null
   return (
@@ -29,7 +24,8 @@ const FeatureAssignments: FC<FeatureAssignmentsProps> = ({
             key={assignment.id}
             index={index}
             {...assignment}
-            {...rest}
+            isEditable={isEditable}
+            catSupported={catSupported}
           />
         )
       })}

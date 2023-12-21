@@ -1,4 +1,4 @@
-import { toString } from 'lodash'
+import { range, slice, toString } from 'lodash'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -13,7 +13,7 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { useNavigate } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 type PaginationProps<TData> = {
   hidden?: boolean
@@ -29,7 +29,7 @@ const TablePagination = <TData,>({
   hidePaginationSelectionInput = false,
 }: PaginationProps<TData>) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const {
     previousPage,
     getCanPreviousPage,
@@ -43,11 +43,27 @@ const TablePagination = <TData,>({
 
   const defaultPageSizeOptions = [
     { label: '10', value: '10' },
+    { label: '15', value: '15' },
     { label: '50', value: '50' },
-    { label: '100', value: '100' },
   ]
 
   const amountOfPages = getPageCount()
+  const pagesArray = range(0, amountOfPages)
+  const pageNumber = getState().pagination.pageIndex
+
+  const startPage =
+    pageNumber < 3 //first three pages
+      ? 0
+      : pageNumber > amountOfPages - 3 // last three pages
+      ? Math.max(0, amountOfPages - 5)
+      : pageNumber - 2
+
+  const endPage =
+    pageNumber < 3
+      ? 5
+      : pageNumber > amountOfPages - 3
+      ? amountOfPages
+      : pageNumber + 3
 
   if (hidden) return null
 
@@ -62,8 +78,9 @@ const TablePagination = <TData,>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={() => {
             previousPage()
-            navigate({
-              search: `?page=${getState().pagination.pageIndex}`,
+            setSearchParams((prevParams) => {
+              prevParams.set('page', `${getState().pagination.pageIndex}`)
+              return searchParams
             })
           }}
           disabled={!getCanPreviousPage()}
@@ -73,7 +90,7 @@ const TablePagination = <TData,>({
 
         <nav role="navigation" aria-label={t('label.pagination_navigation')}>
           <ul className={classes.links}>
-            {[...Array(getPageCount())].map((_, index) => (
+            {slice(pagesArray, startPage, endPage).map((index) => (
               <li
                 key={index}
                 className={classNames(classes.list, {
@@ -82,8 +99,13 @@ const TablePagination = <TData,>({
               >
                 <Button
                   className={classes.pageNumber}
-                  href={`?page=${index + 1}`}
-                  onClick={() => setPageIndex(index)}
+                  onClick={() => {
+                    setPageIndex(index)
+                    setSearchParams((prevParams) => {
+                      prevParams.set('page', `${index + 1}`)
+                      return searchParams
+                    })
+                  }}
                   ariaLabel={t('label.go_to_page') + index}
                   aria-current={getState().pagination.pageIndex === index}
                 >
@@ -101,8 +123,9 @@ const TablePagination = <TData,>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={() => {
             nextPage()
-            navigate({
-              search: `?page=${getState().pagination.pageIndex + 2}`,
+            setSearchParams((prevParams) => {
+              prevParams.set('page', `${getState().pagination.pageIndex + 2}`)
+              return searchParams
             })
           }}
           disabled={!getCanNextPage()}
@@ -120,6 +143,10 @@ const TablePagination = <TData,>({
         value={toString(getState().pagination.pageSize)}
         onChange={(value) => {
           setPageSize(Number(value))
+          setSearchParams((prevParams) => {
+            prevParams.set('per_page', `${Number(value)}`)
+            return searchParams
+          })
         }}
         hideTags
         placeholder={toString(getState().pagination.pageSize)}

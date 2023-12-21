@@ -1,4 +1,12 @@
-import { FC, useState, useRef, useEffect, useCallback, Fragment } from 'react'
+import {
+  FC,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  Fragment,
+  MouseEvent,
+} from 'react'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -45,6 +53,7 @@ export const ProjectFileTypes = [
   InputFileTypes.OpenDocument,
   InputFileTypes.Excel,
   InputFileTypes.SpreadSheet,
+  InputFileTypes.Csv,
   // InputFileTypes.Outlook,
   // InputFileTypes.Asice,
   // InputFileTypes.Zip,
@@ -80,7 +89,7 @@ export const acceptFileExtensions = {
   [InputFileTypes.Jpeg]: ['.jpg', '.jpeg'],
   [InputFileTypes.Text]: ['.txt'],
   [InputFileTypes.Html]: ['.html', '.htm'],
-  [InputFileTypes.Xml]: ['.xml'],
+  [InputFileTypes.Xml]: ['.xml', '.tmx'],
   [InputFileTypes.TextXml]: ['.xml'],
   [InputFileTypes.Other]: ['.akt', '.xst'],
 }
@@ -90,6 +99,7 @@ interface AddedFilesListProps {
   files: File[]
   handleDelete: (index: number) => void
   error?: string
+  listContainerClassName?: string
 }
 
 // TODO: might use a different custom component instead of this
@@ -98,6 +108,7 @@ const AddedFilesList: FC<AddedFilesListProps> = ({
   files,
   handleDelete,
   error,
+  listContainerClassName,
 }) => {
   const { t } = useTranslation()
   const formatFileSize = (sizeInBytes: number): string => {
@@ -122,21 +133,26 @@ const AddedFilesList: FC<AddedFilesListProps> = ({
       <ul
         className={classNames(
           files?.length && classes.fileContainer,
-          files?.length && error && classes.errorContainer
+          files?.length && error && classes.errorContainer,
+          listContainerClassName
         )}
       >
         {map(files, (file, index) => {
           return (
-            <Fragment key={index}>
+            <li key={index}>
               <File className={classes.icon} />
               <div className={classes.fileDetailsContainer}>
                 <p className={classes.fileName}>{file?.name}</p>
                 <p className={classes.fileSize}>{formatFileSize(file?.size)}</p>
               </div>
-              <BaseButton onClick={() => handleDelete(index)}>
+              <BaseButton
+                onClick={() => handleDelete(index)}
+                className={classes.button}
+                aria-label={t('button.delete')}
+              >
                 <Delete />
               </BaseButton>
-            </Fragment>
+            </li>
           )
         })}
       </ul>
@@ -156,6 +172,8 @@ interface SharedImportProps {
   className?: string
   files?: File[]
   hidden?: boolean
+  size?: SizeTypes
+  listContainerClassName?: string
 }
 
 type SingleSelectProps = {
@@ -184,12 +202,15 @@ const FileImport: FC<FileImportProps> = ({
   className,
   files,
   hidden,
+  size,
+  listContainerClassName,
   ...rest
 }) => {
   const [localFiles, setFiles] = useState<File[]>(files || [])
   const parentRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslation()
   const [isDragAndDropOpen, setDragAndDropOpen] = useState<boolean>(false)
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
     // Sync files from outside to local state
@@ -223,9 +244,33 @@ const FileImport: FC<FileImportProps> = ({
     [localFiles, onChangeHandler, onDelete]
   )
 
-  const toggleDragAndDrop = () => {
+  const toggleDragAndDrop = (event: MouseEvent | KeyboardEvent) => {
     setDragAndDropOpen(!isDragAndDropOpen)
+    if (!document.querySelector('.dragNDrop-focus') && !isDragAndDropOpen) {
+      const target = event?.target as HTMLElement
+      target.classList.add('dragNDrop-focus')
+      setFocusElement(target)
+    }
   }
+  const escFunction = useCallback((event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setDragAndDropOpen(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (document.querySelector('.dragNDrop-focus') && !isDragAndDropOpen) {
+      focusElement?.classList.remove('dragNDrop-focus')
+      focusElement?.focus()
+    }
+  }, [focusElement, isDragAndDropOpen])
+
+  useEffect(() => {
+    document.addEventListener('keydown', escFunction)
+    return () => {
+      document.removeEventListener('keydown', escFunction)
+    }
+  }, [escFunction])
 
   const handleSetFiles = useCallback(
     (newFiles: File[]) => {
@@ -243,11 +288,7 @@ const FileImport: FC<FileImportProps> = ({
 
   return (
     <div
-      className={classNames(
-        classes.fileImportContainer,
-        isFilesListHidden && classes.tableStyleContainer,
-        className
-      )}
+      className={classNames(classes.fileImportContainer, className)}
       ref={parentRef}
     >
       <DragAndDrop
@@ -256,13 +297,12 @@ const FileImport: FC<FileImportProps> = ({
         setDragAndDropOpen={setDragAndDropOpen}
         setFiles={handleSetFiles}
         allowMultiple={allowMultiple}
-        isFilesListHidden={isFilesListHidden}
         {...rest}
       />
       <Button
         onClick={toggleDragAndDrop}
         icon={!localFiles?.length || isFilesListHidden ? Attach : undefined}
-        size={SizeTypes.M}
+        size={size || SizeTypes.M}
         ariaLabel={t('label.attach_file')}
         iconPositioning={IconPositioningTypes.Right}
         appearance={
@@ -284,6 +324,7 @@ const FileImport: FC<FileImportProps> = ({
         handleDelete={handleDelete}
         files={localFiles}
         hidden={isFilesListHidden}
+        listContainerClassName={listContainerClassName}
       />
       <p
         hidden={!error || !localFiles?.length}

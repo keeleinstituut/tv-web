@@ -6,7 +6,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  
+
+  @media (max-width: $small_desktop) {
+    display: grid;
+    justify-items: center;
+    grid-gap: spacing(12);
+  }
+
   // TODO: currently will leave it as is, since this is using some weird values
   .whiteBackground {
     position: absolute;
@@ -16,10 +22,16 @@
     z-index: -1;
   }
 
-  img {
+  .background {
     margin-left: spacing(16);
     width: 386px;
     height: 275px;
+
+    @media (max-width: $tablet) {
+      margin: auto;
+      width: 230px;
+      height: 165px;
+    }
   }
 
   .contentContainer {
@@ -33,16 +45,53 @@
 
     .buttonsContainer {
       margin-top: spacing(4);
+      display: grid;
+      grid-template-columns: auto auto;
+      grid-gap: spacing(2);
 
-      button,
-      a {
-        display: inline-flex;
-        margin-left: 8px;
+      @media (max-width: $medium_mobile) {
+        grid-template-columns: 1fr;
       }
     }
 
-    h1 {
+    h1,
+    .text {
       text-align: end;
     }
+
+    .text {
+      margin: spacing(11) 0 spacing(1.5) 0;
+      color: $color-primary;
+    }
+
+    @media (max-width: $small_desktop) {
+      margin: 0;
+      align-items: start;
+
+      h1,
+      .text {
+        text-align: start;
+      }
+      .buttonsContainer {
+        margin-top: spacing(8);
+      }
+      .bigButton {
+        padding: spacing(1.5) spacing(9.5);
+      }
+    }
   }
+
+  .button {
+    justify-content: center;
+    padding: spacing(2) spacing(6);
+  }
+}
+
+.logo {
+  width: 125px;
+  height: 72px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: spacing(8);
 }

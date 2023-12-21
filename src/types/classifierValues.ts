@@ -1,4 +1,5 @@
 import { PaginationFunctionType, SortingFunctionType } from './collective'
+import { ProjectTypeConfig } from 'types/projects'
 
 export enum ClassifierValueType {
   Language = 'LANGUAGE',
@@ -13,10 +14,8 @@ export interface ClassifierValue {
   name: string
   synced_at: string | null
   deleted_at: string | null
-  meta?: {
-    display_start_time?: boolean
-    workflow_id?: string
-  }
+  meta?: string
+  project_type_config: ProjectTypeConfig
 }
 
 export interface LanguageClassifierValue extends ClassifierValue {

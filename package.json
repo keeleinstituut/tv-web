@@ -37,8 +37,9 @@
     "react-scripts": "5.0.1",
     "react-timeit": "^1.1.12",
     "sass": "^1.60.0",
-    "typescript": "^4.9.5",
+    "typescript": "^5.3.3",
     "use-mask-input": "^3.1.2",
+    "use-react-router-breadcrumbs": "^4.0.1",
     "uuid": "^9.0.0",
     "web-vitals": "^2.1.4"
   },
@@ -46,7 +47,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "syncTerms": "node  ./scripts/syncTerms.js"
   },
   "engines": {
     "node": "18.14.2"
@@ -72,6 +74,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-unused-imports": "^2.0.0",
+    "octokit": "^3.1.2",
     "prettier": "^2.8.6"
   }
 }

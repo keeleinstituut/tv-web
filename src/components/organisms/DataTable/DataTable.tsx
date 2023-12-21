@@ -29,6 +29,7 @@ import TableHeaderGroup, {
   HeaderGroupFunctions,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { ResponseMetaTypes, PaginationFunctionType } from 'types/collective'
+import { size } from 'lodash'
 
 export enum TableSizeTypes {
   L = 'l',
@@ -50,7 +51,7 @@ type DataTableProps<TData extends RowData> = {
   data: TData[]
   columns: ColumnDef<TData>[]
   tableSize: TableSizeTypes
-  title?: string
+  title?: string | ReactElement
   headComponent?: ReactElement
   paginationData?: ResponseMetaTypes
   onPaginationChange?: (value?: PaginationFunctionType) => void
@@ -60,11 +61,21 @@ type DataTableProps<TData extends RowData> = {
   pageSizeOptions?: { label: string; value: string }[]
   tableWrapperClassName?: string
   hidden?: boolean
-  getSubRows?:
-    | ((originalRow: TData, index: number) => TData[] | undefined)
-    | undefined
+  getSubRows?: (originalRow: TData, index: number) => TData[] | undefined
   hidePagination?: boolean
   hidePaginationSelectionInput?: boolean
+  getRowStyles?: (row: {
+    parentId?: string
+    getIsExpanded?: () => boolean
+    index?: number
+  }) => {
+    background?: string
+    fontSize?: number
+  }
+
+  columnOrder?: string[] | undefined
+  subRowComponent?: (row: Row<TData>) => ReactElement
+  defaultPaginationData?: PaginationFunctionType
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -85,23 +96,37 @@ const DataTable = <TData,>(
     onPaginationChange,
     meta,
     getSubRows,
-    className,
     pageSizeOptions,
     hidePagination = false,
     headComponent,
+    className,
     hidePaginationSelectionInput = false,
     tableWrapperClassName,
     hidden,
+    getRowStyles,
+    columnOrder,
+    subRowComponent,
+    defaultPaginationData,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
   const [horizontalWrapperId] = useState(useId())
-  const { per_page, last_page } = paginationData || {}
+  const { last_page, current_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: per_page || 10,
+    pageIndex: defaultPaginationData?.page || 0,
+    pageSize: hidePagination ? 10000 : defaultPaginationData?.per_page || 10,
   })
+
+  useEffect(() => {
+    if (current_page && current_page - 1 < pagination.pageIndex) {
+      setPagination({
+        pageIndex: 0,
+        pageSize: paginationData ? paginationData.per_page : 10,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current_page])
 
   useEffect(() => {
     if (onPaginationChange) {
@@ -120,6 +145,7 @@ const DataTable = <TData,>(
     pageCount: last_page, // Provide the total number of pages
     state: {
       expanded,
+      columnOrder,
       ...{ pagination },
     },
     meta,
@@ -157,15 +183,28 @@ const DataTable = <TData,>(
             />
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} style={table.options.meta?.getRowStyles(row)}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                <tr
+                  key={row.id}
+                  style={
+                    typeof getRowStyles === 'function' ? getRowStyles(row) : {}
+                  }
+                >
+                  {!!row.parentId && subRowComponent ? (
+                    <td colSpan={size(table.getAllColumns())}>
+                      {subRowComponent(row)}
                     </td>
-                  ))}
+                  ) : (
+                    row
+                      .getVisibleCells()
+                      .map((cell) => (
+                        <td key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))
+                  )}
                 </tr>
               ))}
             </tbody>

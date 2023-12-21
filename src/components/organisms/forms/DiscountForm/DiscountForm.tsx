@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, FormEventHandler } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import DynamicForm, {
@@ -6,25 +6,37 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { Control } from 'react-hook-form/dist/types'
-import {
-  DiscountPercentageNames,
-  DiscountPercentages,
-  Vendor,
-} from 'types/vendors'
+import { DiscountPercentageNames, DiscountPercentages } from 'types/vendors'
 import useValidators from 'hooks/useValidators'
 import { map } from 'lodash'
+import FormButtons from 'components/organisms/FormButtons/FormButtons'
+import classNames from 'classnames'
 
 interface DiscountFormProps {
-  vendor: Vendor
-  isFormDisabled: boolean
+  isSubmitDisabled?: boolean
+  isResetDisabled?: boolean
   control: Control<DiscountPercentages, unknown>
   isSubmitting: boolean
-  isDirty: boolean
-  isValid: boolean
   resetForm: () => void
+  addFormButtons?: boolean
+  submitButtonName?: string
+  className?: string
+  handleOnSubmit?: FormEventHandler<HTMLFormElement>
+  isEditDisabled?: boolean
 }
 
-const DiscountForm: FC<DiscountFormProps> = ({ control }) => {
+const DiscountForm: FC<DiscountFormProps> = ({
+  control,
+  isSubmitting,
+  isSubmitDisabled = false,
+  isResetDisabled = false,
+  resetForm,
+  addFormButtons = false,
+  submitButtonName,
+  className,
+  handleOnSubmit,
+  isEditDisabled = false,
+}) => {
   const { t } = useTranslation()
   const { discountValidator } = useValidators()
 
@@ -55,21 +67,38 @@ const DiscountForm: FC<DiscountFormProps> = ({ control }) => {
       placeholder: '20.00%',
       label,
       name,
+      disabled: isEditDisabled,
       className: classes.inputContainer,
       rules: {
         validate: discountValidator,
+        required: true,
       },
     })
   )
 
   return (
-    <div className={classes.discountFormContainer}>
+    <div className={classNames(classes.discountFormContainer, className)}>
       <h2>{t('vendors.analysis_based_discount')}</h2>
       <div className={classes.discountHeader}>
         <div>{t('vendors.match_type')}</div>
         <div>{t('vendors.percent_from_price')}</div>
       </div>
-      <DynamicForm fields={fields} control={control} />
+      <DynamicForm
+        formId="PricePercentage"
+        fields={fields}
+        control={control}
+        onSubmit={handleOnSubmit}
+      />
+      <FormButtons
+        loading={isSubmitting}
+        isResetDisabled={isResetDisabled}
+        isSubmitDisabled={isSubmitDisabled}
+        resetForm={resetForm}
+        hidden={isEditDisabled ? true : !addFormButtons}
+        className={classes.formButtons}
+        formId="PricePercentage"
+        submitButtonName={submitButtonName || t('button.confirm_changes')}
+      />
     </div>
   )
 }

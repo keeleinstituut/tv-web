@@ -9,46 +9,87 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { filter, map, find } from 'lodash'
+import { filter, map } from 'lodash'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-import { Price } from 'types/price'
-import { DiscountPercentages } from 'types/vendors'
-import { CatAnalysis } from 'types/orders'
+import { Price, PriceUnits } from 'types/price'
 import { VolumeValue } from 'types/volumes'
-
-// TODO: not sure about this data structure
 
 interface VolumeRowProps extends VolumeValue {
   index: number
-  handleDelete: (index: number) => void
+  handleDelete: (index: number, id: string) => void
   handleEdit: (index: number) => void
 }
 
+export const apiTypeToKey = (apiType: string) => {
+  switch (apiType) {
+    case 'CHARACTERS':
+      return PriceUnits.CharacterFee
+    case 'WORDS':
+      return PriceUnits.WordFee
+    case 'PAGES':
+      return PriceUnits.PageFee
+    case 'MINUTES':
+      return PriceUnits.MinuteFee
+    case 'HOURS':
+      return PriceUnits.HourFee
+    case 'MINIMALS':
+    default:
+      return PriceUnits.MinimalFee
+  }
+}
+
+export const keyToApiType = (key: string) => {
+  switch (key) {
+    case PriceUnits.CharacterFee:
+      return 'CHARACTERS'
+    case PriceUnits.WordFee:
+      return 'WORDS'
+    case PriceUnits.PageFee:
+      return 'PAGES'
+    case PriceUnits.MinuteFee:
+      return 'MINUTES'
+    case PriceUnits.HourFee:
+      return 'HOURS'
+    case PriceUnits.MinimalFee:
+    default:
+      return 'MINIMALS'
+  }
+}
+
 const VolumeRow: FC<VolumeRowProps> = ({
-  amount,
-  unit,
-  isCat,
+  unit_quantity,
+  unit_type,
+  cat_job,
   index,
   handleDelete,
   handleEdit,
+  id,
 }) => {
   const { t } = useTranslation()
   const onEditClick = useCallback(() => {
     handleEdit(index)
   }, [handleEdit, index])
   const onDeleteClick = useCallback(() => {
-    handleDelete(index)
-  }, [handleDelete, index])
+    handleDelete(index, id)
+  }, [handleDelete, index, id])
   return (
     <div className={classes.row}>
-      <span>{`${amount} ${t(`label.${unit}`)}${
-        isCat ? ` ${t('task.open_in_cat')}` : ''
-      }`}</span>
-      <BaseButton onClick={onEditClick} className={classes.editButton}>
+      <span>{`${Number(unit_quantity)} ${t(
+        `label.${apiTypeToKey(unit_type)}`
+      )}${cat_job ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+      <BaseButton
+        onClick={onEditClick}
+        className={classes.editButton}
+        aria-label={t('button.edit')}
+      >
         <Edit className={classes.editIcon} />
       </BaseButton>
-      <BaseButton onClick={onDeleteClick} className={classes.deleteButton}>
+      <BaseButton
+        onClick={onDeleteClick}
+        className={classes.deleteButton}
+        aria-label={t('button.delete')}
+      >
         <Delete className={classes.deleteIcon} />
       </BaseButton>
     </div>
@@ -63,13 +104,11 @@ export interface AddVolumeInputProps {
   label?: JSX.Element | string
   disabled?: boolean
   hidden?: boolean
-  loading?: boolean
   catSupported?: boolean
   vendorPrices?: Price
-  vendorDiscounts?: DiscountPercentages
   vendorName?: string
-  cat_analyzis?: CatAnalysis[]
   assignmentId?: string
+  sub_project_id?: string
 }
 
 const AddVolumeInput: FC<AddVolumeInputProps> = ({
@@ -80,86 +119,75 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   value = [],
   catSupported,
   vendorPrices,
-  vendorDiscounts,
   vendorName,
-  cat_analyzis,
   assignmentId,
+  sub_project_id,
   disabled,
-  loading,
 }) => {
   const { t } = useTranslation()
 
   const handleDelete = useCallback(
-    (index: number) => {
+    (index: number, id: string) => {
       const newVolumes = filter(
         value,
         (_, volumeIndex) => index !== volumeIndex
       )
-      // Random guess that delete will actually be update to all assignment volumes
-      // This might not be the case, but works like this in some other cases
       showModal(ModalTypes.ConfirmDeleteVolume, {
         newVolumes,
+        sub_project_id,
+        volumeId: id,
         callback: () => onChange(newVolumes),
         assignmentId,
       })
-
-      // TODO: delete volume at index
     },
-    [onChange, value, assignmentId]
-  )
-
-  const addNewVolume = useCallback(
-    (volumePayload: VolumeValue) => {
-      onChange([...value, volumePayload])
-    },
-    [onChange, value]
-  )
-
-  const editVolume = useCallback(
-    (volumePayload: VolumeValue, index: number) => {
-      const volumesCopy = [...value]
-      volumesCopy[index] = volumePayload
-      onChange(volumesCopy)
-    },
-    [onChange, value]
+    [value, sub_project_id, assignmentId, onChange]
   )
 
   const handleEdit = useCallback(
     (index: number) => {
       const matchingVolume = value[index]
-      const matchingCatAnalysis = find(cat_analyzis, {
-        chunk_id: matchingVolume.chunkId,
-      })
+      const isCat = !!matchingVolume.cat_job
+
+      const onChangeValue = (updatedVolume: VolumeValue) => {
+        onChange(
+          map(value, (volume) =>
+            volume.id === matchingVolume.id ? updatedVolume : volume
+          )
+        )
+      }
       showModal(ModalTypes.VolumeChange, {
-        onSave: (volumePayload: VolumeValue) =>
-          editVolume(volumePayload, index),
+        isCat,
         vendorPrices,
-        vendorDiscounts,
         vendorName,
-        matchingCatAnalysis,
+        onChangeValue,
+        sub_project_id,
         ...matchingVolume,
       })
     },
-    [value, cat_analyzis, editVolume, vendorPrices, vendorDiscounts, vendorName]
+    [value, vendorPrices, vendorName, onChange, sub_project_id]
   )
 
   const handleAdd = useCallback(() => {
-    // TODO: open add/edit modal with add mode
+    const onChangeValue = (newVolume: VolumeValue) => {
+      onChange([...value, newVolume])
+    }
+
     showModal(ModalTypes.AddVolume, {
-      onSave: addNewVolume,
+      onChangeValue,
+      assignmentId,
+      sub_project_id,
       catSupported,
       vendorPrices,
-      vendorDiscounts,
       vendorName,
-      cat_analyzis,
     })
   }, [
-    addNewVolume,
+    assignmentId,
+    sub_project_id,
     catSupported,
     vendorPrices,
-    vendorDiscounts,
     vendorName,
-    cat_analyzis,
+    onChange,
+    value,
   ])
   // Might need event handler wrappers here
   if (hidden) return null
@@ -179,6 +207,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
           appearance={AppearanceTypes.Text}
           className={classes.addButton}
           iconPositioning={IconPositioningTypes.Left}
+          disabled={disabled}
           icon={Add}
           children={t('button.add_volume')}
           onClick={handleAdd}

@@ -1,8 +1,8 @@
-import { RefObject, forwardRef, useRef } from 'react'
+import { FocusEvent, RefObject, forwardRef, useCallback, useRef } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
-import { omit } from 'lodash'
+import { omit, size, toString } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import InputError from 'components/atoms/InputError/InputError'
 import { InputHTMLAttributes } from 'react'
@@ -27,6 +27,9 @@ export interface TextInputProps
   loading?: boolean
   isTextarea?: boolean
   inputContainerClassName?: string
+  labelClassName?: string
+  hasInputValueSize?: boolean
+  handleOnBlur?: (value: string) => void
 }
 
 const TextInput = forwardRef<
@@ -49,6 +52,10 @@ const TextInput = forwardRef<
     loading,
     handleDelete,
     inputContainerClassName,
+    labelClassName,
+    hasInputValueSize = false,
+    handleOnBlur,
+    onBlur,
     ...rest
   } = props
   const { t } = useTranslation()
@@ -59,18 +66,32 @@ const TextInput = forwardRef<
       handleDelete()
     }
   }
-  // Might need event handler wrappers here
-  if (hidden) return null
 
   const inputProps = {
     ...(placeholder ? { placeholder } : {}),
     className: classes.inputField,
     ref,
-    value: value || '',
+    value: value ?? '',
     'aria-label': ariaLabel,
     disabled,
     ...rest,
+    size: hasInputValueSize ? size(toString(value)) : undefined,
   }
+  const handleOnBlurAction = useCallback(
+    (e: unknown) => {
+      if (!!handleOnBlur) {
+        handleOnBlur(toString(value) || '')
+      }
+      if (!!onBlur) {
+        const event = e as unknown as FocusEvent<HTMLInputElement, Element>
+        onBlur(event)
+      }
+    },
+    [handleOnBlur, onBlur, value]
+  )
+  // Might need event handler wrappers here
+  if (hidden) return null
+
   return (
     <Field
       name={name}
@@ -84,7 +105,12 @@ const TextInput = forwardRef<
         className
       )}
     >
-      <Label className={classNames(classes.label, !label && classes.hidden)}>
+      <Label
+        className={classNames(
+          !label && classes.hidden,
+          labelClassName ? labelClassName : classes.label
+        )}
+      >
         {label}
       </Label>
       <div
@@ -96,12 +122,14 @@ const TextInput = forwardRef<
         <Control asChild>
           {isTextarea ? (
             <textarea
-              {...(inputProps as unknown as InputHTMLAttributes<HTMLTextAreaElement>)}
               rows={4}
+              {...(inputProps as unknown as InputHTMLAttributes<HTMLTextAreaElement>)}
+              onBlur={(e) => handleOnBlurAction(e)}
             />
           ) : (
             <input
               {...(inputProps as unknown as InputHTMLAttributes<HTMLInputElement>)}
+              onBlur={(e) => handleOnBlurAction(e)}
             />
           )}
         </Control>

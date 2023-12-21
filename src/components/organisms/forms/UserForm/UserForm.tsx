@@ -38,7 +38,7 @@ interface FormValues {
   roles?: string[]
 }
 
-type UserFormProps = UserType
+type UserFormProps = { isUserAccount?: boolean } & Partial<UserType>
 
 const UserForm: FC<UserFormProps> = ({
   id,
@@ -48,15 +48,16 @@ const UserForm: FC<UserFormProps> = ({
   department,
   roles,
   status,
+  isUserAccount = false,
 }) => {
   // hooks
   // TODO: department still needs to be handled
-  const { personal_identification_code, forename, surname } = user
+  const { personal_identification_code, forename, surname } = user || {}
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator } = useValidators()
   const { updateUser, isLoading } = useUpdateUser({ id })
-  const { existingRoles = [] } = useRolesFetch()
+  const { existingRoles = [] } = useRolesFetch({ disabled: isUserAccount })
   const { existingDepartments = [] } = useDepartmentsFetch()
 
   const defaultValues = useMemo(
@@ -85,7 +86,8 @@ const UserForm: FC<UserFormProps> = ({
     formState: { isSubmitting, isDirty, isValid },
     setError,
   } = useForm<FormValues>({
-    reValidateMode: 'onSubmit',
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
 
@@ -104,7 +106,7 @@ const UserForm: FC<UserFormProps> = ({
   })
 
   const isFormDisabled =
-    !includes(userPrivileges, Privileges.EditUser) ||
+    (!includes(userPrivileges, Privileges.EditUser) && !isUserAccount) ||
     status === UserStatus.Archived
 
   // map data for rendering
@@ -171,6 +173,7 @@ const UserForm: FC<UserFormProps> = ({
       className: classes.inputInternalPosition,
       options: departmentOptions,
       disabled: isFormDisabled,
+      hidden: isUserAccount,
     },
     {
       inputType: InputTypes.Selections,
@@ -186,6 +189,7 @@ const UserForm: FC<UserFormProps> = ({
       rules: {
         required: true,
       },
+      hidden: isUserAccount,
     },
   ]
 

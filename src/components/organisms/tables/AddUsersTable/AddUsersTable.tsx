@@ -1,4 +1,4 @@
-import { FC, useRef } from 'react'
+import { FC } from 'react'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -39,7 +39,6 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
   rowsWithExistingUsers,
   existingRoles,
 }) => {
-  const containerRef = useRef(null)
   const { t } = useTranslation()
   const { existingDepartments = [] } = useDepartmentsFetch()
 
@@ -93,7 +92,6 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
               hidden={!includes(rowsWithExistingUsers, row.index)}
               tooltipContent={t('tooltip.user_already_exists')}
               className={classes.tooltipPosition}
-              containerRef={containerRef}
             />
           </div>
         )
@@ -196,11 +194,9 @@ const AddUsersTable: FC<AddUsersTableProps> = ({
       //paginationData={pagination}
       //onPaginationChange={onPaginationChange}
       tableSize={TableSizeTypes.M}
-      ref={containerRef}
       pageSizeOptions={[
         { label: '10', value: '10' },
         { label: '50', value: '50' },
-        { label: '100', value: '100' },
       ]}
     />
   )

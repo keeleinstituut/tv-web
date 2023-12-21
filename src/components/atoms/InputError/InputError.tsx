@@ -6,6 +6,7 @@ import errorOutline from 'assets/icons/error_outline.svg'
 import { useTranslation } from 'react-i18next'
 import useElementPosition from 'hooks/useElementPosition'
 import { createPortal } from 'react-dom'
+import useModalContext from 'hooks/useModalContext'
 
 interface InputErrorComponentProps {
   type?: FieldError['type']
@@ -22,7 +23,7 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
   errorZIndex,
   wrapperRef,
 }) => {
-  const isVisible = !message && type !== 'required'
+  const isVisible = !!message || type === 'required'
   const { left, top } =
     useElementPosition({
       ref: wrapperRef,
@@ -30,7 +31,7 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
     }) || {}
 
   const { t } = useTranslation()
-  if (!message && type !== 'required') return null
+  if (!isVisible) return null
   const messageToShow = message || t('error.required')
   return (
     <div
@@ -52,9 +53,10 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
 }
 
 const InputError: FC<InputErrorComponentProps> = (props) => {
+  const { modalContentId } = useModalContext()
   return createPortal(
     <InputErrorComponent {...props} />,
-    document.getElementById('root') || document.body
+    document.getElementById(modalContentId || 'root') || document.body
   )
 }
 

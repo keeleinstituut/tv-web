@@ -1,26 +1,27 @@
 import dayjs from 'dayjs'
 import {
-  omit,
+  compact,
+  flatMap,
+  includes,
+  join,
+  keys,
   map,
+  omit,
+  pickBy,
+  reduce,
+  replace,
   split,
   trim,
-  reduce,
-  values,
-  join,
-  compact,
-  replace,
-  includes,
-  pickBy,
-  keys,
-  flatMap,
   uniqBy,
+  values,
 } from 'lodash'
 import { FullRouteObject } from 'router/router'
-import { PrivilegeKey, PrivilegeType, Privileges } from 'types/privileges'
+import { PrivilegeKey, Privileges, PrivilegeType } from 'types/privileges'
 
 import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import timezone from 'dayjs/plugin/timezone'
+import { LanguagePairType } from 'types/collective'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -31,13 +32,15 @@ interface ObjectWithChildren {
   children?: object[]
 }
 
-interface CsvObjectStructure<ValuesType> {
-  [key: string]: ValuesType
+export interface DynamicObject {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any
 }
+
+type CsvObjectStructure<ValuesType> = Record<string, ValuesType>
 interface DownloadFileProps {
   data: BlobPart
   fileName: string
-  fileType: string
 }
 
 export const usersCsvFieldsToKeys = {
@@ -114,13 +117,9 @@ export const objectsToCsvFile = <ValuesType>(
   return file
 }
 
-export const downloadFile = ({
-  data,
-  fileName,
-  fileType,
-}: DownloadFileProps) => {
-  const blob = new Blob([data], { type: fileType })
-  const url = URL.createObjectURL(blob)
+export const downloadFile = ({ data, fileName }: DownloadFileProps) => {
+  const file = new File([data], fileName)
+  const url = URL.createObjectURL(file)
   const a = document.createElement('a')
   a.href = url
   a.download = fileName
@@ -182,7 +181,7 @@ export const getUtcDateStringFromLocalDateObject = ({
   time?: string
 }) => {
   const dayjsObject = dayjs(
-    trim(`${date || ''} ${time || ''}`),
+    trim(`${date || ''} ${time || '12:00:00'}`),
     'DD/MM/YYYY HH:mm:ss'
   )
   const formattedString = dayjsObject.utc().format('YYYY-MM-DDTHH:mm:ss[Z]')
@@ -263,7 +262,25 @@ export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
   return allNewPrivileges
 }
 
-export const getBEDate = (dateString?: string) => {
-  if (!dateString) return dayjs().format('YYYY-MM-DDTHH:mm:ss[Z]')
-  return dayjs(dateString).format('YYYY-MM-DDTHH:mm:ss[Z]')
+export const parseLanguagePairs = (searchParams: URLSearchParams) => {
+  const langPairs = []
+  for (const [key, value] of Array.from(searchParams)) {
+    if (key.startsWith('lang_pair[')) {
+      langPairs.push(value)
+    }
+  }
+  const formattedLangPairs = []
+  for (let i = 0; i < langPairs.length; i += 2) {
+    formattedLangPairs.push({ src: langPairs[i], dst: langPairs[i + 1] })
+  }
+  return formattedLangPairs
+}
+
+export const stringifyLanguagePairs = (lang_pairs: LanguagePairType[]) => {
+  const formatted_lang_pairs: DynamicObject = {}
+  lang_pairs.forEach(function (element: LanguagePairType, index: number) {
+    formatted_lang_pairs[`lang_pair[${index}][src]`] = element.src
+    formatted_lang_pairs[`lang_pair[${index}][dst]`] = element.dst
+  })
+  return formatted_lang_pairs
 }

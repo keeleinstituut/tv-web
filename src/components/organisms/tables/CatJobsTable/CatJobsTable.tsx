@@ -1,6 +1,6 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, join, initial, split, isEmpty } from 'lodash'
+import { map, round, size, toNumber } from 'lodash'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import { ReactComponent as HorizontalDots } from 'assets/icons/horizontal_dots.svg'
 import classNames from 'classnames'
@@ -9,9 +9,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { CatAnalysis, CatJob, SourceFile } from 'types/orders'
-
-import classes from './classes.module.scss'
+import { CatAnalysis, CatJob, SourceFile } from 'types/projects'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -22,22 +20,36 @@ import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import {
+  useDownloadTranslatedFile,
+  useDownloadXliffFile,
+} from 'hooks/requests/useProjects'
+
+import classes from './classes.module.scss'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 
 interface CatJobsTableProps {
   className?: string
   hidden?: boolean
   cat_jobs?: CatJob[]
+  subProjectId: string
   cat_analyzis?: CatAnalysis[]
+  cat_files?: SourceFile[]
   source_files?: SourceFile[]
-  source_language_classifier_value: LanguageClassifierValue
-  destination_language_classifier_value: LanguageClassifierValue
+  source_language_classifier_value?: LanguageClassifierValue
+  destination_language_classifier_value?: LanguageClassifierValue
+  canSendToVendors?: boolean
+  mode?: ProjectDetailModes
+  isHistoryView?: string
+  isEditable?: boolean
 }
 
 interface CatJobRow {
-  chunk_id: string
-  percentage: string
-  translate_url: string
-  dots_button: number
+  dots_button?: number
+  id?: string | number
+  name?: string
+  progress_percentage?: string
+  translate_url?: string
 }
 
 const columnHelper = createColumnHelper<CatJobRow>()
@@ -47,76 +59,71 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   hidden,
   cat_jobs,
   cat_analyzis,
+  subProjectId,
+  cat_files,
   source_files,
   source_language_classifier_value,
   destination_language_classifier_value,
+  canSendToVendors,
+  mode,
+  isHistoryView,
+  isEditable,
 }) => {
   const { t } = useTranslation()
+  const { downloadXliff } = useDownloadXliffFile()
+  const { downloadTranslatedFile } = useDownloadTranslatedFile()
 
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
       cat_analyzis,
+      subProjectId,
+      cat_files,
       source_files,
       source_language_classifier_value,
       destination_language_classifier_value,
     })
   }, [
     cat_analyzis,
+    subProjectId,
+    cat_files,
     destination_language_classifier_value,
     source_files,
     source_language_classifier_value,
   ])
 
-  const filesData = useMemo(
-    () =>
-      map(
-        cat_jobs,
-        ({ xliff_download_url, translate_url, chunk_id }, index) => {
-          // const name = xliff_download_url
-          //   .substring(xliff_download_url.lastIndexOf('/' + 1))
-          //   .replace('/', '')
-          // TODO: currently randomly assuming that cat_jobs will have chunk_id, which will match cat_analyzis
-          return {
-            chunk_id,
-            percentage: '50%',
-            translate_url,
-            dots_button: index,
-          }
-        }
-      ),
-    [cat_jobs]
-  )
+  const filesData = useMemo(() => {
+    return map(cat_jobs, ({ id, name, progress_percentage, translate_url }) => {
+      return { id, name, progress_percentage, translate_url, dots_button: 0 }
+    })
+  }, [cat_jobs])
 
-  const handleMerge = useCallback((chunk_id?: string) => {
-    // TODO: call some merge endpoint
-    console.warn('PROCEED merging files')
-  }, [])
+  const handleCatSplitClick = useCallback(() => {
+    if (canSendToVendors) {
+      showModal(ModalTypes.CatSplit, {
+        subProjectId,
+      })
+    } else {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('error.cant_split_files'),
+      })
+    }
+  }, [canSendToVendors, subProjectId, t])
 
-  const handleCatMergeClick = useCallback(
-    (chunk_id?: string) => {
-      // TODO: not sure how to check for this
-      // Currently it seems that we should
-      // 1. Create an array of all cat_jobs that had the same source chunk
-      // 2. Check whether any of the other tabs that (that are catSupported?) have any of these files selected
-      // in their "xliff" tab for sending to vendors ?
-      // 3. If they are, then we need to check if any of these sub tasks have been sent to vendors
-      // Possibly there will be a check against BE instead
-      // If it's just a check against BE, then we might move this logic inside the modal
-      const areSplitFilesSentToVendors = true
-      if (areSplitFilesSentToVendors) {
-        showNotification({
-          type: NotificationTypes.Error,
-          title: t('notification.error'),
-          content: t('error.cant_merge_files'),
-        })
-      } else {
-        showModal(ModalTypes.CatMerge, {
-          handleMerge: () => handleMerge(chunk_id),
-        })
-      }
-    },
-    [handleMerge, t]
-  )
+  const handleCatMergeClick = useCallback(() => {
+    if (canSendToVendors && size(cat_jobs) > 1) {
+      showModal(ModalTypes.CatMerge, {
+        subProjectId,
+      })
+    } else {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('error.cant_merge_files'),
+      })
+    }
+  }, [canSendToVendors, cat_jobs, subProjectId, t])
 
   // TODO: not sure how to show this currently
   // This will mean loading state only when none of the files have been analyzed
@@ -124,15 +131,21 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   // 2. If the items start appearing 1 at a time to cat_analyzis, then this check won't work
   // 3. IT also might not work, if we split or merge cat_jobs (The previous array will exist)
   // 4. If they do appear 1 at a time, should we already show the table ? (size(cat_analyzis) < size(cat_jobs))
-  const isCatAnalysisInProgress = isEmpty(cat_analyzis)
+  const isCatAnalysisInProgress = false //isEmpty(cat_analyzis)
 
   const columns = [
-    columnHelper.accessor('chunk_id', {
-      header: () => t('label.xliff_name'),
+    columnHelper.accessor('name', {
+      header: () =>
+        mode === ProjectDetailModes.View
+          ? t('label.file_name')
+          : t('label.xliff_name'),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('percentage', {
-      header: () => t('label.chunks'),
+    columnHelper.accessor('progress_percentage', {
+      header: () => t('label.progress'),
+      cell: ({ getValue }) => {
+        return <span>{`${round(toNumber(getValue()))} %`}</span>
+      },
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('translate_url', {
@@ -143,6 +156,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             className={classes.fitContent}
             size={SizeTypes.S}
             href={getValue()}
+            disabled={!isEditable || !!isHistoryView}
             target="_blank"
           >
             {t('button.open_in_translation_tool')}
@@ -152,47 +166,56 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('dots_button', {
-      header: '',
-      cell: ({ getValue }) => {
-        const { xliff_download_url, translation_download_url, chunk_id } =
-          cat_jobs?.[getValue()] || {}
-        // TODO: continue from here, need to add actual functionality to these buttons
-        return (
+      cell: () => {
+        return mode === ProjectDetailModes.View ? (
           <SimpleDropdown
             icon={HorizontalDots}
+            disabled={!!isHistoryView}
             className={classes.dropdown}
             buttonClassName={classes.dropdownInnerButton}
             options={[
               {
-                label: t('button.split_file'),
-                onClick: () => {
-                  showModal(ModalTypes.CatSplit, {
-                    chunk_id,
-                  })
-                },
-              },
-              {
                 label: t('button.download_xliff'),
-                href: xliff_download_url,
-                download: `${join(initial(split(xliff_download_url, '.')))}`,
-                target: '_blank',
+                onClick: () => downloadXliff(subProjectId),
               },
               {
                 label: t('button.download_ready_translation'),
-                href: translation_download_url,
-                download: `${join(
-                  initial(split(translation_download_url, '.'))
-                )}`,
-                target: '_blank',
-              },
-              {
-                label: t('button.join_files'),
-                onClick: () => {
-                  handleCatMergeClick(chunk_id)
-                },
+                onClick: () => downloadTranslatedFile(subProjectId),
               },
             ]}
           />
+        ) : (
+          ''
+        )
+      },
+      header: () => {
+        return mode !== ProjectDetailModes.View ? (
+          <SimpleDropdown
+            icon={HorizontalDots}
+            className={classes.dropdown}
+            buttonClassName={classes.dropdownInnerButton}
+            disabled={!isEditable}
+            options={[
+              {
+                label: t('button.split_file'),
+                onClick: handleCatSplitClick,
+              },
+              {
+                label: t('button.download_xliff'),
+                onClick: () => downloadXliff(subProjectId),
+              },
+              {
+                label: t('button.download_ready_translation'),
+                onClick: () => downloadTranslatedFile(subProjectId),
+              },
+              {
+                label: t('button.join_files'),
+                onClick: handleCatMergeClick,
+              },
+            ]}
+          />
+        ) : (
+          ''
         )
       },
       footer: (info) => info.column.id,
@@ -211,12 +234,18 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
         hidePagination
         headComponent={
           <div className={classes.titleRow}>
-            <h3>{t('orders.source_files_in_translation_tool')}</h3>
+            <h3>
+              {mode === ProjectDetailModes.View
+                ? t('my_tasks.my_final_files')
+                : t('projects.source_files_in_translation_tool')}
+            </h3>
 
             <SmallTooltip
-              tooltipContent={t(
-                'tooltip.source_files_in_translation_tool_helper'
-              )}
+              tooltipContent={
+                mode === ProjectDetailModes.View
+                  ? t('tooltip.my_ready_files_from_vendors')
+                  : t('tooltip.source_files_in_translation_tool_helper')
+              }
             />
           </div>
         }
@@ -231,6 +260,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
           isCatAnalysisInProgress && classes.loader
         )}
         icon={ArrowRight}
+        hidden={mode === ProjectDetailModes.View}
       >
         {t('button.look_at_cat_analysis')}
       </Button>

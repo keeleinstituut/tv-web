@@ -1,30 +1,16 @@
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { useDownloadUsers, useFetchUsers } from 'hooks/requests/useUsers'
+import { useDownloadUsers } from 'hooks/requests/useUsers'
 import { useTranslation } from 'react-i18next'
 import { FC } from 'react'
 import AddedUsersTable from 'components/organisms/tables/AddedUsersTable/AddedUsersTable'
 import classes from './classes.module.scss'
-import { isEmpty, includes } from 'lodash'
+import { includes } from 'lodash'
 import classNames from 'classnames'
-import { Root } from '@radix-ui/react-form'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import useAuth from 'hooks/useAuth'
 import { Privileges } from 'types/privileges'
-import { UserStatus } from 'types/users'
-import Loader from 'components/atoms/Loader/Loader'
 
 const UsersManagement: FC = () => {
-  const initialFilters = {
-    statuses: [UserStatus.Active, UserStatus.Deactivated],
-  }
-  const {
-    users,
-    paginationData,
-    handleFilterChange,
-    handleSortingChange,
-    handlePaginationChange,
-    isLoading: isUsersLoading,
-  } = useFetchUsers(initialFilters)
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { downloadCSV, isLoading } = useDownloadUsers()
@@ -60,16 +46,7 @@ const UsersManagement: FC = () => {
         </Button>
       </div>
       {/* TODO: remove this form root wrapper, once we refactor CheckBox */}
-      <Root>
-        <Loader loading={isUsersLoading && isEmpty(users)} />
-        <AddedUsersTable
-          data={users}
-          paginationData={paginationData}
-          handleFilterChange={handleFilterChange}
-          handleSortingChange={handleSortingChange}
-          handlePaginationChange={handlePaginationChange}
-        />
-      </Root>
+      <AddedUsersTable />
     </>
   )
 }

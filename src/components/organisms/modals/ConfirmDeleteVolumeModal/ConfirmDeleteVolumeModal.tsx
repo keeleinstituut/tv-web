@@ -6,7 +6,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { useTranslation } from 'react-i18next'
 
 import { VolumeValue } from 'types/volumes'
-import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
+import { useAssignmentRemoveVolume } from 'hooks/requests/useVolumes'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
@@ -15,23 +15,27 @@ export interface ConfirmDeleteVolumeModalProps
   newVolumes?: VolumeValue[]
   callback?: () => void
   assignmentId?: string
+  volumeId?: string
+  sub_project_id?: string
 }
 
 const ConfirmDeleteVolumeModal: FC<ConfirmDeleteVolumeModalProps> = ({
   newVolumes,
   callback,
   assignmentId,
+  sub_project_id,
   closeModal,
+  volumeId,
   ...rest
 }) => {
   const { t } = useTranslation()
-  const { updateAssignment } = useAssignmentUpdate({ id: assignmentId })
+  const { removeAssignmentVolume } = useAssignmentRemoveVolume({
+    subProjectId: sub_project_id,
+  })
 
   const handleDeleteVolume = useCallback(async () => {
     try {
-      // TODO: not sure how delete will actually be done on BE
-      // current assumption is that we will just update the assignment with new volumes
-      await updateAssignment({ volumes: newVolumes })
+      await removeAssignmentVolume({ volumeId })
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
@@ -45,7 +49,7 @@ const ConfirmDeleteVolumeModal: FC<ConfirmDeleteVolumeModalProps> = ({
       // We should not get any 422 errors from here, but will handle just in case
       showValidationErrorMessage(errorData)
     }
-  }, [callback, closeModal, newVolumes, t, updateAssignment])
+  }, [callback, closeModal, removeAssignmentVolume, t, volumeId])
 
   return (
     <ConfirmationModalBase

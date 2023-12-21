@@ -1,4 +1,13 @@
-import { FC, SVGProps, forwardRef, useMemo, useRef, useState } from 'react'
+import {
+  FC,
+  SVGProps,
+  forwardRef,
+  useMemo,
+  useRef,
+  useState,
+  MouseEvent,
+  useEffect,
+} from 'react'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
@@ -49,6 +58,7 @@ export interface SelectionControlsInputProps {
   loading?: boolean
   onEndReached?: () => void
   hidden?: boolean
+  rules?: { required?: boolean }
 }
 
 const SelectionControlsInput = forwardRef<
@@ -72,32 +82,56 @@ const SelectionControlsInput = forwardRef<
     selectIcon,
     usePortal,
     hidden,
+    rules,
     ...rest
   },
   ref
 ) {
+  const isRequired = rules?.required
+  const optionsToUse = useMemo(
+    () =>
+      isRequired || multiple ? options : [{ label: '', value: '' }, ...options],
+    [isRequired, multiple, options]
+  )
   // TODO: hopefully we can get rid of usePortal completely and only use it inside modals and tables
   // Or possibly instead we should use it always, but would be good to get rid of this prop
   const { modalContentId } = useModalContext()
   const shouldUsePortal = usePortal || !!modalContentId
   const [isOpen, setIsOpen] = useState(false)
+  const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
 
-  const toggleDropdown = () => {
+  const toggleDropdown = (event: MouseEvent | KeyboardEvent) => {
     setIsOpen(!isOpen)
+    if (!document.querySelector('.select-focus') && !isOpen) {
+      const target = event?.target as HTMLElement
+      target.classList.add('select-focus')
+      setFocusElement(target)
+    }
   }
 
   const clickAwayInputRef = useRef(null)
   const wrapperRef = useRef(null)
 
+  useEffect(() => {
+    if (document.querySelector('.select-focus') && !isOpen) {
+      focusElement?.classList.remove('select-focus')
+      focusElement?.focus()
+    }
+  }, [focusElement, isOpen])
+
   useClickAway(() => {
     setIsOpen(false)
   }, [clickAwayInputRef, ...(wrapperRef?.current ? [wrapperRef] : [])])
 
-  const selectedOptionObjects = filter(options, (option) => {
-    return !!find(value, (singleValue) => singleValue === option?.value)
-  })
+  const selectedOptionObjects = filter(
+    optionsToUse,
+    (option) =>
+      !!find(value, (singleValue) =>
+        multiple ? singleValue === option?.value : value === option?.value
+      )
+  )
 
-  const singleValue: DropDownOptions | undefined = find(options, {
+  const singleValue: DropDownOptions | undefined = find(optionsToUse, {
     value,
   }) as unknown as DropDownOptions
 
@@ -117,7 +151,7 @@ const SelectionControlsInput = forwardRef<
   const dropdownProps = useMemo(
     () => ({
       name,
-      options,
+      options: optionsToUse,
       dropdownSize,
       disabled,
       isOpen,
@@ -128,15 +162,15 @@ const SelectionControlsInput = forwardRef<
       ...rest,
     }),
     [
-      rest,
-      disabled,
+      name,
+      optionsToUse,
       dropdownSize,
-      errorZIndex,
+      disabled,
       isOpen,
       multiple,
-      name,
-      options,
       value,
+      errorZIndex,
+      rest,
     ]
   )
 
@@ -189,17 +223,15 @@ const SelectionControlsInput = forwardRef<
         {...{ ...dropdownProps, wrapperRef, clickAwayInputRef, usePortal }}
       />
       <div className={classNames(!hideTags && classes.tagsContainer)}>
-        {map(selectedOptionObjects, ({ label }, index) => {
-          return (
-            <Tag
-              hidden={hideTags}
-              className={classes.tag}
-              value
-              key={index}
-              label={label}
-            />
-          )
-        })}
+        {map(selectedOptionObjects, ({ label }, index) => (
+          <Tag
+            hidden={hideTags}
+            className={classes.tag}
+            value
+            key={index}
+            label={label}
+          />
+        ))}
       </div>
     </InputWrapper>
   )

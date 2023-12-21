@@ -8,7 +8,7 @@ import {
   SortingFunctionType,
 } from 'types/collective'
 
-interface UserDetailsType {
+export interface UserDetailsType {
   created_at?: string
   updated_at?: string
   forename?: string
@@ -35,7 +35,7 @@ export interface UserType {
   updated_at?: string
   deactivation_date?: string
   archived_at?: string
-  department?: Department
+  department?: Department | null
   id: string
   // TODO: department type not clear yet, needs to be added here
   email?: string
@@ -44,7 +44,7 @@ export interface UserType {
   roles: RolePayload[]
   status: UserStatus
   user: UserDetailsType
-  vendor?: Vendor
+  vendor?: Vendor | null
 }
 
 export interface UserPostType {
@@ -67,11 +67,11 @@ export interface UserCsvType {
 export type UserPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     role_id?: string[]
-    // status?: UserStatus[]
     statuses?: UserStatus[]
-    department?: string[]
+    departments?: string[]
     // TODO: not sure if these fields will be called name and privileges or something else
     name?: string
+    roles?: string[]
     privileges?: Privileges[]
     fullname?: string
   }

@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   FC,
+  useEffect,
 } from 'react'
 import classNames from 'classnames'
 import { includes, map, isEmpty, debounce, filter } from 'lodash'
@@ -34,6 +35,7 @@ interface DropdownContentComponentProps extends SelectionControlsInputProps {
   setIsOpen?: Dispatch<SetStateAction<boolean>>
   className?: string
   wrapperRef?: RefObject<HTMLDivElement>
+  isCustomSingleDropdown?: boolean
 }
 
 const EmptyContent = ({ hidden }: { hidden?: boolean }) => {
@@ -68,6 +70,7 @@ const DropdownContentComponent = forwardRef<
     onSearch,
     loading,
     onEndReached,
+    isCustomSingleDropdown = false,
   },
   ref
 ) {
@@ -87,7 +90,6 @@ const DropdownContentComponent = forwardRef<
   } = useElementPosition({
     ref: wrapperRef,
     forceRecalculate: isOpen,
-    containingElementId: modalContentId,
   }) || {}
 
   useClickAway(() => {
@@ -96,8 +98,9 @@ const DropdownContentComponent = forwardRef<
     }
   }, [typedRef, wrapperRef])
 
+  // TODO: possibly also move this to "useElementPosition"
   const useLeftPosition = useMemo(
-    () => ratio && ratio < 1 && inViewport && !modalContentId,
+    () => (ratio || ratio === 0) && ratio < 1 && inViewport && !modalContentId,
     // isDragAndDropOpen changes, when this component is displayed
     // We don't want to update this state during any other time
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,8 +127,14 @@ const DropdownContentComponent = forwardRef<
     return filter(options, ({ label }) => regexPattern.test(label))
   }, [onSearch, options, searchValue])
 
+  useEffect(() => {
+    setSelectedValue(initialValue)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value])
+
   const handleSingleSelect = (selectedOption: string) => {
     onChange(selectedOption ? selectedOption : '')
+
     if (setIsOpen) {
       setIsOpen(false)
     }
@@ -204,11 +213,12 @@ const DropdownContentComponent = forwardRef<
         className={classes.searchInput}
         loading={loading}
         isSearch
+        autoFocus={showSearch && isOpen}
       />
 
       <ul ref={scrollContainer}>
         <EmptyContent hidden={!isEmpty(visibleOptions)} />
-        {map(visibleOptions, (option) => {
+        {map(visibleOptions, (option, index) => {
           const isMultiSelected =
             selectedValue && includes(selectedValue, option?.value)
           const isSingleSelected = value && includes(value, option?.value)
@@ -223,6 +233,7 @@ const DropdownContentComponent = forwardRef<
                   value={isMultiSelected || false}
                   className={classes.option}
                   onChange={() => handleMultipleSelect(option?.value)}
+                  autoFocus={!showSearch && isOpen && index === 0}
                 />
               )}
               <Button
@@ -233,6 +244,7 @@ const DropdownContentComponent = forwardRef<
                 hidden={multiple}
                 appearance={AppearanceTypes.Text}
                 onClick={() => handleSingleSelect(option?.value)}
+                autoFocus={!showSearch && isOpen && index === 0}
               >
                 {option?.label}
               </Button>
@@ -242,20 +254,24 @@ const DropdownContentComponent = forwardRef<
       </ul>
       <div
         hidden={!buttons}
-        className={classNames(buttons && classes.buttonsContainer)}
+        className={classNames(
+          buttons && !isCustomSingleDropdown && classes.buttonsContainer
+        )}
       >
         <Button
           appearance={AppearanceTypes.Secondary}
           size={SizeTypes.S}
           onClick={handleCancel}
+          hidden={isCustomSingleDropdown}
         >
-          {t('button.cancel')}
+          {t('button.dropdown_cancel')}
         </Button>
         <Button
           appearance={AppearanceTypes.Primary}
           size={SizeTypes.S}
           onClick={handleOnSave}
           className={classes.dropdownButton}
+          hidden={isCustomSingleDropdown}
         >
           {t('button.save')}
         </Button>

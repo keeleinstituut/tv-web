@@ -1,0 +1,96 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.detailsContainer {
+  display: grid;
+  grid-template-columns: max-content auto;
+  grid-gap: spacing(25);
+
+  @media (max-width: $medium_desktop) {
+    grid-gap: spacing(0);
+  }
+  @media (max-width: $small_desktop) {
+    grid-template-columns: 1fr;
+  }
+}
+.memoryDetails {
+  display: grid;
+  grid-template-columns: 140px auto;
+  grid-column-gap: spacing(10);
+  justify-items: left;
+  align-items: center;
+  width: max-content;
+  grid-row-gap: spacing(4);
+  height: max-content;
+}
+.valueClass {
+  max-width: 220px;
+}
+
+.labelClass {
+  align-self: start;
+  justify-self: end;
+  height: 24px;
+}
+
+.grayColor {
+  grid-row-gap: spacing(0);
+  color: $color-input-main;
+  grid-column: 1/-1;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.tag {
+  @include bodyTextSmallStyle;
+  color: $color-primary;
+  background-color: $color-tag;
+  font-weight: $font-weight-bold;
+  padding: spacing(0.625) spacing(1);
+  border-radius: 4px;
+}
+
+.deleteButton {
+  @include bodyTextSmallStyle;
+  color: $color-error;
+  padding: spacing(1);
+  justify-self: end;
+
+  svg {
+    width: 20px;
+    height: 21px;
+
+    path {
+      fill: $color-error;
+    }
+  }
+  &:focus {
+    box-shadow: inset 0 0 0 2px $color-error;
+  }
+}
+
+.form {
+  justify-self: start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  @media (max-width: calc($medium_desktop - 100px)) and (min-width: $small_desktop) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.inputInternalPosition {
+  justify-content: flex-end;
+  margin-bottom: spacing(4);
+  padding-right: spacing(10);
+
+  input,
+  textarea {
+    width: 274px;
+  }
+}
+.formButtons {
+  margin: spacing(4);
+}

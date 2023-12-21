@@ -1,11 +1,39 @@
-@use "reset";
-@import "./variables.scss";
-@import "./mixins.scss";
+@use 'reset';
+@import './variables.scss';
+@import './mixins.scss';
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 700;
+  src:
+    local('Roboto'),
+    url(./Roboto/Roboto-Bold.ttf) format('truetype'),
+    url(./Roboto/Roboto-BoldItalic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 400;
+  src:
+    local('Roboto'),
+    url(./Roboto/Roboto-Regular.ttf) format('truetype'),
+    url(./Roboto/Roboto-Italic.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 300;
+  src:
+    local('Roboto'),
+    url(./Roboto/Roboto-Light.ttf) format('truetype'),
+    url(./Roboto/Roboto-LightItalic.ttf) format('truetype');
+}
 
 body {
   background-color: $color-background-main;
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 #root {
@@ -101,6 +129,9 @@ textarea {
   font-family: 'Roboto', sans-serif;
 }
 
+button > * {
+  pointer-events: none;
+}
 
 a {
   color: inherit;

@@ -1,9 +1,18 @@
-import { FC, useCallback, useState, useMemo } from 'react'
+import { FC, useCallback, useState, useEffect } from 'react'
 import ModalBase, {
   ButtonPositionTypes,
   ModalSizeTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { debounce, find, reduce, isEmpty, pickBy, keys, filter } from 'lodash'
+import {
+  debounce,
+  pickBy,
+  keys,
+  filter,
+  includes,
+  isEmpty,
+  difference,
+  omitBy,
+} from 'lodash'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import Button, {
@@ -19,7 +28,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useAssignmentUpdate } from 'hooks/requests/useAssignments'
+import { useAssignmentAddVendor } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import Loader from 'components/atoms/Loader/Loader'
@@ -32,22 +41,34 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
   handleFilterChange,
 }) => {
   const { t } = useTranslation()
-  const [searchValue, setSearchValue] = useState<string>()
+  const [searchValue, setSearchValue] = useState<string>('')
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    []
+  )
 
   const handleSearchVendors = useCallback(
     (event: { target: { value: string } }) => {
       setSearchValue(event.target.value)
-      debounce(
-        handleFilterChange,
-        300
-      )({ institution_user_name: event.target.value })
+      debouncedChangeHandler({ institution_user_name: event.target.value })
       // TODO: not sure yet whether filtering param will be name
     },
-    [handleFilterChange]
+    [debouncedChangeHandler]
   )
 
   const handleClearFilters = useCallback(() => {
-    handleFilterChange()
+    setSearchValue('')
+    handleFilterChange({
+      institution_user_name: '',
+      lang_pair: [],
+      skill_id: [],
+      tag_id: [],
+    })
   }, [handleFilterChange])
 
   return (
@@ -85,7 +106,7 @@ export interface SelectVendorModalProps {
   isModalOpen?: boolean
   assignmentId?: string
   selectedVendorsIds?: string[]
-  taskSkills?: string[]
+  skill_id?: string
   source_language_classifier_value_id?: string
   destination_language_classifier_value_id?: string
 }
@@ -97,13 +118,13 @@ interface FormValues {
 const SelectVendorModal: FC<SelectVendorModalProps> = ({
   assignmentId,
   selectedVendorsIds = [],
-  taskSkills = [],
+  skill_id,
   isModalOpen,
   source_language_classifier_value_id,
   destination_language_classifier_value_id,
 }) => {
   const { t } = useTranslation()
-  const { updateAssignment, isLoading } = useAssignmentUpdate({
+  const { addAssignmentVendor, isLoading } = useAssignmentAddVendor({
     id: assignmentId,
   })
   const {
@@ -115,59 +136,56 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
     handlePaginationChange,
     isLoading: isLoadingPrices,
   } = useAllPricesFetch({
-    src_lang_classifier_value_id: [source_language_classifier_value_id],
-    dst_lang_classifier_value_id: [destination_language_classifier_value_id],
-    skill_id: taskSkills,
+    initialFilters: {
+      lang_pair: [
+        {
+          src: source_language_classifier_value_id,
+          dst: destination_language_classifier_value_id,
+        },
+      ],
+      per_page: 10,
+      page: 1,
+      ...(skill_id ? { skill_id: [skill_id] } : {}),
+    },
+    saveQueryParams: false,
   })
-
-  const selectedValues = useMemo(
-    () =>
-      isEmpty(prices)
-        ? {}
-        : reduce(
-            prices,
-            (result, price) => {
-              if (!price) return result
-              return {
-                ...result,
-                [price.id]: find(selectedVendorsIds, { id: price.vendor.id }),
-              }
-            },
-            {}
-          ),
-    [prices, selectedVendorsIds]
-  )
 
   const {
     control,
     handleSubmit,
+    reset,
+    watch,
     formState: { isSubmitting, isValid },
   } = useForm<FormValues>({
     reValidateMode: 'onChange',
     mode: 'onChange',
-    values: {
-      selected: selectedValues,
-    },
-    resetOptions: {
-      keepErrors: true,
-    },
   })
+
+  const selectedValues = watch('selected')
+
+  const checkedVendors = keys(omitBy(selectedValues, (isChecked) => !isChecked))
+
+  const isDirty = !isEmpty(difference(checkedVendors, selectedVendorsIds))
+
+  useEffect(() => {
+    if (!isModalOpen) {
+      reset()
+    }
+    // We only want to reset when modal closes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isModalOpen])
 
   const handleAddSelectedVendors: SubmitHandler<FormValues> = useCallback(
     async ({ selected }) => {
-      const newVendorIds = keys(pickBy(selected, (val) => !!val))
-      const unRemovedVendorIds = filter(selectedVendorsIds, (id) => {
-        // vendor was removed, if it exists in the "selected" object with a value of false
-        const wasVendorRemoved = find(
-          selected,
-          (value, key) => key === id && !value
-        )
-        return !wasVendorRemoved
-      })
+      const selectedVendorIds = keys(pickBy(selected, (val) => !!val))
+      const newVendorIds = filter(
+        selectedVendorIds,
+        (id) => !includes(selectedVendorsIds, id)
+      )
       try {
         // TODO: not sure about this at all
-        await updateAssignment({
-          candidates_ids: [...unRemovedVendorIds, ...newVendorIds],
+        await addAssignmentVendor({
+          data: newVendorIds.map((id) => ({ vendor_id: id })),
         })
         showNotification({
           type: NotificationTypes.Success,
@@ -180,7 +198,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         showValidationErrorMessage(errorData)
       }
     },
-    [selectedVendorsIds, t, updateAssignment]
+    [selectedVendorsIds, addAssignmentVendor, t]
   )
 
   return (
@@ -200,7 +218,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
           appearance: AppearanceTypes.Primary,
           onClick: handleSubmit(handleAddSelectedVendors),
           loading: isSubmitting || isLoading,
-          disabled: !isValid,
+          disabled: !isValid || !isDirty,
           children: t('button.add'),
         },
       ]}
@@ -211,36 +229,18 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
       }
     >
       <Loader loading={isLoadingPrices} />
+
       <SelectVendorsTable
         data={prices}
         paginationData={paginationData}
         handleFilterChange={handleFilterChange}
         handleSortingChange={handleSortingChange}
         handlePaginationChange={handlePaginationChange}
-        taskSkills={taskSkills}
-        source_language_classifier_value_id={
-          source_language_classifier_value_id
-        }
-        destination_language_classifier_value_id={
-          destination_language_classifier_value_id
-        }
+        selectedVendorsIds={selectedVendorsIds}
+        filters={filters}
+        skill_id={skill_id}
         control={control}
         hidden={isLoadingPrices}
-        filters={filters}
-
-        // {...{
-        //   data: prices,
-        //   paginationData,
-        //   handleFilterChange,
-        //   handleSortingChange,
-        //   handlePaginationChange,
-        //   taskSkills,
-        //   source_language_classifier_value_id,
-        //   destination_language_classifier_value_id,
-        //   control,
-        //   hidden: isLoadingPrices,
-        //   filters,
-        // }}
       />
     </ModalBase>
   )

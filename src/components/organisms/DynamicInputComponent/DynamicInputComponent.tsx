@@ -50,6 +50,9 @@ import RadioInput, {
 import RadioGroup, {
   RadioGroupProps,
 } from 'components/molecules/RadioGroup/RadioGroup'
+import ToggleTabs, {
+  ToggleTabsProps,
+} from 'components/molecules/ToggleTabs/ToggleTabs'
 
 // Extend all props of an input with the corresponding inputType
 
@@ -67,6 +70,7 @@ export enum InputTypes {
   AddVolume = 'addVolume',
   Radio = 'radioInput',
   RadioGroup = 'radioGroup',
+  ToggleTabs = 'toggleTabs',
 }
 
 type TextInputPropsWithType = TextInputProps & {
@@ -117,6 +121,9 @@ type RadioInputPropsWithType = RadioInputProps & {
 type RadioGroupPropsWithType = RadioGroupProps & {
   inputType: InputTypes.RadioGroup
 }
+type ToggleTabsPropsWithType = ToggleTabsProps & {
+  inputType: InputTypes.ToggleTabs
+}
 
 export type InputPropsByType = (
   | TextInputPropsWithType
@@ -132,11 +139,13 @@ export type InputPropsByType = (
   | AddVolumeInputPropsWithType
   | RadioInputPropsWithType
   | RadioGroupPropsWithType
+  | ToggleTabsPropsWithType
 ) & {
   emptyDisplayText?: string
   onlyDisplay?: boolean
   error?: FieldError
   errorZIndex?: number
+  rules?: { required?: boolean }
 }
 
 export type InputPropsWithoutControllerProps = SimpleUnionOmit<
@@ -163,21 +172,36 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.Text:
         return (
           <TextInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Checkbox:
         return (
           <CheckBoxInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.Date:
         return (
           <DatePickerInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
@@ -191,21 +215,36 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.Time:
         return (
           <TimePickerInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.DateTime:
         return (
           <DateTimePicker
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.TimeRange:
         return (
           <TimeRangePicker
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
@@ -213,29 +252,61 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
       case InputTypes.Radio:
         return (
           <RadioInput
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.DayTimeRange:
         return (
           <DayTimeRangePicker
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.DateRange:
         return (
           <DateRangePicker
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.RadioGroup:
         return (
           <RadioGroup
-            {...omit(props, ['inputType', 'onlyDisplay', 'emptyDisplayText'])}
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
             ref={ref as unknown as Ref<HTMLInputElement>}
+          />
+        )
+      case InputTypes.ToggleTabs:
+        return (
+          <ToggleTabs
+            {...omit(props, [
+              'inputType',
+              'onlyDisplay',
+              'emptyDisplayText',
+              'rules',
+            ])}
+            //ref={ref as unknown as Ref<HTMLInputElement>}
           />
         )
       case InputTypes.TagsSelect:
@@ -260,6 +331,7 @@ const InputComponent = forwardRef<RefCallBack, InputPropsByType>(
               'inputType',
               'onlyDisplay',
               'emptyDisplayText',
+              'rules',
               'error',
             ])}
           />

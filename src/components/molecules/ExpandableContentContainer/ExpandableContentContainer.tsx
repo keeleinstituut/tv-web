@@ -4,6 +4,7 @@ import classNames from 'classnames'
 
 import classes from './classes.module.scss'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import { useTranslation } from 'react-i18next'
 
 interface ExpandableContentContainerProps {
   className?: string
@@ -18,6 +19,7 @@ interface ExpandableContentContainerProps {
   onExpandedChange?: (isExpanded: boolean) => void
   id?: string
   initialIsExpanded?: boolean
+  isExpandedDisabled?: boolean
 }
 
 const ExpandableContentContainer: FC<
@@ -34,18 +36,23 @@ const ExpandableContentContainer: FC<
   isExpanded = false,
   initialIsExpanded = false,
   onExpandedChange,
+  isExpandedDisabled,
   id,
 }) => {
   const [isExpandedLocal, setIsExpanded] = useState(initialIsExpanded)
-
+  const { t } = useTranslation()
   const showAsExpanded = isExpanded || isExpandedLocal
 
   const toggleIsExpanded = useCallback(() => {
-    setIsExpanded(!showAsExpanded)
-    if (onExpandedChange) {
-      onExpandedChange(!showAsExpanded)
+    if (isExpandedDisabled) {
+      setIsExpanded(false)
+    } else {
+      setIsExpanded(!showAsExpanded)
+      if (onExpandedChange) {
+        onExpandedChange(!showAsExpanded)
+      }
     }
-  }, [showAsExpanded, onExpandedChange])
+  }, [isExpandedDisabled, showAsExpanded, onExpandedChange])
 
   const isContentVisible = showAsExpanded || contentAlwaysVisible
 
@@ -66,7 +73,11 @@ const ExpandableContentContainer: FC<
           </BaseButton>
           <div>
             {rightComponent}
-            <BaseButton className={classes.row} onClick={toggleIsExpanded}>
+            <BaseButton
+              className={classes.row}
+              onClick={toggleIsExpanded}
+              aria-label={t('button.expand')}
+            >
               <DropdownArrow
                 className={classNames(
                   classes.iconButton,

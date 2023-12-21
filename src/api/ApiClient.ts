@@ -49,16 +49,19 @@ class ApiClient {
   debug = (title: string, content: object) => {
     if (this.debug_mode && (title || content)) {
       if (title) {
-        console.log(`=== DEBUG: ${title} ===========================`)
+        // console.log(`=== DEBUG: ${title} ===========================`)
       }
       if (content) {
-        console.log(content)
+        // console.log(content)
       }
     }
   }
 
   request = async (
-    config: AxiosRequestConfigWithRetries & { retries?: number }
+    config: AxiosRequestConfigWithRetries & {
+      retries?: number
+      hideError?: boolean
+    }
   ) => {
     // this.debug(
     //   `API Request #${this.count} to ${this.baseURL}${config.url}`,

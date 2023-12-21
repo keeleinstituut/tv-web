@@ -22,6 +22,7 @@ export interface ConfirmationModalBaseProps {
   proceedButtonDisabled?: boolean
   proceedButtonLoading?: boolean
   cancelButtonDisabled?: boolean
+  proceedButtonHidden?: boolean
 }
 
 const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
@@ -31,6 +32,7 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
   proceedButtonContent,
   proceedButtonDisabled,
   proceedButtonLoading,
+  proceedButtonHidden,
   modalContent,
   isModalOpen,
   closeModal,
@@ -39,10 +41,12 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
   helperText,
   handleCancel,
   size,
+  ...rest
 }) => {
   const { t } = useTranslation()
   return (
     <ModalBase
+      {...rest}
       title={title}
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}
@@ -56,6 +60,7 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
           children: cancelButtonContent || t('button.no'),
           disabled: cancelButtonDisabled,
           size: SizeTypes.M,
+          autoFocus: true,
           onClick: () => {
             if (handleCancel) {
               handleCancel()
@@ -71,10 +76,12 @@ const ConfirmationModalBase: FC<ConfirmationModalBaseProps> = ({
           onClick: () => {
             if (handleProceed) {
               handleProceed()
+            } else {
+              closeModal()
             }
-            closeModal()
           },
           children: proceedButtonContent || t('button.yes'),
+          hidden: proceedButtonHidden,
         },
       ]}
     >

@@ -7,35 +7,41 @@ import { deepOmit } from 'helpers'
 import i18n from 'i18n/i18n'
 import { createBrowserRouter, RouteObject } from 'react-router-dom'
 import { Privileges } from 'types/privileges'
+import BreadcrumbsTitle from 'components/molecules/Breadcrumbs/BreadcrumbsTitle'
+import { BreadcrumbComponentType } from 'use-react-router-breadcrumbs'
 
 // import pages
 import Dashboard from 'pages/Dashboard/Dashboard'
-import Orders from 'pages/Orders/Orders'
-import SubOrders from 'pages/SubOrders/SubOrders'
+import Projects from 'pages/Projects/Projects'
+import SubProjects from 'pages/SubProjects/SubProjects'
 import MyTasks from 'pages/MyTasks/MyTasks'
 import VendorsDatabase from 'pages/VendorsDatabase/VendorsDatabase'
 import VendorPage from 'pages/VendorPage/VendorPage'
 import TranslationMemories from 'pages/TranslationMemories/TranslationMemories'
+import TranslationMemoryPage from 'pages/TranslationMemoryPage/TranslationMemoryPage'
+import NewTranslationMemory from 'pages/NewTranslationMemory/NewTranslationMemory'
 import UsersManagement from 'pages/UsersManagement/UsersManagement'
 import AddUsersPage from 'pages/AddUsersPage/AddUsersPage'
 import UserPage from 'pages/UserPage/UserPage'
 import RolesManagement from 'pages/RolesManagement/RolesManagement'
 import Logs from 'pages/Logs/Logs'
-import NewOrder from 'pages/NewOrder/NewOrder'
+import NewProject from 'pages/NewProject/NewProject'
 import Tags from 'pages/Tags/Tags'
 import ReportExport from 'pages/ReportExport/ReportExport'
 import InstitutionSettings from 'pages/InstitutionSettings/InstitutionSettings'
 import TechnicalSettings from 'pages/TechnicalSettings/TechnicalSettings'
-import OrderPage from 'pages/OrderPage/OrderPage'
+import ProjectPage from 'pages/ProjectPage/ProjectPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
-import Components from 'pages/Components/Components'
+import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
+import VendorTasks from 'pages/VendorTasks/VendorTasks'
+import Terms from 'pages/Terms/Terms'
 
 // import icons
 
 import { ReactComponent as HomeIcon } from 'assets/icons/home.svg'
-import { ReactComponent as OrdersIcon } from 'assets/icons/orders.svg'
+import { ReactComponent as ProjectsIcon } from 'assets/icons/projects.svg'
 import { ReactComponent as VendorsIcon } from 'assets/icons/vendors.svg'
 import { ReactComponent as MemoriesIcon } from 'assets/icons/memories.svg'
 import { ReactComponent as UsersIcon } from 'assets/icons/users.svg'
@@ -46,13 +52,18 @@ import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
 import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
 import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
 import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
+import { ReactComponent as TermsIcon } from 'assets/icons/terms_icon.svg'
 
-export type FullRouteObject = Omit<RouteObject, 'children'> & {
+export type FullRouteObject<ParamKey extends string = string> = Omit<
+  RouteObject,
+  'children'
+> & {
   label?: string
   Icon?: FC<SVGProps<SVGSVGElement>>
   children?: FullRouteObject[]
   isInterTitle?: boolean
   privileges?: Privileges[]
+  breadcrumb?: BreadcrumbComponentType<ParamKey> | string | null
 }
 
 export const protectedRoutes: FullRouteObject[] = [
@@ -63,58 +74,76 @@ export const protectedRoutes: FullRouteObject[] = [
     Icon: HomeIcon,
   },
   {
-    path: 'orders',
-    label: i18n.t('menu.orders'),
-    Icon: OrdersIcon,
-    privileges: [Privileges.ViewPersonalProject, Privileges.ViewPersonalTask],
+    path: 'projects',
+    label: i18n.t('menu.projects'),
+    Icon: ProjectsIcon,
     children: [
       {
         path: '',
-        label: i18n.t('menu.orders'),
-        privileges: [
-          Privileges.ViewPersonalProject,
-          Privileges.ViewPersonalTask,
-        ],
+        label: i18n.t('menu.projects'),
+        privileges: [Privileges.ViewPersonalProject],
         children: [
           {
             path: '',
-            element: <Orders />,
+            element: <Projects />,
             privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: i18n.t('projects.project_tile'),
           },
           {
-            path: 'new-order',
-            element: <NewOrder />,
+            path: 'new-project',
+            element: <NewProject />,
             privileges: [Privileges.CreateProject],
+            breadcrumb: i18n.t('projects.new_project_title'),
+          },
+          {
+            path: ':projectId',
+            element: <ProjectPage />,
+            privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: BreadcrumbsTitle,
           },
         ],
       },
       {
-        path: 'sub-orders',
-        label: i18n.t('menu.sub_orders'),
-        element: <SubOrders />,
+        path: 'sub-projects',
+        label: i18n.t('menu.sub_projects'),
         privileges: [Privileges.ViewPersonalProject],
+        children: [
+          {
+            path: '',
+            element: <SubProjects />,
+            privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: i18n.t('projects.sub_project_tile'),
+          },
+          {
+            path: ':projectId',
+            element: <ProjectPage />,
+            privileges: [Privileges.ViewPersonalProject],
+            breadcrumb: BreadcrumbsTitle,
+          },
+        ],
       },
       {
         path: 'my-tasks',
         label: i18n.t('menu.my_tasks'),
-        privileges: [Privileges.ViewPersonalTask],
         children: [
           {
             path: '',
             element: <MyTasks />,
-            privileges: [Privileges.ViewPersonalTask],
+            breadcrumb: i18n.t('menu.my_tasks'),
           },
           {
             path: ':taskId',
             element: <TaskPage />,
-            privileges: [Privileges.ViewPersonalTask],
+            breadcrumb: BreadcrumbsTitle,
+            children: [
+              {
+                path: ':isHistoryView',
+                element: <TaskPage />,
+                breadcrumb: BreadcrumbsTitle,
+              },
+            ],
           },
         ],
-      },
-      {
-        path: ':orderId',
-        element: <OrderPage />,
-        privileges: [Privileges.ViewPersonalProject],
       },
     ],
   },
@@ -128,20 +157,71 @@ export const protectedRoutes: FullRouteObject[] = [
         path: '',
         element: <VendorsDatabase />,
         privileges: [Privileges.ViewVendorDb],
+        breadcrumb: i18n.t('menu.vendors_database'),
       },
       {
         path: ':vendorId',
-        element: <VendorPage />,
-        privileges: [Privileges.EditVendorDb],
+        children: [
+          {
+            path: '',
+            element: <VendorPage />,
+            privileges: [Privileges.EditVendorDb, Privileges.ViewVendorDb],
+            breadcrumb: BreadcrumbsTitle,
+          },
+          {
+            path: ':userId',
+            element: <VendorTasks />,
+            privileges: [Privileges.ViewVendorTask],
+            breadcrumb: BreadcrumbsTitle,
+          },
+        ],
+      },
+      {
+        path: 'price-list',
+        element: <GeneralPriceList />,
+        privileges: [Privileges.ViewGeneralPricelist],
+        breadcrumb: i18n.t('vendors.price_list'),
       },
     ],
   },
   {
     path: 'memories',
     label: i18n.t('menu.translation_memories'),
-    element: <TranslationMemories />,
     Icon: MemoriesIcon,
-    privileges: [Privileges.ViewTm],
+    privileges: [
+      Privileges.CreateTm,
+      Privileges.ViewTm,
+      Privileges.ImportTm,
+      Privileges.ExportTm,
+      Privileges.EditTmMetadata,
+      Privileges.DeleteTm,
+    ],
+    children: [
+      {
+        path: '',
+        element: <TranslationMemories />,
+        breadcrumb: i18n.t('menu.translation_memories'),
+      },
+      {
+        path: 'new-memory',
+        element: <NewTranslationMemory />,
+        privileges: [Privileges.CreateTm],
+        breadcrumb: i18n.t('translation_memories.new_translation_memory_title'),
+      },
+      {
+        path: ':memoryId',
+        element: <TranslationMemoryPage />,
+        breadcrumb: BreadcrumbsTitle,
+        privileges: [
+          Privileges.CreateTm,
+          Privileges.ViewTm,
+          Privileges.ImportTm,
+          Privileges.ExportTm,
+          Privileges.EditTmMetadata,
+          Privileges.DeleteTm,
+        ],
+      },
+    ],
   },
   {
     path: 'user-details',
@@ -162,16 +242,19 @@ export const protectedRoutes: FullRouteObject[] = [
             path: '',
             element: <UsersManagement />,
             privileges: [Privileges.ViewUser],
+            breadcrumb: i18n.t('menu.user_management'),
           },
           {
             path: ':userId',
             element: <UserPage />,
             privileges: [Privileges.ViewUser],
+            breadcrumb: BreadcrumbsTitle,
           },
           {
             path: 'add',
             element: <AddUsersPage />,
             privileges: [Privileges.AddUser],
+            breadcrumb: i18n.t('users.add_users'),
           },
         ],
       },
@@ -217,8 +300,15 @@ export const protectedRoutes: FullRouteObject[] = [
         label: i18n.t('menu.technical_settings'),
         element: <TechnicalSettings />,
         Icon: TechnicalIcon,
+        privileges: [Privileges.ViewInstitutionPriceRate],
       },
     ],
+  },
+  {
+    path: 'terms',
+    label: i18n.t('menu.sidebar_terms'),
+    element: <Terms />,
+    Icon: TermsIcon,
   },
   {
     path: 'manual',
@@ -228,16 +318,12 @@ export const protectedRoutes: FullRouteObject[] = [
   },
 ]
 
-const protectedRoutesForReactRouter: RouteObject[] = map(
+export const protectedRoutesForReactRouter: RouteObject[] = map(
   protectedRoutes,
   (route) => deepOmit<FullRouteObject, RouteObject>(route, ['label'])
 )
 
 const router = createBrowserRouter([
-  {
-    path: 'test',
-    element: <Components />,
-  },
   {
     path: '/',
     element: <AuthWrapper />,

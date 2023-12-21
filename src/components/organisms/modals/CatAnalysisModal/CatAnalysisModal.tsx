@@ -1,6 +1,6 @@
 import { FC } from 'react'
-import { CatAnalysis, SourceFile } from 'types/orders'
-import { chain, map, zip, join, reduce } from 'lodash'
+import { CatAnalysis, SourceFile } from 'types/projects'
+import { chain, map, zip, reduce } from 'lodash'
 import ModalBase, {
   ButtonPositionTypes,
   ModalSizeTypes,
@@ -17,15 +17,18 @@ import DataTable, {
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import Tag from 'components/atoms/Tag/Tag'
-
-// TODO: this is WIP code for suborder view
+import {
+  useCatAnalysisFetch,
+  useDownloadCatAnalysisFetch,
+} from 'hooks/requests/useAnalysis'
 
 export interface CatAnalysisModalProps {
   cat_analyzis?: CatAnalysis[]
-  source_files?: SourceFile[]
   isModalOpen?: boolean
+  subProjectId?: string
   source_language_classifier_value?: LanguageClassifierValue
   destination_language_classifier_value?: LanguageClassifierValue
+  cat_files?: SourceFile[]
 }
 
 enum RowKeys {
@@ -48,14 +51,18 @@ interface TableRow {
 const columnHelper = createColumnHelper<TableRow>()
 
 const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
-  cat_analyzis,
+  cat_files,
+  subProjectId,
   isModalOpen,
-  source_files,
   source_language_classifier_value,
   destination_language_classifier_value,
 }) => {
+  const { cat_analysis } = useCatAnalysisFetch({ subProjectId })
+  const { downloadAnalysis } = useDownloadCatAnalysisFetch({ subProjectId })
+  const cat_analyzis = [...(cat_analysis?.cat_jobs ?? [])]
+
   const { t } = useTranslation()
-  const totalWordCount = chain(cat_analyzis).map('raw_word_count').sum().value()
+  const totalWordCount = chain(cat_analyzis).map('total').sum().value()
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
   const rowKeys: RowKeys[] = [
     RowKeys.Total,
@@ -69,16 +76,16 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
     RowKeys.Tm049,
   ]
   const rows = zip(
-    ...map(cat_analyzis, (chunk) => [
-      chunk.total,
-      chunk.tm_101,
-      chunk.tm_repetitions,
-      chunk.tm_100,
-      chunk.tm_95_99,
-      chunk.tm_85_94,
-      chunk.tm_75_84,
-      chunk.tm_50_74,
-      chunk.tm_0_49,
+    ...map(cat_analyzis, ({ volume_analysis }) => [
+      volume_analysis.total,
+      volume_analysis.tm_101,
+      volume_analysis.repetitions,
+      volume_analysis.tm_100,
+      volume_analysis.tm_95_99,
+      volume_analysis.tm_85_94,
+      volume_analysis.tm_75_84,
+      volume_analysis.tm_50_74,
+      volume_analysis.tm_0_49,
     ])
   )
 
@@ -92,11 +99,11 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           match_type: rowKeys[index],
           ...reduce(
             cat_analyzis,
-            (result, { chunk_id }, innerIndex) => {
-              if (!chunk_id) return result
+            (result, { id }, innerIndex) => {
+              if (!id) return result
               return {
                 ...result,
-                [chunk_id]: row[innerIndex],
+                [id]: row[innerIndex],
               }
             },
             {}
@@ -115,22 +122,16 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
       cell: ({ getValue }) =>
         t(`translation_memory.chunk.${getValue() as RowKeys}`),
     }),
-    ...map(cat_analyzis, ({ chunk_id }) =>
-      columnHelper.accessor(chunk_id, {
+    ...map(cat_analyzis, ({ id, name }) =>
+      columnHelper.accessor(id, {
         header: () =>
           t('translation_memory.cat_file_name', {
-            file_name: chunk_id,
+            file_name: name,
           }),
         footer: (info) => info.column.id,
       })
     ),
   ] as ColumnDef<TableRow>[]
-
-  // TODO: no idea where this download url is suppose to come from
-  const downloadUrl = 'www.ee'
-  const name = downloadUrl
-    .substring(downloadUrl.lastIndexOf('/' + 1))
-    .replace('/', '')
 
   return (
     <ModalBase
@@ -147,9 +148,10 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           className: classes.linkButton,
           icon: DownloadFilled,
           size: SizeTypes.M,
-          href: downloadUrl,
+          onClick: downloadAnalysis,
+          // href: downloadUrl,
           target: '_blank',
-          download: name,
+          // download: name,
         },
         {
           appearance: AppearanceTypes.Secondary,
@@ -160,13 +162,8 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
     >
       <div className={classes.contentStyle}>
         <span className={classes.sourceFilesText}>
-          {t('orders.source_files')}:{' '}
-          <b>
-            {join(
-              map(cat_analyzis, ({ chunk_id }) => `[${chunk_id}]`),
-              ', '
-            )}
-          </b>
+          {t('projects.source_files')}:{' '}
+          <b>{map(cat_files, ({ name }) => name).toString()}</b>
         </span>
         <p className={classes.helperText}>
           {t('modal.check_analysis_help_page')}
