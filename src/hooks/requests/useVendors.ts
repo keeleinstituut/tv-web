@@ -23,6 +23,7 @@ import useFilters from 'hooks/useFilters'
 import { compact, filter, find, flatMap, includes, isEmpty, map } from 'lodash'
 import { UsersDataType } from 'types/users'
 import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
+import { SkillPrice } from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
 
 export const useVendorsFetch = (
   initialFilters?: GetVendorsPayload,
@@ -275,6 +276,60 @@ export const useDeletePrices = (vendor_id: string | undefined) => {
   }
 }
 
+const editPromise = (data: SkillPrice[]): Promise<unknown> =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await apiClient.put(endpoints.EDIT_PRICES, {
+        data,
+      })
+      resolve({
+        state: 'UPDATED',
+        response,
+      })
+    } catch (error) {
+      reject({
+        state: 'UPDATED',
+        error,
+      })
+    }
+  })
+
+const deletePromise = (id: (string | undefined)[]): Promise<unknown> =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await apiClient.delete(endpoints.EDIT_PRICES, {
+        id,
+      })
+      resolve({
+        state: 'DELETED',
+        response,
+      })
+    } catch (error) {
+      reject({
+        state: 'DELETED',
+        error,
+      })
+    }
+  })
+
+const createPromise = (data: SkillPrice[]): Promise<unknown> =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await apiClient.post(endpoints.EDIT_PRICES, {
+        data,
+      })
+      resolve({
+        state: 'NEW',
+        response,
+      })
+    } catch (error) {
+      reject({
+        state: 'NEW',
+        error,
+      })
+    }
+  })
+
 const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
   payload: UpdatePricesPayload
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -283,18 +338,16 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const results: any = await Promise.allSettled(
       map(payload.data, ({ state, prices }) => {
-        const deletedPricesIds = map(prices, ({ id }) => id)
+        const deletedPricesIds = compact(map(prices, ({ id }) => id))
 
         if (state === 'DELETED') {
-          return apiClient.delete(endpoints.EDIT_PRICES, {
-            id: deletedPricesIds,
-          })
+          return deletePromise(deletedPricesIds)
         }
         if (state === 'NEW') {
-          return apiClient.post(endpoints.EDIT_PRICES, { data: prices })
+          return createPromise(prices)
         }
         if (state === 'UPDATED') {
-          return apiClient.put(endpoints.EDIT_PRICES, { data: prices })
+          return editPromise(prices)
         }
       })
     )
@@ -315,12 +368,7 @@ const requestsPromiseThatThrowsAnErrorWhenSomeRequestsFailed = (
     const errors = compact(
       map(results, ({ status, reason }) => {
         if (status === 'rejected') {
-          const { message } = reason || {}
-          const error = {
-            errors: reason.errors,
-            message: message || '',
-          }
-          return error
+          return reason
         }
       })
     )
@@ -384,7 +432,7 @@ export const useParallelUpdatePrices = ({
     },
     onError: (data) => {
       // TODO: also need to handle errors
-      queryClient.refetchQueries({ queryKey: ['allPrices'] })
+      // queryClient.refetchQueries({ queryKey: ['allPrices'] })
     },
   })
 

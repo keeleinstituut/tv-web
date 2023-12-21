@@ -39,13 +39,13 @@ function LanguageLabels<TFormValues extends FieldValues>({
   }).new
 
   const selectedSrcLanguageId =
-    srcLanguageValue || formValues?.src_lang_classifier_value_id?.id
+    srcLanguageValue || formValues?.src_lang_classifier_value_id
 
   const selectedDstLanguageIds = isEmpty(
-    formValues?.dst_lang_classifier_value_id?.id
+    formValues?.dst_lang_classifier_value_id
   )
     ? dstLanguageValues
-    : formValues?.dst_lang_classifier_value_id?.id
+    : formValues?.dst_lang_classifier_value_id
 
   const srcValue = findLabelByValue(
     [selectedSrcLanguageId] as unknown as string[],
