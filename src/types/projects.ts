@@ -319,3 +319,9 @@ export interface PotentialFilePayload {
   file?: File | SourceFile
   help_file_type?: HelperFileTypes
 }
+
+export interface ExportProjectsPayload {
+  status?: ProjectStatus[]
+  date_from?: string
+  date_to?: string
+}

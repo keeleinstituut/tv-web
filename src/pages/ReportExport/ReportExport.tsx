@@ -1,5 +1,5 @@
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import Container from 'components/atoms/Container/Container'
 import Button from 'components/molecules/Button/Button'
@@ -7,68 +7,51 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { Path, useForm } from 'react-hook-form'
-import { includes } from 'lodash'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { includes, map } from 'lodash'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
 
 import classes from './classes.module.scss'
+import { ProjectStatus } from 'types/projects'
+import { useExportProjects } from 'hooks/requests/useProjects'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showValidationErrorMessage } from 'api/errorHandler'
+import dayjs from 'dayjs'
 
-export type FormValues = {
-  orders_report_status: string
-  orders_report_date: string
+interface FormValues {
+  status?: ProjectStatus[]
+  orders_report_date: { start: string; end: string }
 }
 
 const ReportExport: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
+  const { downloadCSV, isLoading } = useExportProjects()
 
-  const statusCategoryOptions = [
-    {
-      label: 'Uus',
-      value: 'Uus',
-    },
-    {
-      label: 'Registreeritud',
-      value: 'Registreeritud',
-    },
-    {
-      label: 'Tühistatud',
-      value: 'Tühistatud',
-    },
-    {
-      label: 'Tellijale edastatud',
-      value: 'Tellijale edastatud',
-    },
-    {
-      label: 'Tagasi lükatud',
-      value: 'Tagasi lükatud',
-    },
-    {
-      label: 'Parandatud',
-      value: 'Parandatud',
-    },
-    {
-      label: 'Vastuvõetud',
-      value: 'Vastuvõetud',
-    },
-  ]
+  const statusFilters = map(ProjectStatus, (status) => ({
+    label: t(`projects.status.${status}`),
+    value: status,
+  }))
 
   //TODO: Is it 1 option or multiple?
   const statusFields: FieldProps<FormValues>[] = [
     {
       inputType: InputTypes.Selections,
-      name: 'orders_report_status',
+      name: 'status',
       ariaLabel: t('orders_report.select_status'),
-      options: statusCategoryOptions,
+      options: statusFilters,
+      multiple: true,
+      buttons: true,
       placeholder: t('orders_report.select_status'),
       rules: {
         required: false,
       },
-      // disabled: !includes(
-      //   userPrivileges,
-      //   Privileges.ExportInstitutionGeneralReport
-      // ),
+      disabled: !includes(
+        userPrivileges,
+        Privileges.ExportInstitutionGeneralReport
+      ),
     },
   ]
 
@@ -76,21 +59,47 @@ const ReportExport: FC = () => {
     {
       inputType: InputTypes.DateRange,
       label: `${t('orders_report.date_range')}`,
-      name: 'orders_report_date' as Path<FormValues>,
+      name: 'orders_report_date',
       rules: {
         required: false,
       },
       className: classes.reportDateRange,
-      // disabled: !includes(
-      //   userPrivileges,
-      //   Privileges.ExportInstitutionGeneralReport
-      // ),
+      disabled: !includes(
+        userPrivileges,
+        Privileges.ExportInstitutionGeneralReport
+      ),
     },
   ]
 
-  const { control } = useForm<FormValues>({
+  const { control, handleSubmit } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
   })
+
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const { status, orders_report_date } = values
+      const payload = {
+        status,
+        date_from: dayjs(orders_report_date?.start, 'DD/MM/YYYY').format(
+          'YYYY-MM-DD'
+        ),
+        date_to: dayjs(orders_report_date?.end, 'DD/MM/YYYY').format(
+          'YYYY-MM-DD'
+        ),
+      }
+      try {
+        await downloadCSV(payload)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.files_assigned_to_vendors'),
+        })
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
+    },
+    [downloadCSV, t]
+  )
 
   return (
     <>
@@ -111,15 +120,14 @@ const ReportExport: FC = () => {
             type="submit"
             ariaLabel={t('button.report_export_csv')}
             className={classes.exportButton}
-            //TODO: handle submit button
-            // onClick={handleSubmit}
-            // loading={isLoading}
-            // hidden={
-            //   !includes(
-            //     userPrivileges,
-            //     Privileges.ExportInstitutionGeneralReport
-            //   )
-            // }
+            onClick={handleSubmit(onSubmit)}
+            loading={isLoading}
+            hidden={
+              !includes(
+                userPrivileges,
+                Privileges.ExportInstitutionGeneralReport
+              )
+            }
           />
         </div>
       </Container>
