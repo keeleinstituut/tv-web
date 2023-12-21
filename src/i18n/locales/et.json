@@ -187,6 +187,7 @@
     "previous_page": "Eelmine lehekülg",
     "next_page": "Järgmine lehekülg",
     "export_csv": "Ekspordi CSV",
+    "report_export_csv":"Ekspordi .csv",
     "add_users": "Lisa kasutajad",
     "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
     "add": "Lisa",
@@ -722,6 +723,12 @@
       "IN_PROGRESS": "Teostamisel",
       "DONE": "Teostatud"
     }
+  },
+  "orders_report": {
+    "export": "Tellimuste aruande eksport",
+    "description": "Tellimuste aruandesse eksporditakse kõikides staatustes tellimused.",
+    "date_range":"Tellimuste alguskuupäevade vahemik",
+    "select_status": "Vali staatus"
   },
   "my_tasks": {
     "my_assignments": "Minu ülesanded",

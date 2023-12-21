@@ -15,6 +15,7 @@ import {
   SubProjectDetail,
   ProjectDetail,
   SendFinalFilesPayload,
+  ExportProjectsPayload,
 } from 'types/projects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -449,6 +450,26 @@ export const useCancelProject = ({ id }: { id?: string }) => {
   return {
     cancelProject,
     isLoading,
+  }
+}
+
+export const useExportProjects = () => {
+  const { mutateAsync: downloadCSV, isLoading } = useMutation({
+    mutationKey: ['csv'],
+    mutationFn: async (payload: ExportProjectsPayload) =>
+      apiClient.get(`${endpoints.PROJECTS}/export-csv`, payload, {
+        responseType: 'blob',
+      }),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'projects.csv',
+      })
+    },
+  })
+  return {
+    isLoading,
+    downloadCSV,
   }
 }
 

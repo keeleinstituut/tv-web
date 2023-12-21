@@ -18,6 +18,7 @@ export interface DateRangePickerProps {
   handleDelete?: () => void
   minDate?: Date
   maxDate?: Date
+  disabled?: boolean
 }
 
 const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
@@ -33,6 +34,7 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
       handleDelete,
       minDate,
       maxDate,
+      disabled,
     } = props
 
     const { t } = useTranslation()
@@ -81,6 +83,7 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
             error={error}
             minDate={minDate}
             maxDate={maxDate}
+            disabled={disabled}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
           <span className={classes.line} />
@@ -92,6 +95,7 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
             error={error}
             minDate={minDate}
             maxDate={maxDate}
+            disabled={disabled}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         </div>
@@ -101,6 +105,7 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
           icon={Delete}
           className={classes.button}
           onClick={handleOnClick}
+          disabled={disabled}
           hidden={!handleDelete}
         />
       </div>

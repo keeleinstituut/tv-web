@@ -5,16 +5,7 @@ import ModalBase, {
 } from 'components/organisms/ModalBase/ModalBase'
 import React, { ReactElement, useEffect, useState } from 'react'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
-import {
-  filter,
-  find,
-  findKey,
-  isEmpty,
-  map,
-  size,
-  keys,
-  includes,
-} from 'lodash'
+import { filter, find, isEmpty, map, size, keys, includes } from 'lodash'
 import { Control, FieldValues, useFormState } from 'react-hook-form'
 
 import classes from './classes.module.scss'
