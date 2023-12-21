@@ -45,7 +45,6 @@ const TablePagination = <TData,>({
     { label: '10', value: '10' },
     { label: '15', value: '15' },
     { label: '50', value: '50' },
-    { label: '100', value: '100' },
   ]
 
   const amountOfPages = getPageCount()

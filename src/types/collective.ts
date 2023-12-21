@@ -42,7 +42,7 @@ export interface SortingFunctionType {
 }
 
 export interface PaginationFunctionType {
-  per_page?: 10 | 15 | 50 | 100 | number
+  per_page?: 10 | 15 | 50 | number
   page?: number
   limit?: number
 }
