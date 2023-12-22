@@ -29,10 +29,12 @@ export const useFetchTranslationMemories = ({
   initialFilters,
   disabled,
   saveQueryParams,
+  key,
 }: {
   initialFilters?: TranslationMemoryFilters
   disabled?: boolean
   saveQueryParams?: boolean
+  key?: string
 }) => {
   const {
     filters,
@@ -53,7 +55,7 @@ export const useFetchTranslationMemories = ({
   const { isLoading, isError, isFetching, data, refetch } =
     useQuery<TranslationMemoryDataType>({
       enabled: !disabled,
-      queryKey: ['translationMemories'],
+      queryKey: ['translationMemories', ...(key ? [key] : [])],
       queryFn: () =>
         apiClient.get(
           `${endpoints.TRANSLATION_MEMORIES}?${queryString}`,
@@ -400,8 +402,10 @@ export const useToggleTmWritable = ({
 
 export const useCreateEmptyTm = ({
   subProjectId,
+  key,
 }: {
   subProjectId?: string
+  key?: string
 }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: createEmptyTm, isLoading } = useMutation({
@@ -419,7 +423,7 @@ export const useCreateEmptyTm = ({
         }
       )
       queryClient.setQueryData(
-        ['translationMemories'],
+        ['translationMemories', key],
         (oldData?: TranslationMemoryDataType) => {
           const { tags: previousData } = oldData || {}
           if (!previousData) return oldData

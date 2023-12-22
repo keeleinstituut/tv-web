@@ -61,7 +61,10 @@ const TranslationMemoryButtons: FC<TranslationMemoryButtonProps> = ({
   mode,
 }) => {
   const { t } = useTranslation()
-  const { createEmptyTm, isLoading } = useCreateEmptyTm({ subProjectId })
+  const { createEmptyTm, isLoading } = useCreateEmptyTm({
+    subProjectId,
+    key: 'sectionKey',
+  })
 
   const addNewTm = () => {
     showModal(ModalTypes.AddTranslationMemories, {
@@ -152,6 +155,7 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   const { t } = useTranslation()
   const { translationMemories = [] } = useFetchTranslationMemories({
     disabled: isVendor,
+    key: 'sectionKey',
   })
   const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys({ subProjectId })
   const { toggleTmWritable } = useToggleTmWritable({ subProjectId })
