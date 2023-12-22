@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -20,10 +20,24 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { FilterFunctionType } from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
-import { TasksTableProps } from 'pages/MyTasks/MyTasks'
 import { ListTask } from 'types/tasks'
+import { useSearchParams } from 'react-router-dom'
+import { parseLanguagePairs } from 'helpers'
+import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
 
 import classes from './classes.module.scss'
+
+export enum TaskTableTypes {
+  MyTasks = 'myTasks',
+  PendingTasks = 'pendingTasks',
+  HistoryTasks = 'historyTasks',
+  VendorTasks = 'vendorTasks',
+}
+
+export interface TasksTableProps {
+  type: TaskTableTypes
+  userId?: string
+}
 
 type TaskTableRow = {
   ext_id: {
@@ -39,30 +53,147 @@ type TaskTableRow = {
 
 const columnHelper = createColumnHelper<TaskTableRow>()
 
-const TasksTable: FC<TasksTableProps> = ({
-  tasks,
-  isLoading,
-  filters,
-  paginationData,
-  handleFilterChange,
-  handleSortingChange,
-  handlePaginationChange,
-  isHistoryTab,
-}) => {
+const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
   const { t } = useTranslation()
+  const isHistoryTab = type === TaskTableTypes.HistoryTasks
+
+  const [searchParams] = useSearchParams()
+  const initialFilters = useMemo(() => {
+    const sort_by = searchParams.get('sort_by')
+    const sort_order = searchParams.get('sort_order') as 'asc' | 'desc'
+    return {
+      page: Number(searchParams.get('page')) || 1,
+      per_page: Number(searchParams.get('per_page')) || 15,
+      ...(sort_by ? { sort_by } : {}),
+      ...(sort_order ? { sort_order } : {}),
+      lang_pair: parseLanguagePairs(searchParams),
+      type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
+      ...(userId ? { institution_user_id: userId } : {}),
+      ...(isHistoryTab || type === TaskTableTypes.VendorTasks
+        ? {}
+        : type === TaskTableTypes.MyTasks
+        ? { assigned_to_me: 1 }
+        : { assigned_to_me: 0 }),
+    }
+  }, [isHistoryTab, searchParams, type, userId])
+
+  const {
+    tasks: myTasks,
+    filters: myTasksFilters,
+    isLoading: isLoadingMyTasks,
+    paginationData: myTasksPaginationData,
+    handleFilterChange: handleMyTasksFilterChange,
+    handleSortingChange: handleMyTasksSortingChange,
+    handlePaginationChange: handleMyTasksPaginationChange,
+  } = useFetchTasks(
+    {
+      ...initialFilters,
+    },
+    true
+  )
+
+  const {
+    historyTasks = [],
+    filters: historyTasksFilters,
+    isLoading: isLoadingHistoryTasks,
+    paginationData: historyPaginationData,
+    handleFilterChange: handleHistoryFilterChange,
+    handleSortingChange: handleHistorySortingChange,
+    handlePaginationChange: handleHistoryPaginationChange,
+  } = useFetchHistoryTasks(
+    { disabled: type !== TaskTableTypes.HistoryTasks },
+    true
+  )
+
+  const {
+    tasks,
+    filters,
+    isLoading,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } =
+    useMemo(() => {
+      switch (type) {
+        case TaskTableTypes.MyTasks:
+        case TaskTableTypes.PendingTasks:
+        case TaskTableTypes.VendorTasks:
+          return {
+            tasks: myTasks,
+            filters: myTasksFilters,
+            isLoading: isLoadingMyTasks,
+            paginationData: myTasksPaginationData,
+            handleFilterChange: handleMyTasksFilterChange,
+            handleSortingChange: handleMyTasksSortingChange,
+            handlePaginationChange: handleMyTasksPaginationChange,
+          }
+        case TaskTableTypes.HistoryTasks: {
+          return {
+            tasks: historyTasks,
+            filters: historyTasksFilters,
+            isLoading: isLoadingHistoryTasks,
+            paginationData: historyPaginationData,
+            handleFilterChange: handleHistoryFilterChange,
+            handleSortingChange: handleHistorySortingChange,
+            handlePaginationChange: handleHistoryPaginationChange,
+          }
+        }
+      }
+    }, [
+      handleHistoryFilterChange,
+      handleHistoryPaginationChange,
+      handleHistorySortingChange,
+      handleMyTasksFilterChange,
+      handleMyTasksPaginationChange,
+      handleMyTasksSortingChange,
+      historyPaginationData,
+      historyTasks,
+      historyTasksFilters,
+      isLoadingHistoryTasks,
+      isLoadingMyTasks,
+      myTasks,
+      myTasksFilters,
+      myTasksPaginationData,
+      type,
+    ]) || {}
 
   const [filterModified, setFilterModified] = useState<boolean>(false)
 
-  const { languageDirectionFilters, loadMore, handleSearch } =
-    useLanguageDirections({})
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
   const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
     type: ClassifierValueType.ProjectType,
   })
 
-  const { lang_pair, type_classifier_value_id } = (filters || {}) as {
-    lang_pair?: { src: string; dst: string }
+  const {
+    lang_pair,
+    type_classifier_value_id,
+    sort_by,
+    sort_order,
+    per_page,
+    page,
+  } = (filters || {}) as {
+    lang_pair?: [{ src: string; dst: string }]
     type_classifier_value_id?: string
+    sort_by?: string
+    sort_order?: string
+    per_page?: string
+    page?: string
   }
+
+  const defaultPaginationData = {
+    per_page: Number(per_page),
+    page: Number(page) - 1,
+  }
+  useEffect(() => {
+    setSelectedValues(lang_pair ? lang_pair : [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang_pair])
 
   const tasksData = useMemo(() => {
     return reduce<
@@ -113,16 +244,21 @@ const TasksTable: FC<TasksTableProps> = ({
       const typedLanguageDirection = language_direction as string
       const typedClassifierValueId = type_classifier_value_id as string
 
-      const langPair = {
-        0: {
-          src: typedLanguageDirection?.split('_')[0],
-          dst: typedLanguageDirection?.split('_')[1],
-        },
+      let langPair: { src: string; dst: string }[] = []
+      if (typedLanguageDirection) {
+        langPair = [
+          {
+            src: typedLanguageDirection?.split('_')[0],
+            dst: typedLanguageDirection?.split('_')[1],
+          },
+        ]
       }
 
       const newFilters = {
         lang_pair: langPair,
-        type_classifier_value_id: [typedClassifierValueId],
+        type_classifier_value_id: typedClassifierValueId
+          ? [typedClassifierValueId]
+          : '',
         ...rest,
       }
 
@@ -178,7 +314,7 @@ const TasksTable: FC<TasksTableProps> = ({
           meta: {
             filterOption: { language_direction: languageDirectionFilters },
             filterValue: map(
-              lang_pair || {},
+              lang_pair || [],
               ({ src, dst }) => `${src}_${dst ?? ''}`
             ),
             isCustomSingleDropdown: true,
@@ -225,18 +361,21 @@ const TasksTable: FC<TasksTableProps> = ({
           },
           meta: {
             sortingOption: ['asc', 'desc'],
+            currentSorting: sort_by === 'deadline_at' ? sort_order : '',
           },
         }),
       ] as ColumnDef<TaskTableRow>[],
     [
-      t,
-      isHistoryTab,
       languageDirectionFilters,
       lang_pair,
-      typeFilters,
-      type_classifier_value_id,
       loadMore,
       handleSearch,
+      typeFilters,
+      type_classifier_value_id,
+      sort_by,
+      sort_order,
+      t,
+      isHistoryTab,
     ]
   )
 
@@ -257,6 +396,11 @@ const TasksTable: FC<TasksTableProps> = ({
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         className={classes.topSection}
+        defaultPaginationData={defaultPaginationData}
+        pageSizeOptions={[
+          { label: '15', value: '15' },
+          { label: '50', value: '50' },
+        ]}
       />
     </Root>
   )

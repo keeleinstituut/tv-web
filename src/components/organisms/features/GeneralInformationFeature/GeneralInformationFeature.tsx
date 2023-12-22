@@ -35,12 +35,12 @@ import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
-import { getLocalDateOjectFromUtcDateString } from 'helpers'
+import {
+  getLocalDateOjectFromUtcDateString,
+  getUtcDateStringFromLocalDateObject,
+} from 'helpers'
 import { ClassifierValue } from 'types/classifierValues'
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-
-dayjs.extend(utc)
 
 // TODO: this is WIP code for subProject view
 
@@ -91,7 +91,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     useFetchSubProjectCatToolJobs({
       id,
     })
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({ id })
+  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
+    subProjectId: id,
+  })
 
   const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
 
@@ -107,7 +109,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       })),
       final_files,
       cat_jobs: catToolJobs,
-      write_to_memory: {},
+      write_to_memory: reduce(
+        subProjectTmKeyObjectsArray,
+        (result, { key, is_writable }) => {
+          if (!key) return result
+          return { ...result, [key]: is_writable }
+        },
+        {}
+      ),
     }),
     [
       deadline_at,
@@ -116,10 +125,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       source_files,
       final_files,
       catToolJobs,
+      subProjectTmKeyObjectsArray,
     ]
   )
 
-  const { control, getValues, watch, setValue, reset } = useForm<FormValues>({
+  const { control, getValues, watch, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
@@ -128,22 +138,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     reset(defaultValues)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues])
-
-  useEffect(() => {
-    if (SubProjectTmKeys) {
-      setValue(
-        'write_to_memory',
-        reduce(
-          SubProjectTmKeys,
-          (result, { key, is_writable }) => {
-            if (!key) return result
-            return { ...result, [key]: is_writable }
-          },
-          {}
-        )
-      )
-    }
-  }, [setValue, SubProjectTmKeys])
 
   const openSendToCatModal = useCallback(() => {
     const sourceFiles = getValues('source_files')
@@ -162,9 +156,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const handleChangeDeadline = useCallback(
     (value: { date: string; time: string }) => {
-      const { date, time } = value
-      const dateTime = dayjs.utc(`${date} ${time}`, 'DD/MM/YYYY HH:mm')
-      const formattedDateTime = dateTime.format('YYYY-MM-DDTHH:mm:ss[Z]')
+      const formattedDateTime = getUtcDateStringFromLocalDateObject(value)
       // const isDeadLineChanged = !isEqual(formattedDeadline, formattedDateTime)
 
       updateSubProject({
@@ -250,7 +242,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           control={control}
           isEditable={isSomethingEditable}
           subProjectId={id}
-          SubProjectTmKeys={SubProjectTmKeys}
+          subProjectTmKeyObjectsArray={subProjectTmKeyObjectsArray}
           subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}
         />

@@ -11,7 +11,21 @@ import {
   isEmpty,
   includes,
   uniqBy,
+  split,
+  orderBy,
+  replace,
 } from 'lodash'
+
+const escapeSearchString = (searchString: string) =>
+  toLower(searchString).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const getIndexOrMax = (
+  option: { value: string; label: string },
+  query: string
+) => {
+  const index = option?.label.indexOf(query)
+  return index === -1 ? Number.MAX_SAFE_INTEGER : index
+}
 
 export const useLanguageDirections = ({
   per_page = 40,
@@ -31,11 +45,26 @@ export const useLanguageDirections = ({
   const [searchString, handleSearch] = useState('')
   const [selectedValues, setSelectedValues] = useState(initialSelectedValues)
 
+  const handleSetSelectedValues = useCallback(
+    (newSelectedValues: string[] | { src?: string; dst?: string }[]) => {
+      const formattedNewSelectedValues = map(newSelectedValues, (value) => {
+        if (typeof value === 'string') {
+          return replace(value, ':', '_')
+        }
+        const typedValue = value as { src: string; dst: string }
+        return `${typedValue?.src}_${typedValue?.dst}`
+      })
+      setSelectedValues(formattedNewSelectedValues)
+    },
+    []
+  )
+
   const options = useMemo(() => {
     if (!isLoading) {
       return flatMap(languageFilters, ({ value, label }) =>
         map(languageFilters, ({ value: innerValue, label: innerLabel }) => ({
           label: `${label} > ${innerLabel}`,
+          // TODO: seems that different endpoints accept this value in different formats
           value: `${value}_${innerValue}`,
         }))
       )
@@ -45,7 +74,7 @@ export const useLanguageDirections = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
-  const LangPairOptions = useMemo(() => {
+  const langPairOptions = useMemo(() => {
     if (!isLoading) {
       return flatMap(languageFilters, ({ value, label }) =>
         map(languageFilters, ({ value: innerValue, label: innerLabel }) => {
@@ -63,20 +92,50 @@ export const useLanguageDirections = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
-  const allOptions = isLangPair ? LangPairOptions : options
+  const allOptions = isLangPair ? langPairOptions : options
 
   const searchRegexp = useMemo(() => {
-    const escapedSearchString = toLower(searchString).replace(
-      /[.*+?^${}()|[\]\\]/g,
-      '\\$&'
-    )
-    return new RegExp(escapedSearchString, 'i')
-  }, [searchString])
+    if (isLangPair) {
+      return {
+        pattern: new RegExp(escapeSearchString(searchString), 'i'),
+        orderedBy: searchString,
+      }
+    }
+    if (includes(searchString, ' ') || includes(searchString, '>')) {
+      const [firstWord, secondWord] = split(searchString, / > | /)
+      return {
+        pattern: new RegExp(
+          `^(.*?${escapeSearchString(firstWord)}.*? > .*?${escapeSearchString(
+            secondWord
+          )}.*?)$`,
+          'i'
+        ),
+        orderedBy: searchString,
+      }
+    }
+    return {
+      pattern: new RegExp(
+        `^(.*?${escapeSearchString(
+          searchString
+        )}.*? > .*?)|(.*? > .*?${escapeSearchString(searchString)}.*?)$`,
+        'i'
+      ),
+      orderedBy: searchString,
+    }
+  }, [isLangPair, searchString])
 
-  const filteredOptions = useMemo(
-    () => filter(allOptions, ({ label }) => searchRegexp.test(toLower(label))),
-    [allOptions, searchRegexp]
-  )
+  const filteredOptions = useMemo(() => {
+    const { pattern, orderedBy } = searchRegexp
+    const filteredOptions = filter(allOptions, ({ label }) =>
+      pattern.test(toLower(label))
+    )
+    const orderedOptions = orderedBy
+      ? orderBy(filteredOptions, (item) => getIndexOrMax(item, orderedBy), [
+          'asc',
+        ])
+      : filteredOptions
+    return orderedOptions
+  }, [allOptions, searchRegexp])
 
   const selectedOptions = useMemo(() => {
     if (isEmpty(selectedValues)) return []
@@ -104,5 +163,10 @@ export const useLanguageDirections = ({
     [selectedOptions, filteredOptions, per_page, currentPage]
   )
 
-  return { languageDirectionFilters, loadMore, handleSearch, setSelectedValues }
+  return {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues: handleSetSelectedValues,
+  }
 }

@@ -26,6 +26,11 @@ import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatu
 import dayjs from 'dayjs'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
+import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { FilterFunctionType } from 'types/collective'
+import { useSearchParams } from 'react-router-dom'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
 
 type SubProjectTableRow = {
   ext_id: string
@@ -34,7 +39,7 @@ type SubProjectTableRow = {
   type: string
   status?: SubProjectStatus
   price?: string
-  language_directions: string[]
+  language_direction: string[]
 }
 
 const columnHelper = createColumnHelper<SubProjectTableRow>()
@@ -57,22 +62,53 @@ const SubProjectsTable: FC = () => {
     ])
   )
 
+  const [searchParams] = useSearchParams()
+  const initialFilters = {
+    per_page: 10,
+    page: 1,
+    ...Object.fromEntries(searchParams.entries()),
+    status: searchParams.getAll('status'),
+    language_direction: searchParams.getAll('language_direction'),
+    only_show_personal_projects: Number(
+      searchParams.get('only_show_personal_projects') || 0
+    ),
+    type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
+  }
+
   const {
     subProjects,
     paginationData,
+    filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchSubProjects({
-    only_show_personal_projects: onlyPersonalProjectsAllowed ? 1 : 0,
-  })
+  } = useFetchSubProjects(initialFilters, true)
+
+  const {
+    languageDirectionFilters,
+    loadMore,
+    handleSearch,
+    setSelectedValues,
+  } = useLanguageDirections({})
+
+  useEffect(() => {
+    setSelectedValues(filters?.language_direction || [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters?.language_direction])
+
+  const defaultPaginationData = {
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
+  }
 
   const statusFilters = map(SubProjectStatus, (status) => ({
     label: t(`projects.status.${status}`),
     value: status,
   }))
+  const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
+    type: ClassifierValueType.ProjectType,
+  })
 
-  // TODO: remove hardcoded default values, once we have actual data
   const projectRows = useMemo(
     () =>
       map(
@@ -93,7 +129,7 @@ const SubProjectsTable: FC = () => {
             type: project?.type_classifier_value?.name || '',
             status,
             price,
-            language_directions: [
+            language_direction: [
               `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
             ],
           }
@@ -102,26 +138,72 @@ const SubProjectsTable: FC = () => {
     [subProjects]
   )
 
+  const defaultFilterValues = useMemo(
+    () => ({
+      status: (filters?.status as SubProjectStatus[]) || [],
+      only_show_personal_projects: !!(
+        Number(filters?.only_show_personal_projects) || 0
+      ),
+      ext_id: filters?.ext_id || '',
+    }),
+    [filters]
+  )
+
   const { control, handleSubmit, watch } = useForm<FormValues>({
     mode: 'onChange',
-    defaultValues: {
-      only_show_personal_projects: onlyPersonalProjectsAllowed,
-    },
+    defaultValues: defaultFilterValues,
     resetOptions: {
       keepErrors: true,
     },
   })
 
+  const handleModifiedFilterChange = useCallback(
+    (filters?: FilterFunctionType) => {
+      let currentFilters = filters
+      if (filters && 'language_direction' in filters) {
+        const { language_direction, ...rest } = currentFilters || {}
+        const typedLanguageDirection = language_direction as string[]
+
+        const modifiedLanguageDirections = map(
+          typedLanguageDirection,
+          (languageDirectionString) => {
+            return languageDirectionString.replace('_', ':')
+          }
+        )
+
+        currentFilters = {
+          language_direction: modifiedLanguageDirections,
+          ...rest,
+        }
+      }
+
+      if (filters && 'type_classifier_value_id' in filters) {
+        const { type_classifier_value_id, ...rest } = currentFilters || {}
+        const typedTypeClassifierValueId = type_classifier_value_id as string
+
+        currentFilters = {
+          type_classifier_value_id: [typedTypeClassifierValueId],
+          ...rest,
+        }
+      }
+
+      if (handleFilterChange) {
+        handleFilterChange(currentFilters)
+      }
+    },
+    [handleFilterChange]
+  )
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     (payload) => {
-      handleFilterChange({
+      handleModifiedFilterChange({
         ...payload,
         only_show_personal_projects: payload?.only_show_personal_projects
           ? 1
           : 0,
       })
     },
-    [handleFilterChange]
+    [handleModifiedFilterChange]
   )
 
   useEffect(() => {
@@ -145,7 +227,7 @@ const SubProjectsTable: FC = () => {
             ariaLabel={t('label.to_project_view')}
             iconPositioning={IconPositioningTypes.Left}
             disabled={!includes(userPrivileges, Privileges.ViewPersonalProject)}
-            href={`/projects/${parentProjectId}#${projectExtId}`}
+            href={`/projects/sub-projects/${parentProjectId}#${projectExtId}`}
           >
             {projectExtId}
           </Button>
@@ -157,7 +239,7 @@ const SubProjectsTable: FC = () => {
       header: () => t('label.associated_reference_number'),
       footer: (info) => info.column.id,
     }),
-    columnHelper.accessor('language_directions', {
+    columnHelper.accessor('language_direction', {
       header: () => t('label.language_directions'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
@@ -169,10 +251,24 @@ const SubProjectsTable: FC = () => {
           </div>
         )
       },
+      meta: {
+        filterOption: { language_direction: languageDirectionFilters },
+        onEndReached: loadMore,
+        onSearch: handleSearch,
+        showSearch: true,
+        filterValue: filters?.language_direction
+          ? filters.language_direction.map((item) => item.replace(':', '_'))
+          : [],
+      },
     }),
     columnHelper.accessor('type', {
       header: () => t('label.type'),
       footer: (info) => info.column.id,
+      meta: {
+        filterOption: { type_classifier_value_id: typeFilters },
+        filterValue: filters.type_classifier_value_id,
+        isCustomSingleDropdown: true,
+      },
     }),
     columnHelper.accessor('status', {
       header: () => t('label.status'),
@@ -184,6 +280,8 @@ const SubProjectsTable: FC = () => {
       footer: (info) => info.column.id,
       meta: {
         sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('deadline_at', {
@@ -218,6 +316,8 @@ const SubProjectsTable: FC = () => {
       },
       meta: {
         sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
       },
     }),
   ] as ColumnDef<SubProjectTableRow>[]
@@ -230,8 +330,9 @@ const SubProjectsTable: FC = () => {
         tableSize={TableSizeTypes.M}
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
-        onFiltersChange={handleFilterChange}
+        onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
+        defaultPaginationData={defaultPaginationData}
         headComponent={
           <div className={classes.topSection}>
             <FormInput

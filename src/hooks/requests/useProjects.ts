@@ -15,6 +15,7 @@ import {
   SubProjectDetail,
   ProjectDetail,
   SendFinalFilesPayload,
+  ExportProjectsPayload,
 } from 'types/projects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
@@ -24,13 +25,16 @@ import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
 import { useCallback, useEffect, useState } from 'react'
 
-export const useFetchProjects = (initialFilters?: ProjectsPayloadType) => {
+export const useFetchProjects = (
+  initialFilters?: ProjectsPayloadType,
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<ProjectsPayloadType>(initialFilters)
+  } = useFilters<ProjectsPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<ProjectsResponse>({
     queryKey: ['projects', filters],
@@ -45,6 +49,7 @@ export const useFetchProjects = (initialFilters?: ProjectsPayloadType) => {
     isError,
     projects,
     paginationData,
+    filters: filters as ProjectsPayloadType,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
@@ -213,7 +218,8 @@ export const useFetchSubProject = ({ id }: { id?: string }) => {
 }
 
 export const useFetchSubProjects = (
-  initialFilters?: SubProjectsPayloadType
+  initialFilters?: SubProjectsPayloadType,
+  saveQueryParams?: boolean
 ) => {
   const {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -221,7 +227,7 @@ export const useFetchSubProjects = (
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<SubProjectsPayloadType>(initialFilters)
+  } = useFilters<SubProjectsPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data, refetch } = useQuery<SubProjectsResponse>({
     queryKey: ['subprojects'],
@@ -239,6 +245,7 @@ export const useFetchSubProjects = (
     isLoading,
     isError,
     subProjects,
+    filters: filters as SubProjectsPayloadType,
     paginationData,
     handleFilterChange,
     handleSortingChange,
@@ -340,7 +347,7 @@ export const useDownloadXliffFile = () => {
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'xliff.zip',
+        fileName: 'xliff',
       })
     },
   })
@@ -361,7 +368,7 @@ export const useDownloadTranslatedFile = () => {
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'translatedFile.zip',
+        fileName: 'translatedFile',
       })
     },
   })
@@ -443,6 +450,26 @@ export const useCancelProject = ({ id }: { id?: string }) => {
   return {
     cancelProject,
     isLoading,
+  }
+}
+
+export const useExportProjects = () => {
+  const { mutateAsync: downloadCSV, isLoading } = useMutation({
+    mutationKey: ['csv'],
+    mutationFn: async (payload: ExportProjectsPayload) =>
+      apiClient.get(`${endpoints.PROJECTS}/export-csv`, payload, {
+        responseType: 'blob',
+      }),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'projects',
+      })
+    },
+  })
+  return {
+    isLoading,
+    downloadCSV,
   }
 }
 

@@ -39,7 +39,7 @@ interface FormValues {
 
 interface TaskContentProps {
   isLoading?: boolean
-  assignee_institution_user_id?: string
+  isTaskAssignedToMe?: boolean
   taskId?: string
   isHistoryView?: string
   task_type?: string
@@ -48,7 +48,7 @@ interface TaskContentProps {
 
 const TaskContent: FC<TaskContentProps> = ({
   isLoading,
-  assignee_institution_user_id,
+  isTaskAssignedToMe,
   taskId,
   isHistoryView,
   task_type,
@@ -85,26 +85,34 @@ const TaskContent: FC<TaskContentProps> = ({
     disabled: isVendor,
   })
 
-  const { SubProjectTmKeys } = useFetchSubProjectTmKeys({
-    id: sub_project_id,
+  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
+    subProjectId: sub_project_id,
     disabled: isVendor,
   })
 
   const { updateAssigneeComment } = useAssignmentCommentUpdate({ id })
 
   const catJobsToUse = isVendor ? cat_jobs : catToolJobs
-  const tmKeysToUse = isVendor ? cat_tm_keys : SubProjectTmKeys
+  const tmKeysToUse = isVendor ? cat_tm_keys : subProjectTmKeyObjectsArray
 
-  const my_final_files = filter(
-    final_files,
-    ({ custom_properties }) =>
-      custom_properties?.institution_user_id === institutionUserId
+  const my_final_files = useMemo(
+    () =>
+      filter(
+        final_files,
+        ({ custom_properties }) =>
+          custom_properties?.institution_user_id === institutionUserId
+      ),
+    [final_files, institutionUserId]
   )
 
-  const other_final_files = filter(
-    final_files,
-    ({ custom_properties }) =>
-      custom_properties?.institution_user_id !== institutionUserId
+  const other_final_files = useMemo(
+    () =>
+      filter(
+        final_files,
+        ({ custom_properties }) =>
+          custom_properties?.institution_user_id !== institutionUserId
+      ),
+    [final_files, institutionUserId]
   )
 
   const defaultValues = useMemo(
@@ -158,7 +166,7 @@ const TaskContent: FC<TaskContentProps> = ({
       tm_100,
       tm_101,
       total,
-    } = volume_analysis
+    } = volume_analysis || {}
 
     showModal(ModalTypes.VolumeChange, {
       isCat: true,
@@ -256,10 +264,13 @@ const TaskContent: FC<TaskContentProps> = ({
           <p className={classes.taskContent}>
             <span>{`${Number(volumes?.[0]?.unit_quantity)} ${t(
               `label.${apiTypeToKey(volumes?.[0]?.unit_type || '')}`
-            )}${volumes?.[0] ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+            )}${
+              volumes?.[0]?.cat_job ? ` ${t('task.open_in_cat')}` : ''
+            }`}</span>
             <BaseButton
               onClick={handleShowVolume}
               className={classes.volumeIcon}
+              hidden={!volumes?.[0]?.cat_job}
             >
               <Eye />
             </BaseButton>
@@ -281,7 +292,7 @@ const TaskContent: FC<TaskContentProps> = ({
             inputContainerClassName={classes.specialInstructions}
             control={control}
             isTextarea={true}
-            disabled={!!isHistoryView || !assignee_institution_user_id}
+            disabled={!!isHistoryView || !isTaskAssignedToMe}
           />
         </span>
       </div>
@@ -291,7 +302,7 @@ const TaskContent: FC<TaskContentProps> = ({
         control={control}
         isEditable={false}
         subProjectId={sub_project_id}
-        SubProjectTmKeys={tmKeysToUse}
+        subProjectTmKeyObjectsArray={tmKeysToUse}
         subProjectLangPair={subOrderLangPair}
         cat_tm_keys_meta={cat_tm_keys_meta}
         cat_tm_keys_stats={cat_tm_keys_stats}
@@ -313,9 +324,10 @@ const TaskContent: FC<TaskContentProps> = ({
           name="my_final_files"
           title={t('my_tasks.my_ready_files')}
           control={control}
-          isEditable={!!assignee_institution_user_id}
+          isEditable={isTaskAssignedToMe}
           isLoading={isLoading}
           subProjectId={sub_project_id || ''}
+          taskId={taskId}
           className={classes.myFinalFiles}
           mode={ProjectDetailModes.View}
           isHistoryView={isHistoryView}
@@ -325,7 +337,7 @@ const TaskContent: FC<TaskContentProps> = ({
           className={classes.catJobs}
           hidden={isEmpty(catJobsToUse)}
           cat_jobs={catJobsToUse}
-          isEditable={!!assignee_institution_user_id}
+          isEditable={isTaskAssignedToMe}
           cat_files={cat_files}
           source_files={source_files}
           canSendToVendors={true} //TODO add check when camunda is ready
@@ -340,7 +352,7 @@ const TaskContent: FC<TaskContentProps> = ({
       <Button
         className={classes.finishedButton}
         onClick={handleSubmit(handleOpenCompleteModal)}
-        hidden={!assignee_institution_user_id || !!isHistoryView}
+        hidden={!isTaskAssignedToMe || !!isHistoryView}
       >
         {t('button.mark_as_finished')}
       </Button>
@@ -349,7 +361,7 @@ const TaskContent: FC<TaskContentProps> = ({
           className={classes.previousButton}
           onClick={handleSendToPreviousAssignmentModal}
           hidden={
-            !assignee_institution_user_id ||
+            !isTaskAssignedToMe ||
             !!isHistoryView ||
             task_type === TaskType.Review
           }

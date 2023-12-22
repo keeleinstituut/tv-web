@@ -20,8 +20,8 @@ export interface ConfirmCancelProjectModalProps
 }
 
 interface FormValues {
-  reason: string
-  comments: string
+  cancellation_reason: string
+  cancellation_comment: string
 }
 
 const ConfirmCancelProjectModal: FC<ConfirmCancelProjectModalProps> = ({
@@ -46,7 +46,7 @@ const ConfirmCancelProjectModal: FC<ConfirmCancelProjectModalProps> = ({
         label: `${t('label.cancellation_reason')}*`,
         ariaLabel: t('label.cancellation_reason'),
         placeholder: t('placeholder.cancellation_reason'),
-        name: 'reason',
+        name: 'cancellation_reason',
         className: classes.inputInternalPosition,
         isTextarea: true,
         rows: 3,
@@ -59,7 +59,7 @@ const ConfirmCancelProjectModal: FC<ConfirmCancelProjectModalProps> = ({
         label: t('label.comment'),
         ariaLabel: t('label.comment'),
         placeholder: t('placeholder.comment'),
-        name: 'comments',
+        name: 'cancellation_comment',
         className: classes.inputInternalPosition,
         isTextarea: true,
         rows: 3,

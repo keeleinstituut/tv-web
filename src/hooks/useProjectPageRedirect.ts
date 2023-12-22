@@ -38,15 +38,8 @@ const useProjectPageRedirect = ({
       canAnyoneViewProject)
 
   useEffect(() => {
-    if (!isLoading && !client_institution_user_id) {
-      navigate(-1)
-      showNotification({
-        type: NotificationTypes.Warning,
-        title: t('notification.warning'),
-        content: t('warning.project_does_not_exist'),
-      })
-    } else if (!canUserViewProject && !isLoading) {
-      navigate(-1)
+    if (!canUserViewProject && !isLoading) {
+      navigate('/projects')
       showNotification({
         type: NotificationTypes.Warning,
         title: t('notification.warning'),
@@ -55,7 +48,7 @@ const useProjectPageRedirect = ({
     }
     // We want to be certain that this only runs when privilege changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canUserViewProject, navigate])
+  }, [canUserViewProject, navigate, isLoading])
 }
 
 export default useProjectPageRedirect

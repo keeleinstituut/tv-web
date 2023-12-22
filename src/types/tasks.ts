@@ -5,6 +5,7 @@ import {
 } from './collective'
 import { AssignmentType } from 'types/assignments'
 import { TmStatsType, TranslationMemoryType } from './translationMemories'
+import { SubProjectDetail } from './projects'
 
 export enum TaskType {
   Default = 'DEFAULT',
@@ -16,10 +17,11 @@ export enum TaskType {
 export type TasksPayloadType = PaginationFunctionType &
   SortingFunctionType & {
     project_id?: string
-    type_classifier_value_id?: string
+    type_classifier_value_id?: string[]
     assigned_to_me?: number
     lang_pair?: { src?: string; dst?: string }[]
     task_type?: TaskType
+    institution_user_id?: string
   }
 
 export interface ListTask {
@@ -32,6 +34,7 @@ export interface ListTask {
   cat_tm_keys_meta?: {
     tags: TranslationMemoryType[]
   }
+  subProject?: Partial<SubProjectDetail>
 }
 
 export interface TasksResponse {

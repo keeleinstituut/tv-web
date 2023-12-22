@@ -65,7 +65,7 @@ const dateTabs = [
 
 const Logs: FC = () => {
   const { t } = useTranslation()
-  const { minLengthValidator } = useValidators()
+  const { minLengthValidator, dateTimeValidator } = useValidators()
   const {
     logsData,
     paginationData,
@@ -96,13 +96,13 @@ const Logs: FC = () => {
   })
 
   const dateFields: FieldProps<FormValues>[] = [
-    {
-      inputType: InputTypes.DateRange,
-      label: t('logs.date_range'),
-      name: 'date_range' as Path<FormValues>,
-      className: classes.dateInput,
-      maxDate: currentDate.toDate(),
-    },
+    // {
+    //   inputType: InputTypes.DateRange,
+    //   label: t('logs.date_range'),
+    //   name: 'date_range' as Path<FormValues>,
+    //   className: classes.dateInput,
+    //   maxDate: currentDate.toDate(),
+    // },
     {
       inputType: InputTypes.TimeRange,
       label: t('logs.time_range'),
@@ -110,6 +110,9 @@ const Logs: FC = () => {
       className: classNames(classes.inputSection, classes.dateInput),
       showSeconds: true,
       icon: Alarm,
+      rules: {
+        validate: dateTimeValidator,
+      },
     },
   ]
 

@@ -1,28 +1,28 @@
-import { FC, useMemo } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, join, includes } from 'lodash'
+import { map, join, includes, isEmpty, debounce } from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { UserType, UserStatus } from 'types/users'
-import {
-  FilterFunctionType,
-  SortingFunctionType,
-  ResponseMetaTypes,
-  PaginationFunctionType,
-} from 'types/collective'
+import { UserStatus } from 'types/users'
 import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
 import classes from './classes.module.scss'
 import { Privileges } from 'types/privileges'
 import useAuth from 'hooks/useAuth'
+import { useSearchParams } from 'react-router-dom'
+import TextInput from 'components/molecules/TextInput/TextInput'
+import { Root } from '@radix-ui/react-form'
+import Loader from 'components/atoms/Loader/Loader'
+import { useFetchUsers } from 'hooks/requests/useUsers'
+import classNames from 'classnames'
 
 type TableRow = {
   id: string
@@ -35,31 +35,66 @@ type TableRow = {
 const columnHelper = createColumnHelper<TableRow>()
 
 type AddedUsersProps = {
-  data?: UserType[]
-  paginationData?: ResponseMetaTypes
   hidden?: boolean
-  handleFilterChange?: (value?: FilterFunctionType) => void
-  handleSortingChange?: (value?: SortingFunctionType) => void
-  handlePaginationChange?: (value?: PaginationFunctionType) => void
 }
 
-const AddedUsersTable: FC<AddedUsersProps> = ({
-  data,
-  paginationData,
-  hidden,
-  handleFilterChange,
-  handleSortingChange,
-  handlePaginationChange,
-}) => {
+const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
 
-  const { rolesFilters = [] } = useRolesFetch()
+  const [searchParams] = useSearchParams()
+  const initialFilters = {
+    ...Object.fromEntries(searchParams.entries()),
+    statuses: (searchParams.getAll('statuses') as UserStatus[]) || [
+      UserStatus.Active,
+      UserStatus.Deactivated,
+    ],
+    roles: searchParams.getAll('roles'),
+    departments: searchParams.getAll('departments'),
+  }
+
+  const {
+    users,
+    paginationData,
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+    isLoading: isUsersLoading,
+  } = useFetchUsers({ initialFilters: initialFilters, saveQueryParams: true })
+
+  const { rolesFilters = [] } = useRolesFetch({})
   const { departmentFilters = [] } = useDepartmentsFetch()
+
+  const defaultPaginationData = {
+    per_page: Number(filters.per_page),
+    page: Number(filters.page) - 1,
+  }
+
+  const [searchValue, setSearchValue] = useState<string>(
+    filters?.fullname || ''
+  )
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(
+    debounce(handleFilterChange, 300, {
+      leading: false,
+      trailing: true,
+    }),
+    [handleFilterChange]
+  )
+
+  const handleSearchUsers = useCallback(
+    (event: { target: { value: string } }) => {
+      setSearchValue(event.target.value)
+      debouncedChangeHandler({ fullname: event.target.value })
+    },
+    [debouncedChangeHandler]
+  )
 
   const usersData = useMemo(() => {
     return (
-      map(data, ({ id, roles, user, department, status }) => {
+      map(users, ({ id, roles, user, department, status }) => {
         const arrayOfRoles = map(roles, 'name')
         return {
           id,
@@ -70,7 +105,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
         }
       }) || {}
     )
-  }, [data])
+  }, [users])
 
   const columns = [
     columnHelper.accessor('id', {
@@ -91,19 +126,24 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
         </div>
       ),
       footer: (info) => info.column.id,
+      size: 500,
     }),
     columnHelper.accessor('name', {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
+      size: 200,
       meta: {
         sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'name' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('department', {
       header: () => t('label.department'),
       footer: (info) => info.column.id,
+      size: 200,
       meta: {
         filterOption: { departments: departmentFilters },
+        filterValue: filters?.departments || [],
       },
     }),
     columnHelper.accessor('roles', {
@@ -112,8 +152,10 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
         return join(info.renderValue(), ', ')
       },
       footer: (info) => info.column.id,
+      size: 200,
       meta: {
         filterOption: { roles: rolesFilters },
+        filterValue: filters?.roles || [],
       },
     }),
     columnHelper.accessor('status', {
@@ -122,6 +164,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
       cell: ({ getValue }) => {
         return t(`user.status.${getValue()}`)
       },
+      size: 100,
       meta: {
         filterOption: {
           statuses: [
@@ -135,7 +178,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
             { label: t('user.status.ARCHIVED'), value: UserStatus.Archived },
           ],
         },
-        filterValue: [UserStatus.Active, UserStatus.Deactivated],
+        filterValue: filters?.statuses || [],
       },
     }),
   ] as ColumnDef<TableRow>[]
@@ -143,21 +186,38 @@ const AddedUsersTable: FC<AddedUsersProps> = ({
   if (hidden) return null
 
   return (
-    <DataTable
-      data={usersData}
-      columns={columns}
-      title={t('users.added_users')}
-      tableSize={TableSizeTypes.M}
-      paginationData={paginationData}
-      onPaginationChange={handlePaginationChange}
-      onFiltersChange={handleFilterChange}
-      onSortingChange={handleSortingChange}
-      pageSizeOptions={[
-        { label: '10', value: '10' },
-        { label: '50', value: '50' },
-        { label: '100', value: '100' },
-      ]}
-    />
+    <Root onSubmit={(e) => e.preventDefault()}>
+      <Loader loading={isUsersLoading && isEmpty(users)} />
+      <DataTable
+        data={usersData}
+        columns={columns}
+        title={t('users.added_users')}
+        tableSize={TableSizeTypes.M}
+        paginationData={paginationData}
+        onPaginationChange={handlePaginationChange}
+        onFiltersChange={handleFilterChange}
+        onSortingChange={handleSortingChange}
+        defaultPaginationData={defaultPaginationData}
+        pageSizeOptions={[
+          { label: '10', value: '10' },
+          { label: '50', value: '50' },
+        ]}
+        headComponent={
+          <div className={classNames(classes.topSection)}>
+            <TextInput
+              name={'search'}
+              ariaLabel={t('placeholder.search_by_name')}
+              placeholder={t('placeholder.search_by_name')}
+              value={searchValue}
+              onChange={handleSearchUsers}
+              className={classes.searchInput}
+              inputContainerClassName={classes.generalUsersListInput}
+              isSearch
+            />
+          </div>
+        }
+      />
+    </Root>
   )
 }
 

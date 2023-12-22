@@ -15,16 +15,18 @@ import {
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { includes, isEmpty } from 'lodash'
+import { includes } from 'lodash'
 import { useFetchProject } from 'hooks/requests/useProjects'
 
 import classes from './classes.module.scss'
 import { TaskType } from 'types/tasks'
+import useAuth from 'hooks/useAuth'
 
 const TaskPage: FC = () => {
   const { t } = useTranslation()
   const { taskId, isHistoryView } = useParams()
   const navigate = useNavigate()
+  const { institutionUserId } = useAuth()
 
   const { task, isLoading } = useFetchTask({
     id: taskId,
@@ -40,6 +42,10 @@ const TaskPage: FC = () => {
   const { assignment, assignee_institution_user_id, task_type } = isHistoryView
     ? historyTask || {}
     : task || {}
+
+  const isTaskAssignedToMe =
+    assignee_institution_user_id &&
+    assignee_institution_user_id === institutionUserId
 
   // Correcting and Review are PM tasks
   // PM should have all the necessary privileges to fetch everything
@@ -88,7 +94,7 @@ const TaskPage: FC = () => {
           className={classes.acceptButton}
           onClick={handleAcceptTask}
           loading={isAcceptingTask}
-          hidden={!isEmpty(assignee_institution_user_id)}
+          hidden={!!assignee_institution_user_id}
         >
           {t('button.accept')}
         </Button>
@@ -107,7 +113,7 @@ const TaskPage: FC = () => {
         taskId={taskId}
         ext_id={ext_id}
         isLoading={isHistoryView ? isLoadingHistoryTask : isLoading}
-        assignee_institution_user_id={assignee_institution_user_id}
+        isTaskAssignedToMe={!!isTaskAssignedToMe}
         isHistoryView={isHistoryView}
         task_type={task_type}
         price={price}

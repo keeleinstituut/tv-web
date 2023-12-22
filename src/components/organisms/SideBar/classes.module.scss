@@ -30,7 +30,7 @@
     flex-direction: column;
     flex: 1;
 
-    > li:last-child {
+    > li:nth-last-child(2) {
       margin-top: auto;
     }
   }

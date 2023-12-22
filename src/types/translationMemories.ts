@@ -1,4 +1,4 @@
-import { PaginationFunctionType } from './collective'
+import { PaginationFunctionType, SortingFunctionType } from './collective'
 
 export enum TMType {
   Internal = 'private',
@@ -45,11 +45,13 @@ export interface TmStatsType {
 }
 
 export type TranslationMemoryFilters = {
-  lang_pair?: string | string[]
+  lang_pair?: string[]
   name?: string
   type?: TMType | TMType[]
   tv_domain?: string | string[]
-} & PaginationFunctionType
+  tv_tags?: string[]
+} & PaginationFunctionType &
+  SortingFunctionType
 
 export interface ImportTMXPayload {
   file: File
@@ -74,9 +76,11 @@ export interface SubProjectTmKeysResponse {
 }
 export interface SubProjectTmKeysPayload {
   id?: string
-  sub_project_id: string
+  sub_project_id?: string
   is_writable?: boolean
-  tm_keys: {
+  tm_keys?: {
     key: string
   }[]
+  key?: string
+  created_as_empty?: boolean
 }

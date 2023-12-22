@@ -59,7 +59,8 @@ class ApiClient {
   }
 
   request = async (
-    config: AxiosRequestConfigWithRetries & { retries?: number } & {
+    config: AxiosRequestConfigWithRetries & {
+      retries?: number
       hideError?: boolean
     }
   ) => {

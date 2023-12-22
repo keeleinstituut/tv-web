@@ -12,18 +12,22 @@ import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { useParams } from 'react-router-dom'
 
-export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
+export const useFetchTasks = (
+  { disabled, ...initialFilters }: TasksPayloadType & { disabled?: boolean },
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<TasksPayloadType>(initialFilters)
+  } = useFilters<TasksPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data, refetch } = useQuery<TasksResponse>({
     queryKey: ['tasks', filters],
     queryFn: () => apiClient.get(endpoints.TASKS, filters),
     keepPreviousData: true,
+    enabled: !disabled,
   })
 
   const { meta: paginationData, data: tasks } = data || {}
@@ -32,7 +36,7 @@ export const useFetchTasks = (initialFilters?: TasksPayloadType) => {
     isLoading,
     isError,
     tasks,
-    filters,
+    filters: filters as TasksPayloadType,
     paginationData,
     handleFilterChange,
     handleSortingChange,
@@ -59,18 +63,22 @@ export const useFetchTask = ({ id }: { id?: string }) => {
   }
 }
 
-export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
+export const useFetchHistoryTasks = (
+  { disabled, ...initialFilters }: TasksPayloadType & { disabled?: boolean },
+  saveQueryParams?: boolean
+) => {
   const {
     filters,
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<TasksPayloadType>(initialFilters)
+  } = useFilters<TasksPayloadType>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, data } = useQuery<TasksResponse>({
     queryKey: ['historyTasks', filters],
     queryFn: () => apiClient.get(endpoints.HISTORY_TASKS, filters),
     keepPreviousData: true,
+    enabled: !disabled,
   })
 
   const { meta: paginationData, data: historyTasks } = data || {}
@@ -78,7 +86,7 @@ export const useFetchHistoryTasks = (initialFilters?: TasksPayloadType) => {
   return {
     isLoading,
     isError,
-    filters,
+    filters: filters as TasksPayloadType,
     historyTasks,
     paginationData,
     handleFilterChange,

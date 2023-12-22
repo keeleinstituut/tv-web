@@ -1,0 +1,17 @@
+@import 'styles/variables';
+
+.hiddenContainer {
+  display: none;
+}
+
+.timeColumnContainer {
+  display: flex;
+  border: 1px solid $color-input-border;
+  border-radius: 5px;
+  height: 106px;
+  max-width: 200px;
+  width: fit-content;
+  background-color: $color-white;
+  position: absolute;
+  z-index: 2;
+}
