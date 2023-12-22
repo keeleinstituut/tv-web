@@ -1,6 +1,6 @@
 import { useCallback, useMemo, memo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useFetchTags } from 'hooks/requests/useTags'
+// import { useFetchTags } from 'hooks/requests/useTags'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
@@ -29,7 +29,7 @@ import { Root } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
 import { useFetchSkills } from 'hooks/requests/useVendors'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
-import { TagTypes } from 'types/tags'
+// import { TagTypes } from 'types/tags'
 import('dayjs/locale/et')
 
 dayjs.locale('et')
@@ -94,12 +94,16 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   selectedVendorsIds,
 }: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
-  const { tagsFilters = [] } = useFetchTags({
-    type: TagTypes.Vendor,
-  })
+  // const { tagsFilters = [] } = useFetchTags({
+  //   type: TagTypes.Vendor,
+  // })
   const { skillsFilters = [] } = useFetchSkills()
 
-  const { lang_pair, skill_id: selectedSkillFilter, tag_id } = filters || {}
+  const {
+    lang_pair,
+    skill_id: selectedSkillFilter,
+    // tag_id,
+  } = filters || {}
 
   const srcLangId = lang_pair?.[0]?.src || ''
   const dstLangId = lang_pair?.[0]?.dst || ''
@@ -302,10 +306,11 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           </div>
         )
       },
-      meta: {
-        filterOption: { tag_id: tagsFilters },
-        filterValue: tag_id,
-      },
+      // TODO: currently not supported by BE
+      // meta: {
+      //   filterOption: { tag_id: tagsFilters },
+      //   filterValue: tag_id,
+      // },
     }),
     columnHelper.accessor('character_fee', {
       header: () => t('label.character_fee'),

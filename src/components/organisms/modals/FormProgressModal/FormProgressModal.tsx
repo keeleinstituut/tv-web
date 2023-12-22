@@ -5,7 +5,7 @@ import ModalBase, {
 } from 'components/organisms/ModalBase/ModalBase'
 import React, { ReactElement, useEffect, useState } from 'react'
 import ProgressBar from 'components/atoms/ProgressBar/ProgressBar'
-import { filter, find, findKey, isEmpty, map, size } from 'lodash'
+import { filter, find, isEmpty, map, size, keys, includes } from 'lodash'
 import { Control, FieldValues, useFormState } from 'react-hook-form'
 
 import classes from './classes.module.scss'
@@ -28,6 +28,17 @@ export interface FormProgressProps<TFormValues extends FieldValues> {
   control?: Control<TFormValues>
 }
 
+interface PotentialErrorType {
+  src_lang_classifier_value_id?: string
+  dst_lang_classifier_value_id?: string
+  priceObject?: {
+    [key: string]: {
+      isSelected: string
+      [key: string]: string
+    }
+  }
+}
+
 function FormProgressModal<TFormValues extends FieldValues>({
   formData,
   isModalOpen,
@@ -40,21 +51,30 @@ function FormProgressModal<TFormValues extends FieldValues>({
   const [activeStep, setActiveStep] = useState(1)
 
   const formStateErrors = useFormState({ control }).errors
-
-  const targetKey = findKey(formStateErrors?.new, (key) => key)
-
-  const isErrorOnFirstStep =
-    targetKey === 'src_lang_classifier_value_id' ||
-    targetKey === 'dst_lang_classifier_value_id'
+  const typedErrors = formStateErrors?.new as PotentialErrorType
 
   useEffect(() => {
-    if (isErrorOnFirstStep) {
-      setActiveStep(1)
+    if (!isEmpty(typedErrors)) {
+      const errorKeys = keys(typedErrors)
+      const isErrorOnFirstStep =
+        includes(errorKeys, 'src_lang_classifier_value_id') ||
+        includes(errorKeys, 'dst_lang_classifier_value_id')
+      const priceObjectErrors = typedErrors?.priceObject
+      const priceObjectErrorKeys = keys(priceObjectErrors)
+      const isErrorOnSecondStep = includes(priceObjectErrorKeys, 'skill_id')
+      if (isErrorOnFirstStep) {
+        setActiveStep(1)
+      } else if (isErrorOnSecondStep) {
+        setActiveStep(2)
+      }
     }
+  }, [typedErrors])
+
+  useEffect(() => {
     if (isModalOpen) {
       setActiveStep(1)
     }
-  }, [isErrorOnFirstStep, isModalOpen])
+  }, [isModalOpen])
 
   const filteredData = filter(formData, 'showOnly')
 

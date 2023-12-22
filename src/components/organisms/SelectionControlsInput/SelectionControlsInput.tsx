@@ -220,7 +220,13 @@ const SelectionControlsInput = forwardRef<
         {helperText}
       </p>
       <DropdownContent
-        {...{ ...dropdownProps, wrapperRef, clickAwayInputRef, usePortal }}
+        {...{
+          ...dropdownProps,
+          wrapperRef,
+          clickAwayInputRef,
+          usePortal,
+          isRequired,
+        }}
       />
       <div className={classNames(!hideTags && classes.tagsContainer)}>
         {map(selectedOptionObjects, ({ label }, index) => (

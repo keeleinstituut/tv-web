@@ -45,7 +45,6 @@ const TablePagination = <TData,>({
     { label: '10', value: '10' },
     { label: '15', value: '15' },
     { label: '50', value: '50' },
-    { label: '100', value: '100' },
   ]
 
   const amountOfPages = getPageCount()
@@ -142,6 +141,7 @@ const TablePagination = <TData,>({
         label={t('label.pagination_result_count')}
         options={pageSizeOptions || defaultPageSizeOptions}
         value={toString(getState().pagination.pageSize)}
+        rules={{ required: true }}
         onChange={(value) => {
           setPageSize(Number(value))
           setSearchParams((prevParams) => {

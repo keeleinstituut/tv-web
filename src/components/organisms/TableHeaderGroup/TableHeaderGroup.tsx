@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { isEmpty, keys, size, toString, values } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import {
@@ -67,6 +67,10 @@ const HeaderItem = <TData,>({
   const [currentSorting, setCurrentSorting] = useState<
     SortingFunctionType['sort_order']
   >(meta?.currentSorting || undefined)
+
+  useEffect(() => {
+    setCurrentSorting(meta?.currentSorting)
+  }, [meta?.currentSorting])
 
   const filterOption = meta?.filterOption || []
   const onEndReached = meta?.onEndReached

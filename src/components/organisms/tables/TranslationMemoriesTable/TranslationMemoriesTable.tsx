@@ -131,7 +131,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
       leading: false,
       trailing: true,
     }),
-    []
+    [handleFilterChange]
   )
 
   const handleSearchByName = useCallback(

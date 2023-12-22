@@ -6,7 +6,6 @@ import {
   find,
   flatMap,
   groupBy,
-  includes,
   isEmpty,
   isEqual,
   join,
@@ -14,8 +13,9 @@ import {
   reduce,
   some,
   split,
+  toNumber,
 } from 'lodash'
-import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 import {
   useAllPricesFetch,
@@ -125,12 +125,12 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
                   isSelected: false,
                   skill_id: skillData.id,
                   skill: skillData,
-                  character_fee: `${0}`,
-                  hour_fee: `${0}`,
-                  minimal_fee: `${0}`,
-                  minute_fee: `${0}`,
-                  page_fee: `${0}`,
-                  word_fee: `${0}`,
+                  character_fee: '0',
+                  hour_fee: '0',
+                  minimal_fee: '0',
+                  minute_fee: '0',
+                  page_fee: '0',
+                  word_fee: '0',
                 },
               }
             },
@@ -158,12 +158,12 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
                 }),
                 skill_id: skillData.id,
                 skill: skillData,
-                character_fee: skillPrice?.character_fee || `${0}`,
-                hour_fee: skillPrice?.hour_fee || `${0}`,
-                minimal_fee: skillPrice?.minimal_fee || `${0}`,
-                minute_fee: skillPrice?.minute_fee || `${0}`,
-                page_fee: skillPrice?.page_fee || `${0}`,
-                word_fee: skillPrice?.word_fee || `${0}`,
+                character_fee: skillPrice?.character_fee || '0',
+                hour_fee: skillPrice?.hour_fee || '0',
+                minimal_fee: skillPrice?.minimal_fee || '0',
+                minute_fee: skillPrice?.minute_fee || '0',
+                page_fee: skillPrice?.page_fee || '0',
+                word_fee: skillPrice?.word_fee || '0',
                 id: skillPrice?.id,
               },
             }
@@ -273,7 +273,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
             valueItem.isSelected &&
             hasPriceChanged(defaultItem, valueItem)
           ) {
-            return concat(result, [{ id: defaultItem.id, ...defaultItem }])
+            return concat(result, [defaultItem])
           }
           return result
         },
@@ -335,10 +335,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
       const updateSkills = isEmpty(updateAbleSkills)
         ? null
         : {
-            prices: map(updateAbleSkills, ({ id, ...rest }) => ({
-              id,
-              ...rest,
-            })),
+            prices: updateAbleSkills,
             state: DataStateTypes.UPDATED,
           }
 
@@ -362,28 +359,47 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
         closeModal()
       } catch (errorData) {
         if (errorData) {
-          map(errorData, ({ errors }) => {
-            const typedErrorData = errors as ValidationError
+          map(errorData, ({ error, state }) => {
+            const typedErrorData = error as {
+              errors?: ValidationError
+              state?: string
+            }
+            const errors = typedErrorData?.errors
 
-            if (typedErrorData) {
+            if (errors) {
               map(
-                typedErrorData as unknown as Record<string, unknown[]>,
+                errors as unknown as Record<string, unknown[]>,
                 (errorsArray: unknown[], key) => {
-                  const typedKey = key as FieldPath<FormValues>
                   const errorString = join(errorsArray ? errorsArray : '', ',')
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const [_, arrayIndex, fieldName] = split(key, '.')
+                  const erroredPrices = find(updatePricesPayload.data, {
+                    state,
+                  })?.prices
 
-                  if (includes(typedKey, 'dst_lang_classifier_value_id')) {
+                  if (
+                    fieldName === 'dst_lang_classifier_value_id' ||
+                    fieldName === 'src_lang_classifier_value_id'
+                  ) {
+                    setError(`${languageDirectionKey}.${fieldName}`, {
+                      type: 'backend',
+                      message: errorString,
+                    })
+                  } else if (fieldName === 'skill_id') {
                     setError(
-                      `${languageDirectionKey}.dst_lang_classifier_value_id`,
+                      `${languageDirectionKey}.priceObject.${
+                        erroredPrices?.[toNumber(arrayIndex)]?.skill_id
+                      }.isSelected`,
                       {
                         type: 'backend',
                         message: errorString,
                       }
                     )
-                  }
-                  if (includes(typedKey, 'src_lang_classifier_value_id')) {
+                  } else {
                     setError(
-                      `${languageDirectionKey}.src_lang_classifier_value_id`,
+                      `${languageDirectionKey}.priceObject.${
+                        erroredPrices?.[toNumber(arrayIndex)]?.skill_id
+                      }.${fieldName}`,
                       {
                         type: 'backend',
                         message: errorString,

@@ -18,5 +18,5 @@ export interface VolumeValue {
   created_at: string
   volume_analysis?: CatAnalysis
   discounts: DiscountPercentages
-  assignment?: AssignmentType
+  assignment?: Omit<AssignmentType, 'volumes'>
 }

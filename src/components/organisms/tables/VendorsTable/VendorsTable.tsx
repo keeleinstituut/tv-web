@@ -88,7 +88,7 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
       leading: false,
       trailing: true,
     }),
-    []
+    [handleFilterChange]
   )
 
   const handleSearchVendors = useCallback(

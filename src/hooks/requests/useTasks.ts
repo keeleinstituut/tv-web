@@ -13,7 +13,7 @@ import { endpoints } from 'api/endpoints'
 import { useParams } from 'react-router-dom'
 
 export const useFetchTasks = (
-  initialFilters?: TasksPayloadType,
+  { disabled, ...initialFilters }: TasksPayloadType & { disabled?: boolean },
   saveQueryParams?: boolean
 ) => {
   const {
@@ -27,6 +27,7 @@ export const useFetchTasks = (
     queryKey: ['tasks', filters],
     queryFn: () => apiClient.get(endpoints.TASKS, filters),
     keepPreviousData: true,
+    enabled: !disabled,
   })
 
   const { meta: paginationData, data: tasks } = data || {}
@@ -63,7 +64,7 @@ export const useFetchTask = ({ id }: { id?: string }) => {
 }
 
 export const useFetchHistoryTasks = (
-  initialFilters?: TasksPayloadType,
+  { disabled, ...initialFilters }: TasksPayloadType & { disabled?: boolean },
   saveQueryParams?: boolean
 ) => {
   const {
@@ -77,6 +78,7 @@ export const useFetchHistoryTasks = (
     queryKey: ['historyTasks', filters],
     queryFn: () => apiClient.get(endpoints.HISTORY_TASKS, filters),
     keepPreviousData: true,
+    enabled: !disabled,
   })
 
   const { meta: paginationData, data: historyTasks } = data || {}
