@@ -223,7 +223,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
           disabled:
             !isValid ||
             (!prevDeletedValue && !isDirty) ||
-            editableFields.length === inputFields.length,
+            !(editableFields.length === inputFields.length),
         },
       ]}
     >
