@@ -3,11 +3,7 @@
 
 .control {
   display: grid;
-  //flex-direction: column;
-  // align-items: center;
   padding: spacing(1) spacing(3.5);
-  //  grid-gap: spacing(1);
-  // position: relative;
 
   /* Chrome, Safari, Edge, Opera */
   input::-webkit-outer-spin-button,
@@ -27,16 +23,7 @@
   justify-content: center;
   align-items: center;
   display: flex;
-  //padding-top: spacing(1);
 }
-
-// .controlTimeBottom {
-//   //  top: -36px;
-// }
-
-// .controlTimeTop {
-//   padding-top: spacing(1);
-// }
 
 .controlTimeTop svg {
   transform: rotate(270deg);
@@ -58,8 +45,6 @@
   border: 1px solid $color-input-border;
   border-radius: 5px;
   text-align: center;
-  // position: absolute;
-  // top: 32px;
 }
 
 .timeWrapper {
