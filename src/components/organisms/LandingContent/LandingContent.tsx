@@ -10,6 +10,8 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import classes from './classes.module.scss'
+import { includes } from 'lodash'
+import { Privileges } from 'types/privileges'
 
 interface LandingContentProps {
   className?: string
@@ -17,7 +19,7 @@ interface LandingContentProps {
 
 const LandingContent: FC<LandingContentProps> = ({ className }) => {
   const { t } = useTranslation()
-  const { login, isUserLoggedIn } = useAuth()
+  const { login, isUserLoggedIn, userPrivileges } = useAuth()
   return (
     <>
       <div className={classNames(classes.container, className)}>
@@ -45,6 +47,10 @@ const LandingContent: FC<LandingContentProps> = ({ className }) => {
               }
               href={isUserLoggedIn ? '/projects/new-project' : undefined}
               onClick={isUserLoggedIn ? undefined : login}
+              hidden={
+                isUserLoggedIn &&
+                !includes(userPrivileges, Privileges.CreateProject)
+              }
               className={classes.button}
             />
           </div>
