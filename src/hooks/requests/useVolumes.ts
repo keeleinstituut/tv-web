@@ -37,9 +37,13 @@ const getNewSubProjectWithAssignment = (
 
   const newAssignments = map(previousData.assignments, (item) => {
     if (item.id === volume.assignment_id) {
+      // TODO: can be removed later
+      const hackedVolumeType = volume as VolumeValue & {
+        assignment: AssignmentType
+      }
       return {
         ...item,
-        ...(volume.assignment || {}),
+        ...(hackedVolumeType?.assignment || {}),
         volumes: newVolumes,
       }
     }

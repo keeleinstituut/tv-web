@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react'
+import { FC, useMemo, useState, useCallback } from 'react'
 import TasksTable, {
   TaskTableTypes,
 } from 'components/organisms/tables/TasksTable/TasksTable'
@@ -7,14 +7,28 @@ import Tabs from 'components/molecules/Tabs/Tabs'
 import { TabStyle } from 'components/molecules/Tab/Tab'
 import { useTranslation } from 'react-i18next'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
+import { useSearchParams } from 'react-router-dom'
 
 import classes from './classes.module.scss'
 
 const MyTasks: FC = () => {
   const { t } = useTranslation()
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setSearchParams] = useSearchParams()
   const [activeTab, setActiveTab] = useState<string | undefined>(
     t('my_tasks.my_assignments')
+  )
+
+  const handleSetActiveTab = useCallback(
+    (newActiveTab: string | undefined) => {
+      setActiveTab(newActiveTab)
+      setSearchParams({
+        per_page: '15',
+        page: '1',
+      })
+    },
+    [setSearchParams]
   )
 
   const tableType = useMemo(() => {
@@ -50,7 +64,7 @@ const MyTasks: FC = () => {
       </div>
 
       <Tabs
-        setActiveTab={setActiveTab}
+        setActiveTab={handleSetActiveTab}
         activeTab={activeTab}
         tabStyle={TabStyle.Primary}
         tabs={taskTabs}
