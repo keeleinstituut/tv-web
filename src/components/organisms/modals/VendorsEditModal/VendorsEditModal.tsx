@@ -79,7 +79,7 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
       leading: false,
       trailing: true,
     }),
-    []
+    [handleFilterChange]
   )
 
   const handleSearch = useCallback(

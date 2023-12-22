@@ -14,6 +14,7 @@ export interface ToggleTabsProps {
   hidden?: boolean
   dateTabsClassName?: string
   value?: string
+  name: string
   onChange?: (id: string) => void
 }
 

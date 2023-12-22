@@ -88,7 +88,7 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       leading: false,
       trailing: true,
     }),
-    []
+    [handleFilterChange]
   )
 
   const handleSearchVendors = useCallback(

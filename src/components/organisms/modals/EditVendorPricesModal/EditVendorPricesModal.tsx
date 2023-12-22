@@ -6,7 +6,6 @@ import {
   find,
   flatMap,
   groupBy,
-  includes,
   isEmpty,
   isEqual,
   join,
@@ -16,7 +15,7 @@ import {
   split,
   toNumber,
 } from 'lodash'
-import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 import {
   useAllPricesFetch,
@@ -360,40 +359,47 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
         closeModal()
       } catch (errorData) {
         if (errorData) {
-          map(errorData, ({ errors }) => {
-            const typedErrorData = errors as ValidationError
+          map(errorData, ({ error, state }) => {
+            const typedErrorData = error as {
+              errors?: ValidationError
+              state?: string
+            }
+            const errors = typedErrorData?.errors
 
-            if (typedErrorData) {
+            if (errors) {
               map(
-                typedErrorData as unknown as Record<string, unknown[]>,
+                errors as unknown as Record<string, unknown[]>,
                 (errorsArray: unknown[], key) => {
-                  const typedKey = key as FieldPath<FormValues>
                   const errorString = join(errorsArray ? errorsArray : '', ',')
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                  const [_, arrayIndex, fieldName] = split(key, '.')
+                  const erroredPrices = find(updatePricesPayload.data, {
+                    state,
+                  })?.prices
 
-                  if (includes(typedKey, 'dst_lang_classifier_value_id')) {
+                  if (
+                    fieldName === 'dst_lang_classifier_value_id' ||
+                    fieldName === 'src_lang_classifier_value_id'
+                  ) {
+                    setError(`${languageDirectionKey}.${fieldName}`, {
+                      type: 'backend',
+                      message: errorString,
+                    })
+                  } else if (fieldName === 'skill_id') {
                     setError(
-                      `${languageDirectionKey}.dst_lang_classifier_value_id`,
-                      {
-                        type: 'backend',
-                        message: errorString,
-                      }
-                    )
-                  }
-                  if (includes(typedKey, 'src_lang_classifier_value_id')) {
-                    setError(
-                      `${languageDirectionKey}.src_lang_classifier_value_id`,
+                      `${languageDirectionKey}.priceObject.${
+                        erroredPrices?.[toNumber(arrayIndex)]?.skill_id
+                      }.isSelected`,
                       {
                         type: 'backend',
                         message: errorString,
                       }
                     )
                   } else {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    const [_, arrayIndex, fieldName] = split(key, '.')
-                    const erroredPrices =
-                      updatePricesPayload.data[toNumber(arrayIndex)]?.prices
                     setError(
-                      `${languageDirectionKey}.priceObject.${erroredPrices?.[0]?.skill_id}.${fieldName}`,
+                      `${languageDirectionKey}.priceObject.${
+                        erroredPrices?.[toNumber(arrayIndex)]?.skill_id
+                      }.${fieldName}`,
                       {
                         type: 'backend',
                         message: errorString,

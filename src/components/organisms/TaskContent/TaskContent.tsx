@@ -166,7 +166,7 @@ const TaskContent: FC<TaskContentProps> = ({
       tm_100,
       tm_101,
       total,
-    } = volume_analysis
+    } = volume_analysis || {}
 
     showModal(ModalTypes.VolumeChange, {
       isCat: true,

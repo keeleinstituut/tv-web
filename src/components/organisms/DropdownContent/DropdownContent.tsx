@@ -11,7 +11,7 @@ import {
   useEffect,
 } from 'react'
 import classNames from 'classnames'
-import { includes, map, isEmpty, debounce, filter } from 'lodash'
+import { includes, map, isEmpty, debounce, filter, find } from 'lodash'
 import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
 import { useClickAway, useInViewport } from 'ahooks'
 import Button, {
@@ -36,6 +36,7 @@ interface DropdownContentComponentProps extends SelectionControlsInputProps {
   className?: string
   wrapperRef?: RefObject<HTMLDivElement>
   isCustomSingleDropdown?: boolean
+  isRequired?: boolean
 }
 
 const EmptyContent = ({ hidden }: { hidden?: boolean }) => {
@@ -71,11 +72,18 @@ const DropdownContentComponent = forwardRef<
     loading,
     onEndReached,
     isCustomSingleDropdown = false,
+    isRequired,
   },
   ref
 ) {
   const { tableRef } = useTableContext()
   const { modalContentId } = useModalContext()
+  const optionsToUse = useMemo(() => {
+    if (isRequired || multiple) return options
+    const emptyOptionsExists = !!find(options, { value: '' })
+    if (emptyOptionsExists) return options
+    return [{ label: '', value: '' }, ...options]
+  }, [isRequired, multiple, options])
 
   const scrollContainer = useRef(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
@@ -121,11 +129,11 @@ const DropdownContentComponent = forwardRef<
 
   const visibleOptions = useMemo(() => {
     if (onSearch || !searchValue) {
-      return options
+      return optionsToUse
     }
     const regexPattern = new RegExp(searchValue, 'i')
-    return filter(options, ({ label }) => regexPattern.test(label))
-  }, [onSearch, options, searchValue])
+    return filter(optionsToUse, ({ label }) => regexPattern.test(label))
+  }, [onSearch, optionsToUse, searchValue])
 
   useEffect(() => {
     setSelectedValue(initialValue)

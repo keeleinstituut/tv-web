@@ -18,26 +18,25 @@ import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import classNames from 'classnames'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
-import {
-  FilterFunctionType,
-  PaginationFunctionType,
-  ResponseMetaTypes,
-  SortingFunctionType,
-} from 'types/collective'
+import { FilterFunctionType } from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
-import { ListTask, TasksPayloadType } from 'types/tasks'
+import { ListTask } from 'types/tasks'
+import { useSearchParams } from 'react-router-dom'
+import { parseLanguagePairs } from 'helpers'
+import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
 
 import classes from './classes.module.scss'
 
+export enum TaskTableTypes {
+  MyTasks = 'myTasks',
+  PendingTasks = 'pendingTasks',
+  HistoryTasks = 'historyTasks',
+  VendorTasks = 'vendorTasks',
+}
+
 export interface TasksTableProps {
-  tasks?: ListTask[]
-  filters?: object | TasksPayloadType
-  isLoading?: boolean
-  paginationData?: ResponseMetaTypes | undefined
-  handleFilterChange?: (value?: FilterFunctionType | undefined) => void
-  handleSortingChange?: (value?: SortingFunctionType | undefined) => void
-  handlePaginationChange?: (value?: PaginationFunctionType | undefined) => void
-  isHistoryTab?: boolean
+  type: TaskTableTypes
+  userId?: string
 }
 
 type TaskTableRow = {
@@ -54,17 +53,110 @@ type TaskTableRow = {
 
 const columnHelper = createColumnHelper<TaskTableRow>()
 
-const TasksTable: FC<TasksTableProps> = ({
-  tasks,
-  isLoading,
-  filters,
-  paginationData,
-  handleFilterChange,
-  handleSortingChange,
-  handlePaginationChange,
-  isHistoryTab,
-}) => {
+const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
   const { t } = useTranslation()
+  const isHistoryTab = type === TaskTableTypes.HistoryTasks
+
+  const [searchParams] = useSearchParams()
+  const initialFilters = useMemo(() => {
+    const sort_by = searchParams.get('sort_by')
+    const sort_order = searchParams.get('sort_order') as 'asc' | 'desc'
+    return {
+      page: Number(searchParams.get('page')) || 1,
+      per_page: Number(searchParams.get('per_page')) || 15,
+      ...(sort_by ? { sort_by } : {}),
+      ...(sort_order ? { sort_order } : {}),
+      lang_pair: parseLanguagePairs(searchParams),
+      type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
+      ...(userId ? { institution_user_id: userId } : {}),
+      ...(isHistoryTab || type === TaskTableTypes.VendorTasks
+        ? {}
+        : type === TaskTableTypes.MyTasks
+        ? { assigned_to_me: 1 }
+        : { assigned_to_me: 0 }),
+    }
+  }, [isHistoryTab, searchParams, type, userId])
+
+  const {
+    tasks: myTasks,
+    filters: myTasksFilters,
+    isLoading: isLoadingMyTasks,
+    paginationData: myTasksPaginationData,
+    handleFilterChange: handleMyTasksFilterChange,
+    handleSortingChange: handleMyTasksSortingChange,
+    handlePaginationChange: handleMyTasksPaginationChange,
+  } = useFetchTasks(
+    {
+      ...initialFilters,
+    },
+    true
+  )
+
+  const {
+    historyTasks = [],
+    filters: historyTasksFilters,
+    isLoading: isLoadingHistoryTasks,
+    paginationData: historyPaginationData,
+    handleFilterChange: handleHistoryFilterChange,
+    handleSortingChange: handleHistorySortingChange,
+    handlePaginationChange: handleHistoryPaginationChange,
+  } = useFetchHistoryTasks(
+    { disabled: type !== TaskTableTypes.HistoryTasks },
+    true
+  )
+
+  const {
+    tasks,
+    filters,
+    isLoading,
+    paginationData,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } =
+    useMemo(() => {
+      switch (type) {
+        case TaskTableTypes.MyTasks:
+        case TaskTableTypes.PendingTasks:
+        case TaskTableTypes.VendorTasks:
+          return {
+            tasks: myTasks,
+            filters: myTasksFilters,
+            isLoading: isLoadingMyTasks,
+            paginationData: myTasksPaginationData,
+            handleFilterChange: handleMyTasksFilterChange,
+            handleSortingChange: handleMyTasksSortingChange,
+            handlePaginationChange: handleMyTasksPaginationChange,
+          }
+        case TaskTableTypes.HistoryTasks: {
+          return {
+            tasks: historyTasks,
+            filters: historyTasksFilters,
+            isLoading: isLoadingHistoryTasks,
+            paginationData: historyPaginationData,
+            handleFilterChange: handleHistoryFilterChange,
+            handleSortingChange: handleHistorySortingChange,
+            handlePaginationChange: handleHistoryPaginationChange,
+          }
+        }
+      }
+    }, [
+      handleHistoryFilterChange,
+      handleHistoryPaginationChange,
+      handleHistorySortingChange,
+      handleMyTasksFilterChange,
+      handleMyTasksPaginationChange,
+      handleMyTasksSortingChange,
+      historyPaginationData,
+      historyTasks,
+      historyTasksFilters,
+      isLoadingHistoryTasks,
+      isLoadingMyTasks,
+      myTasks,
+      myTasksFilters,
+      myTasksPaginationData,
+      type,
+    ]) || {}
 
   const [filterModified, setFilterModified] = useState<boolean>(false)
 
@@ -305,6 +397,10 @@ const TasksTable: FC<TasksTableProps> = ({
         onSortingChange={handleSortingChange}
         className={classes.topSection}
         defaultPaginationData={defaultPaginationData}
+        pageSizeOptions={[
+          { label: '15', value: '15' },
+          { label: '50', value: '50' },
+        ]}
       />
     </Root>
   )

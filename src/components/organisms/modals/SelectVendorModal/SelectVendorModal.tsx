@@ -49,7 +49,7 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
       leading: false,
       trailing: true,
     }),
-    []
+    [handleFilterChange]
   )
 
   const handleSearchVendors = useCallback(

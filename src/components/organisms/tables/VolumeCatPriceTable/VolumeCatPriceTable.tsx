@@ -34,7 +34,7 @@ const TotalPrice = <TFormValues extends FieldValues>({
 
   const value = round(sum(map(amountValues, (v) => Number(v))), 3)
 
-  return <DisplayValue value={value} />
+  return <DisplayValue value={value} name="displayValue" />
 }
 
 interface RowPriceProps<TFormValues extends FieldValues> {
@@ -70,7 +70,7 @@ const RowPrice = <TFormValues extends FieldValues>({
     [amountValue, discountValue, unitPrice]
   )
 
-  return <DisplayValue value={value} />
+  return <DisplayValue value={value} name="displayValue" />
 }
 
 interface VolumeCatPriceTableProps<TFormValues extends FieldValues> {

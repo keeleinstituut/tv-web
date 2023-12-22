@@ -81,7 +81,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       leading: false,
       trailing: true,
     }),
-    []
+    [handleFilterChange]
   )
 
   const handleSearchUsers = useCallback(
@@ -201,7 +201,6 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
         pageSizeOptions={[
           { label: '10', value: '10' },
           { label: '50', value: '50' },
-          { label: '100', value: '100' },
         ]}
         headComponent={
           <div className={classNames(classes.topSection)}>

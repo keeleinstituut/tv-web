@@ -65,6 +65,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
     workflow_started,
     status: localStatus,
     active_job_definition: localActiveJobDefinition,
+    price: subProjectPrice,
   } = subProject || {}
   const { job_short_name } =
     localActiveJobDefinition || active_job_definition || {}
@@ -185,7 +186,12 @@ const SubProjectSection: FC<SubProjectProps> = ({
       }
       leftComponent={
         <ExpandableContentLeftComponent
-          {...{ ext_id, deadline_at, price, languageDirection }}
+          {...{
+            ext_id,
+            deadline_at,
+            price: subProjectPrice || price,
+            languageDirection,
+          }}
         />
       }
     >
