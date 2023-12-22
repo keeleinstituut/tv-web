@@ -64,7 +64,7 @@ const ToggleButtonsSection: FC<ToggleButtonsSectionProps> = ({
   )
 }
 
-interface FeatureHeaderSectionProps extends ToggleTabsProps {
+interface FeatureHeaderSectionProps extends Omit<ToggleTabsProps, 'name'> {
   catSupported?: boolean
   addVendor?: () => void
   isLoading?: boolean

@@ -31,10 +31,12 @@ export enum TaskTableTypes {
   MyTasks = 'myTasks',
   PendingTasks = 'pendingTasks',
   HistoryTasks = 'historyTasks',
+  VendorTasks = 'vendorTasks',
 }
 
 export interface TasksTableProps {
   type: TaskTableTypes
+  userId?: string
 }
 
 type TaskTableRow = {
@@ -51,7 +53,7 @@ type TaskTableRow = {
 
 const columnHelper = createColumnHelper<TaskTableRow>()
 
-const TasksTable: FC<TasksTableProps> = ({ type }) => {
+const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
   const { t } = useTranslation()
   const isHistoryTab = type === TaskTableTypes.HistoryTasks
 
@@ -66,13 +68,14 @@ const TasksTable: FC<TasksTableProps> = ({ type }) => {
       ...(sort_order ? { sort_order } : {}),
       lang_pair: parseLanguagePairs(searchParams),
       type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
-      ...(isHistoryTab
+      ...(userId ? { institution_user_id: userId } : {}),
+      ...(isHistoryTab || type === TaskTableTypes.VendorTasks
         ? {}
         : type === TaskTableTypes.MyTasks
         ? { assigned_to_me: 1 }
         : { assigned_to_me: 0 }),
     }
-  }, [isHistoryTab, searchParams, type])
+  }, [isHistoryTab, searchParams, type, userId])
 
   const {
     tasks: myTasks,
@@ -85,23 +88,6 @@ const TasksTable: FC<TasksTableProps> = ({ type }) => {
   } = useFetchTasks(
     {
       ...initialFilters,
-      disabled: type !== TaskTableTypes.MyTasks,
-    },
-    true
-  )
-
-  const {
-    tasks: waitingTasks,
-    filters: waitingTasksFilters,
-    isLoading: isLoadingWaitingTasks,
-    paginationData: waitingTasksPaginationData,
-    handleFilterChange: handleWaitingTasksFilterChange,
-    handleSortingChange: handleWaitingTasksSortingChange,
-    handlePaginationChange: handleWaitingTasksPaginationChange,
-  } = useFetchTasks(
-    {
-      ...initialFilters,
-      disabled: type !== TaskTableTypes.PendingTasks,
     },
     true
   )
@@ -131,6 +117,8 @@ const TasksTable: FC<TasksTableProps> = ({ type }) => {
     useMemo(() => {
       switch (type) {
         case TaskTableTypes.MyTasks:
+        case TaskTableTypes.PendingTasks:
+        case TaskTableTypes.VendorTasks:
           return {
             tasks: myTasks,
             filters: myTasksFilters,
@@ -139,16 +127,6 @@ const TasksTable: FC<TasksTableProps> = ({ type }) => {
             handleFilterChange: handleMyTasksFilterChange,
             handleSortingChange: handleMyTasksSortingChange,
             handlePaginationChange: handleMyTasksPaginationChange,
-          }
-        case TaskTableTypes.PendingTasks:
-          return {
-            tasks: waitingTasks,
-            filters: waitingTasksFilters,
-            isLoading: isLoadingWaitingTasks,
-            paginationData: waitingTasksPaginationData,
-            handleFilterChange: handleWaitingTasksFilterChange,
-            handleSortingChange: handleWaitingTasksSortingChange,
-            handlePaginationChange: handleWaitingTasksPaginationChange,
           }
         case TaskTableTypes.HistoryTasks: {
           return {
@@ -169,22 +147,15 @@ const TasksTable: FC<TasksTableProps> = ({ type }) => {
       handleMyTasksFilterChange,
       handleMyTasksPaginationChange,
       handleMyTasksSortingChange,
-      handleWaitingTasksFilterChange,
-      handleWaitingTasksPaginationChange,
-      handleWaitingTasksSortingChange,
       historyPaginationData,
       historyTasks,
       historyTasksFilters,
       isLoadingHistoryTasks,
       isLoadingMyTasks,
-      isLoadingWaitingTasks,
       myTasks,
       myTasksFilters,
       myTasksPaginationData,
       type,
-      waitingTasks,
-      waitingTasksFilters,
-      waitingTasksPaginationData,
     ]) || {}
 
   const [filterModified, setFilterModified] = useState<boolean>(false)
