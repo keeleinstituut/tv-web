@@ -39,7 +39,7 @@ const useProjectPageRedirect = ({
 
   useEffect(() => {
     if (!canUserViewProject && !isLoading) {
-      navigate(-1)
+      navigate('/projects')
       showNotification({
         type: NotificationTypes.Warning,
         title: t('notification.warning'),

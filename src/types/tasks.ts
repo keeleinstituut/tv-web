@@ -5,6 +5,7 @@ import {
 } from './collective'
 import { AssignmentType } from 'types/assignments'
 import { TmStatsType, TranslationMemoryType } from './translationMemories'
+import { SubProjectDetail } from './projects'
 
 export enum TaskType {
   Default = 'DEFAULT',
@@ -33,6 +34,7 @@ export interface ListTask {
   cat_tm_keys_meta?: {
     tags: TranslationMemoryType[]
   }
+  subProject?: Partial<SubProjectDetail>
 }
 
 export interface TasksResponse {

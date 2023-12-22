@@ -63,7 +63,9 @@ export const useFetchTranslationMemories = ({
     })
 
   useEffect(() => {
-    refetch()
+    if (!disabled) {
+      refetch()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters])
 

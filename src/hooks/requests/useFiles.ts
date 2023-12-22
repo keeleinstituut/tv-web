@@ -5,6 +5,7 @@ import {
   SourceFile,
   SubProjectResponse,
 } from 'types/projects'
+import { TaskResponse } from 'types/tasks'
 import { filter, find, map } from 'lodash'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
@@ -26,6 +27,7 @@ const useAddFiles = (config: {
   reference_object_id: string
   reference_object_type: string
   collection: CollectionType
+  taskId?: string
 }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: addFiles, isLoading } = useMutation({
@@ -46,7 +48,8 @@ const useAddFiles = (config: {
       })
     },
     onSuccess: ({ data: { data } }: { data: { data: SourceFile[] } }) => {
-      const { reference_object_id, reference_object_type, collection } = config
+      const { reference_object_id, reference_object_type, collection, taskId } =
+        config
       if (
         reference_object_type === 'subproject' &&
         collection !== CollectionType.Help
@@ -66,6 +69,33 @@ const useAddFiles = (config: {
             }
           }
         )
+        if (taskId) {
+          queryClient.setQueryData(
+            ['tasks', taskId],
+            (oldData?: TaskResponse) => {
+              const { data: previousData } = oldData || {}
+
+              if (!previousData) return oldData
+
+              const previousAssignment = previousData?.assignment || {}
+
+              const newData = {
+                ...(previousData || { id: taskId }),
+                assignment: {
+                  ...previousAssignment,
+                  subProject: {
+                    ...(previousAssignment?.subProject || {}),
+                    [filesKey]: [
+                      ...(previousAssignment?.subProject?.[filesKey] || []),
+                      ...data,
+                    ],
+                  },
+                },
+              }
+              return { data: newData }
+            }
+          )
+        }
       }
     },
   })
@@ -79,6 +109,7 @@ const useDeleteFile = (config: {
   reference_object_id: string
   reference_object_type: string
   collection: CollectionType
+  taskId?: string
 }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteFile, isLoading } = useMutation({
@@ -103,7 +134,8 @@ const useDeleteFile = (config: {
       })
     },
     onSuccess: ({ data }: { data: SourceFile[] }) => {
-      const { reference_object_id, reference_object_type, collection } = config
+      const { reference_object_id, reference_object_type, collection, taskId } =
+        config
       if (
         reference_object_type === 'subproject' &&
         collection !== CollectionType.Help
@@ -125,6 +157,33 @@ const useDeleteFile = (config: {
             }
           }
         )
+        if (taskId) {
+          queryClient.setQueryData(
+            ['tasks', taskId],
+            (oldData?: TaskResponse) => {
+              const { data: previousData } = oldData || {}
+
+              if (!previousData) return oldData
+
+              const previousAssignment = previousData?.assignment || {}
+
+              const newData = {
+                ...(previousData || { id: taskId }),
+                assignment: {
+                  ...previousAssignment,
+                  subProject: {
+                    ...(previousData?.subProject || {}),
+                    [filesKey]: filter(
+                      previousAssignment?.subProject?.[filesKey],
+                      ({ id }) => !find(data, { id })
+                    ),
+                  },
+                },
+              }
+              return { data: newData }
+            }
+          )
+        }
       }
     },
   })
@@ -259,12 +318,15 @@ export const useHandleFiles = (config: {
   reference_object_id: string
   reference_object_type: string
   collection: CollectionType
+  taskId?: string
 }) => {
-  const { collection, reference_object_id, reference_object_type } = config
+  const { collection, reference_object_id, reference_object_type, taskId } =
+    config
   const { addFiles, isLoading: isAddLoading } = useAddFiles({
     reference_object_id,
     reference_object_type,
     collection,
+    taskId,
   })
   const { downloadFile, isLoading: isDownloadLoading } = useDownloadFile({
     reference_object_id,
@@ -275,6 +337,7 @@ export const useHandleFiles = (config: {
     reference_object_id,
     reference_object_type,
     collection,
+    taskId,
   })
 
   return {
