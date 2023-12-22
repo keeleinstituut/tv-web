@@ -304,6 +304,12 @@ const UserPage: FC = () => {
     (!includes(userPrivileges, Privileges.ActivateUser) && isUserDeactivated) ||
     (!includes(userPrivileges, Privileges.DeactivateUser) && !isUserDeactivated)
 
+  const userUpdatedAt = dayjs(user.updated_at)
+  const institutionUserUpdatedAt = dayjs(user.user?.updated_at)
+  const updatedAt = userUpdatedAt.isAfter(institutionUserUpdatedAt)
+    ? userUpdatedAt
+    : institutionUserUpdatedAt
+
   return (
     <>
       <div className={classes.titleRow}>
@@ -372,7 +378,7 @@ const UserPage: FC = () => {
       </p>
       <p className={classes.dateText}>
         {t('user.updated_at', {
-          time: dayjs(user.updated_at).format('DD.MM.YYYY HH:mm') || '',
+          time: updatedAt.format('DD.MM.YYYY HH:mm') || '',
         })}
       </p>
     </>
