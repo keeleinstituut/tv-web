@@ -50,6 +50,7 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
   isLoading?: boolean
   mode?: ProjectDetailModes
   subProjectId: string
+  taskId?: string
   isHistoryView?: string
 }
 interface FileRow {
@@ -74,6 +75,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
   subProjectId,
   mode,
   isHistoryView,
+  taskId,
 }: FinalFilesListProps<TFormValues>) => {
   const { t } = useTranslation()
 
@@ -97,6 +99,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     reference_object_id: subProjectId,
     reference_object_type: 'subproject',
     collection: CollectionType.Final,
+    taskId,
   })
 
   const handleDownload = useCallback(
