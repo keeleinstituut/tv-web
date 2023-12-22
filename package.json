@@ -48,7 +48,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "syncTerms": "node  ./scripts/syncTerms.js"
+    "syncTerms": "node  ./scripts/syncTerms.js",
+    "syncManuals": "node  ./scripts/syncManuals.js"
   },
   "engines": {
     "node": "18.14.2"
