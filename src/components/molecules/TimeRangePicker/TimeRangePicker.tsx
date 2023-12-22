@@ -34,24 +34,36 @@ const TimeRangePicker = forwardRef<HTMLInputElement, TimeRangePickerProps>(
 
     const onChangeStartTime = useCallback(
       (newTimeValue: string) => {
-        const newValue = {
-          ...value,
-          start: `${newTimeValue}:00`,
+        if (!showSeconds && newTimeValue.length === 5) {
+          onChange({
+            ...value,
+            start: `${newTimeValue}:00`,
+          })
+        } else {
+          onChange({
+            ...value,
+            start: newTimeValue,
+          })
         }
-        onChange(newValue)
       },
-      [onChange, value]
+      [onChange, value, showSeconds]
     )
 
     const onChangeEndTime = useCallback(
       (newTimeValue: string) => {
-        const newValue = {
-          ...value,
-          end: `${newTimeValue}:00`,
+        if (!showSeconds && newTimeValue.length === 5) {
+          onChange({
+            ...value,
+            end: `${newTimeValue}:00`,
+          })
+        } else {
+          onChange({
+            ...value,
+            end: newTimeValue,
+          })
         }
-        onChange(newValue)
       },
-      [onChange, value]
+      [onChange, value, showSeconds]
     )
 
     if (hidden) return null

@@ -1,9 +1,10 @@
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
-
+import { parseInt } from 'lodash'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
+import React from 'react'
 
 export type TimeColumnProps = {
   start: number
@@ -11,6 +12,8 @@ export type TimeColumnProps = {
   setValue: (value: number) => void
   value: number
   isTimeColumnOpen?: boolean
+  isHourValue?: boolean
+  autoFocus?: boolean
 }
 
 const TimeColumn = ({
@@ -19,6 +22,7 @@ const TimeColumn = ({
   setValue,
   value,
   isTimeColumnOpen,
+  autoFocus,
 }: TimeColumnProps) => {
   const { t } = useTranslation()
   const controlTop = () => {
@@ -37,13 +41,18 @@ const TimeColumn = ({
       setValue(end - 1)
     }
   }
+  const formattedValueToString = value < 10 ? '0' + value : value
 
-  const formattedValueToString =
-    value?.toString().length === 1 ? `0${value}` : value?.toString()
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = event.target.value
+
+    if (parseInt(inputValue) < 24) {
+      setValue(parseInt(inputValue))
+    }
+  }
 
   return (
     <div className={classes.control}>
-      <div className={classes.selector} />
       <BaseButton
         onClick={controlTop}
         className={classNames(
@@ -51,14 +60,20 @@ const TimeColumn = ({
           isTimeColumnOpen && classes.focusTimeColumnButton
         )}
         aria-label={t('button.increase')}
+        // autoFocus={isTimeColumnOpen && isHourValue}
       >
         <ButtonArrow />
       </BaseButton>
-      <div className={classes.timeWrapper}>
-        <span className={value ? classes.selected : ''}>
-          {formattedValueToString}
-        </span>
-      </div>
+      <input
+        className={classes.selector}
+        type="text"
+        value={formattedValueToString}
+        aria-label={'nimi'}
+        onChange={handleInputChange}
+        min={start}
+        max={end}
+        autoFocus={autoFocus}
+      />
       <BaseButton
         onClick={controlBottom}
         className={classNames(

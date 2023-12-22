@@ -347,7 +347,7 @@ export const useDownloadXliffFile = () => {
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'xliff.zip',
+        fileName: 'xliff',
       })
     },
   })
@@ -368,7 +368,7 @@ export const useDownloadTranslatedFile = () => {
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'translatedFile.zip',
+        fileName: 'translatedFile',
       })
     },
   })
@@ -463,7 +463,7 @@ export const useExportProjects = () => {
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'projects.csv',
+        fileName: 'projects',
       })
     },
   })

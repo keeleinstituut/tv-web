@@ -31,7 +31,7 @@ export interface DayTimeRangePickerProps {
 const DayTimeRangePicker = forwardRef<
   HTMLInputElement,
   DayTimeRangePickerProps
->(function DateTimePicker(props, ref) {
+>(function DayTimeRangePicker(props, ref) {
   const {
     onChange,
     value,

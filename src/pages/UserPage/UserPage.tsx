@@ -355,7 +355,9 @@ const UserPage: FC = () => {
           className={classes.editIcon}
           onClick={() => handleDeactivateModal(true)}
           hidden={
-            !isDeactivationDateInTheFuture || status === UserStatus.Archived
+            !isDeactivationDateInTheFuture ||
+            status === UserStatus.Archived ||
+            !includes(userPrivileges, Privileges.DeactivateUser)
           }
         />
         <Button
@@ -365,7 +367,9 @@ const UserPage: FC = () => {
           className={classes.button}
           onClick={handleOnRemoveDeactivationDate}
           hidden={
-            !isDeactivationDateInTheFuture || status === UserStatus.Archived
+            !isDeactivationDateInTheFuture ||
+            status === UserStatus.Archived ||
+            !includes(userPrivileges, Privileges.DeactivateUser)
           }
         />
       </div>
