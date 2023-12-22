@@ -220,10 +220,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
           children: t('button.save'),
           loading: isSubmitting,
           type: 'submit',
-          disabled:
-            !isValid ||
-            (!prevDeletedValue && !isDirty) ||
-            !(editableFields.length === inputFields.length),
+          disabled: !isValid || (!prevDeletedValue && !isDirty),
         },
       ]}
     >
