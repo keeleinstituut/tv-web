@@ -9,6 +9,7 @@ import {
   size,
   isEmpty,
   includes,
+  round,
 } from 'lodash'
 import { setAccessToken, apiClient } from 'api'
 import axios from 'axios'
@@ -78,6 +79,35 @@ const onVisibilityChange = () => {
   }
 }
 
+let lastRequestTime = new Date()
+
+export const setLastRequestTime = (date: Date) => (lastRequestTime = date)
+
+const startCheckingIdleTime = async (callback: () => void) => {
+  const currentDate = new Date()
+  const timestampInSeconds = currentDate.getTime() / 1000
+  const lastRequestTimeInSeconds = lastRequestTime.getTime() / 1000
+
+  const timeSinceLastRequest = timestampInSeconds - lastRequestTimeInSeconds
+
+  if (timeSinceLastRequest >= 30 * 60) {
+    callback()
+    return
+  }
+
+  if (timeSinceLastRequest >= 25 * 60) {
+    showNotification({
+      type: NotificationTypes.Warning,
+      title: i18n.t('notification.error'),
+      content: i18n.t('error.token_will_expire_soon', {
+        time_left: round(30 - timeSinceLastRequest / 60),
+      }),
+    })
+  }
+
+  setTimeout(() => startCheckingIdleTime(callback), 30000)
+}
+
 export const startRefreshingToken = async (
   onFail?: () => void,
   force?: boolean
@@ -107,6 +137,8 @@ export const startRefreshingToken = async (
     const done = await keycloak.updateToken(timeUntilTokenExpires)
     if (done) {
       clearInterval(refreshInterval)
+      setAccessToken(keycloak.token)
+      startRefreshingToken()
     }
   }, interval * 1000)
 }
@@ -135,12 +167,6 @@ export const selectInstitution = async (institutionId?: string) => {
   return true
 }
 
-keycloak.onAuthRefreshSuccess = () => {
-  // Set new access token + restart refreshing interval
-  setAccessToken(keycloak.token)
-  startRefreshingToken()
-}
-
 const useKeycloak = () => {
   const navigate = useNavigate()
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false)
@@ -160,12 +186,13 @@ const useKeycloak = () => {
     setIsLoading(false)
     // Start refreshing interval
     startRefreshingToken()
+    startCheckingIdleTime(handleLogoutWithError)
     // Token refreshing stops, when window is not visible and doesn't start again
     // Refresh the token again, when window becomes visible
     if (typeof window !== 'undefined' && window.addEventListener) {
       window.addEventListener('visibilitychange', onVisibilityChange)
     }
-  }, [])
+  }, [handleLogoutWithError])
 
   useEffect(() => {
     setIsLoading(true)

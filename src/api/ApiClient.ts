@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
 // import queryString from 'query-string'
 import ApiClientInterceptor from './ApiClientInterceptor'
 import handleError from './errorHandler'
+import { setLastRequestTime } from 'hooks/useKeycloak'
 
 export interface AxiosRequestConfigWithRetries extends AxiosRequestConfig {
   retries?: number
@@ -63,6 +64,7 @@ class ApiClient {
       hideError?: boolean
     }
   ) => {
+    setLastRequestTime(new Date())
     // this.debug(
     //   `API Request #${this.count} to ${this.baseURL}${config.url}`,
     //   config

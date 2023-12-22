@@ -274,6 +274,7 @@
     "file_size_error": "Fail(id) liiga suur(ed). Kogu suurus ei tohi ületada 100mb",
     "unknown_authentication_error": "Teadmata viga",
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
+    "token_will_expire_soon": "Sessioon aegub tegevusetuse tõttu {{time_left}} minuti pärast",
     "work_time_format": "Tööaeg peab olema HH:MM formaadis"
   },
   "landing": {
