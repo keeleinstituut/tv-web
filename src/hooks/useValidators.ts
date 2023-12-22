@@ -32,6 +32,9 @@ const numberBetweenZeroAndHundred = (number: string) =>
 const allowAllNumbersWithDot = (number: string) =>
   /^(\d+(\.\d+)?|\.\d+)$/.test(number)
 
+const timeInCorrectFormat = (time: string) =>
+  /^([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$/.test(time)
+
 const useValidators = () => {
   const { t } = useTranslation()
 
@@ -101,12 +104,25 @@ const useValidators = () => {
     }
   }
 
+  const dateTimeValidator = (
+    value?: { start?: string; end?: string } | string
+  ) => {
+    if (typeof value === 'object' && Object.keys(value).length > 0) {
+      if (
+        !timeInCorrectFormat(value?.start || '') ||
+        !timeInCorrectFormat(value?.end || '')
+      ) {
+        return t('error.work_time_format')
+      }
+    }
+  }
+
   type valueType = {
     days?: string[]
     time_range?: { start?: string; end?: string }
   } | null
 
-  const dateTimeValidator = (value?: valueType) => {
+  const dateTimeRequiredValidator = (value?: valueType) => {
     if (
       !value?.days ||
       !value?.time_range ||
@@ -114,6 +130,12 @@ const useValidators = () => {
       !value?.time_range?.end
     ) {
       return t('error.required')
+    }
+    if (
+      !timeInCorrectFormat(value?.time_range?.start) ||
+      !timeInCorrectFormat(value?.time_range?.end)
+    ) {
+      return t('error.work_time_format')
     }
     return true
   }
@@ -125,10 +147,11 @@ const useValidators = () => {
     rolesValidator,
     tagInputValidator,
     discountValidator,
-    dateTimeValidator,
+    dateTimeRequiredValidator,
     priceValidator,
     nameInputValidator,
     minLengthValidator,
+    dateTimeValidator,
   }
 }
 

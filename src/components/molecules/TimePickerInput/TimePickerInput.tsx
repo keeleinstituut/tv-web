@@ -1,16 +1,17 @@
-import { useState, forwardRef, useRef, FC, SVGProps } from 'react'
-import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
+import React, { useState, forwardRef, useRef, FC, SVGProps } from 'react'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import { useClickAway } from 'ahooks'
-import { withMask } from 'use-mask-input'
 import classNames from 'classnames'
 import { Icon } from '../Button/Button'
 
 import classes from './classes.module.scss'
+import TimeDropdown from '../TimeDropdown/TimeDropdown'
+import useModalContext from 'hooks/useModalContext'
+import useInputMask from 'use-mask-input'
 
-type SharedTimeProps = {
+export type SharedTimeProps = {
   value?: string
   disabled?: boolean
   ariaLabel?: string
@@ -32,9 +33,6 @@ export type TimeInputProps = SharedTimeProps & {
   toggleTimeColumnVisible: () => void
 }
 
-const formatTimeString = (time: number) =>
-  time?.toString().length === 1 ? `0${time}` : time?.toString()
-
 const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
   function TimeInput(
     {
@@ -51,19 +49,8 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
     ref
   ) {
     const placeholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
-
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const inputValue = event.target.value
-
-      const withoutSecondsRegex = /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?$/
-      const secondsRegex =
-        /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?(:[0-5]?[0-9]?)?$/
-
-      const regex = showSeconds ? secondsRegex : withoutSecondsRegex
-
-      if (regex.test(inputValue)) {
-        onChange(inputValue)
-      }
+      onChange(event.target.value)
     }
 
     return (
@@ -81,8 +68,9 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
           onChange={handleInputChange}
           id={name}
           {...(placeholder ? { placeholder } : {})}
-          ref={withMask(showSeconds ? '99:99:99' : '99:99', {
-            placeholder: '0',
+          ref={useInputMask({
+            mask: showSeconds ? '99:99:99' : '99:99',
+            options: { placeholder: '', jitMasking: true },
           })}
         />
         <Icon
@@ -113,14 +101,9 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       icon,
       setIsModalOpen,
     } = props
-
-    const splittedTimeValue = value?.split(':')
-
-    const hourValue = Number(splittedTimeValue?.[0]) || 0
-    const minuteValue = Number(splittedTimeValue?.[1]) || 0
-    const secondValue = Number(splittedTimeValue?.[2]) || 0
-
     const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
+    const { modalContentId } = useModalContext()
+    const shouldUsePortal = !!modalContentId
 
     const toggleTimeColumnVisible = () => {
       setIsModalOpen && setIsModalOpen(!isTimeColumnOpen)
@@ -128,39 +111,12 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
     }
 
     const clickAwayInputRef = useRef(null)
+    const wrapperRef = useRef(null)
 
     useClickAway(() => {
       setIsModalOpen && setIsModalOpen(false)
       setTimeColumnOpen(false)
-    }, [clickAwayInputRef])
-
-    const handleSetHour = (newHour: number) => {
-      const timeWithSeconds = `${formatTimeString(newHour)}:${formatTimeString(
-        minuteValue
-      )}:${formatTimeString(secondValue)}`
-      const formattedTime = `${formatTimeString(newHour)}:${formatTimeString(
-        minuteValue
-      )}`
-      onChange(showSeconds ? timeWithSeconds : formattedTime)
-    }
-
-    const handleSetMinute = (newMinute: number) => {
-      const timeWithSeconds = `${formatTimeString(
-        hourValue
-      )}:${formatTimeString(newMinute)}:${formatTimeString(secondValue)}`
-      const formattedTime = `${formatTimeString(hourValue)}:${formatTimeString(
-        newMinute
-      )}`
-      onChange(showSeconds ? timeWithSeconds : formattedTime)
-    }
-
-    const handleSetSecond = (newSecond: number) => {
-      const timeWithSeconds = `${formatTimeString(
-        hourValue
-      )}:${formatTimeString(minuteValue)}:${formatTimeString(newSecond)}`
-
-      onChange(timeWithSeconds)
-    }
+    }, [clickAwayInputRef, ...(wrapperRef?.current ? [wrapperRef] : [])])
 
     return (
       <InputWrapper
@@ -168,7 +124,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         name={name}
         error={error}
         className={className}
-        ref={clickAwayInputRef}
+        ref={shouldUsePortal ? wrapperRef : clickAwayInputRef}
         wrapperClass={classes.timePickerWrapper}
         errorZIndex={errorZIndex}
       >
@@ -184,37 +140,17 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           ref={ref}
           icon={icon}
         />
-        <div
-          className={
-            !isTimeColumnOpen || disabled
-              ? classes.hiddenContainer
-              : classes.timeColumnContainer
-          }
-        >
-          <TimeColumn
-            start={0}
-            end={24}
-            value={hourValue}
-            setValue={handleSetHour}
-            isTimeColumnOpen={isTimeColumnOpen}
-          />
-          <TimeColumn
-            start={0}
-            end={60}
-            value={minuteValue}
-            setValue={handleSetMinute}
-            isTimeColumnOpen={isTimeColumnOpen}
-          />
-          {showSeconds && (
-            <TimeColumn
-              start={0}
-              end={60}
-              value={secondValue}
-              setValue={handleSetSecond}
-              isTimeColumnOpen={isTimeColumnOpen}
-            />
-          )}
-        </div>
+        <TimeDropdown
+          wrapperRef={wrapperRef}
+          clickAwayInputRef={clickAwayInputRef}
+          isTimeColumnOpen={isTimeColumnOpen}
+          disabled={disabled}
+          onChange={onChange}
+          value={value}
+          showSeconds={showSeconds}
+          name={name}
+          setIsOpen={setTimeColumnOpen}
+        />
       </InputWrapper>
     )
   }

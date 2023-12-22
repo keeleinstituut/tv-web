@@ -67,7 +67,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
   handleOnSubmit,
 }) => {
   const { t } = useTranslation()
-  const { dateTimeValidator } = useValidators()
+  const { dateTimeRequiredValidator } = useValidators()
 
   const defaultValues: FormValues = useMemo(
     () =>
@@ -92,15 +92,14 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
     handleSubmit,
     control,
     reset,
+    resetField,
     unregister,
     setError,
     formState: { isSubmitting, isValid, isDirty },
   } = useForm<FormValues>({
-    reValidateMode: 'onChange',
+    mode: 'onChange',
+    reValidateMode: 'onBlur',
     defaultValues: defaultValues,
-    resetOptions: {
-      keepErrors: false,
-    },
   })
 
   const editableFields: FieldProps<FormValues>[] = map(
@@ -111,10 +110,10 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
         name: `${id}` as Path<FormValues>,
         id: id,
         formControl: control,
-        handleDelete: () => setPrevDeletedValue(id),
+        handleDelete: () => handleOnDelete(String(id)),
         rules: {
           required: true,
-          validate: dateTimeValidator,
+          validate: dateTimeRequiredValidator,
         },
       }
     }
@@ -133,10 +132,10 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
         inputType: InputTypes.DayTimeRange,
         name: `${newId}` as Path<FormValues>,
         formControl: control,
-        handleDelete: () => setPrevDeletedValue(newId),
+        handleDelete: () => handleOnDelete(newId),
         rules: {
           required: true,
-          validate: dateTimeValidator,
+          validate: dateTimeRequiredValidator,
         },
       },
     ]
@@ -157,6 +156,11 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
     unregister(prevDeletedValue)
   }, [prevDeletedValue])
 
+  const handleOnDelete = (id: string) => {
+    setPrevDeletedValue(id)
+    setTimeout(() => resetField(id), 100)
+  }
+
   const resetForm = useCallback(() => {
     reset()
     setPrevDeletedValue(undefined)
@@ -164,7 +168,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
   }, [editableFields, inputFields, reset])
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(async (values) => {
-    const payload = toArray(values)
+    const payload = toArray(values).filter((value) => value)
     try {
       if (handleOnSubmit) {
         await handleOnSubmit(payload)

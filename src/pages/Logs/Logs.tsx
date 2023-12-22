@@ -65,7 +65,7 @@ const dateTabs = [
 
 const Logs: FC = () => {
   const { t } = useTranslation()
-  const { minLengthValidator } = useValidators()
+  const { minLengthValidator, dateTimeValidator } = useValidators()
   const {
     logsData,
     paginationData,
@@ -110,6 +110,9 @@ const Logs: FC = () => {
       className: classNames(classes.inputSection, classes.dateInput),
       showSeconds: true,
       icon: Alarm,
+      rules: {
+        validate: dateTimeValidator,
+      },
     },
   ]
 
