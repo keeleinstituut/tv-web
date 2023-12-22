@@ -1,20 +1,6 @@
-import {
-  useState,
-  forwardRef,
-  useRef,
-  FC,
-  SVGProps,
-  RefObject,
-  useMemo,
-} from 'react'
+import { forwardRef, FC, RefObject, useMemo } from 'react'
 import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
-import { ReactComponent as Clock } from 'assets/icons/clock.svg'
-import { FieldError } from 'react-hook-form'
-import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import { useClickAway, useInViewport } from 'ahooks'
-import { withMask } from 'use-mask-input'
-import classNames from 'classnames'
-import { Icon } from '../Button/Button'
 
 import classes from './classes.module.scss'
 import { SharedTimeProps } from '../TimePickerInput/TimePickerInput'
@@ -84,7 +70,6 @@ const TimeDropdownComponent = forwardRef<HTMLDivElement, TimeDropdownProps>(
     )
 
     const handleSetHour = (newHour: number) => {
-      console.log('new hour', newHour)
       const timeWithSeconds = `${formatTimeString(newHour)}:${formatTimeString(
         minuteValue
       )}:${formatTimeString(secondValue)}`
@@ -108,7 +93,6 @@ const TimeDropdownComponent = forwardRef<HTMLDivElement, TimeDropdownProps>(
       const timeWithSeconds = `${formatTimeString(
         hourValue
       )}:${formatTimeString(minuteValue)}:${formatTimeString(newSecond)}`
-
       onChange(timeWithSeconds)
     }
 

@@ -1,19 +1,15 @@
-import { useState, forwardRef, useRef, FC, SVGProps, useEffect } from 'react'
-import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
+import React, { useState, forwardRef, useRef, FC, SVGProps } from 'react'
 import { ReactComponent as Clock } from 'assets/icons/clock.svg'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import { useClickAway } from 'ahooks'
-import { withMask } from 'use-mask-input'
 import classNames from 'classnames'
 import { Icon } from '../Button/Button'
 
 import classes from './classes.module.scss'
 import TimeDropdown from '../TimeDropdown/TimeDropdown'
 import useModalContext from 'hooks/useModalContext'
-import BaseButton, {
-  BaseButtonProps,
-} from 'components/atoms/BaseButton/BaseButton'
+import useInputMask from 'use-mask-input'
 
 export type SharedTimeProps = {
   value?: string
@@ -34,7 +30,7 @@ export type TimePickerInputProps = SharedTimeProps & {
 }
 
 export type TimeInputProps = SharedTimeProps & {
-  toggleTimeColumnVisible: BaseButtonProps['onClick']
+  toggleTimeColumnVisible: () => void
 }
 
 const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
@@ -53,24 +49,13 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
     ref
   ) {
     const placeholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
-
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      const inputValue = event.target.value
-
-      const withoutSecondsRegex = /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?$/
-      const secondsRegex =
-        /^([01]?[0-9]?|2[0-3]?)(:[0-5]?[0-9]?)?(:[0-5]?[0-9]?)?$/
-
-      const regex = showSeconds ? secondsRegex : withoutSecondsRegex
-
-      if (regex.test(inputValue)) {
-        onChange(inputValue)
-      }
+      onChange(event.target.value)
     }
-    console.log(value)
+
     return (
       <>
-        {/* <input
+        <input
           className={classNames(
             classes.timeInput,
             disabled && classes.disabledTimeInput,
@@ -83,45 +68,18 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
           onChange={handleInputChange}
           id={name}
           {...(placeholder ? { placeholder } : {})}
-          ref={withMask(showSeconds ? '99:99:99' : '99:99', {
-            placeholder: '0',
+          ref={useInputMask({
+            mask: showSeconds ? '99:99:99' : '99:99',
+            options: { placeholder: '', jitMasking: true },
           })}
-        /> */}
-
-        <BaseButton
-          className={classNames(
-            classes.timeInput,
-            disabled && classes.disabledTimeInput,
-            error && classes.error
-          )}
-          id={name}
-          disabled={disabled}
-          // ref={ref}
-          onClick={toggleTimeColumnVisible}
-          aria-label={ariaLabel}
-        >
-          <p
-            ref={withMask(showSeconds ? '99:99:99' : '99:99', {
-              placeholder: '0',
-            })}
-          >
-            {value ? value : placeholder || ''}
-          </p>
-          <Icon
-            icon={icon || Clock}
-            className={classNames(
-              classes.timeIcon,
-              disabled && classes.disabledIcon
-            )}
-          />
-        </BaseButton>
-        {/* <Icon
+        />
+        <Icon
           icon={icon || Clock}
           className={classNames(
             classes.timeIcon,
             disabled && classes.disabledIcon
           )}
-        /> */}
+        />
       </>
     )
   }
@@ -143,31 +101,17 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       icon,
       setIsModalOpen,
     } = props
-    //console.log('piker valeu', value)
-    const [focusElement, setFocusElement] = useState<HTMLElement | null>(null)
     const [isTimeColumnOpen, setTimeColumnOpen] = useState<boolean>(false)
     const { modalContentId } = useModalContext()
     const shouldUsePortal = !!modalContentId
 
-    const toggleTimeColumnVisible: BaseButtonProps['onClick'] = (event) => {
+    const toggleTimeColumnVisible = () => {
       setIsModalOpen && setIsModalOpen(!isTimeColumnOpen)
       setTimeColumnOpen(!isTimeColumnOpen)
-      if (!document.querySelector('.time-focus') && !isTimeColumnOpen) {
-        const target = event?.target as HTMLElement
-        target.classList.add('time-focus')
-        setFocusElement(target)
-      }
     }
 
     const clickAwayInputRef = useRef(null)
     const wrapperRef = useRef(null)
-
-    useEffect(() => {
-      if (document.querySelector('.time-focus') && !isTimeColumnOpen) {
-        focusElement?.classList.remove('time-focus')
-        focusElement?.focus()
-      }
-    }, [focusElement, isTimeColumnOpen])
 
     useClickAway(() => {
       setIsModalOpen && setIsModalOpen(false)
