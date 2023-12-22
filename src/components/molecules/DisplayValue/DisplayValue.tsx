@@ -10,6 +10,7 @@ export interface DisplayValueProps {
   label?: string | JSX.Element
   options?: DropDownOptions[]
   className?: string
+  name: string
   emptyDisplayText?: string
   hidden?: boolean
   value?:

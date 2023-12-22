@@ -39,6 +39,7 @@ const getNewSubProjectWithAssignment = (
     if (item.id === volume.assignment_id) {
       return {
         ...item,
+        ...(volume.assignment || {}),
         volumes: newVolumes,
       }
     }
@@ -98,11 +99,16 @@ export const useAssignmentAddVolume = ({
     mutationFn: (payload: { data: ManualVolumePayload }) =>
       apiClient.post(`${endpoints.VOLUMES}`, payload.data),
     onSuccess: ({ data }: { data: VolumeValue }) => {
+      // TODO: currently not supported by BE
       queryClient.setQueryData(
         ['subprojects', id],
         (oldData?: SubProjectResponse) =>
           getNewSubProjectWithAssignment(data, oldData)
       )
+      queryClient.refetchQueries({
+        queryKey: ['subprojects', id],
+        type: 'active',
+      })
     },
   })
 
@@ -123,11 +129,16 @@ export const useAssignmentEditVolume = ({
     mutationFn: (payload: { data: ManualVolumePayload; volumeId: string }) =>
       apiClient.put(`${endpoints.VOLUMES}/${payload.volumeId}`, payload.data),
     onSuccess: ({ data }: { data: VolumeValue }) => {
+      // TODO: currently not supported by BE
       queryClient.setQueryData(
         ['subprojects', id],
         (oldData?: SubProjectResponse) =>
           getNewSubProjectWithAssignment(data, oldData)
       )
+      queryClient.refetchQueries({
+        queryKey: ['subprojects', id],
+        type: 'active',
+      })
     },
   })
 
@@ -148,11 +159,16 @@ export const useAssignmentAddCatVolume = ({
     mutationFn: (payload: { data: CatVolumePayload }) =>
       apiClient.post(`${endpoints.VOLUMES}/cat-tool`, payload.data),
     onSuccess: ({ data }: { data: VolumeValue }) => {
+      // TODO: currently not supported by BE
       queryClient.setQueryData(
         ['subprojects', id],
         (oldData?: SubProjectResponse) =>
           getNewSubProjectWithAssignment(data, oldData)
       )
+      queryClient.refetchQueries({
+        queryKey: ['subprojects', id],
+        type: 'active',
+      })
     },
   })
 
@@ -176,11 +192,16 @@ export const useAssignmentEditCatVolume = ({
         payload.data
       ),
     onSuccess: ({ data }: { data: VolumeValue }) => {
+      // TODO: currently not supported by BE
       queryClient.setQueryData(
         ['subprojects', id],
         (oldData?: SubProjectResponse) =>
           getNewSubProjectWithAssignment(data, oldData)
       )
+      queryClient.refetchQueries({
+        queryKey: ['subprojects', id],
+        type: 'active',
+      })
     },
   })
 
@@ -201,11 +222,17 @@ export const useAssignmentRemoveVolume = ({
     mutationFn: (payload: { volumeId?: string }) =>
       apiClient.delete(`${endpoints.VOLUMES}/${payload.volumeId}`),
     onSuccess: (_, { volumeId }) => {
+      // TODO: currently not supported by BE
       queryClient.setQueryData(
         ['subprojects', id],
         (oldData?: SubProjectResponse) =>
           getNewSubProjectWithoutVolume(volumeId, oldData)
       )
+      // TODO: remove later
+      queryClient.refetchQueries({
+        queryKey: ['subprojects', id],
+        type: 'active',
+      })
     },
   })
 

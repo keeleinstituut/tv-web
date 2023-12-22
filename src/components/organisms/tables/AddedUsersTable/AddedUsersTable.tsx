@@ -81,7 +81,7 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       leading: false,
       trailing: true,
     }),
-    []
+    [handleFilterChange]
   )
 
   const handleSearchUsers = useCallback(

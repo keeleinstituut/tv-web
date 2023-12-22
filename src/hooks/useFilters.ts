@@ -1,6 +1,7 @@
 import { keys, omit, isEqual, pickBy } from 'lodash'
 import { useCallback, useState } from 'react'
 import { ParamKeyValuePair, useSearchParams } from 'react-router-dom'
+import { useDeepCompareEffect } from 'ahooks'
 import {
   FilterFunctionType,
   LanguagePairType,
@@ -9,7 +10,7 @@ import {
 } from 'types/collective'
 import { stringifyLanguagePairs } from 'helpers'
 
-const useFilters = <TFilters>(
+const useFilters = <TFilters extends object>(
   initialFilters?: TFilters,
   saveParams?: boolean
 ) => {
@@ -41,12 +42,29 @@ const useFilters = <TFilters>(
     [setSearchParams]
   )
 
+  useDeepCompareEffect(() => {
+    if (initialFilters) {
+      setFilters(initialFilters)
+    }
+    if (saveParams) {
+      setModifiedSetSearchParams(initialFilters)
+    }
+  }, [initialFilters])
+
   const handleFilterChange = useCallback(
     (value?: FilterFunctionType) => {
-      setFilters(pickBy({ ...filters, ...value, page }, (val) => !!val))
+      setFilters(
+        pickBy(
+          { ...filters, ...value, page },
+          (val: string | number) => val === 0 || !!val
+        )
+      )
       if (saveParams) {
         setModifiedSetSearchParams(
-          pickBy({ ...filters, ...value, page }, (val) => !!val)
+          pickBy(
+            { ...filters, ...value, page },
+            (val: string | number) => val === 0 || !!val
+          )
         )
       }
     },
