@@ -327,6 +327,7 @@ const TaskContent: FC<TaskContentProps> = ({
           isEditable={isTaskAssignedToMe}
           isLoading={isLoading}
           subProjectId={sub_project_id || ''}
+          taskId={taskId}
           className={classes.myFinalFiles}
           mode={ProjectDetailModes.View}
           isHistoryView={isHistoryView}
