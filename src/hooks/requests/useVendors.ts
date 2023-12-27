@@ -405,7 +405,7 @@ export const useParallelUpdatePrices = ({
         (oldData?: PricesDataType) => {
           const { data: previousData, meta: oldMeta } = oldData || {}
           if (!previousData) return oldData
-          const newValues = flatMap(data, 'value.data')
+          const newValues = flatMap(data, 'value.response.data')
           const newPrices = filter(
             newValues,
             ({ id }) => !find(previousData, { id })
