@@ -1,5 +1,5 @@
 import { FC, useCallback } from 'react'
-import { map, includes } from 'lodash'
+import { map } from 'lodash'
 import { SubProjectFeatures } from 'types/projects'
 import { AssignmentStatus, AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
@@ -46,6 +46,7 @@ const Assignment: FC<AssignmentProps> = ({
   status,
   isEditable,
 }) => {
+  const isAssignmentFinished = status === AssignmentStatus.Done
   const {
     source_language_classifier_value_id,
     destination_language_classifier_value_id,
@@ -153,11 +154,7 @@ const Assignment: FC<AssignmentProps> = ({
           className={classes.addButton}
           onClick={handleOpenVendorsModal}
           disabled={
-            feature === SubProjectFeatures.JobOverview ||
-            !includes(
-              [AssignmentStatus.New, AssignmentStatus.InProgress],
-              status
-            )
+            feature === SubProjectFeatures.JobOverview || isAssignmentFinished
           }
         >
           {t('button.choose_from_database')}
@@ -166,6 +163,7 @@ const Assignment: FC<AssignmentProps> = ({
           id={id}
           sub_project_id={sub_project_id}
           isEditable={isEditable}
+          isAssignmentFinished={isAssignmentFinished}
           catSupported={catSupported}
         />
       </div>

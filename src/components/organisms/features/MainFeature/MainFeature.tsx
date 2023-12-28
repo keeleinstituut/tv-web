@@ -131,6 +131,7 @@ const MainFeature: FC<MainFeatureProps> = ({
         hidden={activeTab === FeatureTabs.Vendors}
         assignments={assignments}
         subProjectCatJobs={cat_jobs}
+        isSomethingEditable={isSomethingEditable}
         {...rest}
       />
     </Root>

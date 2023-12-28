@@ -19,6 +19,7 @@ interface VolumeRowProps extends VolumeValue {
   index: number
   handleDelete: (index: number, id: string) => void
   handleEdit: (index: number) => void
+  disabled?: boolean
 }
 
 export const apiTypeToKey = (apiType: string) => {
@@ -64,6 +65,7 @@ const VolumeRow: FC<VolumeRowProps> = ({
   index,
   handleDelete,
   handleEdit,
+  disabled,
   id,
 }) => {
   const { t } = useTranslation()
@@ -80,17 +82,25 @@ const VolumeRow: FC<VolumeRowProps> = ({
       )}${cat_job ? ` ${t('task.open_in_cat')}` : ''}`}</span>
       <BaseButton
         onClick={onEditClick}
-        className={classes.editButton}
+        className={classNames(
+          classes.editButton,
+          disabled && classes.disabledIcon
+        )}
+        disabled={disabled}
         aria-label={t('button.edit')}
       >
-        <Edit className={classes.editIcon} />
+        <Edit />
       </BaseButton>
       <BaseButton
         onClick={onDeleteClick}
-        className={classes.deleteButton}
+        className={classNames(
+          classes.deleteButton,
+          disabled && classes.disabledIcon
+        )}
+        disabled={disabled}
         aria-label={t('button.delete')}
       >
-        <Delete className={classes.deleteIcon} />
+        <Delete />
       </BaseButton>
     </div>
   )
@@ -199,7 +209,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
       <div className={classes.valuesContainer}>
         {map(value, (props, index) => (
           <VolumeRow
-            {...{ ...props, index, handleDelete, handleEdit }}
+            {...{ ...props, index, handleDelete, handleEdit, disabled }}
             key={index}
           />
         ))}

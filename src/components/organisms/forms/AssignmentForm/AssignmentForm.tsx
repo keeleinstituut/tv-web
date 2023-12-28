@@ -33,6 +33,7 @@ interface AssignmentFormProps {
   id: string
   sub_project_id: string
   isEditable?: boolean
+  isAssignmentFinished?: boolean
   catSupported?: boolean
 }
 
@@ -49,6 +50,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
   sub_project_id,
   isEditable,
   catSupported,
+  isAssignmentFinished,
 }) => {
   const { t } = useTranslation()
   const {
@@ -197,7 +199,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         name: 'deadline_at',
         maxDate: dayjs(subProjectDeadline).toDate(),
         onDateTimeChange: handleAddDateTime,
-        disabled: !isEditable,
+        disabled: !isEditable || isAssignmentFinished,
       },
       {
         inputType: InputTypes.DateTime,
@@ -207,7 +209,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         className: classes.customInternalClass,
         name: 'event_start_at',
         maxDate: dayjs(subProjectDeadline).toDate(),
-        disabled: !isEditable,
+        disabled: !isEditable || isAssignmentFinished,
       },
       {
         inputType: InputTypes.Text,
@@ -219,7 +221,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         className: classes.inputInternalPosition,
         isTextarea: true,
         handleOnBlur: handleAddComment,
-        disabled: !isEditable,
+        disabled: !isEditable || isAssignmentFinished,
       },
       {
         inputType: InputTypes.AddVolume,
@@ -252,6 +254,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       subProjectDeadline,
       handleAddDateTime,
       isEditable,
+      isAssignmentFinished,
       shouldShowStartTimeFields,
       id,
       handleAddComment,
