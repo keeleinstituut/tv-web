@@ -69,9 +69,9 @@ const SubProjectsTable: FC = () => {
     ...Object.fromEntries(searchParams.entries()),
     status: searchParams.getAll('status'),
     language_direction: searchParams.getAll('language_direction'),
-    only_show_personal_projects: Number(
-      searchParams.get('only_show_personal_projects') || 0
-    ),
+    only_show_personal_projects: onlyPersonalProjectsAllowed
+      ? 1
+      : Number(searchParams.get('only_show_personal_projects')) || 0,
     type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
   }
 

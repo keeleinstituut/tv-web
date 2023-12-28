@@ -39,6 +39,8 @@ const TaskPage: FC = () => {
     id: taskId,
   })
 
+  const isLoadingToCheck = isHistoryView ? isLoadingHistoryTask : isLoading
+
   const { assignment, assignee_institution_user_id, task_type } = isHistoryView
     ? historyTask || {}
     : task || {}
@@ -85,7 +87,7 @@ const TaskPage: FC = () => {
     }
   }, [acceptTask, navigate, t])
 
-  if (isLoading) return <Loader loading={isLoading} />
+  if (isLoadingToCheck) return <Loader loading={isLoading} />
   return (
     <>
       <div className={classes.taskTitleContainer}>
@@ -112,7 +114,7 @@ const TaskPage: FC = () => {
         isVendor={isVendor}
         taskId={taskId}
         ext_id={ext_id}
-        isLoading={isHistoryView ? isLoadingHistoryTask : isLoading}
+        isLoading={isLoadingToCheck}
         isTaskAssignedToMe={!!isTaskAssignedToMe}
         isHistoryView={isHistoryView}
         task_type={task_type}

@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { showValidationErrorMessage } from 'api/errorHandler'
+import { AssignmentStatus } from 'types/assignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useLinkCatToolJobs } from 'hooks/requests/useAssignments'
@@ -15,6 +16,7 @@ import classes from './classes.module.scss'
 type FeatureCatJobsProps = Pick<SubProjectDetail, 'assignments'> & {
   hidden?: boolean
   subProjectCatJobs: CatJob[]
+  isSomethingEditable?: boolean
 }
 interface FormValues {
   [key: string]: string
@@ -24,7 +26,10 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
   assignments,
   hidden,
   subProjectCatJobs,
+  isSomethingEditable,
 }) => {
+  const isAssignmentFinished =
+    assignments?.[0]?.status === AssignmentStatus.Done
   const { t } = useTranslation()
   const [isEditable, setIsEditable] = useState(false)
 
@@ -126,7 +131,7 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
   return (
     <>
       <div>
-        {map([...assignments], (assignment, index) => {
+        {map(assignments, (assignment, index) => {
           return (
             <FeatureCatJob
               key={assignment.id}
@@ -149,7 +154,11 @@ const FeatureCatJobs: FC<FeatureCatJobsProps> = ({
         />
         <Button
           children={isEditable ? t('button.save') : t('button.change')}
-          disabled={(!isDirty || !isValid) && isEditable}
+          disabled={
+            !isSomethingEditable ||
+            isAssignmentFinished ||
+            ((!isDirty || !isValid) && isEditable)
+          }
           hidden={isEmpty(subProjectCatJobs)}
           loading={isSubmitting || isLoading}
           onClick={

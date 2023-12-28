@@ -148,6 +148,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           onChange={onChange}
           value={value}
           showSeconds={showSeconds}
+          errorZIndex={errorZIndex}
           name={name}
           setIsOpen={setTimeColumnOpen}
         />
