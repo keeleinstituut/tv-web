@@ -137,10 +137,14 @@ export const startRefreshingToken = async (
     const done = await keycloak.updateToken(timeUntilTokenExpires)
     if (done) {
       clearInterval(refreshInterval)
-      setAccessToken(keycloak.token)
-      startRefreshingToken()
     }
   }, interval * 1000)
+}
+
+keycloak.onAuthRefreshSuccess = () => {
+  // Set new access token + restart refreshing interval
+  setAccessToken(keycloak.token)
+  startRefreshingToken()
 }
 
 export const selectInstitution = async (institutionId?: string) => {
