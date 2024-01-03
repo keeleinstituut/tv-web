@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { debounce, isEmpty, map, split } from 'lodash'
+import { debounce, isEmpty, map, split, includes, omitBy } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import { FilterFunctionType } from 'types/collective'
@@ -47,10 +47,13 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
   } = useLanguageDirections({})
 
   const [searchParams] = useSearchParams()
+
   const initialFilters = {
     per_page: 10,
     page: 1,
-    ...Object.fromEntries(searchParams.entries()),
+    ...omitBy(Object.fromEntries(searchParams.entries()), (_, key) =>
+      includes(key, 'lang_pair')
+    ),
     skill_id: searchParams.getAll('skill_id'),
     lang_pair: parseLanguagePairs(searchParams),
   }
