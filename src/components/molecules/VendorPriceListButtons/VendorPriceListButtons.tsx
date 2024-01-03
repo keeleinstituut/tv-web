@@ -1,4 +1,10 @@
-import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
+import {
+  Control,
+  FieldValues,
+  Path,
+  useFormState,
+  useWatch,
+} from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { size, isEmpty, some } from 'lodash'
@@ -31,6 +37,8 @@ function VendorPriceListButtons<TFormValues extends FieldValues>({
   const formValues = useWatch({
     control,
   })
+
+  const formState = useFormState({ control })
 
   const isAddingNewLanguagePair = !!formValues.new?.src_lang_classifier_value_id
   const editLanguagePairData = formValues?.[languageDirectionKey]
@@ -80,10 +88,14 @@ function VendorPriceListButtons<TFormValues extends FieldValues>({
   const isEditSkillValid =
     activeStep === 2 || activeStep === 3 ? hasTrueEditValueSkill : true
 
-  const isNewValueButtonDisabled = !(isNewLanguageSelected && isNewSkillValid)
-  const isEditValueButtonDisabled = !(
-    isEditLanguageSelected && isEditSkillValid
-  )
+  const isFormInValid =
+    (!formState.isValid || !isEmpty(formState.errors)) &&
+    activeStep === size(steps)
+
+  const isNewValueButtonDisabled =
+    !isNewLanguageSelected || !isNewSkillValid || isFormInValid
+  const isEditValueButtonDisabled =
+    !isEditLanguageSelected || !isEditSkillValid || isFormInValid
 
   const isButtonDisabled = isAddingNewLanguagePair
     ? isNewValueButtonDisabled

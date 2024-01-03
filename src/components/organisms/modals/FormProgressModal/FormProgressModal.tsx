@@ -60,8 +60,10 @@ function FormProgressModal<TFormValues extends FieldValues>({
         includes(errorKeys, 'src_lang_classifier_value_id') ||
         includes(errorKeys, 'dst_lang_classifier_value_id')
       const priceObjectErrors = typedErrors?.priceObject
-      const priceObjectErrorKeys = keys(priceObjectErrors)
-      const isErrorOnSecondStep = includes(priceObjectErrorKeys, 'skill_id')
+      const isErrorOnSecondStep = find(
+        priceObjectErrors,
+        ({ isSelected }) => !!isSelected
+      )
       if (isErrorOnFirstStep) {
         setActiveStep(1)
       } else if (isErrorOnSecondStep) {
