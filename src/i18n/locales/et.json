@@ -559,7 +559,8 @@
     "task_marked_completed": "Ülesanne edukalt lõpetatuks märgitud",
     "project_reassigned": "Tellimus edukalt suunatud",
     "sub_project_files_added": "Failid on edukalt lisatud",
-    "final_file_deleted": "Valmisfail on edukalt kustutatud"
+    "final_file_deleted": "Valmisfail on edukalt kustutatud",
+    "comment_updated": "Kommentaar edukalt uuendatud"
   },
   "notification": {
     "announcement": "Teade",

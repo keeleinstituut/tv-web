@@ -30,6 +30,8 @@ import { useTaskCache } from 'hooks/requests/useTasks'
 import useAuth from 'hooks/useAuth'
 import { useAssignmentCommentUpdate } from 'hooks/requests/useAssignments'
 import { CollectionType } from 'hooks/requests/useFiles'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 interface FormValues {
   my_source_files: SourceFile[]
@@ -190,16 +192,21 @@ const TaskContent: FC<TaskContentProps> = ({
   }, [volumes])
 
   const handleAddAssigneeComment = useCallback(
-    (value: string) => {
+    async (value: string) => {
       const isCommentChanged = !isEqual(value, assignee_comments)
       if (isCommentChanged) {
-        updateAssigneeComment({
+        await updateAssigneeComment({
           assignee_comments: value,
+        })
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.comment_updated'),
         })
       }
     },
 
-    [assignee_comments, updateAssigneeComment]
+    [assignee_comments, t, updateAssigneeComment]
   )
 
   const handleOpenCompleteModal: SubmitHandler<FormValues> = useCallback(
