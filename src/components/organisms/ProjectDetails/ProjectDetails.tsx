@@ -10,7 +10,18 @@ import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
 import ProjectFilesSection from 'components/molecules/ProjectFilesSection/ProjectFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateProject, useUpdateProject } from 'hooks/requests/useProjects'
-import { join, map, includes, isEmpty, pick, keys, compact, find } from 'lodash'
+import {
+  join,
+  map,
+  includes,
+  isEmpty,
+  pick,
+  keys,
+  compact,
+  find,
+  split,
+  toNumber,
+} from 'lodash'
 import { getUtcDateStringFromLocalDateObject } from 'helpers'
 import {
   NewProjectPayload,
@@ -22,7 +33,6 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useNavigate } from 'react-router-dom'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ValidationError } from 'api/errorHandler'
 import { Root } from '@radix-ui/react-form'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
@@ -31,75 +41,16 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { getProjectDefaultValues, mapFilesForApi } from 'helpers/project'
 import { HelperFileTypes } from 'types/classifierValues'
-import { useHandleBulkFiles } from 'hooks/requests/useFiles'
+import { useHandleBulkFiles, CollectionType } from 'hooks/requests/useFiles'
+import ProjectFormButtons from 'components/molecules/ProjectFormButtons/ProjectFormButtons'
 
 import classes from './classes.module.scss'
+import { AxiosError } from 'axios'
 
 export enum ProjectDetailModes {
   New = 'new',
   Editable = 'editable',
   View = 'view',
-}
-
-interface FormButtonsProps {
-  resetForm: () => void
-  setIsEditEnabled: (editable: boolean) => void
-  onSubmit: () => void
-  isNew?: boolean
-  isEditEnabled?: boolean
-  isSubmitting?: boolean
-  isLoading?: boolean
-  isValid?: boolean
-  hidden?: boolean
-  isDirty?: boolean
-}
-
-const FormButtons: FC<FormButtonsProps> = ({
-  resetForm,
-  isNew,
-  isEditEnabled,
-  setIsEditEnabled,
-  isSubmitting,
-  isLoading,
-  isValid,
-  isDirty,
-  onSubmit,
-  hidden,
-}) => {
-  const { t } = useTranslation()
-
-  const submitButtonLabel = useMemo(() => {
-    if (isNew) return t('button.submit_project')
-    if (isEditEnabled) return t('button.save')
-    return t('button.edit')
-  }, [isEditEnabled, isNew, t])
-
-  if (hidden) return null
-
-  return (
-    <div className={classes.formButtons}>
-      <Button
-        appearance={AppearanceTypes.Secondary}
-        children={isNew ? t('button.quit') : t('button.cancel')}
-        {...(isNew
-          ? { href: '/projects' }
-          : {
-              onClick: () => {
-                setIsEditEnabled(false)
-                resetForm()
-              },
-            })}
-        hidden={!isNew && !isEditEnabled}
-        disabled={isSubmitting || isLoading}
-      />
-      <Button
-        children={submitButtonLabel}
-        disabled={(!isValid || !isDirty) && isEditEnabled}
-        loading={isSubmitting || isLoading}
-        onClick={isEditEnabled ? onSubmit : () => setIsEditEnabled(true)}
-      />
-    </div>
-  )
 }
 
 interface FormValues {
@@ -248,6 +199,43 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
     [setError]
   )
 
+  const mapProjectNewFilesErrors = useCallback(
+    (
+      errorData: ValidationError,
+      newFiles?: {
+        file: SourceFile | File
+        collection: CollectionType
+        originalIndex: number
+      }[]
+    ) => {
+      if (errorData.errors) {
+        map(errorData.errors, (errorsArray, key) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const [_, index, __] = split(key, '.')
+          const indexAsANumber = toNumber(index)
+          const matchingFile = newFiles?.[indexAsANumber]
+          const errorString = join(errorsArray, ',')
+          if (matchingFile && matchingFile.collection === CollectionType.Help) {
+            setError(`help_files.${matchingFile?.originalIndex}`, {
+              type: 'backend',
+              message: errorString,
+            })
+          }
+          if (
+            matchingFile &&
+            matchingFile.collection === CollectionType.Source
+          ) {
+            setError(`source_files.${matchingFile?.originalIndex}`, {
+              type: 'backend',
+              message: errorString,
+            })
+          }
+        })
+      }
+    },
+    [setError]
+  )
+
   const handleNewProjectSubmit = useCallback(
     async (payload: NewProjectPayload) => {
       try {
@@ -294,18 +282,30 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
         source_files: newSourceFiles,
       })
 
-      try {
-        if (!isEmpty(newFiles)) {
+      if (!isEmpty(newFiles)) {
+        try {
           await addBulkFiles(newFiles)
+        } catch (error) {
+          const typedError = error as AxiosError
+          const errors = typedError?.response?.data as ValidationError
+
+          mapProjectNewFilesErrors(errors, newFiles)
+          return
+          // Handle file adding errors
         }
+      }
+
+      try {
+        if (!isEmpty(actualPayload)) {
+          await updateProject(actualPayload)
+        }
+
         if (!isEmpty(deletedFiles)) {
           await deleteBulkFiles(deletedFiles)
         }
+
         if (!isEmpty(updatedFiles)) {
           await updateBulkFiles(updatedFiles)
-        }
-        if (!isEmpty(actualPayload)) {
-          await updateProject(actualPayload)
         }
         showNotification({
           type: NotificationTypes.Success,
@@ -322,10 +322,11 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
       dirtyFields,
       help_files,
       source_files,
-      t,
       addBulkFiles,
+      mapProjectNewFilesErrors,
       deleteBulkFiles,
       updateBulkFiles,
+      t,
       updateProject,
       mapProjectValidationErrors,
     ]
@@ -376,6 +377,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
       isLoading: isSubmitLoading,
       isValid,
       isDirty,
+      className: classes.formButtons,
     }),
     [
       handleSubmit,
@@ -437,14 +439,14 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
             control={control}
             isEditable={isRestEditable && isEditEnabled}
           />
-          <FormButtons
+          <ProjectFormButtons
             {...formButtonsProps}
             hidden={
               isNew || !isSomethingEditable || mode === ProjectDetailModes.View
             }
           />
         </Container>
-        <FormButtons
+        <ProjectFormButtons
           {...formButtonsProps}
           hidden={!isNew || !isSomethingEditable}
         />

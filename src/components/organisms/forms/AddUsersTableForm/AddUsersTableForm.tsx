@@ -194,6 +194,7 @@ const AddUsersTableForm: FC = () => {
           inputFileTypes={[InputFileTypes.Csv]}
           onDelete={onDeleteFile}
           allowMultiple={false}
+          storeLocally
         />
         <SubmitButton
           onClick={handleSubmit(onSubmit)}

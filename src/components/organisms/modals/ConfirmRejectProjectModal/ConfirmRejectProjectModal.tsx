@@ -17,7 +17,7 @@ import FileImport, {
   ProjectFileTypes,
 } from 'components/organisms/FileImport/FileImport'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-import { ValidationError } from 'api/errorHandler'
+import { ValidationError, showValidationErrorMessage } from 'api/errorHandler'
 import { join, map } from 'lodash'
 import { AxiosError } from 'axios'
 
@@ -129,6 +129,7 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
       } catch (error) {
         const typedError = error as AxiosError
         const typedErrorData = typedError?.response?.data as ValidationError
+        showValidationErrorMessage(typedErrorData)
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
             const typedKey = key as FieldPath<FormValues>
