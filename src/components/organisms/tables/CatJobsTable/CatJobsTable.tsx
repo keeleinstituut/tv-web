@@ -70,8 +70,10 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   isEditable,
 }) => {
   const { t } = useTranslation()
-  const { downloadXliff } = useDownloadXliffFile()
-  const { downloadTranslatedFile } = useDownloadTranslatedFile()
+  const { downloadXliff } = useDownloadXliffFile({ isZip: size(cat_files) > 1 })
+  const { downloadTranslatedFile } = useDownloadTranslatedFile({
+    isZip: size(cat_files) > 1,
+  })
 
   const handleOpenCatAnalysisModal = useCallback(() => {
     showModal(ModalTypes.CatAnalysis, {
