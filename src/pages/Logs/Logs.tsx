@@ -65,7 +65,7 @@ const dateTabs = [
 
 const Logs: FC = () => {
   const { t } = useTranslation()
-  const { minLengthValidator, dateTimeValidator } = useValidators()
+  const { minLengthValidator, timeRangePickerValidator } = useValidators()
   const {
     logsData,
     paginationData,
@@ -111,7 +111,7 @@ const Logs: FC = () => {
       showSeconds: true,
       icon: Alarm,
       rules: {
-        validate: dateTimeValidator,
+        validate: timeRangePickerValidator,
       },
     },
   ]
