@@ -72,7 +72,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile({ isZip: size(cat_files) > 1 })
   const { downloadTranslatedFile } = useDownloadTranslatedFile({
-    isZip: size(cat_files) > 1,
+    cat_files,
   })
 
   const handleOpenCatAnalysisModal = useCallback(() => {
