@@ -63,7 +63,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
     const sort_order = searchParams.get('sort_order') as 'asc' | 'desc'
     return {
       page: Number(searchParams.get('page')) || 1,
-      per_page: Number(searchParams.get('per_page')) || 15,
+      per_page: Number(searchParams.get('per_page')) || 10,
       ...(sort_by ? { sort_by } : {}),
       ...(sort_order ? { sort_order } : {}),
       lang_pair: parseLanguagePairs(searchParams),
@@ -398,6 +398,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
         className={classes.topSection}
         defaultPaginationData={defaultPaginationData}
         pageSizeOptions={[
+          { label: '10', value: '10' },
           { label: '15', value: '15' },
           { label: '50', value: '50' },
         ]}
