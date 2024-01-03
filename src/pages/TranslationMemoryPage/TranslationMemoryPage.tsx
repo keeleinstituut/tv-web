@@ -10,10 +10,12 @@ import {
 } from 'hooks/requests/useTranslationMemories'
 import useAuth from 'hooks/useAuth'
 import Loader from 'components/atoms/Loader/Loader'
+import { includes } from 'lodash'
+import { Privileges } from 'types/privileges'
 
 const TranslationMemoryPage: FC = () => {
   const { memoryId = '' } = useParams()
-  const { userInfo } = useAuth()
+  const { userInfo, userPrivileges } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
   const { translationMemory, isLoading } = useFetchTranslationMemory({
     id: memoryId,
@@ -43,7 +45,10 @@ const TranslationMemoryPage: FC = () => {
       />
       <TranslationMemorySubProjectsTable
         memoryId={memoryId}
-        hidden={!isTmOwnedByUserInstitution}
+        hidden={
+          !isTmOwnedByUserInstitution ||
+          !includes(userPrivileges, Privileges.ViewInstitutionProjectList)
+        }
       />
     </>
   )

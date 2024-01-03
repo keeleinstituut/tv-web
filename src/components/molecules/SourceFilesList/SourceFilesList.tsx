@@ -21,13 +21,14 @@ import DataTable, {
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { SourceFile, CatProjectStatus } from 'types/projects'
 import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
-
 import classes from './classes.module.scss'
 import { CollectionType, useHandleFiles } from 'hooks/requests/useFiles'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { AxiosError } from 'axios'
+import { showValidationErrorMessage, ValidationError } from 'api/errorHandler'
 
 // TODO: very similar to ProjectFilesList, these 2 can be unified
 
@@ -121,12 +122,18 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   const handleAdd = useCallback(
     async (files: (File | SourceFile)[]) => {
       const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
-      await addFiles(filteredFiles)
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.sub_project_files_added'),
-      })
+      try {
+        await addFiles(filteredFiles)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.sub_project_files_added'),
+        })
+      } catch (error) {
+        const typedError = error as AxiosError
+        const errors = typedError?.response?.data as ValidationError
+        showValidationErrorMessage(errors)
+      }
     },
     [addFiles, t]
   )

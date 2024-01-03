@@ -145,6 +145,7 @@ export const mapFilesForApi = ({
     const typeForThisFile = help_file_types?.[index]
     return {
       file,
+      originalIndex: index,
       collection: CollectionType.Help,
       ...(typeForThisFile
         ? {
@@ -156,9 +157,17 @@ export const mapFilesForApi = ({
 
   // 2.2. Collect all new files by checking for missing 'id' field
 
-  const newSourceFiles = filter(
+  const sourceFilesWithOriginalIndex = map(
     source_files,
-    (newSourceFile) => !('id' in newSourceFile)
+    (file, originalIndex) => ({
+      file,
+      originalIndex,
+    })
+  )
+
+  const newSourceFiles = filter(
+    sourceFilesWithOriginalIndex,
+    (newSourceFile) => !('id' in newSourceFile?.file)
   )
 
   const newHelpFiles = filter(
@@ -168,10 +177,14 @@ export const mapFilesForApi = ({
 
   // 2.3. Add collection to new source files
 
-  const newSourceFilesWithCollection = map(newSourceFiles, (file) => ({
-    file,
-    collection: CollectionType.Source,
-  }))
+  const newSourceFilesWithCollection = map(
+    newSourceFiles,
+    ({ originalIndex, file }) => ({
+      file,
+      collection: CollectionType.Source,
+      originalIndex,
+    })
+  )
 
   // 2.4. Combine new files
 

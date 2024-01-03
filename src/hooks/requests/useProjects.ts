@@ -345,9 +345,10 @@ export const useDownloadXliffFile = () => {
         { responseType: 'blob' }
       ),
     onSuccess: (data) => {
+      // TODO: could be zip as well
       downloadFile({
         data,
-        fileName: 'xliff',
+        fileName: 'xliff.xlf',
       })
     },
   })
@@ -366,9 +367,10 @@ export const useDownloadTranslatedFile = () => {
         { responseType: 'blob' }
       ),
     onSuccess: (data) => {
+      // TODO: could be zip as well
       downloadFile({
         data,
-        fileName: 'translatedFile',
+        fileName: 'translatedFile.txt',
       })
     },
   })
@@ -463,7 +465,7 @@ export const useExportProjects = () => {
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'projects',
+        fileName: 'projects.csv',
       })
     },
   })
