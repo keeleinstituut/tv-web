@@ -101,7 +101,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
     handleSortingChange: handleHistorySortingChange,
     handlePaginationChange: handleHistoryPaginationChange,
   } = useFetchHistoryTasks(
-    { disabled: type !== TaskTableTypes.HistoryTasks },
+    { disabled: type !== TaskTableTypes.HistoryTasks, ...initialFilters },
     true
   )
 

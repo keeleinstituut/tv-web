@@ -29,7 +29,7 @@ import TableHeaderGroup, {
   HeaderGroupFunctions,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { ResponseMetaTypes, PaginationFunctionType } from 'types/collective'
-import { size } from 'lodash'
+import { size, toNumber } from 'lodash'
 
 export enum TableSizeTypes {
   L = 'l',
@@ -111,7 +111,7 @@ const DataTable = <TData,>(
   ref: Ref<HTMLDivElement>
 ) => {
   const [horizontalWrapperId] = useState(useId())
-  const { last_page, current_page } = paginationData || {}
+  const { last_page, current_page, per_page } = paginationData || {}
   const [expanded, setExpanded] = useState<ExpandedState>({})
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: defaultPaginationData?.page || 0,
@@ -156,6 +156,12 @@ const DataTable = <TData,>(
     getSubRows: getSubRows,
     getExpandedRowModel: getExpandedRowModel(),
   })
+
+  useEffect(() => {
+    table.setPageSize(toNumber(per_page))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [per_page])
+
   if (hidden) {
     return null
   }
