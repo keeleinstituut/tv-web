@@ -104,6 +104,16 @@ const useValidators = () => {
     }
   }
 
+  const dateTimePickerValidator = (
+    value?: { date?: string; time?: string } | string
+  ) => {
+    if (typeof value === 'object' && Object.keys(value).length > 0) {
+      if (!timeInCorrectFormat(value?.time || '')) {
+        return t('error.work_time_format')
+      }
+    }
+  }
+
   const dateTimeValidator = (
     value?: { start?: string; end?: string } | string
   ) => {
@@ -152,6 +162,7 @@ const useValidators = () => {
     nameInputValidator,
     minLengthValidator,
     dateTimeValidator,
+    dateTimePickerValidator,
   }
 }
 

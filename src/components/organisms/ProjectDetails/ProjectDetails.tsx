@@ -209,6 +209,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
     formState: { isSubmitting, isValid, dirtyFields },
     setError,
   } = useForm<FormValues>({
+    mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })

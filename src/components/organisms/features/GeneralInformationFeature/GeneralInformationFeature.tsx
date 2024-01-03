@@ -41,6 +41,7 @@ import {
 } from 'helpers'
 import { ClassifierValue } from 'types/classifierValues'
 import dayjs from 'dayjs'
+import useValidators from 'hooks/useValidators'
 
 // TODO: this is WIP code for subProject view
 
@@ -82,6 +83,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   project_id,
 }) => {
   const { t } = useTranslation()
+  const { dateTimePickerValidator } = useValidators()
   const { deadline_at: projectDeadlineAt, status: projectStatus } =
     useProjectCache(project_id) || {}
   const { updateSubProject, isLoading } = useUpdateSubProject({
@@ -156,14 +158,23 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const handleChangeDeadline = useCallback(
     (value: { date: string; time: string }) => {
-      const formattedDateTime = getUtcDateStringFromLocalDateObject(value)
-      // const isDeadLineChanged = !isEqual(formattedDeadline, formattedDateTime)
+      const { date, time } = value
+      const { date: prevDate, time: prevTime } =
+        defaultValues?.deadline_at || {}
+      if (
+        !date ||
+        (date === prevDate && time === prevTime) ||
+        dateTimePickerValidator(value)
+      ) {
+        return false
+      }
 
+      const formattedDateTime = getUtcDateStringFromLocalDateObject(value)
       updateSubProject({
         deadline_at: formattedDateTime,
       })
     },
-    [updateSubProject]
+    [defaultValues?.deadline_at, updateSubProject, dateTimePickerValidator]
   )
 
   const subProjectLangPair = useMemo(() => {
