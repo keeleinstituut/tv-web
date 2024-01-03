@@ -59,6 +59,7 @@ export interface AssignmentPayload {
   volumes?: VolumeValue[]
   comments?: string
   deadline_at?: string
+  event_start_at?: string
 }
 
 export enum VolumeUnits {
