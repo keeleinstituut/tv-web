@@ -6,6 +6,7 @@ import {
   find,
   flatMap,
   groupBy,
+  includes,
   isEmpty,
   isEqual,
   join,
@@ -381,10 +382,12 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
                     fieldName === 'dst_lang_classifier_value_id' ||
                     fieldName === 'src_lang_classifier_value_id'
                   ) {
-                    setError(`${languageDirectionKey}.${fieldName}`, {
-                      type: 'backend',
-                      message: errorString,
-                    })
+                    if (!find(errors, (_, key) => includes(key, 'skill_id'))) {
+                      setError(`${languageDirectionKey}.${fieldName}`, {
+                        type: 'backend',
+                        message: errorString,
+                      })
+                    }
                   } else if (fieldName === 'skill_id') {
                     setError(
                       `${languageDirectionKey}.priceObject.${
@@ -395,7 +398,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
                         message: errorString,
                       }
                     )
-                  } else {
+                  } else if (fieldName !== 'vendor_id') {
                     setError(
                       `${languageDirectionKey}.priceObject.${
                         erroredPrices?.[toNumber(arrayIndex)]?.skill_id

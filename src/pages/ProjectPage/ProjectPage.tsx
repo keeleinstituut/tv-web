@@ -38,6 +38,10 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
   const { tasks, isLoading, refetch } = useFetchTasks({
     project_id: projectId,
     task_type: TaskType.ClientReview,
+    disabled: !includes(
+      [ProjectStatus.Corrected, ProjectStatus.SubmittedToClient],
+      status
+    ),
   })
   const {
     tasks: correctingTasks,
@@ -46,6 +50,7 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
   } = useFetchTasks({
     project_id: projectId,
     task_type: TaskType.Correcting,
+    disabled: status !== ProjectStatus.Rejected,
   })
 
   const { completeTask, isLoading: isCompletingTask } = useCompleteTask({

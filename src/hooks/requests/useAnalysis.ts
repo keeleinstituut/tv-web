@@ -44,7 +44,7 @@ export const useDownloadCatAnalysisFetch = ({
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'analysis',
+        fileName: 'analysis.txt',
       })
     },
   })

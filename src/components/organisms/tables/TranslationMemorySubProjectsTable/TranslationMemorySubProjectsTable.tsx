@@ -38,6 +38,7 @@ const TranslationMemorySubProjectsTable: FC<TmSubProjectsTypes> = ({
       id: memoryId,
       initialFilters: initialFilters,
       saveQueryParams: true,
+      disabled: hidden,
     })
 
   const defaultPaginationData = {

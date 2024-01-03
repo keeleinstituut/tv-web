@@ -31,6 +31,7 @@ import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjec
 import { ConfirmCompleteTaskModalProps } from './ConfirmCompleteTaskModal/ConfirmCompleteTaskModal'
 import { ConfirmSendToPreviousTaskModalProps } from './ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal'
 import { EditVendorPricesModalProps } from './EditVendorPricesModal/EditVendorPricesModal'
+import { ConfirmAssignmentFinishedModalProps } from './ConfirmAssignmentFinishedModal/ConfirmAssignmentFinishedModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -117,6 +118,11 @@ const EditVendorPricesModal = lazy(
   () => import('./EditVendorPricesModal/EditVendorPricesModal')
 )
 
+const ConfirmAssignmentFinishedModal = lazy(
+  () =>
+    import('./ConfirmAssignmentFinishedModal/ConfirmAssignmentFinishedModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -143,6 +149,7 @@ export enum ModalTypes {
   ConfirmCompleteTask = 'confirmCompleteTask',
   ConfirmSendToPreviousTask = 'confirmSendToPreviousTask',
   EditVendorPrices = 'editVendorPrices',
+  ConfirmAssignmentFinished = 'confirmAssignmentFinished',
 }
 
 // Add other modal props types here as well
@@ -171,6 +178,7 @@ type ModalPropTypes =
   | Omit<ConfirmCompleteTaskModalProps, 'closeModal'>
   | Omit<ConfirmSendToPreviousTaskModalProps, 'closeModal'>
   | Omit<EditVendorPricesModalProps, 'closeModal'>
+  | Omit<ConfirmAssignmentFinishedModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -198,6 +206,7 @@ const MODALS = {
   [ModalTypes.ConfirmCompleteTask]: ConfirmCompleteTaskModal,
   [ModalTypes.ConfirmSendToPreviousTask]: ConfirmSendToPreviousTaskModal,
   [ModalTypes.EditVendorPrices]: EditVendorPricesModal,
+  [ModalTypes.ConfirmAssignmentFinished]: ConfirmAssignmentFinishedModal,
 }
 
 interface RefType {

@@ -15,6 +15,8 @@ import {
   identity,
   join,
   replace,
+  includes,
+  filter,
 } from 'lodash'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
@@ -123,18 +125,25 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const { addAssignmentVolume } = useAssignmentAddVolume({
-    subProjectId: sub_project_id,
-  })
-  const { addAssignmentCatVolume } = useAssignmentAddCatVolume({
-    subProjectId: sub_project_id,
-  })
-  const { editAssignmentVolume } = useAssignmentEditVolume({
-    subProjectId: sub_project_id,
-  })
-  const { editAssignmentCatVolume } = useAssignmentEditCatVolume({
-    subProjectId: sub_project_id,
-  })
+  const { addAssignmentVolume, isLoading: isAddingVolume } =
+    useAssignmentAddVolume({
+      subProjectId: sub_project_id,
+    })
+  const { addAssignmentCatVolume, isLoading: isAddingCatVolume } =
+    useAssignmentAddCatVolume({
+      subProjectId: sub_project_id,
+    })
+  const { editAssignmentVolume, isLoading: isEditingVolume } =
+    useAssignmentEditVolume({
+      subProjectId: sub_project_id,
+    })
+  const { editAssignmentCatVolume, isLoading: isEditingCatVolume } =
+    useAssignmentEditCatVolume({
+      subProjectId: sub_project_id,
+    })
+
+  const isLoading =
+    isAddingVolume || isAddingCatVolume || isEditingVolume || isEditingCatVolume
 
   const catAnalysisAmounts = useMemo(() => {
     const relevantValues = pick(volume_analysis, values(CatAnalysisVolumes))
@@ -155,7 +164,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     setValue,
     reset,
     setError,
-    formState: { isValid, isSubmitting },
+    formState: { isValid },
   } = useForm<FormValues>({
     mode: 'onChange',
     defaultValues: {
@@ -240,10 +249,13 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unit_fee, unit_quantity])
 
-  const priceUnitOptions = map(PriceUnits, (unit) => ({
-    label: t(`label.${unit}`),
-    value: unit,
-  }))
+  const priceUnitOptions = filter(
+    map(PriceUnits, (unit) => ({
+      label: t(`label.${unit}`),
+      value: unit,
+    })),
+    ({ value }) => value !== PriceUnits.MinimalFee
+  )
 
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
@@ -364,22 +376,25 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
-            const errorKey = replace(
-              key,
-              'custom_volume_analysis.',
-              ''
-            ) as CatAnalysisVolumes
-            const typedKey =
-              `${analysisVolumeByDiscountPercentage[errorKey]}_amount` as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
-            setError(typedKey, { type: 'backend', message: errorString })
+            if (includes(['unit', 'unit_fee', 'unit_quantity'], key)) {
+              setError(key as FieldPath<FormValues>, {
+                type: 'backend',
+                message: errorString,
+              })
+            } else {
+              const errorKey = replace(
+                key,
+                'custom_volume_analysis.',
+                ''
+              ) as CatAnalysisVolumes
+              const typedKey =
+                `${analysisVolumeByDiscountPercentage[errorKey]}_amount` as FieldPath<FormValues>
+
+              setError(typedKey, { type: 'backend', message: errorString })
+            }
           })
         }
-        // TODO: need to map errors to form
-        showNotification({
-          type: NotificationTypes.Error,
-          title: t('notification.error'),
-        })
       }
     },
     [addAssignmentCatVolume, addAssignmentVolume, onChangeValue, setError, t]
@@ -416,22 +431,25 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
           map(typedErrorData.errors, (errorsArray, key) => {
-            const errorKey = replace(
-              key,
-              'custom_volume_analysis.',
-              ''
-            ) as CatAnalysisVolumes
-            const typedKey =
-              `${analysisVolumeByDiscountPercentage[errorKey]}_amount` as FieldPath<FormValues>
             const errorString = join(errorsArray, ',')
-            setError(typedKey, { type: 'backend', message: errorString })
+            if (includes(['unit', 'unit_fee', 'unit_quantity'], key)) {
+              setError(key as FieldPath<FormValues>, {
+                type: 'backend',
+                message: errorString,
+              })
+            } else {
+              const errorKey = replace(
+                key,
+                'custom_volume_analysis.',
+                ''
+              ) as CatAnalysisVolumes
+              const typedKey =
+                `${analysisVolumeByDiscountPercentage[errorKey]}_amount` as FieldPath<FormValues>
+
+              setError(typedKey, { type: 'backend', message: errorString })
+            }
           })
         }
-        // TODO: need to map errors to form
-        showNotification({
-          type: NotificationTypes.Error,
-          title: t('notification.error'),
-        })
       }
     },
     [
@@ -510,12 +528,12 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       {...rest}
       handleProceed={handleSubmit(onSubmit)}
       cancelButtonContent={t('button.close')}
-      cancelButtonDisabled={isSubmitting}
+      cancelButtonDisabled={isLoading}
       proceedButtonContent={
         mode === ProjectDetailModes.View ? undefined : t('button.confirm')
       }
       proceedButtonDisabled={!isValid}
-      proceedButtonLoading={isSubmitting}
+      proceedButtonLoading={isLoading}
       proceedButtonHidden={mode === ProjectDetailModes.View}
       className={classes.modalContainer}
       title={title}

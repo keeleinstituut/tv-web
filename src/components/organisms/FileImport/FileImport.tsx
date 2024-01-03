@@ -1,12 +1,4 @@
-import {
-  FC,
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  Fragment,
-  MouseEvent,
-} from 'react'
+import { FC, useState, useRef, useEffect, useCallback, MouseEvent } from 'react'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -174,6 +166,7 @@ interface SharedImportProps {
   hidden?: boolean
   size?: SizeTypes
   listContainerClassName?: string
+  storeLocally?: boolean
 }
 
 type SingleSelectProps = {
@@ -204,6 +197,7 @@ const FileImport: FC<FileImportProps> = ({
   hidden,
   size,
   listContainerClassName,
+  storeLocally,
   ...rest
 }) => {
   const [localFiles, setFiles] = useState<File[]>(files || [])
@@ -278,10 +272,18 @@ const FileImport: FC<FileImportProps> = ({
         ? [...localFiles, ...newFiles]
         : newFiles
       onChangeHandler(filesToSave)
-      setFiles(filesToSave)
+      if (storeLocally) {
+        setFiles(filesToSave)
+      }
       setDragAndDropOpen(!isDragAndDropOpen)
     },
-    [isDragAndDropOpen, isFilesListHidden, localFiles, onChangeHandler]
+    [
+      isDragAndDropOpen,
+      isFilesListHidden,
+      localFiles,
+      onChangeHandler,
+      storeLocally,
+    ]
   )
 
   if (hidden) return null
