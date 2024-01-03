@@ -280,17 +280,19 @@ export const useFetchTranslationMemorySubProjects = ({
   id,
   initialFilters,
   saveQueryParams,
+  disabled,
 }: {
   id?: string
   initialFilters?: PaginationFunctionType
   saveQueryParams?: boolean
+  disabled?: boolean
 }) => {
   const { filters, handlePaginationChange } =
     useFilters<TranslationMemoryFilters>(initialFilters, saveQueryParams)
 
   const { isLoading, isError, isFetching, data } =
     useQuery<SubProjectsResponse>({
-      enabled: !!id,
+      enabled: !!id && !disabled,
       queryKey: ['tm-subProjects', id, filters],
       queryFn: () =>
         apiClient.get(`${endpoints.TM_SUB_PROJECTS}/${id}`, filters),
