@@ -158,7 +158,9 @@ const DataTable = <TData,>(
   })
 
   useEffect(() => {
-    table.setPageSize(toNumber(per_page))
+    if (per_page) {
+      table.setPageSize(toNumber(per_page))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [per_page])
 
