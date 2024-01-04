@@ -275,7 +275,9 @@
     "unknown_authentication_error": "Teadmata viga",
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
     "token_will_expire_soon": "Sessioon aegub tegevusetuse tõttu {{time_left}} minuti pärast",
-    "work_time_format": "Tööaeg peab olema HH:MM formaadis"
+    "work_time_format": "Tööaeg peab olema HH:MM formaadis",
+    "time_range_format": "Ajavahemik peab olema HH:MM:SS formaadis",
+    "deadline_time_format": "Tähtaeg peab olema HH:MM:SS formaadis"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks",

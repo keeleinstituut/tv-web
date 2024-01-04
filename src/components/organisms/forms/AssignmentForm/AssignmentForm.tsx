@@ -26,6 +26,7 @@ import { Price } from 'types/price'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import useValidators from 'hooks/useValidators'
 
 dayjs.extend(utc)
 
@@ -53,6 +54,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
   isAssignmentFinished,
 }) => {
   const { t } = useTranslation()
+  const { dateTimePickerValidator } = useValidators()
   const {
     deadline_at,
     event_start_at,
@@ -157,14 +159,23 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       const { date, time } = value
       const { date: prevDate, time: prevTime } =
         defaultValues?.deadline_at || {}
-      if (!date || (date === prevDate && time === prevTime)) return false
+      if (
+        !date ||
+        (date === prevDate && time === prevTime) ||
+        dateTimePickerValidator(value)
+      )
+        return false
 
       handleUpdateAssignment({
         deadline_at: getUtcDateStringFromLocalDateObject(value),
       })
     },
 
-    [defaultValues?.deadline_at, handleUpdateAssignment]
+    [
+      defaultValues?.deadline_at,
+      handleUpdateAssignment,
+      dateTimePickerValidator,
+    ]
   )
 
   const handleAddStartTime = useCallback(
@@ -174,7 +185,12 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         defaultValues?.deadline_at || {}
       const { date: prevDate, time: prevTime } =
         defaultValues?.event_start_at || {}
-      if (!date || (date === prevDate && time === prevTime)) return false
+      if (
+        !date ||
+        (date === prevDate && time === prevTime) ||
+        dateTimePickerValidator(value)
+      )
+        return false
 
       handleUpdateAssignment({
         ...(deadlineDate
@@ -193,6 +209,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       defaultValues?.deadline_at,
       defaultValues?.event_start_at,
       handleUpdateAssignment,
+      dateTimePickerValidator,
     ]
   )
 
