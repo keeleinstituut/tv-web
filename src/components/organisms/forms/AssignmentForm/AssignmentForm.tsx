@@ -209,6 +209,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       defaultValues?.deadline_at,
       defaultValues?.event_start_at,
       handleUpdateAssignment,
+      dateTimePickerValidator,
     ]
   )
 
