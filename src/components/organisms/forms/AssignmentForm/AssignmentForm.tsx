@@ -178,6 +178,35 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     ]
   )
 
+  const handleAddStartTime = useCallback(
+    (value: { date: string; time: string }) => {
+      const { date, time } = value
+      const { date: deadlineDate, time: deadlineTime } =
+        defaultValues?.deadline_at || {}
+      const { date: prevDate, time: prevTime } =
+        defaultValues?.event_start_at || {}
+      if (!date || (date === prevDate && time === prevTime)) return false
+
+      handleUpdateAssignment({
+        ...(deadlineDate
+          ? {
+              deadline_at: getUtcDateStringFromLocalDateObject({
+                date: deadlineDate,
+                time: deadlineTime,
+              }),
+            }
+          : {}),
+        event_start_at: getUtcDateStringFromLocalDateObject(value),
+      })
+    },
+
+    [
+      defaultValues?.deadline_at,
+      defaultValues?.event_start_at,
+      handleUpdateAssignment,
+    ]
+  )
+
   const handleAddComment = useCallback(
     (value: string) => {
       const isCommentChanged = !isEqual(value, comments)
@@ -220,6 +249,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         className: classes.customInternalClass,
         name: 'event_start_at',
         maxDate: dayjs(subProjectDeadline).toDate(),
+        onDateTimeChange: handleAddStartTime,
         disabled: !isEditable || isAssignmentFinished,
       },
       {
@@ -267,6 +297,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       isEditable,
       isAssignmentFinished,
       shouldShowStartTimeFields,
+      handleAddStartTime,
       id,
       handleAddComment,
       catSupported,

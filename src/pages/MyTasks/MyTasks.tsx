@@ -24,7 +24,7 @@ const MyTasks: FC = () => {
     (newActiveTab: string | undefined) => {
       setActiveTab(newActiveTab)
       setSearchParams({
-        per_page: '15',
+        per_page: '10',
         page: '1',
       })
     },

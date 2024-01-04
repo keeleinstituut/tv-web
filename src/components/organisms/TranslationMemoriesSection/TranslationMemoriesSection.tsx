@@ -154,12 +154,14 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
 }: TranslationMemoriesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { translationMemories = [] } = useFetchTranslationMemories({
-    disabled: isVendor,
+    disabled: isVendor || hidden,
     key: 'sectionKey',
   })
   const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys({ subProjectId })
   const { toggleTmWritable } = useToggleTmWritable({ subProjectId })
-  const { tmChunkAmounts } = useFetchTmChunkAmounts({ disabled: isVendor })
+  const { tmChunkAmounts } = useFetchTmChunkAmounts({
+    disabled: isVendor || hidden,
+  })
   const { userInfo } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
 

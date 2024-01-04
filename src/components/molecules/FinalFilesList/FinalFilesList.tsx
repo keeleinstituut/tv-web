@@ -29,7 +29,7 @@ import { SourceFile, SubProjectFeatures } from 'types/projects'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
 import classes from './classes.module.scss'
-import { showValidationErrorMessage } from 'api/errorHandler'
+import { showValidationErrorMessage, ValidationError } from 'api/errorHandler'
 import {
   ModalTypes,
   closeModal,
@@ -40,6 +40,7 @@ import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectD
 import { useSendSubProjectFinalFiles } from 'hooks/requests/useProjects'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { AxiosError } from 'axios'
 interface FinalFilesListProps<TFormValues extends FieldValues> {
   title: string
   name: string
@@ -111,8 +112,14 @@ const FinalFilesList = <TFormValues extends FieldValues>({
 
   const handleAdd = useCallback(
     async (files: (File | SourceFile)[]) => {
-      const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
-      await addFiles(filteredFiles)
+      try {
+        const filteredFiles = filter(files, (f) => !('id' in f)) as File[]
+        await addFiles(filteredFiles)
+      } catch (error) {
+        const typedError = error as AxiosError
+        const errors = typedError?.response?.data as ValidationError
+        showValidationErrorMessage(errors)
+      }
     },
     [addFiles]
   )

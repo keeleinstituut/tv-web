@@ -13,6 +13,7 @@ import InputWrapper, {
 } from 'components/molecules/InputWrapper/InputWrapper'
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './classes.module.scss'
+import useModalContext from 'hooks/useModalContext'
 
 type DatePickerComponentProps = {
   ariaLabel?: string
@@ -88,6 +89,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
   function DatePickerInput(props, ref) {
     const { label, name, error, className, errorZIndex, id, ...rest } = props
     const newRef = useRef(null)
+    const { modalContentId } = useModalContext()
 
     return (
       <InputWrapper
@@ -97,7 +99,10 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         className={className}
         errorZIndex={errorZIndex}
         ref={newRef}
-        wrapperClass={classes.datePickerWrapper}
+        wrapperClass={classNames(
+          classes.datePickerWrapper,
+          !!modalContentId && classes.increasedZIndex
+        )}
       >
         <DatePickerComponent name={name} id={id} {...rest} />
       </InputWrapper>

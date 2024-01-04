@@ -14,6 +14,7 @@ import {
   Path,
   useController,
   useWatch,
+  Controller,
 } from 'react-hook-form'
 import {
   DropDownOptions,
@@ -34,6 +35,8 @@ import { SourceFile } from 'types/projects'
 import { CollectionType, useHandleFiles } from 'hooks/requests/useFiles'
 import { HelperFileTypes } from 'types/classifierValues'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import ErrorPlaceHolder from 'components/molecules/ErrorPlaceHolder/ErrorPlaceHolder'
+
 interface ProjectFilesListProps<TFormValues extends FieldValues> {
   title: string
   typeOptions?: DropDownOptions[]
@@ -147,6 +150,27 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
   const columns = [
     columnHelper.accessor('name', {
       header: () => t('label.name'),
+      cell: ({ column, getValue, row }) => {
+        const errorZIndex = size(filesData) - column.depth
+        return (
+          <Controller
+            name={`${name}.${row.original.delete_button}` as Path<TFormValues>}
+            control={control}
+            render={({ fieldState: { error } }) => {
+              return (
+                <ErrorPlaceHolder
+                  name={`${name}.${row.original.delete_button}`}
+                  errorZIndex={errorZIndex}
+                  error={error}
+                >
+                  <span>{getValue()}</span>
+                </ErrorPlaceHolder>
+              )
+            }}
+          />
+        )
+        return null
+      },
       footer: (info) => info.column.id,
     }),
     columnHelper.accessor('help_file_types', {

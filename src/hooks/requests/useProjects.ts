@@ -16,10 +16,11 @@ import {
   ProjectDetail,
   SendFinalFilesPayload,
   ExportProjectsPayload,
+  SourceFile,
 } from 'types/projects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
-import { find, includes, map } from 'lodash'
+import { find, includes, map, size } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
@@ -335,7 +336,7 @@ export const useMergeCatJobs = () => {
   }
 }
 
-export const useDownloadXliffFile = () => {
+export const useDownloadXliffFile = ({ isZip }: { isZip: boolean }) => {
   const { mutateAsync: downloadXliff, isLoading } = useMutation({
     mutationKey: ['xliff'],
     mutationFn: (sub_project_id: string) =>
@@ -347,7 +348,7 @@ export const useDownloadXliffFile = () => {
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'xliff',
+        fileName: `xliff.${isZip ? 'zip' : 'xlf'}`,
       })
     },
   })
@@ -356,7 +357,11 @@ export const useDownloadXliffFile = () => {
     downloadXliff,
   }
 }
-export const useDownloadTranslatedFile = () => {
+export const useDownloadTranslatedFile = ({
+  cat_files,
+}: {
+  cat_files?: SourceFile[]
+}) => {
   const { mutateAsync: downloadTranslatedFile, isLoading } = useMutation({
     mutationKey: ['translated'],
     mutationFn: (sub_project_id: string) =>
@@ -366,9 +371,12 @@ export const useDownloadTranslatedFile = () => {
         { responseType: 'blob' }
       ),
     onSuccess: (data) => {
+      const isZip = size(cat_files) > 1
+      const singleFileName = cat_files?.[0].file_name || 'xliff.xlf'
+
       downloadFile({
         data,
-        fileName: 'translatedFile',
+        fileName: isZip ? 'translatedFiles.zip' : singleFileName,
       })
     },
   })
@@ -463,7 +471,7 @@ export const useExportProjects = () => {
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'projects',
+        fileName: 'projects.csv',
       })
     },
   })

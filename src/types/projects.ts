@@ -318,6 +318,7 @@ export interface PotentialFilePayload {
   type?: string
   file?: File | SourceFile
   help_file_type?: HelperFileTypes
+  originalIndex?: number
 }
 
 export interface ExportProjectsPayload {

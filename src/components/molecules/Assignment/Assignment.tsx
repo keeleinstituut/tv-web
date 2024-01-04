@@ -66,23 +66,17 @@ const Assignment: FC<AssignmentProps> = ({
   const feature = job_definition.job_key
   const skill_id = job_definition.skill_id
 
-  const handleMarkAssignmentAsFinished = useCallback(async () => {
-    try {
-      await completeAssignment({})
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.task_finished'),
-      })
-    } catch (errorData) {
-      showValidationErrorMessage(errorData)
-    }
-  }, [completeAssignment, t])
-
   const selectedVendorsIds = map(candidates, 'vendor.id')
 
   const openConfirmAssignmentCompletion = useCallback(() => {
     showModal(ModalTypes.ConfirmAssignmentCompletion, {
+      sub_project_id,
+      id,
+    })
+  }, [id, sub_project_id])
+
+  const openConfirmAssignmentFinished = useCallback(() => {
+    showModal(ModalTypes.ConfirmAssignmentFinished, {
       sub_project_id,
       id,
     })
@@ -194,7 +188,7 @@ const Assignment: FC<AssignmentProps> = ({
           loading={isCompletingAssignment}
           onClick={
             feature !== SubProjectFeatures.JobOverview
-              ? handleMarkAssignmentAsFinished
+              ? openConfirmAssignmentFinished
               : openConfirmAssignmentCompletion
           }
         />
