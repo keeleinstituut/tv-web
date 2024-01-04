@@ -59,7 +59,21 @@ const handleError = async (error?: AxiosError) => {
   if (typeof error === 'string') {
     errorContent = error
   } else if (genericErrorMessage) {
-    errorContent = genericErrorMessage
+    if (typeof genericErrorMessage === 'string') {
+      errorContent = genericErrorMessage
+    } else {
+      const typedGenericErrorMessage = genericErrorMessage as Record<
+        string,
+        string
+      >
+      errorContent = (
+        <>
+          {map(typedGenericErrorMessage, (error, index) => (
+            <span key={index}>{error}</span>
+          ))}
+        </>
+      )
+    }
   } else if (!isEmpty(mappedErrors)) {
     // Normally these are field specific errors
     // Currently we are assuming that there will be some generic error message together with these
