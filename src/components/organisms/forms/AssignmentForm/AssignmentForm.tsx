@@ -185,7 +185,12 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         defaultValues?.deadline_at || {}
       const { date: prevDate, time: prevTime } =
         defaultValues?.event_start_at || {}
-      if (!date || (date === prevDate && time === prevTime)) return false
+      if (
+        !date ||
+        (date === prevDate && time === prevTime) ||
+        dateTimePickerValidator(value)
+      )
+        return false
 
       handleUpdateAssignment({
         ...(deadlineDate
