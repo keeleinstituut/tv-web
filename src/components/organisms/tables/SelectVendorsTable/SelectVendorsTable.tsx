@@ -62,7 +62,6 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   skill_id?: string
   selectedVendorsIds?: string[]
 }
-
 interface PricesTableRow {
   selected: string
   alert_icon?: boolean
@@ -92,6 +91,8 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   skill_id: taskSkillId,
   control,
   selectedVendorsIds,
+  source_language_classifier_value_id,
+  destination_language_classifier_value_id,
 }: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
   // const { tagsFilters = [] } = useFetchTags({
@@ -105,10 +106,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
     // tag_id,
   } = filters || {}
 
-  const srcLangId = lang_pair?.[0]?.src || ''
-  const dstLangId = lang_pair?.[0]?.dst || ''
-
-  const matchingLanguageString = `${srcLangId}_${dstLangId}`
+  const matchingLanguageString = `${source_language_classifier_value_id}_${destination_language_classifier_value_id}`
 
   // To populate dropdown
   const {
@@ -146,11 +144,11 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           const languageDirection = `${source_language_classifier_value.value} > ${destination_language_classifier_value.value}`
 
           const tagNames = map(tags, 'name')
-          const typedSrc = (srcLangId || '') as string
-          const typedDst = (dstLangId || '') as string
           const priceLanguageMatch =
-            source_language_classifier_value.id === typedSrc &&
-            destination_language_classifier_value.id === typedDst
+            source_language_classifier_value.id ===
+              source_language_classifier_value_id &&
+            destination_language_classifier_value.id ===
+              destination_language_classifier_value_id
 
           // TODO: missing currently
           // const working_times = []
@@ -186,7 +184,12 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           }
         }
       ),
-    [data, dstLangId, srcLangId, taskSkillId]
+    [
+      data,
+      destination_language_classifier_value_id,
+      source_language_classifier_value_id,
+      taskSkillId,
+    ]
   )
 
   const handleModifiedFilterChange = useCallback(
