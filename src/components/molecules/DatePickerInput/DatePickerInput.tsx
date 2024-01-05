@@ -48,8 +48,13 @@ const DatePickerComponent = ({
   id,
   ...rest
 }: DatePickerComponentProps) => {
-  const handleDateChange: ReactDatePickerProps['onChange'] = (value) =>
-    onChange(changeDateToString(value))
+  const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
+    if (value) {
+      onChange(changeDateToString(value))
+    } else {
+      onChange('')
+    }
+  }
 
   const convertedValue = dayjs(value, 'DD/MM/YYYY')
   const splittedDayValue = convertedValue?.format('YYYY-MM-DD')
