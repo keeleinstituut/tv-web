@@ -13,6 +13,7 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { TypesWithStartTime } from 'types/projects'
+import useValidators from 'hooks/useValidators'
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
@@ -27,6 +28,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
   workflow_started,
 }: DetailsSectionProps<TFormValues>) => {
   const { t } = useTranslation()
+  const { dateTimePickerValidator } = useValidators()
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
   })
@@ -133,6 +135,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         emptyDisplayText: '-',
         rules: {
           required: true,
+          validate: dateTimePickerValidator,
         },
       },
       // TODO: not sure if comment field is correct for this
@@ -202,6 +205,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
       selectedProjectType?.value,
       selectedProjectType?.project_type_config?.is_start_date_supported,
       languageFilters,
+      dateTimePickerValidator,
     ]
   )
 

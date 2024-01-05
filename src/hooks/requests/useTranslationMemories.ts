@@ -234,7 +234,7 @@ export const useExportTMX = () => {
     onSuccess: (data) => {
       downloadFile({
         data,
-        fileName: 'translation_memory.tmx',
+        fileName: 'translation_memory.zip',
       })
     },
   })

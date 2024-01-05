@@ -104,7 +104,16 @@ const useValidators = () => {
     }
   }
 
-  const dateTimeValidator = (
+  const dateTimePickerValidator = (value?: {
+    date?: string
+    time?: string
+  }) => {
+    if (!timeInCorrectFormat(value?.time || '')) {
+      return t('error.deadline_time_format')
+    }
+  }
+
+  const timeRangePickerValidator = (
     value?: { start?: string; end?: string } | string
   ) => {
     if (typeof value === 'object' && Object.keys(value).length > 0) {
@@ -112,7 +121,7 @@ const useValidators = () => {
         !timeInCorrectFormat(value?.start || '') ||
         !timeInCorrectFormat(value?.end || '')
       ) {
-        return t('error.work_time_format')
+        return t('error.time_range_format')
       }
     }
   }
@@ -151,7 +160,8 @@ const useValidators = () => {
     priceValidator,
     nameInputValidator,
     minLengthValidator,
-    dateTimeValidator,
+    timeRangePickerValidator,
+    dateTimePickerValidator,
   }
 }
 

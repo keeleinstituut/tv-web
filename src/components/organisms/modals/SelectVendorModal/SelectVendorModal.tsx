@@ -239,6 +239,12 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         selectedVendorsIds={selectedVendorsIds}
         filters={filters}
         skill_id={skill_id}
+        source_language_classifier_value_id={
+          source_language_classifier_value_id
+        }
+        destination_language_classifier_value_id={
+          destination_language_classifier_value_id
+        }
         control={control}
         hidden={isLoadingPrices}
       />
