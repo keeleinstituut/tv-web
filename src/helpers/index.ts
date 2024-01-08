@@ -11,6 +11,7 @@ import {
   reduce,
   replace,
   split,
+  toLower,
   trim,
   uniqBy,
   values,
@@ -284,3 +285,6 @@ export const stringifyLanguagePairs = (lang_pairs: LanguagePairType[]) => {
   })
   return formatted_lang_pairs
 }
+
+export const escapeSearchString = (searchString: string) =>
+  toLower(searchString).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')

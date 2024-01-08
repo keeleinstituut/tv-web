@@ -11,7 +11,7 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { isEmpty, keys, map, pickBy, reduce } from 'lodash'
+import { find, isEmpty, keys, map, pickBy, reduce } from 'lodash'
 import { useCompleteAssignment } from 'hooks/requests/useAssignments'
 import { useSubProjectCache } from 'hooks/requests/useProjects'
 
@@ -32,23 +32,26 @@ const ConfirmAssignmentCompletionModal: FC<
   const subProject = useSubProjectCache(sub_project_id)
 
   // const { subProject } = useFetchSubProject({ id: sub_project_id })
-  const { final_files, final_file_id } = subProject || {}
-  const { control, handleSubmit } = useForm<FormValues>({
+  const { final_files } = subProject || {}
+  const { control, handleSubmit, watch } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: {
       selected_final_files: reduce(
-        final_file_id || [],
-        (result, id) => {
-          if (!id) return result
+        final_files || [],
+        (result, file) => {
+          if (!file) return result
           return {
             ...result,
-            [id]: true,
+            [file?.id]: !!file?.is_project_final_file,
           }
         },
         {}
       ),
     },
   })
+
+  const selectedFiles = watch('selected_final_files')
+  const anySelected = find(selectedFiles, (isSelected) => !!isSelected)
 
   const { completeAssignment, isLoading: isCompletingAssignment } =
     useCompleteAssignment({
@@ -86,9 +89,6 @@ const ConfirmAssignmentCompletionModal: FC<
         placeholder: t('placeholder.pick'),
         label: name,
         name: `selected_final_files.${id}`,
-        rules: {
-          required: true,
-        },
       })),
     [final_files, t]
   )
@@ -98,7 +98,7 @@ const ConfirmAssignmentCompletionModal: FC<
       title={t('modal.pick_files_to_forward')}
       cancelButtonContent={t('button.quit_alt')}
       proceedButtonContent={t('button.send')}
-      proceedButtonDisabled={isEmpty(final_files)}
+      proceedButtonDisabled={isEmpty(final_files) || !anySelected}
       handleProceed={handleSubmit(onSubmit)}
       proceedButtonLoading={isCompletingAssignment}
       helperText={t('modal.forward_files_helper')}

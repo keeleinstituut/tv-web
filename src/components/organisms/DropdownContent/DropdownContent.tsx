@@ -28,6 +28,7 @@ import TextInput from 'components/molecules/TextInput/TextInput'
 import { createPortal } from 'react-dom'
 import useTableContext from 'hooks/useTableContext'
 import useModalContext from 'hooks/useModalContext'
+import { escapeSearchString } from 'helpers'
 
 interface DropdownContentComponentProps extends SelectionControlsInputProps {
   isOpen?: boolean
@@ -131,7 +132,8 @@ const DropdownContentComponent = forwardRef<
     if (onSearch || !searchValue) {
       return optionsToUse
     }
-    const regexPattern = new RegExp(searchValue, 'i')
+    // Doing this search for some reason ?
+    const regexPattern = new RegExp(escapeSearchString(searchValue), 'i')
     return filter(optionsToUse, ({ label }) => regexPattern.test(label))
   }, [onSearch, optionsToUse, searchValue])
 
