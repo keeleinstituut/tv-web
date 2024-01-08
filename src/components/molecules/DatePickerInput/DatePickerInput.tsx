@@ -59,6 +59,8 @@ const DatePickerComponent = ({
   const convertedValue = dayjs(value, 'DD/MM/YYYY')
   const splittedDayValue = convertedValue?.format('YYYY-MM-DD')
 
+  // convertedValue.isValid()
+
   return (
     <>
       <DatePicker

@@ -15,9 +15,7 @@ import {
   orderBy,
   replace,
 } from 'lodash'
-
-const escapeSearchString = (searchString: string) =>
-  toLower(searchString).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+import { escapeSearchString } from 'helpers'
 
 const getIndexOrMax = (
   option: { value: string; label: string },
