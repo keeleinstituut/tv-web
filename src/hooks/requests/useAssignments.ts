@@ -9,6 +9,7 @@ import {
   AssignmentType,
   CompleteAssignmentPayload,
 } from 'types/assignments'
+import { TaskResponse } from 'types/tasks'
 import {
   ProjectsResponse,
   SplitProjectPayload,
@@ -173,11 +174,32 @@ export const useAssignmentUpdate = ({ id }: { id?: string }) => {
   }
 }
 
-export const useAssignmentCommentUpdate = ({ id }: { id?: string }) => {
+export const useAssignmentCommentUpdate = ({
+  id,
+  taskId,
+}: {
+  id?: string
+  taskId?: string
+}) => {
+  const queryClient = useQueryClient()
   const { mutateAsync: updateAssigneeComment, isLoading } = useMutation({
     mutationKey: ['assignments', id],
     mutationFn: (payload: AssigneeCommentPayload) =>
       apiClient.put(`${endpoints.ASSIGNMENTS}/${id}/assignee-comment`, payload),
+    onSuccess: ({ data }: { data: AssignmentType }) => {
+      queryClient.setQueryData(['tasks', taskId], (oldData?: TaskResponse) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newTask = {
+          ...previousData,
+          assignment: {
+            ...previousData?.assignment,
+            assignee_comments: data?.assignee_comments,
+          },
+        }
+        return { data: newTask }
+      })
+    },
   })
 
   return {
