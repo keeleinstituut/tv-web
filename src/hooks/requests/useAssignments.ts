@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { map, find, filter, isArray, isEmpty } from 'lodash'
+import { map, find, filter, isArray, isEmpty, includes, toString } from 'lodash'
 import {
   AssigneeCommentPayload,
   AssignmentPayload,
@@ -18,8 +18,10 @@ import {
 
 const getNewSubProjectWithAssignment = (
   assignments: AssignmentType | AssignmentType[],
-  oldData?: SubProjectResponse
+  oldData?: SubProjectResponse,
+  payload?: CompleteAssignmentPayload
 ) => {
+  const { final_file_id } = payload || {}
   const { data: previousData } = oldData || {}
   if (!previousData) return oldData
   const allModifiedAssignments = isArray(assignments)
@@ -57,6 +59,16 @@ const getNewSubProjectWithAssignment = (
   const newData = {
     ...previousData,
     ...(allModifiedAssignments?.[0]?.subProject || {}),
+    ...(final_file_id
+      ? {
+          final_files: map(previousData.final_files, (file) => ({
+            ...file,
+            is_project_final_file:
+              file?.is_project_final_file ||
+              includes(final_file_id, toString(file.id)),
+          })),
+        }
+      : {}),
     assignments: active_job_definition
       ? map(newAssignmentsList, (assignment) => {
           if (assignment?.job_definition?.id !== active_job_definition?.id)
@@ -263,13 +275,13 @@ export const useCompleteAssignment = ({ id }: { id?: string }) => {
         `${endpoints.ASSIGNMENTS}/${id}/mark-as-completed`,
         payload
       ),
-    onSuccess: ({ data }: { data: AssignmentType }) => {
+    onSuccess: ({ data }: { data: AssignmentType }, payload) => {
       // TODO: might need to still do the refetch, since the next assignment won't be "IN_PROGRESS" otherwise
       const { sub_project_id } = data
       queryClient.setQueryData(
         ['subprojects', sub_project_id],
         (oldData?: SubProjectResponse) =>
-          getNewSubProjectWithAssignment(data, oldData)
+          getNewSubProjectWithAssignment(data, oldData, payload)
       )
       const changesToProject = data?.subProject?.project
       if (changesToProject) {
