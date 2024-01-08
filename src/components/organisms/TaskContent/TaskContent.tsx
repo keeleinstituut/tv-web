@@ -92,7 +92,7 @@ const TaskContent: FC<TaskContentProps> = ({
     disabled: isVendor,
   })
 
-  const { updateAssigneeComment } = useAssignmentCommentUpdate({ id })
+  const { updateAssigneeComment } = useAssignmentCommentUpdate({ id, taskId })
 
   const catJobsToUse = isVendor ? cat_jobs : catToolJobs
   const tmKeysToUse = isVendor ? cat_tm_keys : subProjectTmKeyObjectsArray
