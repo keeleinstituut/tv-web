@@ -31,7 +31,6 @@ const ConfirmAssignmentCompletionModal: FC<
   const { t } = useTranslation()
   const subProject = useSubProjectCache(sub_project_id)
 
-  // const { subProject } = useFetchSubProject({ id: sub_project_id })
   const { final_files } = subProject || {}
   const { control, handleSubmit, watch } = useForm<FormValues>({
     reValidateMode: 'onChange',
