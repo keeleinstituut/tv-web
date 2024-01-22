@@ -147,6 +147,31 @@ export const useUpdateUser = ({ id }: { id?: string }) => {
   }
 }
 
+export const useUpdateCurrentUser = ({ id }: { id?: string }) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateUser, isLoading } = useMutation({
+    mutationKey: ['users', id],
+    mutationFn: async (payload: UserPostType) => {
+      return apiClient.put(endpoints.USERS, {
+        ...payload,
+      })
+    },
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['users', id], (oldData?: UsersDataType) => {
+        const { data: previousData } = oldData || {}
+        if (!previousData) return oldData
+        const newData = { ...previousData, ...data }
+        return { data: newData }
+      })
+    },
+  })
+
+  return {
+    updateUser,
+    isLoading,
+  }
+}
+
 export const useValidateUsers = () => {
   const formData = new FormData()
   const { mutateAsync: validateUsers, isLoading } = useMutation({
