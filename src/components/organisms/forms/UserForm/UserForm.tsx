@@ -21,7 +21,7 @@ import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
 import useAuth from 'hooks/useAuth'
 import { UserType, UserPostType, UserStatus } from 'types/users'
-import { useUpdateUser } from 'hooks/requests/useUsers'
+import { useUpdateUser, useUpdateCurrentUser } from 'hooks/requests/useUsers'
 import useValidators from 'hooks/useValidators'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -57,8 +57,13 @@ const UserForm: FC<UserFormProps> = ({
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator } = useValidators()
   const { updateUser, isLoading } = useUpdateUser({ id })
+  const { updateUser: updateCurrentUser, isLoading: isLoadingCurrentUser } =
+    useUpdateCurrentUser({ id })
   const { existingRoles = [] } = useRolesFetch({ disabled: isUserAccount })
   const { existingDepartments = [] } = useDepartmentsFetch()
+
+  const isLoadingToUse = isUserAccount ? isLoadingCurrentUser : isLoading
+  const updateFunction = isUserAccount ? updateCurrentUser : updateUser
 
   const defaultValues = useMemo(
     () => ({
@@ -226,7 +231,7 @@ const UserForm: FC<UserFormProps> = ({
         },
       }
       try {
-        await updateUser(payload)
+        await updateFunction(payload)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -247,7 +252,7 @@ const UserForm: FC<UserFormProps> = ({
         }
       }
     },
-    [updateUser, t, setError]
+    [updateFunction, t, setError]
   )
 
   return (
@@ -260,7 +265,7 @@ const UserForm: FC<UserFormProps> = ({
       <FormButtons
         isResetDisabled={!isDirty}
         isSubmitDisabled={!isDirty || !isValid}
-        loading={isSubmitting || isLoading}
+        loading={isSubmitting || isLoadingToUse}
         resetForm={resetForm}
         hidden={isFormDisabled}
         className={classes.formButtons}
