@@ -10,6 +10,7 @@ interface TagProps {
   value?: boolean
   onChange?: () => void
   withBorder?: boolean
+  disabled?: boolean
 }
 
 const Tag: FC<TagProps> = ({
@@ -19,6 +20,7 @@ const Tag: FC<TagProps> = ({
   value,
   onChange,
   withBorder,
+  disabled,
 }) => {
   const WrapperTag = onChange ? BaseButton : 'span'
   const handleOnClick = useCallback(() => {
@@ -33,9 +35,11 @@ const Tag: FC<TagProps> = ({
         classes.tag,
         withBorder && classes.border,
         value && classes.active,
+        disabled && classes.disabled,
         className
       )}
       onClick={handleOnClick}
+      disabled={disabled}
     >
       {label}
     </WrapperTag>

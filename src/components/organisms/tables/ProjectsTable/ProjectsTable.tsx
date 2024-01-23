@@ -70,12 +70,26 @@ const ProjectsTable: FC = () => {
     ])
   )
 
+  const onlyNewProjectsAllowed =
+    includes(
+      userPrivileges,
+      Privileges.ViewInstitutionUnclaimedProjectDetail
+    ) &&
+    isEmpty(
+      intersection(userPrivileges, [
+        Privileges.ViewInstitutionProjectList,
+        Privileges.ViewInstitutionProjectDetail,
+      ])
+    )
+
   const [searchParams] = useSearchParams()
   const initialFilters = {
     per_page: 10,
     page: 1,
     ...Object.fromEntries(searchParams.entries()),
-    statuses: searchParams.getAll('statuses'),
+    statuses: onlyNewProjectsAllowed
+      ? [ProjectStatus.New]
+      : searchParams.getAll('statuses'),
     tag_ids: searchParams.getAll('tag_ids'),
     language_directions: searchParams.getAll('language_directions'),
     only_show_personal_projects: onlyPersonalProjectsAllowed
@@ -384,6 +398,7 @@ const ProjectsTable: FC = () => {
               control={control}
               options={statusFilters}
               inputType={InputTypes.TagsSelect}
+              disabled={onlyNewProjectsAllowed}
             />
             <FormInput
               name="only_show_personal_projects"
