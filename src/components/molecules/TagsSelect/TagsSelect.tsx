@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 interface OptionProp {
   label: string
   value: string
+  disabled?: boolean
 }
 
 export interface TagsSelectProps {
@@ -17,6 +18,7 @@ export interface TagsSelectProps {
   onChange?: (values: string[]) => void
   className?: string
   label?: string
+  disabled?: boolean
 }
 
 const TagsSelect: FC<TagsSelectProps> = ({
@@ -24,6 +26,7 @@ const TagsSelect: FC<TagsSelectProps> = ({
   value,
   onChange,
   className,
+  disabled,
 }) => {
   const { t } = useTranslation()
   const currentValue = value || []
@@ -47,6 +50,7 @@ const TagsSelect: FC<TagsSelectProps> = ({
         onChange={() => handleChange('all')}
         withBorder
         className={classes.tag}
+        disabled={disabled}
       />
       {map(compact(options), ({ label, value: optionValue }) => (
         <Tag
@@ -56,6 +60,7 @@ const TagsSelect: FC<TagsSelectProps> = ({
           onChange={() => handleChange(optionValue)}
           withBorder
           className={classes.tag}
+          disabled={disabled}
         />
       ))}
     </div>

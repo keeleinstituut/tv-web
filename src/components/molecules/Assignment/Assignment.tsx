@@ -19,8 +19,6 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from '../Notification/Notification'
 import { useDeleteAssignment } from 'hooks/requests/useAssignments'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
-
-import { useCompleteAssignment } from 'hooks/requests/useAssignments'
 import { useSubProjectCache } from 'hooks/requests/useProjects'
 import AssignmentForm from 'components/organisms/forms/AssignmentForm/AssignmentForm'
 
@@ -53,10 +51,6 @@ const Assignment: FC<AssignmentProps> = ({
     workflow_started,
   } = useSubProjectCache(sub_project_id) || {}
   const { t } = useTranslation()
-  const { completeAssignment, isLoading: isCompletingAssignment } =
-    useCompleteAssignment({
-      id,
-    })
 
   const { deleteAssignment, isLoading: isDeletingAssignment } =
     useDeleteAssignment({
@@ -77,23 +71,15 @@ const Assignment: FC<AssignmentProps> = ({
 
   const openConfirmAssignmentFinished = useCallback(() => {
     showModal(ModalTypes.ConfirmAssignmentFinished, {
-      sub_project_id,
       id,
     })
-  }, [id, sub_project_id])
+  }, [id])
 
-  const sendToPreviousAssignment = useCallback(async () => {
-    try {
-      await completeAssignment({ accepted: false })
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.sent_to_previous_task'),
-      })
-    } catch (errorData) {
-      showValidationErrorMessage(errorData)
-    }
-  }, [completeAssignment, t])
+  const openConfirmSendToPreviousAssignment = useCallback(() => {
+    showModal(ModalTypes.ConfirmSendToPreviousAssignment, {
+      id,
+    })
+  }, [id])
 
   const handleDeleteAssignment = useCallback(async () => {
     try {
@@ -178,14 +164,13 @@ const Assignment: FC<AssignmentProps> = ({
         <Button
           appearance={AppearanceTypes.Secondary}
           children={t('button.send_to_previous_task')}
-          onClick={sendToPreviousAssignment}
+          onClick={openConfirmSendToPreviousAssignment}
           hidden={feature !== SubProjectFeatures.JobOverview}
           disabled={!isEditable || status !== AssignmentStatus.InProgress}
         />
         <Button
           children={t('button.mark_as_finished')}
           disabled={status !== AssignmentStatus.InProgress}
-          loading={isCompletingAssignment}
           onClick={
             feature !== SubProjectFeatures.JobOverview
               ? openConfirmAssignmentFinished

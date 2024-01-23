@@ -62,12 +62,26 @@ const SubProjectsTable: FC = () => {
     ])
   )
 
+  const onlyNewProjectsAllowed =
+    includes(
+      userPrivileges,
+      Privileges.ViewInstitutionUnclaimedProjectDetail
+    ) &&
+    isEmpty(
+      intersection(userPrivileges, [
+        Privileges.ViewInstitutionProjectList,
+        Privileges.ViewInstitutionProjectDetail,
+      ])
+    )
+
   const [searchParams] = useSearchParams()
   const initialFilters = {
     per_page: 10,
     page: 1,
     ...Object.fromEntries(searchParams.entries()),
-    status: searchParams.getAll('status'),
+    status: onlyNewProjectsAllowed
+      ? [SubProjectStatus.New]
+      : searchParams.getAll('status'),
     language_direction: searchParams.getAll('language_direction'),
     only_show_personal_projects: onlyPersonalProjectsAllowed
       ? 1
@@ -340,6 +354,7 @@ const SubProjectsTable: FC = () => {
               control={control}
               options={statusFilters}
               inputType={InputTypes.TagsSelect}
+              disabled={onlyNewProjectsAllowed}
             />
             <FormInput
               name="only_show_personal_projects"

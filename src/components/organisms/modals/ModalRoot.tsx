@@ -32,6 +32,7 @@ import { ConfirmCompleteTaskModalProps } from './ConfirmCompleteTaskModal/Confir
 import { ConfirmSendToPreviousTaskModalProps } from './ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal'
 import { EditVendorPricesModalProps } from './EditVendorPricesModal/EditVendorPricesModal'
 import { ConfirmAssignmentFinishedModalProps } from './ConfirmAssignmentFinishedModal/ConfirmAssignmentFinishedModal'
+import { ConfirmSendToPreviousAssignmentModalProps } from './ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -123,6 +124,13 @@ const ConfirmAssignmentFinishedModal = lazy(
     import('./ConfirmAssignmentFinishedModal/ConfirmAssignmentFinishedModal')
 )
 
+const ConfirmSendToPreviousAssignmentModal = lazy(
+  () =>
+    import(
+      './ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal'
+    )
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -150,6 +158,7 @@ export enum ModalTypes {
   ConfirmSendToPreviousTask = 'confirmSendToPreviousTask',
   EditVendorPrices = 'editVendorPrices',
   ConfirmAssignmentFinished = 'confirmAssignmentFinished',
+  ConfirmSendToPreviousAssignment = 'confirmSendToPreviousAssignment',
 }
 
 // Add other modal props types here as well
@@ -179,6 +188,7 @@ type ModalPropTypes =
   | Omit<ConfirmSendToPreviousTaskModalProps, 'closeModal'>
   | Omit<EditVendorPricesModalProps, 'closeModal'>
   | Omit<ConfirmAssignmentFinishedModalProps, 'closeModal'>
+  | Omit<ConfirmSendToPreviousAssignmentModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -207,6 +217,8 @@ const MODALS = {
   [ModalTypes.ConfirmSendToPreviousTask]: ConfirmSendToPreviousTaskModal,
   [ModalTypes.EditVendorPrices]: EditVendorPricesModal,
   [ModalTypes.ConfirmAssignmentFinished]: ConfirmAssignmentFinishedModal,
+  [ModalTypes.ConfirmSendToPreviousAssignment]:
+    ConfirmSendToPreviousAssignmentModal,
 }
 
 interface RefType {
