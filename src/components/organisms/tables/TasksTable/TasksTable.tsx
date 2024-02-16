@@ -74,6 +74,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
         : type === TaskTableTypes.MyTasks
         ? { assigned_to_me: 1 }
         : { assigned_to_me: 0 }),
+      ...(type === TaskTableTypes.PendingTasks ? { is_candidate: 1 } : {}),
     }
   }, [isHistoryTab, searchParams, type, userId])
 
