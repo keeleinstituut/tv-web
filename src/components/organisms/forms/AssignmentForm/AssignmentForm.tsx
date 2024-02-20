@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
@@ -11,7 +11,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 import {
-  getLocalDateOjectFromUtcDateString,
+  getLocalDateObjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
 } from 'helpers'
 import { VolumeValue } from 'types/volumes'
@@ -80,11 +80,21 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
   const defaultValues = useMemo(
     () => ({
       ...(deadline_at
-        ? { deadline_at: getLocalDateOjectFromUtcDateString(deadline_at) }
-        : {}),
+        ? {
+            deadline_at: getLocalDateObjectFromUtcDateString(
+              (subProjectDeadline || '') < deadline_at
+                ? subProjectDeadline || ''
+                : deadline_at
+            ),
+          }
+        : {
+            deadline_at: getLocalDateObjectFromUtcDateString(
+              subProjectDeadline || ''
+            ),
+          }),
       ...(shouldShowStartTimeFields && event_start_at
         ? {
-            event_start_at: getLocalDateOjectFromUtcDateString(event_start_at),
+            event_start_at: getLocalDateObjectFromUtcDateString(event_start_at),
           }
         : {}),
       volume: volumes,
@@ -98,13 +108,18 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       shouldShowStartTimeFields,
       volumes,
       assignee_comments,
+      subProjectDeadline,
     ]
   )
 
-  const { control } = useForm<FormValues>({
+  const { control, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
+
+  useEffect(() => {
+    reset(defaultValues)
+  }, [reset, defaultValues])
 
   const { vendor } =
     find(candidates, ({ vendor }) => vendor?.id === assigned_vendor_id) || {}
@@ -239,16 +254,6 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     () => [
       {
         inputType: InputTypes.DateTime,
-        ariaLabel: t('label.deadline'),
-        label: t('label.deadline'),
-        className: classes.customInternalClass,
-        name: 'deadline_at',
-        maxDate: dayjs(subProjectDeadline).toDate(),
-        onDateTimeChange: handleAddDateTime,
-        disabled: !isEditable || isAssignmentFinished,
-      },
-      {
-        inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}`,
         hidden: !shouldShowStartTimeFields,
@@ -256,6 +261,16 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         name: 'event_start_at',
         maxDate: dayjs(subProjectDeadline).toDate(),
         onDateTimeChange: handleAddStartTime,
+        disabled: !isEditable || isAssignmentFinished,
+      },
+      {
+        inputType: InputTypes.DateTime,
+        ariaLabel: t('label.deadline'),
+        label: t('label.deadline'),
+        className: classes.customInternalClass,
+        name: 'deadline_at',
+        maxDate: dayjs(subProjectDeadline).toDate(),
+        onDateTimeChange: handleAddDateTime,
         disabled: !isEditable || isAssignmentFinished,
       },
       {

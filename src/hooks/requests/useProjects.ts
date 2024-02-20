@@ -155,6 +155,7 @@ export const useUpdateProject = ({ id }: { id?: string }) => {
           }
         )
       )
+      queryClient.refetchQueries({ queryKey: ['subprojects'] })
     },
   })
 
@@ -193,6 +194,7 @@ export const useUpdateSubProject = ({ id }: { id?: string }) => {
           return { data: newData }
         }
       )
+      queryClient.refetchQueries({ queryKey: ['projects'] })
     },
   })
 

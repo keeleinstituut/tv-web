@@ -1,4 +1,4 @@
-import { getLocalDateOjectFromUtcDateString } from 'helpers'
+import { getLocalDateObjectFromUtcDateString } from 'helpers'
 import { filter, find, isEmpty, map, uniq, compact } from 'lodash'
 import { ProjectDetail, SourceFile } from 'types/projects'
 
@@ -63,10 +63,10 @@ export const getProjectDefaultValues = ({
     review_files: isNew ? [] : review_files,
     ext_id,
     deadline_at: deadline_at
-      ? getLocalDateOjectFromUtcDateString(deadline_at)
+      ? getLocalDateObjectFromUtcDateString(deadline_at)
       : { date: '', time: '23:59:59' },
     event_start_at: event_start_at
-      ? getLocalDateOjectFromUtcDateString(event_start_at)
+      ? getLocalDateObjectFromUtcDateString(event_start_at)
       : { date: '', time: '' },
     source_language_classifier_value_id,
     destination_language_classifier_value_ids,
