@@ -143,19 +143,38 @@ export const useUpdateProject = ({ id }: { id?: string }) => {
           return { data: newData }
         }
       )
-      map(data.sub_projects, (subProject) =>
+      map(data.sub_projects, (subProject) => {
         queryClient.setQueryData(
           ['subprojects', subProject.id],
           (oldData?: SubProjectResponse) => {
             const { data: previousData } = oldData || {}
 
+            const newAssignments = map(
+              previousData?.assignments,
+              (assignment) => {
+                if (data.deadline_at < (assignment.deadline_at || '')) {
+                  return {
+                    ...assignment,
+                    deadline_at: data.deadline_at,
+                  }
+                } else {
+                  return {
+                    ...assignment,
+                  }
+                }
+              }
+            )
+
             if (!previousData) return oldData
-            const newData = { ...previousData, ...subProject }
+            const newData = {
+              ...previousData,
+              ...subProject,
+              assignments: newAssignments,
+            }
             return { data: newData }
           }
         )
-      )
-      queryClient.refetchQueries({ queryKey: ['subprojects'] })
+      })
     },
   })
 
@@ -194,7 +213,6 @@ export const useUpdateSubProject = ({ id }: { id?: string }) => {
           return { data: newData }
         }
       )
-      queryClient.refetchQueries({ queryKey: ['projects'] })
     },
   })
 

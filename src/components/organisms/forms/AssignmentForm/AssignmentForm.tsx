@@ -81,17 +81,9 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     () => ({
       ...(deadline_at
         ? {
-            deadline_at: getLocalDateObjectFromUtcDateString(
-              (subProjectDeadline || '') < deadline_at
-                ? subProjectDeadline || ''
-                : deadline_at
-            ),
+            deadline_at: getLocalDateObjectFromUtcDateString(deadline_at),
           }
-        : {
-            deadline_at: getLocalDateObjectFromUtcDateString(
-              subProjectDeadline || ''
-            ),
-          }),
+        : {}),
       ...(shouldShowStartTimeFields && event_start_at
         ? {
             event_start_at: getLocalDateObjectFromUtcDateString(event_start_at),
@@ -108,7 +100,6 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       shouldShowStartTimeFields,
       volumes,
       assignee_comments,
-      subProjectDeadline,
     ]
   )
 
