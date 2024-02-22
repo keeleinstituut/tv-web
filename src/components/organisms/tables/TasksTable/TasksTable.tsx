@@ -93,6 +93,8 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
     true
   )
 
+  console.log('TASKS', myTasks)
+
   const {
     historyTasks = [],
     filters: historyTasksFilters,
@@ -209,18 +211,35 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
       }[]
     >(
       tasks,
-      (result, { id, assignment }) => {
+      (result, { id, assignment, project }) => {
         // TODO: add handling for REVIEW, CLIENT_REVIEW and CORRECTION tasks
         if (!assignment) {
-          return result
+          const {
+            ext_id,
+            reference_number,
+            price,
+            type_classifier_value,
+            deadline_at,
+            sub_projects,
+          } = project
+
+          const taskData = {
+            ext_id: { id, ext_id },
+            reference_number: reference_number,
+            language_directions: ` > `,
+            cost: price,
+            type: type_classifier_value?.name,
+            deadline_at: deadline_at,
+          }
+          return [...result, taskData]
         }
         const { subProject, ext_id, deadline_at, price } = assignment
         const {
-          project,
+          project: mainProject,
           source_language_classifier_value,
           destination_language_classifier_value,
         } = subProject || {}
-        const { type_classifier_value, reference_number } = project || {}
+        const { type_classifier_value, reference_number } = mainProject || {}
         const taskData = {
           ext_id: { id, ext_id },
           reference_number: reference_number,
