@@ -563,7 +563,8 @@
     "project_reassigned": "Tellimus edukalt suunatud",
     "sub_project_files_added": "Failid on edukalt lisatud",
     "final_file_deleted": "Valmisfail on edukalt kustutatud",
-    "comment_updated": "Kommentaar edukalt uuendatud"
+    "comment_updated": "Kommentaar edukalt uuendatud",
+    "sub_project_deadline_updated": "Tähtaeg on edukalt uuendatud"
   },
   "notification": {
     "announcement": "Teade",

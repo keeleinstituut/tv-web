@@ -59,7 +59,7 @@ const DisplayValue: FC<DisplayValueProps> = ({
       return value
     }
     if (value && 'date' in value) {
-      return value?.date
+      return `${value?.date} ${value?.time.slice(0, -3)}`
     }
     return reduce(
       value,
