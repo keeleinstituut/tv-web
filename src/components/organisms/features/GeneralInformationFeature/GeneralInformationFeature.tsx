@@ -34,14 +34,17 @@ import classes from './classes.module.scss'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import {
-  getLocalDateOjectFromUtcDateString,
+  getLocalDateObjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
 } from 'helpers'
 import { ClassifierValue } from 'types/classifierValues'
 import dayjs from 'dayjs'
 import useValidators from 'hooks/useValidators'
+import { showValidationErrorMessage } from 'api/errorHandler'
 
 // TODO: this is WIP code for subProject view
 
@@ -101,7 +104,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const defaultValues = useMemo(
     () => ({
-      deadline_at: getLocalDateOjectFromUtcDateString(
+      deadline_at: getLocalDateObjectFromUtcDateString(
         deadline_at || projectDeadlineAt || ''
       ),
       cat_files,
@@ -157,24 +160,33 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   }, [getValues, id, startPolling])
 
   const handleChangeDeadline = useCallback(
-    (value: { date: string; time: string }) => {
-      const { date, time } = value
-      const { date: prevDate, time: prevTime } =
-        defaultValues?.deadline_at || {}
-      if (
-        !date ||
-        (date === prevDate && time === prevTime) ||
-        dateTimePickerValidator(value)
-      ) {
-        return false
-      }
+    async (value: { date: string; time: string }) => {
+      try {
+        const { date, time } = value
+        const { date: prevDate, time: prevTime } =
+          defaultValues?.deadline_at || {}
+        if (
+          !date ||
+          (date === prevDate && time === prevTime) ||
+          dateTimePickerValidator(value)
+        ) {
+          return false
+        }
 
-      const formattedDateTime = getUtcDateStringFromLocalDateObject(value)
-      updateSubProject({
-        deadline_at: formattedDateTime,
-      })
+        const formattedDateTime = getUtcDateStringFromLocalDateObject(value)
+        await updateSubProject({
+          deadline_at: formattedDateTime,
+        })
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.sub_project_deadline_updated'),
+        })
+      } catch (errorData) {
+        showValidationErrorMessage(errorData)
+      }
     },
-    [defaultValues?.deadline_at, updateSubProject, dateTimePickerValidator]
+    [defaultValues?.deadline_at, updateSubProject, dateTimePickerValidator, t]
   )
 
   const subProjectLangPair = useMemo(() => {

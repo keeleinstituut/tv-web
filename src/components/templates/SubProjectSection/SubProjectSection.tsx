@@ -66,6 +66,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
     status: localStatus,
     active_job_definition: localActiveJobDefinition,
     price: subProjectPrice,
+    deadline_at: innerDeadlineAt,
   } = subProject || {}
   const { job_short_name } =
     localActiveJobDefinition || active_job_definition || {}
@@ -188,7 +189,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
         <ExpandableContentLeftComponent
           {...{
             ext_id,
-            deadline_at,
+            deadline_at: innerDeadlineAt || deadline_at,
             price: subProjectPrice || price,
             languageDirection,
           }}
