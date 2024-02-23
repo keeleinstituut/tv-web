@@ -18,6 +18,7 @@ import { DiscountPercentages, UpdateVendorPayload, Vendor } from 'types/vendors'
 import { TagTypes } from 'types/tags'
 import DiscountForm from '../DiscountForm/DiscountForm'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import dayjs from 'dayjs'
 
 type FormValues = {
   name?: string
@@ -43,6 +44,8 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
     company_name,
     comment,
     tags,
+    created_at,
+    updated_at,
     discount_percentage_0_49,
     discount_percentage_50_74,
     discount_percentage_75_84,
@@ -116,6 +119,10 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   })
 
   const isEditDisabled = !includes(userPrivileges, Privileges.EditVendorDb)
+  const showDates = created_at && updated_at
+
+  const vendorCreated = dayjs(created_at).format('DD.MM.YYYY hh:mm')
+  const vendorUpdated = dayjs(updated_at).format('DD.MM.YYYY hh:mm')
 
   const fields: FieldProps<FormValues>[] = [
     {
@@ -260,6 +267,14 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
             onClick={handleSubmit(onSubmit)}
           />
         </div>
+      </div>
+      <div hidden={!showDates}>
+        <p className={classes.dateText}>
+          {t('vendors.vendor_created', { vendorCreated })}
+        </p>
+        <p className={classes.dateText}>
+          {t('vendors.vendor_updated_at', { vendorUpdated })}
+        </p>
       </div>
     </>
   )

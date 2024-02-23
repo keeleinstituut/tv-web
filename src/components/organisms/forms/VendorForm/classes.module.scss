@@ -46,3 +46,11 @@
   margin-left: auto;
   margin-bottom: spacing(6);
 }
+
+.dateText {
+  @include bodyTextSmallStyle;
+  color: $color-input-main;
+  &:first-of-type {
+    margin-top: spacing(2);
+  }
+}
