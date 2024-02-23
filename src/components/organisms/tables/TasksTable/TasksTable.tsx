@@ -43,9 +43,10 @@ type TaskTableRow = {
   ext_id: {
     id: string
     ext_id: string
+    task_type: string
   }
   reference_number?: string
-  language_directions: string
+  language_directions: string[]
   cost?: string
   type?: string
   deadline_at?: string
@@ -92,8 +93,6 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
     },
     true
   )
-
-  console.log('TASKS', myTasks)
 
   const {
     historyTasks = [],
@@ -202,19 +201,19 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
     return reduce<
       ListTask,
       {
-        ext_id: { id: string; ext_id: string }
+        ext_id: { id: string; ext_id: string; task_type: string }
         reference_number?: string
-        language_directions: string
+        language_directions: string[]
         cost?: string
         type?: string
         deadline_at?: string
       }[]
     >(
       tasks,
-      (result, { id, assignment, project }) => {
-        // TODO: add handling for REVIEW, CLIENT_REVIEW and CORRECTION tasks
+      (result, { id, assignment, project, task_type }) => {
         if (!assignment) {
           const {
+            id: projectId,
             ext_id,
             reference_number,
             price,
@@ -223,10 +222,19 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             sub_projects,
           } = project
 
+          const language_directions = map(
+            sub_projects,
+            ({
+              source_language_classifier_value,
+              destination_language_classifier_value,
+            }) =>
+              `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
+          )
+
           const taskData = {
-            ext_id: { id, ext_id },
+            ext_id: { id: projectId, ext_id, task_type },
             reference_number: reference_number,
-            language_directions: ` > `,
+            language_directions: language_directions,
             cost: price,
             type: type_classifier_value?.name,
             deadline_at: deadline_at,
@@ -241,9 +249,11 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
         } = subProject || {}
         const { type_classifier_value, reference_number } = mainProject || {}
         const taskData = {
-          ext_id: { id, ext_id },
+          ext_id: { id, ext_id, task_type },
           reference_number: reference_number,
-          language_directions: `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
+          language_directions: [
+            `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
+          ],
           cost: price,
           type: type_classifier_value?.name,
           deadline_at: deadline_at,
@@ -299,6 +309,13 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             const projectExtIdObject = getValue()
             const taskId = projectExtIdObject?.id
             const projectExtId = projectExtIdObject?.ext_id
+            const taskType = projectExtIdObject?.task_type
+
+            const href = ['CORRECTING', 'CLIENT_REVIEW'].includes(taskType)
+              ? `/projects/${taskId}`
+              : `/projects/my-tasks/${taskId}${
+                  isHistoryTab ? '/isHistoryView' : ''
+                }`
 
             return (
               <Button
@@ -307,9 +324,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
                 icon={ArrowRight}
                 ariaLabel={t('label.to_task_view')}
                 iconPositioning={IconPositioningTypes.Left}
-                href={`/projects/my-tasks/${taskId}${
-                  isHistoryTab ? '/isHistoryView' : ''
-                }     `}
+                href={href}
               >
                 {projectExtId}
               </Button>
@@ -324,10 +339,11 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           header: () => t('label.language_directions'),
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {
-            const label = getValue()
             return (
               <div className={classes.tagsRow}>
-                <Tag label={label} value />
+                {map(getValue(), (value, index) => (
+                  <Tag label={value} value key={index} />
+                ))}
               </div>
             )
           },
