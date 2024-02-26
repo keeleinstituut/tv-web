@@ -370,7 +370,7 @@ const TaskContent: FC<TaskContentProps> = ({
           hidden={
             !isTaskAssignedToMe ||
             !!isHistoryView ||
-            task_type === TaskType.Review
+            !(task_type === TaskType.Review)
           }
           appearance={AppearanceTypes.Secondary}
         >
