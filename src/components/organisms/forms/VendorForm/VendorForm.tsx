@@ -268,7 +268,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
           />
         </div>
       </div>
-      <div hidden={!showDates}>
+      <div hidden={!showDates} className={classes.datesContainer}>
         <p className={classes.dateText}>
           {t('vendors.vendor_created', { vendorCreated })}
         </p>
