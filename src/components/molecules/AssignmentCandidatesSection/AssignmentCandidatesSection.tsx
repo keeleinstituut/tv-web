@@ -60,7 +60,8 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
           delete_button: vendor?.id,
         }
       })
-    } else if (manager_candidates?.length) {
+    }
+    if (manager_candidates?.length) {
       return map(manager_candidates, ({ institution_user, price, status }) => {
         const name = `${institution_user?.user?.forename} ${institution_user?.user?.surname}`
 
@@ -70,9 +71,8 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
           price,
         }
       })
-    } else {
-      return []
     }
+    return []
   }, [candidates, manager_candidates])
 
   const handleDelete = useCallback(
