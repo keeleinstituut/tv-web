@@ -33,6 +33,7 @@ interface AssignmentProps extends AssignmentType {
 const Assignment: FC<AssignmentProps> = ({
   index,
   candidates,
+  manager_candidates,
   id,
   sub_project_id,
   assigned_vendor_id,
@@ -154,6 +155,7 @@ const Assignment: FC<AssignmentProps> = ({
             job_definition,
             assigned_vendor_id,
             candidates,
+            manager_candidates,
             assignee_id: assignee?.id,
             finished_at,
             isEditable,

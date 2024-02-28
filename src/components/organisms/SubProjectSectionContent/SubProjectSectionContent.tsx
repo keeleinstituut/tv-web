@@ -72,11 +72,15 @@ const AssignmentsSection: FC<AssignmentsSectionProps> = ({ assignments }) => {
   const assignmentsInfo = flatMap(groupedAssignments, (assignmentsByKey) =>
     map(
       assignmentsByKey,
-      ({ job_definition, assignee, assignee_comments }, index) => ({
+      (
+        { job_definition, assignee, assignee_comments, manager_candidates },
+        index
+      ) => ({
         title: `${t('task.vendor_title', { number: index + 1 })} (${
           job_definition?.job_short_name
         })`,
-        institution_user: assignee?.institution_user,
+        institution_user:
+          assignee?.institution_user || manager_candidates[0]?.institution_user,
         assignee_comments,
       })
     )

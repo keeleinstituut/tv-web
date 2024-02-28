@@ -19,7 +19,7 @@ import { NotificationTypes } from '../Notification/Notification'
 
 type AssignmentCandidatesSectionProps = Pick<
   AssignmentType,
-  'id' | 'candidates' | 'job_definition'
+  'id' | 'candidates' | 'job_definition' | 'manager_candidates'
 > & {
   className?: string
   isEditable?: boolean
@@ -29,8 +29,7 @@ interface CandidateRow {
   name: string
   status: CandidateStatus
   price: string
-  // TODO: delete button should be disabled, once the workflow has started
-  delete_button: string
+  delete_button?: string
 }
 
 const columnHelper = createColumnHelper<CandidateRow>()
@@ -38,6 +37,7 @@ const columnHelper = createColumnHelper<CandidateRow>()
 const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
   id,
   candidates,
+  manager_candidates,
   className,
   job_definition,
   isEditable,
@@ -47,9 +47,9 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
     id,
   })
 
-  const tableRows = useMemo(
-    () =>
-      map(candidates, ({ vendor, price, status }) => {
+  const tableRows = useMemo(() => {
+    if (candidates?.length) {
+      return map(candidates, ({ vendor, price, status }) => {
         const { institution_user } = vendor || {}
         const name = `${institution_user?.user?.forename} ${institution_user?.user?.surname}`
 
@@ -59,9 +59,21 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
           price,
           delete_button: vendor?.id,
         }
-      }),
-    [candidates]
-  )
+      })
+    }
+    if (manager_candidates?.length) {
+      return map(manager_candidates, ({ institution_user, price, status }) => {
+        const name = `${institution_user?.user?.forename} ${institution_user?.user?.surname}`
+
+        return {
+          name,
+          status,
+          price,
+        }
+      })
+    }
+    return []
+  }, [candidates, manager_candidates])
 
   const handleDelete = useCallback(
     async (vendor_id: string) => {
@@ -109,7 +121,7 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
                     job_definition.job_key === SubProjectFeatures.JobOverview
                   }
                   disabled={!isEnabled}
-                  onClick={() => handleDelete(getValue())}
+                  onClick={() => handleDelete(getValue() || '')}
                   aria-label={t('button.delete')}
                 >
                   <Delete />
