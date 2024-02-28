@@ -117,7 +117,7 @@ const FilesSection: FC<FilesSectionProps> = ({ files, id }) => {
   const { downloadFile } = useHandleFiles({
     reference_object_id: id || '',
     reference_object_type: 'subproject',
-    collection: CollectionType.Source,
+    collection: CollectionType.Final,
   })
 
   const handleDownload = useCallback(
