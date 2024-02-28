@@ -5,7 +5,7 @@ import {
 } from './collective'
 import { AssignmentType } from 'types/assignments'
 import { TmStatsType, TranslationMemoryType } from './translationMemories'
-import { SubProjectDetail } from './projects'
+import { ProjectDetail, SubProjectDetail } from './projects'
 
 export enum TaskType {
   Default = 'DEFAULT',
@@ -27,6 +27,7 @@ export type TasksPayloadType = PaginationFunctionType &
 export interface ListTask {
   id: string
   task_type: TaskType
+  project: ProjectDetail
   project_id: string
   assignment: AssignmentType
   assignee_institution_user_id?: string
