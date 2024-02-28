@@ -27,6 +27,8 @@ export type Vendor = {
   skills: SkillsData[]
   comment: string
   institution_user_id: string
+  created_at: string
+  updated_at: string
 } & DiscountPercentages
 
 export type DiscountPercentages = {
@@ -125,6 +127,7 @@ export type UpdatedPrices = {
 export type PricesDataType = {
   data: PricesData[]
   meta?: ResponseMetaTypes
+  aggregation?: { min_created_at: string; max_updated_at: string }
 }
 
 export enum OrderBy {

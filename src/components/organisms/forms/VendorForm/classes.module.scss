@@ -46,3 +46,15 @@
   margin-left: auto;
   margin-bottom: spacing(6);
 }
+
+.datesContainer {
+  margin-bottom: spacing(3);
+
+  .dateText {
+    @include bodyTextSmallStyle;
+    color: $color-input-main;
+    &:first-of-type {
+      margin-top: spacing(2);
+    }
+  }
+}
