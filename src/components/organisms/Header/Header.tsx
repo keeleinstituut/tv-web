@@ -4,7 +4,7 @@ import logo from 'assets/logo.svg'
 import { useTranslation } from 'react-i18next'
 import LanguageChanger from 'components/molecules/LanguageChanger/LanguageChanger'
 import UserRoleSection from 'components/molecules/UserRoleSection/UserRoleSection'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import Button, {
   AppearanceTypes,
   SizeTypes,

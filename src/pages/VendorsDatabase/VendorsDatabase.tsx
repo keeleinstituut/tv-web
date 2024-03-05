@@ -1,7 +1,7 @@
 import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { includes } from 'lodash'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import VendorsTable from 'components/organisms/tables/VendorsTable/VendorsTable'
 import { Privileges } from 'types/privileges'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'

@@ -12,7 +12,7 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { t } from 'i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import useValidators from 'hooks/useValidators'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 
 type TagCategoryTypes = {

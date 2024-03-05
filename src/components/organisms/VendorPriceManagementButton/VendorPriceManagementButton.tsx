@@ -8,7 +8,7 @@ import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
 import { useTranslation } from 'react-i18next'
 import { includes } from 'lodash'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 
 import classes from './classes.module.scss'

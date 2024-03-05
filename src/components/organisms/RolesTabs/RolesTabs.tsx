@@ -7,7 +7,7 @@ import { useRolesFetch } from 'hooks/requests/useRoles'
 import Loader from 'components/atoms/Loader/Loader'
 import Tabs from 'components/molecules/Tabs/Tabs'
 import classes from './classes.module.scss'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { RolePayload } from 'types/roles'
 import { Privileges } from 'types/privileges'
 

@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import Container from 'components/atoms/Container/Container'
 import PersonSection, {
   PersonSectionTypes,

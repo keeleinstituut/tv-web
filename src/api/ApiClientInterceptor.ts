@@ -1,6 +1,5 @@
 import { get } from 'lodash'
 import axios from 'axios'
-import { keycloak, startRefreshingToken } from 'hooks/useKeycloak'
 import { AxiosRequestConfigWithRetries } from './ApiClient'
 
 interface ResultInterface {
@@ -41,14 +40,6 @@ const interceptor = (error: ErrorInterface) => {
         response.status === 403)) ||
     error.code === 'ECONNABORTED'
   ) {
-    if (response && response.status === 403) {
-      // Attempt token refresh, log out if it fails
-      startRefreshingToken(() => {
-        keycloak.logout({
-          redirectUri: `${window.location.href}#show-error`,
-        })
-      }, true)
-    }
     const deferred = Defer()
     let retries = get(error, 'config.retries', 0)
     const retryLimit = 2

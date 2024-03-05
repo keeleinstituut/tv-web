@@ -5,7 +5,7 @@ import { PrivilegesResponse } from 'types/privileges'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
 import { findIndex, filter, map } from 'lodash'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 
 export const useRolesFetch = ({ disabled }: { disabled?: boolean }) => {
   const {
