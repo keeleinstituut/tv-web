@@ -84,7 +84,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             deadline_at: getLocalDateObjectFromUtcDateString(deadline_at),
           }
         : {}),
-      ...(shouldShowStartTimeFields && event_start_at
+      ...(event_start_at
         ? {
             event_start_at: getLocalDateObjectFromUtcDateString(event_start_at),
           }
@@ -93,14 +93,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       comments,
       assignee_comments,
     }),
-    [
-      comments,
-      deadline_at,
-      event_start_at,
-      shouldShowStartTimeFields,
-      volumes,
-      assignee_comments,
-    ]
+    [comments, deadline_at, event_start_at, volumes, assignee_comments]
   )
 
   const { control, reset } = useForm<FormValues>({
@@ -247,7 +240,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}`,
-        hidden: !shouldShowStartTimeFields,
+        hidden: !shouldShowStartTimeFields && !event_start_at,
         className: classes.customInternalClass,
         name: 'event_start_at',
         maxDate: dayjs(subProjectDeadline).toDate(),
@@ -309,6 +302,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       isEditable,
       isAssignmentFinished,
       shouldShowStartTimeFields,
+      event_start_at,
       handleAddStartTime,
       id,
       handleAddComment,
