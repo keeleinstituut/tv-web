@@ -429,7 +429,7 @@
     "set_working_times_title": "Tööaegade määramine",
     "confirm_complete_task": "Kas oled kindel, et soovid ülesande lõpetatuks märkida?",
     "confirm_send_to_previous_assignment": "Kas oled kindel, et soovid suunata töö eelmisesse ülesandesse tagasi?",
-    "confirm_send_to_previous_assignment_details": "Enne jätkamist veendu, et lisasid teostaja(te)le ülesande juhistesse tagasisuunamise põhjenduse ja kirjeldasid seda, mida on vaja teisiti teha.",
+    "confirm_send_to_previous_assignment_details": "Veendu, et peale tagasi saatmist lisad teostajale ülesande juhistesse põhjenduse ja kirjeldad seda, mida on vaja teisiti teha.",
     "confirm_complete_task_details": "Pärast lõpetamist failidega enam tegevusi teha ei saa ja ülesanne liigub järgmisesse etappi.",
     "view_cat_volumes": "Vaata CAT analüüsi mahtu",
     "confirm_order_cancellation_title": "Kas oled kindel, et soovid tellimuse tühistada?",
