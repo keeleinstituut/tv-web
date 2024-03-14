@@ -367,11 +367,7 @@ const TaskContent: FC<TaskContentProps> = ({
         <Button
           className={classes.previousButton}
           onClick={handleSendToPreviousAssignmentModal}
-          hidden={
-            !isTaskAssignedToMe ||
-            !!isHistoryView ||
-            !(task_type === TaskType.Review)
-          }
+          hidden={!isTaskAssignedToMe || !!isHistoryView}
           appearance={AppearanceTypes.Secondary}
         >
           {t('button.send_to_previous_assignment')}
