@@ -70,6 +70,7 @@ const getNewSubProjectWithAssignment = (
           })),
         }
       : {}),
+    project: { ...previousData.project },
     assignments: active_job_definition
       ? map(newAssignmentsList, (assignment) => {
           if (assignment?.job_definition?.id !== active_job_definition?.id)

@@ -69,7 +69,8 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
         onDateTimeChange({ date: value?.date || '', time: value?.time || '' })
         setWasModalOpen(!wasModalOpen)
       }
-    }, [isModalOpen, onDateTimeChange, value, wasModalOpen])
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isModalOpen, value?.date, value?.time, wasModalOpen])
 
     if (hidden) return null
 

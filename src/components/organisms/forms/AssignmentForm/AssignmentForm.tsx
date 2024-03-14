@@ -97,9 +97,9 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       comments,
       deadline_at,
       event_start_at,
-      shouldShowStartTimeFields,
       volumes,
       assignee_comments,
+      shouldShowStartTimeFields,
     ]
   )
 
