@@ -2,7 +2,7 @@ import { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { map, uniqBy, concat, compact, find, includes, join } from 'lodash'
 import {
   InputTypes,

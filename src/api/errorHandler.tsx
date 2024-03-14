@@ -3,9 +3,9 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import i18n from 'i18n/i18n'
 import { get, compact, map, isEmpty } from 'lodash'
-import { keycloak, startRefreshingToken } from 'hooks/useKeycloak'
 import { ReactElement } from 'react'
 import { AxiosRequestConfigWithRetries } from './ApiClient'
+import { rawLogout } from 'components/contexts/AuthContext'
 
 interface ValidationErrorDataType {
   [key: string]: string[]
@@ -89,15 +89,8 @@ const handleError = async (error?: AxiosError) => {
     errorContent = i18n.t('error.unknown_error', { code })
   }
 
-  // TODO: 403 needs to be changed to 401, once BE has made the change
-  // Waiting for task: https://github.com/keeleinstituut/tv-tolkevarav/issues/393
-  if (code === 403) {
-    // Attempt token refresh, log out if it fails
-    startRefreshingToken(() => {
-      keycloak.logout({
-        redirectUri: `${window.location.href}#show-error`,
-      })
-    }, true)
+  if (code === 401) {
+    rawLogout()
     throw error
   } else if (code === 422) {
     // Throw only validation errors

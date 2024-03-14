@@ -187,7 +187,7 @@
     "previous_page": "Eelmine lehekülg",
     "next_page": "Järgmine lehekülg",
     "export_csv": "Ekspordi CSV",
-    "report_export_csv":"Ekspordi .csv",
+    "report_export_csv": "Ekspordi .csv",
     "add_users": "Lisa kasutajad",
     "look_at_tutorial": "Vaata täpsemalt kasutusjuhendi lehelt",
     "add": "Lisa",
@@ -274,10 +274,12 @@
     "file_size_error": "Fail(id) liiga suur(ed). Kogu suurus ei tohi ületada 100mb",
     "unknown_authentication_error": "Teadmata viga",
     "token_expired_error": "Sessioon on aegunud. Palun logige uuesti sisse",
-    "token_will_expire_soon": "Sessioon aegub tegevusetuse tõttu {{time_left}} minuti pärast",
+    "token_will_expire_soon": "Sessioon aegub tegevusetuse tõttu {{time_left}} {{time_unit}} pärast",
     "work_time_format": "Tööaeg peab olema HH:MM formaadis",
     "time_range_format": "Ajavahemik peab olema HH:MM:SS formaadis",
-    "deadline_time_format": "Tähtaeg peab olema HH:MM:SS formaadis"
+    "deadline_time_format": "Tähtaeg peab olema HH:MM:SS formaadis",
+    "time_unit_s": "sekundi",
+    "time_unit_m": "minuti"
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks",
@@ -736,7 +738,7 @@
   "orders_report": {
     "export": "Tellimuste aruande eksport",
     "description": "Tellimuste aruandesse eksporditakse kõikides staatustes tellimused.",
-    "date_range":"Tellimuste alguskuupäevade vahemik",
+    "date_range": "Tellimuste alguskuupäevade vahemik",
     "select_status": "Vali staatus"
   },
   "my_tasks": {

@@ -7,7 +7,7 @@ import classes from './classes.module.scss'
 import { includes } from 'lodash'
 import classNames from 'classnames'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 
 const UsersManagement: FC = () => {

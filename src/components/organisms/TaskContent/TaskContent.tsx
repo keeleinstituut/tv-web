@@ -27,7 +27,7 @@ import { TaskType } from 'types/tasks'
 
 import classes from './classes.module.scss'
 import { useTaskCache } from 'hooks/requests/useTasks'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { useAssignmentCommentUpdate } from 'hooks/requests/useAssignments'
 import { CollectionType } from 'hooks/requests/useFiles'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'

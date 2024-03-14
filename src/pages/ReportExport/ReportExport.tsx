@@ -10,7 +10,7 @@ import DynamicForm, {
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { includes, map } from 'lodash'
 import { Privileges } from 'types/privileges'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 
 import classes from './classes.module.scss'
 import { ProjectStatus } from 'types/projects'

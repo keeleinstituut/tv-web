@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { RouterProvider } from 'react-router-dom'
 import dayjs from 'dayjs'
+import { AuthProvider } from 'components/contexts/AuthContext'
 import('dayjs/locale/et')
 
 dayjs.locale('et')
@@ -24,8 +25,10 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
   <QueryClientProvider client={queryClient}>
-    <RouterProvider router={router} />
-    <NotificationRoot />
+    <AuthProvider>
+      <RouterProvider router={router} />
+      <NotificationRoot />
+    </AuthProvider>
   </QueryClientProvider>
 )
 

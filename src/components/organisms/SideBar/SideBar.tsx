@@ -9,7 +9,7 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { protectedRoutes, FullRouteObject } from 'router/router'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 
 interface MenuItemsProps {
   menuItems: FullRouteObject[]

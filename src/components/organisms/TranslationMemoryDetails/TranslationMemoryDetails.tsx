@@ -3,7 +3,7 @@ import { includes, split } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
