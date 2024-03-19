@@ -213,13 +213,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         const fileName = getValue()
-        return (
-          <p
-            className={mode === ProjectDetailModes.View ? classes.fileName : ''}
-          >
-            {fileName}
-          </p>
-        )
+        return <p className={classes.fileName}>{fileName}</p>
       },
     }),
 
