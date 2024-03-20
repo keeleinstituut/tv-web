@@ -186,7 +186,11 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     ...(mode !== ProjectDetailModes.View
       ? [
           columnHelper.accessor('is_project_final_file', {
-            header: () => t('label.shared_with_client'),
+            header: () => (
+              <p className={classes.wrappedHeader}>
+                {t('label.shared_with_client')}
+              </p>
+            ),
             footer: (info) => info.column.id,
             cell: ({ getValue }) => {
               return (
@@ -206,20 +210,34 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       : []),
     columnHelper.accessor('name', {
       header: () => (
-        <p className={mode === ProjectDetailModes.View ? classes.header : ''}>
+        <p
+          className={classNames(
+            mode === ProjectDetailModes.View ? classes.header : '',
+            classes.wrappedHeader
+          )}
+        >
           {t('label.file_name')}
         </p>
       ),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => {
         const fileName = getValue()
-        return <p className={classes.fileName}>{fileName}</p>
+        return (
+          <p className={classNames(classes.fileName, classes.wrappedFileName)}>
+            {fileName}
+          </p>
+        )
       },
     }),
 
     columnHelper.accessor('feature', {
       header: () => (
-        <p hidden={mode === ProjectDetailModes.View}>{t('label.task')}</p>
+        <p
+          className={classes.wrappedHeader}
+          hidden={mode === ProjectDetailModes.View}
+        >
+          {t('label.task')}
+        </p>
       ),
       footer: (info) => {
         if (mode === ProjectDetailModes.View) return null
@@ -233,7 +251,12 @@ const FinalFilesList = <TFormValues extends FieldValues>({
     }),
     columnHelper.accessor('created_at', {
       header: () => (
-        <p className={mode === ProjectDetailModes.View ? classes.header : ''}>
+        <p
+          className={classNames(
+            mode === ProjectDetailModes.View ? classes.header : '',
+            classes.wrappedHeader
+          )}
+        >
           {t('label.added_at')}
         </p>
       ),

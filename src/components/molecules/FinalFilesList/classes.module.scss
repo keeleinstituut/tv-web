@@ -128,10 +128,19 @@
 
 .fileName {
   font-weight: $font-weight-bold;
-  white-space: break-spaces;
 }
 
 .createdAt {
   color: $color-input-main;
   font-size: $font-size-14;
+}
+
+.wrappedFileName {
+  white-space: break-spaces;
+}
+
+.wrappedHeader {
+  white-space: break-spaces;
+  height: spacing(16);
+  vertical-align: top;
 }
