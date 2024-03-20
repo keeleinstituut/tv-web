@@ -134,3 +134,13 @@
   color: $color-input-main;
   font-size: $font-size-14;
 }
+
+.wrappedFileName,
+.wrappedHeader {
+  white-space: break-spaces;
+}
+
+.wrappedHeader {
+  height: spacing(16);
+  vertical-align: top;
+}
