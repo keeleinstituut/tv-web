@@ -135,12 +135,12 @@
   font-size: $font-size-14;
 }
 
-.wrappedFileName {
+.wrappedFileName,
+.wrappedHeader {
   white-space: break-spaces;
 }
 
 .wrappedHeader {
-  white-space: break-spaces;
   height: spacing(16);
   vertical-align: top;
 }
