@@ -26,6 +26,10 @@
     padding: spacing(2.25) spacing(3.75);
     filter: drop-shadow(0px 1px 5px rgba(0, 0, 0, 0.15));
 
+    &:focus {
+      box-shadow: inset 0 0 0 2px $color-primary;
+    }
+
     span {
       color: $color-primary;
       font-weight: $font-weight-bold;

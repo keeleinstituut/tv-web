@@ -158,6 +158,7 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
             <Dialog.Overlay
               className={classes.scrollableContent}
               id="modalVerticalContentId"
+              tabIndex={0}
             >
               <p hidden={!helperText} className={classes.helperText}>
                 {helperText}
