@@ -29,6 +29,7 @@ import { createPortal } from 'react-dom'
 import useTableContext from 'hooks/useTableContext'
 import useModalContext from 'hooks/useModalContext'
 import { escapeSearchString } from 'helpers'
+import FocusTrap from 'focus-trap-react'
 
 interface DropdownContentComponentProps extends SelectionControlsInputProps {
   isOpen?: boolean
@@ -226,47 +227,54 @@ const DropdownContentComponent = forwardRef<
         autoFocus={showSearch && isOpen}
       />
 
-      <ul ref={scrollContainer}>
-        <EmptyContent hidden={!isEmpty(visibleOptions)} />
-        {map(visibleOptions, (option, index) => {
-          const isMultiSelected =
-            selectedValue && includes(selectedValue, option?.value)
-          const isSingleSelected = value && includes(value, option?.value)
+      <FocusTrap
+        focusTrapOptions={{
+          clickOutsideDeactivates: true,
+        }}
+      >
+        <ul ref={scrollContainer} tabIndex={0}>
+          <EmptyContent hidden={!isEmpty(visibleOptions)} />
+          {map(visibleOptions, (option, index) => {
+            const isMultiSelected =
+              selectedValue && includes(selectedValue, option?.value)
+            const isSingleSelected = value && includes(value, option?.value)
 
-          return (
-            <li key={option.value} className={classes.dropdownMenuItem}>
-              {multiple && (
-                <CheckBoxInput
-                  name={name}
-                  ariaLabel={option?.label || ''}
-                  label={option.label}
-                  value={isMultiSelected || false}
-                  className={classes.option}
-                  onChange={() => handleMultipleSelect(option?.value)}
-                  autoFocus={!showSearch && isOpen && index === 0}
-                />
-              )}
-              <Button
-                className={classNames(
-                  classes.option,
-                  isSingleSelected && classes.selectedOption
+            return (
+              <li key={option.value} className={classes.dropdownMenuItem}>
+                {multiple && (
+                  <CheckBoxInput
+                    name={name}
+                    ariaLabel={option?.label || ''}
+                    label={option.label}
+                    value={isMultiSelected || false}
+                    className={classes.option}
+                    onChange={() => handleMultipleSelect(option?.value)}
+                    autoFocus={!showSearch && isOpen && index === 0}
+                  />
                 )}
-                hidden={multiple}
-                appearance={AppearanceTypes.Text}
-                onClick={() => handleSingleSelect(option?.value)}
-                autoFocus={!showSearch && isOpen && index === 0}
-              >
-                {option?.label}
-              </Button>
-            </li>
-          )
-        })}
-      </ul>
+                <Button
+                  className={classNames(
+                    classes.option,
+                    isSingleSelected && classes.selectedOption
+                  )}
+                  hidden={multiple}
+                  appearance={AppearanceTypes.Text}
+                  onClick={() => handleSingleSelect(option?.value)}
+                  // autoFocus={!showSearch && isOpen && index === 0}
+                >
+                  {option?.label}
+                </Button>
+              </li>
+            )
+          })}
+        </ul>
+      </FocusTrap>
       <div
         hidden={!buttons}
         className={classNames(
           buttons && !isCustomSingleDropdown && classes.buttonsContainer
         )}
+        tabIndex={0}
       >
         <Button
           appearance={AppearanceTypes.Secondary}
@@ -282,6 +290,7 @@ const DropdownContentComponent = forwardRef<
           onClick={handleOnSave}
           className={classes.dropdownButton}
           hidden={isCustomSingleDropdown}
+          type="submit"
         >
           {t('button.save')}
         </Button>
