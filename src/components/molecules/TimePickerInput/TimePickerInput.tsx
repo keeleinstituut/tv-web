@@ -49,8 +49,28 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
     ref
   ) {
     const placeholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
+    const [blurredByKeyboard, setBlurredByKeyboard] = useState(false)
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       onChange(event.target.value)
+    }
+
+    const handleFocus = () => {
+      setBlurredByKeyboard(false)
+      toggleTimeColumnVisible()
+    }
+
+    const handleBlur = () => {
+      if (blurredByKeyboard) {
+        toggleTimeColumnVisible()
+      }
+    }
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === ' ') {
+        toggleTimeColumnVisible()
+      }
+      setBlurredByKeyboard(true)
     }
 
     return (
@@ -61,11 +81,14 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             disabled && classes.disabledTimeInput,
             error && classes.error
           )}
+          tabIndex={0}
           type="text"
           value={value ? value : ''}
-          onFocus={toggleTimeColumnVisible}
+          onFocus={handleFocus}
           aria-label={ariaLabel}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
           id={name}
           {...(placeholder ? { placeholder } : {})}
           ref={useInputMask({

@@ -213,6 +213,7 @@ const DateTimeRangeFormModal: FC<DateTimeRangeFormModalProps> = ({
             resetForm()
             closeModal()
           },
+          autoFocus: true,
         },
         {
           appearance: AppearanceTypes.Primary,

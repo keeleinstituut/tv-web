@@ -197,6 +197,7 @@ const SelectionControlsInput = forwardRef<
         ref={ref}
         disabled={disabled}
         onClick={toggleDropdown}
+        tabIndex={0}
       >
         <p
           hidden={!placeholder && multiple}

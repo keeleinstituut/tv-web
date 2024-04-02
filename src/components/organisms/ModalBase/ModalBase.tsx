@@ -17,6 +17,7 @@ import { map } from 'lodash'
 
 import classes from './classes.module.scss'
 import { closeModal } from '../modals/ModalRoot'
+import FocusTrap from 'focus-trap-react'
 interface ModalContextType {
   modalContentId?: string
   modalVerticalContentId?: string
@@ -86,7 +87,7 @@ const ModalFooter: FC<PropsWithChildren<ModalFooterProps>> = ({
       >
         {buttons &&
           map(buttons, (button, index) => (
-            <Button key={index} {...button}>
+            <Button key={index} autoFocus={button?.autoFocus} {...button}>
               {button?.children}
             </Button>
           ))}
@@ -130,7 +131,6 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
           <Dialog.Overlay className={classes.dialogOverlay} />
           <Dialog.Content
             onEscapeKeyDown={closeModal}
-            id="modalContentId"
             className={classNames(
               classes.dialogContent,
               classes[size],
@@ -138,45 +138,54 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
               className
             )}
           >
-            <Button
-              hidden={!topButton}
-              icon={Close}
-              appearance={AppearanceTypes.Secondary}
-              onClick={handleClose}
-              className={classes.topButton}
-              autoFocus={open && topButton}
-            >
-              {t('button.cancel')}
-            </Button>
-            <div hidden={!progressBar} className={classes.progressBarContent}>
-              {progressBar}
-            </div>
-            <h1 className={classNames(classes.modalTitle, classes[titleFont])}>
-              {title}
-            </h1>
-            {headComponent}
-            <Dialog.Overlay
-              className={classes.scrollableContent}
-              id="modalVerticalContentId"
-              tabIndex={0}
-            >
-              <p hidden={!helperText} className={classes.helperText}>
-                {helperText}
-              </p>
-              <div
-                className={classNames(
-                  classes.dialogDescription,
-                  innerWrapperClassName
-                )}
-              >
-                {children}
+            <FocusTrap>
+              <div id="modalContentId">
+                <Button
+                  hidden={!topButton}
+                  icon={Close}
+                  appearance={AppearanceTypes.Secondary}
+                  onClick={handleClose}
+                  className={classes.topButton}
+                  autoFocus={open && topButton}
+                >
+                  {t('button.cancel')}
+                </Button>
+                <div
+                  hidden={!progressBar}
+                  className={classes.progressBarContent}
+                >
+                  {progressBar}
+                </div>
+                <h1
+                  className={classNames(classes.modalTitle, classes[titleFont])}
+                >
+                  {title}
+                </h1>
+                {headComponent}
+                <Dialog.Overlay
+                  className={classes.scrollableContent}
+                  id="modalVerticalContentId"
+                  tabIndex={0}
+                >
+                  <p hidden={!helperText} className={classes.helperText}>
+                    {helperText}
+                  </p>
+                  <div
+                    className={classNames(
+                      classes.dialogDescription,
+                      innerWrapperClassName
+                    )}
+                  >
+                    {children}
+                  </div>
+                </Dialog.Overlay>
+                <ModalFooter
+                  buttonsPosition={buttonsPosition}
+                  buttons={buttons}
+                  buttonComponent={buttonComponent}
+                />
               </div>
-            </Dialog.Overlay>
-            <ModalFooter
-              buttonsPosition={buttonsPosition}
-              buttons={buttons}
-              buttonComponent={buttonComponent}
-            />
+            </FocusTrap>
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
