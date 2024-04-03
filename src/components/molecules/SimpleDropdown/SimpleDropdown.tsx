@@ -112,6 +112,15 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
     setIsOpen(false)
   }, [clickAwayInputRef])
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    event.stopPropagation()
+    if (event.key === 'Escape') {
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
+    }
+  }
+
   return (
     <div
       className={classNames(
@@ -120,6 +129,7 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
         className
       )}
       ref={clickAwayInputRef}
+      onKeyDown={handleKeyDown}
     >
       <label>{title}</label>
       <Button

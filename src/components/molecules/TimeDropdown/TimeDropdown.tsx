@@ -96,6 +96,15 @@ const TimeDropdownComponent = forwardRef<HTMLDivElement, TimeDropdownProps>(
       onChange(timeWithSeconds)
     }
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      event.stopPropagation()
+      if (event.key === 'Escape') {
+        if (setIsOpen) {
+          setIsOpen(false)
+        }
+      }
+    }
+
     return (
       <div
         className={
@@ -108,13 +117,13 @@ const TimeDropdownComponent = forwardRef<HTMLDivElement, TimeDropdownProps>(
           zIndex: 51 + (errorZIndex || 0),
           ...(wrapperRef
             ? {
-                left: useLeftPosition ? 'unset' : left - 1,
+                left: useLeftPosition ? 'unset' : left - 2,
                 right: useLeftPosition ? right - left : 'unset',
-                top: top + 80,
+                top: top + 40,
               }
             : {}),
         }}
-        tabIndex={0}
+        onKeyDown={handleKeyDown}
       >
         <TimeColumn
           start={0}

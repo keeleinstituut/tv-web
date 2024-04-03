@@ -192,46 +192,56 @@ const DropdownContentComponent = forwardRef<
     [onSearch]
   )
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    event.stopPropagation()
+    if (event.key === 'Escape') {
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
+    }
+  }
+
   if (disabled || !isOpen) return null
 
   return (
-    <div
-      className={classNames(
-        classes.dropdownMenu,
-        showSearch ? classes.l : classes[dropdownSize],
-        className
-      )}
-      ref={ref}
-      style={{
-        zIndex: 51 + (errorZIndex || 0),
-        ...(wrapperRef
-          ? {
-              left: useLeftPosition ? 'unset' : left - 2,
-              right: useLeftPosition ? right - left : 'unset',
-              top: top + 40,
-            }
-          : {}),
+    <FocusTrap
+      focusTrapOptions={{
+        clickOutsideDeactivates: true,
       }}
     >
-      <TextInput
-        ref={searchInputRef}
-        hidden={!showSearch}
-        name={`search-${name}`}
-        ariaLabel={t('label.search')}
-        placeholder={t('placeholder.search')}
-        value={searchValue}
-        onChange={handleSearch}
-        className={classes.searchInput}
-        loading={loading}
-        isSearch
-        autoFocus={showSearch && isOpen}
-      />
-
-      <FocusTrap
-        focusTrapOptions={{
-          clickOutsideDeactivates: true,
+      <div
+        className={classNames(
+          classes.dropdownMenu,
+          showSearch ? classes.l : classes[dropdownSize],
+          className
+        )}
+        ref={ref}
+        style={{
+          zIndex: 51 + (errorZIndex || 0),
+          ...(wrapperRef
+            ? {
+                left: useLeftPosition ? 'unset' : left - 2,
+                right: useLeftPosition ? right - left : 'unset',
+                top: top + 40,
+              }
+            : {}),
         }}
+        onKeyDown={handleKeyDown}
       >
+        <TextInput
+          ref={searchInputRef}
+          hidden={!showSearch}
+          name={`search-${name}`}
+          ariaLabel={t('label.search')}
+          placeholder={t('placeholder.search')}
+          value={searchValue}
+          onChange={handleSearch}
+          className={classes.searchInput}
+          loading={loading}
+          isSearch
+          autoFocus={showSearch && isOpen}
+        />
+
         <ul ref={scrollContainer} tabIndex={0}>
           <EmptyContent hidden={!isEmpty(visibleOptions)} />
           {map(visibleOptions, (option, index) => {
@@ -268,34 +278,35 @@ const DropdownContentComponent = forwardRef<
             )
           })}
         </ul>
-      </FocusTrap>
-      <div
-        hidden={!buttons}
-        className={classNames(
-          buttons && !isCustomSingleDropdown && classes.buttonsContainer
-        )}
-        tabIndex={0}
-      >
-        <Button
-          appearance={AppearanceTypes.Secondary}
-          size={SizeTypes.S}
-          onClick={handleCancel}
-          hidden={isCustomSingleDropdown}
+
+        <div
+          hidden={!buttons}
+          className={classNames(
+            buttons && !isCustomSingleDropdown && classes.buttonsContainer
+          )}
+          tabIndex={0}
         >
-          {t('button.dropdown_cancel')}
-        </Button>
-        <Button
-          appearance={AppearanceTypes.Primary}
-          size={SizeTypes.S}
-          onClick={handleOnSave}
-          className={classes.dropdownButton}
-          hidden={isCustomSingleDropdown}
-          type="submit"
-        >
-          {t('button.save')}
-        </Button>
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            size={SizeTypes.S}
+            onClick={handleCancel}
+            hidden={isCustomSingleDropdown}
+          >
+            {t('button.dropdown_cancel')}
+          </Button>
+          <Button
+            appearance={AppearanceTypes.Primary}
+            size={SizeTypes.S}
+            onClick={handleOnSave}
+            className={classes.dropdownButton}
+            hidden={isCustomSingleDropdown}
+            type="submit"
+          >
+            {t('button.save')}
+          </Button>
+        </div>
       </div>
-    </div>
+    </FocusTrap>
   )
 })
 

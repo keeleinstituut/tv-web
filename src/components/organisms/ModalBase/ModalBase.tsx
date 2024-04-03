@@ -129,17 +129,17 @@ const ModalBase: FC<PropsWithChildren<ModalProps>> = ({
         {trigger}
         <Dialog.Portal>
           <Dialog.Overlay className={classes.dialogOverlay} />
-          <Dialog.Content
-            onEscapeKeyDown={closeModal}
-            className={classNames(
-              classes.dialogContent,
-              classes[size],
-              progressBar && classes.progressBarContainer,
-              className
-            )}
-          >
+          <Dialog.Content onEscapeKeyDown={closeModal}>
             <FocusTrap>
-              <div id="modalContentId">
+              <div
+                id="modalContentId"
+                className={classNames(
+                  classes.dialogContent,
+                  classes[size],
+                  progressBar && classes.progressBarContainer,
+                  className
+                )}
+              >
                 <Button
                   hidden={!topButton}
                   icon={Close}
