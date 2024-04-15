@@ -69,6 +69,7 @@ const TooltipContent: FC<TooltipContentProps> = ({
       className={classNames(
         classes.tooltipContent,
         useBottomPosition && classes.bottomPosition,
+        isVisible && classes.visible,
         className
       )}
     >
@@ -86,6 +87,7 @@ const Icon: FC<IconProps> = ({
   if (!IconComponent || hidden) return null
   return (
     <IconComponent
+      tabIndex={0}
       aria-label={ariaLabel}
       className={classNames(classes.infoIcon, className)}
     />
@@ -116,6 +118,15 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
 
   const wrapperRef = useRef(null)
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (
+      event.type === 'click' ||
+      (event.type === 'keydown' && (event.key === 'Enter' || event.key === ' '))
+    ) {
+      setVisible((prevVisible) => !prevVisible)
+    }
+  }
+
   if (hidden) return null
   return (
     <div
@@ -127,6 +138,7 @@ const SmallTooltip: FC<SmallTooltipProps> = ({
           }
         : {})}
       ref={wrapperRef}
+      onKeyDown={handleKeyDown}
     >
       <TooltipContent
         isVisible={isVisible}

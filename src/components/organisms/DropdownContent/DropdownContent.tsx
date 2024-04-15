@@ -29,6 +29,7 @@ import { createPortal } from 'react-dom'
 import useTableContext from 'hooks/useTableContext'
 import useModalContext from 'hooks/useModalContext'
 import { escapeSearchString } from 'helpers'
+import FocusTrap from 'focus-trap-react'
 
 interface DropdownContentComponentProps extends SelectionControlsInputProps {
   isOpen?: boolean
@@ -191,102 +192,121 @@ const DropdownContentComponent = forwardRef<
     [onSearch]
   )
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    event.stopPropagation()
+    if (event.key === 'Escape') {
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
+    }
+  }
+
   if (disabled || !isOpen) return null
 
   return (
-    <div
-      className={classNames(
-        classes.dropdownMenu,
-        showSearch ? classes.l : classes[dropdownSize],
-        className
-      )}
-      ref={ref}
-      style={{
-        zIndex: 51 + (errorZIndex || 0),
-        ...(wrapperRef
-          ? {
-              left: useLeftPosition ? 'unset' : left - 2,
-              right: useLeftPosition ? right - left : 'unset',
-              top: top + 40,
-            }
-          : {}),
+    <FocusTrap
+      focusTrapOptions={{
+        clickOutsideDeactivates: true,
       }}
     >
-      <TextInput
-        ref={searchInputRef}
-        hidden={!showSearch}
-        name={`search-${name}`}
-        ariaLabel={t('label.search')}
-        placeholder={t('placeholder.search')}
-        value={searchValue}
-        onChange={handleSearch}
-        className={classes.searchInput}
-        loading={loading}
-        isSearch
-        autoFocus={showSearch && isOpen}
-      />
-
-      <ul ref={scrollContainer}>
-        <EmptyContent hidden={!isEmpty(visibleOptions)} />
-        {map(visibleOptions, (option, index) => {
-          const isMultiSelected =
-            selectedValue && includes(selectedValue, option?.value)
-          const isSingleSelected = value && includes(value, option?.value)
-
-          return (
-            <li key={option.value} className={classes.dropdownMenuItem}>
-              {multiple && (
-                <CheckBoxInput
-                  name={name}
-                  ariaLabel={option?.label || ''}
-                  label={option.label}
-                  value={isMultiSelected || false}
-                  className={classes.option}
-                  onChange={() => handleMultipleSelect(option?.value)}
-                  autoFocus={!showSearch && isOpen && index === 0}
-                />
-              )}
-              <Button
-                className={classNames(
-                  classes.option,
-                  isSingleSelected && classes.selectedOption
-                )}
-                hidden={multiple}
-                appearance={AppearanceTypes.Text}
-                onClick={() => handleSingleSelect(option?.value)}
-                autoFocus={!showSearch && isOpen && index === 0}
-              >
-                {option?.label}
-              </Button>
-            </li>
-          )
-        })}
-      </ul>
       <div
-        hidden={!buttons}
         className={classNames(
-          buttons && !isCustomSingleDropdown && classes.buttonsContainer
+          classes.dropdownMenu,
+          showSearch ? classes.l : classes[dropdownSize],
+          className
         )}
+        ref={ref}
+        style={{
+          zIndex: 51 + (errorZIndex || 0),
+          ...(wrapperRef
+            ? {
+                left: useLeftPosition ? 'unset' : left - 2,
+                right: useLeftPosition ? right - left : 'unset',
+                top: top + 40,
+              }
+            : {}),
+        }}
+        onKeyDown={handleKeyDown}
       >
-        <Button
-          appearance={AppearanceTypes.Secondary}
-          size={SizeTypes.S}
-          onClick={handleCancel}
-          hidden={isCustomSingleDropdown}
+        <TextInput
+          ref={searchInputRef}
+          hidden={!showSearch}
+          name={`search-${name}`}
+          ariaLabel={t('label.search')}
+          placeholder={t('placeholder.search')}
+          value={searchValue}
+          onChange={handleSearch}
+          className={classes.searchInput}
+          loading={loading}
+          isSearch
+          autoFocus={showSearch && isOpen}
+        />
+
+        <ul ref={scrollContainer} tabIndex={0}>
+          <EmptyContent hidden={!isEmpty(visibleOptions)} />
+          {map(visibleOptions, (option, index) => {
+            const isMultiSelected =
+              selectedValue && includes(selectedValue, option?.value)
+            const isSingleSelected = value && includes(value, option?.value)
+
+            return (
+              <li key={option.value} className={classes.dropdownMenuItem}>
+                {multiple && (
+                  <CheckBoxInput
+                    name={name}
+                    ariaLabel={option?.label || ''}
+                    label={option.label}
+                    value={isMultiSelected || false}
+                    className={classes.option}
+                    onChange={() => handleMultipleSelect(option?.value)}
+                    autoFocus={!showSearch && isOpen && index === 0}
+                  />
+                )}
+                <Button
+                  className={classNames(
+                    classes.option,
+                    isSingleSelected && classes.selectedOption
+                  )}
+                  hidden={multiple}
+                  appearance={AppearanceTypes.Text}
+                  onClick={() => handleSingleSelect(option?.value)}
+                  // autoFocus={!showSearch && isOpen && index === 0}
+                >
+                  {option?.label}
+                </Button>
+              </li>
+            )
+          })}
+        </ul>
+
+        <div
+          hidden={!buttons}
+          className={classNames(
+            buttons && !isCustomSingleDropdown && classes.buttonsContainer
+          )}
+          tabIndex={0}
         >
-          {t('button.dropdown_cancel')}
-        </Button>
-        <Button
-          appearance={AppearanceTypes.Primary}
-          size={SizeTypes.S}
-          onClick={handleOnSave}
-          className={classes.dropdownButton}
-          hidden={isCustomSingleDropdown}
-        >
-          {t('button.save')}
-        </Button>
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            size={SizeTypes.S}
+            onClick={handleCancel}
+            hidden={isCustomSingleDropdown}
+          >
+            {t('button.dropdown_cancel')}
+          </Button>
+          <Button
+            appearance={AppearanceTypes.Primary}
+            size={SizeTypes.S}
+            onClick={handleOnSave}
+            className={classes.dropdownButton}
+            hidden={isCustomSingleDropdown}
+            type="submit"
+          >
+            {t('button.save')}
+          </Button>
+        </div>
       </div>
-    </div>
+    </FocusTrap>
   )
 })
 
