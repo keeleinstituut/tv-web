@@ -5,7 +5,7 @@ import Button, {
 import landingBackground from 'assets/landing_background.svg'
 import sponsorLogo from 'assets/sponsor-logo.jpg'
 import { useTranslation } from 'react-i18next'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { FC } from 'react'
 import classNames from 'classnames'
 

@@ -1,36 +1,19 @@
-import { FC, PropsWithChildren, useCallback } from 'react'
+import { FC, PropsWithChildren } from 'react'
 import { Outlet } from 'react-router-dom'
-import useKeycloak, { AuthContext } from 'hooks/useKeycloak'
 import ModalRoot from 'components/organisms/modals/ModalRoot'
 import Landing from 'pages/Landing/Landing'
 import useAuthRedirect from 'hooks/useAuthRedirect'
 import Loader from 'components/atoms/Loader/Loader'
 import classes from './classes.module.scss'
-import { useQueryClient } from '@tanstack/react-query'
+import { useAuth } from 'components/contexts/AuthContext'
 
 const AuthWrapper: FC<PropsWithChildren> = () => {
-  const { keycloak, isUserLoggedIn, userInfo, isLoading } = useKeycloak()
-  const queryClient = useQueryClient()
+  const auth = useAuth()
+  const { isUserLoggedIn, initializing: isLoading, userInfo } = auth
   useAuthRedirect(userInfo?.tolkevarav?.privileges)
 
-  const handleLogout = useCallback(() => {
-    if (keycloak) {
-      queryClient.clear()
-      keycloak.logout()
-    }
-  }, [keycloak, queryClient])
-
   return (
-    <AuthContext.Provider
-      value={{
-        isUserLoggedIn,
-        userInfo,
-        login: keycloak && keycloak.login,
-        logout: handleLogout,
-        userPrivileges: userInfo?.tolkevarav?.privileges || [],
-        institutionUserId: userInfo?.tolkevarav?.institutionUserId || '',
-      }}
-    >
+    <>
       <Loader
         loading={isLoading && !isUserLoggedIn}
         className={classes.fullScreenLoader}
@@ -38,7 +21,7 @@ const AuthWrapper: FC<PropsWithChildren> = () => {
       {isUserLoggedIn && <Outlet />}
       {!isUserLoggedIn && !isLoading && <Landing />}
       <ModalRoot />
-    </AuthContext.Provider>
+    </>
   )
 }
 

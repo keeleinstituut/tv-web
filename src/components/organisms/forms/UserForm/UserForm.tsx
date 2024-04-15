@@ -19,7 +19,7 @@ import {
 } from 'lodash'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { UserType, UserPostType, UserStatus } from 'types/users'
 import { useUpdateUser, useUpdateCurrentUser } from 'hooks/requests/useUsers'
 import useValidators from 'hooks/useValidators'

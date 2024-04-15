@@ -35,7 +35,7 @@ import {
   TranslationMemoryType,
 } from 'types/translationMemories'
 import { map, includes, filter, find, isEqual, pull } from 'lodash'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from '../NotificationRoot/NotificationRoot'

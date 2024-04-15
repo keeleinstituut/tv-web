@@ -8,7 +8,7 @@ import {
   useFetchTmChunkAmounts,
   useFetchTranslationMemory,
 } from 'hooks/requests/useTranslationMemories'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import Loader from 'components/atoms/Loader/Loader'
 import { includes } from 'lodash'
 import { Privileges } from 'types/privileges'

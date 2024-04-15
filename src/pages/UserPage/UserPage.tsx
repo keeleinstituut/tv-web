@@ -17,7 +17,7 @@ import Button, {
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import { Privileges } from 'types/privileges'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import {
   ModalTypes,
   closeModal,
