@@ -4,7 +4,7 @@ import { FC } from 'react'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 // import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { useFetchUser } from 'hooks/requests/useUsers'
 import Loader from 'components/atoms/Loader/Loader'
 

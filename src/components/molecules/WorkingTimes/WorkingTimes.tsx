@@ -32,7 +32,7 @@ import { useInstitutionUpdate } from 'hooks/requests/useInstitutions'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import { EditDataType } from 'components/organisms/modals/DateTimeRangeFormModal/DateTimeRangeFormModal'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 
 dayjs.extend(timezone)

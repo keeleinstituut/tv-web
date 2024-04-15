@@ -4,7 +4,7 @@ import { includes } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import useAuth from './useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 
 const useProjectPageRedirect = ({

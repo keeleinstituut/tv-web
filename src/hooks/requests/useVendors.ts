@@ -232,12 +232,13 @@ export const useAllPricesFetch = ({
     enabled: !disabled,
   })
 
-  const { meta: paginationData, data: prices } = data || {}
+  const { meta: paginationData, data: prices, aggregation: dates } = data || {}
 
   return {
     isLoading,
     isError,
     prices,
+    dates,
     paginationData,
     filters: filters as GetPricesPayload,
     handleFilterChange,

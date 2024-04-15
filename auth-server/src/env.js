@@ -1,0 +1,30 @@
+require('dotenv').config()
+
+const PORT = process.env.SERVER_PORT || 8000
+const HOST = process.env.SERVER_HOST || 'localhost'
+
+const ENV = {
+  PORT,
+  HOST,
+
+  APP_SECRET: process.env.APP_SECRET,
+
+  APP_URL: process.env.APP_URL || `http://${HOST}:${PORT}`,
+
+  CLIENT_ID: process.env.OAUTH_CLIENT_ID,
+  CLIENT_SECRET: process.env.OAUTH_CLIENT_SECRET,
+  ISSUER: process.env.OAUTH_ISSUER,
+
+  TRANSLATION_ORDER_SERVICE_BASE_URL:
+    process.env.TRANSLATION_ORDER_SERVICE_BASE_URL,
+  AUTHORIZATION_SERVICE_BASE_URL: process.env.AUTHORIZATION_SERVICE_BASE_URL,
+  TRANSLATION_MEMORY_SERVICE_BASE_URL:
+    process.env.TRANSLATION_MEMORY_SERVICE_BASE_URL,
+  AUDIT_LOG_SERVICE_BASE_URL: process.env.AUDIT_LOG_SERVICE_BASE_URL,
+
+  ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS?.split(','),
+  ALLOWED_REDIRECT_URIS: process.env.ALLOWED_REDIRECT_URIS?.split(','),
+  DEFAULT_REDIRECT_URI: process.env.DEFAULT_REDIRECT_URI,
+}
+
+module.exports = ENV

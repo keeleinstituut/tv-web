@@ -4,12 +4,14 @@ FROM node:18.14.2-alpine3.17
 
 ENV APP_ROOT /app
 ENV ENTRYPOINT /entrypoint.sh
+ENV START /start.sh
 
 WORKDIR ${APP_ROOT}
 COPY ./ ${APP_ROOT}
 
 RUN yarn install
-RUN apk add nginx
+RUN cd ${APP_ROOT}/auth-server && yarn install
+RUN apk add nginx bash
 
 RUN <<EOF cat > /etc/nginx/http.d/default.conf
 server {
@@ -18,11 +20,19 @@ server {
   error_log  /var/log/nginx/error.log;
   access_log /var/log/nginx/access.log;
 
+  large_client_header_buffers 4 32k;
+  proxy_buffers 16 16k;
+  proxy_buffer_size 32k;
+
   root ${APP_ROOT}/build;
 
   location / {
     try_files \$uri /index.html;
     gzip_static on;
+  }
+
+  location /gateway/ {
+    proxy_pass http://localhost:8000/;
   }
 }
 EOF
@@ -43,11 +53,27 @@ echo "Starting..."
 exec "\$@"
 EOF
 
+RUN <<EOF cat > ${START}
+#!/bin/bash
+echo "Starting auth-server"
+cd \$APP_ROOT/auth-server && yarn start &
+
+echo "Starting nginx"
+nginx &
+
+# Wait for any process to exit
+wait -n
+
+# Exit with status of process that exited first
+exit \$?
+EOF
+
 RUN chmod +x ${ENTRYPOINT}
+RUN chmod +x ${START}
 
 RUN echo 'daemon off;' >> /etc/nginx/nginx.conf
 
-CMD ["nginx"]
+CMD ["/start.sh"]
 EXPOSE 80
 
 ENTRYPOINT ["/entrypoint.sh"]

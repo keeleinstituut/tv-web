@@ -20,7 +20,7 @@ import { useFetchProject } from 'hooks/requests/useProjects'
 
 import classes from './classes.module.scss'
 import { TaskType } from 'types/tasks'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 
 const TaskPage: FC = () => {
   const { t } = useTranslation()

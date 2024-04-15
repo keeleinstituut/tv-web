@@ -3,19 +3,17 @@ import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { size, map } from 'lodash'
 import { InstitutionType } from 'types/institutions'
-import { selectInstitution } from 'hooks/useKeycloak'
 import ModalBase, {
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import classes from './classes.module.scss'
-import { useNavigate } from 'react-router-dom'
 
 export interface InstitutionSelectModalProps {
   onClose?: () => void
   institutions?: InstitutionType[]
   isModalOpen?: boolean
   closeModal: () => void
-  onSelect?: () => void
+  onSelect?: (id: string) => void | Promise<void>
 }
 
 const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
@@ -29,7 +27,6 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
   // No need to fetch, if institutions are passed as a prop
 
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const handleClose = useCallback(() => {
     closeModal()
     if (onClose) {
@@ -37,18 +34,15 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
     }
   }, [closeModal, onClose])
 
-  const handleSelectInstitution = useCallback(
+  const handleSelect = useCallback(
     async (id: string) => {
-      setLoadingSelect(id)
-      await selectInstitution(id)
-      setLoadingSelect('')
-      navigate('/')
       if (onSelect) {
-        onSelect()
+        setLoadingSelect(id)
+        await onSelect(id)
+        closeModal()
       }
-      closeModal()
     },
-    [closeModal, navigate, onSelect]
+    [onSelect, closeModal]
   )
 
   return (
@@ -70,7 +64,7 @@ const InstitutionSelectModal: FC<InstitutionSelectModalProps> = ({
           <Button
             appearance={AppearanceTypes.Secondary}
             className={classes.institution}
-            onClick={() => handleSelectInstitution(id)}
+            onClick={() => handleSelect(id)}
             loading={loadingSelect === id}
             disabled={!!loadingSelect}
             key={id}

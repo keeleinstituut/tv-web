@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 import { ListSubProjectDetail, ProjectStatus } from 'types/projects'
 import ProjectDetails, {

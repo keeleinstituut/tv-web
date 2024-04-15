@@ -86,6 +86,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
   const {
     prices: pricesData,
+    dates: priceListDates,
     paginationData,
     handlePaginationChange,
     filters,
@@ -110,12 +111,15 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     page: Number(filters.page) - 1,
   }
 
-  const priceListCreated = dayjs(
-    orderedList ? orderedList[0]?.created_at : ''
-  ).format('DD.MM.YYYY hh:mm')
-  const priceListUpdated = dayjs(
-    orderedList ? orderedList[0]?.updated_at : ''
-  ).format('DD.MM.YYYY hh:mm')
+  const showDates =
+    priceListDates?.min_created_at && priceListDates?.max_updated_at
+
+  const priceListCreated = dayjs(priceListDates?.min_created_at).format(
+    'DD.MM.YYYY hh:mm'
+  )
+  const priceListUpdated = dayjs(priceListDates?.max_updated_at).format(
+    'DD.MM.YYYY hh:mm'
+  )
 
   const groupedLanguagePairData = useMemo(() => {
     return chain(orderedList)
@@ -271,13 +275,14 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           defaultPaginationData={defaultPaginationData}
         />
       </Root>
-
-      <p className={classes.dateText}>
-        {t('vendors.price_list_created', { priceListCreated })}
-      </p>
-      <p className={classes.dateText}>
-        {t('vendors.price_list_updated_at', { priceListUpdated })}
-      </p>
+      <div hidden={!showDates}>
+        <p className={classes.dateText}>
+          {t('vendors.price_list_created', { priceListCreated })}
+        </p>
+        <p className={classes.dateText}>
+          {t('vendors.price_list_updated_at', { priceListUpdated })}
+        </p>
+      </div>
     </>
   )
 }

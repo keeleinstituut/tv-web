@@ -6,11 +6,18 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["prettier", "@typescript-eslint", "unused-imports"],
+  "plugins": [
+    "prettier",
+    "@typescript-eslint",
+    "unused-imports"
+  ],
   "rules": {
     // Enable reporting Prettier issues as ESlint issues
     "prettier/prettier": "error",
-    "quotes": ["error", "single"],
+    "quotes": [
+      "error",
+      "single"
+    ],
     "@typescript-eslint/no-unused-vars": 1
   }
 }

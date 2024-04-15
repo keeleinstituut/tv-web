@@ -27,7 +27,7 @@ import { TaskType } from 'types/tasks'
 
 import classes from './classes.module.scss'
 import { useTaskCache } from 'hooks/requests/useTasks'
-import useAuth from 'hooks/useAuth'
+import { useAuth } from 'components/contexts/AuthContext'
 import { useAssignmentCommentUpdate } from 'hooks/requests/useAssignments'
 import { CollectionType } from 'hooks/requests/useFiles'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -367,11 +367,7 @@ const TaskContent: FC<TaskContentProps> = ({
         <Button
           className={classes.previousButton}
           onClick={handleSendToPreviousAssignmentModal}
-          hidden={
-            !isTaskAssignedToMe ||
-            !!isHistoryView ||
-            task_type === TaskType.Review
-          }
+          hidden={!isTaskAssignedToMe || !!isHistoryView}
           appearance={AppearanceTypes.Secondary}
         >
           {t('button.send_to_previous_assignment')}

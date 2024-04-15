@@ -6,6 +6,7 @@ import {
 } from 'types/projects'
 import { DiscountPercentages, Vendor } from './vendors'
 import { VolumeValue } from './volumes'
+import { UserType } from './users'
 
 export enum AssignmentStatus {
   New = 'NEW',
@@ -24,6 +25,12 @@ export interface Candidate {
   vendor: Vendor
   price: string
   status: CandidateStatus
+}
+
+export interface ManagerCandidate {
+  institution_user: UserType
+  status: CandidateStatus
+  price: string
 }
 
 export interface AssignmentType {
@@ -49,6 +56,7 @@ export interface AssignmentType {
   finished_at: string
   assigned_chunks: string[]
   comments: string
+  manager_candidates: ManagerCandidate[]
   price: string
 }
 

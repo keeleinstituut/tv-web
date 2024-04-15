@@ -3,43 +3,33 @@ import { useTranslation } from 'react-i18next'
 import SimpleDropdown, {
   SimpleDropdownOption,
 } from 'components/molecules/SimpleDropdown/SimpleDropdown'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { size } from 'lodash'
-import useAuth from 'hooks/useAuth'
-import { useInstitutionsFetch } from 'hooks/requests/useInstitutions'
+import { useAuth } from 'components/contexts/AuthContext'
 
 const UserRoleSection: FC = () => {
   const { t } = useTranslation()
-  const { institutions: fetchedInstitutions, isLoading } =
-    useInstitutionsFetch()
+  const { userInfo, institutions, openInstitutionSelectModal } = useAuth()
 
-  const { userInfo } = useAuth()
+  const openInstitutionSelection = useCallback(() => {
+    openInstitutionSelectModal({
+      onSelect: (id: string) => {
+        window.location.reload()
+      },
+    })
+  }, [openInstitutionSelectModal])
 
-  const openInstitutionSelection = useCallback(
-    () =>
-      showModal(ModalTypes.InstitutionSelect, {
-        institutions: fetchedInstitutions,
-        onSelect: () => {
-          window.location.reload()
-        },
-      }),
-    [fetchedInstitutions]
-  )
+  const shouldShowInstitutionSelection = size(institutions) > 1
 
-  const shouldShowInstitutionSelection =
-    size(fetchedInstitutions) > 1 && !isLoading
-
-  const options: SimpleDropdownOption[] = [
+  const dropDownOptions: SimpleDropdownOption[] = [
     { href: '/user-details', label: t('button.my_details') },
-    ...(shouldShowInstitutionSelection
-      ? [
-          {
-            onClick: openInstitutionSelection,
-            label: t('button.change_institution'),
-          },
-        ]
-      : []),
   ]
+
+  if (shouldShowInstitutionSelection) {
+    dropDownOptions.push({
+      onClick: openInstitutionSelection,
+      label: t('button.change_institution'),
+    })
+  }
 
   const { forename, surname } = userInfo?.tolkevarav || {}
 
@@ -47,7 +37,7 @@ const UserRoleSection: FC = () => {
 
   return (
     <SimpleDropdown
-      options={options}
+      options={dropDownOptions}
       title={t('header.my_role')}
       label={fullName}
     />
