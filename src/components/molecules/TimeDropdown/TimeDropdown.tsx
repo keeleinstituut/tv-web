@@ -1,13 +1,13 @@
 import { forwardRef, FC, RefObject, useMemo } from 'react'
 import TimeColumn from 'components/molecules/TimeColumn/TimeColumn'
 import { useClickAway, useInViewport } from 'ahooks'
-
-import classes from './classes.module.scss'
 import { SharedTimeProps } from '../TimePickerInput/TimePickerInput'
 import useModalContext from 'hooks/useModalContext'
 import { createPortal } from 'react-dom'
 import useElementPosition from 'hooks/useElementPosition'
 import useTableContext from 'hooks/useTableContext'
+
+import classes from './classes.module.scss'
 
 export type TimeDropdownProps = SharedTimeProps & {
   isTimeColumnOpen?: boolean
@@ -96,6 +96,15 @@ const TimeDropdownComponent = forwardRef<HTMLDivElement, TimeDropdownProps>(
       onChange(timeWithSeconds)
     }
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      event.stopPropagation()
+      if (event.key === 'Escape') {
+        if (setIsOpen) {
+          setIsOpen(false)
+        }
+      }
+    }
+
     return (
       <div
         className={
@@ -114,6 +123,7 @@ const TimeDropdownComponent = forwardRef<HTMLDivElement, TimeDropdownProps>(
               }
             : {}),
         }}
+        onKeyDown={handleKeyDown}
       >
         <TimeColumn
           start={0}

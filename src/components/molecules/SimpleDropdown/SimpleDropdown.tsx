@@ -8,6 +8,7 @@ import classNames from 'classnames'
 import useElementPosition from 'hooks/useElementPosition'
 import classes from './classes.module.scss'
 import useTableContext from 'hooks/useTableContext'
+import FocusTrap from 'focus-trap-react'
 
 export interface SimpleDropdownOption {
   label: string
@@ -38,27 +39,32 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
   if (!isOpen) return null
   if (horizontalWrapperId) {
     return createPortal(
-      <ul
-        className={classes.content}
-        style={{
-          left: left || 0,
-          top: (top || 0) + 24,
-          // bottom: 'unset',
-          // transform: 'translateY(-100%)',
+      <FocusTrap
+        focusTrapOptions={{
+          initialFocus: '#simple-dropdown-elements',
+          clickOutsideDeactivates: true,
         }}
       >
-        {map(options, ({ label, ...rest }, index) => (
-          <li key={label}>
-            <Button
-              appearance={AppearanceTypes.Text}
-              {...rest}
-              autoFocus={index === 0 && isOpen}
-            >
-              {label}
-            </Button>
-          </li>
-        ))}
-      </ul>,
+        <ul
+          className={classes.content}
+          style={{
+            left: left || 0,
+            top: (top || 0) + 24,
+            // bottom: 'unset',
+            // transform: 'translateY(-100%)',
+          }}
+          tabIndex={0}
+          id="simple-dropdown-elements"
+        >
+          {map(options, ({ label, ...rest }, index) => (
+            <li key={label}>
+              <Button appearance={AppearanceTypes.Text} {...rest}>
+                {label}
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </FocusTrap>,
       document.getElementById('root') || document.body
     )
   }
@@ -66,11 +72,7 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
     <ul className={classes.content}>
       {map(options, ({ label, ...rest }, index) => (
         <li key={label}>
-          <Button
-            appearance={AppearanceTypes.Text}
-            {...rest}
-            autoFocus={index === 0 && isOpen}
-          >
+          <Button appearance={AppearanceTypes.Text} {...rest}>
             {label}
           </Button>
         </li>
@@ -110,6 +112,15 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
     setIsOpen(false)
   }, [clickAwayInputRef])
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    event.stopPropagation()
+    if (event.key === 'Escape') {
+      if (setIsOpen) {
+        setIsOpen(false)
+      }
+    }
+  }
+
   return (
     <div
       className={classNames(
@@ -118,6 +129,7 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
         className
       )}
       ref={clickAwayInputRef}
+      onKeyDown={handleKeyDown}
     >
       <label>{title}</label>
       <Button

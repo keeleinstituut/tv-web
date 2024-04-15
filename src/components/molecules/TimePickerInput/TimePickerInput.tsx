@@ -5,11 +5,11 @@ import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import { useClickAway } from 'ahooks'
 import classNames from 'classnames'
 import { Icon } from '../Button/Button'
-
-import classes from './classes.module.scss'
 import TimeDropdown from '../TimeDropdown/TimeDropdown'
 import useModalContext from 'hooks/useModalContext'
 import useInputMask from 'use-mask-input'
+
+import classes from './classes.module.scss'
 
 export type SharedTimeProps = {
   value?: string
@@ -30,7 +30,8 @@ export type TimePickerInputProps = SharedTimeProps & {
 }
 
 export type TimeInputProps = SharedTimeProps & {
-  toggleTimeColumnVisible: () => void
+  onClick: () => void
+  handleKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void
 }
 
 const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
@@ -39,16 +40,18 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
       disabled,
       ariaLabel,
       value,
-      toggleTimeColumnVisible,
       error,
       showSeconds,
       name,
       onChange,
       icon,
+      handleKeyDown,
+      onClick,
     },
     ref
   ) {
     const placeholder = showSeconds ? 'hh:mm:ss' : 'hh:mm'
+
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       onChange(event.target.value)
     }
@@ -61,11 +64,13 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
             disabled && classes.disabledTimeInput,
             error && classes.error
           )}
+          tabIndex={0}
           type="text"
           value={value ? value : ''}
-          onFocus={toggleTimeColumnVisible}
           aria-label={ariaLabel}
+          onClick={onClick}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
           id={name}
           {...(placeholder ? { placeholder } : {})}
           ref={useInputMask({
@@ -105,11 +110,6 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
     const { modalContentId } = useModalContext()
     const shouldUsePortal = !!modalContentId
 
-    const toggleTimeColumnVisible = () => {
-      setIsModalOpen && setIsModalOpen(!isTimeColumnOpen)
-      setTimeColumnOpen(!isTimeColumnOpen)
-    }
-
     const clickAwayInputRef = useRef(null)
     const wrapperRef = useRef(null)
 
@@ -117,6 +117,25 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
       setIsModalOpen && setIsModalOpen(false)
       setTimeColumnOpen(false)
     }, [clickAwayInputRef, ...(wrapperRef?.current ? [wrapperRef] : [])])
+
+    const handleClick = () => {
+      setTimeColumnOpen(!isTimeColumnOpen)
+    }
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === 'Enter') {
+        setTimeColumnOpen(!isTimeColumnOpen)
+      }
+      if (event.key === 'Tab' && isTimeColumnOpen) {
+        event.preventDefault()
+        if (wrapperRef.current) {
+          const inputElement = (
+            clickAwayInputRef.current as unknown as HTMLElement
+          ).querySelector('button')
+          inputElement && inputElement.focus()
+        }
+      }
+    }
 
     return (
       <InputWrapper
@@ -133,12 +152,13 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           disabled={disabled}
           ariaLabel={ariaLabel}
           value={value}
-          toggleTimeColumnVisible={toggleTimeColumnVisible}
           error={error}
           showSeconds={showSeconds}
           onChange={onChange}
           ref={ref}
           icon={icon}
+          handleKeyDown={handleKeyDown}
+          onClick={handleClick}
         />
         <TimeDropdown
           wrapperRef={wrapperRef}

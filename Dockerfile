@@ -5,12 +5,14 @@ FROM node:18.14.2-alpine3.17
 ENV APP_ROOT /app
 ENV ENTRYPOINT /entrypoint.sh
 ENV START /start.sh
+ENV REACT_APP_GATEWAY_BASE /gateway
 
 WORKDIR ${APP_ROOT}
 COPY ./ ${APP_ROOT}
 
 RUN yarn install
 RUN cd ${APP_ROOT}/auth-server && yarn install
+RUN cd ${APP_ROOT} && yarn build
 RUN apk add nginx bash
 
 RUN <<EOF cat > /etc/nginx/http.d/default.conf
@@ -42,12 +44,6 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
 
 RUN <<EOF cat > ${ENTRYPOINT}
 #!/bin/sh
-set -e
-
-cd \$APP_ROOT
-echo "Creating production build"
-yarn build
-echo "Finished production build"
 
 echo "Starting..."
 exec "\$@"
