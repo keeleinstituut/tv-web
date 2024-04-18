@@ -16,14 +16,14 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 
 export enum InputFileTypes {
   Csv = 'text/csv',
-  Pdf = 'application/pdf',
-  Doc = 'application/msword',
-  Docx = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  Pdf = 'application/pdf', // in list
+  Doc = 'application/msword', // in list
+  Docx = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // in list
   OpenDocument = 'application/vnd.oasis.opendocument.text',
   Excel = 'application/vnd.ms-excel',
   SpreadSheet = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   Outlook = 'application/vnd.ms-outlook',
-  Asice = 'application/vnd.etsi.asic-e+zip',
+  AsiceBdoc = 'application/vnd.etsi.asic-e+zip',
   Zip = 'application/zip',
   Zip7 = 'application/x-7z-compressed',
   Png = 'image/png',
@@ -36,6 +36,14 @@ export enum InputFileTypes {
   Xml = 'application/xml',
   TextXml = 'text/xml',
   Other = 'application/octet-stream',
+  Mpeg = 'video/mp4',
+  Mpeg3 = 'audio/mpeg',
+  Avi = 'video/x-msvideo',
+  QuickTime = 'video/quicktime',
+  Wav = 'audio/wav',
+  Aac = 'audio/aac',
+  Wma = 'audio/x-ms-wma',
+  Wmv = 'video/x-ms-asf',
 }
 
 export const ProjectFileTypes = [
@@ -46,19 +54,27 @@ export const ProjectFileTypes = [
   InputFileTypes.Excel,
   InputFileTypes.SpreadSheet,
   InputFileTypes.Csv,
-  // InputFileTypes.Outlook,
-  // InputFileTypes.Asice,
-  // InputFileTypes.Zip,
-  // InputFileTypes.Zip7,
+  InputFileTypes.Outlook,
+  InputFileTypes.AsiceBdoc,
+  InputFileTypes.Zip,
+  InputFileTypes.Zip7,
   InputFileTypes.Png,
   InputFileTypes.Rtf,
-  // InputFileTypes.Eml,
+  InputFileTypes.Eml,
   InputFileTypes.Ods,
-  // InputFileTypes.Jpeg,
+  InputFileTypes.Jpeg,
   InputFileTypes.Text,
   InputFileTypes.Html,
   InputFileTypes.Xml,
   InputFileTypes.TextXml,
+  InputFileTypes.Mpeg,
+  InputFileTypes.Mpeg3,
+  InputFileTypes.Avi,
+  InputFileTypes.Wav,
+  InputFileTypes.QuickTime,
+  InputFileTypes.Aac,
+  InputFileTypes.Wma,
+  InputFileTypes.Wmv,
   // InputFileTypes.Other,
 ]
 
@@ -71,7 +87,7 @@ export const acceptFileExtensions = {
   [InputFileTypes.Excel]: ['.xls', '.xlsx'],
   [InputFileTypes.SpreadSheet]: ['.xls', '.xlsx'],
   [InputFileTypes.Outlook]: ['.msg'],
-  [InputFileTypes.Asice]: ['.asice'],
+  [InputFileTypes.AsiceBdoc]: ['.asice', '.bdoc'],
   [InputFileTypes.Zip]: ['.zip'],
   [InputFileTypes.Zip7]: ['.7z'],
   [InputFileTypes.Png]: ['.png'],
@@ -84,6 +100,14 @@ export const acceptFileExtensions = {
   [InputFileTypes.Xml]: ['.xml', '.tmx'],
   [InputFileTypes.TextXml]: ['.xml'],
   [InputFileTypes.Other]: ['.akt', '.xst'],
+  [InputFileTypes.Mpeg]: ['.mp4', '.hevc'],
+  [InputFileTypes.Mpeg3]: ['.mp3'],
+  [InputFileTypes.Avi]: ['.avi'],
+  [InputFileTypes.QuickTime]: ['.mov'],
+  [InputFileTypes.Wav]: ['.wav'],
+  [InputFileTypes.Aac]: ['.aac'],
+  [InputFileTypes.Wma]: ['.wma'],
+  [InputFileTypes.Wmv]: ['.wmv'],
 }
 
 interface AddedFilesListProps {
