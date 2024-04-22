@@ -173,6 +173,7 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           columns={tableColumns}
           tableSize={TableSizeTypes.M}
           hidePagination
+          isHorizontallyScrollable
           headComponent={
             <div className={classes.titleRow}>
               <h3>
