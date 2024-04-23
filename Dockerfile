@@ -25,6 +25,7 @@ server {
   large_client_header_buffers 4 32k;
   proxy_buffers 16 16k;
   proxy_buffer_size 32k;
+  client_max_body_size 100M;
 
   root ${APP_ROOT}/build;
 
