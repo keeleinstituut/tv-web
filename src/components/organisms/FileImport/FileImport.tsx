@@ -44,6 +44,8 @@ export enum InputFileTypes {
   Aac = 'audio/aac',
   Wma = 'audio/x-ms-wma',
   Wmv = 'video/x-ms-asf',
+  Ppt = 'application/vnd.ms-powerpoint',
+  Pptx = 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 }
 
 export const ProjectFileTypes = [
@@ -75,6 +77,8 @@ export const ProjectFileTypes = [
   InputFileTypes.Aac,
   InputFileTypes.Wma,
   InputFileTypes.Wmv,
+  InputFileTypes.Ppt,
+  InputFileTypes.Pptx,
   // InputFileTypes.Other,
 ]
 
@@ -108,6 +112,8 @@ export const acceptFileExtensions = {
   [InputFileTypes.Aac]: ['.aac'],
   [InputFileTypes.Wma]: ['.wma'],
   [InputFileTypes.Wmv]: ['.wmv'],
+  [InputFileTypes.Ppt]: ['.ppt'],
+  [InputFileTypes.Pptx]: ['.pptx'],
 }
 
 interface AddedFilesListProps {
