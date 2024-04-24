@@ -39,35 +39,39 @@ const ToggleInput = forwardRef<HTMLInputElement, ToggleInputProps>(
       }
     }
     return (
-      <BaseButton
-        onClick={handleChange}
-        disabled={disabled}
-        className={classNames(
-          classes.toggleContainer,
-          disabled && classes.disabled,
-          className
-        )}
-      >
+      <div className={classes.toggleInputContainer}>
         <label htmlFor={name}>{label}</label>
         <SmallTooltip
           hidden={!tooltipContent}
           tooltipContent={tooltipContent}
         />
-        <div className={classes.row}>
-          <span>{t('label.no')}</span>
-          <div className={classNames(classes.switch, value && classes.checked)}>
-            <input
-              type="checkbox"
-              name={name}
-              checked={!!value}
-              readOnly
-              ref={ref}
-            />
-            <span className={classNames(classes.slider)}></span>
+        <BaseButton
+          onClick={handleChange}
+          disabled={disabled}
+          className={classNames(
+            classes.toggleContainer,
+            disabled && classes.disabled,
+            className
+          )}
+        >
+          <div className={classes.row}>
+            <span>{t('label.no')}</span>
+            <div
+              className={classNames(classes.switch, value && classes.checked)}
+            >
+              <input
+                type="checkbox"
+                name={name}
+                checked={!!value}
+                readOnly
+                ref={ref}
+              />
+              <span className={classNames(classes.slider)}></span>
+            </div>
+            <span>{t('label.yes')}</span>
           </div>
-          <span>{t('label.yes')}</span>
-        </div>
-      </BaseButton>
+        </BaseButton>
+      </div>
     )
   }
 )
