@@ -34,19 +34,30 @@ import timezone from 'dayjs/plugin/timezone'
 import { EditDataType } from 'components/organisms/modals/DateTimeRangeFormModal/DateTimeRangeFormModal'
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
+import { useUpdateUser } from 'hooks/requests/useUsers'
+import { UserPostType } from 'types/users'
 
 dayjs.extend(timezone)
 interface WorkingTimesPropType {
   data?: InstitutionType
-  name: string
+  name?: string
   id: string
+  userName?: { surname?: string; forename?: string }
+  isUserWorkingTimes?: boolean
 }
 type PayloadType = {
   [key in string]: string
 }
 
-const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
+const WorkingTimes: FC<WorkingTimesPropType> = ({
+  data,
+  id,
+  name,
+  userName,
+  isUserWorkingTimes,
+}) => {
   const { updateInstitution } = useInstitutionUpdate({ id })
+  const { updateUser } = useUpdateUser({ id })
   const { userPrivileges } = useAuth()
 
   const { t } = useTranslation()
@@ -108,16 +119,32 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({ data, id, name }) => {
       workTime[`${day}_worktime_end`] = ''
     })
 
-    const payload: InstitutionPostType = {
+    const institutionWorkingTimesPayload: InstitutionPostType = {
       ...workTime,
       worktime_timezone: timezone,
       name,
     }
-    await updateInstitution(payload)
+
+    const userWorkingTimesPayload: UserPostType = {
+      ...workTime,
+      worktime_timezone: timezone,
+      user: userName,
+    }
+
+    if (isUserWorkingTimes) {
+      updateUser(userWorkingTimesPayload)
+    } else {
+      updateInstitution(institutionWorkingTimesPayload)
+    }
+
+    const successMessage = isUserWorkingTimes
+      ? t('success.user_working_times_updated')
+      : t('success.institution_updated')
+
     showNotification({
       type: NotificationTypes.Success,
       title: t('notification.announcement'),
-      content: t('success.institution_updated'),
+      content: successMessage,
     })
   }
 

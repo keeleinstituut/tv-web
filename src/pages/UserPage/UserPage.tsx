@@ -37,6 +37,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { UserStatus, UserStatusType } from 'types/users'
+import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 
 import classes from './classes.module.scss'
 
@@ -71,7 +72,30 @@ const UserPage: FC = () => {
   })
   const deactivationDate = user?.deactivation_date || ''
   const name = `${user?.user.forename} ${user?.user.surname}`
+  const userName = {
+    surname: user?.user.surname,
+    forename: user?.user.forename,
+  }
   const status = user?.status
+  const userWorkingTimes =
+    {
+      id: user?.id || '',
+      name: name || '',
+      monday_worktime_start: user?.monday_worktime_start || '',
+      monday_worktime_end: user?.monday_worktime_end || '',
+      tuesday_worktime_start: user?.tuesday_worktime_start || '',
+      tuesday_worktime_end: user?.tuesday_worktime_end || '',
+      wednesday_worktime_start: user?.wednesday_worktime_start || '',
+      wednesday_worktime_end: user?.wednesday_worktime_end || '',
+      thursday_worktime_start: user?.thursday_worktime_start || '',
+      thursday_worktime_end: user?.thursday_worktime_end || '',
+      friday_worktime_start: user?.friday_worktime_start || '',
+      friday_worktime_end: user?.friday_worktime_end || '',
+      saturday_worktime_start: user?.saturday_worktime_start || '',
+      saturday_worktime_end: user?.saturday_worktime_end || '',
+      sunday_worktime_start: user?.sunday_worktime_start || '',
+      sunday_worktime_end: user?.sunday_worktime_end || '',
+    } || {}
 
   const isUserArchived = user?.archived_at !== null
 
@@ -374,7 +398,14 @@ const UserPage: FC = () => {
         />
       </div>
 
-      <UserForm {...user} />
+      <WorkingTimes
+        id={user?.id}
+        data={userWorkingTimes}
+        userName={userName}
+        isUserWorkingTimes
+      />
+
+      <UserForm {...user} className={classes.userForm} />
       <p className={classes.dateText}>
         {t('user.created_at', {
           time: dayjs(user.created_at).format('DD.MM.YYYY HH:mm') || '',
