@@ -170,7 +170,10 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({
         className={classes.editButton}
         icon={EditIcon}
         onClick={handleEditList}
-        hidden={!includes(userPrivileges, Privileges.EditInstitutionWorktime)}
+        hidden={
+          !includes(userPrivileges, Privileges.EditInstitutionWorktime) ||
+          !includes(userPrivileges, Privileges.EditUserWorktime)
+        }
       />
     </div>
   )
