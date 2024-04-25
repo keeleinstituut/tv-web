@@ -129,14 +129,14 @@ const DataTable = <TData,>(
   }, [current_page])
 
   useEffect(() => {
-    if (onPaginationChange) {
+    if (paginationData && onPaginationChange) {
       onPaginationChange({
         per_page: pagination.pageSize,
         page: pagination.pageIndex + 1,
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination])
+  }, [pagination, paginationData])
 
   const table = useReactTable<TData>({
     data,
