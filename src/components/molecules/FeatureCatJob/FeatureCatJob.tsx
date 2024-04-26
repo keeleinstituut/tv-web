@@ -81,11 +81,15 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
     }),
   ] as ColumnDef<TableRow>[]
 
+  const catToolName = job_definition.linking_with_cat_tool_jobs_enabled
+    ? '(CAT)'
+    : ''
+  const featureName = `${job_definition.job_short_name} ${catToolName}`
+
   return (
     <div className={classes.container}>
       <h3>
-        {t('task.vendor_title', { number: index + 1 })}(
-        {t(`projects.features.${job_definition.job_key}`)})
+        {t('task.vendor_title', { number: index + 1 })}({featureName})
       </h3>
       <span className={classes.assignmentId}>{ext_id}</span>
       <div className={classes.titleRow}>
