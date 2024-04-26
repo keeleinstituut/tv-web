@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { downloadFile } from 'helpers'
+// import { downloadFile } from 'helpers'
 import { CatAnalysis, SourceFile } from 'types/projects'
 
 export interface AnalysisResponse {
@@ -28,30 +28,26 @@ export const useCatAnalysisFetch = ({
   }
 }
 
-export const useDownloadCatAnalysisFetch = ({
-  subProjectId: id,
-}: {
-  subProjectId?: string
-}) => {
-  const { isLoading, isSuccess, mutateAsync } = useMutation({
-    mutationKey: ['cat_analysis', id],
-    mutationFn: () =>
-      apiClient.get(
-        `${endpoints.CAT_TOOL}/download-volume-analysis/${id}`,
-        {},
-        { responseType: 'blob' }
-      ),
-    onSuccess: (data) => {
-      downloadFile({
-        data,
-        fileName: 'analysis.txt',
-      })
-    },
-  })
+// export const useDownloadCatAnalysisFetch = ({
+//   subProjectId: id,
+// }: {
+//   subProjectId?: string
+// }) => {
+//   const { isLoading, isSuccess, mutateAsync } = useMutation({
+//     mutationKey: ['cat_analysis', id],
+//     mutationFn: () =>
+//       apiClient.get(`${endpoints.CAT_TOOL}/download-volume-analysis/${id}`, {}),
+//     onSuccess: (data) => {
+//       downloadFile({
+//         data,
+//         fileName: 'analysis.txt',
+//       })
+//     },
+//   })
 
-  return {
-    downloadAnalysis: mutateAsync,
-    isSuccess,
-    isLoading,
-  }
-}
+//   return {
+//     downloadAnalysis: mutateAsync,
+//     isSuccess,
+//     isLoading,
+//   }
+// }
