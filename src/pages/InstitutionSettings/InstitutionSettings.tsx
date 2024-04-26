@@ -2,13 +2,17 @@ import Container from 'components/atoms/Container/Container'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import { FC } from 'react'
 import classes from './classes.module.scss'
-import { useInstitutionFetch } from 'hooks/requests/useInstitutions'
+import {
+  useInstitutionFetch,
+  useInstitutionVacationsFetch,
+} from 'hooks/requests/useInstitutions'
 import { useAuth } from 'components/contexts/AuthContext'
 import InstitutionForm from 'components/organisms/forms/InstitutionForm/InstitutionForm'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import DepartmentManagement from 'components/molecules/DepartmentManagement/DepartmentManagement'
 import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
+import VacationTimes from 'components/molecules/VacationTimes/VacationTimes'
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
@@ -20,6 +24,7 @@ const InstitutionSettings: FC = () => {
   const { institution } = useInstitutionFetch({
     id: institutionId,
   })
+  const { institutionVacations } = useInstitutionVacationsFetch()
 
   const { updated_at, created_at } = institution || {}
 
@@ -38,8 +43,9 @@ const InstitutionSettings: FC = () => {
           workingTimes={
             <WorkingTimes name={name} id={institutionId} data={institution} />
           }
-          //TODO: add vacation days component as prop
-          //vacationDays={<div>Puhkepäevad:</div>}
+          vacationDays={
+            <VacationTimes name={name} id={institutionId} data={institution} />
+          }
         />
       </Container>
 

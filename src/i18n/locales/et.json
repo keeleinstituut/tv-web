@@ -329,6 +329,8 @@
     "created_at": "Konto loodud {{ time }}",
     "updated_at": "Konto andmed muudetud {{ time }}",
     "working_times": "Tööajad",
+    "vacation_times": "Puhkepäevad:",
+    "vacation_times_range": "Puhkuse vahemik",
     "working_days": "Tööpäevad",
     "days": {
       "monday": "Esmaspäev",
@@ -429,6 +431,7 @@
     "calculation_by_analysis": "Arvutuskäik analüüsi järgi",
     "confirm_delete_volume": "Kas oled kindel, et soovid mahu kustutada?",
     "set_working_times_title": "Tööaegade määramine",
+    "set_vacation_times_title": "Puhkepäevade määramine",
     "confirm_complete_task": "Kas oled kindel, et soovid ülesande lõpetatuks märkida?",
     "confirm_send_to_previous_assignment": "Kas oled kindel, et soovid suunata töö eelmisesse ülesandesse tagasi?",
     "confirm_send_to_previous_assignment_details": "Veendu, et peale tagasi saatmist lisad teostajale ülesande juhistesse põhjenduse ja kirjeldad seda, mida on vaja teisiti teha.",

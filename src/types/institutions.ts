@@ -25,9 +25,20 @@ export interface InstitutionType {
   sunday_worktime_start?: string
   sunday_worktime_end?: string
 }
+export interface InstitutionVacationType {
+  id: string
+  start_date: string
+  end_date: string
+}
 
 export interface InstitutionsDataType {
   data: InstitutionType[]
+}
+export interface InstitutionVacationsDataType {
+  data: string[]
+}
+export interface InstitutionVacationsPostType {
+  vacations: InstitutionVacationType[]
 }
 export interface InstitutionDataType {
   data: InstitutionType

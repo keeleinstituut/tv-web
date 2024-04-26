@@ -5,6 +5,8 @@ import {
   InstitutionDataType,
   InstitutionDiscountsDataType,
   InstitutionPostType,
+  InstitutionVacationsDataType,
+  InstitutionVacationsPostType,
   InstitutionsDataType,
 } from 'types/institutions'
 import { DiscountPercentages } from 'types/vendors'
@@ -103,6 +105,48 @@ export const useUpdateInstitutionDiscounts = () => {
   })
   return {
     updateInstitutionDiscounts,
+    isLoading,
+  }
+}
+
+export const useInstitutionVacationsFetch = () => {
+  const { isLoading, isError, data } = useQuery<InstitutionVacationsDataType>({
+    queryKey: ['institution-vacations'],
+    queryFn: () => apiClient.get(`${endpoints.INSTITUTION_VACATIONS}`),
+  })
+  console.log('data', data)
+
+  const { data: institutionVacations } = data || {}
+
+  return {
+    institutionVacations,
+    isLoading: isLoading,
+    isError: isError,
+  }
+}
+
+export const useInstitutionVacationsUpdate = () => {
+  // const queryClient = useQueryClient()
+  const { mutateAsync: updateInstitutionVacations, isLoading } = useMutation({
+    mutationKey: ['institution-vacations'],
+    mutationFn: (payload: any) =>
+      apiClient.post(`${endpoints.INSTITUTION_VACATIONS}/sync`, payload),
+    // onSuccess: ({ data }) => {
+    //   queryClient.setQueryData(
+    //     ['institution-vacations'],
+    //     (oldData?: any) => {
+    //       const { data: previousData } = oldData || {}
+    //       if (!previousData) return oldData
+    //       const newData = { ...previousData, ...data }
+    //       return { data: newData }
+    //     }
+    //   )
+    //   queryClient.refetchQueries({ queryKey: ['institutions'], type: 'active' })
+    // },
+  })
+
+  return {
+    updateInstitutionVacations,
     isLoading,
   }
 }
