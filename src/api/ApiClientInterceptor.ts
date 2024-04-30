@@ -15,7 +15,7 @@ const shouldRetry = (error: ErrorInterface): boolean => {
   const { response } = error
   if (!response) return false
   return (
-    [429, 500, 502, 503, 504, 403].includes(response.status) ||
+    [429, 500, 502, 503, 504, 401].includes(response.status) ||
     error.code === 'ECONNABORTED'
   )
 }
