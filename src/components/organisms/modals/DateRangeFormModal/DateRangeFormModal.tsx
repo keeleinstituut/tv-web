@@ -15,19 +15,7 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import {
-  compact,
-  filter,
-  includes,
-  isEqual,
-  join,
-  map,
-  reduce,
-  size,
-  split,
-  toArray,
-  uniqueId,
-} from 'lodash'
+import { filter, isEqual, map, size, split, uniqueId } from 'lodash'
 import {
   FieldPath,
   Path,
@@ -60,7 +48,6 @@ export interface DateRangeFormModalProps {
 
 type FormValues = {
   [key in string]: DateRangeType
-  // vacations: { [key in string]: DateRangeType }
 }
 
 const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
@@ -84,13 +71,6 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
   } = useForm<FormValues>({
     mode: 'onChange',
     reValidateMode: 'onBlur',
-    // defaultValues: {
-    //   date_range: {},
-    // },
-    // defaultValues: {
-    //   // vacations: { [id]: {} },
-    //   vacations: {},
-    // },
     defaultValues: {},
   })
 
@@ -103,10 +83,10 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
         id: id,
         label: t('institution.vacation_times_range'),
         formControl: control,
-        // handleDelete: () => handleOnDelete(String(id)),
+        // handleDelete
         rules: {
           required: true,
-          //   validate: dateTimeRequiredValidator,
+          //   validate,
         },
       }
     }
@@ -130,7 +110,7 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
         // handleDelete: () => handleOnDelete(newId),
         // rules: {
         //   required: true,
-        //   validate: dateTimeRequiredValidator,
+        //   validate,
         // },
       },
     ]
@@ -151,11 +131,6 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
     // unregister(prevDeletedValue)
   }, [prevDeletedValue])
 
-  // const handleOnDelete = (id: string) => {
-  //   setPrevDeletedValue(id)
-  //   setTimeout(() => resetField(id), 100)
-  // }
-
   const resetForm = useCallback(() => {
     reset()
     setPrevDeletedValue(undefined)
@@ -163,8 +138,6 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
   }, [editableFields, inputFields, reset])
 
   const onSubmit: SubmitHandler<any> = useCallback(async (values) => {
-    // const payload = toArray(values).filter((value) => value)
-
     const payload = values
 
     try {
@@ -178,18 +151,6 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
       if (typedErrorData.errors) {
         map(typedErrorData.errors, (errorsArray, key) => {
           const typedKey = key as unknown as FieldPath<FormValues>
-
-          //   const filedId = compact(
-          //     map(values, ({ days }, index) => {
-          //       const day = split(typedKey, '_')[0]
-          //       if (includes(days, day)) {
-          //         return index
-          //       }
-          //     })
-          //   )[0]
-
-          const errorString = join(errorsArray, ',')
-          //   setError(filedId, { type: 'backend', message: errorString })
         })
       }
     }

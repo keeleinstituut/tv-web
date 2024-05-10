@@ -126,23 +126,10 @@ export const useInstitutionVacationsFetch = () => {
 }
 
 export const useInstitutionVacationsUpdate = () => {
-  // const queryClient = useQueryClient()
   const { mutateAsync: updateInstitutionVacations, isLoading } = useMutation({
     mutationKey: ['institution-vacations'],
     mutationFn: (payload: any) =>
       apiClient.post(`${endpoints.INSTITUTION_VACATIONS}/sync`, payload),
-    // onSuccess: ({ data }) => {
-    //   queryClient.setQueryData(
-    //     ['institution-vacations'],
-    //     (oldData?: any) => {
-    //       const { data: previousData } = oldData || {}
-    //       if (!previousData) return oldData
-    //       const newData = { ...previousData, ...data }
-    //       return { data: newData }
-    //     }
-    //   )
-    //   queryClient.refetchQueries({ queryKey: ['institutions'], type: 'active' })
-    // },
   })
 
   return {

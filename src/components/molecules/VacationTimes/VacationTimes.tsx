@@ -96,53 +96,10 @@ const VacationTimes: FC<VacationTimesPropType> = ({ data, id, name }) => {
     ', '
   )
 
-  // const handleOnSubmit = async (values: EditDataType[]) => {
-  //   const usedDays = flatMapDeep(values, 'days')
-  //   const unUsedDays = omit(DayTypes, usedDays) || {}
-  //   const timezone = dayjs.tz.guess()
-  //   const workTime: PayloadType = {}
-
-  //   forEach(values, ({ days, date_range }) => {
-  //     forEach(days, (day) => {
-  //       workTime[`${day}_worktime_start`] = date_range?.start || ''
-  //       workTime[`${day}_worktime_end`] = date_range?.end || ''
-  //     })
-  //   })
-  //   forEach(unUsedDays, (day) => {
-  //     workTime[`${day}_worktime_start`] = ''
-  //     workTime[`${day}_worktime_end`] = ''
-  //   })
-
-  //   const payload: InstitutionPostType = {
-  //     ...workTime,
-  //     worktime_timezone: timezone,
-  //     name,
-  //   }
-  //   await updateInstitution(payload)
-  //   showNotification({
-  //     type: NotificationTypes.Success,
-  //     title: t('notification.announcement'),
-  //     content: t('success.institution_updated'),
-  //   })
-  // }
   const handleOnSubmit = async (values: any) => {
     const payload: any = {
       values,
     }
-
-    // const vacationTimes = map(values, (date, key) => {
-    //   return {
-    //     id: key,
-    //     start_date: date.start,
-    //     end_date: date.end,
-    //   }
-    // })
-
-    // console.log('vacationTimes', vacationTimes)
-
-    // const payload2 = {
-    //   vacations: vacationTimes,
-    // }
 
     console.log('values', values)
 
