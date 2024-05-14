@@ -15,27 +15,17 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { filter, isEqual, map, size, split, uniqueId } from 'lodash'
-import {
-  FieldPath,
-  Path,
-  SubmitHandler,
-  useController,
-  useForm,
-} from 'react-hook-form'
+import { filter, isEqual, map, reduce, size, split, uniqueId } from 'lodash'
+import { FieldPath, Path, SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
 import classes from './classes.module.scss'
 import { ValidationError } from 'api/errorHandler'
 import useValidators from 'hooks/useValidators'
 
-export interface DateRangeType {
-  start_date: string
-  end_date: string
-}
 export type EditDataType = {
   id?: string
-  days?: string[]
-  date_range?: DateRangeType
+  start?: string
+  end?: string
 }
 
 export interface DateRangeFormModalProps {
@@ -47,7 +37,7 @@ export interface DateRangeFormModalProps {
 }
 
 type FormValues = {
-  [key in string]: DateRangeType
+  [key in string]: string
 }
 
 const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
@@ -58,7 +48,26 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
   handleOnSubmit,
 }) => {
   const { t } = useTranslation()
-  const { dateTimeRequiredValidator } = useValidators()
+  // const { dateTimeRequiredValidator } = useValidators()
+
+  const defaultValues: FormValues = useMemo(
+    () =>
+      reduce(
+        editableData,
+        (result, value) => {
+          if (!value.id) {
+            return result
+          }
+          return {
+            ...result,
+            [value.id]: value,
+          }
+        },
+        {}
+      ),
+
+    [editableData]
+  )
 
   const {
     handleSubmit,
@@ -66,12 +75,12 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
     reset,
     resetField,
     unregister,
-    setError,
+    // setError,
     formState: { isSubmitting, isValid, isDirty },
   } = useForm<FormValues>({
     mode: 'onChange',
     reValidateMode: 'onBlur',
-    defaultValues: {},
+    defaultValues: defaultValues,
   })
 
   const editableFields: FieldProps<FormValues>[] = map(
@@ -83,10 +92,9 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
         id: id,
         label: t('institution.vacation_times_range'),
         formControl: control,
-        // handleDelete
+        handleDelete: () => handleOnDelete(String(id)),
         rules: {
           required: true,
-          //   validate,
         },
       }
     }
@@ -99,19 +107,17 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
 
   const addInputField = () => {
     const newId = uniqueId()
-
     const newFields: FieldProps<FormValues>[] = [
       ...inputFields,
       {
         inputType: InputTypes.DateRange,
         name: `${newId}` as Path<FormValues>,
         label: t('institution.vacation_times_range'),
-        // formControl: control,
-        // handleDelete: () => handleOnDelete(newId),
-        // rules: {
-        //   required: true,
-        //   validate,
-        // },
+        formControl: control,
+        handleDelete: () => handleOnDelete(newId),
+        rules: {
+          required: true,
+        },
       },
     ]
     setInputFields(newFields)
@@ -119,7 +125,7 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
 
   useEffect(() => {
     setInputFields(editableFields)
-    // reset(defaultValues)
+    reset(defaultValues)
   }, [editableData])
 
   useEffect(() => {
@@ -128,8 +134,13 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
       return !isEqual(fieldId, prevDeletedValue)
     })
     setInputFields(withoutDeleteFields)
-    // unregister(prevDeletedValue)
+    unregister(prevDeletedValue)
   }, [prevDeletedValue])
+
+  const handleOnDelete = (id: string) => {
+    setPrevDeletedValue(id)
+    setTimeout(() => resetField(id), 100)
+  }
 
   const resetForm = useCallback(() => {
     reset()
@@ -139,7 +150,6 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
 
   const onSubmit: SubmitHandler<any> = useCallback(async (values) => {
     const payload = values
-
     try {
       if (handleOnSubmit) {
         await handleOnSubmit(payload)
