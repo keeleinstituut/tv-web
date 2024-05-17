@@ -23,6 +23,7 @@ import {
   reduce,
   size,
   split,
+  toArray,
   uniqueId,
 } from 'lodash'
 import { FieldPath, Path, SubmitHandler, useForm } from 'react-hook-form'
@@ -71,6 +72,7 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
           return {
             ...result,
             [value.id]: {
+              id: value.id,
               start: value.start,
               end: value.end,
             },
@@ -159,10 +161,11 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
     setInputFields(editableFields)
   }, [editableFields, inputFields, reset])
 
-  const onSubmit: SubmitHandler<any> = useCallback(async (values) => {
+  const onSubmit: SubmitHandler<FormValues> = useCallback(async (values) => {
+    const payload = toArray(values).filter((value) => value)
     try {
       if (handleOnSubmit) {
-        await handleOnSubmit(values)
+        await handleOnSubmit(payload)
       }
       resetForm()
       closeModal()

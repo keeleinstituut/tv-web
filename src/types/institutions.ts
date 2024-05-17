@@ -35,9 +35,9 @@ export interface InstitutionVacationType {
 }
 
 export interface InstitutionVacationPostType {
-  id: string
-  start_date: string
-  end_date: string
+  id?: string
+  start_date?: string
+  end_date?: string
 }
 
 export interface InstitutionsDataType {

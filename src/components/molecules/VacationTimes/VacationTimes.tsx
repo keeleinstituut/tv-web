@@ -10,13 +10,17 @@ import { map, includes, join } from 'lodash'
 import classes from './classes.module.scss'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { InstitutionVacationType } from 'types/institutions'
+import {
+  InstitutionVacationsPostType,
+  InstitutionVacationType,
+} from 'types/institutions'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import { useInstitutionVacationsUpdate } from 'hooks/requests/useInstitutions'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
+import { EditDataType } from 'components/organisms/modals/DateRangeFormModal/DateRangeFormModal'
 
 dayjs.extend(timezone)
 interface VacationTimesPropType {
@@ -44,7 +48,7 @@ const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {
       const startDate = dayjs(start, 'DD/MM/YYYY').format('DD')
       const endDate = dayjs(end, 'DD/MM/YYYY').format('DD.MM.YYYY')
 
-      if (start == end) {
+      if (start === end) {
         return `${endDate}`
       }
       return `${startDate}-${endDate}`
@@ -52,25 +56,18 @@ const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {
     ', '
   )
 
-  const handleOnSubmit = async (values: any) => {
+  const handleOnSubmit = async (values: EditDataType[]) => {
     const formattedVacationTimes = map(values, (date) => {
-      const startDateParts = date.start.split('/')
-      const endDateParts = date.end.split('/')
-
-      // Format start date
-      const formattedStartDate = `${startDateParts[2]}-${startDateParts[1]}-${startDateParts[0]}`
-
-      // Format end date
-      const formattedEndDate = `${endDateParts[2]}-${endDateParts[1]}-${endDateParts[0]}`
-
+      const startDate = dayjs(date.start, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      const endDate = dayjs(date.end, 'DD/MM/YYYY').format('YYYY-MM-DD')
       return {
         ...(date.id && { id: date.id }),
-        start_date: formattedStartDate,
-        end_date: formattedEndDate,
+        start_date: startDate,
+        end_date: endDate,
       }
     })
 
-    const payload: any = {
+    const payload: InstitutionVacationsPostType = {
       vacations: formattedVacationTimes,
     }
 
