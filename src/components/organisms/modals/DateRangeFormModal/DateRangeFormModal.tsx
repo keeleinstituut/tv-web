@@ -15,12 +15,20 @@ import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { filter, isEqual, map, reduce, size, split, uniqueId } from 'lodash'
+import {
+  filter,
+  isEqual,
+  join,
+  map,
+  reduce,
+  size,
+  split,
+  uniqueId,
+} from 'lodash'
 import { FieldPath, Path, SubmitHandler, useForm } from 'react-hook-form'
 import { ReactComponent as Add } from 'assets/icons/add.svg'
 import classes from './classes.module.scss'
 import { ValidationError } from 'api/errorHandler'
-import useValidators from 'hooks/useValidators'
 
 export type EditDataType = {
   id?: string
@@ -37,7 +45,10 @@ export interface DateRangeFormModalProps {
 }
 
 type FormValues = {
-  [key in string]: string
+  [key in string]: {
+    start: string
+    end: string
+  }
 }
 
 const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
@@ -48,7 +59,6 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
   handleOnSubmit,
 }) => {
   const { t } = useTranslation()
-  // const { dateTimeRequiredValidator } = useValidators()
 
   const defaultValues: FormValues = useMemo(
     () =>
@@ -60,7 +70,10 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
           }
           return {
             ...result,
-            [value.id]: value,
+            [value.id]: {
+              start: value.start,
+              end: value.end,
+            },
           }
         },
         {}
@@ -75,7 +88,7 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
     reset,
     resetField,
     unregister,
-    // setError,
+    setError,
     formState: { isSubmitting, isValid, isDirty },
   } = useForm<FormValues>({
     mode: 'onChange',
@@ -91,7 +104,6 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
         name: `${id}` as Path<FormValues>,
         id: id,
         label: t('institution.vacation_times_range'),
-        formControl: control,
         handleDelete: () => handleOnDelete(String(id)),
         rules: {
           required: true,
@@ -107,20 +119,19 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
 
   const addInputField = () => {
     const newId = uniqueId()
-    const newFields: FieldProps<FormValues>[] = [
+
+    setInputFields([
       ...inputFields,
       {
         inputType: InputTypes.DateRange,
         name: `${newId}` as Path<FormValues>,
         label: t('institution.vacation_times_range'),
-        formControl: control,
         handleDelete: () => handleOnDelete(newId),
         rules: {
           required: true,
         },
       },
-    ]
-    setInputFields(newFields)
+    ])
   }
 
   useEffect(() => {
@@ -149,10 +160,9 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
   }, [editableFields, inputFields, reset])
 
   const onSubmit: SubmitHandler<any> = useCallback(async (values) => {
-    const payload = values
     try {
       if (handleOnSubmit) {
-        await handleOnSubmit(payload)
+        await handleOnSubmit(values)
       }
       resetForm()
       closeModal()
@@ -161,6 +171,11 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
       if (typedErrorData.errors) {
         map(typedErrorData.errors, (errorsArray, key) => {
           const typedKey = key as unknown as FieldPath<FormValues>
+          const errorString = join(errorsArray, ',')
+          setError(typedKey, {
+            type: 'backend',
+            message: errorString,
+          })
         })
       }
     }

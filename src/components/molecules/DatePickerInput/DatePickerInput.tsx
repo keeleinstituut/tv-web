@@ -1,4 +1,4 @@
-import { forwardRef, useRef } from 'react'
+import React, { forwardRef, useRef } from 'react'
 import DatePicker, {
   ReactDatePickerProps,
   registerLocale,
@@ -58,10 +58,23 @@ const DatePickerComponent = ({
 
   const convertedValue = dayjs(value, 'DD/MM/YYYY')
   const splittedDayValue = convertedValue?.format('YYYY-MM-DD')
+  const calendarRef = useRef<any>(null)
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.stopPropagation()
+    }
+
+    if (event.key === 'Enter') {
+      if (calendarRef.current) {
+        calendarRef.current.setOpen(true)
+      }
+    }
+  }
 
   return (
     <>
       <DatePicker
+        ref={calendarRef}
         id={id || name}
         selected={value ? new Date(splittedDayValue) : undefined}
         dateFormat={'dd.MM.yyyy'}
@@ -71,9 +84,10 @@ const DatePickerComponent = ({
         disabled={disabled}
         minDate={minDate ? minDate : undefined}
         maxDate={maxDate ? maxDate : undefined}
+        preventOpenOnFocus={true}
+        onKeyDown={handleKeyDown}
         {...rest}
         onChange={handleDateChange}
-        autoFocus={false}
       />
       <Calender
         className={classNames(

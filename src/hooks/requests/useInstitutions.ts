@@ -6,7 +6,6 @@ import {
   InstitutionDiscountsDataType,
   InstitutionPostType,
   InstitutionVacationsDataType,
-  InstitutionVacationsPostType,
   InstitutionsDataType,
 } from 'types/institutions'
 import { DiscountPercentages } from 'types/vendors'
@@ -126,10 +125,22 @@ export const useInstitutionVacationsFetch = () => {
 }
 
 export const useInstitutionVacationsUpdate = () => {
+  const queryClient = useQueryClient()
   const { mutateAsync: updateInstitutionVacations, isLoading } = useMutation({
     mutationKey: ['institution-vacations'],
     mutationFn: (payload: any) =>
       apiClient.post(`${endpoints.INSTITUTION_VACATIONS}/sync`, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['institution-vacations'],
+        (oldData?: InstitutionVacationsDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...data }
+          return { data: newData }
+        }
+      )
+    },
   })
 
   return {

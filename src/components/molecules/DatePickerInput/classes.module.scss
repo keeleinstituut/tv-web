@@ -56,10 +56,6 @@
 .datePickerWrapper {
   width: 125px;
   position: relative;
-
-  &.increasedZIndex {
-    z-index: 14;
-  }
 }
 
 :global(.react-datepicker-popper[data-placement^='bottom']) {
@@ -73,6 +69,10 @@
   border-radius: spacing(1);
 }
 
+:global(.react-datepicker__tab-loop) {
+  z-index: 1;
+}
+
 :global(.react-datepicker__triangle) {
   display: none;
 }
@@ -84,6 +84,10 @@
 
   &:hover *::before {
     border-color: $color-background-dark;
+  }
+
+  &:focus {
+    border: 1px solid $color-white;
   }
 }
 
@@ -171,7 +175,6 @@
   position: relative;
   display: inline-block;
   background-color: $color-primary;
-  color: $color-white;
   padding: spacing(1.5);
   text-align: center;
   width: 32px;

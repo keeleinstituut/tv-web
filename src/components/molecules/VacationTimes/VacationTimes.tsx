@@ -6,7 +6,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
-import { map, includes, join, mapValues } from 'lodash'
+import { map, includes, join } from 'lodash'
 import classes from './classes.module.scss'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -53,7 +53,7 @@ const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {
   )
 
   const handleOnSubmit = async (values: any) => {
-    const formattedVacationTimes = mapValues(values, (date) => {
+    const formattedVacationTimes = map(values, (date) => {
       const startDateParts = date.start.split('/')
       const endDateParts = date.end.split('/')
 
