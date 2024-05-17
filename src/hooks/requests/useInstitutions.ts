@@ -113,7 +113,6 @@ export const useInstitutionVacationsFetch = () => {
     queryKey: ['institution-vacations'],
     queryFn: () => apiClient.get(`${endpoints.INSTITUTION_VACATIONS}`),
   })
-  console.log('data', data)
 
   const { data: institutionVacations } = data || {}
 
