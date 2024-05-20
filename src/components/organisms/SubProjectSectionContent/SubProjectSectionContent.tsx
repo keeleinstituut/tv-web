@@ -75,15 +75,10 @@ const AssignmentsSection: FC<AssignmentsSectionProps> = ({ assignments }) => {
         { job_definition, assignee, assignee_comments, manager_candidates },
         index
       ) => {
-        const catToolName = job_definition?.linking_with_cat_tool_jobs_enabled
-          ? '(CAT)'
-          : ''
-        const featureName = `${job_definition?.job_short_name} ${catToolName}`
-
         return {
           title: `${t('task.vendor_title', {
             number: index + 1,
-          })} (${featureName})`,
+          })} (${job_definition?.job_short_name})`,
           institution_user:
             assignee?.institution_user ||
             manager_candidates[0]?.institution_user,
@@ -268,11 +263,10 @@ const ManagerContent: FC<ManagerContentProps> = ({ id, projectDomain }) => {
   const availableTabs = compact(
     map(uniqueAssignments, (feature) => {
       if (feature) {
-        const catToolName = feature.cat_tool_enabled ? '(CAT)' : ''
         return {
           key: feature.id,
           id: feature.job_key,
-          name: `${feature.job_short_name} ${catToolName}`,
+          name: feature.job_short_name,
         }
       }
     })
