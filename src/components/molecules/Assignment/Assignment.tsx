@@ -58,15 +58,7 @@ const Assignment: FC<AssignmentProps> = ({
       sub_project_id,
     })
 
-  const {
-    job_key,
-    skill_id,
-    job_short_name,
-    linking_with_cat_tool_jobs_enabled,
-  } = job_definition
-
-  const catToolName = linking_with_cat_tool_jobs_enabled ? '(CAT)' : ''
-  const featureName = `${job_short_name} ${catToolName}`
+  const { job_key, skill_id, job_short_name } = job_definition
 
   const selectedVendorsIds = map(candidates, 'vendor.id')
 
@@ -122,7 +114,7 @@ const Assignment: FC<AssignmentProps> = ({
     <div className={classes.assignmentContainer}>
       <div>
         <h3 className={classes.titleContainer}>
-          {t('task.vendor_title', { number: index + 1 })}({featureName})
+          {t('task.vendor_title', { number: index + 1 })}({job_short_name})
           <BaseButton
             className={classes.deleteButton}
             hidden={index === 0 || workflow_started}
