@@ -25,6 +25,7 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { showNotification } from '../NotificationRoot/NotificationRoot'
 import { TranslationMemoryType } from 'types/translationMemories'
 import { useNavigate } from 'react-router-dom'
+import { AxiosError } from 'axios'
 
 type TranslationMemoryDetailsTypes = {
   translationMemory: Partial<TranslationMemoryType>
@@ -59,11 +60,14 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
         content: t('success.translation_memory_import'),
       })
     } catch (error) {
-      showNotification({
-        type: NotificationTypes.Error,
-        title: t('notification.error'),
-        content: t('notification.tm_import_failed'),
-      })
+      const typedError = error as AxiosError
+      if (typedError?.response?.status !== 413) {
+        showNotification({
+          type: NotificationTypes.Error,
+          title: t('notification.error'),
+          content: t('notification.tm_import_failed'),
+        })
+      }
     }
   }
 
