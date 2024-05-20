@@ -11,7 +11,11 @@ const Container = (
   ref: Ref<HTMLDivElement>
 ) => {
   return (
-    <section ref={ref} className={classNames(classes.container, className)}>
+    <section
+      ref={ref}
+      className={classNames(classes.container, className)}
+      tabIndex={0}
+    >
       {children}
     </section>
   )
