@@ -11,11 +11,15 @@ import classes from './classes.module.scss'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import {
+  InstitutionUserVacationsPostType,
   InstitutionVacationsPostType,
   InstitutionVacationType,
 } from 'types/institutions'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
-import { useInstitutionVacationsUpdate } from 'hooks/requests/useInstitutions'
+import {
+  useInstitutionUserVacationsUpdate,
+  useInstitutionVacationsUpdate,
+} from 'hooks/requests/useInstitutions'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import { useAuth } from 'components/contexts/AuthContext'
@@ -25,12 +29,15 @@ import { EditDataType } from 'components/organisms/modals/DateRangeFormModal/Dat
 dayjs.extend(timezone)
 interface VacationTimesPropType {
   data?: InstitutionVacationType[]
-  name: string
-  id: string
+  isUserVacationTimes?: boolean
 }
 
-const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {
+const VacationTimes: FC<VacationTimesPropType> = ({
+  data,
+  isUserVacationTimes,
+}) => {
   const { updateInstitutionVacations } = useInstitutionVacationsUpdate()
+  const { updateInstitutionUserVacations } = useInstitutionUserVacationsUpdate()
   const { userPrivileges } = useAuth()
 
   const { t } = useTranslation()
@@ -67,11 +74,19 @@ const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {
       }
     })
 
-    const payload: InstitutionVacationsPostType = {
-      vacations: formattedVacationTimes,
+    if (isUserVacationTimes) {
+      const payload: InstitutionUserVacationsPostType = {
+        institution_user_id: '',
+        vacations: formattedVacationTimes,
+        institution_vacation_exclusions: [],
+      }
+      await updateInstitutionUserVacations(payload)
+    } else {
+      const payload: InstitutionVacationsPostType = {
+        vacations: formattedVacationTimes,
+      }
+      await updateInstitutionVacations(payload)
     }
-
-    await updateInstitutionVacations(payload)
     showNotification({
       type: NotificationTypes.Success,
       title: t('notification.announcement'),

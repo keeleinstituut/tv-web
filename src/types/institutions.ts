@@ -49,6 +49,20 @@ export interface InstitutionVacationsDataType {
 export interface InstitutionVacationsPostType {
   vacations: InstitutionVacationPostType[]
 }
+
+export interface InstitutionUserVacationsDataType {
+  institution_user_vacations: InstitutionVacationType[]
+  institution_vacations: InstitutionVacationType[]
+}
+export interface InstitutionUserVacationResponse {
+  data: InstitutionUserVacationsDataType
+}
+
+export interface InstitutionUserVacationsPostType {
+  institution_user_id: string
+  vacations: InstitutionVacationPostType[]
+  institution_vacation_exclusions: string[]
+}
 export interface InstitutionDataType {
   data: InstitutionType
 }

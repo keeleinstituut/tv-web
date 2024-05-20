@@ -39,6 +39,8 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { UserStatus, UserStatusType } from 'types/users'
 
 import classes from './classes.module.scss'
+import VacationTimes from '../../components/molecules/VacationTimes/VacationTimes'
+import { useInstitutionUserVacationsFetch } from '../../hooks/requests/useInstitutions'
 
 interface FormValues {
   deactivation_date?: string
@@ -61,6 +63,9 @@ const UserPage: FC = () => {
   })
 
   const { existingRoles = [] } = useRolesFetch({})
+  const { userVacations } = useInstitutionUserVacationsFetch({ id: userId })
+
+  console.log('USER VACAYS', userVacations)
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
     institution_user_id: userId,
   })
@@ -374,6 +379,11 @@ const UserPage: FC = () => {
           }
         />
       </div>
+
+      {/*<VacationTimes*/}
+      {/*  data=*/}
+      {/*  isUserVacationTimes*/}
+      {/*/>*/}
 
       <UserForm {...user} />
       <p className={classes.dateText}>
