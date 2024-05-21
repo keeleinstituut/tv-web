@@ -24,6 +24,7 @@ import {
   size,
   split,
   toArray,
+  toNumber,
   uniqueId,
 } from 'lodash'
 import { FieldPath, Path, SubmitHandler, useForm } from 'react-hook-form'
@@ -47,6 +48,7 @@ export interface DateRangeFormModalProps {
 
 type FormValues = {
   [key in string]: {
+    id: string
     start: string
     end: string
   }
@@ -93,7 +95,7 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
     setError,
     formState: { isSubmitting, isValid, isDirty },
   } = useForm<FormValues>({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onBlur',
     defaultValues: defaultValues,
   })
@@ -108,7 +110,11 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
         label: t('institution.vacation_times_range'),
         handleDelete: () => handleOnDelete(String(id)),
         rules: {
-          required: true,
+          validate: (value) => {
+            if (!value?.end || !value?.start) {
+              return t('error.required')
+            }
+          },
         },
       }
     }
@@ -130,7 +136,11 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
         label: t('institution.vacation_times_range'),
         handleDelete: () => handleOnDelete(newId),
         rules: {
-          required: true,
+          validate: (value) => {
+            if (!value?.end || !value?.start) {
+              return t('error.required')
+            }
+          },
         },
       },
     ])
@@ -174,11 +184,16 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
       if (typedErrorData.errors) {
         map(typedErrorData.errors, (errorsArray, key) => {
           const typedKey = key as unknown as FieldPath<FormValues>
+          const tKey = split(typedKey, '.')[1]
           const errorString = join(errorsArray, ',')
-          setError(typedKey, {
-            type: 'backend',
-            message: errorString,
-          })
+
+          if (tKey) {
+            const inputName = `${payload[toNumber(tKey)].id}`
+            setError(inputName, {
+              type: 'backend',
+              message: errorString,
+            })
+          }
         })
       }
     }

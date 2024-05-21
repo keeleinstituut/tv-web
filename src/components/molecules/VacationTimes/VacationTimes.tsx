@@ -25,8 +25,6 @@ import { EditDataType } from 'components/organisms/modals/DateRangeFormModal/Dat
 dayjs.extend(timezone)
 interface VacationTimesPropType {
   data?: InstitutionVacationType[]
-  name: string
-  id: string
 }
 
 const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {

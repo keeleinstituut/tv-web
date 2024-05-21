@@ -1,5 +1,6 @@
 import React, { forwardRef, useRef } from 'react'
 import DatePicker, {
+  ReactDatePicker,
   ReactDatePickerProps,
   registerLocale,
 } from 'react-datepicker'
@@ -13,7 +14,6 @@ import InputWrapper, {
 } from 'components/molecules/InputWrapper/InputWrapper'
 import 'react-datepicker/dist/react-datepicker.css'
 import classes from './classes.module.scss'
-import useModalContext from 'hooks/useModalContext'
 
 type DatePickerComponentProps = {
   ariaLabel?: string
@@ -25,6 +25,7 @@ type DatePickerComponentProps = {
   minDate?: Date
   maxDate?: Date
   id?: string
+  onBlur?: () => void
 }
 
 export type DatePickerInputProps = DatePickerComponentProps &
@@ -46,6 +47,7 @@ const DatePickerComponent = ({
   minDate,
   maxDate,
   id,
+  onBlur,
   ...rest
 }: DatePickerComponentProps) => {
   const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
@@ -58,7 +60,7 @@ const DatePickerComponent = ({
 
   const convertedValue = dayjs(value, 'DD/MM/YYYY')
   const splittedDayValue = convertedValue?.format('YYYY-MM-DD')
-  const calendarRef = useRef<any>(null)
+  const calendarRef = useRef<ReactDatePicker>(null)
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Escape') {
       event.stopPropagation()
@@ -86,6 +88,7 @@ const DatePickerComponent = ({
         maxDate={maxDate ? maxDate : undefined}
         preventOpenOnFocus={true}
         onKeyDown={handleKeyDown}
+        onBlur={onBlur}
         {...rest}
         onChange={handleDateChange}
       />
@@ -103,7 +106,6 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
   function DatePickerInput(props, ref) {
     const { label, name, error, className, errorZIndex, id, ...rest } = props
     const newRef = useRef(null)
-    const { modalContentId } = useModalContext()
 
     return (
       <InputWrapper
@@ -113,10 +115,7 @@ const DatePickerInput = forwardRef<HTMLInputElement, DatePickerInputProps>(
         className={className}
         errorZIndex={errorZIndex}
         ref={newRef}
-        wrapperClass={classNames(
-          classes.datePickerWrapper,
-          !!modalContentId && classes.increasedZIndex
-        )}
+        wrapperClass={classNames(classes.datePickerWrapper)}
       >
         <DatePickerComponent name={name} id={id} {...rest} />
       </InputWrapper>

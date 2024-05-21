@@ -1,4 +1,4 @@
-import { FC, ReactElement, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
@@ -15,9 +15,15 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
 import { useInstitutionUpdate } from 'hooks/requests/useInstitutions'
-import { InstitutionPostType, InstitutionType } from 'types/institutions'
+import {
+  InstitutionPostType,
+  InstitutionType,
+  InstitutionVacationType,
+} from 'types/institutions'
 import Button from 'components/molecules/Button/Button'
 import classNames from 'classnames'
+import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
+import VacationTimes from 'components/molecules/VacationTimes/VacationTimes'
 
 interface FormValues {
   name: string
@@ -27,19 +33,12 @@ interface FormValues {
 }
 
 type InstitutionPropTypes = {
-  workingTimes?: ReactElement
-  vacationDays?: ReactElement
+  institutionVacations?: InstitutionVacationType[]
 } & InstitutionType
 
-const InstitutionForm: FC<InstitutionPropTypes> = ({
-  id,
-  name,
-  short_name,
-  email,
-  phone,
-  workingTimes,
-  vacationDays,
-}) => {
+const InstitutionForm: FC<InstitutionPropTypes> = (props) => {
+  const { id, name, short_name, email, phone, institutionVacations } = props
+
   // hooks
   const { t } = useTranslation()
   const [isUpdatingData, setIsUpdatingData] = useState(false)
@@ -174,8 +173,8 @@ const InstitutionForm: FC<InstitutionPropTypes> = ({
         />
 
         <div className={classes.dateTimeContainer}>
-          {workingTimes}
-          {vacationDays}
+          <WorkingTimes name={name} id={id} data={props} />
+          <VacationTimes data={institutionVacations} />
         </div>
       </div>
       <Button
