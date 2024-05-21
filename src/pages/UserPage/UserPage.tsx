@@ -65,7 +65,6 @@ const UserPage: FC = () => {
   const { existingRoles = [] } = useRolesFetch({})
   const { userVacations } = useInstitutionUserVacationsFetch({ id: userId })
 
-  console.log('USER VACAYS', userVacations)
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
     institution_user_id: userId,
   })
@@ -380,12 +379,16 @@ const UserPage: FC = () => {
         />
       </div>
 
-      {/*<VacationTimes*/}
-      {/*  data=*/}
-      {/*  isUserVacationTimes*/}
-      {/*/>*/}
+      <VacationTimes
+        data={[
+          ...(userVacations?.institution_vacations || []),
+          ...(userVacations?.institution_user_vacations || []),
+        ]}
+        userId={userId}
+        isUserVacationTimes
+      />
 
-      <UserForm {...user} />
+      <UserForm {...user} className={classes.userForm} />
       <p className={classes.dateText}>
         {t('user.created_at', {
           time: dayjs(user.created_at).format('DD.MM.YYYY HH:mm') || '',

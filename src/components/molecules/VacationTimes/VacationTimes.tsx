@@ -29,15 +29,19 @@ import { EditDataType } from 'components/organisms/modals/DateRangeFormModal/Dat
 dayjs.extend(timezone)
 interface VacationTimesPropType {
   data?: InstitutionVacationType[]
+  userId?: string
   isUserVacationTimes?: boolean
 }
 
 const VacationTimes: FC<VacationTimesPropType> = ({
   data,
+  userId,
   isUserVacationTimes,
 }) => {
   const { updateInstitutionVacations } = useInstitutionVacationsUpdate()
-  const { updateInstitutionUserVacations } = useInstitutionUserVacationsUpdate()
+  const { updateInstitutionUserVacations } = useInstitutionUserVacationsUpdate({
+    id: userId,
+  })
   const { userPrivileges } = useAuth()
 
   const { t } = useTranslation()
@@ -45,6 +49,8 @@ const VacationTimes: FC<VacationTimesPropType> = ({
   const editableData = map(data, (vacation) => {
     return {
       id: vacation.id,
+      institution_id: vacation?.institution_id,
+      institution_user_id: vacation?.institution_user_id,
       start: dayjs(vacation.start_date).format('DD/MM/YYYY').toString(),
       end: dayjs(vacation.end_date).format('DD/MM/YYYY').toString(),
     }
@@ -63,22 +69,29 @@ const VacationTimes: FC<VacationTimesPropType> = ({
     ', '
   )
 
-  const handleOnSubmit = async (values: EditDataType[]) => {
-    const formattedVacationTimes = map(values, (date) => {
-      const startDate = dayjs(date.start, 'DD/MM/YYYY').format('YYYY-MM-DD')
-      const endDate = dayjs(date.end, 'DD/MM/YYYY').format('YYYY-MM-DD')
-      return {
-        ...(date.id && { id: date.id }),
-        start_date: startDate,
-        end_date: endDate,
+  const handleOnSubmit = async (
+    values: EditDataType[],
+    vacationExclusions: string[]
+  ) => {
+    const userVacations = values.filter((vacation) => !vacation.institution_id)
+    const formattedVacationTimes = map(
+      isUserVacationTimes ? userVacations : values,
+      (date) => {
+        const startDate = dayjs(date.start, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        const endDate = dayjs(date.end, 'DD/MM/YYYY').format('YYYY-MM-DD')
+        return {
+          ...(date.id && { id: date.id }),
+          start_date: startDate,
+          end_date: endDate,
+        }
       }
-    })
+    )
 
     if (isUserVacationTimes) {
       const payload: InstitutionUserVacationsPostType = {
-        institution_user_id: '',
+        institution_user_id: userId!,
         vacations: formattedVacationTimes,
-        institution_vacation_exclusions: [],
+        institution_vacation_exclusions: vacationExclusions,
       }
       await updateInstitutionUserVacations(payload)
     } else {
@@ -87,10 +100,15 @@ const VacationTimes: FC<VacationTimesPropType> = ({
       }
       await updateInstitutionVacations(payload)
     }
+
+    const successMessage = isUserVacationTimes
+      ? t('success.user_vacation_times_updated')
+      : t('success.institution_updated')
+
     showNotification({
       type: NotificationTypes.Success,
       title: t('notification.announcement'),
-      content: t('success.institution_updated'),
+      content: successMessage,
     })
   }
 
@@ -113,7 +131,12 @@ const VacationTimes: FC<VacationTimesPropType> = ({
         className={classes.editButton}
         icon={EditIcon}
         onClick={handleEditList}
-        hidden={!includes(userPrivileges, Privileges.EditInstitutionWorktime)}
+        hidden={
+          (!includes(userPrivileges, Privileges.EditUserVacation) &&
+            isUserVacationTimes) ||
+          (!includes(userPrivileges, Privileges.EditInstitutionWorktime) &&
+            !isUserVacationTimes)
+        }
       />
     </div>
   )

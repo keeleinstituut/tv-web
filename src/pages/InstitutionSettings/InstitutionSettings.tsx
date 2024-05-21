@@ -43,13 +43,7 @@ const InstitutionSettings: FC = () => {
           workingTimes={
             <WorkingTimes name={name} id={institutionId} data={institution} />
           }
-          vacationDays={
-            <VacationTimes
-              name={name}
-              id={institutionId}
-              data={institutionVacations}
-            />
-          }
+          vacationDays={<VacationTimes data={institutionVacations} />}
         />
       </Container>
 

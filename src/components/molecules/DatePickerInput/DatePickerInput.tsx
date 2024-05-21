@@ -25,6 +25,7 @@ type DatePickerComponentProps = {
   minDate?: Date
   maxDate?: Date
   id?: string
+  onBlur?: any
 }
 
 export type DatePickerInputProps = DatePickerComponentProps &
@@ -46,6 +47,7 @@ const DatePickerComponent = ({
   minDate,
   maxDate,
   id,
+  onBlur,
   ...rest
 }: DatePickerComponentProps) => {
   const handleDateChange: ReactDatePickerProps['onChange'] = (value) => {
@@ -86,6 +88,7 @@ const DatePickerComponent = ({
         maxDate={maxDate ? maxDate : undefined}
         preventOpenOnFocus={true}
         onKeyDown={handleKeyDown}
+        onBlur={onBlur}
         {...rest}
         onChange={handleDateChange}
       />

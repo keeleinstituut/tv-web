@@ -24,6 +24,7 @@ import {
   size,
   split,
   toArray,
+  toNumber,
   uniqueId,
 } from 'lodash'
 import { FieldPath, Path, SubmitHandler, useForm } from 'react-hook-form'
@@ -33,6 +34,8 @@ import { ValidationError } from 'api/errorHandler'
 
 export type EditDataType = {
   id?: string
+  institution_id?: string
+  institution_user_id?: string
   start?: string
   end?: string
 }
@@ -42,11 +45,17 @@ export interface DateRangeFormModalProps {
   closeModal: () => void
   data?: EditDataType[]
   title?: string
-  handleOnSubmit?: (values: EditDataType[]) => void
+  handleOnSubmit?: (
+    values: EditDataType[],
+    vacationExclusions?: string[]
+  ) => void
 }
 
 type FormValues = {
   [key in string]: {
+    institution_id?: string
+    institution_user_id?: string
+    id: string
     start: string
     end: string
   }
@@ -73,6 +82,8 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
             ...result,
             [value.id]: {
               id: value.id,
+              institution_id: value?.institution_id,
+              institution_user_id: value?.institution_user_id,
               start: value.start,
               end: value.end,
             },
@@ -93,7 +104,7 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
     setError,
     formState: { isSubmitting, isValid, isDirty },
   } = useForm<FormValues>({
-    mode: 'onChange',
+    mode: 'onBlur',
     reValidateMode: 'onBlur',
     defaultValues: defaultValues,
   })
@@ -108,7 +119,11 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
         label: t('institution.vacation_times_range'),
         handleDelete: () => handleOnDelete(String(id)),
         rules: {
-          required: true,
+          validate: (value) => {
+            if (!value.end || !value.start) {
+              return t('error.required')
+            }
+          },
         },
       }
     }
@@ -118,6 +133,8 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
     useState<FieldProps<FormValues>[]>(editableFields)
 
   const [prevDeletedValue, setPrevDeletedValue] = useState<string>()
+
+  const [vacationExclusions, setVacationExclusions] = useState<string[]>([])
 
   const addInputField = () => {
     const newId = uniqueId()
@@ -130,7 +147,11 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
         label: t('institution.vacation_times_range'),
         handleDelete: () => handleOnDelete(newId),
         rules: {
-          required: true,
+          validate: (value) => {
+            if (!value?.end || !value?.start) {
+              return t('error.required')
+            }
+          },
         },
       },
     ])
@@ -147,6 +168,14 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
       return !isEqual(fieldId, prevDeletedValue)
     })
     setInputFields(withoutDeleteFields)
+    if (
+      prevDeletedValue &&
+      editableData?.find(
+        (value) => value.id === prevDeletedValue && value.institution_id
+      )
+    ) {
+      setVacationExclusions([...vacationExclusions, prevDeletedValue])
+    }
     unregister(prevDeletedValue)
   }, [prevDeletedValue])
 
@@ -161,28 +190,39 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
     setInputFields(editableFields)
   }, [editableFields, inputFields, reset])
 
-  const onSubmit: SubmitHandler<FormValues> = useCallback(async (values) => {
-    const payload = toArray(values).filter((value) => value)
-    try {
-      if (handleOnSubmit) {
-        await handleOnSubmit(payload)
-      }
-      resetForm()
-      closeModal()
-    } catch (errorData) {
-      const typedErrorData = errorData as ValidationError
-      if (typedErrorData.errors) {
-        map(typedErrorData.errors, (errorsArray, key) => {
-          const typedKey = key as unknown as FieldPath<FormValues>
-          const errorString = join(errorsArray, ',')
-          setError(typedKey, {
-            type: 'backend',
-            message: errorString,
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const payload = toArray(values).filter((value) => value)
+      try {
+        if (handleOnSubmit) {
+          await handleOnSubmit(payload, vacationExclusions)
+        }
+        resetForm()
+        closeModal()
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as unknown as FieldPath<FormValues>
+            const tKey = split(typedKey, '.')[1]
+            const errorString = join(errorsArray, ',')
+
+            if (tKey) {
+              const userVacations = payload.filter(
+                (vacation) => !vacation.institution_id
+              )
+              const inputName = `${userVacations[toNumber(tKey)].id}`
+              setError(inputName, {
+                type: 'backend',
+                message: errorString,
+              })
+            }
           })
-        })
+        }
       }
-    }
-  }, [])
+    },
+    [vacationExclusions]
+  )
 
   return (
     <ModalBase

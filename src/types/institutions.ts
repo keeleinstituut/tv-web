@@ -27,7 +27,8 @@ export interface InstitutionType {
 }
 export interface InstitutionVacationType {
   id: string
-  institution_id: string
+  institution_id?: string
+  institution_user_id?: string
   start_date: string
   end_date: string
   create_at: string

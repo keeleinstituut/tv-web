@@ -5,7 +5,6 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
-import FormButtons from 'components/organisms/FormButtons/FormButtons'
 import {
   includes,
   split,
@@ -28,6 +27,8 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { ValidationError } from 'api/errorHandler'
 import { useRolesFetch } from 'hooks/requests/useRoles'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
+import FormButtons from 'components/organisms/FormButtons/FormButtons'
+import classNames from 'classnames'
 
 interface FormValues {
   personal_identification_code?: string
@@ -38,7 +39,10 @@ interface FormValues {
   roles?: string[]
 }
 
-type UserFormProps = { isUserAccount?: boolean } & Partial<UserType>
+type UserFormProps = {
+  isUserAccount?: boolean
+  className?: string
+} & Partial<UserType>
 
 const UserForm: FC<UserFormProps> = ({
   id,
@@ -49,6 +53,7 @@ const UserForm: FC<UserFormProps> = ({
   roles,
   status,
   isUserAccount = false,
+  className,
 }) => {
   // hooks
   // TODO: department still needs to be handled
@@ -260,7 +265,7 @@ const UserForm: FC<UserFormProps> = ({
       fields={fields}
       control={control}
       onSubmit={handleSubmit(onSubmit)}
-      className={classes.formContainer}
+      className={classNames(classes.formContainer, className)}
     >
       <FormButtons
         isResetDisabled={!isDirty}
