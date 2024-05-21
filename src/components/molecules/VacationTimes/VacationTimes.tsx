@@ -89,7 +89,7 @@ const VacationTimes: FC<VacationTimesPropType> = ({
 
     if (isUserVacationTimes) {
       const payload: InstitutionUserVacationsPostType = {
-        institution_user_id: userId!,
+        institution_user_id: userId || '',
         vacations: formattedVacationTimes,
         institution_vacation_exclusions: vacationExclusions,
       }

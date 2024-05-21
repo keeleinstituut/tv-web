@@ -18,7 +18,7 @@ export interface DateRangePickerProps {
   minDate?: Date
   maxDate?: Date
   disabled?: boolean
-  onBlur?: any
+  onBlur?: () => void
 }
 
 const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(

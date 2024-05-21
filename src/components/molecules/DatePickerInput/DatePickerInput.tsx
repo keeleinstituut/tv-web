@@ -1,5 +1,6 @@
 import React, { forwardRef, useRef } from 'react'
 import DatePicker, {
+  ReactDatePicker,
   ReactDatePickerProps,
   registerLocale,
 } from 'react-datepicker'
@@ -25,7 +26,7 @@ type DatePickerComponentProps = {
   minDate?: Date
   maxDate?: Date
   id?: string
-  onBlur?: any
+  onBlur?: () => void
 }
 
 export type DatePickerInputProps = DatePickerComponentProps &
@@ -60,7 +61,7 @@ const DatePickerComponent = ({
 
   const convertedValue = dayjs(value, 'DD/MM/YYYY')
   const splittedDayValue = convertedValue?.format('YYYY-MM-DD')
-  const calendarRef = useRef<any>(null)
+  const calendarRef = useRef<ReactDatePicker>(null)
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Escape') {
       event.stopPropagation()
