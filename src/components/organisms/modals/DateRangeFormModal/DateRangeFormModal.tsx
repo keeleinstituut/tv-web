@@ -120,7 +120,7 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
         handleDelete: () => handleOnDelete(String(id)),
         rules: {
           validate: (value) => {
-            if (!value.end || !value.start) {
+            if (!value?.end || !value?.start) {
               return t('error.required')
             }
           },

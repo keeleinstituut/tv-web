@@ -121,8 +121,8 @@ export const useInstitutionVacationsFetch = () => {
 
   return {
     institutionVacations,
-    isLoading: isLoading,
-    isError: isError,
+    isLoading,
+    isError,
   }
 }
 

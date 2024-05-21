@@ -11,8 +11,6 @@ import InstitutionForm from 'components/organisms/forms/InstitutionForm/Institut
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import DepartmentManagement from 'components/molecules/DepartmentManagement/DepartmentManagement'
-import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
-import VacationTimes from 'components/molecules/VacationTimes/VacationTimes'
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
@@ -39,11 +37,8 @@ const InstitutionSettings: FC = () => {
         <InstitutionForm
           name={name}
           id={institutionId}
+          institutionVacations={institutionVacations}
           {...institution}
-          workingTimes={
-            <WorkingTimes name={name} id={institutionId} data={institution} />
-          }
-          vacationDays={<VacationTimes data={institutionVacations} />}
         />
       </Container>
 
