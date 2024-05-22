@@ -68,21 +68,23 @@ const AssignmentsSection: FC<AssignmentsSectionProps> = ({ assignments }) => {
   const { t } = useTranslation()
   if (isEmpty(assignments)) return null
   const groupedAssignments = groupBy(assignments, 'job_definition.job_key')
-
   const assignmentsInfo = flatMap(groupedAssignments, (assignmentsByKey) =>
     map(
       assignmentsByKey,
       (
         { job_definition, assignee, assignee_comments, manager_candidates },
         index
-      ) => ({
-        title: `${t('task.vendor_title', { number: index + 1 })} (${
-          job_definition?.job_short_name
-        })`,
-        institution_user:
-          assignee?.institution_user || manager_candidates[0]?.institution_user,
-        assignee_comments,
-      })
+      ) => {
+        return {
+          title: `${t('task.vendor_title', {
+            number: index + 1,
+          })} (${job_definition?.job_short_name})`,
+          institution_user:
+            assignee?.institution_user ||
+            manager_candidates[0]?.institution_user,
+          assignee_comments,
+        }
+      }
     )
   )
   return (
@@ -251,6 +253,7 @@ const ManagerContent: FC<ManagerContentProps> = ({ id, projectDomain }) => {
     return {
       id: job_definition?.id,
       job_key: job_definition?.job_key,
+      job_short_name: job_definition?.job_short_name,
       cat_tool_enabled: job_definition?.linking_with_cat_tool_jobs_enabled,
     }
   })
@@ -260,11 +263,10 @@ const ManagerContent: FC<ManagerContentProps> = ({ id, projectDomain }) => {
   const availableTabs = compact(
     map(uniqueAssignments, (feature) => {
       if (feature) {
-        const catToolName = feature.cat_tool_enabled ? '(CAT)' : ''
         return {
           key: feature.id,
           id: feature.job_key,
-          name: `${t(`projects.features.${feature.job_key}`)}${catToolName}`,
+          name: feature.job_short_name,
         }
       }
     })

@@ -1,6 +1,7 @@
 import { omit, isEmpty, map, filter, uniqBy, find } from 'lodash'
 import Notification, {
   NotificationProps,
+  NotificationTypes,
 } from 'components/molecules/Notification/Notification'
 import { v4 as uuidv4 } from 'uuid'
 import { useState, useCallback, createRef, useImperativeHandle } from 'react'
@@ -67,7 +68,9 @@ const NotificationRoot = () => {
         ),
       ])
 
-      setTimeout(closeNotification, timeout || 5000, emptyNotification.id)
+      if (notificationProps.type !== NotificationTypes.Error) {
+        setTimeout(closeNotification, timeout || 5000, emptyNotification.id)
+      }
     },
     [closeNotification, notifications]
   )

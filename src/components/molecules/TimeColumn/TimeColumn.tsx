@@ -13,7 +13,6 @@ export type TimeColumnProps = {
   value: number
   isTimeColumnOpen?: boolean
   isHourValue?: boolean
-  autoFocus?: boolean
 }
 
 const TimeColumn = ({
@@ -22,7 +21,6 @@ const TimeColumn = ({
   setValue,
   value,
   isTimeColumnOpen,
-  autoFocus,
 }: TimeColumnProps) => {
   const { t } = useTranslation()
   const controlTop = () => {
@@ -60,7 +58,6 @@ const TimeColumn = ({
           isTimeColumnOpen && classes.focusTimeColumnButton
         )}
         aria-label={t('button.increase')}
-        // autoFocus={isTimeColumnOpen && isHourValue}
       >
         <ButtonArrow />
       </BaseButton>
@@ -72,7 +69,6 @@ const TimeColumn = ({
         onChange={handleInputChange}
         min={start}
         max={end}
-        autoFocus={autoFocus}
       />
       <BaseButton
         onClick={controlBottom}

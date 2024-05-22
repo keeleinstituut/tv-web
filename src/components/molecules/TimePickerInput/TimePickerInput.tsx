@@ -125,6 +125,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (event.key === 'Enter') {
         setTimeColumnOpen(!isTimeColumnOpen)
+        event.preventDefault()
       }
       if (event.key === 'Tab' && isTimeColumnOpen) {
         event.preventDefault()

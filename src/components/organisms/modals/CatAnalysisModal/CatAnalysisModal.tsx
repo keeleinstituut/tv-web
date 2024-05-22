@@ -17,10 +17,8 @@ import DataTable, {
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import { LanguageClassifierValue } from 'types/classifierValues'
 import Tag from 'components/atoms/Tag/Tag'
-import {
-  useCatAnalysisFetch,
-  useDownloadCatAnalysisFetch,
-} from 'hooks/requests/useAnalysis'
+import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
+import { endpoints } from 'api/endpoints'
 
 export interface CatAnalysisModalProps {
   cat_analyzis?: CatAnalysis[]
@@ -58,7 +56,6 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
   destination_language_classifier_value,
 }) => {
   const { cat_analysis } = useCatAnalysisFetch({ subProjectId })
-  const { downloadAnalysis } = useDownloadCatAnalysisFetch({ subProjectId })
   const cat_analyzis = [...(cat_analysis?.cat_jobs ?? [])]
 
   const { t } = useTranslation()
@@ -148,10 +145,8 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           className: classes.linkButton,
           icon: DownloadFilled,
           size: SizeTypes.M,
-          onClick: downloadAnalysis,
-          // href: downloadUrl,
-          target: '_blank',
-          // download: name,
+          href: `${endpoints.CAT_TOOL}/download-volume-analysis/${subProjectId}`,
+          download: 'analysis.txt',
         },
         {
           appearance: AppearanceTypes.Secondary,
@@ -173,6 +168,7 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           columns={tableColumns}
           tableSize={TableSizeTypes.M}
           hidePagination
+          isHorizontallyScrollable
           isModalTable
           headComponent={
             <div className={classes.titleRow}>
