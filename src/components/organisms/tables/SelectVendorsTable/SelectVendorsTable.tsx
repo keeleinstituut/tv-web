@@ -61,6 +61,7 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   skill_id?: string
   selectedVendorsIds?: string[]
+  isModalTable?: boolean
 }
 interface PricesTableRow {
   selected: string
@@ -93,6 +94,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   selectedVendorsIds,
   source_language_classifier_value_id,
   destination_language_classifier_value_id,
+  isModalTable = false,
 }: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
   // const { tagsFilters = [] } = useFetchTags({
@@ -378,6 +380,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         className={classes.tableContainer}
+        isModalTable={isModalTable}
       />
     </Root>
   )

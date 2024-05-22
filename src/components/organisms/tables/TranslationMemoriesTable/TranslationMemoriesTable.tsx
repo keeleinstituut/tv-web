@@ -47,12 +47,14 @@ interface TranslationMemoriesTableTypes {
   isSelectingModal?: boolean
   tmKeyControl?: Control
   initialFilters?: TranslationMemoryFilters
+  isModalTable?: boolean
 }
 
 const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   isSelectingModal = false,
   tmKeyControl,
   initialFilters,
+  isModalTable = false,
 }) => {
   const { t } = useTranslation()
 
@@ -301,6 +303,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
         tableSize={TableSizeTypes.M}
         // paginationData={paginationData}
         // onPaginationChange={handlePaginationChange}
+        isModalTable={isModalTable}
         onFiltersChange={handleFilterChange}
         defaultPaginationData={defaultPaginationData}
         headComponent={

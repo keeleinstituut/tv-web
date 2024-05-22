@@ -552,6 +552,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
             hidden={!isCat}
             isEditable={mode !== ProjectDetailModes.View}
             taskViewPricesClass={taskViewPricesClass}
+            isModalTable
           />
         </Root>
       }

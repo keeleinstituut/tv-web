@@ -76,6 +76,7 @@ type DataTableProps<TData extends RowData> = {
   columnOrder?: string[] | undefined
   subRowComponent?: (row: Row<TData>) => ReactElement
   defaultPaginationData?: PaginationFunctionType
+  isModalTable?: boolean
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -107,6 +108,7 @@ const DataTable = <TData,>(
     columnOrder,
     subRowComponent,
     defaultPaginationData,
+    isModalTable,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -129,14 +131,14 @@ const DataTable = <TData,>(
   }, [current_page])
 
   useEffect(() => {
-    if (paginationData && onPaginationChange) {
+    if (onPaginationChange) {
       onPaginationChange({
         per_page: pagination.pageSize,
         page: pagination.pageIndex + 1,
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination, paginationData])
+  }, [pagination])
 
   const table = useReactTable<TData>({
     data,
@@ -223,6 +225,7 @@ const DataTable = <TData,>(
           table={table}
           pageSizeOptions={pageSizeOptions}
           hidePaginationSelectionInput={hidePaginationSelectionInput}
+          isModalTable={isModalTable}
         />
       </Container>
     </TableContext.Provider>

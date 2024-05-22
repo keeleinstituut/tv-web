@@ -147,6 +147,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
       <TranslationMemoriesTable
         isSelectingModal={true}
         tmKeyControl={control}
+        isModalTable
         initialFilters={{
           lang_pair: [
             subProjectLangPair,

@@ -78,6 +78,7 @@ interface VolumeCatPriceTableProps<TFormValues extends FieldValues> {
   hidden?: boolean
   isEditable?: boolean
   taskViewPricesClass?: string
+  isModalTable?: boolean
 }
 
 interface TableRow {
@@ -94,6 +95,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
   hidden,
   isEditable,
   taskViewPricesClass,
+  isModalTable = false,
 }: VolumeCatPriceTableProps<TFormValues>) => {
   const { t } = useTranslation()
 
@@ -204,6 +206,7 @@ const VolumeCatPriceTable = <TFormValues extends FieldValues>({
       tableSize={TableSizeTypes.M}
       className={classNames(classes.tableContainer, taskViewPricesClass)}
       hidePagination
+      isModalTable={isModalTable}
       headComponent={
         <h2 className={classes.tableTitle}>
           {t('modal.calculation_by_analysis')}

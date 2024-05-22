@@ -15,6 +15,7 @@ export interface VendorsEditProps {
   control: Control
   handlePaginationChange?: (value?: PaginationFunctionType) => void
   paginationData?: ResponseMetaTypes
+  isModalTable?: boolean
 }
 
 export type VendorUser = {
@@ -30,6 +31,7 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
   control,
   paginationData,
   handlePaginationChange,
+  isModalTable,
 }) => {
   const { t } = useTranslation()
 
@@ -86,6 +88,7 @@ const VendorsEditTable: FC<VendorsEditProps> = ({
       hidePaginationSelectionInput
       paginationData={paginationData}
       onPaginationChange={handlePaginationChange}
+      isModalTable={isModalTable}
     />
   )
 }
