@@ -171,8 +171,10 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({
         icon={EditIcon}
         onClick={handleEditList}
         hidden={
-          !includes(userPrivileges, Privileges.EditInstitutionWorktime) ||
-          !includes(userPrivileges, Privileges.EditUserWorktime)
+          (!includes(userPrivileges, Privileges.EditInstitutionWorktime) &&
+            !isUserWorkingTimes) ||
+          (!includes(userPrivileges, Privileges.EditUserWorktime) &&
+            isUserWorkingTimes)
         }
       />
     </div>
