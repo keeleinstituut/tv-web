@@ -3,10 +3,11 @@ import dayjs from 'dayjs'
 import { FC } from 'react'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
-// import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 import { useAuth } from 'components/contexts/AuthContext'
 import { useFetchUser } from 'hooks/requests/useUsers'
 import Loader from 'components/atoms/Loader/Loader'
+import VacationTimes from 'components/molecules/VacationTimes/VacationTimes'
+import { useInstitutionUserVacationsFetch } from 'hooks/requests/useInstitutions'
 
 const UserDetails: FC = () => {
   const { t } = useTranslation()
@@ -15,6 +16,7 @@ const UserDetails: FC = () => {
   const { isLoading, user } = useFetchUser({
     id: userId,
   })
+  const { userVacations } = useInstitutionUserVacationsFetch({ id: userId })
 
   if (isLoading) return <Loader loading={isLoading} />
 
@@ -23,12 +25,14 @@ const UserDetails: FC = () => {
       <div className={classes.titleRow}>
         <h1 className={classes.title}>{t('user.account')}</h1>
 
-        {/* TODO: edit personal working times and vacation days will come later with new endpoints */}
-        {/* <WorkingTimes
-          name={user?.institution.name || ''}
-          id={user?.institution.id || ''}
-          data={user?.institution}
-        /> */}
+        <VacationTimes
+          data={[
+            ...(userVacations?.institution_vacations || []),
+            ...(userVacations?.institution_user_vacations || []),
+          ]}
+          userId={userId}
+          isDetailPageTimes
+        />
       </div>
       <UserForm {...user} id={userId} isUserAccount />
       <p className={classes.dateText}>

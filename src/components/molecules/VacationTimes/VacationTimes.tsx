@@ -31,12 +31,14 @@ interface VacationTimesPropType {
   data?: InstitutionVacationType[]
   userId?: string
   isUserVacationTimes?: boolean
+  isDetailPageTimes?: boolean
 }
 
 const VacationTimes: FC<VacationTimesPropType> = ({
   data,
   userId,
   isUserVacationTimes,
+  isDetailPageTimes,
 }) => {
   const { updateInstitutionVacations } = useInstitutionVacationsUpdate()
   const { updateInstitutionUserVacations } = useInstitutionUserVacationsUpdate({
@@ -75,7 +77,7 @@ const VacationTimes: FC<VacationTimesPropType> = ({
   ) => {
     const userVacations = values.filter((vacation) => !vacation.institution_id)
     const formattedVacationTimes = map(
-      isUserVacationTimes ? userVacations : values,
+      isUserVacationTimes || isDetailPageTimes ? userVacations : values,
       (date) => {
         const startDate = dayjs(date.start, 'DD/MM/YYYY').format('YYYY-MM-DD')
         const endDate = dayjs(date.end, 'DD/MM/YYYY').format('YYYY-MM-DD')
@@ -87,7 +89,7 @@ const VacationTimes: FC<VacationTimesPropType> = ({
       }
     )
 
-    if (isUserVacationTimes) {
+    if (isUserVacationTimes || isDetailPageTimes) {
       const payload: InstitutionUserVacationsPostType = {
         institution_user_id: userId || '',
         vacations: formattedVacationTimes,
@@ -101,9 +103,10 @@ const VacationTimes: FC<VacationTimesPropType> = ({
       await updateInstitutionVacations(payload)
     }
 
-    const successMessage = isUserVacationTimes
-      ? t('success.user_vacation_times_updated')
-      : t('success.institution_updated')
+    const successMessage =
+      isUserVacationTimes || isDetailPageTimes
+        ? t('success.user_vacation_times_updated')
+        : t('success.institution_updated')
 
     showNotification({
       type: NotificationTypes.Success,
@@ -133,9 +136,11 @@ const VacationTimes: FC<VacationTimesPropType> = ({
         onClick={handleEditList}
         hidden={
           (!includes(userPrivileges, Privileges.EditUserVacation) &&
-            isUserVacationTimes) ||
+            isUserVacationTimes &&
+            !isDetailPageTimes) ||
           (!includes(userPrivileges, Privileges.EditInstitutionWorktime) &&
-            !isUserVacationTimes)
+            !isUserVacationTimes &&
+            !isDetailPageTimes)
         }
       />
     </div>
