@@ -44,6 +44,7 @@ interface WorkingTimesPropType {
   id: string
   userName?: { surname?: string; forename?: string }
   isUserWorkingTimes?: boolean
+  isDetailPageTimes?: boolean
 }
 type PayloadType = {
   [key in string]: string
@@ -55,6 +56,7 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({
   name,
   userName,
   isUserWorkingTimes,
+  isDetailPageTimes,
 }) => {
   const { updateInstitution } = useInstitutionUpdate({ id })
   const { updateUser } = useUpdateUser({ id })
@@ -90,7 +92,7 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({
   })
 
   const dayTimeRange = join(
-    map(editableData, ({ days, time_range }, key) => {
+    map(editableData, ({ days, time_range }) => {
       const startTime = replace(time_range.start, /:\d{2}$/, '')
       const endTime = replace(time_range.end, /:\d{2}$/, '')
       const letters = join(
@@ -131,15 +133,16 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({
       user: userName,
     }
 
-    if (isUserWorkingTimes) {
+    if (isUserWorkingTimes || isDetailPageTimes) {
       updateUser(userWorkingTimesPayload)
     } else {
       updateInstitution(institutionWorkingTimesPayload)
     }
 
-    const successMessage = isUserWorkingTimes
-      ? t('success.user_working_times_updated')
-      : t('success.institution_updated')
+    const successMessage =
+      isUserWorkingTimes || isDetailPageTimes
+        ? t('success.user_working_times_updated')
+        : t('success.institution_updated')
 
     showNotification({
       type: NotificationTypes.Success,
@@ -172,9 +175,11 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({
         onClick={handleEditList}
         hidden={
           (!includes(userPrivileges, Privileges.EditInstitutionWorktime) &&
-            !isUserWorkingTimes) ||
+            !isUserWorkingTimes &&
+            !isDetailPageTimes) ||
           (!includes(userPrivileges, Privileges.EditUserWorktime) &&
-            isUserWorkingTimes)
+            isUserWorkingTimes &&
+            !isDetailPageTimes)
         }
       />
     </div>

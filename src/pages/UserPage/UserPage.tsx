@@ -81,20 +81,39 @@ const UserPage: FC = () => {
     {
       id: user?.id || '',
       name: name || '',
-      monday_worktime_start: user?.monday_worktime_start || '',
-      monday_worktime_end: user?.monday_worktime_end || '',
-      tuesday_worktime_start: user?.tuesday_worktime_start || '',
-      tuesday_worktime_end: user?.tuesday_worktime_end || '',
-      wednesday_worktime_start: user?.wednesday_worktime_start || '',
-      wednesday_worktime_end: user?.wednesday_worktime_end || '',
-      thursday_worktime_start: user?.thursday_worktime_start || '',
-      thursday_worktime_end: user?.thursday_worktime_end || '',
-      friday_worktime_start: user?.friday_worktime_start || '',
-      friday_worktime_end: user?.friday_worktime_end || '',
-      saturday_worktime_start: user?.saturday_worktime_start || '',
-      saturday_worktime_end: user?.saturday_worktime_end || '',
-      sunday_worktime_start: user?.sunday_worktime_start || '',
-      sunday_worktime_end: user?.sunday_worktime_end || '',
+      monday_worktime_start:
+        user?.monday_worktime_start || user?.institution.monday_worktime_start,
+      monday_worktime_end:
+        user?.monday_worktime_end || user?.institution.monday_worktime_start,
+      tuesday_worktime_start:
+        user?.tuesday_worktime_start ||
+        user?.institution.tuesday_worktime_start,
+      tuesday_worktime_end:
+        user?.tuesday_worktime_end || user?.institution.tuesday_worktime_end,
+      wednesday_worktime_start:
+        user?.wednesday_worktime_start ||
+        user?.institution.wednesday_worktime_start,
+      wednesday_worktime_end:
+        user?.wednesday_worktime_end ||
+        user?.institution.wednesday_worktime_end,
+      thursday_worktime_start:
+        user?.thursday_worktime_start ||
+        user?.institution.thursday_worktime_start,
+      thursday_worktime_end:
+        user?.thursday_worktime_end || user?.institution.thursday_worktime_end,
+      friday_worktime_start:
+        user?.friday_worktime_start || user?.institution.friday_worktime_start,
+      friday_worktime_end:
+        user?.friday_worktime_end || user?.institution.friday_worktime_end,
+      saturday_worktime_start:
+        user?.saturday_worktime_start ||
+        user?.institution.saturday_worktime_start,
+      saturday_worktime_end:
+        user?.saturday_worktime_end || user?.institution.saturday_worktime_end,
+      sunday_worktime_start:
+        user?.sunday_worktime_start || user?.institution.sunday_worktime_start,
+      sunday_worktime_end:
+        user?.sunday_worktime_end || user?.institution.sunday_worktime_end,
     } || {}
 
   const isUserArchived = user?.archived_at !== null
