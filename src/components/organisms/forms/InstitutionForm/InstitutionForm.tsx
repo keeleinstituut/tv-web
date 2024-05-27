@@ -1,4 +1,4 @@
-import { FC, ReactElement, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
@@ -14,10 +14,15 @@ import useValidators from 'hooks/useValidators'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
-import { useInstitutionUpdate } from 'hooks/requests/useInstitutions'
+import {
+  useInstitutionUpdate,
+  useInstitutionVacationsFetch,
+} from 'hooks/requests/useInstitutions'
 import { InstitutionPostType, InstitutionType } from 'types/institutions'
 import Button from 'components/molecules/Button/Button'
 import classNames from 'classnames'
+import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
+import VacationTimes from 'components/molecules/VacationTimes/VacationTimes'
 
 interface FormValues {
   name: string
@@ -26,25 +31,15 @@ interface FormValues {
   phone?: string | null
 }
 
-type InstitutionPropTypes = {
-  workingTimes?: ReactElement
-  vacationDays?: ReactElement
-} & InstitutionType
+const InstitutionForm: FC<InstitutionType> = (props) => {
+  const { id, name, short_name, email, phone } = props
 
-const InstitutionForm: FC<InstitutionPropTypes> = ({
-  id,
-  name,
-  short_name,
-  email,
-  phone,
-  workingTimes,
-  vacationDays,
-}) => {
   // hooks
   const { t } = useTranslation()
   const [isUpdatingData, setIsUpdatingData] = useState(false)
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator, nameInputValidator } = useValidators()
+  const { institutionVacations } = useInstitutionVacationsFetch()
   const { updateInstitution, isLoading } = useInstitutionUpdate({
     id,
   })
@@ -174,8 +169,8 @@ const InstitutionForm: FC<InstitutionPropTypes> = ({
         />
 
         <div className={classes.dateTimeContainer}>
-          {workingTimes}
-          {vacationDays}
+          <WorkingTimes name={name} id={id} data={props} />
+          <VacationTimes data={institutionVacations} />
         </div>
       </div>
       <Button

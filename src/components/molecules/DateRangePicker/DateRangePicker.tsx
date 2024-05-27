@@ -19,6 +19,7 @@ export interface DateRangePickerProps {
   minDate?: Date
   maxDate?: Date
   disabled?: boolean
+  onBlur?: () => void
 }
 
 const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
@@ -35,6 +36,7 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
       minDate,
       maxDate,
       disabled,
+      onBlur,
     } = props
 
     const { t } = useTranslation()
@@ -80,10 +82,11 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
             name={`${name}.start`}
             placeholder={t('placeholder.date')}
             value={value?.start}
-            error={error}
+            error={!value?.start ? error : undefined}
             minDate={minDate}
             maxDate={maxDate}
             disabled={disabled}
+            onBlur={onBlur}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
           <span className={classes.line} />
@@ -92,10 +95,11 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
             name={`${name}.end`}
             placeholder={t('placeholder.date')}
             value={value?.end}
-            error={error}
+            error={!value?.end ? error : undefined}
             minDate={minDate}
             maxDate={maxDate}
             disabled={disabled}
+            onBlur={onBlur}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         </div>
