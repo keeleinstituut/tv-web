@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from 'components/contexts/AuthContext'
 import { useFetchUser } from 'hooks/requests/useUsers'
 import Loader from 'components/atoms/Loader/Loader'
+import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 
 const UserDetails: FC = () => {
   const { t } = useTranslation()
@@ -16,6 +17,50 @@ const UserDetails: FC = () => {
     id: userId,
   })
 
+  const userName = {
+    surname: user?.user.surname,
+    forename: user?.user.forename,
+  }
+
+  const userWorkingTimes =
+    {
+      id: user?.id || '',
+      name: `${user?.user.forename} ${user?.user.surname}` || '',
+      monday_worktime_start:
+        user?.monday_worktime_start || user?.institution.monday_worktime_start,
+      monday_worktime_end:
+        user?.monday_worktime_end || user?.institution.monday_worktime_start,
+      tuesday_worktime_start:
+        user?.tuesday_worktime_start ||
+        user?.institution.tuesday_worktime_start,
+      tuesday_worktime_end:
+        user?.tuesday_worktime_end || user?.institution.tuesday_worktime_end,
+      wednesday_worktime_start:
+        user?.wednesday_worktime_start ||
+        user?.institution.wednesday_worktime_start,
+      wednesday_worktime_end:
+        user?.wednesday_worktime_end ||
+        user?.institution.wednesday_worktime_end,
+      thursday_worktime_start:
+        user?.thursday_worktime_start ||
+        user?.institution.thursday_worktime_start,
+      thursday_worktime_end:
+        user?.thursday_worktime_end || user?.institution.thursday_worktime_end,
+      friday_worktime_start:
+        user?.friday_worktime_start || user?.institution.friday_worktime_start,
+      friday_worktime_end:
+        user?.friday_worktime_end || user?.institution.friday_worktime_end,
+      saturday_worktime_start:
+        user?.saturday_worktime_start ||
+        user?.institution.saturday_worktime_start,
+      saturday_worktime_end:
+        user?.saturday_worktime_end || user?.institution.saturday_worktime_end,
+      sunday_worktime_start:
+        user?.sunday_worktime_start || user?.institution.sunday_worktime_start,
+      sunday_worktime_end:
+        user?.sunday_worktime_end || user?.institution.sunday_worktime_end,
+    } || {}
+
   if (isLoading) return <Loader loading={isLoading} />
 
   return (
@@ -23,12 +68,12 @@ const UserDetails: FC = () => {
       <div className={classes.titleRow}>
         <h1 className={classes.title}>{t('user.account')}</h1>
 
-        {/* TODO: edit personal working times and vacation days will come later with new endpoints */}
-        {/* <WorkingTimes
-          name={user?.institution.name || ''}
-          id={user?.institution.id || ''}
-          data={user?.institution}
-        /> */}
+        <WorkingTimes
+          id={user?.id || ''}
+          data={userWorkingTimes}
+          userName={userName}
+          isDetailPageTimes
+        />
       </div>
       <UserForm {...user} id={userId} isUserAccount />
       <p className={classes.dateText}>
