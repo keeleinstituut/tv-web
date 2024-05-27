@@ -13,6 +13,7 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
+import useModalContext from 'hooks/useModalContext'
 import { useSearchParams } from 'react-router-dom'
 
 type PaginationProps<TData> = {
@@ -20,7 +21,6 @@ type PaginationProps<TData> = {
   hidePaginationSelectionInput?: boolean
   table: Table<PaginationState> | Table<TData>
   pageSizeOptions?: { label: string; value: string }[]
-  isModalTable?: boolean
 }
 
 const TablePagination = <TData,>({
@@ -28,9 +28,10 @@ const TablePagination = <TData,>({
   table,
   pageSizeOptions,
   hidePaginationSelectionInput = false,
-  isModalTable = false,
 }: PaginationProps<TData>) => {
   const { t } = useTranslation()
+  const { modalContentId } = useModalContext()
+  const isModalTable = !!modalContentId
   const [searchParams, setSearchParams] = useSearchParams()
   const {
     previousPage,

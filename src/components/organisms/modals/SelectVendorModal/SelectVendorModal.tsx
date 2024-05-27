@@ -247,7 +247,6 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         }
         control={control}
         hidden={isLoadingPrices}
-        isModalTable
       />
     </ModalBase>
   )

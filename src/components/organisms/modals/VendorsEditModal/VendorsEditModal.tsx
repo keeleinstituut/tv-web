@@ -202,7 +202,6 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
         <VendorsEditTable
           data={usersData}
           control={control}
-          isModalTable
           {...{
             paginationData,
             handlePaginationChange,

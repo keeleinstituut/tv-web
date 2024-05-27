@@ -527,6 +527,7 @@
     "user_updated": "Kasutaja „{{name}}“ on edukalt muudetud.",
     "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
     "institution_updated": "Asutuse andmed on edukalt muudetud.",
+    "user_working_times_updated": "Kasutaja tööaeg on edukalt muudetud.",
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
     "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",

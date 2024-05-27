@@ -9,7 +9,7 @@
 
   .buttonsContainer {
     display: flex;
-    >:first-child {
+    > :first-child {
       margin-right: spacing(2);
     }
   }
@@ -93,4 +93,8 @@
 
 .checkboxInputClass {
   padding-top: spacing(4);
+}
+
+.userForm {
+  margin-top: spacing(6);
 }
