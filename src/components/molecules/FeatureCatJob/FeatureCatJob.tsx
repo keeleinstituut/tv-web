@@ -85,7 +85,7 @@ const FeatureCatJob = <TFormValues extends FieldValues>({
     <div className={classes.container}>
       <h3>
         {t('task.vendor_title', { number: index + 1 })}(
-        {t(`projects.features.${job_definition.job_key}`)})
+        {job_definition.job_short_name})
       </h3>
       <span className={classes.assignmentId}>{ext_id}</span>
       <div className={classes.titleRow}>

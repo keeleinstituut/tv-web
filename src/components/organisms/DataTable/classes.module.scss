@@ -5,8 +5,16 @@
   margin: spacing(6) spacing(4);
 }
 
+.horizontallyScrollableClassName {
+  overflow-x: unset;
+}
+
 .tableWrapper {
   overflow-x: auto;
+}
+
+.tableWrapper,
+.horizontallyScrollableClassName {
   white-space: nowrap;
 
   .dataTable {

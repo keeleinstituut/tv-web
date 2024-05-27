@@ -13,6 +13,7 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
+import useModalContext from 'hooks/useModalContext'
 import { useSearchParams } from 'react-router-dom'
 
 type PaginationProps<TData> = {
@@ -29,6 +30,8 @@ const TablePagination = <TData,>({
   hidePaginationSelectionInput = false,
 }: PaginationProps<TData>) => {
   const { t } = useTranslation()
+  const { modalContentId } = useModalContext()
+  const isModalTable = !!modalContentId
   const [searchParams, setSearchParams] = useSearchParams()
   const {
     previousPage,
@@ -78,10 +81,12 @@ const TablePagination = <TData,>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={() => {
             previousPage()
-            setSearchParams((prevParams) => {
-              prevParams.set('page', `${getState().pagination.pageIndex}`)
-              return searchParams
-            })
+            if (!isModalTable) {
+              setSearchParams((prevParams) => {
+                prevParams.set('page', `${getState().pagination.pageIndex}`)
+                return searchParams
+              })
+            }
           }}
           disabled={!getCanPreviousPage()}
           className={classes.arrows}
@@ -101,10 +106,12 @@ const TablePagination = <TData,>({
                   className={classes.pageNumber}
                   onClick={() => {
                     setPageIndex(index)
-                    setSearchParams((prevParams) => {
-                      prevParams.set('page', `${index + 1}`)
-                      return searchParams
-                    })
+                    if (!isModalTable) {
+                      setSearchParams((prevParams) => {
+                        prevParams.set('page', `${index + 1}`)
+                        return searchParams
+                      })
+                    }
                   }}
                   ariaLabel={t('label.go_to_page') + index}
                   aria-current={getState().pagination.pageIndex === index}
@@ -123,10 +130,12 @@ const TablePagination = <TData,>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={() => {
             nextPage()
-            setSearchParams((prevParams) => {
-              prevParams.set('page', `${getState().pagination.pageIndex + 2}`)
-              return searchParams
-            })
+            if (!isModalTable) {
+              setSearchParams((prevParams) => {
+                prevParams.set('page', `${getState().pagination.pageIndex + 2}`)
+                return searchParams
+              })
+            }
           }}
           disabled={!getCanNextPage()}
           className={classNames(classes.arrows, classes.toRight)}
@@ -144,10 +153,12 @@ const TablePagination = <TData,>({
         rules={{ required: true }}
         onChange={(value) => {
           setPageSize(Number(value))
-          setSearchParams((prevParams) => {
-            prevParams.set('per_page', `${Number(value)}`)
-            return searchParams
-          })
+          if (!isModalTable) {
+            setSearchParams((prevParams) => {
+              prevParams.set('per_page', `${Number(value)}`)
+              return searchParams
+            })
+          }
         }}
         hideTags
         placeholder={toString(getState().pagination.pageSize)}

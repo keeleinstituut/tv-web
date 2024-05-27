@@ -45,6 +45,20 @@ export interface UserType {
   status: UserStatus
   user: UserDetailsType
   vendor?: Vendor | null
+  monday_worktime_start?: string
+  monday_worktime_end?: string
+  tuesday_worktime_start?: string
+  tuesday_worktime_end?: string
+  wednesday_worktime_start?: string
+  wednesday_worktime_end?: string
+  thursday_worktime_start?: string
+  thursday_worktime_end?: string
+  friday_worktime_start?: string
+  friday_worktime_end?: string
+  saturday_worktime_start?: string
+  saturday_worktime_end?: string
+  sunday_worktime_start?: string
+  sunday_worktime_end?: string
 }
 
 export interface UserPostType {
@@ -53,6 +67,8 @@ export interface UserPostType {
   roles?: string[]
   phone?: string
   email?: string
+  worktime_timezone?: string
+  name?: string
 }
 
 export interface UserCsvType {

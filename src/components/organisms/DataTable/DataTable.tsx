@@ -63,6 +63,7 @@ type DataTableProps<TData extends RowData> = {
   hidden?: boolean
   getSubRows?: (originalRow: TData, index: number) => TData[] | undefined
   hidePagination?: boolean
+  isHorizontallyScrollable?: boolean
   hidePaginationSelectionInput?: boolean
   getRowStyles?: (row: {
     parentId?: string
@@ -98,6 +99,7 @@ const DataTable = <TData,>(
     getSubRows,
     pageSizeOptions,
     hidePagination = false,
+    isHorizontallyScrollable = false,
     headComponent,
     className,
     hidePaginationSelectionInput = false,
@@ -174,13 +176,24 @@ const DataTable = <TData,>(
         tableRef: ref,
       }}
     >
-      <Container ref={ref} className={className}>
+      <Container
+        ref={ref}
+        className={classNames(
+          isHorizontallyScrollable ? classes.tableWrapper : '',
+          className
+        )}
+      >
         <h4 className={classes.title} hidden={!title}>
           {title}
         </h4>
         {headComponent}
         <div
-          className={classNames(classes.tableWrapper, tableWrapperClassName)}
+          className={classNames(
+            isHorizontallyScrollable
+              ? classes.horizontallyScrollableClassName
+              : classes.tableWrapper,
+            tableWrapperClassName
+          )}
           id={horizontalWrapperId}
         >
           <table className={classNames(classes.dataTable, classes[tableSize])}>

@@ -2,10 +2,7 @@ import Container from 'components/atoms/Container/Container'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import { FC } from 'react'
 import classes from './classes.module.scss'
-import {
-  useInstitutionFetch,
-  useInstitutionVacationsFetch,
-} from 'hooks/requests/useInstitutions'
+import { useInstitutionFetch } from 'hooks/requests/useInstitutions'
 import { useAuth } from 'components/contexts/AuthContext'
 import InstitutionForm from 'components/organisms/forms/InstitutionForm/InstitutionForm'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +19,6 @@ const InstitutionSettings: FC = () => {
   const { institution } = useInstitutionFetch({
     id: institutionId,
   })
-  const { institutionVacations } = useInstitutionVacationsFetch()
 
   const { updated_at, created_at } = institution || {}
 
@@ -34,12 +30,7 @@ const InstitutionSettings: FC = () => {
       </div>
       <Container className={classes.container}>
         <h3 className={classes.title}>{t('institution.institution_data')}</h3>
-        <InstitutionForm
-          name={name}
-          id={institutionId}
-          institutionVacations={institutionVacations}
-          {...institution}
-        />
+        <InstitutionForm name={name} id={institutionId} {...institution} />
       </Container>
 
       <p className={classes.dateText}>
