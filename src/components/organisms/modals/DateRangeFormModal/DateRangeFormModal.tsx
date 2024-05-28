@@ -23,7 +23,6 @@ import {
   reduce,
   size,
   split,
-  toArray,
   toNumber,
   uniqueId,
 } from 'lodash'
@@ -34,6 +33,8 @@ import { ValidationError } from 'api/errorHandler'
 
 export type EditDataType = {
   id?: string
+  institution_id?: string
+  institution_user_id?: string
   start?: string
   end?: string
 }
@@ -43,11 +44,16 @@ export interface DateRangeFormModalProps {
   closeModal: () => void
   data?: EditDataType[]
   title?: string
-  handleOnSubmit?: (values: EditDataType[]) => void
+  handleOnSubmit?: (
+    values: EditDataType[],
+    vacationExclusions?: string[]
+  ) => void
 }
 
 type FormValues = {
-  [key in string]: {
+  [key: string]: {
+    institution_id?: string
+    institution_user_id?: string
     id: string
     start: string
     end: string
@@ -75,6 +81,8 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
             ...result,
             [value.id]: {
               id: value.id,
+              institution_id: value?.institution_id,
+              institution_user_id: value?.institution_user_id,
               start: value.start,
               end: value.end,
             },
@@ -125,6 +133,8 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
 
   const [prevDeletedValue, setPrevDeletedValue] = useState<string>()
 
+  const [vacationExclusions, setVacationExclusions] = useState<string[]>([])
+
   const addInputField = () => {
     const newId = uniqueId()
 
@@ -157,6 +167,14 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
       return !isEqual(fieldId, prevDeletedValue)
     })
     setInputFields(withoutDeleteFields)
+    if (
+      prevDeletedValue &&
+      editableData?.find(
+        (value) => value.id === prevDeletedValue && value.institution_id
+      )
+    ) {
+      setVacationExclusions([...vacationExclusions, prevDeletedValue])
+    }
     unregister(prevDeletedValue)
   }, [prevDeletedValue])
 
@@ -171,33 +189,38 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
     setInputFields(editableFields)
   }, [editableFields, inputFields, reset])
 
-  const onSubmit: SubmitHandler<FormValues> = useCallback(async (values) => {
-    const payload = toArray(values).filter((value) => value)
-    try {
-      if (handleOnSubmit) {
-        await handleOnSubmit(payload)
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    async (values) => {
+      const payloadWithKey = map(values, (value, key) => ({
+        ...value,
+        key,
+      }))
+      try {
+        if (handleOnSubmit) {
+          await handleOnSubmit(payloadWithKey, vacationExclusions)
+        }
+        resetForm()
+        closeModal()
+      } catch (errorData) {
+        const typedErrorData = errorData as ValidationError
+        if (typedErrorData.errors) {
+          map(typedErrorData.errors, (errorsArray, key) => {
+            const typedKey = key as unknown as FieldPath<FormValues>
+            const tKey = split(typedKey, '.')[1]
+            const errorString = join(errorsArray, ',')
+            if (tKey) {
+              const inputName = `${payloadWithKey[toNumber(tKey)].key}`
+              setError(inputName, {
+                type: 'backend',
+                message: errorString,
+              })
+            }
+          })
+        }
       }
-      resetForm()
-      closeModal()
-    } catch (errorData) {
-      const typedErrorData = errorData as ValidationError
-      if (typedErrorData.errors) {
-        map(typedErrorData.errors, (errorsArray, key) => {
-          const typedKey = key as unknown as FieldPath<FormValues>
-          const tKey = split(typedKey, '.')[1]
-          const errorString = join(errorsArray, ',')
-
-          if (tKey) {
-            const inputName = `${payload[toNumber(tKey)].id}`
-            setError(inputName, {
-              type: 'backend',
-              message: errorString,
-            })
-          }
-        })
-      }
-    }
-  }, [])
+    },
+    [vacationExclusions]
+  )
 
   return (
     <ModalBase

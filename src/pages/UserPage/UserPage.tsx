@@ -40,6 +40,8 @@ import { UserStatus, UserStatusType } from 'types/users'
 import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 
 import classes from './classes.module.scss'
+import VacationTimes from '../../components/molecules/VacationTimes/VacationTimes'
+import { useInstitutionUserVacationsFetch } from '../../hooks/requests/useInstitutions'
 
 interface FormValues {
   deactivation_date?: string
@@ -62,6 +64,8 @@ const UserPage: FC = () => {
   })
 
   const { existingRoles = [] } = useRolesFetch({})
+  const { userVacations } = useInstitutionUserVacationsFetch({ id: userId })
+
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
     institution_user_id: userId,
   })
@@ -354,6 +358,8 @@ const UserPage: FC = () => {
     ? userUpdatedAt
     : institutionUserUpdatedAt
 
+  console.warn('Userpage', userVacations)
+
   return (
     <>
       <div className={classes.titleRow}>
@@ -418,6 +424,14 @@ const UserPage: FC = () => {
         />
       </div>
 
+      <VacationTimes
+        data={[
+          ...(userVacations?.institution_vacations || []),
+          ...(userVacations?.institution_user_vacations || []),
+        ]}
+        userId={userId}
+        isUserVacationTimes
+      />
       <WorkingTimes
         id={user?.id}
         data={userWorkingTimes}

@@ -6,16 +6,20 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
-import { map, includes, join } from 'lodash'
+import { map, includes, join, compact } from 'lodash'
 import classes from './classes.module.scss'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import {
+  InstitutionUserVacationsPostType,
   InstitutionVacationsPostType,
   InstitutionVacationType,
 } from 'types/institutions'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
-import { useInstitutionVacationsUpdate } from 'hooks/requests/useInstitutions'
+import {
+  useInstitutionUserVacationsUpdate,
+  useInstitutionVacationsUpdate,
+} from 'hooks/requests/useInstitutions'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import { useAuth } from 'components/contexts/AuthContext'
@@ -25,10 +29,21 @@ import { EditDataType } from 'components/organisms/modals/DateRangeFormModal/Dat
 dayjs.extend(timezone)
 interface VacationTimesPropType {
   data?: InstitutionVacationType[]
+  userId?: string
+  isUserVacationTimes?: boolean
+  isDetailPageTimes?: boolean
 }
 
-const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {
+const VacationTimes: FC<VacationTimesPropType> = ({
+  data,
+  userId,
+  isUserVacationTimes,
+  isDetailPageTimes,
+}) => {
   const { updateInstitutionVacations } = useInstitutionVacationsUpdate()
+  const { updateInstitutionUserVacations } = useInstitutionUserVacationsUpdate({
+    id: userId,
+  })
   const { userPrivileges } = useAuth()
 
   const { t } = useTranslation()
@@ -36,6 +51,8 @@ const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {
   const editableData = map(data, (vacation) => {
     return {
       id: vacation.id,
+      institution_id: vacation?.institution_id,
+      institution_user_id: vacation?.institution_user_id,
       start: dayjs(vacation.start_date).format('DD/MM/YYYY').toString(),
       end: dayjs(vacation.end_date).format('DD/MM/YYYY').toString(),
     }
@@ -43,37 +60,73 @@ const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {
 
   const vacationDatesList = join(
     map(editableData, ({ start, end }) => {
-      const startDate = dayjs(start, 'DD/MM/YYYY').format('DD')
-      const endDate = dayjs(end, 'DD/MM/YYYY').format('DD.MM.YYYY')
+      const startDate = dayjs(start, 'DD/MM/YYYY')
+      const endDate = dayjs(end, 'DD/MM/YYYY')
+      const isSameYearAndMonth =
+        startDate.isSame(endDate, 'month') && startDate.isSame(endDate, 'year')
+
+      const formattedStartDate = isSameYearAndMonth
+        ? startDate.format('DD')
+        : startDate.format('DD.MM.YYYY')
+
+      const formattedEndDate = endDate.format('DD.MM.YYYY')
 
       if (start === end) {
-        return `${endDate}`
+        return `${formattedEndDate}`
       }
-      return `${startDate}-${endDate}`
+      return `${formattedStartDate}-${formattedEndDate}`
     }),
     ', '
   )
 
-  const handleOnSubmit = async (values: EditDataType[]) => {
+  const handleOnSubmit = async (
+    values: EditDataType[],
+    vacationExclusions: string[]
+  ) => {
     const formattedVacationTimes = map(values, (date) => {
       const startDate = dayjs(date.start, 'DD/MM/YYYY').format('YYYY-MM-DD')
       const endDate = dayjs(date.end, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      const institutionVacationIdObject = date.id ? { id: date.id } : {}
+      const userVacationIdObject =
+        date.id && !date.institution_id ? { id: date.id } : {}
       return {
-        ...(date.id && { id: date.id }),
+        ...(userId ? userVacationIdObject : institutionVacationIdObject),
         start_date: startDate,
         end_date: endDate,
       }
     })
 
-    const payload: InstitutionVacationsPostType = {
-      vacations: formattedVacationTimes,
+    if (isUserVacationTimes || isDetailPageTimes) {
+      const editedInstitutionVacations = compact(
+        map(values, ({ institution_id, id }) => {
+          if (institution_id) return id
+        })
+      )
+      const payload: InstitutionUserVacationsPostType = {
+        institution_user_id: userId || '',
+        vacations: formattedVacationTimes,
+        institution_vacation_exclusions: [
+          ...vacationExclusions,
+          ...editedInstitutionVacations,
+        ],
+      }
+      await updateInstitutionUserVacations(payload)
+    } else {
+      const payload: InstitutionVacationsPostType = {
+        vacations: formattedVacationTimes,
+      }
+      await updateInstitutionVacations(payload)
     }
 
-    await updateInstitutionVacations(payload)
+    const successMessage =
+      isUserVacationTimes || isDetailPageTimes
+        ? t('success.user_vacation_times_updated')
+        : t('success.institution_updated')
+
     showNotification({
       type: NotificationTypes.Success,
       title: t('notification.announcement'),
-      content: t('success.institution_updated'),
+      content: successMessage,
     })
   }
 
@@ -96,7 +149,14 @@ const VacationTimes: FC<VacationTimesPropType> = ({ data }) => {
         className={classes.editButton}
         icon={EditIcon}
         onClick={handleEditList}
-        hidden={!includes(userPrivileges, Privileges.EditInstitutionWorktime)}
+        hidden={
+          (!includes(userPrivileges, Privileges.EditUserVacation) &&
+            isUserVacationTimes &&
+            !isDetailPageTimes) ||
+          (!includes(userPrivileges, Privileges.EditInstitutionWorktime) &&
+            !isUserVacationTimes &&
+            !isDetailPageTimes)
+        }
       />
     </div>
   )

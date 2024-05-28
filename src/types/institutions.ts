@@ -27,7 +27,8 @@ export interface InstitutionType {
 }
 export interface InstitutionVacationType {
   id: string
-  institution_id: string
+  institution_id?: string
+  institution_user_id?: string
   start_date: string
   end_date: string
   create_at: string
@@ -48,6 +49,20 @@ export interface InstitutionVacationsDataType {
 }
 export interface InstitutionVacationsPostType {
   vacations: InstitutionVacationPostType[]
+}
+
+export interface InstitutionUserVacationsDataType {
+  institution_user_vacations: InstitutionVacationType[]
+  institution_vacations: InstitutionVacationType[]
+}
+export interface InstitutionUserVacationResponse {
+  data: InstitutionUserVacationsDataType
+}
+
+export interface InstitutionUserVacationsPostType {
+  institution_user_id: string
+  vacations: InstitutionVacationPostType[]
+  institution_vacation_exclusions: string[]
 }
 export interface InstitutionDataType {
   data: InstitutionType

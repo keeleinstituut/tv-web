@@ -3,10 +3,11 @@ import dayjs from 'dayjs'
 import { FC } from 'react'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
-// import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 import { useAuth } from 'components/contexts/AuthContext'
 import { useFetchUser } from 'hooks/requests/useUsers'
 import Loader from 'components/atoms/Loader/Loader'
+import VacationTimes from 'components/molecules/VacationTimes/VacationTimes'
+import { useInstitutionUserVacationsFetch } from 'hooks/requests/useInstitutions'
 import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 
 const UserDetails: FC = () => {
@@ -16,6 +17,7 @@ const UserDetails: FC = () => {
   const { isLoading, user } = useFetchUser({
     id: userId,
   })
+  const { userVacations } = useInstitutionUserVacationsFetch({ id: userId })
 
   const userName = {
     surname: user?.user.surname,
@@ -62,12 +64,20 @@ const UserDetails: FC = () => {
     } || {}
 
   if (isLoading) return <Loader loading={isLoading} />
-
+  console.warn('Userdetails')
   return (
     <>
       <div className={classes.titleRow}>
         <h1 className={classes.title}>{t('user.account')}</h1>
 
+        <VacationTimes
+          data={[
+            ...(userVacations?.institution_vacations || []),
+            ...(userVacations?.institution_user_vacations || []),
+          ]}
+          userId={userId}
+          isDetailPageTimes
+        />
         <WorkingTimes
           id={user?.id || ''}
           data={userWorkingTimes}
