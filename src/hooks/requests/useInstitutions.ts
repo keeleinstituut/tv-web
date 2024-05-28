@@ -5,7 +5,11 @@ import {
   InstitutionDataType,
   InstitutionDiscountsDataType,
   InstitutionPostType,
+  InstitutionVacationsDataType,
   InstitutionsDataType,
+  InstitutionUserVacationResponse,
+  InstitutionUserVacationsPostType,
+  InstitutionVacationsPostType,
 } from 'types/institutions'
 import { DiscountPercentages } from 'types/vendors'
 
@@ -103,6 +107,98 @@ export const useUpdateInstitutionDiscounts = () => {
   })
   return {
     updateInstitutionDiscounts,
+    isLoading,
+  }
+}
+
+export const useInstitutionVacationsFetch = () => {
+  const { isLoading, isError, data } = useQuery<InstitutionVacationsDataType>({
+    queryKey: ['institution-vacations'],
+    queryFn: () => apiClient.get(`${endpoints.INSTITUTION_VACATIONS}`),
+  })
+
+  const { data: institutionVacations } = data || {}
+
+  return {
+    institutionVacations,
+    isLoading,
+    isError,
+  }
+}
+
+export const useInstitutionVacationsUpdate = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateInstitutionVacations, isLoading } = useMutation({
+    mutationKey: ['institution-vacations'],
+    mutationFn: (payload: InstitutionVacationsPostType) =>
+      apiClient.post(`${endpoints.INSTITUTION_VACATIONS}/sync`, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(
+        ['institution-vacations'],
+        (oldData?: InstitutionVacationsDataType) => {
+          const { data: previousData } = oldData || {}
+          if (!previousData) return oldData
+          const newData = { ...data }
+          return { data: newData }
+        }
+      )
+    },
+  })
+
+  return {
+    updateInstitutionVacations,
+    isLoading,
+  }
+}
+
+export const useInstitutionUserVacationsFetch = ({
+  id,
+}: {
+  id?: string | undefined
+}) => {
+  const { isLoading, isError, data } =
+    useQuery<InstitutionUserVacationResponse>({
+      enabled: !!id,
+      queryKey: ['institution-user-vacations', id],
+      queryFn: () =>
+        apiClient.get(`${endpoints.INSTITUTION_USER_VACATIONS}/${id}`),
+    })
+
+  const { data: institutionUserVacations } = data || {}
+
+  return {
+    userVacations: institutionUserVacations,
+    isLoading: isLoading,
+    isError: isError,
+  }
+}
+
+export const useInstitutionUserVacationsUpdate = ({
+  id,
+}: {
+  id?: string | undefined
+}) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateInstitutionUserVacations, isLoading } =
+    useMutation({
+      mutationKey: ['institution-user-vacations', id],
+      mutationFn: (payload: InstitutionUserVacationsPostType) =>
+        apiClient.post(`${endpoints.INSTITUTION_USER_VACATIONS}/sync`, payload),
+      onSuccess: ({ data }) => {
+        queryClient.setQueryData(
+          ['institution-user-vacations', id],
+          (oldData?: InstitutionVacationsDataType) => {
+            const { data: previousData } = oldData || {}
+            if (!previousData) return oldData
+            const newData = { ...data }
+            return { data: newData }
+          }
+        )
+      },
+    })
+
+  return {
+    updateInstitutionUserVacations,
     isLoading,
   }
 }

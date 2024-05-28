@@ -25,16 +25,51 @@ export interface InstitutionType {
   sunday_worktime_start?: string
   sunday_worktime_end?: string
 }
+export interface InstitutionVacationType {
+  id: string
+  institution_id?: string
+  institution_user_id?: string
+  start_date: string
+  end_date: string
+  create_at: string
+  update_at: string
+}
+
+export interface InstitutionVacationPostType {
+  id?: string
+  start_date?: string
+  end_date?: string
+}
 
 export interface InstitutionsDataType {
   data: InstitutionType[]
+}
+export interface InstitutionVacationsDataType {
+  data: InstitutionVacationType[]
+}
+export interface InstitutionVacationsPostType {
+  vacations: InstitutionVacationPostType[]
+}
+
+export interface InstitutionUserVacationsDataType {
+  institution_user_vacations: InstitutionVacationType[]
+  institution_vacations: InstitutionVacationType[]
+}
+export interface InstitutionUserVacationResponse {
+  data: InstitutionUserVacationsDataType
+}
+
+export interface InstitutionUserVacationsPostType {
+  institution_user_id: string
+  vacations: InstitutionVacationPostType[]
+  institution_vacation_exclusions: string[]
 }
 export interface InstitutionDataType {
   data: InstitutionType
 }
 
 export interface InstitutionPostType {
-  name: string
+  name?: string
   short_name?: string | null
   phone?: string | null
   email?: string | null

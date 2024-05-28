@@ -25,6 +25,8 @@ const auditLog = (path: string) => {
 export const endpoints = {
   ROLES: authorization('roles'),
   INSTITUTIONS: authorization('institutions'),
+  INSTITUTION_VACATIONS: authorization('institution-vacations'),
+  INSTITUTION_USER_VACATIONS: authorization('institution-user-vacations'),
   PRIVILEGES: authorization('privileges'),
   USERS: authorization('institution-users'),
   VALIDATE_CSV: authorization('institution-users/validate-import-csv'),

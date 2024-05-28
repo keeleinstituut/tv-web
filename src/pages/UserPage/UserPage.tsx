@@ -37,8 +37,11 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { UserStatus, UserStatusType } from 'types/users'
+import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 
 import classes from './classes.module.scss'
+import VacationTimes from '../../components/molecules/VacationTimes/VacationTimes'
+import { useInstitutionUserVacationsFetch } from '../../hooks/requests/useInstitutions'
 
 interface FormValues {
   deactivation_date?: string
@@ -59,7 +62,10 @@ const UserPage: FC = () => {
   const { isLoading, isError, user } = useFetchUser({
     id: userId,
   })
+
   const { existingRoles = [] } = useRolesFetch({})
+  const { userVacations } = useInstitutionUserVacationsFetch({ id: userId })
+
   const { archiveUser, isLoading: isArchiving } = useArchiveUser({
     institution_user_id: userId,
   })
@@ -71,7 +77,49 @@ const UserPage: FC = () => {
   })
   const deactivationDate = user?.deactivation_date || ''
   const name = `${user?.user.forename} ${user?.user.surname}`
+  const userName = {
+    surname: user?.user.surname,
+    forename: user?.user.forename,
+  }
   const status = user?.status
+  const userWorkingTimes =
+    {
+      id: user?.id || '',
+      name: name || '',
+      monday_worktime_start:
+        user?.monday_worktime_start || user?.institution.monday_worktime_start,
+      monday_worktime_end:
+        user?.monday_worktime_end || user?.institution.monday_worktime_start,
+      tuesday_worktime_start:
+        user?.tuesday_worktime_start ||
+        user?.institution.tuesday_worktime_start,
+      tuesday_worktime_end:
+        user?.tuesday_worktime_end || user?.institution.tuesday_worktime_end,
+      wednesday_worktime_start:
+        user?.wednesday_worktime_start ||
+        user?.institution.wednesday_worktime_start,
+      wednesday_worktime_end:
+        user?.wednesday_worktime_end ||
+        user?.institution.wednesday_worktime_end,
+      thursday_worktime_start:
+        user?.thursday_worktime_start ||
+        user?.institution.thursday_worktime_start,
+      thursday_worktime_end:
+        user?.thursday_worktime_end || user?.institution.thursday_worktime_end,
+      friday_worktime_start:
+        user?.friday_worktime_start || user?.institution.friday_worktime_start,
+      friday_worktime_end:
+        user?.friday_worktime_end || user?.institution.friday_worktime_end,
+      saturday_worktime_start:
+        user?.saturday_worktime_start ||
+        user?.institution.saturday_worktime_start,
+      saturday_worktime_end:
+        user?.saturday_worktime_end || user?.institution.saturday_worktime_end,
+      sunday_worktime_start:
+        user?.sunday_worktime_start || user?.institution.sunday_worktime_start,
+      sunday_worktime_end:
+        user?.sunday_worktime_end || user?.institution.sunday_worktime_end,
+    } || {}
 
   const isUserArchived = user?.archived_at !== null
 
@@ -310,6 +358,8 @@ const UserPage: FC = () => {
     ? userUpdatedAt
     : institutionUserUpdatedAt
 
+  console.warn('Userpage', userVacations)
+
   return (
     <>
       <div className={classes.titleRow}>
@@ -374,7 +424,22 @@ const UserPage: FC = () => {
         />
       </div>
 
-      <UserForm {...user} />
+      <VacationTimes
+        data={[
+          ...(userVacations?.institution_vacations || []),
+          ...(userVacations?.institution_user_vacations || []),
+        ]}
+        userId={userId}
+        isUserVacationTimes
+      />
+      <WorkingTimes
+        id={user?.id}
+        data={userWorkingTimes}
+        userName={userName}
+        isUserWorkingTimes
+      />
+
+      <UserForm {...user} className={classes.userForm} />
       <p className={classes.dateText}>
         {t('user.created_at', {
           time: dayjs(user.created_at).format('DD.MM.YYYY HH:mm') || '',

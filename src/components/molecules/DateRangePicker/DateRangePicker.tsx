@@ -6,7 +6,6 @@ import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes, IconPositioningTypes } from '../Button/Button'
-
 export interface DateRangePickerProps {
   onChange: (value: { start?: string; end?: string }) => void
   value?: { start?: string; end?: string }
@@ -19,6 +18,7 @@ export interface DateRangePickerProps {
   minDate?: Date
   maxDate?: Date
   disabled?: boolean
+  onBlur?: () => void
 }
 
 const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
@@ -35,6 +35,7 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
       minDate,
       maxDate,
       disabled,
+      onBlur,
     } = props
 
     const { t } = useTranslation()
@@ -80,10 +81,11 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
             name={`${name}.start`}
             placeholder={t('placeholder.date')}
             value={value?.start}
-            error={error}
+            error={!value?.end && value?.start ? undefined : error}
             minDate={minDate}
             maxDate={maxDate}
             disabled={disabled}
+            onBlur={onBlur}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
           <span className={classes.line} />
@@ -92,10 +94,11 @@ const DateRangePicker = forwardRef<HTMLInputElement, DateRangePickerProps>(
             name={`${name}.end`}
             placeholder={t('placeholder.date')}
             value={value?.end}
-            error={error}
+            error={!value?.start && value?.end ? undefined : error}
             minDate={minDate}
             maxDate={maxDate}
             disabled={disabled}
+            onBlur={onBlur}
             ref={ref as unknown as Ref<HTMLInputElement>}
           />
         </div>
