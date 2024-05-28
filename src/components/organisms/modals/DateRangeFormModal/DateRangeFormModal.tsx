@@ -23,7 +23,6 @@ import {
   reduce,
   size,
   split,
-  toArray,
   toNumber,
   uniqueId,
 } from 'lodash'
@@ -52,7 +51,7 @@ export interface DateRangeFormModalProps {
 }
 
 type FormValues = {
-  [key in string]: {
+  [key: string]: {
     institution_id?: string
     institution_user_id?: string
     id: string
@@ -192,10 +191,13 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const payload = toArray(values).filter((value) => value)
+      const payloadWithKey = map(values, (value, key) => ({
+        ...value,
+        key,
+      }))
       try {
         if (handleOnSubmit) {
-          await handleOnSubmit(payload, vacationExclusions)
+          await handleOnSubmit(payloadWithKey, vacationExclusions)
         }
         resetForm()
         closeModal()
@@ -206,12 +208,8 @@ const DateRangeFormModal: FC<DateRangeFormModalProps> = ({
             const typedKey = key as unknown as FieldPath<FormValues>
             const tKey = split(typedKey, '.')[1]
             const errorString = join(errorsArray, ',')
-
             if (tKey) {
-              const userVacations = payload.filter(
-                (vacation) => !vacation.institution_id
-              )
-              const inputName = `${userVacations[toNumber(tKey)].id}`
+              const inputName = `${payloadWithKey[toNumber(tKey)].key}`
               setError(inputName, {
                 type: 'backend',
                 message: errorString,

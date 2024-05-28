@@ -69,7 +69,7 @@ const CatSplitModal: FC<CatSplitModalProps> = ({
             className={classes.numberSelector}
             name="cat_split_amount"
             ariaLabel={t('label.cat_split_amount')}
-            options={map(range(2, 101), (number) => ({
+            options={map(range(2, 51), (number) => ({
               value: toString(number),
               label: toString(number),
             }))}

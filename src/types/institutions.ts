@@ -69,7 +69,7 @@ export interface InstitutionDataType {
 }
 
 export interface InstitutionPostType {
-  name: string
+  name?: string
   short_name?: string | null
   phone?: string | null
   email?: string | null

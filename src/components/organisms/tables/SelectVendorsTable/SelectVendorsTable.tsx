@@ -378,6 +378,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
         onFiltersChange={handleModifiedFilterChange}
         onSortingChange={handleSortingChange}
         className={classes.tableContainer}
+        isHorizontallyScrollable
       />
     </Root>
   )

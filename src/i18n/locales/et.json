@@ -279,7 +279,19 @@
     "time_range_format": "Ajavahemik peab olema HH:MM:SS formaadis",
     "deadline_time_format": "Tähtaeg peab olema HH:MM:SS formaadis",
     "time_unit_s": "sekundi",
-    "time_unit_m": "minuti"
+    "time_unit_m": "minuti",
+    "server_error": {
+      "501": "Päringumeetodit ei toetata serveri poolt (501)",
+      "502": "Server sai vigase vastuse (502)",
+      "503": "Teenus ei ole kättesaadav (503)",
+      "504": "Ühendus aegus (504)",
+      "505": "Server ei toeta antud Http versiooni (505)",
+      "506": "Serveril on sisemine konfiguratsiooniviga (506)",
+      "507": "Ebapiisav salvestusruum (507)",
+      "508": "Server tuvastas päringu töötlemisel lõputu tsükli. (508)",
+      "510": "Päringu täitmiseks on vajalikud täiendavad laiendused serveri poolt. (510)",
+      "511": "Võrgu autentimine on nõutav. (511)"
+    }
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks",
@@ -519,6 +531,7 @@
     "users_uploaded": "Fail {{fileName}} lisatud edukalt. Kasutaja andmete haldamiseks klõpsa kasutajakonto ID lingile.",
     "institution_updated": "Asutuse andmed on edukalt muudetud.",
     "user_vacation_times_updated": "Kasutaja puhkepäevad on edukalt muudetud.",
+    "user_working_times_updated": "Kasutaja tööaeg on edukalt muudetud.",
     "user_deactivated": "Kasutaja „{{name}}“ on edukalt deaktiveeritud.",
     "deactivation_date_edit": "Kasutaja „{{name}}“ deaktiveerimise kuupäev on edukalt muudetud.",
     "user_activated": "Kasutaja „{{name}}“ on edukalt aktiveeritud.",

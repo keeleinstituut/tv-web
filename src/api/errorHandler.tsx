@@ -89,27 +89,42 @@ const handleError = async (error?: AxiosError) => {
     errorContent = i18n.t('error.unknown_error', { code })
   }
 
-  if (code === 401) {
-    rawLogout()
-    throw error
-  } else if (code === 422) {
-    // Throw only validation errors
-    throw error?.response?.data
-  } else if (code === 413) {
-    // TODO: might add specific errors based on endpoint, but this should be fine for now
-    showNotification({
-      type: NotificationTypes.Error,
-      title: i18n.t('notification.error'),
-      content: i18n.t('error.file_size_error'),
-    })
-    throw error
-  } else {
-    showNotification({
-      type: NotificationTypes.Error,
-      title: i18n.t('notification.error'),
-      content: errorContent,
-    })
-    throw error
+  switch (code) {
+    case 401:
+      rawLogout()
+      throw error
+    case 422:
+      throw error?.response?.data
+    case 413:
+      showNotification({
+        type: NotificationTypes.Error,
+        title: i18n.t('notification.error'),
+        content: i18n.t('error.file_size_error'),
+      })
+      throw error
+    case 501:
+    case 502:
+    case 503:
+    case 504:
+    case 505:
+    case 506:
+    case 507:
+    case 508:
+    case 510:
+    case 511:
+      showNotification({
+        type: NotificationTypes.Error,
+        title: i18n.t('notification.error'),
+        content: i18n.t(`error.server_error.${code}`),
+      })
+      throw error
+    default:
+      showNotification({
+        type: NotificationTypes.Error,
+        title: i18n.t('notification.error'),
+        content: errorContent,
+      })
+      throw error
   }
 }
 

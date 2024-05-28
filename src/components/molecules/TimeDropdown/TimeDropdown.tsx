@@ -6,6 +6,7 @@ import useModalContext from 'hooks/useModalContext'
 import { createPortal } from 'react-dom'
 import useElementPosition from 'hooks/useElementPosition'
 import useTableContext from 'hooks/useTableContext'
+import FocusTrap from 'focus-trap-react'
 
 import classes from './classes.module.scss'
 
@@ -105,52 +106,55 @@ const TimeDropdownComponent = forwardRef<HTMLDivElement, TimeDropdownProps>(
       }
     }
 
+    if (!isTimeColumnOpen || disabled) return null
+
     return (
-      <div
-        className={
-          !isTimeColumnOpen || disabled
-            ? classes.hiddenContainer
-            : classes.timeColumnContainer
-        }
-        ref={ref}
-        style={{
-          zIndex: 51 + (errorZIndex || 0),
-          ...(wrapperRef
-            ? {
-                left: useLeftPosition ? 'unset' : left - 2,
-                right: useLeftPosition ? right - left : 'unset',
-                top: top + 40,
-              }
-            : {}),
+      <FocusTrap
+        focusTrapOptions={{
+          clickOutsideDeactivates: true,
         }}
-        onKeyDown={handleKeyDown}
       >
-        <TimeColumn
-          start={0}
-          end={24}
-          value={hourValue}
-          setValue={handleSetHour}
-          isTimeColumnOpen={isTimeColumnOpen}
-          isHourValue
-          autoFocus={isTimeColumnOpen}
-        />
-        <TimeColumn
-          start={0}
-          end={60}
-          value={minuteValue}
-          setValue={handleSetMinute}
-          isTimeColumnOpen={isTimeColumnOpen}
-        />
-        {showSeconds && (
+        <div
+          className={classes.timeColumnContainer}
+          ref={ref}
+          style={{
+            zIndex: 51 + (errorZIndex || 0),
+            ...(wrapperRef
+              ? {
+                  left: useLeftPosition ? 'unset' : left - 2,
+                  right: useLeftPosition ? right - left : 'unset',
+                  top: top + 40,
+                }
+              : {}),
+          }}
+          onKeyDown={handleKeyDown}
+        >
+          <TimeColumn
+            start={0}
+            end={24}
+            value={hourValue}
+            setValue={handleSetHour}
+            isTimeColumnOpen={isTimeColumnOpen}
+            isHourValue
+          />
           <TimeColumn
             start={0}
             end={60}
-            value={secondValue}
-            setValue={handleSetSecond}
+            value={minuteValue}
+            setValue={handleSetMinute}
             isTimeColumnOpen={isTimeColumnOpen}
           />
-        )}
-      </div>
+          {showSeconds && (
+            <TimeColumn
+              start={0}
+              end={60}
+              value={secondValue}
+              setValue={handleSetSecond}
+              isTimeColumnOpen={isTimeColumnOpen}
+            />
+          )}
+        </div>
+      </FocusTrap>
     )
   }
 )

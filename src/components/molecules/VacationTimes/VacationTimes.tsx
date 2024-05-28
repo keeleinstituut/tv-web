@@ -6,7 +6,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
-import { map, includes, join } from 'lodash'
+import { map, includes, join, compact } from 'lodash'
 import classes from './classes.module.scss'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -60,13 +60,21 @@ const VacationTimes: FC<VacationTimesPropType> = ({
 
   const vacationDatesList = join(
     map(editableData, ({ start, end }) => {
-      const startDate = dayjs(start, 'DD/MM/YYYY').format('DD')
-      const endDate = dayjs(end, 'DD/MM/YYYY').format('DD.MM.YYYY')
+      const startDate = dayjs(start, 'DD/MM/YYYY')
+      const endDate = dayjs(end, 'DD/MM/YYYY')
+      const isSameYearAndMonth =
+        startDate.isSame(endDate, 'month') && startDate.isSame(endDate, 'year')
+
+      const formattedStartDate = isSameYearAndMonth
+        ? startDate.format('DD')
+        : startDate.format('DD.MM.YYYY')
+
+      const formattedEndDate = endDate.format('DD.MM.YYYY')
 
       if (start === end) {
-        return `${endDate}`
+        return `${formattedEndDate}`
       }
-      return `${startDate}-${endDate}`
+      return `${formattedStartDate}-${formattedEndDate}`
     }),
     ', '
   )
@@ -75,25 +83,32 @@ const VacationTimes: FC<VacationTimesPropType> = ({
     values: EditDataType[],
     vacationExclusions: string[]
   ) => {
-    const userVacations = values.filter((vacation) => !vacation.institution_id)
-    const formattedVacationTimes = map(
-      isUserVacationTimes || isDetailPageTimes ? userVacations : values,
-      (date) => {
-        const startDate = dayjs(date.start, 'DD/MM/YYYY').format('YYYY-MM-DD')
-        const endDate = dayjs(date.end, 'DD/MM/YYYY').format('YYYY-MM-DD')
-        return {
-          ...(date.id && { id: date.id }),
-          start_date: startDate,
-          end_date: endDate,
-        }
+    const formattedVacationTimes = map(values, (date) => {
+      const startDate = dayjs(date.start, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      const endDate = dayjs(date.end, 'DD/MM/YYYY').format('YYYY-MM-DD')
+      const institutionVacationIdObject = date.id ? { id: date.id } : {}
+      const userVacationIdObject =
+        date.id && !date.institution_id ? { id: date.id } : {}
+      return {
+        ...(userId ? userVacationIdObject : institutionVacationIdObject),
+        start_date: startDate,
+        end_date: endDate,
       }
-    )
+    })
 
     if (isUserVacationTimes || isDetailPageTimes) {
+      const editedInstitutionVacations = compact(
+        map(values, ({ institution_id, id }) => {
+          if (institution_id) return id
+        })
+      )
       const payload: InstitutionUserVacationsPostType = {
         institution_user_id: userId || '',
         vacations: formattedVacationTimes,
-        institution_vacation_exclusions: vacationExclusions,
+        institution_vacation_exclusions: [
+          ...vacationExclusions,
+          ...editedInstitutionVacations,
+        ],
       }
       await updateInstitutionUserVacations(payload)
     } else {

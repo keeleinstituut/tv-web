@@ -14,12 +14,11 @@ import useValidators from 'hooks/useValidators'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
-import { useInstitutionUpdate } from 'hooks/requests/useInstitutions'
 import {
-  InstitutionPostType,
-  InstitutionType,
-  InstitutionVacationType,
-} from 'types/institutions'
+  useInstitutionUpdate,
+  useInstitutionVacationsFetch,
+} from 'hooks/requests/useInstitutions'
+import { InstitutionPostType, InstitutionType } from 'types/institutions'
 import Button from 'components/molecules/Button/Button'
 import classNames from 'classnames'
 import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
@@ -32,18 +31,15 @@ interface FormValues {
   phone?: string | null
 }
 
-type InstitutionPropTypes = {
-  institutionVacations?: InstitutionVacationType[]
-} & InstitutionType
-
-const InstitutionForm: FC<InstitutionPropTypes> = (props) => {
-  const { id, name, short_name, email, phone, institutionVacations } = props
+const InstitutionForm: FC<InstitutionType> = (props) => {
+  const { id, name, short_name, email, phone } = props
 
   // hooks
   const { t } = useTranslation()
   const [isUpdatingData, setIsUpdatingData] = useState(false)
   const { userPrivileges } = useAuth()
   const { emailValidator, phoneValidator, nameInputValidator } = useValidators()
+  const { institutionVacations } = useInstitutionVacationsFetch()
   const { updateInstitution, isLoading } = useInstitutionUpdate({
     id,
   })

@@ -58,8 +58,7 @@ const Assignment: FC<AssignmentProps> = ({
       sub_project_id,
     })
 
-  const feature = job_definition.job_key
-  const skill_id = job_definition.skill_id
+  const { job_key, skill_id, job_short_name } = job_definition
 
   const selectedVendorsIds = map(candidates, 'vendor.id')
 
@@ -115,8 +114,7 @@ const Assignment: FC<AssignmentProps> = ({
     <div className={classes.assignmentContainer}>
       <div>
         <h3 className={classes.titleContainer}>
-          {t('task.vendor_title', { number: index + 1 })}(
-          {t(`projects.features.${feature}`)})
+          {t('task.vendor_title', { number: index + 1 })}({job_short_name})
           <BaseButton
             className={classes.deleteButton}
             hidden={index === 0 || workflow_started}
@@ -135,7 +133,7 @@ const Assignment: FC<AssignmentProps> = ({
           className={classes.addButton}
           onClick={handleOpenVendorsModal}
           disabled={
-            feature === SubProjectFeatures.JobOverview || isAssignmentFinished
+            job_key === SubProjectFeatures.JobOverview || isAssignmentFinished
           }
         >
           {t('button.choose_from_database')}
@@ -167,14 +165,14 @@ const Assignment: FC<AssignmentProps> = ({
           appearance={AppearanceTypes.Secondary}
           children={t('button.send_to_previous_task')}
           onClick={openConfirmSendToPreviousAssignment}
-          hidden={feature !== SubProjectFeatures.JobOverview}
+          hidden={job_key !== SubProjectFeatures.JobOverview}
           disabled={!isEditable || status !== AssignmentStatus.InProgress}
         />
         <Button
           children={t('button.mark_as_finished')}
           disabled={status !== AssignmentStatus.InProgress}
           onClick={
-            feature !== SubProjectFeatures.JobOverview
+            job_key !== SubProjectFeatures.JobOverview
               ? openConfirmAssignmentFinished
               : openConfirmAssignmentCompletion
           }
