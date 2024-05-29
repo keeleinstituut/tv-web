@@ -62,6 +62,7 @@ interface PersonSectionProps<TFormValues extends FieldValues> {
   selectedUser?: UserType
   isEditable?: boolean
   hideDetails?: boolean
+  isRequired?: boolean
 }
 
 const PersonSection = <TFormValues extends FieldValues>({
@@ -71,6 +72,7 @@ const PersonSection = <TFormValues extends FieldValues>({
   selectedUser,
   isEditable,
   hideDetails,
+  isRequired,
 }: PersonSectionProps<TFormValues>) => {
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
@@ -208,7 +210,7 @@ const PersonSection = <TFormValues extends FieldValues>({
         onlyDisplay={!isEditable}
         className={classNames(!isEditable && classes.boldText)}
         rules={{
-          required: type === PersonSectionTypes.Client,
+          required: type === PersonSectionTypes.Client || isRequired,
         }}
         hideTags
       />

@@ -89,6 +89,7 @@ const ReassignProjectModal: FC<ReassignProjectModalProps> = ({
             selectedUser={manager_institution_user}
             hideDetails
             isEditable
+            isRequired
           />
         </Form>
       }
