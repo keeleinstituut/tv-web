@@ -171,12 +171,16 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
 
   // Privilege checks
   const hasManagerPrivilege = includes(userPrivileges, Privileges.ManageProject)
-  const isUserClientOfProject = client_institution_user_id === institutionUserId
+  const isUserClientOfProject =
+    client_institution_user?.id === institutionUserId ||
+    !client_institution_user?.id
 
   const isManagerEditable = isNew || hasManagerPrivilege
+
   const isClientEditable =
     (isUserClientOfProject || hasManagerPrivilege) &&
     includes(userPrivileges, Privileges.ChangeClient)
+
   const isRestEditable = isNew || hasManagerPrivilege
 
   const isSomethingEditable =
