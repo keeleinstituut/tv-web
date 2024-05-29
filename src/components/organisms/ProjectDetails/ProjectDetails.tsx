@@ -171,12 +171,16 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
 
   // Privilege checks
   const hasManagerPrivilege = includes(userPrivileges, Privileges.ManageProject)
-  const isUserClientOfProject = client_institution_user_id === institutionUserId
+  const isUserClientOfProject =
+    client_institution_user?.id === institutionUserId ||
+    !client_institution_user?.id
 
   const isManagerEditable = isNew || hasManagerPrivilege
+
   const isClientEditable =
     (isUserClientOfProject || hasManagerPrivilege) &&
     includes(userPrivileges, Privileges.ChangeClient)
+
   const isRestEditable = isNew || hasManagerPrivilege
 
   const isSomethingEditable =
@@ -426,6 +430,9 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
             selectedUserId={manager_institution_user_id}
             selectedUser={manager_institution_user}
             isEditable={isManagerEditable && isEditEnabled}
+            isRequired={
+              mode !== ProjectDetailModes.New && status !== ProjectStatus.New
+            }
           />
         </Container>
         <Container className={classNames(classes.detailsContainer)}>
