@@ -26,7 +26,6 @@ import { TagTypes } from 'types/tags'
 import { useInstitutionFetch } from 'hooks/requests/useInstitutions'
 import dayjs from 'dayjs'
 import { useUpdateTranslationMemory } from 'hooks/requests/useTranslationMemories'
-import classNames from 'classnames'
 
 interface FormValues {
   name: string
@@ -224,7 +223,8 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
               />
             )
           )}
-          <div
+          {/* Note: importing and segments info coming later */}
+          {/* <div
             className={classNames(
               classes.memoryDetails,
               classes.grayColor,
@@ -235,19 +235,18 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
               {t('label.last_imported')}
             </span>
             <span>xxxx</span>
-            {/* Note: importing and segments info coming later */}
-            {/* <SmallTooltip
+            <SmallTooltip
             tooltipContent={'Viga viga'}
             icon={ErrorIcon}
             // hidden={}
             //className={classNames(classes.bar, isVacation && classes.vacation)}
             contentClassName={classes.content}
-          /> */}
+          />
             <span className={classes.labelClass}>
               {t('label.chunk_amount_old')}
             </span>
             <span>xxxx</span>
-          </div>
+          </div> */}
         </div>
         <DynamicForm
           fields={fields}
