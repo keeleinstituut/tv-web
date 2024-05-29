@@ -358,8 +358,6 @@ const UserPage: FC = () => {
     ? userUpdatedAt
     : institutionUserUpdatedAt
 
-  console.warn('Userpage', userVacations)
-
   return (
     <>
       <div className={classes.titleRow}>

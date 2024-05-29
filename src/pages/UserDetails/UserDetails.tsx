@@ -64,7 +64,6 @@ const UserDetails: FC = () => {
     } || {}
 
   if (isLoading) return <Loader loading={isLoading} />
-  console.warn('Userdetails')
   return (
     <>
       <div className={classes.titleRow}>

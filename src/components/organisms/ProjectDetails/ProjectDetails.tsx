@@ -426,6 +426,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
             selectedUserId={manager_institution_user_id}
             selectedUser={manager_institution_user}
             isEditable={isManagerEditable && isEditEnabled}
+            isRequired={mode !== ProjectDetailModes.New}
           />
         </Container>
         <Container className={classNames(classes.detailsContainer)}>
