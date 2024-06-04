@@ -43,11 +43,11 @@ const useAddFiles = (config: {
         collection,
       }))
 
-      return apiClient.instance.postForm(endpoints.MEDIA_BULK, {
+      return apiClient.postForm(endpoints.MEDIA_BULK, {
         files,
       })
     },
-    onSuccess: ({ data: { data } }: { data: { data: SourceFile[] } }) => {
+    onSuccess: ({ data }: { data: SourceFile[] }) => {
       const { reference_object_id, reference_object_type, collection, taskId } =
         config
       if (
@@ -240,7 +240,7 @@ const useAddBulkFiles = (config: {
         ...rest,
       }))
 
-      return apiClient.instance.postForm(endpoints.MEDIA_BULK, {
+      return apiClient.postForm(endpoints.MEDIA_BULK, {
         files,
       })
     },

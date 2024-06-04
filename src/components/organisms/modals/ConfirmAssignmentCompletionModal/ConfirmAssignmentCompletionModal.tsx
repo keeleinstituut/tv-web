@@ -65,7 +65,7 @@ const ConfirmAssignmentCompletionModal: FC<
       try {
         await completeAssignment({
           final_file_id: selectedFiles,
-          accepted: true,
+          accepted: 1,
         })
         showNotification({
           type: NotificationTypes.Success,

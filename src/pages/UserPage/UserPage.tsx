@@ -210,11 +210,11 @@ const UserPage: FC = () => {
   }, [navigate, archiveUser, t, name])
 
   const onDeactivateSubmit: SubmitHandler<FormValues> = useCallback(
-    async ({ roles, ...rest }) => {
+    async ({ roles, notify_user, ...rest }) => {
       const isUserEditingDeactivationDate = deactivationDate !== ''
 
       try {
-        await deactivateUser({ ...rest })
+        await deactivateUser({ ...rest, notify_user: notify_user ? 1 : 0 })
         closeModal()
         showNotification({
           type: NotificationTypes.Success,
@@ -250,7 +250,7 @@ const UserPage: FC = () => {
 
       const payload: UserStatusType = {
         roles,
-        notify_user: !!notify_user,
+        notify_user: notify_user ? 1 : 0,
       }
       try {
         await activateUser(payload)

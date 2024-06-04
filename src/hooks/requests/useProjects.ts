@@ -439,7 +439,7 @@ export const useToggleMtEngine = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: toggleMtEngine, isLoading } = useMutation({
     mutationKey: ['mt_engine', id],
-    mutationFn: async (payload: { mt_enabled: boolean }) =>
+    mutationFn: async (payload: { mt_enabled: number }) =>
       apiClient.put(`${endpoints.MT_ENGINE}/${id}`, payload),
     onSuccess: ({ data }: { data: { mt_enabled: boolean } }) => {
       queryClient.setQueryData(

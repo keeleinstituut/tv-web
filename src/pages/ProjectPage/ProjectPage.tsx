@@ -175,11 +175,6 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
     // TODO
   }, [completeCorrectingTask, t])
 
-  // TODO: mapped buttons:
-  // Left:
-  // 1. Delegate to other manager (Registreeritud status + )
-  // Right:
-  // 1. Cancel project --
   if (!status) return null
 
   return (
@@ -187,8 +182,6 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
       <Button
         appearance={AppearanceTypes.Secondary}
         children={t('button.delegate_to_other_manager')}
-        // TODO: disabled for now, we don't have endpoint for this
-        // open confirmation modal from here
         onClick={openReassignmentModal}
         hidden={!canReassignProject}
       />

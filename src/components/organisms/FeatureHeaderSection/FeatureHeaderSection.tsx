@@ -98,7 +98,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   const isSplittingAllowed = !!addVendor
 
   const toggleInputChange = useCallback(async () => {
-    const payload = { mt_enabled: !mt_enabled }
+    const payload = { mt_enabled: mt_enabled ? 0 : 1 }
 
     try {
       await toggleMtEngine(payload)

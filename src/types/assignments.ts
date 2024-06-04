@@ -95,7 +95,7 @@ export interface CatVolumePayload {
 }
 
 export interface CompleteAssignmentPayload {
-  accepted?: boolean
+  accepted?: number
   final_file_id?: string[]
 }
 

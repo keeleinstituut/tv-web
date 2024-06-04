@@ -48,7 +48,7 @@ export interface TaskResponse {
 }
 
 export interface CompleteTaskPayload {
-  accepted?: number | boolean
+  accepted?: number
   final_file_id?: string[]
   sub_project_id?: string[]
   description?: string
