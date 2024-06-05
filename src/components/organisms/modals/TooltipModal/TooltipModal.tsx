@@ -1,10 +1,6 @@
 import { FC, ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  AppearanceTypes,
-  IconPositioningTypes,
-  SizeTypes,
-} from 'components/molecules/Button/Button'
+import { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'
 import ModalBase, {
   ButtonPositionTypes,
   TitleFontTypes,

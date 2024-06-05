@@ -60,8 +60,11 @@ const ConfirmRejectProjectModal: FC<ConfirmRejectProjectModalProps> = ({
   const review_file = watch('review_file')
 
   const handleAdd = useCallback(
-    async (newFiles: File[]) => {
-      setValue('review_file', [...(review_file || []), ...newFiles])
+    async (newFiles: File[], isDelete?: boolean) => {
+      setValue(
+        'review_file',
+        isDelete ? newFiles : [...(review_file || []), ...newFiles]
+      )
     },
     [review_file, setValue]
   )
