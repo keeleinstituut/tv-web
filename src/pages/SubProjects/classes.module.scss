@@ -2,7 +2,10 @@
 
 .titleRow {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: spacing(4);
+
+  .toolTip {
+    margin-left: spacing(4);
+  }
 }

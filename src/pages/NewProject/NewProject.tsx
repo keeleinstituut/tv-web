@@ -4,16 +4,19 @@ import { useTranslation } from 'react-i18next'
 import ProjectDetails, {
   ProjectDetailModes,
 } from 'components/organisms/ProjectDetails/ProjectDetails'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
 
 const NewProject: FC = () => {
   const { t } = useTranslation()
 
   return (
-    <div className={classes.container}>
-      <h1>{t('projects.new_project_title')}</h1>
+    <>
+      <div className={classes.titleRow}>
+        <h1>{t('projects.new_project_title')}</h1>
+        <Tooltip helpSectionKey="addProject" />
+      </div>
       <ProjectDetails mode={ProjectDetailModes.New} />
-      {/* <SubmitButtons /> */}
-    </div>
+    </>
   )
 }
 

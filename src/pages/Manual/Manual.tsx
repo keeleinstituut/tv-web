@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import useHashState from 'hooks/useHashState'
 import ReactHtmlParser from 'html-react-parser'
-import helpSections from './helpSections.json'
+import manual from 'static/manual.json'
 import { HelpSections } from 'components/organisms/Tooltip/Tooltip'
 
 import classes from './classes.module.scss'
@@ -12,7 +12,7 @@ import classes from './classes.module.scss'
 const Manual: FC = () => {
   const { t } = useTranslation()
 
-  const helpSectionsData: HelpSections = helpSections
+  const helpSectionsData: HelpSections = manual
 
   const date = '15.02.2022'
   const author = 'Interlex'

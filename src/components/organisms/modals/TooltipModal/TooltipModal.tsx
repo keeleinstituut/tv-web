@@ -36,7 +36,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
 
   return (
     <ModalBase
-      title={title}
+      title={`[${title}] ${t('modal.location_helper')}`}
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}
       className={classNames(classes.modalContent, className)}
@@ -47,8 +47,8 @@ const TooltipModal: FC<TooltipModalProps> = ({
           children: textButtonContent,
           size: SizeTypes.M,
           href: href,
-          iconPositioning: IconPositioningTypes.Left,
           onClick: closeModal,
+          className: classes.linkButton,
         },
         {
           appearance: AppearanceTypes.Secondary,

@@ -5,7 +5,7 @@ import termsContent from 'static/terms.json'
 
 import classes from './classes.module.scss'
 
-const Manual: FC = () => {
+const Terms: FC = () => {
   const { t } = useTranslation()
 
   return (
@@ -18,4 +18,4 @@ const Manual: FC = () => {
   )
 }
 
-export default Manual
+export default Terms

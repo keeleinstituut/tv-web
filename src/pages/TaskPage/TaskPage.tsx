@@ -105,7 +105,7 @@ const TaskPage: FC = () => {
       <ProjectDetails
         mode={ProjectDetailModes.View}
         project={projectToUse}
-        className={classes.orderDetails}
+        className={classes.projectDetails}
       />
 
       <div className={classes.separator} />

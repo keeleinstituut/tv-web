@@ -11,6 +11,7 @@ interface ExpandableContentContainerProps {
   hidden?: boolean
   rightComponent?: JSX.Element
   leftComponent?: JSX.Element
+  toolTip?: JSX.Element
   bottomComponent?: JSX.Element
   title?: string
   contentAlwaysVisible?: boolean
@@ -30,6 +31,7 @@ const ExpandableContentContainer: FC<
   className,
   rightComponent,
   leftComponent,
+  toolTip,
   bottomComponent,
   contentAlwaysVisible,
   wrapContent,
@@ -71,6 +73,7 @@ const ExpandableContentContainer: FC<
           <BaseButton className={classes.row} onClick={toggleIsExpanded}>
             {leftComponent}
           </BaseButton>
+          {toolTip}
           <div>
             {rightComponent}
             <BaseButton
