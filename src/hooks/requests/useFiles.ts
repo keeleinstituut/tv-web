@@ -16,11 +16,16 @@ export enum CollectionType {
   Final = 'final',
   Source = 'source',
   Help = 'help',
+  Review = 'review',
 }
 
-const filesKeys: Record<string, 'final_files' | 'source_files'> = {
+const filesKeys: Record<
+  string,
+  'final_files' | 'source_files' | 'review_files'
+> = {
   [CollectionType.Final]: 'final_files',
   [CollectionType.Source]: 'source_files',
+  [CollectionType.Review]: 'review_files',
 }
 
 const useAddFiles = (config: {
