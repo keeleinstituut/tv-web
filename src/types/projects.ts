@@ -173,6 +173,7 @@ export interface SubProjectDetail extends ListSubProjectDetail {
   cat_files: SourceFile[]
   final_files: SourceFile[]
   source_files: SourceFile[]
+  review_files: SourceFile[]
   assignments: AssignmentType[]
   mt_enabled: boolean
   workflow_started?: boolean
