@@ -57,6 +57,12 @@ interface FileRow {
 
 const columnHelper = createColumnHelper<FileRow>()
 
+const collectionMap = {
+  help_files: CollectionType.Help,
+  source_files: CollectionType.Source,
+  review_files: CollectionType.Review,
+}
+
 const ProjectFilesList = <TFormValues extends FieldValues>({
   title,
   typeOptions,
@@ -91,8 +97,7 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
   const { downloadFile } = useHandleFiles({
     reference_object_id: projectId ?? '',
     reference_object_type: 'project',
-    collection:
-      name === 'help_files' ? CollectionType.Help : CollectionType.Source,
+    collection: collectionMap[name as keyof typeof collectionMap],
   })
 
   const filesData = useMemo(
@@ -169,7 +174,6 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
             }}
           />
         )
-        return null
       },
       footer: (info) => info.column.id,
     }),
