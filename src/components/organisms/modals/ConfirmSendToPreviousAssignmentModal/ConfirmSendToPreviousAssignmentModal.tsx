@@ -25,7 +25,7 @@ const ConfirmSendToPreviousAssignmentModal: FC<
 
   const sendToPreviousAssignment = useCallback(async () => {
     try {
-      await completeAssignment({ accepted: false })
+      await completeAssignment({ accepted: 0 })
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),

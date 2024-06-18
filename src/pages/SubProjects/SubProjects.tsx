@@ -2,6 +2,7 @@ import SubProjectsTable from 'components/organisms/tables/SubProjectsTable/SubPr
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
 
 // TODO: WIP - implement this page
 
@@ -11,7 +12,7 @@ const SubProjects: FC = () => {
     <>
       <div className={classes.titleRow}>
         <h1>{t('projects.sub_project_tile')}</h1>
-        {/* TODO: add tooltip */}
+        <Tooltip className={classes.toolTip} helpSectionKey="subProject" />
       </div>
       <SubProjectsTable />
     </>

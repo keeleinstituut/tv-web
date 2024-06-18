@@ -201,12 +201,12 @@ interface SharedImportProps {
 
 type SingleSelectProps = {
   allowMultiple: false | undefined
-  onChange?: (file: File) => void
+  onChange?: (file: File, isDelete?: boolean) => void
 }
 
 type MultiSelectProps = {
   allowMultiple: true
-  onChange?: (files: File[]) => void
+  onChange?: (files: File[], isDelete?: boolean) => void
 }
 
 export type FileImportProps = SharedImportProps &
@@ -244,12 +244,12 @@ const FileImport: FC<FileImportProps> = ({
   }, [files])
 
   const onChangeHandler = useCallback(
-    (newFiles: File[]) => {
+    (newFiles: File[], isDelete?: boolean) => {
       if (onChange) {
         if (allowMultiple) {
-          onChange(newFiles)
+          onChange(newFiles, isDelete)
         } else {
-          onChange(newFiles[0])
+          onChange(newFiles[0], isDelete)
         }
       }
     },
@@ -260,7 +260,7 @@ const FileImport: FC<FileImportProps> = ({
     (index: number) => {
       const newFiles = filter(localFiles, (_, fileIndex) => index !== fileIndex)
       setFiles(newFiles)
-      onChangeHandler(newFiles)
+      onChangeHandler(newFiles, true)
       if (onDelete) {
         onDelete(localFiles[index])
       }

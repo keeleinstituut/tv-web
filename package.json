@@ -50,7 +50,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "syncTerms": "node  ./scripts/syncTerms.js",
+    "syncStatic": "node  ./scripts/syncStatic.js",
     "postinstall": "patch-package"
   },
   "engines": {

@@ -147,6 +147,7 @@ const CatAnalysisModal: FC<CatAnalysisModalProps> = ({
           size: SizeTypes.M,
           href: `${endpoints.CAT_TOOL}/download-volume-analysis/${subProjectId}`,
           download: 'analysis.txt',
+          target: '_blank',
         },
         {
           appearance: AppearanceTypes.Secondary,

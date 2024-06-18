@@ -142,7 +142,7 @@ const TaskContent: FC<TaskContentProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues])
 
-  const subOrderLangPair = useMemo(() => {
+  const subProjectLangPair = useMemo(() => {
     const srcLangShort = split(source_language_classifier_value?.value, '-')[0]
     const dstLangShort = split(
       destination_language_classifier_value?.value,
@@ -215,7 +215,7 @@ const TaskContent: FC<TaskContentProps> = ({
 
       const completionPayload = {
         final_file_id: finalFilesIds,
-        accepted: true,
+        accepted: 1,
         description: values?.assignee_comments,
       }
 
@@ -310,7 +310,7 @@ const TaskContent: FC<TaskContentProps> = ({
         isEditable={false}
         subProjectId={sub_project_id}
         subProjectTmKeyObjectsArray={tmKeysToUse}
-        subProjectLangPair={subOrderLangPair}
+        subProjectLangPair={subProjectLangPair}
         cat_tm_keys_meta={cat_tm_keys_meta}
         cat_tm_keys_stats={cat_tm_keys_stats}
         isVendor={isVendor}

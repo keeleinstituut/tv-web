@@ -46,6 +46,7 @@ import ProjectFormButtons from 'components/molecules/ProjectFormButtons/ProjectF
 
 import classes from './classes.module.scss'
 import { AxiosError } from 'axios'
+import Tooltip from '../Tooltip/Tooltip'
 
 export enum ProjectDetailModes {
   New = 'new',
@@ -402,6 +403,9 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
       hidden={isNew}
       contentAlwaysVisible={isNew}
       rightComponent={<ProjectStatusTag status={status} />}
+      toolTip={
+        <Tooltip className={classes.toolTip} helpSectionKey="projectDetails" />
+      }
       leftComponent={
         <h2 className={classes.expandableContentTitle}>
           {t('projects.project_details_expandable')}

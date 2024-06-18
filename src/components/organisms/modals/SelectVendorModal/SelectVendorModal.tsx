@@ -93,7 +93,7 @@ const ModalHeadSection: FC<ModalHeadSectionProps> = ({
           children={t('button.clear_filters')}
         />
         <SmallTooltip
-          className={classes.tooltip}
+          className={classes.toolTip}
           tooltipContent={t('tooltip.clear_price_filters')}
         />
       </div>
