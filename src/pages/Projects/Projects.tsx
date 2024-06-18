@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 import ProjectsTable from 'components/organisms/tables/ProjectsTable/ProjectsTable'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
 
 // TODO: WIP - implement this page
 
@@ -16,7 +17,7 @@ const Projects: FC = () => {
     <>
       <div className={classes.titleRow}>
         <h1>{t('projects.project_tile')}</h1>
-        {/* TODO: add tooltip */}
+        <Tooltip className={classes.toolTip} helpSectionKey="projects" />
         <Button
           children={t('button.add_project')}
           href="/projects/new-project"

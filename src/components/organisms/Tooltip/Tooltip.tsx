@@ -6,7 +6,7 @@ import { ReactComponent as QuestionMark } from 'assets/icons/question_mark.svg'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import ReactHtmlParser from 'html-react-parser'
-import helpSections from 'pages/Manual/helpSections.json'
+import manual from 'static/manual.json'
 
 import classes from './classes.module.scss'
 
@@ -50,7 +50,7 @@ const Tooltip: FC<TooltipProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const helpSectionsData: HelpSections = helpSections
+  const helpSectionsData: HelpSections = manual
 
   const selectedHelpSection = helpSectionsData[helpSectionKey] || {}
 
@@ -60,14 +60,13 @@ const Tooltip: FC<TooltipProps> = ({
       textButtonContent: textButtonContent || t('button.look_at_tutorial'),
       modalContent: ReactHtmlParser(selectedHelpSection.tooltipContent || ''),
       href: `/manual#${helpSectionKey}`,
-      className: className,
     })
   }
 
   return (
     <BaseButton
       onClick={handleModalOpen}
-      className={classes.container}
+      className={classNames(classes.container, className)}
       aria-label={t('label.tooltip')}
     >
       <Icon icon={icon} ariaLabel={ariaLabel} />

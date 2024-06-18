@@ -283,7 +283,6 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
               placeholder={t('label.search_by_name_here')}
               value={searchValue}
               onChange={handleSearchVendors}
-              className={classes.searchInput}
               inputContainerClassName={classes.generalPriceListInput}
               isSearch
             />

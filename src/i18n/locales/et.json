@@ -461,7 +461,8 @@
     "forward_files_helper": "Vali teostajatelt saadud valmis failid, mile soovid tellijale edasi saata.",
     "reassign_project_title": "Suuna teisele tõlkekorraldajale",
     "reassign_project_helper": "Kõik tellimusega seotud süsteemiteated saadetakse edaspidi vaid uuele tõlkekorraldajale. Tellimus kaob sinule määratud tellimuste, alamtellimuste ja ülesannete nimekirjast",
-    "confirm_complete_assignment_details": "Lõpetatud ülesanne suletakse ja ülesande teostaja ei saa talle määratud failidega enam töötada."
+    "confirm_complete_assignment_details": "Lõpetatud ülesanne suletakse ja ülesande teostaja ei saa talle määratud failidega enam töötada.",
+    "location_helper": "Kohtspikker"
   },
   "user": {
     "created_at": "Kasutaja loodud {{time}}",

@@ -105,7 +105,7 @@ const ReportExport: FC = () => {
     <>
       <div className={classes.reportHeader}>
         <h1>{t('orders_report.export')}</h1>
-        <Tooltip helpSectionKey="ordersReportExport" />
+        <Tooltip helpSectionKey="projectsReportExport" />
       </div>
 
       <Container className={classes.reportContainer}>
