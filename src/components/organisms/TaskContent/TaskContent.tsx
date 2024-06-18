@@ -215,7 +215,7 @@ const TaskContent: FC<TaskContentProps> = ({
 
       const completionPayload = {
         final_file_id: finalFilesIds,
-        accepted: true,
+        accepted: 1,
         description: values?.assignee_comments,
       }
 

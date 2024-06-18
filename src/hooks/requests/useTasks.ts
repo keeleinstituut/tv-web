@@ -119,8 +119,8 @@ export const useCompleteTask = ({ id }: { id?: string }) => {
   const { mutateAsync: completeTask, isLoading } = useMutation({
     mutationKey: ['tasks', id],
     mutationFn: (payload: CompleteTaskPayload) =>
-      apiClient.instance.postForm(`${endpoints.TASKS}/${id}/complete`, payload),
-    onSuccess: ({ data: { data } }: { data: { data: ListTask } }) => {
+      apiClient.postForm(`${endpoints.TASKS}/${id}/complete`, payload),
+    onSuccess: ({ data }: { data: ListTask }) => {
       // TODO: we should update task with this id + we should also update the parent project and possibly sub-project
       // Will see if we get all the relevant info in the response
       queryClient.setQueryData(['tasks', id], (oldData?: TaskResponse) => {

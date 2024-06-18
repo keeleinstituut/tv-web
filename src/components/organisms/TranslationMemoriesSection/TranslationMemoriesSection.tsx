@@ -286,11 +286,12 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
             inputType={InputTypes.Checkbox}
             disabled={mode === ProjectDetailModes.View || !isEditable}
             onClick={() => {
+              const newIsWritable = !getValue() || false
               const payload: SubProjectTmKeysPayload = {
                 id: row.original.tm_key_id || '',
                 sub_project_id: subProjectId || '',
                 tm_keys: [{ key }],
-                is_writable: !getValue() || false,
+                is_writable: newIsWritable ? 1 : 0,
               }
               isEqual(type, TMType.Public) && !getValue()
                 ? showModal(ModalTypes.ConfirmTmWritable, {

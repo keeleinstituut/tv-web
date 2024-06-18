@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
 // import queryString from 'query-string'
 import ApiClientInterceptor from './ApiClientInterceptor'
 import handleError from './errorHandler'
+import { getPopulateFormData } from 'helpers'
 
 export interface AxiosRequestConfigWithRetries extends AxiosRequestConfig {
   retries?: number
@@ -123,6 +124,17 @@ class ApiClient {
       url,
       data,
     })
+
+  postForm = async (url: string, data = {}, config = {}) => {
+    const formData2 = getPopulateFormData(data)
+
+    return this.request({
+      ...config,
+      data: formData2,
+      method: 'post',
+      url,
+    })
+  }
 }
 
 export default ApiClient

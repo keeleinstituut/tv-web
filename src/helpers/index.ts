@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import {
   compact,
   flatMap,
+  forEach,
   includes,
   join,
   keys,
@@ -288,3 +289,18 @@ export const stringifyLanguagePairs = (lang_pairs: LanguagePairType[]) => {
 
 export const escapeSearchString = (searchString: string) =>
   toLower(searchString).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+export const getPopulateFormData = (data = {}) => {
+  const formData = new FormData()
+  const populate = (value: string | Blob | object, key: string) => {
+    if (typeof value === 'object' && !(value instanceof Blob)) {
+      forEach(value, (innerValue, innerKey) => {
+        populate(innerValue, `${key}[${innerKey}]`)
+      })
+    } else {
+      formData.append(key, value)
+    }
+  }
+  forEach(data, populate)
+  return formData
+}
