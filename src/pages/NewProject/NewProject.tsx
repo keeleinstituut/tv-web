@@ -13,7 +13,7 @@ const NewProject: FC = () => {
     <>
       <div className={classes.titleRow}>
         <h1>{t('projects.new_project_title')}</h1>
-        <Tooltip helpSectionKey="addProject" />
+        <Tooltip helpSectionKey="projectDetails" />
       </div>
       <ProjectDetails mode={ProjectDetailModes.New} />
     </>

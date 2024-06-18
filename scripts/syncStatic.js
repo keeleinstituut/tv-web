@@ -65,7 +65,6 @@ const orderOfKeys = [
   'roleManagement',
   'projects',
   'projectDetails',
-  'addProject',
   'subProject',
   'myTasks',
   'editProjectDetails',

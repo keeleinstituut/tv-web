@@ -20,7 +20,7 @@ Kasutajate andmete haldamiseks tuleb klõpsata valitud kasutaja kasutajakonto ID
 
 Konto deaktiveerimisel kasutaja juurdepääsuõigused peatatakse ja tema roll(id) võetakse ära. See sobib kasutaja juurdepääsu ajutiseks peatamiseks. Kui pole soovi kontot hiljem taas aktiveerida, siis tuleks kasutaja konto arhiveerida.  
 Kui kasutaja konto deaktiveeritakse ja kasutaja pole ise oma poolikuid töid kolleegidele suunanud, siis on vaid vastavate õigustega kasutajal juurdepääs tema poolikutele tellimustele, alamtellimustele ja ülesannetele. Dekativeeritud konto aktiveerimiseks tuleb klõpsata nupule „Aktiveeri konto“ ja kontole määrata rollid. Kasutaja juurdepääs taastatakse ja ta näeb endaga seotud tellimuste, alamtellimuste või ülesannete ajalugu, kui tema uus roll seda lubab.  
-Aktiveeritud/deaktiveeritud kasutajale ei saa uut kontot samas asutuse luua. Arhiveeritud kasutajaga seotud isikukoodile saab uue konto luua: süsteemis luuakse uue unikaalse identifikaatoriga konto, mis on kasutaja isikukoodiga seotud ja sellega seotakse ka kõik uued tellimused (vana kontoga seotud tellimusi selle kontoga ei seota).
+Aktiveeritud/deaktiveeritud kasutajale ei saa uut kontot samas asutuses luua. Arhiveeritud kasutajaga seotud isikukoodile saab uue konto luua: süsteemis luuakse uue unikaalse identifikaatoriga konto, mis on kasutaja isikukoodiga seotud ja sellega seotakse ka kõik uued tellimused (vana kontoga seotud tellimusi selle kontoga ei seota).
 
 [END]
 
@@ -31,6 +31,8 @@ Kasutaja lisamiseks süsteemi tuleb importida kasutaja andmed CSV failiga. Laadi
 Kasutaja konto loomiseks tuleb failis kasutaja(te) andmetega täita vajalikud andmeväljad. Kui CSV failis ei ole konkreetse kasutaja roll määratud, siis saab kasutaja automaatselt tellija rolli. Pärast faili üleslaadimist tuleb kontrollida, et kõik andmed oleksid korrektsed ja vajadusel parandada vead. Kui kõik andmed on korrektsed, siis klõpsa „Salvesta ja saada teavitused“ nupule. Seejärel saavad kõik uued kasutajad teate, et neile on loodud konto Tõlkeväravas.
 
 [BREAK]
+
+Soovitus: igal asutusel peaks olema vähemalt kaks peakasutajat.
 
 [END]
 
@@ -78,18 +80,6 @@ Lisaks saab tellimusi filtreerida tellimuse ID, keelesuuna, tüübi, siltide, st
 - Tagasi lükatud – tellija poolt tagasi lükatud valmis tellimus  
 - Parandatud – tellijale saadetud parandatud valmis tellimus  
 - Vastu võetud – tellija poolt vastu võetud valmis tellimus
-
-[END]
-
-[START]
-
-## Tellimuse detailid
-
-Tellimuse detailide all kuvatakse tellimuse üldandmeid, alamtellimuste andmeid ja tellimuse lähte-ja valmisfaile.
-Tellimuse üldandmeid ja sellega seotud alamtellimusi saab muuta tõlkekorraldaja rolliga kasutaja.
-Tellija rolliga kasutaja (kellele on vastav privileeg) saab tellimuse üldandmetes muuta vaid tellimuse omaniku nime (isik, kelle nimele tellimus on tehtud).
-
-[BREAK]
 
 [END]
 
@@ -223,7 +213,15 @@ Lisaks saab ülesandeid filtreerida keelesuuna ja tüübi järgi.
 
 [START]
 
-## Tellimuse detailide muutmine
+## Tellimuse detailid
+
+Tellimuse detailide all kuvatakse tellimuse üldandmeid, alamtellimuste andmeid ja tellimuse lähte-ja valmisfaile.
+Tellimuse üldandmeid ja sellega seotud alamtellimusi saab muuta tõlkekorraldaja rolliga kasutaja.
+Tellija rolliga kasutaja saab tellimuse üldandmetes muuta vaid tellimuse omaniku nime.
+
+[BREAK]
+
+**Tellimuse detailide muutmine**
 
 Tõlkekorraldaja rolliga (või vastavate privileegidega) kasutaja saab tellimust ja sellega seotud alamtellimust muuta ja hallata.
 
