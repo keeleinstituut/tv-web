@@ -68,6 +68,11 @@ export interface Link {
   active: boolean
 }
 
+interface Review {
+  created_at: string
+  files: SourceFile[]
+  id: string
+}
 export interface ProjectTypeConfig {
   id: string
   workflow_process_definition_id: string
@@ -223,6 +228,7 @@ export interface ProjectDetail extends ListProject {
   corrected_at?: string
   rejected_at?: string
   cancelled_at?: string
+  reviews?: Review[]
 }
 
 export type ProjectsPayloadType = PaginationFunctionType &
