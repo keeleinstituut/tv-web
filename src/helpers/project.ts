@@ -1,5 +1,5 @@
 import { getLocalDateObjectFromUtcDateString } from 'helpers'
-import { filter, find, isEmpty, map, uniq, compact } from 'lodash'
+import { filter, find, isEmpty, map, uniq, compact, flatMap } from 'lodash'
 import { ProjectDetail, SourceFile } from 'types/projects'
 
 import dayjs from 'dayjs'
@@ -28,7 +28,7 @@ export const getProjectDefaultValues = ({
     reference_number = '',
     source_files,
     help_files,
-    review_files,
+    reviews,
     translation_domain_classifier_value,
     comments = '',
     ext_id = '',
@@ -50,6 +50,13 @@ export const getProjectDefaultValues = ({
     ({ custom_properties }) => custom_properties?.type
   )
 
+  const reviewFilesWithReviewId = flatMap(reviews, ({ files, id }) =>
+    map(files, (file) => ({
+      ...file,
+      reference_object_id: id,
+    }))
+  )
+
   return {
     type_classifier_value_id:
       type_classifier_value?.id || defaultProjectTypeClassifier?.id,
@@ -60,7 +67,7 @@ export const getProjectDefaultValues = ({
     reference_number,
     source_files: isNew ? [] : source_files,
     help_files: isNew ? [] : help_files,
-    review_files: isNew ? [] : review_files,
+    review_files: isNew ? [] : reviewFilesWithReviewId,
     ext_id,
     deadline_at: deadline_at
       ? getLocalDateObjectFromUtcDateString(deadline_at)

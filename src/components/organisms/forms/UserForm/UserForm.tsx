@@ -229,7 +229,7 @@ const UserForm: FC<UserFormProps> = ({
       const payload: UserPostType = {
         ...rest,
         ...(isEmpty(roles) ? {} : { roles }),
-        ...(!department_id ? {} : { department_id }),
+        department_id,
         user: {
           surname,
           forename,
