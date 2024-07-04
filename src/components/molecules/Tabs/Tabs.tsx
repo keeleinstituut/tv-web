@@ -24,6 +24,7 @@ interface TabsProps {
   tabNames?: ObjectType
   editDisabled?: boolean
   tabStyle?: TabStyle
+  avoidName?: boolean
 }
 
 const Tabs: FC<TabsProps> = ({
@@ -54,7 +55,7 @@ const Tabs: FC<TabsProps> = ({
           <Tab
             onClick={setActiveTab}
             key={id}
-            name={tabNames?.[id] || name}
+            name={tabNames?.[id] || (editDisabled ? name : '')}
             id={id}
             isActive={activeTab === id}
             onChangeName={onChangeName}
