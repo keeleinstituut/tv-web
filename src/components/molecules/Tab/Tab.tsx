@@ -111,6 +111,7 @@ const Tab: FC<TabType> = ({
   const handleClick = useCallback(() => {
     onClick(id)
   }, [id, onClick])
+
   const handleNameChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       setTempName(event.target.value)

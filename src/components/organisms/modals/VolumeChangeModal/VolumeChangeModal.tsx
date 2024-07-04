@@ -16,7 +16,6 @@ import {
   join,
   replace,
   includes,
-  filter,
 } from 'lodash'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
@@ -249,13 +248,10 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unit_fee, unit_quantity])
 
-  const priceUnitOptions = filter(
-    map(PriceUnits, (unit) => ({
-      label: t(`label.${unit}`),
-      value: unit,
-    })),
-    ({ value }) => value !== PriceUnits.MinimalFee
-  )
+  const priceUnitOptions = map(PriceUnits, (unit) => ({
+    label: t(`label.${unit}`),
+    value: unit,
+  }))
 
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [

@@ -1,6 +1,6 @@
 import { FC, useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { isEmpty, map, includes, omit, filter } from 'lodash'
+import { isEmpty, map, includes, omit, filter, reduce } from 'lodash'
 import RoleForm from 'components/organisms/forms/RoleForm/RoleForm'
 import { v4 as uuidv4 } from 'uuid'
 import { useRolesFetch } from 'hooks/requests/useRoles'
@@ -33,6 +33,19 @@ const RolesTabs: FC = () => {
   useEffect(() => {
     if (!isEmpty(existingRoles) && !activeTab) {
       setActiveTab(existingRoles[0].id)
+      setTabNames(
+        reduce(
+          existingRoles,
+          (result, role) => {
+            if (!role) return result
+            return {
+              ...result,
+              ...(role?.id ? { [role.id]: role?.name } : {}),
+            }
+          },
+          {}
+        )
+      )
     }
   }, [activeTab, existingRoles])
 
@@ -81,12 +94,14 @@ const RolesTabs: FC = () => {
     return <div />
   }
 
+  const allRoles = [...existingRoles, ...temporaryRoles]
+
   return (
     <>
       <Tabs
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        tabs={[...existingRoles, ...temporaryRoles]}
+        tabs={allRoles}
         className={classes.tabsContainer}
         onChangeName={onChangeName}
         tabNames={tabNames}
@@ -95,7 +110,7 @@ const RolesTabs: FC = () => {
         addDisabled={!includes(userPrivileges, Privileges.AddRole)}
         editDisabled={!includes(userPrivileges, Privileges.EditRole)}
       />
-      {map([...existingRoles, ...temporaryRoles], (role) => {
+      {map(allRoles, (role) => {
         if (!role?.id) return null
         // We render all RoleForms, instead of just the visible one
         // This is for making sure than the internal state of the useForm inside RoleForm
