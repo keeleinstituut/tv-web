@@ -288,12 +288,18 @@ const useDownloadFile = (config: {
 }) => {
   const { mutateAsync: downloadFile, isLoading } = useMutation({
     mutationKey: ['files', config.reference_object_id],
-    mutationFn: (payload: SourceFile & { collection?: CollectionType }) => {
+    mutationFn: (
+      payload: SourceFile & {
+        collection?: CollectionType
+        reference_object_id?: string
+      }
+    ) => {
       const { reference_object_id, reference_object_type, collection } = config
 
       const file = {
         id: payload.id,
-        reference_object_id,
+        reference_object_id:
+          payload?.reference_object_id || reference_object_id,
         reference_object_type,
         collection: payload?.collection || collection,
       }

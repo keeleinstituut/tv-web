@@ -96,7 +96,7 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
 
   const { downloadFile } = useHandleFiles({
     reference_object_id: projectId ?? '',
-    reference_object_type: 'project',
+    reference_object_type: name === 'review_files' ? 'review' : 'project',
     collection: collectionMap[name as keyof typeof collectionMap],
   })
 
