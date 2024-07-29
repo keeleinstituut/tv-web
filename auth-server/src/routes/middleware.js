@@ -1,4 +1,5 @@
-const { getValidCsrfToken } = require("../util")
+const { jwtDecode } = require("jwt-decode")
+const { getCsrfTokenFromSession, setCsrfTokenToSession } = require("../util")
 
 const requiresValidAccessToken = () => (req, res, next) => {
   const { accessToken } = req.oidc
@@ -12,7 +13,7 @@ const requiresValidAccessToken = () => (req, res, next) => {
 
 const requiresValidCsrfToken = () => (req, res, next) => {
   const submittedCsrfToken = req.headers['x-csrf-token']
-  const validCsrfToken = getValidCsrfToken(req)
+  const validCsrfToken = getCsrfTokenFromSession(req)
 
   if (submittedCsrfToken !== validCsrfToken) {
     return res.status(401).json()
@@ -21,7 +22,37 @@ const requiresValidCsrfToken = () => (req, res, next) => {
   next()
 }
 
+const populateCsrfTokenIntoSession = () => (req, res, next) => {
+  setCsrfTokenToSession(req)
+  next()
+}
+
+const autoRefreshAccessToken = () => async (req, res, next) => {
+  const { accessToken } = req.oidc
+
+  if (!!accessToken && accessToken.isExpired()) {
+    const { exp } = jwtDecode(req.oidc.refreshToken)
+    const now = Math.ceil(Date.now() / 1000)
+    if (now < exp) {
+      try {
+        await accessToken.refresh()
+      } catch (err) { }
+    }
+  }
+
+  if (!!accessToken) {
+    const { exp } = jwtDecode(req.oidc.refreshToken) // Reread refresh token from session in case it was updated
+    res.cookie('session-expires', exp)
+  } else {
+    res.clearCookie('session-expires')
+  }
+
+  next()
+}
+
 module.exports = {
   requiresValidAccessToken,
   requiresValidCsrfToken,
+  autoRefreshAccessToken,
+  populateCsrfTokenIntoSession,
 }

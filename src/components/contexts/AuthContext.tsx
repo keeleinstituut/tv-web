@@ -99,17 +99,16 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
 
   const contextQuery = useQuery(['auth-context'], () => {
     return apiClient.get(authEndpoints.CONTEXT)
+  }, {
+    onSuccess(data) {
+      setCsrfToken(data.csrfToken)
+    },
   })
 
   const context = contextQuery.data
   const isUserLoggedIn = context?.authenticated || false
   const user = context?.user
   const isInstitutionSelected = !!user?.selectedInstitution
-  const csrfToken = context?.csrfToken
-
-  useEffect(() => {
-    setCsrfToken(csrfToken)
-  }, [csrfToken])
 
   const institutionsQuery = useQuery({
     enabled: isUserLoggedIn,

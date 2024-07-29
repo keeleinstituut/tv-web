@@ -1,14 +1,18 @@
-const { jwtDecode } = require("jwt-decode")
+const { randomUUID } = require("crypto")
+const { SESSION_COOKIE_NAME } = require("./env")
 
-const getValidCsrfToken = (req) => {
-  const { accessToken } = req.oidc
-  if (!accessToken) {
-    return null
-  }
-
-  return jwtDecode(accessToken.access_token)?.sid
+const getCsrfTokenFromSession = (req) => {
+  return req[SESSION_COOKIE_NAME].csrfToken
 }
 
+const setCsrfTokenToSession = (req) => {
+  if (!getCsrfTokenFromSession(req)) {
+    req[SESSION_COOKIE_NAME].csrfToken = randomUUID().toString()
+  }
+}
+
+
 module.exports = {
-  getValidCsrfToken,
+  getCsrfTokenFromSession,
+  setCsrfTokenToSession,
 }

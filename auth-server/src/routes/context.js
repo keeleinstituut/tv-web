@@ -2,7 +2,7 @@ const { Router } = require('express')
 const { jwtDecode } = require('jwt-decode')
 const { requiresAuth } = require('express-openid-connect')
 const { ISSUER, CLIENT_ID, CLIENT_SECRET } = require('../env')
-const { getValidCsrfToken } = require('../util')
+const { getCsrfTokenFromSession } = require('../util')
 const { requiresValidCsrfToken } = require('./middleware')
 
 function constructContextRoutes() {
@@ -24,7 +24,7 @@ function constructContextRoutes() {
       sessionExpiry,
       authenticated: true,
       user: parsedAccessToken?.tolkevarav,
-      csrfToken: getValidCsrfToken(req),
+      csrfToken: getCsrfTokenFromSession(req),
     })
   })
 
