@@ -10,6 +10,7 @@ const ENV = {
   APP_SECRET: process.env.APP_SECRET,
 
   APP_URL: process.env.APP_URL || `http://${HOST}:${PORT}`,
+  REDIS_URL: process.env.REDIS_URL,
 
   CLIENT_ID: process.env.OAUTH_CLIENT_ID,
   CLIENT_SECRET: process.env.OAUTH_CLIENT_SECRET,

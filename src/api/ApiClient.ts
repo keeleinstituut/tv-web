@@ -42,9 +42,9 @@ class ApiClient {
     this.instance.defaults.headers.common['Accept-Language'] = locale
   }
 
-  setAccessToken = (accessToken?: string) => {
-    this.instance.defaults.headers.common.Authorization =
-      accessToken === null ? null : `Bearer ${accessToken}`
+  setCsrfToken = (csrfToken?: string) => {
+    this.instance.defaults.headers.common['X-CSRF-Token'] =
+      csrfToken === null ? null : csrfToken
   }
 
   debug = (title: string, content: object) => {
@@ -85,7 +85,7 @@ class ApiClient {
     }
   }
 
-  get = async (url: string, params = {}, config = {}) =>
+  get = async (url: string, params = {}, config: Partial<typeof this.request> = {}) =>
     this.request({
       ...config,
       method: 'get',
@@ -93,7 +93,7 @@ class ApiClient {
       params,
     })
 
-  post = async (url: string, data = {}, config = {}) =>
+  post = async (url: string, data = {}, config: Partial<typeof this.request> = {}) =>
     this.request({
       ...config,
       method: 'post',
@@ -101,7 +101,7 @@ class ApiClient {
       data,
     })
 
-  patch = async (url: string, data = {}, config = {}) =>
+  patch = async (url: string, data = {}, config: Partial<typeof this.request> = {}) =>
     this.request({
       ...config,
       method: 'patch',
@@ -109,7 +109,7 @@ class ApiClient {
       data,
     })
 
-  put = async (url: string, data = {}, config = {}) =>
+  put = async (url: string, data = {}, config: Partial<typeof this.request> = {}) =>
     this.request({
       ...config,
       method: 'put',
@@ -117,7 +117,7 @@ class ApiClient {
       data,
     })
 
-  delete = async (url: string, data = {}, config = {}) =>
+  delete = async (url: string, data = {}, config: Partial<typeof this.request> = {}) =>
     this.request({
       ...config,
       method: 'delete',
@@ -125,7 +125,7 @@ class ApiClient {
       data,
     })
 
-  postForm = async (url: string, data = {}, config = {}) => {
+  postForm = async (url: string, data = {}, config: Partial<typeof this.request> = {}) => {
     const formData2 = getPopulateFormData(data)
 
     return this.request({

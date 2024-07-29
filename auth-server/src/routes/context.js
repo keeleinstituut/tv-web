@@ -2,6 +2,8 @@ const { Router } = require('express')
 const { jwtDecode } = require('jwt-decode')
 const { requiresAuth } = require('express-openid-connect')
 const { ISSUER, CLIENT_ID, CLIENT_SECRET } = require('../env')
+const { getValidCsrfToken } = require('../util')
+const { requiresValidCsrfToken } = require('./middleware')
 
 function constructContextRoutes() {
   const router = Router()
@@ -22,10 +24,11 @@ function constructContextRoutes() {
       sessionExpiry,
       authenticated: true,
       user: parsedAccessToken?.tolkevarav,
+      csrfToken: getValidCsrfToken(req),
     })
   })
 
-  router.get('/switch-context', requiresAuth(), async (req, res) => {
+  router.get('/switch-context', requiresAuth(), requiresValidCsrfToken(), async (req, res) => {
     const { institution_id } = req.query
 
     const response = await fetch(`${ISSUER}/protocol/openid-connect/token`, {

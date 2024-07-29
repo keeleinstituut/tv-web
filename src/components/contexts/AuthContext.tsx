@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { apiClient } from 'api'
+import { apiClient, setCsrfToken } from 'api'
 import { authEndpoints, endpoints } from 'api/endpoints'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -52,15 +52,15 @@ const authContextDefaultValues: AuthContextType = {
   initializing: true,
   isUserLoggedIn: false,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  login: () => {},
+  login: () => { },
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  logout: () => {},
+  logout: () => { },
   userInfo: {},
   userPrivileges: [],
   institutionUserId: '',
   institutions: [],
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  openInstitutionSelectModal: () => {},
+  openInstitutionSelectModal: () => { },
 }
 
 const authContext = createContext<AuthContextType>(authContextDefaultValues)
@@ -79,9 +79,8 @@ export const rawLogout = (error?: string) => {
   if (error) {
     redirectUri += `#${error}`
   }
-  window.location.href = `${
-    authEndpoints.LOGOUT
-  }?redirect_uri=${encodeURIComponent(redirectUri)}`
+  window.location.href = `${authEndpoints.LOGOUT
+    }?redirect_uri=${encodeURIComponent(redirectUri)}`
 }
 
 export const AuthProvider: FC<PropsWithChildren> = (props) => {
@@ -106,6 +105,11 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   const isUserLoggedIn = context?.authenticated || false
   const user = context?.user
   const isInstitutionSelected = !!user?.selectedInstitution
+  const csrfToken = context?.csrfToken
+
+  useEffect(() => {
+    setCsrfToken(csrfToken)
+  }, [csrfToken])
 
   const institutionsQuery = useQuery({
     enabled: isUserLoggedIn,

@@ -10,11 +10,14 @@ const {
   CLIENT_SECRET,
   ISSUER,
   ALLOWED_ORIGINS,
+  REDIS_URL,
 } = require('./env')
 const morgan = require('morgan')
 const cors = require('cors')
 const httpErrors = require('http-errors')
 const { jwtDecode } = require('jwt-decode')
+const { createClient } = require('redis')
+const RedisStore = require('connect-redis').default
 
 async function setup() {
   const app = express()
@@ -26,6 +29,15 @@ async function setup() {
       credentials: true,
     })
   )
+
+  const redisClient = createClient({
+    url: REDIS_URL,
+  })
+  redisClient.connect().catch(console.error)
+  const redisStore = new RedisStore({
+    client: redisClient,
+    prefix: 'tv-web:',
+  })
 
   app.use(
     auth({
@@ -47,6 +59,9 @@ async function setup() {
         logout: false,
       },
       idpLogout: true, // trigger logout in central SSO as well when logging out
+      session: {
+        store: redisStore,
+      }
     })
   )
 
@@ -59,7 +74,7 @@ async function setup() {
       if (now < exp) {
         try {
           await accessToken.refresh()
-        } catch (err) {}
+        } catch (err) { }
       }
     }
 
