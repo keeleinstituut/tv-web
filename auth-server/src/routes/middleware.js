@@ -23,7 +23,10 @@ const requiresValidCsrfToken = () => (req, res, next) => {
 }
 
 const populateCsrfTokenIntoSession = () => (req, res, next) => {
-  setCsrfTokenToSession(req)
+  const { accessToken } = req.oidc
+  if (!!accessToken && accessToken.isExpired()) {
+    setCsrfTokenToSession(req)
+  }
   next()
 }
 
