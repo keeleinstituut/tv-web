@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node ./src/index.js",
-    "dev": "NODE_ENV=production nodemon -w . -w .env --exec yarn start"
+    "dev": "nodemon -w . -w .env --exec yarn start"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

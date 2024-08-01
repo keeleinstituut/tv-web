@@ -1,11 +1,13 @@
 require('dotenv').config()
 
+const NODE_ENV = process.env.NODE_ENV || 'production'
 const PORT = process.env.SERVER_PORT || 8000
 const HOST = process.env.SERVER_HOST || 'localhost'
 
 const ENV = {
   PORT,
   HOST,
+  NODE_ENV,
 
   APP_SECRET: process.env.APP_SECRET,
 
@@ -27,7 +29,7 @@ const ENV = {
   ALLOWED_REDIRECT_URIS: process.env.ALLOWED_REDIRECT_URIS?.split(','),
   DEFAULT_REDIRECT_URI: process.env.DEFAULT_REDIRECT_URI,
 
-  SESSION_COOKIE_NAME: '__HOST_session'
+  SESSION_COOKIE_NAME: NODE_ENV === 'production' ? '__HOST-session' : 'session'
 }
 
 module.exports = ENV
