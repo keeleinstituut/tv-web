@@ -8,7 +8,7 @@ const {
   AUDIT_LOG_SERVICE_BASE_URL,
 } = require('../env')
 const { omit } = require('lodash')
-const { requiresValidAccessToken } = require('./middleware')
+const { requiresValidAccessToken, requiresValidCsrfToken } = require('./middleware')
 
 const attachAuthorizationHeader = (proxyReq, req, res) => {
   proxyReq.removeHeader('Cookie')
@@ -36,6 +36,7 @@ function constructProxyRoutes() {
     '/translation-order',
     requiresAuth(),
     requiresValidAccessToken(),
+    requiresValidCsrfToken(),
     proxy({
       target: TRANSLATION_ORDER_SERVICE_BASE_URL,
       changeOrigin: true,
@@ -51,6 +52,7 @@ function constructProxyRoutes() {
     '/authorization',
     requiresAuth(),
     requiresValidAccessToken(),
+    requiresValidCsrfToken(),
     proxy({
       target: AUTHORIZATION_SERVICE_BASE_URL,
       changeOrigin: true,
@@ -66,6 +68,7 @@ function constructProxyRoutes() {
     '/translation-memory',
     requiresAuth(),
     requiresValidAccessToken(),
+    requiresValidCsrfToken(),
     proxy({
       target: TRANSLATION_MEMORY_SERVICE_BASE_URL,
       changeOrigin: true,
@@ -81,6 +84,7 @@ function constructProxyRoutes() {
     '/audit-log',
     requiresAuth(),
     requiresValidAccessToken(),
+    requiresValidCsrfToken(),
     proxy({
       target: AUDIT_LOG_SERVICE_BASE_URL,
       changeOrigin: true,
