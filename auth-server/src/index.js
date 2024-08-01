@@ -10,11 +10,15 @@ const {
   CLIENT_SECRET,
   ISSUER,
   ALLOWED_ORIGINS,
+  REDIS_URL,
+  SESSION_COOKIE_NAME,
 } = require('./env')
 const morgan = require('morgan')
 const cors = require('cors')
 const httpErrors = require('http-errors')
-const { jwtDecode } = require('jwt-decode')
+const { createClient } = require('redis')
+const { autoRefreshAccessToken, populateCsrfTokenIntoSession } = require('./routes/middleware')
+const RedisStore = require('connect-redis').default
 
 async function setup() {
   const app = express()
@@ -26,6 +30,15 @@ async function setup() {
       credentials: true,
     })
   )
+
+  const redisClient = createClient({
+    url: REDIS_URL,
+  })
+  redisClient.connect().catch(console.error)
+  const redisStore = new RedisStore({
+    client: redisClient,
+    prefix: 'tv-web:',
+  })
 
   app.use(
     auth({
@@ -47,31 +60,15 @@ async function setup() {
         logout: false,
       },
       idpLogout: true, // trigger logout in central SSO as well when logging out
+      session: {
+        store: redisStore,
+        name: SESSION_COOKIE_NAME,
+      }
     })
   )
 
-  app.use(async (req, res, next) => {
-    const { accessToken } = req.oidc
-
-    if (!!accessToken && accessToken.isExpired()) {
-      const { exp } = jwtDecode(req.oidc.refreshToken)
-      const now = Math.ceil(Date.now() / 1000)
-      if (now < exp) {
-        try {
-          await accessToken.refresh()
-        } catch (err) {}
-      }
-    }
-
-    if (!!accessToken) {
-      const { exp } = jwtDecode(req.oidc.refreshToken) // Reread refresh token from session in case it was updated
-      res.cookie('session-expires', exp)
-    } else {
-      res.clearCookie('session-expires')
-    }
-
-    next()
-  })
+  app.use(populateCsrfTokenIntoSession())
+  app.use(autoRefreshAccessToken())
 
   const routes = constructRoutes()
   app.use(routes)
