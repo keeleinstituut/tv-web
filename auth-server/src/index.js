@@ -37,7 +37,7 @@ async function setup() {
   const redisClient = createClient({
     url: REDIS_URL,
   })
-  redisClient.connect().catch(console.error)
+  redisClient.connect()
   const redisStore = new RedisStore({
     client: redisClient,
     prefix: 'tv-web:',
