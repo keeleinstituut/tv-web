@@ -28,29 +28,34 @@ function constructContextRoutes() {
     })
   })
 
-  router.get('/switch-context', requiresAuth(), requiresValidCsrfToken(), async (req, res) => {
-    const { institution_id } = req.query
+  router.get(
+    '/switch-context',
+    requiresAuth(),
+    requiresValidCsrfToken(),
+    async (req, res) => {
+      const { institution_id } = req.query
 
-    const response = await fetch(`${ISSUER}/protocol/openid-connect/token`, {
-      method: 'POST',
-      headers: {
-        'X-Selected-Institution-ID': institution_id,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        grant_type: 'refresh_token',
-        client_id: CLIENT_ID,
-        client_secret: CLIENT_SECRET,
-        refresh_token: req.oidc.refreshToken,
-      }),
-    })
-    if (response.status === 200) {
-      await req.oidc.accessToken.refresh()
-      return res.status(200).json()
+      const response = await fetch(`${ISSUER}/protocol/openid-connect/token`, {
+        method: 'POST',
+        headers: {
+          'X-Selected-Institution-ID': institution_id,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          grant_type: 'refresh_token',
+          client_id: CLIENT_ID,
+          client_secret: CLIENT_SECRET,
+          refresh_token: req.oidc.refreshToken,
+        }),
+      })
+      if (response.status === 200) {
+        await req.oidc.accessToken.refresh()
+        return res.status(200).json()
+      }
+
+      res.status(422).json()
     }
-
-    res.status(422).json()
-  })
+  )
 
   return router
 }

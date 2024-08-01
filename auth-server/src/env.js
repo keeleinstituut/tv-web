@@ -29,7 +29,7 @@ const ENV = {
   ALLOWED_REDIRECT_URIS: process.env.ALLOWED_REDIRECT_URIS?.split(','),
   DEFAULT_REDIRECT_URI: process.env.DEFAULT_REDIRECT_URI,
 
-  SESSION_COOKIE_NAME: NODE_ENV === 'production' ? '__HOST-session' : 'session'
+  SESSION_COOKIE_NAME: NODE_ENV === 'production' ? '__HOST-session' : 'session',
 }
 
 module.exports = ENV
