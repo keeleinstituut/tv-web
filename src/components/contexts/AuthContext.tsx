@@ -52,15 +52,15 @@ const authContextDefaultValues: AuthContextType = {
   initializing: true,
   isUserLoggedIn: false,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  login: () => { },
+  login: () => {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  logout: () => { },
+  logout: () => {},
   userInfo: {},
   userPrivileges: [],
   institutionUserId: '',
   institutions: [],
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  openInstitutionSelectModal: () => { },
+  openInstitutionSelectModal: () => {},
 }
 
 const authContext = createContext<AuthContextType>(authContextDefaultValues)
@@ -79,8 +79,9 @@ export const rawLogout = (error?: string) => {
   if (error) {
     redirectUri += `#${error}`
   }
-  window.location.href = `${authEndpoints.LOGOUT
-    }?redirect_uri=${encodeURIComponent(redirectUri)}`
+  window.location.href = `${
+    authEndpoints.LOGOUT
+  }?redirect_uri=${encodeURIComponent(redirectUri)}`
 }
 
 export const AuthProvider: FC<PropsWithChildren> = (props) => {
@@ -97,13 +98,17 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     rawLogout()
   }, [queryClient])
 
-  const contextQuery = useQuery(['auth-context'], () => {
-    return apiClient.get(authEndpoints.CONTEXT)
-  }, {
-    onSuccess(data) {
-      setCsrfToken(data.csrfToken)
+  const contextQuery = useQuery(
+    ['auth-context'],
+    () => {
+      return apiClient.get(authEndpoints.CONTEXT)
     },
-  })
+    {
+      onSuccess(data) {
+        setCsrfToken(data.csrfToken)
+      },
+    }
+  )
 
   const context = contextQuery.data
   const isUserLoggedIn = context?.authenticated || false

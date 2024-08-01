@@ -8,7 +8,10 @@ const {
   AUDIT_LOG_SERVICE_BASE_URL,
 } = require('../env')
 const { omit } = require('lodash')
-const { requiresValidAccessToken, requiresValidCsrfToken } = require('./middleware')
+const {
+  requiresValidAccessToken,
+  requiresValidCsrfToken,
+} = require('./middleware')
 
 const attachAuthorizationHeader = (proxyReq, req, res) => {
   proxyReq.removeHeader('Cookie')
