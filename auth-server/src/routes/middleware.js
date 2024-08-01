@@ -1,5 +1,5 @@
-const { jwtDecode } = require("jwt-decode")
-const { getCsrfTokenFromSession, setCsrfTokenToSession } = require("../util")
+const { jwtDecode } = require('jwt-decode')
+const { getCsrfTokenFromSession, setCsrfTokenToSession } = require('../util')
 
 const requiresValidAccessToken = () => (req, res, next) => {
   const { accessToken } = req.oidc
@@ -39,7 +39,7 @@ const autoRefreshAccessToken = () => async (req, res, next) => {
     if (now < exp) {
       try {
         await accessToken.refresh()
-      } catch (err) { }
+      } catch (err) {}
     }
   }
 

@@ -17,7 +17,10 @@ const morgan = require('morgan')
 const cors = require('cors')
 const httpErrors = require('http-errors')
 const { createClient } = require('redis')
-const { autoRefreshAccessToken, populateCsrfTokenIntoSession } = require('./routes/middleware')
+const {
+  autoRefreshAccessToken,
+  populateCsrfTokenIntoSession,
+} = require('./routes/middleware')
 const RedisStore = require('connect-redis').default
 
 async function setup() {
@@ -63,7 +66,7 @@ async function setup() {
       session: {
         store: redisStore,
         name: SESSION_COOKIE_NAME,
-      }
+      },
     })
   )
 

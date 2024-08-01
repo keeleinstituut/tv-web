@@ -85,7 +85,11 @@ class ApiClient {
     }
   }
 
-  get = async (url: string, params = {}, config: Partial<typeof this.request> = {}) =>
+  get = async (
+    url: string,
+    params = {},
+    config: Partial<typeof this.request> = {}
+  ) =>
     this.request({
       ...config,
       method: 'get',
@@ -93,7 +97,11 @@ class ApiClient {
       params,
     })
 
-  post = async (url: string, data = {}, config: Partial<typeof this.request> = {}) =>
+  post = async (
+    url: string,
+    data = {},
+    config: Partial<typeof this.request> = {}
+  ) =>
     this.request({
       ...config,
       method: 'post',
@@ -101,7 +109,11 @@ class ApiClient {
       data,
     })
 
-  patch = async (url: string, data = {}, config: Partial<typeof this.request> = {}) =>
+  patch = async (
+    url: string,
+    data = {},
+    config: Partial<typeof this.request> = {}
+  ) =>
     this.request({
       ...config,
       method: 'patch',
@@ -109,7 +121,11 @@ class ApiClient {
       data,
     })
 
-  put = async (url: string, data = {}, config: Partial<typeof this.request> = {}) =>
+  put = async (
+    url: string,
+    data = {},
+    config: Partial<typeof this.request> = {}
+  ) =>
     this.request({
       ...config,
       method: 'put',
@@ -117,7 +133,11 @@ class ApiClient {
       data,
     })
 
-  delete = async (url: string, data = {}, config: Partial<typeof this.request> = {}) =>
+  delete = async (
+    url: string,
+    data = {},
+    config: Partial<typeof this.request> = {}
+  ) =>
     this.request({
       ...config,
       method: 'delete',
@@ -125,7 +145,11 @@ class ApiClient {
       data,
     })
 
-  postForm = async (url: string, data = {}, config: Partial<typeof this.request> = {}) => {
+  postForm = async (
+    url: string,
+    data = {},
+    config: Partial<typeof this.request> = {}
+  ) => {
     const formData2 = getPopulateFormData(data)
 
     return this.request({

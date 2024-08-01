@@ -25,7 +25,12 @@ const Header: FC = () => {
     enabled: !!institution,
     queryKey: ['institution', institution?.id, 'logo'],
     queryFn: () => {
-      return apiClient.get(institution?.logo_url!!, {}, { responseType: 'blob' })
+      const logo_url = institution?.logo_url
+
+      if (!logo_url) {
+        return
+      }
+      return apiClient.get(logo_url, {}, { responseType: 'blob' })
     },
   })
 
@@ -34,7 +39,7 @@ const Header: FC = () => {
       return ''
     }
 
-    const urlCreator = window.URL || window.webkitURL;
+    const urlCreator = window.URL || window.webkitURL
     return urlCreator.createObjectURL(logoQuery.data)
   }, [logoQuery])
 
