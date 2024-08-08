@@ -6,6 +6,7 @@ const {
   AUTHORIZATION_SERVICE_BASE_URL,
   TRANSLATION_MEMORY_SERVICE_BASE_URL,
   AUDIT_LOG_SERVICE_BASE_URL,
+  NODE_ENV,
 } = require('../env')
 const { omit } = require('lodash')
 const {
@@ -39,7 +40,7 @@ function constructProxyRoutes() {
     '/translation-order',
     requiresAuth(),
     requiresValidAccessToken(),
-    requiresValidCsrfToken(),
+    ...(NODE_ENV === 'local' ? [] : [requiresValidCsrfToken()]),
     proxy({
       target: TRANSLATION_ORDER_SERVICE_BASE_URL,
       changeOrigin: true,
@@ -55,7 +56,7 @@ function constructProxyRoutes() {
     '/authorization',
     requiresAuth(),
     requiresValidAccessToken(),
-    requiresValidCsrfToken(),
+    ...(NODE_ENV === 'local' ? [] : [requiresValidCsrfToken()]),
     proxy({
       target: AUTHORIZATION_SERVICE_BASE_URL,
       changeOrigin: true,
@@ -71,7 +72,7 @@ function constructProxyRoutes() {
     '/translation-memory',
     requiresAuth(),
     requiresValidAccessToken(),
-    requiresValidCsrfToken(),
+    ...(NODE_ENV === 'local' ? [] : [requiresValidCsrfToken()]),
     proxy({
       target: TRANSLATION_MEMORY_SERVICE_BASE_URL,
       changeOrigin: true,
@@ -87,7 +88,7 @@ function constructProxyRoutes() {
     '/audit-log',
     requiresAuth(),
     requiresValidAccessToken(),
-    requiresValidCsrfToken(),
+    ...(NODE_ENV === 'local' ? [] : [requiresValidCsrfToken()]),
     proxy({
       target: AUDIT_LOG_SERVICE_BASE_URL,
       changeOrigin: true,

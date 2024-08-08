@@ -166,6 +166,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
     formState: { isValid },
   } = useForm<FormValues>({
     mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       // TODO: might need to deal with task_type
       task_type: 'Tõlkimine',
