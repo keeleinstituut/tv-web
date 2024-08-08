@@ -34,7 +34,7 @@ export const apiTypeToKey = (apiType: string) => {
       return PriceUnits.MinuteFee
     case 'HOURS':
       return PriceUnits.HourFee
-    case 'MINIMALS':
+    case 'MIN_FEE':
     default:
       return PriceUnits.MinimalFee
   }
@@ -54,7 +54,7 @@ export const keyToApiType = (key: string) => {
       return 'HOURS'
     case PriceUnits.MinimalFee:
     default:
-      return 'MINIMALS'
+      return 'MIN_FEE'
   }
 }
 
