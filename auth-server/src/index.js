@@ -12,6 +12,7 @@ const {
   ALLOWED_ORIGINS,
   REDIS_URL,
   SESSION_COOKIE_NAME,
+  NODE_ENV,
 } = require('./env')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -63,14 +64,19 @@ async function setup() {
         logout: false,
       },
       idpLogout: true, // trigger logout in central SSO as well when logging out
-      session: {
-        store: redisStore,
-        name: SESSION_COOKIE_NAME,
-      },
+      ...(NODE_ENV === 'local'
+        ? {}
+        : {
+            session: {
+              store: redisStore,
+              name: SESSION_COOKIE_NAME,
+            },
+          }),
     })
   )
 
-  app.use(populateCsrfTokenIntoSession())
+  NODE_ENV !== 'local' && app.use(populateCsrfTokenIntoSession())
+
   app.use(autoRefreshAccessToken())
 
   const routes = constructRoutes()

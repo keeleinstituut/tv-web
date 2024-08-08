@@ -76,7 +76,7 @@ const UserForm: FC<UserFormProps> = ({
       name: `${forename} ${surname}`,
       email,
       phone,
-      department_id: department ? department?.id : undefined,
+      department_id: department ? department?.id : '',
       roles: map(roles, 'id'),
     }),
     [
@@ -208,8 +208,8 @@ const UserForm: FC<UserFormProps> = ({
   }, [defaultValues, reset])
 
   useEffect(() => {
-    resetForm()
-  }, [defaultValues, resetForm])
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {

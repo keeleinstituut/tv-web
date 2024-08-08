@@ -134,9 +134,9 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({
     }
 
     if (isUserWorkingTimes || isDetailPageTimes) {
-      updateUser(userWorkingTimesPayload)
+      await updateUser(userWorkingTimesPayload)
     } else {
-      updateInstitution(institutionWorkingTimesPayload)
+      await updateInstitution(institutionWorkingTimesPayload)
     }
 
     const successMessage =
