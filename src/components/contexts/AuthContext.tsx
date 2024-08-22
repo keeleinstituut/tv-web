@@ -8,7 +8,7 @@ import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import useAsRef from 'hooks/useAsRef'
 import i18n from 'i18n/i18n'
 import Cookies from 'js-cookie'
-import { size } from 'lodash'
+import { isEmpty, size, includes } from 'lodash'
 import {
   FC,
   PropsWithChildren,
@@ -93,10 +93,13 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     rawLogin()
   }, [])
 
-  const logout = useCallback(() => {
-    queryClient.clear()
-    rawLogout()
-  }, [queryClient])
+  const logout = useCallback(
+    (error?: string) => {
+      queryClient.clear()
+      rawLogout(error)
+    },
+    [queryClient]
+  )
 
   const contextQuery = useQuery(
     ['auth-context'],
@@ -115,15 +118,16 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   const user = context?.user
   const isInstitutionSelected = !!user?.selectedInstitution
 
-  const institutionsQuery = useQuery({
+  const { data, isLoading } = useQuery({
     enabled: isUserLoggedIn,
     queryKey: ['institutions'],
     queryFn: () => {
-      return apiClient.get(endpoints.INSTITUTIONS)
+      // retry limit is 2, here we start the request and retry counter 2, so it wouldn't retry this request
+      return apiClient.get(endpoints.INSTITUTIONS, {}, { retries: 2 })
     },
   })
 
-  const institutions = institutionsQuery.data?.data
+  const institutions = data?.data
 
   const switchInstitutionMutation = useMutation({
     mutationKey: ['auth-context', 'selected-institution'],
@@ -157,22 +161,27 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   )
 
   useEffect(() => {
-    if (!isUserLoggedIn || isInstitutionSelected || !institutions) {
-      return
+    // Currently will show error with any hash
+    // If we add any extra hash parameters later, then this should be changed
+    if (window.location.hash && includes(window.location.hash, 'show-error')) {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: i18n.t('notification.error'),
+        content: i18n.t('error.token_expired_error'),
+      })
     }
+  }, [])
 
+  useEffect(() => {
     const institutionsCount = size(institutions)
 
-    if (institutionsCount === 0) {
-      logout()
-      return
-    }
-
-    if (institutionsCount === 1) {
+    if (isUserLoggedIn && institutionsCount === 0 && !isLoading) {
+      logout('show-error')
+    } else if (institutionsCount === 1) {
       const selectedInstitutionId = institutions[0].id
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       switchInstitutionMutationRef.current!.mutate(selectedInstitutionId)
-    } else {
+    } else if (institutionsCount > 1) {
       openInstitutionSelectModal({
         onClose: logout,
       })
@@ -184,6 +193,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     switchInstitutionMutationRef,
     isInstitutionSelected,
     logout,
+    isLoading,
   ])
 
   const userInfo = useMemo(() => {
@@ -247,7 +257,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
 
   const value = useMemo((): AuthContextType => {
     return {
-      isUserLoggedIn,
+      isUserLoggedIn: isUserLoggedIn && !isEmpty(institutions),
       login,
       logout,
       userInfo,
