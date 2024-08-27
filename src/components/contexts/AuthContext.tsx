@@ -175,7 +175,9 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   useEffect(() => {
     const institutionsCount = size(institutions)
 
-    if (isUserLoggedIn && institutionsCount === 0 && !isLoading) {
+    if (isInstitutionSelected) {
+      // Do nothing
+    } else if (isUserLoggedIn && institutionsCount === 0 && !isLoading) {
       logout('show-error')
     } else if (institutionsCount === 1) {
       const selectedInstitutionId = institutions[0].id
