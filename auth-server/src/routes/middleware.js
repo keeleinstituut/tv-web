@@ -15,7 +15,7 @@ const requiresValidCsrfToken = () => (req, res, next) => {
   const submittedCsrfToken = req.headers['x-csrf-token']
   const validCsrfToken = getCsrfTokenFromSession(req)
 
-  if (submittedCsrfToken !== validCsrfToken) {
+  if (!submittedCsrfToken || submittedCsrfToken !== validCsrfToken) {
     return res.status(401).json()
   }
 
@@ -24,7 +24,7 @@ const requiresValidCsrfToken = () => (req, res, next) => {
 
 const populateCsrfTokenIntoSession = () => (req, res, next) => {
   const { accessToken } = req.oidc
-  if (!!accessToken && accessToken.isExpired()) {
+  if (!!accessToken && !accessToken.isExpired()) {
     setCsrfTokenToSession(req)
   }
 
