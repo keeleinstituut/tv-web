@@ -31,6 +31,9 @@ const removeCorsHeaders = (proxyRes, req, res) => {
     'access-control-allow-headers',
     'access-control-allow-credentials',
   ])
+  if (!proxyRes.headers['content-disposition']) {
+    proxyRes.headers['content-disposition'] = 'attachment'
+  }
 }
 
 function constructProxyRoutes() {

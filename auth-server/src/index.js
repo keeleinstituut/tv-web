@@ -28,12 +28,16 @@ async function setup() {
   const app = express()
   app.set('trust proxy', true)
   app.use(morgan())
-  app.use(
-    cors({
-      origin: ALLOWED_ORIGINS,
-      credentials: true,
-    })
-  )
+  app.use((req, res, next) => {
+    if (ALLOWED_ORIGINS.indexOf(req.header('Origin')) !== -1) {
+      cors({
+        origin: ALLOWED_ORIGINS,
+        credentials: true,
+      })(req, res, next)
+    } else {
+      next()
+    }
+  })
 
   const redisClient = createClient({
     url: REDIS_URL,
