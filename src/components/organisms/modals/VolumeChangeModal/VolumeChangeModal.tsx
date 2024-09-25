@@ -16,6 +16,7 @@ import {
   join,
   replace,
   includes,
+  mapValues,
 } from 'lodash'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
@@ -93,6 +94,18 @@ const analysisVolumeByDiscountPercentage = {
   [CatAnalysisVolumes.Tmrepetitions]: DiscountPercentageNames.DP_repetitions,
 }
 
+const defaultDiscounts = reduce(
+  DiscountPercentageNames,
+  (result, value) => {
+    if (!value) return result
+    return {
+      ...result,
+      [value]: 0,
+    }
+  },
+  {}
+)
+
 type FormValues = {
   task_type: string
   unit: PriceUnits
@@ -123,6 +136,11 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation()
+
+  const inverseDiscounts = mapValues(
+    discounts || defaultDiscounts,
+    (value: number) => 100 - value
+  )
 
   const { addAssignmentVolume, isLoading: isAddingVolume } =
     useAssignmentAddVolume({
@@ -173,7 +191,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       unit: isCat ? PriceUnits.WordFee : undefined,
       unit_fee: isCat ? vendorPrices?.word_fee : undefined,
       vendor: vendorName || undefined,
-      ...discounts,
+      ...inverseDiscounts,
       ...catAnalysisAmounts,
     },
   })
@@ -186,7 +204,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
       unit: isCat ? PriceUnits.WordFee : undefined,
       unit_fee: isCat ? vendorPrices?.word_fee : undefined,
       vendor: vendorName || undefined,
-      ...discounts,
+      ...inverseDiscounts,
       ...catAnalysisAmounts,
     })
     setValue('unit_quantity', initialUnitQuantity ?? 0)
@@ -215,7 +233,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
           (sum, n, i) => {
             return (
               sum +
-              ((100 - toNumber(amountDiscounts[i] ?? 0)) / 100) *
+              (toNumber(amountDiscounts[i] ?? 0) / 100) *
                 toNumber(amountValues[i])
             )
           },
@@ -483,10 +501,13 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         : {
             assignment_id: assignmentId ?? '',
             unit_fee: toNumber(unit_fee),
-            discounts: zipObject<DiscountPercentages>(
-              values(DiscountPercentageNames),
-              // @ts-expect-error type mismatch
-              map(amountDiscounts, toNumber)
+            discounts: mapValues(
+              zipObject<DiscountPercentages>(
+                values(DiscountPercentageNames),
+                // @ts-expect-error type mismatch
+                map(amountDiscounts, toNumber)
+              ),
+              (value: number) => 100 - value
             ),
             custom_volume_analysis: zipObject<CatAnalysisVolumes>(
               values(CatAnalysisVolumes),

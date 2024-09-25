@@ -5,7 +5,15 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { useTranslation } from 'react-i18next'
-import { includes, join, isEmpty, map, startsWith } from 'lodash'
+import {
+  includes,
+  join,
+  isEmpty,
+  map,
+  startsWith,
+  toNumber,
+  mapValues,
+} from 'lodash'
 import { Privileges } from 'types/privileges'
 import classes from './classes.module.scss'
 import { useAuth } from 'components/contexts/AuthContext'
@@ -70,15 +78,22 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
       comment,
       company_name,
       tags: map(tags, 'id'),
-      discount_percentage_0_49: String(discount_percentage_0_49) || '0',
-      discount_percentage_50_74: String(discount_percentage_50_74) || '0',
-      discount_percentage_75_84: String(discount_percentage_75_84) || '0',
-      discount_percentage_85_94: String(discount_percentage_85_94) || '0',
-      discount_percentage_95_99: String(discount_percentage_95_99) || '0',
-      discount_percentage_100: String(discount_percentage_100) || '0',
-      discount_percentage_101: String(discount_percentage_101) || '0',
+      discount_percentage_0_49:
+        String(100 - toNumber(discount_percentage_0_49)) || '100',
+      discount_percentage_50_74:
+        String(100 - toNumber(discount_percentage_50_74)) || '100',
+      discount_percentage_75_84:
+        String(100 - toNumber(discount_percentage_75_84)) || '100',
+      discount_percentage_85_94:
+        String(100 - toNumber(discount_percentage_85_94)) || '100',
+      discount_percentage_95_99:
+        String(100 - toNumber(discount_percentage_95_99)) || '100',
+      discount_percentage_100:
+        String(100 - toNumber(discount_percentage_100)) || '100',
+      discount_percentage_101:
+        String(100 - toNumber(discount_percentage_101)) || '100',
       discount_percentage_repetitions:
-        String(discount_percentage_repetitions) || '0',
+        String(100 - toNumber(discount_percentage_repetitions)) || '100',
     }),
     [
       company_name,
@@ -205,7 +220,7 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
         tags: (isEmpty(tags) ? [] : tags) as string[],
         company_name: company_name ?? '',
         comment: comment || '-',
-        ...discounts,
+        ...mapValues(discounts, (value) => 100 - toNumber(value)),
       }
 
       try {

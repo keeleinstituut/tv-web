@@ -3,13 +3,14 @@
     "react-app",
     "react-app/jest",
     "plugin:prettier/recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "plugins": [
-    "prettier",
     "@typescript-eslint",
-    "unused-imports"
+    "unused-imports",
+    "prettier"
   ],
   "rules": {
     // Enable reporting Prettier issues as ESlint issues
