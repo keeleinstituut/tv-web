@@ -8,7 +8,7 @@ import { DiscountPercentages } from 'types/vendors'
 import { ValidationError } from 'api/errorHandler'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { map, join, includes, mapValues } from 'lodash'
+import { map, join, includes, mapValues, toNumber, toString } from 'lodash'
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 import {
@@ -23,7 +23,11 @@ const TechnicalSettings: FC = () => {
   const { updateInstitutionDiscounts } = useUpdateInstitutionDiscounts()
 
   const defaultValues = useMemo(
-    () => mapValues(institutionDiscounts, (value) => String(value) || '0'),
+    () =>
+      mapValues(
+        institutionDiscounts,
+        (value) => String(100 - toNumber(value)) || '100'
+      ),
     [institutionDiscounts]
   )
 
@@ -42,7 +46,9 @@ const TechnicalSettings: FC = () => {
   const onSubmit: SubmitHandler<DiscountPercentages> = useCallback(
     async (values) => {
       try {
-        await updateInstitutionDiscounts(values)
+        await updateInstitutionDiscounts(
+          mapValues(values, (value) => toString(100 - toNumber(value)))
+        )
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
