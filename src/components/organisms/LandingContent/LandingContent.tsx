@@ -1,10 +1,7 @@
-import Button, {
-  AppearanceTypes,
-  SizeTypes,
-} from 'components/molecules/Button/Button'
+import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import landingBackground from 'assets/landing_background.svg'
 import sponsorLogo from 'assets/sponsor-logo.jpg'
-import { useTranslation } from 'react-i18next'
+import { useTranslation, Trans } from 'react-i18next'
 import { useAuth } from 'components/contexts/AuthContext'
 import { FC } from 'react'
 import classNames from 'classnames'
@@ -31,7 +28,6 @@ const LandingContent: FC<LandingContentProps> = ({ className }) => {
         />
         <div className={classes.contentContainer}>
           <h1>{t('landing.site_description')}</h1>
-
           <div className={classes.buttonsContainer}>
             <Button
               appearance={AppearanceTypes.Secondary}
@@ -55,16 +51,37 @@ const LandingContent: FC<LandingContentProps> = ({ className }) => {
             />
           </div>
           <h4 hidden={isUserLoggedIn} className={classes.text}>
-            {t('landing.machine_translation_text')}
+            <Trans i18nKey="landing.machine_translation_text">
+              Loe Tõlkeväravast täpsemalt
+              <Button
+                appearance={AppearanceTypes.Text}
+                href={'https://eki.ee/keeletehnoloogia/tolkevarav/'}
+                target="_blank"
+                className={classes.link}
+                hidden={isUserLoggedIn}
+              >
+                https://eki.ee/keeletehnoloogia/tolkevarav/
+              </Button>
+              , kasutajaks registreerumiseks kirjuta Tõlkevärava abiliinile
+              <Button
+                appearance={AppearanceTypes.Text}
+                href={'mailto:tolkevarav@eki.ee'}
+                target="_blank"
+                className={classes.link}
+                hidden={isUserLoggedIn}
+              >
+                tolkevarav@eki.ee.
+              </Button>
+            </Trans>
           </h4>
-          <Button
+          {/* <Button
             appearance={AppearanceTypes.Primary}
             children={t('button.click_here')}
             href={'https://mtee.eki.ee/'}
             target="_blank"
             size={SizeTypes.S}
             hidden={isUserLoggedIn}
-          />
+          /> */}
         </div>
       </div>
       <img
