@@ -295,7 +295,7 @@
   },
   "landing": {
     "site_description": "Tõlkevärav – keskkond avaliku sektori tõlkeprojektide haldamiseks ja tõlkimiseks",
-    "machine_translation_text": "Eesti Keele Instituudi masintõlkekeskkonna kasutamiseks"
+    "machine_translation_text": "<0>Loe Tõlkeväravast täpsemalt</0> <1>https://eki.ee/keeletehnoloogia/tolkevarav/</1><2>, kasutajaks registreerumiseks kirjuta Tõlkevärava abiliinile</2> <3>tolkevarav@eki.ee.</3>"
   },
   "menu": {
     "landing": "Avaleht",
