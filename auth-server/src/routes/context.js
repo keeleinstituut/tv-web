@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const { jwtDecode } = require('jwt-decode')
 const { requiresAuth } = require('express-openid-connect')
-const { ISSUER, CLIENT_ID, CLIENT_SECRET, NODE_ENV } = require('../env')
+const { ISSUER, CLIENT_ID, CLIENT_SECRET } = require('../env')
 const { getCsrfTokenFromSession } = require('../util')
 const { requiresValidCsrfToken } = require('./middleware')
 
@@ -24,18 +24,14 @@ function constructContextRoutes() {
       sessionExpiry,
       authenticated: true,
       user: parsedAccessToken?.tolkevarav,
-      ...(NODE_ENV === 'local'
-        ? {}
-        : {
-            csrfToken: getCsrfTokenFromSession(req),
-          }),
+      csrfToken: getCsrfTokenFromSession(req),
     })
   })
 
   router.get(
     '/switch-context',
     requiresAuth(),
-    ...(NODE_ENV === 'local' ? [] : [requiresValidCsrfToken()]),
+    requiresValidCsrfToken(),
     async (req, res) => {
       const { institution_id } = req.query
 
