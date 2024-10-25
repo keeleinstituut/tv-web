@@ -60,7 +60,7 @@ const LandingContent: FC<LandingContentProps> = ({ className }) => {
                 className={classes.link}
                 hidden={isUserLoggedIn}
               >
-                https://eki.ee/keeletehnoloogia/tolkevarav/
+                siit
               </Button>
               , kasutajaks registreerumiseks kirjuta Tõlkevärava abiliinile
               <Button
