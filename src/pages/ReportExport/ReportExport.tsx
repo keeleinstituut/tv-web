@@ -92,7 +92,7 @@ const ReportExport: FC = () => {
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.files_assigned_to_vendors'),
+          content: t('success.report_exported'),
         })
       } catch (errorData) {
         showValidationErrorMessage(errorData)
