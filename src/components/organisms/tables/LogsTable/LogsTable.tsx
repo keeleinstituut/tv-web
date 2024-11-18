@@ -46,6 +46,10 @@ const LogsTable: FC<LogsTableProps> = ({
   handlePaginationChange,
 }) => {
   const { t } = useTranslation()
+  const pageSizeOptions = [
+    { label: '15', value: '15' },
+    { label: '50', value: '50' },
+  ]
   const tableData: AuditLog[] = map(
     data,
     ({
@@ -143,7 +147,6 @@ const LogsTable: FC<LogsTableProps> = ({
     return !row?.parentId ? { background: '#F0F0F2' } : {}
   }
   if (hidden) return null
-
   return (
     <Root>
       <DataTable
@@ -157,6 +160,8 @@ const LogsTable: FC<LogsTableProps> = ({
         tableWrapperClassName={classes.tableClassName}
         paginationData={paginationData}
         onPaginationChange={handlePaginationChange}
+        pageSizeOptions={pageSizeOptions}
+        defaultPaginationData={{ per_page: 15 }}
       />
     </Root>
   )

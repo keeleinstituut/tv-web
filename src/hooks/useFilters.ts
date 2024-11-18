@@ -17,7 +17,7 @@ const useFilters = <TFilters extends object>(
   const [filters, setFilters] = useState<TFilters | object>({
     ...initialFilters,
   })
-  const page = '1'
+  const page = 1
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setSearchParams] = useSearchParams()
 

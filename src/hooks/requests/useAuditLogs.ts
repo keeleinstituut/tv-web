@@ -8,7 +8,9 @@ import { AuditLogPayloadType, AuditLogsResponseDataType } from 'types/auditLogs'
 
 export const useFetchAuditLogs = () => {
   const { filters, handleFilterChange, handlePaginationChange } =
-    useFilters<AuditLogPayloadType>()
+    useFilters<AuditLogPayloadType>({
+      per_page: 15,
+    })
 
   const { isLoading, data } = useQuery<AuditLogsResponseDataType>({
     enabled: !isEmpty(omit(filters, ['page', 'per_page'])),
