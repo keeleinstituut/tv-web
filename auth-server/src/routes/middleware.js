@@ -12,7 +12,7 @@ const requiresValidAccessToken = () => (req, res, next) => {
 }
 
 const requiresValidCsrfToken = () => (req, res, next) => {
-  if (req.method !== 'GET') {
+  if (req.method === 'GET') {
     return next()
   }
 
