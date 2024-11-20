@@ -12,6 +12,10 @@ const requiresValidAccessToken = () => (req, res, next) => {
 }
 
 const requiresValidCsrfToken = () => (req, res, next) => {
+  if (req.method === 'GET') {
+    return next()
+  }
+
   const submittedCsrfToken = req.headers['x-csrf-token']
   const validCsrfToken = getCsrfTokenFromSession(req)
 
