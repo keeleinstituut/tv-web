@@ -28,19 +28,6 @@ const populateCsrfTokenIntoSession = () => (req, res, next) => {
     setCsrfTokenToSession(req)
   }
 
-  const submittedCsrfToken = req.headers['x-csrf-token']
-  const validCsrfToken = getCsrfTokenFromSession(req)
-  console.log("CSRF")
-  console.log("CSRF")
-  console.log("CSRF")
-  console.log({
-    token_in_session: validCsrfToken,
-    token_in_header: submittedCsrfToken,
-  })
-  console.log("CSRF")
-  console.log("CSRF")
-  console.log("CSRF")
-
   next()
 }
 
