@@ -12,14 +12,10 @@ const requiresValidAccessToken = () => (req, res, next) => {
 }
 
 const requiresValidCsrfToken = () => (req, res, next) => {
-  if (req.method !== 'GET') {
-    return next()
-  }
-
   const submittedCsrfToken = req.headers['x-csrf-token']
   const validCsrfToken = getCsrfTokenFromSession(req)
 
-  if (!submittedCsrfToken || submittedCsrfToken !== validCsrfToken) {
+  if (req.method !== 'GET' && (!submittedCsrfToken || submittedCsrfToken !== validCsrfToken)) {
     return res.status(401).json()
   }
 
@@ -31,19 +27,6 @@ const populateCsrfTokenIntoSession = () => (req, res, next) => {
   if (!!accessToken && !accessToken.isExpired()) {
     setCsrfTokenToSession(req)
   }
-
-  const submittedCsrfToken = req.headers['x-csrf-token']
-  const validCsrfToken = getCsrfTokenFromSession(req)
-  console.log("CSRF")
-  console.log("CSRF")
-  console.log("CSRF")
-  console.log({
-    token_in_session: validCsrfToken,
-    token_in_header: submittedCsrfToken,
-  })
-  console.log("CSRF")
-  console.log("CSRF")
-  console.log("CSRF")
 
   next()
 }
