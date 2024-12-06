@@ -124,13 +124,11 @@ const WorkingTimes: FC<WorkingTimesPropType> = ({
     const institutionWorkingTimesPayload: InstitutionPostType = {
       ...workTime,
       worktime_timezone: timezone,
-      name,
     }
 
     const userWorkingTimesPayload: UserPostType = {
       ...workTime,
       worktime_timezone: timezone,
-      user: userName,
     }
 
     if (isUserWorkingTimes || isDetailPageTimes) {
