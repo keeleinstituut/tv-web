@@ -39,14 +39,15 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
   })
 
   const isHistoryTask = includes(match?.pathname, '/isHistoryView')
+  const isVendorTasksPage = includes(match?.pathname, '/vendor-tasks')
 
   const { name } = useMemo(() => {
     switch (true) {
-      case !!vendorId && !!userId: {
+      case !!vendorId && isVendorTasksPage: {
         return {
-          name: `${user?.user.forename} ${user?.user.surname} ${t(
-            'my_tasks.tasks'
-          )}`,
+          name: `${vendor?.institution_user?.user.forename} ${
+            vendor?.institution_user?.user.surname
+          } ${t('my_tasks.tasks')}`,
         }
       }
       case !!vendorId: {
@@ -77,15 +78,16 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
     }
   }, [
     vendorId,
+    isVendorTasksPage,
     userId,
     projectId,
     memoryId,
     taskId,
     vendor?.institution_user?.user.forename,
     vendor?.institution_user?.user.surname,
+    t,
     user?.user.forename,
     user?.user.surname,
-    t,
     project?.ext_id,
     translationMemory?.name,
     isHistoryTask,

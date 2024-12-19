@@ -26,7 +26,7 @@ const VendorPage: FC = () => {
 
         <Button
           children={t('button.vendor_tasks')}
-          href={`/vendors/${vendor.id}/${vendor.institution_user.id}`}
+          href={`/vendors/${vendor.id}/vendor-tasks`}
           hidden={!includes(userPrivileges, Privileges.ViewVendorTask)}
         />
       </div>

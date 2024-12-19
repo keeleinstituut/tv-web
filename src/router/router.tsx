@@ -169,7 +169,7 @@ export const protectedRoutes: FullRouteObject[] = [
             breadcrumb: BreadcrumbsTitle,
           },
           {
-            path: ':userId',
+            path: 'vendor-tasks',
             element: <VendorTasks />,
             privileges: [Privileges.ViewVendorTask],
             breadcrumb: BreadcrumbsTitle,
