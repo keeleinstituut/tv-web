@@ -24,8 +24,13 @@ import { isEmpty, isEqual, map, pickBy, size, split, toNumber } from 'lodash'
 import dayjs from 'dayjs'
 import useValidators from 'hooks/useValidators'
 import i18n from 'i18n/i18n'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { AuditLogPayloadType, EventTypes } from 'types/auditLogs'
+
+dayjs.extend(timezone)
+dayjs.extend(utc)
 
 export enum DateTabs {
   Hour = '1 hour',
@@ -169,11 +174,21 @@ const Logs: FC = () => {
       const number = toNumber(toggleValue[0] ?? 0)
       const count = isEqual(toggleValue[1], 'hour') ? 'hour' : 'days'
 
+      const utcTimeStart = dayjs(values?.time_range.start, 'HH:mm:ss')
+        .utc()
+        .format('HH:mm:ss')
+
+      const utcTimeEnd = dayjs(values?.time_range.end, 'HH:mm:ss')
+        .utc()
+        .format('HH:mm:ss')
+
       const formattedCurrentDate = currentDate.format('DD/MM/YYYY')
       const startDate = values?.date_range.start || formattedCurrentDate
       const startTime = values?.time_range.start || currentTime
+      const utcStartTime = values?.time_range.start ? utcTimeStart : currentTime
       const endDate = values?.date_range.end || formattedCurrentDate
       const endTime = values?.time_range.end || currentTime
+      const utcEndTime = values?.time_range.start ? utcTimeEnd : currentTime
 
       if (!values?.last_date) {
         setValue('date_range', { start: startDate, end: endDate })
@@ -182,11 +197,11 @@ const Logs: FC = () => {
 
       const startDateTime = !!values?.last_date
         ? currentDate.subtract(number, count)
-        : dayjs.utc(`${startDate} ${startTime}`, 'DD/MM/YYYY HH:mm:ss')
+        : dayjs.utc(`${startDate} ${utcStartTime}`, 'DD/MM/YYYY HH:mm:ss')
 
       const endDateTime = !!values?.last_date
         ? currentDate
-        : dayjs.utc(`${endDate} ${endTime}`, 'DD/MM/YYYY HH:mm:ss')
+        : dayjs.utc(`${endDate} ${utcEndTime}`, 'DD/MM/YYYY HH:mm:ss')
 
       const payload = {
         event_type: values?.activity,
