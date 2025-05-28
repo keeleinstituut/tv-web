@@ -47,6 +47,7 @@ export type AuditLogPayloadType = {
   department_id?: string
   event_type?: string
   text?: string
+  acting_user_pic?: string
 } & PaginationFunctionType
 
 export type AuditLogsResponse = {

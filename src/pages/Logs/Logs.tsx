@@ -47,6 +47,7 @@ export type FormValues = {
   last_date: string
   search: string
   payload: object
+  acting_user_pic: string
 }
 
 const dateTabs = [
@@ -142,6 +143,14 @@ const Logs: FC = () => {
       hideTags: true,
       className: classes.inputSection,
     },
+    {
+      name: 'acting_user_pic',
+      inputType: InputTypes.Text,
+      className: classes.searchInput,
+      inputContainerClassName: classes.picInputContainer,
+      ariaLabel: t('placeholder.search_by_pic'),
+      placeholder: t('placeholder.search_by_pic'),
+    },
   ]
 
   const toggleSearchFields: FieldProps<FormValues>[] = [
@@ -207,6 +216,7 @@ const Logs: FC = () => {
         event_type: values?.activity,
         text: values?.search,
         department_id: values?.department_id,
+        acting_user_pic: values?.acting_user_pic,
         start_datetime: startDateTime.utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
         end_datetime: endDateTime.utc().format('YYYY-MM-DDTHH:mm:ss[Z]'),
       }
