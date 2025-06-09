@@ -82,6 +82,8 @@ export const endpoints = {
   TM_STATS: translationMemory('tm/stats'),
 
   AUDIT_LOGS: auditLog('event-records'),
+  AUDIT_LOG_SETTING: (institution_id?: string) =>
+    auditLog(`institutions/${institution_id}/settings`),
   EXPORT_AUDIT_LOGS: auditLog('event-records/export'),
 }
 

@@ -115,3 +115,15 @@ export interface AuditLogsResponseDataType {
   links: LinkTypes
   meta: ResponseMetaTypes
 }
+
+export interface AuditLogSettingType {
+  id: string
+  institution_id: string
+  event_record_retention_time: number
+  created_at: string
+  updated_at: string
+}
+
+export interface AuditLogSettingDataType {
+  data: AuditLogSettingType
+}
