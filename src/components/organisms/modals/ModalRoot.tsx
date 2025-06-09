@@ -13,6 +13,7 @@ import {
 import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
 import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
+import { AuditLogSettingsModalProps } from './AuditLogSettingsModal/AuditLogSettingsModal'
 import { ConfirmSendToCatModalProps } from './ConfirmSendToCatModal/ConfirmSendToCatModal'
 import { CatAnalysisModalProps } from './CatAnalysisModal/CatAnalysisModal'
 import { ConfirmationModalBaseProps } from './ConfirmationModalBase/ConfirmationModalBase'
@@ -44,6 +45,9 @@ const UserAndRoleManagementModal = lazy(
 )
 const EditableListModal = lazy(
   () => import('./EditableListModal/EditableListModal')
+)
+const AuditLogSettingsModal = lazy(
+  () => import('./AuditLogSettingsModal/AuditLogSettingsModal')
 )
 
 const ConfirmSendToCatModal = lazy(
@@ -142,6 +146,7 @@ export enum ModalTypes {
   CatSplit = 'catSplit',
   CatMerge = 'catMerge',
   EditableListModal = 'editableListModal',
+  AuditLogSettingsModal = 'auditLogSettingsModal',
   ConfirmationModal = 'confirmationModal',
   ConfirmSendToCat = 'confirmSendToCat',
   CatAnalysis = 'catAnalysis',
@@ -174,6 +179,7 @@ type ModalPropTypes =
   | Omit<CatSplitModalProps, 'closeModal'>
   | Omit<CatMergeModalProps, 'closeModal'>
   | Omit<EditableListModalProps, 'closeModal'>
+  | Omit<AuditLogSettingsModalProps, 'closeModal'>
   | Omit<ConfirmationModalBaseProps, 'closeModal'>
   | Omit<ConfirmSendToCatModalProps, 'closeModal'>
   | Omit<CatAnalysisModalProps, 'closeModal'>
@@ -203,6 +209,7 @@ const MODALS = {
   [ModalTypes.CatSplit]: CatSplitModal,
   [ModalTypes.CatMerge]: CatMergeModal,
   [ModalTypes.EditableListModal]: EditableListModal,
+  [ModalTypes.AuditLogSettingsModal]: AuditLogSettingsModal,
   [ModalTypes.ConfirmationModal]: ConfirmationModal,
   [ModalTypes.ConfirmSendToCat]: ConfirmSendToCatModal,
   [ModalTypes.CatAnalysis]: CatAnalysisModal,

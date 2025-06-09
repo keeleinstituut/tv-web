@@ -43,6 +43,7 @@ export enum Privileges {
   DeleteDepartment = 'DELETE_DEPARTMENT',
   EditUserWorktime = 'EDIT_USER_WORKTIME',
   EditUserVacation = 'EDIT_USER_VACATION',
+  EditAuditLogSettings = 'EDIT_AUDIT_LOG_SETTINGS',
 }
 
 export type PrivilegeKey = `${Privileges}`

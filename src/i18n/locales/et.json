@@ -354,7 +354,12 @@
       "saturday": "Laupäev",
       "sunday": "Pühapäev"
     },
-    "departments": "Üksused"
+    "departments": "Üksused",
+    "audit_log_settings": "Audit logi sätted"
+  },
+  "audit_log": {
+    "event_record_retention_time": "Logikirje säilivus",
+    "retention_time_unit": "min"
   },
   "privileges": {
     "ADD_ROLE": "Rolli lisamine süsteemi",
@@ -401,7 +406,8 @@
     "EDIT_DEPARTMENT": "Asutuse üksuste muutmine",
     "DELETE_DEPARTMENT": "Asutuse üksuste kustutamine",
     "EDIT_USER_WORKTIME": "Kasutajate tööaegade muutmine",
-    "EDIT_USER_VACATION": "Kasutaja puhkuse muutmine"
+    "EDIT_USER_VACATION": "Kasutaja puhkuse muutmine",
+    "EDIT_AUDIT_LOG_SETTINGS": "Asutuse audit logi sätete muutmine"
   },
   "modal": {
     "pick_institution_title": "Vali asutus, mille alt soovid Tõlkeväravasse siseneda.",
@@ -420,6 +426,7 @@
     "remove_deactivation_date": "Kas oled kindel, et soovid deaktiveerimise kuupäeva kustutada?",
     "deactivation_date_content": "Hetkel on määratud deaktiveerimise kuupäevaks {{date}}",
     "edit_departments": "Üksuste muutmine",
+    "edit_audit_log_settings": "Audit logi sätete muutmine",
     "confirm_send_to_cat_title": "Kas oled kindel, et soovid lähtefailid tõlketööriista saata?",
     "confirm_send_to_cat_description": "Faile saab tõlketööriista saata vaid ühe korra ja hiljem faile juurde lisada ei saa. Hiljem lisandunud failid tuleks töösse panna uue tellimusega. Lisaks veendu, et oled valinud ka soovitud tõlkemälud. Hiljem lisatud tõlkemäludega mahuanalüüsi teha ei saa.",
     "confirm_source_files": "1. Veendu, et kõik lähtefailid on soovitud kujul ja tõlkimiseks valmis.",
@@ -546,6 +553,7 @@
     "deactivation_cancelled": "Kasutaja „{{name}}“ deaktiveerimine on tühistatud.",
     "department_changed": "Üksus {{name}} edukalt uuendatud",
     "department_updated": "Üksused edukalt uuendatud",
+    "audit_log_settings_updated": "Audit logi sätted edukalt uuendatud",
     "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
     "project_updated": "Tellimus on edukalt uuendatud",
