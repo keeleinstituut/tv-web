@@ -387,6 +387,7 @@
     "VIEW_INSTITUTION_PROJECT_LIST": "Asutuse tellimuste nimekirja vaatamine",
     "VIEW_INSTITUTION_PROJECT_DETAIL": "Asutuse tellimuste detailide vaatamine",
     "CHANGE_CLIENT": "Tellija vahetamine",
+    "CHANGE_PROJECT_MANAGER": "Tõlkekorraldaja vahetamine",
     "VIEW_PERSONAL_TASK": "Enda ülesannete vaatamine",
     "EXPORT_INSTITUTION_GENERAL_REPORT": "Asutuse tellimuste koondraporti eksport",
     "ADD_TAG": "Siltide lisamine",

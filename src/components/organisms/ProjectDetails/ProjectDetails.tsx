@@ -176,7 +176,9 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
     client_institution_user?.id === institutionUserId ||
     !client_institution_user?.id
 
-  const isManagerEditable = isNew || hasManagerPrivilege
+  const isManagerEditable =
+    (isNew || hasManagerPrivilege) &&
+    includes(userPrivileges, Privileges.ChangeProjectManager)
 
   const isClientEditable =
     (isUserClientOfProject || hasManagerPrivilege) &&
@@ -434,6 +436,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
             selectedUserId={manager_institution_user_id}
             selectedUser={manager_institution_user}
             isEditable={isManagerEditable && isEditEnabled}
+            hideDetails={isNew && !isManagerEditable}
             isRequired={
               mode !== ProjectDetailModes.New && status !== ProjectStatus.New
             }
