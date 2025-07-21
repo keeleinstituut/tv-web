@@ -8,6 +8,7 @@ import InstitutionForm from 'components/organisms/forms/InstitutionForm/Institut
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import DepartmentManagement from 'components/molecules/DepartmentManagement/DepartmentManagement'
+import AuditLogManagement from 'components/molecules/AuditLogManagement/AuditLogManagement'
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
@@ -44,6 +45,7 @@ const InstitutionSettings: FC = () => {
         })}
       </p>
       <DepartmentManagement />
+      <AuditLogManagement />
     </>
   )
 }

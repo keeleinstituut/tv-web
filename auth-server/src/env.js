@@ -30,6 +30,9 @@ const ENV = {
   DEFAULT_REDIRECT_URI: process.env.DEFAULT_REDIRECT_URI,
 
   SESSION_COOKIE_NAME: NODE_ENV === 'production' ? '__HOST-session' : 'session',
+
+  AMQP_URL: process.env.AMQP_URL,
+  AMQP_AUDITLOG_EXCHANGE: process.env.AMQP_AUDITLOG_EXCHANGE || 'audit-log-events',
 }
 
 module.exports = ENV

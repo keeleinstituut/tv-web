@@ -14,12 +14,14 @@ function constructAuthRoutes() {
   const router = Router()
 
   router.get('/login', (req, res) => {
+    res.locals.skipAuditLog = true
     res.oidc.login({
       returnTo: determineReturnToUrl(req.query),
     })
   })
 
   router.get('/logout', (req, res) => {
+    res.locals.skipAuditLog = true
     res.oidc.logout({
       returnTo: determineReturnToUrl(req.query),
     })

@@ -1,70 +1,3 @@
-// import { useFetchAuditLogs2 } from "hooks/requests/useAuditLogs"
-// import { isEmpty, map } from "lodash"
-// import { useEffect } from "react"
-// import { useTranslation } from 'react-i18next'
-// import LogsTable from 'components/organisms/tables/LogsTable2/LogsTable'
-
-// const Logs2 = () => {
-//   const {
-//     logsData,
-//     paginationData,
-//     handleFilterChange,
-//     handlePaginationChange,
-//     isLoading,
-//   } = useFetchAuditLogs2({
-//     // refetchInterval: 2000,
-//   })
-
-//   const { t } = useTranslation()
-
-//   useEffect(() => {
-//     handleFilterChange({
-//       asd: 3
-//     })
-//   }, [])
-
-//   return (
-//     <>
-//       {/* <h1>lOGS 2</h1>
-
-//       <table>
-//         <thead>
-//           <tr>
-//             <th>Nimi</th>
-//             <th>Isikukood</th>
-//             <th>Tegevus</th>
-//             <th>Path</th>
-//             <th>Web path</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {map(logsData, (record: any) => {
-//             const translatedAction = t(`logs.event_type2.${record.action}` as any)
-
-//             return (
-//               <tr key={record.id}>
-//                 <td>{record.actor_name}</td>
-//                 <td>{record.actor_pic}</td>
-//                 <td>{translatedAction}</td>
-//                 <td>{record.path}</td>
-//                 <td>{record.web_path}</td>
-//               </tr>
-//             )
-//           })}
-//         </tbody>
-//       </table> */}
-//       <LogsTable
-//         data={logsData}
-//         hidden={isEmpty(logsData)}
-//         paginationData={paginationData}
-//         handlePaginationChange={handlePaginationChange}
-//       />
-//     </>
-//   )
-// }
-
-// export default Logs2
-
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import { FC, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -80,12 +13,11 @@ import DynamicForm, {
 import { Path, SubmitHandler, useForm } from 'react-hook-form'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
-// import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
+import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
 import { ReactComponent as Alarm } from 'assets/icons/alarm.svg'
 import {
-  useExportAuditLogsCSV,
-  useFetchAuditLogActions,
-  useFetchAuditLogs,
+  useExportAuditLogsCSVOld,
+  useFetchAuditLogsOld,
 } from 'hooks/requests/useAuditLogs'
 import { useDepartmentsFetch } from 'hooks/requests/useDepartments'
 import { isEmpty, isEqual, map, pickBy, size, split, toNumber } from 'lodash'
@@ -96,7 +28,6 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { AuditLogPayloadType, EventTypes } from 'types/auditLogs'
-import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
 
 dayjs.extend(timezone)
 dayjs.extend(utc)
@@ -147,11 +78,9 @@ const Logs: FC = () => {
     handleFilterChange,
     handlePaginationChange,
     isLoading,
-  } = useFetchAuditLogs()
-
-  const { auditLogActions } = useFetchAuditLogActions()
+  } = useFetchAuditLogsOld()
   const { departmentFilters = [] } = useDepartmentsFetch()
-  const { exportCSV } = useExportAuditLogsCSV()
+  const { exportCSV } = useExportAuditLogsCSVOld()
   const currentDate = dayjs()
   const currentTime = currentDate.format('HH:mm:ss')
 
@@ -206,9 +135,9 @@ const Logs: FC = () => {
       inputType: InputTypes.Selections,
       name: 'activity',
       ariaLabel: t('logs.select_activity'),
-      options: map(auditLogActions, (action) => ({
-        value: action,
-        label: t(`logs.event_type2.${action}` as any),
+      options: map(EventTypes, (type) => ({
+        value: type,
+        label: t(`logs.event_type.${type}`),
       })),
       placeholder: t('logs.select_activity'),
       hideTags: true,
@@ -398,12 +327,6 @@ const Logs: FC = () => {
       >
         {t('logs.no_results_found')}
       </p>
-      {/* <LogsTable
-        data={logsData}
-        hidden={isEmpty(logsData)}
-        paginationData={paginationData}
-        handlePaginationChange={handlePaginationChange}
-      /> */}
       <LogsTable
         data={logsData}
         hidden={isEmpty(logsData)}

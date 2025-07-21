@@ -1,6 +1,21 @@
+const os = require('os')
 const express = require('express')
+const cors = require('cors')
+const morgan = require('morgan')
+const httpErrors = require('http-errors')
+const bodyParser = require('body-parser')
+const formData = require('express-form-data')
 const { auth } = require('express-openid-connect')
+const { createClient } = require('redis')
+const RedisStore = require('connect-redis').default
+const {
+  autoRefreshAccessToken,
+  populateCsrfTokenIntoSession,
+} = require('./routes/middleware')
+const amqp = require('./amqp')
 const { constructRoutes } = require('./routes/index')
+const { storeOriginalRequestBody, sendToAuditLog, storeResponseBody } = require('./middlewares')
+
 const {
   HOST,
   PORT,
@@ -13,20 +28,32 @@ const {
   REDIS_URL,
   SESSION_COOKIE_NAME,
 } = require('./env')
-const morgan = require('morgan')
-const cors = require('cors')
-const httpErrors = require('http-errors')
-const { createClient } = require('redis')
-const {
-  autoRefreshAccessToken,
-  populateCsrfTokenIntoSession,
-} = require('./routes/middleware')
-const RedisStore = require('connect-redis').default
+
 
 async function setup() {
   const app = express()
   app.set('trust proxy', true)
+
+  // Store copy of raw request body
+  app.use(storeOriginalRequestBody())
+  
+  // Store copy of response body
+  app.use(storeResponseBody())
+
+  // Parsing
+  app.use(bodyParser.json({}))
+  app.use(bodyParser.urlencoded())
+  app.use(bodyParser.urlencoded({ extended: true }))
+  app.use(formData.parse({
+    uploadDir: os.tmpdir(),
+    autoClean: true,
+  }))
+  app.use(formData.union())
+
+  // Logging
   app.use(morgan())
+
+  // Cors
   app.use((req, res, next) => {
     if (ALLOWED_ORIGINS.indexOf(req.header('Origin')) !== -1) {
       cors({
@@ -37,6 +64,8 @@ async function setup() {
       next()
     }
   })
+
+  await amqp.connect()
 
   const redisClient = createClient({
     url: REDIS_URL,
@@ -79,12 +108,13 @@ async function setup() {
   )
 
   app.use(populateCsrfTokenIntoSession())
-
   app.use(autoRefreshAccessToken())
+  app.use(await sendToAuditLog())
 
   const routes = constructRoutes()
   app.use(routes)
 
+  // Global error handler
   app.use((err, req, res, next) => {
     console.log(err)
     if (!httpErrors.isHttpError(err)) {
@@ -97,6 +127,7 @@ async function setup() {
   return app
 }
 
+// Entrypoint
 async function main() {
   const app = await setup()
 
