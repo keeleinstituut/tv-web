@@ -9,6 +9,8 @@ function constructContextRoutes() {
   const router = Router()
 
   router.get('/context', async (req, res) => {
+    res.locals.skipAuditLog = true
+
     const { accessToken, refreshToken } = req.oidc
     const parsedAccessToken = !accessToken
       ? {}
@@ -25,6 +27,7 @@ function constructContextRoutes() {
       authenticated: true,
       user: parsedAccessToken?.tolkevarav,
       csrfToken: getCsrfTokenFromSession(req),
+      accessToken,
     })
   })
 
@@ -48,6 +51,9 @@ function constructContextRoutes() {
           refresh_token: req.oidc.refreshToken,
         }),
       })
+
+      res.setHeader('X-Log-Action', 'auth-server.switch-context')
+
       if (response.status === 200) {
         await req.oidc.accessToken.refresh()
         return res.status(200).json()
@@ -59,6 +65,8 @@ function constructContextRoutes() {
 
   return router
 }
+
+
 
 module.exports = {
   constructContextRoutes,

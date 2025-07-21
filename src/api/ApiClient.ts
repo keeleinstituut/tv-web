@@ -30,6 +30,11 @@ class ApiClient {
     //     arrayFormat: 'bracket',
     //   })
     // }
+
+    this.instance.interceptors.request.use(function (config) {
+      config.headers.set('X-Web-Path', window.location.href)
+      return config
+    })
   }
 
   setBaseUrl = (baseUrl: string) => {

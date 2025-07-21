@@ -82,9 +82,13 @@ export const endpoints = {
   TM_STATS: translationMemory('tm/stats'),
 
   AUDIT_LOGS: auditLog('event-records'),
+  AUDIT_LOG_ACTIONS: auditLog('event-records/actions'),
   AUDIT_LOG_SETTING: (institution_id?: string) =>
     auditLog(`institutions/${institution_id}/settings`),
   EXPORT_AUDIT_LOGS: auditLog('event-records/export'),
+
+  AUDIT_LOGS_OLD: auditLog('event-records-old'),
+  EXPORT_AUDIT_LOGS_OLD: auditLog('event-records-old/export'),
 }
 
 export const authEndpoints = {

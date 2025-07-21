@@ -35,11 +35,68 @@ export const useFetchAuditLogs = () => {
   }
 }
 
+export const useFetchAuditLogsOld = (options = {}) => {
+  const { filters, handleFilterChange, handlePaginationChange } =
+    useFilters<AuditLogPayloadType>({
+      per_page: 15,
+    })
+
+  const { isLoading, data } = useQuery<AuditLogsResponseDataType>({
+    enabled: !isEmpty(omit(filters, ['page', 'per_page'])),
+    queryKey: ['auditLogs', filters],
+    queryFn: () => apiClient.get(endpoints.AUDIT_LOGS_OLD, filters),
+    keepPreviousData: true,
+    ...options,
+  })
+  const { meta: paginationData, data: logsData } = data || {}
+
+  return {
+    isLoading,
+    logsData,
+    paginationData,
+    handleFilterChange,
+    filters,
+    handlePaginationChange,
+  }
+}
+
+export const useFetchAuditLogActions = () => {
+  const { isLoading, isError, data } = useQuery<any>({
+    queryKey: ['departments'],
+    queryFn: () => apiClient.get(endpoints.AUDIT_LOG_ACTIONS),
+  })
+  const { data: auditLogActions } = data || {}
+
+  return {
+    auditLogActions,
+    isLoading: isLoading,
+    isError: isError,
+  }
+}
+
 export const useExportAuditLogsCSV = () => {
   const { mutateAsync: exportCSV, isLoading } = useMutation({
     mutationKey: ['csv'],
     mutationFn: async (payload: AuditLogPayloadType) =>
       apiClient.get(endpoints.EXPORT_AUDIT_LOGS, payload),
+    onSuccess: (data) => {
+      downloadFile({
+        data,
+        fileName: 'audit_logs.csv',
+      })
+    },
+  })
+  return {
+    isLoading,
+    exportCSV,
+  }
+}
+
+export const useExportAuditLogsCSVOld = () => {
+  const { mutateAsync: exportCSV, isLoading } = useMutation({
+    mutationKey: ['csv'],
+    mutationFn: async (payload: AuditLogPayloadType) =>
+      apiClient.get(endpoints.EXPORT_AUDIT_LOGS_OLD, payload),
     onSuccess: (data) => {
       downloadFile({
         data,
