@@ -12,6 +12,7 @@ const {
   requiresValidAccessToken,
   requiresValidCsrfToken,
 } = require('./middleware')
+const { register } = require('module')
 
 const attachAuthorizationHeader = (proxyReq, req, res) => {
   proxyReq.removeHeader('Cookie')
@@ -35,6 +36,20 @@ const removeCorsHeaders = (proxyRes, req, res) => {
   }
 }
 
+const rewriteProxyReqBody = (proxyReq, req, res, options) => {
+  proxyReq.setHeader('Content-Length', Buffer.byteLength(req.rawBody));
+  proxyReq.write(req.rawBody)
+}
+
+const onProxyReq = (proxyReq, req, res, options) => {
+  attachAuthorizationHeader(proxyReq, req, res)
+  rewriteProxyReqBody(proxyReq, req, res, options)
+}
+
+const onProxyRes = (proxyRes, req, res) => {
+  removeCorsHeaders(proxyRes, req, res)
+}
+
 function constructProxyRoutes() {
   const router = Router()
 
@@ -49,8 +64,8 @@ function constructProxyRoutes() {
       pathRewrite: {
         '/translation-order': '',
       },
-      onProxyReq: attachAuthorizationHeader,
-      onProxyRes: removeCorsHeaders,
+      onProxyReq,
+      onProxyRes,
     })
   )
 
@@ -65,8 +80,8 @@ function constructProxyRoutes() {
       pathRewrite: {
         '/authorization': '',
       },
-      onProxyReq: attachAuthorizationHeader,
-      onProxyRes: removeCorsHeaders,
+      onProxyReq,
+      onProxyRes,
     })
   )
 
@@ -81,8 +96,8 @@ function constructProxyRoutes() {
       pathRewrite: {
         '/translation-memory': '',
       },
-      onProxyReq: attachAuthorizationHeader,
-      onProxyRes: removeCorsHeaders,
+      onProxyReq,
+      onProxyRes,
     })
   )
 
@@ -97,8 +112,8 @@ function constructProxyRoutes() {
       pathRewrite: {
         '/audit-log': '',
       },
-      onProxyReq: attachAuthorizationHeader,
-      onProxyRes: removeCorsHeaders,
+      onProxyReq,
+      onProxyRes,
     })
   )
 

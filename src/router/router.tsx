@@ -25,6 +25,7 @@ import AddUsersPage from 'pages/AddUsersPage/AddUsersPage'
 import UserPage from 'pages/UserPage/UserPage'
 import RolesManagement from 'pages/RolesManagement/RolesManagement'
 import Logs from 'pages/Logs/Logs'
+import LogsOld from 'pages/LogsOld/Logs'
 import NewProject from 'pages/NewProject/NewProject'
 import Tags from 'pages/Tags/Tags'
 import ReportExport from 'pages/ReportExport/ReportExport'
@@ -272,6 +273,13 @@ export const protectedRoutes: FullRouteObject[] = [
         Icon: LogsIcon,
         privileges: [Privileges.ViewAuditLog],
       },
+      // {
+      //   path: 'logs-old',
+      //   label: i18n.t('menu.logs') + " VANA",
+      //   element: <LogsOld />,
+      //   Icon: LogsIcon,
+      //   privileges: [Privileges.ViewAuditLog],
+      // },
       {
         path: 'tags',
         label: i18n.t('menu.tags'),
