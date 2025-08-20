@@ -66,24 +66,8 @@ class AuditLogMessage {
       !!res.getHeader('x-log-action'),
       !!this.generalData.actor_institution_id,
     ]
-    console.log(conditions)
 
     return conditions.every(value => value === true)
-
-    // if (res.locals.skipAuditLog) {
-    //   next()
-    //   return;
-    // }
-
-    // if (res.statusCode == 500) {
-    //   next()
-    //   return
-    // }
-
-    // if (!res.getHeader('x-log-action')) {
-    //   next()
-    //   return
-    // }
   }
 }
 

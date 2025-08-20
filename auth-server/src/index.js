@@ -1,4 +1,5 @@
 const os = require('os')
+const stream = require('stream')
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
@@ -14,7 +15,7 @@ const {
 } = require('./routes/middleware')
 const amqp = require('./amqp')
 const { constructRoutes } = require('./routes/index')
-const { storeOriginalRequestBody, sendToAuditLog, storeResponseBody } = require('./middlewares')
+const { sendToAuditLog, storeResponseBody } = require('./middlewares')
 
 const {
   HOST,
@@ -33,22 +34,80 @@ const {
 async function setup() {
   const app = express()
   app.set('trust proxy', true)
-
-  // Store copy of raw request body
-  app.use(storeOriginalRequestBody())
   
   // Store copy of response body
   app.use(storeResponseBody())
 
-  // Parsing
-  app.use(bodyParser.json({}))
-  app.use(bodyParser.urlencoded())
-  app.use(bodyParser.urlencoded({ extended: true }))
-  app.use(formData.parse({
-    uploadDir: os.tmpdir(),
-    autoClean: true,
-  }))
-  app.use(formData.union())
+  app.use((req, res, next) => {
+    const raw = new stream.PassThrough()
+    raw.headers = {
+      'content-length': req.get('content-length'),
+      'content-type': req.get('content-type'),
+    }
+    const parsed = new stream.PassThrough()
+    parsed.headers = {
+      'content-length': req.get('content-length'),
+      'content-type': req.get('content-type'),
+    }
+
+    req.pipe(new stream.Writable({
+      write: (chunk, encoding, callback) => {
+        raw.push(chunk)
+        parsed.push(chunk)
+        callback()
+      },
+      destroy: (err, callback) => {
+        raw.destroy(err)
+        parsed.destroy(err)
+        callback()
+      },
+      final: (callback) => {
+        raw.push(null)
+        parsed.push(null)
+        callback()
+      }
+    }))
+
+    Promise.all([
+      new Promise((resolve, reject) => {
+        bodyParser.raw({ type: '*/*' })(raw, res, () => {
+          resolve(raw)
+        })
+
+      }),
+      new Promise((resolve, reject) => {
+        const parsers = [
+          bodyParser.json({}),
+          bodyParser.urlencoded(),
+          bodyParser.urlencoded({ extended: true }),
+
+          formData.parse({
+            uploadDir: os.tmpdir(),
+            autoClean: true,
+          }),
+          formData.union(),
+        ]
+
+        // Create nested method in the same order as they are in "parsers" array
+        // by passing next parser as the callback of previous parser. The last function
+        // in the chain responsible for resolving the promise.
+        const chained = parsers.reverse().reduce((acc, parser) => {
+          return () => parser(parsed, res, acc)
+        }, () => {
+          resolve(parsed)
+        })
+
+        // Call out the nested method
+        chained()
+      })
+    ]).then(([rawStream, parsedStream]) => {
+      req.body = parsedStream.body
+      req.rawBody = rawStream.body
+
+      next()
+    })
+
+  })
 
   // Logging
   app.use(morgan())

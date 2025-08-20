@@ -919,7 +919,7 @@
       "translation-order.cat.setup": "CAT tööriista saatmine",
       "translation-order.cat.split": "CAT tööriistas poolitamine",
       "translation-order.cat.merge": "CAT tööriistas kokkuühendamine",
-      "translation-order.cat.jobsIndex": "",
+      "translation-order.cat.jobsIndex": "CAT tööriistas lähtefailide vaatamine",
       "translation-order.cat.toggleMTEngine": "Alamprojekti tõlkemootori seadistamine",
       "translation-order.cat.volumeAnalysis": "Analüüsi vaatamine",
       "translation-order.cat.downloadXLIFFs": "XLIFFi allalaadimine",

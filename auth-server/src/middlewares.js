@@ -1,16 +1,6 @@
 const amqp = require('./amqp')
 const { AuditLogMessage } = require('./util')
 
-const storeOriginalRequestBody = () => (req, res, next) => {
-  req.rawBody = ''
-
-  req.on('data', (chunk) => {
-    req.rawBody += chunk
-  })
-
-  next()
-}
-
 const storeResponseBody = () => (req, res, next) => {
   const oldWrite = res.write
   res.locals.chunks = []
@@ -43,7 +33,6 @@ const sendToAuditLog = async () => {
 }
 
 module.exports = {
-  storeOriginalRequestBody,
   storeResponseBody,
   sendToAuditLog,
 }

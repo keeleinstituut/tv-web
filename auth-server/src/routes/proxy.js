@@ -37,8 +37,10 @@ const removeCorsHeaders = (proxyRes, req, res) => {
 }
 
 const rewriteProxyReqBody = (proxyReq, req, res, options) => {
-  proxyReq.setHeader('Content-Length', Buffer.byteLength(req.rawBody));
-  proxyReq.write(req.rawBody)
+  if (!!req.rawBody) {
+    proxyReq.setHeader('Content-Length', Buffer.byteLength(req.rawBody));
+    proxyReq.write(req.rawBody)
+  }
 }
 
 const onProxyReq = (proxyReq, req, res, options) => {
