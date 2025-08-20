@@ -52,8 +52,10 @@ async function setup() {
 
     req.pipe(new stream.Writable({
       write: (chunk, encoding, callback) => {
-        raw.push(chunk)
-        parsed.push(chunk)
+        console.log("ENCODING")
+        console.log(encoding)
+        raw.push(chunk, encoding)
+        parsed.push(chunk, encoding)
         callback()
       },
       destroy: (err, callback) => {
