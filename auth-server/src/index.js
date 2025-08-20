@@ -9,6 +9,8 @@ const formData = require('express-form-data')
 const { auth } = require('express-openid-connect')
 const { createClient } = require('redis')
 const RedisStore = require('connect-redis').default
+const streamify = require('stream-array')
+
 const {
   autoRefreshAccessToken,
   populateCsrfTokenIntoSession,
@@ -38,77 +40,54 @@ async function setup() {
   // Store copy of response body
   app.use(storeResponseBody())
 
+  // Parse request body as raw for passing it to proxy
+  app.use(bodyParser.raw({type: '*/*', limit: '100mb'}))
   app.use((req, res, next) => {
-    const raw = new stream.PassThrough()
-    raw.headers = {
-      'content-length': req.get('content-length'),
-      'content-type': req.get('content-type'),
-    }
-    const parsed = new stream.PassThrough()
-    parsed.headers = {
-      'content-length': req.get('content-length'),
-      'content-type': req.get('content-type'),
-    }
+    const rawBody = req.body
+    req.rawBody = rawBody
+    req.body = undefined
+    next()
+  })
 
-    req.pipe(new stream.Writable({
-      write: (chunk, encoding, callback) => {
-        console.log("ENCODING")
-        console.log(encoding)
-        raw.push(chunk, encoding)
-        parsed.push(chunk, encoding)
-        callback()
-      },
-      destroy: (err, callback) => {
-        raw.destroy(err)
-        parsed.destroy(err)
-        callback()
-      },
-      final: (callback) => {
-        raw.push(null)
-        parsed.push(null)
-        callback()
-      }
-    }))
+  // Since request is already read then parser middlewares can't be
+  // used normally. This middleware uses rawBody as the incoming stream
+  app.use(async (req, res, next) => {
+    const stream = streamify([req.rawBody])
+    stream.headers = req.headers
 
-    Promise.all([
-      new Promise((resolve, reject) => {
-        bodyParser.raw({ type: '*/*' })(raw, res, () => {
-          resolve(raw)
-        })
+    const parsers = [
+      bodyParser.json({}),
+      bodyParser.urlencoded(),
+      bodyParser.urlencoded({ extended: true }),
 
+      formData.parse({
+        uploadDir: os.tmpdir(),
+        autoClean: true,
       }),
-      new Promise((resolve, reject) => {
-        const parsers = [
-          bodyParser.json({}),
-          bodyParser.urlencoded(),
-          bodyParser.urlencoded({ extended: true }),
+      formData.union(),
+    ]
 
-          formData.parse({
-            uploadDir: os.tmpdir(),
-            autoClean: true,
-          }),
-          formData.union(),
-        ]
-
-        // Create nested method in the same order as they are in "parsers" array
-        // by passing next parser as the callback of previous parser. The last function
-        // in the chain responsible for resolving the promise.
-        const chained = parsers.reverse().reduce((acc, parser) => {
-          return () => parser(parsed, res, acc)
-        }, () => {
-          resolve(parsed)
+    const promises = parsers.map((parserFunction) => {
+      return () => new Promise((resolve, reject) => {
+        parserFunction(stream, res, (err) => {
+          if (err) {
+            reject()
+          } else {
+            resolve()
+          }
         })
-
-        // Call out the nested method
-        chained()
       })
-    ]).then(([rawStream, parsedStream]) => {
-      req.body = parsedStream.body
-      req.rawBody = rawStream.body
-
-      next()
     })
 
+    for (let index = 0; index < promises.length; index++) {
+      const promise = promises[index];
+      await promise()
+    }
+
+    // Assign parsed body to req object
+    req.body = stream.body
+
+    next()
   })
 
   // Logging

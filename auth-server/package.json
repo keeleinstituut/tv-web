@@ -25,6 +25,7 @@
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
-    "redis": "^4.6.15"
+    "redis": "^4.6.15",
+    "stream-array": "^1.1.2"
   }
 }

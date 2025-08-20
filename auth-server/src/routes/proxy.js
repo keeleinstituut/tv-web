@@ -12,7 +12,6 @@ const {
   requiresValidAccessToken,
   requiresValidCsrfToken,
 } = require('./middleware')
-const { register } = require('module')
 
 const attachAuthorizationHeader = (proxyReq, req, res) => {
   proxyReq.removeHeader('Cookie')
