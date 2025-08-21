@@ -5,10 +5,12 @@ import { endpoints } from 'api/endpoints'
 import {
   ClassifierValuesPayload,
   ClassifierValuesDataTypes,
+  ClassifierValue,
 } from 'types/classifierValues'
 
 export const useClassifierValuesFetch = (
-  initialFilters?: ClassifierValuesPayload
+  initialFilters?: ClassifierValuesPayload,
+  orderFn?: (values: ClassifierValue[]) => ClassifierValue[]
 ) => {
   const {
     isLoading,
@@ -19,7 +21,11 @@ export const useClassifierValuesFetch = (
     queryFn: () => apiClient.get(endpoints.CLASSIFIER_VALUES, initialFilters),
   })
 
-  const { data: classifierValues } = classifierValuesData || {}
+  let { data: classifierValues } = classifierValuesData || {}
+
+  if (orderFn && classifierValues) {
+    classifierValues = orderFn(classifierValues)
+  }
 
   const classifierValuesFilters = map(classifierValues, ({ id, name }) => {
     return { value: id, label: name }

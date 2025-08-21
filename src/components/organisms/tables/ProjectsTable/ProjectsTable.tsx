@@ -19,7 +19,10 @@ import {
   FormInput,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useFetchProjects } from 'hooks/requests/useProjects'
+import {
+  useFetchProjects,
+  useProjectLanguagesFetch,
+} from 'hooks/requests/useProjects'
 import { ProjectStatus } from 'types/projects'
 import Tag from 'components/atoms/Tag/Tag'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
@@ -107,6 +110,8 @@ const ProjectsTable: FC = () => {
     filters,
   } = useFetchProjects(initialFilters, true)
 
+  const { languages: projectLanguages } = useProjectLanguagesFetch()
+
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
   })
@@ -118,7 +123,7 @@ const ProjectsTable: FC = () => {
     loadMore,
     handleSearch,
     setSelectedValues,
-  } = useLanguageDirections({})
+  } = useLanguageDirections({ includeValues: projectLanguages })
 
   useEffect(() => {
     setSelectedValues(filters?.language_directions || [])

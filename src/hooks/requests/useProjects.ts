@@ -6,6 +6,7 @@ import {
   SubProjectsResponse,
   SubProjectResponse,
   SubProjectsPayloadType,
+  ProjectLanguagesResponse,
   CatProjectPayload,
   CatToolJobsResponse,
   SubProjectPayload,
@@ -530,6 +531,21 @@ export const useSendSubProjectFinalFiles = ({ id }: { id?: string }) => {
   return {
     sendFinalFiles,
     isLoading,
+  }
+}
+
+export const useProjectLanguagesFetch = () => {
+  const { isLoading, isError, data } = useQuery<ProjectLanguagesResponse>({
+    queryKey: ['projectLanguages'],
+    queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}/languages`),
+  })
+
+  const { data: languages } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    languages,
   }
 }
 
