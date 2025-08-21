@@ -24,6 +24,7 @@ import utc from 'dayjs/plugin/utc'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import timezone from 'dayjs/plugin/timezone'
 import { LanguagePairType } from 'types/collective'
+import { ClassifierValue } from 'types/classifierValues'
 
 dayjs.extend(utc)
 dayjs.extend(advancedFormat)
@@ -303,4 +304,34 @@ export const getPopulateFormData = (data = {}) => {
   }
   forEach(data, populate)
   return formData
+}
+
+export const orderClassifierByLangPriority = (languages: ClassifierValue[]) => {
+  // priority of languages, matching classifierValue.value property
+  const priorityList = [
+    'et-EE',
+    'en-GB',
+    'ru-RU',
+    'de-DE',
+    'fr-FR',
+    'lv-LV',
+    'lt-LT',
+    'fi-FI',
+    'sv-SE',
+    'uk-UA',
+    'es-ES',
+    'ar-EG',
+  ]
+
+  // move priority items to the top of the list
+  return [...languages].sort((a, b) => {
+    const aPriority = priorityList.includes(a.value)
+      ? priorityList.indexOf(a.value)
+      : priorityList.length
+    const bPriority = priorityList.includes(b.value)
+      ? priorityList.indexOf(b.value)
+      : priorityList.length
+
+    return aPriority - bPriority
+  })
 }

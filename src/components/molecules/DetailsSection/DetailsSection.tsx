@@ -14,6 +14,7 @@ import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { TypesWithStartTime } from 'types/projects'
 import useValidators from 'hooks/useValidators'
+import { orderClassifierByLangPriority } from 'helpers'
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
@@ -46,7 +47,8 @@ const DetailsSection = <TFormValues extends FieldValues>({
   const { classifierValuesFilters: languageFilters } = useClassifierValuesFetch(
     {
       type: ClassifierValueType.Language,
-    }
+    },
+    orderClassifierByLangPriority
   )
   // Fetch list of users bases on PersonSectionType
   // TODO: depends on the picked type classifier

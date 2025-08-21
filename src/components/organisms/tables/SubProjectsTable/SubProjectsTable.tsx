@@ -19,7 +19,10 @@ import {
   FormInput,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { useFetchSubProjects } from 'hooks/requests/useProjects'
+import {
+  useFetchSubProjects,
+  useProjectLanguagesFetch,
+} from 'hooks/requests/useProjects'
 import { SubProjectStatus } from 'types/projects'
 import Tag from 'components/atoms/Tag/Tag'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
@@ -98,12 +101,14 @@ const SubProjectsTable: FC = () => {
     handlePaginationChange,
   } = useFetchSubProjects(initialFilters, true)
 
+  const { languages: projectLanguages } = useProjectLanguagesFetch()
+
   const {
     languageDirectionFilters,
     loadMore,
     handleSearch,
     setSelectedValues,
-  } = useLanguageDirections({})
+  } = useLanguageDirections({ includeValues: projectLanguages })
 
   useEffect(() => {
     setSelectedValues(filters?.language_direction || [])

@@ -266,6 +266,10 @@ export interface SubProjectResponse {
   data: SubProjectDetail
 }
 
+export interface ProjectLanguagesResponse {
+  data: string[]
+}
+
 // TODO: not sure yet
 export interface SubProjectPayload {
   deadline_at?: string

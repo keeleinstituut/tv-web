@@ -29,10 +29,12 @@ export const useLanguageDirections = ({
   per_page = 40,
   initialSelectedValues = [],
   isLangPair = false,
+  includeValues = [],
 }: {
   per_page?: number
   initialSelectedValues?: string[]
   isLangPair?: boolean
+  includeValues?: string[]
 }) => {
   const { classifierValuesFilters: languageFilters, isLoading } =
     useClassifierValuesFetch({
@@ -92,6 +94,22 @@ export const useLanguageDirections = ({
 
   const allOptions = isLangPair ? langPairOptions : options
 
+  // Filter options based on project languages if provided
+  const filteredAllOptions = useMemo(() => {
+    if (isLangPair || !includeValues || includeValues.length === 0) {
+      return allOptions
+    }
+
+    // apply value formatting used by options
+    const availableLanguagePairs = map(includeValues, (langPair) =>
+      langPair.replace(':', '_')
+    )
+
+    return filter(allOptions, (option) =>
+      includes(availableLanguagePairs, option.value)
+    )
+  }, [allOptions, includeValues])
+
   const searchRegexp = useMemo(() => {
     if (isLangPair) {
       return {
@@ -124,7 +142,7 @@ export const useLanguageDirections = ({
 
   const filteredOptions = useMemo(() => {
     const { pattern, orderedBy } = searchRegexp
-    const filteredOptions = filter(allOptions, ({ label }) =>
+    const filteredOptions = filter(filteredAllOptions, ({ label }) =>
       pattern.test(toLower(label))
     )
     const orderedOptions = orderedBy
@@ -133,7 +151,7 @@ export const useLanguageDirections = ({
         ])
       : filteredOptions
     return orderedOptions
-  }, [allOptions, searchRegexp])
+  }, [filteredAllOptions, searchRegexp])
 
   const selectedOptions = useMemo(() => {
     if (isEmpty(selectedValues)) return []
@@ -143,10 +161,10 @@ export const useLanguageDirections = ({
   }, [selectedValues, filteredOptions])
 
   const loadMore = useCallback(() => {
-    if (currentPage * per_page < size(allOptions)) {
+    if (currentPage * per_page < size(filteredAllOptions)) {
       setCurrentPage(currentPage + 1)
     }
-  }, [allOptions, currentPage, per_page])
+  }, [filteredAllOptions, currentPage, per_page])
 
   const languageDirectionFilters = useMemo(
     () =>
