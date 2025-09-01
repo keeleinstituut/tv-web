@@ -283,6 +283,8 @@
     "deadline_time_format": "Tähtaeg peab olema HH:MM:SS formaadis",
     "time_unit_s": "sekundi",
     "time_unit_m": "minuti",
+    "decimal_invalid_precision": "Väärtus liiga suur",
+    "decimal_invalid_scale": "Väärtus sisaldab liiga palju komakohti",
     "server_error": {
       "501": "Päringumeetodit ei toetata serveri poolt (501)",
       "502": "Server sai vigase vastuse (502)",
