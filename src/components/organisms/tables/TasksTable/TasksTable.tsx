@@ -49,7 +49,11 @@ type TaskTableRow = {
   language_directions: string[]
   cost?: string
   type?: string
+  tags: string[]
   deadline_at?: string
+  created_at?: string
+  event_start_at?: string
+  client_name: string
 }
 
 const columnHelper = createColumnHelper<TaskTableRow>()
@@ -207,6 +211,10 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
         cost?: string
         type?: string
         deadline_at?: string
+        created_at?: string
+        event_start_at?: string
+        tags: string[]
+        client_name: string
       }[]
     >(
       tasks,
@@ -220,6 +228,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             type_classifier_value,
             deadline_at,
             sub_projects,
+            tags,
           } = project
 
           const language_directions = map(
@@ -238,6 +247,13 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             cost: price,
             type: type_classifier_value?.name,
             deadline_at: deadline_at,
+            created_at: project?.created_at,
+            event_start_at: project?.event_start_at,
+            tags: map(tags, 'name'),
+            client_name:
+              project?.client_institution_user?.user.forename +
+              ' ' +
+              project?.client_institution_user?.user.surname,
           }
           return [...result, taskData]
         }
@@ -247,7 +263,8 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           source_language_classifier_value,
           destination_language_classifier_value,
         } = subProject || {}
-        const { type_classifier_value, reference_number } = mainProject || {}
+        const { type_classifier_value, reference_number, tags } =
+          mainProject || {}
         const taskData = {
           ext_id: { id, ext_id, task_type },
           reference_number: reference_number,
@@ -257,6 +274,13 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           cost: price,
           type: type_classifier_value?.name,
           deadline_at: deadline_at,
+          created_at: subProject?.created_at,
+          event_start_at: mainProject?.event_start_at,
+          tags: map(tags, 'name'),
+          client_name:
+            mainProject?.client_institution_user?.user.forename +
+            ' ' +
+            mainProject?.client_institution_user?.user.surname,
         }
         return [...result, taskData]
       },
@@ -373,6 +397,24 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             isCustomSingleDropdown: true,
           },
         }),
+        columnHelper.accessor('tags', {
+          header: () => t('label.project_tags'),
+          footer: (info) => info.column.id,
+          cell: ({ getValue }) => {
+            return (
+              <div className={classes.tagsRow}>
+                {map(getValue(), (value) => (
+                  <Tag label={value} value key={value} />
+                ))}
+              </div>
+            )
+          },
+          meta: {
+            // filterOption: { tag_ids: tagsFilters },
+            // showSearch: true,
+            // filterValue: filters?.tag_ids || [],
+          },
+        }),
         columnHelper.accessor('deadline_at', {
           header: () => t('label.deadline_at'),
           footer: (info) => info.column.id,
@@ -398,6 +440,46 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           meta: {
             sortingOption: ['asc', 'desc'],
             currentSorting: sort_by === 'deadline_at' ? sort_order : '',
+          },
+        }),
+        columnHelper.accessor('created_at', {
+          header: () => t('label.created_at'),
+          footer: (info) => info.column.id,
+          meta: {
+            // sortingOption: ['asc', 'desc'],
+            // currentSorting: filters?.sort_by === 'created_at' ? filters.sort_order : '',
+          },
+          cell: ({ getValue, row }) => {
+            const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
+
+            return <span>{formattedDate}</span>
+          },
+        }),
+        columnHelper.accessor('event_start_at', {
+          header: () => t('label.event_start_at'),
+          footer: (info) => info.column.id,
+          meta: {
+            // sortingOption: ['asc', 'desc'],
+            // currentSorting: filters?.sort_by === 'event_start_at' ? filters.sort_order : '',
+          },
+          cell: ({ getValue, row }) => {
+            const value = getValue()
+
+            if (!value) {
+              return <span />
+            }
+
+            const formattedDate = dayjs(value).format('DD.MM.YYYY HH:mm')
+
+            return <span>{formattedDate}</span>
+          },
+        }),
+        columnHelper.accessor('client_name', {
+          header: () => t('label.client'),
+          footer: (info) => info.column.id,
+          meta: {
+            // sortingOption: ['asc', 'desc'],
+            // currentSorting: filters?.sort_by === 'client' ? filters.sort_order : '',
           },
         }),
       ] as ColumnDef<TaskTableRow>[],
