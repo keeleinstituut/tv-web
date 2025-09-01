@@ -44,11 +44,14 @@ type ProjectTableRow = {
   ext_id?: string
   reference_number?: string
   deadline_at?: string
+  created_at: string
+  event_start_at?: string
   type: string
   status?: ProjectStatus
   tags: string[]
   price?: string
   language_directions: string[]
+  client_name: string
 }
 
 const columnHelper = createColumnHelper<ProjectTableRow>()
@@ -149,20 +152,29 @@ const ProjectsTable: FC = () => {
           reference_number,
           sub_projects,
           deadline_at,
+          created_at,
+          event_start_at,
           ext_id,
           type_classifier_value,
           status,
           tags,
           price,
+          client_institution_user,
         }) => {
           return {
             ext_id,
             reference_number,
             deadline_at,
+            created_at,
+            event_start_at,
             type: type_classifier_value?.name || '',
             status,
             tags: map(tags, 'name'),
             price,
+            client_name:
+              client_institution_user.user.forename +
+              ' ' +
+              client_institution_user.user.surname,
             language_directions: uniq(
               map(
                 sub_projects,
@@ -381,6 +393,48 @@ const ProjectsTable: FC = () => {
         sortingOption: ['asc', 'desc'],
         currentSorting:
           filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
+      },
+    }),
+    columnHelper.accessor('created_at', {
+      header: () => t('label.created_at'),
+      footer: (info) => info.column.id,
+      meta: {
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'created_at' ? filters.sort_order : '',
+      },
+      cell: ({ getValue, row }) => {
+        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
+
+        return <span>{formattedDate}</span>
+      },
+    }),
+    columnHelper.accessor('event_start_at', {
+      header: () => t('label.event_start_at'),
+      footer: (info) => info.column.id,
+      meta: {
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'event_start_at' ? filters.sort_order : '',
+      },
+      cell: ({ getValue, row }) => {
+        const value = getValue()
+
+        if (!value) {
+          return <span />
+        }
+
+        const formattedDate = dayjs(value).format('DD.MM.YYYY HH:mm')
+
+        return <span>{formattedDate}</span>
+      },
+    }),
+    columnHelper.accessor('client_name', {
+      header: () => t('label.client'),
+      footer: (info) => info.column.id,
+      meta: {
+        // sortingOption: ['asc', 'desc'],
+        // currentSorting: filters?.sort_by === 'client' ? filters.sort_order : '',
       },
     }),
   ] as ColumnDef<ProjectTableRow>[]

@@ -207,6 +207,7 @@ export interface ListProject {
   workflow_template_id: WorkflowTemplateID
   workflow_instance_ref: string | null
   deadline_at: string
+  event_start_at?: string
   created_at: string
   updated_at: string
   sub_projects: ListSubProjectDetail[]
@@ -220,7 +221,6 @@ export interface ListProject {
 }
 export interface ProjectDetail extends ListProject {
   translation_domain_classifier_value: ClassifierValue
-  event_start_at?: string
   workflow_started?: boolean
   review_files?: SourceFile[]
   // TODO: unclear type for following:
