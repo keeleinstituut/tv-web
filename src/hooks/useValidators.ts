@@ -1,4 +1,4 @@
-import { isArray, isEmpty, isObject, size } from 'lodash'
+import { isArray, isEmpty, isObject, size, split, map } from 'lodash'
 import { useTranslation } from 'react-i18next'
 
 const emailIsCorrect = (email: string) =>
@@ -91,13 +91,33 @@ const useValidators = () => {
     return true
   }
 
+  const decimalValidator = (
+    value?: string | null,
+    precision?: number,
+    scale?: number
+  ) => {
+    const parts = split(value, '.')
+    const sizes = map(parts, size)
+
+    if (precision && sizes[0] + sizes[1] > precision) {
+      return t('error.decimal_invalid_precision')
+    }
+
+    if (scale && sizes[1] > scale) {
+      return t('error.decimal_invalid_scale')
+    }
+
+    return true
+  }
+
   const priceValidator = (value?: string | null) => {
     if (value && !allowAllNumbersWithDot(value)) {
       return t('error.invalid_price')
     }
 
-    return true
+    return decimalValidator(value, undefined, 3)
   }
+
   const minLengthValidator = (value?: string | string[] | null | object) => {
     if (!!value && size(value) < 3) {
       return t('error.search_input_length')
@@ -162,6 +182,7 @@ const useValidators = () => {
     minLengthValidator,
     timeRangePickerValidator,
     dateTimePickerValidator,
+    decimalValidator,
   }
 }
 

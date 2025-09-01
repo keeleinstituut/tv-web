@@ -52,6 +52,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
+import useValidators from 'hooks/useValidators'
 
 export interface VolumeChangeModalProps {
   assignmentId?: string
@@ -136,6 +137,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation()
+  const validators = useValidators()
 
   const inverseDiscounts = mapValues(
     discounts || defaultDiscounts,
@@ -307,6 +309,10 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
         name: 'unit_fee',
         rules: {
           required: true,
+          validate: (value: unknown) => {
+            const typedValue = value as string
+            return validators.priceValidator(typedValue)
+          },
         },
         onlyDisplay: mode === ProjectDetailModes.View,
       },
