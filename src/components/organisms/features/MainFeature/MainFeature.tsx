@@ -1,9 +1,5 @@
 import { FC, useCallback, useState, useEffect } from 'react'
-import {
-  ProjectStatus,
-  SubProjectDetail,
-  SubProjectFeatures,
-} from 'types/projects'
+import { SubProjectDetail, SubProjectFeatures } from 'types/projects'
 import { Root } from '@radix-ui/react-form'
 import { useTranslation } from 'react-i18next'
 import FeatureHeaderSection, {
@@ -15,7 +11,6 @@ import { useSplitAssignment } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { get } from 'lodash'
-import { useProjectCache } from 'hooks/requests/useProjects'
 
 type MainFeatureProps = Pick<
   SubProjectDetail,
@@ -45,9 +40,8 @@ const MainFeature: FC<MainFeatureProps> = ({
   project_id,
   ...rest
 }) => {
-  const { status: projectStatus } = useProjectCache(project_id) || {}
   const { t } = useTranslation()
-  const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
+  const isSomethingEditable = true
   const featureTabs = [
     {
       label: t('button.vendors'),
