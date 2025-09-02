@@ -187,8 +187,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
   const isRestEditable = isNew || hasManagerPrivilege
 
   const isSomethingEditable =
-    status !== ProjectStatus.Accepted &&
-    (isManagerEditable || isClientEditable || isRestEditable)
+    isManagerEditable || isClientEditable || isRestEditable
 
   // Validation errors
   const mapProjectValidationErrors = useCallback(
@@ -437,9 +436,6 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
             selectedUser={manager_institution_user}
             isEditable={isManagerEditable && isEditEnabled}
             hideDetails={isNew && !isManagerEditable}
-            isRequired={
-              mode !== ProjectDetailModes.New && status !== ProjectStatus.New
-            }
           />
         </Container>
         <Container className={classNames(classes.detailsContainer)}>
