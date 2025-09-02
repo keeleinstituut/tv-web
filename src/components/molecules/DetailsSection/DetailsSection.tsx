@@ -15,6 +15,7 @@ import { TagTypes } from 'types/tags'
 import { TypesWithStartTime } from 'types/projects'
 import useValidators from 'hooks/useValidators'
 import { orderClassifierByLangPriority } from 'helpers'
+import dayjs from 'dayjs'
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
@@ -125,6 +126,17 @@ const DetailsSection = <TFormValues extends FieldValues>({
         emptyDisplayText: '-',
         rules: {
           required: true,
+          validate: (value: { date?: string; time?: string }, formValues) => {
+            const deadline_at = dayjs(
+              formValues.deadline_at.date + ' ' + formValues.deadline_at.time
+            )
+            const event_start_at = dayjs(value.date + ' ' + value.time)
+
+            if (event_start_at.isAfter(deadline_at)) {
+              return t('error.event_start_at_after_deadline_at')
+            }
+            return true
+          },
         },
       },
       {
@@ -137,7 +149,19 @@ const DetailsSection = <TFormValues extends FieldValues>({
         emptyDisplayText: '-',
         rules: {
           required: true,
-          validate: dateTimePickerValidator,
+          validate: (value: { date?: string; time?: string }, formValues) => {
+            const deadline_at = dayjs(value.date + ' ' + value.time)
+            const event_start_at = dayjs(
+              formValues.event_start_at.date +
+                ' ' +
+                formValues.event_start_at.time
+            )
+
+            if (deadline_at.isBefore(event_start_at)) {
+              return t('error.deadline_at_before_event_start_at')
+            }
+            return dateTimePickerValidator(value)
+          },
         },
       },
       // TODO: not sure if comment field is correct for this

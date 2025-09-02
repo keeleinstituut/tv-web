@@ -198,7 +198,6 @@ const SelectionControlsInput = forwardRef<
         disabled={disabled}
         onClick={toggleDropdown}
         tabIndex={0}
-        autoFocus={true}
       >
         <p
           hidden={!placeholder && multiple}

@@ -131,6 +131,7 @@ const useValidators = () => {
     if (!timeInCorrectFormat(value?.time || '')) {
       return t('error.deadline_time_format')
     }
+    return true
   }
 
   const timeRangePickerValidator = (

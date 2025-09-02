@@ -91,6 +91,7 @@ const DatePickerComponent = ({
         onBlur={onBlur}
         {...rest}
         onChange={handleDateChange}
+        autoComplete="off"
       />
       <Calender
         className={classNames(
