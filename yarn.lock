@@ -8855,6 +8855,11 @@ react-jss@^10.9.0:
     theming "^3.3.0"
     tiny-warning "^1.0.2"
 
+react-merge-refs@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/react-merge-refs/-/react-merge-refs-3.0.2.tgz#483b4e8029f89d805c4e55c8d22e9b8f77e3b58e"
+  integrity sha512-MSZAfwFfdbEvwkKWP5EI5chuLYnNUxNS7vyS0i1Jp+wtd8J4Ga2ddzhaE68aMol2Z4vCnRM/oGOo1a3V75UPlw==
+
 react-onclickoutside@^6.12.2:
   version "6.13.0"
   resolved "https://registry.npmjs.org/react-onclickoutside/-/react-onclickoutside-6.13.0.tgz"
