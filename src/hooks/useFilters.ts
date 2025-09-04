@@ -1,6 +1,6 @@
 import { keys, omit, isEqual, pickBy } from 'lodash'
 import { useCallback, useState } from 'react'
-import { ParamKeyValuePair, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { useDeepCompareEffect } from 'ahooks'
 import {
   FilterFunctionType,
@@ -12,11 +12,12 @@ import { stringifyLanguagePairs } from 'helpers'
 
 const useFilters = <TFilters extends object>(
   initialFilters?: TFilters,
-  saveParams?: boolean
+  saveParamsToQueryString?: boolean
 ) => {
-  const [filters, setFilters] = useState<TFilters | object>({
+  const [filters, setFiltersBase] = useState<TFilters | object>({
     ...initialFilters,
   })
+
   const page = 1
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, setSearchParams] = useSearchParams()
@@ -42,12 +43,16 @@ const useFilters = <TFilters extends object>(
     [setSearchParams]
   )
 
+  const setFilters = useCallback((value: TFilters | object) => {
+    setFiltersBase(value)
+    if (saveParamsToQueryString) {
+      setModifiedSetSearchParams(value)
+    }
+  }, [setFiltersBase, setModifiedSetSearchParams, saveParamsToQueryString])
+
   useDeepCompareEffect(() => {
     if (initialFilters) {
       setFilters(initialFilters)
-    }
-    if (saveParams) {
-      setModifiedSetSearchParams(initialFilters)
     }
   }, [initialFilters])
 
@@ -59,14 +64,6 @@ const useFilters = <TFilters extends object>(
           (val: string | number) => val === 0 || !!val
         )
       )
-      if (saveParams) {
-        setModifiedSetSearchParams(
-          pickBy(
-            { ...filters, ...value, page },
-            (val: string | number) => val === 0 || !!val
-          )
-        )
-      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [filters]
@@ -78,14 +75,8 @@ const useFilters = <TFilters extends object>(
         const sortingKeys = keys(value)
         const filtersWithOutSorting = filters ? omit(filters, sortingKeys) : {}
         setFilters({ ...filtersWithOutSorting, page })
-        if (saveParams) {
-          setModifiedSetSearchParams({ ...filtersWithOutSorting, page })
-        }
       } else {
         setFilters({ ...filters, ...value, page })
-        if (saveParams) {
-          setModifiedSetSearchParams({ ...filters, ...value, page })
-        }
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,12 +89,6 @@ const useFilters = <TFilters extends object>(
       // any unnecessary requests
       if (!isEqual(filters, value)) {
         setFilters({ ...filters, ...value })
-        if (saveParams) {
-          setModifiedSetSearchParams({
-            ...filters,
-            ...value,
-          } as ParamKeyValuePair[])
-        }
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

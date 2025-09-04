@@ -23,7 +23,7 @@ import {
   useFetchProjects,
   useProjectLanguagesFetch,
 } from 'hooks/requests/useProjects'
-import { ProjectStatus } from 'types/projects'
+import { ProjectsPayloadType, ProjectStatus } from 'types/projects'
 import Tag from 'components/atoms/Tag/Tag'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
 import dayjs from 'dayjs'
@@ -89,8 +89,10 @@ const ProjectsTable: FC = () => {
     )
 
   const [searchParams] = useSearchParams()
-  const initialFilters = {
-    per_page: 10,
+  const initialFilters: ProjectsPayloadType = {
+    per_page: 50,
+    sort_by: 'deadline_at',
+    sort_order: 'asc',
     page: 1,
     ...Object.fromEntries(searchParams.entries()),
     statuses: onlyNewProjectsAllowed
