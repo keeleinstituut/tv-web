@@ -291,10 +291,21 @@ const ProjectsTable: FC = () => {
         )
       },
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'ext_id',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'ext_id' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('reference_number', {
       header: () => t('label.reference_number'),
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'reference_number',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'reference_number' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('language_directions', {
       header: () => t('label.language_directions'),
@@ -349,6 +360,11 @@ const ProjectsTable: FC = () => {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => <ProjectStatusTag status={getValue()} />,
+      meta: {
+        sortingParameterName: 'status',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'status' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('price', {
       header: () => t('label.cost'),
@@ -433,8 +449,12 @@ const ProjectsTable: FC = () => {
       header: () => t('label.client'),
       footer: (info) => info.column.id,
       meta: {
-        // sortingOption: ['asc', 'desc'],
-        // currentSorting: filters?.sort_by === 'client' ? filters.sort_order : '',
+        sortingParameterName: 'clientInstitutionUser.name',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'clientInstitutionUser.name'
+            ? filters.sort_order
+            : '',
       },
     }),
   ] as ColumnDef<ProjectTableRow>[]

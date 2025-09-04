@@ -354,10 +354,21 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
               </Button>
             )
           },
+          meta: {
+            sortingOption: ['asc', 'desc'],
+            currentSorting: sort_by === 'project.ext_id' ? sort_order : '',
+            sortingParameterName: 'project.ext_id',
+          },
         }),
         columnHelper.accessor('reference_number', {
           header: () => t('label.associated_reference_number'),
           footer: (info) => info.column.id,
+          meta: {
+            sortingOption: ['asc', 'desc'],
+            currentSorting:
+              sort_by === 'project.reference_number' ? sort_order : '',
+            sortingParameterName: 'project.reference_number',
+          },
         }),
         columnHelper.accessor('language_directions', {
           header: () => t('label.language_directions'),
@@ -387,6 +398,11 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           header: () => t('label.cost'),
           footer: (info) => info.column.id,
           cell: ({ getValue }) => (getValue() ? `${getValue()}€` : '-'),
+          meta: {
+            sortingOption: ['asc', 'desc'],
+            currentSorting: sort_by === 'project.price' ? sort_order : '',
+            sortingParameterName: 'project.price',
+          },
         }),
         columnHelper.accessor('type', {
           header: () => t('label.type'),
@@ -439,15 +455,17 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           },
           meta: {
             sortingOption: ['asc', 'desc'],
-            currentSorting: sort_by === 'deadline_at' ? sort_order : '',
+            currentSorting: sort_by === 'project.deadline_at' ? sort_order : '',
+            sortingParameterName: 'project.deadline_at',
           },
         }),
         columnHelper.accessor('created_at', {
           header: () => t('label.created_at'),
           footer: (info) => info.column.id,
           meta: {
-            // sortingOption: ['asc', 'desc'],
-            // currentSorting: filters?.sort_by === 'created_at' ? filters.sort_order : '',
+            sortingOption: ['asc', 'desc'],
+            currentSorting: sort_by === 'created_at' ? sort_order : '',
+            sortingParameterName: 'created_at',
           },
           cell: ({ getValue, row }) => {
             const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
@@ -459,8 +477,10 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           header: () => t('label.event_start_at'),
           footer: (info) => info.column.id,
           meta: {
-            // sortingOption: ['asc', 'desc'],
-            // currentSorting: filters?.sort_by === 'event_start_at' ? filters.sort_order : '',
+            sortingOption: ['asc', 'desc'],
+            currentSorting:
+              sort_by === 'project.event_start_at' ? sort_order : '',
+            sortingParameterName: 'project.event_start_at',
           },
           cell: ({ getValue, row }) => {
             const value = getValue()
@@ -478,8 +498,12 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           header: () => t('label.client'),
           footer: (info) => info.column.id,
           meta: {
-            // sortingOption: ['asc', 'desc'],
-            // currentSorting: filters?.sort_by === 'client' ? filters.sort_order : '',
+            sortingOption: ['asc', 'desc'],
+            currentSorting:
+              sort_by === 'project.clientInstitutionUser.name'
+                ? sort_order
+                : '',
+            sortingParameterName: 'project.clientInstitutionUser.name',
           },
         }),
       ] as ColumnDef<TaskTableRow>[],
