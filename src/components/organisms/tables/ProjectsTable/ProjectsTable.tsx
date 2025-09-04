@@ -44,11 +44,14 @@ type ProjectTableRow = {
   ext_id?: string
   reference_number?: string
   deadline_at?: string
+  created_at: string
+  event_start_at?: string
   type: string
   status?: ProjectStatus
   tags: string[]
   price?: string
   language_directions: string[]
+  client_name: string
 }
 
 const columnHelper = createColumnHelper<ProjectTableRow>()
@@ -149,20 +152,29 @@ const ProjectsTable: FC = () => {
           reference_number,
           sub_projects,
           deadline_at,
+          created_at,
+          event_start_at,
           ext_id,
           type_classifier_value,
           status,
           tags,
           price,
+          client_institution_user,
         }) => {
           return {
             ext_id,
             reference_number,
             deadline_at,
+            created_at,
+            event_start_at,
             type: type_classifier_value?.name || '',
             status,
             tags: map(tags, 'name'),
             price,
+            client_name:
+              client_institution_user.user.forename +
+              ' ' +
+              client_institution_user.user.surname,
             language_directions: uniq(
               map(
                 sub_projects,
@@ -279,10 +291,21 @@ const ProjectsTable: FC = () => {
         )
       },
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'ext_id',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'ext_id' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('reference_number', {
       header: () => t('label.reference_number'),
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'reference_number',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'reference_number' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('language_directions', {
       header: () => t('label.language_directions'),
@@ -337,6 +360,11 @@ const ProjectsTable: FC = () => {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => <ProjectStatusTag status={getValue()} />,
+      meta: {
+        sortingParameterName: 'status',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'status' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('price', {
       header: () => t('label.cost'),
@@ -381,6 +409,52 @@ const ProjectsTable: FC = () => {
         sortingOption: ['asc', 'desc'],
         currentSorting:
           filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
+      },
+    }),
+    columnHelper.accessor('created_at', {
+      header: () => t('label.created_at'),
+      footer: (info) => info.column.id,
+      meta: {
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'created_at' ? filters.sort_order : '',
+      },
+      cell: ({ getValue, row }) => {
+        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
+
+        return <span>{formattedDate}</span>
+      },
+    }),
+    columnHelper.accessor('event_start_at', {
+      header: () => t('label.event_start_at'),
+      footer: (info) => info.column.id,
+      meta: {
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'event_start_at' ? filters.sort_order : '',
+      },
+      cell: ({ getValue, row }) => {
+        const value = getValue()
+
+        if (!value) {
+          return <span />
+        }
+
+        const formattedDate = dayjs(value).format('DD.MM.YYYY HH:mm')
+
+        return <span>{formattedDate}</span>
+      },
+    }),
+    columnHelper.accessor('client_name', {
+      header: () => t('label.client'),
+      footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'clientInstitutionUser.name',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'clientInstitutionUser.name'
+            ? filters.sort_order
+            : '',
       },
     }),
   ] as ColumnDef<ProjectTableRow>[]

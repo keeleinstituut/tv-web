@@ -17,7 +17,6 @@ import {
 import {
   CatProjectPayload,
   CatProjectStatus,
-  ProjectStatus,
   SourceFile,
   SubProjectDetail,
 } from 'types/projects'
@@ -87,8 +86,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 }) => {
   const { t } = useTranslation()
   const { dateTimePickerValidator } = useValidators()
-  const { deadline_at: projectDeadlineAt, status: projectStatus } =
-    useProjectCache(project_id) || {}
+  const { deadline_at: projectDeadlineAt } = useProjectCache(project_id) || {}
   const { updateSubProject, isLoading } = useUpdateSubProject({
     id,
   })
@@ -100,7 +98,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     subProjectId: id,
   })
 
-  const isSomethingEditable = projectStatus !== ProjectStatus.Accepted
+  const isSomethingEditable = true
 
   const defaultValues = useMemo(
     () => ({

@@ -57,6 +57,7 @@
     "deadline": "Tähtaeg",
     "deadline_time": "Tähtaja kellaaeg",
     "special_instructions": "Erijuhised tellimuse kohta",
+    "event_start_at": "Algusaeg",
     "start_date": "Algus",
     "start_time": "Alguse kellaaeg",
     "source_language": "Lähtekeel",
@@ -132,7 +133,8 @@
     "tooltip": "Tööriistavihje",
     "date": "Kuupäev",
     "time": "Aeg",
-    "progress": "Tehtud"
+    "progress": "Tehtud",
+    "client": "Tellija"
   },
   "placeholder": {
     "email": "nimi@domen.ee",
@@ -281,6 +283,11 @@
     "deadline_time_format": "Tähtaeg peab olema HH:MM:SS formaadis",
     "time_unit_s": "sekundi",
     "time_unit_m": "minuti",
+    "decimal_invalid_precision": "Väärtus liiga suur",
+    "decimal_invalid_scale": "Väärtus sisaldab liiga palju komakohti",
+    "audit_log_event_record_retention_time_too_small": "Logikirje säilivus peab olema vähemat 730 päeva",
+    "event_start_at_after_deadline_at": "Algusaeg ei saa olla pärast tähtaega",
+    "deadline_at_before_event_start_at": "Tähtaeg ei saa olla enne algusaega",
     "server_error": {
       "501": "Päringumeetodit ei toetata serveri poolt (501)",
       "502": "Server sai vigase vastuse (502)",
@@ -359,7 +366,8 @@
   },
   "audit_log": {
     "event_record_retention_time": "Logikirje säilivus",
-    "retention_time_unit": "min"
+    "retention_time_unit": "päeva",
+    "retention_time_unit2": "päevades"
   },
   "privileges": {
     "ADD_ROLE": "Rolli lisamine süsteemi",

@@ -12,6 +12,7 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { SubmitHandler, useForm } from 'react-hook-form'
+import useValidators from 'hooks/useValidators'
 
 export type AuditLogSettingsFormValues = {
   event_record_retention_time: number
@@ -33,6 +34,7 @@ const AuditLogSettingsModal: FC<AuditLogSettingsModalProps> = ({
   updateSetting,
 }) => {
   const { t } = useTranslation()
+  const validators = useValidators()
 
   const {
     control,
@@ -51,12 +53,22 @@ const AuditLogSettingsModal: FC<AuditLogSettingsModalProps> = ({
     {
       name: 'event_record_retention_time',
       label: `${t('audit_log.event_record_retention_time')} (${t(
-        'audit_log.retention_time_unit'
+        'audit_log.retention_time_unit2'
       )})`,
       ariaLabel: `${t('audit_log.event_record_retention_time')} (${t(
-        'audit_log.retention_time_unit'
+        'audit_log.retention_time_unit2'
       )})`,
       inputType: InputTypes.Text,
+      rules: {
+        required: true,
+        validate: (value: number) => {
+          if (value < 730) {
+            return t('error.audit_log_event_record_retention_time_too_small')
+          }
+
+          return true
+        },
+      },
     },
   ]
 

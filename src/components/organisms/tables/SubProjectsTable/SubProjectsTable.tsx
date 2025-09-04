@@ -39,10 +39,14 @@ type SubProjectTableRow = {
   ext_id: string
   reference_number?: string
   deadline_at: string
+  created_at: string
+  event_start_at?: string
   type: string
+  tags: string[]
   status?: SubProjectStatus
   price?: string
   language_direction: string[]
+  client_name: string
 }
 
 const columnHelper = createColumnHelper<SubProjectTableRow>()
@@ -134,6 +138,7 @@ const SubProjectsTable: FC = () => {
         subProjects,
         ({
           deadline_at,
+          created_at,
           ext_id,
           source_language_classifier_value,
           destination_language_classifier_value,
@@ -145,9 +150,16 @@ const SubProjectsTable: FC = () => {
             ext_id,
             reference_number: project?.reference_number,
             deadline_at,
+            created_at,
+            event_start_at: project?.event_start_at,
             type: project?.type_classifier_value?.name || '',
             status,
             price,
+            client_name:
+              project?.client_institution_user?.user.forename +
+              ' ' +
+              project?.client_institution_user?.user.surname,
+            tags: map(project?.tags, 'name'),
             language_direction: [
               `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
             ],
@@ -253,10 +265,23 @@ const SubProjectsTable: FC = () => {
         )
       },
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'ext_id',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'ext_id' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('reference_number', {
       header: () => t('label.associated_reference_number'),
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'project.reference_number',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'project.reference_number'
+            ? filters.sort_order
+            : '',
+      },
     }),
     columnHelper.accessor('language_direction', {
       header: () => t('label.language_directions'),
@@ -289,18 +314,41 @@ const SubProjectsTable: FC = () => {
         isCustomSingleDropdown: true,
       },
     }),
+    columnHelper.accessor('tags', {
+      header: () => t('label.project_tags'),
+      footer: (info) => info.column.id,
+      cell: ({ getValue }) => {
+        return (
+          <div className={classes.tagsRow}>
+            {map(getValue(), (value) => (
+              <Tag label={value} value key={value} />
+            ))}
+          </div>
+        )
+      },
+      meta: {
+        // filterOption: { tag_ids: tagsFilters },
+        // showSearch: true,
+        // filterValue: filters?.tag_ids || [],
+      },
+    }),
     columnHelper.accessor('status', {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => <ProjectStatusTag status={getValue()} />,
+      meta: {
+        sortingParameterName: 'status',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'status' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('price', {
       header: () => t('label.cost'),
       footer: (info) => info.column.id,
       meta: {
+        sortingParameterName: 'price',
         sortingOption: ['asc', 'desc'],
-        currentSorting:
-          filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
+        currentSorting: filters?.sort_by === 'price' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('deadline_at', {
@@ -334,9 +382,59 @@ const SubProjectsTable: FC = () => {
         )
       },
       meta: {
+        sortingParameterName: 'deadline_at',
         sortingOption: ['asc', 'desc'],
         currentSorting:
           filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
+      },
+    }),
+    columnHelper.accessor('created_at', {
+      header: () => t('label.created_at'),
+      footer: (info) => info.column.id,
+      meta: {
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'created_at' ? filters.sort_order : '',
+      },
+      cell: ({ getValue, row }) => {
+        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
+
+        return <span>{formattedDate}</span>
+      },
+    }),
+    columnHelper.accessor('event_start_at', {
+      header: () => t('label.event_start_at'),
+      footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'project.event_start_at',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'project.event_start_at'
+            ? filters.sort_order
+            : '',
+      },
+      cell: ({ getValue, row }) => {
+        const value = getValue()
+
+        if (!value) {
+          return <span />
+        }
+
+        const formattedDate = dayjs(value).format('DD.MM.YYYY HH:mm')
+
+        return <span>{formattedDate}</span>
+      },
+    }),
+    columnHelper.accessor('client_name', {
+      header: () => t('label.client'),
+      footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'project.clientInstitutionUser.name',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'project.clientInstitutionUser.name'
+            ? filters.sort_order
+            : '',
       },
     }),
   ] as ColumnDef<SubProjectTableRow>[]

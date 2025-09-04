@@ -8,6 +8,7 @@ import { Icon } from '../Button/Button'
 import TimeDropdown from '../TimeDropdown/TimeDropdown'
 import useModalContext from 'hooks/useModalContext'
 import useInputMask from 'use-mask-input'
+import { mergeRefs } from 'react-merge-refs'
 
 import classes from './classes.module.scss'
 
@@ -59,6 +60,7 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
     return (
       <>
         <input
+          autoComplete="off"
           className={classNames(
             classes.timeInput,
             disabled && classes.disabledTimeInput,
@@ -73,10 +75,13 @@ const TimeInput = forwardRef<HTMLInputElement, TimeInputProps>(
           onKeyDown={handleKeyDown}
           id={name}
           {...(placeholder ? { placeholder } : {})}
-          ref={useInputMask({
-            mask: showSeconds ? '99:99:99' : '99:99',
-            options: { placeholder: '', jitMasking: true },
-          })}
+          ref={mergeRefs([
+            ref,
+            useInputMask({
+              mask: showSeconds ? '99:99:99' : '99:99',
+              options: { placeholder: '', jitMasking: true },
+            }),
+          ])}
         />
         <Icon
           icon={icon || Clock}
@@ -112,6 +117,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
 
     const clickAwayInputRef = useRef(null)
     const wrapperRef = useRef(null)
+    const inputRef = useRef<HTMLInputElement>(null)
 
     useClickAway(() => {
       setIsModalOpen && setIsModalOpen(false)
@@ -120,6 +126,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
 
     const handleClick = () => {
       setTimeColumnOpen(!isTimeColumnOpen)
+      inputRef.current?.focus()
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -156,7 +163,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           error={error}
           showSeconds={showSeconds}
           onChange={onChange}
-          ref={ref}
+          ref={mergeRefs([ref, inputRef])}
           icon={icon}
           handleKeyDown={handleKeyDown}
           onClick={handleClick}
