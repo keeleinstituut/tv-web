@@ -43,12 +43,15 @@ const useFilters = <TFilters extends object>(
     [setSearchParams]
   )
 
-  const setFilters = useCallback((value: TFilters | object) => {
-    setFiltersBase(value)
-    if (saveParamsToQueryString) {
-      setModifiedSetSearchParams(value)
-    }
-  }, [setFiltersBase, setModifiedSetSearchParams, saveParamsToQueryString])
+  const setFilters = useCallback(
+    (value: TFilters | object) => {
+      setFiltersBase(value)
+      if (saveParamsToQueryString) {
+        setModifiedSetSearchParams(value)
+      }
+    },
+    [setFiltersBase, setModifiedSetSearchParams, saveParamsToQueryString]
+  )
 
   useDeepCompareEffect(() => {
     if (initialFilters) {
