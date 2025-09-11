@@ -59,6 +59,7 @@ const AuditLogSettingsModal: FC<AuditLogSettingsModalProps> = ({
         'audit_log.retention_time_unit2'
       )})`,
       inputType: InputTypes.Text,
+      autoComplete: 'off',
       rules: {
         required: true,
         validate: (value: number) => {
@@ -66,7 +67,7 @@ const AuditLogSettingsModal: FC<AuditLogSettingsModalProps> = ({
             return t('error.audit_log_event_record_retention_time_too_small')
           }
 
-          return true
+          return validators.integerValidator(value)
         },
       },
     },
