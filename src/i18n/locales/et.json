@@ -926,6 +926,7 @@
       "translation-order.subprojects.startWorkflow": "Alamprojekti töövoo käivitamine",
       "translation-order.subprojects.update": "Alamprojekti uuendamine",
       "translation-order.subprojects.setProjectFinalFiles": "Alamprojekti valmisfailide muutmine",
+      "translation-order.subprojects.getLanguageCombinations": "Kasutuses olevate keelekombinatsioonide vaatamine",
       "translation-order.cat.setup": "CAT tööriista saatmine",
       "translation-order.cat.split": "CAT tööriistas poolitamine",
       "translation-order.cat.merge": "CAT tööriistas kokkuühendamine",
