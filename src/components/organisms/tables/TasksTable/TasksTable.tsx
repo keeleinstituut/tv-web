@@ -20,7 +20,7 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { FilterFunctionType } from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
-import { ListTask } from 'types/tasks'
+import { ListTask, TasksPayloadType } from 'types/tasks'
 import { useSearchParams } from 'react-router-dom'
 import { parseLanguagePairs } from 'helpers'
 import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
@@ -62,26 +62,21 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
   const { t } = useTranslation()
   const isHistoryTab = type === TaskTableTypes.HistoryTasks
 
-  const [searchParams] = useSearchParams()
-  const initialFilters = useMemo(() => {
-    const sort_by = searchParams.get('sort_by')
-    const sort_order = searchParams.get('sort_order') as 'asc' | 'desc'
-    return {
-      page: Number(searchParams.get('page')) || 1,
-      per_page: Number(searchParams.get('per_page')) || 10,
-      ...(sort_by ? { sort_by } : {}),
-      ...(sort_order ? { sort_order } : {}),
-      lang_pair: parseLanguagePairs(searchParams),
-      type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
-      ...(userId ? { institution_user_id: userId } : {}),
-      ...(isHistoryTab || type === TaskTableTypes.VendorTasks
-        ? {}
-        : type === TaskTableTypes.MyTasks
-        ? { assigned_to_me: 1 }
-        : { assigned_to_me: 0 }),
-      ...(type === TaskTableTypes.PendingTasks ? { is_candidate: 1 } : {}),
-    }
-  }, [isHistoryTab, searchParams, type, userId])
+  const initialFilters: TasksPayloadType = {
+    page: 1,
+    per_page: 50,
+    sort_by: 'project.deadline_at',
+    sort_order: 'asc',
+    // lang_pair: parseLanguagePairs(searchParams),
+    // type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
+    ...(userId ? { institution_user_id: userId } : {}),
+    ...(isHistoryTab || type === TaskTableTypes.VendorTasks
+      ? {}
+      : type === TaskTableTypes.MyTasks
+      ? { assigned_to_me: 1 }
+      : { assigned_to_me: 0 }),
+    ...(type === TaskTableTypes.PendingTasks ? { is_candidate: 1 } : {}),
+  }
 
   const {
     tasks: myTasks,
@@ -91,12 +86,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
     handleFilterChange: handleMyTasksFilterChange,
     handleSortingChange: handleMyTasksSortingChange,
     handlePaginationChange: handleMyTasksPaginationChange,
-  } = useFetchTasks(
-    {
-      ...initialFilters,
-    },
-    true
-  )
+  } = useFetchTasks(initialFilters, true)
 
   const {
     historyTasks = [],

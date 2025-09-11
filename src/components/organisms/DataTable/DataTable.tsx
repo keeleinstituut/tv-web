@@ -159,12 +159,12 @@ const DataTable = <TData,>(
     getExpandedRowModel: getExpandedRowModel(),
   })
 
-  useEffect(() => {
-    if (per_page) {
-      table.setPageSize(toNumber(per_page))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [per_page])
+  // useEffect(() => {
+  //   if (per_page) {
+  //     table.setPageSize(toNumber(per_page))
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [per_page])
 
   if (hidden) {
     return null
