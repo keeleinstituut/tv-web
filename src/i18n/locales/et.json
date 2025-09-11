@@ -288,6 +288,8 @@
     "audit_log_event_record_retention_time_too_small": "Logikirje säilivus peab olema vähemat 730 päeva",
     "event_start_at_after_deadline_at": "Algusaeg ei saa olla pärast tähtaega",
     "deadline_at_before_event_start_at": "Tähtaeg ei saa olla enne algusaega",
+    "must_be_number": "Väärtus peab olema numbriline",
+    "must_be_integer": "Väärtus peab olema täisarvuline",
     "server_error": {
       "501": "Päringumeetodit ei toetata serveri poolt (501)",
       "502": "Server sai vigase vastuse (502)",

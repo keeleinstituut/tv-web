@@ -147,6 +147,30 @@ const useValidators = () => {
     }
   }
 
+  const numberValidator = (value: any) => {
+    try {
+      if (isNaN(value)) {
+        return t('error.must_be_number')
+      }
+      return true
+    } catch (error) {
+      return t('error.must_be_number')
+    }
+  }
+
+  const integerValidator = (value: any) => {
+    const numberValidation = numberValidator(value)
+    if (numberValidation != true) {
+      return numberValidation
+    }
+
+    if (!Number.isInteger(Number(value))) {
+      return t('error.must_be_integer')
+    }
+
+    return true
+  }
+
   type valueType = {
     days?: string[]
     time_range?: { start?: string; end?: string }
@@ -184,6 +208,8 @@ const useValidators = () => {
     timeRangePickerValidator,
     dateTimePickerValidator,
     decimalValidator,
+    numberValidator,
+    integerValidator,
   }
 }
 
