@@ -44,6 +44,7 @@ type ColumnMeta = {
     showSearch?: boolean
     isCustomSingleDropdown?: boolean
     currentSorting?: SortingFunctionType['sort_order']
+    sortingParameterName: string
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
@@ -81,6 +82,7 @@ const HeaderItem = <TData,>({
   const options = values(filterOption)[0] || []
   const sortingOption = meta?.sortingOption || []
   const filterValue = meta?.filterValue
+  const sortingParameterName = meta?.sortingParameterName || id
 
   const [step, setStep] = useState<number>(
     currentSorting ? sortingOption.indexOf(currentSorting) + 1 : 0
@@ -93,12 +95,13 @@ const HeaderItem = <TData,>({
 
     if (onSortingChange) {
       const sortingValues = {
-        sort_by: id,
+        sort_by: sortingParameterName,
         sort_order: sortingOption[step],
       }
       onSortingChange(sortingValues)
     }
   }
+
   const Icon = useMemo(() => {
     switch (currentSorting) {
       case 'asc': {

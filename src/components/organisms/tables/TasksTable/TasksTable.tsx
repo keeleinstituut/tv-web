@@ -20,7 +20,7 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { FilterFunctionType } from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
-import { ListTask } from 'types/tasks'
+import { ListTask, TasksPayloadType } from 'types/tasks'
 import { useSearchParams } from 'react-router-dom'
 import { parseLanguagePairs } from 'helpers'
 import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
@@ -62,26 +62,21 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
   const { t } = useTranslation()
   const isHistoryTab = type === TaskTableTypes.HistoryTasks
 
-  const [searchParams] = useSearchParams()
-  const initialFilters = useMemo(() => {
-    const sort_by = searchParams.get('sort_by')
-    const sort_order = searchParams.get('sort_order') as 'asc' | 'desc'
-    return {
-      page: Number(searchParams.get('page')) || 1,
-      per_page: Number(searchParams.get('per_page')) || 10,
-      ...(sort_by ? { sort_by } : {}),
-      ...(sort_order ? { sort_order } : {}),
-      lang_pair: parseLanguagePairs(searchParams),
-      type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
-      ...(userId ? { institution_user_id: userId } : {}),
-      ...(isHistoryTab || type === TaskTableTypes.VendorTasks
-        ? {}
-        : type === TaskTableTypes.MyTasks
-        ? { assigned_to_me: 1 }
-        : { assigned_to_me: 0 }),
-      ...(type === TaskTableTypes.PendingTasks ? { is_candidate: 1 } : {}),
-    }
-  }, [isHistoryTab, searchParams, type, userId])
+  const initialFilters: TasksPayloadType = {
+    page: 1,
+    per_page: 50,
+    sort_by: 'project.deadline_at',
+    sort_order: 'asc',
+    // lang_pair: parseLanguagePairs(searchParams),
+    // type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
+    ...(userId ? { institution_user_id: userId } : {}),
+    ...(isHistoryTab || type === TaskTableTypes.VendorTasks
+      ? {}
+      : type === TaskTableTypes.MyTasks
+      ? { assigned_to_me: 1 }
+      : { assigned_to_me: 0 }),
+    ...(type === TaskTableTypes.PendingTasks ? { is_candidate: 1 } : {}),
+  }
 
   const {
     tasks: myTasks,
@@ -91,12 +86,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
     handleFilterChange: handleMyTasksFilterChange,
     handleSortingChange: handleMyTasksSortingChange,
     handlePaginationChange: handleMyTasksPaginationChange,
-  } = useFetchTasks(
-    {
-      ...initialFilters,
-    },
-    true
-  )
+  } = useFetchTasks(initialFilters, true)
 
   const {
     historyTasks = [],
@@ -354,10 +344,21 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
               </Button>
             )
           },
+          meta: {
+            sortingOption: ['asc', 'desc'],
+            currentSorting: sort_by === 'project.ext_id' ? sort_order : '',
+            sortingParameterName: 'project.ext_id',
+          },
         }),
         columnHelper.accessor('reference_number', {
           header: () => t('label.associated_reference_number'),
           footer: (info) => info.column.id,
+          meta: {
+            sortingOption: ['asc', 'desc'],
+            currentSorting:
+              sort_by === 'project.reference_number' ? sort_order : '',
+            sortingParameterName: 'project.reference_number',
+          },
         }),
         columnHelper.accessor('language_directions', {
           header: () => t('label.language_directions'),
@@ -387,6 +388,11 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           header: () => t('label.cost'),
           footer: (info) => info.column.id,
           cell: ({ getValue }) => (getValue() ? `${getValue()}€` : '-'),
+          meta: {
+            sortingOption: ['asc', 'desc'],
+            currentSorting: sort_by === 'project.price' ? sort_order : '',
+            sortingParameterName: 'project.price',
+          },
         }),
         columnHelper.accessor('type', {
           header: () => t('label.type'),
@@ -439,15 +445,17 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           },
           meta: {
             sortingOption: ['asc', 'desc'],
-            currentSorting: sort_by === 'deadline_at' ? sort_order : '',
+            currentSorting: sort_by === 'project.deadline_at' ? sort_order : '',
+            sortingParameterName: 'project.deadline_at',
           },
         }),
         columnHelper.accessor('created_at', {
           header: () => t('label.created_at'),
           footer: (info) => info.column.id,
           meta: {
-            // sortingOption: ['asc', 'desc'],
-            // currentSorting: filters?.sort_by === 'created_at' ? filters.sort_order : '',
+            sortingOption: ['asc', 'desc'],
+            currentSorting: sort_by === 'created_at' ? sort_order : '',
+            sortingParameterName: 'created_at',
           },
           cell: ({ getValue, row }) => {
             const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
@@ -459,8 +467,10 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           header: () => t('label.event_start_at'),
           footer: (info) => info.column.id,
           meta: {
-            // sortingOption: ['asc', 'desc'],
-            // currentSorting: filters?.sort_by === 'event_start_at' ? filters.sort_order : '',
+            sortingOption: ['asc', 'desc'],
+            currentSorting:
+              sort_by === 'project.event_start_at' ? sort_order : '',
+            sortingParameterName: 'project.event_start_at',
           },
           cell: ({ getValue, row }) => {
             const value = getValue()
@@ -478,8 +488,12 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           header: () => t('label.client'),
           footer: (info) => info.column.id,
           meta: {
-            // sortingOption: ['asc', 'desc'],
-            // currentSorting: filters?.sort_by === 'client' ? filters.sort_order : '',
+            sortingOption: ['asc', 'desc'],
+            currentSorting:
+              sort_by === 'project.clientInstitutionUser.name'
+                ? sort_order
+                : '',
+            sortingParameterName: 'project.clientInstitutionUser.name',
           },
         }),
       ] as ColumnDef<TaskTableRow>[],

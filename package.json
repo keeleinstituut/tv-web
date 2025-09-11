@@ -35,6 +35,7 @@
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.43.8",
     "react-i18next": "^12.2.0",
+    "react-merge-refs": "^3.0.2",
     "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
     "react-timeit": "^1.1.12",
