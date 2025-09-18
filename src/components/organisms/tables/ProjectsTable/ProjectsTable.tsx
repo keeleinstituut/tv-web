@@ -242,7 +242,9 @@ const ProjectsTable: FC = () => {
         const typedTypeClassifierValueId = type_classifier_value_ids as string
 
         currentFilters = {
-          type_classifier_value_ids: [typedTypeClassifierValueId],
+          type_classifier_value_ids: !!typedTypeClassifierValueId
+            ? [typedTypeClassifierValueId]
+            : [],
           ...rest,
         }
       }
