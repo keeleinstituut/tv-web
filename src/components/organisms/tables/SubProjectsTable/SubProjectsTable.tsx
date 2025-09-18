@@ -215,7 +215,9 @@ const SubProjectsTable: FC = () => {
         const typedTypeClassifierValueId = type_classifier_value_id as string
 
         currentFilters = {
-          type_classifier_value_id: [typedTypeClassifierValueId],
+          type_classifier_value_id: !!typedTypeClassifierValueId
+            ? [typedTypeClassifierValueId]
+            : [],
           ...rest,
         }
       }
