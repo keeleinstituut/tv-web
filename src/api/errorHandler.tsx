@@ -23,6 +23,7 @@ export interface ValidationError extends Error {
 export interface CsvValidationError extends Error {
   errors: RowValidationErrorType[]
   rowsWithExistingInstitutionUsers?: number[]
+  message: string
 }
 
 export const showValidationErrorMessage = (errorData: unknown) => {
