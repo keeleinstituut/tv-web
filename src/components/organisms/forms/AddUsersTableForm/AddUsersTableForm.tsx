@@ -116,7 +116,7 @@ const AddUsersTableForm: FC = () => {
         const typedErrorData = errorData as CsvValidationError
 
         if (!!typedErrorData.message) {
-          setFileError('Invalid file')
+          setFileError(t('label.invalid_file'))
           return false
         } else {
           setFileError(undefined)
