@@ -33,7 +33,7 @@ class AuditLogMessage {
     this.generalData.actor_department_id = parsedAccessToken.tolkevarav?.department?.id
     this.generalData.actor_institution_id = parsedAccessToken.tolkevarav?.selectedInstitution?.id
     this.generalData.actor_institution_user_id = parsedAccessToken.tolkevarav?.institutionUserId
-    this.generalData.web_path = req.headers['x-web-path']
+    this.generalData.web_path = req.headers['x-web-path'] || req.headers['referer']
 
     this.requestData.path = req.path
     this.requestData.method = req.method
