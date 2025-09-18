@@ -9,7 +9,11 @@ import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { AssignmentType, CandidateStatus } from 'types/assignments'
+import {
+  AssignmentStatus,
+  AssignmentType,
+  CandidateStatus,
+} from 'types/assignments'
 
 import classes from './classes.module.scss'
 import { SubProjectFeatures } from 'types/projects'
@@ -23,6 +27,7 @@ type AssignmentCandidatesSectionProps = Pick<
 > & {
   className?: string
   isEditable?: boolean
+  assignmentStatus: string
 }
 
 interface CandidateRow {
@@ -41,6 +46,7 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
   className,
   job_definition,
   isEditable,
+  assignmentStatus,
 }) => {
   const { t } = useTranslation()
   const { deleteAssignmentVendor } = useAssignmentRemoveVendor({
@@ -62,8 +68,18 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
       })
     }
     if (manager_candidates?.length) {
-      return map(manager_candidates, ({ institution_user, price, status }) => {
+      return map(manager_candidates, (managerCandidate) => {
+        const {
+          institution_user,
+          price,
+          status: candidateStatus,
+        } = managerCandidate
         const name = `${institution_user?.user?.forename} ${institution_user?.user?.surname}`
+
+        const status =
+          assignmentStatus === AssignmentStatus.InProgress
+            ? candidateStatus
+            : CandidateStatus.New
 
         return {
           name,
@@ -73,7 +89,7 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
       })
     }
     return []
-  }, [candidates, manager_candidates])
+  }, [candidates, manager_candidates, assignmentStatus])
 
   const handleDelete = useCallback(
     async (vendor_id: string) => {
