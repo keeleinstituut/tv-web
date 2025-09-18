@@ -134,7 +134,8 @@
     "date": "Kuupäev",
     "time": "Aeg",
     "progress": "Tehtud",
-    "client": "Tellija"
+    "client": "Tellija",
+    "invalid_file": "Ebakorrektne fail"
   },
   "placeholder": {
     "email": "nimi@domen.ee",
