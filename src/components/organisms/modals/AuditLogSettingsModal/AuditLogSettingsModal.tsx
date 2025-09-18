@@ -63,11 +63,25 @@ const AuditLogSettingsModal: FC<AuditLogSettingsModalProps> = ({
       rules: {
         required: true,
         validate: (value: number) => {
-          if (value < 730) {
-            return t('error.audit_log_event_record_retention_time_too_small')
+          const integerValidator = validators.integerValidator(value)
+
+          if (integerValidator != true) {
+            return integerValidator
           }
 
-          return validators.integerValidator(value)
+          if (value < 730) {
+            return t('error.audit_log_event_record_retention_time_too_small', {
+              value: 730,
+            })
+          }
+
+          if (value > 3650) {
+            return t('error.audit_log_event_record_retention_time_too_large', {
+              value: 3650,
+            })
+          }
+
+          return true
         },
       },
     },
