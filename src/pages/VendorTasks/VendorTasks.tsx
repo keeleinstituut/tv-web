@@ -12,14 +12,14 @@ const VendorTasks: FC = () => {
   const { t } = useTranslation()
   const { vendorId } = useParams()
   const vendor = useVendorCache(vendorId)
-  const vendorName = `${vendor?.institution_user?.user?.forename} ${
-    vendor?.institution_user?.user?.surname
-  } ${t('my_tasks.tasks')}`
+  const title = t('my_tasks.vendor_in_progress_tasks', {
+    name: `${vendor?.institution_user?.user?.forename} ${vendor?.institution_user?.user?.surname}`,
+  })
 
   return (
     <>
       <div className={classes.titleRow}>
-        <h1>{vendorName}</h1>
+        <h1>{title}</h1>
         <Tooltip helpSectionKey="vendorTasks" />
       </div>
 
