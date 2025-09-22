@@ -252,7 +252,7 @@
     "increase": "Suurenda",
     "decrease": "Vähendama",
     "expand": "Laienda",
-    "vendor_tasks": "Vaata teostaja ülesandeid",
+    "view_vendor_in_progress_tasks": "Vaata teostaja teostamisel ülesandeid",
     "click_here": "Vajuta siia",
     "dropdown_cancel": "Sulge"
   },
@@ -792,7 +792,9 @@
     "my_final_files": "Minu lähtefailid tõlketööriistas",
     "my_ready_files": "Minu valmisfailid",
     "no_tasks_yet": "Siin ei ole veel midagi.",
-    "tasks": "ülesanded"
+    "tasks": "ülesanded",
+    "in_progress_tasks": "Teostamisel ülesanded",
+    "vendor_in_progress_tasks": "{{ name }} teostamisel ülesanded"
   },
   "logs": {
     "filters": "Filtrid",
