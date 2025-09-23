@@ -32,6 +32,7 @@ export const endpoints = {
   VALIDATE_CSV: authorization('institution-users/validate-import-csv'),
   IMPORT_CSV: authorization('institution-users/import-csv'),
   DEPARTMENTS: authorization('departments'),
+  DEPARTMENTS_BULK: authorization('departments/bulk'),
   EXPORT_CSV: authorization('institution-users/export-csv'),
   ARCHIVE_USER: authorization('institution-users/archive'),
   DEACTIVATE_USER: authorization('institution-users/deactivate'),
