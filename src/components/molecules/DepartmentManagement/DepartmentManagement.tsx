@@ -2,15 +2,18 @@ import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useDepartmentsFetch,
-  useParallelMutationDepartment,
+  useBulkUpdateDepartments,
 } from 'hooks/requests/useDepartments'
 
 import EditableListContainer from 'components/molecules/EditableListContainer/EditableListContainer'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
-import { EditDataType } from 'components/organisms/modals/EditableListModal/EditableListModal'
+import {
+  DataStateTypes,
+  EditDataType,
+} from 'components/organisms/modals/EditableListModal/EditableListModal'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { includes, intersection, isEmpty } from 'lodash'
+import { chain, includes, intersection, isEmpty, omit } from 'lodash'
 
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
@@ -19,18 +22,29 @@ const DepartmentManagement: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { existingDepartments } = useDepartmentsFetch()
-  const { parallelUpdating } = useParallelMutationDepartment()
+  const { bulkUpdateDepartments } = useBulkUpdateDepartments()
 
   const handleOnSubmit = useCallback(
     async (values: EditDataType[]) => {
-      await parallelUpdating(values)
+      const data = chain(values)
+        .filter((v) => v.state !== DataStateTypes.DELETED)
+        .map((v) => {
+          if (v.state === 'NEW') {
+            return omit(v, 'id')
+          }
+          return v
+        })
+        .map((v) => omit(v, 'state'))
+        .value()
+
+      await bulkUpdateDepartments(data)
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
         content: t('success.department_updated'),
       })
     },
-    [parallelUpdating, t]
+    [bulkUpdateDepartments, t]
   )
 
   const handleEditDepartmentsModal = () => {
