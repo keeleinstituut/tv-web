@@ -48,7 +48,7 @@ class AuditLogMessage {
 
     this.responseData.status_code = res.statusCode
     this.responseData.headers = res.getHeaders()
-    this.responseData.body = Buffer.concat(res.locals.chunks).toString('utf-8')
+    // this.responseData.body = Buffer.concat(res.locals.chunks).toString('utf-8')
   }
 
   toJsonObject() {
