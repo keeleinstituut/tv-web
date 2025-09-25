@@ -147,7 +147,7 @@ const useValidators = () => {
     }
   }
 
-  const numberValidator = (value: any) => {
+  const numberValidator = (value: number) => {
     try {
       if (isNaN(value)) {
         return t('error.must_be_number')
@@ -158,9 +158,9 @@ const useValidators = () => {
     }
   }
 
-  const integerValidator = (value: any) => {
+  const integerValidator = (value: number) => {
     const numberValidation = numberValidator(value)
-    if (numberValidation != true) {
+    if (numberValidation !== true) {
       return numberValidation
     }
 
