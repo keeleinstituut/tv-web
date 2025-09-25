@@ -166,7 +166,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         if (
           !date ||
           (date === prevDate && time === prevTime) ||
-          dateTimePickerValidator(value)
+          dateTimePickerValidator(value) !== true
         ) {
           return false
         }
