@@ -1,0 +1,26 @@
+@import 'styles/variables';
+@import 'styles/mixins';
+
+.notPublicMemory {
+  color: red;
+}
+
+.helpText {
+  padding-bottom: 16px;
+}
+
+.memoriesList {
+  display: flex;
+  flex-direction: column;
+
+  li {
+    margin-left: 20px;
+    position: relative;
+
+    &::before {
+      content: '\2022';
+      position: absolute;
+      left: -15px;
+    }
+  }
+}

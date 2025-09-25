@@ -35,6 +35,7 @@ import { ConfirmSendToPreviousTaskModalProps } from './ConfirmSendToPreviousTask
 import { EditVendorPricesModalProps } from './EditVendorPricesModal/EditVendorPricesModal'
 import { ConfirmAssignmentFinishedModalProps } from './ConfirmAssignmentFinishedModal/ConfirmAssignmentFinishedModal'
 import { ConfirmSendToPreviousAssignmentModalProps } from './ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal'
+import { TranslationMemoryBulkExportModalProps } from './TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -139,6 +140,13 @@ const ConfirmSendToPreviousAssignmentModal = lazy(
     )
 )
 
+const TranslationMemoryBulkExportModal = lazy(
+  () =>
+    import(
+      './TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal'
+    )
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -169,6 +177,7 @@ export enum ModalTypes {
   EditVendorPrices = 'editVendorPrices',
   ConfirmAssignmentFinished = 'confirmAssignmentFinished',
   ConfirmSendToPreviousAssignment = 'confirmSendToPreviousAssignment',
+  TranslationMemoryBulkExportModal = 'translationMemoryBulkExportModal',
 }
 
 // Add other modal props types here as well
@@ -201,6 +210,7 @@ type ModalPropTypes =
   | Omit<EditVendorPricesModalProps, 'closeModal'>
   | Omit<ConfirmAssignmentFinishedModalProps, 'closeModal'>
   | Omit<ConfirmSendToPreviousAssignmentModalProps, 'closeModal'>
+  | Omit<TranslationMemoryBulkExportModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -233,6 +243,8 @@ const MODALS = {
   [ModalTypes.ConfirmAssignmentFinished]: ConfirmAssignmentFinishedModal,
   [ModalTypes.ConfirmSendToPreviousAssignment]:
     ConfirmSendToPreviousAssignmentModal,
+  [ModalTypes.TranslationMemoryBulkExportModal]:
+    TranslationMemoryBulkExportModal,
 }
 
 interface RefType {
@@ -313,7 +325,8 @@ const ModalRoot = () => {
       <SelectedModal
         isModalOpen={isModalOpen}
         closeModal={closeModal}
-        {...currentModalProps}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        {...(currentModalProps as any)}
       />
     </Suspense>
   )

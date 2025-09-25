@@ -61,7 +61,7 @@ export interface ImportTMXPayload {
 export interface ExportTMXPayload {
   slang: string
   tlang: string
-  tag: string
+  tag: string | string[]
 }
 
 export interface SubProjectTmKeys {
