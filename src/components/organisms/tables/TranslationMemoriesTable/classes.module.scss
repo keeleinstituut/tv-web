@@ -3,6 +3,8 @@
 
 .topSection {
   padding: spacing(6) spacing(4);
+  display: flex;
+  justify-content: space-between;
 }
 
 .modalTable {
@@ -65,4 +67,13 @@
       width: 328px;
     }
   }
+}
+
+.exportButtonContainer {
+  display: flex;
+  align-items: center;
+}
+
+.exportToolTip {
+  padding-right: 8px;
 }

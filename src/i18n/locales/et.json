@@ -649,7 +649,8 @@
     "skill_language_mismatch": "Oskus ja keelesuund ei vasta ülesandele, antud hinnakirja ei rakendata",
     "split_task": "Soovi korral saab ülesande jagada mitme teostaja vahel. Klõpsates nupule „+ jaga ülesanne“, lisatakse ülesandele juurde veel üks teostaja.",
     "my_source_files_helper": "Ülesande lähtefaile kuvatakse siin. Kui tõlketöö on määratud tegemiseks tõlketööriistas, siis lähtefailid on vaid referentsina kaasa lisatud ja tõlkida tuleb tõlketööriistas määratud faile. Mis tahes küsimuste korral võta ühendust tõlkekorraldajaga.",
-    "my_ready_files_from_vendors": "Kui alamtellimus on jagatud tõlkimiseks mitme teostaja vahel siis veendu, et töötad sinule määratud segmentidega. See kehtib juhul kui töötad väljaspool Tõlkeväravat ja enda tõlketööriistas."
+    "my_ready_files_from_vendors": "Kui alamtellimus on jagatud tõlkimiseks mitme teostaja vahel siis veendu, et töötad sinule määratud segmentidega. See kehtib juhul kui töötad väljaspool Tõlkeväravat ja enda tõlketööriistas.",
+    "translation_memories_bulk_export_button": "Eksportimiseks peab olema keelesuuna filtrisse valitud ainult üks keelesuund"
   },
   "tag": {
     "tag_management": "Sildid",
@@ -755,6 +756,8 @@
     "confirmation_help_text": "Kui otsustad määrata tõlkemälu kasutamise tüübiks 'Avalik' või 'Asutuse üleseks jagamiseks', siis seda mälu ja selles olevaid tõlkesegmente näevad ja saavad tõlkimisel kasutad ka asutusevälised kasutajad.",
     "delete_confirmation_text": "Kas oled kindel, et soovid tõlkemälu kustutada?",
     "create_empty_confirmation_text": "Kas oled kindel, et soovid luua tühja tõlkemälu?",
+    "export_confirmation_text": "Kas oled kindel, et soovid tõlkemälud eksportida?",
+    "export_confirmation_help_text": "Eksporditavad tõlkemälud on loetletud allpool. Mitte-avalikud mälud on märgitud punasega. Kontrolli, et loetelu sisaldaks ainult soovitud tõlkemälusid.",
     "status": {
       "private": "Asutuse sisene",
       "shared": "Asutustega jagamiseks",
