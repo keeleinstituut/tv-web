@@ -1,5 +1,5 @@
 import { FC, useCallback, RefObject, useRef, useMemo } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { DropEvent, FileRejection, useDropzone } from 'react-dropzone'
 import { createPortal } from 'react-dom'
 import { useInViewport } from 'ahooks'
 import Button, {
@@ -25,6 +25,7 @@ interface DragAndDropContentProps {
   inputFileTypes?: InputFileTypes[]
   parentRef: RefObject<HTMLDivElement>
   setDragAndDropOpen?: (isOpen: boolean) => void
+  onDropRejected?: (fileRejections: FileRejection[], event: DropEvent) => void
 }
 
 const DragAndDropContent: FC<DragAndDropContentProps> = ({
@@ -34,6 +35,7 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
   allowMultiple,
   parentRef,
   setDragAndDropOpen,
+  onDropRejected,
 }) => {
   const containerRef = useRef(null)
   const { left, top, right } =
@@ -69,6 +71,7 @@ const DragAndDropContent: FC<DragAndDropContentProps> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropRejected,
     multiple: !!allowMultiple,
     accept: reduce(
       inputFileTypes,
