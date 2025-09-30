@@ -13,6 +13,7 @@ import { ReactComponent as Delete } from 'assets/icons/delete.svg'
 import { ReactComponent as File } from 'assets/icons/file.svg'
 import { useTranslation } from 'react-i18next'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
+import { DropEvent, FileRejection } from 'react-dropzone'
 
 export enum InputFileTypes {
   Csv = 'text/csv',
@@ -197,6 +198,7 @@ interface SharedImportProps {
   size?: SizeTypes
   listContainerClassName?: string
   storeLocally?: boolean
+  onDropRejected?: (fileRejections: FileRejection[], event: DropEvent) => void
 }
 
 type SingleSelectProps = {
@@ -358,10 +360,7 @@ const FileImport: FC<FileImportProps> = ({
         hidden={isFilesListHidden}
         listContainerClassName={listContainerClassName}
       />
-      <p
-        hidden={!error || !localFiles?.length}
-        className={classNames(localFiles?.length && classes.errorText)}
-      >
+      <p hidden={!error} className={classes.errorText}>
         {error}
       </p>
     </div>
