@@ -163,6 +163,12 @@ const ProjectsTable: FC = () => {
           price,
           client_institution_user,
         }) => {
+          const client_name = !client_institution_user
+            ? ''
+            : client_institution_user?.user.forename +
+              ' ' +
+              client_institution_user?.user.surname
+
           return {
             ext_id,
             reference_number,
@@ -173,10 +179,7 @@ const ProjectsTable: FC = () => {
             status,
             tags: map(tags, 'name'),
             price,
-            client_name:
-              client_institution_user.user.forename +
-              ' ' +
-              client_institution_user.user.surname,
+            client_name,
             language_directions: uniq(
               map(
                 sub_projects,
