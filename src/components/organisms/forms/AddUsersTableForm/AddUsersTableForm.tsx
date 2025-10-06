@@ -29,6 +29,7 @@ import AddUsersTable, {
   ErrorsInRow,
 } from 'components/organisms/tables/AddUsersTable/AddUsersTable'
 import { useRolesFetch } from 'hooks/requests/useRoles'
+import { FileRejection } from 'react-dropzone'
 
 interface FormValues {
   [key: string]: UserCsvType
@@ -202,6 +203,10 @@ const AddUsersTableForm: FC = () => {
     setTableData([])
   }, [])
 
+  const onDropRejected = useCallback(() => {
+    setFileError(t('label.invalid_file'))
+  }, [setFileError])
+
   return (
     <>
       <div className={classes.row}>
@@ -214,6 +219,7 @@ const AddUsersTableForm: FC = () => {
           onDelete={onDeleteFile}
           allowMultiple={false}
           error={fileError}
+          onDropRejected={onDropRejected}
           storeLocally
         />
         <SubmitButton
