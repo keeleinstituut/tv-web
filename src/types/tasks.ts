@@ -22,6 +22,7 @@ export type TasksPayloadType = PaginationFunctionType &
     lang_pair?: { src?: string; dst?: string }[]
     task_type?: TaskType
     institution_user_id?: string
+    tag_ids?: string[]
   }
 
 export interface ListTask {

@@ -21,11 +21,12 @@ import { ClassifierValueType } from 'types/classifierValues'
 import { FilterFunctionType } from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
 import { ListTask, TasksPayloadType } from 'types/tasks'
-import { useSearchParams } from 'react-router-dom'
-import { parseLanguagePairs } from 'helpers'
 import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
 
 import classes from './classes.module.scss'
+import { useFetchTags } from 'hooks/requests/useTags'
+import { TagTypes } from 'types/tags'
+import { useProjectLanguagesFetch } from 'hooks/requests/useProjects'
 
 export enum TaskTableTypes {
   MyTasks = 'myTasks',
@@ -156,12 +157,18 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
 
   const [filterModified, setFilterModified] = useState<boolean>(false)
 
+  const { tagsFilters = [] } = useFetchTags({
+    type: TagTypes.Project,
+  })
+
+  const { languages: projectLanguages } = useProjectLanguagesFetch()
+
   const {
     languageDirectionFilters,
     loadMore,
     handleSearch,
     setSelectedValues,
-  } = useLanguageDirections({})
+  } = useLanguageDirections({ includeValues: projectLanguages })
   const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
     type: ClassifierValueType.ProjectType,
   })
@@ -416,9 +423,9 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             )
           },
           meta: {
-            // filterOption: { tag_ids: tagsFilters },
-            // showSearch: true,
-            // filterValue: filters?.tag_ids || [],
+            filterOption: { tag_ids: tagsFilters },
+            showSearch: true,
+            filterValue: filters?.tag_ids || [],
           },
         }),
         columnHelper.accessor('deadline_at', {
@@ -508,6 +515,8 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
       sort_order,
       t,
       isHistoryTab,
+      tagsFilters,
+      filters,
     ]
   )
 

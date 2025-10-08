@@ -71,7 +71,7 @@ export const getProjectDefaultValues = ({
     ext_id,
     deadline_at: deadline_at
       ? getLocalDateObjectFromUtcDateString(deadline_at)
-      : { date: '', time: '23:59:59' },
+      : { date: '', time: '' },
     event_start_at: event_start_at
       ? getLocalDateObjectFromUtcDateString(event_start_at)
       : { date: '', time: '' },

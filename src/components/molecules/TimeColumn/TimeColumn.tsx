@@ -42,10 +42,14 @@ const TimeColumn = ({
   const formattedValueToString = value < 10 ? '0' + value : value
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const inputValue = event.target.value
+    const inputValue = parseInt(event.target.value)
 
-    if (parseInt(inputValue) < 24) {
-      setValue(parseInt(inputValue))
+    if (inputValue >= end) {
+      setValue(end - 1)
+    } else if (inputValue < start) {
+      setValue(start)
+    } else {
+      setValue(inputValue)
     }
   }
 
