@@ -34,6 +34,8 @@ import { FilterFunctionType } from 'types/collective'
 import { useSearchParams } from 'react-router-dom'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
+import { useFetchTags } from 'hooks/requests/useTags'
+import { TagTypes } from 'types/tags'
 
 type SubProjectTableRow = {
   ext_id: string
@@ -96,6 +98,7 @@ const SubProjectsTable: FC = () => {
       ? 1
       : Number(searchParams.get('only_show_personal_projects')) || 0,
     type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
+    tag_ids: searchParams.getAll('tag_ids'),
   }
 
   const {
@@ -106,6 +109,10 @@ const SubProjectsTable: FC = () => {
     handleSortingChange,
     handlePaginationChange,
   } = useFetchSubProjects(initialFilters, true)
+
+  const { tagsFilters = [] } = useFetchTags({
+    type: TagTypes.Project,
+  })
 
   const { languages: projectLanguages } = useProjectLanguagesFetch()
 
@@ -334,9 +341,9 @@ const SubProjectsTable: FC = () => {
         )
       },
       meta: {
-        // filterOption: { tag_ids: tagsFilters },
-        // showSearch: true,
-        // filterValue: filters?.tag_ids || [],
+        filterOption: { tag_ids: tagsFilters },
+        showSearch: true,
+        filterValue: filters?.tag_ids || [],
       },
     }),
     columnHelper.accessor('status', {
