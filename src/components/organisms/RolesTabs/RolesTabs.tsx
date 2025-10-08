@@ -1,6 +1,6 @@
 import { FC, useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { isEmpty, map, includes, omit, filter, reduce } from 'lodash'
+import { isEmpty, map, includes, filter, reduce, startsWith } from 'lodash'
 import RoleForm from 'components/organisms/forms/RoleForm/RoleForm'
 import { v4 as uuidv4 } from 'uuid'
 import { useRolesFetch } from 'hooks/requests/useRoles'
@@ -24,6 +24,7 @@ const RolesTabs: FC = () => {
     allPrivileges = [],
     isLoading,
     isError,
+    refetchRoles,
   } = useRolesFetch({})
   const { userPrivileges } = useAuth()
   const [activeTab, setActiveTab] = useState<string>()
@@ -31,8 +32,7 @@ const RolesTabs: FC = () => {
   const [temporaryRoles, setTemporaryRoles] = useState<RolePayload[]>([])
 
   useEffect(() => {
-    if (!isEmpty(existingRoles) && !activeTab) {
-      setActiveTab(existingRoles[0].id)
+    if (!isEmpty(existingRoles)) {
       setTabNames(
         reduce(
           existingRoles,
@@ -46,6 +46,12 @@ const RolesTabs: FC = () => {
           {}
         )
       )
+    }
+  }, [existingRoles])
+
+  useEffect(() => {
+    if (!activeTab && !isEmpty(existingRoles)) {
+      setActiveTab(existingRoles[0].id)
     }
   }, [activeTab, existingRoles])
 
@@ -69,13 +75,6 @@ const RolesTabs: FC = () => {
     [tabNames]
   )
 
-  const onResetForm = useCallback(
-    (id: string) => {
-      setTabNames(omit(tabNames, id))
-    },
-    [tabNames]
-  )
-
   const removeTemporaryRole = useCallback(
     (id: string, newId?: string) => {
       setTemporaryRoles(
@@ -84,6 +83,23 @@ const RolesTabs: FC = () => {
       setActiveTab(newId || existingRoles[0].id)
     },
     [existingRoles, temporaryRoles]
+  )
+
+  const onResetForm = useCallback(
+    (id: string) => {
+      if (startsWith(id, 'temp-')) {
+        removeTemporaryRole(id)
+      }
+    },
+    [removeTemporaryRole]
+  )
+
+  const onRoleSubmitSuccess = useCallback(
+    (id: string, newId?: string) => {
+      removeTemporaryRole(id, newId)
+      refetchRoles()
+    },
+    [refetchRoles, removeTemporaryRole]
   )
 
   if (isLoading) {
@@ -121,7 +137,7 @@ const RolesTabs: FC = () => {
             hidden={activeTab !== role.id}
             key={role.id}
             onReset={onResetForm}
-            onSubmitSuccess={removeTemporaryRole}
+            onSubmitSuccess={onRoleSubmitSuccess}
             {...role}
             temporaryName={tabNames[role.id]}
             allPrivileges={allPrivileges}

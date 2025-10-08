@@ -148,6 +148,12 @@ const SubProjectsTable: FC = () => {
           project,
           price,
         }) => {
+          const client_name = !project?.client_institution_user
+            ? ''
+            : project?.client_institution_user?.user.forename +
+              ' ' +
+              project?.client_institution_user?.user.surname
+
           return {
             ext_id,
             reference_number: project?.reference_number,
@@ -157,10 +163,7 @@ const SubProjectsTable: FC = () => {
             type: project?.type_classifier_value?.name || '',
             status,
             price,
-            client_name:
-              project?.client_institution_user?.user.forename +
-              ' ' +
-              project?.client_institution_user?.user.surname,
+            client_name,
             tags: map(project?.tags, 'name'),
             language_direction: [
               `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
@@ -215,7 +218,9 @@ const SubProjectsTable: FC = () => {
         const typedTypeClassifierValueId = type_classifier_value_id as string
 
         currentFilters = {
-          type_classifier_value_id: [typedTypeClassifierValueId],
+          type_classifier_value_id: !!typedTypeClassifierValueId
+            ? [typedTypeClassifierValueId]
+            : [],
           ...rest,
         }
       }

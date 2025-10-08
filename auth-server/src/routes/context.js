@@ -27,7 +27,6 @@ function constructContextRoutes() {
       authenticated: true,
       user: parsedAccessToken?.tolkevarav,
       csrfToken: getCsrfTokenFromSession(req),
-      accessToken,
     })
   })
 

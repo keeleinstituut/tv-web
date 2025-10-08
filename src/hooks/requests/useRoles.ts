@@ -12,6 +12,7 @@ export const useRolesFetch = ({ disabled }: { disabled?: boolean }) => {
     isLoading,
     isError,
     data: rolesData,
+    refetch: refetchRoles,
   } = useQuery<RolesResponse>({
     enabled: !disabled,
     queryKey: ['roles'],
@@ -41,6 +42,7 @@ export const useRolesFetch = ({ disabled }: { disabled?: boolean }) => {
     isLoading: isLoading || isLoadingPrivileges,
     isError: isError || isPrivilegesError,
     rolesFilters,
+    refetchRoles,
   }
 }
 

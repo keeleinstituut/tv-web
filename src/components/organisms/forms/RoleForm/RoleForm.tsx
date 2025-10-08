@@ -225,7 +225,7 @@ const RoleForm: FC<RoleFormProps> = ({
     onReset(id || '')
   }, [defaultPrivileges, id, onReset, reset])
 
-  const isResetDisabled = !isDirty && !hasNameChanged
+  const isResetDisabled = !isDirty && !hasNameChanged && !isTemporaryRole
   const isSubmitDisabled =
     isResetDisabled || (!name && !temporaryName) || !isValid
 
@@ -259,7 +259,9 @@ const RoleForm: FC<RoleFormProps> = ({
         icon={DeleteIcon}
         className={classes.deleteButton}
         onClick={is_root ? showErrorMessage : handleDeleteModal}
-        hidden={!includes(userPrivileges, Privileges.DeleteRole)}
+        hidden={
+          !includes(userPrivileges, Privileges.DeleteRole) || isTemporaryRole
+        }
       />
       <h2>{t('roles.privileges')}</h2>
       <DynamicForm
