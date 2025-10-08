@@ -26,6 +26,7 @@ import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
 import classes from './classes.module.scss'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
+import { useProjectLanguagesFetch } from 'hooks/requests/useProjects'
 
 export enum TaskTableTypes {
   MyTasks = 'myTasks',
@@ -160,12 +161,14 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
     type: TagTypes.Project,
   })
 
+  const { languages: projectLanguages } = useProjectLanguagesFetch()
+
   const {
     languageDirectionFilters,
     loadMore,
     handleSearch,
     setSelectedValues,
-  } = useLanguageDirections({})
+  } = useLanguageDirections({ includeValues: projectLanguages })
   const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
     type: ClassifierValueType.ProjectType,
   })
