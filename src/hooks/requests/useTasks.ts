@@ -25,7 +25,7 @@ export const useFetchTasks = (
 
   const { isLoading, isError, data, refetch } = useQuery<TasksResponse>({
     queryKey: ['tasks', filters],
-    queryFn: () => apiClient.get(endpoints.TASKS, filters),
+    queryFn: () => apiClient.get(endpoints.TASKS2, filters),
     keepPreviousData: true,
     enabled: !disabled,
   })
@@ -76,7 +76,7 @@ export const useFetchHistoryTasks = (
 
   const { isLoading, isError, data } = useQuery<TasksResponse>({
     queryKey: ['historyTasks', filters],
-    queryFn: () => apiClient.get(endpoints.HISTORY_TASKS, filters),
+    queryFn: () => apiClient.get(endpoints.HISTORY_TASKS2, filters),
     keepPreviousData: true,
     enabled: !disabled,
   })

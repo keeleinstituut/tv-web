@@ -23,7 +23,7 @@ import {
   useFetchSubProjects,
   useProjectLanguagesFetch,
 } from 'hooks/requests/useProjects'
-import { SubProjectStatus } from 'types/projects'
+import { SubProjectsPayloadType, SubProjectStatus } from 'types/projects'
 import Tag from 'components/atoms/Tag/Tag'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
 import dayjs from 'dayjs'
@@ -34,6 +34,8 @@ import { FilterFunctionType } from 'types/collective'
 import { useSearchParams } from 'react-router-dom'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
+import { useFetchTags } from 'hooks/requests/useTags'
+import { TagTypes } from 'types/tags'
 
 type SubProjectTableRow = {
   ext_id: string
@@ -82,8 +84,10 @@ const SubProjectsTable: FC = () => {
     )
 
   const [searchParams] = useSearchParams()
-  const initialFilters = {
-    per_page: 10,
+  const initialFilters: SubProjectsPayloadType = {
+    per_page: 50,
+    sort_by: 'deadline_at',
+    sort_order: 'asc',
     page: 1,
     ...Object.fromEntries(searchParams.entries()),
     status: onlyNewProjectsAllowed
@@ -94,6 +98,7 @@ const SubProjectsTable: FC = () => {
       ? 1
       : Number(searchParams.get('only_show_personal_projects')) || 0,
     type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
+    tag_ids: searchParams.getAll('tag_ids'),
   }
 
   const {
@@ -104,6 +109,10 @@ const SubProjectsTable: FC = () => {
     handleSortingChange,
     handlePaginationChange,
   } = useFetchSubProjects(initialFilters, true)
+
+  const { tagsFilters = [] } = useFetchTags({
+    type: TagTypes.Project,
+  })
 
   const { languages: projectLanguages } = useProjectLanguagesFetch()
 
@@ -146,6 +155,12 @@ const SubProjectsTable: FC = () => {
           project,
           price,
         }) => {
+          const client_name = !project?.client_institution_user
+            ? ''
+            : project?.client_institution_user?.user.forename +
+              ' ' +
+              project?.client_institution_user?.user.surname
+
           return {
             ext_id,
             reference_number: project?.reference_number,
@@ -155,10 +170,7 @@ const SubProjectsTable: FC = () => {
             type: project?.type_classifier_value?.name || '',
             status,
             price,
-            client_name:
-              project?.client_institution_user?.user.forename +
-              ' ' +
-              project?.client_institution_user?.user.surname,
+            client_name,
             tags: map(project?.tags, 'name'),
             language_direction: [
               `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`,
@@ -213,7 +225,9 @@ const SubProjectsTable: FC = () => {
         const typedTypeClassifierValueId = type_classifier_value_id as string
 
         currentFilters = {
-          type_classifier_value_id: [typedTypeClassifierValueId],
+          type_classifier_value_id: !!typedTypeClassifierValueId
+            ? [typedTypeClassifierValueId]
+            : [],
           ...rest,
         }
       }
@@ -265,10 +279,23 @@ const SubProjectsTable: FC = () => {
         )
       },
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'ext_id',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'ext_id' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('reference_number', {
       header: () => t('label.associated_reference_number'),
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'project.reference_number',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'project.reference_number'
+            ? filters.sort_order
+            : '',
+      },
     }),
     columnHelper.accessor('language_direction', {
       header: () => t('label.language_directions'),
@@ -314,23 +341,28 @@ const SubProjectsTable: FC = () => {
         )
       },
       meta: {
-        // filterOption: { tag_ids: tagsFilters },
-        // showSearch: true,
-        // filterValue: filters?.tag_ids || [],
+        filterOption: { tag_ids: tagsFilters },
+        showSearch: true,
+        filterValue: filters?.tag_ids || [],
       },
     }),
     columnHelper.accessor('status', {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => <ProjectStatusTag status={getValue()} />,
+      meta: {
+        sortingParameterName: 'status',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'status' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('price', {
       header: () => t('label.cost'),
       footer: (info) => info.column.id,
       meta: {
+        sortingParameterName: 'price',
         sortingOption: ['asc', 'desc'],
-        currentSorting:
-          filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
+        currentSorting: filters?.sort_by === 'price' ? filters.sort_order : '',
       },
     }),
     columnHelper.accessor('deadline_at', {
@@ -364,6 +396,7 @@ const SubProjectsTable: FC = () => {
         )
       },
       meta: {
+        sortingParameterName: 'deadline_at',
         sortingOption: ['asc', 'desc'],
         currentSorting:
           filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
@@ -387,8 +420,12 @@ const SubProjectsTable: FC = () => {
       header: () => t('label.event_start_at'),
       footer: (info) => info.column.id,
       meta: {
-        // sortingOption: ['asc', 'desc'],
-        // currentSorting: filters?.sort_by === 'event_start_at' ? filters.sort_order : '',
+        sortingParameterName: 'project.event_start_at',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'project.event_start_at'
+            ? filters.sort_order
+            : '',
       },
       cell: ({ getValue, row }) => {
         const value = getValue()
@@ -406,8 +443,12 @@ const SubProjectsTable: FC = () => {
       header: () => t('label.client'),
       footer: (info) => info.column.id,
       meta: {
-        // sortingOption: ['asc', 'desc'],
-        // currentSorting: filters?.sort_by === 'client' ? filters.sort_order : '',
+        sortingParameterName: 'project.clientInstitutionUser.name',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'project.clientInstitutionUser.name'
+            ? filters.sort_order
+            : '',
       },
     }),
   ] as ColumnDef<SubProjectTableRow>[]

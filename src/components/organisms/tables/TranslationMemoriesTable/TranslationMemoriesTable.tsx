@@ -3,7 +3,16 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, find, debounce, omit } from 'lodash'
+import {
+  map,
+  find,
+  debounce,
+  omit,
+  includes,
+  size,
+  isEmpty,
+  split,
+} from 'lodash'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import Button, {
   AppearanceTypes,
@@ -29,6 +38,10 @@ import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemori
 import TextInput from 'components/molecules/TextInput/TextInput'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import { useSearchParams } from 'react-router-dom'
+import { Privileges } from 'types/privileges'
+import { useAuth } from 'components/contexts/AuthContext'
+import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 
 type TranslationMemoriesTableRow = {
   name: string
@@ -55,6 +68,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   initialFilters,
 }) => {
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
 
   const [searchParams] = useSearchParams()
   const combinedInitialFilters = {
@@ -142,6 +156,21 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     },
     [debouncedChangeHandler]
   )
+
+  const openExportModal = useCallback(() => {
+    if (!filters.lang_pair) {
+      return
+    }
+
+    const lang_pair = filters.lang_pair[0]
+    const [source_language, target_language] = split(lang_pair, '_')
+
+    showModal(ModalTypes.TranslationMemoryBulkExportModal, {
+      translationMemories: translationMemories,
+      source_language,
+      target_language,
+    })
+  }, [translationMemories, filters])
 
   const [types] = watch(['types'])
 
@@ -309,23 +338,46 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
               [classes.padding]: isSelectingModal,
             })}
           >
-            <FormInput
-              name="types"
-              control={control}
-              options={statusFilters}
-              inputType={InputTypes.TagsSelect}
-              hidden={isSelectingModal}
-            />
-            <TextInput
-              name="name"
-              ariaLabel={t('label.search')}
-              placeholder={t('placeholder.search_by_tm_name')}
-              value={searchValue}
-              onChange={handleSearchByName}
-              className={classes.searchInput}
-              inputContainerClassName={classes.searchInnerContainer}
-              isSearch
-            />
+            <div>
+              <FormInput
+                name="types"
+                control={control}
+                options={statusFilters}
+                inputType={InputTypes.TagsSelect}
+                hidden={isSelectingModal}
+              />
+              <TextInput
+                name="name"
+                ariaLabel={t('label.search')}
+                placeholder={t('placeholder.search_by_tm_name')}
+                value={searchValue}
+                onChange={handleSearchByName}
+                className={classes.searchInput}
+                inputContainerClassName={classes.searchInnerContainer}
+                isSearch
+              />
+            </div>
+            <div>
+              <div className={classes.exportButtonContainer}>
+                <SmallTooltip
+                  tooltipContent={t(
+                    'tooltip.translation_memories_bulk_export_button'
+                  )}
+                  className={classes.exportToolTip}
+                />
+                <Button
+                  children={t('button.export')}
+                  onClick={openExportModal}
+                  disabled={
+                    isEmpty(filters.lang_pair) || size(filters.lang_pair) > 1
+                  }
+                  hidden={
+                    isSelectingModal ||
+                    !includes(userPrivileges, Privileges.ExportTm)
+                  }
+                />
+              </div>
+            </div>
           </div>
         }
         columnOrder={

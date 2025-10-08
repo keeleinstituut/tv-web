@@ -63,6 +63,7 @@ const AddUsersTableForm: FC = () => {
   )
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [fileError, setFileError] = useState<string | undefined>(undefined)
 
   const formValues = useMemo(
     () =>
@@ -111,7 +112,16 @@ const AddUsersTableForm: FC = () => {
       } catch (errorData) {
         setRowsWithErrors({})
         clearErrors()
+
         const typedErrorData = errorData as CsvValidationError
+
+        if (!!typedErrorData.message) {
+          setFileError(t('label.invalid_file'))
+          return false
+        } else {
+          setFileError(undefined)
+        }
+
         const { errors, rowsWithExistingInstitutionUsers } = typedErrorData
         if (rowsWithExistingInstitutionUsers) {
           setRowsWithExistingUsers(rowsWithExistingInstitutionUsers)
@@ -138,20 +148,29 @@ const AddUsersTableForm: FC = () => {
       }
       return false
     },
-    [clearErrors, setError, validateUsers]
+    [clearErrors, setError, validateUsers, t]
   )
 
   const handleFileUploaded = async (uploadedFile: File) => {
-    const fileReader = new FileReader()
-    fileReader.onload = async (event) => {
-      if (event?.target?.result) {
-        const tableRows = convertUsersCsvToArray(event?.target?.result)
-        setTableData(tableRows)
-      }
+    if (!uploadedFile) {
+      return
     }
-    if (uploadedFile) {
-      await handleFileValidationAttempt(uploadedFile)
+
+    await handleFileValidationAttempt(uploadedFile)
+
+    const fileContent = await new Promise<
+      undefined | null | string | ArrayBuffer
+    >((resolve) => {
+      const fileReader = new FileReader()
+      fileReader.onload = async (event) => {
+        resolve(event?.target?.result)
+      }
       fileReader.readAsText(uploadedFile)
+    })
+
+    if (fileContent) {
+      const tableRows = convertUsersCsvToArray(fileContent)
+      setTableData(tableRows)
     }
   }
 
@@ -183,6 +202,10 @@ const AddUsersTableForm: FC = () => {
     setTableData([])
   }, [])
 
+  const onDropRejected = useCallback(() => {
+    setFileError(t('label.invalid_file'))
+  }, [setFileError, t])
+
   return (
     <>
       <div className={classes.row}>
@@ -194,19 +217,21 @@ const AddUsersTableForm: FC = () => {
           inputFileTypes={[InputFileTypes.Csv]}
           onDelete={onDeleteFile}
           allowMultiple={false}
+          error={fileError}
+          onDropRejected={onDropRejected}
           storeLocally
         />
         <SubmitButton
           onClick={handleSubmit(onSubmit)}
           type="submit"
-          hidden={isEmpty(tableData)}
+          hidden={isEmpty(tableData) || !!fileError}
           loading={isLoading || isUploadLoading}
           control={control}
         >
           {t('button.save_and_send_notifications')}
         </SubmitButton>
       </div>
-      {!isEmpty(tableData) && (
+      {!isEmpty(tableData) && !fileError && (
         <Root onSubmit={handleSubmit(onSubmit)}>
           <AddUsersTable
             tableData={tableData}

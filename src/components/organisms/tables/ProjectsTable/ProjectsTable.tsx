@@ -23,7 +23,7 @@ import {
   useFetchProjects,
   useProjectLanguagesFetch,
 } from 'hooks/requests/useProjects'
-import { ProjectStatus } from 'types/projects'
+import { ProjectsPayloadType, ProjectStatus } from 'types/projects'
 import Tag from 'components/atoms/Tag/Tag'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
 import dayjs from 'dayjs'
@@ -89,8 +89,10 @@ const ProjectsTable: FC = () => {
     )
 
   const [searchParams] = useSearchParams()
-  const initialFilters = {
-    per_page: 10,
+  const initialFilters: ProjectsPayloadType = {
+    per_page: 50,
+    sort_by: 'deadline_at',
+    sort_order: 'asc',
     page: 1,
     ...Object.fromEntries(searchParams.entries()),
     statuses: onlyNewProjectsAllowed
@@ -161,6 +163,12 @@ const ProjectsTable: FC = () => {
           price,
           client_institution_user,
         }) => {
+          const client_name = !client_institution_user
+            ? ''
+            : client_institution_user?.user.forename +
+              ' ' +
+              client_institution_user?.user.surname
+
           return {
             ext_id,
             reference_number,
@@ -171,10 +179,7 @@ const ProjectsTable: FC = () => {
             status,
             tags: map(tags, 'name'),
             price,
-            client_name:
-              client_institution_user.user.forename +
-              ' ' +
-              client_institution_user.user.surname,
+            client_name,
             language_directions: uniq(
               map(
                 sub_projects,
@@ -240,7 +245,9 @@ const ProjectsTable: FC = () => {
         const typedTypeClassifierValueId = type_classifier_value_ids as string
 
         currentFilters = {
-          type_classifier_value_ids: [typedTypeClassifierValueId],
+          type_classifier_value_ids: !!typedTypeClassifierValueId
+            ? [typedTypeClassifierValueId]
+            : [],
           ...rest,
         }
       }
@@ -291,10 +298,21 @@ const ProjectsTable: FC = () => {
         )
       },
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'ext_id',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'ext_id' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('reference_number', {
       header: () => t('label.reference_number'),
       footer: (info) => info.column.id,
+      meta: {
+        sortingParameterName: 'reference_number',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'reference_number' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('language_directions', {
       header: () => t('label.language_directions'),
@@ -349,6 +367,11 @@ const ProjectsTable: FC = () => {
       header: () => t('label.status'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => <ProjectStatusTag status={getValue()} />,
+      meta: {
+        sortingParameterName: 'status',
+        sortingOption: ['asc', 'desc'],
+        currentSorting: filters?.sort_by === 'status' ? filters.sort_order : '',
+      },
     }),
     columnHelper.accessor('price', {
       header: () => t('label.cost'),
@@ -433,8 +456,12 @@ const ProjectsTable: FC = () => {
       header: () => t('label.client'),
       footer: (info) => info.column.id,
       meta: {
-        // sortingOption: ['asc', 'desc'],
-        // currentSorting: filters?.sort_by === 'client' ? filters.sort_order : '',
+        sortingParameterName: 'clientInstitutionUser.name',
+        sortingOption: ['asc', 'desc'],
+        currentSorting:
+          filters?.sort_by === 'clientInstitutionUser.name'
+            ? filters.sort_order
+            : '',
       },
     }),
   ] as ColumnDef<ProjectTableRow>[]

@@ -157,6 +157,7 @@ const Assignment: FC<AssignmentProps> = ({
             assignee_id: assignee?.id,
             finished_at,
             isEditable,
+            assignmentStatus: status,
           }}
         />
       </div>

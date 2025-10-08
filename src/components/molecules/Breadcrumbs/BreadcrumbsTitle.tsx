@@ -45,9 +45,7 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
     switch (true) {
       case !!vendorId && isVendorTasksPage: {
         return {
-          name: `${vendor?.institution_user?.user.forename} ${
-            vendor?.institution_user?.user.surname
-          } ${t('my_tasks.tasks')}`,
+          name: t('my_tasks.in_progress_tasks'),
         }
       }
       case !!vendorId: {

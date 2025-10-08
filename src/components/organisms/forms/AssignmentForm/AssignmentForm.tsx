@@ -168,7 +168,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       if (
         !date ||
         (date === prevDate && time === prevTime) ||
-        dateTimePickerValidator(value)
+        dateTimePickerValidator(value) !== true
       )
         return false
 
@@ -194,7 +194,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       if (
         !date ||
         (date === prevDate && time === prevTime) ||
-        dateTimePickerValidator(value)
+        dateTimePickerValidator(value) !== true
       )
         return false
 

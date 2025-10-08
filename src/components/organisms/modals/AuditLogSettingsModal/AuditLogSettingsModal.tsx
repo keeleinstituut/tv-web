@@ -59,11 +59,26 @@ const AuditLogSettingsModal: FC<AuditLogSettingsModalProps> = ({
         'audit_log.retention_time_unit2'
       )})`,
       inputType: InputTypes.Text,
+      autoComplete: 'off',
       rules: {
         required: true,
         validate: (value: number) => {
+          const integerValidator = validators.integerValidator(value)
+
+          if (integerValidator != true) {
+            return integerValidator
+          }
+
           if (value < 730) {
-            return t('error.audit_log_event_record_retention_time_too_small')
+            return t('error.audit_log_event_record_retention_time_too_small', {
+              value: 730,
+            })
+          }
+
+          if (value > 3650) {
+            return t('error.audit_log_event_record_retention_time_too_large', {
+              value: 3650,
+            })
           }
 
           return true

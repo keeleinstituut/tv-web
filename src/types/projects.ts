@@ -247,6 +247,7 @@ export type SubProjectsPayloadType = PaginationFunctionType &
     only_show_personal_projects?: number
     status?: string[]
     language_direction?: string[]
+    tag_ids?: string[]
     type_classifier_value_id?: string | string[]
   }
 
