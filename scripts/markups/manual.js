@@ -1,9 +1,10 @@
 const manualText = `[START]
+
 ## Kasutajate haldus
 
 **Kasutaja lisamine**
 
-Uute kasutajate lisamiseks klõpsa nupule „Lisa kasutajad“. Kasutaja(te) lisamiseks süsteemi tuleb importida kasutaja(te) andmed CSV failiga. Laadi mall alla siit ([kasutajad_utf.csv](https://github.com/keeleinstituut/tv-tolkevarav/files/15483853/kasutajad_utf.csv)).
+Uute kasutajate lisamiseks klõpsa nupule „Lisa kasutajad“. Kasutaja(te) lisamiseks süsteemi tuleb importida kasutaja(te) andmed CSV failiga. Laadi mall alla siit ([kasutajad_utf.csv](https://github.com/keeleinstituut/tv-tolkevarav/files/15483853/kasutajad_utf.csv)). Pane tähele, et kasutaja meiliaadress ei tohi sisaldada täpitähti.
 
 **Kasutaja andmete haldamine**
 
@@ -27,7 +28,7 @@ Aktiveeritud/deaktiveeritud kasutajale ei saa uut kontot samas asutuses luua. Ar
 [START]
 ## Kasutajate lisamine
 
-Kasutaja lisamiseks süsteemi tuleb importida kasutaja andmed CSV failiga. Laadi faili mall alla siit. Kasutaja(te) lisamine töötab vaid selle malliga.
+Kasutaja lisamiseks süsteemi tuleb importida kasutaja andmed CSV failiga. Laadi faili mall alla siit ([kasutajad_utf.csv](https://github.com/keeleinstituut/tv-tolkevarav/files/15483853/kasutajad_utf.csv)). Kasutaja(te) lisamine töötab vaid selle malliga.
 Kasutaja konto loomiseks tuleb failis kasutaja(te) andmetega täita vajalikud andmeväljad. Kui CSV failis ei ole konkreetse kasutaja roll määratud, siis saab kasutaja automaatselt tellija rolli. Pärast faili üleslaadimist tuleb kontrollida, et kõik andmed oleksid korrektsed ja vajadusel parandada vead. Kui kõik andmed on korrektsed, siis klõpsa „Salvesta ja saada teavitused“ nupule. Seejärel saavad kõik uued kasutajad teate, et neile on loodud konto Tõlkeväravas.
 
 [BREAK]
@@ -51,14 +52,15 @@ Iga asutuse peakasutaja saab luua uusi rolle, rolle kustutada ja ümber nimetada
 [BREAK]
 
 Rollidele haldamisega seotud privileegid:  
-* „Rollihalduse tabeli vaatamine“ – lubab rollide tabelit vaid vaadata;  
-* „Rolli lisamine süsteemi“ – lubab rollide tabelise lisada juurde uusi rolle;  
-* „Rolli muutmine (privileegide lisamine/ eemaldamine)“ – lubab olemasolevate rollide privileege muuta;  
-* „Rolli kustutamine“ – lubab olemasolevaid rolle kustutada.  
+* „Rollihalduse tabeli vaatamine“ - lubab rollide tabelit vaid vaadata;  
+* „Rolli lisamine süsteemi“ - lubab rollide tabelise lisada juurde uusi rolle;  
+* „Rolli muutmine (privileegide lisamine/ eemaldamine)“ - lubab olemasolevate rollide privileege muuta;  
+* „Rolli kustutamine“ - lubab olemasolevaid rolle kustutada.  
 
-Link rollide seadistamise näidisele, mis aitab rolle luua ja seadistada: https://github.com/keeleinstituut/tv-tolkevarav/files/12485432/_privileegide.tabel-310823-110333.pdf.
+Link rollide seadistamise näidisele, mis aitab rolle luua ja seadistada: https://github.com/user-attachments/files/22882365/Rollide-privileegide-tabel_10.10.2025.xlsx
 
-Märkus. Igale kasutajale soovitame määrata ainult ühe rolli. See välistab olukorra, kus ühele kasutajale määratud erinevate privileegidega rollid on teineteisega vastuolus.
+
+Märkus. Igale kasutajale tuleb määrata ainult üks roll. See välistab olukorra, kus ühele kasutajale määratud erinevate privileegidega rollid on teineteisega vastuolus.
 
 [END]
 
@@ -68,18 +70,18 @@ Märkus. Igale kasutajale soovitame määrata ainult ühe rolli. See välistab o
 
 Tellimuste lehel kuvatakse kõiki sisseloginud kasutajaga seotud tellimusi.
 Kui kasutajale on antud juurdepääs, et näha ka asutuse teisi tellimusi, siis saab eemaldada linnukese valikust „Soovin näha vaid oma tellimusi“ ja kuvatakse kõiki tellimusi.
-Lisaks saab tellimusi filtreerida tellimuse ID, keelesuuna, tüübi, siltide, staatuse ja maksumuse järgi.
+Lisaks saab tellimusi filtreerida tellimuse ID, viitenumbri, keelesuuna, tüübi, siltide, staatuse, maksumuse, tähtaja, loomisaja, algusaja ja tellija järgi.
 
 [BREAK]
 
 **Tellimuste staatused**  
-- Uus – tellija loodud uus tellimus  
-- Registreeritud – tõlkekorraldajale töösse registreeritud tellimus  
-- Tühistatud – tühistatud tellimus  
-- Tellijale edastatud – tellijale saadetud valmis tellimus  
-- Tagasi lükatud – tellija poolt tagasi lükatud valmis tellimus  
-- Parandatud – tellijale saadetud parandatud valmis tellimus  
-- Vastu võetud – tellija poolt vastu võetud valmis tellimus
+- Uus - tellija loodud uus tellimus  
+- Registreeritud - tõlkekorraldajale töösse registreeritud tellimus  
+- Tühistatud - tühistatud tellimus  
+- Tellijale edastatud - tellijale saadetud valmis tellimus  
+- Tagasi lükatud - tellija poolt tagasi lükatud valmis tellimus  
+- Parandatud - tellijale saadetud parandatud valmis tellimus  
+- Vastu võetud - tellija poolt vastu võetud valmis tellimus
 
 [END]
 
@@ -88,17 +90,18 @@ Lisaks saab tellimusi filtreerida tellimuse ID, keelesuuna, tüübi, siltide, st
 ## Tellimuse lisamine
 
 Tellimuse lisamisel on oluline määrata tellimusele järgmised parameetrid.
- - Määrata tellija (isik, kelle nimele tellimus vormsitatakse ja/või kellele valmis tellimus tagasi saadetakse).
- - Määrata tõlkekorraldaja, kellele tellimus suunatakse. Selle välja võib ka tühjaks jätta.
- - Määrata tellimuse tüüp. See on teenus, mida soovitakse tellida.
- - Määrata tellimuse valdkond.
- - Määrata tellimusele soovitud valmimise aeg.
- - Kirjutada tõlkekorraldajale tellimuse erijuhised (näiteks tõlke vormistamise soov, kasutatava terminoloogia erisoovid või muud vajalikud juhised).
- - Kirjutada viitenumber (olenevalt asutusest võib siia märkida asutusesiseselt kokkulepitud viis tellimusi nimetada/nummerdada). Selle välja võib ka tühjaks jätta.
- - Määrata lähtekeel ja sihtkeel(ed).
+ - Määrata **tellija**. See on isik, kelle nimele tellimus vormsitatakse ja kellele valmis tellimus tagasi saadetakse.
+ - Määrata tõlkekorraldaja, kellele tellimus suunatakse. Selle välja võib ka tühjaks jätta. Teatud juhtudel ei saa tõlkekorraldajat valida, sest see võimalus on tellija jaoks süsteemi poolt keelatud.
+ - Määrata **tellimuse tüüp**. See on teenus, mida soovitakse tellida. Tellimuse tüüpi ei saa muuta pärast tellimuse loomist.
+ - Määrata tellimuse sisule vastav **valdkond**.
+ - Määrata tellimusele soovitud **valmimise aeg**.
+ - Kirjutada tõlkekorraldajale tellimuse erijuhised (näiteks info tõlke vormistamise ja kasutatava sõnavara kohta või muud vajalikud juhised).
+ - Sisestada viitenumber (andmereale võib märkida tellimuse nimetuse, numbri, töö sisule viitava info vms).
+ - Määrata **lähtekeel ja sihtkeel(ed)**. Valitud keeli ei saa muuta pärast tellimuse loomist.
  - Lisada tõlgitav(ad) fail(id).
  - Lisada soovi korral abifail(id) ja määra nendele tüüp (abifail, stiilijuhis või terminibaas). Abifail on materjal, mis võib tellimuse teostamisel olla vajalik (nt varasemad tõlked, lähtefailiga seotud dokumendid või muu taustamaterjal).
- Kõiki tellimuse parameetreid ja faile saab hiljem tõlkekorraldaja vajadusel muuta ja täiendada.
+
+Osasid tellimuse parameetreid ja faile saab hiljem tõlkekorraldaja vajadusel muuta ja täiendada.
 
 [BREAK]
 
@@ -106,72 +109,78 @@ Tellimusega seotud üksikasjad.
 
 **1. Tellimuse tüüp**  
 Tellimuse tüüpide loetelus on valik teenustest, mida saab tellida. Sõltuvalt valitud tellimuse tüübist seadistatakse tellimusele soovitud töövoog. Tellimuse tüübi lühendit kasutatakse osana tellimuse ID genereerimisel. Loetelu teenuse tüüpidest ja nende lühenditest:  
-- Suuline tõlge – S  
-- Järeltõlge – JÄ  
-- Sünkroontõlge – SÜ  
-- Viipekeel – VK  
-- Tõlkimine(CAT), Ülevaatus – T  
-- Tõlkimine(CAT) – T  
-- Tõlkimine, Ülevaatus – T  
-- Tõlkimine – T  
-- Toimetamine, Ülevaatus – TO  
-- Toimetamine – TO  
-- Toimetatud tõlge, Ülevaatus – TO  
-- Toimetatud tõlge – TT  
-- Tõlkimine(CAT), Toimetamine, Ülevaatus – TT  
-- Tõlkimine(CAT), Toimetamine – TT  
-- Tõlkimine, Toimetamine, Ülevaatus – TT  
-- Tõlkimine, Toimetamine – TT  
-- Käsikirjaline tõlge, Ülevaatus – KT  
-- Käsikirjaline tõlge – KT  
-- Terminoloogia töö – TR  
-- Vandetõlge (CAT), Ülevaatus – VT  
-- Vandetõlge (CAT) – VT  
-- Vandetõlge, Ülevaatus – VT  
-- Vandetõlge – VT
+- Suuline tõlge - S  
+- Järeltõlge - JÄ  
+- Sünkroontõlge - SÜ  
+- Viipekeel - VK  
+- Tõlkimine(CAT), Ülevaatus - T  
+- Tõlkimine(CAT) - T  
+- Tõlkimine, Ülevaatus - T  
+- Tõlkimine - T  
+- Toimetamine, Ülevaatus - TO  
+- Toimetamine - TO  
+- Toimetatud tõlge, Ülevaatus - TO  
+- Toimetatud tõlge - TT  
+- Tõlkimine(CAT), Toimetamine, Ülevaatus - TT  
+- Tõlkimine(CAT), Toimetamine - TT  
+- Tõlkimine, Toimetamine, Ülevaatus - TT  
+- Tõlkimine, Toimetamine - TT  
+- Käsikirjaline tõlge, Ülevaatus - KT  
+- Käsikirjaline tõlge - KT  
+- Terminoloogia töö - TR  
+- Vandetõlge (CAT), Ülevaatus - VT  
+- Vandetõlge (CAT) - VT  
+- Vandetõlge, Ülevaatus - VT  
+- Vandetõlge - VT
+
+Märkus. Sulgudes **lühend CAT** tellimuse tüübi nimes viitab sellele, et teenuse osaks on kirjalik tõlkimine kasutades tõlketööriista (mh tõlkemälud, terminibaasid ja masintõlge). Ilma CAT lühendita tellimuse tüübid on tõlketööriistata tellimused ja nende puhul ei saa kirjalikku tõlketellimust tõlketööriistas tõlkida, sest CAT lühendita tellimuse tüüpidele ei ole tõlketööriista liidestatud. 
+
 
 **2. Valdkond**  
-Valdkondi kasutatakse Tõlkeväravas tellimuste all kui ka tõlkemälude all. Valdkonna saab määrata üksikutele tellimustele ja ka tõlkemäludele. Loetelu valdkondadest ja nende lühenditest:  
-- Arhiivindus – ARH  
-- Avalik kord ja sisejulgeolek – ASP  
-- Eelarvepoliitika – EAP  
-- Finants– ja kindlustuspoliitika – FKP  
-- Haridus – HAR  
-- Justiitshalduspoliitika – JHP  
-- Kinnisvara– ja osaluspoliitika – KOP  
-- Kodakondsuse, rände ja identiteedihaldus – KRI  
-- Kriisireguleerimine ja päästetööd – KPT  
-- Kriminaalpoliitika – KRP  
-- Maksu– ja tollipoliitika – MTP  
-- Noorte– ja keelepoliitika – NKP  
-- Õiguspoliitika – ÕIP  
-- Piirivalve – PRV  
-- Rahvastiku– ja perepoliitika – RPP  
-- Riigiraamatupidamine – RRP  
-- Riiklik statistika – RST  
-- Seadusetõlked – SET  
-- Teadus – TEA  
+Valdkondi kasutatakse Tõlkeväravas nii tellimuste all kui ka tõlkemälude all. Valdkonda saab määrata tellimustele ja tõlkemäludele. Loetelu valdkondadest ja nende lühenditest:  
+- Arhiivindus - ARH  
+- Avalik kord ja sisejulgeolek - ASP  
+- Eelarvepoliitika - EAP  
+- Finants- ja kindlustuspoliitika - FKP  
+- Haridus - HAR  
+- Justiitshalduspoliitika - JHP  
+- Kinnisvara- ja osaluspoliitika - KOP  
+- Kodakondsuse, rände ja identiteedihaldus - KRI  
+- Kriisireguleerimine ja päästetööd - KPT  
+- Kriminaalpoliitika - KRP  
+- Maksu- ja tollipoliitika - MTP  
+- Noorte- ja keelepoliitika - NKP  
+- Õiguspoliitika - ÕIP  
+- Piirivalve - PRV  
+- Rahvastiku- ja perepoliitika - RPP  
+- Riigiraamatupidamine - RRP  
+- Riiklik statistika - RST  
+- Seadusetõlked - SET  
+- Teadus - TEA  
+
 
 **3. Tähtaeg**  
 Tähtaeg viitab tellimusele määratud valmimise ajale.
+Suulise tõlke puhul saab tellimusele määrata algusaja ja tähtaja.
 
 **4. Erijuhised tellimuse kohta**  
-Iga tellimusega võib kaasa panna ka juhiseid. Need on mõeldud tõlkekorraldajale, tõlkijale/tõlgile ja/või toimetajatele. 
+Igale tellimusele võib kaasa panna ka juhiseid. Need on mõeldud tõlkekorraldajale, tõlkijale/tõlgile ja/või toimetajatele. 
 
 **5. Viitenumber**  
-Tellimuse viitenumbri reale saab sisestada tellimuse nimetuse või muu numbri, mille järgi saab tellimust hiljem süsteemist otsida. Sõltuvalt asutusest võib viitenumbri lisamise süsteem ja kord erineda.
+Tellimuse viitenumbri reale saab sisestada tellimuse nimetuse või numbri, mille järgi saab tellimust hiljem süsteemis sortida. Sõltuvalt asutusest võib viitenumbri lisamise süsteem ja kord erineda.
 
 **6. Lähtekeel**  
-Valida saab ühe lähtekeele. Kui soovitakse tõlkida mitmest lähtekeelest, siis tuleks luua eraldi tellimused.
+Valida saab ühe lähtekeele. Kui soovitakse tõlkida mitmest lähtekeelest, siis tuleks luua eraldi tellimused. Pärast tellimuse loomist ei saa lähtekeelt muuta.
 
 **7. Sihtkeel**  
-Valida saab ühe või mitu sihtkeelt. Iga keele kohta luuakse tellimuse alla eraldi keelepaaripõhine alamtellimus.
+Valida saab ühe või mitu sihtkeelt. Iga keele kohta luuakse tellimuse alla eraldi keelepaaripõhine alamtellimus. Pärast tellimuse loomist ei saa keelevalikut muuta.
 
 **8. Lähtefailid**  
-Kirjaliku tellimuse puhul saab lisada järgmisi faililaienditega dokumente: .pdf, .doc, .docx, .odt, .xls, .xlsx, .png, .rtf, .odt, .ods, .txt, .html, .xml ja .csv. Tõlkeväravas töötab automaatne tekstituvastus vaid teatud tüüpi masinloetavate failide peal (nt .docx, .xlsx jms). Faililaiendiga .pdf, .jpg, .eml, .png vms dokumentide tõlkimiseks peab tõlkekorraldaja/tõlketeenuse osutaja tõlkimiseks tekstifail ise ette valmistama/vormistama. Neid ei saa otse tõlketööriista importida.
+Kirjaliku tellimuse puhul saab lisada järgmisi faililaienditega dokumente: .pdf, .doc, .docx, .odt.xls, .xlsx (all formats).png, .rtf, .odt, .ods, .txt, .html, .xml, .csv, .asice, ja .bdoc. Tõlkeväravas töötab tekstituvastus vaid teatud tüüpi masinloetavate failide peal (nt .docx, .xlsx, .txt jms).
+Dokumentide tõlkimiseks, mille faililaiend on .pdf, .jpg, .eml, .png vms, peab tõlkekorraldaja/tõlketeenuse osutaja tekstifail tõlkimiseks ise ette valmistama ja vormistama. Neid ei saa otse tõlketööriista importida.
 
 **9. Abifailid**  
-Tellimusega saab kaasa panna mistahes abimaterjale. Lisatud failile saab määrata soovi korral abifail tüübi: abifail, stiilijuhis või terminibaas. Sõltuvalt asutusest võib abifailide kaasa lisamise kord ja vajadus erineda.
+Tellimusega saab kaasa panna mistahes abimaterjale. Abifailile saab määrata soovi korral ka tüübi: abifail, stiilijuhis või terminibaas. Sõltuvalt asutusest võib abifailide kaasa lisamise kord ja vajadus erineda.
 Igal asutusel võib olla kasutusel erinev tööde tellimise kord. Soovitame luua asutusesiseselt enda vajadusele sobiva tellimise süsteemi. 
 
 [END]
@@ -182,22 +191,22 @@ Igal asutusel võib olla kasutusel erinev tööde tellimise kord. Soovitame luua
 
 Alamtellimuste lehel kuvatakse kõiki sisseloginud kasutajaga seotud tellimuste alamtellimusi.
 Kui kasutajale on antud juurdepääs, et näha ka asutuse teisi alamtellimusi, siis saab eemaldada linnukese valikust „Soovin näha vaid oma tellimusi“ ja kuvatakse kõiki alamtellimusi.
-Lisaks saab alamtellimusi filtreerida ID, keelesuuna, tüübi, staatuse ja maksumuse järgi.
+Lisaks saab alamtellimusi filtreerida ID, viitenumbri, keelesuuna, tüübi, siltide, staatuse, maksumuse, tähtaja, loomisaja, algusaja ja tellija järgi.
 
 [BREAK]
 
 **Alamtellimuste staatused**  
-- Uus – tellija loodud uus tellimus  
-- Registreeritud – tõlkekorraldajale töösse registreeritud tellimus  
-- Teostajale edastatud (ülesanne) – alamtellimuse ülesanne on saadetud teostajale  
-- Teostamisel (ülesanne) – alamtellimuse ülesanne on saadetud teostajale ja see on tema poolt töösse võetud  
-- Teostatud (ülesanne) – alamtellimuse ülesanne on teostaja poolt lõpetatuks märgitud  
-- Teostatud – kõik alamtellimuse ülesanded on lõpetatuks märgitud  
-- Tühistatud – tühistatud tellimus  
-- Tellijale edastatud – tellijale saadetud valmis tellimus  
-- Tagasi lükatud – tellija poolt tagasi lükatud valmis tellimus  
-- Parandatud – tellijale saadetud muudatustega valmis tellimus  
-- Vastu võetud – tellija poolt vastu võetud valmis tellimus
+- Uus - tellija loodud uus tellimus  
+- Registreeritud - tõlkekorraldajale töösse registreeritud tellimus  
+- Teostajale edastatud (ülesanne) - alamtellimuse ülesanne on saadetud teostajale ootel ülesannete alla 
+- Teostamisel (ülesanne) - alamtellimuse ülesanne on saadetud teostajale ja see on tema poolt töösse võetud  
+- Teostatud (ülesanne) - alamtellimuse ülesanne on teostaja poolt lõpetatuks märgitud  
+- Teostatud - kõik alamtellimuse ülesanded on lõpetatuks märgitud  
+- Tühistatud - tellija või tõlkekorraldaja poolt tühistatud tellimus  
+- Tellijale edastatud - tellijale saadetud valmis tellimus  
+- Tagasi lükatud - tellija poolt tagasi lükatud valmis tellimus  
+- Parandatud - tellijale uuesti saadetud muudatustega valmis tellimus  
+- Vastu võetud - tellija poolt vastu võetud valmis tellimus
 
 [END]
 
@@ -205,9 +214,8 @@ Lisaks saab alamtellimusi filtreerida ID, keelesuuna, tüübi, staatuse ja maksu
 
 ## Minu ülesanded
 
-Minu ülesannete lehel kuvatakse kõiki sisseloginud kasutajaga seotud ülesandeid.
-Võimalik on vaadata aktiivseid ülesandeid ja ka tehtud ülesannete ajalugu.
-Lisaks saab ülesandeid filtreerida keelesuuna ja tüübi järgi.
+Minu ülesannete lehel kuvatakse kõiki sisseloginud kasutajaga seotud ülesandeid. Võimalik on vaadata aktiivseid ja ootel ülesandeid ülesandeid ning teostatud ülesannete ajalugu. Lisaks saab ülesandeid filtreerida ID, viite, keelesuuna, maksumuse, tüübi, siltide, tähtaja, loomisaja, algusaja ja tellija järgi.
+
 
 [END]
 
@@ -216,38 +224,38 @@ Lisaks saab ülesandeid filtreerida keelesuuna ja tüübi järgi.
 ## Tellimuse detailid
 
 Tellimuse detailide all kuvatakse tellimuse üldandmeid, alamtellimuste andmeid ja tellimuse lähte-ja valmisfaile.
-Tellimuse üldandmeid ja sellega seotud alamtellimusi saab muuta tõlkekorraldaja rolliga kasutaja.
-Tellija rolliga kasutaja saab tellimuse üldandmetes muuta vaid tellimuse omaniku nime.
+Pärast tellimuse loomist, ei saa tellimuse detailandmetes muuta tellimuse tüüpi, lähtekeelt ja sihtkeelt. Pärast tellimuse loomist saab tellimuse detailandmete all teha muudatusi viitenumbri ja erijuhiste väljal ning muuta tellimuse valdkonda, tähtaega, silte ja failide loendit.
+Tellimusega seotud alamtellimusi saab töösse saata tõlkekorraldaja rolliga kasutaja või kasutaja, kellele on antud privileeg „Tõlketellimuse korraldamine“.
 
 [BREAK]
 
 **Tellimuse detailide muutmine**
 
-Tõlkekorraldaja rolliga (või vastavate privileegidega) kasutaja saab tellimust ja sellega seotud alamtellimust muuta ja hallata.
+Tõlkekorraldaja rolliga (või privileegiga „Tõlketellimuse korraldamine“) kasutaja saab tellimust ja sellega seotud alamtellimust hallata.
 
 **Tellimuse üldandmete muutmine**
-* Enne tellimuse töösse panemist peaks kontrollima tellimuse üldandmeid. Soovi korral saab tõlkekorraldaja tellimuse üldandmetes teha järgmisi muudatusi.
+
+Enne tellimuse töösse panemist peaks kontrollima tellimuse üldandmeid. Soovi korral saab tõlkekorraldaja tellimuse üldandmetes teha järgmisi muudatusi.
 * Muuta tellimuse tellijat.
-* Muuta vastutavat tõlkekorraldajat.
-* Muuta tellimuse tüüpi (teenust).
+* Muuta tellimuse tõlkekorraldajat.
 * Kustutada/lisada lähtefaile.
 * Kustutada/lisada abifaile.
-* Muuta tellimuse tähtaega.
-* Muuta tellimuse viitenumbrit (kokkulepitud viis tellimusi nimetada/nummerdada).
-* Muuta tellimuse lähtekeelt ja sihtkeeli.
+* Muuta tellimuse tähtaega või algus-ja tähtaega.
+* Muuta tellimuse viitenumbrit (so kokkulepitud viis tellimusi nimetada/nummerdada).
 * Lisada tellimusele asutusepõhiseid silte.
 * Muuta tellimuse valdkonda.
-* Tellimuse üldandmetes valitud tellimuse tüüp määrab alamtellimuse all kasutatava töövoo (näiteks suulise ja kirjaliku teenuse töövood on erinevate sätetega). Lisaks saab tellimuse lähtekeelt ja sihtkeeli muuta samuti vaid tellimuse üldandmete all.
+Tellimuse üldandmetes valitud tellimuse tüüp määrab alamtellimuse all kasutatava töövoo (näiteks suulise ja kirjaliku teenuse töövood on erinevate sätetega). Tellimuse tüüpi ja keeli ei saa muuta pärast tellimuse loomist. Kui tellimus on loodud vale tellimuse tüübi või keelesuunaga, siis tuleks tellimus tühistada ja luua uus tellimus korrektse tellimuse tüübi ja keeltega.
 
 **Alamtellimuse üldandmete muutmine**
-* Alamtellimus(ed) luuakse tellimuse üldandmetes määratud tellimuse tüübi järgi ning üldandmetesse lisatud lähtekeele ja sihtkeel(t)ega. Sõltuvalt valitud teenuse tüübist saab tõlkekorraldaja alamtellimuse all teha järgmist.
-* Määrata ja muuta töövoo ülesannete tähtaegasid.
-* Kustutada/lisada lähtefaile.
+
+Alamtellimus(ed) luuakse tellimuse üldandmetes määratud tellimuse tüübi järgi ning üldandmetesse lisatud lähtekeele ja sihtkeel(t)ega. Sõltuvalt valitud teenuse tüübist saab tõlkekorraldaja alamtellimuse all teha järgmist.
+* Määrata ja muuta alamtellimuse all olevate ülesannete tähtaegasid või algus-ja tähtaegasid.
+* Kustutada/lisada lähtefaile ja valmisfaile.
 * Lisada teostajate ülesannetele erijuhiseid.
-* Valida teksti tõlkimiseks tõlketööriista. Määrata kasutatavad tõlkemälud ja teha nende põhjal tõlkemahuanalüüse.
-* Valida teostajate andmebaasist ülesannetele teostajad (tõlkijad, tõlgid, toimetajad, tõlkebürood jt).
+* CAT-liidestusega tellimuse tüübiga tellimuste puhul lisada alamtellimusele tõlkemälud, saata tõlgitav teksti tõlkimiseks tõlketööriista ja teha nende põhjal tõlkemahuanalüüs.
 * Lisada ülesannetele töömahtu ja töötasu (käsitsi või tõlkemahuanalüüsi järgi).
-* Teostajate valmis tööfaile alla laadida, kontrollida ja tellijale suunata. Seda sammu saab ka vahele jätta: sõltuvalt tellimuse tüübi sätetest saadab süsteem teostajate valmisfailid otse tellijale.
+* Valida teostajate andmebaasist ülesannetele teostajad (tõlkijad, tõlgid, toimetajad, tõlkebürood jt) ja saata tööpäring teostajatele.
+* Teostajate valmis tööfaile alla laadida, kontrollida ja tellijale suunata. Seda sammu saab ka vahele jätta: sõltuvalt tellimuse tüübi sätetest saadab süsteem teostajate valmisfailid otse tellijale. Tellimuse tüüp, mille nimes on ülevaatus (nt „Tõlkimine, Ülevaatus“), on mõeldud selleks, et teostaja poolt süsteemi üles laaditud valmisfailid saaks tõlkekorraldaja enne tellijaga jagamist ise üle vaadata ja väljastuseelse kontrolli teha. Lisaks saab tõlkekorraldaja valida, milliseid faile tellijaga jagada. Selleks on loodud valmisfailide loendisse tulp „Tellijaga jagatud“, mis võimaldab vaid sobilikke valmisfaile tellijaga jagada.
 
 [END]
 
@@ -255,14 +263,15 @@ Tõlkekorraldaja rolliga (või vastavate privileegidega) kasutaja saab tellimust
 
 ## Tellimuse tühistamine
 
-Tellimust saab tühistada tellimuse vaates klõpsates nuppu „Tühista tellimus“.
-Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistamisel tuleks märkida ära tühistamise põhjus ja klõpsata „Jah, tühista“. Tühistatud tellimus tähistatakse staatusega „Tühistatud“. Teade tühistamise kohta koos tühistamise põhjendusega saadetakse tõlkekorraldajale. Tühistatud tellimust saab 3 kuud pärast tühistamist taastada. Kolme kuu möödumisel tuleb sama töö uuesti tellimiseks luua uus tellimus.
+Tellimust saab tühistada tellimuse vaates klõpsates nuppu „Tühista tellimus“. 
+Kui tellimus on tühistamise hetkel juba teostamisel, siis võib tekkida vajadus pooliku töö eest teostaja(te)le tasuda. Tühistamisel tuleks märkida ka tühistamise põhjus ja klõpsata „Jah, tühista“. Tühistatud tellimus tähistatakse staatusega „Tühistatud“. Teade tühistamise kohta koos tühistamise põhjendusega saadetakse tõlkekorraldajale ja tellijale, kes on tellimuse all määratud tellijaks/tõlkekorraldajaks. Sama töö uuesti tellimiseks tuleb luua uus tellimus.
 
 [END]
 [START]
 
 ## Tellimuse vastuvõtmine (tellija)
-Kui tellimus on valmis, siis saab tellija selle kohta Tõlkeväravast teate pealkirjaga „Tellimus vastuvõtmiseks valmis“. Valmis tellimuse faili(d) saab alla laadida tellimusega seotud alamtellimuse sektsioonist „Valmisfailid teostajatelt“. Lisaks on vaja tellimus heaks kiita klõpsates nupule „Võta vastu“. Seejärel on tellimus lõplikult valmis ja sellega seotud alamtellimused ja ülesanded suletakse.
+
+Kui tellimus on valmis (st tellimuse saatus on „Edastatud“ ja alamtellimuse staatus on „Teostatud“), siis saab tellija selle kohta Tõlkeväravast teate pealkirjaga „Tellimus vastuvõtmiseks valmis“. Valmisfaili(d) saab alla laadida tellimusega seotud alamtellimuse all „Valmisfailid teostajatelt“ tulbast. Lisaks on vaja tellimus heaks kiita klõpsates nupule „Võta vastu“. Seejärel on tellimus lõplikult valmis ja sellega seotud alamtellimused ja ülesanded suletakse. Tellimus saab staatuse „Vastuvõetud“ ja alamtellimusele jääb staatus „Teostatud“.
 
 Kui tellija soovib tellimuse tõlkekorraldajale/tõlkijale/toimetajale tagasi saata, siis saab tellimuse tagasi lükata klõpsates nupule „Lükka tagasi“. Seejärel tuleb valida alamtellimus(ed), mida soovitakse tagasi lükata. Hea oleks juurde lisada ka lühike tagasilükkamise põhjendus ja kirjeldus, mida on vaja teisiti teha. Juhul kui tellijal on kaasa panna alamtellimusega seotud tagasisidefail, siis saab ka selle juurde lisada.
 
@@ -297,14 +306,14 @@ Tõlkemälu kasutamisest ja selle pealt hinnasoodustuse arvutamise põhimõtetes
 [START]
 
 ## Koondhinnakiri
-Koondhinnakirja vaates saab filtreerida teostajaid keelte, oskuste, nimede ja nende hindade järgi.
+Koondhinnakirja vaates saab filtreerida teostajaid keelte ja oskuste järgi, otsida teostajaid nime järgi ning sortida neid ühikuhinna järgi.
 
 [END]
 
 [START]
 
 ## Ülesanded
-Siin kuvatakse selle kasutajaga seotud ülesandeid.
+Ülesannete lehel kuvatakse kõiki sisseloginud kasutajaga seotud aktiivseid ülesandeid.
 
 [END]
 
@@ -315,18 +324,28 @@ Tõlkemälude nimekirjas kuvatakse kõiki asutuse siseseid, asutustega jagatud j
 Tõlkemälusid saab filtreerida järgmiste parameetrite järgi: nimetus, sildid, valdkond ja keelesuund.
 
 Tõlkevärava tõlkemälud on kolme erineva kasutuspiiranguga:  
-- „Asutuste sisene“ – tõlkemälu on jagatud ainult asutuse kasutajatega, kelle roll lubab mälusid vaadata, hallata ja/või kasutada;
-- „Asutustega jagamiseks“ – tõlkemälu on jagatud ka teiste avaliku sektori asutuste kasutajatega, kelle roll lubab mälusid vaadata, hallata ja/või kasutada;
-- „Avalik“ – tõlkemälu on jagatud kõikide Tõlkevärava kasutajatega.
+- „Asutuste sisene“ - tõlkemälu on jagatud ainult asutuse kasutajatega, kelle roll lubab mälusid vaadata, hallata ja/või kasutada;
+- „Asutustega jagamiseks“ - tõlkemälu on jagatud ka teiste avaliku sektori asutuste kasutajatega, kelle roll lubab mälusid vaadata, hallata ja/või kasutada;
+- „Avalik“ - tõlkemälu on jagatud kõikide Tõlkevärava kasutajatega.
+
 
 **Tõlkemälu haldamine**  
-Tõlkemälu täpsemate andmete vaatamiseks ja haldamiseks tuleb klõpsata tõlkemälu nimetusele. Muuta saab tõlkemälu nime, silte, kasutust, valdkonda ja kommentaare. Tõlkemällu saab salvestada tõlkeid kahel järgmisel moel.
-1. Tõlkemälusse saab salvestada väljaspool Tõlkeväravat koostatud tõlkemälu. Selleks tuleb avada tõlkemälu või luua uus mälu ja tõlkemälu .tmx failina sellesse importida.
+
+Tõlkemälu andmete vaatamiseks ja haldamiseks tuleb klõpsata tõlkemälu nimetusele. Vastava privileegiga kasutaja saab muuta tõlkemälu nime, silte, kasutust, valdkonda ja kommentaare. Tõlkemällu saab salvestada tõlkeid kahel järgmisel moel.
+1. Tõlkemälusse saab salvestada väljaspool Tõlkeväravat koostatud tõlkemälu. Selleks tuleb avada tõlkemälu või luua uus mälu ja tõlkemälu .tmx failina sellesse importida (nuppust „Impordi .tmx“).
 2. Lisades tõlkemälu alamtellimusele „Peamine/Kirjuta“ mäluna salvestatakse selle alamtellimuse tõlkesegmendid sellesse tõlkemällu. Tõlkemälu üldandmete vaates kuvatakse mäluga seotud alamtellimused, milliste tellimuse tõlked on sellesse tõlkemällu salvestatud.
+
+
+**Tõlkemälude eksportimine**
+ 
+Tõlkemälusid saab alla laadida ühekaupa või hulgi. Tõlkemälud laetakse alla .tmx failina.
+1. Ükshaaval eksportimist saab teha tõlkemälu detailvaates, vajutades nupule „Ekspordi“.
+2. Hulgi eksportimine on võimalik tõlkemälude koondvaates. Alla saab laadida ühe kindla keelesuuna koondmälu. Eksportimiseks on vajalik keelesuuna filtris valida ainult üks keelesuund (nt „et_en“). Eksportimisel luuakse kõikidest valitud tõlkemäludest üks koondmälu ja see salvestatakse kasutaja arvutisse. **NB!** Süsteem hoiatab kasutajat, kui eksportimiseks on valitud ka mitte-avalikud tõlkemälud. Kasutaja peab kontrollima, et ta tundlikuid andmeid kogemata alla ei laadiks.
 
 [BREAK]
 
-**Märkus.** Avaliku ja jagatud kasutuspiiranguga tõlkemälu andmeid kuvatakse kõikidele Tõlkevärava kasutajatele, kelle roll lubab mälusid vaadata, hallata ja/või kasutada. St kuvatakse kasutajatele mälu ID, nimi, valdkond, keelesuund, segmentide arv, loomise aeg ja kommentaar.
+
+**Märkus.** Avaliku ja jagatud kasutuspiiranguga tõlkemälu andmeid kuvatakse kõikidele Tõlkevärava kasutajatele, kelle roll lubab mälusid vaadata, hallata ja/või kasutada. St kasutajatele kuvatakse mälu ID, nimi, valdkond, keelesuund, segmentide arv, loomise aeg ja kommentaar.
 
 Tõlkemälude kasutamisest saab juurde lugeda Tõlkevärava Wiki artiklist „Tõlketööde hankimise parimad praktikad ning põhimõtted“: https://github.com/keeleinstituut/tv-tolkevarav/wiki/T%C3%B5lket%C3%B6%C3%B6de-hankimise-parimad-praktikad-ning-p%C3%B5him%C3%B5tted#t%C3%B5lkimisest-%C3%BCldiselt
 
@@ -336,10 +355,10 @@ Tõlkemälude kasutamisest saab juurde lugeda Tõlkevärava Wiki artiklist „T�
 
 ## Tõlketööriista mahuanalüüs
 
-Tõlketööriistas saab lähteteksti mahtu sõnapõhiselt analüüsida. Analüüsitakse lähteteksti tekstisisest kattuvust ja ka kattuvusi tõlkemäludega. Analüüsi põhjal saab tõlkimise tasu arvestada ja hinnata tõlkimiseks planeeritavat töökiirust.
+Tõlketööriistas saab lähteteksti **mahtu sõnapõhiselt analüüsida**. Analüüsitakse lähteteksti tekstisisest kattuvust ja ka kattuvusi tõlkemäludega. Analüüsi põhjal saab tõlkimise tasu arvestada ja hinnata tõlkimiseks planeeritavat töökiirust.
 
 **Mahuanalüüs**  
-Sõnade, fraaside ja lausete eest, mille vasted on osalise kattuvusega võimaldab tõlke-eelarve pealt kokku hoida. Tõlkemälu kasutamisel võiks hinnasoodustuse arvutamisel kasutada järgnevat mudelit.
+Sõnade, fraaside ja lausete eest, mille vasted on osalise kattuvusega võimaldab tõlke-eelarve pealt kokku hoida. Tõlkemälu kasutamisel võiks hinnasoodustuse arvutamisel kasutada järgnevat mudelit. Selle analüüsipõhise soodustuse saab seadistada iga teostaja all eraldi.
 
 **Näidis analüüsipõhisest soodustusest**  
 Korduvad vasted ja täielikud (101%) vasted: tasu täishinnast 25%  
@@ -353,7 +372,7 @@ Korduvad vasted ja täielikud (101%) vasted: tasu täishinnast 25%
 101% ja 100% kattuvad vasted peaksid olema tasustatud, sest tõlkija peab need siiski üle kontrollima ja tõlkesse lisama. Tõlkemällu võib kõigest hoolimata vigu jääda ja terminoloogia võib aja jooksul muutuda. Sama sõna, fraas või lause võib nõuda sõltuvalt kontekstist eri kohtades erinevat tõlget. Kui tellija ei soovi 100% kattuvate vastetega teksti eest maksta, ei vastuta tõlkija 100% kattuvate vastetega tõlke õigsuse eest.
 
 **Tõlkimiskiirus**  
-Keskmine tõlkimiskiirus on umbes 200 kuni 300 sõna tunnis ja 1500 kuni 2500 sõna päevas. Täpne päevane tõlkemaht sõltub teksti olemusest ja keerukusest.
+Keskmine tõlkimiskiirus on umbes 200 kuni 300 sõna tunnis ja 1500 kuni 2500 sõna päevas. Täpne päevane tõlkemaht sõltub teksti olemusest ja keerukusest ning sellest kas tõlkimisel saab lisaks tõlkemälule kasutada ka masintõlget. Keskmine tõlkimiskiirus masintõlke kasutamise puhul on umbes 400 kuni 700 sõna tunnis ja 5000 sõna päevas.
 
 [END]
 
@@ -362,9 +381,9 @@ Keskmine tõlkimiskiirus on umbes 200 kuni 300 sõna tunnis ja 1500 kuni 2500 s�
 ## Tõlkemälu loomine 
 
 Tõlkemälu tuleks nimetada võimalikult täpselt. Hea mälu nimetus viitab tõlkemälu sisule. Soovi korral saab mälule määrata ka valdkonna ja sildi(d), siis on kasutajatel lihtsam mälude nimekirjas otsingut teha ja tellimustele õige sisuga mälud leida ja lisada. Oluline on tõlkemälule määrata ka kasutuspiirang:  
-- „Asutuste sisene“ – tõlkemälu on jagatud asutuse kasutajatega, kelle roll lubab mälusid vaadata, hallata ja/või kasutada;  
-- „Asutustega jagamiseks“ – tõlkemälu on jagatud ka teiste avaliku sektori asutuste kasutajatega, kelle roll lubab mälusid vaadata, hallata ja/või kasutada;  
-- „Avalik“ – tõlkemälu on jagatud kõikide Tõlkevärava kasutajatega.
+- „Asutuste sisene“ - tõlkemälu on jagatud asutuse kasutajatega, kelle roll lubab mälusid vaadata, hallata ja/või kasutada;  
+- „Asutustega jagamiseks“ - tõlkemälu on jagatud ka teiste avaliku sektori asutuste kasutajatega, kelle roll lubab mälusid vaadata, hallata ja/või kasutada;  
+- „Avalik“ - tõlkemälu on jagatud kõikide Tõlkevärava kasutajatega.
 Kui puudub soov mälusid teiste asutustega või avalikkusega jagada, siis tuleb määrata tõlkemälu kasutuseks „Asutuste sisene“.
 
 [BREAK]
@@ -412,11 +431,11 @@ Tõlketööriist kuvab vasakul lähtesegmenti ja paremal sihtsegmenti. Klõpsa s
 Kui oled sisestanud oma tõlke, redigeerinud eeltõlget või muutnud eelnevalt tõlgitud segmenti, **peab segmendi kinnitama**. **Kinnitatud segment salvestatakse tõlkemällu ja seejärel saab liikuda järgmise segmendi tõlkimise juurde.**  
 
 **Tõlkesegmendi kinnitamise kaks viisi**  
-**1. Nupp „TÕLGITUD“** – klõpsa sellel nupul või kasuta otseteed klahvidega „Crtl+Enter“, et kinnitada aktiivse segmendi tõlge ja salvestada see tõlkemällu.   
-**2. Nupp „T+>>“** (tõlgi ja liigu järgmisele tõlkimata segmendile) – klõpsa sellele või kasuta otseteed klahvidega „Crtl+Shift+Enter“, et kinnitada aktiivse segmendi tõlge ja salvestada see tõlkemällu ning liikuda järgmisele tõlkimata segmendile. Pane tähele, et see nupp ilmub kasutajaliidesesse ainult siis, kui tööfailis on juba tõlgitud segmente.  
+**1. Nupp „TÕLGITUD“** - klõpsa sellel nupul või kasuta otseteed klahvidega „Crtl+Enter“, et kinnitada aktiivse segmendi tõlge ja salvestada see tõlkemällu.   
+**2. Nupp „T+>>“** (tõlgi ja liigu järgmisele tõlkimata segmendile) - klõpsa sellele või kasuta otseteed klahvidega „Crtl+Shift+Enter“, et kinnitada aktiivse segmendi tõlge ja salvestada see tõlkemällu ning liikuda järgmisele tõlkimata segmendile. Pane tähele, et see nupp ilmub kasutajaliidesesse ainult siis, kui tööfailis on juba tõlgitud segmente.  
 Mõlemat kinnitamise funktsooni kasutades muutub segmendi staatuse riba värv paremal siniseks.
 
-**Korraga mitme segmendi tõlkimine** – kui sul on vaja korraga mitu segmenti kinnitada, siis vali soovitud segmendid, tähistades need linnukesega. Üles ilmub nupp **„MÄRGI TÕLGITUKS“**. Klõpsa sellel, et kinnitada valitud segmendid. Segmentide staatus **„MUSTAND“** salvestatakse üle staatusega **„TÕLGITUD“**.
+**Korraga mitme segmendi tõlkimine** - kui sul on vaja korraga mitu segmenti kinnitada, siis vali soovitud segmendid, tähistades need linnukesega. Üles ilmub nupp **„MÄRGI TÕLGITUKS“**. Klõpsa sellel, et kinnitada valitud segmendid. Segmentide staatus **„MUSTAND“** salvestatakse üle staatusega **„TÕLGITUD“**.
 Kui tõlge on valmis, saad tõlgitud dokumendi alla laadida, klõpsates lehe paremas ülanurgas nupule „Laadi alla“.
 
 
@@ -499,9 +518,9 @@ Valikus on segmentide filtreerimine järgmiste staatuste järgi.
 * Kordused: näitab korduvaid segmente.  
 * MT: näitab segmente, kus esimene tõlkevaste ettepanek pärineb masintõlkemootorist.  
 * 100% kattuvad: näitab segmente, kus esimene tõlkevaste ettepanek on 100% kattuv tõlkemälu vaste.  
-* 75%–84% kattuvad: näitab segmente, kus tõlkemäluettepanek on umbkaudne, mille protsent jääb vahemikku 75–84%.  
-* 85%–94% kattuvad: näitab segmente, kus tõlkemäluettepanek on umbkaudne, mille protsent jääb vahemikku 85–94%.  
-* 95%–99% kattuvad: näitab segmente, kus tõlkemäluettepanek on umbkaudne, mille protsent jääb vahemikku 95–99%.  
+* 75%-84% kattuvad: näitab segmente, kus tõlkemäluettepanek on umbkaudne, mille protsent jääb vahemikku 75-84%.  
+* 85%-94% kattuvad: näitab segmente, kus tõlkemäluettepanek on umbkaudne, mille protsent jääb vahemikku 85-94%.  
+* 95%-99% kattuvad: näitab segmente, kus tõlkemäluettepanek on umbkaudne, mille protsent jääb vahemikku 95-99%.  
 * Teha: näitab veel tegemata/tõlkimata segmente. 
 
 ### Tõlkemälu otsingu vahekaart
@@ -514,7 +533,7 @@ See võimaldab kasutajatel otsida konkreetset sõna, väljendit või fraasi üle
 Kui avada segment tõlkimiseks, täidab tõlketööriist selle automaatselt tõlkemälu (TM) vastega või masintõlke (MT) ettepanekuga.
 Kui masintõlge on sisse lülitatud, pakub tõlketööriist segmendile masintõlke ettepanekut. Kui tõlketööriist tuvastab tõlkemälu vaste, pakub see segmendile tõlkemälu vastet ettepanekuna. Kui MT on välja lülitatud ja tõlkemälust vastet ei ole, jätab süsteem sihtsegmendi tühjaks.
  
-Vahekaart **„Tõlkevasted“** – sellel vahekaardil kuvatakse kolm kõrgeima kattuvusprotsendiga olemasolevat vastet aktiivse segmendi jaoks, sealhulgas vaste kattuvusprotsent, selle allikas ja loomise kuupäev. Ühe pakutud vaste valimiseks ja muutmiseks saab kasutada otseteed klahvidega „Ctrl+1/2/3“.
+Vahekaart **„Tõlkevasted“** - sellel vahekaardil kuvatakse kolm kõrgeima kattuvusprotsendiga olemasolevat vastet aktiivse segmendi jaoks, sealhulgas vaste kattuvusprotsent, selle allikas ja loomise kuupäev. Ühe pakutud vaste valimiseks ja muutmiseks saab kasutada otseteed klahvidega „Ctrl+1/2/3“.
 Tõlketööriist pakub tõlkemälu ettepanekuid, mis vastavad tõlkemälust leitud vastetele, samuti masintõlke ettepanekuid, kui MT on aktiveeritud.
 Ettepanekud on järjestatud vastavalt nende vastavusprotsendile, alates kõrgeimast kuni madalaimani. Nagu eelnevalt mainitud, kuvatakse kõrgemate tõlkemälu vastavusprotsentide puudumisel esmajärjekorras masintõlget.
 Iga TM-i ettepaneku puhul on selle kirje paremas allnurgas allikas järgmiste andmetega: tõlkemälu nimetus, vastavusprotsent ja loomise kuupäev.
@@ -539,7 +558,7 @@ Tõlketööriist hoiatab kolme tüüpi probleemidest.
 **1. Vormingu sildi mittevastavus**
 Tõlketööriist hoiatab kasutajat, kui mõni vormingu silt on sihtkeele segmendist puudu. Puuduvast vormingu sildist annab süsteem märku veateatega. 
  
-Lähtekeele vormingu silt ... puudub sihtsegmendist.
+Lähtekeele vormingu silt „XY“ puudub sihtsegmendist.
 **Seda tüüpi viga tuleks parandada. Vastasel juhul võib tõlgitud faili jääda tõlkimata sisu.**
 
 **2. Vormingu sildi järjekorra mittevastavus**
@@ -577,19 +596,14 @@ Tõlkevärava tõlketööriist kasutab vormingu silte, et tagada lähteteksti ja
 
 ### Tõlke allalaadimine tõlketööriistast
 
-Tõlketeksti saab alla laadida tellimuse vaates kolme täpiga ikoonist avanevast allalaadimise nupust **„Laadi alla valmis tõlge“**.
+Tõlketeksti saab alla laadida alamtellimuse vaates kolme täpiga ikoonist avanevast allalaadimise nupust **„Laadi alla valmis tõlge“**. 
 
 ![Tõlke allalaadimine_tellimuse vaates](https://github.com/keeleinstituut/tv-tolkevarav/assets/119607967/bca5faa0-1a98-4007-955d-ac857495ca9c)
 
-Lisaks saab ka tõlketööriista vaates tõlkimise ajal igal ajal tõlke alla laadida noole ikooniga nupule klõpsates. Kui tõlge ei ole veel valmis, saab alla laadida mustandi. Sellisel juhul asendatakse teksti redigeerimata osad masintõlkega või jäetakse need tühjaks.
+Enne valmis tõlke alla laadimist veendu, et kõik segmendid on tõlgitud (edenemise riba on jõudnud 100%-ni) ja lahendatud on kõik QA probleemid.
+Kui tõlkimisesse saadeti DOCX-fail, siis laaditakse alla tõlgitud DOCX-fail jne. Kui lähtefaile oli rohkem kui üks, siis laaditakse need kõik alla pakitud zip-kaustana. St ülesandest ei ole võimalik üksikuid faile eraldi alla laadida. Saab alla laadida kõik failid korraga.
 
-![Tõlke allalaadimine](https://github.com/keeleinstituut/tv-tolkevarav/assets/119607967/5ceb24e2-36e2-4490-991c-d1490d2d205c)
-
-Kui tõlge on valmis (edenemise riba jõuab 100%-ni), asendatakse menüüs „Allalaadimine“ nupp „Mustand“ nupuga **„Laadi tõlge alla“**. Klõpsa sellel, et laadida alla tõlgitud tekst samas formaadis nagu originaalfail (kui laaditi üles DOCX-fail, siis laaditakse alla tõlgitud DOCX-fail jne).
-Kui lähtefaile oli rohkem kui üks, siis laaditakse need kõik alla pakitud zip-kaustana.
-
-Ülesandest ei ole võimalik üksikuid faile eraldi alla laadida. Saab alla laadida kõik failid korraga.
-Allalaadimise lisavalikud:
+Lisaks saab ka tõlketööriista vaates noole ikooniga nupule klõpsates alla laadida järgmised failid:
 * originaal (lähtefail);
 * ekspordi XLIFF, mis sisaldab nii lähteteksti kui ka sihtteksti;
 * ekspordi TMX, mis sisaldab tellimuse tõlkemälu.
@@ -650,7 +664,7 @@ Asutuse üldandmete all saab luua ja muuta asutuse üksuseid. Asutuse üksuseid 
 
 [START]
 
-## Asutuse ülesed süsteemi sätted
+## Asutuse süsteemi sätted
 
 Asutuse ülestes sätetes saab hallata tõlkeanalüüsipõhist soodustuste tabelit. Analüüsipõhise soodustuse protsendid võetakse üle vaikeväärtusena teostajate hinnakirjadesse. Kui asutuse analüüsipõhine soodustuse tabel on kinnitatud, siis võib selle alusel luua teostajatele hinnakirjad.
 
@@ -679,7 +693,7 @@ Logidest saab vaadata järgmist:
 
 [BREAK]
 
-Logisid säilitatakse kuni 6 kuud.
+Logisid säilitatakse 731 päeva.
 
 [END]`
 
