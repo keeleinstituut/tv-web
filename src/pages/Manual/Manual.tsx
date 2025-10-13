@@ -14,7 +14,7 @@ const Manual: FC = () => {
 
   const helpSectionsData: HelpSections = manual
 
-  const date = '15.02.2022'
+  const date = '13.10.2025'
   const author = 'Interlex'
   const authorEmail = 'koostaja@interlex.ee'
 
