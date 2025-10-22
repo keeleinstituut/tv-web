@@ -13,7 +13,7 @@ const UserRoleSection: FC = () => {
   const openInstitutionSelection = useCallback(() => {
     openInstitutionSelectModal({
       onSelect: (id: string) => {
-        window.location.reload()
+        window.location.href = '/'
       },
     })
   }, [openInstitutionSelectModal])
