@@ -1,4 +1,4 @@
-import { memo, FC, RefObject } from 'react'
+import { memo, FC, RefObject, useMemo } from 'react'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
@@ -31,8 +31,20 @@ const InputErrorComponent: FC<InputErrorComponentProps> = ({
     }) || {}
 
   const { t } = useTranslation()
+
+  const messageToShow = useMemo(() => {
+    if (!message) {
+      return t('error.required')
+    }
+
+    return t(message, {
+      keyPrefix: 'backend.error_translations',
+      defaultValue: message,
+    })
+  }, [t, message])
+
   if (!isVisible) return null
-  const messageToShow = message || t('error.required')
+
   return (
     <div
       className={classNames(classes.errorContainer, className)}
