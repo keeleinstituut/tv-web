@@ -1,4 +1,4 @@
-import { useCallback, useMemo, Fragment } from 'react'
+import { useCallback, useMemo, Fragment, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import { map, filter, size, isEmpty } from 'lodash'
@@ -36,6 +36,7 @@ import { CollectionType, useHandleFiles } from 'hooks/requests/useFiles'
 import { HelperFileTypes } from 'types/classifierValues'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import ErrorPlaceHolder from 'components/molecules/ErrorPlaceHolder/ErrorPlaceHolder'
+import InputError from 'components/atoms/InputError/InputError'
 
 interface ProjectFilesListProps<TFormValues extends FieldValues> {
   title: string
@@ -86,6 +87,8 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
     name: 'help_file_types' as Path<TFormValues>,
     control,
   })
+
+  const titleRef = useRef(null)
 
   const helpFileTypes: HelperFileTypes[] = useWatch({
     control,
@@ -268,22 +271,31 @@ const ProjectFilesList = <TFormValues extends FieldValues>({
       tableWrapperClassName={classes.tableWrapperClassName}
       hidePagination
       headComponent={
-        <div className={classes.titleRow}>
-          <h3>{title}</h3>
+        <div className={classes.headContainer}>
+          <div className={classes.titleRow}>
+            <h3 ref={titleRef}>{title}</h3>
 
-          <SmallTooltip
-            hidden={!tooltipContent || !isEditable}
-            tooltipContent={tooltipContent}
-          />
-          <FileImport
-            fileButtonText={t('button.add_file')}
-            hidden={!isEditable}
-            isFilesListHidden
-            files={value}
-            inputFileTypes={ProjectFileTypes}
-            className={classes.fileImportButton}
-            onChange={onChange}
-            allowMultiple
+            <SmallTooltip
+              hidden={!tooltipContent || !isEditable}
+              tooltipContent={tooltipContent}
+            />
+            <FileImport
+              fileButtonText={t('button.add_file')}
+              hidden={!isEditable}
+              isFilesListHidden
+              files={value}
+              inputFileTypes={ProjectFileTypes}
+              className={classes.fileImportButton}
+              onChange={onChange}
+              allowMultiple
+            />
+          </div>
+          <InputError
+            wrapperRef={titleRef}
+            message={
+              control.getFieldState(name as Path<TFormValues>).error?.message ||
+              ''
+            }
           />
         </div>
       }

@@ -1004,5 +1004,11 @@
       "ACCEPTED": "Teostamisel",
       "DONE": "Teostatud"
     }
+  },
+  "backend": {
+    "error_translations": {
+      "The source files field must not have more than 20 items.": "Lähtefailides ei tohi sisalduda rohkem kui 20 faili.",
+      "The help files field must not have more than 20 items.": "Abifailides ei tohi sisalduda rohkem kui 20 faili."
+    }
   }
 }

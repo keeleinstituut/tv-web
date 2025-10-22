@@ -13,7 +13,6 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { TypesWithStartTime } from 'types/projects'
-import useValidators from 'hooks/useValidators'
 import { orderClassifierByLangPriority } from 'helpers'
 import dayjs from 'dayjs'
 interface DetailsSectionProps<TFormValues extends FieldValues> {
@@ -30,7 +29,6 @@ const DetailsSection = <TFormValues extends FieldValues>({
   workflow_started,
 }: DetailsSectionProps<TFormValues>) => {
   const { t } = useTranslation()
-  const { dateTimePickerValidator } = useValidators()
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
   })
@@ -160,7 +158,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
             if (deadline_at.isBefore(event_start_at)) {
               return t('error.deadline_at_before_event_start_at')
             }
-            return dateTimePickerValidator(value)
+            return true
           },
         },
       },
@@ -231,7 +229,6 @@ const DetailsSection = <TFormValues extends FieldValues>({
       selectedProjectType?.value,
       selectedProjectType?.project_type_config?.is_start_date_supported,
       languageFilters,
-      dateTimePickerValidator,
     ]
   )
 
