@@ -1,5 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
-import { isEmpty, keys, size, toString, values } from 'lodash'
+import {
+  createContext,
+  ReactElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import { isEmpty, size, toString } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import {
   Table,
@@ -20,6 +27,15 @@ import Button, {
   SizeTypes,
 } from 'components/molecules/Button/Button'
 import { FilterFunctionType, SortingFunctionType } from 'types/collective'
+import DatePicker from 'react-datepicker'
+import dayjs from 'dayjs'
+
+type HeaderItemContextType<TData> = {
+  header: Header<TData, RowData>
+} & HeaderGroupFunctions
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const HeaderItemContext = createContext<HeaderItemContextType<any>>(null as any)
 
 export interface HeaderGroupFunctions {
   onSortingChange?: (value?: SortingFunctionType) => void
@@ -30,21 +46,13 @@ type HeaderGroupProps<TData> = {
   table: Table<TData>
 } & HeaderGroupFunctions
 
-type FilterTypes = {
-  [filterKey: string]: DropDownOptions[]
-}
-
 type ColumnMeta = {
   meta?: {
-    filterOption?: FilterTypes
     sortingOption?: SortingFunctionType['sort_order'][]
-    filterValue?: string | string[]
-    onEndReached?: () => void
-    onSearch?: (value: string) => void
-    showSearch?: boolean
-    isCustomSingleDropdown?: boolean
     currentSorting?: SortingFunctionType['sort_order']
     sortingParameterName: string
+
+    FilteringComponent: ReactElement | (() => ReactElement)
   }
 }
 type CustomColumnDef<TData> = ColumnDef<TData> & ColumnMeta
@@ -53,6 +61,94 @@ type HeaderItemProps<TData> = {
   hidden?: boolean
   header: Header<TData, RowData>
 } & HeaderGroupFunctions
+
+interface DropdownFilterProps {
+  filterKey: string
+  options: DropDownOptions[]
+  value?: string | string[]
+  onEndReached?: () => void
+  onSearch?: (value: string) => void
+  isCustomSingleDropdown?: boolean
+  showSearch?: boolean
+}
+
+export const TableSelectFilter = <TData,>({
+  filterKey,
+  options,
+  value: currentValue,
+  onEndReached,
+  onSearch,
+  isCustomSingleDropdown,
+  showSearch,
+}: DropdownFilterProps) => {
+  const { t } = useTranslation()
+  const { onFiltersChange, header } =
+    useContext<HeaderItemContextType<TData>>(HeaderItemContext)
+  const { id } = header
+
+  const handleOnFiltering = (value: string | string[]) => {
+    if (onFiltersChange) {
+      onFiltersChange({ [filterKey]: value })
+    }
+  }
+
+  return (
+    <>
+      <TableColumnFilter
+        hidden={isEmpty(options) && !showSearch}
+        filterOption={options}
+        name={toString(id)}
+        onChange={handleOnFiltering}
+        icon={FilterIcon}
+        value={currentValue}
+        isCustomSingleDropdown={isCustomSingleDropdown}
+        buttons
+        ariaLabel={t('button.filter')}
+        onEndReached={onEndReached}
+        onSearch={onSearch}
+        showSearch={showSearch}
+      />
+    </>
+  )
+}
+
+type TableDateFilterProps = {
+  filterKey: string
+  value?: string
+}
+
+export const TableDateFilter = <TData,>({
+  filterKey,
+  value,
+}: TableDateFilterProps) => {
+  const { t } = useTranslation()
+  const { onFiltersChange } =
+    useContext<HeaderItemContextType<TData>>(HeaderItemContext)
+
+  return (
+    <>
+      <DatePicker
+        selected={value ? dayjs(value).toDate() : null}
+        onChange={(value) => {
+          if (onFiltersChange) {
+            const formatted = dayjs(value).format('YYYY-MM-DD')
+            onFiltersChange({ [filterKey]: formatted })
+          }
+        }}
+        autoComplete="off"
+        customInput={
+          <Button
+            appearance={AppearanceTypes.Text}
+            size={SizeTypes.S}
+            icon={FilterIcon}
+            ariaLabel={t('button.sort')}
+            className={classes.iconButton}
+          />
+        }
+      />
+    </>
+  )
+}
 
 const HeaderItem = <TData,>({
   hidden,
@@ -73,16 +169,9 @@ const HeaderItem = <TData,>({
     setCurrentSorting(meta?.currentSorting)
   }, [meta?.currentSorting])
 
-  const filterOption = meta?.filterOption || []
-  const onEndReached = meta?.onEndReached
-  const onSearch = meta?.onSearch
-  const showSearch = meta?.showSearch
-  const isCustomSingleDropdown = meta?.isCustomSingleDropdown
-
-  const options = values(filterOption)[0] || []
   const sortingOption = meta?.sortingOption || []
-  const filterValue = meta?.filterValue
   const sortingParameterName = meta?.sortingParameterName || id
+  const FilteringComponent = meta?.FilteringComponent
 
   const [step, setStep] = useState<number>(
     currentSorting ? sortingOption.indexOf(currentSorting) + 1 : 0
@@ -116,14 +205,6 @@ const HeaderItem = <TData,>({
     }
   }, [currentSorting])
 
-  const handleOnFiltering = (value: string | string[]) => {
-    const filterKey = keys(filterOption)[0]
-
-    if (onFiltersChange) {
-      onFiltersChange({ [filterKey]: value })
-    }
-  }
-
   if (hidden) return null
 
   return (
@@ -140,20 +221,19 @@ const HeaderItem = <TData,>({
 
       {flexRender(column.columnDef.header, header.getContext())}
 
-      <TableColumnFilter
-        hidden={isEmpty(options) && !showSearch}
-        filterOption={options}
-        name={toString(id)}
-        onChange={handleOnFiltering}
-        icon={FilterIcon}
-        value={filterValue}
-        isCustomSingleDropdown={isCustomSingleDropdown}
-        buttons
-        ariaLabel={t('button.filter')}
-        onEndReached={onEndReached}
-        onSearch={onSearch}
-        showSearch={showSearch}
-      />
+      <HeaderItemContext.Provider
+        value={{
+          header,
+          onFiltersChange,
+        }}
+      >
+        {}
+        {typeof FilteringComponent === 'function' ? (
+          <FilteringComponent />
+        ) : (
+          FilteringComponent
+        )}
+      </HeaderItemContext.Provider>
     </div>
   )
 }

@@ -18,6 +18,7 @@ import classNames from 'classnames'
 import Loader from 'components/atoms/Loader/Loader'
 import { useSearchParams } from 'react-router-dom'
 import { parseLanguagePairs } from 'helpers'
+import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 
 type GeneralPriceListTableProps = {
   hidden?: boolean
@@ -174,13 +175,18 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       },
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { language_direction: languageDirectionFilters },
-        onEndReached: loadMore,
-        onSearch: handleSearch,
-        showSearch: true,
-        filterValue: map(
-          filters.lang_pair || [],
-          ({ src, dst }) => `${src}_${dst}`
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="language_direction"
+            options={languageDirectionFilters}
+            onEndReached={loadMore}
+            onSearch={handleSearch}
+            showSearch
+            value={map(
+              filters.lang_pair || [],
+              ({ src, dst }) => `${src}_${dst}`
+            )}
+          />
         ),
       },
     }),
@@ -188,9 +194,14 @@ const GeneralPriceListTable: FC<GeneralPriceListTableProps> = ({ hidden }) => {
       header: () => t('label.skill'),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { skill_id: skillsFilters },
-        showSearch: true,
-        filterValue: filters?.skill_id || [],
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="skill_id"
+            options={skillsFilters}
+            showSearch
+            value={filters?.skill_id || []}
+          />
+        ),
       },
       size: 200,
     }),

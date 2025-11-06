@@ -36,6 +36,11 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
+import {
+  TableDateFilter,
+  TableSelectFilter,
+} from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
+import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 
 type SubProjectTableRow = {
   ext_id: string
@@ -56,7 +61,7 @@ const columnHelper = createColumnHelper<SubProjectTableRow>()
 interface FormValues {
   status?: SubProjectStatus[]
   only_show_personal_projects: boolean
-  ext_id?: string
+  q?: string
 }
 
 const SubProjectsTable: FC = () => {
@@ -99,6 +104,9 @@ const SubProjectsTable: FC = () => {
       : Number(searchParams.get('only_show_personal_projects')) || 0,
     type_classifier_value_id: searchParams.getAll('type_classifier_value_id'),
     tag_ids: searchParams.getAll('tag_ids'),
+    client_institution_user_ids: searchParams.getAll(
+      'client_institution_user_ids'
+    ),
   }
 
   const {
@@ -122,6 +130,26 @@ const SubProjectsTable: FC = () => {
     handleSearch,
     setSelectedValues,
   } = useLanguageDirections({ includeValues: projectLanguages })
+
+  const {
+    users: usersData,
+    handleFilterChange: usersFetchHandleFilterChange,
+    fetchNextPage: usersFetchFetchNextPage,
+  } = useFetchInfiniteProjectPerson(
+    {
+      per_page: 50,
+    },
+    'client'
+  )
+
+  const userFilterValues = useMemo(() => {
+    return map(usersData, (user) => {
+      return {
+        value: user.id,
+        label: `${user.user.forename} ${user.user.surname}`,
+      }
+    })
+  }, [usersData])
 
   useEffect(() => {
     setSelectedValues(filters?.language_direction || [])
@@ -310,22 +338,36 @@ const SubProjectsTable: FC = () => {
         )
       },
       meta: {
-        filterOption: { language_direction: languageDirectionFilters },
-        onEndReached: loadMore,
-        onSearch: handleSearch,
-        showSearch: true,
-        filterValue: filters?.language_direction
-          ? filters.language_direction.map((item) => item.replace(':', '_'))
-          : [],
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="language_direction"
+            options={languageDirectionFilters}
+            onEndReached={loadMore}
+            onSearch={handleSearch}
+            showSearch
+            value={
+              filters?.language_direction
+                ? filters?.language_direction.map((item) =>
+                    item.replace(':', '_')
+                  )
+                : []
+            }
+          />
+        ),
       },
     }),
     columnHelper.accessor('type', {
       header: () => t('label.type'),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { type_classifier_value_id: typeFilters },
-        filterValue: filters.type_classifier_value_id,
-        isCustomSingleDropdown: true,
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="type_classifier_value_id"
+            options={typeFilters}
+            value={filters.type_classifier_value_id}
+            isCustomSingleDropdown
+          />
+        ),
       },
     }),
     columnHelper.accessor('tags', {
@@ -341,9 +383,14 @@ const SubProjectsTable: FC = () => {
         )
       },
       meta: {
-        filterOption: { tag_ids: tagsFilters },
-        showSearch: true,
-        filterValue: filters?.tag_ids || [],
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="tag_ids"
+            options={tagsFilters}
+            showSearch={true}
+            value={filters?.tag_ids || []}
+          />
+        ),
       },
     }),
     columnHelper.accessor('status', {
@@ -400,6 +447,12 @@ const SubProjectsTable: FC = () => {
         sortingOption: ['asc', 'desc'],
         currentSorting:
           filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
+        FilteringComponent: (
+          <TableDateFilter
+            filterKey="deadline_at"
+            value={filters?.deadline_at}
+          />
+        ),
       },
     }),
     columnHelper.accessor('created_at', {
@@ -409,6 +462,9 @@ const SubProjectsTable: FC = () => {
         sortingOption: ['asc', 'desc'],
         currentSorting:
           filters?.sort_by === 'created_at' ? filters.sort_order : '',
+        FilteringComponent: (
+          <TableDateFilter filterKey="created_at" value={filters?.created_at} />
+        ),
       },
       cell: ({ getValue, row }) => {
         const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
@@ -426,6 +482,12 @@ const SubProjectsTable: FC = () => {
           filters?.sort_by === 'project.event_start_at'
             ? filters.sort_order
             : '',
+        FilteringComponent: (
+          <TableDateFilter
+            filterKey="event_start_at"
+            value={filters?.event_start_at}
+          />
+        ),
       },
       cell: ({ getValue, row }) => {
         const value = getValue()
@@ -449,6 +511,20 @@ const SubProjectsTable: FC = () => {
           filters?.sort_by === 'project.clientInstitutionUser.name'
             ? filters.sort_order
             : '',
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="client_institution_user_ids"
+            options={userFilterValues}
+            onEndReached={usersFetchFetchNextPage}
+            value={filters?.client_institution_user_ids || []}
+            showSearch
+            onSearch={(value) =>
+              usersFetchHandleFilterChange({
+                fullname: value,
+              })
+            }
+          />
+        ),
       },
     }),
   ] as ColumnDef<SubProjectTableRow>[]
@@ -483,9 +559,9 @@ const SubProjectsTable: FC = () => {
               disabled={onlyPersonalProjectsAllowed}
             />
             <FormInput
-              name="ext_id"
+              name="q"
               ariaLabel={t('label.search_by_id')}
-              placeholder={t('placeholder.search_by_id')}
+              placeholder={t('placeholder.search_by_id_or_reference_number')}
               inputType={InputTypes.Text}
               className={classes.searchInput}
               inputContainerClassName={classes.searchInnerContainer}
