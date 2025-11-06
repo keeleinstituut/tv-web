@@ -156,7 +156,7 @@
     "notes_for_translation_manager": "Tõlkekorraldajale jäetud info",
     "select_tags": "Vali sildid",
     "pick_days": "Vali päev(ad)",
-    "search_by_id": "Otsi tellimuse ID siit...",
+    "search_by_id_or_reference_number": "Otsi tellimuse ID või viitenumbrit siit...",
     "comment": "Lisa tekst...",
     "cancellation_reason": "Lisa tühistamise põhjus...",
     "extra_information": "Täpsusta, mis on valesti...",
