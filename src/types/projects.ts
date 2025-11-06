@@ -239,6 +239,10 @@ export type ProjectsPayloadType = PaginationFunctionType &
     statuses?: string[]
     tag_ids?: string[]
     type_classifier_value_ids?: string | string[]
+    client_institution_user_ids?: string | string[]
+    event_start_at?: string
+    deadline_at?: string
+    created_at?: string
   }
 
 export type SubProjectsPayloadType = PaginationFunctionType &
@@ -249,6 +253,10 @@ export type SubProjectsPayloadType = PaginationFunctionType &
     language_direction?: string[]
     tag_ids?: string[]
     type_classifier_value_id?: string | string[]
+    client_institution_user_ids?: string | string[]
+    event_start_at?: string
+    deadline_at?: string
+    created_at?: string
   }
 
 export interface ProjectsResponse {

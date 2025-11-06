@@ -72,7 +72,7 @@ export const useFetchUsers = ({
 export const useFetchInfiniteProjectPerson = (
   initialFilters?: UserPayloadType,
   personToFetch = 'client',
-  enabled = false
+  enabled = true
 ) => {
   const { filters, handleFilterChange } =
     useFilters<UserPayloadType>(initialFilters)

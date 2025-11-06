@@ -25,6 +25,7 @@ import { Root } from '@radix-ui/react-form'
 import { useVendorsFetch } from 'hooks/requests/useVendors'
 import classNames from 'classnames'
 import { parseLanguagePairs } from 'helpers'
+import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 
 type VendorsTableProps = {
   hidden?: boolean
@@ -185,13 +186,18 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
       },
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { language_direction: languageDirectionFilters },
-        onEndReached: loadMore,
-        onSearch: handleSearch,
-        showSearch: true,
-        filterValue: map(
-          filters.lang_pair || [],
-          ({ src, dst }) => `${src}_${dst}`
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="language_direction"
+            options={languageDirectionFilters}
+            onEndReached={loadMore}
+            onSearch={handleSearch}
+            showSearch
+            value={map(
+              filters.lang_pair || [],
+              ({ src, dst }) => `${src}_${dst}`
+            )}
+          />
         ),
       },
     }),
@@ -200,9 +206,14 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
       cell: ({ renderValue }) => join(renderValue(), ', '),
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { role_id: rolesFilters },
-        showSearch: true,
-        filterValue: filters?.role_id || [],
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="role_id"
+            options={rolesFilters}
+            showSearch
+            value={filters?.role_id || []}
+          />
+        ),
       },
     }),
     columnHelper.accessor('name', {
@@ -226,8 +237,13 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
         )
       },
       meta: {
-        filterOption: { tag_id: tagsFilters },
-        filterValue: filters?.tag_id || [],
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="tag_id"
+            options={tagsFilters}
+            value={filters?.tag_id || []}
+          />
+        ),
       },
     }),
     columnHelper.accessor('id', {

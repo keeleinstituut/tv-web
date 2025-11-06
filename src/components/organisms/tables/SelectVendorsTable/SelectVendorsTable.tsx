@@ -29,6 +29,7 @@ import { Root } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
 import { useFetchSkills } from 'hooks/requests/useVendors'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 // import { TagTypes } from 'types/tags'
 import('dayjs/locale/et')
 
@@ -263,11 +264,16 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
       },
       footer: (info) => info.column.id,
       meta: {
-        filterOption: { language_direction: languageDirectionFilters },
-        filterValue: map(lang_pair, ({ src, dst }) => `${src}_${dst}`),
-        onEndReached: loadMore,
-        onSearch: handleSearch,
-        showSearch: true,
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="language_direction"
+            options={languageDirectionFilters}
+            onEndReached={loadMore}
+            onSearch={handleSearch}
+            showSearch
+            value={map(lang_pair, ({ src, dst }) => `${src}_${dst}`)}
+          />
+        ),
       },
     }),
     columnHelper.accessor('skill', {
@@ -281,9 +287,14 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
         )
       },
       meta: {
-        filterOption: { skill_id: skillsFilters },
-        filterValue: selectedSkillFilter,
-        showSearch: true,
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="skill_id"
+            options={skillsFilters}
+            showSearch
+            value={selectedSkillFilter}
+          />
+        ),
       },
     }),
     columnHelper.accessor('name', {

@@ -42,6 +42,7 @@ import { Privileges } from 'types/privileges'
 import { useAuth } from 'components/contexts/AuthContext'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
+import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 
 type TranslationMemoriesTableRow = {
   name: string
@@ -247,9 +248,14 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           },
           size: 520,
           meta: {
-            filterOption: { tv_tags: tagsOptions },
-            showSearch: true,
-            filterValue: filters?.tv_tags || [],
+            FilteringComponent: (
+              <TableSelectFilter
+                filterKey="tv_tags"
+                options={tagsOptions}
+                showSearch
+                value={filters?.tv_tags || []}
+              />
+            ),
           },
         }),
         columnHelper.accessor('tv_domain', {
@@ -262,9 +268,13 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           },
           size: 375,
           meta: {
-            filterOption: { tv_domain: domainOptions },
-            filterValue: filters?.tv_domain || [],
-            showSearch: false,
+            FilteringComponent: (
+              <TableSelectFilter
+                filterKey="tv_domain"
+                options={domainOptions}
+                value={filters?.tv_domain || []}
+              />
+            ),
           },
         }),
         columnHelper.accessor('lang_pair', {
@@ -281,11 +291,16 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           size: 100,
           meta: !isSelectingModal
             ? {
-                filterOption: { lang_pair: languageDirectionFilters },
-                onEndReached: loadMore,
-                onSearch: handleSearch,
-                showSearch: true,
-                filterValue: filters?.lang_pair || [],
+                FilteringComponent: (
+                  <TableSelectFilter
+                    filterKey="lang_pair"
+                    options={languageDirectionFilters}
+                    onEndReached={loadMore}
+                    onSearch={handleSearch}
+                    showSearch
+                    value={filters?.lang_pair || []}
+                  />
+                ),
               }
             : {},
         }),

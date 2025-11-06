@@ -27,6 +27,7 @@ import classes from './classes.module.scss'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { useProjectLanguagesFetch } from 'hooks/requests/useProjects'
+import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 
 export enum TaskTableTypes {
   MyTasks = 'myTasks',
@@ -380,15 +381,20 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             )
           },
           meta: {
-            filterOption: { language_direction: languageDirectionFilters },
-            filterValue: map(
-              lang_pair || [],
-              ({ src, dst }) => `${src}_${dst ?? ''}`
+            FilteringComponent: (
+              <TableSelectFilter
+                filterKey="language_direction"
+                options={languageDirectionFilters}
+                value={map(
+                  lang_pair || [],
+                  ({ src, dst }) => `${src}_${dst ?? ''}`
+                )}
+                isCustomSingleDropdown
+                onEndReached={loadMore}
+                onSearch={handleSearch}
+                showSearch
+              />
             ),
-            isCustomSingleDropdown: true,
-            onEndReached: loadMore,
-            onSearch: handleSearch,
-            showSearch: true,
           },
         }),
         columnHelper.accessor('cost', {
@@ -405,9 +411,14 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           header: () => t('label.type'),
           footer: (info) => info.column.id,
           meta: {
-            filterOption: { type_classifier_value_id: typeFilters },
-            filterValue: type_classifier_value_id,
-            isCustomSingleDropdown: true,
+            FilteringComponent: (
+              <TableSelectFilter
+                filterKey="type_classifier_value_id"
+                options={typeFilters}
+                value={type_classifier_value_id}
+                isCustomSingleDropdown
+              />
+            ),
           },
         }),
         columnHelper.accessor('tags', {
@@ -423,9 +434,14 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             )
           },
           meta: {
-            filterOption: { tag_ids: tagsFilters },
-            showSearch: true,
-            filterValue: filters?.tag_ids || [],
+            FilteringComponent: (
+              <TableSelectFilter
+                filterKey="tag_ids"
+                options={tagsFilters}
+                value={filters?.tag_ids || []}
+                showSearch
+              />
+            ),
           },
         }),
         columnHelper.accessor('deadline_at', {

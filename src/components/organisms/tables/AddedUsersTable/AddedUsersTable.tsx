@@ -23,6 +23,7 @@ import { Root } from '@radix-ui/react-form'
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchUsers } from 'hooks/requests/useUsers'
 import classNames from 'classnames'
+import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 
 type TableRow = {
   id: string
@@ -142,8 +143,13 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       footer: (info) => info.column.id,
       size: 200,
       meta: {
-        filterOption: { departments: departmentFilters },
-        filterValue: filters?.departments || [],
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="departments"
+            options={departmentFilters}
+            value={filters?.departments || []}
+          />
+        ),
       },
     }),
     columnHelper.accessor('roles', {
@@ -154,8 +160,13 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       footer: (info) => info.column.id,
       size: 200,
       meta: {
-        filterOption: { roles: rolesFilters },
-        filterValue: filters?.roles || [],
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="roles"
+            options={rolesFilters}
+            value={filters?.roles || []}
+          />
+        ),
       },
     }),
     columnHelper.accessor('status', {
@@ -166,19 +177,22 @@ const AddedUsersTable: FC<AddedUsersProps> = ({ hidden }) => {
       },
       size: 100,
       meta: {
-        filterOption: {
-          statuses: [
-            // not using enum values for translations, so there would be less changes needed
-            // If the enum values change
-            { label: t('user.status.ACTIVE'), value: UserStatus.Active },
-            {
-              label: t('user.status.DEACTIVATED'),
-              value: UserStatus.Deactivated,
-            },
-            { label: t('user.status.ARCHIVED'), value: UserStatus.Archived },
-          ],
-        },
-        filterValue: filters?.statuses || [],
+        FilteringComponent: (
+          <TableSelectFilter
+            filterKey="statuses"
+            options={[
+              // not using enum values for translations, so there would be less changes needed
+              // If the enum values change
+              { label: t('user.status.ACTIVE'), value: UserStatus.Active },
+              {
+                label: t('user.status.DEACTIVATED'),
+                value: UserStatus.Deactivated,
+              },
+              { label: t('user.status.ARCHIVED'), value: UserStatus.Archived },
+            ]}
+            value={filters?.statuses || []}
+          />
+        ),
       },
     }),
   ] as ColumnDef<TableRow>[]
