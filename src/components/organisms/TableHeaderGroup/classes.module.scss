@@ -30,3 +30,24 @@
     fill-opacity: 1;
   }
 }
+
+.customCalendarContainer {
+  background: $color-white;
+  border: 1.25px solid $color-input-border;
+  border-radius: spacing(1);
+}
+
+.calendar {
+  border: none !important;
+}
+
+.buttonsContainer {
+  display: flex;
+  padding: spacing(3) 0;
+  justify-content: center;
+  box-shadow: 0 -1px 1px $color-shadow-secondary;
+}
+
+.leftMargin {
+  margin-left: spacing(2);
+}
