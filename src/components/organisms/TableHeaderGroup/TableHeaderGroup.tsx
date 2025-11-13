@@ -1,6 +1,7 @@
 import {
   createContext,
   ReactElement,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -27,8 +28,9 @@ import Button, {
   SizeTypes,
 } from 'components/molecules/Button/Button'
 import { FilterFunctionType, SortingFunctionType } from 'types/collective'
-import DatePicker from 'react-datepicker'
+import DatePicker, { CalendarContainer } from 'react-datepicker'
 import dayjs from 'dayjs'
+import classNames from 'classnames'
 
 type HeaderItemContextType<TData> = {
   header: Header<TData, RowData>
@@ -125,6 +127,12 @@ export const TableDateFilter = <TData,>({
   const { onFiltersChange } =
     useContext<HeaderItemContextType<TData>>(HeaderItemContext)
 
+  const clearSelection = useCallback(() => {
+    if (onFiltersChange) {
+      onFiltersChange({ [filterKey]: '' })
+    }
+  }, [onFiltersChange, filterKey])
+
   return (
     <>
       <DatePicker
@@ -145,6 +153,24 @@ export const TableDateFilter = <TData,>({
             className={classes.iconButton}
           />
         }
+        calendarContainer={({ children, className }) => (
+          <div className={classes.customCalendarContainer}>
+            <CalendarContainer
+              className={classNames(className, classes.calendar)}
+            >
+              {children}
+            </CalendarContainer>
+            <div className={classes.buttonsContainer}>
+              <Button
+                appearance={AppearanceTypes.Secondary}
+                size={SizeTypes.S}
+                onClick={clearSelection}
+              >
+                {t('button.clear_filter')}
+              </Button>
+            </div>
+          </div>
+        )}
       />
     </>
   )
