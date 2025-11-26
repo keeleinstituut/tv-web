@@ -37,7 +37,7 @@ const TranslationMemorySubProjectsTable: FC<TmSubProjectsTypes> = ({
     useFetchTranslationMemorySubProjects({
       id: memoryId,
       initialFilters: initialFilters,
-      saveQueryParams: true,
+      saveQueryParams: false,
       disabled: hidden,
     })
 
