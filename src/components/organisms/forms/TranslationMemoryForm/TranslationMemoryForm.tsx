@@ -84,10 +84,13 @@ const TranslationMemoryForm: FC = () => {
       inputType: InputTypes.Selections,
       ariaLabel: t('label.translation_domain'),
       placeholder: t('placeholder.pick'),
-      label: t('label.translation_domain'),
+      label: `${t('label.translation_domain')}*`,
       name: 'tv_domain',
       options: domainOptions,
       className: classes.inputInternalPosition,
+      rules: {
+        required: true,
+      },
     },
     {
       inputType: InputTypes.Selections,
