@@ -57,7 +57,7 @@ interface FinalFilesListProps<TFormValues extends FieldValues> {
 interface FileRow {
   name: string
   is_project_final_file: number
-  feature: SubProjectFeatures
+  uploader_name: string
   created_at: string
   delete_button?: number
   download_button: number
@@ -150,18 +150,21 @@ const FinalFilesList = <TFormValues extends FieldValues>({
 
   const filesData = useMemo(
     () =>
-      map(typedValue, (file, index) => ({
-        is_project_final_file: index,
-        name: file.name,
-        created_at:
-          'created_at' in file
-            ? dayjs(file?.created_at).format('DD.MM.YYYY HH:mm')
-            : '',
-        download_button: index,
-        delete_button: index,
-        // TODO: feature missing, not sure what field value will be or where it comes from
-        feature: SubProjectFeatures.JobRevision,
-      })),
+      map(typedValue, (file, index) => {
+        const uploader_name = `${file.institution_user?.user?.forename} ${file.institution_user?.user?.surname}`
+
+        return {
+          is_project_final_file: index,
+          name: file.name,
+          created_at:
+            'created_at' in file
+              ? dayjs(file?.created_at).format('DD.MM.YYYY HH:mm')
+              : '',
+          download_button: index,
+          delete_button: index,
+          uploader_name,
+        }
+      }),
     [typedValue]
   )
 
@@ -230,7 +233,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
       },
     }),
 
-    columnHelper.accessor('feature', {
+    columnHelper.accessor('uploader_name', {
       header: () => (
         <p
           className={classes.wrappedHeader}
@@ -244,9 +247,8 @@ const FinalFilesList = <TFormValues extends FieldValues>({
         return info.column.id
       },
       cell: ({ getValue }) => {
-        const selectedFeature = getValue()
         if (mode === ProjectDetailModes.View) return null
-        return t(`projects.features.${selectedFeature}`)
+        return getValue()
       },
     }),
     columnHelper.accessor('created_at', {

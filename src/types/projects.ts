@@ -116,6 +116,7 @@ export interface SourceFile {
   generated_conversions: string[]
   responsive_images: string[]
   isChecked?: boolean
+  institution_user: UserType
 }
 
 export interface CatJob {
