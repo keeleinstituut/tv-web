@@ -12,6 +12,7 @@ import { useAuth } from 'components/contexts/AuthContext'
 import Loader from 'components/atoms/Loader/Loader'
 import { includes } from 'lodash'
 import { Privileges } from 'types/privileges'
+import TranslationMemoryContentChecksTable from 'components/organisms/tables/TranslationMemoryContentChecksTable copy/TranslationMemoryContentChecksTable'
 
 const TranslationMemoryPage: FC = () => {
   const { memoryId = '' } = useParams()
@@ -27,6 +28,8 @@ const TranslationMemoryPage: FC = () => {
 
   if (isLoading) return <Loader loading={isLoading} />
 
+  console.log('asd')
+
   return (
     <>
       <div className={classes.titleRow}>
@@ -34,14 +37,16 @@ const TranslationMemoryPage: FC = () => {
         <Tooltip helpSectionKey="translationMemory" />
       </div>
       <TranslationMemoryDetails
-        translationMemory={
-          {
-            ...translationMemory,
-            chunk_amount: tmChunkAmounts?.[memoryId],
-          } || {}
-        }
+        translationMemory={{
+          ...translationMemory,
+          chunk_amount: tmChunkAmounts?.[memoryId],
+        }}
         memoryId={memoryId}
         isTmOwnedByUserInstitution={isTmOwnedByUserInstitution}
+      />
+      <TranslationMemoryContentChecksTable
+        memoryId={memoryId}
+        hidden={!isTmOwnedByUserInstitution}
       />
       <TranslationMemorySubProjectsTable
         memoryId={memoryId}

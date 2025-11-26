@@ -4,6 +4,9 @@ import { apiClient } from 'api'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import {
+  ContextCheckFilters,
+  ContextCheckListResponse,
+  ContextCheckPayload,
   ExportTMXPayload,
   ImportTMXPayload,
   SubProjectTmKeysPayload,
@@ -439,5 +442,55 @@ export const useCreateEmptyTm = ({
   return {
     isLoading,
     createEmptyTm,
+  }
+}
+
+export const useFetchTranslationMemoryContextChecks = (options?: {
+  initialFilters: ContextCheckFilters
+  refetchInterval?: number
+}) => {
+  const saveQueryParams = false
+  const { initialFilters = {}, refetchInterval = undefined } = options || {}
+
+  const {
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useFilters<ContextCheckFilters>(initialFilters, saveQueryParams)
+
+  const { isLoading, isError, data, refetch } =
+    useQuery<ContextCheckListResponse>({
+      queryKey: ['translation-memory-context-checks', filters],
+      queryFn: () => apiClient.get(`${endpoints.TM_CONTENT_CHECKS}`, filters),
+      keepPreviousData: true,
+      refetchInterval,
+    })
+
+  const { meta: paginationData, data: contextChecks } = data || {}
+
+  return {
+    isLoading,
+    isError,
+    contextChecks,
+    paginationData,
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+    refetch,
+  }
+}
+
+export const useCreateTranslationMemoryContextCheck = () => {
+  const { mutateAsync: createContextCheck, isLoading } = useMutation({
+    mutationKey: ['translationMemories'],
+    mutationFn: (payload: ContextCheckPayload) =>
+      apiClient.post(endpoints.TM_CONTENT_CHECKS, payload),
+  })
+
+  return {
+    createContextCheck,
+    isLoading,
   }
 }

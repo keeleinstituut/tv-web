@@ -1,4 +1,8 @@
-import { PaginationFunctionType, SortingFunctionType } from './collective'
+import {
+  PaginationFunctionType,
+  ResponseMetaTypes,
+  SortingFunctionType,
+} from './collective'
 
 export enum TMType {
   Internal = 'private',
@@ -83,4 +87,30 @@ export interface SubProjectTmKeysPayload {
   }[]
   key?: string
   created_as_empty?: number
+}
+
+export type ContextCheckPayload = {
+  tag_id: string
+}
+
+export type ContextCheckFilters = {
+  tag_id?: string
+} & PaginationFunctionType &
+  SortingFunctionType
+
+export interface ContextCheckType {
+  id: string
+  segments_checked_count: number | null
+  segments_count: number | null
+  segments_failed_count: number | null
+  segments_passwed_count: number | null
+  status: string
+
+  finished_at: string
+  created_at: string
+}
+
+export interface ContextCheckListResponse {
+  data: ContextCheckType[]
+  meta?: ResponseMetaTypes
 }

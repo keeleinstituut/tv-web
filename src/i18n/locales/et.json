@@ -763,6 +763,12 @@
       "private": "Asutuse sisene",
       "shared": "Asutustega jagamiseks",
       "public": "Avalik"
+    },
+    "content_check_status": {
+      "waiting": "Ootel",
+      "running": "Käivitatud",
+      "done": "Tehtud",
+      "failure": "Viga"
     }
   },
   "task": {

@@ -83,6 +83,7 @@ export const endpoints = {
   IMPORT_TMX: translationMemory('tm/import'),
   EXPORT_TMX: translationMemory('tm/export'),
   TM_STATS: translationMemory('tm/stats'),
+  TM_CONTENT_CHECKS: translationMemory('content-checks'),
 
   AUDIT_LOGS: auditLog('event-records'),
   AUDIT_LOG_ACTIONS: auditLog('event-records/actions'),
