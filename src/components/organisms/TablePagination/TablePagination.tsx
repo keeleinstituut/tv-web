@@ -81,12 +81,12 @@ const TablePagination = <TData,>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={() => {
             previousPage()
-            if (!isModalTable) {
-              setSearchParams((prevParams) => {
-                prevParams.set('page', `${getState().pagination.pageIndex}`)
-                return searchParams
-              })
-            }
+            // if (!isModalTable) {
+            //   setSearchParams((prevParams) => {
+            //     prevParams.set('page', `${getState().pagination.pageIndex}`)
+            //     return searchParams
+            //   })
+            // }
           }}
           disabled={!getCanPreviousPage()}
           className={classes.arrows}
@@ -106,12 +106,12 @@ const TablePagination = <TData,>({
                   className={classes.pageNumber}
                   onClick={() => {
                     setPageIndex(index)
-                    if (!isModalTable) {
-                      setSearchParams((prevParams) => {
-                        prevParams.set('page', `${index + 1}`)
-                        return searchParams
-                      })
-                    }
+                    // if (!isModalTable) {
+                    //   setSearchParams((prevParams) => {
+                    //     prevParams.set('page', `${index + 1}`)
+                    //     return searchParams
+                    //   })
+                    // }
                   }}
                   ariaLabel={t('label.go_to_page') + index}
                   aria-current={getState().pagination.pageIndex === index}
@@ -130,12 +130,12 @@ const TablePagination = <TData,>({
           iconPositioning={IconPositioningTypes.Left}
           onClick={() => {
             nextPage()
-            if (!isModalTable) {
-              setSearchParams((prevParams) => {
-                prevParams.set('page', `${getState().pagination.pageIndex + 2}`)
-                return searchParams
-              })
-            }
+            // if (!isModalTable) {
+            //   setSearchParams((prevParams) => {
+            //     prevParams.set('page', `${getState().pagination.pageIndex + 2}`)
+            //     return searchParams
+            //   })
+            // }
           }}
           disabled={!getCanNextPage()}
           className={classNames(classes.arrows, classes.toRight)}
@@ -153,12 +153,12 @@ const TablePagination = <TData,>({
         rules={{ required: true }}
         onChange={(value) => {
           setPageSize(Number(value))
-          if (!isModalTable) {
-            setSearchParams((prevParams) => {
-              prevParams.set('per_page', `${Number(value)}`)
-              return searchParams
-            })
-          }
+          // if (!isModalTable) {
+          //   setSearchParams((prevParams) => {
+          //     prevParams.set('per_page', `${Number(value)}`)
+          //     return searchParams
+          //   })
+          // }
         }}
         hideTags
         placeholder={toString(getState().pagination.pageSize)}
