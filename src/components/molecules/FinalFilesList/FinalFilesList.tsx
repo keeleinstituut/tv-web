@@ -239,7 +239,7 @@ const FinalFilesList = <TFormValues extends FieldValues>({
           className={classes.wrappedHeader}
           hidden={mode === ProjectDetailModes.View}
         >
-          {t('label.task')}
+          {t('label.vendor')}
         </p>
       ),
       footer: (info) => {
