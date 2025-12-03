@@ -28,7 +28,24 @@ async function auditLog() {
   }
 }
 
+function checkHealth() {
+  try {
+    if (!connection || !channel) {
+      return false
+    }
+
+    if (connection.connection && connection.connection.closing) {
+      return false
+    }
+
+    return !channel.closed;
+  } catch (error) {
+    return false
+  }
+}
+
 module.exports = {
   connect,
   auditLog,
+  checkHealth,
 }

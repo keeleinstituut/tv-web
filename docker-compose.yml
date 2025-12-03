@@ -7,4 +7,32 @@ services:
     ports:
       - 3000:80
     environment:
-      - SOME_ENV=somevalue
+      - REACT_APP_GATEWAY_BASE=http://host.docker.internal:8000
+      - NODE_ENV=local
+      - SERVER_PORT=8000
+      - SERVER_HOST=localhost
+      - APP_SECRET=13f6cc39b627a65cccf0f761ba6dc608234062fc4142faab1b8b7e984bece257964b08434f56174983948d41128638c4c9e564f60116e6fedee50e1e8702d3fe
+      - APP_URL=http://localhost:8000
+      - REDIS_URL=redis://redis:6379
+      - OAUTH_CLIENT_ID=web
+      - OAUTH_CLIENT_SECRET=33IMPBSgJaAFilyyQMaZ8SLCRK7LIRhU
+      - OAUTH_ISSUER=http://host.docker.internal:8185/realms/tolkevarav-dev
+      - TRANSLATION_ORDER_SERVICE_BASE_URL=http://localhost:8001
+      - AUTHORIZATION_SERVICE_BASE_URL=http://localhost:8002
+      - TRANSLATION_MEMORY_SERVICE_BASE_URL=http://localhost:8003
+      - AUDIT_LOG_SERVICE_BASE_URL=http://localhost:8004
+      - ALLOWED_ORIGINS=http://localhost:3000
+      - ALLOWED_REDIRECT_URIS="http://localhost:3000,http://localhost:3000#show-error"
+      - DEFAULT_REDIRECT_URI=http://localhost:3000
+      - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6389:6379
+
+  rabbitmq:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest

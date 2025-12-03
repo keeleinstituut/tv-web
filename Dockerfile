@@ -13,7 +13,7 @@ COPY ./ ${APP_ROOT}
 RUN yarn install
 RUN cd ${APP_ROOT}/auth-server && yarn install
 RUN cd ${APP_ROOT} && yarn build
-RUN apk add nginx bash
+RUN apk add nginx bash curl
 
 RUN <<EOF cat > /etc/nginx/http.d/default.conf
 server {
@@ -67,6 +67,29 @@ EOF
 
 RUN chmod +x ${ENTRYPOINT}
 RUN chmod +x ${START}
+
+RUN <<EOF cat > /startup-probe.sh
+#!/bin/sh
+curl -f http://localhost:8000/healthz || exit 1
+curl -f http://localhost/ || exit 1
+EOF
+
+RUN <<EOF cat > /readiness-probe.sh
+#!/bin/sh
+# Readiness probe: Check if services are ready (Redis/AMQP connected)
+curl -f http://localhost:8000/healthz/ready || exit 1
+EOF
+
+RUN <<EOF cat > /liveness-probe.sh
+#!/bin/sh
+# Liveness probe: Check if services are alive
+curl -f http://localhost:8000/healthz || exit 1
+curl -f http://localhost/ || exit 1
+EOF
+
+RUN chmod +x /startup-probe.sh
+RUN chmod +x /readiness-probe.sh
+RUN chmod +x /liveness-probe.sh
 
 RUN echo 'daemon off;' >> /etc/nginx/nginx.conf
 

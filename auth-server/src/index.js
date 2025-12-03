@@ -120,6 +120,9 @@ async function setup() {
     console.error(error)
   })
 
+  app.locals.redisClient = redisClient
+  app.locals.amqp = amqp
+
   app.use(
     auth({
       authRequired: false,
