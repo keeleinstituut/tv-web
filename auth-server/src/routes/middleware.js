@@ -44,20 +44,6 @@ const autoRefreshAccessToken = () => async (req, res, next) => {
     }
   }
 
-  if (!!accessToken) {
-    const { exp } = jwtDecode(req.oidc.refreshToken) // Reread refresh token from session in case it was updated
-
-    const isSecure = req.secure || req.protocol === 'https'
-    
-    res.cookie('session-expires', exp, {
-      sameSite: 'lax',
-      secure: isSecure,
-      httpOnly: false,
-    })
-  } else {
-    res.clearCookie('session-expires')
-  }
-
   next()
 }
 

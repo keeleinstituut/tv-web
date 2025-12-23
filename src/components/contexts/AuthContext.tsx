@@ -7,7 +7,6 @@ import { InstitutionSelectModalProps } from 'components/organisms/modals/Institu
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import useAsRef from 'hooks/useAsRef'
 import i18n from 'i18n/i18n'
-import Cookies from 'js-cookie'
 import { isEmpty, size, includes } from 'lodash'
 import {
   FC,
@@ -110,6 +109,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
       onSuccess(data) {
         setCsrfToken(data.csrfToken)
       },
+      refetchInterval: 60000, // Refetch every 60 seconds
     }
   )
 
@@ -209,9 +209,9 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
 
   const checkSession = useCallback(() => {
     const now = Math.ceil(Date.now() / 1000)
-    const sessionExpires = Number(Cookies.get('session-expires'))
+    const sessionExpires = context?.sessionExpiry
 
-    if (!sessionExpires) {
+    if (!sessionExpires || !context?.authenticated) {
       return
     }
     const remaining = sessionExpires - now
@@ -246,7 +246,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     if (isSessionExpired) {
       logout()
     }
-  }, [logout])
+  }, [logout, context])
 
   const checkSessionRef = useAsRef(checkSession)
 
