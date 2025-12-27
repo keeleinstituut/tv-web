@@ -54,9 +54,33 @@ const autoRefreshAccessToken = () => async (req, res, next) => {
   next()
 }
 
+const indexUserSession = () => async (req, res, next) => {
+  try {
+    const { accessToken } = req.oidc
+    const { redisClient } = req.app.locals
+
+    if (accessToken && !accessToken.isExpired()) {
+      const parsedToken = jwtDecode(accessToken.access_token)
+      const userPIC = parsedToken.tolkevarav?.personalIdentificationCode
+      const sessionId = req.sessionID
+
+      if (userPIC && sessionId) {
+        const indexKey = `tv-web:user-sessions:${userPIC}`
+        await redisClient.sAdd(indexKey, sessionId)
+      }
+    }
+  } catch (error) {
+    // Log error but don't block request
+    console.error('Error indexing user session:', error)
+  }
+
+  next()
+}
+
 module.exports = {
   requiresValidAccessToken,
   requiresValidCsrfToken,
   autoRefreshAccessToken,
   populateCsrfTokenIntoSession,
+  indexUserSession,
 }
