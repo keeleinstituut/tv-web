@@ -112,14 +112,55 @@ async function setup() {
     url: REDIS_URL,
   })
   redisClient.connect()
-  const redisStore = new RedisStore({
+  const redisStoreRaw = new RedisStore({
     client: redisClient,
     prefix: 'tv-web:',
   })
 
-  redisClient.on('error', function (error) {
-    console.error(error)
-  })
+    // Wrap connect-redis store to fix async callback issue with express-openid-connect
+    // connect-redis's get method is async but uses callbacks, which doesn't work with promisify
+    // We need to wrap it to return a promise that resolves to the callback result
+    const redisStore = {
+        get: (sid, cb) => {
+            if (cb) {
+                // If callback provided, use original method
+                return redisStoreRaw.get(sid, cb);
+            }
+            // If no callback, return a promise that resolves to the data
+            return new Promise((resolve, reject) => {
+                redisStoreRaw.get(sid, (err, data) => {
+                    if (err) reject(err);
+                    else resolve(data);
+                });
+            });
+        },
+        set: (sid, sess, cb) => {
+            if (cb) {
+                return redisStoreRaw.set(sid, sess, cb);
+            }
+            return new Promise((resolve, reject) => {
+                redisStoreRaw.set(sid, sess, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+        },
+        destroy: (sid, cb) => {
+            if (cb) {
+                return redisStoreRaw.destroy(sid, cb);
+            }
+            return new Promise((resolve, reject) => {
+                redisStoreRaw.destroy(sid, (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+            });
+        },
+    };
+
+    redisClient.on('error', function (error) {
+        console.error(error)
+    })
 
   app.locals.redisClient = redisClient
   app.locals.amqp = amqp
