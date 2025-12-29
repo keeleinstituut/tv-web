@@ -12,6 +12,28 @@ const setCsrfTokenToSession = (req) => {
   }
 }
 
+const getSessionId = (req) => {
+  let sessionId = req.sessionID
+
+  if (!sessionId && req.cookies && req.cookies[SESSION_COOKIE_NAME]) {
+    sessionId = req.cookies[SESSION_COOKIE_NAME]
+  }
+
+  if (!sessionId && req[SESSION_COOKIE_NAME]) {
+    sessionId = req[SESSION_COOKIE_NAME].id || req[SESSION_COOKIE_NAME].sessionID
+  }
+
+  if (!sessionId && req.headers.cookie) {
+    const cookieHeader = req.headers.cookie
+    const cookieMatch = cookieHeader.match(new RegExp(`(?:^|; )${SESSION_COOKIE_NAME}=([^;]*)`))
+    if (cookieMatch) {
+      sessionId = cookieMatch[1]
+    }
+  }
+
+  return sessionId
+}
+
 
 class AuditLogMessage {
   constructor() {
@@ -71,8 +93,62 @@ class AuditLogMessage {
   }
 }
 
+/**
+ * Extracts user PIC and refresh token from session data.
+ * Uses the current format: connect-redis stores session data in {header, data, cookie} structure
+ * where oidc tokens are stored flat in data: {access_token, refresh_token, ...}
+ * 
+ * @param {string|object} rawSessionData - Raw session data (string or object)
+ * @returns {{userPIC: string|null, refreshToken: string|null}} - Extracted user PIC and refresh token
+ */
+const extractSessionTokens = (rawSessionData) => {
+  let userPIC = null
+  let refreshToken = null
+
+  const session = typeof rawSessionData === 'string' ? JSON.parse(rawSessionData) : rawSessionData
+
+  if (session.data?.access_token) {
+    try {
+      const tokenData = jwtDecode(session.data.access_token)
+      userPIC = tokenData.tolkevarav?.personalIdentificationCode
+      refreshToken = session.data.refresh_token || null
+    } catch (e) {}
+  }
+
+  return { userPIC, refreshToken }
+}
+
+/**
+ * Extracts session state and user PIC from session data.
+ * Uses the current format: connect-redis stores session data in {header, data, cookie} structure
+ * where oidc tokens are stored flat in data: {access_token, refresh_token, ...}
+ * 
+ * @param {string|object} rawSessionData - Raw session data (string or object)
+ * @returns {{sessionState: string|null, userPIC: string|null}} - Extracted session state and user PIC
+ */
+const extractSessionInfo = (rawSessionData) => {
+  let sessionState = null
+  let userPIC = null
+
+  const session = typeof rawSessionData === 'string' ? JSON.parse(rawSessionData) : rawSessionData
+
+  if (session.data?.access_token) {
+    try {
+      const tokenData = jwtDecode(session.data.access_token)
+      sessionState = tokenData.session_state || tokenData.sid || null
+      userPIC = tokenData.tolkevarav?.personalIdentificationCode
+    } catch (e) {
+    }
+  }
+
+  return { sessionState, userPIC }
+}
+
 module.exports = {
   getCsrfTokenFromSession,
   setCsrfTokenToSession,
+  getSessionId,
   AuditLogMessage,
+  extractSessionTokens,
+  extractSessionInfo,
 }

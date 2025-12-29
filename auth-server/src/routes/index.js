@@ -12,6 +12,7 @@ function constructRoutes() {
   router.use(constructAuthRoutes())
   router.use(constructContextRoutes())
   router.use(constructProxyRoutes())
+  router.use(constructSessionRoutes())
 
   return router
 }

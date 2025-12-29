@@ -3,6 +3,7 @@ const { jwtDecode } = require('jwt-decode')
 const { requiresAuth } = require('express-openid-connect')
 const { ISSUER, CLIENT_ID, CLIENT_SECRET } = require('../env')
 const { requiresValidCsrfToken } = require('./middleware')
+const { getSessionId, extractSessionTokens, extractSessionInfo } = require('../util')
 
 function constructSessionRoutes() {
   const router = Router()
@@ -12,7 +13,7 @@ function constructSessionRoutes() {
     requiresAuth(),
     async (req, res) => {
       try {
-        const { redisClient } = req.app.locals
+        const { redisClient, redisStore } = req.app.locals
         const { accessToken } = req.oidc
 
         if (!accessToken) {
@@ -21,7 +22,7 @@ function constructSessionRoutes() {
 
         const currentUserToken = jwtDecode(accessToken.access_token)
         const currentUserPIC = currentUserToken.tolkevarav?.personalIdentificationCode
-        const currentSessionId = req.sessionID
+        const currentSessionId = getSessionId(req)
 
         if (!currentUserPIC) {
           return res.status(400).json({ error: 'User identifier not found' })
@@ -32,74 +33,32 @@ function constructSessionRoutes() {
 
         const sessions = []
         const expiredSessionIds = []
-
-        if (sessionIds.length === 0) {
-          const currentSessionKey = `tv-web:sess:${currentSessionId}`
-          const currentSessionData = await redisClient.get(currentSessionKey)
-
-          if (currentSessionData) {
-            try {
-              const session = JSON.parse(currentSessionData)
-              let sessionState = null
-              let lastAccess = null
-
-              if (session.oidc?.accessToken) {
-                try {
-                  const tokenData = jwtDecode(session.oidc.accessToken.access_token)
-                  sessionState = tokenData.session_state || tokenData.sid || null
-                  if (tokenData.tolkevarav?.personalIdentificationCode === currentUserPIC) {
-                    lastAccess = session.cookie?.expires
-                      ? new Date(session.cookie.expires).toISOString()
-                      : null
-
-                    sessions.push({
-                      sessionId: currentSessionId,
-                      isCurrent: true,
-                      sessionState,
-                      lastAccess,
-                      createdAt: null,
-                      userAgent: session.userAgent || null,
-                      ipAddress: session.ipAddress || null,
-                    })
-                  }
-                } catch (e) {
-                }
-              }
-            } catch (error) {
-              console.error(`Error parsing current session:`, error)
-            }
-          }
-
-          return res.json({ sessions })
-        }
-
         for (const sessionId of sessionIds) {
-          const sessionKey = `tv-web:sess:${sessionId}`
-          const sessionData = await redisClient.get(sessionKey)
+          let sessionData = await new Promise((resolve, reject) => {
+            redisStore.get(sessionId, (err, data) => {
+              if (err) reject(err)
+              else resolve(data)
+            })
+          })
+
 
           if (sessionData) {
             try {
-              const session = JSON.parse(sessionData)
-              let sessionState = null
-              let lastAccess = null
+              const session = typeof sessionData === 'string' ? JSON.parse(sessionData) : sessionData
+              const { sessionState, userPIC: sessionUserPIC } = extractSessionInfo(sessionData)
 
-              if (session.oidc) {
-                try {
-                  if (session.oidc.accessToken) {
-                    const tokenData = jwtDecode(session.oidc.accessToken.access_token)
-                    sessionState = tokenData.session_state || tokenData.sid || null
-                    const sessionUserPIC = tokenData.tolkevarav?.personalIdentificationCode
-                    if (sessionUserPIC !== currentUserPIC) {
-                      continue
-                    }
-                  }
-                } catch (e) {
-                }
+              if (sessionUserPIC !== currentUserPIC) {
+                continue
               }
 
-              lastAccess = session.cookie?.expires
+              const lastAccess = session.cookie?.expires
                 ? new Date(session.cookie.expires).toISOString()
                 : null
+
+              // connect-redis stores custom session properties in session.data
+              // OIDC tokens are also in session.data, but userAgent/ipAddress are custom properties
+              const userAgent = session.data?.userAgent || session.userAgent || null
+              const ipAddress = session.data?.ipAddress || session.ipAddress || null
 
               sessions.push({
                 sessionId,
@@ -107,8 +66,8 @@ function constructSessionRoutes() {
                 sessionState,
                 lastAccess,
                 createdAt: null,
-                userAgent: session.userAgent || null,
-                ipAddress: session.ipAddress || null,
+                userAgent,
+                ipAddress,
               })
             } catch (error) {
               console.error(`Error parsing session ${sessionId}:`, error)
@@ -137,7 +96,7 @@ function constructSessionRoutes() {
     requiresValidCsrfToken(),
     async (req, res) => {
       try {
-        const { redisClient } = req.app.locals
+        const { redisClient, redisStore } = req.app.locals
         const { sessionId } = req.params
         const { accessToken } = req.oidc
 
@@ -152,28 +111,18 @@ function constructSessionRoutes() {
           return res.status(400).json({ error: 'User identifier not found' })
         }
 
-        const sessionKey = `tv-web:sess:${sessionId}`
-        const sessionData = await redisClient.get(sessionKey)
+        let sessionData = await new Promise((resolve, reject) => {
+            redisStore.get(sessionId, (err, data) => {
+              if (err) reject(err)
+              else resolve(data)
+            })
+          })
 
         if (!sessionData) {
           return res.status(404).json({ error: 'Session not found' })
         }
 
-        const session = JSON.parse(sessionData)
-        let userPIC = null
-        let refreshToken = null
-
-        if (session.oidc) {
-          try {
-            if (session.oidc.accessToken) {
-              const tokenData = jwtDecode(session.oidc.accessToken.access_token)
-              userPIC = tokenData.tolkevarav?.personalIdentificationCode
-            }
-            refreshToken = session.oidc.refreshToken
-          } catch (e) {
-            // Continue
-          }
-        }
+        const { userPIC, refreshToken } = extractSessionTokens(sessionData)
 
         if (userPIC !== currentUserPIC) {
           return res.status(403).json({ error: 'Not authorized to invalidate this session' })
@@ -202,7 +151,12 @@ function constructSessionRoutes() {
           }
         }
 
-        await redisClient.del(sessionKey)
+        await new Promise((resolve, reject) => {
+          redisStore.destroy(sessionId, (err) => {
+            if (err) reject(err)
+            else resolve()
+          })
+        })
 
         const indexKey = `tv-web:user-sessions:${currentUserPIC}`
         await redisClient.sRem(indexKey, sessionId)
