@@ -44,13 +44,6 @@ const autoRefreshAccessToken = () => async (req, res, next) => {
     }
   }
 
-  if (!!accessToken) {
-    const { exp } = jwtDecode(req.oidc.refreshToken) // Reread refresh token from session in case it was updated
-    res.cookie('session-expires', exp)
-  } else {
-    res.clearCookie('session-expires')
-  }
-
   next()
 }
 
