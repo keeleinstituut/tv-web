@@ -5,6 +5,8 @@
 # ============================================================================
 FROM node:18.14.2-alpine3.17 AS builder
 
+ENV REACT_APP_GATEWAY_BASE /gateway
+
 WORKDIR /app
 
 COPY package.json yarn.lock ./
@@ -28,7 +30,6 @@ FROM node:18.14.2-alpine3.17
 ENV APP_ROOT /app
 ENV ENTRYPOINT /entrypoint.sh
 ENV START /start.sh
-ENV REACT_APP_GATEWAY_BASE /gateway
 
 WORKDIR ${APP_ROOT}
 
