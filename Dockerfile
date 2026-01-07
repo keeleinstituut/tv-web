@@ -45,8 +45,10 @@ COPY auth-server/src ./auth-server/src
 RUN apk add --no-cache nginx curl && \
     rm -rf /var/cache/apk/*
 
-RUN chown -R nginx:nginx ${APP_ROOT}/build && \
-    chown -R node:node ${APP_ROOT}/auth-server
+RUN chown -R nginx:nginx ${APP_ROOT}/build
+
+RUN chown -R root:root ${APP_ROOT}/auth-server && \
+    chmod -R 755 ${APP_ROOT}/auth-server
 
 RUN echo 'daemon off;' >> /etc/nginx/nginx.conf
 
