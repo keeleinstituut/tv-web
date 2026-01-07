@@ -1,6 +1,5 @@
 const { jwtDecode } = require('jwt-decode')
 const { getCsrfTokenFromSession, setCsrfTokenToSession, getSessionId } = require('../util')
-const { SESSION_COOKIE_NAME } = require('../env')
 
 const requiresValidAccessToken = () => (req, res, next) => {
   const { accessToken } = req.oidc
@@ -53,7 +52,7 @@ const populateSessionMetadata = () => (req, res, next) => {
   if (req[SESSION_COOKIE_NAME] && !req[SESSION_COOKIE_NAME].userAgent) {
     req[SESSION_COOKIE_NAME].userAgent = req.get('user-agent') || null
   }
-  
+
   if (req[SESSION_COOKIE_NAME] && !req[SESSION_COOKIE_NAME].ipAddress) {
     // req.ip is available when trust proxy is enabled
     req[SESSION_COOKIE_NAME].ipAddress = req.ip || req.connection.remoteAddress || null

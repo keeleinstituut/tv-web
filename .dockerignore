@@ -1,12 +1,13 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
+# dependencies (will be installed during build)
 /node_modules
 /.pnp
 .pnp.js
 
 # testing
 /coverage
+/test
 
 # production
 /build
@@ -28,6 +29,14 @@ Dockerfile
 docker-compose.yml
 helm
 
+# Development configs
+.vscode
+.idea
+
+# Build scripts (not needed in image)
+/scripts
+
+# Auth server - exclude node_modules (will be installed during build)
 auth-server/node_modules
 auth-server/.DS_Store
 auth-server/.env

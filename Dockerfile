@@ -1,19 +1,54 @@
 # syntax = docker/dockerfile:1.4.0
 
+# ============================================================================
+# Stage 1: Builder - Build React application
+# ============================================================================
+FROM node:18.14.2-alpine3.17 AS builder
+
+ENV REACT_APP_GATEWAY_BASE /gateway
+
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+
+RUN yarn install --frozen-lockfile
+
+COPY public ./public
+COPY src ./src
+COPY tsconfig.json ./
+COPY patches ./patches
+COPY .eslintrc.json ./
+COPY .prettierrc.json ./
+
+RUN yarn build
+
+# ============================================================================
+# Stage 2: Runtime - Minimal production image
+# ============================================================================
 FROM node:18.14.2-alpine3.17
 
 ENV APP_ROOT /app
 ENV ENTRYPOINT /entrypoint.sh
 ENV START /start.sh
-ENV REACT_APP_GATEWAY_BASE /gateway
 
 WORKDIR ${APP_ROOT}
-COPY ./ ${APP_ROOT}
 
-RUN yarn install
-RUN cd ${APP_ROOT}/auth-server && yarn install
-RUN cd ${APP_ROOT} && yarn build
-RUN apk add nginx bash curl
+COPY --from=builder /app/build ./build
+
+COPY auth-server/package.json auth-server/yarn.lock ./auth-server/
+
+RUN cd auth-server && yarn install --frozen-lockfile --production && \
+    yarn cache clean
+
+COPY auth-server/src ./auth-server/src
+
+RUN apk add --no-cache nginx curl && \
+    rm -rf /var/cache/apk/*
+
+RUN chown -R nginx:nginx ${APP_ROOT}/build && \
+    chown -R node:node ${APP_ROOT}/auth-server
+
+RUN echo 'daemon off;' >> /etc/nginx/nginx.conf
 
 RUN <<EOF cat > /etc/nginx/http.d/default.conf
 server {
@@ -51,9 +86,9 @@ exec "\$@"
 EOF
 
 RUN <<EOF cat > ${START}
-#!/bin/bash
-echo "Starting auth-server"
-cd \$APP_ROOT/auth-server && yarn start &
+#!/bin/sh
+echo "Starting auth-server as node user"
+su -s /bin/sh node -c "cd \$APP_ROOT/auth-server && yarn start" &
 
 echo "Starting nginx"
 nginx &
@@ -64,9 +99,6 @@ wait -n
 # Exit with status of process that exited first
 exit \$?
 EOF
-
-RUN chmod +x ${ENTRYPOINT}
-RUN chmod +x ${START}
 
 RUN <<EOF cat > /startup-probe.sh
 #!/bin/sh
@@ -87,13 +119,10 @@ curl -f http://localhost:8000/healthz || exit 1
 curl -f http://localhost/ || exit 1
 EOF
 
-RUN chmod +x /startup-probe.sh
-RUN chmod +x /readiness-probe.sh
-RUN chmod +x /liveness-probe.sh
 
-RUN echo 'daemon off;' >> /etc/nginx/nginx.conf
+RUN chmod +x ${ENTRYPOINT} ${START} /startup-probe.sh /readiness-probe.sh /liveness-probe.sh
 
-CMD ["/start.sh"]
 EXPOSE 80
 
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/start.sh"]

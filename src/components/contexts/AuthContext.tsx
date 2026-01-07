@@ -109,7 +109,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
       onSuccess(data) {
         setCsrfToken(data.csrfToken)
       },
-      refetchInterval: 30000, // Refetch every 30 seconds
+      refetchInterval: 60000, // Refetch every 60 seconds
     }
   )
 
