@@ -1,10 +1,10 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .titleRow {
   display: grid;
   grid-template-columns: max-content auto max-content;
   align-items: center;
   justify-items: start;
-  grid-gap: spacing(4);
-  margin-bottom: spacing(6);
+  grid-gap: variables.spacing(4);
+  margin-bottom: variables.spacing(6);
 }

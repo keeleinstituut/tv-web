@@ -41,19 +41,19 @@ import Terms from 'pages/Terms/Terms'
 
 // import icons
 
-import { ReactComponent as HomeIcon } from 'assets/icons/home.svg'
-import { ReactComponent as ProjectsIcon } from 'assets/icons/projects.svg'
-import { ReactComponent as VendorsIcon } from 'assets/icons/vendors.svg'
-import { ReactComponent as MemoriesIcon } from 'assets/icons/memories.svg'
-import { ReactComponent as UsersIcon } from 'assets/icons/users.svg'
-import { ReactComponent as RolesIcon } from 'assets/icons/roles.svg'
-import { ReactComponent as LogsIcon } from 'assets/icons/logs.svg'
-import { ReactComponent as TagsIcon } from 'assets/icons/tags.svg'
-import { ReactComponent as ReportIcon } from 'assets/icons/download.svg'
-import { ReactComponent as InstitutionIcon } from 'assets/icons/settings.svg'
-import { ReactComponent as TechnicalIcon } from 'assets/icons/technical.svg'
-import { ReactComponent as ManualIcon } from 'assets/icons/question_mark.svg'
-import { ReactComponent as TermsIcon } from 'assets/icons/terms_icon.svg'
+import HomeIcon from 'assets/icons/home.svg?react'
+import ProjectsIcon from 'assets/icons/projects.svg?react'
+import VendorsIcon from 'assets/icons/vendors.svg?react'
+import MemoriesIcon from 'assets/icons/memories.svg?react'
+import UsersIcon from 'assets/icons/users.svg?react'
+import RolesIcon from 'assets/icons/roles.svg?react'
+import LogsIcon from 'assets/icons/logs.svg?react'
+import TagsIcon from 'assets/icons/tags.svg?react'
+import ReportIcon from 'assets/icons/download.svg?react'
+import InstitutionIcon from 'assets/icons/settings.svg?react'
+import TechnicalIcon from 'assets/icons/technical.svg?react'
+import ManualIcon from 'assets/icons/question_mark.svg?react'
+import TermsIcon from 'assets/icons/terms_icon.svg?react'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,

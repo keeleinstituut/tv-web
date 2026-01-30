@@ -1,4 +1,4 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .editIcon svg {
   width: 22px;
@@ -7,5 +7,5 @@
 
 .languageButton {
   align-self: center;
-  padding-left: spacing(6);
+  padding-left: variables.spacing(6);
 }

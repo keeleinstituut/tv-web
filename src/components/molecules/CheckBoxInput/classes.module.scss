@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .container {
   display: flex;
@@ -7,8 +7,8 @@
   position: relative;
   
   .label {
-    @include labelTextStyle;
-    padding-left: spacing(2);
+    @include mixins.labelTextStyle;
+    padding-left: variables.spacing(2);
     cursor: pointer;
 
     &.hiddenLabel {
@@ -19,7 +19,7 @@
   .visibleCheckbox {
     width: 16px;
     height: 16px;
-    border: 1px solid $color-border-secondary;
+    border: 1px solid variables.$color-border-secondary;
     border-radius: 2px;
   }
 
@@ -36,7 +36,7 @@
         width: 18px;
         height: 18px;
         border: unset;
-        background-color: $color-primary;
+        background-color: variables.$color-primary;
         background-image: url('../../../assets/icons/check.svg');
       }
     }
@@ -50,11 +50,11 @@
     }
     .checkBoxContainer {
       .visibleCheckbox {
-        border-color: $color-border;
+        border-color: variables.$color-border;
       }
       &.checked {
         .visibleCheckbox {
-          background-color: $color-border;
+          background-color: variables.$color-border;
         }
       }
     }
@@ -93,20 +93,20 @@
 
     &:focus-visible + .checkBoxContainer {
       &::after {
-        background: $color-checkbox-focus;
+        background: variables.$color-checkbox-focus;
       }
     }
 
 
     &:hover + .checkBoxContainer {
       &::after {
-        background: $color-checkbox-hover;
+        background: variables.$color-checkbox-hover;
       }
     }
 
     &:active + .checkBoxContainer {
       &::after {
-        background: $color-checkbox-active;
+        background: variables.$color-checkbox-active;
       }
     }
   }

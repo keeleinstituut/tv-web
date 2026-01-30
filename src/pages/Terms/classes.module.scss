@@ -1,22 +1,22 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .manualContainer {
   display: grid;
   grid-template-columns: 70fr 30fr;
-  padding: spacing(2) spacing(7) spacing(16) spacing(7);
+  padding: variables.spacing(2) variables.spacing(7) variables.spacing(16) variables.spacing(7);
 
   .manualContentContainer {
     grid-column-start: 1;
-    background-color: $color-white;
+    background-color: variables.$color-white;
     box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.14);
-    padding: spacing(8);
-    margin-top: spacing(4);
-    @include manualStyle($color-text-dark);
+    padding: variables.spacing(8);
+    margin-top: variables.spacing(4);
+    @include mixins.manualStyle(variables.$color-text-dark);
 
     h1,
     h2 {
-      margin-bottom: spacing(4);
+      margin-bottom: variables.spacing(4);
     }
   }
 }

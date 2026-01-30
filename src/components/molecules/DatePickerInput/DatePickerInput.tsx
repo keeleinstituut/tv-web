@@ -8,7 +8,7 @@ import { et } from 'date-fns/locale'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { ReactComponent as Calender } from 'assets/icons/calender.svg'
+import Calender from 'assets/icons/calender.svg?react'
 import InputWrapper, {
   InputWrapperProps,
 } from 'components/molecules/InputWrapper/InputWrapper'

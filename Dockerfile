@@ -3,7 +3,7 @@
 # ============================================================================
 # Stage 1: Builder - Build React application
 # ============================================================================
-FROM node:18.14.2-alpine3.17 AS builder
+FROM node:20.19.0-alpine AS builder
 
 ENV REACT_APP_GATEWAY_BASE /gateway
 

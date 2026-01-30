@@ -1,79 +1,79 @@
-@import 'variables.scss';
+@use 'variables' as variables;
 
 // typography mixin
 
 @mixin h1TextStyle {
-  font-size: $font-size-32;
-  font-weight: $font-weight-light;
-  @media (max-width: $mobile) {
-    font-size: $font-size-24;
+  font-size: variables.$font-size-32;
+  font-weight: variables.$font-weight-light;
+  @media (max-width: variables.$mobile) {
+    font-size: variables.$font-size-24;
   }
 }
 
 @mixin h2TextStyle {
-  font-size: $font-size-28;
-  font-weight: $font-weight-normal;
-  @media (max-width: $mobile) {
-    font-size: $font-size-20;
+  font-size: variables.$font-size-28;
+  font-weight: variables.$font-weight-normal;
+  @media (max-width: variables.$mobile) {
+    font-size: variables.$font-size-20;
   }
 }
 
 @mixin h3TextStyle {
-  font-size: $font-size-24;
-  font-weight: $font-weight-normal;
-  @media (max-width: $mobile) {
-    font-size: $font-size-19;
+  font-size: variables.$font-size-24;
+  font-weight: variables.$font-weight-normal;
+  @media (max-width: variables.$mobile) {
+    font-size: variables.$font-size-19;
   }
 }
 
 @mixin h4TextStyle {
-  font-size: $font-size-20;
-  font-weight: $font-weight-normal;
+  font-size: variables.$font-size-20;
+  font-weight: variables.$font-weight-normal;
 }
 
 @mixin h5TextStyle {
-  font-size: $font-size-18;
-  font-weight: $font-weight-normal;
+  font-size: variables.$font-size-18;
+  font-weight: variables.$font-weight-normal;
 }
 
 @mixin h6TextStyle {
-  font-size: $font-size-16;
-  font-weight: $font-weight-bold;
+  font-size: variables.$font-size-16;
+  font-weight: variables.$font-weight-bold;
 }
 
 @mixin bodyTextStyle {
-  font-size: $font-size-16;
+  font-size: variables.$font-size-16;
 }
 
 @mixin bodyTextSmallStyle {
-  font-size: $font-size-14;
+  font-size: variables.$font-size-14;
 }
 
 @mixin subtitleTextStyle {
-  font-size: $font-size-16;
-  font-weight: $font-weight-bold;
+  font-size: variables.$font-size-16;
+  font-weight: variables.$font-weight-bold;
 }
 
 @mixin subtitleSmallTextStyle {
-  font-size: $font-size-14;
-  font-weight: $font-weight-normal;
+  font-size: variables.$font-size-14;
+  font-weight: variables.$font-weight-normal;
 }
 
 @mixin buttonTextStyle {
-  font-size: $font-size-16;
-  font-weight: $font-weight-normal;
+  font-size: variables.$font-size-16;
+  font-weight: variables.$font-weight-normal;
 }
 
 @mixin labelTextStyle {
-  font-size: $font-size-16;
-  font-weight: $font-weight-normal;
-  color: $color-text-dark;
+  font-size: variables.$font-size-16;
+  font-weight: variables.$font-weight-normal;
+  color: variables.$color-text-dark;
 }
 
 @mixin smallButtonTextStyle {
-  font-size: $font-size-12;
-  font-weight: $font-weight-normal;
-  line-height: $line-height-14;
+  font-size: variables.$font-size-12;
+  font-weight: variables.$font-weight-normal;
+  line-height: variables.$line-height-14;
 }
 
 @mixin badgeEndTriangles($color) {
@@ -93,7 +93,7 @@
 @mixin statusTagStyle($color, $text-color: $color) {
   color: $text-color;
   box-shadow: 0 0 0 2px $color;
-  padding: spacing(0.5) spacing(4);
+  padding: variables.spacing(0.5) variables.spacing(4);
   border-radius: 4px;
   min-height: 25px;
 }
@@ -101,14 +101,14 @@
 @mixin manualStyle($background-color: $color) {
   p {
     white-space: break-spaces;
-    padding-bottom: spacing(6);
+    padding-bottom: variables.spacing(6);
     &:last-child {
       padding-bottom: 0;
     }
   }
 
   a {
-    color: $color-primary;
+    color: variables.$color-primary;
     text-decoration: underline;
   }
 

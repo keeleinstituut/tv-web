@@ -7,12 +7,13 @@ import {
   useState,
   MouseEvent,
   useEffect,
+  ReactNode,
 } from 'react'
 import classNames from 'classnames'
 import { FieldError } from 'react-hook-form'
 import InputWrapper from 'components/molecules/InputWrapper/InputWrapper'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import { ReactComponent as DropdownArrow } from 'assets/icons/dropdown.svg'
+import DropdownArrow from 'assets/icons/dropdown.svg?react'
 import { useClickAway } from 'ahooks'
 import DropdownContent from 'components/organisms/DropdownContent/DropdownContent'
 
@@ -37,7 +38,7 @@ export type DropDownOptions = {
 export interface SelectionControlsInputProps {
   name: string
   error?: FieldError
-  label?: JSX.Element | string
+  label?: ReactNode
   ariaLabel: string
   value?: string | string[]
   options: DropDownOptions[]

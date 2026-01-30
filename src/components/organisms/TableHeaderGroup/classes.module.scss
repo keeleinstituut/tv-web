@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 //HeaderItem
 .headingWrapper {
@@ -8,7 +8,7 @@
   grid-auto-flow: column;
   justify-content: start;
   align-items: center;
-  grid-gap: spacing(2);
+  grid-gap: variables.spacing(2);
 
   input {
     order: -1;
@@ -16,7 +16,7 @@
 }
 
 .iconButton {
-  padding: spacing(1);
+  padding: variables.spacing(1);
 
   svg {
     padding: 0;
@@ -26,15 +26,15 @@
 
   svg g path,
   svg path {
-    fill: $color-input-main;
+    fill: variables.$color-input-main;
     fill-opacity: 1;
   }
 }
 
 .customCalendarContainer {
-  background: $color-white;
-  border: 1.25px solid $color-input-border;
-  border-radius: spacing(1);
+  background: variables.$color-white;
+  border: 1.25px solid variables.$color-input-border;
+  border-radius: variables.spacing(1);
 }
 
 .calendar {
@@ -43,11 +43,11 @@
 
 .buttonsContainer {
   display: flex;
-  padding: spacing(3) 0;
+  padding: variables.spacing(3) 0;
   justify-content: center;
-  box-shadow: 0 -1px 1px $color-shadow-secondary;
+  box-shadow: 0 -1px 1px variables.$color-shadow-secondary;
 }
 
 .leftMargin {
-  margin-left: spacing(2);
+  margin-left: variables.spacing(2);
 }

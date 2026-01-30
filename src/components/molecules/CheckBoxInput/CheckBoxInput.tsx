@@ -1,4 +1,4 @@
-import { RefObject, forwardRef, useRef } from 'react'
+import { RefObject, forwardRef, useRef, ReactNode } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
@@ -15,7 +15,7 @@ export interface CheckBoxInputProps
   name: string
   className?: string
   error?: FieldError
-  label?: JSX.Element | string
+  label?: ReactNode
   ariaLabel: string
   value?: boolean
   errorZIndex?: number

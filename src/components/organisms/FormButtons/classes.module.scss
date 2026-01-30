@@ -1,11 +1,11 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .formButtons {
-  padding-top: spacing(4);
+  padding-top: variables.spacing(4);
   display: flex;
   justify-content: flex-end;
 
   :first-child {
-    margin-right: spacing(2);
+    margin-right: variables.spacing(2);
   }
 }

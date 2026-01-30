@@ -1,5 +1,5 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .content {
-  color: $color-primary;
+  color: variables.$color-primary;
 }

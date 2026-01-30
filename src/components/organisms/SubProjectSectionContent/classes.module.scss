@@ -1,21 +1,21 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .clientContentContainer {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: spacing(24);
-  border: 1px solid $color-border-sub-project-content;
+  grid-gap: variables.spacing(24);
+  border: 1px solid variables.$color-border-sub-project-content;
   border-radius: 4px;
-  padding: spacing(1);
-  padding-bottom: spacing(5);
-  margin-top: spacing(5);
+  padding: variables.spacing(1);
+  padding-bottom: variables.spacing(5);
+  margin-top: variables.spacing(5);
 }
 
 .filesListContainer {
   box-shadow: unset;
   border: unset;
-  padding: spacing(4) spacing(5);
-  background-color: $color-background-card;
+  padding: variables.spacing(4) variables.spacing(5);
+  background-color: variables.$color-background-card;
   align-self: start;
 
   .iconButton {
@@ -34,7 +34,7 @@
   .downloadButton {
     svg {
       path {
-        fill: $color-primary;
+        fill: variables.$color-primary;
       }
     }
   }
@@ -44,7 +44,7 @@
   }
 
   .innerTooltip {
-    margin-left: spacing(2);
+    margin-left: variables.spacing(2);
   }
 
   &.increasedSpecificity {
@@ -52,7 +52,7 @@
       tr {
         th {
           padding: unset;
-          padding-right: spacing(8);
+          padding-right: variables.spacing(8);
           border: transparent;
           vertical-align: top;
           height: 40px;
@@ -62,7 +62,7 @@
             max-width: 78px;
             width: 78px;
             white-space: pre-wrap;
-            padding-right: spacing(1);
+            padding-right: variables.spacing(1);
           }
         }
       }
@@ -72,15 +72,15 @@
       tr {
         td {
           padding: unset;
-          padding-right: spacing(8);
+          padding-right: variables.spacing(8);
           border: transparent;
           height: 32px;
           max-height: 32px;
       
           &:first-child {
-            padding-right: spacing(1);
+            padding-right: variables.spacing(1);
             width: 78px;
-            font-weight: $font-weight-bold;
+            font-weight: variables.$font-weight-bold;
           }
           &:last-child {
             padding: 0;
@@ -101,38 +101,38 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: spacing(4);
-  color: $color-primary;
+  margin-bottom: variables.spacing(4);
+  color: variables.$color-primary;
 }
 
 .assignmentContainer {
   display: flex;
   flex-direction: column;
-  padding-left: spacing(4);
-  padding-top: spacing(4);
+  padding-left: variables.spacing(4);
+  padding-top: variables.spacing(4);
 
   h3 {
-    margin-bottom: spacing(4);
-    color: $color-primary;
+    margin-bottom: variables.spacing(4);
+    color: variables.$color-primary;
   }
 
   .row {
     display: flex;
     justify-content: space-between;
     .label {
-      font-size: $font-size-16;
+      font-size: variables.$font-size-16;
       width: 260px;
     }
     .value {
-      font-weight: $font-weight-bold;
+      font-weight: variables.$font-weight-bold;
     }
     &:not(:last-child) {
-      margin-bottom: spacing(2);
+      margin-bottom: variables.spacing(2);
     }
   }
 }
 
 .tabsContainer {
-  margin-top: spacing(8);
-  margin-bottom: spacing(4);
+  margin-top: variables.spacing(8);
+  margin-bottom: variables.spacing(4);
 }

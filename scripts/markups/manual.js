@@ -697,4 +697,4 @@ Logisid säilitatakse 731 päeva.
 
 [END]`
 
-module.exports = manualText
+export default manualText

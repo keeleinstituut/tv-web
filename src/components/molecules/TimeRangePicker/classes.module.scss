@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .wrapper {
   display: flex;
@@ -7,22 +7,22 @@
 }
 
 .label {
-  @include labelTextStyle;
+  @include mixins.labelTextStyle;
   display: inline-block;
-  padding-right: spacing(2.5);
+  padding-right: variables.spacing(2.5);
   text-align: end;
 }
 
 .innerWrapper {
   display: grid;
   grid-template-columns: max-content max-content max-content;
-  grid-gap: spacing(2);
+  grid-gap: variables.spacing(2);
   align-items: center;
 
   .line {
     width: 8px;
     height: 0;
-    border: 1px solid $color-border-secondary;
+    border: 1px solid variables.$color-border-secondary;
     margin: 3px;
     display: inline-block;
   }

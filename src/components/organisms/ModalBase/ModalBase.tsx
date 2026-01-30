@@ -11,13 +11,13 @@ import Button, {
   AppearanceTypes,
   ButtonProps,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as Close } from 'assets/icons/close.svg'
+import Close from 'assets/icons/close.svg?react'
 import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
 
 import classes from './classes.module.scss'
 import { closeModal } from '../modals/ModalRoot'
-import FocusTrap from 'focus-trap-react'
+import { FocusTrap } from 'focus-trap-react'
 interface ModalContextType {
   modalContentId?: string
   modalVerticalContentId?: string

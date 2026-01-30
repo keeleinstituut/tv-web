@@ -1,8 +1,8 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .titleRow {
   display: grid;
   grid-template-columns: max-content max-content;
   align-items: center;
-  grid-gap: spacing(4);
+  grid-gap: variables.spacing(4);
 }

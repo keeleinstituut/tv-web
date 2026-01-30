@@ -1,9 +1,9 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .formWrapper {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: spacing(5);
+  grid-gap: variables.spacing(5);
 
   .selection,
   .fileImportButton {

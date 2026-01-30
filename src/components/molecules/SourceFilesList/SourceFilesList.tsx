@@ -5,8 +5,8 @@ import {
   InputTypes,
   FormInput,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
-import { ReactComponent as Download } from 'assets/icons/download.svg'
+import Delete from 'assets/icons/delete.svg?react'
+import Download from 'assets/icons/download.svg?react'
 import { Control, FieldValues, Path, useController } from 'react-hook-form'
 import classNames from 'classnames'
 import FileImport, {

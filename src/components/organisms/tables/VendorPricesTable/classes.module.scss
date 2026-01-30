@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .pricesTitleContainer {
   display: flex;
@@ -7,23 +7,23 @@
 }
 
 .pricesTitle {
-  color: $color-primary;
+  color: variables.$color-primary;
 }
 
 .currency {
-  @include bodyTextSmallStyle;
-  color: $color-input-main;
+  @include mixins.bodyTextSmallStyle;
+  color: variables.$color-input-main;
 }
 
 .priceListContainer {
-  border: 1px solid $color-primary;
-  margin: spacing(6) 0;
-  padding-bottom: spacing(4);
+  border: 1px solid variables.$color-primary;
+  margin: variables.spacing(6) 0;
+  padding-bottom: variables.spacing(4);
 }
 
 .pricesInput input {
   width: 114px;
   &::placeholder {
-    color: $color-text-dark;
+    color: variables.$color-text-dark;
   }
 }

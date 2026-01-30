@@ -2,7 +2,7 @@ import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInpu
 import { Ref, forwardRef, useCallback } from 'react'
 import { FieldError } from 'react-hook-form'
 import classNames from 'classnames'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Delete from 'assets/icons/delete.svg?react'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes, IconPositioningTypes } from '../Button/Button'

@@ -1,4 +1,4 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .tagsContainer {
   display: flex;
@@ -7,9 +7,9 @@
 }
 
 .tag {
-  border: 1px solid $color-border;
+  border: 1px solid variables.$color-border;
   border-right: 0;
-  margin-bottom: spacing(2);
+  margin-bottom: variables.spacing(2);
 
   &:last-child {
     border-top-right-radius: 4px;
@@ -20,6 +20,6 @@
     border-bottom-left-radius: 4px;
   }
   &:focus {
-    box-shadow: inset 0 0 0 1px $color-primary;
+    box-shadow: inset 0 0 0 1px variables.$color-primary;
   }
 }

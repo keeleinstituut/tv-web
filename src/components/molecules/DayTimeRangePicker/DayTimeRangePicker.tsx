@@ -1,7 +1,7 @@
 import { forwardRef, useCallback } from 'react'
 import { Control, FieldError, Path, useWatch } from 'react-hook-form'
 import classNames from 'classnames'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Delete from 'assets/icons/delete.svg?react'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import TimeRangePicker from 'components/molecules/TimeRangePicker/TimeRangePicker'

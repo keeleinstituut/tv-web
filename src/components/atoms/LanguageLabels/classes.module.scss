@@ -1,28 +1,28 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .languageContianer {
   display: block;
 }
 
 .sourceLanguage {
-  padding-top: spacing(4);
+  padding-top: variables.spacing(4);
   display: inline-block;
 }
 
 .languageTag {
-  background-color: $color-tag;
-  border-radius: $border-radius-4;
-  color: $color-primary;
-  @include bodyTextSmallStyle;
-  font-weight: $font-weight-bold;
-  padding: spacing(0.6) spacing(1);
+  background-color: variables.$color-tag;
+  border-radius: variables.$border-radius-4;
+  color: variables.$color-primary;
+  @include mixins.bodyTextSmallStyle;
+  font-weight: variables.$font-weight-bold;
+  padding: variables.spacing(0.6) variables.spacing(1);
   width: fit-content;
-  margin-left: spacing(2.5);
+  margin-left: variables.spacing(2.5);
   display: inline-block;
 }
 
 .destinationLanguage {
-  padding-top: spacing(6);
+  padding-top: variables.spacing(6);
   display: inline-block;
 }

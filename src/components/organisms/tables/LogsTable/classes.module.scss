@@ -1,17 +1,17 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .dataTable {
-  margin-top: spacing(4);
-  padding-top: spacing(1);
+  margin-top: variables.spacing(4);
+  padding-top: variables.spacing(1);
 }
 
 .firstHeader {
-  padding-left: spacing(8);
-  font-size: $font-size-14;
+  padding-left: variables.spacing(8);
+  font-size: variables.$font-size-14;
 }
 
 .header {
-  font-size: $font-size-14;
+  font-size: variables.$font-size-14;
 }
 
 .row {
@@ -26,23 +26,23 @@
   height: 16px;
   width: 20px;
   svg {
-    margin: spacing(0.5);
+    margin: variables.spacing(0.5);
   }
 }
 
 .expandedIcon svg path {
-  fill: $color-expanded-icon;
+  fill: variables.$color-expanded-icon;
 }
 
 .tableClassName {
   th {
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid variables.$color-border;
   }
   tbody {
     tr {
       &:last-child {
         td {
-          border-bottom: 1px solid $color-border;
+          border-bottom: 1px solid variables.$color-border;
         }
       }
     }

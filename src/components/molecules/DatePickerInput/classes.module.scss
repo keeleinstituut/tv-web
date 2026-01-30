@@ -1,15 +1,15 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .dateIcon {
   position: absolute;
-  right: spacing(2);
-  top: spacing(2);
+  right: variables.spacing(2);
+  top: variables.spacing(2);
   pointer-events: none;
 }
 
 .disabledCalender g path {
-  fill: $color-input-border;
+  fill: variables.$color-input-border;
 }
 
 
@@ -22,35 +22,35 @@
   width: 100%;
   display: block;
   appearance: none;
-  background-color: $color-white;
-  border: 1px solid $color-input-border;
+  background-color: variables.$color-white;
+  border: 1px solid variables.$color-input-border;
   border-radius: 4px;
-  color: $color-input-main;
-  @include buttonTextStyle;
+  color: variables.$color-input-main;
+  @include mixins.buttonTextStyle;
   height: 40px;
-  padding: spacing(2);
+  padding: variables.spacing(2);
 
   &::placeholder {
-    color: $color-input-main;
+    color: variables.$color-input-main;
   }
 
   &:focus {
     outline: none;
-    color: $color-text-dark;
-    border-color: $color-primary;
+    color: variables.$color-text-dark;
+    border-color: variables.$color-primary;
   }
 
   &:disabled {
-    background-color: $color-background;
+    background-color: variables.$color-background;
   }
 
   &:disabled::placeholder {
-    color: $color-input-border;
+    color: variables.$color-input-border;
   }
 }
 
 .errorMessage :global(.react-datepicker__input-container) {
-  border: 1px solid $color-error;
+  border: 1px solid variables.$color-error;
 }
 
 .datePickerWrapper {
@@ -64,9 +64,9 @@
 
 :global(.react-datepicker) {
   font-family: inherit;
-  @include subtitleSmallTextStyle;
-  border: 1.25px solid $color-input-border;
-  border-radius: spacing(1);
+  @include mixins.subtitleSmallTextStyle;
+  border: 1.25px solid variables.$color-input-border;
+  border-radius: variables.spacing(1);
 }
 
 :global(.react-datepicker__tab-loop) {
@@ -83,23 +83,23 @@
   top: 0;
 
   &:hover *::before {
-    border-color: $color-background-dark;
+    border-color: variables.$color-background-dark;
   }
 
   &:focus {
-    border: 1px solid $color-white;
+    border: 1px solid variables.$color-white;
   }
 }
 
 :global(.react-datepicker__navigation--previous) {
   ::before {
-    border-color: $color-white;
+    border-color: variables.$color-white;
   }
 }
 
 :global(.react-datepicker__navigation--next) {
   ::before {
-    border-color: $color-white;
+    border-color: variables.$color-white;
   }
 }
 
@@ -114,22 +114,22 @@
 
 :global(.react-datepicker__current-month) {
   height: 50px;
-  border-bottom: 1px solid $color-input-border;
-  background-color: $color-primary;
-  color: $color-white;
-  @include h5TextStyle;
-  line-height: $line-height;
-  padding-top: spacing(3);
+  border-bottom: 1px solid variables.$color-input-border;
+  background-color: variables.$color-primary;
+  color: variables.$color-white;
+  @include mixins.h5TextStyle;
+  line-height: variables.$line-height;
+  padding-top: variables.spacing(3);
 }
 
 :global(.react-datepicker__day-names) {
-  background-color: $color-white;
+  background-color: variables.$color-white;
   margin-bottom: 0;
 }
 
 :global(.react-datepicker__month) {
   margin: 0;
-  padding-bottom: spacing(5);
+  padding-bottom: variables.spacing(5);
 }
 
 :global(.react-datepicker__week) {
@@ -137,48 +137,48 @@
 }
 
 :global(.react-datepicker__day-name) {
-  margin: spacing(2.75) 0 0 0;
-  line-height: $line-height;
-  color: $color-input-main;
+  margin: variables.spacing(2.75) 0 0 0;
+  line-height: variables.$line-height;
+  color: variables.$color-input-main;
   height: 33px;
   width: 56px;
   vertical-align: sub;
-  background-color: $color-white;
-  @include bodyTextSmallStyle;
-  font-weight: $font-weight-bold;
+  background-color: variables.$color-white;
+  @include mixins.bodyTextSmallStyle;
+  font-weight: variables.$font-weight-bold;
 }
 
 :global(.react-datepicker__day) {
-  color: $color-input-main;
+  color: variables.$color-input-main;
   margin: 0;
-  @include subtitleSmallTextStyle;
-  line-height: $line-height;
+  @include mixins.subtitleSmallTextStyle;
+  line-height: variables.$line-height;
   height: 33px;
   width: 56px;
-  padding: spacing(1.5) 0;
+  padding: variables.spacing(1.5) 0;
 
   &:hover {
     border-radius: 16px;
     position: relative;
     display: inline-block;
-    background-color: $color-background-dark;
-    padding: spacing(1.5);
+    background-color: variables.$color-background-dark;
+    padding: variables.spacing(1.5);
     text-align: center;
     width: 32px;
-    margin: 0 spacing(3);
+    margin: 0 variables.spacing(3);
   }
 }
 
 :global(.react-datepicker__day--selected) {
-  color: $color-white;
+  color: variables.$color-white;
   border-radius: 16px;
   position: relative;
   display: inline-block;
-  background-color: $color-primary;
-  padding: spacing(1.5);
+  background-color: variables.$color-primary;
+  padding: variables.spacing(1.5);
   text-align: center;
   width: 32px;
-  margin: 0 spacing(3);
+  margin: 0 variables.spacing(3);
 }
 
 :global(.react-datepicker__navigation-icon::before) {
@@ -200,23 +200,23 @@
   border-radius: 16px;
   position: relative;
   display: inline-block;
-  color: $color-input-main;
-  padding: spacing(1.5);
+  color: variables.$color-input-main;
+  padding: variables.spacing(1.5);
   text-align: center;
   width: 32px;
-  margin: 0 spacing(3);
+  margin: 0 variables.spacing(3);
 }
 
 :global(.react-datepicker__day--disabled) {
-  color: $color-background-dark;
+  color: variables.$color-background-dark;
 }
 
 :global(
     .react-datepicker__day.react-datepicker__day--selected.react-datepicker__day--weekend
   ) {
-  color: $color-white;
+  color: variables.$color-white;
 }
 
 :global(.react-datepicker__day--disabled:hover) {
-  color: $color-white;
+  color: variables.$color-white;
 }

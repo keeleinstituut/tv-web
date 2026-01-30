@@ -10,7 +10,7 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
+import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import { Root } from '@radix-ui/react-form'
 import Tag from 'components/atoms/Tag/Tag'
 import dayjs from 'dayjs'

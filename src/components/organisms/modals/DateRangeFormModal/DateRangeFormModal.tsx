@@ -27,7 +27,7 @@ import {
   uniqueId,
 } from 'lodash'
 import { FieldPath, Path, SubmitHandler, useForm } from 'react-hook-form'
-import { ReactComponent as Add } from 'assets/icons/add.svg'
+import Add from 'assets/icons/add.svg?react'
 import classes from './classes.module.scss'
 import { ValidationError } from 'api/errorHandler'
 

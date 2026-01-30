@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .pricesDataTableHeader {
   display: flex;
@@ -10,15 +10,15 @@
 }
 
 .dateText {
-  @include bodyTextSmallStyle;
-  color: $color-input-main;
+  @include mixins.bodyTextSmallStyle;
+  color: variables.$color-input-main;
   &:first-of-type {
-    margin-top: spacing(2);
+    margin-top: variables.spacing(2);
   }
 }
 
 .vendorPricesContainer {
-  margin-top: spacing(9);
+  margin-top: variables.spacing(9);
 }
 
 .hiddenVendorPrices > div {
@@ -26,12 +26,12 @@
 }
 
 .languageTag {
-  background-color: $color-tag;
-  border-radius: $border-radius-4;
-  color: $color-primary;
-  @include bodyTextSmallStyle;
-  font-weight: $font-weight-bold;
-  padding: spacing(0.6) spacing(1);
+  background-color: variables.$color-tag;
+  border-radius: variables.$border-radius-4;
+  color: variables.$color-primary;
+  @include mixins.bodyTextSmallStyle;
+  font-weight: variables.$font-weight-bold;
+  padding: variables.spacing(0.6) variables.spacing(1);
   width: fit-content;
   display: inline-block;
 }

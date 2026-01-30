@@ -6,7 +6,7 @@ import ModalBase, {
   ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
+import DownloadFilled from 'assets/icons/download_filled.svg?react'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
 import { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'

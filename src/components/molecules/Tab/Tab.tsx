@@ -1,7 +1,7 @@
 import { FC, useCallback, useState, useEffect } from 'react'
 import classNames from 'classnames'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
+import EditIcon from 'assets/icons/edit.svg?react'
 import { startsWith } from 'lodash'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'

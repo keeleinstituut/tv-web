@@ -3,8 +3,8 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as Edit } from 'assets/icons/edit.svg'
-import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
+import Edit from 'assets/icons/edit.svg?react'
+import AddIcon from 'assets/icons/add.svg?react'
 import { useTranslation } from 'react-i18next'
 import { includes } from 'lodash'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'

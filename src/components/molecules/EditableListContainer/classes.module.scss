@@ -1,27 +1,27 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .editableContainer {
   width: 375px;
-  margin-top: spacing(8);
-  padding: spacing(2) spacing(4);
-  grid-gap: spacing(4);
+  margin-top: variables.spacing(8);
+  padding: variables.spacing(2) variables.spacing(4);
+  grid-gap: variables.spacing(4);
   grid-template-rows: 32px auto;
 
   .headerContent {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid $color-border;
-    padding-bottom: spacing(2);
+    border-bottom: 1px solid variables.$color-border;
+    padding-bottom: variables.spacing(2);
     align-items: center;
 
     .title {
-      color: $color-border-secondary;
+      color: variables.$color-border-secondary;
       text-decoration: underline;
     }
 
     .editButton {
-      padding: spacing(1) spacing(1.5);
+      padding: variables.spacing(1) variables.spacing(1.5);
 
       svg {
         width: 21px;
@@ -29,10 +29,10 @@
       }
     }
     span {
-      @include bodyTextSmallStyle;
+      @include mixins.bodyTextSmallStyle;
     }
   }
   .listItem {
-    @include bodyTextSmallStyle;
+    @include mixins.bodyTextSmallStyle;
   }
 }

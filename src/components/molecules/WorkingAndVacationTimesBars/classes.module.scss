@@ -1,24 +1,24 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .container {
   display: grid;
   grid-auto-columns: max-content;
   grid-auto-flow: column;
-  grid-gap: spacing(1);
+  grid-gap: variables.spacing(1);
 
   .bar {
     width: 5px;
     height: 24px;
-    background-color: $color-success;
+    background-color: variables.$color-success;
 
     &.vacation {
-      background-color: $color-primary;
+      background-color: variables.$color-primary;
     }
   }
 }
 
 .content {
-  padding: spacing(1);
+  padding: variables.spacing(1);
   width: fit-content;
   white-space: nowrap;
   margin-left: -9px;

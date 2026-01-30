@@ -1,4 +1,4 @@
-import { FocusEvent, RefObject, forwardRef, useCallback, useRef } from 'react'
+import { FocusEvent, RefObject, forwardRef, useCallback, useRef, ReactNode } from 'react'
 import classNames from 'classnames'
 import { Field, Label, Control } from '@radix-ui/react-form'
 import classes from './classes.module.scss'
@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import InputError from 'components/atoms/InputError/InputError'
 import { InputHTMLAttributes } from 'react'
 import { FieldError } from 'react-hook-form'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Delete from 'assets/icons/delete.svg?react'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -18,7 +18,7 @@ export interface TextInputProps
   name: string
   className?: string
   error?: FieldError
-  label?: JSX.Element | string
+  label?: ReactNode
   ariaLabel: string
   errorZIndex?: number
   handleDelete?: () => void

@@ -1,9 +1,9 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .firstSection,
 .secondSection {
-  margin-bottom: spacing(4);
-  color: $color-primary;
+  margin-bottom: variables.spacing(4);
+  color: variables.$color-primary;
 }
 
 .secondSection {

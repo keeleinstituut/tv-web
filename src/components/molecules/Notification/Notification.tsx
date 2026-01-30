@@ -1,11 +1,11 @@
-import { FC, PropsWithChildren } from 'react'
+import { FC, PropsWithChildren, ReactNode } from 'react'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
-import { ReactComponent as CloseIcon } from 'assets/icons/close.svg'
-import { ReactComponent as WarningIcon } from 'assets/icons/warning.svg'
-import { ReactComponent as SuccessIcon } from 'assets/icons/success.svg'
-import { ReactComponent as ErrorIcon } from 'assets/icons/error_outline.svg'
-import { ReactComponent as InfoIcon } from 'assets/icons/info.svg'
+import CloseIcon from 'assets/icons/close.svg?react'
+import WarningIcon from 'assets/icons/warning.svg?react'
+import SuccessIcon from 'assets/icons/success.svg?react'
+import ErrorIcon from 'assets/icons/error_outline.svg?react'
+import InfoIcon from 'assets/icons/info.svg?react'
 
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 
@@ -24,7 +24,7 @@ interface IconComponentProps {
 export interface NotificationProps {
   type: NotificationTypes
   title?: string
-  content?: JSX.Element | string
+  content?: ReactNode
   hideIcon?: boolean
   closeNotification?: () => void
   className?: string

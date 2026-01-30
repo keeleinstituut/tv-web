@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .container {
   position: absolute;
@@ -9,14 +9,14 @@
 
 .dragAndDropContainer {
   height: 100%;
-  background: $color-text-button;
-  border: 1px solid $color-border-black-coral;
+  background: variables.$color-text-button;
+  border: 1px solid variables.$color-border-black-coral;
   border-radius: 5px;
   width: 318px;
-  padding: spacing(4) spacing(4) spacing(2) spacing(4);
+  padding: variables.spacing(4) variables.spacing(4) variables.spacing(2) variables.spacing(4);
   position: relative;
-  box-shadow: 0px 0px 2px $color-shadow-main, 0px 2px 2px $color-checkbox-focus,
-    0px 1px 3px $color-shadow-secondary;
+  box-shadow: 0px 0px 2px variables.$color-shadow-main, 0px 2px 2px variables.$color-checkbox-focus,
+    0px 1px 3px variables.$color-shadow-secondary;
 
   &::after {
     content: ' ';
@@ -26,9 +26,9 @@
     height: 0;
     border-left: 12px solid transparent;
     border-right: 12px solid transparent;
-    border-top: 10px solid $color-text-button;
+    border-top: 10px solid variables.$color-text-button;
     margin-top: 6px;
-    filter: drop-shadow(0px 2px 2px $color-shadow-secondary);
+    filter: drop-shadow(0px 2px 2px variables.$color-shadow-secondary);
   }
 
   &.rightIndicator {
@@ -39,25 +39,25 @@
 }
 
 .dragAndDropContent {
-  border: 1px dashed $color-border-secondary;
+  border: 1px dashed variables.$color-border-secondary;
   border-radius: 2px;
-  padding: spacing(3.5) 0 spacing(5) 0;
+  padding: variables.spacing(3.5) 0 variables.spacing(5) 0;
   text-align: center;
 }
 
 .dragAndDropText {
-  @include bodyTextSmallStyle;
-  padding-top: spacing(0.5);
+  @include mixins.bodyTextSmallStyle;
+  padding-top: variables.spacing(0.5);
   display: inline-flex;
 }
 
 .dropButton {
-  margin-left: spacing(2);
+  margin-left: variables.spacing(2);
 }
 
 .multipleFilesText {
-  font-size: $font-size-12;
-  font-weight: $font-weight-normal;
-  padding-top: spacing(1);
-  height: spacing(6);
+  font-size: variables.$font-size-12;
+  font-weight: variables.$font-weight-normal;
+  padding-top: variables.spacing(1);
+  height: variables.spacing(6);
 }

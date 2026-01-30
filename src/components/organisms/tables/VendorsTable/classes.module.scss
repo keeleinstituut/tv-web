@@ -1,28 +1,28 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .topSection {
-  padding: spacing(6) spacing(4);
+  padding: variables.spacing(6) variables.spacing(4);
 }
 
 .checkbox {
-  margin-top: spacing(4);
+  margin-top: variables.spacing(4);
 }
 
 .tagsRow,
 .languageRow {
   display: flex;
   :not(:first-child) {
-    margin-left: spacing(2);
+    margin-left: variables.spacing(2);
   }
-  max-width: spacing(44);
+  max-width: variables.spacing(44);
   overflow: hidden;
 }
 
 .deadline {
-  font-size: $font-size-16;
+  font-size: variables.$font-size-16;
 
   &.error {
-    color: $color-error;
+    color: variables.$color-error;
   }
 }
 

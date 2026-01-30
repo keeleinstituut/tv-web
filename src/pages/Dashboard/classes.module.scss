@@ -1,6 +1,6 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .landingContent {
-  margin-left: spacing(-6);
-  margin-right: spacing(-6)
+  margin-left: variables.spacing(-6);
+  margin-right: variables.spacing(-6)
 }

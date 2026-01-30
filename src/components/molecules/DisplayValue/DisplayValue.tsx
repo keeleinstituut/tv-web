@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react'
+import { FC, useMemo, ReactNode } from 'react'
 import { join, isArray, reduce, map, filter, includes, find } from 'lodash'
 import classNames from 'classnames'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
@@ -7,7 +7,7 @@ import { VolumeValue } from 'types/volumes'
 import classes from './classes.module.scss'
 
 export interface DisplayValueProps {
-  label?: string | JSX.Element
+  label?: ReactNode
   options?: DropDownOptions[]
   className?: string
   name: string

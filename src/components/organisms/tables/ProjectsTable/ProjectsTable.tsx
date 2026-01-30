@@ -11,7 +11,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import classNames from 'classnames'
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
+import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
 import { SubmitHandler, useForm } from 'react-hook-form'

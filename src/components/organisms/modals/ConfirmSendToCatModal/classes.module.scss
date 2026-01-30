@@ -1,5 +1,5 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .helpText {
-  color: $color-primary;
+  color: variables.$color-primary;
 }

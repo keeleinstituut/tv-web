@@ -23,8 +23,8 @@ import {
   closeModal,
   showModal,
 } from 'components/organisms/modals/ModalRoot'
-import { ReactComponent as Edit } from 'assets/icons/edit.svg'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Edit from 'assets/icons/edit.svg?react'
+import Delete from 'assets/icons/delete.svg?react'
 import DynamicForm, {
   FieldProps,
   InputTypes,
