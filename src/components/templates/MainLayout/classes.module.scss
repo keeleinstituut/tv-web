@@ -10,7 +10,7 @@
     overflow-x: hidden;
 
     .scrollableContent {
-      height: calc(100vh - variables.$header-height - variables.$breadcrumb-height);
+      height: calc(100vh - #{variables.$header-height} - #{variables.$breadcrumb-height});
       width: 100%;
       overflow-x: hidden;
       overflow-y: scroll;

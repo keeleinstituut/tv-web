@@ -7,7 +7,7 @@
   padding: variables.spacing(1.5) variables.spacing(10) variables.spacing(1.5) variables.spacing(1);
   white-space: nowrap;
   width: fit-content;
-  top: calc(100% + variables.spacing(2));
+  top: calc(100% + #{variables.spacing(2)});
   left: 0;
   background-color: variables.$color-error-light;
   z-index: 1;

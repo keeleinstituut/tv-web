@@ -76,7 +76,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
 
-  @media (max-width: calc(variables.$medium_desktop - 100px)) and (min-width: variables.$small_desktop) {
+  @media (max-width: calc(#{variables.$medium_desktop} - 100px)) and (min-width: #{variables.$small_desktop}) {
     grid-template-columns: 1fr;
   }
 }

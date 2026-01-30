@@ -5,7 +5,7 @@
   display: flex;
   overflow-x: auto;
   // Hack to make room for box-shadow of single tab
-  width: calc(100% + variables.spacing(5));
+  width: calc(100% + #{variables.spacing(5)});
   margin-left: variables.spacing(-2.5);
   padding-left: variables.spacing(2.5);
   padding-right: variables.spacing(2.5);
