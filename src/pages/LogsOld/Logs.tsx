@@ -14,7 +14,7 @@ import { Path, SubmitHandler, useForm } from 'react-hook-form'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import LogsTable from 'components/organisms/tables/LogsTable/LogsTable'
-import { ReactComponent as Alarm } from 'assets/icons/alarm.svg'
+import Alarm from 'assets/icons/alarm.svg?react'
 import {
   useExportAuditLogsCSVOld,
   useFetchAuditLogsOld,

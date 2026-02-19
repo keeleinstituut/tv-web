@@ -1,64 +1,64 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .titleRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: spacing(4);
+  margin-bottom: variables.spacing(4);
 
   .buttonsContainer {
     display: flex;
     > :first-child {
-      margin-right: spacing(2);
+      margin-right: variables.spacing(2);
     }
   }
 }
 
 .dateText {
-  @include bodyTextSmallStyle;
-  color: $color-input-main;
+  @include mixins.bodyTextSmallStyle;
+  color: variables.$color-input-main;
   &:first-of-type {
-    margin-top: spacing(2);
+    margin-top: variables.spacing(2);
   }
 }
 
 .archiveContent {
-  color: $color-primary;
+  color: variables.$color-primary;
 }
 
 .deactivationDate {
   display: grid;
   grid-auto-flow: column;
-  grid-gap: spacing(2);
+  grid-gap: variables.spacing(2);
   align-items: center;
   width: max-content;
-  padding: spacing(6) 0 spacing(8) 0;
+  padding: variables.spacing(6) 0 variables.spacing(8) 0;
 
   &.hidden {
     display: none;
   }
 
   span {
-    @include bodyTextStyle;
-    color: $color-error;
+    @include mixins.bodyTextStyle;
+    color: variables.$color-error;
   }
 
   .button {
-    padding: spacing(1);
+    padding: variables.spacing(1);
     svg {
       width: 20px;
       height: 21px;
       path {
-        fill: $color-error;
+        fill: variables.$color-error;
       }
     }
     &:focus {
-      box-shadow: inset 0 0 0 2px $color-error;
+      box-shadow: inset 0 0 0 2px variables.$color-error;
     }
   }
   .editIcon {
-    padding: spacing(1);
+    padding: variables.spacing(1);
     svg {
       width: 21px;
       height: 20px;
@@ -72,12 +72,12 @@
 }
 
 .deactivateDynamicForm {
-  padding-top: spacing(6);
+  padding-top: variables.spacing(6);
 }
 
 .deactivateContent > div > div > div,
 .activateContent > div > div > div {
-  color: $color-primary;
+  color: variables.$color-primary;
   max-width: 70%;
 }
 
@@ -87,14 +87,14 @@
 }
 
 .activateDynamicForm {
-  padding-top: spacing(5);
-  padding-bottom: spacing(10);
+  padding-top: variables.spacing(5);
+  padding-bottom: variables.spacing(10);
 }
 
 .checkboxInputClass {
-  padding-top: spacing(4);
+  padding-top: variables.spacing(4);
 }
 
 .userForm {
-  margin-top: spacing(6);
+  margin-top: variables.spacing(6);
 }

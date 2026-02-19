@@ -1,4 +1,4 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .dateTimeContainer {
   display: flex;
@@ -6,14 +6,14 @@
 
   .bold {
     font-weight: bold;
-    margin-right: spacing(2);
+    margin-right: variables.spacing(2);
   }
   .blue {
-    color: $color-primary;
-    margin-right: spacing(4);
+    color: variables.$color-primary;
+    margin-right: variables.spacing(4);
   }
   .editButton {
-    padding: spacing(0.3);
+    padding: variables.spacing(0.3);
     svg {
       width: 21px;
       height: 20px;

@@ -1,7 +1,7 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .searchInput {
-  margin: spacing(2) 0;
+  margin: variables.spacing(2) 0;
 
   input {
     width: 328px;

@@ -23,7 +23,7 @@ class ApiClient {
       baseURL,
       timeout: 40000,
     })
-    this.debug_mode = process.env.NODE_ENV !== 'production'
+    this.debug_mode = !import.meta.env.PROD
     this.instance.interceptors.response.use(undefined, ApiClientInterceptor)
     // this.instance.defaults.paramsSerializer = (params) => {
     //   return queryString.stringify(params, {

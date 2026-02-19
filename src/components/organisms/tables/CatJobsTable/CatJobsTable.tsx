@@ -1,8 +1,8 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map, round, size, toNumber } from 'lodash'
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
-import { ReactComponent as HorizontalDots } from 'assets/icons/horizontal_dots.svg'
+import ArrowRight from 'assets/icons/arrow_right.svg?react'
+import HorizontalDots from 'assets/icons/horizontal_dots.svg?react'
 import classNames from 'classnames'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import DataTable, {

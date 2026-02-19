@@ -5,7 +5,7 @@ import ToggleTabs, {
 } from 'components/molecules/ToggleTabs/ToggleTabs'
 import { useTranslation } from 'react-i18next'
 import ToggleInput from 'components/molecules/ToggleInput/ToggleInput'
-import { ReactComponent as Add } from 'assets/icons/add.svg'
+import Add from 'assets/icons/add.svg?react'
 
 import classes from './classes.module.scss'
 import Button, {

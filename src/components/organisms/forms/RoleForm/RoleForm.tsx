@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo } from 'react'
-import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
+import {useForm, SubmitHandler, FieldPath, Resolver, FieldErrors} from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
   InputTypes,
@@ -24,7 +24,7 @@ import {
   useDeleteRole,
   useCreateRole,
 } from 'hooks/requests/useRoles'
-import { ReactComponent as DeleteIcon } from 'assets/icons/delete.svg'
+import DeleteIcon from 'assets/icons/delete.svg?react'
 import classes from './classes.module.scss'
 import { useAuth } from 'components/contexts/AuthContext'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -93,6 +93,31 @@ const RoleForm: FC<RoleFormProps> = ({
   const { createRole, isLoading: isCreating } = useCreateRole()
   const { deleteRole, isLoading: isDeleting } = useDeleteRole({ id })
 
+  const customResolver: Resolver<FormValues> = (data) => {
+          // Validate the entire form
+          const anyPrivilegePicked = find(data.privileges, (value) => !!value)
+
+          if (!anyPrivilegePicked) {
+              // Validation failed - return empty values
+              return {
+                  values: {} as Record<string, never>,
+                  errors: {
+                      privileges: {
+                          type: 'required',
+                          message: 'At least one privilege must be selected',
+                      },
+                  } as FieldErrors<FormValues>,
+              }
+          }
+
+          return {
+              values: {
+                  privileges: data.privileges,
+              },
+              errors: {},
+          }
+      }
+
   const {
     control,
     handleSubmit,
@@ -107,19 +132,7 @@ const RoleForm: FC<RoleFormProps> = ({
     resetOptions: {
       keepDirtyValues: true, // keep dirty fields unchanged, but update defaultValues
     },
-    resolver: (data) => {
-      // Validate entire form
-      const anyPrivilegePicked = find(data.privileges, (value) => !!value)
-
-      return {
-        values: {
-          privileges: data.privileges,
-        },
-        errors: {
-          ...(!anyPrivilegePicked ? { privileges: '' } : {}),
-        },
-      }
-    },
+    resolver: customResolver
   })
 
   const handleMainUserPrivilegeClick = (
@@ -264,7 +277,7 @@ const RoleForm: FC<RoleFormProps> = ({
         }
       />
       <h2>{t('roles.privileges')}</h2>
-      <DynamicForm
+      <DynamicForm<FormValues>
         fields={fields}
         control={control}
         onSubmit={handleSubmit(onSubmit)}

@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import React, { FC } from 'react'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { map } from 'lodash'

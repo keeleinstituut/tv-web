@@ -1,6 +1,6 @@
 @use 'reset';
-@import './variables.scss';
-@import './mixins.scss';
+@use './variables' as variables;
+@use './mixins' as mixins;
 
 @font-face {
   font-family: 'Roboto';
@@ -30,7 +30,7 @@
 }
 
 body {
-  background-color: $color-background-main;
+  background-color: variables.$color-background-main;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -125,7 +125,7 @@ input,
 select,
 textarea {
   box-sizing: border-box;
-  line-height: $line-height;
+  line-height: variables.$line-height;
   font-family: 'Roboto', sans-serif;
 }
 
@@ -139,29 +139,29 @@ a {
 }
 
 h1 {
-  @include h1TextStyle;
+  @include mixins.h1TextStyle;
 }
 
 h2 {
-  @include h2TextStyle;
+  @include mixins.h2TextStyle;
 }
 
 h3 {
-  @include h3TextStyle;
+  @include mixins.h3TextStyle;
 }
 
 h4 {
-  @include h4TextStyle;
+  @include mixins.h4TextStyle;
 }
 
 h5 {
-  @include h5TextStyle;
+  @include mixins.h5TextStyle;
 }
 
 h6 {
-  @include h6TextStyle;
+  @include mixins.h6TextStyle;
 }
 
 p {
-  @include bodyTextStyle;
+  @include mixins.bodyTextStyle;
 }

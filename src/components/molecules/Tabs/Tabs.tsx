@@ -6,7 +6,7 @@ import Button, {
   AppearanceTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as AddIcon } from 'assets/icons/add.svg'
+import AddIcon from 'assets/icons/add.svg?react'
 import classes from './classes.module.scss'
 
 interface ObjectType {

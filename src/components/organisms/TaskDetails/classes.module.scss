@@ -1,32 +1,32 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .expandableContainer {
-  border-left: spacing(1) solid;
+  border-left: variables.spacing(1) solid;
   &:not(:first-child) {
-    margin-top: spacing(4);
+    margin-top: variables.spacing(4);
   }
   &.registered {
-    border-color: $color-highlight;
+    border-color: variables.$color-highlight;
   }
   &.new {
-    border-color: $color-warning;
+    border-color: variables.$color-warning;
   }
   &.tasks_submitted_to_vendors {
-    border-color: $color-success;
+    border-color: variables.$color-success;
   }
   &.tasks_in_progress {
-    border-color: $color-primary;
+    border-color: variables.$color-primary;
   }
   &.tasks_completed {
-    border-color: $color-success;
+    border-color: variables.$color-success;
   }
   &.done_task {
-    border-color: $color-success;
+    border-color: variables.$color-success;
   }
   &.cancelled {
-    border-color: $color-border;
+    border-color: variables.$color-border;
   }
   &.completed {
-    border-color: $color-warning;
+    border-color: variables.$color-warning;
   }
 }

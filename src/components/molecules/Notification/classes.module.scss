@@ -1,11 +1,11 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .notificationContainer {
   width: 392px;
-  padding: spacing(4);
+  padding: variables.spacing(4);
   display: grid;
-  grid-gap: spacing(2);
-  grid-template-columns: spacing(4) 1fr 1fr;
+  grid-gap: variables.spacing(2);
+  grid-template-columns: variables.spacing(4) 1fr 1fr;
   border: 1px solid;
   border-radius: 5px;
   align-items: center;
@@ -32,22 +32,22 @@
   }
 
   &.error {
-    background-color: $color-error-light;
-    border-color: $color-error;
+    background-color: variables.$color-error-light;
+    border-color: variables.$color-error;
   }
 
   &.warning {
-    background-color: $color-warning-light;
-    border-color: $color-warning;
+    background-color: variables.$color-warning-light;
+    border-color: variables.$color-warning;
   }
 
   &.success {
-    background-color: $color-success-light;
-    border-color: $color-success;
+    background-color: variables.$color-success-light;
+    border-color: variables.$color-success;
   }
 
   &.info {
-    background-color: $color-info-light;
-    border-color: $color-primary;
+    background-color: variables.$color-info-light;
+    border-color: variables.$color-primary;
   }
 }

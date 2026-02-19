@@ -1,18 +1,18 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .container {
-  background: $color-white;
-  padding: spacing(6) spacing(6) spacing(8) spacing(6);
-  border: 1px solid $color-border;
+  background: variables.$color-white;
+  padding: variables.spacing(6) variables.spacing(6) variables.spacing(8) variables.spacing(6);
+  border: 1px solid variables.$color-border;
   border-top: unset;
-  box-shadow: 0 4px 10px $color-shadow-main;
+  box-shadow: 0 4px 10px variables.$color-shadow-main;
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
 
   h2 {
-    @include h3TextStyle;
-    margin-bottom: spacing(8);
+    @include mixins.h3TextStyle;
+    margin-bottom: variables.spacing(8);
   }
 
   .formButtons {
@@ -21,17 +21,17 @@
 
   .formContainer {
     display: grid;
-    grid-gap: spacing(4);
+    grid-gap: variables.spacing(4);
     grid-template-columns: 1fr 1fr;
   }
 }
 
 .deleteButton {
-  color: $color-error;
+  color: variables.$color-error;
   margin-left: auto;
-  margin-bottom: spacing(6);
+  margin-bottom: variables.spacing(6);
 }
 
 .deleteButton svg path {
-  fill: $color-error;
+  fill: variables.$color-error;
 }

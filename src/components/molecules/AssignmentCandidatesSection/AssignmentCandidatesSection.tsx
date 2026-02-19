@@ -1,7 +1,7 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Delete from 'assets/icons/delete.svg?react'
 
 import classNames from 'classnames'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'

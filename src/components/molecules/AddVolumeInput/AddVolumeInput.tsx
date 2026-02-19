@@ -1,10 +1,10 @@
-import { FC, useCallback } from 'react'
+import { FC, ReactNode, useCallback } from 'react'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
-import { ReactComponent as Edit } from 'assets/icons/edit.svg'
-import { ReactComponent as Add } from 'assets/icons/add.svg'
+import Delete from 'assets/icons/delete.svg?react'
+import Edit from 'assets/icons/edit.svg?react'
+import Add from 'assets/icons/add.svg?react'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -111,7 +111,7 @@ export interface AddVolumeInputProps {
   value?: VolumeValue[]
   name: string
   className?: string
-  label?: JSX.Element | string
+  label?: ReactNode
   disabled?: boolean
   hidden?: boolean
   catSupported?: boolean

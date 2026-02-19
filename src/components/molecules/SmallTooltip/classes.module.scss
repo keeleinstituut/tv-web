@@ -1,4 +1,4 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .tooltipWrapper {
   position: relative;
@@ -6,14 +6,14 @@
 }
 
 .tooltipContent {
-  background: $color-text-button;
+  background: variables.$color-text-button;
   text-align: center;
   border-radius: 5px;
   width: 230px;
-  padding: spacing(1);
+  padding: variables.spacing(1);
   position: absolute;
-  bottom: calc(100% + spacing(2));
-  left: spacing(-6);
+  bottom: calc(100% + #{variables.spacing(2)});
+  left: variables.spacing(-6);
   z-index: 5;
   box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.25);
   display: none;
@@ -22,7 +22,7 @@
 
   &.bottomPosition {
     bottom: unset;
-    top: spacing(8);
+    top: variables.spacing(8);
 
     &::after {
       content: ' ';
@@ -33,11 +33,11 @@
       height: 0;
       border-left: 8px solid transparent;
       border-right: 8px solid transparent;
-      border-bottom: 8px solid $color-text-button;
+      border-bottom: 8px solid variables.$color-text-button;
       border-top: unset;
-      margin-top: spacing(-2);
-      margin-left: spacing(6);
-      filter: drop-shadow(0px -2px 2px $color-shadow-secondary);
+      margin-top: variables.spacing(-2);
+      margin-left: variables.spacing(6);
+      filter: drop-shadow(0px -2px 2px variables.$color-shadow-secondary);
     }
   }
 
@@ -49,10 +49,10 @@
     height: 0;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-top: 8px solid $color-text-button;
-    margin-top: spacing(1);
-    margin-left: spacing(6);
-    filter: drop-shadow(0px 2px 2px $color-shadow-secondary);
+    border-top: 8px solid variables.$color-text-button;
+    margin-top: variables.spacing(1);
+    margin-left: variables.spacing(6);
+    filter: drop-shadow(0px 2px 2px variables.$color-shadow-secondary);
   }
 }
 
@@ -73,6 +73,6 @@
   height: 24px;
   width: 24px;
   g path {
-    fill: $color-primary;
+    fill: variables.$color-primary;
   }
 }

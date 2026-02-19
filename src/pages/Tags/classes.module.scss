@@ -1,29 +1,29 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .tagsHeader {
   display: grid;
   grid-template-columns: max-content max-content;
   align-items: center;
-  grid-gap: spacing(4);
+  grid-gap: variables.spacing(4);
 }
 
 .tagsContainer {
   grid-template-columns: auto auto auto;
-  margin-top: spacing(6);
-  padding: spacing(6) spacing(8);
-  grid-gap: spacing(2);
+  margin-top: variables.spacing(6);
+  padding: variables.spacing(6) variables.spacing(8);
+  grid-gap: variables.spacing(2);
 }
 
 .addingTag {
-  color: $color-primary;
-  padding-bottom: spacing(4);
+  color: variables.$color-primary;
+  padding-bottom: variables.spacing(4);
 }
 
 .tagsSection {
   display: grid;
-  border-left: 1px solid $color-background-dark;
-  padding-left: spacing(4);
+  border-left: 1px solid variables.$color-background-dark;
+  padding-left: variables.spacing(4);
 }
 
 .categorySection {
@@ -34,24 +34,24 @@
 
 .tagInputField {
   p {
-    color: $color-text-dark;
+    color: variables.$color-text-dark;
   }
   input {
     width: 508px;
     height: 100%;
-    padding: spacing(2);
+    padding: variables.spacing(2);
   }
 }
 
 .addButton {
-  margin-top: spacing(4);
+  margin-top: variables.spacing(4);
 }
 
 .categoryContainer {
   display: flex;
   flex-wrap: wrap;
-  padding-top: spacing(8);
+  padding-top: variables.spacing(8);
   & > * {
-    margin-right: spacing(6);
+    margin-right: variables.spacing(6);
   }
 }

@@ -1,23 +1,23 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .reportHeader {
   display: grid;
   grid-template-columns: max-content max-content;
   align-items: center;
-  grid-gap: spacing(4);
+  grid-gap: variables.spacing(4);
 }
 
 .reportContainer {
   grid-template-columns: auto auto auto;
-  margin-top: spacing(6);
-  padding: spacing(6) spacing(8);
-  grid-gap: spacing(2);
+  margin-top: variables.spacing(6);
+  padding: variables.spacing(6) variables.spacing(8);
+  grid-gap: variables.spacing(2);
 }
 
 .dateRangeSection {
   display: grid;
-  border-left: 1px solid $color-background-dark;
-  padding-left: spacing(4);
+  border-left: 1px solid variables.$color-background-dark;
+  padding-left: variables.spacing(4);
 }
 
 .statusSection {
@@ -27,7 +27,7 @@
 }
 
 .exportButton {
-  margin-top: spacing(4);
+  margin-top: variables.spacing(4);
 }
 
 .reportDateRange > :first-child {

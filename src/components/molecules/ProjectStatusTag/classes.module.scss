@@ -1,28 +1,28 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .new {
-  @include statusTagStyle($color-warning, $color-warning-dark);
+  @include mixins.statusTagStyle(variables.$color-warning, variables.$color-warning-dark);
 }
 .registered {
-  @include statusTagStyle($color-highlight);
+  @include mixins.statusTagStyle(variables.$color-highlight);
 }
 .submitted_to_client,
 .tasks_submitted_to_vendors,
 .completed,
 .tasks_completed {
-  @include statusTagStyle($color-success);
+  @include mixins.statusTagStyle(variables.$color-success);
 }
 .cancelled {
-  @include statusTagStyle($color-border, $color-text);
+  @include mixins.statusTagStyle(variables.$color-border, variables.$color-text);
 }
 .accepted {
-  @include statusTagStyle($color-dark);
+  @include mixins.statusTagStyle(variables.$color-dark);
 }
 .rejected {
-  @include statusTagStyle($color-error);
+  @include mixins.statusTagStyle(variables.$color-error);
 }
 .tasks_in_progress,
 .corrected {
-  @include statusTagStyle($color-primary);
+  @include mixins.statusTagStyle(variables.$color-primary);
 }

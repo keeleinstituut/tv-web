@@ -11,7 +11,7 @@ export type InputWrapperProps = {
   name: string
   className?: string
   error?: FieldError
-  label?: JSX.Element | string
+  label?: ReactNode
   children?: ReactNode
   wrapperClass?: string
   errorClass?: string

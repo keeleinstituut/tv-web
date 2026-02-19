@@ -29,7 +29,7 @@ import { createPortal } from 'react-dom'
 import useTableContext from 'hooks/useTableContext'
 import useModalContext from 'hooks/useModalContext'
 import { escapeSearchString } from 'helpers'
-import FocusTrap from 'focus-trap-react'
+import { FocusTrap } from 'focus-trap-react'
 
 interface DropdownContentComponentProps extends SelectionControlsInputProps {
   isOpen?: boolean

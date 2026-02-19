@@ -65,8 +65,10 @@ function constructProxyRoutes() {
       pathRewrite: {
         '/translation-order': '',
       },
-      onProxyReq,
-      onProxyRes,
+      on: {
+        proxyReq: onProxyReq,
+        proxyRes: onProxyRes,
+      },
     })
   )
 
@@ -78,11 +80,10 @@ function constructProxyRoutes() {
     proxy({
       target: AUTHORIZATION_SERVICE_BASE_URL,
       changeOrigin: true,
-      pathRewrite: {
-        '/authorization': '',
+      on: {
+        proxyReq: onProxyReq,
+        proxyRes: onProxyRes,
       },
-      onProxyReq,
-      onProxyRes,
     })
   )
 
@@ -94,11 +95,10 @@ function constructProxyRoutes() {
     proxy({
       target: TRANSLATION_MEMORY_SERVICE_BASE_URL,
       changeOrigin: true,
-      pathRewrite: {
-        '/translation-memory': '',
+      on: {
+        proxyReq: onProxyReq,
+        proxyRes: onProxyRes,
       },
-      onProxyReq,
-      onProxyRes,
     })
   )
 
@@ -110,11 +110,10 @@ function constructProxyRoutes() {
     proxy({
       target: AUDIT_LOG_SERVICE_BASE_URL,
       changeOrigin: true,
-      pathRewrite: {
-        '/audit-log': '',
+      on: {
+        proxyReq: onProxyReq,
+        proxyRes: onProxyRes,
       },
-      onProxyReq,
-      onProxyRes,
     })
   )
 

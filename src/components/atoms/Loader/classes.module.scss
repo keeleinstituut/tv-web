@@ -1,4 +1,4 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 @keyframes spin {
   0% {
@@ -22,8 +22,8 @@
     height: 16px;
     margin: 4px;
     border-radius: 50%;
-    border: 4px solid $color-black;
-    border-color: $color-black transparent $color-black transparent;
+    border: 4px solid variables.$color-black;
+    border-color: variables.$color-black transparent variables.$color-black transparent;
     animation: spin 1.2s linear infinite;
   }
 }

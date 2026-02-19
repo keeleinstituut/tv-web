@@ -1,11 +1,11 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .topSection {
-  padding: spacing(6) spacing(4);
+  padding: variables.spacing(6) variables.spacing(4);
 }
 
 .container {
-  padding-top: spacing(2);
+  padding-top: variables.spacing(2);
 }
 
 .generalPriceListInput input {

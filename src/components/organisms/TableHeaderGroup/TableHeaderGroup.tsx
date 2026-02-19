@@ -17,10 +17,10 @@ import {
   RowData,
 } from '@tanstack/react-table'
 import { DropDownOptions } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-import { ReactComponent as FilterIcon } from 'assets/icons/filter.svg'
-import { ReactComponent as SortingArrows } from 'assets/icons/sorting_arrows.svg'
-import { ReactComponent as SortingMore } from 'assets/icons/sorting_more.svg'
-import { ReactComponent as SortingLess } from 'assets/icons/sorting_less.svg'
+import FilterIcon from 'assets/icons/filter.svg?react'
+import SortingArrows from 'assets/icons/sorting_arrows.svg?react'
+import SortingMore from 'assets/icons/sorting_more.svg?react'
+import SortingLess from 'assets/icons/sorting_less.svg?react'
 import TableColumnFilter from 'components/organisms/TableColumnFilter/TableColumnFilter'
 import classes from './classes.module.scss'
 import Button, {

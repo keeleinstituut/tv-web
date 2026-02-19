@@ -6,7 +6,7 @@ import Button, {
 import { map } from 'lodash'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
+import EditIcon from 'assets/icons/edit.svg?react'
 
 import classes from './classes.module.scss'
 

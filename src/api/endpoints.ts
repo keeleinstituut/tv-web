@@ -2,7 +2,7 @@ const clean = (path: string) => path.replace(/^\//, '').replace('/$', '')
 
 const gateway = (path: string) => {
   return (
-    process.env.REACT_APP_GATEWAY_BASE?.replace(/\/$/, '') + '/' + clean(path)
+    import.meta.env.REACT_APP_GATEWAY_BASE?.replace(/\/$/, '') + '/' + clean(path)
   )
 }
 

@@ -1,17 +1,17 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .timeColumnContainer {
   display: flex;
-  border: 1px solid $color-input-border;
+  border: 1px solid variables.$color-input-border;
   border-radius: 5px;
   height: 106px;
   max-width: 200px;
   width: fit-content;
-  background-color: $color-white;
+  background-color: variables.$color-white;
   position: absolute;
   z-index: 2;
 
   &:focus {
-    box-shadow: inset 0 0 0 2px $color-primary;
+    box-shadow: inset 0 0 0 2px variables.$color-primary;
   }
 }

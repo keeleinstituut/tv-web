@@ -4,7 +4,7 @@ import {
   InputTypes,
   FormInput,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Delete from 'assets/icons/delete.svg?react'
 import { Control, FieldValues, Path } from 'react-hook-form'
 import classNames from 'classnames'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'

@@ -1,31 +1,31 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .institution {
   display: grid;
   grid-template-columns: max-content max-content;
   align-items: center;
-  grid-gap: spacing(4);
+  grid-gap: variables.spacing(4);
 }
 
 .container {
   grid-column: 1/-1;
-  border-radius: $border-radius-4;
-  padding: spacing(4);
-  margin-top: spacing(6);
-  grid-gap: spacing(4);
+  border-radius: variables.$border-radius-4;
+  padding: variables.spacing(4);
+  margin-top: variables.spacing(6);
+  grid-gap: variables.spacing(4);
 
   .title {
-    color: $color-primary;
-    padding: spacing(3) spacing(4);
+    color: variables.$color-primary;
+    padding: variables.spacing(3) variables.spacing(4);
   }
 }
 
 .dateText {
   grid-column: 1/-1;
-  @include bodyTextSmallStyle;
-  color: $color-input-main;
+  @include mixins.bodyTextSmallStyle;
+  color: variables.$color-input-main;
   &:first-of-type {
-    margin-top: spacing(2);
+    margin-top: variables.spacing(2);
   }
 }

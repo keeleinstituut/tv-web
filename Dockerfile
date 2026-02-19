@@ -3,7 +3,7 @@
 # ============================================================================
 # Stage 1: Builder - Build React application
 # ============================================================================
-FROM node:18.14.2-alpine3.17 AS builder
+FROM node:20.19.0-alpine AS builder
 
 ENV REACT_APP_GATEWAY_BASE /gateway
 
@@ -16,16 +16,18 @@ RUN yarn install --frozen-lockfile
 COPY public ./public
 COPY src ./src
 COPY tsconfig.json ./
+COPY vite.config.ts ./
 COPY patches ./patches
-COPY .eslintrc.json ./
+COPY eslint.config.cjs ./
 COPY .prettierrc.json ./
+COPY index.html ./
 
 RUN yarn build
 
 # ============================================================================
 # Stage 2: Runtime - Minimal production image
 # ============================================================================
-FROM node:18.14.2-alpine3.17
+FROM node:20.19.0-alpine
 
 ENV APP_ROOT /app
 ENV ENTRYPOINT /entrypoint.sh
@@ -45,8 +47,10 @@ COPY auth-server/src ./auth-server/src
 RUN apk add --no-cache nginx curl && \
     rm -rf /var/cache/apk/*
 
-RUN chown -R nginx:nginx ${APP_ROOT}/build && \
-    chown -R node:node ${APP_ROOT}/auth-server
+RUN chown -R nginx:nginx ${APP_ROOT}/build
+
+RUN chown -R root:root ${APP_ROOT}/auth-server && \
+    chmod -R 755 ${APP_ROOT}/auth-server
 
 RUN echo 'daemon off;' >> /etc/nginx/nginx.conf
 

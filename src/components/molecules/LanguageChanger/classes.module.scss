@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .container {
   display: flex;
@@ -7,11 +7,11 @@
   position: relative;
 
   label {
-    @include bodyTextSmallStyle;
-    font-weight: $font-weight-light;
+    @include mixins.bodyTextSmallStyle;
+    font-weight: variables.$font-weight-light;
   }
 
   span {
-    color: $color-primary;
+    color: variables.$color-primary;
   }
 }

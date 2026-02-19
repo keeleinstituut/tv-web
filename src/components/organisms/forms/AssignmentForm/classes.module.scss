@@ -1,14 +1,14 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .formContainer {
   display: flex;
   flex-direction: column;
-  margin-top: spacing(6);
+  margin-top: variables.spacing(6);
 
   .inputInternalPosition {
     justify-content: flex-end;
-    margin-bottom: spacing(4);
+    margin-bottom: variables.spacing(4);
 
     label {
       text-align: end;
@@ -27,7 +27,7 @@
 
   .customInternalClass {
     justify-content: flex-end;
-    margin-bottom: spacing(4);
+    margin-bottom: variables.spacing(4);
 
     label {
       text-align: end;

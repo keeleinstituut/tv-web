@@ -1,5 +1,4 @@
 const os = require('os')
-const stream = require('stream')
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
@@ -8,7 +7,7 @@ const bodyParser = require('body-parser')
 const formData = require('express-form-data')
 const { auth } = require('express-openid-connect')
 const { createClient } = require('redis')
-const RedisStore = require('connect-redis').default
+const { RedisStore } = require('connect-redis')
 const streamify = require('stream-array')
 
 const {
@@ -59,7 +58,7 @@ async function setup() {
 
     const parsers = [
       bodyParser.json({}),
-      bodyParser.urlencoded(),
+      bodyParser.urlencoded({ extended: false }),
       bodyParser.urlencoded({ extended: true }),
 
       formData.parse({
@@ -93,7 +92,7 @@ async function setup() {
   })
 
   // Logging
-  app.use(morgan())
+  app.use(morgan('combined'))
 
   // Cors
   app.use((req, res, next) => {
@@ -179,7 +178,11 @@ async function setup() {
 async function main() {
   const app = await setup()
 
-  app.listen(PORT, HOST, function () {
+  app.listen(PORT, HOST, function (err) {
+    if (err) {
+      console.error('Server failed to start:', err)
+      process.exit(1)
+    }
     console.log(`Listening at http://${HOST}:${PORT}`)
   })
 }

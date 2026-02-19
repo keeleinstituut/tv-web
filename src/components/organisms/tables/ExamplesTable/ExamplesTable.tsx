@@ -8,8 +8,8 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as ExpandIcon } from 'assets/icons/expand.svg'
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
+import ExpandIcon from 'assets/icons/expand.svg?react'
+import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import data from 'components/organisms/tables/ExamplesTable/data.json'
 import classes from './classes.module.scss'
 

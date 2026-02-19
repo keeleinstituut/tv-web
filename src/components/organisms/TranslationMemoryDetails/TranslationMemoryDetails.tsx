@@ -9,7 +9,7 @@ import Button, {
   IconPositioningTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Delete from 'assets/icons/delete.svg?react'
 import Container from 'components/atoms/Container/Container'
 import TranslationMemoryEditForm from 'components/organisms/forms/TranslationMemoryEditForm/TranslationMemoryEditForm'
 import FileImport, {

@@ -1,13 +1,13 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .titleRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: spacing(4);
+  margin-bottom: variables.spacing(4);
 
   .toolTip {
-    margin-left: spacing(4);
+    margin-left: variables.spacing(4);
     margin-right: auto;
   }
 }

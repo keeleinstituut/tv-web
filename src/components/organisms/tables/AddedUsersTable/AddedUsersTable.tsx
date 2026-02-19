@@ -13,7 +13,7 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import { UserStatus } from 'types/users'
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
+import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import classes from './classes.module.scss'
 import { Privileges } from 'types/privileges'
 import { useAuth } from 'components/contexts/AuthContext'

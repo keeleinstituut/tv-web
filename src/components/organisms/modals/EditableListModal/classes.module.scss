@@ -1,7 +1,7 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .editTagInput {
-  margin: spacing(4) 0;
+  margin: variables.spacing(4) 0;
   div input {
     width: 274px;
   }

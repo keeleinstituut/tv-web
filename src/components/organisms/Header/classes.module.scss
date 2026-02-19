@@ -1,11 +1,11 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .header {
   width: 100%;
-  background: $color-white;
-  height: $header-height;
-  box-shadow: 0 0 2px $color-shadow-main, 0 2px 2px $color-checkbox-focus, 0 1px 3px $color-shadow-secondary;
-  padding: spacing(6);
+  background: variables.$color-white;
+  height: variables.$header-height;
+  box-shadow: 0 0 2px variables.$color-shadow-main, 0 2px 2px variables.$color-checkbox-focus, 0 1px 3px variables.$color-shadow-secondary;
+  padding: variables.spacing(6);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,7 +13,7 @@
   z-index: 3;
 
   img {
-    margin-left: spacing(4);
+    margin-left: variables.spacing(4);
     height: 52px;
   }
 
@@ -30,7 +30,7 @@
   .separator {
     width: 2px;
     height: 30px;
-    background-color: $color-background;
-    margin: 0 spacing(8);
+    background-color: variables.$color-background;
+    margin: 0 variables.spacing(8);
   }
 }

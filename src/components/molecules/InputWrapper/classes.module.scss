@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .container {
   display: flex;
@@ -7,9 +7,9 @@
   width: 100%;
 
   .label {
-    @include labelTextStyle;
+    @include mixins.labelTextStyle;
     display: inline-block;
-    padding-right: spacing(2.5);
+    padding-right: variables.spacing(2.5);
   }
 
   .wrapper {
@@ -23,7 +23,7 @@
   }
 
   .errorMessage input {
-    border: 1px solid $color-error;
+    border: 1px solid variables.$color-error;
     border-radius: 5px;
   }
 }

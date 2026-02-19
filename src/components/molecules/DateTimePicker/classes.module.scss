@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .wrapper {
   display: flex;
@@ -7,9 +7,9 @@
 }
 
 .label {
-  @include labelTextStyle;
+  @include mixins.labelTextStyle;
   display: inline-block;
-  padding-right: spacing(2.5);
+  padding-right: variables.spacing(2.5);
   text-align: end;
 }
 

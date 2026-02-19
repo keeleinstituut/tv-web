@@ -1,11 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { FC } from 'react'
 import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
-import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
+import EditIcon from 'assets/icons/edit.svg?react'
 import {
   groupBy,
   map,

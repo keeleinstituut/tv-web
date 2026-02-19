@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .selectionsContainer {
   display: flex;
@@ -8,52 +8,52 @@
 }
 
 .helperText {
-  color: $color-secondary-dark;
-  @include subtitleSmallTextStyle;
-  padding-top: spacing(1);
+  color: variables.$color-secondary-dark;
+  @include mixins.subtitleSmallTextStyle;
+  padding-top: variables.spacing(1);
 }
 
 .toggleDropdown {
   display: grid;
   grid-template-columns: auto max-content;
-  padding: spacing(2);
-  border: 1px solid $color-text-light;
+  padding: variables.spacing(2);
+  border: 1px solid variables.$color-text-light;
   border-radius: 4px;
-  background: $color-white;
+  background: variables.$color-white;
   height: 40px;
   text-align: left;
   overflow: hidden;
   width: 100%;
 
   &.error {
-    border: 1px solid $color-error;
+    border: 1px solid variables.$color-error;
     border-radius: 5px;
   }
 
   &:focus {
-    border: 1px solid $color-primary;
+    border: 1px solid variables.$color-primary;
     border-radius: 5px;
   }
 
   &.m svg g path {
-    fill: $color-text-dark;
+    fill: variables.$color-text-dark;
   }
 
   &.s {
-    border: 1px solid $color-border;
+    border: 1px solid variables.$color-border;
     border-radius: 5px;
   }
 
   &:disabled {
-    background-color: $color-background;
+    background-color: variables.$color-background;
     pointer-events: none;
 
     &:focus {
-      border: 1px solid $color-text-light;
+      border: 1px solid variables.$color-text-light;
     }
 
     svg g path {
-      fill: $color-input-border;
+      fill: variables.$color-input-border;
     }
   }
 }
@@ -82,15 +82,15 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  color: $color-text-light;
+  color: variables.$color-text-light;
 
   &.selectedValue {
-    color: $color-text-dark;
+    color: variables.$color-text-dark;
   }
 }
 
 .selectionsError {
-  top: spacing(12);
+  top: variables.spacing(12);
 }
 
 .tagsContainer {
@@ -99,6 +99,6 @@
 }
 
 .tag {
-  margin: spacing(2) spacing(2) 0 0;
-  padding: spacing(0.625) spacing(1);
+  margin: variables.spacing(2) variables.spacing(2) 0 0;
+  padding: variables.spacing(0.625) variables.spacing(1);
 }
