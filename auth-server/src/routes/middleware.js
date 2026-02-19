@@ -1,5 +1,6 @@
 const { jwtDecode } = require('jwt-decode')
 const { getCsrfTokenFromSession, setCsrfTokenToSession, getSessionId } = require('../util')
+const { SESSION_COOKIE_NAME } = require('../env')
 
 const requiresValidAccessToken = () => (req, res, next) => {
   const { accessToken } = req.oidc

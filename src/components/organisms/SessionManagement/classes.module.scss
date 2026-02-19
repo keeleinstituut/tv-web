@@ -1,18 +1,18 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .container {
-  margin-top: spacing(6);
+  margin-top: variables.spacing(6);
 }
 
 .title {
-  margin-bottom: spacing(4);
-  margin-top: spacing(4);
+  margin-bottom: variables.spacing(4);
+  margin-top: variables.spacing(4);
 }
 
 .emptyMessage {
-  @include bodyTextStyle;
-  color: $color-input-main;
+  @include mixins.bodyTextStyle;
+  color: variables.$color-input-main;
 }
 
 .sessionsTable {
@@ -22,11 +22,11 @@
   thead {
     tr {
       th {
-        @include bodyTextSmallStyle;
+        @include mixins.bodyTextSmallStyle;
         font-weight: bold;
         text-align: left;
-        padding: spacing(2);
-        border-bottom: 1px solid $color-border;
+        padding: variables.spacing(2);
+        border-bottom: 1px solid variables.$color-border;
       }
     }
   }
@@ -34,9 +34,9 @@
   tbody {
     tr {
       td {
-        @include bodyTextStyle;
-        padding: spacing(2);
-        border-bottom: 1px solid $color-border;
+        @include mixins.bodyTextStyle;
+        padding: variables.spacing(2);
+        border-bottom: 1px solid variables.$color-border;
 
         &:last-child {
           text-align: right;
