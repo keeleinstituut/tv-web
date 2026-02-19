@@ -16,16 +16,18 @@ RUN yarn install --frozen-lockfile
 COPY public ./public
 COPY src ./src
 COPY tsconfig.json ./
+COPY vite.config.ts ./
 COPY patches ./patches
-COPY .eslintrc.json ./
+COPY eslint.config.cjs ./
 COPY .prettierrc.json ./
+COPY index.html ./
 
 RUN yarn build
 
 # ============================================================================
 # Stage 2: Runtime - Minimal production image
 # ============================================================================
-FROM node:18.14.2-alpine3.17
+FROM node:20.19.0-alpine
 
 ENV APP_ROOT /app
 ENV ENTRYPOINT /entrypoint.sh
