@@ -15,7 +15,7 @@ services:
       - REDIS_URL=redis://redis:6379
       - OAUTH_CLIENT_ID=web
       - OAUTH_CLIENT_SECRET=33IMPBSgJaAFilyyQMaZ8SLCRK7LIRhU
-      - OAUTH_ISSUER=http://host.docker.internal:8185/realms/tolkevarav-dev
+      - OAUTH_ISSUER=http://host.docker.internal:8180/realms/tolkevarav-dev
       - TRANSLATION_ORDER_SERVICE_BASE_URL=http://localhost:8001
       - AUTHORIZATION_SERVICE_BASE_URL=http://localhost:8002
       - TRANSLATION_MEMORY_SERVICE_BASE_URL=http://localhost:8003

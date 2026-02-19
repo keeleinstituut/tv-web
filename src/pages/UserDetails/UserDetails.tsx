@@ -9,6 +9,7 @@ import Loader from 'components/atoms/Loader/Loader'
 import VacationTimes from 'components/molecules/VacationTimes/VacationTimes'
 import { useInstitutionUserVacationsFetch } from 'hooks/requests/useInstitutions'
 import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
+import SessionManagement from 'components/organisms/SessionManagement/SessionManagement'
 
 const UserDetails: FC = () => {
   const { t } = useTranslation()
@@ -95,6 +96,7 @@ const UserDetails: FC = () => {
           time: dayjs(user?.updated_at).format('DD.MM.YYYY HH:mm') || '',
         })}
       </p>
+      <SessionManagement />
     </>
   )
 }

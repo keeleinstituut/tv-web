@@ -100,4 +100,6 @@ export const authEndpoints = {
   SWITCH_CONTEXT: gateway('/switch-context'),
   LOGIN: gateway('/login'),
   LOGOUT: gateway('/logout'),
+  SESSIONS: gateway('/sessions'),
+  INVALIDATE_SESSION: (sessionId: string) => gateway(`/sessions/${sessionId}`),
 }

@@ -1017,5 +1017,19 @@
       "The source files field must not have more than 20 items.": "Lähtefailides ei tohi sisalduda rohkem kui 20 faili.",
       "The help files field must not have more than 20 items.": "Abifailides ei tohi sisalduda rohkem kui 20 faili."
     }
+  },
+  "sessions": {
+    "active_sessions": "Aktiivsed sessioonid",
+    "no_active_sessions": "Aktiivseid sessioone pole",
+    "device_browser": "Seade/brauser",
+    "ip_address": "IP-aadress",
+    "last_access": "Viimane juurdepääs",
+    "status": "Staatus",
+    "actions": "Tegevused",
+    "unknown": "Tundmatu",
+    "current_session": "Praegune sessioon",
+    "active": "Aktiivne",
+    "logout": "Logi välja",
+    "revoke": "Tühista"
   }
 }

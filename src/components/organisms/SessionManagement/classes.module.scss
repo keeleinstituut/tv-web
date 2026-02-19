@@ -1,0 +1,54 @@
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
+
+.container {
+  margin-top: variables.spacing(6);
+}
+
+.title {
+  margin-bottom: variables.spacing(4);
+  margin-top: variables.spacing(4);
+}
+
+.emptyMessage {
+  @include mixins.bodyTextStyle;
+  color: variables.$color-input-main;
+}
+
+.sessionsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    tr {
+      th {
+        @include mixins.bodyTextSmallStyle;
+        font-weight: bold;
+        text-align: left;
+        padding: variables.spacing(2);
+        border-bottom: 1px solid variables.$color-border;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      td {
+        @include mixins.bodyTextStyle;
+        padding: variables.spacing(2);
+        border-bottom: 1px solid variables.$color-border;
+
+        &:last-child {
+          text-align: right;
+        }
+      }
+
+      &:last-child {
+        td {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+}
+

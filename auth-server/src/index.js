@@ -13,6 +13,8 @@ const streamify = require('stream-array')
 const {
   autoRefreshAccessToken,
   populateCsrfTokenIntoSession,
+  populateSessionMetadata,
+  indexUserSession,
 } = require('./routes/middleware')
 const amqp = require('./amqp')
 const { constructRoutes } = require('./routes/index')
@@ -120,6 +122,7 @@ async function setup() {
   })
 
   app.locals.redisClient = redisClient
+  app.locals.redisStore = redisStore
   app.locals.amqp = amqp
 
   app.use(
@@ -149,8 +152,10 @@ async function setup() {
     })
   )
 
+  app.use(populateSessionMetadata())
   app.use(populateCsrfTokenIntoSession())
   app.use(autoRefreshAccessToken())
+  app.use(indexUserSession())
   app.use(await sendToAuditLog())
 
   const routes = constructRoutes()
