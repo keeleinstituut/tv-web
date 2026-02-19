@@ -1,13 +1,13 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .header {
   display: grid;
   grid-template-columns: max-content max-content;
   align-items: center;
-  grid-gap: spacing(4);
-  padding-bottom: spacing(6);
+  grid-gap: variables.spacing(4);
+  padding-bottom: variables.spacing(6);
 }
 
 .formContainer {
-  background-color: $color-white;
+  background-color: variables.$color-white;
 }

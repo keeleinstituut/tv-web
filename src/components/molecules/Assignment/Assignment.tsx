@@ -7,7 +7,7 @@ import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Delete from 'assets/icons/delete.svg?react'
 
 import classes from './classes.module.scss'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'

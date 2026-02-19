@@ -48,4 +48,4 @@ Eesti Keele Instituut
 Roosikrantsi 6, 10119 Tallinn, EESTI  
 E-post: tolkevarav@eki.ee`
 
-module.exports = termsText
+export default termsText

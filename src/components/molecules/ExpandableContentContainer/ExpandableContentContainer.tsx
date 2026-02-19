@@ -1,5 +1,11 @@
-import { FC, PropsWithChildren, useCallback, useState } from 'react'
-import { ReactComponent as DropdownArrow } from 'assets/icons/arrow_down.svg'
+import {
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useState,
+  ReactElement,
+} from 'react'
+import DropdownArrow from 'assets/icons/arrow_down.svg?react'
 import classNames from 'classnames'
 
 import classes from './classes.module.scss'
@@ -9,10 +15,10 @@ import { useTranslation } from 'react-i18next'
 interface ExpandableContentContainerProps {
   className?: string
   hidden?: boolean
-  rightComponent?: JSX.Element
-  leftComponent?: JSX.Element
-  toolTip?: JSX.Element
-  bottomComponent?: JSX.Element
+  rightComponent?: ReactElement
+  leftComponent?: ReactElement
+  toolTip?: ReactElement
+  bottomComponent?: ReactElement
   title?: string
   contentAlwaysVisible?: boolean
   wrapContent?: boolean

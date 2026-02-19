@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config({ quiet: true })
 
 const NODE_ENV = process.env.NODE_ENV || 'production'
 const PORT = process.env.SERVER_PORT || 8000

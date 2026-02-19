@@ -1,9 +1,9 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .container {
   display: grid;
-  background: $color-white;
-  border: 1px solid $color-border;
-  box-shadow: 0 4px 10px $color-shadow-main;
-  border-radius: $border-radius-6;
+  background: variables.$color-white;
+  border: 1px solid variables.$color-border;
+  box-shadow: 0 4px 10px variables.$color-shadow-main;
+  border-radius: variables.$border-radius-6;
 }

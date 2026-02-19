@@ -1,5 +1,5 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .modalContent {
-  padding: 0 spacing(4);
+  padding: 0 variables.spacing(4);
 }

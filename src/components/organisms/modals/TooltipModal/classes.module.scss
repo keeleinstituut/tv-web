@@ -1,13 +1,13 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .modalContent {
   .linkButton {
-    margin-left: spacing(12);
-    padding-top: spacing(2);
+    margin-left: variables.spacing(12);
+    padding-top: variables.spacing(2);
   }
 }
 
 .contentStyle {
-  @include manualStyle($color-text-dark);
+  @include mixins.manualStyle(variables.$color-text-dark);
 }

@@ -1,46 +1,46 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .progressBarSteps {
   display: grid;
   grid-auto-flow: column;
-  grid-gap: spacing(11);
-  background-color: $color-background;
-  border-radius: $border-radius-5;
+  grid-gap: variables.spacing(11);
+  background-color: variables.$color-background;
+  border-radius: variables.$border-radius-5;
   width: 100%;
 }
 
 .step {
   display: grid;
   grid-template-columns: max-content auto;
-  grid-gap: spacing(2);
-  padding: spacing(2);
-  border-top-left-radius: $border-radius-5;
-  border-bottom-left-radius: $border-radius-5;
+  grid-gap: variables.spacing(2);
+  padding: variables.spacing(2);
+  border-top-left-radius: variables.$border-radius-5;
+  border-bottom-left-radius: variables.$border-radius-5;
   position: relative;
   white-space: nowrap;
   cursor: pointer;
 
   .stepNumber {
-    color: $color-input-main;
-    background-color: $color-white;
-    border-radius: $border-radius-20;
-    padding: spacing(0) spacing(1.5);
-    font-weight: $font-weight-bold;
-    @include bodyTextSmallStyle;
+    color: variables.$color-input-main;
+    background-color: variables.$color-white;
+    border-radius: variables.$border-radius-20;
+    padding: variables.spacing(0) variables.spacing(1.5);
+    font-weight: variables.$font-weight-bold;
+    @include mixins.bodyTextSmallStyle;
   }
 
   .stepLabel {
-    @include bodyTextSmallStyle;
+    @include mixins.bodyTextSmallStyle;
   }
 
   &.currentStep {
-    background-color: $color-primary;
-    color: $color-white;
-    @include badgeEndTriangles($color-primary);
+    background-color: variables.$color-primary;
+    color: variables.$color-white;
+    @include mixins.badgeEndTriangles(variables.$color-primary);
 
     &:focus {
-      box-shadow: inset 0 0 0 2px $color-navigation-icon;
+      box-shadow: inset 0 0 0 2px variables.$color-navigation-icon;
     }
   }
 }

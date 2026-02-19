@@ -8,8 +8,8 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as ExpandIcon } from 'assets/icons/expand.svg'
-import { ReactComponent as ShrinkIcon } from 'assets/icons/shrink.svg'
+import ExpandIcon from 'assets/icons/expand.svg?react'
+import ShrinkIcon from 'assets/icons/shrink.svg?react'
 import classes from './classes.module.scss'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'

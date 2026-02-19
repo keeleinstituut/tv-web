@@ -3,8 +3,8 @@ import classes from './classes.module.scss'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import { Table, PaginationState } from '@tanstack/react-table'
-import { ReactComponent as Arrow } from 'assets/icons/arrow_pagination.svg'
-import { ReactComponent as SelectArrow } from 'assets/icons/select_arrow.svg'
+import Arrow from 'assets/icons/arrow_pagination.svg?react'
+import SelectArrow from 'assets/icons/select_arrow.svg?react'
 import SelectionControlsInput, {
   DropdownSizeTypes,
 } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'

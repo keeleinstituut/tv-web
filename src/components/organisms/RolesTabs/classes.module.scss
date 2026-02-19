@@ -1,5 +1,5 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .tabsContainer {
-  margin-top: spacing(6)
+  margin-top: variables.spacing(6)
 }

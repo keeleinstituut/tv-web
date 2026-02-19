@@ -1,13 +1,13 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .headComponentContainer {
-  margin: spacing(6) spacing(4);
+  margin: variables.spacing(6) variables.spacing(4);
   display: flex;
   justify-content: space-between;
 }
 
 .subProjectContainer {
-  margin-top: spacing(2);
+  margin-top: variables.spacing(2);
 }
 
 .newButtonContainer {

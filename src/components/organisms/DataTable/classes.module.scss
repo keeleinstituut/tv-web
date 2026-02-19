@@ -1,8 +1,8 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .title {
-  margin: spacing(6) spacing(4);
+  margin: variables.spacing(6) variables.spacing(4);
 }
 
 .horizontallyScrollableClassName {
@@ -23,20 +23,20 @@
     text-align: left;
     margin-bottom: 0;
     display: table;
-    @include bodyTextStyle;
+    @include mixins.bodyTextStyle;
   }
 
   .l {
     th,
     td {
-      padding: spacing(4) spacing(3.5);
+      padding: variables.spacing(4) variables.spacing(3.5);
       height: 56px;
     }
   }
   .m {
     th,
     td {
-      padding: 0 spacing(3.5);
+      padding: 0 variables.spacing(3.5);
       height: 48px;
       max-height: 48px;
     }
@@ -44,18 +44,18 @@
   .s {
     th,
     td {
-      padding: spacing(1) spacing(3.5);
+      padding: variables.spacing(1) variables.spacing(3.5);
       height: 40px;
     }
   }
 
   th {
-    border-bottom: 1px solid $color-border-secondary;
+    border-bottom: 1px solid variables.$color-border-secondary;
     vertical-align: middle;
-    color: $color-text;
+    color: variables.$color-text;
   }
   td {
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid variables.$color-border;
     vertical-align: middle;
   }
 
@@ -63,7 +63,7 @@
     tr {
       &:last-child {
         td {
-          border-bottom: 1px solid $color-border-secondary;
+          border-bottom: 1px solid variables.$color-border-secondary;
         }
       }
     }

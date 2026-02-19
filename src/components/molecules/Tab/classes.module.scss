@@ -1,27 +1,27 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .tab {
-  padding: spacing(4);
-  color: $color-text-dark;
+  padding: variables.spacing(4);
+  color: variables.$color-text-dark;
   border: 1px solid transparent;
 
   svg {
-    margin-left: spacing(1);
+    margin-left: variables.spacing(1);
   }
 
   &.active {
-    background: $color-white;
-    border: 1px solid $color-border;
+    background: variables.$color-white;
+    border: 1px solid variables.$color-border;
     border-bottom: 1px solid white;
-    color: $color-primary;
+    color: variables.$color-primary;
     border-top-right-radius: 6px;
     border-top-left-radius: 6px;
-    box-shadow: 0 4px 10px $color-shadow-main;
+    box-shadow: 0 4px 10px variables.$color-shadow-main;
 
     &:focus-visible,
     &:focus {
-      box-shadow: 0 4px 10px $color-shadow-main, inset 0 0 0 2px $color-primary;
+      box-shadow: 0 4px 10px variables.$color-shadow-main, inset 0 0 0 2px variables.$color-primary;
     }
   }
 
@@ -46,18 +46,18 @@
   }
 
   &.primaryTab {
-    color: $color-primary;
+    color: variables.$color-primary;
     border-top-right-radius: 6px;
     border-top-left-radius: 6px;
-    padding-bottom: spacing(3);
+    padding-bottom: variables.spacing(3);
     &:not(:first-child) {
-      margin-left: spacing(2);
+      margin-left: variables.spacing(2);
     }
 
     &.active {
-      background: $color-primary;
-      color: $color-white;
-      border-color: $color-primary;
+      background: variables.$color-primary;
+      color: variables.$color-white;
+      border-color: variables.$color-primary;
     }
   }
 }

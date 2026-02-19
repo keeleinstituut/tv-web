@@ -1,11 +1,11 @@
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 import ConfirmationModalBase, {
   ConfirmationModalBaseProps,
 } from 'components/organisms/modals/ConfirmationModalBase/ConfirmationModalBase'
 
 export interface UserAndRoleManagementModalProps
   extends ConfirmationModalBaseProps {
-  dynamicForm?: JSX.Element
+  dynamicForm?: ReactElement
 }
 
 const UserAndRoleManagementModal: FC<UserAndRoleManagementModalProps> = ({

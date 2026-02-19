@@ -1,14 +1,14 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .titleRow {
   display: flex;
   align-items: center;
-  margin-bottom: spacing(5);
-  margin-top: spacing(7);
+  margin-bottom: variables.spacing(5);
+  margin-top: variables.spacing(7);
 
   h4 {
-    margin-right: spacing(2);
+    margin-right: variables.spacing(2);
   }
 }
 
@@ -17,18 +17,18 @@
 
   &.visible {
     display: block;
-    @include subtitleSmallTextStyle;
+    @include mixins.subtitleSmallTextStyle;
   }
 }
 
 .container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  padding-top: spacing(4);
+  padding-top: variables.spacing(4);
 
   &:not(:first-child) {
-    margin-top: spacing(8);
-    border-top: 1px solid $color-border-secondary;
+    margin-top: variables.spacing(8);
+    border-top: 1px solid variables.$color-border-secondary;
   }
 
   > * {
@@ -36,7 +36,7 @@
   }
 
   h3 {
-    color: $color-primary;
+    color: variables.$color-primary;
   }
 
   .tableContainer {
@@ -45,8 +45,8 @@
 
     th,
     td {
-      padding-left: spacing(4);
-      padding-right: spacing(6);
+      padding-left: variables.spacing(4);
+      padding-right: variables.spacing(6);
     }
 
     thead {
@@ -85,7 +85,7 @@
 
         &:last-child {
           td {
-            border-bottom: 1px solid $color-border;
+            border-bottom: 1px solid variables.$color-border;
           }
         }
       }
@@ -94,6 +94,6 @@
 }
 
 .assignmentId {
-  font-weight: $font-weight-bold;
-  margin-top: spacing(2);
+  font-weight: variables.$font-weight-bold;
+  margin-top: variables.spacing(2);
 }

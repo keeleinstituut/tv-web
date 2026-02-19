@@ -1,17 +1,17 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .tabsRow {
   display: flex;
   overflow-x: auto;
   // Hack to make room for box-shadow of single tab
-  width: calc(100% + spacing(5));
-  margin-left: spacing(-2.5);
-  padding-left: spacing(2.5);
-  padding-right: spacing(2.5);
+  width: calc(100% + #{variables.spacing(5)});
+  margin-left: variables.spacing(-2.5);
+  padding-left: variables.spacing(2.5);
+  padding-right: variables.spacing(2.5);
 
   .addButton {
-    padding: spacing(4);
+    padding: variables.spacing(4);
     border-top: 1px solid transparent;
     white-space: nowrap;
   }
@@ -20,6 +20,6 @@
     margin-left: unset;
     padding-left: unset;
     width: 100%;
-    border-bottom: 4px solid $color-primary;
+    border-bottom: 4px solid variables.$color-primary;
   }
 }

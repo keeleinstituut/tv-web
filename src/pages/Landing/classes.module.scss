@@ -1,18 +1,18 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .container {
   min-height: 100vh;
-  padding: 0 spacing(26);
+  padding: 0 variables.spacing(26);
   display: flex;
   align-items: center;
-  background-color: $color-white;
+  background-color: variables.$color-white;
 
-  @media (max-width: $small_desktop) {
-    padding: 0 spacing(16);
+  @media (max-width: variables.$small_desktop) {
+    padding: 0 variables.spacing(16);
   }
 
-  @media (max-width: $mobile) {
-    padding: 0 spacing(4);
+  @media (max-width: variables.$mobile) {
+    padding: 0 variables.spacing(4);
   }
 }

@@ -1,12 +1,12 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .container {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   p {
-    margin-right: spacing(2);
-    color: $color-primary;
+    margin-right: variables.spacing(2);
+    color: variables.$color-primary;
   }
 
   .generateButton {

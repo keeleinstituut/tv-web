@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { includes, size, map, filter } from 'lodash'
 import { protectedRoutesForReactRouter } from 'router/router'
 import useBreadcrumbs from 'use-react-router-breadcrumbs'
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
+import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import { DynamicObject } from 'helpers'
 
 import classes from './classes.module.scss'

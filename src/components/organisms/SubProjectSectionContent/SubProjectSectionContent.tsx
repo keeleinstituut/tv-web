@@ -11,7 +11,7 @@ import {
   filter,
 } from 'lodash'
 import { FC, useCallback, useMemo, useState } from 'react'
-import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
+import DownloadFilled from 'assets/icons/download_filled.svg?react'
 import Feature from 'components/organisms/features/Feature'
 import { SourceFile, SubProjectFeatures } from 'types/projects'
 import { useTranslation } from 'react-i18next'

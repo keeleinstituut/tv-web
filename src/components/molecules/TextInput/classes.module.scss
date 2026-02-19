@@ -1,5 +1,5 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .container {
   display: flex;
@@ -13,8 +13,8 @@
   }
 
   .label {
-    @include labelTextStyle;
-    padding-right: spacing(2.5);
+    @include mixins.labelTextStyle;
+    padding-right: variables.spacing(2.5);
 
     &.hidden {
       display: none;
@@ -22,7 +22,7 @@
   }
 
   input {
-    @include labelTextStyle;
+    @include mixins.labelTextStyle;
     cursor: auto;
   }
 
@@ -37,7 +37,7 @@
 
   &.error {
     .inputField {
-      border-color: $color-error;
+      border-color: variables.$color-error;
     }
   }
 
@@ -45,23 +45,23 @@
     display: grid;
     grid-template-columns: max-content max-content;
     align-items: center;
-    grid-gap: spacing(4);
+    grid-gap: variables.spacing(4);
 
     .button {
-      @include bodyTextSmallStyle;
-      color: $color-error;
-      padding: spacing(1);
+      @include mixins.bodyTextSmallStyle;
+      color: variables.$color-error;
+      padding: variables.spacing(1);
 
       svg {
         width: 20px;
         height: 21px;
 
         path {
-          fill: $color-error;
+          fill: variables.$color-error;
         }
       }
       &:focus {
-        box-shadow: inset 0 0 0 2px $color-error;
+        box-shadow: inset 0 0 0 2px variables.$color-error;
       }
     }
   }
@@ -81,18 +81,18 @@
 }
 
 .inputField {
-  padding: spacing(2);
-  background-color: $color-white;
-  border: solid $color-input-border 1px;
+  padding: variables.spacing(2);
+  background-color: variables.$color-white;
+  border: solid variables.$color-input-border 1px;
   border-radius: 4px;
   height: 100%;
 
   &:focus {
-    border-color: $color-primary;
+    border-color: variables.$color-primary;
   }
 
   &:disabled {
-    background-color: $color-background;
+    background-color: variables.$color-background;
   }
 }
 
@@ -100,17 +100,17 @@
   min-height: 46px;
 
   .inputField {
-    padding-left: spacing(13);
+    padding-left: variables.spacing(13);
     background-image: url('../../../assets/icons/search.svg');
-    box-shadow: 0px 1px 3px 0px $color-shadow-secondary,
-      0px 2px 2px 0px $color-checkbox-focus, 0px 0px 2px 0px $color-shadow-main;
+    box-shadow: 0px 1px 3px 0px variables.$color-shadow-secondary,
+      0px 2px 2px 0px variables.$color-checkbox-focus, 0px 0px 2px 0px variables.$color-shadow-main;
     background-size: 20px 20px;
-    background-position: spacing(4) center;
+    background-position: variables.spacing(4) center;
     background-repeat: no-repeat;
     width: 258px;
-    border: solid $color-background 1px;
+    border: solid variables.$color-background 1px;
     &:focus {
-      border-color: $color-primary;
+      border-color: variables.$color-primary;
     }
   }
 

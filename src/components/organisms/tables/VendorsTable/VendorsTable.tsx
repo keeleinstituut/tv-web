@@ -10,7 +10,7 @@ import Button, {
   SizeTypes,
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
-import { ReactComponent as ArrowRight } from 'assets/icons/arrow_right.svg'
+import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import { map, join, compact, split, isEmpty, debounce } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'

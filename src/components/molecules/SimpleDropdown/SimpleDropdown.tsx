@@ -1,6 +1,6 @@
-import { FC, RefObject, SVGProps, useRef, useState } from 'react'
+import React, { FC, RefObject, SVGProps, useRef, useState } from 'react'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { ReactComponent as DropdownArrow } from 'assets/icons/arrow_down.svg'
+import DropdownArrow from 'assets/icons/arrow_down.svg?react'
 import { createPortal } from 'react-dom'
 import { useClickAway } from 'ahooks'
 import { map } from 'lodash'
@@ -8,7 +8,7 @@ import classNames from 'classnames'
 import useElementPosition from 'hooks/useElementPosition'
 import classes from './classes.module.scss'
 import useTableContext from 'hooks/useTableContext'
-import FocusTrap from 'focus-trap-react'
+import { FocusTrap } from 'focus-trap-react'
 
 export interface SimpleDropdownOption {
   label: string
@@ -56,7 +56,7 @@ const SimpleDropdownContent: FC<SimpleDropdownContentProps> = ({
           tabIndex={0}
           id="simple-dropdown-elements"
         >
-          {map(options, ({ label, ...rest }, index) => (
+          {map(options, ({ label, ...rest }) => (
             <li key={label}>
               <Button appearance={AppearanceTypes.Text} {...rest}>
                 {label}

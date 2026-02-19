@@ -1,25 +1,25 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .tag {
-  @include bodyTextSmallStyle;
-  color: $color-input-main;
-  font-weight: $font-weight-bold;
-  padding: spacing(0.625) spacing(1);
+  @include mixins.bodyTextSmallStyle;
+  color: variables.$color-input-main;
+  font-weight: variables.$font-weight-bold;
+  padding: variables.spacing(0.625) variables.spacing(1);
 
   &.border {
-    box-shadow: 1px 0 0 0 $color-background-dark;
-    padding: spacing(0.5) spacing(2);
+    box-shadow: 1px 0 0 0 variables.$color-background-dark;
+    padding: variables.spacing(0.5) variables.spacing(2);
   }
 
   &.active {
-    background-color: $color-tag;
+    background-color: variables.$color-tag;
     border-radius: 4px;
-    color: $color-primary;
+    color: variables.$color-primary;
     z-index: 1;
 
     &.border {
-      box-shadow: 0 0 0 1px $color-primary;
+      box-shadow: 0 0 0 1px variables.$color-primary;
       border: unset;
     }
   }

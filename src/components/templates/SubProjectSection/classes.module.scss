@@ -1,41 +1,41 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .expandableContainer {
-  border-left: spacing(1) solid;
+  border-left: variables.spacing(1) solid;
   &:not(:first-child) {
-    margin-top: spacing(4);
+    margin-top: variables.spacing(4);
   }
   &.new {
-    border-color: $color-warning;
+    border-color: variables.$color-warning;
   }
   &.registered {
-    border-color: $color-highlight;
+    border-color: variables.$color-highlight;
   }
   &.tasks_submitted_to_vendors {
-    border-color: $color-success;
+    border-color: variables.$color-success;
   }
   &.tasks_in_progress {
-    border-color: $color-primary;
+    border-color: variables.$color-primary;
   }
   &.tasks_completed {
-    border-color: $color-success;
+    border-color: variables.$color-success;
   }
   &.cancelled {
-    border-color: $color-border;
+    border-color: variables.$color-border;
   }
   &.completed {
-    border-color: $color-success;
+    border-color: variables.$color-success;
   }
 
   .startWorkFlowNotification {
     border-color: transparent;
-    background-color: $color-tag;
-    color: $color-primary;
+    background-color: variables.$color-tag;
+    color: variables.$color-primary;
     justify-content: space-between;
 
     p {
       max-width: 561px;
-      font-size: $font-size-14;
+      font-size: variables.$font-size-14;
     }
 
     button {
@@ -43,16 +43,16 @@
     }
 
     &.warning {
-      background-color: $color-warning-light;
-      border-color: $color-warning;
-      color: $color-text;
+      background-color: variables.$color-warning-light;
+      border-color: variables.$color-warning;
+      color: variables.$color-text;
     }
   }
 
   .notificationStyle {
     display: flex;
     width: 100%;
-    padding: spacing(2) spacing(4);
-    margin: spacing(4) 0 spacing(2);
+    padding: variables.spacing(2) variables.spacing(4);
+    margin: variables.spacing(4) 0 variables.spacing(2);
   }
 }

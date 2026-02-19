@@ -1,8 +1,8 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .filesListContainer {
-  margin-bottom: spacing(10);
+  margin-bottom: variables.spacing(10);
   box-shadow: unset;
   border: unset;
 
@@ -59,17 +59,17 @@
   }
 
   h3 {
-    @include h4TextStyle;
-    margin-right: spacing(2);
+    @include mixins.h4TextStyle;
+    margin-right: variables.spacing(2);
   }
 }
 
 .headContainer {
-  margin-bottom: spacing(4);
+  margin-bottom: variables.spacing(4);
 }
 
 .errorText {
-  color: $color-error;
+  color: variables.$color-error;
 }
 
 .filesTable {
@@ -79,40 +79,40 @@
 .altFilesContainer {
   display: grid;
   grid-template-columns: minmax(194px, max-content) max-content max-content;
-  grid-row-gap: spacing(2);
-  grid-column-gap: spacing(4);
+  grid-row-gap: variables.spacing(2);
+  grid-column-gap: variables.spacing(4);
   align-items: center;
-  margin-bottom: spacing(8);
+  margin-bottom: variables.spacing(8);
 
   h3 {
     grid-column: 1/4;
-    font-size: $font-size-16;
-    margin-bottom: spacing(2);
+    font-size: variables.$font-size-16;
+    margin-bottom: variables.spacing(2);
   }
 
   label {
-    font-size: $font-size-16;
-    font-weight: $font-weight-bold;
+    font-size: variables.$font-size-16;
+    font-weight: variables.$font-weight-bold;
   }
 
   span {
-    font-size: $font-size-14;
+    font-size: variables.$font-size-14;
   }
 }
 
 .button,
 .deleteButton {
   display: flex;
-  padding: spacing(1);
+  padding: variables.spacing(1);
 
   &.deleteButton:focus {
-    box-shadow: inset 0 0 0 2px $color-error;
+    box-shadow: inset 0 0 0 2px variables.$color-error;
   }
   &.button:focus {
-    box-shadow: inset 0 0 0 2px $color-primary;
+    box-shadow: inset 0 0 0 2px variables.$color-primary;
   }
 }
 
 .fileName {
-  margin-right: spacing(2);
+  margin-right: variables.spacing(2);
 }

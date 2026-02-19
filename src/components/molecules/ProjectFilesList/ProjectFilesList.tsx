@@ -6,8 +6,8 @@ import {
   InputTypes,
   FormInput,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
-import { ReactComponent as DownloadFilled } from 'assets/icons/download_filled.svg'
+import Delete from 'assets/icons/delete.svg?react'
+import DownloadFilled from 'assets/icons/download_filled.svg?react'
 import {
   Control,
   FieldValues,

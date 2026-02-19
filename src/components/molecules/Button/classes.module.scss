@@ -1,16 +1,16 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .btn {
   display: flex;
   appearance: none;
   align-items: center;
-  color: $color-white;
+  color: variables.$color-white;
   cursor: pointer;
   overflow: visible;
   text-decoration: none;
-  border-radius: $border-radius-20;
-  background-color: $color-primary;
+  border-radius: variables.$border-radius-20;
+  background-color: variables.$color-primary;
   height: fit-content;
 
   &:focus {
@@ -19,11 +19,11 @@
 }
 
 .m {
-  @include buttonTextStyle;
+  @include mixins.buttonTextStyle;
 }
 
 .s {
-  @include smallButtonTextStyle;
+  @include mixins.smallButtonTextStyle;
 }
 
 .buttonText {
@@ -33,54 +33,54 @@
 .right {
   svg {
     order: 3;
-    padding-left: spacing(1);
+    padding-left: variables.spacing(1);
   }
 }
 
 .left {
   svg {
     order: 1;
-    padding-right: spacing(1);
+    padding-right: variables.spacing(1);
   }
 }
 
 .primary {
-  background-color: $color-primary;
+  background-color: variables.$color-primary;
 
   &:hover,
   &:active,
   &:focus {
-    background-color: $color-secondary-dark;
+    background-color: variables.$color-secondary-dark;
   }
 
   &:focus {
-    box-shadow: inset 0 0 0 2px $color-navigation-icon;
+    box-shadow: inset 0 0 0 2px variables.$color-navigation-icon;
   }
 
   &.disabled {
     cursor: not-allowed;
     pointer-events: none;
-    background-color: $color-background-disabled;
+    background-color: variables.$color-background-disabled;
     border: none;
   }
 
   &.m {
-    padding: spacing(2) spacing(10);
+    padding: variables.spacing(2) variables.spacing(10);
 
     &.customIconPadding {
-      padding: spacing(2) spacing(6);
+      padding: variables.spacing(2) variables.spacing(6);
     }
   }
 
   &.s {
-    padding: spacing(0.75) spacing(6);
+    padding: variables.spacing(0.75) variables.spacing(6);
   }
 }
 
 .secondary {
-  background-color: $color-white;
-  border: 2px solid $color-border-secondary;
-  color: $color-text;
+  background-color: variables.$color-white;
+  border: 2px solid variables.$color-border-secondary;
+  color: variables.$color-text;
 
   .loader{
     height: 18px;
@@ -88,55 +88,55 @@
 
 
   svg g path {
-    fill: $color-border-secondary;
+    fill: variables.$color-border-secondary;
   }
 
   &:hover,
   &:active {
-    border: 2px solid $color-border;
+    border: 2px solid variables.$color-border;
   }
 
   &:focus {
-    border: 2px solid $color-primary;
+    border: 2px solid variables.$color-primary;
   }
 
   &.disabled {
     cursor: not-allowed;
-    color: $color-text-light;
-    background-color: $color-background;
-    border: 2px solid $color-background-disabled;
+    color: variables.$color-text-light;
+    background-color: variables.$color-background;
+    border: 2px solid variables.$color-background-disabled;
 
     svg g path {
-      fill: $color-input-border;
+      fill: variables.$color-input-border;
     }
   }
 
   &.m {
-    padding: spacing(1.5) spacing(10);
+    padding: variables.spacing(1.5) variables.spacing(10);
 
     &.customIconPadding {
-      padding: spacing(1.5) spacing(6);
+      padding: variables.spacing(1.5) variables.spacing(6);
     }
   }
 
   &.s {
-    padding: spacing(0.25) spacing(6);
+    padding: variables.spacing(0.25) variables.spacing(6);
   }
 }
 .customIconPadding svg {
-  height: spacing(4);
-  width: spacing(4);
+  height: variables.spacing(4);
+  width: variables.spacing(4);
 }
 
 .text {
   padding: 0;
   background: none;
-  color: $color-primary;
+  color: variables.$color-primary;
   border-radius: 0;
 
   svg g path,
   svg path {
-    fill: $color-primary;
+    fill: variables.$color-primary;
   }
 
   &:hover,
@@ -145,18 +145,18 @@
   }
 
   &:focus {
-    box-shadow: inset 0 0 0 2px $color-primary;
+    box-shadow: inset 0 0 0 2px variables.$color-primary;
   }
 
   &.disabled {
     cursor: not-allowed;
-    color: $color-text-light;
+    color: variables.$color-text-light;
     text-decoration: none;
     box-shadow: none;
 
     svg g path,
     svg path {
-      fill: $color-text-light;
+      fill: variables.$color-text-light;
     }
   }
 }

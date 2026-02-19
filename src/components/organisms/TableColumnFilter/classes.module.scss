@@ -1,7 +1,7 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .iconButton {
-  padding: spacing(1);
+  padding: variables.spacing(1);
 
   svg {
     padding: 0;
@@ -11,7 +11,7 @@
 
   svg g path,
   svg path {
-    fill: $color-input-main;
+    fill: variables.$color-input-main;
   }
 }
 

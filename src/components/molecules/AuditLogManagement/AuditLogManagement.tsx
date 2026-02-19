@@ -6,7 +6,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 import { useAuth } from 'components/contexts/AuthContext'
-import { ReactComponent as EditIcon } from 'assets/icons/edit.svg'
+import EditIcon from 'assets/icons/edit.svg?react'
 import Container from 'components/atoms/Container/Container'
 import Button, {
   AppearanceTypes,

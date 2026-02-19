@@ -1,5 +1,5 @@
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import { ReactComponent as ButtonArrow } from 'assets/icons/button_arrow.svg'
+import ButtonArrow from 'assets/icons/button_arrow.svg?react'
 import { parseInt } from 'lodash'
 import classes from './classes.module.scss'
 import classNames from 'classnames'

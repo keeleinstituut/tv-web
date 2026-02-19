@@ -1,9 +1,9 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .deleteIcon svg {
   width: 22px;
   height: 20px;
   path {
-    fill: $color-error;
+    fill: variables.$color-error;
   }
 }

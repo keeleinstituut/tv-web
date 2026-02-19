@@ -1,10 +1,10 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .sidebarContainer {
   width: 208px;
   flex-shrink: 0;
-  background-color: $color-primary;
+  background-color: variables.$color-primary;
   scrollbar-width: none;
   transition: width .1s ease-out;
   height: 100vh;
@@ -37,36 +37,36 @@
 
   .listItem {
     height: 48px;
-    color: $color-white;
-    font-size: $font-size-14;
+    color: variables.$color-white;
+    font-size: variables.$font-size-14;
     width: 100%;
     display: flex;
     align-items: center;
-    padding: spacing(3.5) spacing(2);
-    box-shadow: inset 0px -1px 0px $color-submenu-background;
+    padding: variables.spacing(3.5) variables.spacing(2);
+    box-shadow: inset 0px -1px 0px variables.$color-submenu-background;
 
 
     &:hover {
-      background-color: $color-secondary;
+      background-color: variables.$color-secondary;
     }
 
     &:active {
-      background-color: $color-secondary-light;
+      background-color: variables.$color-secondary-light;
     }
 
     &:focus-visible {
-      outline: $color-white 2px solid;
+      outline: variables.$color-white 2px solid;
       width: calc(100% - 6px);
       margin-left: 3px;
       outline-offset: unset;
     }
 
     &[aria-current=page] {
-      background: $color-secondary-light;
+      background: variables.$color-secondary-light;
     } 
 
     .itemIcon {
-      margin-right: spacing(2);
+      margin-right: variables.spacing(2);
     }
 
     span {
@@ -92,11 +92,11 @@
     }
 
     &.interListItem {
-      border-top: 2px solid $color-white;
-      border-bottom: 2px solid $color-white;
+      border-top: 2px solid variables.$color-white;
+      border-bottom: 2px solid variables.$color-white;
       > span {
         text-transform: uppercase;
-        @include h6TextStyle;
+        @include mixins.h6TextStyle;
       }
     }
   }
@@ -106,9 +106,9 @@
 
     &:not(.interSubMenu) {
       .listItem {
-        background-color: $color-submenu-background;
-        box-shadow: inset 0 -1px 0 $color-submenu-shadow;
-        padding-left: spacing(8);
+        background-color: variables.$color-submenu-background;
+        box-shadow: inset 0 -1px 0 variables.$color-submenu-shadow;
+        padding-left: variables.spacing(8);
       }
     }
   }
@@ -137,7 +137,7 @@
       }
 
       svg path {
-        fill: $color-white;
+        fill: variables.$color-white;
       }
 
       .itemIcon {

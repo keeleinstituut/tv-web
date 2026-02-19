@@ -1,8 +1,8 @@
-@import 'styles/variables';
-@import 'styles/mixins';
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .tableContainer {
-  margin-bottom: spacing(3);
+  margin-bottom: variables.spacing(3);
 
   .input {
     input {
@@ -43,6 +43,6 @@
 }
 
 .tableTitle {
-  @include h4TextStyle;
-  padding: spacing(6) spacing(4) spacing(4) spacing(4);
+  @include mixins.h4TextStyle;
+  padding: variables.spacing(6) variables.spacing(4) variables.spacing(4) variables.spacing(4);
 }

@@ -1,4 +1,4 @@
-import { RefObject, forwardRef } from 'react'
+import { RefObject, forwardRef, ReactNode } from 'react'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
 import { omit } from 'lodash'
@@ -17,7 +17,7 @@ export interface RadioInputProps
   name: string
   className?: string
   error?: FieldError
-  label?: JSX.Element | string
+  label?: ReactNode
   ariaLabel: string
   value?: string
   errorZIndex?: number

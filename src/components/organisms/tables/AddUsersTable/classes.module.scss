@@ -1,4 +1,4 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .row {
   display: flex;
@@ -15,5 +15,5 @@
 }
 
 .tooltipPosition {
-  margin-left: spacing(2);
+  margin-left: variables.spacing(2);
 }

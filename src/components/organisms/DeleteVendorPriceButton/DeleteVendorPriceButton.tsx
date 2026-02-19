@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { ReactComponent as Delete } from 'assets/icons/delete.svg'
+import Delete from 'assets/icons/delete.svg?react'
 import { useTranslation } from 'react-i18next'
 import { includes } from 'lodash'
 import { useAuth } from 'components/contexts/AuthContext'

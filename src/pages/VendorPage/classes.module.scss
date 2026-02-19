@@ -1,18 +1,18 @@
-@import 'styles/variables';
+@use 'styles/variables' as variables;
 
 .titleRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: spacing(4);
+  margin-bottom: variables.spacing(4);
 
   .buttonsContainer {
     display: flex;
     :first-child {
-      margin-right: spacing(2);
+      margin-right: variables.spacing(2);
     }
   }
 }
 .title {
-  padding: 0 0 spacing(8) 0;
+  padding: 0 0 variables.spacing(8) 0;
 }
