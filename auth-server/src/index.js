@@ -32,6 +32,7 @@ const {
   REDIS_URL,
   SESSION_COOKIE_NAME,
 } = require('./env')
+const { constructProxyDirectRoutes } = require('./routes/proxy-direct')
 
 
 async function setup() {
@@ -152,14 +153,20 @@ async function setup() {
     })
   )
 
-  app.use(populateSessionMetadata())
-  app.use(populateCsrfTokenIntoSession())
-  app.use(autoRefreshAccessToken())
-  app.use(indexUserSession())
-  app.use(await sendToAuditLog())
 
-  const routes = constructRoutes()
-  app.use(routes)
+  const mainRouter = express.Router()
+
+  mainRouter.use(populateSessionMetadata())
+  mainRouter.use(populateCsrfTokenIntoSession())
+  mainRouter.use(autoRefreshAccessToken())
+  mainRouter.use(indexUserSession())
+  mainRouter.use(await sendToAuditLog())
+
+  mainRouter.use(constructRoutes())
+
+  app.use(mainRouter)
+
+  app.use('/direct', constructProxyDirectRoutes())
 
   // Global error handler
   app.use((err, req, res, next) => {
