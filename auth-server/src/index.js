@@ -31,6 +31,7 @@ const {
   ALLOWED_ORIGINS,
   REDIS_URL,
   SESSION_COOKIE_NAME,
+  ENABLE_AUDIT_LOG,
 } = require('./env')
 const { constructProxyDirectRoutes } = require('./routes/proxy-direct')
 
@@ -107,8 +108,6 @@ async function setup() {
     }
   })
 
-  await amqp.connect()
-
   const redisClient = createClient({
     url: REDIS_URL,
   })
@@ -160,7 +159,12 @@ async function setup() {
   mainRouter.use(populateCsrfTokenIntoSession())
   mainRouter.use(autoRefreshAccessToken())
   mainRouter.use(indexUserSession())
-  mainRouter.use(await sendToAuditLog())
+
+  if (ENABLE_AUDIT_LOG) {
+    await amqp.connect()
+
+    mainRouter.use(await sendToAuditLog())
+  }
 
   mainRouter.use(constructRoutes())
 

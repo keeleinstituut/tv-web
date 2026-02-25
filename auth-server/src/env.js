@@ -33,6 +33,8 @@ const ENV = {
 
   AMQP_URL: process.env.AMQP_URL,
   AMQP_AUDITLOG_EXCHANGE: process.env.AMQP_AUDITLOG_EXCHANGE || 'audit-log-events',
+
+  ENABLE_AUDIT_LOG: process.env.ENABLE_AUDIT_LOG !== 'false'
 }
 
 module.exports = ENV
