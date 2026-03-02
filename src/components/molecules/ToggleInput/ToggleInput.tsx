@@ -6,17 +6,17 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { useTranslation } from 'react-i18next'
 
-export interface ToggleInputProps
-  extends Omit<
-    InputHTMLAttributes<HTMLInputElement>,
-    'label' | 'placeholder' | 'value' | 'onChange'
-  > {
+export interface ToggleInputProps extends Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  'label' | 'placeholder' | 'value' | 'onChange'
+> {
   name: string
   className?: string
   tooltipContent?: string
   label: string
   value?: boolean
   onChange?: (newValue: boolean) => void
+  dynamicWidth?: boolean
 }
 
 const ToggleInput = forwardRef<HTMLInputElement, ToggleInputProps>(
@@ -29,6 +29,7 @@ const ToggleInput = forwardRef<HTMLInputElement, ToggleInputProps>(
       disabled,
       value = false,
       onChange,
+      dynamicWidth = false,
     },
     ref
   ) {
@@ -39,7 +40,10 @@ const ToggleInput = forwardRef<HTMLInputElement, ToggleInputProps>(
       }
     }
     return (
-      <div className={classes.toggleInputContainer}>
+      <div
+        className={classes.toggleInputContainer}
+        style={{ width: dynamicWidth ? 'auto' : '236px' }}
+      >
         <label htmlFor={name}>{label}</label>
         <SmallTooltip
           hidden={!tooltipContent}

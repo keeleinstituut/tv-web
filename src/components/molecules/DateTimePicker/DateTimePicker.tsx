@@ -76,9 +76,11 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
 
     return (
       <div className={classNames(classes.wrapper, className)}>
-        <label htmlFor={`${name}.date`} className={classes.label}>
-          {label}
-        </label>
+        {label && (
+          <label htmlFor={`${name}.date`} className={classes.label}>
+            {label}
+          </label>
+        )}
         <div className={classes.innerWrapper}>
           <DatePickerInput
             ariaLabel={t('label.date')}

@@ -315,6 +315,7 @@
     "projects": "Tellimused",
     "sub_projects": "Alam-tellimused",
     "my_tasks": "Minu ülesanded",
+    "calendar": "Kalender",
     "vendors_database": "Teostajate andmebaas",
     "translation_memories": "Tõlkemälud",
     "settings": "Sätted",
@@ -336,6 +337,28 @@
   "alt": {
     "header_logo": "Logo",
     "checked": "Valitud"
+  },
+  "calendar": {
+    "filter_today": "Täna",
+    "filter_week": "Nädal",
+    "filter_month": "Kuu",
+    "filter_more": "Veel",
+    "tellija_select_language": "Vali keel",
+    "tellija_date_time": "Kuupäev ja kellaaeg",
+    "tellija_select_start_time": "Vali algusaeg",
+    "tellija_duration": "Kestus",
+    "tellija_duration_30min": "kuni 30 minutit",
+    "tellija_find_suitable_time": "Leia sobiv aeg",
+    "search_dropdown_section_heading": "Sektsiooni pealkiri",
+    "search_dropdown_allow_action": "Luba toiming",
+    "search_dropdown_allow_absence": "Luba märkida eemalolek",
+    "search_dropdown_allow_change": "Luba muuta",
+    "search_dropdown_allow_overwrite": "Luba üle kirjutada",
+    "search_dropdown_parameter": "Parameeter",
+    "search_dropdown_parameters": "Parameetrid",
+    "search_dropdown_default": "Vaikimisi",
+    "search_dropdown_allowed": "Lubatud",
+    "search_dropdown_close": "Sulge"
   },
   "header": {
     "my_role": "Minu roll:",

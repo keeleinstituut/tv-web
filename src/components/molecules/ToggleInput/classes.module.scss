@@ -5,7 +5,6 @@
   display: flex;
   align-items: center;
   padding-bottom: variables.spacing(1.5);
-  width: 236px;
 
   label {
     @include mixins.labelTextStyle;
