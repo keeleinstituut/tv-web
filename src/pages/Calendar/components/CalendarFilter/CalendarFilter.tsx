@@ -9,7 +9,7 @@ import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
 import classes from './CalendarFilter.module.scss'
 import DateTimePicker from 'components/molecules/DateTimePicker/DateTimePicker'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
-import MoreButton from 'pages/Calendar/components/CalendarFindTime/CalendarMoreButton'
+import MoreButton from 'pages/Calendar/components/CalendarMoreButton/CalendarMoreButton'
 
 export type CalendarView = 'today' | 'week' | 'month'
 

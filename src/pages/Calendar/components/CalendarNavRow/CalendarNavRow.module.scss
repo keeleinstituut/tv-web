@@ -1,0 +1,100 @@
+@use 'styles/variables' as variables;
+
+.root {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 32px;
+  background: variables.$color-white;
+}
+
+.left {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: variables.spacing(2);
+}
+
+/* Month variant: single label */
+.monthLabel {
+  font-size: 10px;
+  font-weight: variables.$font-weight-normal;
+  line-height: 1.33;
+  color: variables.$color-text-dark;
+  white-space: nowrap;
+}
+
+/* Day variant: weekday + date */
+.dayContent {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(2);
+}
+
+.weekdayLetter {
+  font-size: 12px;
+  font-weight: variables.$font-weight-normal;
+  color: variables.$color-text-dark;
+}
+
+.dateLabel {
+  font-size: variables.$font-size-14;
+  font-weight: variables.$font-weight-bold;
+  color: variables.$color-text-dark;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  padding-right: variables.spacing(2);
+}
+
+.prevButton,
+.nextButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: variables.$color-border-secondary;
+
+  &:hover {
+    color: variables.$color-primary;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    box-shadow: inset 0 0 0 2px variables.$color-primary;
+    border-radius: variables.$border-radius-2;
+  }
+}
+
+.prevIcon {
+  width: 18px;
+  height: 18px;
+  transform: rotate(180deg);
+
+  path {
+    fill: currentColor;
+  }
+}
+
+.nextIcon {
+  width: 18px;
+  height: 18px;
+
+  path {
+    fill: currentColor;
+  }
+}
+
+.content {
+  display: flex;
+  padding-left: variables.spacing(9);
+}

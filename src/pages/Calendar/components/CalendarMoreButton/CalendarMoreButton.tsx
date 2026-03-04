@@ -8,7 +8,7 @@ import classes from './CalendarMoreButton.module.scss'
 import SimpleDropdown from 'components/molecules/SimpleDropdown/SimpleDropdown'
 import ToggleInput from 'components/molecules/ToggleInput/ToggleInput'
 
-export interface FindSuitableTimeDropdownProps {
+export interface CalendarMoreButtonProps {
   triggerLabel?: string
   TriggerIcon?: ComponentType<{ className?: string }>
   triggerClassName?: string
@@ -70,7 +70,7 @@ const SECTIONS: SectionConfig[] = [
   { type: 'toggles', toggleKeys: ['calendar-parameter'] },
 ]
 
-const FindSuitableTimeDropdown: FC<FindSuitableTimeDropdownProps> = ({
+const CalendarMoreButton: FC<CalendarMoreButtonProps> = ({
   triggerLabel,
   TriggerIcon,
   triggerClassName,
@@ -187,4 +187,4 @@ const FindSuitableTimeDropdown: FC<FindSuitableTimeDropdownProps> = ({
   )
 }
 
-export default FindSuitableTimeDropdown
+export default CalendarMoreButton
