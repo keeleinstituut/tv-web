@@ -3,7 +3,7 @@ import CalendarFilter from './components/CalendarFilter/CalendarFilter'
 // import { CalendarGrid } from './components/CalendarGrid/CalendarGrid'
 import { CalendarNavRow } from './components/CalendarNavRow/CalendarNavRow'
 import { CalendarTimeRow } from './components/CalendarTimeRow/CalendarTimeRow'
-import { getTeostajaDayRows } from './mocks/teostajaDayGrid'
+// import { getTeostajaDayRows } from './mocks/teostajaDayGrid'
 import { LAYOUT_TOTAL_WIDTH_PX } from './constants/layout'
 import { useCalendarState } from './hooks/useCalendarState'
 
@@ -58,7 +58,7 @@ const Calendar: FC = () => {
     handleNextDay,
   } = useCalendarState()
 
-  const gridRows = useMemo(() => getTeostajaDayRows(), [])
+  // const gridRows = useMemo(() => getTeostajaDayRows(), [])
 
   useEffect(() => {
     const mainScroll = document.getElementById('mainScroll')
