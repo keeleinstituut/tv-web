@@ -35,6 +35,7 @@ import ProjectPage from 'pages/ProjectPage/ProjectPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
+import Kalender from 'pages/Kalender/Kalender'
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
 import Terms from 'pages/Terms/Terms'
@@ -54,6 +55,7 @@ import InstitutionIcon from 'assets/icons/settings.svg?react'
 import TechnicalIcon from 'assets/icons/technical.svg?react'
 import ManualIcon from 'assets/icons/question_mark.svg?react'
 import TermsIcon from 'assets/icons/terms_icon.svg?react'
+import CalendarIcon from 'assets/icons/calender.svg?react'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,
@@ -147,6 +149,13 @@ export const protectedRoutes: FullRouteObject[] = [
         ],
       },
     ],
+  },
+  {
+    path: 'kalender',
+    label: i18n.t('menu.calendar'),
+    Icon: CalendarIcon,
+    element: <Kalender />,
+    breadcrumb: i18n.t('menu.calendar'),
   },
   {
     path: 'vendors',
