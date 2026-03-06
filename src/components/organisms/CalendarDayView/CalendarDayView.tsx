@@ -160,6 +160,18 @@ const CalendarDayView: FC = () => {
 
         {/* Language rows */}
         <div className={classes.rowsContainer}>
+          {/* Full-height vertical hour guides */}
+          {HOUR_LABELS.map((hour) => (
+            <div
+              key={hour}
+              className={classes.hourGuide}
+              style={{
+                left:
+                  LABEL_WIDTH_PX + (hour - DAY_START_HOUR) * SLOT_WIDTH_PX * 2,
+              }}
+            />
+          ))}
+
           {languages.map((lang) => (
             <CalendarLanguageRow
               key={lang.language.id}
@@ -167,7 +179,6 @@ const CalendarDayView: FC = () => {
               date={dateStr}
               dayStartHour={DAY_START_HOUR}
               dayEndHour={DAY_END_HOUR}
-              currentTimeX={timeX}
               onSelectRange={(langId, start, end) => {
                 // Phase 6: open side panel
                 console.log('Selected range', { langId, start, end })

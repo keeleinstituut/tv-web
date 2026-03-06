@@ -16,7 +16,6 @@ interface Props {
   date: string // YYYY-MM-DD
   dayStartHour: number
   dayEndHour: number
-  currentTimeX: number // px offset of current time
   onSelectRange?: (langId: string, startIso: string, endIso: string) => void
 }
 
@@ -97,7 +96,20 @@ const BookedSlotBlock: FC<{
     )
   }
 
-  if (slot.type === 'external_calendar' || slot.type === 'vacation') {
+  if (slot.type === 'external_calendar') {
+    return (
+      <div
+        className={classNames(classes.slotBlock, getSlotClass(slot))}
+        style={{ left: left + 4, width: width - 8 }}
+        title={slot.meta}
+      >
+        <ClockIcon className={classes.slotIconExternal} />
+        <span className={classes.slotLabelExternal}>Hõivatud</span>
+      </div>
+    )
+  }
+
+  if (slot.type === 'vacation') {
     return (
       <div
         className={classNames(classes.slotBlock, getSlotClass(slot))}

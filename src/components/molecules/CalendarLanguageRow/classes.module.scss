@@ -119,7 +119,8 @@ $hour-border-color: #f0f0f2;
 }
 
 .slotExternal {
-  background: $color-background-dark;
+  background: #efdbdb;
+  color: #8a4b4b;
 }
 
 .slotVacation {
@@ -139,6 +140,13 @@ $hour-border-color: #f0f0f2;
   color: $color-white;
 }
 
+.slotIconExternal {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #8a4b4b;
+}
+
 .slotIconMuted {
   width: 14px;
   height: 14px;
@@ -147,11 +155,17 @@ $hour-border-color: #f0f0f2;
 }
 
 .slotLabel {
-  font-size: $font-size-14;
+  font-size: $font-size-12;
   color: $color-white;
 }
 
 .slotLabelMuted {
-  font-size: $font-size-14;
+  font-size: $font-size-12;
   color: $color-secondary-dark;
+}
+
+.slotLabelExternal {
+  font-size: 10px;
+  color: #8a4b4b;
+  white-space: nowrap;
 }

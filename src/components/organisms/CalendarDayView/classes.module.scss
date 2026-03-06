@@ -210,6 +210,18 @@ $hour-border-color: #f0f0f2;
   min-height: calc(100% - #{$header-height});
 }
 
+// --- Full-height hour guides ---
+
+.hourGuide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: $border-color;
+  pointer-events: none;
+  z-index: 0;
+}
+
 // --- Current time marker ---
 // top/height are set inline. The marker starts at -HEADER_HEIGHT so the dot
 // sits at the very top of the time header row.
