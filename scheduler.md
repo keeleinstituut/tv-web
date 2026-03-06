@@ -84,11 +84,11 @@
    2. "viitenumber" a text input which can be used as an organisation specific identifier within the organisation
    3. "teenuse tüüp" a dropdown for order type with options
       1. "Kaugtõlge" - remote spoken interpretation and
-      2. "Kohal tõlge" - on-site spoken interpretation
+      2. "Kontakttõlge" - on-site spoken interpretation
    4. "Valdkond" - a dropdown where user can select label's connected to Translator
    5. "Teostaja" a dropdown with available Translators for the chosen time slot and if the user has a correct privilege
    6. A text field called
-      1. "Asukoht" if the type is "kohal tõlge" or
+      1. "Asukoht" if the type is "kontakttõlge" or
       2. "Koosoleku link" if the type is "kaugtõlge".
 4. Side panel also has the following sections:
    1. "Lisamaterjalid" for adding/removing and downloading attachments where user can
