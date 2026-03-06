@@ -1,0 +1,237 @@
+@use 'styles/variables' as *;
+
+$label-width: 64px;
+$slot-width: 48px;
+$row-height: 40px;
+$header-height: 40px;
+$border-color: #e2e4e9;
+$hour-border-color: #f0f0f2;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: $color-white;
+  position: relative;
+}
+
+// --- Date navigation: two rows ---
+
+// Row 1: month name (h-32px) with its own arrows
+.dateNavMonth {
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  background: $color-white;
+  flex-shrink: 0;
+}
+
+.navMonthCenter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.monthLabel {
+  font-size: $font-size-12;
+  color: $color-text;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+// Row 2: day navigation (h-32px) with arrows + day info
+.dateNav {
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  background: $color-white;
+  flex-shrink: 0;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $label-width;
+  flex-shrink: 0;
+}
+
+.navCenter {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  flex-shrink: 0;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: $border-radius-4;
+  color: $color-text;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.navIcon {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+}
+
+.navIconFlip {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+  transform: scaleX(-1);
+}
+
+.dayLetter {
+  font-size: $font-size-12;
+  color: $color-text;
+  white-space: nowrap;
+}
+
+.dateLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: $border-radius-4;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.dateShort {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: #09090b;
+  white-space: nowrap;
+}
+
+.todayDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $color-primary;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+// --- Grid scroll area ---
+
+.gridScroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  position: relative;
+}
+
+// --- Time header row ---
+
+.headerRow {
+  display: flex;
+  height: $header-height;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: $color-white;
+}
+
+.cornerCell {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  border-right: 1px solid $border-color;
+  flex-shrink: 0;
+}
+
+.timeHeader {
+  position: relative;
+  flex-shrink: 0;
+  height: $header-height;
+}
+
+.hourCell {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: #{$slot-width * 2};
+  border-left: 1px solid $border-color;
+  display: flex;
+  align-items: center;
+  padding: 8px 0 8px 16px;
+  box-sizing: border-box;
+  font-size: $font-size-12;
+  color: #4d4f5d;
+  font-weight: $font-weight-normal;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.hourCellBold {
+  color: #09090b;
+  font-weight: $font-weight-bold;
+}
+
+// --- Rows container ---
+
+.rowsContainer {
+  position: relative;
+  width: max-content;
+  min-width: calc(#{$label-width} + #{$slot-width * 26});
+  min-height: calc(100% - #{$header-height});
+}
+
+// --- Current time marker ---
+// top/height are set inline. The marker starts at -HEADER_HEIGHT so the dot
+// sits at the very top of the time header row.
+// z-index: 5 renders it above the sticky header (z-index: 3).
+
+.timeMarker {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  background: #09090b;
+  pointer-events: none;
+  z-index: 5;
+  transform: translateX(-1px);
+}
+
+.timeMarkerDot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #09090b;
+}

@@ -9,6 +9,8 @@ interface CalendarContextType {
   setCurrentDate: (date: Dayjs) => void
   navigatePrev: () => void
   navigateNext: () => void
+  navigatePrevMonth: () => void
+  navigateNextMonth: () => void
   navigateToday: () => void
   expandedLanguageIds: string[]
   toggleLanguageExpanded: (languageId: string) => void
@@ -24,6 +26,8 @@ const CalendarContext = createContext<CalendarContextType>({
   setCurrentDate: () => undefined,
   navigatePrev: () => undefined,
   navigateNext: () => undefined,
+  navigatePrevMonth: () => undefined,
+  navigateNextMonth: () => undefined,
   navigateToday: () => undefined,
   expandedLanguageIds: [],
   toggleLanguageExpanded: () => undefined,
@@ -54,6 +58,14 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
     })
   }, [view])
 
+  const navigatePrevMonth = useCallback(() => {
+    setCurrentDate((prev) => prev.subtract(1, 'month'))
+  }, [])
+
+  const navigateNextMonth = useCallback(() => {
+    setCurrentDate((prev) => prev.add(1, 'month'))
+  }, [])
+
   const navigateToday = useCallback(() => {
     setCurrentDate(dayjs())
   }, [])
@@ -78,6 +90,8 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
         setCurrentDate,
         navigatePrev,
         navigateNext,
+        navigatePrevMonth,
+        navigateNextMonth,
         navigateToday,
         expandedLanguageIds,
         toggleLanguageExpanded,

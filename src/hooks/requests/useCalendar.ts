@@ -52,13 +52,22 @@ const MOCK_VENDORS = [
   { id: 'v7', institution_user: { id: 'u7', name: 'Raili Lepp' }, is_internal: false },
 ]
 
-const mockDayResponse = (date: string): CalendarDayResponse => ({
-  current_time: new Date().toISOString(),
-  booked_slots: [
+import dayjs from 'dayjs'
+
+const TODAY = dayjs().format('YYYY-MM-DD')
+
+// Build ISO string in local timezone for the given date + hour + minute
+const localIso = (date: string, hour: number, minute = 0) =>
+  dayjs(date).hour(hour).minute(minute).second(0).millisecond(0).toISOString()
+
+const mockDayResponse = (date: string, languageId?: string): CalendarDayResponse => {
+  if (date !== TODAY) return { current_time: new Date().toISOString(), booked_slots: [] }
+
+  const slots = [
     {
-      start_at: `${date}T09:00:00Z`,
-      end_at: `${date}T10:30:00Z`,
-      type: 'assignment',
+      start_at: localIso(date, 9, 0),
+      end_at: localIso(date, 10, 30),
+      type: 'assignment' as const,
       assignment: {
         id: 'asgn-1',
         sub_project: {
@@ -69,15 +78,21 @@ const mockDayResponse = (date: string): CalendarDayResponse => ({
         },
       },
     },
-    {
-      start_at: `${date}T13:00:00Z`,
-      end_at: `${date}T13:30:00Z`,
-      type: 'external_calendar',
+  ]
+
+  // External calendar event only for the 'ru' language row
+  if (languageId === 'lang-ru') {
+    slots.push({
+      start_at: localIso(date, 13, 0),
+      end_at: localIso(date, 13, 30),
+      type: 'external_calendar' as const,
       assignment: null,
       meta: 'Meeskonna koosolek',
-    },
-  ],
-})
+    })
+  }
+
+  return { current_time: new Date().toISOString(), booked_slots: slots }
+}
 
 const mockWeekResponse = (date: string): CalendarWeekResponse => {
   const days = Array.from({ length: 7 }, (_, i) => {
@@ -225,7 +240,7 @@ export const useFetchCalendarLanguages = (timeframe?: string) => {
 export const useFetchCalendarDay = (date: string, languageId?: string) => {
   const { isLoading, isError, data } = useQuery<CalendarDayResponse>({
     queryKey: ['calendar-day', date, languageId],
-    queryFn: () => Promise.resolve(mockDayResponse(date)),
+    queryFn: () => Promise.resolve(mockDayResponse(date, languageId)),
     // queryFn: () => apiClient.get(endpoints.CALENDAR_DAY, { date, language_id: languageId }),
     enabled: !!date,
   })

@@ -1,0 +1,128 @@
+@use 'styles/variables' as *;
+
+.toolbar {
+  padding: 0 spacing(8);
+  background: $color-background-main;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  gap: 24px;
+  padding-top: 8px;
+  padding-bottom: 16px;
+}
+
+// --- Segmented tab group ---
+
+.tabs {
+  display: flex;
+  height: 37px;
+  flex-shrink: 0;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 12px;
+  border: 1px solid #5d6071;
+  background: $color-white;
+  cursor: pointer;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: #5d6071;
+  line-height: 21px;
+  white-space: nowrap;
+  transition:
+    background 0.1s,
+    border-color 0.1s,
+    color 0.1s;
+
+  // Connected group: share borders
+  &:not(:first-child) {
+    margin-left: -1px;
+  }
+
+  &:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  &:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+
+  &:focus {
+    outline: none;
+    z-index: 1;
+    position: relative;
+  }
+}
+
+.tabActive {
+  background: #d0e1ee;
+  border: 2px solid #1769ab;
+  color: #004277;
+  z-index: 1;
+  position: relative;
+
+  // Compensate for thicker border so tabs don't shift
+  &:not(:first-child) {
+    margin-left: -2px;
+  }
+
+  .tabIcon {
+    color: #004277;
+  }
+}
+
+.tabIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #5d6071;
+}
+
+// --- Middle items area (filter dropdowns phase 5) ---
+
+.items {
+  flex: 1;
+}
+
+// --- Right side actions ---
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.moreButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 24px;
+  height: 40px;
+  border: 2px solid #5d6071;
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+  color: #4d4f5d;
+  line-height: 19px;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.moreIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}

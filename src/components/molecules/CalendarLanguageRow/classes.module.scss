@@ -1,0 +1,157 @@
+@use 'styles/variables' as *;
+
+$label-width: 64px;
+$row-height: 40px;
+$border-color: #e2e4e9;
+$hour-border-color: #f0f0f2;
+
+.rowWrapper {
+  display: flex;
+  height: $row-height;
+  position: relative;
+  min-width: calc(64px + 1248px); // label + 26 slots × 48px
+}
+
+// --- Left label column (sticky) ---
+
+.label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 spacing(2);
+  border-right: 1px solid $border-color;
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  background: #b9d2e5;
+  color: #004277;
+  border-radius: $border-radius-4;
+  font-size: 16px;
+  font-weight: $font-weight-bold;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
+// --- Slot area ---
+
+.slotArea {
+  position: relative;
+  height: $row-height;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.slotCell {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.slotCellHour {
+  border-left: 1px solid $border-color;
+}
+
+.slotCellPast {
+  cursor: default;
+  background: $color-background;
+  border-radius: $border-radius-4;
+}
+
+.slotCellBookable {
+  cursor: crosshair;
+  transition: background 0.1s;
+
+  &:hover {
+    background: rgba($color-primary, 0.06);
+  }
+}
+
+// --- Drag selection ---
+
+.selectionHighlight {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  background: rgba($color-primary, 0.18);
+  border: 1px solid $color-primary;
+  border-radius: $border-radius-4;
+  pointer-events: none;
+  z-index: 3;
+}
+
+// --- Booked slot blocks ---
+
+.slotBlock {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  padding: 0 spacing(2);
+  gap: spacing(1);
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.slotAssignmentFuture {
+  background: $color-secondary;
+  color: $color-white;
+}
+
+.slotAssignmentPast {
+  background: $color-info-light;
+  color: $color-secondary-dark;
+}
+
+.slotExternal {
+  background: $color-background-dark;
+}
+
+.slotVacation {
+  background: $color-warning-light;
+  border-left: 3px solid $color-warning;
+}
+
+.slotPrebook {
+  background: $color-warning-light;
+  border: 1px dashed $color-warning;
+}
+
+.slotIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: $color-white;
+}
+
+.slotIconMuted {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: $color-secondary-dark;
+}
+
+.slotLabel {
+  font-size: $font-size-14;
+  color: $color-white;
+}
+
+.slotLabelMuted {
+  font-size: $font-size-14;
+  color: $color-secondary-dark;
+}
