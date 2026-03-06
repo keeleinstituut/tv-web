@@ -1,0 +1,240 @@
+@use 'styles/variables' as *;
+
+$label-width: 64px;
+$day-width: 160px;
+$row-height: 40px;
+$border-color: #e2e4e9;
+$block-gap: 4px;
+
+// ─── Summary language row ─────────────────────────────────────────────────────
+
+.rowWrapper {
+  display: flex;
+  height: $row-height;
+  position: relative;
+  min-width: calc(#{$label-width} + #{$day-width * 7});
+}
+
+.label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.expandBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: $color-text-light;
+  flex-shrink: 0;
+
+  &:hover {
+    color: $color-text;
+  }
+}
+
+.expandIcon {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.15s;
+  transform: rotate(-90deg); // chevron_left rotated to point down
+}
+
+.expandIconOpen {
+  transform: rotate(90deg); // pointing up when expanded
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  background: #b9d2e5;
+  color: #004277;
+  border-radius: $border-radius-4;
+  font-size: $font-size-12;
+  font-weight: $font-weight-bold;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+// ─── Vendor sub-row ───────────────────────────────────────────────────────────
+
+.vendorRowWrapper {
+  display: flex;
+  height: $row-height;
+  position: relative;
+  min-width: calc(#{$label-width} + #{$day-width * 7});
+}
+
+.vendorLabel {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 spacing(2);
+  flex-shrink: 0;
+}
+
+.vendorBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  background: $color-background;
+  color: $color-text;
+  border-radius: $border-radius-4;
+  font-size: $font-size-12;
+  font-weight: $font-weight-bold;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+// ─── Slot area ────────────────────────────────────────────────────────────────
+
+.slotArea {
+  display: flex;
+  height: $row-height;
+  flex-shrink: 0;
+}
+
+.dayGroup {
+  width: $day-width;
+  min-width: $day-width;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: $block-gap;
+  border-left: 1px solid $border-color;
+  box-sizing: border-box;
+}
+
+// ─── Booked day banner ────────────────────────────────────────────────────────
+
+.dayBookedBanner {
+  flex: 1;
+  height: calc(#{$row-height} - #{$block-gap * 2});
+  background: #fdebd8;
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.bookedIcon {
+  width: 12px;
+  height: 12px;
+  color: #c07a30;
+  flex-shrink: 0;
+}
+
+.bookedLabel {
+  font-size: $font-size-12;
+  font-weight: $font-weight-bold;
+  color: #c07a30;
+  white-space: nowrap;
+}
+
+// ─── Add vendor row ───────────────────────────────────────────────────────────
+
+.addVendorRow {
+  display: flex;
+  height: $row-height;
+  align-items: center;
+  min-width: calc(#{$label-width} + #{$day-width * 7});
+}
+
+.addVendorBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-left: 20px;
+  border: none;
+  background: $color-background;
+  border-radius: $border-radius-4;
+  cursor: pointer;
+  color: $color-text-light;
+
+  &:hover {
+    background: darken(#f5f6f8, 5%);
+    color: $color-text;
+  }
+}
+
+.addVendorIcon {
+  width: 14px;
+  height: 14px;
+}
+
+// ─── Availability blocks ──────────────────────────────────────────────────────
+
+.block {
+  flex: 1;
+  height: calc(#{$row-height} - #{$block-gap * 2});
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-background;
+}
+
+// Outside working hours — light grey
+.blockOff {
+  background: $color-background;
+}
+
+// Fully booked during working hours — red-ish
+.blockFull {
+  background: #efdbdb;
+}
+
+// Low availability (1–33%)
+.blockLow {
+  background: #b9d2e5;
+}
+
+// Medium availability (33–66%)
+.blockMid {
+  background: #5a9bc2;
+}
+
+// High availability (66–100%)
+.blockHigh {
+  background: $color-secondary;
+}
+
+// Vendor available block
+.blockVendorAvail {
+  background: $color-secondary;
+}
+
+.bookingIcon {
+  width: 10px;
+  height: 10px;
+  color: $color-white;
+  flex-shrink: 0;
+}

@@ -56,6 +56,12 @@ import dayjs from 'dayjs'
 
 const TODAY = dayjs().format('YYYY-MM-DD')
 
+// Deterministic pseudo-random based on a numeric seed
+const seededRandom = (seed: number): number => {
+  const x = Math.sin(seed + 1) * 10000
+  return x - Math.floor(x)
+}
+
 // Build ISO string in local timezone for the given date + hour + minute
 const localIso = (date: string, hour: number, minute = 0) =>
   dayjs(date).hour(hour).minute(minute).second(0).millisecond(0).toISOString()
@@ -109,13 +115,16 @@ const mockWeekResponse = (date: string): CalendarWeekResponse => {
       language_id: l.language.id,
       total_vendors: 7,
       slots: days.flatMap((day) =>
-        blocks.map((block, bi) => ({
-          start_at: `${day}T${block}:00Z`,
-          end_at: `${day}T${blocks[(bi + 1) % 4] || '24:00'}:00Z`,
-          working_hours: bi === 1 || bi === 2 ? 6 : 0,
-          available_vendors: bi === 1 || bi === 2 ? Math.floor(Math.random() * 7) : 0,
-          my_bookings_count: bi === 1 ? (Math.random() > 0.8 ? 1 : 0) : 0,
-        }))
+        blocks.map((block, bi) => {
+          const seed = i * 100 + bi
+          return {
+            start_at: `${day}T${block}:00Z`,
+            end_at: `${day}T${blocks[(bi + 1) % 4] || '24:00'}:00Z`,
+            working_hours: bi === 1 || bi === 2 ? 6 : 0,
+            available_vendors: bi === 1 || bi === 2 ? Math.floor(seededRandom(seed) * 7) : 0,
+            my_bookings_count: bi === 1 ? (seededRandom(seed + 50) > 0.8 ? 1 : 0) : 0,
+          }
+        })
       ),
     })),
   }
@@ -142,8 +151,8 @@ const mockMonthResponse = (date: string): CalendarMonthResponse => {
         return {
           date: day,
           working_hours: isWeekend ? 0 : 8,
-          available_vendors: isWeekend ? 0 : Math.floor(Math.random() * 7),
-          my_bookings_count: !isWeekend && Math.random() > 0.8 ? 1 : 0,
+          available_vendors: isWeekend ? 0 : Math.floor(seededRandom(i * 17) * 7),
+          my_bookings_count: !isWeekend && seededRandom(i * 17 + 50) > 0.8 ? 1 : 0,
         }
       }),
     })),
@@ -152,10 +161,10 @@ const mockMonthResponse = (date: string): CalendarMonthResponse => {
 
 const mockDayVendors = (date: string, languageId: string): CalendarDayVendorsResponse => ({
   language_id: languageId,
-  vendors: MOCK_VENDORS.map((v) => ({
+  vendors: MOCK_VENDORS.map((v, vi) => ({
     ...v,
     booked_slots:
-      Math.random() > 0.5
+      seededRandom(vi * 13) > 0.5
         ? [
             {
               start_at: `${date}T09:00:00Z`,
@@ -182,14 +191,15 @@ const mockWeekVendors = (date: string, languageId: string): CalendarWeekVendorsR
     language_id: languageId,
     week_start: days[0],
     week_end: days[6],
-    vendors: MOCK_VENDORS.map((v) => ({
+    vendors: MOCK_VENDORS.map((v, vi) => ({
       ...v,
-      slots: days.flatMap((day) =>
+      slots: days.flatMap((day, di) =>
         blocks.map((block, bi) => ({
           start_at: `${day}T${block}:00Z`,
           end_at: `${day}T${blocks[(bi + 1) % 4] || '24:00'}:00Z`,
-          available: bi === 1 || bi === 2 ? Math.random() > 0.3 : false,
-          booked_hours: bi === 1 || bi === 2 ? Math.floor(Math.random() * 4) : undefined,
+          // First vendor (AB) is fully booked all day every day
+          available: vi === 0 ? false : bi === 1 || bi === 2 ? seededRandom(vi * 31 + di * 7 + bi) > 0.3 : false,
+          booked_hours: vi === 0 ? 6 : undefined,
         }))
       ),
     })),

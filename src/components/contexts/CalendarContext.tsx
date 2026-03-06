@@ -15,8 +15,8 @@ interface CalendarContextType {
   expandedLanguageIds: string[]
   toggleLanguageExpanded: (languageId: string) => void
   isLanguageExpanded: (languageId: string) => boolean
-  allExpanded: boolean
-  setAllExpanded: (value: boolean) => void
+  expandAll: (languageIds: string[]) => void
+  collapseAll: () => void
 }
 
 const CalendarContext = createContext<CalendarContextType>({
@@ -32,15 +32,14 @@ const CalendarContext = createContext<CalendarContextType>({
   expandedLanguageIds: [],
   toggleLanguageExpanded: () => undefined,
   isLanguageExpanded: () => false,
-  allExpanded: false,
-  setAllExpanded: () => undefined,
+  expandAll: () => undefined,
+  collapseAll: () => undefined,
 })
 
 export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   const [view, setView] = useState<CalendarView>('day')
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs())
   const [expandedLanguageIds, setExpandedLanguageIds] = useState<string[]>([])
-  const [allExpanded, setAllExpanded] = useState(false)
 
   const navigatePrev = useCallback(() => {
     setCurrentDate((prev) => {
@@ -70,6 +69,10 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
     setCurrentDate(dayjs())
   }, [])
 
+  const collapseAll = useCallback(() => {
+    setExpandedLanguageIds([])
+  }, [])
+
   const toggleLanguageExpanded = useCallback((languageId: string) => {
     setExpandedLanguageIds((prev) =>
       prev.includes(languageId) ? prev.filter((id) => id !== languageId) : [...prev, languageId]
@@ -77,9 +80,13 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [])
 
   const isLanguageExpanded = useCallback(
-    (languageId: string) => allExpanded || expandedLanguageIds.includes(languageId),
-    [allExpanded, expandedLanguageIds]
+    (languageId: string) => expandedLanguageIds.includes(languageId),
+    [expandedLanguageIds]
   )
+
+  const expandAll = useCallback((languageIds: string[]) => {
+    setExpandedLanguageIds(languageIds)
+  }, [])
 
   return (
     <CalendarContext.Provider
@@ -96,8 +103,8 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
         expandedLanguageIds,
         toggleLanguageExpanded,
         isLanguageExpanded,
-        allExpanded,
-        setAllExpanded,
+        expandAll,
+        collapseAll,
       }}
     >
       {children}

@@ -39,8 +39,14 @@ function currentTimeX(): number {
 }
 
 const CalendarDayView: FC = () => {
-  const { currentDate, navigatePrev, navigateNext, navigatePrevMonth, navigateNextMonth, navigateToday } =
-    useCalendarContext()
+  const {
+    currentDate,
+    navigatePrev,
+    navigateNext,
+    navigatePrevMonth,
+    navigateNextMonth,
+    navigateToday,
+  } = useCalendarContext()
   const { languages } = useFetchCalendarLanguages()
   const dateStr = currentDate.locale('et').format('YYYY-MM-DD')
   const isToday = currentDate.isSame(dayjs(), 'day')

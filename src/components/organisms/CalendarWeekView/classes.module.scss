@@ -1,0 +1,276 @@
+@use 'styles/variables' as *;
+
+$label-width: 64px;
+$day-width: 160px;
+$row-height: 40px;
+$header-height: 72px; // 40px day name + 32px time axis
+$border-color: #e2e4e9;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: $color-white;
+  position: relative;
+}
+
+// --- Month nav row ---
+
+.monthNavRow {
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  background: $color-white;
+  flex-shrink: 0;
+}
+
+.navLeft,
+.navRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $label-width;
+  flex-shrink: 0;
+}
+
+.monthCenter {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.monthLabel {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: $font-size-12;
+  color: $color-text;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 12px;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: $border-radius-4;
+  color: $color-text;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.navIcon {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+}
+
+.navIconFlip {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+  transform: scaleX(-1);
+}
+
+// --- Grid scroll area ---
+
+.gridScroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  position: relative;
+}
+
+// --- Row A: day names + week nav (sticky top: 0) ---
+
+.dayNamesRow {
+  display: flex;
+  height: $row-height;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: $color-white;
+  width: max-content;
+  min-width: calc(#{$label-width} + #{$day-width * 7} + #{$label-width});
+}
+
+.cornerCell {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cornerCellRight {
+  position: sticky;
+  right: 0;
+  z-index: 4;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+// --- Day header column ---
+
+.dayHeader {
+  width: $day-width;
+  min-width: $day-width;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.dayLetter {
+  font-size: $font-size-12;
+  color: $color-text-light;
+  white-space: nowrap;
+}
+
+.dayDateBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: $border-radius-4;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.dayDate {
+  font-size: $font-size-13;
+  font-weight: $font-weight-bold;
+  color: $color-text;
+  white-space: nowrap;
+}
+
+.dayDateToday {
+  color: $color-primary;
+}
+
+.todayDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $color-primary;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+// --- Row B: time axis + collapse-all (sticky top: 40px) ---
+
+.timeAxisRow {
+  display: flex;
+  height: 32px;
+  position: sticky;
+  top: $row-height;
+  z-index: 3;
+  background: $color-white;
+  width: max-content;
+  min-width: calc(#{$label-width} + #{$day-width * 7} + #{$label-width});
+}
+
+.timeAxis {
+  width: $day-width;
+  min-width: $day-width;
+  height: 32px;
+  display: flex;
+  flex-shrink: 0;
+  border-left: 1px solid $border-color;
+}
+
+.timeLabel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  justify-content: center;
+  padding-left: 4px;
+  font-size: $font-size-12;
+  color: #4d4f5d;
+  white-space: nowrap;
+  user-select: none;
+  border-left: 1px solid #f0f0f2;
+
+  &:first-child {
+    border-left: none;
+  }
+}
+
+.collapseIcon {
+  width: 14px;
+  height: 14px;
+  color: $color-text-light;
+}
+
+// --- Time guide lines ---
+
+.timeGuide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #f0f0f2;
+  z-index: 0;
+  pointer-events: none;
+}
+
+// --- Rows container ---
+
+.rowsContainer {
+  position: relative;
+  width: max-content;
+  min-width: calc(#{$label-width} + #{$day-width * 7});
+  min-height: calc(100% - #{$row-height} - 32px);
+}
+
+// --- Current time marker ---
+
+.timeMarker {
+  position: absolute;
+  width: 2px;
+  background: #09090b;
+  pointer-events: none;
+  z-index: 5;
+  transform: translateX(-1px);
+}
+
+.timeMarkerDot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #09090b;
+}
