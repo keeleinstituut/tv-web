@@ -114,9 +114,9 @@ const mockWeekResponse = (date: string): CalendarWeekResponse => {
     languages: MOCK_LANGUAGES.languages.map((l) => ({
       language_id: l.language.id,
       total_vendors: 7,
-      slots: days.flatMap((day) =>
+      slots: days.flatMap((day, di) =>
         blocks.map((block, bi) => {
-          const seed = i * 100 + bi
+          const seed = di * 100 + bi
           return {
             start_at: `${day}T${block}:00Z`,
             end_at: `${day}T${blocks[(bi + 1) % 4] || '24:00'}:00Z`,
@@ -145,7 +145,7 @@ const mockMonthResponse = (date: string): CalendarMonthResponse => {
     languages: MOCK_LANGUAGES.languages.map((l) => ({
       language_id: l.language.id,
       total_vendors: 7,
-      slots: days.map((day) => {
+      slots: days.map((day, i) => {
         const dow = new Date(day).getDay()
         const isWeekend = dow === 0 || dow === 6
         return {
@@ -218,15 +218,15 @@ const mockMonthVendors = (date: string, languageId: string): CalendarMonthVendor
   return {
     language_id: languageId,
     month: `${year}-${String(month + 1).padStart(2, '0')}`,
-    vendors: MOCK_VENDORS.map((v) => ({
+    vendors: MOCK_VENDORS.map((v, vi) => ({
       ...v,
-      slots: days.map((day) => {
+      slots: days.map((day, di) => {
         const dow = new Date(day).getDay()
         const isWeekend = dow === 0 || dow === 6
         return {
           date: day,
-          available: !isWeekend && Math.random() > 0.3,
-          booked_hours: !isWeekend ? Math.floor(Math.random() * 8) : undefined,
+          available: !isWeekend && seededRandom(vi * 37 + di) > 0.3,
+          booked_hours: !isWeekend ? Math.floor(seededRandom(vi * 37 + di + 100) * 8) : undefined,
         }
       }),
     })),

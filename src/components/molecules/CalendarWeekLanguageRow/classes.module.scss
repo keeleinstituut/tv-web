@@ -207,34 +207,7 @@ $block-gap: 4px;
   background: $color-background;
 }
 
-// Fully booked during working hours — red-ish
-.blockFull {
-  background: #efdbdb;
-}
-
-// Low availability (1–33%)
-.blockLow {
-  background: #b9d2e5;
-}
-
-// Medium availability (33–66%)
-.blockMid {
-  background: #5a9bc2;
-}
-
-// High availability (66–100%)
-.blockHigh {
-  background: $color-secondary;
-}
-
 // Vendor available block
 .blockVendorAvail {
   background: $color-secondary;
-}
-
-.bookingIcon {
-  width: 10px;
-  height: 10px;
-  color: $color-white;
-  flex-shrink: 0;
 }

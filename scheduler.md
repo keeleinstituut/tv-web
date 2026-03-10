@@ -119,8 +119,8 @@
    2. opens the detail view from the side panel "Ava" to open the detail view.
 2. All the fields are displayed using the same logic as for the side panel.
 3. Timeframe of the order can be chosen using the "kuupäev ja kellaaeg" and "kestus" and
-   1. if the language chosen is main language then after selecting a longer duration than is available will not be possible (longer durations than available are disabled) or
-   2. if the language is not main language (harvikkeel), then any time and date (following the overall rule of not adding orders to the same day) are allowed.
+   if the language chosen is main language then after selecting a longer duration then notification is shown to user that chosen time slot is booked and therefore the order is treated separately or
+   if the language is not main language (harvikkeel), then any time and date (following the overall rule of not adding orders to the same day) are allowed.
 4. User can void the pre order by clicking on secondary button "Katkesta" and
    1. the detail view is closed and
    2. the pre booking is voided.
