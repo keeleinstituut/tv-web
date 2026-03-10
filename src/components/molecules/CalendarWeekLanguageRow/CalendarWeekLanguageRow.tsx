@@ -71,13 +71,22 @@ const VendorRow: FC<{
             (sum, s) => sum + (s.booked_hours ?? 0),
             0
           )
+          const dayUnavailable = daySlots.every((s) => s.on_vacation)
+
+          if (dayUnavailable) {
+            return (
+              <div key={dayIdx} className={classes.dayGroup}>
+                <div className={classes.dayUnavailableBanner} />
+              </div>
+            )
+          }
 
           if (dayBookedHours > 0) {
             return (
               <div key={dayIdx} className={classes.dayGroup}>
                 <div className={classes.dayBookedBanner}>
                   <AlarmIcon className={classes.bookedIcon} />
-                  <span className={classes.bookedLabel}>{dayBookedHours}h</span>
+                  <span className={classes.bookedLabel}>EMO</span>
                 </div>
               </div>
             )

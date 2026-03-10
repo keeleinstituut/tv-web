@@ -130,6 +130,15 @@ $block-gap: 4px;
   box-sizing: border-box;
 }
 
+// ─── Unavailable day banner (vacation / absence) ──────────────────────────────
+
+.dayUnavailableBanner {
+  flex: 1;
+  height: calc(#{$row-height} - #{$block-gap * 2});
+  background: #efdbdb;
+  border-radius: $border-radius-4;
+}
+
 // ─── Booked day banner ────────────────────────────────────────────────────────
 
 .dayBookedBanner {

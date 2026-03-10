@@ -24,32 +24,84 @@ import {
 const MOCK_LANGUAGES: CalendarLanguagesResponse = {
   languages: [
     {
-      language: { id: 'lang-ru', type: 'LANGUAGE', value: 'ru', name: 'Vene keel', meta: { iso3_code: 'rus' } },
+      language: {
+        id: 'lang-ru',
+        type: 'LANGUAGE',
+        value: 'ru',
+        name: 'Vene keel',
+        meta: { iso3_code: 'rus' },
+      },
       pinned: true,
     },
     {
-      language: { id: 'lang-en', type: 'LANGUAGE', value: 'en', name: 'Inglise keel', meta: { iso3_code: 'eng' } },
+      language: {
+        id: 'lang-en',
+        type: 'LANGUAGE',
+        value: 'en',
+        name: 'Inglise keel',
+        meta: { iso3_code: 'eng' },
+      },
       pinned: true,
     },
     {
-      language: { id: 'lang-de', type: 'LANGUAGE', value: 'de', name: 'Saksa keel', meta: { iso3_code: 'deu' } },
+      language: {
+        id: 'lang-de',
+        type: 'LANGUAGE',
+        value: 'de',
+        name: 'Saksa keel',
+        meta: { iso3_code: 'deu' },
+      },
       pinned: false,
     },
     {
-      language: { id: 'lang-fi', type: 'LANGUAGE', value: 'fi', name: 'Soome keel', meta: { iso3_code: 'fin' } },
+      language: {
+        id: 'lang-fi',
+        type: 'LANGUAGE',
+        value: 'fi',
+        name: 'Soome keel',
+        meta: { iso3_code: 'fin' },
+      },
       pinned: false,
     },
   ],
 }
 
 const MOCK_VENDORS = [
-  { id: 'v1', institution_user: { id: 'u1', name: 'Anna Bergmann' }, is_internal: true },
-  { id: 'v2', institution_user: { id: 'u2', name: 'Boris Dmitrov' }, is_internal: true },
-  { id: 'v3', institution_user: { id: 'u3', name: 'Fiona Hall' }, is_internal: false },
-  { id: 'v4', institution_user: { id: 'u4', name: 'Karl Liiv' }, is_internal: true },
-  { id: 'v5', institution_user: { id: 'u5', name: 'Mari Vaher' }, is_internal: false },
-  { id: 'v6', institution_user: { id: 'u6', name: 'Mati Tamm' }, is_internal: true },
-  { id: 'v7', institution_user: { id: 'u7', name: 'Raili Lepp' }, is_internal: false },
+  {
+    id: 'v1',
+    institution_user: { id: 'u1', name: 'Anna Bergmann' },
+    is_internal: true,
+  },
+  {
+    id: 'v2',
+    institution_user: { id: 'u2', name: 'Boris Dmitrov' },
+    is_internal: true,
+  },
+  {
+    id: 'v3',
+    institution_user: { id: 'u3', name: 'Fiona Hall' },
+    is_internal: false,
+  },
+  {
+    id: 'v4',
+    institution_user: { id: 'u4', name: 'Karl Liiv' },
+    is_internal: true,
+  },
+  {
+    id: 'v5',
+    institution_user: { id: 'u5', name: 'Mari Vaher' },
+    is_internal: false,
+  },
+  {
+    id: 'v6',
+    institution_user: { id: 'u6', name: 'Mati Tamm' },
+    is_internal: true,
+  },
+  {
+    id: 'v7',
+    institution_user: { id: 'u7', name: 'Raili Lepp' },
+    is_internal: false,
+  },
 ]
 
 import dayjs from 'dayjs'
@@ -66,8 +118,12 @@ const seededRandom = (seed: number): number => {
 const localIso = (date: string, hour: number, minute = 0) =>
   dayjs(date).hour(hour).minute(minute).second(0).millisecond(0).toISOString()
 
-const mockDayResponse = (date: string, languageId?: string): CalendarDayResponse => {
-  if (date !== TODAY) return { current_time: new Date().toISOString(), booked_slots: [] }
+const mockDayResponse = (
+  date: string,
+  languageId?: string
+): CalendarDayResponse => {
+  if (date !== TODAY)
+    return { current_time: new Date().toISOString(), booked_slots: [] }
 
   const slots = [
     {
@@ -80,7 +136,11 @@ const mockDayResponse = (date: string, languageId?: string): CalendarDayResponse
           id: 'sp-1',
           ext_id: 'OR-2024-001',
           source_language: { id: 'lang-et', value: 'et', name: 'Eesti keel' },
-          destination_language: { id: 'lang-ru', value: 'ru', name: 'Vene keel' },
+          destination_language: {
+            id: 'lang-ru',
+            value: 'ru',
+            name: 'Vene keel',
+          },
         },
       },
     },
@@ -121,8 +181,10 @@ const mockWeekResponse = (date: string): CalendarWeekResponse => {
             start_at: `${day}T${block}:00Z`,
             end_at: `${day}T${blocks[(bi + 1) % 4] || '24:00'}:00Z`,
             working_hours: bi === 1 || bi === 2 ? 6 : 0,
-            available_vendors: bi === 1 || bi === 2 ? Math.floor(seededRandom(seed) * 7) : 0,
-            my_bookings_count: bi === 1 ? (seededRandom(seed + 50) > 0.8 ? 1 : 0) : 0,
+            available_vendors:
+              bi === 1 || bi === 2 ? Math.floor(seededRandom(seed) * 7) : 0,
+            my_bookings_count:
+              bi === 1 ? (seededRandom(seed + 50) > 0.8 ? 1 : 0) : 0,
           }
         })
       ),
@@ -151,15 +213,21 @@ const mockMonthResponse = (date: string): CalendarMonthResponse => {
         return {
           date: day,
           working_hours: isWeekend ? 0 : 8,
-          available_vendors: isWeekend ? 0 : Math.floor(seededRandom(i * 17) * 7),
-          my_bookings_count: !isWeekend && seededRandom(i * 17 + 50) > 0.8 ? 1 : 0,
+          available_vendors: isWeekend
+            ? 0
+            : Math.floor(seededRandom(i * 17) * 7),
+          my_bookings_count:
+            !isWeekend && seededRandom(i * 17 + 50) > 0.8 ? 1 : 0,
         }
       }),
     })),
   }
 }
 
-const mockDayVendors = (date: string, languageId: string): CalendarDayVendorsResponse => ({
+const mockDayVendors = (
+  date: string,
+  languageId: string
+): CalendarDayVendorsResponse => ({
   language_id: languageId,
   vendors: MOCK_VENDORS.map((v, vi) => ({
     ...v,
@@ -177,7 +245,10 @@ const mockDayVendors = (date: string, languageId: string): CalendarDayVendorsRes
   })),
 })
 
-const mockWeekVendors = (date: string, languageId: string): CalendarWeekVendorsResponse => {
+const mockWeekVendors = (
+  date: string,
+  languageId: string
+): CalendarWeekVendorsResponse => {
   const d = new Date(date)
   const monday = new Date(d)
   monday.setDate(d.getDate() - ((d.getDay() + 6) % 7))
@@ -193,20 +264,32 @@ const mockWeekVendors = (date: string, languageId: string): CalendarWeekVendorsR
     week_end: days[6],
     vendors: MOCK_VENDORS.map((v, vi) => ({
       ...v,
-      slots: days.flatMap((day, di) =>
-        blocks.map((block, bi) => ({
+      slots: days.flatMap((day, di) => {
+        // Third vendor (FH) is on vacation Mon–Wed
+        const onVacation = vi === 2 && di < 3
+        return blocks.map((block, bi) => ({
           start_at: `${day}T${block}:00Z`,
           end_at: `${day}T${blocks[(bi + 1) % 4] || '24:00'}:00Z`,
           // First vendor (AB) is fully booked all day every day
-          available: vi === 0 ? false : bi === 1 || bi === 2 ? seededRandom(vi * 31 + di * 7 + bi) > 0.3 : false,
-          booked_hours: vi === 0 ? 6 : undefined,
+          available: onVacation
+            ? false
+            : vi === 0
+              ? false
+              : bi === 1 || bi === 2
+                ? seededRandom(vi * 31 + di * 7 + bi) > 0.3
+                : false,
+          booked_hours: onVacation ? undefined : vi === 0 ? 6 : undefined,
+          on_vacation: onVacation || undefined,
         }))
-      ),
+      }),
     })),
   }
 }
 
-const mockMonthVendors = (date: string, languageId: string): CalendarMonthVendorsResponse => {
+const mockMonthVendors = (
+  date: string,
+  languageId: string
+): CalendarMonthVendorsResponse => {
   const d = new Date(date)
   const year = d.getFullYear()
   const month = d.getMonth()
@@ -226,7 +309,9 @@ const mockMonthVendors = (date: string, languageId: string): CalendarMonthVendor
         return {
           date: day,
           available: !isWeekend && seededRandom(vi * 37 + di) > 0.3,
-          booked_hours: !isWeekend ? Math.floor(seededRandom(vi * 37 + di + 100) * 8) : undefined,
+          booked_hours: !isWeekend
+            ? Math.floor(seededRandom(vi * 37 + di + 100) * 8)
+            : undefined,
         }
       }),
     })),
@@ -277,7 +362,10 @@ export const useFetchCalendarMonth = (date: string) => {
   return { isLoading, isError, data }
 }
 
-export const useFetchCalendarDayVendors = (date: string, languageId?: string) => {
+export const useFetchCalendarDayVendors = (
+  date: string,
+  languageId?: string
+) => {
   const { isLoading, isError, data } = useQuery<
     CalendarDayVendorsResponse | CalendarDayVendorsAllResponse
   >({
@@ -286,7 +374,9 @@ export const useFetchCalendarDayVendors = (date: string, languageId?: string) =>
       languageId
         ? Promise.resolve(mockDayVendors(date, languageId))
         : Promise.resolve({
-            languages: MOCK_LANGUAGES.languages.map((l) => mockDayVendors(date, l.language.id)),
+            languages: MOCK_LANGUAGES.languages.map((l) =>
+              mockDayVendors(date, l.language.id)
+            ),
           } as CalendarDayVendorsAllResponse),
     // queryFn: () => apiClient.get(endpoints.CALENDAR_DAY_VENDORS, { date, language_id: languageId }),
     enabled: !!date,
@@ -294,7 +384,10 @@ export const useFetchCalendarDayVendors = (date: string, languageId?: string) =>
   return { isLoading, isError, data }
 }
 
-export const useFetchCalendarWeekVendors = (date: string, languageId?: string) => {
+export const useFetchCalendarWeekVendors = (
+  date: string,
+  languageId?: string
+) => {
   const { isLoading, isError, data } = useQuery<
     CalendarWeekVendorsResponse | CalendarWeekVendorsAllResponse
   >({
@@ -303,7 +396,9 @@ export const useFetchCalendarWeekVendors = (date: string, languageId?: string) =
       languageId
         ? Promise.resolve(mockWeekVendors(date, languageId))
         : Promise.resolve({
-            languages: MOCK_LANGUAGES.languages.map((l) => mockWeekVendors(date, l.language.id)),
+            languages: MOCK_LANGUAGES.languages.map((l) =>
+              mockWeekVendors(date, l.language.id)
+            ),
           } as CalendarWeekVendorsAllResponse),
     // queryFn: () => apiClient.get(endpoints.CALENDAR_WEEK_VENDORS, { date, language_id: languageId }),
     enabled: !!date,
@@ -311,7 +406,10 @@ export const useFetchCalendarWeekVendors = (date: string, languageId?: string) =
   return { isLoading, isError, data }
 }
 
-export const useFetchCalendarMonthVendors = (date: string, languageId?: string) => {
+export const useFetchCalendarMonthVendors = (
+  date: string,
+  languageId?: string
+) => {
   const { isLoading, isError, data } = useQuery<
     CalendarMonthVendorsResponse | CalendarMonthVendorsAllResponse
   >({
@@ -320,7 +418,9 @@ export const useFetchCalendarMonthVendors = (date: string, languageId?: string) 
       languageId
         ? Promise.resolve(mockMonthVendors(date, languageId))
         : Promise.resolve({
-            languages: MOCK_LANGUAGES.languages.map((l) => mockMonthVendors(date, l.language.id)),
+            languages: MOCK_LANGUAGES.languages.map((l) =>
+              mockMonthVendors(date, l.language.id)
+            ),
           } as CalendarMonthVendorsAllResponse),
     // queryFn: () => apiClient.get(endpoints.CALENDAR_MONTH_VENDORS, { date, language_id: languageId }),
     enabled: !!date,
@@ -331,7 +431,8 @@ export const useFetchCalendarMonthVendors = (date: string, languageId?: string) 
 export const useFetchCalendarSearch = (params: CalendarSearchParams | null) => {
   const { isLoading, isError, data } = useQuery<CalendarSearchResponse>({
     queryKey: ['calendar-search', params],
-    queryFn: () => Promise.resolve({ dates: ['2026-03-06', '2026-03-09', '2026-03-10'] }),
+    queryFn: () =>
+      Promise.resolve({ dates: ['2026-03-06', '2026-03-09', '2026-03-10'] }),
     // queryFn: () => apiClient.get(endpoints.CALENDAR_SEARCH, params ?? {}),
     enabled: !!params,
   })
@@ -345,7 +446,11 @@ export const useFetchCalendarSummary = (month: string) => {
       Promise.resolve({
         month,
         summary: MOCK_LANGUAGES.languages.map((l) => ({
-          language: { id: l.language.id, value: l.language.value, name: l.language.name },
+          language: {
+            id: l.language.id,
+            value: l.language.value,
+            name: l.language.name,
+          },
           accepted_projects_count: Math.floor(Math.random() * 20),
           total_duration_minutes: Math.floor(Math.random() * 1440),
         })),

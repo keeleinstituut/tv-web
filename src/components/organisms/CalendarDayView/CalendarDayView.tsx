@@ -48,7 +48,7 @@ const CalendarDayView: FC = () => {
     navigateToday,
   } = useCalendarContext()
   const { languages } = useFetchCalendarLanguages()
-  const dateStr = currentDate.locale('et').format('YYYY-MM-DD')
+  const dateStr = currentDate.format('YYYY-MM-DD')
   const isToday = currentDate.isSame(dayjs(), 'day')
 
   // Current time marker — updates every minute
@@ -63,11 +63,11 @@ const CalendarDayView: FC = () => {
   const gridScrollRef = useRef<HTMLDivElement>(null)
   const [scrollLeft, setScrollLeft] = useState(0)
   useEffect(() => {
-    if (!gridScrollRef.current) return
+    if (!gridScrollRef.current || timeX < 0) return
     const scrollTo = Math.max(0, timeX - 200)
     gridScrollRef.current.scrollLeft = scrollTo
     setScrollLeft(scrollTo)
-  }, [timeX])
+  }, [])
   useEffect(() => {
     const el = gridScrollRef.current
     if (!el) return
