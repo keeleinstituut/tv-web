@@ -1,9 +1,10 @@
 @use 'styles/variables' as *;
 
 $label-width: 64px;
-$day-width: 160px;
-$row-height: 40px;
-$header-height: 72px; // 40px day name + 32px time axis
+$week-col-width: 186px;
+$total-col-width: 186px;
+$week-header-height: 40px;
+$day-letters-height: 32px;
 $border-color: #e2e4e9;
 
 .container {
@@ -36,18 +37,20 @@ $border-color: #e2e4e9;
 
 .monthCenter {
   flex: 1;
-  display: flex;
-  align-items: center;
+  position: relative;
   overflow: hidden;
 }
 
 .monthLabel {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: $font-size-12;
   color: $color-text;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 0 8px;
+  padding: 0 12px;
 }
 
 .navBtn {
@@ -89,13 +92,16 @@ $border-color: #e2e4e9;
   position: relative;
 }
 
-// --- Row A: day names + week nav (sticky top: 0) ---
+// --- Row A: week headers (sticky top: 0) ---
 
-.dayNamesRow {
+.weekHeaderRow {
   display: flex;
-  height: $row-height;
-  flex-shrink: 0;
+  height: $week-header-height;
+  position: sticky;
+  top: 0;
+  z-index: 3;
   background: $color-white;
+  width: max-content;
 }
 
 .cornerCell {
@@ -111,45 +117,20 @@ $border-color: #e2e4e9;
   flex-shrink: 0;
 }
 
-.cornerCellRight {
-  margin-left: auto;
-  width: $label-width;
-  min-width: $label-width;
-  background: $color-white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-// --- Day header column ---
-
-.dayHeader {
-  width: $day-width;
-  min-width: $day-width;
+.weekHeader {
+  width: $week-col-width;
+  min-width: $week-col-width;
   flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 8px;
-  box-sizing: border-box;
-}
-
-.dayLetter {
+  border: none;
+  border-left: 1px solid $border-color;
   font-size: $font-size-12;
   color: $color-text;
-  white-space: nowrap;
-}
-
-.dayDateBtn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
   background: none;
-  border: none;
   cursor: pointer;
-  padding: 2px 4px;
-  border-radius: $border-radius-4;
+  padding: 0 8px;
+  white-space: nowrap;
   transition: background 0.15s;
 
   &:hover {
@@ -157,63 +138,16 @@ $border-color: #e2e4e9;
   }
 }
 
-.dayDate {
-  font-size: $font-size-13;
-  font-weight: $font-weight-bold;
-  color: $color-text;
-  white-space: nowrap;
-}
-
-.dayDateToday {
-  color: $color-primary;
-}
-
-.todayDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: $color-primary;
-  display: inline-block;
+.totalHeader {
+  width: $total-col-width;
+  min-width: $total-col-width;
   flex-shrink: 0;
-}
-
-// --- Row B: time axis + collapse-all (sticky top: 40px) ---
-
-.timeAxisRow {
-  display: flex;
-  height: 32px;
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  background: $color-white;
-  width: max-content;
-  min-width: calc(#{$label-width} + #{$day-width * 7} + #{$label-width});
-}
-
-.timeAxis {
-  width: $day-width;
-  min-width: $day-width;
-  height: 32px;
-  display: flex;
-  flex-shrink: 0;
-  border-left: 1px solid $border-color;
-}
-
-.timeLabel {
-  flex: 1;
   display: flex;
   align-items: center;
-  height: 100%;
-  justify-content: center;
+  border-left: 2px solid $border-color;
   font-size: $font-size-12;
-  color: #4d4f5d;
-  white-space: nowrap;
-  user-select: none;
-  border-left: 1px solid #f0f0f2;
-
-  &:first-child {
-    border-left: none;
-  }
+  color: $color-text;
+  padding: 0 8px;
 }
 
 .collapseIcon {
@@ -222,16 +156,46 @@ $border-color: #e2e4e9;
   color: $color-text-light;
 }
 
-// --- Time guide lines ---
+// --- Row B: day letters (sticky top: week-header-height) ---
 
-.timeGuide {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: #f0f0f2;
-  z-index: 0;
-  pointer-events: none;
+.dayLettersRow {
+  display: flex;
+  height: $day-letters-height;
+  position: sticky;
+  top: $week-header-height;
+  z-index: 3;
+  background: $color-white;
+  width: max-content;
+}
+
+.dayLettersGroup {
+  width: $week-col-width;
+  min-width: $week-col-width;
+  flex-shrink: 0;
+  display: flex;
+  border-left: 1px solid $border-color;
+}
+
+.dayLetter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-12;
+  color: $color-text-light;
+  user-select: none;
+  border-left: 1px solid $border-color;
+
+  &:first-child {
+    border-left: none;
+  }
+}
+
+.totalDayCell {
+  width: $total-col-width;
+  min-width: $total-col-width;
+  flex-shrink: 0;
+  border-left: 2px solid $border-color;
 }
 
 // --- Rows container ---
@@ -239,16 +203,13 @@ $border-color: #e2e4e9;
 .rowsContainer {
   position: relative;
   width: max-content;
-  min-width: calc(#{$label-width} + #{$day-width * 7});
-  min-height: calc(100% - #{$row-height} - 32px);
+  min-height: calc(100% - #{$week-header-height} - #{$day-letters-height});
 }
 
 // --- Current time marker ---
 
 .timeMarker {
   position: absolute;
-  top: -44px;
-  height: 52px;
   width: 2px;
   background: #09090b;
   pointer-events: none;
@@ -258,7 +219,7 @@ $border-color: #e2e4e9;
 
 .timeMarkerDot {
   position: absolute;
-  top: 12px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 10px;

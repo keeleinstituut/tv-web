@@ -182,6 +182,26 @@
             2. the Translator and
             3. if the order had no Translator assigned (it was created for harvikkeel but not yet assigned to a translator by the TPM), then to this TPM.
 
+Managing EMO translators
+Summary: In case all the available time slots are full, client must be still able to book an order. All such orders will appear in regular orders (Tellimused) list and respective notification is also sent to TPM once the order is created. TPM must manually find a translators/Vendor from the available vendors/translators list. In such list, there are regular vendors/translators and also so called EMO vendors/translators. TPM can assign manually EMO vendors to take care of the order.
+
+TPM is responsible of booking Vendors/translators to EMO shift. Once the Vendor is on EMO shift, the system does not assign any orders to them automatically, only TPM can assign orders to EMO Vendors.
+
+User Flows:
+
+Scheduling EMO Vendors
+
+TPM navigates to "Teostajate andmebaas" and selects desired Vendor
+TPM selects the desired date/dates from the EMO calendar.
+All selected dates will appear under the calendar selection (as in setting personal vacation days in personal settings)
+TPM navigates to Calendar
+All EMO vendors that are assigned to work are visible only for TPM on Calendar. Rows for EMO Vendors appear in Yellow.
+Assigning orders to EMO Vendors
+
+TPM selects an order from "Tellimused"
+TPM selects a "Teostaja" (Vendor), from the dropdown. All available EMO Vendors are marked with a sign "EMO" and appear in Yellow.
+Once the order is placed and accepted, the order will appear also in Calendar on the respective EMO Vendor row.
+
 ## Figma
 
 https://www.figma.com/design/3PLabFR6bgsvqsipbClHbL/EKI-t%C3%B5lkev%C3%A4rav-2.0---Translation-Hub?node-id=14-3&m=dev

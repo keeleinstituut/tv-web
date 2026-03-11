@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
 import AlarmIcon from 'assets/icons/alarm.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
+import ClockIcon from 'assets/icons/clock.svg?react'
 import { CalendarLanguage, VendorWeekData } from 'types/calendar'
 import { useFetchCalendarWeekVendors } from 'hooks/requests/useCalendar'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
@@ -76,7 +77,10 @@ const VendorRow: FC<{
           if (dayUnavailable) {
             return (
               <div key={dayIdx} className={classes.dayGroup}>
-                <div className={classes.dayUnavailableBanner} />
+                <div className={classes.dayUnavailableBanner}>
+                  <ClockIcon className={classes.unavailableIcon} />
+                  <span className={classes.unavailableLabel}>Hõivatud</span>
+                </div>
               </div>
             )
           }
@@ -98,8 +102,10 @@ const VendorRow: FC<{
                 <div
                   key={blockIdx}
                   className={classNames(classes.block, {
-                    [classes.blockVendorAvail]: slot.available,
-                    [classes.blockOff]: !slot.available,
+                    [classes.blockUnavailable]: slot.on_vacation,
+                    [classes.blockVendorAvail]:
+                      !slot.on_vacation && slot.available,
+                    [classes.blockOff]: !slot.on_vacation && !slot.available,
                   })}
                 />
               ))}

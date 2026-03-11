@@ -10,12 +10,8 @@ import ExpandIcon from 'assets/icons/expand.svg?react'
 import ShrinkIcon from 'assets/icons/shrink.svg?react'
 import classes from './classes.module.scss'
 
-export const LABEL_WIDTH_PX = 64
-export const DAY_WIDTH_PX = 160
-
-const MONTH_NAV_HEIGHT = 32
-const DAY_HEADER_HEIGHT = 40
-const DOT_TOP_Y = MONTH_NAV_HEIGHT + DAY_HEADER_HEIGHT - 5
+const LABEL_WIDTH_PX = 64
+const DAY_WIDTH_PX = 160
 
 // Estonian day letters: index matches dayjs .day() (0=Sun)
 const ET_DAY_LETTERS = ['P', 'E', 'T', 'K', 'N', 'R', 'L']
@@ -26,12 +22,45 @@ export function getWeekStart(date: Dayjs): Dayjs {
   return date.add(day === 0 ? -6 : 1 - day, 'day')
 }
 
+// Each TIME_LABEL is centered in its 32px cell — anchor each hour to its label center
+const BLOCK_PX = DAY_WIDTH_PX / 5 // 32px per visual cell
+const TIME_BREAKPOINTS = [
+  { h: 0, px: BLOCK_PX * 0.5 }, // '00' center = 16px
+  { h: 6, px: BLOCK_PX * 1.5 }, // '06' center = 48px
+  { h: 12, px: BLOCK_PX * 2.5 }, // '12' center = 80px
+  { h: 18, px: BLOCK_PX * 3.5 }, // '18' center = 112px
+  { h: 21, px: BLOCK_PX * 4.5 }, // '21' center = 144px
+]
+
+function timeToPixelInDay(hour: number, minute: number): number {
+  const t = hour + minute / 60
+  for (let i = 0; i < TIME_BREAKPOINTS.length - 1; i++) {
+    const a = TIME_BREAKPOINTS[i]
+    const b = TIME_BREAKPOINTS[i + 1]
+    if (t >= a.h && t <= b.h) {
+      return a.px + ((t - a.h) / (b.h - a.h)) * (b.px - a.px)
+    }
+  }
+  // After 21h: extrapolate at same rate as 18→21 segment
+  const last = TIME_BREAKPOINTS[TIME_BREAKPOINTS.length - 1]
+  const prev = TIME_BREAKPOINTS[TIME_BREAKPOINTS.length - 2]
+  const rate = (last.px - prev.px) / (last.h - prev.h)
+  return last.px + (t - last.h) * rate
+}
+
 function currentNeedleX(weekStart: Dayjs): number | null {
-  const now = dayjs()
-  const todayIndex = now.startOf('day').diff(weekStart.startOf('day'), 'day')
+  const now = new Date()
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const wsDate = new Date(weekStart.year(), weekStart.month(), weekStart.date())
+  const todayIndex = Math.round(
+    (todayStart.getTime() - wsDate.getTime()) / 86400000
+  )
   if (todayIndex < 0 || todayIndex > 6) return null
-  const fraction = (now.hour() + now.minute() / 60) / 24
-  return LABEL_WIDTH_PX + todayIndex * DAY_WIDTH_PX + fraction * DAY_WIDTH_PX
+  return (
+    LABEL_WIDTH_PX +
+    todayIndex * DAY_WIDTH_PX +
+    timeToPixelInDay(now.getHours(), now.getMinutes())
+  )
 }
 
 const CalendarWeekView: FC = () => {
@@ -81,24 +110,14 @@ const CalendarWeekView: FC = () => {
   }, [weekStart])
 
   const gridScrollRef = useRef<HTMLDivElement>(null)
-  const [scrollLeft, setScrollLeft] = useState(0)
-
   const weekStartStr = weekStart.format('YYYY-MM-DD')
 
-  // Reset scroll when navigating to a different week
+  // Auto-scroll to current time when navigating to a different week
   useEffect(() => {
     if (!gridScrollRef.current) return
-    const scrollTo = needleX !== null ? Math.max(0, needleX - 200) : 0
-    gridScrollRef.current.scrollLeft = scrollTo
-    setScrollLeft(scrollTo)
+    const x = currentNeedleX(weekStart)
+    gridScrollRef.current.scrollLeft = x !== null ? Math.max(0, x - 200) : 0
   }, [weekStartStr])
-  useEffect(() => {
-    const el = gridScrollRef.current
-    if (!el) return
-    const onScroll = () => setScrollLeft(el.scrollLeft)
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [])
 
   return (
     <div className={classes.container}>
@@ -114,18 +133,9 @@ const CalendarWeekView: FC = () => {
           </button>
         </div>
         <div className={classes.monthCenter}>
-          {monthGroups.map((g, i) => (
-            <span
-              key={i}
-              className={classes.monthLabel}
-              style={{
-                position: 'absolute',
-                left: g.startIdx * DAY_WIDTH_PX - scrollLeft,
-              }}
-            >
-              {g.label}
-            </span>
-          ))}
+          <span className={classes.monthLabel}>
+            {monthGroups.map((g) => g.label).join(' – ')}
+          </span>
         </div>
         <div className={classes.navRight}>
           <button
@@ -138,65 +148,65 @@ const CalendarWeekView: FC = () => {
         </div>
       </div>
 
-      {/* Grid scroll area */}
-      <div className={classes.gridScroll} ref={gridScrollRef}>
-        {/* Row A: day names + week nav arrows (sticky top: 0) */}
-        <div className={classes.dayNamesRow}>
-          <div className={classes.cornerCell}>
-            <button
-              className={classes.navBtn}
-              onClick={navigatePrev}
-              aria-label="Eelmine nädal"
-            >
-              <ChevronLeft className={classes.navIcon} />
-            </button>
-          </div>
-
-          {days.map((day, i) => {
-            const isToday = day.isSame(dayjs(), 'day')
-            return (
-              <div
-                key={i}
-                className={classNames(classes.dayHeader, {
-                  [classes.dayHeaderToday]: isToday,
-                })}
-              >
-                <span className={classes.dayLetter}>
-                  {ET_DAY_LETTERS[day.day()]}
-                </span>
-                <button
-                  className={classes.dayDateBtn}
-                  onClick={() => {
-                    setCurrentDate(day)
-                    setView('day')
-                  }}
-                  aria-label={day.format('D.MM')}
-                >
-                  <span
-                    className={classNames(classes.dayDate, {
-                      [classes.dayDateToday]: isToday,
-                    })}
-                  >
-                    {day.format('D.MM')}
-                  </span>
-                  {isToday && <span className={classes.todayDot} />}
-                </button>
-              </div>
-            )
-          })}
-
-          <div className={classes.cornerCellRight}>
-            <button
-              className={classes.navBtn}
-              onClick={navigateNext}
-              aria-label="Järgmine nädal"
-            >
-              <ChevronLeft className={classes.navIconFlip} />
-            </button>
-          </div>
+      {/* Row A: day names + week nav arrows — full-width, outside gridScroll */}
+      <div className={classes.dayNamesRow}>
+        <div className={classes.cornerCell}>
+          <button
+            className={classes.navBtn}
+            onClick={navigatePrev}
+            aria-label="Eelmine nädal"
+          >
+            <ChevronLeft className={classes.navIcon} />
+          </button>
         </div>
 
-        {/* Row B: time axis + collapse-all toggle (sticky top: 40px) */}
+        {days.map((day, i) => {
+          const isToday = day.isSame(dayjs(), 'day')
+          return (
+            <div
+              key={i}
+              className={classNames(classes.dayHeader, {
+                [classes.dayHeaderToday]: isToday,
+              })}
+            >
+              <span className={classes.dayLetter}>
+                {ET_DAY_LETTERS[day.day()]}
+              </span>
+              <button
+                className={classes.dayDateBtn}
+                onClick={() => {
+                  setCurrentDate(day)
+                  setView('day')
+                }}
+                aria-label={day.format('D.MM')}
+              >
+                <span
+                  className={classNames(classes.dayDate, {
+                    [classes.dayDateToday]: isToday,
+                  })}
+                >
+                  {day.format('D.MM')}
+                </span>
+                {isToday && <span className={classes.todayDot} />}
+              </button>
+            </div>
+          )
+        })}
+
+        <div className={classes.cornerCellRight}>
+          <button
+            className={classes.navBtn}
+            onClick={navigateNext}
+            aria-label="Järgmine nädal"
+          >
+            <ChevronLeft className={classes.navIconFlip} />
+          </button>
+        </div>
+      </div>
+
+      {/* Grid scroll area */}
+      <div className={classes.gridScroll} ref={gridScrollRef}>
+        {/* Row B: time axis + collapse-all toggle (sticky top: 0) */}
         <div className={classes.timeAxisRow}>
           <div className={classes.cornerCell}>
             <button
@@ -250,22 +260,15 @@ const CalendarWeekView: FC = () => {
               date={dateStr}
             />
           ))}
+
+          {/* Needle: inside rowsContainer so it scrolls with the grid */}
+          {needleX !== null && (
+            <div className={classes.timeMarker} style={{ left: needleX }}>
+              <div className={classes.timeMarkerDot} />
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Current time needle */}
-      {needleX !== null && (
-        <div
-          className={classes.timeMarker}
-          style={{
-            left: needleX - scrollLeft,
-            top: DOT_TOP_Y,
-            height: 40,
-          }}
-        >
-          <div className={classes.timeMarkerDot} />
-        </div>
-      )}
     </div>
   )
 }

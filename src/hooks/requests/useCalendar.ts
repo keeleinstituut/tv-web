@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { endpoints } from 'api/endpoints'
 import {
+  BookedSlot,
   CalendarLanguagesResponse,
   CalendarDayResponse,
   CalendarWeekResponse,
@@ -125,7 +125,7 @@ const mockDayResponse = (
   if (date !== TODAY)
     return { current_time: new Date().toISOString(), booked_slots: [] }
 
-  const slots = [
+  const slots: BookedSlot[] = [
     {
       start_at: localIso(date, 9, 0),
       end_at: localIso(date, 10, 30),
@@ -264,24 +264,27 @@ const mockWeekVendors = (
     week_end: days[6],
     vendors: MOCK_VENDORS.map((v, vi) => ({
       ...v,
-      slots: days.flatMap((day, di) => {
-        // Third vendor (FH) is on vacation Mon–Wed
-        const onVacation = vi === 2 && di < 3
-        return blocks.map((block, bi) => ({
-          start_at: `${day}T${block}:00Z`,
-          end_at: `${day}T${blocks[(bi + 1) % 4] || '24:00'}:00Z`,
-          // First vendor (AB) is fully booked all day every day
-          available: onVacation
-            ? false
-            : vi === 0
+      slots: days.flatMap((day, di) =>
+        blocks.map((block, bi) => {
+          // FH: Mon full day, Tue morning only (bi===1), Wed full day
+          const onVacation =
+            vi === 2 && (di === 0 || (di === 1 && bi === 1) || di === 2)
+          return {
+            start_at: `${day}T${block}:00Z`,
+            end_at: `${day}T${blocks[(bi + 1) % 4] || '24:00'}:00Z`,
+            // First vendor (AB) is fully booked all day every day
+            available: onVacation
               ? false
-              : bi === 1 || bi === 2
-                ? seededRandom(vi * 31 + di * 7 + bi) > 0.3
-                : false,
-          booked_hours: onVacation ? undefined : vi === 0 ? 6 : undefined,
-          on_vacation: onVacation || undefined,
-        }))
-      }),
+              : vi === 0
+                ? false
+                : bi === 1 || bi === 2
+                  ? seededRandom(vi * 31 + di * 7 + bi) > 0.3
+                  : false,
+            booked_hours: onVacation ? undefined : vi === 0 ? 6 : undefined,
+            on_vacation: onVacation || undefined,
+          }
+        })
+      ),
     })),
   }
 }
@@ -306,12 +309,15 @@ const mockMonthVendors = (
       slots: days.map((day, di) => {
         const dow = new Date(day).getDay()
         const isWeekend = dow === 0 || dow === 6
+        const isAB = vi === 0
         return {
           date: day,
-          available: !isWeekend && seededRandom(vi * 37 + di) > 0.3,
-          booked_hours: !isWeekend
-            ? Math.floor(seededRandom(vi * 37 + di + 100) * 8)
-            : undefined,
+          available: !isWeekend,
+          booked_hours: isWeekend
+            ? undefined
+            : isAB
+              ? 7
+              : Math.floor(seededRandom(vi * 37 + di + 100) * 6),
         }
       }),
     })),
@@ -477,10 +483,10 @@ export const useFetchSlotMatching = (
 export const useUpdatePinnedLanguages = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (_languageIds: string[]) => Promise.resolve(),
+    mutationFn: () => Promise.resolve(),
     // mutationFn: (language_ids: string[]) => apiClient.post(endpoints.PINNED_LANGUAGES, { language_ids }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['calendar-languages'])
+      queryClient.invalidateQueries({ queryKey: ['calendar-languages'] })
     },
   })
 }

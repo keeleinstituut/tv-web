@@ -228,7 +228,8 @@ $border-color: #e2e4e9;
 
 .timeMarker {
   position: absolute;
-  top: 0;
+  top: -40px;
+  bottom: 0;
   width: 2px;
   background: #09090b;
   pointer-events: none;

@@ -84,10 +84,89 @@
   color: #5d6071;
 }
 
-// --- Middle items area (filter dropdowns phase 5) ---
+// --- Search group (TPM + Tellija only) ---
 
-.items {
+.searchGroup {
+  display: flex;
+  align-items: flex-end;
   flex: 1;
+}
+
+.searchField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+
+  // Connected group: share borders
+  &:not(:first-child) .searchInput {
+    margin-left: -1px;
+  }
+
+  &:first-child .searchInput {
+    border-radius: 4px 0 0 4px;
+  }
+}
+
+.searchLabel {
+  font-size: 10px;
+  font-weight: $font-weight-normal;
+  color: $color-text;
+  white-space: nowrap;
+}
+
+.searchInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 37px;
+  border: 1px solid #9799a4;
+  background: $color-white;
+  padding: 0 12px 0 16px;
+  box-sizing: border-box;
+}
+
+.searchInputLast {
+  border-radius: 0 4px 4px 0;
+}
+
+.searchSelect {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: #5d6071;
+  appearance: none;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.searchDatetime {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: #5d6071;
+  cursor: pointer;
+  min-width: 0;
+  width: 100%;
+
+  &::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+}
+
+.searchChevron {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #5d6071;
+  transform: rotate(-90deg);
+  pointer-events: none;
 }
 
 // --- Right side actions ---
@@ -97,6 +176,30 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.findButton {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 8px 24px;
+  background: #005aa3;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+  color: $color-white;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #004d8a;
+  }
+}
+
+.moreWrapper {
+  position: relative;
 }
 
 .moreButton {
@@ -125,4 +228,34 @@
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+}
+
+.moreDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: $color-white;
+  border: 1px solid #e2e4e9;
+  border-radius: $border-radius-4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 160px;
+}
+
+.moreDropdownItem {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: $color-text;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: $color-background;
+  }
 }

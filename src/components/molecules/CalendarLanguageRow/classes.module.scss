@@ -69,12 +69,26 @@ $border-color: #e2e4e9;
 }
 
 .slotCellBookable {
-  cursor: crosshair;
+  cursor: pointer;
+  background: $color-primary;
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background 0.1s;
 
   &:hover {
-    background: rgba($color-primary, 0.06);
+    background: $color-secondary-dark;
   }
+}
+
+.slotCellBookableLabel {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: $color-white;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
 }
 
 // --- Drag selection ---
@@ -108,13 +122,13 @@ $border-color: #e2e4e9;
 }
 
 .slotAssignmentFuture {
-  background: $color-secondary;
-  color: $color-white;
+  background: $color-info-light;
+  color: $color-secondary-dark;
 }
 
 .slotAssignmentPast {
-  background: $color-info-light;
-  color: $color-secondary-dark;
+  background: $color-background-dark;
+  color: $color-text;
 }
 
 .slotExternal {
@@ -136,7 +150,7 @@ $border-color: #e2e4e9;
   width: 14px;
   height: 14px;
   flex-shrink: 0;
-  color: $color-white;
+  color: $color-secondary-dark;
 }
 
 .slotIconExternal {
@@ -150,17 +164,17 @@ $border-color: #e2e4e9;
   width: 14px;
   height: 14px;
   flex-shrink: 0;
-  color: $color-secondary-dark;
+  color: $color-text;
 }
 
 .slotLabel {
   font-size: $font-size-12;
-  color: $color-white;
+  color: $color-secondary-dark;
 }
 
 .slotLabelMuted {
   font-size: $font-size-12;
-  color: $color-secondary-dark;
+  color: $color-text;
 }
 
 .slotLabelExternal {

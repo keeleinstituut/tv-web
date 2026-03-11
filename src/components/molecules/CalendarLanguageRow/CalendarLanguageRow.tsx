@@ -231,10 +231,10 @@ const CalendarLanguageRow: FC<Props> = ({
   ])
 
   const selectionLeft = isDragging
-    ? Math.min(dragStart!, dragEnd!) * SLOT_WIDTH_PX
+    ? Math.min(dragStart!, dragEnd!) * SLOT_WIDTH_PX + 4
     : 0
   const selectionWidth = isDragging
-    ? (Math.abs(dragEnd! - dragStart!) + 1) * SLOT_WIDTH_PX
+    ? (Math.abs(dragEnd! - dragStart!) + 1) * SLOT_WIDTH_PX - 8
     : 0
 
   return (
@@ -259,8 +259,8 @@ const CalendarLanguageRow: FC<Props> = ({
           const isBooked = isSlotBooked(i)
           const isBookable = !isPast && !isBooked
 
-          // Odd past slots are visually covered by the preceding even cell's block
-          if (isPast && i % 2 === 1) return null
+          // Odd past/bookable slots are merged into the preceding even cell
+          if ((isPast || isBookable) && i % 2 === 1) return null
 
           const isEvenPast = isPast && i % 2 === 0
           const nextIsPast =
@@ -268,28 +268,42 @@ const CalendarLanguageRow: FC<Props> = ({
             i + 1 < totalSlots &&
             dayjs(slotIndexToIso(i + 1, date, dayStartHour)).isBefore(dayjs())
 
+          const isEvenBookable = isBookable && i % 2 === 0
+          const nextIsBookable =
+            isEvenBookable &&
+            i + 1 < totalSlots &&
+            !isSlotPast(slotIndexToIso(i + 1, date, dayStartHour)) &&
+            !isSlotBooked(i + 1)
+
+          const isWide =
+            (isEvenPast && nextIsPast) || (isEvenBookable && nextIsBookable)
+
           return (
             <div
               key={i}
               className={classNames(classes.slotCell, {
                 [classes.slotCellPast]: isEvenPast,
-                [classes.slotCellBookable]: isBookable,
+                [classes.slotCellBookable]: isEvenBookable,
                 [classes.slotCellHour]: i % 2 === 0,
               })}
               style={
-                isEvenPast
+                isEvenPast || isEvenBookable
                   ? {
                       left: i * SLOT_WIDTH_PX + 4,
-                      width:
-                        (nextIsPast ? SLOT_WIDTH_PX * 2 : SLOT_WIDTH_PX) - 8,
+                      width: isWide ? SLOT_WIDTH_PX * 2 - 8 : SLOT_WIDTH_PX - 8,
                       top: 4,
                       bottom: 4,
                       height: 'auto',
                     }
                   : { left: i * SLOT_WIDTH_PX, width: SLOT_WIDTH_PX }
               }
-              title={isBookable ? t('calendar.select_time') : undefined}
-            />
+            >
+              {isEvenBookable && (
+                <span className={classes.slotCellBookableLabel}>
+                  {t('calendar.select_time')}
+                </span>
+              )}
+            </div>
           )
         })}
 

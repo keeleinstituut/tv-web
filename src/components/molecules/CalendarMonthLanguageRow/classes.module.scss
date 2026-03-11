@@ -2,18 +2,17 @@
 @use 'styles/variables' as *;
 
 $label-width: 64px;
-$day-width: 160px;
+$week-col-width: 186px;
+$total-col-width: 186px;
 $row-height: 40px;
+$cell-pad: 4px;
 $border-color: #e2e4e9;
-$block-gap: 4px;
 
-// ─── Summary language row ─────────────────────────────────────────────────────
+// ─── Summary row ──────────────────────────────────────────────────────────────
 
 .rowWrapper {
   display: flex;
   height: $row-height;
-  position: relative;
-  min-width: calc(#{$label-width} + #{$day-width * 7});
 }
 
 .label {
@@ -53,11 +52,11 @@ $block-gap: 4px;
   width: 12px;
   height: 12px;
   transition: transform 0.15s;
-  transform: rotate(-90deg); // chevron_left rotated to point down
+  transform: rotate(-90deg);
 }
 
 .expandIconOpen {
-  transform: rotate(90deg); // pointing up when expanded
+  transform: rotate(90deg);
 }
 
 .badge {
@@ -74,13 +73,11 @@ $block-gap: 4px;
   white-space: nowrap;
 }
 
-// ─── Vendor sub-row ───────────────────────────────────────────────────────────
+// ─── Vendor row ───────────────────────────────────────────────────────────────
 
 .vendorRowWrapper {
   display: flex;
   height: $row-height;
-  position: relative;
-  min-width: calc(#{$label-width} + #{$day-width * 7});
 }
 
 .vendorLabel {
@@ -111,78 +108,76 @@ $block-gap: 4px;
   white-space: nowrap;
 }
 
-// ─── Slot area ────────────────────────────────────────────────────────────────
+// ─── Week data cells ──────────────────────────────────────────────────────────
 
-.slotArea {
-  display: flex;
-  height: $row-height;
+// Container slot (always present, provides the border-left divider)
+.weekCell {
+  width: $week-col-width;
+  min-width: $week-col-width;
   flex-shrink: 0;
-}
-
-.dayGroup {
-  width: $day-width;
-  min-width: $day-width;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: $block-gap;
+  padding: $cell-pad;
   border-left: 1px solid $border-color;
   box-sizing: border-box;
 }
 
-// ─── Unavailable day banner (vacation / absence) ──────────────────────────────
-
-.dayUnavailableBanner {
+// Filled inner pill — shared base
+%dataPill {
   flex: 1;
-  height: calc(#{$row-height} - #{$block-gap * 2});
-  background: #efdbdb;
-  border-radius: $border-radius-4;
+  height: 100%;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   padding: 0 8px;
+  border-radius: $border-radius-4;
 }
 
-.unavailableIcon {
-  width: 12px;
-  height: 12px;
-  color: #8a4b4b;
-  flex-shrink: 0;
+.weekCellAvailable {
+  @extend %dataPill;
+  background: #d0e1ee;
 }
 
-.unavailableLabel {
-  font-size: $font-size-12;
-  font-weight: $font-weight-bold;
-  color: #8a4b4b;
-  white-space: nowrap;
-}
-
-// ─── Booked day banner ────────────────────────────────────────────────────────
-
-.dayBookedBanner {
-  flex: 1;
-  height: calc(#{$row-height} - #{$block-gap * 2});
+.weekCellBooked {
+  @extend %dataPill;
   background: #fdebd8;
-  border-radius: $border-radius-4;
+}
+
+// ─── Total cell ───────────────────────────────────────────────────────────────
+
+.totalCell {
+  width: $total-col-width;
+  min-width: $total-col-width;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 0 8px;
+  padding: $cell-pad;
+  border-left: 2px solid $border-color;
+  box-sizing: border-box;
 }
 
-.bookedIcon {
+// ─── Cell content ─────────────────────────────────────────────────────────────
+
+.cellIcon {
   width: 12px;
   height: 12px;
-  color: #c07a30;
   flex-shrink: 0;
+  color: #004277;
 }
 
-.bookedLabel {
+.cellIconBooked {
+  color: #c07a30;
+}
+
+.cellLabel {
   font-size: $font-size-12;
   font-weight: $font-weight-bold;
-  color: #c07a30;
+  color: #004277;
   white-space: nowrap;
+}
+
+.cellLabelBooked {
+  color: #c07a30;
 }
 
 // ─── Add vendor row ───────────────────────────────────────────────────────────
@@ -191,7 +186,6 @@ $block-gap: 4px;
   display: flex;
   height: $row-height;
   align-items: center;
-  min-width: calc(#{$label-width} + #{$day-width * 7});
 }
 
 .addVendorBtn {
@@ -216,31 +210,4 @@ $block-gap: 4px;
 .addVendorIcon {
   width: 14px;
   height: 14px;
-}
-
-// ─── Availability blocks ──────────────────────────────────────────────────────
-
-.block {
-  flex: 1;
-  height: calc(#{$row-height} - #{$block-gap * 2});
-  border-radius: $border-radius-4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: $color-background;
-}
-
-// Outside working hours — light grey
-.blockOff {
-  background: $color-background;
-}
-
-// Vendor available block
-.blockVendorAvail {
-  background: $color-secondary;
-}
-
-// Vendor unavailable block (partial-day vacation)
-.blockUnavailable {
-  background: #efdbdb;
 }

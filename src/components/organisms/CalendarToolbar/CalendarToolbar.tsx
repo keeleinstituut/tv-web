@@ -1,15 +1,52 @@
-import { FC } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { includes } from 'lodash'
 import CalendarIcon from 'assets/icons/calender.svg?react'
 import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
+import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useAuth } from 'components/contexts/AuthContext'
+import { useFetchCalendarLanguages } from 'hooks/requests/useCalendar'
+import { Privileges } from 'types/privileges'
 import { CalendarView } from 'types/calendar'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 
+const DURATION_OPTIONS = [
+  { value: 30, labelKey: 'calendar.up_to_30min' },
+  { value: 60, labelKey: 'calendar.up_to_1h' },
+  { value: 120, labelKey: 'calendar.up_to_2h' },
+  { value: 180, labelKey: 'calendar.up_to_3h' },
+  { value: 240, labelKey: 'calendar.up_to_4h' },
+]
+
 const CalendarToolbar: FC = () => {
   const { t } = useTranslation()
   const { view, setView } = useCalendarContext()
+  const { userPrivileges } = useAuth()
+  const { languages } = useFetchCalendarLanguages()
+
+  const canSearch =
+    includes(userPrivileges, Privileges.ManageProject) ||
+    includes(userPrivileges, Privileges.CreateProject)
+
+  const [searchLangId, setSearchLangId] = useState('')
+  const [searchFrom, setSearchFrom] = useState('')
+  const [searchDuration, setSearchDuration] = useState(60)
+  const [moreOpen, setMoreOpen] = useState(false)
+
+  const moreRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!moreOpen) return
+    const handler = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [moreOpen])
 
   const views: { key: CalendarView; label: string }[] = [
     { key: 'day', label: t('calendar.today') },
@@ -24,7 +61,9 @@ const CalendarToolbar: FC = () => {
           {views.map(({ key, label }) => (
             <button
               key={key}
-              className={classNames(classes.tab, { [classes.tabActive]: view === key })}
+              className={classNames(classes.tab, {
+                [classes.tabActive]: view === key,
+              })}
               onClick={() => setView(key)}
             >
               <CalendarIcon className={classes.tabIcon} />
@@ -33,14 +72,87 @@ const CalendarToolbar: FC = () => {
           ))}
         </div>
 
-        <div className={classes.items} />
+        {canSearch && (
+          <div className={classes.searchGroup}>
+            <div className={classes.searchField}>
+              <span className={classes.searchLabel}>{t('calendar.language')}</span>
+              <div className={classes.searchInput}>
+                <select
+                  className={classes.searchSelect}
+                  value={searchLangId}
+                  onChange={(e) => setSearchLangId(e.target.value)}
+                >
+                  <option value="">{t('calendar.select_language')}</option>
+                  {languages.map((lang) => (
+                    <option key={lang.language.id} value={lang.language.id}>
+                      {lang.language.value}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDownIcon className={classes.searchChevron} />
+              </div>
+            </div>
 
-        <div className={classes.actions}>
-          <button className={classes.moreButton}>
-            {t('calendar.more')}
-            <HorizontalDotsIcon className={classes.moreIcon} />
-          </button>
-        </div>
+            <div className={classes.searchField}>
+              <span className={classes.searchLabel}>{t('calendar.date_and_time')}</span>
+              <div className={classes.searchInput}>
+                <input
+                  type="datetime-local"
+                  className={classes.searchDatetime}
+                  value={searchFrom}
+                  onChange={(e) => setSearchFrom(e.target.value)}
+                  placeholder={t('calendar.from')}
+                />
+              </div>
+            </div>
+
+            <div className={classes.searchField}>
+              <span className={classes.searchLabel}>{t('calendar.duration')}</span>
+              <div className={classNames(classes.searchInput, classes.searchInputLast)}>
+                <select
+                  className={classes.searchSelect}
+                  value={searchDuration}
+                  onChange={(e) => setSearchDuration(Number(e.target.value))}
+                >
+                  {DURATION_OPTIONS.map(({ value, labelKey }) => (
+                    <option key={value} value={value}>
+                      {t(labelKey as never)}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDownIcon className={classes.searchChevron} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {canSearch && (
+          <div className={classes.actions}>
+            <button className={classes.findButton}>
+              {t('calendar.find_slot')}
+            </button>
+
+            <div className={classes.moreWrapper} ref={moreRef}>
+              <button
+                className={classes.moreButton}
+                onClick={() => setMoreOpen((o) => !o)}
+              >
+                {t('calendar.more')}
+                <HorizontalDotsIcon className={classes.moreIcon} />
+              </button>
+              {moreOpen && (
+                <div className={classes.moreDropdown}>
+                  <button
+                    className={classes.moreDropdownItem}
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    {t('calendar.add_order')}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -13,11 +13,6 @@ import classes from './classes.module.scss'
 
 const DAY_START_HOUR = 9
 const DAY_END_HOUR = 22
-const DATE_NAV_MONTH_HEIGHT = 32
-const DATE_NAV_HEIGHT = 32
-// Center of dateNav row within .container; dot (10px) top = center - 5
-const DOT_CENTER_Y = DATE_NAV_MONTH_HEIGHT + 16 + DATE_NAV_HEIGHT / 2
-const DOT_TOP_Y = DOT_CENTER_Y - 5
 const TOTAL_SLOTS = (DAY_END_HOUR - DAY_START_HOUR) * 2
 const TOTAL_GRID_WIDTH = TOTAL_SLOTS * SLOT_WIDTH_PX
 
@@ -30,12 +25,15 @@ const HOUR_LABELS = Array.from(
   (_, i) => DAY_START_HOUR + i
 )
 
-function currentTimeX(): number {
-  const now = dayjs()
-  const hoursFromStart = now.hour() + now.minute() / 60 - DAY_START_HOUR
-  if (hoursFromStart < 0 || hoursFromStart > DAY_END_HOUR - DAY_START_HOUR)
-    return -1
-  return hoursFromStart * SLOT_WIDTH_PX * 2
+function currentTimeX(dateStr: string): number {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  // new Date(y, m-1, d, h) always creates local time — no UTC/dayjs ambiguity
+  const dayStartMs = new Date(y, m - 1, d, DAY_START_HOUR, 0, 0, 0).getTime()
+  const dayEndMs = new Date(y, m - 1, d, DAY_END_HOUR, 0, 0, 0).getTime()
+  const nowMs = Date.now()
+  if (nowMs < dayStartMs || nowMs > dayEndMs) return -1
+  const minutesFromStart = (nowMs - dayStartMs) / 60000
+  return (minutesFromStart / 30) * SLOT_WIDTH_PX
 }
 
 const CalendarDayView: FC = () => {
@@ -52,28 +50,20 @@ const CalendarDayView: FC = () => {
   const isToday = currentDate.isSame(dayjs(), 'day')
 
   // Current time marker — updates every minute
-  const [timeX, setTimeX] = useState(currentTimeX())
+  const [timeX, setTimeX] = useState(() => currentTimeX(dateStr))
   useEffect(() => {
-    setTimeX(currentTimeX())
-    const interval = setInterval(() => setTimeX(currentTimeX()), 60_000)
+    const update = () => setTimeX(currentTimeX(dateStr))
+    update()
+    const interval = setInterval(update, 60_000)
     return () => clearInterval(interval)
   }, [])
 
-  // Auto-scroll to current time on mount; track scrollLeft for needle alignment
+  // Auto-scroll to current time on mount
   const gridScrollRef = useRef<HTMLDivElement>(null)
-  const [scrollLeft, setScrollLeft] = useState(0)
   useEffect(() => {
-    if (!gridScrollRef.current || timeX < 0) return
-    const scrollTo = Math.max(0, timeX - 200)
-    gridScrollRef.current.scrollLeft = scrollTo
-    setScrollLeft(scrollTo)
-  }, [])
-  useEffect(() => {
-    const el = gridScrollRef.current
-    if (!el) return
-    const onScroll = () => setScrollLeft(el.scrollLeft)
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
+    const x = currentTimeX(dateStr)
+    if (!gridScrollRef.current || x < 0) return
+    gridScrollRef.current.scrollLeft = Math.max(0, x - 200)
   }, [])
 
   const monthLabel = currentDate.locale('et').format('MMMM') // e.g. "november"
@@ -191,22 +181,18 @@ const CalendarDayView: FC = () => {
               }}
             />
           ))}
+
+          {/* Needle: inside rowsContainer so it scrolls with the grid */}
+          {isToday && timeX >= 0 && (
+            <div
+              className={classes.timeMarker}
+              style={{ left: LABEL_WIDTH_PX + timeX }}
+            >
+              <div className={classes.timeMarkerDot} />
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Needle: positioned relative to .container, dot in dateNav row */}
-      {timeX >= 0 && (
-        <div
-          className={classes.timeMarker}
-          style={{
-            left: LABEL_WIDTH_PX + timeX - scrollLeft,
-            top: DOT_TOP_Y,
-            height: `calc(100% - ${DOT_TOP_Y}px)`,
-          }}
-        >
-          <div className={classes.timeMarkerDot} />
-        </div>
-      )}
     </div>
   )
 }
