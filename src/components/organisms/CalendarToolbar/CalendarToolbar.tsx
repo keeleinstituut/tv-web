@@ -1,12 +1,15 @@
 import { FC, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { includes } from 'lodash'
+import dayjs from 'dayjs'
 import CalendarIcon from 'assets/icons/calender.svg?react'
 import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
 import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
 import { useAuth } from 'components/contexts/AuthContext'
-import { useFetchCalendarLanguages } from 'hooks/requests/useCalendar'
+import {
+  useCalendarSearch,
+  useFetchCalendarLanguages,
+} from 'hooks/requests/useCalendar'
 import { Privileges } from 'types/privileges'
 import { CalendarView } from 'types/calendar'
 import classes from './classes.module.scss'
@@ -22,18 +25,21 @@ const DURATION_OPTIONS = [
 
 const CalendarToolbar: FC = () => {
   const { t } = useTranslation()
-  const { view, setView } = useCalendarContext()
+  const { view, setView, currentDate, setCurrentDate, openSidePanel } =
+    useCalendarContext()
   const { userPrivileges } = useAuth()
   const { languages } = useFetchCalendarLanguages()
+  const { mutate: runSearch, isPending: isSearching } = useCalendarSearch()
 
   const canSearch =
-    includes(userPrivileges, Privileges.ManageProject) ||
-    includes(userPrivileges, Privileges.CreateProject)
+    userPrivileges.includes(Privileges.ManageProject) ||
+    userPrivileges.includes(Privileges.CreateProject)
 
   const [searchLangId, setSearchLangId] = useState('')
   const [searchFrom, setSearchFrom] = useState('')
   const [searchDuration, setSearchDuration] = useState(60)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [noResults, setNoResults] = useState(false)
 
   const moreRef = useRef<HTMLDivElement>(null)
 
@@ -53,6 +59,46 @@ const CalendarToolbar: FC = () => {
     { key: 'week', label: t('calendar.week') },
     { key: 'month', label: t('calendar.month') },
   ]
+
+  const handleSearch = () => {
+    if (!searchLangId) return
+    setNoResults(false)
+    const base = searchFrom ? dayjs(searchFrom) : currentDate
+    runSearch(
+      {
+        language_id: searchLangId,
+        date_from: base.format('YYYY-MM-DD'),
+        date_to: base.add(30, 'day').format('YYYY-MM-DD'),
+        slot_length: searchDuration,
+        start_time: searchFrom ? dayjs(searchFrom).format('HH:mm') : undefined,
+      },
+      {
+        onSuccess: ({ dates }) => {
+          if (dates.length > 0) {
+            setCurrentDate(dayjs(dates[0]))
+            setView('day')
+          } else {
+            setNoResults(true)
+          }
+        },
+      }
+    )
+  }
+
+  const handleAddOrder = () => {
+    setMoreOpen(false)
+    const lang =
+      languages.find((l) => l.language.id === searchLangId) || languages[0]
+    if (!lang) return
+    const base = searchFrom
+      ? dayjs(searchFrom)
+      : currentDate.hour(9).minute(0).second(0).millisecond(0)
+    openSidePanel({
+      language: lang,
+      startIso: base.toISOString(),
+      endIso: base.add(searchDuration, 'minute').toISOString(),
+    })
+  }
 
   return (
     <div className={classes.toolbar}>
@@ -75,12 +121,17 @@ const CalendarToolbar: FC = () => {
         {canSearch && (
           <div className={classes.searchGroup}>
             <div className={classes.searchField}>
-              <span className={classes.searchLabel}>{t('calendar.language')}</span>
+              <span className={classes.searchLabel}>
+                {t('calendar.language')}
+              </span>
               <div className={classes.searchInput}>
                 <select
                   className={classes.searchSelect}
                   value={searchLangId}
-                  onChange={(e) => setSearchLangId(e.target.value)}
+                  onChange={(e) => {
+                    setSearchLangId(e.target.value)
+                    setNoResults(false)
+                  }}
                 >
                   <option value="">{t('calendar.select_language')}</option>
                   {languages.map((lang) => (
@@ -94,21 +145,33 @@ const CalendarToolbar: FC = () => {
             </div>
 
             <div className={classes.searchField}>
-              <span className={classes.searchLabel}>{t('calendar.date_and_time')}</span>
+              <span className={classes.searchLabel}>
+                {t('calendar.date_and_time')}
+              </span>
               <div className={classes.searchInput}>
                 <input
                   type="datetime-local"
                   className={classes.searchDatetime}
                   value={searchFrom}
-                  onChange={(e) => setSearchFrom(e.target.value)}
+                  onChange={(e) => {
+                    setSearchFrom(e.target.value)
+                    setNoResults(false)
+                  }}
                   placeholder={t('calendar.from')}
                 />
               </div>
             </div>
 
             <div className={classes.searchField}>
-              <span className={classes.searchLabel}>{t('calendar.duration')}</span>
-              <div className={classNames(classes.searchInput, classes.searchInputLast)}>
+              <span className={classes.searchLabel}>
+                {t('calendar.duration')}
+              </span>
+              <div
+                className={classNames(
+                  classes.searchInput,
+                  classes.searchInputLast
+                )}
+              >
                 <select
                   className={classes.searchSelect}
                   value={searchDuration}
@@ -128,9 +191,24 @@ const CalendarToolbar: FC = () => {
 
         {canSearch && (
           <div className={classes.actions}>
-            <button className={classes.findButton}>
-              {t('calendar.find_slot')}
-            </button>
+            <div className={classes.findWrapper}>
+              <button
+                className={classNames(classes.findButton, {
+                  [classes.findButtonDisabled]: !searchLangId || isSearching,
+                })}
+                onClick={handleSearch}
+                disabled={!searchLangId || isSearching}
+              >
+                {isSearching
+                  ? t('calendar.searching')
+                  : t('calendar.find_slot')}
+              </button>
+              {noResults && (
+                <span className={classes.noResults}>
+                  {t('calendar.no_slots_found')}
+                </span>
+              )}
+            </div>
 
             <div className={classes.moreWrapper} ref={moreRef}>
               <button
@@ -144,7 +222,7 @@ const CalendarToolbar: FC = () => {
                 <div className={classes.moreDropdown}>
                   <button
                     className={classes.moreDropdownItem}
-                    onClick={() => setMoreOpen(false)}
+                    onClick={handleAddOrder}
                   >
                     {t('calendar.add_order')}
                   </button>

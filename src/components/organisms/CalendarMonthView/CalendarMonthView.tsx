@@ -1,4 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/et'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
@@ -6,8 +7,8 @@ import { useFetchCalendarLanguages } from 'hooks/requests/useCalendar'
 import { getWeekStart } from 'components/organisms/CalendarWeekView/CalendarWeekView'
 import CalendarMonthLanguageRow from 'components/molecules/CalendarMonthLanguageRow/CalendarMonthLanguageRow'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
-import ExpandIcon from 'assets/icons/expand.svg?react'
-import ShrinkIcon from 'assets/icons/shrink.svg?react'
+import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
+import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
 import classes from './classes.module.scss'
 
 export const LABEL_WIDTH_PX = 64
@@ -16,7 +17,6 @@ export const TOTAL_COL_WIDTH = 186
 
 const MONTH_NAV_HEIGHT = 32
 const WEEK_HEADER_HEIGHT = 40
-const DAY_LETTERS_HEIGHT = 32
 const DOT_TOP_Y = MONTH_NAV_HEIGHT + WEEK_HEADER_HEIGHT - 5
 
 const ET_DAY_LETTERS = ['E', 'T', 'K', 'N', 'R', 'L', 'P']
@@ -61,16 +61,10 @@ const CalendarMonthView: FC = () => {
     setView,
     navigatePrevMonth,
     navigateNextMonth,
-    expandedLanguageIds,
-    expandAll,
-    collapseAll,
   } = useCalendarContext()
 
+  const { t } = useTranslation()
   const { languages } = useFetchCalendarLanguages()
-
-  const allExpanded =
-    languages.length > 0 &&
-    languages.every((l) => expandedLanguageIds.includes(l.language.id))
 
   const weeks = getWeeksForMonth(currentDate)
   const dateStr = currentDate.format('YYYY-MM-DD')
@@ -96,13 +90,7 @@ const CalendarMonthView: FC = () => {
   })
 
   // Current time needle
-  const [needleX, setNeedleX] = useState<number | null>(null)
-  useEffect(() => {
-    const update = () => setNeedleX(currentNeedleX(weeks))
-    update()
-    const interval = setInterval(update, 60_000)
-    return () => clearInterval(interval)
-  }, [monthStr])
+  const needleX = useCurrentTimeMarker(() => currentNeedleX(weeks), [monthStr])
 
   // Scroll tracking for month label positioning
   const gridScrollRef = useRef<HTMLDivElement>(null)
@@ -133,7 +121,7 @@ const CalendarMonthView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigatePrevMonth}
-            aria-label="Eelmine kuu"
+            aria-label={t('calendar.prev_month')}
           >
             <ChevronLeft className={classes.navIcon} />
           </button>
@@ -156,7 +144,7 @@ const CalendarMonthView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigateNextMonth}
-            aria-label="Järgmine kuu"
+            aria-label={t('calendar.next_month')}
           >
             <ChevronLeft className={classes.navIconFlip} />
           </button>
@@ -171,21 +159,9 @@ const CalendarMonthView: FC = () => {
           style={{ minWidth: totalGridWidth }}
         >
           <div className={classes.cornerCell}>
-            <button
-              className={classes.navBtn}
-              onClick={() =>
-                allExpanded
-                  ? collapseAll()
-                  : expandAll(languages.map((l) => l.language.id))
-              }
-              aria-label={allExpanded ? 'Ahenda kõik' : 'Laienda kõik'}
-            >
-              {allExpanded ? (
-                <ShrinkIcon className={classes.collapseIcon} />
-              ) : (
-                <ExpandIcon className={classes.collapseIcon} />
-              )}
-            </button>
+            <CalendarCollapseExpandButton
+              languageIds={languages.map((l) => l.language.id)}
+            />
           </div>
           {weeks.map((week, i) => (
             <button
@@ -199,7 +175,7 @@ const CalendarMonthView: FC = () => {
               {week.start.format('D.MM')} - {week.end.format('D.MM')}
             </button>
           ))}
-          <div className={classes.totalHeader}>Kokku</div>
+          <div className={classes.totalHeader}>{t('calendar.total')}</div>
         </div>
 
         {/* Row B: day letters (sticky top: WEEK_HEADER_HEIGHT) */}

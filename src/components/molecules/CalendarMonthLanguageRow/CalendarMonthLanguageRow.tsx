@@ -1,12 +1,14 @@
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
-import AddIcon from 'assets/icons/add.svg?react'
+import { getInitials } from 'helpers/calendar'
 import { CalendarLanguage, VendorMonthData } from 'types/calendar'
 import { useFetchCalendarMonthVendors } from 'hooks/requests/useCalendar'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
 import { WeekRange } from 'components/organisms/CalendarMonthView/CalendarMonthView'
+import CalendarAddVendorRow from 'components/atoms/CalendarAddVendorRow/CalendarAddVendorRow'
 import classes from './classes.module.scss'
 
 const TOTAL_THRESHOLD_MINUTES = 160 * 60 // >160h shown as ">160h"
@@ -17,15 +19,6 @@ function formatMinutes(minutes: number): string {
   const m = minutes % 60
   if (m === 0) return `${h}h`
   return `${h}h ${m}min`
-}
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
 }
 
 interface WeekData {
@@ -57,28 +50,31 @@ const MonthSummaryRow: FC<{
   weeks: WeekRange[]
   onToggle: () => void
   expanded: boolean
-}> = ({ language, weeks, onToggle, expanded }) => (
-  <div className={classes.rowWrapper}>
-    <div className={classes.label}>
-      <span className={classes.badge}>{language.language.value}</span>
-      <button
-        className={classes.expandBtn}
-        onClick={onToggle}
-        aria-label="Laienda rida"
-      >
-        <ChevronDownIcon
-          className={classNames(classes.expandIcon, {
-            [classes.expandIconOpen]: expanded,
-          })}
-        />
-      </button>
+}> = ({ language, weeks, onToggle, expanded }) => {
+  const { t } = useTranslation()
+  return (
+    <div className={classes.rowWrapper}>
+      <div className={classes.label}>
+        <span className={classes.badge}>{language.language.value}</span>
+        <button
+          className={classes.expandBtn}
+          onClick={onToggle}
+          aria-label={t('calendar.expand_row')}
+        >
+          <ChevronDownIcon
+            className={classNames(classes.expandIcon, {
+              [classes.expandIconOpen]: expanded,
+            })}
+          />
+        </button>
+      </div>
+      {weeks.map((_, i) => (
+        <div key={i} className={classes.weekCell} />
+      ))}
+      <div className={classes.totalCell} />
     </div>
-    {weeks.map((_, i) => (
-      <div key={i} className={classes.weekCell} />
-    ))}
-    <div className={classes.totalCell} />
-  </div>
-)
+  )
+}
 
 // ─── Vendor sub-row ───────────────────────────────────────────────────────────
 
@@ -191,13 +187,7 @@ const CalendarMonthLanguageRow: FC<Props> = ({ language, date, weeks }) => {
         vendors.map((vendor) => (
           <VendorRow key={vendor.id} vendor={vendor} weeks={weeks} />
         ))}
-      {expanded && (
-        <div className={classes.addVendorRow}>
-          <button className={classes.addVendorBtn} aria-label="Lisa tõlkija">
-            <AddIcon className={classes.addVendorIcon} />
-          </button>
-        </div>
-      )}
+      {expanded && <CalendarAddVendorRow />}
     </>
   )
 }

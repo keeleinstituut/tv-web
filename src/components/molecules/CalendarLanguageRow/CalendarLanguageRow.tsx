@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import ClockIcon from 'assets/icons/clock.svg?react'
+import { formatDuration } from 'helpers/calendar'
 import { BookedSlot, CalendarLanguage } from 'types/calendar'
 import { useFetchCalendarDay } from 'hooks/requests/useCalendar'
 import classes from './classes.module.scss'
@@ -17,6 +18,8 @@ interface Props {
   dayStartHour: number
   dayEndHour: number
   onSelectRange?: (langId: string, startIso: string, endIso: string) => void
+  onClickSlot?: (slot: BookedSlot) => void
+  onTogglePin?: () => void
 }
 
 function timeToX(isoTime: string, dayStartHour: number): number {
@@ -46,14 +49,6 @@ function slotIndexToIso(
     .toISOString()
 }
 
-function formatDuration(startIso: string, endIso: string): string {
-  const minutes = dayjs(endIso).diff(dayjs(startIso), 'minute')
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  if (m === 0) return `${h}h`
-  return `${h}h ${m}min`
-}
-
 function isSlotPast(startIso: string): boolean {
   return dayjs(startIso).isBefore(dayjs())
 }
@@ -77,18 +72,31 @@ function getSlotClass(slot: BookedSlot): string {
 const BookedSlotBlock: FC<{
   slot: BookedSlot
   dayStartHour: number
-}> = ({ slot, dayStartHour }) => {
+  onClick?: (slot: BookedSlot) => void
+}> = ({ slot, dayStartHour, onClick }) => {
+  const { t } = useTranslation()
   const left = timeToX(slot.start_at, dayStartHour)
   const width = durationToWidth(slot.start_at, slot.end_at)
   const isPast = isSlotPast(slot.start_at)
+
+  const handleClick =
+    slot.type === 'assignment' && onClick
+      ? (e: React.MouseEvent) => {
+          e.stopPropagation()
+          onClick(slot)
+        }
+      : undefined
 
   if (slot.type === 'assignment' && !isPast) {
     const label = formatDuration(slot.start_at, slot.end_at)
     return (
       <div
-        className={classNames(classes.slotBlock, getSlotClass(slot))}
+        className={classNames(classes.slotBlock, getSlotClass(slot), {
+          [classes.slotClickable]: !!handleClick,
+        })}
         style={{ left: left + 4, width: width - 8 }}
         title={slot.assignment?.sub_project.ext_id}
+        onClick={handleClick}
       >
         <ClockIcon className={classes.slotIcon} />
         <span className={classes.slotLabel}>{label}</span>
@@ -104,7 +112,9 @@ const BookedSlotBlock: FC<{
         title={slot.meta}
       >
         <ClockIcon className={classes.slotIconExternal} />
-        <span className={classes.slotLabelExternal}>Hõivatud</span>
+        <span className={classes.slotLabelExternal}>
+          {t('calendar.booked')}
+        </span>
       </div>
     )
   }
@@ -132,9 +142,12 @@ const BookedSlotBlock: FC<{
   const label = formatDuration(slot.start_at, slot.end_at)
   return (
     <div
-      className={classNames(classes.slotBlock, getSlotClass(slot))}
+      className={classNames(classes.slotBlock, getSlotClass(slot), {
+        [classes.slotClickable]: !!handleClick,
+      })}
       style={{ left: left + 4, width: width - 8 }}
       title={slot.assignment?.sub_project.ext_id}
+      onClick={handleClick}
     >
       <ClockIcon className={classes.slotIconMuted} />
       <span className={classes.slotLabelMuted}>{label}</span>
@@ -148,6 +161,8 @@ const CalendarLanguageRow: FC<Props> = ({
   dayStartHour,
   dayEndHour,
   onSelectRange,
+  onClickSlot,
+  onTogglePin,
 }) => {
   const { t } = useTranslation()
   const { data } = useFetchCalendarDay(date, language.language.id)
@@ -241,6 +256,19 @@ const CalendarLanguageRow: FC<Props> = ({
     <div className={classes.rowWrapper}>
       <div className={classes.label}>
         <span className={classes.badge}>{language.language.value}</span>
+        {onTogglePin && (
+          <button
+            className={classNames(classes.pinBtn, {
+              [classes.pinBtnActive]: language.pinned,
+            })}
+            onClick={onTogglePin}
+            title={
+              language.pinned
+                ? t('calendar.unpin_language')
+                : t('calendar.pin_language')
+            }
+          />
+        )}
       </div>
 
       <div
@@ -317,7 +345,12 @@ const CalendarLanguageRow: FC<Props> = ({
 
         {/* Booked slot blocks */}
         {bookedSlots.map((slot, i) => (
-          <BookedSlotBlock key={i} slot={slot} dayStartHour={dayStartHour} />
+          <BookedSlotBlock
+            key={i}
+            slot={slot}
+            dayStartHour={dayStartHour}
+            onClick={onClickSlot}
+          />
         ))}
       </div>
     </div>

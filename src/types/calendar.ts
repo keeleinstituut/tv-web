@@ -1,6 +1,10 @@
 export type CalendarView = 'day' | 'week' | 'month'
 
-export type SlotType = 'assignment' | 'external_calendar' | 'vacation' | 'prebook'
+export type SlotType =
+  | 'assignment'
+  | 'external_calendar'
+  | 'vacation'
+  | 'prebook'
 
 export interface CalendarLanguage {
   language: {
@@ -191,6 +195,19 @@ export interface CalendarSummaryResponse {
     accepted_projects_count: number
     total_duration_minutes: number
   }
+}
+
+// --- Create order ---
+
+export interface CreateOrderPayload {
+  language_id: string
+  start_at: string
+  end_at: string
+  service_type: 'remote' | 'on-site'
+  reference_number?: string
+  location?: string
+  meeting_link?: string
+  client_institution_id?: string
 }
 
 // --- Slot matching ---

@@ -1,4 +1,5 @@
 @use 'styles/variables' as *;
+@use 'styles/calendarShared' as *;
 
 $label-width: 64px;
 $slot-width: 48px;
@@ -7,12 +8,7 @@ $header-height: 40px;
 $border-color: #e2e4e9;
 
 .container {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
-  background: $color-white;
-  position: relative;
+  @include calContainer;
 }
 
 // --- Date navigation: two rows ---
@@ -74,33 +70,15 @@ $border-color: #e2e4e9;
 }
 
 .navBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  border-radius: $border-radius-4;
-  color: $color-text;
-
-  &:hover {
-    background: $color-background;
-  }
+  @include calNavBtn;
 }
 
 .navIcon {
-  width: 16px;
-  height: 16px;
-  color: $color-text;
+  @include calNavIcon;
 }
 
 .navIconFlip {
-  width: 16px;
-  height: 16px;
-  color: $color-text;
-  transform: scaleX(-1);
+  @include calNavIconFlip;
 }
 
 .dayLetter {
@@ -144,10 +122,7 @@ $border-color: #e2e4e9;
 // --- Grid scroll area ---
 
 .gridScroll {
-  flex: 1;
-  overflow-x: auto;
-  overflow-y: auto;
-  position: relative;
+  @include calGridScroll;
 }
 
 // --- Time header row ---

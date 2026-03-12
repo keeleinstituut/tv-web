@@ -23,9 +23,33 @@ $border-color: #e2e4e9;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   padding: 0 spacing(2);
   border-right: 1px solid $border-color;
   flex-shrink: 0;
+}
+
+.pinBtn {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 2px solid #9799a4;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+
+  &:hover {
+    border-color: #005aa3;
+  }
+}
+
+.pinBtnActive {
+  background: #005aa3;
+  border-color: #005aa3;
 }
 
 .badge {
@@ -119,6 +143,15 @@ $border-color: #e2e4e9;
   white-space: nowrap;
   z-index: 1;
   pointer-events: none;
+}
+
+.slotClickable {
+  pointer-events: auto;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.93);
+  }
 }
 
 .slotAssignmentFuture {

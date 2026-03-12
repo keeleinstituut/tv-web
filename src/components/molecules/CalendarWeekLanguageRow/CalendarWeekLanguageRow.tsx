@@ -1,25 +1,18 @@
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
 import AlarmIcon from 'assets/icons/alarm.svg?react'
-import AddIcon from 'assets/icons/add.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
+import { getInitials } from 'helpers/calendar'
 import { CalendarLanguage, VendorWeekData } from 'types/calendar'
 import { useFetchCalendarWeekVendors } from 'hooks/requests/useCalendar'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
+import CalendarAddVendorRow from 'components/atoms/CalendarAddVendorRow/CalendarAddVendorRow'
 import classes from './classes.module.scss'
 
 const BLOCK_COUNT = 4 // 4 × 6h blocks per day
 const DAYS_IN_WEEK = 7
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-}
 
 // ─── Summary block row (collapsed) ────────────────────────────────────────────
 
@@ -27,35 +20,39 @@ const WeekSummaryRow: FC<{
   language: CalendarLanguage
   onToggle: () => void
   expanded: boolean
-}> = ({ language, onToggle, expanded }) => (
-  <div className={classes.rowWrapper}>
-    <div className={classes.label}>
-      <span className={classes.badge}>{language.language.value}</span>
-      <button
-        className={classes.expandBtn}
-        onClick={onToggle}
-        aria-label="Laienda rida"
-      >
-        <ChevronDownIcon
-          className={classNames(classes.expandIcon, {
-            [classes.expandIconOpen]: expanded,
-          })}
-        />
-      </button>
+}> = ({ language, onToggle, expanded }) => {
+  const { t } = useTranslation()
+  return (
+    <div className={classes.rowWrapper}>
+      <div className={classes.label}>
+        <span className={classes.badge}>{language.language.value}</span>
+        <button
+          className={classes.expandBtn}
+          onClick={onToggle}
+          aria-label={t('calendar.expand_row')}
+        >
+          <ChevronDownIcon
+            className={classNames(classes.expandIcon, {
+              [classes.expandIconOpen]: expanded,
+            })}
+          />
+        </button>
+      </div>
+      <div className={classes.slotArea}>
+        {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => (
+          <div key={dayIdx} className={classes.dayGroup} />
+        ))}
+      </div>
     </div>
-    <div className={classes.slotArea}>
-      {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => (
-        <div key={dayIdx} className={classes.dayGroup} />
-      ))}
-    </div>
-  </div>
-)
+  )
+}
 
 // ─── Vendor sub-row ────────────────────────────────────────────────────────────
 
 const VendorRow: FC<{
   vendor: VendorWeekData
 }> = ({ vendor }) => {
+  const { t } = useTranslation()
   const initials = getInitials(vendor.institution_user.name)
   return (
     <div className={classes.vendorRowWrapper}>
@@ -79,7 +76,9 @@ const VendorRow: FC<{
               <div key={dayIdx} className={classes.dayGroup}>
                 <div className={classes.dayUnavailableBanner}>
                   <ClockIcon className={classes.unavailableIcon} />
-                  <span className={classes.unavailableLabel}>Hõivatud</span>
+                  <span className={classes.unavailableLabel}>
+                    {t('calendar.booked')}
+                  </span>
                 </div>
               </div>
             )
@@ -146,13 +145,7 @@ const CalendarWeekLanguageRow: FC<Props> = ({ language, date }) => {
       />
       {expanded &&
         vendors.map((vendor) => <VendorRow key={vendor.id} vendor={vendor} />)}
-      {expanded && (
-        <div className={classes.addVendorRow}>
-          <button className={classes.addVendorBtn} aria-label="Lisa tõlkija">
-            <AddIcon className={classes.addVendorIcon} />
-          </button>
-        </div>
-      )}
+      {expanded && <CalendarAddVendorRow />}
     </>
   )
 }

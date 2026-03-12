@@ -1,4 +1,5 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/et'
 import classNames from 'classnames'
@@ -6,8 +7,8 @@ import { useCalendarContext } from 'components/contexts/CalendarContext'
 import { useFetchCalendarLanguages } from 'hooks/requests/useCalendar'
 import CalendarWeekLanguageRow from 'components/molecules/CalendarWeekLanguageRow/CalendarWeekLanguageRow'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
-import ExpandIcon from 'assets/icons/expand.svg?react'
-import ShrinkIcon from 'assets/icons/shrink.svg?react'
+import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
+import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
 import classes from './classes.module.scss'
 
 const LABEL_WIDTH_PX = 64
@@ -72,16 +73,10 @@ const CalendarWeekView: FC = () => {
     navigateNext,
     navigatePrevMonth,
     navigateNextMonth,
-    expandedLanguageIds,
-    expandAll,
-    collapseAll,
   } = useCalendarContext()
 
+  const { t } = useTranslation()
   const { languages } = useFetchCalendarLanguages()
-
-  const allExpanded =
-    languages.length > 0 &&
-    languages.every((l) => expandedLanguageIds.includes(l.language.id))
 
   const weekStart = getWeekStart(currentDate)
   const days = Array.from({ length: 7 }, (_, i) => weekStart.add(i, 'day'))
@@ -101,16 +96,13 @@ const CalendarWeekView: FC = () => {
   })
 
   // Current time needle
-  const [needleX, setNeedleX] = useState<number | null>(null)
-  useEffect(() => {
-    const update = () => setNeedleX(currentNeedleX(weekStart))
-    update()
-    const interval = setInterval(update, 60_000)
-    return () => clearInterval(interval)
-  }, [weekStart])
+  const weekStartStr = weekStart.format('YYYY-MM-DD')
+  const needleX = useCurrentTimeMarker(
+    () => currentNeedleX(weekStart),
+    [weekStartStr]
+  )
 
   const gridScrollRef = useRef<HTMLDivElement>(null)
-  const weekStartStr = weekStart.format('YYYY-MM-DD')
 
   // Auto-scroll to current time when navigating to a different week
   useEffect(() => {
@@ -127,7 +119,7 @@ const CalendarWeekView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigatePrevMonth}
-            aria-label="Eelmine kuu"
+            aria-label={t('calendar.prev_month')}
           >
             <ChevronLeft className={classes.navIcon} />
           </button>
@@ -141,7 +133,7 @@ const CalendarWeekView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigateNextMonth}
-            aria-label="Järgmine kuu"
+            aria-label={t('calendar.next_month')}
           >
             <ChevronLeft className={classes.navIconFlip} />
           </button>
@@ -154,7 +146,7 @@ const CalendarWeekView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigatePrev}
-            aria-label="Eelmine nädal"
+            aria-label={t('calendar.prev_week')}
           >
             <ChevronLeft className={classes.navIcon} />
           </button>
@@ -197,7 +189,7 @@ const CalendarWeekView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigateNext}
-            aria-label="Järgmine nädal"
+            aria-label={t('calendar.next_week')}
           >
             <ChevronLeft className={classes.navIconFlip} />
           </button>
@@ -209,21 +201,9 @@ const CalendarWeekView: FC = () => {
         {/* Row B: time axis + collapse-all toggle (sticky top: 0) */}
         <div className={classes.timeAxisRow}>
           <div className={classes.cornerCell}>
-            <button
-              className={classes.navBtn}
-              onClick={() =>
-                allExpanded
-                  ? collapseAll()
-                  : expandAll(languages.map((l) => l.language.id))
-              }
-              aria-label={allExpanded ? 'Ahenda kõik' : 'Laienda kõik'}
-            >
-              {allExpanded ? (
-                <ShrinkIcon className={classes.collapseIcon} />
-              ) : (
-                <ExpandIcon className={classes.collapseIcon} />
-              )}
-            </button>
+            <CalendarCollapseExpandButton
+              languageIds={languages.map((l) => l.language.id)}
+            />
           </div>
           {days.map((_, i) => (
             <div key={i} className={classes.timeAxis}>

@@ -1,0 +1,12 @@
+@use 'styles/variables' as *;
+@use 'styles/calendarShared' as *;
+
+.btn {
+  @include calNavBtn;
+}
+
+.icon {
+  width: 14px;
+  height: 14px;
+  color: $color-text-light;
+}

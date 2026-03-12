@@ -35,7 +35,7 @@ import ProjectPage from 'pages/ProjectPage/ProjectPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
-import Kalender from 'pages/Kalender/Kalender'
+import Calendar from 'pages/Calendar/Calendar'
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
 import Terms from 'pages/Terms/Terms'
@@ -151,10 +151,10 @@ export const protectedRoutes: FullRouteObject[] = [
     ],
   },
   {
-    path: 'kalender',
+    path: 'calendar',
     label: i18n.t('menu.calendar'),
     Icon: CalendarIcon,
-    element: <Kalender />,
+    element: <Calendar />,
     breadcrumb: i18n.t('menu.calendar'),
   },
   {

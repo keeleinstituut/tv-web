@@ -1,4 +1,3 @@
-@use 'sass:color';
 @use 'styles/variables' as *;
 
 $label-width: 64px;
@@ -180,34 +179,3 @@ $border-color: #e2e4e9;
   color: #c07a30;
 }
 
-// ─── Add vendor row ───────────────────────────────────────────────────────────
-
-.addVendorRow {
-  display: flex;
-  height: $row-height;
-  align-items: center;
-}
-
-.addVendorBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  margin-left: 20px;
-  border: none;
-  background: $color-background;
-  border-radius: $border-radius-4;
-  cursor: pointer;
-  color: $color-text-light;
-
-  &:hover {
-    background: color.adjust(#f5f6f8, $lightness: -5%);
-    color: $color-text;
-  }
-}
-
-.addVendorIcon {
-  width: 14px;
-  height: 14px;
-}

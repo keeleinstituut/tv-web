@@ -1,0 +1,251 @@
+@use 'styles/variables' as *;
+
+$panel-width: 522px;
+$header-height: 59px;
+$footer-height: 64px;
+$border-color: #d2d3d8;
+$input-border: #878a97;
+$label-color: #131317;
+$placeholder-color: #9799a4;
+$primary-blue: #005aa3;
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 19;
+}
+
+.panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: $panel-width;
+  background: $color-white;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  z-index: 20;
+  border-left: 1px solid $border-color;
+}
+
+.open {
+  transform: translateX(0);
+}
+
+// --- Header ---
+
+.header {
+  height: $header-height;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid $border-color;
+  gap: 8px;
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: $font-weight-normal;
+  color: $primary-blue;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.headerBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $primary-blue;
+  font-size: $font-size-14;
+  padding: 8px;
+  border-radius: $border-radius-4;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.headerBtnIcon {
+  width: 18px;
+  height: 18px;
+  color: $primary-blue;
+}
+
+.headerBtnArrow {
+  font-size: 14px;
+  line-height: 1;
+}
+
+// --- Body (scrollable) ---
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.formRow {
+  display: flex;
+  gap: 24px;
+
+  .formGroup {
+    flex: 1;
+  }
+}
+
+.label {
+  font-size: $font-size-16;
+  color: $label-color;
+  font-weight: $font-weight-normal;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $color-text;
+  background: $color-white;
+  outline: none;
+
+  &::placeholder {
+    color: $placeholder-color;
+  }
+
+  &:focus {
+    border-color: $primary-blue;
+  }
+}
+
+.inputReadonly {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $color-text;
+  background: $color-background;
+  user-select: none;
+}
+
+.select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $color-text;
+  background: $color-white;
+  outline: none;
+  cursor: pointer;
+  appearance: auto;
+
+  &:focus {
+    border-color: $primary-blue;
+  }
+}
+
+// --- Section rows ---
+
+.divider {
+  height: 2px;
+  background: $border-color;
+  margin: 0 24px;
+  flex-shrink: 0;
+}
+
+.sectionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+
+.sectionLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: $font-size-14;
+  color: $color-text;
+}
+
+.sectionIcon {
+  width: 18px;
+  height: 18px;
+  color: $color-text;
+  flex-shrink: 0;
+}
+
+.sectionChevron {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+  transform: rotate(-90deg);
+  flex-shrink: 0;
+}
+
+.sectionBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $primary-blue;
+  font-size: $font-size-14;
+  padding: 8px;
+  border-radius: $border-radius-4;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+// --- Footer ---
+
+.footer {
+  height: $footer-height;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px;
+  border-top: 1px solid $border-color;
+}

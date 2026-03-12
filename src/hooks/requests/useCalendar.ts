@@ -15,6 +15,7 @@ import {
   CalendarSearchResponse,
   CalendarSummaryResponse,
   CalendarSlotMatchingResponse,
+  CreateOrderPayload,
 } from 'types/calendar'
 
 // ---------------------------------------------------------------------------
@@ -434,16 +435,17 @@ export const useFetchCalendarMonthVendors = (
   return { isLoading, isError, data }
 }
 
-export const useFetchCalendarSearch = (params: CalendarSearchParams | null) => {
-  const { isLoading, isError, data } = useQuery<CalendarSearchResponse>({
-    queryKey: ['calendar-search', params],
-    queryFn: () =>
-      Promise.resolve({ dates: ['2026-03-06', '2026-03-09', '2026-03-10'] }),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_SEARCH, params ?? {}),
-    enabled: !!params,
+export const useCalendarSearch = () =>
+  useMutation({
+    mutationFn: (_params: CalendarSearchParams) =>
+      new Promise<CalendarSearchResponse>((resolve) =>
+        setTimeout(
+          () => resolve({ dates: ['2026-03-12', '2026-03-15', '2026-03-17'] }),
+          300
+        )
+      ),
+    // mutationFn: (params: CalendarSearchParams) => apiClient.get(endpoints.CALENDAR_SEARCH, params),
   })
-  return { isLoading, isError, dates: data?.dates ?? [] }
-}
 
 export const useFetchCalendarSummary = (month: string) => {
   const { isLoading, isError, data } = useQuery<CalendarSummaryResponse>({
@@ -480,13 +482,53 @@ export const useFetchSlotMatching = (
   return { isLoading, isError, vendors: data?.vendors ?? [] }
 }
 
+export const useCreateCalendarOrder = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mutationFn: (_payload: CreateOrderPayload) =>
+      new Promise<{ id: string }>((resolve) =>
+        setTimeout(() => resolve({ id: `order-${Date.now()}` }), 400)
+      ),
+    // mutationFn: (payload: CreateOrderPayload) => apiClient.post(endpoints.CALENDAR_ORDERS, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+    },
+  })
+}
+
 export const useUpdatePinnedLanguages = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => Promise.resolve(),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mutationFn: (_language_ids: string[]) =>
+      new Promise<void>((resolve) => setTimeout(resolve, 200)),
     // mutationFn: (language_ids: string[]) => apiClient.post(endpoints.PINNED_LANGUAGES, { language_ids }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-languages'] })
+    onMutate: async (language_ids) => {
+      await queryClient.cancelQueries({ queryKey: ['calendar-languages'] })
+      const previous = queryClient.getQueriesData<CalendarLanguagesResponse>({
+        queryKey: ['calendar-languages'],
+      })
+      queryClient.setQueriesData<CalendarLanguagesResponse>(
+        { queryKey: ['calendar-languages'] },
+        (old) =>
+          old
+            ? {
+                languages: old.languages.map((l) => ({
+                  ...l,
+                  pinned: language_ids.includes(l.language.id),
+                })),
+              }
+            : old
+      )
+      return { previous }
+    },
+    onError: (_err, _ids, context) => {
+      if (context?.previous) {
+        context.previous.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data)
+        })
+      }
     },
   })
 }

@@ -9,4 +9,5 @@ $layout-padding: 24px; // spacing(6) from MainLayout
   margin: -$layout-padding;
   height: calc(100% + #{$layout-padding * 2});
   overflow: hidden;
+  position: relative;
 }

@@ -1,4 +1,5 @@
 @use 'styles/variables' as *;
+@use 'styles/calendarShared' as *;
 
 $label-width: 64px;
 $week-col-width: 186px;
@@ -8,12 +9,7 @@ $day-letters-height: 32px;
 $border-color: #e2e4e9;
 
 .container {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
-  background: $color-white;
-  position: relative;
+  @include calContainer;
 }
 
 // --- Month nav row ---
@@ -54,42 +50,21 @@ $border-color: #e2e4e9;
 }
 
 .navBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  border-radius: $border-radius-4;
-  color: $color-text;
-
-  &:hover {
-    background: $color-background;
-  }
+  @include calNavBtn;
 }
 
 .navIcon {
-  width: 16px;
-  height: 16px;
-  color: $color-text;
+  @include calNavIcon;
 }
 
 .navIconFlip {
-  width: 16px;
-  height: 16px;
-  color: $color-text;
-  transform: scaleX(-1);
+  @include calNavIconFlip;
 }
 
 // --- Grid scroll area ---
 
 .gridScroll {
-  flex: 1;
-  overflow-x: auto;
-  overflow-y: auto;
-  position: relative;
+  @include calGridScroll;
 }
 
 // --- Row A: week headers (sticky top: 0) ---
@@ -148,12 +123,6 @@ $border-color: #e2e4e9;
   font-size: $font-size-12;
   color: $color-text;
   padding: 0 8px;
-}
-
-.collapseIcon {
-  width: 14px;
-  height: 14px;
-  color: $color-text-light;
 }
 
 // --- Row B: day letters (sticky top: week-header-height) ---

@@ -1,14 +1,19 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import 'dayjs/locale/et'
 import classNames from 'classnames'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
-import { useFetchCalendarLanguages } from 'hooks/requests/useCalendar'
+import {
+  useFetchCalendarLanguages,
+  useUpdatePinnedLanguages,
+} from 'hooks/requests/useCalendar'
 import CalendarLanguageRow, {
   SLOT_WIDTH_PX,
   LABEL_WIDTH_PX,
 } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
+import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
 import classes from './classes.module.scss'
 
 const DAY_START_HOUR = 9
@@ -44,19 +49,26 @@ const CalendarDayView: FC = () => {
     navigatePrevMonth,
     navigateNextMonth,
     navigateToday,
+    openSidePanel,
   } = useCalendarContext()
+  const { t } = useTranslation()
   const { languages } = useFetchCalendarLanguages()
+  const { mutate: updatePinned } = useUpdatePinnedLanguages()
+
+  const handleTogglePin = (langId: string) => {
+    const currentPinned = languages
+      .filter((l) => l.pinned)
+      .map((l) => l.language.id)
+    const newPinned = currentPinned.includes(langId)
+      ? currentPinned.filter((id) => id !== langId)
+      : [...currentPinned, langId]
+    updatePinned(newPinned)
+  }
   const dateStr = currentDate.format('YYYY-MM-DD')
   const isToday = currentDate.isSame(dayjs(), 'day')
 
   // Current time marker — updates every minute
-  const [timeX, setTimeX] = useState(() => currentTimeX(dateStr))
-  useEffect(() => {
-    const update = () => setTimeX(currentTimeX(dateStr))
-    update()
-    const interval = setInterval(update, 60_000)
-    return () => clearInterval(interval)
-  }, [])
+  const timeX = useCurrentTimeMarker(() => currentTimeX(dateStr), [dateStr])
 
   // Auto-scroll to current time on mount
   const gridScrollRef = useRef<HTMLDivElement>(null)
@@ -78,7 +90,7 @@ const CalendarDayView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigatePrevMonth}
-            aria-label="Eelmine kuu"
+            aria-label={t('calendar.prev_month')}
           >
             <ChevronLeft className={classes.navIcon} />
           </button>
@@ -90,7 +102,7 @@ const CalendarDayView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigateNextMonth}
-            aria-label="Järgmine kuu"
+            aria-label={t('calendar.next_month')}
           >
             <ChevronLeft className={classes.navIconFlip} />
           </button>
@@ -103,7 +115,7 @@ const CalendarDayView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigatePrev}
-            aria-label="Eelmine päev"
+            aria-label={t('calendar.prev_day')}
           >
             <ChevronLeft className={classes.navIcon} />
           </button>
@@ -121,7 +133,7 @@ const CalendarDayView: FC = () => {
           <button
             className={classes.navBtn}
             onClick={navigateNext}
-            aria-label="Järgmine päev"
+            aria-label={t('calendar.next_day')}
           >
             <ChevronLeft className={classes.navIconFlip} />
           </button>
@@ -176,9 +188,19 @@ const CalendarDayView: FC = () => {
               dayStartHour={DAY_START_HOUR}
               dayEndHour={DAY_END_HOUR}
               onSelectRange={(langId, start, end) => {
-                // Phase 6: open side panel
-                console.log('Selected range', { langId, start, end })
+                const l = languages.find((l) => l.language.id === langId)
+                if (l)
+                  openSidePanel({ language: l, startIso: start, endIso: end })
               }}
+              onClickSlot={(slot) => {
+                openSidePanel({
+                  language: lang,
+                  startIso: slot.start_at,
+                  endIso: slot.end_at,
+                  slot,
+                })
+              }}
+              onTogglePin={() => handleTogglePin(lang.language.id)}
             />
           ))}
 

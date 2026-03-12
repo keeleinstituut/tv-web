@@ -1,0 +1,47 @@
+@use 'styles/variables' as *;
+
+@mixin calNavBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: $border-radius-4;
+  color: $color-text;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+@mixin calNavIcon {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+}
+
+@mixin calNavIconFlip {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+  transform: scaleX(-1);
+}
+
+@mixin calContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  background: $color-white;
+  position: relative;
+}
+
+@mixin calGridScroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  position: relative;
+}

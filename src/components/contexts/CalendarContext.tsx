@@ -1,6 +1,21 @@
 import dayjs, { Dayjs } from 'dayjs'
-import { FC, PropsWithChildren, createContext, useCallback, useContext, useState } from 'react'
-import { CalendarView } from 'types/calendar'
+import {
+  FC,
+  PropsWithChildren,
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+} from 'react'
+import { BookedSlot, CalendarLanguage, CalendarView } from 'types/calendar'
+
+export interface SidePanelSelection {
+  language: CalendarLanguage
+  startIso: string
+  endIso: string
+  /** Present when opening an existing booked slot (view mode) */
+  slot?: BookedSlot
+}
 
 interface CalendarContextType {
   view: CalendarView
@@ -17,6 +32,9 @@ interface CalendarContextType {
   isLanguageExpanded: (languageId: string) => boolean
   expandAll: (languageIds: string[]) => void
   collapseAll: () => void
+  sidePanelSelection: SidePanelSelection | null
+  openSidePanel: (selection: SidePanelSelection) => void
+  closeSidePanel: () => void
 }
 
 const CalendarContext = createContext<CalendarContextType>({
@@ -34,12 +52,25 @@ const CalendarContext = createContext<CalendarContextType>({
   isLanguageExpanded: () => false,
   expandAll: () => undefined,
   collapseAll: () => undefined,
+  sidePanelSelection: null,
+  openSidePanel: () => undefined,
+  closeSidePanel: () => undefined,
 })
 
 export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   const [view, setView] = useState<CalendarView>('day')
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs())
   const [expandedLanguageIds, setExpandedLanguageIds] = useState<string[]>([])
+  const [sidePanelSelection, setSidePanelSelection] =
+    useState<SidePanelSelection | null>(null)
+
+  const openSidePanel = useCallback((selection: SidePanelSelection) => {
+    setSidePanelSelection(selection)
+  }, [])
+
+  const closeSidePanel = useCallback(() => {
+    setSidePanelSelection(null)
+  }, [])
 
   const navigatePrev = useCallback(() => {
     setCurrentDate((prev) => {
@@ -75,7 +106,9 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const toggleLanguageExpanded = useCallback((languageId: string) => {
     setExpandedLanguageIds((prev) =>
-      prev.includes(languageId) ? prev.filter((id) => id !== languageId) : [...prev, languageId]
+      prev.includes(languageId)
+        ? prev.filter((id) => id !== languageId)
+        : [...prev, languageId]
     )
   }, [])
 
@@ -105,6 +138,9 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
         isLanguageExpanded,
         expandAll,
         collapseAll,
+        sidePanelSelection,
+        openSidePanel,
+        closeSidePanel,
       }}
     >
       {children}
