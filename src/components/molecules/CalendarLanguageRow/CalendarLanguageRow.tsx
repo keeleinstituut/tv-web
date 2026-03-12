@@ -1,11 +1,16 @@
-import { FC, useCallback, useRef, useState } from 'react'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import dayjs from 'dayjs'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import ClockIcon from 'assets/icons/clock.svg?react'
+import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import { formatDuration } from 'helpers/calendar'
 import { BookedSlot, CalendarLanguage } from 'types/calendar'
-import { useFetchCalendarDay } from 'hooks/requests/useCalendar'
+import {
+  useFetchCalendarDay,
+  useFetchCalendarWeek,
+} from 'hooks/requests/useCalendar'
+import { useCalendarContext } from 'components/contexts/CalendarContext'
 import classes from './classes.module.scss'
 
 export const SLOT_WIDTH_PX = 48 // px per 30 min
@@ -20,9 +25,13 @@ interface Props {
   onSelectRange?: (langId: string, startIso: string, endIso: string) => void
   onClickSlot?: (slot: BookedSlot) => void
   onTogglePin?: () => void
+  onToggleExpand?: () => void
+  isExpanded?: boolean
+  /** When true the row is a header-only strip: no slot cells, no interaction */
+  readOnly?: boolean
 }
 
-function timeToX(isoTime: string, dayStartHour: number): number {
+export function timeToX(isoTime: string, dayStartHour: number): number {
   const t = dayjs(isoTime)
   const hoursFromStart = t.hour() + t.minute() / 60 - dayStartHour
   return hoursFromStart * SLOT_WIDTH_PX * 2
@@ -33,7 +42,7 @@ function durationToWidth(startIso: string, endIso: string): number {
   return (minutes / 30) * SLOT_WIDTH_PX
 }
 
-function slotIndexToIso(
+export function slotIndexToIso(
   index: number,
   date: string,
   dayStartHour: number
@@ -49,15 +58,22 @@ function slotIndexToIso(
     .toISOString()
 }
 
-function isSlotPast(startIso: string): boolean {
+export function isSlotPast(startIso: string): boolean {
   return dayjs(startIso).isBefore(dayjs())
 }
 
-function getSlotClass(slot: BookedSlot): string {
-  const past = isSlotPast(slot.start_at)
+function getSlotClass(
+  slot: BookedSlot,
+  past: boolean,
+  ongoing = false
+): string {
   switch (slot.type) {
     case 'assignment':
-      return past ? classes.slotAssignmentPast : classes.slotAssignmentFuture
+      if (past) return classes.slotAssignmentPast
+      if (ongoing) return classes.slotAssignmentFuture
+      return slot.assignment?.confirmed
+        ? classes.slotAssignmentConfirmed
+        : classes.slotAssignmentFuture
     case 'external_calendar':
       return classes.slotExternal
     case 'vacation':
@@ -77,7 +93,10 @@ export const BookedSlotBlock: FC<{
   const { t } = useTranslation()
   const left = timeToX(slot.start_at, dayStartHour)
   const width = durationToWidth(slot.start_at, slot.end_at)
-  const isPast = isSlotPast(slot.start_at)
+  const now = dayjs()
+  const isPast = dayjs(slot.end_at).isBefore(now)
+  const isOngoing = !isPast && dayjs(slot.start_at).isBefore(now)
+  const isNarrow = width <= SLOT_WIDTH_PX
 
   const handleClick =
     slot.type === 'assignment' && onClick
@@ -89,17 +108,31 @@ export const BookedSlotBlock: FC<{
 
   if (slot.type === 'assignment' && !isPast) {
     const label = formatDuration(slot.start_at, slot.end_at)
+    const isConfirmed = !isOngoing && !!slot.assignment?.confirmed
     return (
       <div
-        className={classNames(classes.slotBlock, getSlotClass(slot), {
-          [classes.slotClickable]: !!handleClick,
-        })}
+        className={classNames(
+          classes.slotBlock,
+          getSlotClass(slot, isPast, isOngoing),
+          {
+            [classes.slotClickable]: !!handleClick,
+            [classes.slotBlockNarrow]: isNarrow,
+          }
+        )}
         style={{ left: left + 4, width: width - 8 }}
         title={slot.assignment?.sub_project.ext_id}
         onClick={handleClick}
       >
-        <ClockIcon className={classes.slotIcon} />
-        <span className={classes.slotLabel}>{label}</span>
+        <ClockIcon
+          className={isConfirmed ? classes.slotIconWhite : classes.slotIcon}
+        />
+        {!isNarrow && (
+          <span
+            className={isConfirmed ? classes.slotLabelWhite : classes.slotLabel}
+          >
+            {label}
+          </span>
+        )}
       </div>
     )
   }
@@ -107,14 +140,20 @@ export const BookedSlotBlock: FC<{
   if (slot.type === 'external_calendar') {
     return (
       <div
-        className={classNames(classes.slotBlock, getSlotClass(slot))}
+        className={classNames(
+          classes.slotBlock,
+          getSlotClass(slot, isPast, isOngoing),
+          { [classes.slotBlockNarrow]: isNarrow }
+        )}
         style={{ left: left + 4, width: width - 8 }}
         title={slot.meta}
       >
         <ClockIcon className={classes.slotIconExternal} />
-        <span className={classes.slotLabelExternal}>
-          {t('calendar.booked')}
-        </span>
+        {!isNarrow && (
+          <span className={classes.slotLabelExternal}>
+            {t('calendar.booked')}
+          </span>
+        )}
       </div>
     )
   }
@@ -122,7 +161,10 @@ export const BookedSlotBlock: FC<{
   if (slot.type === 'vacation') {
     return (
       <div
-        className={classNames(classes.slotBlock, getSlotClass(slot))}
+        className={classNames(
+          classes.slotBlock,
+          getSlotClass(slot, isPast, isOngoing)
+        )}
         style={{ left: left + 4, width: width - 8 }}
         title={slot.meta}
       />
@@ -132,7 +174,10 @@ export const BookedSlotBlock: FC<{
   if (slot.type === 'prebook') {
     return (
       <div
-        className={classNames(classes.slotBlock, getSlotClass(slot))}
+        className={classNames(
+          classes.slotBlock,
+          getSlotClass(slot, isPast, isOngoing)
+        )}
         style={{ left: left + 4, width: width - 8 }}
       />
     )
@@ -142,15 +187,20 @@ export const BookedSlotBlock: FC<{
   const label = formatDuration(slot.start_at, slot.end_at)
   return (
     <div
-      className={classNames(classes.slotBlock, getSlotClass(slot), {
-        [classes.slotClickable]: !!handleClick,
-      })}
+      className={classNames(
+        classes.slotBlock,
+        getSlotClass(slot, isPast, isOngoing),
+        {
+          [classes.slotClickable]: !!handleClick,
+          [classes.slotBlockNarrow]: isNarrow,
+        }
+      )}
       style={{ left: left + 4, width: width - 8 }}
       title={slot.assignment?.sub_project.ext_id}
       onClick={handleClick}
     >
       <ClockIcon className={classes.slotIconMuted} />
-      <span className={classes.slotLabelMuted}>{label}</span>
+      {!isNarrow && <span className={classes.slotLabelMuted}>{label}</span>}
     </div>
   )
 }
@@ -163,10 +213,52 @@ const CalendarLanguageRow: FC<Props> = ({
   onSelectRange,
   onClickSlot,
   onTogglePin,
+  onToggleExpand,
+  isExpanded,
+  readOnly = false,
 }) => {
   const { t } = useTranslation()
   const { data } = useFetchCalendarDay(date, language.language.id)
+  const { data: weekData } = useFetchCalendarWeek(date)
+  const { pendingDeepLink, setPendingDeepLink, openSidePanel } =
+    useCalendarContext()
   const bookedSlots = data?.booked_slots ?? []
+
+  const langWeekSlots =
+    weekData?.languages.find((l) => l.language_id === language.language.id)
+      ?.slots ?? null
+
+  const isSlotFullyBooked = useCallback(
+    (slotIndex: number): boolean => {
+      if (!langWeekSlots) return false
+      const hourOfDay = dayStartHour + slotIndex * 0.5
+      const blockInDay = Math.floor(hourOfDay / 6)
+      const weekDayOffset = dayjs(date).diff(dayjs(weekData!.week_start), 'day')
+      if (weekDayOffset < 0 || weekDayOffset > 6) return false
+      const slot = langWeekSlots[weekDayOffset * 4 + blockInDay]
+      return !!slot && slot.working_hours > 0 && slot.available_vendors === 0
+    },
+    [langWeekSlots, weekData, date, dayStartHour]
+  )
+
+  useEffect(() => {
+    if (!pendingDeepLink || !data?.booked_slots) return
+    // slotId is the assignment id; fall back to start_at match
+    const match = data.booked_slots.find(
+      (s) =>
+        s.assignment?.id === pendingDeepLink.slotId ||
+        s.start_at === pendingDeepLink.slotId
+    )
+    if (!match) return
+    openSidePanel({
+      language,
+      startIso: match.start_at,
+      endIso: match.end_at,
+      slot: match,
+      intent: pendingDeepLink.intent,
+    })
+    setPendingDeepLink(null)
+  }, [data, pendingDeepLink])
 
   const totalSlots = (dayEndHour - dayStartHour) * 2
   const totalWidth = totalSlots * SLOT_WIDTH_PX
@@ -255,11 +347,10 @@ const CalendarLanguageRow: FC<Props> = ({
   return (
     <div className={classes.rowWrapper}>
       <div className={classes.label}>
-        <span className={classes.badge}>{language.language.value}</span>
         {onTogglePin && (
           <button
-            className={classNames(classes.pinBtn, {
-              [classes.pinBtnActive]: language.pinned,
+            className={classNames(classes.pinIcon, {
+              [classes.pinIconActive]: language.pinned,
             })}
             onClick={onTogglePin}
             title={
@@ -267,7 +358,39 @@ const CalendarLanguageRow: FC<Props> = ({
                 ? t('calendar.unpin_language')
                 : t('calendar.pin_language')
             }
-          />
+          >
+            <svg
+              viewBox="0 0 10 10"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.5 1.5L8.5 3.5L6.2 5.8L6.5 8L5 6.5L3.5 8L3.8 5.8L1.5 3.5L3.5 1.5L4.5 2.5L5 2L5.5 2.5L6.5 1.5Z"
+                fill="currentColor"
+              />
+              <line
+                x1="5"
+                y1="6.5"
+                x2="5"
+                y2="9"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        )}
+        <span className={classes.badge}>{language.language.value}</span>
+        {onToggleExpand && (
+          <button
+            className={classNames(classes.collapseBtn, {
+              [classes.collapseBtnExpanded]: isExpanded ?? language.pinned,
+            })}
+            onClick={onToggleExpand}
+            aria-label={t('calendar.expand_row')}
+          >
+            <ArrowDownIcon className={classes.collapseIcon} />
+          </button>
         )}
       </div>
 
@@ -275,68 +398,128 @@ const CalendarLanguageRow: FC<Props> = ({
         ref={rowRef}
         className={classes.slotArea}
         style={{ width: totalWidth }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onMouseDown={readOnly ? undefined : handleMouseDown}
+        onMouseMove={readOnly ? undefined : handleMouseMove}
+        onMouseUp={readOnly ? undefined : handleMouseUp}
+        onMouseLeave={readOnly ? undefined : handleMouseUp}
       >
-        {/* Slot background cells (for hover + interaction) */}
-        {Array.from({ length: totalSlots }).map((_, i) => {
-          const slotIso = slotIndexToIso(i, date, dayStartHour)
-          const isPast = dayjs(slotIso).isBefore(dayjs())
-          const isBooked = isSlotBooked(i)
-          const isBookable = !isPast && !isBooked
-
-          // Odd past/bookable slots are merged into the preceding even cell
-          if ((isPast || isBookable) && i % 2 === 1) return null
-
-          const isEvenPast = isPast && i % 2 === 0
-          const nextIsPast =
-            isEvenPast &&
-            i + 1 < totalSlots &&
-            dayjs(slotIndexToIso(i + 1, date, dayStartHour)).isBefore(dayjs())
-
-          const isEvenBookable = isBookable && i % 2 === 0
-          const nextIsBookable =
-            isEvenBookable &&
-            i + 1 < totalSlots &&
-            !isSlotPast(slotIndexToIso(i + 1, date, dayStartHour)) &&
-            !isSlotBooked(i + 1)
-
-          const isWide =
-            (isEvenPast && nextIsPast) || (isEvenBookable && nextIsBookable)
-
-          return (
+        {/* Slot background cells */}
+        {readOnly &&
+          Array.from({ length: Math.floor(totalSlots / 2) }).map((_, i) => (
             <div
               key={i}
-              className={classNames(classes.slotCell, {
-                [classes.slotCellPast]: isEvenPast,
-                [classes.slotCellBookable]: isEvenBookable,
-                [classes.slotCellHour]: i % 2 === 0,
-              })}
-              style={
-                isEvenPast || isEvenBookable
-                  ? {
-                      left: i * SLOT_WIDTH_PX + 4,
-                      width: isWide ? SLOT_WIDTH_PX * 2 - 8 : SLOT_WIDTH_PX - 8,
-                      top: 4,
-                      bottom: 4,
-                      height: 'auto',
-                    }
-                  : { left: i * SLOT_WIDTH_PX, width: SLOT_WIDTH_PX }
-              }
-            >
-              {isEvenBookable && (
-                <span className={classes.slotCellBookableLabel}>
-                  {t('calendar.select_time')}
-                </span>
-              )}
-            </div>
-          )
-        })}
+              className={classNames(classes.slotCell, classes.slotCellPast)}
+              style={{
+                left: i * SLOT_WIDTH_PX * 2 + 4,
+                width: SLOT_WIDTH_PX * 2 - 8,
+                top: 4,
+                bottom: 4,
+                height: 'auto',
+              }}
+            />
+          ))}
+        {!readOnly &&
+          Array.from({ length: totalSlots }).map((_, i) => {
+            const slotIso = slotIndexToIso(i, date, dayStartHour)
+            const isPast = dayjs(slotIso).isBefore(dayjs())
+            const isBooked = isSlotBooked(i)
+            const fullyBooked = !isPast && !isBooked && isSlotFullyBooked(i)
+            const isBookable = !isPast && !isBooked && !fullyBooked
+
+            // Booked cells have no background pill — BookedSlotBlock renders instead
+            if (isBooked) return null
+
+            // Odd slots merge into the preceding even cell, but only when
+            // the even pair will also render as a pill (not booked).
+            if (i % 2 === 1) {
+              const prevBooked = isSlotBooked(i - 1)
+              const prevIso = slotIndexToIso(i - 1, date, dayStartHour)
+              const prevIsPast = isSlotPast(prevIso)
+              if (isPast && !prevBooked && prevIsPast) return null
+              if (
+                isBookable &&
+                !prevBooked &&
+                !prevIsPast &&
+                !isSlotFullyBooked(i - 1)
+              )
+                return null
+              if (
+                fullyBooked &&
+                !prevBooked &&
+                !prevIsPast &&
+                isSlotFullyBooked(i - 1)
+              )
+                return null
+              // Even pair is booked — render this odd slot independently below
+            }
+
+            // Pill cells: even (or independent odd) past/bookable/fullyBooked
+            const isPill = isPast || isBookable || fullyBooked
+            const nextSlotIso =
+              i + 1 < totalSlots
+                ? slotIndexToIso(i + 1, date, dayStartHour)
+                : null
+            const nextIsPastUnbooked =
+              isPast &&
+              nextSlotIso !== null &&
+              dayjs(nextSlotIso).isBefore(dayjs()) &&
+              !isSlotBooked(i + 1)
+            const nextIsBookable =
+              isBookable &&
+              nextSlotIso !== null &&
+              !isSlotPast(nextSlotIso) &&
+              !isSlotBooked(i + 1) &&
+              !isSlotFullyBooked(i + 1)
+            const nextIsFullyBooked =
+              fullyBooked &&
+              nextSlotIso !== null &&
+              !isSlotPast(nextSlotIso) &&
+              !isSlotBooked(i + 1) &&
+              isSlotFullyBooked(i + 1)
+            // Wide only for even slots (odd independent slots are always narrow)
+            const isWide =
+              i % 2 === 0 &&
+              (nextIsPastUnbooked || nextIsBookable || nextIsFullyBooked)
+
+            return (
+              <div
+                key={i}
+                className={classNames(classes.slotCell, {
+                  [classes.slotCellPast]: isPast,
+                  [classes.slotCellBookable]: isBookable,
+                  [classes.slotCellFullyBooked]: fullyBooked,
+                  [classes.slotCellHour]: i % 2 === 0,
+                })}
+                style={
+                  isPill
+                    ? {
+                        left: i * SLOT_WIDTH_PX + 4,
+                        width: isWide
+                          ? SLOT_WIDTH_PX * 2 - 8
+                          : SLOT_WIDTH_PX - 8,
+                        top: 4,
+                        bottom: 4,
+                        height: 'auto',
+                      }
+                    : { left: i * SLOT_WIDTH_PX, width: SLOT_WIDTH_PX }
+                }
+              >
+                {isBookable && (
+                  <span className={classes.slotCellBookableLabel}>
+                    {isWide ? t('calendar.select_time') : '+'}
+                  </span>
+                )}
+                {fullyBooked && isWide && (
+                  <span className={classes.slotCellFullyBookedLabel}>
+                    {t('calendar.booked')}
+                  </span>
+                )}
+              </div>
+            )
+          })}
 
         {/* Drag selection highlight */}
-        {isDragging && (
+        {!readOnly && isDragging && (
           <div
             className={classes.selectionHighlight}
             style={{ left: selectionLeft, width: selectionWidth }}

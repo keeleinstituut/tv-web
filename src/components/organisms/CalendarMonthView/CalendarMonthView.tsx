@@ -3,13 +3,29 @@ import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/et'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
-import { useFetchCalendarLanguages } from 'hooks/requests/useCalendar'
+import {
+  useFetchCalendarLanguages,
+  useFetchCalendarTranslatorLanguages,
+  useUpdatePinnedLanguages,
+} from 'hooks/requests/useCalendar'
 import { getWeekStart } from 'components/organisms/CalendarWeekView/CalendarWeekView'
 import CalendarMonthLanguageRow from 'components/molecules/CalendarMonthLanguageRow/CalendarMonthLanguageRow'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
+import { useCalendarRole } from 'hooks/useCalendarRole'
 import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
 import classes from './classes.module.scss'
+
+const FORALL_LANGUAGE: import('types/calendar').CalendarLanguage = {
+  language: {
+    id: 'forall',
+    type: 'LANGUAGE',
+    value: '/forall',
+    name: '',
+    meta: { iso3_code: '' },
+  },
+  pinned: false,
+}
 
 export const LABEL_WIDTH_PX = 64
 export const WEEK_COL_WIDTH = 186
@@ -61,10 +77,40 @@ const CalendarMonthView: FC = () => {
     setView,
     navigatePrevMonth,
     navigateNextMonth,
+    focusedLanguageId,
   } = useCalendarContext()
 
   const { t } = useTranslation()
-  const { languages } = useFetchCalendarLanguages()
+  const { isTPM, isClient, isTranslator } = useCalendarRole()
+  const canInteract = isTPM || isClient
+  const { languages: allLanguages } = useFetchCalendarLanguages()
+  const { languages: translatorLanguages } =
+    useFetchCalendarTranslatorLanguages()
+  const { mutate: updatePinned } = useUpdatePinnedLanguages()
+
+  const handleTogglePin = (langId: string) => {
+    const currentPinned = allLanguages
+      .filter((l) => l.pinned)
+      .map((l) => l.language.id)
+    const newPinned = currentPinned.includes(langId)
+      ? currentPinned.filter((id) => id !== langId)
+      : [...currentPinned, langId]
+    updatePinned(newPinned)
+  }
+
+  const languages = isTranslator ? translatorLanguages : allLanguages
+  const displayLanguages = isClient
+    ? [...languages].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
+    : languages
+
+  const finalLanguages =
+    isTranslator && displayLanguages.length === 0
+      ? [FORALL_LANGUAGE]
+      : displayLanguages
+
+  const visibleLanguages = focusedLanguageId
+    ? finalLanguages.filter((l) => l.language.id === focusedLanguageId)
+    : finalLanguages
 
   const weeks = getWeeksForMonth(currentDate)
   const dateStr = currentDate.format('YYYY-MM-DD')
@@ -159,9 +205,11 @@ const CalendarMonthView: FC = () => {
           style={{ minWidth: totalGridWidth }}
         >
           <div className={classes.cornerCell}>
-            <CalendarCollapseExpandButton
-              languageIds={languages.map((l) => l.language.id)}
-            />
+            {isTPM && (
+              <CalendarCollapseExpandButton
+                languageIds={languages.map((l) => l.language.id)}
+              />
+            )}
           </div>
           {weeks.map((week, i) => (
             <button
@@ -201,12 +249,17 @@ const CalendarMonthView: FC = () => {
           className={classes.rowsContainer}
           style={{ minWidth: totalGridWidth }}
         >
-          {languages.map((lang) => (
+          {visibleLanguages.map((lang) => (
             <CalendarMonthLanguageRow
               key={lang.language.id}
               language={lang}
               date={dateStr}
               weeks={weeks}
+              onTogglePin={
+                canInteract
+                  ? () => handleTogglePin(lang.language.id)
+                  : undefined
+              }
             />
           ))}
         </div>

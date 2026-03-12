@@ -26,6 +26,7 @@ const CalendarDayVendorRows: FC<Props> = ({
         <CalendarDayVendorRow
           key={vendor.id}
           vendor={vendor}
+          date={date}
           dayStartHour={dayStartHour}
           dayEndHour={dayEndHour}
         />

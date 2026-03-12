@@ -25,12 +25,34 @@ export interface CalendarLanguagesResponse {
 
 export interface BookedSlotAssignment {
   id: string
+  confirmed?: boolean
   sub_project: {
     id: string
     ext_id: string
     source_language: { id: string; value: string; name: string }
     destination_language: { id: string; value: string; name: string }
   }
+  // Teostaja panel detail fields (populated by backend, mocked for now)
+  service_type?: 'remote' | 'on-site'
+  location?: string
+  meeting_link?: string
+  reference_number?: string
+  client?: {
+    name: string
+    institution: string
+    email: string
+    phone: string
+  }
+  coordinator?: {
+    name: string
+    email: string
+    phone: string
+  }
+  files?: Array<{ name: string }>
+  comments?: Array<{ author: string; text: string; created_at: string }>
+  last_comment_date?: string
+  price_per_minute?: string
+  billing_method?: string
 }
 
 export interface BookedSlot {
@@ -208,6 +230,23 @@ export interface CreateOrderPayload {
   location?: string
   meeting_link?: string
   client_institution_id?: string
+  domain_id?: string
+  vendor_id?: string
+}
+
+// --- Update order ---
+
+export interface UpdateOrderPayload {
+  id: string
+  service_type?: 'remote' | 'on-site'
+  reference_number?: string
+  location?: string
+  meeting_link?: string
+  client_institution_id?: string
+  start_at?: string
+  end_at?: string
+  domain_id?: string
+  vendor_id?: string
 }
 
 // --- Slot matching ---

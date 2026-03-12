@@ -1,16 +1,16 @@
 import { FC, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import CalendarIcon from 'assets/icons/calender.svg?react'
 import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
 import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
-import { useAuth } from 'components/contexts/AuthContext'
+import { useCalendarRole } from 'hooks/useCalendarRole'
 import {
   useCalendarSearch,
   useFetchCalendarLanguages,
 } from 'hooks/requests/useCalendar'
-import { Privileges } from 'types/privileges'
 import { CalendarView } from 'types/calendar'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
@@ -25,15 +25,19 @@ const DURATION_OPTIONS = [
 
 const CalendarToolbar: FC = () => {
   const { t } = useTranslation()
-  const { view, setView, currentDate, setCurrentDate, openSidePanel } =
-    useCalendarContext()
-  const { userPrivileges } = useAuth()
+  const {
+    view,
+    setView,
+    currentDate,
+    setCurrentDate,
+    focusedLanguageId,
+    setFocusedLanguageId,
+  } = useCalendarContext()
+  const navigate = useNavigate()
+  const { isTPM, isClient } = useCalendarRole()
+  const canSearch = isTPM || isClient
   const { languages } = useFetchCalendarLanguages()
   const { mutate: runSearch, isPending: isSearching } = useCalendarSearch()
-
-  const canSearch =
-    userPrivileges.includes(Privileges.ManageProject) ||
-    userPrivileges.includes(Privileges.CreateProject)
 
   const [searchLangId, setSearchLangId] = useState('')
   const [searchFrom, setSearchFrom] = useState('')
@@ -77,6 +81,7 @@ const CalendarToolbar: FC = () => {
           if (dates.length > 0) {
             setCurrentDate(dayjs(dates[0]))
             setView('day')
+            setFocusedLanguageId(searchLangId)
           } else {
             setNoResults(true)
           }
@@ -87,21 +92,31 @@ const CalendarToolbar: FC = () => {
 
   const handleAddOrder = () => {
     setMoreOpen(false)
-    const lang =
-      languages.find((l) => l.language.id === searchLangId) || languages[0]
-    if (!lang) return
-    const base = searchFrom
-      ? dayjs(searchFrom)
-      : currentDate.hour(9).minute(0).second(0).millisecond(0)
-    openSidePanel({
-      language: lang,
-      startIso: base.toISOString(),
-      endIso: base.add(searchDuration, 'minute').toISOString(),
-    })
+    navigate('/projects/new-project')
   }
+
+  const focusedLang = focusedLanguageId
+    ? languages.find((l) => l.language.id === focusedLanguageId)
+    : null
 
   return (
     <div className={classes.toolbar}>
+      {focusedLang && (
+        <div className={classes.filterBanner}>
+          <span className={classes.filterBannerText}>
+            {t('calendar.filter_active', {
+              value: focusedLang.language.value,
+            })}
+          </span>
+          <button
+            className={classes.filterBannerClose}
+            onClick={() => setFocusedLanguageId(null)}
+            aria-label={t('common.close')}
+          >
+            ×
+          </button>
+        </div>
+      )}
       <div className={classes.content}>
         <div className={classes.tabs}>
           {views.map(({ key, label }) => (

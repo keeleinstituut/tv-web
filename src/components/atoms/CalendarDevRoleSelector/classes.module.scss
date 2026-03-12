@@ -1,0 +1,53 @@
+@use 'styles/variables' as *;
+
+.panel {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1a1a2e;
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #7986cb;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.btn {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid #3a3a5c;
+  background: transparent;
+  color: #aab0d0;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+
+  &:hover {
+    background: #2a2a4a;
+    color: #fff;
+  }
+}
+
+.btnActive {
+  @extend .btn;
+  background: #3f51b5;
+  border-color: #3f51b5;
+  color: #fff;
+}

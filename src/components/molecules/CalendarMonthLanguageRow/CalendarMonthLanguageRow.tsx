@@ -1,12 +1,16 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
-import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
+import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
 import { getInitials } from 'helpers/calendar'
-import { CalendarLanguage, VendorMonthData } from 'types/calendar'
-import { useFetchCalendarMonthVendors } from 'hooks/requests/useCalendar'
+import { CalendarLanguage, VendorMonthData, MonthSlot } from 'types/calendar'
+import {
+  useFetchCalendarMonthVendors,
+  useFetchCalendarMonth,
+} from 'hooks/requests/useCalendar'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarRole } from 'hooks/useCalendarRole'
 import { WeekRange } from 'components/organisms/CalendarMonthView/CalendarMonthView'
 import CalendarAddVendorRow from 'components/atoms/CalendarAddVendorRow/CalendarAddVendorRow'
 import classes from './classes.module.scss'
@@ -43,35 +47,122 @@ function getVendorWeekData(vendor: VendorMonthData, week: WeekRange): WeekData {
   return { freeMinutes, bookedMinutes }
 }
 
+function getLangWeekAvailableMinutes(
+  langSlots: MonthSlot[],
+  week: WeekRange
+): number {
+  const weekStart = week.start.format('YYYY-MM-DD')
+  const weekEnd = week.end.format('YYYY-MM-DD')
+  let minutes = 0
+  for (const slot of langSlots) {
+    if (slot.date < weekStart || slot.date > weekEnd) continue
+    if (slot.available_vendors > 0) minutes += slot.working_hours * 60
+  }
+  return minutes
+}
+
 // ─── Summary row (collapsed) ──────────────────────────────────────────────────
 
 const MonthSummaryRow: FC<{
   language: CalendarLanguage
   weeks: WeekRange[]
+  langSlots: MonthSlot[] | null
+  onTogglePin?: () => void
   onToggle: () => void
   expanded: boolean
-}> = ({ language, weeks, onToggle, expanded }) => {
+  isTPM: boolean
+}> = ({
+  language,
+  weeks,
+  langSlots,
+  onTogglePin,
+  onToggle,
+  expanded,
+  isTPM,
+}) => {
   const { t } = useTranslation()
+  const totalMinutes = langSlots
+    ? weeks.reduce(
+        (sum, week) => sum + getLangWeekAvailableMinutes(langSlots, week),
+        0
+      )
+    : 0
   return (
     <div className={classes.rowWrapper}>
       <div className={classes.label}>
-        <span className={classes.badge}>{language.language.value}</span>
-        <button
-          className={classes.expandBtn}
-          onClick={onToggle}
-          aria-label={t('calendar.expand_row')}
-        >
-          <ChevronDownIcon
-            className={classNames(classes.expandIcon, {
-              [classes.expandIconOpen]: expanded,
+        {onTogglePin && (
+          <button
+            className={classNames(classes.pinIcon, {
+              [classes.pinIconActive]: language.pinned,
             })}
-          />
-        </button>
+            onClick={onTogglePin}
+            title={
+              language.pinned
+                ? t('calendar.unpin_language')
+                : t('calendar.pin_language')
+            }
+          >
+            <svg
+              viewBox="0 0 10 10"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.5 1.5L8.5 3.5L6.2 5.8L6.5 8L5 6.5L3.5 8L3.8 5.8L1.5 3.5L3.5 1.5L4.5 2.5L5 2L5.5 2.5L6.5 1.5Z"
+                fill="currentColor"
+              />
+              <line
+                x1="5"
+                y1="6.5"
+                x2="5"
+                y2="9"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        )}
+        <span className={classes.badge}>{language.language.value}</span>
+        {isTPM && (
+          <button
+            className={classNames(classes.collapseBtn, {
+              [classes.collapseBtnExpanded]: expanded,
+            })}
+            onClick={onToggle}
+            aria-label={t('calendar.expand_row')}
+          >
+            <ArrowDownIcon className={classes.collapseIcon} />
+          </button>
+        )}
       </div>
-      {weeks.map((_, i) => (
-        <div key={i} className={classes.weekCell} />
-      ))}
-      <div className={classes.totalCell} />
+      {weeks.map((week, i) => {
+        const minutes = langSlots
+          ? getLangWeekAvailableMinutes(langSlots, week)
+          : 0
+        return (
+          <div key={i} className={classes.weekCell}>
+            {minutes > 0 && (
+              <div className={classes.weekCellAvailable}>
+                <ClockIcon className={classes.cellIcon} />
+                <span className={classes.cellLabel}>
+                  {formatMinutes(minutes)}
+                </span>
+              </div>
+            )}
+          </div>
+        )
+      })}
+      <div className={classes.totalCell}>
+        {totalMinutes > 0 && (
+          <div className={classes.weekCellAvailable}>
+            <ClockIcon className={classes.cellIcon} />
+            <span className={classes.cellLabel}>
+              {formatMinutes(totalMinutes)}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -161,11 +252,25 @@ interface Props {
   language: CalendarLanguage
   date: string
   weeks: WeekRange[]
+  onTogglePin?: () => void
 }
 
-const CalendarMonthLanguageRow: FC<Props> = ({ language, date, weeks }) => {
+const CalendarMonthLanguageRow: FC<Props> = ({
+  language,
+  date,
+  weeks,
+  onTogglePin,
+}) => {
   const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarContext()
-  const expanded = language.pinned || isLanguageExpanded(language.language.id)
+  const { isTPM } = useCalendarRole()
+  const expanded =
+    isTPM && (language.pinned || isLanguageExpanded(language.language.id))
+
+  const { data: monthData } = useFetchCalendarMonth(date)
+  const langMonthData = monthData?.languages.find(
+    (l) => l.language_id === language.language.id
+  )
+  const langSlots = langMonthData?.slots ?? null
 
   const { data: vendorData } = useFetchCalendarMonthVendors(
     date,
@@ -180,8 +285,11 @@ const CalendarMonthLanguageRow: FC<Props> = ({ language, date, weeks }) => {
       <MonthSummaryRow
         language={language}
         weeks={weeks}
+        langSlots={langSlots}
+        onTogglePin={onTogglePin}
         onToggle={() => toggleLanguageExpanded(language.language.id)}
         expanded={expanded}
+        isTPM={isTPM}
       />
       {expanded &&
         vendors.map((vendor) => (

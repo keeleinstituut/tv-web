@@ -43,5 +43,20 @@ $border-color: #e2e4e9;
   position: relative;
   height: $row-height;
   flex-shrink: 0;
+  background: $color-white;
+}
+
+.slotCell {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: $border-radius-4;
+}
+
+
+.slotCellPast {
   background: $color-background;
+}
+
+.slotCellFuture {
+  background: transparent;
 }

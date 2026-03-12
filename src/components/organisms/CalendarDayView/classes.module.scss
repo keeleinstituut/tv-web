@@ -193,7 +193,7 @@ $border-color: #e2e4e9;
   width: 1px;
   background: $border-color;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
 }
 
 // --- Current time marker ---

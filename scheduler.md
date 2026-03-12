@@ -15,7 +15,7 @@
              2. not enabled (harvikkeeled) for which current Client has any orders within the timeframe and
        2. Translator
           1. rows with
-             1. orders assigned to the user corresponding to languages are being displayed and if the user has a blocked time in the calendar then this is displayed across the language rows or
+             1. orders assigned to the user corresponding to languages are being displayed and if the user has a blocked time in the calendar then this is displayed across the language rows orsti
              2. if the user has no assigned bookings then just one row with blocked times or empty and the row label is /forall
        3. TPM
           1. all rows are displayed as described in the next flow description.
@@ -182,7 +182,8 @@
             2. the Translator and
             3. if the order had no Translator assigned (it was created for harvikkeel but not yet assigned to a translator by the TPM), then to this TPM.
 
-Managing EMO translators
+## Managing EMO translators
+
 Summary: In case all the available time slots are full, client must be still able to book an order. All such orders will appear in regular orders (Tellimused) list and respective notification is also sent to TPM once the order is created. TPM must manually find a translators/Vendor from the available vendors/translators list. In such list, there are regular vendors/translators and also so called EMO vendors/translators. TPM can assign manually EMO vendors to take care of the order.
 
 TPM is responsible of booking Vendors/translators to EMO shift. Once the Vendor is on EMO shift, the system does not assign any orders to them automatically, only TPM can assign orders to EMO Vendors.

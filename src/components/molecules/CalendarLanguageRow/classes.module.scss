@@ -23,33 +23,47 @@ $border-color: #e2e4e9;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 0 spacing(2);
+  padding: 0 4px;
   border-right: 1px solid $border-color;
   flex-shrink: 0;
+  gap: 2px;
 }
 
-.pinBtn {
-  width: 8px;
-  height: 8px;
-  flex-shrink: 0;
+.pinIcon {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  border: 2px solid #9799a4;
-  background: transparent;
+  border: none;
+  background: #c8d9e8;
+  color: #004277;
   cursor: pointer;
-  padding: 0;
-  transition:
-    background 0.15s,
-    border-color 0.15s;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  flex-shrink: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 
   &:hover {
-    border-color: #005aa3;
+    background: #a8c4da;
   }
 }
 
-.pinBtnActive {
+.pinIconActive {
   background: #005aa3;
-  border-color: #005aa3;
+  color: $color-white;
+
+  &:hover {
+    background: #004277;
+  }
 }
 
 .badge {
@@ -64,6 +78,32 @@ $border-color: #e2e4e9;
   font-weight: $font-weight-bold;
   line-height: 24px;
   letter-spacing: 0;
+}
+
+.collapseBtn {
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.collapseBtnExpanded {
+  .collapseIcon {
+    transform: rotate(180deg);
+  }
+}
+
+.collapseIcon {
+  width: 10px;
+  height: 10px;
+  fill: #5d6071;
+  transition: transform 0.2s;
 }
 
 // --- Slot area ---
@@ -115,6 +155,24 @@ $border-color: #e2e4e9;
   user-select: none;
 }
 
+.slotCellFullyBooked {
+  cursor: default;
+  background: #efdbdb;
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slotCellFullyBookedLabel {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: #8a4b4b;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
 // --- Drag selection ---
 
 .selectionHighlight {
@@ -145,6 +203,11 @@ $border-color: #e2e4e9;
   pointer-events: none;
 }
 
+.slotBlockNarrow {
+  justify-content: center;
+  padding: 0;
+}
+
 .slotClickable {
   pointer-events: auto;
   cursor: pointer;
@@ -155,8 +218,17 @@ $border-color: #e2e4e9;
 }
 
 .slotAssignmentFuture {
-  background: $color-info-light;
+  background: #e8f1f8;
   color: $color-secondary-dark;
+}
+
+.slotAssignmentConfirmed {
+  background: $color-primary;
+  color: $color-white;
+
+  svg {
+    color: $color-white;
+  }
 }
 
 .slotAssignmentPast {
@@ -186,6 +258,13 @@ $border-color: #e2e4e9;
   color: $color-secondary-dark;
 }
 
+.slotIconWhite {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: $color-white;
+}
+
 .slotIconExternal {
   width: 14px;
   height: 14px;
@@ -203,6 +282,11 @@ $border-color: #e2e4e9;
 .slotLabel {
   font-size: $font-size-12;
   color: $color-secondary-dark;
+}
+
+.slotLabelWhite {
+  font-size: $font-size-12;
+  color: $color-white;
 }
 
 .slotLabelMuted {

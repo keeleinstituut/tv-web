@@ -27,7 +27,7 @@ $primary-blue: #005aa3;
   flex-direction: column;
   transform: translateX(100%);
   transition: transform 0.25s ease;
-  z-index: 20;
+  z-index: 999;
   border-left: 1px solid $border-color;
 }
 
@@ -235,6 +235,290 @@ $primary-blue: #005aa3;
 
   &:hover {
     background: $color-background;
+  }
+}
+
+// --- Translator (Teostaja) view ---
+
+.translatorActions {
+  display: flex;
+  gap: 16px;
+  padding: 24px 24px 0;
+  flex-shrink: 0;
+}
+
+.readValue {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $label-color;
+  line-height: 24px;
+}
+
+.metaToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 24px 0 0;
+  font-size: $font-size-16;
+  color: #09090b;
+  width: 100%;
+  text-align: left;
+  border-top: 1px solid $border-color;
+}
+
+.metaIcon {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.metaIconOpen {
+  transform: rotate(180deg);
+}
+
+.metaContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-top: none;
+}
+
+.metaGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaRow {
+  display: flex;
+  gap: 16px;
+
+  .metaGroup {
+    flex: 1;
+  }
+}
+
+.metaLabel {
+  font-size: $font-size-14;
+  font-weight: $font-weight-normal;
+  color: $label-color;
+  line-height: 21px;
+}
+
+.metaValue {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $label-color;
+  line-height: 21px;
+}
+
+.sectionNote {
+  font-size: $font-size-14;
+  color: #4d4f5d;
+  margin-left: 4px;
+}
+
+.sectionLinkBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $primary-blue;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  text-decoration: underline;
+  padding: 0;
+}
+
+// --- Duration stepper ---
+
+.durationGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.durationStepper {
+  display: flex;
+  align-items: center;
+  width: 217px;
+}
+
+.stepperBtn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid $input-border;
+  background: $color-white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  color: $color-text;
+
+  &:first-child {
+    border-radius: $border-radius-4 0 0 $border-radius-4;
+  }
+
+  &:last-child {
+    border-radius: 0 $border-radius-4 $border-radius-4 0;
+  }
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.stepperValue {
+  flex: 1;
+  min-width: 80px;
+  height: 40px;
+  border-top: 1px solid $input-border;
+  border-bottom: 1px solid $input-border;
+  border-left: none;
+  border-right: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-16;
+  color: #09090b;
+  background: $color-white;
+}
+
+// --- Meeting link ---
+
+.meetingLink {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $primary-blue;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+// --- File list ---
+
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 24px 24px;
+}
+
+.fileListHeader {
+  font-size: $font-size-16;
+  color: #09090b;
+  line-height: 30px;
+  border-bottom: 2px solid $border-color;
+  padding-bottom: 4px;
+}
+
+.fileItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 16px;
+}
+
+.fileLink {
+  flex: 1;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: #09090b;
+  text-decoration: underline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.downloadIcon {
+  width: 24px;
+  height: 24px;
+  color: $primary-blue;
+  flex-shrink: 0;
+}
+
+// --- Comment content ---
+
+.commentContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 24px 24px;
+}
+
+.commentAuthor {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $label-color;
+  line-height: 24px;
+}
+
+.commentText {
+  font-size: $font-size-16;
+  font-weight: $font-weight-normal;
+  color: $label-color;
+  line-height: 24px;
+}
+
+.commentDate {
+  font-size: $font-size-14;
+  color: #4d4f5d;
+  line-height: 21px;
+}
+
+// --- Cost section ---
+
+.costContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 24px 24px;
+}
+
+.costGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.costLabel {
+  font-size: $font-size-14;
+  color: $label-color;
+  line-height: 21px;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $color-text;
+  background: $color-white;
+  outline: none;
+  min-height: 136px;
+  resize: vertical;
+  font-family: inherit;
+
+  &::placeholder {
+    color: $placeholder-color;
+  }
+
+  &:focus {
+    border-color: $primary-blue;
   }
 }
 

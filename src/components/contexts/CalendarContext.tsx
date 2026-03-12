@@ -9,12 +9,16 @@ import {
 } from 'react'
 import { BookedSlot, CalendarLanguage, CalendarView } from 'types/calendar'
 
+export type SidePanelIntent = 'view' | 'accept'
+
 export interface SidePanelSelection {
   language: CalendarLanguage
   startIso: string
   endIso: string
-  /** Present when opening an existing booked slot (view mode) */
+  /** Present when opening an existing booked slot (view/accept mode) */
   slot?: BookedSlot
+  /** 'accept' — Translator is reviewing an order for acceptance/decline */
+  intent?: SidePanelIntent
 }
 
 interface CalendarContextType {
@@ -35,6 +39,10 @@ interface CalendarContextType {
   sidePanelSelection: SidePanelSelection | null
   openSidePanel: (selection: SidePanelSelection) => void
   closeSidePanel: () => void
+  focusedLanguageId: string | null
+  setFocusedLanguageId: (id: string | null) => void
+  pendingDeepLink: { slotId: string; date: string; intent: SidePanelIntent } | null
+  setPendingDeepLink: (link: { slotId: string; date: string; intent: SidePanelIntent } | null) => void
 }
 
 const CalendarContext = createContext<CalendarContextType>({
@@ -55,6 +63,10 @@ const CalendarContext = createContext<CalendarContextType>({
   sidePanelSelection: null,
   openSidePanel: () => undefined,
   closeSidePanel: () => undefined,
+  focusedLanguageId: null,
+  setFocusedLanguageId: () => undefined,
+  pendingDeepLink: null,
+  setPendingDeepLink: () => undefined,
 })
 
 export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -63,6 +75,12 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   const [expandedLanguageIds, setExpandedLanguageIds] = useState<string[]>([])
   const [sidePanelSelection, setSidePanelSelection] =
     useState<SidePanelSelection | null>(null)
+  const [focusedLanguageId, setFocusedLanguageId] = useState<string | null>(null)
+  const [pendingDeepLink, setPendingDeepLink] = useState<{
+    slotId: string
+    date: string
+    intent: SidePanelIntent
+  } | null>(null)
 
   const openSidePanel = useCallback((selection: SidePanelSelection) => {
     setSidePanelSelection(selection)
@@ -73,6 +91,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [])
 
   const navigatePrev = useCallback(() => {
+    setFocusedLanguageId(null)
     setCurrentDate((prev) => {
       if (view === 'day') return prev.subtract(1, 'day')
       if (view === 'week') return prev.subtract(1, 'week')
@@ -81,6 +100,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [view])
 
   const navigateNext = useCallback(() => {
+    setFocusedLanguageId(null)
     setCurrentDate((prev) => {
       if (view === 'day') return prev.add(1, 'day')
       if (view === 'week') return prev.add(1, 'week')
@@ -89,10 +109,12 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [view])
 
   const navigatePrevMonth = useCallback(() => {
+    setFocusedLanguageId(null)
     setCurrentDate((prev) => prev.subtract(1, 'month'))
   }, [])
 
   const navigateNextMonth = useCallback(() => {
+    setFocusedLanguageId(null)
     setCurrentDate((prev) => prev.add(1, 'month'))
   }, [])
 
@@ -141,6 +163,10 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
         sidePanelSelection,
         openSidePanel,
         closeSidePanel,
+        focusedLanguageId,
+        setFocusedLanguageId,
+        pendingDeepLink,
+        setPendingDeepLink,
       }}
     >
       {children}

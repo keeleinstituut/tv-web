@@ -1,13 +1,17 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
-import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
+import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import AlarmIcon from 'assets/icons/alarm.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
 import { getInitials } from 'helpers/calendar'
-import { CalendarLanguage, VendorWeekData } from 'types/calendar'
-import { useFetchCalendarWeekVendors } from 'hooks/requests/useCalendar'
+import { CalendarLanguage, VendorWeekData, WeekSlot } from 'types/calendar'
+import {
+  useFetchCalendarWeekVendors,
+  useFetchCalendarWeek,
+} from 'hooks/requests/useCalendar'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarRole } from 'hooks/useCalendarRole'
 import CalendarAddVendorRow from 'components/atoms/CalendarAddVendorRow/CalendarAddVendorRow'
 import classes from './classes.module.scss'
 
@@ -18,30 +22,87 @@ const DAYS_IN_WEEK = 7
 
 const WeekSummaryRow: FC<{
   language: CalendarLanguage
+  langSlots: WeekSlot[] | null
+  onTogglePin?: () => void
   onToggle: () => void
   expanded: boolean
-}> = ({ language, onToggle, expanded }) => {
+  isTPM: boolean
+}> = ({ language, langSlots, onTogglePin, onToggle, expanded, isTPM }) => {
   const { t } = useTranslation()
   return (
     <div className={classes.rowWrapper}>
       <div className={classes.label}>
-        <span className={classes.badge}>{language.language.value}</span>
-        <button
-          className={classes.expandBtn}
-          onClick={onToggle}
-          aria-label={t('calendar.expand_row')}
-        >
-          <ChevronDownIcon
-            className={classNames(classes.expandIcon, {
-              [classes.expandIconOpen]: expanded,
+        {onTogglePin && (
+          <button
+            className={classNames(classes.pinIcon, {
+              [classes.pinIconActive]: language.pinned,
             })}
-          />
-        </button>
+            onClick={onTogglePin}
+            title={
+              language.pinned
+                ? t('calendar.unpin_language')
+                : t('calendar.pin_language')
+            }
+          >
+            <svg
+              viewBox="0 0 10 10"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6.5 1.5L8.5 3.5L6.2 5.8L6.5 8L5 6.5L3.5 8L3.8 5.8L1.5 3.5L3.5 1.5L4.5 2.5L5 2L5.5 2.5L6.5 1.5Z"
+                fill="currentColor"
+              />
+              <line
+                x1="5"
+                y1="6.5"
+                x2="5"
+                y2="9"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        )}
+        <span className={classes.badge}>{language.language.value}</span>
+        {isTPM && (
+          <button
+            className={classNames(classes.collapseBtn, {
+              [classes.collapseBtnExpanded]: expanded,
+            })}
+            onClick={onToggle}
+            aria-label={t('calendar.expand_row')}
+          >
+            <ArrowDownIcon className={classes.collapseIcon} />
+          </button>
+        )}
       </div>
       <div className={classes.slotArea}>
-        {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => (
-          <div key={dayIdx} className={classes.dayGroup} />
-        ))}
+        {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => {
+          const daySlots = langSlots
+            ? langSlots.slice(
+                dayIdx * BLOCK_COUNT,
+                dayIdx * BLOCK_COUNT + BLOCK_COUNT
+              )
+            : null
+          return (
+            <div key={dayIdx} className={classes.dayGroup}>
+              {daySlots
+                ? daySlots.map((slot, blockIdx) => (
+                    <div
+                      key={blockIdx}
+                      className={classNames(classes.block, {
+                        [classes.blockVendorAvail]:
+                          slot.working_hours > 0 && slot.available_vendors > 0,
+                      })}
+                    />
+                  ))
+                : null}
+              <div className={classes.block} />
+            </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -125,11 +186,24 @@ const VendorRow: FC<{
 interface Props {
   language: CalendarLanguage
   date: string // any date within the target week
+  onTogglePin?: () => void
 }
 
-const CalendarWeekLanguageRow: FC<Props> = ({ language, date }) => {
+const CalendarWeekLanguageRow: FC<Props> = ({
+  language,
+  date,
+  onTogglePin,
+}) => {
   const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarContext()
-  const expanded = language.pinned || isLanguageExpanded(language.language.id)
+  const { isTPM } = useCalendarRole()
+  const expanded =
+    isTPM && (language.pinned || isLanguageExpanded(language.language.id))
+
+  const { data: weekData } = useFetchCalendarWeek(date)
+  const langWeekData = weekData?.languages.find(
+    (l) => l.language_id === language.language.id
+  )
+  const langSlots = langWeekData?.slots ?? null
 
   const { data: vendorData } = useFetchCalendarWeekVendors(
     date,
@@ -143,8 +217,11 @@ const CalendarWeekLanguageRow: FC<Props> = ({ language, date }) => {
     <>
       <WeekSummaryRow
         language={language}
+        langSlots={langSlots}
+        onTogglePin={onTogglePin}
         onToggle={() => toggleLanguageExpanded(language.language.id)}
         expanded={expanded}
+        isTPM={isTPM}
       />
       {expanded &&
         vendors.map((vendor) => <VendorRow key={vendor.id} vendor={vendor} />)}

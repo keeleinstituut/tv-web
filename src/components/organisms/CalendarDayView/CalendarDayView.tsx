@@ -6,6 +6,7 @@ import classNames from 'classnames'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
 import {
   useFetchCalendarLanguages,
+  useFetchCalendarTranslatorLanguages,
   useUpdatePinnedLanguages,
 } from 'hooks/requests/useCalendar'
 import CalendarLanguageRow, {
@@ -14,6 +15,7 @@ import CalendarLanguageRow, {
 } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
+import { useCalendarRole } from 'hooks/useCalendarRole'
 import CalendarDayVendorRows from 'components/molecules/CalendarDayVendorRows/CalendarDayVendorRows'
 import classes from './classes.module.scss'
 
@@ -21,6 +23,17 @@ const DAY_START_HOUR = 9
 const DAY_END_HOUR = 22
 const TOTAL_SLOTS = (DAY_END_HOUR - DAY_START_HOUR) * 2
 const TOTAL_GRID_WIDTH = TOTAL_SLOTS * SLOT_WIDTH_PX
+
+const FORALL_LANGUAGE: import('types/calendar').CalendarLanguage = {
+  language: {
+    id: 'forall',
+    type: 'LANGUAGE',
+    value: '/forall',
+    name: '',
+    meta: { iso3_code: '' },
+  },
+  pinned: false,
+}
 
 // Bold at quarter-day boundaries; regular for others
 const BOLD_HOURS = new Set([9, 12, 15, 18, 21])
@@ -51,13 +64,22 @@ const CalendarDayView: FC = () => {
     navigateNextMonth,
     navigateToday,
     openSidePanel,
+    isLanguageExpanded,
+    toggleLanguageExpanded,
+    focusedLanguageId,
   } = useCalendarContext()
   const { t } = useTranslation()
-  const { languages } = useFetchCalendarLanguages()
+  const { isTPM, isClient, isTranslator } = useCalendarRole()
+  const canInteract = isTPM || isClient
+  const { languages: allLanguages } = useFetchCalendarLanguages()
+  const { languages: translatorLanguages } =
+    useFetchCalendarTranslatorLanguages()
   const { mutate: updatePinned } = useUpdatePinnedLanguages()
 
+  const languages = isTranslator ? translatorLanguages : allLanguages
+
   const handleTogglePin = (langId: string) => {
-    const currentPinned = languages
+    const currentPinned = allLanguages
       .filter((l) => l.pinned)
       .map((l) => l.language.id)
     const newPinned = currentPinned.includes(langId)
@@ -65,6 +87,20 @@ const CalendarDayView: FC = () => {
       : [...currentPinned, langId]
     updatePinned(newPinned)
   }
+  const displayLanguages = isClient
+    ? [...languages].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
+    : languages
+  // `languages` is already translator-filtered above; sort only applies to client
+
+  const finalLanguages =
+    isTranslator && displayLanguages.length === 0
+      ? [FORALL_LANGUAGE]
+      : displayLanguages
+
+  const visibleLanguages = focusedLanguageId
+    ? finalLanguages.filter((l) => l.language.id === focusedLanguageId)
+    : finalLanguages
+
   const dateStr = currentDate.format('YYYY-MM-DD')
   const isToday = currentDate.isSame(dayjs(), 'day')
 
@@ -181,18 +217,29 @@ const CalendarDayView: FC = () => {
             />
           ))}
 
-          {languages.map((lang) => (
+          {visibleLanguages.map((lang) => (
             <Fragment key={lang.language.id}>
               <CalendarLanguageRow
                 language={lang}
                 date={dateStr}
                 dayStartHour={DAY_START_HOUR}
                 dayEndHour={DAY_END_HOUR}
-                onSelectRange={(langId, start, end) => {
-                  const l = languages.find((l) => l.language.id === langId)
-                  if (l)
-                    openSidePanel({ language: l, startIso: start, endIso: end })
-                }}
+                readOnly={!canInteract}
+                onSelectRange={
+                  canInteract
+                    ? (langId, start, end) => {
+                        const l = languages.find(
+                          (l) => l.language.id === langId
+                        )
+                        if (l)
+                          openSidePanel({
+                            language: l,
+                            startIso: start,
+                            endIso: end,
+                          })
+                      }
+                    : undefined
+                }
                 onClickSlot={(slot) => {
                   openSidePanel({
                     language: lang,
@@ -201,16 +248,27 @@ const CalendarDayView: FC = () => {
                     slot,
                   })
                 }}
-                onTogglePin={() => handleTogglePin(lang.language.id)}
+                onTogglePin={
+                  canInteract
+                    ? () => handleTogglePin(lang.language.id)
+                    : undefined
+                }
+                onToggleExpand={
+                  isTPM
+                    ? () => toggleLanguageExpanded(lang.language.id)
+                    : undefined
+                }
+                isExpanded={lang.pinned || isLanguageExpanded(lang.language.id)}
               />
-              {lang.pinned && (
-                <CalendarDayVendorRows
-                  language={lang}
-                  date={dateStr}
-                  dayStartHour={DAY_START_HOUR}
-                  dayEndHour={DAY_END_HOUR}
-                />
-              )}
+              {isTPM &&
+                (lang.pinned || isLanguageExpanded(lang.language.id)) && (
+                  <CalendarDayVendorRows
+                    language={lang}
+                    date={dateStr}
+                    dayStartHour={DAY_START_HOUR}
+                    dayEndHour={DAY_END_HOUR}
+                  />
+                )}
             </Fragment>
           ))}
 
