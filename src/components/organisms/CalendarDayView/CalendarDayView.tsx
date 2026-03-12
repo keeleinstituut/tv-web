@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from 'react'
+import { FC, Fragment, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import 'dayjs/locale/et'
@@ -14,6 +14,7 @@ import CalendarLanguageRow, {
 } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
+import CalendarDayVendorRows from 'components/molecules/CalendarDayVendorRows/CalendarDayVendorRows'
 import classes from './classes.module.scss'
 
 const DAY_START_HOUR = 9
@@ -181,27 +182,36 @@ const CalendarDayView: FC = () => {
           ))}
 
           {languages.map((lang) => (
-            <CalendarLanguageRow
-              key={lang.language.id}
-              language={lang}
-              date={dateStr}
-              dayStartHour={DAY_START_HOUR}
-              dayEndHour={DAY_END_HOUR}
-              onSelectRange={(langId, start, end) => {
-                const l = languages.find((l) => l.language.id === langId)
-                if (l)
-                  openSidePanel({ language: l, startIso: start, endIso: end })
-              }}
-              onClickSlot={(slot) => {
-                openSidePanel({
-                  language: lang,
-                  startIso: slot.start_at,
-                  endIso: slot.end_at,
-                  slot,
-                })
-              }}
-              onTogglePin={() => handleTogglePin(lang.language.id)}
-            />
+            <Fragment key={lang.language.id}>
+              <CalendarLanguageRow
+                language={lang}
+                date={dateStr}
+                dayStartHour={DAY_START_HOUR}
+                dayEndHour={DAY_END_HOUR}
+                onSelectRange={(langId, start, end) => {
+                  const l = languages.find((l) => l.language.id === langId)
+                  if (l)
+                    openSidePanel({ language: l, startIso: start, endIso: end })
+                }}
+                onClickSlot={(slot) => {
+                  openSidePanel({
+                    language: lang,
+                    startIso: slot.start_at,
+                    endIso: slot.end_at,
+                    slot,
+                  })
+                }}
+                onTogglePin={() => handleTogglePin(lang.language.id)}
+              />
+              {lang.pinned && (
+                <CalendarDayVendorRows
+                  language={lang}
+                  date={dateStr}
+                  dayStartHour={DAY_START_HOUR}
+                  dayEndHour={DAY_END_HOUR}
+                />
+              )}
+            </Fragment>
           ))}
 
           {/* Needle: inside rowsContainer so it scrolls with the grid */}

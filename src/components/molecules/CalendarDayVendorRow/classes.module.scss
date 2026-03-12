@@ -1,0 +1,47 @@
+@use 'styles/variables' as *;
+
+$label-width: 64px;
+$row-height: 40px;
+$border-color: #e2e4e9;
+
+.vendorRowWrapper {
+  display: flex;
+  height: $row-height;
+  position: relative;
+}
+
+.vendorLabel {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 spacing(2);
+  border-right: 1px solid $border-color;
+  flex-shrink: 0;
+}
+
+.vendorBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  background: $color-background;
+  color: $color-text;
+  border-radius: $border-radius-4;
+  font-size: $font-size-12;
+  font-weight: $font-weight-bold;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.slotArea {
+  position: relative;
+  height: $row-height;
+  flex-shrink: 0;
+  background: $color-background;
+}

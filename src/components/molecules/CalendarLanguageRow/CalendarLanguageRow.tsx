@@ -69,7 +69,7 @@ function getSlotClass(slot: BookedSlot): string {
   }
 }
 
-const BookedSlotBlock: FC<{
+export const BookedSlotBlock: FC<{
   slot: BookedSlot
   dayStartHour: number
   onClick?: (slot: BookedSlot) => void

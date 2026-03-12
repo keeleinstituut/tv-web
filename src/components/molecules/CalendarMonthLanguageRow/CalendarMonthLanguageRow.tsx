@@ -165,7 +165,7 @@ interface Props {
 
 const CalendarMonthLanguageRow: FC<Props> = ({ language, date, weeks }) => {
   const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarContext()
-  const expanded = isLanguageExpanded(language.language.id)
+  const expanded = language.pinned || isLanguageExpanded(language.language.id)
 
   const { data: vendorData } = useFetchCalendarMonthVendors(
     date,

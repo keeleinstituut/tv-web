@@ -6,12 +6,12 @@ import classNames from 'classnames'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
 import { useFetchCalendarLanguages } from 'hooks/requests/useCalendar'
 import CalendarWeekLanguageRow from 'components/molecules/CalendarWeekLanguageRow/CalendarWeekLanguageRow'
+import { LABEL_WIDTH_PX } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
 import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
 import classes from './classes.module.scss'
 
-const LABEL_WIDTH_PX = 64
 const DAY_WIDTH_PX = 160
 
 // Estonian day letters: index matches dayjs .day() (0=Sun)

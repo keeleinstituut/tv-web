@@ -85,11 +85,14 @@ const VendorRow: FC<{
           }
 
           if (dayBookedHours > 0) {
+            const h = Math.floor(dayBookedHours)
+            const m = Math.round((dayBookedHours - h) * 60)
+            const bookedLabel = m === 0 ? `${h}h` : `${h}h ${m}min`
             return (
               <div key={dayIdx} className={classes.dayGroup}>
                 <div className={classes.dayBookedBanner}>
                   <AlarmIcon className={classes.bookedIcon} />
-                  <span className={classes.bookedLabel}>EMO</span>
+                  <span className={classes.bookedLabel}>{bookedLabel}</span>
                 </div>
               </div>
             )
@@ -126,7 +129,7 @@ interface Props {
 
 const CalendarWeekLanguageRow: FC<Props> = ({ language, date }) => {
   const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarContext()
-  const expanded = isLanguageExpanded(language.language.id)
+  const expanded = language.pinned || isLanguageExpanded(language.language.id)
 
   const { data: vendorData } = useFetchCalendarWeekVendors(
     date,
