@@ -13,6 +13,11 @@ $primary-blue: #005aa3;
   position: absolute;
   inset: 0;
   z-index: 19;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.4);
+  }
 }
 
 .panel {
@@ -29,6 +34,12 @@ $primary-blue: #005aa3;
   transition: transform 0.25s ease;
   z-index: 999;
   border-left: 1px solid $border-color;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    width: 100%;
+    border-left: none;
+  }
 }
 
 .open {

@@ -41,6 +41,13 @@
   gap: 24px;
   padding-top: 8px;
   padding-bottom: 16px;
+
+  @media (max-width: 900px) {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    row-gap: 10px;
+  }
 }
 
 // --- Segmented tab group ---
@@ -49,6 +56,10 @@
   display: flex;
   height: 37px;
   flex-shrink: 0;
+
+  @media (max-width: 900px) {
+    order: 1;
+  }
 }
 
 .tab {
@@ -119,6 +130,31 @@
   display: flex;
   align-items: flex-end;
   flex: 1;
+
+  @media (max-width: 900px) {
+    order: 3;
+    width: 100%;
+    flex: none;
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    // Reset connected-group borders when stacked
+    & .searchField:not(:first-child) .searchInput {
+      margin-left: 0;
+      margin-top: -1px;
+    }
+
+    & .searchField:first-child .searchInput {
+      border-radius: 4px 4px 0 0;
+    }
+
+    & .searchInputLast {
+      border-radius: 0 0 4px 4px;
+    }
+  }
 }
 
 .searchField {
@@ -200,18 +236,16 @@
 
 // --- Right side actions ---
 
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
 .findWrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
+
+  @media (max-width: 900px) {
+    order: 4;
+    width: 100%;
+  }
 }
 
 .noResults {
@@ -223,6 +257,7 @@
 .findButton {
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 40px;
   padding: 8px 24px;
   background: #005aa3;
@@ -238,6 +273,11 @@
   &:hover {
     background: #004d8a;
   }
+
+  @media (max-width: 900px) {
+    width: 100%;
+    border-radius: 8px;
+  }
 }
 
 .findButtonDisabled {
@@ -251,6 +291,11 @@
 
 .moreWrapper {
   position: relative;
+
+  @media (max-width: 900px) {
+    order: 2;
+    margin-left: auto;
+  }
 }
 
 .moreButton {

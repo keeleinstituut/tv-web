@@ -508,15 +508,16 @@ const CalendarLanguageRow: FC<Props> = ({
         )}
 
         {/* Booked slot blocks */}
-        {!isExpanded && bookedSlots.map((slot, i) => (
-          <BookedSlotBlock
-            key={i}
-            slot={slot}
-            dayStartHour={dayStartHour}
-            onClick={onClickSlot}
-            alwaysLightBlue={readOnly}
-          />
-        ))}
+        {!isExpanded &&
+          bookedSlots.map((slot, i) => (
+            <BookedSlotBlock
+              key={i}
+              slot={slot}
+              dayStartHour={dayStartHour}
+              onClick={onClickSlot}
+              alwaysLightBlue={readOnly}
+            />
+          ))}
       </div>
     </div>
   )

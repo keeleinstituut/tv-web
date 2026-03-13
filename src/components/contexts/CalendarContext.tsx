@@ -39,7 +39,6 @@ interface CalendarContextType {
   expandAll: (languageIds: string[]) => void
   collapseAll: () => void
   allCollapsedOverride: boolean
-  resetCollapseOverride: () => void
   sidePanelSelection: SidePanelSelection | null
   openSidePanel: (selection: SidePanelSelection) => void
   closeSidePanel: () => void
@@ -68,7 +67,6 @@ const CalendarContext = createContext<CalendarContextType>({
   expandAll: () => undefined,
   collapseAll: () => undefined,
   allCollapsedOverride: false,
-  resetCollapseOverride: () => undefined,
   sidePanelSelection: null,
   openSidePanel: () => undefined,
   closeSidePanel: () => undefined,
@@ -156,10 +154,6 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
     setAllCollapsedOverride(true)
   }, [])
 
-  const resetCollapseOverride = useCallback(() => {
-    setAllCollapsedOverride(false)
-  }, [])
-
   const toggleLanguageExpanded = useCallback((languageId: string) => {
     setAllCollapsedOverride(false)
     setExpandedLanguageIds((prev) =>
@@ -197,7 +191,6 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
         expandAll,
         collapseAll,
         allCollapsedOverride,
-        resetCollapseOverride,
         sidePanelSelection,
         openSidePanel,
         closeSidePanel,

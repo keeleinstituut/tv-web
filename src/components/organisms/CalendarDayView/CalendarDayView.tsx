@@ -4,11 +4,6 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/et'
 import classNames from 'classnames'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
-import {
-  useFetchCalendarLanguages,
-  useFetchCalendarTranslatorLanguages,
-  useUpdatePinnedLanguages,
-} from 'hooks/requests/useCalendar'
 import CalendarLanguageRow, {
   SLOT_WIDTH_PX,
   LABEL_WIDTH_PX,
@@ -16,6 +11,8 @@ import CalendarLanguageRow, {
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
 import { useCalendarRole } from 'hooks/useCalendarRole'
+import { useCalendarPinning } from 'hooks/useCalendarPinning'
+import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
 import CalendarDayVendorRows from 'components/molecules/CalendarDayVendorRows/CalendarDayVendorRows'
 import classes from './classes.module.scss'
 
@@ -23,17 +20,6 @@ const DAY_START_HOUR = 9
 const DAY_END_HOUR = 22
 const TOTAL_SLOTS = (DAY_END_HOUR - DAY_START_HOUR) * 2
 const TOTAL_GRID_WIDTH = TOTAL_SLOTS * SLOT_WIDTH_PX
-
-const FORALL_LANGUAGE: import('types/calendar').CalendarLanguage = {
-  language: {
-    id: 'forall',
-    type: 'LANGUAGE',
-    value: '/forall',
-    name: '',
-    meta: { iso3_code: '' },
-  },
-  pinned: false,
-}
 
 // Bold at quarter-day boundaries; regular for others
 const BOLD_HOURS = new Set([9, 12, 15, 18, 21])
@@ -72,39 +58,10 @@ const CalendarDayView: FC = () => {
     focusedLanguageId,
   } = useCalendarContext()
   const { t } = useTranslation()
-  const { isTPM, isClient, isTranslator } = useCalendarRole()
+  const { isTPM, isClient } = useCalendarRole()
   const canInteract = isTPM || isClient
-  const { languages: allLanguages } = useFetchCalendarLanguages()
-  const { languages: translatorLanguages } =
-    useFetchCalendarTranslatorLanguages()
-  const { mutate: updatePinned } = useUpdatePinnedLanguages()
-
-  const languages = isTranslator ? translatorLanguages : allLanguages
-
-  const pinnedCount = allLanguages.filter((l) => l.pinned).length
-
-  const handleTogglePin = (langId: string) => {
-    const currentPinned = allLanguages
-      .filter((l) => l.pinned)
-      .map((l) => l.language.id)
-    if (!currentPinned.includes(langId) && currentPinned.length >= 3) return
-    const newPinned = currentPinned.includes(langId)
-      ? currentPinned.filter((id) => id !== langId)
-      : [...currentPinned, langId]
-    updatePinned(newPinned)
-  }
-  const displayLanguages = [...languages].sort(
-    (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0)
-  )
-
-  const finalLanguages =
-    isTranslator && displayLanguages.length === 0
-      ? [FORALL_LANGUAGE]
-      : displayLanguages
-
-  const visibleLanguages = focusedLanguageId
-    ? finalLanguages.filter((l) => l.language.id === focusedLanguageId)
-    : finalLanguages
+  const { handleTogglePin, pinnedCount } = useCalendarPinning()
+  const { languages, visibleLanguages } = useVisibleCalendarLanguages()
 
   const dateStr = currentDate.format('YYYY-MM-DD')
   const isToday = currentDate.isSame(dayjs(), 'day')
@@ -249,6 +206,7 @@ const CalendarDayView: FC = () => {
 
           {visibleLanguages.map((lang) => {
             const isExpanded =
+              isTPM &&
               !allCollapsedOverride &&
               (lang.pinned || isLanguageExpanded(lang.language.id))
             return (

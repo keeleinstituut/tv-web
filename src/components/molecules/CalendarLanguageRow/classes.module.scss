@@ -257,13 +257,6 @@ $border-color: #e2e4e9;
   color: $color-secondary-dark;
 }
 
-.slotIconWhite {
-  width: 14px;
-  height: 14px;
-  flex-shrink: 0;
-  color: $color-white;
-}
-
 .slotIconExternal {
   width: 14px;
   height: 14px;
@@ -281,11 +274,6 @@ $border-color: #e2e4e9;
 .slotLabel {
   font-size: $font-size-12;
   color: $color-secondary-dark;
-}
-
-.slotLabelWhite {
-  font-size: $font-size-12;
-  color: $color-white;
 }
 
 .slotLabelMuted {

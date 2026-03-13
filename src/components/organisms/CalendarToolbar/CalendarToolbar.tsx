@@ -207,45 +207,45 @@ const CalendarToolbar: FC = () => {
         )}
 
         {canSearch && (
-          <div className={classes.actions}>
-            <div className={classes.findWrapper}>
-              <button
-                className={classNames(classes.findButton, {
-                  [classes.findButtonDisabled]: !searchLangId || isSearching,
-                })}
-                onClick={handleSearch}
-                disabled={!searchLangId || isSearching}
-              >
-                {isSearching
-                  ? t('calendar.searching')
-                  : t('calendar.find_slot')}
-              </button>
-              {noResults && (
-                <span className={classes.noResults}>
-                  {t('calendar.no_slots_found')}
-                </span>
-              )}
-            </div>
+          <div className={classes.findWrapper}>
+            <button
+              className={classNames(classes.findButton, {
+                [classes.findButtonDisabled]: !searchLangId || isSearching,
+              })}
+              onClick={handleSearch}
+              disabled={!searchLangId || isSearching}
+            >
+              {isSearching
+                ? t('calendar.searching')
+                : t('calendar.find_slot')}
+            </button>
+            {noResults && (
+              <span className={classes.noResults}>
+                {t('calendar.no_slots_found')}
+              </span>
+            )}
+          </div>
+        )}
 
-            <div className={classes.moreWrapper} ref={moreRef}>
-              <button
-                className={classes.moreButton}
-                onClick={() => setMoreOpen((o) => !o)}
-              >
-                {t('calendar.more')}
-                <HorizontalDotsIcon className={classes.moreIcon} />
-              </button>
-              {moreOpen && (
-                <div className={classes.moreDropdown}>
-                  <button
-                    className={classes.moreDropdownItem}
-                    onClick={handleAddOrder}
-                  >
-                    {t('calendar.add_order')}
-                  </button>
-                </div>
-              )}
-            </div>
+        {canSearch && (
+          <div className={classes.moreWrapper} ref={moreRef}>
+            <button
+              className={classes.moreButton}
+              onClick={() => setMoreOpen((o) => !o)}
+            >
+              {t('calendar.more')}
+              <HorizontalDotsIcon className={classes.moreIcon} />
+            </button>
+            {moreOpen && (
+              <div className={classes.moreDropdown}>
+                <button
+                  className={classes.moreDropdownItem}
+                  onClick={handleAddOrder}
+                >
+                  {t('calendar.add_order')}
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
