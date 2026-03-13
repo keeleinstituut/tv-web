@@ -247,16 +247,20 @@ const CalendarDayView: FC = () => {
             />
           ))}
 
-          {visibleLanguages.map((lang) => (
+          {visibleLanguages.map((lang) => {
+            const isExpanded =
+              !allCollapsedOverride &&
+              (lang.pinned || isLanguageExpanded(lang.language.id))
+            return (
             <Fragment key={lang.language.id}>
               <CalendarLanguageRow
                 language={lang}
                 date={dateStr}
                 dayStartHour={DAY_START_HOUR}
                 dayEndHour={DAY_END_HOUR}
-                readOnly={!canInteract}
+                readOnly={!canInteract || isExpanded}
                 onSelectRange={
-                  canInteract
+                  canInteract && !isExpanded
                     ? (langId, start, end) => {
                         const l = languages.find(
                           (l) => l.language.id === langId
@@ -270,14 +274,18 @@ const CalendarDayView: FC = () => {
                       }
                     : undefined
                 }
-                onClickSlot={(slot) => {
-                  openSidePanel({
-                    language: lang,
-                    startIso: slot.start_at,
-                    endIso: slot.end_at,
-                    slot,
-                  })
-                }}
+                onClickSlot={
+                  !isExpanded
+                    ? (slot) => {
+                        openSidePanel({
+                          language: lang,
+                          startIso: slot.start_at,
+                          endIso: slot.end_at,
+                          slot,
+                        })
+                      }
+                    : undefined
+                }
                 onTogglePin={
                   canInteract && (lang.pinned || pinnedCount < 3)
                     ? () => handleTogglePin(lang.language.id)
@@ -288,23 +296,19 @@ const CalendarDayView: FC = () => {
                     ? () => toggleLanguageExpanded(lang.language.id)
                     : undefined
                 }
-                isExpanded={
-                  !allCollapsedOverride &&
-                  (lang.pinned || isLanguageExpanded(lang.language.id))
-                }
+                isExpanded={isExpanded}
               />
-              {isTPM &&
-                !allCollapsedOverride &&
-                (lang.pinned || isLanguageExpanded(lang.language.id)) && (
-                  <CalendarDayVendorRows
-                    language={lang}
-                    date={dateStr}
-                    dayStartHour={DAY_START_HOUR}
-                    dayEndHour={DAY_END_HOUR}
-                  />
-                )}
+              {isTPM && isExpanded && (
+                <CalendarDayVendorRows
+                  language={lang}
+                  date={dateStr}
+                  dayStartHour={DAY_START_HOUR}
+                  dayEndHour={DAY_END_HOUR}
+                />
+              )}
             </Fragment>
-          ))}
+            )
+          })}
 
           {/* Needle: inside rowsContainer so it scrolls with the grid */}
           {isToday && timeX >= 0 && (

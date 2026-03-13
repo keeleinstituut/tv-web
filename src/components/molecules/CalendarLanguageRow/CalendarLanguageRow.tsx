@@ -385,7 +385,7 @@ const CalendarLanguageRow: FC<Props> = ({
         onMouseLeave={readOnly ? undefined : handleMouseUp}
       >
         {/* Slot background cells */}
-        {readOnly &&
+        {!isExpanded && readOnly &&
           Array.from({ length: Math.floor(totalSlots / 2) }).map((_, i) => (
             <div
               key={i}
@@ -399,7 +399,7 @@ const CalendarLanguageRow: FC<Props> = ({
               }}
             />
           ))}
-        {!readOnly &&
+        {!isExpanded && !readOnly &&
           Array.from({ length: totalSlots }).map((_, i) => {
             const slotIso = slotIndexToIso(i, date, dayStartHour)
             const isPast = dayjs(slotIso).isBefore(dayjs())
@@ -500,7 +500,7 @@ const CalendarLanguageRow: FC<Props> = ({
           })}
 
         {/* Drag selection highlight */}
-        {!readOnly && isDragging && (
+        {!isExpanded && !readOnly && isDragging && (
           <div
             className={classes.selectionHighlight}
             style={{ left: selectionLeft, width: selectionWidth }}
@@ -508,7 +508,7 @@ const CalendarLanguageRow: FC<Props> = ({
         )}
 
         {/* Booked slot blocks */}
-        {bookedSlots.map((slot, i) => (
+        {!isExpanded && bookedSlots.map((slot, i) => (
           <BookedSlotBlock
             key={i}
             slot={slot}
