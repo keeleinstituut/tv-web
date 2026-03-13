@@ -189,6 +189,43 @@ export interface CalendarMonthVendorsAllResponse {
   }>
 }
 
+// --- Order detail view ---
+
+export interface CalendarOrderDetail {
+  id: string
+  ext_id: string
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
+  language: { id: string; value: string; name: string }
+  start_at: string
+  end_at: string
+  service_type: 'remote' | 'on-site'
+  location?: string
+  domain?: string
+  reference_number?: string
+  created_at: string
+  updated_at?: string
+  accepted_at?: string
+  cancelled_at?: string
+  completed_at?: string
+  client?: { name: string; institution: string; email: string; phone: string }
+  coordinator?: { name: string; email: string; phone: string }
+  files_count: number
+  files_accessible: boolean
+  comments: Array<{ author: string; role: string; text: string; created_at: string }>
+}
+
+// --- Week slot bookings (Teostaja panel) ---
+
+export interface WeekSlotBooking {
+  id: string
+  ext_id: string
+  language: { id: string; value: string; name: string }
+}
+
+export interface WeekSlotBookingsResponse {
+  bookings: WeekSlotBooking[]
+}
+
 // --- Search ---
 
 export interface CalendarSearchParams {

@@ -1,0 +1,464 @@
+@use 'styles/variables' as *;
+
+$primary-blue: #005aa3;
+$border-color: #e2e4e9;
+$label-color: #6b7280;
+$value-color: #131317;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 960px;
+}
+
+.loading {
+  padding: 24px;
+  color: $color-text-light;
+}
+
+// --- Top actions ---
+
+.topActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+// --- Cards ---
+
+.card {
+  background: $color-white;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-4;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// --- Card 1: Summary ---
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.orderTitle {
+  font-size: 22px;
+  font-weight: $font-weight-normal;
+  color: $primary-blue;
+  margin: 0;
+}
+
+.statusBadge {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: #005aa3;
+  background: #e7f0f6;
+  border-radius: $border-radius-4;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.summaryGrid {
+  display: flex;
+  gap: 48px;
+}
+
+.summaryLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 0 0 auto;
+  min-width: 220px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fieldLabel {
+  font-size: $font-size-14;
+  color: $label-color;
+}
+
+.fieldValue {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $value-color;
+}
+
+// --- Timestamps ---
+
+.timestamps {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-4;
+  overflow: hidden;
+  align-self: flex-start;
+}
+
+.tsRow {
+  display: flex;
+  padding: 8px 16px;
+  border-bottom: 1px solid $border-color;
+  gap: 24px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.tsLabel {
+  font-size: $font-size-14;
+  color: $label-color;
+  flex: 0 0 160px;
+}
+
+.tsValue {
+  font-size: $font-size-14;
+  color: $value-color;
+}
+
+// --- Metadata collapsible ---
+
+.metaToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  border-top: 1px solid $border-color;
+  cursor: pointer;
+  padding: 16px 0 0;
+  font-size: $font-size-16;
+  color: $value-color;
+  width: 100%;
+  text-align: left;
+}
+
+.metaIcon {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+  transition: transform 0.2s;
+  transform: rotate(180deg); // default: pointing up = open
+}
+
+.metaIconOpen {
+  transform: rotate(0deg);
+}
+
+.metaContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metaRow {
+  display: flex;
+  gap: 32px;
+
+  .metaField {
+    flex: 1;
+  }
+}
+
+.metaField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metaLabel {
+  font-size: $font-size-14;
+  color: $label-color;
+}
+
+.metaValue {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $value-color;
+}
+
+// --- Card 2: Details ---
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: $font-weight-bold;
+  color: $primary-blue;
+  margin: 0;
+}
+
+.detailsGrid {
+  display: flex;
+  gap: 48px;
+}
+
+.detailsLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.detailsRight {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+// --- Service type toggle (read-only) ---
+
+.serviceToggle {
+  display: flex;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-4;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.serviceOption {
+  padding: 8px 20px;
+  font-size: $font-size-14;
+  color: $color-text-light;
+  background: $color-white;
+}
+
+.serviceOptionActive {
+  background: $color-background;
+  color: $value-color;
+  font-weight: $font-weight-bold;
+}
+
+// --- Readonly input ---
+
+.readonlyInput {
+  border: 1px solid #e2e4e9;
+  border-radius: $border-radius-4;
+  padding: 8px 12px;
+  font-size: $font-size-14;
+  color: $value-color;
+  background: $color-background;
+}
+
+// --- Domain chip ---
+
+.domainChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: $color-background;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  font-size: $font-size-14;
+  color: $value-color;
+}
+
+// --- Attachments info ---
+
+.attachmentsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: #e8f0f8;
+  border: 1px solid #b3cde8;
+  border-radius: $border-radius-4;
+}
+
+.attachmentsCount {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $primary-blue;
+}
+
+.attachmentsLocked {
+  font-size: $font-size-14;
+  color: $primary-blue;
+}
+
+// --- Card 3: Comments ---
+
+.comments {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.commentAuthor {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $value-color;
+}
+
+.commentText {
+  font-size: $font-size-16;
+  color: $value-color;
+  line-height: 1.5;
+}
+
+.commentDate {
+  font-size: $font-size-14;
+  color: $label-color;
+}
+
+// --- Required fields notice ---
+
+.requiredNotice {
+  font-size: $font-size-14;
+  color: #ac3232;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+// --- Editable input ---
+
+.editInput {
+  border: 1px solid #878a97;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $value-color;
+  background: $color-white;
+  width: 100%;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: #9799a4;
+  }
+}
+
+// --- File table ---
+
+.fileTable {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fileTableHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-16;
+  color: $value-color;
+  padding-bottom: 4px;
+  border-bottom: 2px solid $border-color;
+}
+
+.fileRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid $border-color;
+  font-size: $font-size-16;
+  color: $value-color;
+}
+
+.fileRowActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fileDate {
+  font-size: $font-size-14;
+  color: $label-color;
+}
+
+.fileIconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: $color-text;
+
+  &:hover {
+    color: #005aa3;
+  }
+}
+
+.noFilesRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: $font-size-16;
+  color: #4d4f5d;
+}
+
+// --- Comment textarea form ---
+
+.commentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.commentFormAuthor {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $value-color;
+}
+
+.commentTextarea {
+  border: 1px solid #878a97;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  min-height: 100px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+
+  &::placeholder {
+    color: #9799a4;
+  }
+}
+
+.commentEditLink {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #005aa3;
+  font-size: $font-size-14;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.filesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filesSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filesSectionTitle {
+  font-size: 20px;
+  font-weight: $font-weight-normal;
+  color: $value-color;
+}

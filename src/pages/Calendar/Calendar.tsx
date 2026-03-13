@@ -12,44 +12,13 @@ import CalendarWeekView from 'components/organisms/CalendarWeekView/CalendarWeek
 import CalendarMonthView from 'components/organisms/CalendarMonthView/CalendarMonthView'
 import CalendarOrderSidePanel from 'components/organisms/CalendarOrderSidePanel/CalendarOrderSidePanel'
 import CalendarDevRoleSelector from 'components/atoms/CalendarDevRoleSelector/CalendarDevRoleSelector'
-import CalendarTranslatorNotification from 'components/molecules/CalendarTranslatorNotification/CalendarTranslatorNotification'
-import CalendarClientNotification from 'components/molecules/CalendarClientNotification/CalendarClientNotification'
-import { useCalendarRole } from 'hooks/useCalendarRole'
-import {
-  useFetchCalendarDay,
-  useFetchCalendarTranslatorLanguages,
-} from 'hooks/requests/useCalendar'
-import { isSlotPast } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
+import CalendarWeekBookingPanel from 'components/organisms/CalendarWeekBookingPanel/CalendarWeekBookingPanel'
 import classes from './classes.module.scss'
 
 const CalendarContent: FC = () => {
   const { view, setView, setCurrentDate, setPendingDeepLink } =
     useCalendarContext()
   const [searchParams] = useSearchParams()
-  const { isTranslator, isClient } = useCalendarRole()
-  const today = dayjs().format('YYYY-MM-DD')
-  const { languages: translatorLanguages } = useFetchCalendarTranslatorLanguages()
-  const primaryLanguage = translatorLanguages[0] ?? null
-  const { data: todayData } = useFetchCalendarDay(
-    isTranslator || isClient ? today : '',
-    primaryLanguage?.language.id
-  )
-
-  // TODO: restore !isSlotPast check once backend is wired up
-  const pendingSlot = isTranslator
-    ? (todayData?.booked_slots ?? []).find(
-        (s) => s.type === 'assignment' && s.assignment?.confirmed === false
-      ) ?? null
-    : null
-
-  const confirmedSlot = isClient
-    ? (todayData?.booked_slots ?? []).find(
-        (s) =>
-          s.type === 'assignment' &&
-          !isSlotPast(s.start_at) &&
-          s.assignment?.confirmed === true
-      ) ?? null
-    : null
 
   useEffect(() => {
     const slotId = searchParams.get('slotId')
@@ -64,23 +33,12 @@ const CalendarContent: FC = () => {
 
   return (
     <div className={classes.container}>
-      {pendingSlot && primaryLanguage && (
-        <CalendarTranslatorNotification
-          slot={pendingSlot}
-          language={primaryLanguage}
-        />
-      )}
-      {confirmedSlot && primaryLanguage && (
-        <CalendarClientNotification
-          slot={confirmedSlot}
-          language={primaryLanguage}
-        />
-      )}
       <CalendarToolbar />
       {view === 'day' && <CalendarDayView />}
       {view === 'week' && <CalendarWeekView />}
       {view === 'month' && <CalendarMonthView />}
       <CalendarOrderSidePanel />
+      <CalendarWeekBookingPanel />
       <CalendarDevRoleSelector />
     </div>
   )

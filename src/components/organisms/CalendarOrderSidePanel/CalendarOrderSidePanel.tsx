@@ -18,6 +18,8 @@ import {
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import CloseIcon from 'assets/icons/close.svg?react'
 import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
@@ -137,7 +139,16 @@ const CalendarOrderSidePanel: FC = () => {
         domain_id: domainId || undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
       },
-      { onSuccess: closeSidePanel }
+      {
+        onSuccess: () => {
+          closeSidePanel()
+          showNotification({
+            type: NotificationTypes.Success,
+            title: t('notification.announcement'),
+            content: t('success.calendar_order_created'),
+          })
+        },
+      }
     )
   }
 
@@ -180,17 +191,44 @@ const CalendarOrderSidePanel: FC = () => {
 
   const handleVoidConfirm = () => {
     if (!projectId) return
-    cancelOrder(projectId, { onSuccess: closeSidePanel })
+    cancelOrder(projectId, {
+      onSuccess: () => {
+        closeSidePanel()
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.calendar_order_cancelled'),
+        })
+      },
+    })
   }
 
   const handleAccept = () => {
     if (!projectId) return
-    acceptOrder(projectId, { onSuccess: closeSidePanel })
+    acceptOrder(projectId, {
+      onSuccess: () => {
+        closeSidePanel()
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.calendar_order_accepted'),
+        })
+      },
+    })
   }
 
   const handleDecline = () => {
     if (!projectId) return
-    declineOrder(projectId, { onSuccess: closeSidePanel })
+    declineOrder(projectId, {
+      onSuccess: () => {
+        closeSidePanel()
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.calendar_order_declined'),
+        })
+      },
+    })
   }
 
   const handleStartChangeDuration = () => {
@@ -211,7 +249,16 @@ const CalendarOrderSidePanel: FC = () => {
       .toISOString()
     updateOrder(
       { id: projectId, end_at: newEndIso },
-      { onSuccess: () => setIsChangingDuration(false) }
+      {
+        onSuccess: () => {
+          setIsChangingDuration(false)
+          showNotification({
+            type: NotificationTypes.Success,
+            title: t('notification.announcement'),
+            content: t('success.calendar_duration_saved'),
+          })
+        },
+      }
     )
   }
 
@@ -230,7 +277,7 @@ const CalendarOrderSidePanel: FC = () => {
             {isViewMode && projectId && (
               <button
                 className={classes.headerBtn}
-                onClick={() => navigate(`/projects/${projectId}`)}
+                onClick={() => navigate(`/calendar/${projectId}`)}
               >
                 {t('calendar.open')}
                 <span className={classes.headerBtnArrow}>↗</span>

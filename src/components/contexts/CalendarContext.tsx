@@ -43,6 +43,9 @@ interface CalendarContextType {
   setFocusedLanguageId: (id: string | null) => void
   pendingDeepLink: { slotId: string; date: string; intent: SidePanelIntent } | null
   setPendingDeepLink: (link: { slotId: string; date: string; intent: SidePanelIntent } | null) => void
+  weekBookingPanel: { start_at: string; end_at: string; language_id: string } | null
+  openWeekBookingPanel: (params: { start_at: string; end_at: string; language_id: string }) => void
+  closeWeekBookingPanel: () => void
 }
 
 const CalendarContext = createContext<CalendarContextType>({
@@ -67,6 +70,9 @@ const CalendarContext = createContext<CalendarContextType>({
   setFocusedLanguageId: () => undefined,
   pendingDeepLink: null,
   setPendingDeepLink: () => undefined,
+  weekBookingPanel: null,
+  openWeekBookingPanel: () => undefined,
+  closeWeekBookingPanel: () => undefined,
 })
 
 export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -81,6 +87,22 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
     date: string
     intent: SidePanelIntent
   } | null>(null)
+  const [weekBookingPanel, setWeekBookingPanel] = useState<{
+    start_at: string
+    end_at: string
+    language_id: string
+  } | null>(null)
+
+  const openWeekBookingPanel = useCallback(
+    (params: { start_at: string; end_at: string; language_id: string }) => {
+      setWeekBookingPanel(params)
+    },
+    []
+  )
+
+  const closeWeekBookingPanel = useCallback(() => {
+    setWeekBookingPanel(null)
+  }, [])
 
   const openSidePanel = useCallback((selection: SidePanelSelection) => {
     setSidePanelSelection(selection)
@@ -167,6 +189,9 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
         setFocusedLanguageId,
         pendingDeepLink,
         setPendingDeepLink,
+        weekBookingPanel,
+        openWeekBookingPanel,
+        closeWeekBookingPanel,
       }}
     >
       {children}

@@ -89,7 +89,8 @@ export const BookedSlotBlock: FC<{
   slot: BookedSlot
   dayStartHour: number
   onClick?: (slot: BookedSlot) => void
-}> = ({ slot, dayStartHour, onClick }) => {
+  alwaysLightBlue?: boolean
+}> = ({ slot, dayStartHour, onClick, alwaysLightBlue }) => {
   const { t } = useTranslation()
   const left = timeToX(slot.start_at, dayStartHour)
   const width = durationToWidth(slot.start_at, slot.end_at)
@@ -108,12 +109,12 @@ export const BookedSlotBlock: FC<{
 
   if (slot.type === 'assignment' && !isPast) {
     const label = formatDuration(slot.start_at, slot.end_at)
-    const isConfirmed = !isOngoing && !!slot.assignment?.confirmed
+    const isConfirmed = !alwaysLightBlue && !isOngoing && !!slot.assignment?.confirmed
     return (
       <div
         className={classNames(
           classes.slotBlock,
-          getSlotClass(slot, isPast, isOngoing),
+          isConfirmed ? classes.slotAssignmentConfirmed : classes.slotAssignmentFuture,
           {
             [classes.slotClickable]: !!handleClick,
             [classes.slotBlockNarrow]: isNarrow,
@@ -533,6 +534,7 @@ const CalendarLanguageRow: FC<Props> = ({
             slot={slot}
             dayStartHour={dayStartHour}
             onClick={onClickSlot}
+            alwaysLightBlue={readOnly}
           />
         ))}
       </div>

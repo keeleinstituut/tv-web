@@ -15,6 +15,8 @@ import {
   CalendarSearchResponse,
   CalendarSummaryResponse,
   CalendarSlotMatchingResponse,
+  WeekSlotBookingsResponse,
+  CalendarOrderDetail,
   CreateOrderPayload,
   UpdateOrderPayload,
 } from 'types/calendar'
@@ -608,6 +610,43 @@ export const useCalendarSearch = () =>
     // mutationFn: (params: CalendarSearchParams) => apiClient.get(endpoints.CALENDAR_SEARCH, params),
   })
 
+export const useFetchWeekSlotBookings = (
+  params: { start_at: string; end_at: string; language_id: string } | null
+) => {
+  const { isLoading, data } = useQuery<WeekSlotBookingsResponse>({
+    queryKey: ['week-slot-bookings', params?.start_at, params?.end_at, params?.language_id],
+    enabled: !!params,
+    queryFn: () =>
+      new Promise<WeekSlotBookingsResponse>((resolve) =>
+        setTimeout(
+          () =>
+            resolve({
+              bookings: [
+                {
+                  id: 'proj-1',
+                  ext_id: 'PPA-2021-04-S-126',
+                  language: { id: 'lang-en', value: 'en', name: 'inglise' },
+                },
+                {
+                  id: 'proj-2',
+                  ext_id: 'PPA-225-08-T-3',
+                  language: { id: 'lang-en', value: 'en', name: 'inglise' },
+                },
+                {
+                  id: 'proj-3',
+                  ext_id: 'MRQ-225-08-T-3',
+                  language: { id: 'lang-en', value: 'en', name: 'inglise' },
+                },
+              ],
+            }),
+          300
+        )
+      ),
+    // queryFn: () => apiClient.get(endpoints.CALENDAR_WEEK_SLOT_BOOKINGS, params),
+  })
+  return { bookings: data?.bookings ?? [], isLoading }
+}
+
 export const useFetchCalendarSummary = (month: string) => {
   const { isLoading, isError, data } = useQuery<CalendarSummaryResponse>({
     queryKey: ['calendar-summary', month],
@@ -745,4 +784,54 @@ export const useUpdatePinnedLanguages = () => {
       }
     },
   })
+}
+
+export const useFetchCalendarOrderDetail = (id: string | null) => {
+  const { isLoading, isError, data } = useQuery<CalendarOrderDetail>({
+    queryKey: ['calendar-order-detail', id],
+    enabled: !!id,
+    queryFn: () =>
+      new Promise<CalendarOrderDetail>((resolve) =>
+        setTimeout(
+          () =>
+            resolve({
+              id: id!,
+              ext_id: 'PPA-2025-11-28-S-126',
+              status: 'pending',
+              language: { id: 'lang-fi', value: 'fi', name: 'Soome keel' },
+              start_at: '2025-11-28T15:00:00Z',
+              end_at: '2025-11-28T16:00:00Z',
+              service_type: 'on-site',
+              location: 'Tellija kirjutatud aadress Narva mnt 25, Tallinn',
+              domain: 'Õigus',
+              reference_number: 'PPA-2025-11-28-S-126',
+              created_at: '2025-11-25T00:00:00Z',
+              files_count: 2,
+              files_accessible: false,
+              client: {
+                name: 'Tellija Nimi',
+                institution: 'Politsei- ja piirivalveamet',
+                email: 'info@asutusenimi.ee',
+                phone: '+372 5432 1234',
+              },
+              coordinator: {
+                name: 'Malle Karu',
+                email: 'info@tõlkekorraldaja.ee',
+                phone: '+372 5432 4321',
+              },
+              comments: [
+                {
+                  author: 'Malle Karu',
+                  role: 'Tõlkekorraldaja',
+                  text: 'Tõlketeenus toimub kohapeal. Palume tõlgil saabuda vähemalt 10 minutit enne teenuse algust, et jõuaks vajadusel täpsustada korralduslikke detaile. Teenus toimub kohapeal aadressil Narva mnt 25, Tallinn. Sisenemine peauksest, turvakontrolli läbimine on kohustuslik. Palume kaasa võtta isikut tõendav dokument.',
+                  created_at: '2025-11-28T12:28:00Z',
+                },
+              ],
+            }),
+          300
+        )
+      ),
+    // queryFn: () => apiClient.get(`${endpoints.CALENDAR_ORDER_DETAIL}/${id}`),
+  })
+  return { order: data ?? null, isLoading, isError }
 }

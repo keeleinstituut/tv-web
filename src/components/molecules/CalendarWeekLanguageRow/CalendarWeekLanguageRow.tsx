@@ -27,7 +27,8 @@ const WeekSummaryRow: FC<{
   onToggle: () => void
   expanded: boolean
   isTPM: boolean
-}> = ({ language, langSlots, onTogglePin, onToggle, expanded, isTPM }) => {
+  onClickBookedSlot?: (slot: WeekSlot) => void
+}> = ({ language, langSlots, onTogglePin, onToggle, expanded, isTPM, onClickBookedSlot }) => {
   const { t } = useTranslation()
   return (
     <div className={classes.rowWrapper}>
@@ -89,15 +90,22 @@ const WeekSummaryRow: FC<{
           return (
             <div key={dayIdx} className={classes.dayGroup}>
               {daySlots
-                ? daySlots.map((slot, blockIdx) => (
-                    <div
-                      key={blockIdx}
-                      className={classNames(classes.block, {
-                        [classes.blockVendorAvail]:
-                          slot.working_hours > 0 && slot.available_vendors > 0,
-                      })}
-                    />
-                  ))
+                ? daySlots.map((slot, blockIdx) => {
+                    const isBooked = slot.my_bookings_count > 0
+                    const clickable = isBooked && !!onClickBookedSlot
+                    return (
+                      <div
+                        key={blockIdx}
+                        className={classNames(classes.block, {
+                          [classes.blockVendorAvail]:
+                            slot.working_hours > 0 && slot.available_vendors > 0,
+                          [classes.blockBooked]: isBooked,
+                          [classes.blockClickable]: clickable,
+                        })}
+                        onClick={clickable ? () => onClickBookedSlot(slot) : undefined}
+                      />
+                    )
+                  })
                 : null}
               <div className={classes.block} />
             </div>
@@ -194,8 +202,9 @@ const CalendarWeekLanguageRow: FC<Props> = ({
   date,
   onTogglePin,
 }) => {
-  const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarContext()
-  const { isTPM } = useCalendarRole()
+  const { isLanguageExpanded, toggleLanguageExpanded, openWeekBookingPanel } =
+    useCalendarContext()
+  const { isTPM, isTranslator } = useCalendarRole()
   const expanded =
     isTPM && (language.pinned || isLanguageExpanded(language.language.id))
 
@@ -222,6 +231,16 @@ const CalendarWeekLanguageRow: FC<Props> = ({
         onToggle={() => toggleLanguageExpanded(language.language.id)}
         expanded={expanded}
         isTPM={isTPM}
+        onClickBookedSlot={
+          isTranslator
+            ? (slot) =>
+                openWeekBookingPanel({
+                  start_at: slot.start_at,
+                  end_at: slot.end_at,
+                  language_id: language.language.id,
+                })
+            : undefined
+        }
       />
       {expanded &&
         vendors.map((vendor) => <VendorRow key={vendor.id} vendor={vendor} />)}

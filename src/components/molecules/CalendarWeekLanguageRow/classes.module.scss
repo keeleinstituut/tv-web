@@ -239,6 +239,20 @@ $block-gap: 4px;
   background: $color-secondary;
 }
 
+// Booked slot (my_bookings_count > 0) — darker blue
+.blockBooked {
+  background: #1769ab;
+}
+
+// Clickable booked slot
+.blockClickable {
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.85;
+  }
+}
+
 // Vendor unavailable block (partial-day vacation)
 .blockUnavailable {
   background: #efdbdb;

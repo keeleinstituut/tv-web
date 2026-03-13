@@ -36,6 +36,9 @@ import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
 import Calendar from 'pages/Calendar/Calendar'
+import CalendarNewOrder from 'pages/CalendarNewOrder/CalendarNewOrder'
+import CalendarOrderDetail from 'pages/CalendarOrderDetail/CalendarOrderDetail'
+import CalendarOrderBreadcrumb from 'components/molecules/Breadcrumbs/CalendarOrderBreadcrumb'
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
 import Terms from 'pages/Terms/Terms'
@@ -154,8 +157,23 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'calendar',
     label: i18n.t('menu.calendar'),
     Icon: CalendarIcon,
-    element: <Calendar />,
-    breadcrumb: i18n.t('menu.calendar'),
+    children: [
+      {
+        path: '',
+        element: <Calendar />,
+        breadcrumb: i18n.t('menu.calendar'),
+      },
+      {
+        path: 'new-order',
+        element: <CalendarNewOrder />,
+        breadcrumb: i18n.t('calendar.add_order'),
+      },
+      {
+        path: ':orderId',
+        element: <CalendarOrderDetail />,
+        breadcrumb: CalendarOrderBreadcrumb,
+      },
+    ],
   },
   {
     path: 'vendors',

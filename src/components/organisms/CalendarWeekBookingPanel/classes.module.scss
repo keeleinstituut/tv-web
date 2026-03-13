@@ -1,0 +1,130 @@
+@use 'styles/variables' as *;
+
+$panel-width: 522px;
+$header-height: 59px;
+$border-color: #d2d3d8;
+$primary-blue: #005aa3;
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 19;
+}
+
+.panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: $panel-width;
+  background: $color-white;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  z-index: 999;
+  border-left: 1px solid $border-color;
+}
+
+.open {
+  transform: translateX(0);
+}
+
+// --- Header ---
+
+.header {
+  height: $header-height;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid $border-color;
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: $font-weight-normal;
+  color: $primary-blue;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $primary-blue;
+  font-size: $font-size-14;
+  padding: 8px;
+  border-radius: $border-radius-4;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.closeIcon {
+  width: 18px;
+  height: 18px;
+}
+
+// --- Body ---
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.loading {
+  padding: 24px;
+  color: $color-text-light;
+  font-size: $font-size-14;
+}
+
+// --- Booking items ---
+
+.bookingItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid $border-color;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.bookingInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bookingId {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $primary-blue;
+}
+
+.bookingLang {
+  font-size: $font-size-14;
+  color: $color-text;
+}
+
+.chevron {
+  width: 18px;
+  height: 18px;
+  color: $color-text;
+  transform: rotate(180deg);
+  flex-shrink: 0;
+}

@@ -196,3 +196,19 @@ $border-color: #e2e4e9;
   border-radius: 50%;
   background: #09090b;
 }
+
+// TODO!!!??!?!??!?!?!?!??!?
+
+// 2. referring to the business spec we need to create the logic of adding a booking from side panel or new order view for the client and TPM
+// We already have some logic in place for clicking/dragging a slot which opens the side panel but please refer to the spec here ->
+
+// scheduler.md "Adding an order through side panel" and "Adding an order through order detail view"
+
+// design for side panel ->
+// @https://www.figma.com/design/3PLabFR6bgsvqsipbClHbL/EKI-t%C3%B5lkev%C3%A4rav-2.0---Translation-Hub?node-id=885-24835&m=dev
+
+// design for new order view ->
+// ??????
+
+// 3. for tpm day view -> if the language is collapsed then if any translator has a free slot then you can add a booking there by specifying the translator
+// if the language is expanded then the language row itself is empty and now you can see the free/booked slots for the translators instead
