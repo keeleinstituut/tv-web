@@ -238,6 +238,77 @@ $primary-blue: #005aa3;
   }
 }
 
+// --- Client non-past view/edit top bar ---
+
+.clientEditBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px 0;
+  flex-shrink: 0;
+}
+
+.loobuLink {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $primary-blue;
+  font-size: $font-size-16;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.requiredNotice {
+  font-size: $font-size-14;
+  color: $label-color;
+  margin: 0;
+}
+
+// --- Status badge (Client past view) ---
+
+.statusBadgeGrey {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: $border-radius-4;
+  background: #f0f0f2;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: #5d6071;
+  line-height: 21px;
+  align-self: flex-start;
+}
+
+.readValueBlue {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $primary-blue;
+  line-height: 24px;
+}
+
+.fileIconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: $color-text;
+  flex-shrink: 0;
+
+  &:hover {
+    color: $primary-blue;
+  }
+}
+
+.commentForm {
+  padding: 0 24px 24px;
+}
+
 // --- Translator (Teostaja) view ---
 
 .translatorActions {

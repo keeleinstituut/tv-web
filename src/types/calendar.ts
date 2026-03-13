@@ -48,6 +48,7 @@ export interface BookedSlotAssignment {
     email: string
     phone: string
   }
+  updated_at?: string
   files?: Array<{ name: string }>
   comments?: Array<{ author: string; text: string; created_at: string }>
   last_comment_date?: string

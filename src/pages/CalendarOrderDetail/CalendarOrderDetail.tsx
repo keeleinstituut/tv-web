@@ -434,7 +434,7 @@ const CalendarOrderDetail: FC = () => {
                 </span>
               </div>
             </div>
-            {order.location && (
+            {(order.service_type === 'on-site' ? order.location : order.meeting_link) && (
               <div className={classes.field}>
                 <span className={classes.fieldLabel}>
                   {order.service_type === 'on-site'
@@ -442,7 +442,18 @@ const CalendarOrderDetail: FC = () => {
                     : t('calendar.meeting_link')}
                 </span>
                 {isTranslator ? (
-                  <div className={classes.readonlyInput}>{order.location}</div>
+                  order.service_type === 'on-site' ? (
+                    <div className={classes.readonlyInput}>{order.location}</div>
+                  ) : (
+                    <a
+                      className={classes.meetingLink}
+                      href={order.meeting_link}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {order.meeting_link}
+                    </a>
+                  )
                 ) : (
                   <input
                     className={classes.editInput}

@@ -1,7 +1,6 @@
 import { FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
-import classNames from 'classnames'
 import dayjs from 'dayjs'
 import { formatDuration } from 'helpers/calendar'
 import { isSlotPast } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
@@ -21,11 +20,10 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import CloseIcon from 'assets/icons/close.svg?react'
-import AttachIcon from 'assets/icons/attach.svg?react'
-import ChevronLeft from 'assets/icons/chevron_left.svg?react'
-import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
-import AddIcon from 'assets/icons/add.svg?react'
-import DownloadIcon from 'assets/icons/download.svg?react'
+import CalendarTranslatorBody from './CalendarTranslatorBody'
+import CalendarClientPastBody from './CalendarClientPastBody'
+import CalendarClientBody from './CalendarClientBody'
+import CalendarOrderFormBody from './CalendarOrderFormBody'
 import classes from './classes.module.scss'
 
 type ServiceType = 'kaugtolge' | 'kontakttolge' | ''
@@ -49,6 +47,8 @@ const CalendarOrderSidePanel: FC = () => {
   const [viitenumber, setViitenumber] = useState('')
   const [serviceType, setServiceType] = useState<ServiceType>('')
   const [location, setLocation] = useState('')
+  const [kuupaev, setKuupaev] = useState('')
+  const [algusaeg, setAlgusaeg] = useState('')
   const [tellija, setTellija] = useState('')
   const [domainId, setDomainId] = useState('')
   const [vendorId, setVendorId] = useState('')
@@ -77,30 +77,25 @@ const CalendarOrderSidePanel: FC = () => {
   const slotDurationMinutes =
     startIso && endIso ? dayjs(endIso).diff(dayjs(startIso), 'minute') : 60
 
-  const formatDurationMins = (mins: number) => {
-    const h = Math.floor(mins / 60)
-    const m = mins % 60
-    if (h === 0) return `${m} min`
-    if (m === 0) return `${h} ${h === 1 ? 'tund' : 'tundi'}`
-    return `${h}h ${m}min`
-  }
-
   const projectId = slot?.assignment?.sub_project?.id
   const canEdit = isTPM || isClient
   const isPastSlot = slot ? isSlotPast(slot.start_at) : false
+  const isClientPastView = isClient && isViewMode && isPastSlot
 
-  // Slot matching for Teostaja — only fetch in form mode
+  // Slot matching for TPM — only fetch in form mode
   const slotMatchingParams =
     isFormMode && isTPM && startIso && endIso && language
-      ? { start_at: startIso, end_at: endIso, language_id: language.language.id }
+      ? {
+          start_at: startIso,
+          end_at: endIso,
+          language_id: language.language.id,
+        }
       : null
   const { vendors } = useFetchSlotMatching(slotMatchingParams)
 
   // Domains for Valdkond
   const { classifierValues: domains } = useClassifierValuesFetch(
-    isFormMode
-      ? { type: ClassifierValueType.TranslationDomain }
-      : undefined
+    isFormMode ? { type: ClassifierValueType.TranslationDomain } : undefined
   )
 
   // Reset state when panel opens/closes
@@ -109,6 +104,8 @@ const CalendarOrderSidePanel: FC = () => {
       setViitenumber('')
       setServiceType('')
       setLocation('')
+      setKuupaev('')
+      setAlgusaeg('')
       setTellija('')
       setDomainId('')
       setVendorId('')
@@ -118,8 +115,8 @@ const CalendarOrderSidePanel: FC = () => {
       setIsChangingDuration(false)
       setDurationMinutes(60)
       setDurationNote('')
-    } else if (isAcceptMode) {
-      // Unconfirmed accept panel: metaandmed expanded by default
+    } else if (isAcceptMode || isClientPastView) {
+      // Unconfirmed accept panel + Client past view: metaandmed expanded by default
       setIsMetaOpen(true)
     }
   }, [isOpen, isAcceptMode])
@@ -155,6 +152,20 @@ const CalendarOrderSidePanel: FC = () => {
   const handleStartEdit = () => {
     setIsEditing(true)
     setIsConfirmingCancel(false)
+    setViitenumber(slot?.assignment?.reference_number ?? '')
+    setServiceType(
+      slot?.assignment?.service_type === 'remote'
+        ? 'kaugtolge'
+        : slot?.assignment?.service_type === 'on-site'
+          ? 'kontakttolge'
+          : ''
+    )
+    setLocation(
+      slot?.assignment?.meeting_link ?? slot?.assignment?.location ?? ''
+    )
+    setKuupaev(date)
+    setAlgusaeg(startTime)
+    setDurationMinutes(slotDurationMinutes)
   }
 
   const handleCancelEdit = () => {
@@ -162,6 +173,8 @@ const CalendarOrderSidePanel: FC = () => {
     setViitenumber('')
     setServiceType('')
     setLocation('')
+    setKuupaev('')
+    setAlgusaeg('')
     setTellija('')
     setDomainId('')
     setVendorId('')
@@ -262,6 +275,12 @@ const CalendarOrderSidePanel: FC = () => {
     )
   }
 
+  // Determine which footer to show
+  const showFooter =
+    (!isTranslatorView || isChangingDuration) &&
+    !isClientPastView &&
+    !(isClient && isViewMode)
+
   return (
     <>
       {isOpen && <div className={classes.backdrop} onClick={closeSidePanel} />}
@@ -293,589 +312,104 @@ const CalendarOrderSidePanel: FC = () => {
         {/* Scrollable body */}
         <div className={classes.body}>
           {isTranslatorView ? (
-            <>
-              {/* Action buttons — hidden for past confirmed slots; accept always visible */}
-              {(!isPastSlot || isAcceptMode) && <div className={classes.translatorActions}>
-                {isChangingDuration ? (
-                  <Button
-                    appearance={AppearanceTypes.Secondary}
-                    onClick={() => setIsConfirmingCancel(true)}
-                    disabled={isCancelling}
-                  >
-                    {t('calendar.cancel_order')}
-                  </Button>
-                ) : isAcceptMode ? (
-                  <>
-                    <Button
-                      appearance={AppearanceTypes.Primary}
-                      onClick={handleAccept}
-                      disabled={isAccepting || isDeclining}
-                    >
-                      {isAccepting
-                        ? t('calendar.saving')
-                        : t('calendar.accept')}
-                    </Button>
-                    <Button
-                      appearance={AppearanceTypes.Secondary}
-                      onClick={handleDecline}
-                      disabled={isAccepting || isDeclining}
-                    >
-                      {isDeclining
-                        ? t('calendar.saving')
-                        : t('calendar.decline')}
-                    </Button>
-                  </>
-                ) : isConfirmingCancel ? (
-                  <>
-                    <Button
-                      appearance={AppearanceTypes.Primary}
-                      onClick={handleVoidConfirm}
-                      disabled={isCancelling}
-                    >
-                      {isCancelling
-                        ? t('calendar.voiding')
-                        : t('calendar.void_confirm_yes')}
-                    </Button>
-                    <Button
-                      appearance={AppearanceTypes.Secondary}
-                      onClick={() => setIsConfirmingCancel(false)}
-                      disabled={isCancelling}
-                    >
-                      {t('calendar.void_confirm_no')}
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    {isTranslatorConfirmedView && (
-                      <Button
-                        appearance={AppearanceTypes.Primary}
-                        onClick={handleStartChangeDuration}
-                      >
-                        {t('calendar.change_duration')}
-                      </Button>
-                    )}
-                    <Button
-                      appearance={AppearanceTypes.Secondary}
-                      onClick={() => setIsConfirmingCancel(true)}
-                    >
-                      {t('calendar.cancel_order')}
-                    </Button>
-                  </>
-                )}
-              </div>}
-
-              {/* Read-only order fields */}
-              <div className={classes.form}>
-                <div className={classes.formGroup}>
-                  <label className={classes.label}>
-                    {t('calendar.language')}
-                  </label>
-                  <span className={classes.readValue}>
-                    {language?.language.name ?? ''}
-                  </span>
-                </div>
-                <div className={classes.formGroup}>
-                  <label className={classes.label}>{t('calendar.date')}</label>
-                  <span className={classes.readValue}>{date}</span>
-                </div>
-                <div className={classes.formGroup}>
-                  <label className={classes.label}>
-                    {t('calendar.start')}
-                  </label>
-                  <span className={classes.readValue}>{startTime}</span>
-                </div>
-
-                {/* Kestus — stepper in change mode, read-only otherwise */}
-                <div className={classes.durationGroup}>
-                  <label className={classes.label}>
-                    {t('calendar.duration')}
-                  </label>
-                  {isChangingDuration ? (
-                    <div className={classes.durationStepper}>
-                      <button
-                        className={classes.stepperBtn}
-                        onClick={() =>
-                          setDurationMinutes((v) => Math.max(30, v - 30))
-                        }
-                      >
-                        −
-                      </button>
-                      <span className={classes.stepperValue}>
-                        {formatDurationMins(durationMinutes)}
-                      </span>
-                      <button
-                        className={classes.stepperBtn}
-                        onClick={() =>
-                          setDurationMinutes((v) => v + 30)
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-                  ) : (
-                    <span className={classes.readValue}>{duration}</span>
-                  )}
-                </div>
-
-                {slot?.assignment?.service_type && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.order_way')}
-                    </label>
-                    <span className={classes.readValue}>
-                      {slot.assignment.service_type === 'remote'
-                        ? t('calendar.service_type_remote')
-                        : t('calendar.service_type_contact')}
-                    </span>
-                  </div>
-                )}
-                {slot?.assignment?.location && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.location')}
-                    </label>
-                    <span className={classes.readValue}>
-                      {slot.assignment.location}
-                    </span>
-                  </div>
-                )}
-                {slot?.assignment?.meeting_link && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.meeting_link')}
-                    </label>
-                    <a
-                      className={classes.meetingLink}
-                      href={`https://${slot.assignment.meeting_link}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {slot.assignment.meeting_link}
-                    </a>
-                  </div>
-                )}
-
-                {/* Collapsible metaandmed */}
-                <button
-                  className={classes.metaToggle}
-                  onClick={() => setIsMetaOpen((v) => !v)}
-                >
-                  <ArrowDownIcon
-                    className={classNames(classes.metaIcon, {
-                      [classes.metaIconOpen]: isMetaOpen,
-                    })}
-                  />
-                  <span>{t('calendar.order_meta')}</span>
-                </button>
-                {isMetaOpen && (
-                  <div className={classes.metaContent}>
-                    {slot?.assignment?.reference_number && (
-                      <div className={classes.metaGroup}>
-                        <span className={classes.metaLabel}>
-                          {t('calendar.reference_number')}
-                        </span>
-                        <span className={classes.metaValue}>
-                          {slot.assignment.reference_number}
-                        </span>
-                      </div>
-                    )}
-                    {slot?.assignment?.client && (
-                      <>
-                        <div className={classes.metaRow}>
-                          <div className={classes.metaGroup}>
-                            <span className={classes.metaLabel}>
-                              {t('calendar.client_name')}
-                            </span>
-                            <span className={classes.metaValue}>
-                              {slot.assignment.client.name}
-                            </span>
-                          </div>
-                          <div className={classes.metaGroup}>
-                            <span className={classes.metaLabel}>
-                              {t('calendar.institution')}
-                            </span>
-                            <span className={classes.metaValue}>
-                              {slot.assignment.client.institution}
-                            </span>
-                          </div>
-                        </div>
-                        <div className={classes.metaRow}>
-                          <div className={classes.metaGroup}>
-                            <span className={classes.metaLabel}>
-                              {t('calendar.email')}
-                            </span>
-                            <span className={classes.metaValue}>
-                              {slot.assignment.client.email}
-                            </span>
-                          </div>
-                          <div className={classes.metaGroup}>
-                            <span className={classes.metaLabel}>
-                              {t('calendar.phone')}
-                            </span>
-                            <span className={classes.metaValue}>
-                              {slot.assignment.client.phone}
-                            </span>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    {slot?.assignment?.coordinator && (
-                      <>
-                        <div className={classes.metaGroup}>
-                          <span className={classes.metaLabel}>
-                            {t('calendar.coordinator_name')}
-                          </span>
-                          <span className={classes.metaValue}>
-                            {slot.assignment.coordinator.name}
-                          </span>
-                        </div>
-                        <div className={classes.metaRow}>
-                          <div className={classes.metaGroup}>
-                            <span className={classes.metaLabel}>
-                              {t('calendar.email')}
-                            </span>
-                            <span className={classes.metaValue}>
-                              {slot.assignment.coordinator.email}
-                            </span>
-                          </div>
-                          <div className={classes.metaGroup}>
-                            <span className={classes.metaLabel}>
-                              {t('calendar.phone')}
-                            </span>
-                            <span className={classes.metaValue}>
-                              {slot.assignment.coordinator.phone}
-                            </span>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Lisamaterjalid */}
-              <div className={classes.divider} />
-              <div className={classes.sectionRow}>
-                <div className={classes.sectionLabel}>
-                  <AttachIcon className={classes.sectionIcon} />
-                  <span>{t('calendar.attachments')}</span>
-                  {isTranslatorConfirmedView &&
-                    slot?.assignment?.files?.length ? (
-                      <button className={classes.sectionLinkBtn}>
-                        {t('calendar.download_files', {
-                          count: slot.assignment.files.length,
-                        })}
-                      </button>
-                    ) : !isTranslatorConfirmedView ? null : (
-                      <span className={classes.sectionNote}>
-                        {t('calendar.available_after_confirmation')}
-                      </span>
-                    )}
-                </div>
-              </div>
-              {(isChangingDuration || isPastSlot) && slot?.assignment?.files?.length ? (
-                <div className={classes.fileList}>
-                  <div className={classes.fileListHeader}>
-                    {t('calendar.file_list_header')}
-                  </div>
-                  {slot.assignment.files.map((f, i) => (
-                    <div key={i} className={classes.fileItem}>
-                      <button className={classes.fileLink}>{f.name}</button>
-                      <DownloadIcon className={classes.downloadIcon} />
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-
-              {/* Kommentaarid */}
-              <div className={classes.divider} />
-              <div className={classes.sectionRow}>
-                <div className={classes.sectionLabel}>
-                  <ChevronLeft className={classes.sectionChevron} />
-                  <span>{t('calendar.comments')}</span>
-                  {isTranslatorConfirmedView &&
-                    slot?.assignment?.last_comment_date && (
-                      <span className={classes.sectionNote}>
-                        {t('calendar.last_commented', {
-                          date: slot.assignment.last_comment_date,
-                        })}
-                      </span>
-                    )}
-                </div>
-                {isTranslatorConfirmedView && (
-                  <button className={classes.sectionBtn}>
-                    {t('calendar.add_short')}
-                    <AddIcon style={{ width: 16, height: 16 }} />
-                  </button>
-                )}
-              </div>
-              {(isChangingDuration || isPastSlot) && slot?.assignment?.comments?.length ? (
-                <>
-                  {slot.assignment.comments.map((c, i) => (
-                    <div key={i} className={classes.commentContent}>
-                      <span className={classes.commentAuthor}>{c.author}</span>
-                      <span className={classes.commentText}>{c.text}</span>
-                      <span className={classes.commentDate}>
-                        {t('calendar.added_at', {
-                          date: dayjs(c.created_at).format(
-                            'DD.MM.YYYY [kell] HH:mm'
-                          ),
-                        })}
-                      </span>
-                    </div>
-                  ))}
-                  <div className={classes.sectionRow}>
-                    <div className={classes.sectionLabel} />
-                    <button className={classes.sectionBtn}>
-                      {t('calendar.add_short')}
-                      <AddIcon style={{ width: 16, height: 16 }} />
-                    </button>
-                  </div>
-                </>
-              ) : null}
-
-              {/* Tõlketeenuse maksumus */}
-              {(isChangingDuration || isPastSlot) && (
-                <>
-                  <div className={classes.divider} />
-                  <div className={classes.sectionRow}>
-                    <div className={classes.sectionLabel}>
-                      <ChevronLeft className={classes.sectionChevron} />
-                      <span>{t('calendar.translation_cost')}</span>
-                    </div>
-                  </div>
-                  <div className={classes.costContent}>
-                    {slot?.assignment?.price_per_minute && (
-                      <div className={classes.costGroup}>
-                        <span className={classes.costLabel}>
-                          {t('calendar.cost_per_minute')}
-                        </span>
-                        <div className={classes.inputReadonly}>
-                          {slot.assignment.price_per_minute}
-                        </div>
-                      </div>
-                    )}
-                    {slot?.assignment?.billing_method && (
-                      <div className={classes.costGroup}>
-                        <span className={classes.costLabel}>
-                          {t('calendar.billing_method')}
-                        </span>
-                        <div className={classes.inputReadonly}>
-                          {slot.assignment.billing_method}
-                        </div>
-                      </div>
-                    )}
-                    {isChangingDuration && (
-                      <div className={classes.costGroup}>
-                        <span className={classes.costLabel}>
-                          {t('calendar.add_note')}
-                        </span>
-                        <textarea
-                          className={classes.textarea}
-                          placeholder={t('calendar.write_text')}
-                          value={durationNote}
-                          onChange={(e) => setDurationNote(e.target.value)}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </>
-              )}
-            </>
+            <CalendarTranslatorBody
+              language={language}
+              slot={slot}
+              date={date}
+              startTime={startTime}
+              duration={duration}
+              isPastSlot={isPastSlot}
+              isAcceptMode={isAcceptMode}
+              isTranslatorConfirmedView={isTranslatorConfirmedView}
+              isChangingDuration={isChangingDuration}
+              isConfirmingCancel={isConfirmingCancel}
+              isMetaOpen={isMetaOpen}
+              durationMinutes={durationMinutes}
+              durationNote={durationNote}
+              isAccepting={isAccepting}
+              isDeclining={isDeclining}
+              isCancelling={isCancelling}
+              isUpdating={isUpdating}
+              onAccept={handleAccept}
+              onDecline={handleDecline}
+              onVoidConfirm={handleVoidConfirm}
+              onSetIsConfirmingCancel={setIsConfirmingCancel}
+              onStartChangeDuration={handleStartChangeDuration}
+              onSetIsMetaOpen={setIsMetaOpen}
+              onSetDurationMinutes={setDurationMinutes}
+              onSetDurationNote={setDurationNote}
+            />
+          ) : isClientPastView ? (
+            <CalendarClientPastBody
+              language={language}
+              slot={slot}
+              date={date}
+              startTime={startTime}
+              duration={duration}
+              isMetaOpen={isMetaOpen}
+              onSetIsMetaOpen={setIsMetaOpen}
+            />
+          ) : isClient && isViewMode ? (
+            <CalendarClientBody
+              language={language}
+              slot={slot}
+              date={date}
+              startTime={startTime}
+              duration={duration}
+              isEditing={isEditing}
+              isConfirmingCancel={isConfirmingCancel}
+              isMetaOpen={isMetaOpen}
+              durationMinutes={durationMinutes}
+              viitenumber={viitenumber}
+              serviceType={serviceType}
+              location={location}
+              kuupaev={kuupaev}
+              algusaeg={algusaeg}
+              domainId={domainId}
+              domains={domains}
+              isUpdating={isUpdating}
+              isCancelling={isCancelling}
+              onStartEdit={handleStartEdit}
+              onCancelEdit={handleCancelEdit}
+              onSaveEdit={handleSaveEdit}
+              onVoidConfirm={handleVoidConfirm}
+              onSetIsConfirmingCancel={setIsConfirmingCancel}
+              onSetIsMetaOpen={setIsMetaOpen}
+              onSetViitenumber={setViitenumber}
+              onSetServiceType={setServiceType}
+              onSetLocation={setLocation}
+              onSetKuupaev={setKuupaev}
+              onSetAlgusaeg={setAlgusaeg}
+              onSetDomainId={setDomainId}
+              onSetDurationMinutes={setDurationMinutes}
+            />
           ) : (
-            <>
-              <div className={classes.form}>
-                {/* Tellija — TPM only, form mode */}
-                {isTPM && isFormMode && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.client')}
-                    </label>
-                    <input
-                      className={classes.input}
-                      placeholder={t('calendar.enter_name')}
-                      value={tellija}
-                      onChange={(e) => setTellija(e.target.value)}
-                    />
-                  </div>
-                )}
-
-                {/* Viitenumber — form mode only */}
-                {isFormMode && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.reference_number')}
-                    </label>
-                    <input
-                      className={classes.input}
-                      placeholder={t('calendar.enter_number')}
-                      value={viitenumber}
-                      onChange={(e) => setViitenumber(e.target.value)}
-                    />
-                  </div>
-                )}
-
-                {/* Keel */}
-                <div className={classes.formGroup}>
-                  <label className={classes.label}>
-                    {t('calendar.language')}
-                  </label>
-                  <div className={classes.inputReadonly}>
-                    {language?.language.name ?? ''}
-                  </div>
-                </div>
-
-                {/* Kuupäev */}
-                <div className={classes.formGroup}>
-                  <label className={classes.label}>{t('calendar.date')}</label>
-                  <div className={classes.inputReadonly}>{date}</div>
-                </div>
-
-                {/* Alates + Kestus */}
-                <div className={classes.formRow}>
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.from')}
-                    </label>
-                    <div className={classes.inputReadonly}>{startTime}</div>
-                  </div>
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.duration')}
-                    </label>
-                    <div className={classes.inputReadonly}>{duration}</div>
-                  </div>
-                </div>
-
-                {/* Tellimuse tüüp — form mode only */}
-                {isFormMode && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.order_type')}
-                    </label>
-                    <select
-                      className={classes.select}
-                      value={serviceType}
-                      onChange={(e) => {
-                        setServiceType(e.target.value as ServiceType)
-                        setLocation('')
-                      }}
-                    >
-                      <option value="" disabled>
-                        {t('calendar.select_type')}
-                      </option>
-                      <option value="kaugtolge">
-                        {t('calendar.service_type_remote')}
-                      </option>
-                      <option value="kontakttolge">
-                        {t('calendar.service_type_contact')}
-                      </option>
-                    </select>
-                  </div>
-                )}
-
-                {/* Asukoht / Koosoleku link — form mode only */}
-                {isFormMode && serviceType === 'kontakttolge' && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.location')}
-                    </label>
-                    <input
-                      className={classes.input}
-                      placeholder={t('calendar.enter_address')}
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                    />
-                  </div>
-                )}
-                {isFormMode && serviceType === 'kaugtolge' && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.meeting_link')}
-                    </label>
-                    <input
-                      className={classes.input}
-                      placeholder={t('calendar.enter_link')}
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                    />
-                  </div>
-                )}
-
-                {/* Valdkond — form mode only */}
-                {isFormMode && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.domain')}
-                    </label>
-                    <select
-                      className={classes.select}
-                      value={domainId}
-                      onChange={(e) => setDomainId(e.target.value)}
-                    >
-                      <option value="">{t('calendar.select_domain')}</option>
-                      {(domains ?? []).map((d) => (
-                        <option key={d.id} value={d.id}>
-                          {d.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                {/* Teostaja — TPM only, form mode only */}
-                {isTPM && isFormMode && (
-                  <div className={classes.formGroup}>
-                    <label className={classes.label}>
-                      {t('calendar.translator')}
-                    </label>
-                    <select
-                      className={classes.select}
-                      value={vendorId}
-                      onChange={(e) => setVendorId(e.target.value)}
-                    >
-                      <option value="">
-                        {t('calendar.select_translator')}
-                      </option>
-                      {vendors.map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {v.institution_user.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              {/* Lisamaterjal */}
-              <div className={classes.divider} />
-              <div className={classes.sectionRow}>
-                <div className={classes.sectionLabel}>
-                  <AttachIcon className={classes.sectionIcon} />
-                  <span>{t('calendar.attachments')}</span>
-                </div>
-                <button className={classes.sectionBtn}>
-                  {t('calendar.add_attachment')}
-                </button>
-              </div>
-
-              {/* Kommentaarid */}
-              <div className={classes.divider} />
-              <div className={classes.sectionRow}>
-                <div className={classes.sectionLabel}>
-                  <ChevronLeft className={classes.sectionChevron} />
-                  <span>{t('calendar.comments')}</span>
-                </div>
-                <button className={classes.sectionBtn}>
-                  {t('calendar.add_comment')}
-                </button>
-              </div>
-            </>
+            <CalendarOrderFormBody
+              language={language}
+              date={date}
+              startTime={startTime}
+              duration={duration}
+              isTPM={isTPM}
+              viitenumber={viitenumber}
+              serviceType={serviceType}
+              location={location}
+              tellija={tellija}
+              domainId={domainId}
+              vendorId={vendorId}
+              domains={domains}
+              vendors={vendors}
+              onSetViitenumber={setViitenumber}
+              onSetServiceType={setServiceType}
+              onSetLocation={setLocation}
+              onSetTellija={setTellija}
+              onSetDomainId={setDomainId}
+              onSetVendorId={setVendorId}
+            />
           )}
         </div>
 
-        {/* Footer — hidden for Teostaja view except in muuda kestus mode */}
-        {(!isTranslatorView || isChangingDuration) && (
+        {/* Footer — hidden for Teostaja (except muuda kestus), Client past, and Client non-past view */}
+        {showFooter && (
           <div className={classes.footer}>
             {isChangingDuration ? (
               <>

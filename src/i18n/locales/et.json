@@ -461,8 +461,12 @@
     "status_confirmed": "Kinnitatud",
     "status_ongoing": "Töö on teostamisel",
     "status_cancelled": "Tühistatud",
-    "status_completed": "Lõppenud",
-    "status_pending": "Ootel"
+    "status_completed": "Töö on lõppenud",
+    "last_modified": "Viimati muudetud {{date}}",
+    "status_pending": "Ootel",
+    "status_forwarded": "Teostajale edastatud",
+    "cannot_extend_time": "Pole võimalik aega pikendada",
+    "abandon_editing": "Loobu muutmisest"
   },
   "alt": {
     "header_logo": "Logo",
