@@ -400,6 +400,7 @@
     "accepted_orders": "Vastuvõetud tellimused",
     "total_duration": "Kogukestus",
     "expand_row": "Laienda rida",
+    "collapse_all": "Ahenda kõik",
     "filter_active": "Kuvatakse keelt: {{value}}",
     "add_translator": "Lisa tõlkija",
     "prev_month": "Eelmine kuu",

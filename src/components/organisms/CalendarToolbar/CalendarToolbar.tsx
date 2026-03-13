@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import CalendarIcon from 'assets/icons/calender.svg?react'
+import ViewWeekIcon from 'assets/icons/view_week.svg?react'
+import ViewMonthIcon from 'assets/icons/view_month.svg?react'
 import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
 import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
@@ -58,10 +60,10 @@ const CalendarToolbar: FC = () => {
     return () => document.removeEventListener('mousedown', handler)
   }, [moreOpen])
 
-  const views: { key: CalendarView; label: string }[] = [
-    { key: 'day', label: t('calendar.today') },
-    { key: 'week', label: t('calendar.week') },
-    { key: 'month', label: t('calendar.month') },
+  const views: { key: CalendarView; label: string; Icon: FC }[] = [
+    { key: 'day', label: t('calendar.today'), Icon: CalendarIcon },
+    { key: 'week', label: t('calendar.week'), Icon: ViewWeekIcon },
+    { key: 'month', label: t('calendar.month'), Icon: ViewMonthIcon },
   ]
 
   const handleSearch = () => {
@@ -119,7 +121,7 @@ const CalendarToolbar: FC = () => {
       )}
       <div className={classes.content}>
         <div className={classes.tabs}>
-          {views.map(({ key, label }) => (
+          {views.map(({ key, label, Icon }) => (
             <button
               key={key}
               className={classNames(classes.tab, {
@@ -127,7 +129,7 @@ const CalendarToolbar: FC = () => {
               })}
               onClick={() => setView(key)}
             >
-              <CalendarIcon className={classes.tabIcon} />
+              <Icon className={classes.tabIcon} />
               {label}
             </button>
           ))}

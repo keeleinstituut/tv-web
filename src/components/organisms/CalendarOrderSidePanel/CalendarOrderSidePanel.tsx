@@ -20,6 +20,7 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import CloseIcon from 'assets/icons/close.svg?react'
+import OpenBookingIcon from 'assets/icons/open_booking.svg?react'
 import CalendarTranslatorBody from './CalendarTranslatorBody'
 import CalendarClientPastBody from './CalendarClientPastBody'
 import CalendarClientBody from './CalendarClientBody'
@@ -115,7 +116,13 @@ const CalendarOrderSidePanel: FC = () => {
       setIsChangingDuration(false)
       setDurationMinutes(60)
       setDurationNote('')
-    } else if (isAcceptMode || isClientPastView) {
+    } else {
+      // Pre-fill vendor when opening from a vendor row
+      if (sidePanelSelection?.vendorId) {
+        setVendorId(sidePanelSelection.vendorId)
+      }
+    }
+    if (isOpen && (isAcceptMode || isClientPastView)) {
       // Unconfirmed accept panel + Client past view: metaandmed expanded by default
       setIsMetaOpen(true)
     }
@@ -299,7 +306,7 @@ const CalendarOrderSidePanel: FC = () => {
                 onClick={() => navigate(`/calendar/${projectId}`)}
               >
                 {t('calendar.open')}
-                <span className={classes.headerBtnArrow}>↗</span>
+                <OpenBookingIcon className={classes.headerBtnIcon} />
               </button>
             )}
             <button className={classes.headerBtn} onClick={closeSidePanel}>

@@ -58,7 +58,7 @@ import InstitutionIcon from 'assets/icons/settings.svg?react'
 import TechnicalIcon from 'assets/icons/technical.svg?react'
 import ManualIcon from 'assets/icons/question_mark.svg?react'
 import TermsIcon from 'assets/icons/terms_icon.svg?react'
-import CalendarIcon from 'assets/icons/calender.svg?react'
+import CalendarIcon from 'assets/icons/calendar_menu.svg?react'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,

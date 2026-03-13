@@ -88,10 +88,13 @@ const CalendarMonthView: FC = () => {
     useFetchCalendarTranslatorLanguages()
   const { mutate: updatePinned } = useUpdatePinnedLanguages()
 
+  const pinnedCount = allLanguages.filter((l) => l.pinned).length
+
   const handleTogglePin = (langId: string) => {
     const currentPinned = allLanguages
       .filter((l) => l.pinned)
       .map((l) => l.language.id)
+    if (!currentPinned.includes(langId) && currentPinned.length >= 3) return
     const newPinned = currentPinned.includes(langId)
       ? currentPinned.filter((id) => id !== langId)
       : [...currentPinned, langId]
@@ -99,9 +102,9 @@ const CalendarMonthView: FC = () => {
   }
 
   const languages = isTranslator ? translatorLanguages : allLanguages
-  const displayLanguages = isClient
-    ? [...languages].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
-    : languages
+  const displayLanguages = [...languages].sort(
+    (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0)
+  )
 
   const finalLanguages =
     isTranslator && displayLanguages.length === 0
@@ -256,7 +259,7 @@ const CalendarMonthView: FC = () => {
               date={dateStr}
               weeks={weeks}
               onTogglePin={
-                canInteract
+                canInteract && (lang.pinned || pinnedCount < 3)
                   ? () => handleTogglePin(lang.language.id)
                   : undefined
               }

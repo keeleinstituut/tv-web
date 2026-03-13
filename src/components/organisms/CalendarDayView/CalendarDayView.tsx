@@ -66,6 +66,9 @@ const CalendarDayView: FC = () => {
     openSidePanel,
     isLanguageExpanded,
     toggleLanguageExpanded,
+    collapseAll,
+    expandAll,
+    allCollapsedOverride,
     focusedLanguageId,
   } = useCalendarContext()
   const { t } = useTranslation()
@@ -78,19 +81,21 @@ const CalendarDayView: FC = () => {
 
   const languages = isTranslator ? translatorLanguages : allLanguages
 
+  const pinnedCount = allLanguages.filter((l) => l.pinned).length
+
   const handleTogglePin = (langId: string) => {
     const currentPinned = allLanguages
       .filter((l) => l.pinned)
       .map((l) => l.language.id)
+    if (!currentPinned.includes(langId) && currentPinned.length >= 3) return
     const newPinned = currentPinned.includes(langId)
       ? currentPinned.filter((id) => id !== langId)
       : [...currentPinned, langId]
     updatePinned(newPinned)
   }
-  const displayLanguages = isClient
-    ? [...languages].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
-    : languages
-  // `languages` is already translator-filtered above; sort only applies to client
+  const displayLanguages = [...languages].sort(
+    (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0)
+  )
 
   const finalLanguages =
     isTranslator && displayLanguages.length === 0
@@ -182,7 +187,32 @@ const CalendarDayView: FC = () => {
         {/* Time header row */}
         <div className={classes.headerRow}>
           {/* Sticky corner cell */}
-          <div className={classes.cornerCell} />
+          <div className={classes.cornerCell}>
+            {isTPM && (
+              <button
+                className={classes.collapseAllBtn}
+                onClick={() => {
+                  const anyExpanded =
+                    !allCollapsedOverride &&
+                    visibleLanguages.some(
+                      (l) =>
+                        l.pinned || isLanguageExpanded(l.language.id)
+                    )
+                  if (anyExpanded) {
+                    collapseAll()
+                  } else {
+                    expandAll(visibleLanguages.map((l) => l.language.id))
+                  }
+                }}
+                title={t('calendar.collapse_all')}
+              >
+                <svg viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 7L8 2L13 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 13L8 18L13 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
+          </div>
 
           {/* Hour cells */}
           <div
@@ -249,7 +279,7 @@ const CalendarDayView: FC = () => {
                   })
                 }}
                 onTogglePin={
-                  canInteract
+                  canInteract && (lang.pinned || pinnedCount < 3)
                     ? () => handleTogglePin(lang.language.id)
                     : undefined
                 }
@@ -258,9 +288,13 @@ const CalendarDayView: FC = () => {
                     ? () => toggleLanguageExpanded(lang.language.id)
                     : undefined
                 }
-                isExpanded={lang.pinned || isLanguageExpanded(lang.language.id)}
+                isExpanded={
+                  !allCollapsedOverride &&
+                  (lang.pinned || isLanguageExpanded(lang.language.id))
+                }
               />
               {isTPM &&
+                !allCollapsedOverride &&
                 (lang.pinned || isLanguageExpanded(lang.language.id)) && (
                   <CalendarDayVendorRows
                     language={lang}

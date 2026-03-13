@@ -144,6 +144,30 @@ $border-color: #e2e4e9;
   min-width: $label-width;
   background: $color-white;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapseAllBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-primary;
+  padding: 4px;
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 12px;
+    height: 15px;
+  }
+
+  &:hover {
+    background: $color-background;
+  }
 }
 
 .timeHeader {

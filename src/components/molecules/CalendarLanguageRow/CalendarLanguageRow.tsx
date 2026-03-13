@@ -2,8 +2,11 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react'
 import dayjs from 'dayjs'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
-import ClockIcon from 'assets/icons/clock.svg?react'
-import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
+import BookingUpcomingIcon from 'assets/icons/booking_upcoming.svg?react'
+import BookingPastIcon from 'assets/icons/booking_past.svg?react'
+import BookingBusyIcon from 'assets/icons/booking_busy.svg?react'
+import PinIcon from 'assets/icons/pin.svg?react'
+import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
 import { formatDuration } from 'helpers/calendar'
 import { BookedSlot, CalendarLanguage } from 'types/calendar'
 import {
@@ -109,12 +112,15 @@ export const BookedSlotBlock: FC<{
 
   if (slot.type === 'assignment' && !isPast) {
     const label = formatDuration(slot.start_at, slot.end_at)
-    const isConfirmed = !alwaysLightBlue && !isOngoing && !!slot.assignment?.confirmed
+    const isConfirmed =
+      !alwaysLightBlue && !isOngoing && !!slot.assignment?.confirmed
     return (
       <div
         className={classNames(
           classes.slotBlock,
-          isConfirmed ? classes.slotAssignmentConfirmed : classes.slotAssignmentFuture,
+          isConfirmed
+            ? classes.slotAssignmentConfirmed
+            : classes.slotAssignmentFuture,
           {
             [classes.slotClickable]: !!handleClick,
             [classes.slotBlockNarrow]: isNarrow,
@@ -124,16 +130,8 @@ export const BookedSlotBlock: FC<{
         title={slot.assignment?.sub_project.ext_id}
         onClick={handleClick}
       >
-        <ClockIcon
-          className={isConfirmed ? classes.slotIconWhite : classes.slotIcon}
-        />
-        {!isNarrow && (
-          <span
-            className={isConfirmed ? classes.slotLabelWhite : classes.slotLabel}
-          >
-            {label}
-          </span>
-        )}
+        <BookingUpcomingIcon className={classes.slotIcon} />
+        {!isNarrow && <span className={classes.slotLabel}>{label}</span>}
       </div>
     )
   }
@@ -149,7 +147,7 @@ export const BookedSlotBlock: FC<{
         style={{ left: left + 4, width: width - 8 }}
         title={slot.meta}
       >
-        <ClockIcon className={classes.slotIconExternal} />
+        <BookingBusyIcon className={classes.slotIconExternal} />
         {!isNarrow && (
           <span className={classes.slotLabelExternal}>
             {t('calendar.booked')}
@@ -200,7 +198,7 @@ export const BookedSlotBlock: FC<{
       title={slot.assignment?.sub_project.ext_id}
       onClick={handleClick}
     >
-      <ClockIcon className={classes.slotIconMuted} />
+      <BookingPastIcon className={classes.slotIconMuted} />
       {!isNarrow && <span className={classes.slotLabelMuted}>{label}</span>}
     </div>
   )
@@ -360,25 +358,7 @@ const CalendarLanguageRow: FC<Props> = ({
                 : t('calendar.pin_language')
             }
           >
-            <svg
-              viewBox="0 0 10 10"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.5 1.5L8.5 3.5L6.2 5.8L6.5 8L5 6.5L3.5 8L3.8 5.8L1.5 3.5L3.5 1.5L4.5 2.5L5 2L5.5 2.5L6.5 1.5Z"
-                fill="currentColor"
-              />
-              <line
-                x1="5"
-                y1="6.5"
-                x2="5"
-                y2="9"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
+            <PinIcon />
           </button>
         )}
         <span className={classes.badge}>{language.language.value}</span>
@@ -390,7 +370,7 @@ const CalendarLanguageRow: FC<Props> = ({
             onClick={onToggleExpand}
             aria-label={t('calendar.expand_row')}
           >
-            <ArrowDownIcon className={classes.collapseIcon} />
+            <SmallArrowIcon className={classes.collapseIcon} />
           </button>
         )}
       </div>

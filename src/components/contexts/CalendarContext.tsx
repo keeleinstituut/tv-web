@@ -19,6 +19,8 @@ export interface SidePanelSelection {
   slot?: BookedSlot
   /** 'accept' — Translator is reviewing an order for acceptance/decline */
   intent?: SidePanelIntent
+  /** Pre-selected vendor when booking from a vendor row (TPM) */
+  vendorId?: string
 }
 
 interface CalendarContextType {
@@ -36,6 +38,8 @@ interface CalendarContextType {
   isLanguageExpanded: (languageId: string) => boolean
   expandAll: (languageIds: string[]) => void
   collapseAll: () => void
+  allCollapsedOverride: boolean
+  resetCollapseOverride: () => void
   sidePanelSelection: SidePanelSelection | null
   openSidePanel: (selection: SidePanelSelection) => void
   closeSidePanel: () => void
@@ -63,6 +67,8 @@ const CalendarContext = createContext<CalendarContextType>({
   isLanguageExpanded: () => false,
   expandAll: () => undefined,
   collapseAll: () => undefined,
+  allCollapsedOverride: false,
+  resetCollapseOverride: () => undefined,
   sidePanelSelection: null,
   openSidePanel: () => undefined,
   closeSidePanel: () => undefined,
@@ -79,6 +85,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   const [view, setView] = useState<CalendarView>('day')
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs())
   const [expandedLanguageIds, setExpandedLanguageIds] = useState<string[]>([])
+  const [allCollapsedOverride, setAllCollapsedOverride] = useState(false)
   const [sidePanelSelection, setSidePanelSelection] =
     useState<SidePanelSelection | null>(null)
   const [focusedLanguageId, setFocusedLanguageId] = useState<string | null>(null)
@@ -146,9 +153,15 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const collapseAll = useCallback(() => {
     setExpandedLanguageIds([])
+    setAllCollapsedOverride(true)
+  }, [])
+
+  const resetCollapseOverride = useCallback(() => {
+    setAllCollapsedOverride(false)
   }, [])
 
   const toggleLanguageExpanded = useCallback((languageId: string) => {
+    setAllCollapsedOverride(false)
     setExpandedLanguageIds((prev) =>
       prev.includes(languageId)
         ? prev.filter((id) => id !== languageId)
@@ -162,6 +175,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   )
 
   const expandAll = useCallback((languageIds: string[]) => {
+    setAllCollapsedOverride(false)
     setExpandedLanguageIds(languageIds)
   }, [])
 
@@ -182,6 +196,8 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
         isLanguageExpanded,
         expandAll,
         collapseAll,
+        allCollapsedOverride,
+        resetCollapseOverride,
         sidePanelSelection,
         openSidePanel,
         closeSidePanel,
