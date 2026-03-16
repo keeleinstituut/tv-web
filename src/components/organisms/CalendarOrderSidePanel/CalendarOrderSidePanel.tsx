@@ -283,9 +283,11 @@ const CalendarOrderSidePanel: FC = () => {
   }
 
   // Determine which footer to show
+  const isTPMPastView = isTPM && isViewMode && isPastSlot
   const showFooter =
     (!isTranslatorView || isChangingDuration) &&
     !isClientPastView &&
+    !isTPMPastView &&
     !(isClient && isViewMode)
 
   return (
@@ -346,7 +348,7 @@ const CalendarOrderSidePanel: FC = () => {
               onSetDurationMinutes={setDurationMinutes}
               onSetDurationNote={setDurationNote}
             />
-          ) : isClientPastView ? (
+          ) : isClientPastView || isTPMPastView ? (
             <CalendarClientPastBody
               language={language}
               slot={slot}
@@ -476,7 +478,7 @@ const CalendarOrderSidePanel: FC = () => {
                 </>
               ) : (
                 <>
-                  {canEdit && (
+                  {canEdit && !isPastSlot && (
                     <Button
                       appearance={AppearanceTypes.Primary}
                       onClick={handleStartEdit}
@@ -484,7 +486,7 @@ const CalendarOrderSidePanel: FC = () => {
                       {t('calendar.edit')}
                     </Button>
                   )}
-                  {isPastSlot && !canEdit ? (
+                  {isPastSlot ? (
                     <Button
                       appearance={AppearanceTypes.Secondary}
                       onClick={closeSidePanel}

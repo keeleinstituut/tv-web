@@ -386,7 +386,24 @@ const mockDayVendors = (
               start_at: `${date}T09:00:00Z`,
               end_at: `${date}T10:30:00Z`,
               type: 'assignment' as const,
-              assignment: null,
+              assignment: {
+                id: `asgn-vendor-${vi}`,
+                confirmed: true,
+                sub_project: {
+                  id: `sp-vendor-${vi}`,
+                  ext_id: `OR-2026-0${50 + vi}`,
+                  source_language: {
+                    id: 'lang-et',
+                    value: 'et',
+                    name: 'Eesti keel',
+                  },
+                  destination_language: {
+                    id: 'lang-ru',
+                    value: 'ru',
+                    name: 'Vene keel',
+                  },
+                },
+              },
             },
           ]
         : [],

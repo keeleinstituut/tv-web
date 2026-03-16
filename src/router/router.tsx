@@ -36,7 +36,6 @@ import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
 import Calendar from 'pages/Calendar/Calendar'
-import CalendarNewOrder from 'pages/CalendarNewOrder/CalendarNewOrder'
 import CalendarOrderDetail from 'pages/CalendarOrderDetail/CalendarOrderDetail'
 import CalendarOrderBreadcrumb from 'components/molecules/Breadcrumbs/CalendarOrderBreadcrumb'
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
@@ -165,7 +164,7 @@ export const protectedRoutes: FullRouteObject[] = [
       },
       {
         path: 'new-order',
-        element: <CalendarNewOrder />,
+        element: <CalendarOrderDetail />,
         breadcrumb: i18n.t('calendar.add_order'),
       },
       {

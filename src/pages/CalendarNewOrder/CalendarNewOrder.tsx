@@ -78,8 +78,8 @@ const CalendarNewOrder: FC = () => {
         vendor_id: isTPM ? vendorId || undefined : undefined,
       },
       {
-        onSuccess: () => {
-          navigate('/calendar')
+        onSuccess: (data) => {
+          navigate(`/calendar/${data.id}`)
           showNotification({
             type: NotificationTypes.Success,
             title: t('notification.announcement'),

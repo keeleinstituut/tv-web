@@ -94,7 +94,7 @@ const CalendarToolbar: FC = () => {
 
   const handleAddOrder = () => {
     setMoreOpen(false)
-    navigate('/projects/new-project')
+    navigate('/calendar/new-order')
   }
 
   const focusedLang = focusedLanguageId

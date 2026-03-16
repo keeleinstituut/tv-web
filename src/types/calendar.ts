@@ -201,6 +201,7 @@ export interface CalendarOrderDetail {
   end_at: string
   service_type: 'remote' | 'on-site'
   location?: string
+  meeting_link?: string
   domain?: string
   reference_number?: string
   created_at: string

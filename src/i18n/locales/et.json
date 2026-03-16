@@ -448,6 +448,9 @@
     "order_id_label": "Tellimuse ID",
     "order_details_title": "Tellimuse detailid",
     "change_duration_btn": "Muuda kestust",
+    "cancel_booking": "Loobu tellimusest",
+    "save_changes_btn": "Salvesta muudatus",
+    "duration_until": "Kestus kuni",
     "attachments_count": "Tellimus sisaldab {{count}} manust",
     "attachments_locked": "Manused kuvatakse turvalisuse tõttu alles pärast tellimuse kinnitamist.",
     "add_comment_btn": "Lisa kommentaar",
@@ -467,7 +470,8 @@
     "status_pending": "Ootel",
     "status_forwarded": "Teostajale edastatud",
     "cannot_extend_time": "Pole võimalik aega pikendada",
-    "abandon_editing": "Loobu muutmisest"
+    "abandon_editing": "Loobu muutmisest",
+    "cancel_order_confirm": "Kas oled kindel, et soovid tellimuse tühistada?"
   },
   "alt": {
     "header_logo": "Logo",
@@ -748,6 +752,7 @@
     "sub_project_deadline_updated": "Tähtaeg on edukalt uuendatud",
     "report_exported": "Aruanne on edukalt alla laaditud",
     "calendar_order_created": "Tellimus edukalt loodud.",
+    "calendar_order_updated": "Tellimus edukalt salvestatud.",
     "calendar_order_cancelled": "Tellimus edukalt tühistatud.",
     "calendar_order_accepted": "Tellimus edukalt vastu võetud.",
     "calendar_order_declined": "Tellimus edukalt tagasi lükatud.",
