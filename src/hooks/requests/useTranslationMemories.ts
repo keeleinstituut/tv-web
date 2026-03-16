@@ -78,7 +78,7 @@ export const useFetchTranslationMemories = ({
 
   const {
     // meta: paginationData,
-    tags: translationMemories,
+    data: translationMemories,
   } = data || {}
 
   return {
@@ -104,10 +104,12 @@ export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
   return {
     isLoading,
     isError,
-    translationMemory: data,
+    translationMemory: data?.data,
+    chunk_amount: data?.segment_count,
     isFetching,
   }
 }
+
 export const useFetchTmChunkAmounts = ({
   disabled,
 }: {
@@ -128,17 +130,17 @@ export const useUpdateTranslationMemory = ({ id }: { id?: string }) => {
   const { mutateAsync: updateTranslationMemory, isLoading } = useMutation({
     mutationKey: ['translationMemories', id],
     mutationFn: async (payload: TranslationMemoryPostType) => {
-      return apiClient.post(`${endpoints.TRANSLATION_MEMORIES}/${id}`, {
+      return apiClient.put(`${endpoints.TRANSLATION_MEMORIES}/${id}`, {
         ...payload,
       })
     },
-    onSuccess: ({ tag: data }) => {
+    onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['translationMemories', id],
         (oldData?: TranslationMemoryType) => {
           const previousData = oldData || {}
           if (!previousData) return oldData
-          return data
+          return { data }
         }
       )
     },
@@ -156,14 +158,14 @@ export const useCreateTranslationMemory = () => {
     mutationKey: ['translationMemories'],
     mutationFn: (payload: TranslationMemoryPayload) =>
       apiClient.post(endpoints.TRANSLATION_MEMORIES, payload),
-    onSuccess: ({ tag: data }) => {
+    onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['translationMemories'],
         (oldData?: TranslationMemoryDataType) => {
-          const { tags: previousData } = oldData || {}
+          const { data: previousData } = oldData || {}
           if (!previousData) return oldData
           const newData = [...previousData, data]
-          return { tags: newData }
+          return { data: newData }
         }
       )
     },
@@ -211,7 +213,7 @@ export const useImportTMX = () => {
     mutationFn: async (data: ImportTMXPayload) => {
       formData.append('file', data.file)
       formData.append('tag', data.tag)
-      return apiClient.put(endpoints.IMPORT_TMX, formData)
+      return apiClient.post(endpoints.IMPORT_TMX, formData)
     },
   })
 
@@ -430,10 +432,10 @@ export const useCreateEmptyTm = ({
       queryClient.setQueryData(
         ['translationMemories', key],
         (oldData?: TranslationMemoryDataType) => {
-          const { tags: previousData } = oldData || {}
+          const { data: previousData } = oldData || {}
           if (!previousData) return oldData
           const newData = [...previousData, cat_tm_meta?.tag]
-          return { tags: newData }
+          return { data: newData }
         }
       )
     },

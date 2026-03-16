@@ -149,7 +149,7 @@ const TranslationMemoryForm: FC = () => {
           title: t('notification.announcement'),
           content: t('success.translation_memory_created'),
         })
-        navigate(`/memories/${data?.tag?.id}`)
+        navigate(`/memories/${data?.data?.id}`)
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {

@@ -18,7 +18,7 @@ const TranslationMemoryPage: FC = () => {
   const { memoryId = '' } = useParams()
   const { userInfo, userPrivileges } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
-  const { translationMemory, isLoading } = useFetchTranslationMemory({
+  const { translationMemory, isLoading, chunk_amount } = useFetchTranslationMemory({
     id: memoryId,
   })
   const { tmChunkAmounts } = useFetchTmChunkAmounts({})
@@ -27,8 +27,6 @@ const TranslationMemoryPage: FC = () => {
     selectedInstitution?.id === translationMemory?.institution_id
 
   if (isLoading) return <Loader loading={isLoading} />
-
-  console.log('asd')
 
   return (
     <>
@@ -39,7 +37,7 @@ const TranslationMemoryPage: FC = () => {
       <TranslationMemoryDetails
         translationMemory={{
           ...translationMemory,
-          chunk_amount: tmChunkAmounts?.[memoryId],
+          chunk_amount,
         }}
         memoryId={memoryId}
         isTmOwnedByUserInstitution={isTmOwnedByUserInstitution}

@@ -79,11 +79,11 @@ export const endpoints = {
   UPDATE_TM_KEYS: translationOrder('tm-keys/sync'),
   TOGGLE_TM_WRITABLE: translationOrder('tm-keys/toggle-writable'),
 
-  TRANSLATION_MEMORIES: translationMemory('tags'),
-  IMPORT_TMX: translationMemory('tm/import'),
-  EXPORT_TMX: translationMemory('tm/export'),
+  TRANSLATION_MEMORIES: translationOrder('catv2/translation-memories'),
+  IMPORT_TMX: translationOrder('catv2/translation-memories/import'),
+  EXPORT_TMX: translationOrder('catv2/translation-memories/export'),
   TM_STATS: translationMemory('tm/stats'),
-  TM_CONTENT_CHECKS: translationMemory('content-checks'),
+  TM_CONTENT_CHECKS: translationOrder('catv2/translation-memories/content-checks'),
 
   AUDIT_LOGS: auditLog('event-records'),
   AUDIT_LOG_ACTIONS: auditLog('event-records/actions'),
