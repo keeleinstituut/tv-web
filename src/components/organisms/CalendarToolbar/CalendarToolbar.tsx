@@ -7,6 +7,7 @@ import ViewWeekIcon from 'assets/icons/view_week.svg?react'
 import ViewMonthIcon from 'assets/icons/view_month.svg?react'
 import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
 import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
+import FilterIcon from 'assets/icons/filter.svg?react'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import {
@@ -34,6 +35,8 @@ const CalendarToolbar: FC = () => {
     setCurrentDate,
     focusedLanguageId,
     setFocusedLanguageId,
+    filteredLanguageIds,
+    setFilteredLanguageIds,
   } = useCalendarContext()
   const navigate = useNavigate()
   const { isTPM, isClient } = useCalendarRole()
@@ -45,9 +48,11 @@ const CalendarToolbar: FC = () => {
   const [searchFrom, setSearchFrom] = useState('')
   const [searchDuration, setSearchDuration] = useState(60)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [filterOpen, setFilterOpen] = useState(false)
   const [noResults, setNoResults] = useState(false)
 
   const moreRef = useRef<HTMLDivElement>(null)
+  const filterRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!moreOpen) return
@@ -59,6 +64,25 @@ const CalendarToolbar: FC = () => {
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [moreOpen])
+
+  useEffect(() => {
+    if (!filterOpen) return
+    const handler = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setFilterOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [filterOpen])
+
+  const toggleFilterLanguage = (id: string) => {
+    setFilteredLanguageIds(
+      filteredLanguageIds.includes(id)
+        ? filteredLanguageIds.filter((fid) => fid !== id)
+        : [...filteredLanguageIds, id]
+    )
+  }
 
   const views: { key: CalendarView; label: string; Icon: FC }[] = [
     { key: 'day', label: t('calendar.today'), Icon: CalendarIcon },
@@ -133,6 +157,52 @@ const CalendarToolbar: FC = () => {
               {label}
             </button>
           ))}
+        </div>
+
+        <div className={classes.filterWrapper} ref={filterRef}>
+          <button
+            className={classNames(classes.filterButton, {
+              [classes.filterButtonActive]: filteredLanguageIds.length > 0,
+            })}
+            onClick={() => setFilterOpen((o) => !o)}
+          >
+            <FilterIcon className={classes.filterIcon} />
+            {t('calendar.filter_languages')}
+            {filteredLanguageIds.length > 0 && (
+              <span className={classes.filterBadge}>
+                {filteredLanguageIds.length}
+              </span>
+            )}
+          </button>
+          {filterOpen && (
+            <div className={classes.filterDropdown}>
+              {languages.map((lang) => (
+                <button
+                  key={lang.language.id}
+                  className={classes.filterDropdownItem}
+                  onClick={() => toggleFilterLanguage(lang.language.id)}
+                >
+                  <input
+                    type="checkbox"
+                    readOnly
+                    checked={filteredLanguageIds.includes(lang.language.id)}
+                  />
+                  {lang.language.value} — {lang.language.name}
+                </button>
+              ))}
+              {filteredLanguageIds.length > 0 && (
+                <button
+                  className={classes.filterDropdownClear}
+                  onClick={() => {
+                    setFilteredLanguageIds([])
+                    setFilterOpen(false)
+                  }}
+                >
+                  {t('calendar.filter_clear')}
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {canSearch && (

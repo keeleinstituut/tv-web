@@ -1,0 +1,352 @@
+@use 'styles/variables' as *;
+
+.wizard {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: $color-white;
+  padding: 16px 16px 100px; // bottom padding for fixed footer
+}
+
+// --- Progress bar ---
+
+.progress {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.progressSegment {
+  height: 6px;
+  flex: 1;
+  background: $cal-card-border;
+  border-radius: 3px;
+}
+
+.progressSegmentFilled {
+  background: $color-primary;
+}
+
+// --- Step header ---
+
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-14;
+  flex-shrink: 0;
+}
+
+.stepTitle {
+  font-size: 20px;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin: 0;
+}
+
+// --- Required notice ---
+
+.requiredNotice {
+  font-size: $font-size-14;
+  color: #ac3232;
+  margin-bottom: 16px;
+
+  &::before {
+    content: '* ';
+  }
+}
+
+// --- Step content ---
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// --- Field ---
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+.fieldInput {
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 10px 12px;
+  font-size: $font-size-16;
+  color: $cal-text;
+  background: $color-white;
+  width: 100%;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: $color-text-light;
+  }
+}
+
+.fieldSelect {
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 10px 12px;
+  font-size: $font-size-16;
+  color: $cal-text;
+  background: $color-white;
+  width: 100%;
+  box-sizing: border-box;
+  appearance: auto;
+}
+
+.timeRow {
+  display: flex;
+  gap: 8px;
+}
+
+// --- Service type toggle ---
+
+.serviceToggle {
+  display: flex;
+  border: 1px solid $cal-card-border;
+  border-radius: $border-radius-4;
+  overflow: hidden;
+}
+
+.serviceOption {
+  flex: 1;
+  padding: 10px;
+  font-size: $font-size-14;
+  color: $cal-label;
+  background: $color-white;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.serviceOptionActive {
+  background: #e7f0f6;
+  color: $cal-text;
+  font-weight: $font-weight-bold;
+}
+
+// --- Step 3: Comments ---
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid $cal-card-border;
+}
+
+.commentAuthor {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+}
+
+.commentText {
+  font-size: $font-size-16;
+  color: $cal-text;
+  line-height: 1.5;
+}
+
+.commentDate {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+.commentTextarea {
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 10px;
+  font-size: $font-size-16;
+  min-height: 80px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+}
+
+// --- Step 4: Files ---
+
+.fileTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.fileTableHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+  padding-bottom: 8px;
+  border-bottom: 2px solid $cal-card-border;
+  margin-bottom: 4px;
+}
+
+.fileRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+  border-bottom: 1px solid $cal-card-border;
+}
+
+.fileRowName {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+}
+
+.fileRowMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fileDate {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+.fileActions {
+  display: flex;
+  gap: 12px;
+}
+
+.fileIconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: $color-primary;
+  font-size: 18px;
+}
+
+.emptyFiles {
+  font-size: $font-size-14;
+  color: $cal-label;
+  padding: 8px 0;
+}
+
+// --- Fixed footer ---
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px;
+  background: $color-white;
+  border-top: 1px solid $cal-card-border;
+  z-index: 10;
+}
+
+.footerBtn {
+  flex: 1;
+}
+
+// --- Success screen ---
+
+.success {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 32px;
+}
+
+.successTitle {
+  font-size: 22px;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin: 0;
+}
+
+.successDate {
+  font-size: $font-size-14;
+  color: $cal-label;
+  margin-top: -8px;
+}
+
+.statusRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statusLabel {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+.statusBadge {
+  display: inline-block;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  background: #e7f0f6;
+  border-radius: $border-radius-4;
+  padding: 4px 8px;
+  width: fit-content;
+}
+
+.whatNext {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.whatNextTitle {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+  margin: 0;
+}
+
+.whatNextText {
+  font-size: $font-size-14;
+  color: $cal-text;
+  line-height: 1.5;
+}
+
+.contactTitle {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+  margin: 0;
+}
+
+.contactName {
+  font-size: $font-size-14;
+  color: $cal-text;
+}
+
+.successBtn {
+  margin-top: 8px;
+}

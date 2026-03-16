@@ -14,6 +14,7 @@ import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useCalendarPinning } from 'hooks/useCalendarPinning'
 import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
 import CalendarDayVendorRows from 'components/molecules/CalendarDayVendorRows/CalendarDayVendorRows'
+import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
 import classes from './classes.module.scss'
 
 const DAY_START_HOUR = 9
@@ -52,8 +53,6 @@ const CalendarDayView: FC = () => {
     openSidePanel,
     isLanguageExpanded,
     toggleLanguageExpanded,
-    collapseAll,
-    expandAll,
     allCollapsedOverride,
     focusedLanguageId,
   } = useCalendarContext()
@@ -146,28 +145,7 @@ const CalendarDayView: FC = () => {
           {/* Sticky corner cell */}
           <div className={classes.cornerCell}>
             {isTPM && (
-              <button
-                className={classes.collapseAllBtn}
-                onClick={() => {
-                  const anyExpanded =
-                    !allCollapsedOverride &&
-                    visibleLanguages.some(
-                      (l) =>
-                        l.pinned || isLanguageExpanded(l.language.id)
-                    )
-                  if (anyExpanded) {
-                    collapseAll()
-                  } else {
-                    expandAll(visibleLanguages.map((l) => l.language.id))
-                  }
-                }}
-                title={t('calendar.collapse_all')}
-              >
-                <svg viewBox="0 0 16 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 7L8 2L13 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M3 13L8 18L13 13" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
+              <CalendarCollapseExpandButton languages={visibleLanguages} />
             )}
           </div>
 

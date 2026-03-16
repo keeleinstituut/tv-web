@@ -1,21 +1,34 @@
 import { FC, PropsWithChildren } from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
+import classNames from 'classnames'
 import Header from 'components/organisms/Header/Header'
 import SideBar from 'components/organisms/SideBar/SideBar'
-import classes from './classes.module.scss'
 import Breadcrumbs from 'components/molecules/Breadcrumbs/Breadcrumbs'
+import { useIsMobile } from 'hooks/useIsMobile'
+import classes from './classes.module.scss'
 
-const MainLayout: FC<PropsWithChildren> = () => (
-  <main className={classes.mainContainer}>
-    <SideBar />
-    <div className={classes.contentContainer}>
-      <Header />
-      <Breadcrumbs />
-      <div className={classes.scrollableContent} id="mainScroll">
-        <Outlet />
+const MainLayout: FC<PropsWithChildren> = () => {
+  const { pathname } = useLocation()
+  const isMobile = useIsMobile()
+  const isFullscreen = isMobile && pathname === '/calendar/new-order'
+
+  return (
+    <main className={classes.mainContainer}>
+      {!isFullscreen && <SideBar />}
+      <div className={classes.contentContainer}>
+        {!isFullscreen && <Header />}
+        {!isFullscreen && <Breadcrumbs />}
+        <div
+          className={classNames(classes.scrollableContent, {
+            [classes.scrollableContentFull]: isFullscreen,
+          })}
+          id="mainScroll"
+        >
+          <Outlet />
+        </div>
       </div>
-    </div>
-  </main>
-)
+    </main>
+  )
+}
 
 export default MainLayout

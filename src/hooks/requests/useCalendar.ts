@@ -66,6 +66,7 @@ const MOCK_LANGUAGES: CalendarLanguagesResponse = {
         meta: { iso3_code: 'fin' },
       },
       pinned: false,
+      is_rare: true,
     },
   ],
 }

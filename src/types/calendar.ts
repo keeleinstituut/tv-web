@@ -15,6 +15,7 @@ export interface CalendarLanguage {
     meta: { iso3_code: string }
   }
   pinned: boolean
+  is_rare?: boolean
 }
 
 export interface CalendarLanguagesResponse {

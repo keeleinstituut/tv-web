@@ -70,7 +70,7 @@ const CalendarMonthView: FC = () => {
   const { isTPM, isClient } = useCalendarRole()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
-  const { languages, visibleLanguages } = useVisibleCalendarLanguages()
+  const { visibleLanguages } = useVisibleCalendarLanguages()
 
   const weeks = getWeeksForMonth(currentDate)
   const dateStr = currentDate.format('YYYY-MM-DD')
@@ -166,9 +166,7 @@ const CalendarMonthView: FC = () => {
         >
           <div className={classes.cornerCell}>
             {isTPM && (
-              <CalendarCollapseExpandButton
-                languageIds={languages.map((l) => l.language.id)}
-              />
+              <CalendarCollapseExpandButton languages={visibleLanguages} />
             )}
           </div>
           {weeks.map((week, i) => (

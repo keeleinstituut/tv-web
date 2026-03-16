@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useState } from 'react'
+import { FC, MouseEvent, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
 import { map, find, includes } from 'lodash'
@@ -124,7 +124,16 @@ const MenuItems: FC<MenuItemsProps> = ({
 
 const SideBar: FC = () => {
   const { t } = useTranslation()
-  const [navCollapsed, setNavCollapsed] = useState(false)
+  const location = useLocation()
+  const [navCollapsed, setNavCollapsed] = useState(
+    () => location.pathname.startsWith('/calendar')
+  )
+
+  useEffect(() => {
+    if (location.pathname.startsWith('/calendar')) {
+      setNavCollapsed(true)
+    }
+  }, [location.pathname])
 
   const toggleNavCollapsed = useCallback(() => {
     setNavCollapsed(!navCollapsed)

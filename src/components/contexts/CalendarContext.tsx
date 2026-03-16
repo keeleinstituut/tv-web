@@ -44,6 +44,8 @@ interface CalendarContextType {
   closeSidePanel: () => void
   focusedLanguageId: string | null
   setFocusedLanguageId: (id: string | null) => void
+  filteredLanguageIds: string[]
+  setFilteredLanguageIds: (ids: string[]) => void
   pendingDeepLink: { slotId: string; date: string; intent: SidePanelIntent } | null
   setPendingDeepLink: (link: { slotId: string; date: string; intent: SidePanelIntent } | null) => void
   weekBookingPanel: { start_at: string; end_at: string; language_id: string } | null
@@ -72,6 +74,8 @@ const CalendarContext = createContext<CalendarContextType>({
   closeSidePanel: () => undefined,
   focusedLanguageId: null,
   setFocusedLanguageId: () => undefined,
+  filteredLanguageIds: [],
+  setFilteredLanguageIds: () => undefined,
   pendingDeepLink: null,
   setPendingDeepLink: () => undefined,
   weekBookingPanel: null,
@@ -87,6 +91,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   const [sidePanelSelection, setSidePanelSelection] =
     useState<SidePanelSelection | null>(null)
   const [focusedLanguageId, setFocusedLanguageId] = useState<string | null>(null)
+  const [filteredLanguageIds, setFilteredLanguageIds] = useState<string[]>([])
   const [pendingDeepLink, setPendingDeepLink] = useState<{
     slotId: string
     date: string
@@ -196,6 +201,8 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
         closeSidePanel,
         focusedLanguageId,
         setFocusedLanguageId,
+        filteredLanguageIds,
+        setFilteredLanguageIds,
         pendingDeepLink,
         setPendingDeepLink,
         weekBookingPanel,

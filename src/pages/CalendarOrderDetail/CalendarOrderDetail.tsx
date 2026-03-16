@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react'
+import { FC, useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -18,6 +18,8 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { useIsMobile } from 'hooks/useIsMobile'
+import CalendarMobileWizard from './CalendarMobileWizard'
 import classes from './classes.module.scss'
 
 const CalendarOrderDetail: FC = () => {
@@ -25,6 +27,7 @@ const CalendarOrderDetail: FC = () => {
   const navigate = useNavigate()
   const { orderId } = useParams<{ orderId: string }>()
   const isCreateMode = !orderId
+  const isMobile = useIsMobile()
   const { isTPM, isTranslator } = useCalendarRole()
   const isClient = !isTPM && !isTranslator
 
@@ -46,6 +49,8 @@ const CalendarOrderDetail: FC = () => {
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
   const [isAddingComment, setIsAddingComment] = useState(false)
   const [commentText, setCommentText] = useState('')
+  const [editingCommentIdx, setEditingCommentIdx] = useState<number | null>(null)
+  const [editingCommentText, setEditingCommentText] = useState('')
 
   // Editable field state
   const [kuupaev, setKuupaev] = useState('')
@@ -59,6 +64,14 @@ const CalendarOrderDetail: FC = () => {
   const [languageId, setLanguageId] = useState('')
   const [domainId, setDomainId] = useState('')
   const [vendorId, setVendorId] = useState('')
+
+  // File upload state
+  const [localFiles, setLocalFiles] = useState<File[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Mobile wizard state (create mode only)
+  const [mobileCreatedAt, setMobileCreatedAt] = useState<string | null>(null)
+  const [mobileCreatedOrderId, setMobileCreatedOrderId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!order) return
@@ -152,12 +165,17 @@ const CalendarOrderDetail: FC = () => {
       },
       {
         onSuccess: (data) => {
-          navigate(`/calendar/${data.id}`)
           showNotification({
             type: NotificationTypes.Success,
             title: t('notification.announcement'),
             content: t('success.calendar_order_created'),
           })
+          if (isMobile) {
+            setMobileCreatedAt(data.created_at ?? new Date().toISOString())
+            setMobileCreatedOrderId(data.id)
+          } else {
+            navigate(`/calendar/${data.id}`)
+          }
         },
       }
     )
@@ -277,9 +295,15 @@ const CalendarOrderDetail: FC = () => {
               {languages.map((lang) => (
                 <option key={lang.language.id} value={lang.language.id}>
                   {lang.language.name}
+                  {lang.is_rare ? ` (${t('calendar.rare_language')})` : ''}
                 </option>
               ))}
             </select>
+            {languageId && languages.find((l) => l.language.id === languageId)?.is_rare && (
+              <span className={classes.rareLanguageNote}>
+                {t('calendar.rare_language_note')}
+              </span>
+            )}
           </div>
           <div className={classes.field}>
             <span className={classes.fieldLabel}>{t('calendar.date_and_start_time')}</span>
@@ -477,6 +501,40 @@ const CalendarOrderDetail: FC = () => {
   const isServiceEditable = isCreateMode || isEditing
   const activeServiceType = isServiceEditable ? serviceType : order?.service_type ?? 'on-site'
 
+  if (isCreateMode && isMobile && (isTPM || isClient)) {
+    return (
+      <CalendarMobileWizard
+        isTPM={isTPM}
+        languageId={languageId}
+        setLanguageId={setLanguageId}
+        kuupaev={kuupaev}
+        setKuupaev={setKuupaev}
+        algusaeg={algusaeg}
+        setAlgusaeg={setAlgusaeg}
+        durationMinutes={durationMinutes}
+        setDurationMinutes={setDurationMinutes}
+        serviceType={serviceType}
+        setServiceType={setServiceType}
+        aadress={aadress}
+        setAadress={setAadress}
+        tellija={tellija}
+        setTellija={setTellija}
+        viitenumber={viitenumber}
+        setViitenumber={setViitenumber}
+        domainId={domainId}
+        setDomainId={setDomainId}
+        vendorId={vendorId}
+        setVendorId={setVendorId}
+        onSubmit={handleCreate}
+        onCancel={() => navigate('/calendar')}
+        isCreating={isCreating}
+        createdAt={mobileCreatedAt}
+        createdOrderId={mobileCreatedOrderId}
+        onBackToCalendar={() => navigate('/calendar')}
+      />
+    )
+  }
+
   return (
     <div className={classes.page}>
       {/* Top actions — detail mode only */}
@@ -500,19 +558,10 @@ const CalendarOrderDetail: FC = () => {
               {t('calendar.confirm_order')}
             </Button>
           )}
-          {isTranslator && (order?.status === 'confirmed' || order?.status === 'completed') && !isChangingDuration && (
+          {isTranslator && (order?.status === 'confirmed' || order?.status === 'completed') && !isChangingDuration && !isConfirmingCancel && (
             <Button
               appearance={AppearanceTypes.Secondary}
-              onClick={() => cancelOrder(orderId!, {
-                onSuccess: () => {
-                  showNotification({
-                    type: NotificationTypes.Success,
-                    title: t('notification.announcement'),
-                    content: t('success.calendar_order_cancelled'),
-                  })
-                },
-              })}
-              disabled={isCancelling}
+              onClick={() => setIsConfirmingCancel(true)}
             >
               {t('calendar.cancel_booking')}
             </Button>
@@ -545,7 +594,9 @@ const CalendarOrderDetail: FC = () => {
           {isConfirmingCancel && (
             <>
               <span className={classes.cancelPrompt}>
-                {t('calendar.cancel_order_confirm')}
+                {isTranslator
+                  ? t('calendar.cancel_booking_confirm')
+                  : t('calendar.cancel_order_confirm')}
               </span>
               <Button
                 appearance={AppearanceTypes.Primary}
@@ -826,44 +877,63 @@ const CalendarOrderDetail: FC = () => {
                 <span className={classes.filesSectionTitle}>
                   {isClient ? t('calendar.files_and_links') : t('calendar.attachments')}
                 </span>
-                {isTPM && (
-                  <Button appearance={AppearanceTypes.Primary}>
-                    {t('calendar.add_file')}
-                  </Button>
+                {(isTPM || isClient) && (
+                  <>
+                    <Button
+                      appearance={AppearanceTypes.Primary}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {t('calendar.add_file')}
+                    </Button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) setLocalFiles((prev) => [...prev, file])
+                        e.target.value = ''
+                      }}
+                    />
+                  </>
                 )}
               </div>
-              {!isCreateMode && order!.files_count === 0 && isTPM ? (
-                <div className={classes.noFilesRow}>
-                  <span>{t('calendar.no_files_msg')}</span>
-                </div>
-              ) : !isCreateMode && order!.files_count > 0 ? (
+              {((!isCreateMode && order!.files_count > 0) || localFiles.length > 0) ? (
                 <div className={classes.fileTable}>
                   <div className={classes.fileTableHeader}>
                     <span>{t('calendar.file_list_header')}</span>
                     <span>{t('calendar.updated_at_label')}</span>
                   </div>
-                  {Array.from({ length: order!.files_count }).map((_, i) => (
+                  {!isCreateMode && Array.from({ length: order!.files_count }).map((_, i) => (
                     <div key={i} className={classes.fileRow}>
                       <span>Faili_nimi.doc</span>
                       <div className={classes.fileRowActions}>
                         <span className={classes.fileDate}>dd.mm.yyyy hh:mm</span>
-                        <button className={classes.fileIconBtn} title="Laadi alla">
-                          ↓
+                        <button className={classes.fileIconBtn} title="Laadi alla">↓</button>
+                      </div>
+                    </div>
+                  ))}
+                  {localFiles.map((file, i) => (
+                    <div key={`local-${i}`} className={classes.fileRow}>
+                      <span>{file.name}</span>
+                      <div className={classes.fileRowActions}>
+                        <span className={classes.fileDate}>{dayjs().format('DD.MM.YYYY HH:mm')}</span>
+                        <button
+                          className={classes.fileIconBtn}
+                          title={t('calendar.remove_file')}
+                          onClick={() => setLocalFiles((prev) => prev.filter((_, j) => j !== i))}
+                        >
+                          ✕
                         </button>
-                        {isClient && (
-                          <button className={classes.fileIconBtn} title="Kustuta">
-                            ✕
-                          </button>
-                        )}
                       </div>
                     </div>
                   ))}
                 </div>
-              ) : isCreateMode && isTPM ? (
+              ) : (
                 <div className={classes.noFilesRow}>
                   <span>{t('calendar.no_files_msg')}</span>
                 </div>
-              ) : null}
+              )}
             </div>
           </div>
         </div>
@@ -877,15 +947,53 @@ const CalendarOrderDetail: FC = () => {
             order!.comments.map((c, i) => (
               <div key={i} className={classes.comment}>
                 <span className={classes.commentAuthor}>{c.role}</span>
-                <span className={classes.commentText}>{c.text}</span>
+                {editingCommentIdx === i ? (
+                  <div className={classes.commentForm}>
+                    <textarea
+                      className={classes.commentTextarea}
+                      value={editingCommentText}
+                      onChange={(e) => setEditingCommentText(e.target.value)}
+                      autoFocus
+                    />
+                    <div className={classes.commentFormActions}>
+                      <Button
+                        appearance={AppearanceTypes.Primary}
+                        disabled={!editingCommentText.trim()}
+                        onClick={() => {
+                          setEditingCommentIdx(null)
+                          setEditingCommentText('')
+                        }}
+                      >
+                        {t('calendar.save')}
+                      </Button>
+                      <Button
+                        appearance={AppearanceTypes.Secondary}
+                        onClick={() => {
+                          setEditingCommentIdx(null)
+                          setEditingCommentText('')
+                        }}
+                      >
+                        {t('calendar.cancel')}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <span className={classes.commentText}>{c.text}</span>
+                )}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span className={classes.commentDate}>
                     {t('calendar.added_at_label', {
                       date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
                     })}
                   </span>
-                  {(isTPM || isClient) && (
-                    <button className={classes.commentEditLink}>
+                  {(isTPM || isClient) && editingCommentIdx !== i && (
+                    <button
+                      className={classes.commentEditLink}
+                      onClick={() => {
+                        setEditingCommentIdx(i)
+                        setEditingCommentText(c.text)
+                      }}
+                    >
                       {t('calendar.edit')}
                     </button>
                   )}

@@ -82,7 +82,7 @@ const CalendarWeekView: FC = () => {
   const { isTPM, isClient } = useCalendarRole()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
-  const { languages, visibleLanguages } = useVisibleCalendarLanguages()
+  const { visibleLanguages } = useVisibleCalendarLanguages()
 
   const weekStart = getWeekStart(currentDate)
   const days = Array.from({ length: 7 }, (_, i) => weekStart.add(i, 'day'))
@@ -163,9 +163,7 @@ const CalendarWeekView: FC = () => {
           return (
             <div
               key={i}
-              className={classNames(classes.dayHeader, {
-                [classes.dayHeaderToday]: isToday,
-              })}
+              className={classes.dayHeader}
             >
               <span className={classes.dayLetter}>
                 {ET_DAY_LETTERS[day.day()]}
@@ -208,9 +206,7 @@ const CalendarWeekView: FC = () => {
         <div className={classes.timeAxisRow}>
           <div className={classes.cornerCell}>
             {isTPM && (
-              <CalendarCollapseExpandButton
-                languageIds={languages.map((l) => l.language.id)}
-              />
+              <CalendarCollapseExpandButton languages={visibleLanguages} />
             )}
           </div>
           {days.map((_, i) => (

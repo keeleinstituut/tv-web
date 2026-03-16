@@ -1,36 +1,59 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import ExpandIcon from 'assets/icons/expand.svg?react'
-import ShrinkIcon from 'assets/icons/shrink.svg?react'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { CalendarLanguage } from 'types/calendar'
 import classes from './classes.module.scss'
 
 interface Props {
-  languageIds: string[]
+  languages: CalendarLanguage[]
 }
 
-const CalendarCollapseExpandButton: FC<Props> = ({ languageIds }) => {
+const CalendarCollapseExpandButton: FC<Props> = ({ languages }) => {
   const { t } = useTranslation()
-  const { expandedLanguageIds, expandAll, collapseAll } = useCalendarContext()
-  const allExpanded =
-    languageIds.length > 0 &&
-    languageIds.every((id) => expandedLanguageIds.includes(id))
+  const {
+    isLanguageExpanded,
+    expandAll,
+    collapseAll,
+    allCollapsedOverride,
+  } = useCalendarContext()
+
+  const anyExpanded =
+    !allCollapsedOverride &&
+    languages.some((l) => l.pinned || isLanguageExpanded(l.language.id))
 
   return (
     <button
       className={classes.btn}
       onClick={() =>
-        allExpanded ? collapseAll() : expandAll(languageIds)
+        anyExpanded
+          ? collapseAll()
+          : expandAll(languages.map((l) => l.language.id))
       }
       aria-label={
-        allExpanded ? t('calendar.collapse_all') : t('calendar.expand_all')
+        anyExpanded ? t('calendar.collapse_all') : t('calendar.expand_all')
       }
     >
-      {allExpanded ? (
-        <ShrinkIcon className={classes.icon} />
-      ) : (
-        <ExpandIcon className={classes.icon} />
-      )}
+      <svg
+        viewBox="0 0 16 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={classes.icon}
+      >
+        <path
+          d="M3 7L8 2L13 7"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M3 13L8 18L13 13"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </button>
   )
 }

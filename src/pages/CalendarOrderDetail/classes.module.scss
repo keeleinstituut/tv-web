@@ -1,9 +1,5 @@
 @use 'styles/variables' as *;
-
-$primary-blue: #005aa3;
-$border-color: #e2e4e9;
-$label-color: #6b7280;
-$value-color: #131317;
+@use 'styles/calendarShared' as *;
 
 .page {
   display: flex;
@@ -27,7 +23,7 @@ $value-color: #131317;
 
 .card {
   background: $color-white;
-  border: 1px solid $border-color;
+  border: 1px solid $cal-card-border;
   border-radius: $border-radius-4;
   padding: 24px;
   display: flex;
@@ -47,14 +43,14 @@ $value-color: #131317;
 .orderTitle {
   font-size: 22px;
   font-weight: $font-weight-normal;
-  color: $primary-blue;
+  color: $color-primary;
   margin: 0;
 }
 
 .statusBadge {
   font-size: $font-size-14;
   font-weight: $font-weight-bold;
-  color: #005aa3;
+  color: $color-primary;
   background: #e7f0f6;
   border-radius: $border-radius-4;
   padding: 2px 6px;
@@ -82,13 +78,13 @@ $value-color: #131317;
 
 .fieldLabel {
   font-size: $font-size-14;
-  color: $label-color;
+  color: $cal-label;
 }
 
 .fieldValue {
   font-size: $font-size-16;
   font-weight: $font-weight-bold;
-  color: $value-color;
+  color: $cal-text;
 }
 
 // --- Timestamps ---
@@ -98,7 +94,7 @@ $value-color: #131317;
   flex-direction: column;
   gap: 0;
   flex: 1;
-  border: 1px solid $border-color;
+  border: 1px solid $cal-card-border;
   border-radius: $border-radius-4;
   overflow: hidden;
   align-self: flex-start;
@@ -107,7 +103,7 @@ $value-color: #131317;
 .tsRow {
   display: flex;
   padding: 8px 16px;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid $cal-card-border;
   gap: 24px;
 
   &:last-child {
@@ -117,13 +113,13 @@ $value-color: #131317;
 
 .tsLabel {
   font-size: $font-size-14;
-  color: $label-color;
+  color: $cal-label;
   flex: 0 0 160px;
 }
 
 .tsValue {
   font-size: $font-size-14;
-  color: $value-color;
+  color: $cal-text;
 }
 
 // --- Metadata collapsible ---
@@ -134,11 +130,11 @@ $value-color: #131317;
   gap: 8px;
   background: none;
   border: none;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid $cal-card-border;
   cursor: pointer;
   padding: 16px 0 0;
   font-size: $font-size-16;
-  color: $value-color;
+  color: $cal-text;
   width: 100%;
   text-align: left;
 }
@@ -178,13 +174,13 @@ $value-color: #131317;
 
 .metaLabel {
   font-size: $font-size-14;
-  color: $label-color;
+  color: $cal-label;
 }
 
 .metaValue {
   font-size: $font-size-14;
   font-weight: $font-weight-bold;
-  color: $value-color;
+  color: $cal-text;
 }
 
 // --- Card 2: Details ---
@@ -192,7 +188,7 @@ $value-color: #131317;
 .sectionTitle {
   font-size: 18px;
   font-weight: $font-weight-bold;
-  color: $primary-blue;
+  color: $color-primary;
   margin: 0;
 }
 
@@ -220,7 +216,7 @@ $value-color: #131317;
 
 .serviceToggle {
   display: flex;
-  border: 1px solid $border-color;
+  border: 1px solid $cal-card-border;
   border-radius: $border-radius-4;
   overflow: hidden;
   width: fit-content;
@@ -235,18 +231,18 @@ $value-color: #131317;
 
 .serviceOptionActive {
   background: $color-background;
-  color: $value-color;
+  color: $cal-text;
   font-weight: $font-weight-bold;
 }
 
 // --- Readonly input ---
 
 .readonlyInput {
-  border: 1px solid #e2e4e9;
+  border: 1px solid $cal-card-border;
   border-radius: $border-radius-4;
   padding: 8px 12px;
   font-size: $font-size-14;
-  color: $value-color;
+  color: $cal-text;
   background: $color-background;
 }
 
@@ -263,10 +259,10 @@ $value-color: #131317;
   align-items: center;
   padding: 4px 12px;
   background: $color-background;
-  border: 1px solid $border-color;
+  border: 1px solid $cal-card-border;
   border-radius: 12px;
   font-size: $font-size-14;
-  color: $value-color;
+  color: $cal-text;
 }
 
 // --- Attachments info ---
@@ -284,12 +280,12 @@ $value-color: #131317;
 .attachmentsCount {
   font-size: $font-size-14;
   font-weight: $font-weight-bold;
-  color: $primary-blue;
+  color: $color-primary;
 }
 
 .attachmentsLocked {
   font-size: $font-size-14;
-  color: $primary-blue;
+  color: $color-primary;
 }
 
 // --- Card 3: Comments ---
@@ -309,18 +305,26 @@ $value-color: #131317;
 .commentAuthor {
   font-size: $font-size-14;
   font-weight: $font-weight-bold;
-  color: $value-color;
+  color: $cal-text;
 }
 
 .commentText {
   font-size: $font-size-16;
-  color: $value-color;
+  color: $cal-text;
   line-height: 1.5;
 }
 
 .commentDate {
   font-size: $font-size-14;
-  color: $label-color;
+  color: $cal-label;
+}
+
+// --- Rare language note ---
+
+.rareLanguageNote {
+  font-size: $font-size-12;
+  color: $color-primary;
+  margin-top: 2px;
 }
 
 // --- Cancel prompt ---
@@ -339,7 +343,7 @@ $value-color: #131317;
   align-items: center;
   gap: 12px;
   padding-top: 16px;
-  border-top: 1px solid $border-color;
+  border-top: 1px solid $cal-card-border;
 }
 
 // --- Time row (date + time side by side) ---
@@ -357,45 +361,11 @@ $value-color: #131317;
 }
 
 .stepperBtn {
-  width: 40px;
-  height: 40px;
-  border: 1px solid #878a97;
-  background: $color-white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  flex-shrink: 0;
-  color: $color-text;
-
-  &:first-child {
-    border-radius: $border-radius-4 0 0 $border-radius-4;
-  }
-
-  &:last-child {
-    border-radius: 0 $border-radius-4 $border-radius-4 0;
-  }
-
-  &:hover {
-    background: $color-background;
-  }
+  @include calStepperBtn;
 }
 
 .stepperValue {
-  flex: 1;
-  min-width: 80px;
-  height: 40px;
-  border-top: 1px solid #878a97;
-  border-bottom: 1px solid #878a97;
-  border-left: none;
-  border-right: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: $font-size-16;
-  color: $value-color;
-  background: $color-white;
+  @include calStepperValue;
 }
 
 // --- Comment form actions ---
@@ -408,11 +378,11 @@ $value-color: #131317;
 // --- Editable input ---
 
 .editSelect {
-  border: 1px solid #878a97;
+  border: 1px solid $cal-input-border;
   border-radius: $border-radius-4;
   padding: 8px;
   font-size: $font-size-16;
-  color: $value-color;
+  color: $cal-text;
   background: $color-white;
   width: 100%;
   box-sizing: border-box;
@@ -420,26 +390,26 @@ $value-color: #131317;
 }
 
 .editInput {
-  border: 1px solid #878a97;
+  border: 1px solid $cal-input-border;
   border-radius: $border-radius-4;
   padding: 8px;
   font-size: $font-size-16;
-  color: $value-color;
+  color: $cal-text;
   background: $color-white;
   width: 100%;
   box-sizing: border-box;
 
   &::placeholder {
-    color: #9799a4;
+    color: $color-text-light;
   }
 }
 
 .editInputNarrow {
-  border: 1px solid #878a97;
+  border: 1px solid $cal-input-border;
   border-radius: $border-radius-4;
   padding: 8px;
   font-size: $font-size-16;
-  color: $value-color;
+  color: $cal-text;
   background: $color-white;
   width: 120px;
   flex-shrink: 0;
@@ -458,9 +428,9 @@ $value-color: #131317;
   display: flex;
   justify-content: space-between;
   font-size: $font-size-16;
-  color: $value-color;
+  color: $cal-text;
   padding-bottom: 4px;
-  border-bottom: 2px solid $border-color;
+  border-bottom: 2px solid $cal-card-border;
 }
 
 .fileRow {
@@ -468,9 +438,9 @@ $value-color: #131317;
   align-items: center;
   justify-content: space-between;
   padding: 4px 0;
-  border-bottom: 1px solid $border-color;
+  border-bottom: 1px solid $cal-card-border;
   font-size: $font-size-16;
-  color: $value-color;
+  color: $cal-text;
 }
 
 .fileRowActions {
@@ -481,7 +451,7 @@ $value-color: #131317;
 
 .fileDate {
   font-size: $font-size-14;
-  color: $label-color;
+  color: $cal-label;
 }
 
 .fileIconBtn {
@@ -494,7 +464,7 @@ $value-color: #131317;
   color: $color-text;
 
   &:hover {
-    color: #005aa3;
+    color: $color-primary;
   }
 }
 
@@ -518,11 +488,11 @@ $value-color: #131317;
 .commentFormAuthor {
   font-size: $font-size-14;
   font-weight: $font-weight-bold;
-  color: $value-color;
+  color: $cal-text;
 }
 
 .commentTextarea {
-  border: 1px solid #878a97;
+  border: 1px solid $cal-input-border;
   border-radius: $border-radius-4;
   padding: 8px;
   font-size: $font-size-16;
@@ -533,7 +503,7 @@ $value-color: #131317;
   font-family: inherit;
 
   &::placeholder {
-    color: #9799a4;
+    color: $color-text-light;
   }
 }
 
@@ -541,7 +511,7 @@ $value-color: #131317;
   background: none;
   border: none;
   cursor: pointer;
-  color: #005aa3;
+  color: $color-primary;
   font-size: $font-size-14;
   text-decoration: underline;
   padding: 0;
@@ -562,5 +532,5 @@ $value-color: #131317;
 .filesSectionTitle {
   font-size: 20px;
   font-weight: $font-weight-normal;
-  color: $value-color;
+  color: $cal-text;
 }
