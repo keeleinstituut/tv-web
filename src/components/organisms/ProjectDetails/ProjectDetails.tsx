@@ -76,16 +76,24 @@ interface FormValues {
   tags?: string[]
 }
 
+export interface ProjectPrefillData {
+  sourceLanguageId?: string
+  targetLanguageId?: string
+  sourceFiles?: File[]
+}
+
 interface ProjectDetailsProps {
   mode?: ProjectDetailModes
   project?: ProjectDetail
   className?: string
+  prefillData?: ProjectPrefillData
 }
 
 const ProjectDetails: FC<ProjectDetailsProps> = ({
   mode,
   project,
   className,
+  prefillData,
 }) => {
   const {
     workflow_started,
@@ -139,23 +147,35 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
 
   const [isEditEnabled, setIsEditEnabled] = useState(isNew)
 
-  const defaultValues = useMemo(
-    () =>
-      getProjectDefaultValues({
-        institutionUserId,
-        isNew,
-        project,
-        defaultDomainClassifier,
-        defaultProjectTypeClassifier,
-      }),
-    [
-      defaultDomainClassifier,
-      defaultProjectTypeClassifier,
+  const defaultValues = useMemo(() => {
+    const base = getProjectDefaultValues({
       institutionUserId,
       isNew,
       project,
-    ]
-  )
+      defaultDomainClassifier,
+      defaultProjectTypeClassifier,
+    })
+    if (!isNew || !prefillData) return base
+    return {
+      ...base,
+      ...(prefillData.sourceLanguageId
+        ? { source_language_classifier_value_id: prefillData.sourceLanguageId }
+        : {}),
+      ...(prefillData.targetLanguageId
+        ? { destination_language_classifier_value_ids: [prefillData.targetLanguageId] }
+        : {}),
+      ...(prefillData.sourceFiles?.length
+        ? { source_files: prefillData.sourceFiles }
+        : {}),
+    }
+  }, [
+    defaultDomainClassifier,
+    defaultProjectTypeClassifier,
+    institutionUserId,
+    isNew,
+    prefillData,
+    project,
+  ])
 
   const {
     control,

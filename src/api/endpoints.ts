@@ -24,6 +24,10 @@ const auditLog = (path: string) => {
   return gateway(`/audit-log/api/${clean(path)}`)
 }
 
+const machineTranslation = (path: string) => {
+  return gateway(`/machine-translation/api/${clean(path)}`)
+}
+
 export const endpoints = {
   ROLES: authorization('roles'),
   INSTITUTIONS: authorization('institutions'),
@@ -124,6 +128,16 @@ export const endpoints = {
 
   AUDIT_LOGS_OLD: auditLog('event-records-old'),
   EXPORT_AUDIT_LOGS_OLD: auditLog('event-records-old/export'),
+
+  MT_PROVIDERS: machineTranslation('providers'),
+  MT_PROVIDER_OPTIONS: (provider: string) =>
+    machineTranslation(`providers/${provider}/options`),
+  MT_TRANSLATE_TEXT: machineTranslation('translate/text'),
+  MT_TRANSLATE_FILE: machineTranslation('translate/file'),
+  MT_JOBS: machineTranslation('translate/jobs'),
+  MT_FILE_DOWNLOAD: (id: string) =>
+    machineTranslation(`translate/file/${id}/download`),
+  MT_INSTITUTION_SETTINGS: machineTranslation('settings'),
 }
 
 export const authEndpoints = {
