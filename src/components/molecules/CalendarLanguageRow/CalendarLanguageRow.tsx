@@ -14,6 +14,8 @@ import {
   useFetchCalendarWeek,
 } from 'hooks/requests/useCalendar'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import classes from './classes.module.scss'
 
 export const SLOT_WIDTH_PX = 48 // px per 30 min
@@ -162,11 +164,16 @@ export const BookedSlotBlock: FC<{
       <div
         className={classNames(
           classes.slotBlock,
-          getSlotClass(slot, isPast, isOngoing)
+          getSlotClass(slot, isPast, isOngoing),
+          {
+            [classes.slotBlockNarrow]: isNarrow,
+          }
         )}
         style={{ left: left + 4, width: width - 8 }}
         title={slot.meta}
-      />
+      >
+        <BookingBusyIcon className={classes.slotIconVacation} />
+      </div>
     )
   }
 
@@ -254,7 +261,6 @@ const CalendarLanguageRow: FC<Props> = ({
       startIso: match.start_at,
       endIso: match.end_at,
       slot: match,
-      intent: pendingDeepLink.intent,
     })
     setPendingDeepLink(null)
   }, [data, pendingDeepLink])
@@ -322,6 +328,36 @@ const CalendarLanguageRow: FC<Props> = ({
     }
     const startIdx = Math.min(dragStart, dragEnd)
     const endIdx = Math.max(dragStart, dragEnd) + 1
+
+    // Validate: no past slots in range
+    for (let i = startIdx; i < endIdx; i++) {
+      const slotIso = slotIndexToIso(i, date, dayStartHour)
+      if (dayjs(slotIso).isBefore(dayjs())) {
+        setDragStart(null)
+        setDragEnd(null)
+        showNotification({
+          type: NotificationTypes.Error,
+          title: t('notification.announcement'),
+          content: t('calendar.drag_into_past'),
+        })
+        return
+      }
+    }
+
+    // Validate: no booked slots in range
+    for (let i = startIdx; i < endIdx; i++) {
+      if (isSlotBooked(i)) {
+        setDragStart(null)
+        setDragEnd(null)
+        showNotification({
+          type: NotificationTypes.Error,
+          title: t('notification.announcement'),
+          content: t('calendar.drag_into_booked'),
+        })
+        return
+      }
+    }
+
     const startIso = slotIndexToIso(startIdx, date, dayStartHour)
     const endIso = slotIndexToIso(endIdx, date, dayStartHour)
     onSelectRange?.(language.language.id, startIso, endIso)
@@ -334,6 +370,8 @@ const CalendarLanguageRow: FC<Props> = ({
     dayStartHour,
     language.language.id,
     onSelectRange,
+    isSlotBooked,
+    t,
   ])
 
   const selectionLeft = isDragging
@@ -385,21 +423,56 @@ const CalendarLanguageRow: FC<Props> = ({
         onMouseLeave={readOnly ? undefined : handleMouseUp}
       >
         {/* Slot background cells */}
-        {!isExpanded && readOnly &&
-          Array.from({ length: Math.floor(totalSlots / 2) }).map((_, i) => (
-            <div
-              key={i}
-              className={classNames(classes.slotCell, classes.slotCellPast)}
-              style={{
-                left: i * SLOT_WIDTH_PX * 2 + 4,
-                width: SLOT_WIDTH_PX * 2 - 8,
-                top: 4,
-                bottom: 4,
-                height: 'auto',
-              }}
-            />
-          ))}
-        {!isExpanded && !readOnly &&
+        {!isExpanded &&
+          readOnly &&
+          Array.from({ length: totalSlots }).map((_, i) => {
+            const slotStart = slotIndexToIso(i, date, dayStartHour)
+            const slotEnd = slotIndexToIso(i + 1, date, dayStartHour)
+            const isCellBooked = bookedSlots.some(
+              (s) =>
+                dayjs(s.start_at).isBefore(dayjs(slotEnd)) &&
+                dayjs(s.end_at).isAfter(dayjs(slotStart))
+            )
+            if (isCellBooked) return null
+
+            if (i % 2 === 1) {
+              const prevStart = slotIndexToIso(i - 1, date, dayStartHour)
+              const prevEnd = slotIndexToIso(i, date, dayStartHour)
+              const prevBooked = bookedSlots.some(
+                (s) =>
+                  dayjs(s.start_at).isBefore(dayjs(prevEnd)) &&
+                  dayjs(s.end_at).isAfter(dayjs(prevStart))
+              )
+              if (!prevBooked) return null // merge with even cell
+            }
+
+            const nextStart = slotIndexToIso(i + 1, date, dayStartHour)
+            const nextEnd = slotIndexToIso(i + 2, date, dayStartHour)
+            const nextBooked =
+              i + 1 < totalSlots &&
+              bookedSlots.some(
+                (s) =>
+                  dayjs(s.start_at).isBefore(dayjs(nextEnd)) &&
+                  dayjs(s.end_at).isAfter(dayjs(nextStart))
+              )
+            const isWide = i % 2 === 0 && i + 1 < totalSlots && !nextBooked
+
+            return (
+              <div
+                key={i}
+                className={classNames(classes.slotCell, classes.slotCellPast)}
+                style={{
+                  left: i * SLOT_WIDTH_PX + 4,
+                  width: isWide ? SLOT_WIDTH_PX * 2 - 8 : SLOT_WIDTH_PX - 8,
+                  top: 4,
+                  bottom: 4,
+                  height: 'auto',
+                }}
+              />
+            )
+          })}
+        {!isExpanded &&
+          !readOnly &&
           Array.from({ length: totalSlots }).map((_, i) => {
             const slotIso = slotIndexToIso(i, date, dayStartHour)
             const isPast = dayjs(slotIso).isBefore(dayjs())
@@ -490,10 +563,17 @@ const CalendarLanguageRow: FC<Props> = ({
                     {isWide ? t('calendar.select_time') : '+'}
                   </span>
                 )}
-                {fullyBooked && isWide && (
-                  <span className={classes.slotCellFullyBookedLabel}>
-                    {t('calendar.booked')}
-                  </span>
+                {fullyBooked && (
+                  <>
+                    <BookingBusyIcon
+                      className={classes.slotCellFullyBookedIcon}
+                    />
+                    {isWide && (
+                      <span className={classes.slotCellFullyBookedLabel}>
+                        {t('calendar.booked')}
+                      </span>
+                    )}
+                  </>
                 )}
               </div>
             )

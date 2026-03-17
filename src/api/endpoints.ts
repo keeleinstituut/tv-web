@@ -89,6 +89,17 @@ export const endpoints = {
   CALENDAR_SEARCH: translationOrder('calendar/search'),
   CALENDAR_SUMMARY: translationOrder('calendar/summary'),
   CALENDAR_SLOT_MATCHING: translationOrder('calendar/slot-matching'),
+  CALENDAR_ORDERS: translationOrder('calendar/orders'),
+  CALENDAR_ORDER: (id: string) => translationOrder(`calendar/orders/${id}`),
+  CALENDAR_ORDER_ACCEPT: (id: string) =>
+    translationOrder(`calendar/orders/${id}/accept`),
+  CALENDAR_ORDER_DECLINE: (id: string) =>
+    translationOrder(`calendar/orders/${id}/decline`),
+  CALENDAR_ORDER_CONFIRM: (id: string) =>
+    translationOrder(`calendar/orders/${id}/confirm`),
+  CALENDAR_ORDER_REJECT: (id: string) =>
+    translationOrder(`calendar/orders/${id}/reject`),
+  CALENDAR_WEEK_SLOT_BOOKINGS: translationOrder('calendar/week/bookings'),
   PINNED_LANGUAGES: translationOrder('institution-users/pinned-languages'),
   VENDOR_CALENDAR_IMPORT: translationOrder('vendors/calendar/import'),
 

@@ -632,7 +632,12 @@ export const useFetchWeekSlotBookings = (
   params: { start_at: string; end_at: string; language_id: string } | null
 ) => {
   const { isLoading, data } = useQuery<WeekSlotBookingsResponse>({
-    queryKey: ['week-slot-bookings', params?.start_at, params?.end_at, params?.language_id],
+    queryKey: [
+      'week-slot-bookings',
+      params?.start_at,
+      params?.end_at,
+      params?.language_id,
+    ],
     enabled: !!params,
     queryFn: () =>
       new Promise<WeekSlotBookingsResponse>((resolve) =>
@@ -721,7 +726,7 @@ export const useAcceptCalendarOrder = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mutationFn: (_id: string) =>
       new Promise<void>((resolve) => setTimeout(resolve, 400)),
-    // mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_ACCEPT(id)),
+    // TODO: mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_ACCEPT(id)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
     },
@@ -734,7 +739,33 @@ export const useDeclineCalendarOrder = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     mutationFn: (_id: string) =>
       new Promise<void>((resolve) => setTimeout(resolve, 400)),
-    // mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_DECLINE(id)),
+    // TODO: mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_DECLINE(id)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+    },
+  })
+}
+
+export const useConfirmCalendarOrder = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mutationFn: (_id: string) =>
+      new Promise<void>((resolve) => setTimeout(resolve, 400)),
+    // TODO: mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_CONFIRM(id)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+    },
+  })
+}
+
+export const useRejectCalendarOrder = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    mutationFn: (_id: string) =>
+      new Promise<void>((resolve) => setTimeout(resolve, 400)),
+    // TODO: mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_REJECT(id)),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
     },

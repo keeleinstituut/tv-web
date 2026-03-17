@@ -2,10 +2,7 @@ import { FC, useEffect } from 'react'
 import dayjs from 'dayjs'
 import { useSearchParams } from 'react-router'
 import { CalendarProvider } from 'components/contexts/CalendarContext'
-import {
-  useCalendarContext,
-  SidePanelIntent,
-} from 'components/contexts/CalendarContext'
+import { useCalendarContext } from 'components/contexts/CalendarContext'
 import CalendarToolbar from 'components/organisms/CalendarToolbar/CalendarToolbar'
 import CalendarDayView from 'components/organisms/CalendarDayView/CalendarDayView'
 import CalendarWeekView from 'components/organisms/CalendarWeekView/CalendarWeekView'
@@ -23,13 +20,12 @@ const CalendarContent: FC = () => {
   useEffect(() => {
     const slotId = searchParams.get('slotId')
     const date = searchParams.get('date')
-    const intent = searchParams.get('intent') as SidePanelIntent | null
-    if (slotId && date && intent) {
+    if (slotId && date) {
       setCurrentDate(dayjs(date))
       setView('day')
-      setPendingDeepLink({ slotId, date, intent })
+      setPendingDeepLink({ slotId, date })
     }
-  }, []) // eslint-disable-line
+  }, [])
 
   return (
     <div className={classes.container}>

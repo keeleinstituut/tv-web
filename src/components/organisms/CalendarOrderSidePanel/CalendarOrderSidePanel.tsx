@@ -3,15 +3,14 @@ import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import { formatDuration } from 'helpers/calendar'
-import { isSlotPast } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import {
   useCreateCalendarOrder,
   useUpdateCalendarOrder,
   useCancelCalendarOrder,
-  useAcceptCalendarOrder,
-  useDeclineCalendarOrder,
+  useConfirmCalendarOrder,
+  useRejectCalendarOrder,
   useFetchSlotMatching,
 } from 'hooks/requests/useCalendar'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
@@ -40,10 +39,10 @@ const CalendarOrderSidePanel: FC = () => {
     useUpdateCalendarOrder()
   const { mutate: cancelOrder, isPending: isCancelling } =
     useCancelCalendarOrder()
-  const { mutate: acceptOrder, isPending: isAccepting } =
-    useAcceptCalendarOrder()
-  const { mutate: declineOrder, isPending: isDeclining } =
-    useDeclineCalendarOrder()
+  const { mutate: confirmOrder, isPending: isConfirming } =
+    useConfirmCalendarOrder()
+  const { mutate: rejectOrder, isPending: isRejecting } =
+    useRejectCalendarOrder()
 
   const [viitenumber, setViitenumber] = useState('')
   const [serviceType, setServiceType] = useState<ServiceType>('')
@@ -62,9 +61,7 @@ const CalendarOrderSidePanel: FC = () => {
 
   const isOpen = sidePanelSelection !== null
   const isViewMode = !!sidePanelSelection?.slot
-  const isAcceptMode = isViewMode && sidePanelSelection?.intent === 'accept'
   const isTranslatorView = isTranslator && isViewMode
-  const isTranslatorConfirmedView = isTranslatorView && !isAcceptMode
   const isFormMode = !isViewMode || isEditing
 
   const language = sidePanelSelection?.language
@@ -80,8 +77,10 @@ const CalendarOrderSidePanel: FC = () => {
 
   const projectId = slot?.assignment?.sub_project?.id
   const canEdit = isTPM || isClient
-  const isPastSlot = slot ? isSlotPast(slot.start_at) : false
+  const isPastSlot = slot ? dayjs(slot.end_at).isBefore(dayjs()) : false
   const isClientPastView = isClient && isViewMode && isPastSlot
+  const isTPMPendingView =
+    isTPM && isViewMode && slot?.assignment?.status === 'pending'
 
   // Slot matching for TPM — only fetch in form mode
   const slotMatchingParams =
@@ -121,20 +120,39 @@ const CalendarOrderSidePanel: FC = () => {
       if (sidePanelSelection?.vendorId) {
         setVendorId(sidePanelSelection.vendorId)
       }
+      // Initialise duration stepper from the drag selection
+      if (!isViewMode) {
+        setDurationMinutes(slotDurationMinutes)
+      }
+      // Pre-fill form for TPM pending order view
+      if (isTPM && sidePanelSelection?.slot?.assignment?.status === 'pending') {
+        const a = sidePanelSelection.slot.assignment
+        setViitenumber(a.reference_number ?? '')
+        setServiceType(
+          a.service_type === 'remote'
+            ? 'kaugtolge'
+            : a.service_type === 'on-site'
+              ? 'kontakttolge'
+              : ''
+        )
+        setLocation(a.meeting_link ?? a.location ?? '')
+      }
     }
-    if (isOpen && (isAcceptMode || isClientPastView)) {
-      // Unconfirmed accept panel + Client past view: metaandmed expanded by default
+    if (isOpen && isClientPastView) {
       setIsMetaOpen(true)
     }
-  }, [isOpen, isAcceptMode])
+  }, [isOpen])
 
   const handleSubmit = () => {
-    if (!language || !startIso || !endIso) return
+    if (!language || !startIso) return
+    const computedEndIso = dayjs(startIso)
+      .add(durationMinutes, 'minute')
+      .toISOString()
     createOrder(
       {
         language_id: language.language.id,
         start_at: startIso,
-        end_at: endIso,
+        end_at: computedEndIso,
         service_type: serviceType === 'kaugtolge' ? 'remote' : 'on-site',
         reference_number: viitenumber || undefined,
         location: serviceType === 'kontakttolge' ? location : undefined,
@@ -223,29 +241,29 @@ const CalendarOrderSidePanel: FC = () => {
     })
   }
 
-  const handleAccept = () => {
+  const handleConfirmOrder = () => {
     if (!projectId) return
-    acceptOrder(projectId, {
+    confirmOrder(projectId, {
       onSuccess: () => {
         closeSidePanel()
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.calendar_order_accepted'),
+          content: t('success.calendar_order_confirmed'),
         })
       },
     })
   }
 
-  const handleDecline = () => {
+  const handleRejectOrder = () => {
     if (!projectId) return
-    declineOrder(projectId, {
+    rejectOrder(projectId, {
       onSuccess: () => {
         closeSidePanel()
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.calendar_order_declined'),
+          content: t('success.calendar_order_rejected'),
         })
       },
     })
@@ -288,6 +306,7 @@ const CalendarOrderSidePanel: FC = () => {
     (!isTranslatorView || isChangingDuration) &&
     !isClientPastView &&
     !isTPMPastView &&
+    !isTPMPendingView &&
     !(isClient && isViewMode)
 
   return (
@@ -328,19 +347,13 @@ const CalendarOrderSidePanel: FC = () => {
               startTime={startTime}
               duration={duration}
               isPastSlot={isPastSlot}
-              isAcceptMode={isAcceptMode}
-              isTranslatorConfirmedView={isTranslatorConfirmedView}
               isChangingDuration={isChangingDuration}
               isConfirmingCancel={isConfirmingCancel}
               isMetaOpen={isMetaOpen}
               durationMinutes={durationMinutes}
               durationNote={durationNote}
-              isAccepting={isAccepting}
-              isDeclining={isDeclining}
               isCancelling={isCancelling}
               isUpdating={isUpdating}
-              onAccept={handleAccept}
-              onDecline={handleDecline}
               onVoidConfirm={handleVoidConfirm}
               onSetIsConfirmingCancel={setIsConfirmingCancel}
               onStartChangeDuration={handleStartChangeDuration}
@@ -365,6 +378,7 @@ const CalendarOrderSidePanel: FC = () => {
               date={date}
               startTime={startTime}
               duration={duration}
+              isPastSlot={isPastSlot}
               isEditing={isEditing}
               isConfirmingCancel={isConfirmingCancel}
               isMetaOpen={isMetaOpen}
@@ -395,6 +409,13 @@ const CalendarOrderSidePanel: FC = () => {
           ) : (
             <CalendarOrderFormBody
               language={language}
+              slot={slot}
+              isViewMode={isViewMode}
+              isTPMPendingView={isTPMPendingView}
+              isConfirming={isConfirming}
+              isRejecting={isRejecting}
+              onConfirmOrder={handleConfirmOrder}
+              onRejectOrder={handleRejectOrder}
               date={date}
               startTime={startTime}
               duration={duration}
@@ -405,8 +426,10 @@ const CalendarOrderSidePanel: FC = () => {
               tellija={tellija}
               domainId={domainId}
               vendorId={vendorId}
+              durationMinutes={durationMinutes}
               domains={domains}
               vendors={vendors}
+              onSetDurationMinutes={setDurationMinutes}
               onSetViitenumber={setViitenumber}
               onSetServiceType={setServiceType}
               onSetLocation={setLocation}

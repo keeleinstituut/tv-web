@@ -10,12 +10,8 @@ interface Props {
 
 const CalendarCollapseExpandButton: FC<Props> = ({ languages }) => {
   const { t } = useTranslation()
-  const {
-    isLanguageExpanded,
-    expandAll,
-    collapseAll,
-    allCollapsedOverride,
-  } = useCalendarContext()
+  const { isLanguageExpanded, expandAll, collapseAll, allCollapsedOverride } =
+    useCalendarContext()
 
   const anyExpanded =
     !allCollapsedOverride &&

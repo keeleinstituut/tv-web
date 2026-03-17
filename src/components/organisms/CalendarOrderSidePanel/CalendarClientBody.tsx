@@ -9,6 +9,7 @@ import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
+import DownloadIcon from 'assets/icons/download.svg?react'
 import classes from './classes.module.scss'
 
 export type ServiceType = 'kaugtolge' | 'kontakttolge' | ''
@@ -28,6 +29,7 @@ interface CalendarClientBodyProps {
   date: string
   startTime: string
   duration: string
+  isPastSlot: boolean
   isEditing: boolean
   isConfirmingCancel: boolean
   isMetaOpen: boolean
@@ -62,6 +64,7 @@ const CalendarClientBody: FC<CalendarClientBodyProps> = ({
   date,
   startTime,
   duration,
+  isPastSlot,
   isEditing,
   isConfirmingCancel,
   isMetaOpen,
@@ -93,8 +96,8 @@ const CalendarClientBody: FC<CalendarClientBodyProps> = ({
 
   return (
     <>
-      {/* Top action bar */}
-      {isEditing ? (
+      {/* Top action bar — hidden for past/completed slots */}
+      {!isPastSlot && isEditing ? (
         <div className={classes.clientEditBar}>
           <button className={classes.loobuLink} onClick={onCancelEdit}>
             <ChevronLeft style={{ width: 14, height: 14 }} />
@@ -108,7 +111,7 @@ const CalendarClientBody: FC<CalendarClientBodyProps> = ({
             {isUpdating ? t('calendar.saving') : t('calendar.save')}
           </Button>
         </div>
-      ) : (
+      ) : !isPastSlot ? (
         <div className={classes.translatorActions}>
           {isConfirmingCancel ? (
             <>
@@ -146,14 +149,18 @@ const CalendarClientBody: FC<CalendarClientBodyProps> = ({
             </>
           )}
         </div>
-      )}
+      ) : null}
 
       <div className={classes.form}>
         {/* Status badge */}
         <div className={classes.statusBadgeGrey}>
-          {slot?.assignment?.confirmed
-            ? t('calendar.status_forwarded')
-            : t('calendar.status_pending')}
+          {slot?.assignment?.status === 'completed'
+            ? t('calendar.status_completed')
+            : slot?.assignment?.status === 'cancelled'
+              ? t('calendar.status_cancelled')
+              : slot?.assignment?.status === 'confirmed'
+                ? t('calendar.status_forwarded')
+                : t('calendar.status_pending')}
         </div>
 
         {isEditing && (
@@ -504,11 +511,26 @@ const CalendarClientBody: FC<CalendarClientBodyProps> = ({
             </>
           ) : null}
         </div>
-        <button className={classes.sectionBtn}>
-          {t('calendar.add_short')}
-          <AddIcon style={{ width: 16, height: 16 }} />
-        </button>
+        {!isPastSlot && (
+          <button className={classes.sectionBtn}>
+            {t('calendar.add_short')}
+            <AddIcon style={{ width: 16, height: 16 }} />
+          </button>
+        )}
       </div>
+      {isPastSlot && !!slot?.assignment?.files?.length && (
+        <div className={classes.fileList}>
+          <div className={classes.fileListHeader}>
+            {t('calendar.file_list_header')}
+          </div>
+          {slot.assignment.files.map((f, i) => (
+            <div key={i} className={classes.fileItem}>
+              <button className={classes.fileLink}>{f.name}</button>
+              <DownloadIcon className={classes.downloadIcon} />
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Kommentaarid */}
       <div className={classes.divider} />
@@ -529,6 +551,21 @@ const CalendarClientBody: FC<CalendarClientBodyProps> = ({
           <AddIcon style={{ width: 16, height: 16 }} />
         </button>
       </div>
+      {isPastSlot && !!slot?.assignment?.comments?.length && (
+        <>
+          {slot.assignment.comments.map((c, i) => (
+            <div key={i} className={classes.commentContent}>
+              <span className={classes.commentAuthor}>{c.author}</span>
+              <span className={classes.commentText}>{c.text}</span>
+              <span className={classes.commentDate}>
+                {t('calendar.added_at', {
+                  date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
+                })}
+              </span>
+            </div>
+          ))}
+        </>
+      )}
     </>
   )
 }

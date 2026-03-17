@@ -11,6 +11,8 @@ import {
   isSlotPast,
 } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import classes from './classes.module.scss'
 
 interface Props {
@@ -92,6 +94,36 @@ const CalendarDayVendorRow: FC<Props> = ({
     }
     const startIdx = Math.min(dragStart, dragEnd)
     const endIdx = Math.max(dragStart, dragEnd) + 1
+
+    // Validate: no past slots in range
+    for (let i = startIdx; i < endIdx; i++) {
+      const slotIso = slotIndexToIso(i, date, dayStartHour)
+      if (dayjs(slotIso).isBefore(dayjs())) {
+        setDragStart(null)
+        setDragEnd(null)
+        showNotification({
+          type: NotificationTypes.Error,
+          title: t('notification.announcement'),
+          content: t('calendar.drag_into_past'),
+        })
+        return
+      }
+    }
+
+    // Validate: no booked slots in range
+    for (let i = startIdx; i < endIdx; i++) {
+      if (isSlotBooked(i)) {
+        setDragStart(null)
+        setDragEnd(null)
+        showNotification({
+          type: NotificationTypes.Error,
+          title: t('notification.announcement'),
+          content: t('calendar.drag_into_booked'),
+        })
+        return
+      }
+    }
+
     const startIso = slotIndexToIso(startIdx, date, dayStartHour)
     const endIso = slotIndexToIso(endIdx, date, dayStartHour)
     openSidePanel({
@@ -102,7 +134,17 @@ const CalendarDayVendorRow: FC<Props> = ({
     })
     setDragStart(null)
     setDragEnd(null)
-  }, [dragStart, dragEnd, date, dayStartHour, language, vendor.id, openSidePanel])
+  }, [
+    dragStart,
+    dragEnd,
+    date,
+    dayStartHour,
+    language,
+    vendor.id,
+    openSidePanel,
+    isSlotBooked,
+    t,
+  ])
 
   const handleClickSlot = useCallback(
     (slot: BookedSlot) => {
@@ -148,13 +190,17 @@ const CalendarDayVendorRow: FC<Props> = ({
           if (i % 2 === 1) {
             const prevBooked = isSlotBooked(i - 1)
             if (!prevBooked) {
-              const prevPast = isSlotPast(slotIndexToIso(i - 1, date, dayStartHour))
+              const prevPast = isSlotPast(
+                slotIndexToIso(i - 1, date, dayStartHour)
+              )
               if (isPast === prevPast) return null
             }
           }
 
           const nextSlotIso =
-            i + 1 < totalSlots ? slotIndexToIso(i + 1, date, dayStartHour) : null
+            i + 1 < totalSlots
+              ? slotIndexToIso(i + 1, date, dayStartHour)
+              : null
           const nextSameState =
             i % 2 === 0 &&
             nextSlotIso !== null &&
@@ -171,7 +217,9 @@ const CalendarDayVendorRow: FC<Props> = ({
               })}
               style={{
                 left: i * SLOT_WIDTH_PX + 4,
-                width: nextSameState ? SLOT_WIDTH_PX * 2 - 8 : SLOT_WIDTH_PX - 8,
+                width: nextSameState
+                  ? SLOT_WIDTH_PX * 2 - 8
+                  : SLOT_WIDTH_PX - 8,
                 top: 4,
                 bottom: 4,
                 height: 'auto',

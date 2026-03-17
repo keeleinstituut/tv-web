@@ -7,7 +7,7 @@ import { useCalendarContext } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 
 export function useVisibleCalendarLanguages() {
-  const { focusedLanguageId, filteredLanguageIds } = useCalendarContext()
+  const { focusedLanguageId } = useCalendarContext()
   const { isTranslator } = useCalendarRole()
   const { languages: allLanguages } = useFetchCalendarLanguages()
   const { languages: translatorLanguages } = useFetchCalendarTranslatorLanguages()
@@ -23,9 +23,7 @@ export function useVisibleCalendarLanguages() {
 
   const visibleLanguages = focusedLanguageId
     ? withFallback.filter((l) => l.language.id === focusedLanguageId)
-    : filteredLanguageIds.length > 0
-      ? withFallback.filter((l) => filteredLanguageIds.includes(l.language.id))
-      : withFallback
+    : withFallback
 
   return { languages, allLanguages, visibleLanguages }
 }

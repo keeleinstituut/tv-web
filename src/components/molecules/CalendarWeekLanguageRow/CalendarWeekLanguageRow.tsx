@@ -28,7 +28,15 @@ const WeekSummaryRow: FC<{
   expanded: boolean
   isTPM: boolean
   onClickBookedSlot?: (slot: WeekSlot) => void
-}> = ({ language, langSlots, onTogglePin, onToggle, expanded, isTPM, onClickBookedSlot }) => {
+}> = ({
+  language,
+  langSlots,
+  onTogglePin,
+  onToggle,
+  expanded,
+  isTPM,
+  onClickBookedSlot,
+}) => {
   const { t } = useTranslation()
   return (
     <div className={classes.rowWrapper}>
@@ -98,11 +106,14 @@ const WeekSummaryRow: FC<{
                         key={blockIdx}
                         className={classNames(classes.block, {
                           [classes.blockVendorAvail]:
-                            slot.working_hours > 0 && slot.available_vendors > 0,
+                            slot.working_hours > 0 &&
+                            slot.available_vendors > 0,
                           [classes.blockBooked]: isBooked,
                           [classes.blockClickable]: clickable,
                         })}
-                        onClick={clickable ? () => onClickBookedSlot(slot) : undefined}
+                        onClick={
+                          clickable ? () => onClickBookedSlot(slot) : undefined
+                        }
                       />
                     )
                   })

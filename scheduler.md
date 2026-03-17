@@ -132,11 +132,10 @@
 
 ### Accepting & declining an order
 
-1. User clicks on the link in the notification they got via email and
-   1. the calendar view opens with the order time slot visible in the center of the given time slot and
-   2. with the side panel opened that has the details of the order visible
-      1. uneditable if the user has the prvilege of a Translator or
-      2. editable if the user has tan he privilege of a TPM.
+> **Note (2026-03-17):** Per updated spec, Translator accept/decline happens in **Tellimused → Minu Ülesanded → Ootel ülesanded**, NOT in the calendar side panel. The calendar side panel has no accept/decline flow for Teostaja. The `isAcceptMode` path and `useAcceptCalendarOrder` / `useDeclineCalendarOrder` hooks have been removed from the calendar feature accordingly.
+
+1. Vendor receives an email with order details.
+   * User navigates to Tellimused > Minu Ülesanded > Ootel ülesanded
 2. On top of the panel buttons are displayed:
    1. secondary action button "Lükka tagasi" and
    2. primary action button "Võta vastu".

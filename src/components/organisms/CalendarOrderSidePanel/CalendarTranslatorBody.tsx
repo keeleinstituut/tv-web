@@ -27,19 +27,13 @@ interface CalendarTranslatorBodyProps {
   startTime: string
   duration: string
   isPastSlot: boolean
-  isAcceptMode: boolean
-  isTranslatorConfirmedView: boolean
   isChangingDuration: boolean
   isConfirmingCancel: boolean
   isMetaOpen: boolean
   durationMinutes: number
   durationNote: string
-  isAccepting: boolean
-  isDeclining: boolean
   isCancelling: boolean
   isUpdating: boolean
-  onAccept: () => void
-  onDecline: () => void
   onVoidConfirm: () => void
   onSetIsConfirmingCancel: (v: boolean) => void
   onStartChangeDuration: () => void
@@ -55,18 +49,12 @@ const CalendarTranslatorBody: FC<CalendarTranslatorBodyProps> = ({
   startTime,
   duration,
   isPastSlot,
-  isAcceptMode,
-  isTranslatorConfirmedView,
   isChangingDuration,
   isConfirmingCancel,
   isMetaOpen,
   durationMinutes,
   durationNote,
-  isAccepting,
-  isDeclining,
   isCancelling,
-  onAccept,
-  onDecline,
   onVoidConfirm,
   onSetIsConfirmingCancel,
   onStartChangeDuration,
@@ -78,8 +66,8 @@ const CalendarTranslatorBody: FC<CalendarTranslatorBodyProps> = ({
 
   return (
     <>
-      {/* Action buttons — hidden for past confirmed slots; accept always visible */}
-      {(!isPastSlot || isAcceptMode) && (
+      {/* Action buttons — hidden for past slots */}
+      {!isPastSlot && (
         <div className={classes.translatorActions}>
           {isChangingDuration ? (
             <Button
@@ -89,23 +77,6 @@ const CalendarTranslatorBody: FC<CalendarTranslatorBodyProps> = ({
             >
               {t('calendar.cancel_order')}
             </Button>
-          ) : isAcceptMode ? (
-            <>
-              <Button
-                appearance={AppearanceTypes.Primary}
-                onClick={onAccept}
-                disabled={isAccepting || isDeclining}
-              >
-                {isAccepting ? t('calendar.saving') : t('calendar.accept')}
-              </Button>
-              <Button
-                appearance={AppearanceTypes.Secondary}
-                onClick={onDecline}
-                disabled={isAccepting || isDeclining}
-              >
-                {isDeclining ? t('calendar.saving') : t('calendar.decline')}
-              </Button>
-            </>
           ) : isConfirmingCancel ? (
             <>
               <Button
@@ -127,14 +98,12 @@ const CalendarTranslatorBody: FC<CalendarTranslatorBodyProps> = ({
             </>
           ) : (
             <>
-              {isTranslatorConfirmedView && (
-                <Button
-                  appearance={AppearanceTypes.Primary}
-                  onClick={onStartChangeDuration}
-                >
-                  {t('calendar.change_duration')}
-                </Button>
-              )}
+              <Button
+                appearance={AppearanceTypes.Primary}
+                onClick={onStartChangeDuration}
+              >
+                {t('calendar.change_duration')}
+              </Button>
               <Button
                 appearance={AppearanceTypes.Secondary}
                 onClick={() => onSetIsConfirmingCancel(true)}
@@ -214,14 +183,49 @@ const CalendarTranslatorBody: FC<CalendarTranslatorBodyProps> = ({
             <label className={classes.label}>
               {t('calendar.meeting_link')}
             </label>
-            <a
-              className={classes.meetingLink}
-              href={`https://${slot.assignment.meeting_link}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {slot.assignment.meeting_link}
-            </a>
+            <div className={classes.meetingLinkRow}>
+              <a
+                className={classes.meetingLink}
+                href={`https://${slot.assignment.meeting_link}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {slot.assignment.meeting_link}
+              </a>
+              <button
+                className={classes.copyBtn}
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    `https://${slot.assignment!.meeting_link}`
+                  )
+                }
+                title={t('label.copy' as never)}
+              >
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                >
+                  <rect
+                    x="7"
+                    y="7"
+                    width="10"
+                    height="10"
+                    rx="1.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                  <path
+                    d="M13 7V5C13 4.17 12.33 3.5 11.5 3.5H4.5C3.67 3.5 3 4.17 3 5v7c0 .83.67 1.5 1.5 1.5H7"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         )}
 
@@ -329,16 +333,12 @@ const CalendarTranslatorBody: FC<CalendarTranslatorBodyProps> = ({
         <div className={classes.sectionLabel}>
           <AttachIcon className={classes.sectionIcon} />
           <span>{t('calendar.attachments')}</span>
-          {isTranslatorConfirmedView && slot?.assignment?.files?.length ? (
+          {!!slot?.assignment?.files?.length && (
             <button className={classes.sectionLinkBtn}>
               {t('calendar.download_files', {
                 count: slot.assignment.files.length,
               })}
             </button>
-          ) : !isTranslatorConfirmedView ? null : (
-            <span className={classes.sectionNote}>
-              {t('calendar.available_after_confirmation')}
-            </span>
           )}
         </div>
       </div>
@@ -362,7 +362,7 @@ const CalendarTranslatorBody: FC<CalendarTranslatorBodyProps> = ({
         <div className={classes.sectionLabel}>
           <ChevronLeft className={classes.sectionChevron} />
           <span>{t('calendar.comments')}</span>
-          {isTranslatorConfirmedView && slot?.assignment?.last_comment_date && (
+          {!!slot?.assignment?.last_comment_date && (
             <span className={classes.sectionNote}>
               {t('calendar.last_commented', {
                 date: slot.assignment.last_comment_date,
@@ -370,12 +370,10 @@ const CalendarTranslatorBody: FC<CalendarTranslatorBodyProps> = ({
             </span>
           )}
         </div>
-        {isTranslatorConfirmedView && (
-          <button className={classes.sectionBtn}>
-            {t('calendar.add_short')}
-            <AddIcon style={{ width: 16, height: 16 }} />
-          </button>
-        )}
+        <button className={classes.sectionBtn}>
+          {t('calendar.add_short')}
+          <AddIcon style={{ width: 16, height: 16 }} />
+        </button>
       </div>
       {!!(isChangingDuration || isPastSlot) &&
         !!slot?.assignment?.comments?.length && (

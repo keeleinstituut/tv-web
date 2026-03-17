@@ -185,6 +185,7 @@
     "download_csv": "Laadi alla .csv",
     "choose": "Vali",
     "close": "Sulge",
+    "copy": "Kopeeri",
     "add_new_csv": "Lisa uus .csv",
     "filter": "Filtreeri",
     "sort": "Sorteeri",
@@ -448,7 +449,7 @@
     "order_id_label": "Tellimuse ID",
     "order_details_title": "Tellimuse detailid",
     "change_duration_btn": "Muuda kestust",
-    "cancel_booking": "Loobu tellimusest",
+    "cancel_booking": "Tühista tõlketeenust",
     "save_changes_btn": "Salvesta muudatus",
     "duration_until": "Kestus kuni",
     "step_basic_info": "Põhiandmed",
@@ -464,6 +465,9 @@
     "back_to_calendar": "Tagasi Kalendrisse",
     "order_submitted_title": "Tõlketellimus on edukalt esitatud",
     "attachments_count": "Tellimus sisaldab {{count}} manust",
+    "attached_files_count": "{{count}} lisatud manust",
+    "translation_feedback": "Hinnang tõlkekorraldusele",
+    "add_rating": "Lisa hinnang",
     "attachments_locked": "Manused kuvatakse turvalisuse tõttu alles pärast tellimuse kinnitamist.",
     "add_comment_btn": "Lisa kommentaar",
     "added_at_label": "Lisatud {{date}}",
@@ -489,7 +493,9 @@
     "filter_clear": "Tühista filter",
     "rare_language": "harv keel",
     "rare_language_note": "Harv keel — igal ajal ja kestusega tellimuse saab esitada.",
-    "remove_file": "Eemalda"
+    "remove_file": "Eemalda",
+    "drag_into_past": "Ei saa valida mineviku aega.",
+    "drag_into_booked": "Valitud ajavahemikus on juba tellimus olemas."
   },
   "alt": {
     "header_logo": "Logo",
@@ -774,6 +780,8 @@
     "calendar_order_cancelled": "Tellimus edukalt tühistatud.",
     "calendar_order_accepted": "Tellimus edukalt vastu võetud.",
     "calendar_order_declined": "Tellimus edukalt tagasi lükatud.",
+    "calendar_order_confirmed": "Tellimus edukalt kinnitatud.",
+    "calendar_order_rejected": "Tellimus edukalt tagasi lükatud.",
     "calendar_duration_saved": "Kestus edukalt salvestatud."
   },
   "notification": {

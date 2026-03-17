@@ -27,6 +27,7 @@ export interface CalendarLanguagesResponse {
 export interface BookedSlotAssignment {
   id: string
   confirmed?: boolean
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed'
   sub_project: {
     id: string
     ext_id: string

@@ -9,16 +9,12 @@ import {
 } from 'react'
 import { BookedSlot, CalendarLanguage, CalendarView } from 'types/calendar'
 
-export type SidePanelIntent = 'view' | 'accept'
-
 export interface SidePanelSelection {
   language: CalendarLanguage
   startIso: string
   endIso: string
-  /** Present when opening an existing booked slot (view/accept mode) */
+  /** Present when opening an existing booked slot */
   slot?: BookedSlot
-  /** 'accept' — Translator is reviewing an order for acceptance/decline */
-  intent?: SidePanelIntent
   /** Pre-selected vendor when booking from a vendor row (TPM) */
   vendorId?: string
 }
@@ -44,10 +40,8 @@ interface CalendarContextType {
   closeSidePanel: () => void
   focusedLanguageId: string | null
   setFocusedLanguageId: (id: string | null) => void
-  filteredLanguageIds: string[]
-  setFilteredLanguageIds: (ids: string[]) => void
-  pendingDeepLink: { slotId: string; date: string; intent: SidePanelIntent } | null
-  setPendingDeepLink: (link: { slotId: string; date: string; intent: SidePanelIntent } | null) => void
+  pendingDeepLink: { slotId: string; date: string } | null
+  setPendingDeepLink: (link: { slotId: string; date: string } | null) => void
   weekBookingPanel: { start_at: string; end_at: string; language_id: string } | null
   openWeekBookingPanel: (params: { start_at: string; end_at: string; language_id: string }) => void
   closeWeekBookingPanel: () => void
@@ -74,8 +68,6 @@ const CalendarContext = createContext<CalendarContextType>({
   closeSidePanel: () => undefined,
   focusedLanguageId: null,
   setFocusedLanguageId: () => undefined,
-  filteredLanguageIds: [],
-  setFilteredLanguageIds: () => undefined,
   pendingDeepLink: null,
   setPendingDeepLink: () => undefined,
   weekBookingPanel: null,
@@ -91,11 +83,9 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   const [sidePanelSelection, setSidePanelSelection] =
     useState<SidePanelSelection | null>(null)
   const [focusedLanguageId, setFocusedLanguageId] = useState<string | null>(null)
-  const [filteredLanguageIds, setFilteredLanguageIds] = useState<string[]>([])
   const [pendingDeepLink, setPendingDeepLink] = useState<{
     slotId: string
     date: string
-    intent: SidePanelIntent
   } | null>(null)
   const [weekBookingPanel, setWeekBookingPanel] = useState<{
     start_at: string
@@ -201,8 +191,6 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
         closeSidePanel,
         focusedLanguageId,
         setFocusedLanguageId,
-        filteredLanguageIds,
-        setFilteredLanguageIds,
         pendingDeepLink,
         setPendingDeepLink,
         weekBookingPanel,
