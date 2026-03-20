@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef, useState } from 'react'
+import { FC, useCallback, useEffect, useRef } from 'react'
 import dayjs from 'dayjs'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -14,8 +14,7 @@ import {
   useFetchCalendarWeek,
 } from 'hooks/requests/useCalendar'
 import { useCalendarContext } from 'components/contexts/CalendarContext'
-import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { useDragSelection } from 'hooks/useDragSelection'
 import classes from './classes.module.scss'
 
 export const SLOT_WIDTH_PX = 48 // px per 30 min
@@ -34,17 +33,26 @@ interface Props {
   isExpanded?: boolean
   /** When true the row is a header-only strip: no slot cells, no interaction */
   readOnly?: boolean
+  slotWidth?: number
 }
 
-export function timeToX(isoTime: string, dayStartHour: number): number {
+export function timeToX(
+  isoTime: string,
+  dayStartHour: number,
+  slotWidthPx = SLOT_WIDTH_PX
+): number {
   const t = dayjs(isoTime)
   const hoursFromStart = t.hour() + t.minute() / 60 - dayStartHour
-  return hoursFromStart * SLOT_WIDTH_PX * 2
+  return hoursFromStart * slotWidthPx * 2
 }
 
-function durationToWidth(startIso: string, endIso: string): number {
+function durationToWidth(
+  startIso: string,
+  endIso: string,
+  slotWidthPx = SLOT_WIDTH_PX
+): number {
   const minutes = dayjs(endIso).diff(dayjs(startIso), 'minute')
-  return (minutes / 30) * SLOT_WIDTH_PX
+  return (minutes / 30) * slotWidthPx
 }
 
 export function slotIndexToIso(
@@ -95,14 +103,16 @@ export const BookedSlotBlock: FC<{
   dayStartHour: number
   onClick?: (slot: BookedSlot) => void
   alwaysLightBlue?: boolean
-}> = ({ slot, dayStartHour, onClick, alwaysLightBlue }) => {
+  slotWidth?: number
+}> = ({ slot, dayStartHour, onClick, alwaysLightBlue, slotWidth }) => {
   const { t } = useTranslation()
-  const left = timeToX(slot.start_at, dayStartHour)
-  const width = durationToWidth(slot.start_at, slot.end_at)
+  const sw = slotWidth ?? SLOT_WIDTH_PX
+  const left = timeToX(slot.start_at, dayStartHour, sw)
+  const width = durationToWidth(slot.start_at, slot.end_at, sw)
   const now = dayjs()
   const isPast = dayjs(slot.end_at).isBefore(now)
   const isOngoing = !isPast && dayjs(slot.start_at).isBefore(now)
-  const isNarrow = width <= SLOT_WIDTH_PX
+  const isNarrow = width <= sw
 
   const handleClick =
     slot.type === 'assignment' && onClick
@@ -222,7 +232,9 @@ const CalendarLanguageRow: FC<Props> = ({
   onToggleExpand,
   isExpanded,
   readOnly = false,
+  slotWidth,
 }) => {
+  const sw = slotWidth ?? SLOT_WIDTH_PX
   const { t } = useTranslation()
   const { data } = useFetchCalendarDay(date, language.language.id)
   const { data: weekData } = useFetchCalendarWeek(date)
@@ -266,24 +278,9 @@ const CalendarLanguageRow: FC<Props> = ({
   }, [data, pendingDeepLink])
 
   const totalSlots = (dayEndHour - dayStartHour) * 2
-  const totalWidth = totalSlots * SLOT_WIDTH_PX
+  const totalWidth = totalSlots * sw
 
-  // Drag selection state
-  const [dragStart, setDragStart] = useState<number | null>(null)
-  const [dragEnd, setDragEnd] = useState<number | null>(null)
-  const isDragging = dragStart !== null && dragEnd !== null
   const rowRef = useRef<HTMLDivElement>(null)
-
-  const getSlotIndexFromX = useCallback(
-    (clientX: number): number | null => {
-      const rect = rowRef.current?.getBoundingClientRect()
-      if (!rect) return null
-      const x = clientX - rect.left
-      const index = Math.floor(x / SLOT_WIDTH_PX)
-      return Math.max(0, Math.min(totalSlots - 1, index))
-    },
-    [totalSlots]
-  )
 
   const isSlotBooked = useCallback(
     (slotIndex: number): boolean => {
@@ -298,88 +295,17 @@ const CalendarLanguageRow: FC<Props> = ({
     [bookedSlots, date, dayStartHour]
   )
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      const idx = getSlotIndexFromX(e.clientX)
-      if (idx === null) return
-      // Only allow selection on future, non-booked slots
-      const slotIso = slotIndexToIso(idx, date, dayStartHour)
-      if (dayjs(slotIso).isBefore(dayjs()) || isSlotBooked(idx)) return
-      setDragStart(idx)
-      setDragEnd(idx)
-    },
-    [getSlotIndexFromX, date, dayStartHour, isSlotBooked]
-  )
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (dragStart === null) return
-      const idx = getSlotIndexFromX(e.clientX)
-      if (idx !== null) setDragEnd(idx)
-    },
-    [dragStart, getSlotIndexFromX]
-  )
-
-  const handleMouseUp = useCallback(() => {
-    if (dragStart === null || dragEnd === null) {
-      setDragStart(null)
-      setDragEnd(null)
-      return
-    }
-    const startIdx = Math.min(dragStart, dragEnd)
-    const endIdx = Math.max(dragStart, dragEnd) + 1
-
-    // Validate: no past slots in range
-    for (let i = startIdx; i < endIdx; i++) {
-      const slotIso = slotIndexToIso(i, date, dayStartHour)
-      if (dayjs(slotIso).isBefore(dayjs())) {
-        setDragStart(null)
-        setDragEnd(null)
-        showNotification({
-          type: NotificationTypes.Error,
-          title: t('notification.announcement'),
-          content: t('calendar.drag_into_past'),
-        })
-        return
-      }
-    }
-
-    // Validate: no booked slots in range
-    for (let i = startIdx; i < endIdx; i++) {
-      if (isSlotBooked(i)) {
-        setDragStart(null)
-        setDragEnd(null)
-        showNotification({
-          type: NotificationTypes.Error,
-          title: t('notification.announcement'),
-          content: t('calendar.drag_into_booked'),
-        })
-        return
-      }
-    }
-
-    const startIso = slotIndexToIso(startIdx, date, dayStartHour)
-    const endIso = slotIndexToIso(endIdx, date, dayStartHour)
-    onSelectRange?.(language.language.id, startIso, endIso)
-    setDragStart(null)
-    setDragEnd(null)
-  }, [
-    dragStart,
-    dragEnd,
-    date,
-    dayStartHour,
-    language.language.id,
-    onSelectRange,
-    isSlotBooked,
-    t,
-  ])
-
-  const selectionLeft = isDragging
-    ? Math.min(dragStart!, dragEnd!) * SLOT_WIDTH_PX + 4
-    : 0
-  const selectionWidth = isDragging
-    ? (Math.abs(dragEnd! - dragStart!) + 1) * SLOT_WIDTH_PX - 8
-    : 0
+  const { isDragging, selectionLeft, selectionWidth, handleMouseDown, handleMouseMove, handleMouseUp } =
+    useDragSelection({
+      rowRef,
+      date,
+      dayStartHour,
+      totalSlots,
+      slotWidth: sw,
+      isSlotBooked,
+      onDragComplete: (startIso, endIso) =>
+        onSelectRange?.(language.language.id, startIso, endIso),
+    })
 
   return (
     <div className={classes.rowWrapper}>
@@ -462,8 +388,8 @@ const CalendarLanguageRow: FC<Props> = ({
                 key={i}
                 className={classNames(classes.slotCell, classes.slotCellPast)}
                 style={{
-                  left: i * SLOT_WIDTH_PX + 4,
-                  width: isWide ? SLOT_WIDTH_PX * 2 - 8 : SLOT_WIDTH_PX - 8,
+                  left: i * sw + 4,
+                  width: isWide ? sw * 2 - 8 : sw - 8,
                   top: 4,
                   bottom: 4,
                   height: 'auto',
@@ -547,15 +473,13 @@ const CalendarLanguageRow: FC<Props> = ({
                 style={
                   isPill
                     ? {
-                        left: i * SLOT_WIDTH_PX + 4,
-                        width: isWide
-                          ? SLOT_WIDTH_PX * 2 - 8
-                          : SLOT_WIDTH_PX - 8,
+                        left: i * sw + 4,
+                        width: isWide ? sw * 2 - 8 : sw - 8,
                         top: 4,
                         bottom: 4,
                         height: 'auto',
                       }
-                    : { left: i * SLOT_WIDTH_PX, width: SLOT_WIDTH_PX }
+                    : { left: i * sw, width: sw }
                 }
               >
                 {isBookable && (
@@ -596,6 +520,7 @@ const CalendarLanguageRow: FC<Props> = ({
               dayStartHour={dayStartHour}
               onClick={onClickSlot}
               alwaysLightBlue={readOnly}
+              slotWidth={sw}
             />
           ))}
       </div>

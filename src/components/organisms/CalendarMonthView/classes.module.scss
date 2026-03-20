@@ -175,27 +175,7 @@ $border-color: #e2e4e9;
   min-height: calc(100% - #{$week-header-height} - #{$day-letters-height});
 }
 
-// --- Current time marker ---
-
-.timeMarker {
-  position: absolute;
-  width: 2px;
-  background: #09090b;
-  pointer-events: none;
-  z-index: 5;
-  transform: translateX(-1px);
-}
-
-.timeMarkerDot {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #09090b;
-}
+// --- Current time marker: see CalendarTimeMarker atom ---
 
 // TODO!!!??!?!??!?!?!?!??!?
 

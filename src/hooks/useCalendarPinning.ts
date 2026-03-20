@@ -10,14 +10,14 @@ export function useCalendarPinning() {
   const pinnedCount = allLanguages.filter((l) => l.pinned).length
 
   const handleTogglePin = (langId: string) => {
-    const currentPinned = allLanguages
-      .filter((l) => l.pinned)
-      .map((l) => l.language.id)
-    if (!currentPinned.includes(langId) && currentPinned.length >= 3) return
-    const newPinned = currentPinned.includes(langId)
-      ? currentPinned.filter((id) => id !== langId)
-      : [...currentPinned, langId]
-    updatePinned(newPinned)
+    const lang = allLanguages.find((l) => l.language.id === langId)
+    if (!lang) return
+    const institution_main_language_id =
+      lang.language.institution_main_language_id
+    if (!institution_main_language_id) return
+    const isPinned = lang.pinned
+    if (!isPinned && pinnedCount >= 3) return
+    updatePinned({ institution_main_language_id, pin: !isPinned })
   }
 
   return { handleTogglePin, pinnedCount }

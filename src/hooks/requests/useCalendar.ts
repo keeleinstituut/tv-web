@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
-  BookedSlot,
   CalendarLanguagesResponse,
   CalendarDayResponse,
   CalendarWeekResponse,
@@ -13,13 +12,22 @@ import {
   CalendarMonthVendorsAllResponse,
   CalendarSearchParams,
   CalendarSearchResponse,
-  CalendarSummaryResponse,
   CalendarSlotMatchingResponse,
   WeekSlotBookingsResponse,
   CalendarOrderDetail,
   CreateOrderPayload,
   UpdateOrderPayload,
+  ApiCalendarLanguagesResponse,
+  ApiCalendarDayResponse,
+  ApiCalendarWeekResponse,
+  ApiCalendarMonthResponse,
+  transformLanguages,
+  transformDayResponse,
+  transformWeekResponse,
+  transformMonthResponse,
 } from 'types/calendar'
+import { apiClient } from 'api'
+import { endpoints } from 'api/endpoints'
 
 // ---------------------------------------------------------------------------
 // Mock data — replace with apiClient calls once backend is ready
@@ -109,307 +117,11 @@ const MOCK_VENDORS = [
   },
 ]
 
-import dayjs from 'dayjs'
-
-const TODAY = dayjs().format('YYYY-MM-DD')
-const TOMORROW = dayjs().add(1, 'day').format('YYYY-MM-DD')
-
 // Deterministic pseudo-random based on a numeric seed
 const seededRandom = (seed: number): number => {
   const x = Math.sin(seed + 1) * 10000
   return x - Math.floor(x)
 }
-
-// Build ISO string in local timezone for the given date + hour + minute
-const localIso = (date: string, hour: number, minute = 0) =>
-  dayjs(date).hour(hour).minute(minute).second(0).millisecond(0).toISOString()
-
-const mockDayResponse = (
-  date: string,
-  languageId?: string
-): CalendarDayResponse => {
-  if (date === TOMORROW) {
-    return {
-      current_time: new Date().toISOString(),
-      booked_slots: [
-        {
-          start_at: localIso(date, 14, 0),
-          end_at: localIso(date, 15, 30),
-          type: 'assignment' as const,
-          assignment: {
-            id: 'asgn-tomorrow-1',
-            confirmed: false,
-            sub_project: {
-              id: 'sp-tomorrow-1',
-              ext_id: 'OR-2026-042',
-              source_language: {
-                id: 'lang-et',
-                value: 'et',
-                name: 'Eesti keel',
-              },
-              destination_language: {
-                id: 'lang-ru',
-                value: 'ru',
-                name: 'Vene keel',
-              },
-            },
-          },
-        },
-      ],
-    }
-  }
-
-  if (date !== TODAY)
-    return { current_time: new Date().toISOString(), booked_slots: [] }
-
-  const slots: BookedSlot[] = [
-    {
-      start_at: localIso(date, 9, 0),
-      end_at: localIso(date, 10, 30),
-      type: 'assignment' as const,
-      assignment: {
-        id: 'asgn-1',
-        confirmed: true,
-        sub_project: {
-          id: 'sp-1',
-          ext_id: 'OR-2024-001',
-          source_language: { id: 'lang-et', value: 'et', name: 'Eesti keel' },
-          destination_language: {
-            id: 'lang-ru',
-            value: 'ru',
-            name: 'Vene keel',
-          },
-        },
-      },
-    },
-  ]
-
-  // External calendar event only for the 'ru' language row
-  if (languageId === 'lang-ru') {
-    slots.push({
-      start_at: localIso(date, 13, 0),
-      end_at: localIso(date, 13, 30),
-      type: 'external_calendar' as const,
-      assignment: null,
-      meta: 'Meeskonna koosolek',
-    })
-    // Upcoming unconfirmed assignment
-    slots.push({
-      start_at: localIso(date, 16, 0),
-      end_at: localIso(date, 17, 30),
-      type: 'assignment' as const,
-      assignment: {
-        id: 'asgn-today-future',
-        confirmed: false,
-        sub_project: {
-          id: 'sp-today-future',
-          ext_id: 'OR-2026-043',
-          source_language: {
-            id: 'lang-et',
-            value: 'et',
-            name: 'Eesti keel',
-          },
-          destination_language: {
-            id: 'lang-ru',
-            value: 'ru',
-            name: 'Vene keel',
-          },
-        },
-        service_type: 'on-site',
-        location: 'Narva mnt 25, Tallinn',
-        reference_number: '12345124566243',
-        client: {
-          name: 'Uurija Perekonnanimi',
-          institution: 'Politsei- ja piirivalveamet',
-          email: 'info@asutusenimi.ee',
-          phone: '+372 5432 1234',
-        },
-        coordinator: {
-          name: 'Malle Karu',
-          email: 'info@tolkekorraldaja.ee',
-          phone: '+372 5432 4321',
-        },
-      },
-    })
-    // Upcoming confirmed assignment
-    slots.push({
-      start_at: localIso(date, 18, 0),
-      end_at: localIso(date, 19, 0),
-      type: 'assignment' as const,
-      assignment: {
-        id: 'asgn-today-confirmed',
-        confirmed: true,
-        sub_project: {
-          id: 'sp-today-confirmed',
-          ext_id: 'OR-2026-044',
-          source_language: {
-            id: 'lang-et',
-            value: 'et',
-            name: 'Eesti keel',
-          },
-          destination_language: {
-            id: 'lang-ru',
-            value: 'ru',
-            name: 'Vene keel',
-          },
-        },
-        service_type: 'remote',
-        meeting_link: 'teams.microsoft.link',
-        reference_number: '12345124566243',
-        client: {
-          name: 'Uurija Perekonnanimi',
-          institution: 'Politsei- ja piirivalveamet',
-          email: 'info@asutusenimi.ee',
-          phone: '+372 5432 1234',
-        },
-        coordinator: {
-          name: 'Malle Karu',
-          email: 'info@tolkekorraldaja.ee',
-          phone: '+372 5432 4321',
-        },
-        files: [{ name: 'Faili_nimi.doc' }, { name: 'Faili_nimi2.pdf' }],
-        comments: [
-          {
-            author: 'Tõlkekorraldaja',
-            text: 'Tõlketeenus toimub kaugtõlge vormis. Palume liituda mõni minut varem ja testida ühendust eelnevalt.',
-            created_at: localIso(date, 9, 15),
-          },
-        ],
-        last_comment_date: dayjs(date).format('DD.MM.YYYY'),
-        price_per_minute: '0.60€ / minut + KM',
-        billing_method: 'Jooksva kuu koondarvele',
-      },
-    })
-    // Currently ongoing booking
-    slots.push({
-      start_at: localIso(date, 20, 0),
-      end_at: localIso(date, 21, 30),
-      type: 'assignment' as const,
-      assignment: {
-        id: 'asgn-today-ongoing',
-        confirmed: true,
-        sub_project: {
-          id: 'sp-today-ongoing',
-          ext_id: 'OR-2026-045',
-          source_language: {
-            id: 'lang-et',
-            value: 'et',
-            name: 'Eesti keel',
-          },
-          destination_language: {
-            id: 'lang-ru',
-            value: 'ru',
-            name: 'Vene keel',
-          },
-        },
-      },
-    })
-  }
-
-  return { current_time: new Date().toISOString(), booked_slots: slots }
-}
-
-const mockWeekResponse = (date: string): CalendarWeekResponse => {
-  const days = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(date)
-    d.setDate(d.getDate() - d.getDay() + 1 + i)
-    return d.toISOString().split('T')[0]
-  })
-  const blocks = ['00:00', '06:00', '12:00', '18:00']
-  return {
-    current_time: new Date().toISOString(),
-    week_start: days[0],
-    week_end: days[6],
-    languages: MOCK_LANGUAGES.languages.map((l) => ({
-      language_id: l.language.id,
-      total_vendors: 7,
-      slots: days.flatMap((day, di) =>
-        blocks.map((block, bi) => {
-          const seed = di * 100 + bi
-          return {
-            start_at: `${day}T${block}:00Z`,
-            end_at: `${day}T${blocks[(bi + 1) % 4] || '24:00'}:00Z`,
-            working_hours: bi === 1 || bi === 2 ? 6 : 0,
-            available_vendors:
-              bi === 1 || bi === 2 ? Math.floor(seededRandom(seed) * 7) : 0,
-            my_bookings_count:
-              bi === 1 ? (seededRandom(seed + 50) > 0.8 ? 1 : 0) : 0,
-          }
-        })
-      ),
-    })),
-  }
-}
-
-const mockMonthResponse = (date: string): CalendarMonthResponse => {
-  const d = new Date(date)
-  const year = d.getFullYear()
-  const month = d.getMonth()
-  const daysInMonth = new Date(year, month + 1, 0).getDate()
-  const days = Array.from({ length: daysInMonth }, (_, i) => {
-    const day = new Date(year, month, i + 1)
-    return day.toISOString().split('T')[0]
-  })
-  return {
-    current_time: new Date().toISOString(),
-    month: `${year}-${String(month + 1).padStart(2, '0')}`,
-    languages: MOCK_LANGUAGES.languages.map((l) => ({
-      language_id: l.language.id,
-      total_vendors: 7,
-      slots: days.map((day, i) => {
-        const dow = new Date(day).getDay()
-        const isWeekend = dow === 0 || dow === 6
-        return {
-          date: day,
-          working_hours: isWeekend ? 0 : 8,
-          available_vendors: isWeekend
-            ? 0
-            : Math.floor(seededRandom(i * 17) * 7),
-          my_bookings_count:
-            !isWeekend && seededRandom(i * 17 + 50) > 0.8 ? 1 : 0,
-        }
-      }),
-    })),
-  }
-}
-
-const mockDayVendors = (
-  date: string,
-  languageId: string
-): CalendarDayVendorsResponse => ({
-  language_id: languageId,
-  vendors: MOCK_VENDORS.map((v, vi) => ({
-    ...v,
-    booked_slots:
-      seededRandom(vi * 13) > 0.5
-        ? [
-            {
-              start_at: `${date}T09:00:00Z`,
-              end_at: `${date}T10:30:00Z`,
-              type: 'assignment' as const,
-              assignment: {
-                id: `asgn-vendor-${vi}`,
-                confirmed: true,
-                sub_project: {
-                  id: `sp-vendor-${vi}`,
-                  ext_id: `OR-2026-0${50 + vi}`,
-                  source_language: {
-                    id: 'lang-et',
-                    value: 'et',
-                    name: 'Eesti keel',
-                  },
-                  destination_language: {
-                    id: 'lang-ru',
-                    value: 'ru',
-                    name: 'Vene keel',
-                  },
-                },
-              },
-            },
-          ]
-        : [],
-  })),
-})
 
 const mockWeekVendors = (
   date: string,
@@ -497,23 +209,29 @@ const mockMonthVendors = (
 export const useFetchCalendarLanguages = (timeframe?: string) => {
   const { isLoading, isError, data } = useQuery<CalendarLanguagesResponse>({
     queryKey: ['calendar-languages', timeframe],
-    queryFn: () => Promise.resolve(MOCK_LANGUAGES),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_LANGUAGES, { timeframe }),
+    queryFn: async () => {
+      const raw: ApiCalendarLanguagesResponse = await apiClient.get(
+        endpoints.CALENDAR_LANGUAGES,
+        timeframe ? { timeframe } : {}
+      )
+      return transformLanguages(raw)
+    },
     staleTime: Infinity,
   })
   return { isLoading, isError, languages: data?.languages ?? [] }
 }
 
 // Returns only the languages for which the current translator has assigned orders.
-// Backend filters this server-side; the mock returns a single language as a stub.
+// Same endpoint — backend filters based on role server-side.
 export const useFetchCalendarTranslatorLanguages = () => {
-  const MOCK_TRANSLATOR_LANGUAGES: CalendarLanguagesResponse = {
-    languages: [MOCK_LANGUAGES.languages[0]], // ru — stub for assigned language
-  }
   const { isLoading, isError, data } = useQuery<CalendarLanguagesResponse>({
     queryKey: ['calendar-translator-languages'],
-    queryFn: () => Promise.resolve(MOCK_TRANSLATOR_LANGUAGES),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_TRANSLATOR_LANGUAGES),
+    queryFn: async () => {
+      const raw: ApiCalendarLanguagesResponse = await apiClient.get(
+        endpoints.CALENDAR_LANGUAGES
+      )
+      return transformLanguages(raw)
+    },
     staleTime: Infinity,
   })
   return { isLoading, isError, languages: data?.languages ?? [] }
@@ -522,8 +240,13 @@ export const useFetchCalendarTranslatorLanguages = () => {
 export const useFetchCalendarDay = (date: string, languageId?: string) => {
   const { isLoading, isError, data } = useQuery<CalendarDayResponse>({
     queryKey: ['calendar-day', date, languageId],
-    queryFn: () => Promise.resolve(mockDayResponse(date, languageId)),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_DAY, { date, language_id: languageId }),
+    queryFn: async () => {
+      const raw: ApiCalendarDayResponse = await apiClient.get(
+        endpoints.CALENDAR_DAY,
+        { date, ...(languageId ? { language_id: languageId } : {}) }
+      )
+      return transformDayResponse(raw, languageId)
+    },
     enabled: !!date,
   })
   return { isLoading, isError, data }
@@ -532,8 +255,13 @@ export const useFetchCalendarDay = (date: string, languageId?: string) => {
 export const useFetchCalendarWeek = (date: string) => {
   const { isLoading, isError, data } = useQuery<CalendarWeekResponse>({
     queryKey: ['calendar-week', date],
-    queryFn: () => Promise.resolve(mockWeekResponse(date)),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_WEEK, { date }),
+    queryFn: async () => {
+      const raw: ApiCalendarWeekResponse = await apiClient.get(
+        endpoints.CALENDAR_WEEK,
+        { date }
+      )
+      return transformWeekResponse(raw)
+    },
     enabled: !!date,
   })
   return { isLoading, isError, data }
@@ -542,8 +270,13 @@ export const useFetchCalendarWeek = (date: string) => {
 export const useFetchCalendarMonth = (date: string) => {
   const { isLoading, isError, data } = useQuery<CalendarMonthResponse>({
     queryKey: ['calendar-month', date],
-    queryFn: () => Promise.resolve(mockMonthResponse(date)),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_MONTH, { date }),
+    queryFn: async () => {
+      const raw: ApiCalendarMonthResponse = await apiClient.get(
+        endpoints.CALENDAR_MONTH,
+        { date }
+      )
+      return transformMonthResponse(raw)
+    },
     enabled: !!date,
   })
   return { isLoading, isError, data }
@@ -554,18 +287,28 @@ export const useFetchCalendarDayVendors = (
   languageId?: string
 ) => {
   const { isLoading, isError, data } = useQuery<
+    CalendarDayResponse,
+    Error,
     CalendarDayVendorsResponse | CalendarDayVendorsAllResponse
   >({
-    queryKey: ['calendar-day-vendors', date, languageId],
-    queryFn: () =>
-      languageId
-        ? Promise.resolve(mockDayVendors(date, languageId))
-        : Promise.resolve({
-            languages: MOCK_LANGUAGES.languages.map((l) =>
-              mockDayVendors(date, l.language.id)
-            ),
-          } as CalendarDayVendorsAllResponse),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_DAY_VENDORS, { date, language_id: languageId }),
+    queryKey: ['calendar-day', date, languageId],
+    queryFn: async () => {
+      const raw: ApiCalendarDayResponse = await apiClient.get(
+        endpoints.CALENDAR_DAY,
+        { date, ...(languageId ? { language_id: languageId } : {}) }
+      )
+      return transformDayResponse(raw, languageId)
+    },
+    select: (
+      dayData
+    ): CalendarDayVendorsResponse | CalendarDayVendorsAllResponse => {
+      const tpmVendors = dayData.tpm_vendors ?? []
+      if (languageId) {
+        const langData = tpmVendors.find((l) => l.language_id === languageId)
+        return { language_id: languageId, vendors: langData?.vendors ?? [] }
+      }
+      return { languages: tpmVendors }
+    },
     enabled: !!date,
   })
   return { isLoading, isError, data }
@@ -613,6 +356,33 @@ export const useFetchCalendarMonthVendors = (
     enabled: !!date,
   })
   return { isLoading, isError, data }
+}
+
+export const useCreatePrebook = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (params: {
+      language_id: string
+      start_at: string
+      end_at: string
+    }) => apiClient.post(endpoints.CALENDAR_PREBOOK, params),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
+    },
+  })
+}
+
+export const useCancelPrebook = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (prebookId: string) =>
+      apiClient.delete(endpoints.CALENDAR_PREBOOK, { id: prebookId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
+    },
+  })
 }
 
 export const useCalendarSearch = () =>
@@ -668,29 +438,6 @@ export const useFetchWeekSlotBookings = (
     // queryFn: () => apiClient.get(endpoints.CALENDAR_WEEK_SLOT_BOOKINGS, params),
   })
   return { bookings: data?.bookings ?? [], isLoading }
-}
-
-export const useFetchCalendarSummary = (month: string) => {
-  const { isLoading, isError, data } = useQuery<CalendarSummaryResponse>({
-    queryKey: ['calendar-summary', month],
-    queryFn: () =>
-      Promise.resolve({
-        month,
-        summary: MOCK_LANGUAGES.languages.map((l) => ({
-          language: {
-            id: l.language.id,
-            value: l.language.value,
-            name: l.language.name,
-          },
-          accepted_projects_count: Math.floor(Math.random() * 20),
-          total_duration_minutes: Math.floor(Math.random() * 1440),
-        })),
-        total: { accepted_projects_count: 47, total_duration_minutes: 2880 },
-      }),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_SUMMARY, { month }),
-    enabled: !!month,
-  })
-  return { isLoading, isError, data }
 }
 
 export const useFetchSlotMatching = (
@@ -802,11 +549,21 @@ export const useCancelCalendarOrder = () => {
 export const useUpdatePinnedLanguages = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: (_language_ids: string[]) =>
-      new Promise<void>((resolve) => setTimeout(resolve, 200)),
-    // mutationFn: (language_ids: string[]) => apiClient.post(endpoints.PINNED_LANGUAGES, { language_ids }),
-    onMutate: async (language_ids) => {
+    mutationFn: ({
+      institution_main_language_id,
+      pin,
+    }: {
+      institution_main_language_id: string
+      pin: boolean
+    }) =>
+      pin
+        ? apiClient.post(endpoints.PINNED_LANGUAGES, {
+            institution_main_language_id,
+          })
+        : apiClient.delete(endpoints.PINNED_LANGUAGES, {
+            institution_main_language_id,
+          }),
+    onMutate: async ({ institution_main_language_id, pin }) => {
       await queryClient.cancelQueries({ queryKey: ['calendar-languages'] })
       const previous = queryClient.getQueriesData<CalendarLanguagesResponse>({
         queryKey: ['calendar-languages'],
@@ -818,14 +575,18 @@ export const useUpdatePinnedLanguages = () => {
             ? {
                 languages: old.languages.map((l) => ({
                   ...l,
-                  pinned: language_ids.includes(l.language.id),
+                  pinned:
+                    l.language.institution_main_language_id ===
+                    institution_main_language_id
+                      ? pin
+                      : l.pinned,
                 })),
               }
             : old
       )
       return { previous }
     },
-    onError: (_err, _ids, context) => {
+    onError: (_err, _vars, context) => {
       if (context?.previous) {
         context.previous.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data)

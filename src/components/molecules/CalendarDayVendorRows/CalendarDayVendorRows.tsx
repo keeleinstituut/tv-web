@@ -9,6 +9,7 @@ interface Props {
   date: string
   dayStartHour: number
   dayEndHour: number
+  slotWidth?: number
 }
 
 const CalendarDayVendorRows: FC<Props> = ({
@@ -16,6 +17,7 @@ const CalendarDayVendorRows: FC<Props> = ({
   date,
   dayStartHour,
   dayEndHour,
+  slotWidth,
 }) => {
   const { data } = useFetchCalendarDayVendors(date, language.language.id)
   const vendors = data && 'vendors' in data ? data.vendors : []
@@ -30,6 +32,7 @@ const CalendarDayVendorRows: FC<Props> = ({
           date={date}
           dayStartHour={dayStartHour}
           dayEndHour={dayEndHour}
+          slotWidth={slotWidth}
         />
       ))}
       <CalendarAddVendorRow />

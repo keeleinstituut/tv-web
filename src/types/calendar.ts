@@ -9,6 +9,8 @@ export type SlotType =
 export interface CalendarLanguage {
   language: {
     id: string
+    /** UUID used for pin/unpin API calls */
+    institution_main_language_id?: string
     type: string
     value: string
     name: string
@@ -69,6 +71,8 @@ export interface BookedSlot {
 export interface CalendarDayResponse {
   current_time: string
   booked_slots: BookedSlot[]
+  /** Populated only for TPM role — vendor-level breakdown per language */
+  tpm_vendors?: Array<{ language_id: string; vendors: VendorDayData[] }>
 }
 
 // --- Week view ---
@@ -245,21 +249,6 @@ export interface CalendarSearchResponse {
   dates: string[]
 }
 
-// --- Summary ---
-
-export interface CalendarSummaryResponse {
-  month: string
-  summary: Array<{
-    language: { id: string; value: string; name: string }
-    accepted_projects_count: number
-    total_duration_minutes: number
-  }>
-  total: {
-    accepted_projects_count: number
-    total_duration_minutes: number
-  }
-}
-
 // --- Create order ---
 
 export interface CreateOrderPayload {
@@ -300,4 +289,214 @@ export interface SlotMatchingVendor {
 
 export interface CalendarSlotMatchingResponse {
   vendors: SlotMatchingVendor[]
+}
+
+// ---------------------------------------------------------------------------
+// Raw API response types (backend shapes before transformation)
+// ---------------------------------------------------------------------------
+
+export interface ApiLanguageItem {
+  id: string
+  institution_main_language_id: string
+  type: string
+  value: string
+  name: string
+  meta?: { iso3_code: string }
+  is_rare?: boolean
+}
+
+export interface ApiCalendarLanguagesResponse {
+  main_languages: ApiLanguageItem[]
+  pinned_languages: Array<{ institution_main_language_id: string }>
+  project_languages: ApiLanguageItem[]
+}
+
+// Day response is role-specific — backend determines shape
+export interface ApiCalendarDayVendorShape {
+  current_time: string
+  booked_slots: BookedSlot[]
+}
+
+export interface ApiCalendarDayClientShape {
+  current_time: string
+  languages: Array<{
+    language_id: string
+    working_hours: number
+    available_vendors: number
+  }>
+}
+
+export interface ApiCalendarDayVendorEntry {
+  id: string
+  institution_user: { id: string; name: string }
+  is_internal: boolean
+  booked_slots: BookedSlot[]
+}
+
+export interface ApiCalendarDayTpmShape {
+  current_time: string
+  languages: Array<{
+    language_id: string
+    vendors: ApiCalendarDayVendorEntry[]
+  }>
+}
+
+export type ApiCalendarDayResponse =
+  | ApiCalendarDayVendorShape
+  | ApiCalendarDayClientShape
+  | ApiCalendarDayTpmShape
+
+export interface ApiCalendarWeekResponse {
+  current_time: string
+  week_start: string
+  week_end: string
+  languages: Array<{
+    language_id: string
+    total_vendors: number
+    slots: Array<{
+      start_at: string
+      end_at: string
+      working_hours: number
+      available_vendors: number
+      my_bookings_count?: number
+    }>
+  }>
+}
+
+export interface ApiCalendarMonthResponse {
+  current_time: string
+  month: string
+  languages: Array<{
+    language_id: string
+    total_vendors: number
+    slots: Array<{
+      date: string
+      working_hours?: number
+      vendor_hours?: number
+      available_vendors?: number
+      my_bookings_count?: number
+    }>
+  }>
+}
+
+// ---------------------------------------------------------------------------
+// Transform functions
+// ---------------------------------------------------------------------------
+
+export function transformLanguages(
+  api: ApiCalendarLanguagesResponse
+): CalendarLanguagesResponse {
+  const pinnedIds = new Set(
+    api.pinned_languages.map((p) => p.institution_main_language_id)
+  )
+  const allLanguages = [
+    ...(api.main_languages ?? []),
+    ...(api.project_languages ?? []),
+  ]
+  const seen = new Set<string>()
+  const languages: CalendarLanguage[] = []
+  for (const lang of allLanguages) {
+    if (seen.has(lang.id)) continue
+    seen.add(lang.id)
+    languages.push({
+      language: {
+        id: lang.id,
+        institution_main_language_id: lang.institution_main_language_id,
+        type: lang.type ?? 'LANGUAGE',
+        value: lang.value,
+        name: lang.name,
+        meta: lang.meta ?? { iso3_code: '' },
+      },
+      pinned: pinnedIds.has(lang.institution_main_language_id),
+      is_rare: lang.is_rare,
+    })
+  }
+  return { languages }
+}
+
+function isVendorDayShape(
+  api: ApiCalendarDayResponse
+): api is ApiCalendarDayVendorShape {
+  return 'booked_slots' in api
+}
+
+function isTpmDayShape(
+  api: ApiCalendarDayResponse
+): api is ApiCalendarDayTpmShape {
+  return (
+    'languages' in api &&
+    Array.isArray((api as ApiCalendarDayTpmShape).languages) &&
+    (api as ApiCalendarDayTpmShape).languages.length > 0 &&
+    'vendors' in (api as ApiCalendarDayTpmShape).languages[0]
+  )
+}
+
+export function transformDayResponse(
+  api: ApiCalendarDayResponse,
+  languageId?: string
+): CalendarDayResponse {
+  if (isVendorDayShape(api)) {
+    return api
+  }
+  if (isTpmDayShape(api)) {
+    const tpm = api as ApiCalendarDayTpmShape
+    const langData = languageId
+      ? tpm.languages.find((l) => l.language_id === languageId)
+      : null
+    return {
+      current_time: api.current_time,
+      booked_slots: langData
+        ? langData.vendors.flatMap((v) => v.booked_slots)
+        : [],
+      tpm_vendors: tpm.languages.map((l) => ({
+        language_id: l.language_id,
+        vendors: l.vendors,
+      })),
+    }
+  }
+  // Client shape — no individual slot data at language level
+  return {
+    current_time: api.current_time,
+    booked_slots: [],
+  }
+}
+
+export function transformWeekResponse(
+  api: ApiCalendarWeekResponse
+): CalendarWeekResponse {
+  return {
+    current_time: api.current_time,
+    week_start: api.week_start,
+    week_end: api.week_end,
+    languages: api.languages.map((lang) => ({
+      language_id: lang.language_id,
+      total_vendors: lang.total_vendors,
+      slots: lang.slots.map((slot) => ({
+        start_at: slot.start_at,
+        end_at: slot.end_at,
+        working_hours: slot.working_hours,
+        available_vendors: slot.available_vendors,
+        my_bookings_count: slot.my_bookings_count ?? 0,
+      })),
+    })),
+  }
+}
+
+export function transformMonthResponse(
+  api: ApiCalendarMonthResponse
+): CalendarMonthResponse {
+  return {
+    current_time: api.current_time,
+    month: api.month,
+    languages: api.languages.map((lang) => ({
+      language_id: lang.language_id,
+      total_vendors: lang.total_vendors,
+      slots: lang.slots.map((slot) => ({
+        date: slot.date,
+        working_hours: slot.working_hours ?? 0,
+        available_vendors: slot.available_vendors ?? 0,
+        my_bookings_count: slot.my_bookings_count ?? 0,
+      })),
+    })),
+  }
 }

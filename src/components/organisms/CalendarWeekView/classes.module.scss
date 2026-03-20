@@ -64,13 +64,16 @@ $border-color: #e2e4e9;
   @include calGridScroll;
 }
 
-// --- Row A: day names + week nav (sticky top: 0) ---
+// --- Row A: day names + week nav (sticky top: 0, inside gridScroll) ---
 
 .dayNamesRow {
   display: flex;
   height: $row-height;
-  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 3;
   background: $color-white;
+  width: max-content;
 }
 
 .cornerCell {
@@ -100,7 +103,6 @@ $border-color: #e2e4e9;
 // --- Day header column ---
 
 .dayHeader {
-  width: $day-width;
   min-width: $day-width;
   flex-shrink: 0;
   display: flex;
@@ -152,13 +154,13 @@ $border-color: #e2e4e9;
   flex-shrink: 0;
 }
 
-// --- Row B: time axis + collapse-all (sticky top: 40px) ---
+// --- Row B: time axis + collapse-all (sticky top: row-height) ---
 
 .timeAxisRow {
   display: flex;
   height: 32px;
   position: sticky;
-  top: 0;
+  top: $row-height;
   z-index: 3;
   background: $color-white;
   width: max-content;
@@ -166,7 +168,6 @@ $border-color: #e2e4e9;
 }
 
 .timeAxis {
-  width: $day-width;
   min-width: $day-width;
   height: 32px;
   display: flex;
@@ -212,26 +213,4 @@ $border-color: #e2e4e9;
   min-height: calc(100% - #{$row-height} - 32px);
 }
 
-// --- Current time marker ---
-
-.timeMarker {
-  position: absolute;
-  top: -44px;
-  height: 52px;
-  width: 2px;
-  background: #09090b;
-  pointer-events: none;
-  z-index: 5;
-  transform: translateX(-1px);
-}
-
-.timeMarkerDot {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #09090b;
-}
+// --- Current time marker: see CalendarTimeMarker atom ---

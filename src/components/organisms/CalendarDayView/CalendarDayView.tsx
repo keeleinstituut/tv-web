@@ -1,4 +1,4 @@
-import { FC, Fragment, useEffect, useRef } from 'react'
+import { FC, Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import 'dayjs/locale/et'
@@ -15,12 +15,12 @@ import { useCalendarPinning } from 'hooks/useCalendarPinning'
 import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
 import CalendarDayVendorRows from 'components/molecules/CalendarDayVendorRows/CalendarDayVendorRows'
 import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
+import CalendarTimeMarker from 'components/atoms/CalendarTimeMarker/CalendarTimeMarker'
 import classes from './classes.module.scss'
 
 const DAY_START_HOUR = 9
 const DAY_END_HOUR = 22
 const TOTAL_SLOTS = (DAY_END_HOUR - DAY_START_HOUR) * 2
-const TOTAL_GRID_WIDTH = TOTAL_SLOTS * SLOT_WIDTH_PX
 
 // Bold at quarter-day boundaries; regular for others
 const BOLD_HOURS = new Set([9, 12, 15, 18, 21])
@@ -31,7 +31,7 @@ const HOUR_LABELS = Array.from(
   (_, i) => DAY_START_HOUR + i
 )
 
-function currentTimeX(dateStr: string): number {
+function currentTimeX(dateStr: string, slotWidthPx: number): number {
   const [y, m, d] = dateStr.split('-').map(Number)
   // new Date(y, m-1, d, h) always creates local time — no UTC/dayjs ambiguity
   const dayStartMs = new Date(y, m - 1, d, DAY_START_HOUR, 0, 0, 0).getTime()
@@ -39,7 +39,7 @@ function currentTimeX(dateStr: string): number {
   const nowMs = Date.now()
   if (nowMs < dayStartMs || nowMs > dayEndMs) return -1
   const minutesFromStart = (nowMs - dayStartMs) / 60000
-  return (minutesFromStart / 30) * SLOT_WIDTH_PX
+  return (minutesFromStart / 30) * slotWidthPx
 }
 
 const CalendarDayView: FC = () => {
@@ -65,13 +65,32 @@ const CalendarDayView: FC = () => {
   const dateStr = currentDate.format('YYYY-MM-DD')
   const isToday = currentDate.isSame(dayjs(), 'day')
 
+  // Fluid slot width: fills available container width, min 48px per 30 min
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [slotWidth, setSlotWidth] = useState(SLOT_WIDTH_PX)
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!containerRef.current) return
+      const available = containerRef.current.clientWidth - LABEL_WIDTH_PX
+      setSlotWidth(Math.max(SLOT_WIDTH_PX, Math.floor(available / TOTAL_SLOTS)))
+    }
+    measure()
+    const obs = new ResizeObserver(measure)
+    if (containerRef.current) obs.observe(containerRef.current)
+    return () => obs.disconnect()
+  }, [])
+
   // Current time marker — updates every minute
-  const timeX = useCurrentTimeMarker(() => currentTimeX(dateStr), [dateStr])
+  const timeX = useCurrentTimeMarker(
+    () => currentTimeX(dateStr, slotWidth),
+    [dateStr, slotWidth]
+  )
 
   // Auto-scroll to current time on mount
   const gridScrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    const x = currentTimeX(dateStr)
+    const x = currentTimeX(dateStr, slotWidth)
     if (!gridScrollRef.current || x < 0) return
     gridScrollRef.current.scrollLeft = Math.max(0, x - 200)
   }, [])
@@ -81,7 +100,7 @@ const CalendarDayView: FC = () => {
   const dateShort = currentDate.format('D.MM') // e.g. "28.11"
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} ref={containerRef}>
       {/* Month row */}
       <div className={classes.dateNavMonth}>
         <div className={classes.navLeft}>
@@ -152,7 +171,7 @@ const CalendarDayView: FC = () => {
           {/* Hour cells */}
           <div
             className={classes.timeHeader}
-            style={{ width: TOTAL_GRID_WIDTH }}
+            style={{ width: TOTAL_SLOTS * slotWidth }}
           >
             {HOUR_LABELS.map((hour) => (
               <div
@@ -160,7 +179,7 @@ const CalendarDayView: FC = () => {
                 className={classNames(classes.hourCell, {
                   [classes.hourCellBold]: BOLD_HOURS.has(hour),
                 })}
-                style={{ left: (hour - DAY_START_HOUR) * SLOT_WIDTH_PX * 2 }}
+                style={{ left: (hour - DAY_START_HOUR) * slotWidth * 2 }}
               >
                 {String(hour).padStart(2, '0')}
               </div>
@@ -176,8 +195,7 @@ const CalendarDayView: FC = () => {
               key={hour}
               className={classes.hourGuide}
               style={{
-                left:
-                  LABEL_WIDTH_PX + (hour - DAY_START_HOUR) * SLOT_WIDTH_PX * 2,
+                left: LABEL_WIDTH_PX + (hour - DAY_START_HOUR) * slotWidth * 2,
               }}
             />
           ))}
@@ -188,72 +206,70 @@ const CalendarDayView: FC = () => {
               !allCollapsedOverride &&
               (lang.pinned || isLanguageExpanded(lang.language.id))
             return (
-            <Fragment key={lang.language.id}>
-              <CalendarLanguageRow
-                language={lang}
-                date={dateStr}
-                dayStartHour={DAY_START_HOUR}
-                dayEndHour={DAY_END_HOUR}
-                readOnly={!canInteract || isExpanded}
-                onSelectRange={
-                  canInteract && !isExpanded
-                    ? (langId, start, end) => {
-                        const l = languages.find(
-                          (l) => l.language.id === langId
-                        )
-                        if (l)
-                          openSidePanel({
-                            language: l,
-                            startIso: start,
-                            endIso: end,
-                          })
-                      }
-                    : undefined
-                }
-                onClickSlot={
-                  !isExpanded
-                    ? (slot) => {
-                        openSidePanel({
-                          language: lang,
-                          startIso: slot.start_at,
-                          endIso: slot.end_at,
-                          slot,
-                        })
-                      }
-                    : undefined
-                }
-                onTogglePin={
-                  canInteract && (lang.pinned || pinnedCount < 3)
-                    ? () => handleTogglePin(lang.language.id)
-                    : undefined
-                }
-                onToggleExpand={
-                  isTPM
-                    ? () => toggleLanguageExpanded(lang.language.id)
-                    : undefined
-                }
-                isExpanded={isExpanded}
-              />
-              {isTPM && isExpanded && (
-                <CalendarDayVendorRows
+              <Fragment key={lang.language.id}>
+                <CalendarLanguageRow
                   language={lang}
                   date={dateStr}
                   dayStartHour={DAY_START_HOUR}
                   dayEndHour={DAY_END_HOUR}
+                  readOnly={!canInteract || isExpanded}
+                  onSelectRange={
+                    canInteract && !isExpanded
+                      ? (langId, start, end) => {
+                          const l = languages.find(
+                            (l) => l.language.id === langId
+                          )
+                          if (l)
+                            openSidePanel({
+                              language: l,
+                              startIso: start,
+                              endIso: end,
+                            })
+                        }
+                      : undefined
+                  }
+                  onClickSlot={
+                    !isExpanded
+                      ? (slot) => {
+                          openSidePanel({
+                            language: lang,
+                            startIso: slot.start_at,
+                            endIso: slot.end_at,
+                            slot,
+                          })
+                        }
+                      : undefined
+                  }
+                  onTogglePin={
+                    canInteract && (lang.pinned || pinnedCount < 3)
+                      ? () => handleTogglePin(lang.language.id)
+                      : undefined
+                  }
+                  onToggleExpand={
+                    isTPM
+                      ? () => toggleLanguageExpanded(lang.language.id)
+                      : undefined
+                  }
+                  isExpanded={isExpanded}
+                  slotWidth={slotWidth}
                 />
-              )}
-            </Fragment>
+                {isTPM && isExpanded && (
+                  <CalendarDayVendorRows
+                    language={lang}
+                    date={dateStr}
+                    dayStartHour={DAY_START_HOUR}
+                    dayEndHour={DAY_END_HOUR}
+                    slotWidth={slotWidth}
+                  />
+                )}
+              </Fragment>
             )
           })}
 
-          {/* Needle: inside rowsContainer so it scrolls with the grid */}
           {isToday && timeX >= 0 && (
-            <div
-              className={classes.timeMarker}
-              style={{ left: LABEL_WIDTH_PX + timeX }}
-            >
-              <div className={classes.timeMarkerDot} />
-            </div>
+            <CalendarTimeMarker
+              style={{ left: LABEL_WIDTH_PX + timeX, top: -40, height: 40 }}
+            />
           )}
         </div>
       </div>

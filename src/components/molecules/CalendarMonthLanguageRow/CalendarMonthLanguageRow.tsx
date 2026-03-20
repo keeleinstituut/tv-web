@@ -1,9 +1,10 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
-import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
+import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
+import PinIcon from 'assets/icons/pin.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
-import { getInitials } from 'helpers/calendar'
+import { formatMinutes } from 'helpers/calendar'
 import { CalendarLanguage, VendorMonthData, MonthSlot } from 'types/calendar'
 import {
   useFetchCalendarMonthVendors,
@@ -13,17 +14,8 @@ import { useCalendarContext } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { WeekRange } from 'components/organisms/CalendarMonthView/CalendarMonthView'
 import CalendarAddVendorRow from 'components/atoms/CalendarAddVendorRow/CalendarAddVendorRow'
+import CalendarVendorBadge from 'components/atoms/CalendarVendorBadge/CalendarVendorBadge'
 import classes from './classes.module.scss'
-
-const TOTAL_THRESHOLD_MINUTES = 160 * 60 // >160h shown as ">160h"
-
-function formatMinutes(minutes: number): string {
-  if (minutes >= TOTAL_THRESHOLD_MINUTES) return '>160h'
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  if (m === 0) return `${h}h`
-  return `${h}h ${m}min`
-}
 
 interface WeekData {
   freeMinutes: number
@@ -72,6 +64,7 @@ const MonthSummaryRow: FC<{
   onToggle: () => void
   expanded: boolean
   isTPM: boolean
+  weekColWidth?: number
 }> = ({
   language,
   weeks,
@@ -81,6 +74,7 @@ const MonthSummaryRow: FC<{
   onToggle,
   expanded,
   isTPM,
+  weekColWidth,
 }) => {
   const { t } = useTranslation()
 
@@ -108,25 +102,7 @@ const MonthSummaryRow: FC<{
                 : t('calendar.pin_language')
             }
           >
-            <svg
-              viewBox="0 0 10 10"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.5 1.5L8.5 3.5L6.2 5.8L6.5 8L5 6.5L3.5 8L3.8 5.8L1.5 3.5L3.5 1.5L4.5 2.5L5 2L5.5 2.5L6.5 1.5Z"
-                fill="currentColor"
-              />
-              <line
-                x1="5"
-                y1="6.5"
-                x2="5"
-                y2="9"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
+            <PinIcon />
           </button>
         )}
         <span className={classes.badge}>{language.language.value}</span>
@@ -138,12 +114,16 @@ const MonthSummaryRow: FC<{
             onClick={onToggle}
             aria-label={t('calendar.expand_row')}
           >
-            <ArrowDownIcon className={classes.collapseIcon} />
+            <SmallArrowIcon className={classes.collapseIcon} />
           </button>
         )}
       </div>
       {weekMinutes.map((minutes, i) => (
-        <div key={i} className={classes.weekCell}>
+        <div
+          key={i}
+          className={classes.weekCell}
+          style={{ width: weekColWidth, minWidth: weekColWidth }}
+        >
           {minutes > 0 && (
             <div className={classes.weekCellAvailable}>
               <ClockIcon className={classes.cellIcon} />
@@ -154,7 +134,10 @@ const MonthSummaryRow: FC<{
           )}
         </div>
       ))}
-      <div className={classes.totalCell}>
+      <div
+        className={classes.totalCell}
+        style={{ width: weekColWidth, minWidth: weekColWidth }}
+      >
         {totalMinutes > 0 && (
           <div className={classes.weekCellAvailable}>
             <ClockIcon className={classes.cellIcon} />
@@ -173,8 +156,8 @@ const MonthSummaryRow: FC<{
 const VendorRow: FC<{
   vendor: VendorMonthData
   weeks: WeekRange[]
-}> = ({ vendor, weeks }) => {
-  const initials = getInitials(vendor.institution_user.name)
+  weekColWidth?: number
+}> = ({ vendor, weeks, weekColWidth }) => {
   const weekData = weeks.map((week) => getVendorWeekData(vendor, week))
   const totalFree = weekData.reduce((sum, w) => sum + w.freeMinutes, 0)
   const totalBooked = weekData.reduce((sum, w) => sum + w.bookedMinutes, 0)
@@ -182,7 +165,10 @@ const VendorRow: FC<{
   return (
     <div className={classes.vendorRowWrapper}>
       <div className={classes.vendorLabel}>
-        <span className={classes.vendorBadge}>{initials}</span>
+        <CalendarVendorBadge
+          vendorId={vendor.id}
+          name={vendor.institution_user.name}
+        />
       </div>
 
       {weekData.map((wd, i) => {
@@ -190,7 +176,11 @@ const VendorRow: FC<{
         const isBooked = wd.bookedMinutes > wd.freeMinutes
         const minutes = isBooked ? wd.bookedMinutes : wd.freeMinutes
         return (
-          <div key={i} className={classes.weekCell}>
+          <div
+            key={i}
+            className={classes.weekCell}
+            style={{ width: weekColWidth, minWidth: weekColWidth }}
+          >
             {hasData && (
               <div
                 className={
@@ -216,7 +206,10 @@ const VendorRow: FC<{
       })}
 
       {/* Total cell */}
-      <div className={classes.totalCell}>
+      <div
+        className={classes.totalCell}
+        style={{ width: weekColWidth, minWidth: weekColWidth }}
+      >
         {(totalFree > 0 || totalBooked > 0) &&
           (() => {
             const isBooked = totalBooked > totalFree
@@ -253,6 +246,7 @@ interface Props {
   language: CalendarLanguage
   date: string
   weeks: WeekRange[]
+  weekColWidth?: number
   onTogglePin?: () => void
 }
 
@@ -260,6 +254,7 @@ const CalendarMonthLanguageRow: FC<Props> = ({
   language,
   date,
   weeks,
+  weekColWidth,
   onTogglePin,
 }) => {
   const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarContext()
@@ -308,10 +303,16 @@ const CalendarMonthLanguageRow: FC<Props> = ({
         onToggle={() => toggleLanguageExpanded(language.language.id)}
         expanded={expanded}
         isTPM={isTPM}
+        weekColWidth={weekColWidth}
       />
       {expanded &&
         vendors.map((vendor) => (
-          <VendorRow key={vendor.id} vendor={vendor} weeks={weeks} />
+          <VendorRow
+            key={vendor.id}
+            vendor={vendor}
+            weeks={weeks}
+            weekColWidth={weekColWidth}
+          />
         ))}
       {expanded && <CalendarAddVendorRow />}
     </>

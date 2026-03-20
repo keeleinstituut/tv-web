@@ -134,6 +134,7 @@ $border-color: #f0f0f2;
   top: 0;
   z-index: 3;
   background: $color-white;
+  width: max-content;
 }
 
 .cornerCell {
@@ -198,30 +199,4 @@ $border-color: #f0f0f2;
   z-index: 2;
 }
 
-// --- Current time marker ---
-// top/height are set inline. The marker starts at -HEADER_HEIGHT so the dot
-// sits at the very top of the time header row.
-// z-index: 5 renders it above the sticky header (z-index: 3).
-
-.timeMarker {
-  height: $header-height;
-  position: absolute;
-  top: -40px;
-  bottom: 0;
-  width: 2px;
-  background: #09090b;
-  pointer-events: none;
-  z-index: 5;
-  transform: translateX(-1px);
-}
-
-.timeMarkerDot {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #09090b;
-}
+// --- Current time marker: see CalendarTimeMarker atom ---

@@ -1,10 +1,11 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
-import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
+import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
+import PinIcon from 'assets/icons/pin.svg?react'
 import AlarmIcon from 'assets/icons/alarm.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
-import { getInitials } from 'helpers/calendar'
+import CalendarVendorBadge from 'components/atoms/CalendarVendorBadge/CalendarVendorBadge'
 import { CalendarLanguage, VendorWeekData, WeekSlot } from 'types/calendar'
 import {
   useFetchCalendarWeekVendors,
@@ -28,6 +29,7 @@ const WeekSummaryRow: FC<{
   expanded: boolean
   isTPM: boolean
   onClickBookedSlot?: (slot: WeekSlot) => void
+  dayWidth?: number
 }> = ({
   language,
   langSlots,
@@ -36,6 +38,7 @@ const WeekSummaryRow: FC<{
   expanded,
   isTPM,
   onClickBookedSlot,
+  dayWidth,
 }) => {
   const { t } = useTranslation()
   return (
@@ -53,25 +56,7 @@ const WeekSummaryRow: FC<{
                 : t('calendar.pin_language')
             }
           >
-            <svg
-              viewBox="0 0 10 10"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6.5 1.5L8.5 3.5L6.2 5.8L6.5 8L5 6.5L3.5 8L3.8 5.8L1.5 3.5L3.5 1.5L4.5 2.5L5 2L5.5 2.5L6.5 1.5Z"
-                fill="currentColor"
-              />
-              <line
-                x1="5"
-                y1="6.5"
-                x2="5"
-                y2="9"
-                stroke="currentColor"
-                strokeWidth="1.2"
-                strokeLinecap="round"
-              />
-            </svg>
+            <PinIcon />
           </button>
         )}
         <span className={classes.badge}>{language.language.value}</span>
@@ -83,7 +68,7 @@ const WeekSummaryRow: FC<{
             onClick={onToggle}
             aria-label={t('calendar.expand_row')}
           >
-            <ArrowDownIcon className={classes.collapseIcon} />
+            <SmallArrowIcon className={classes.collapseIcon} />
           </button>
         )}
       </div>
@@ -96,7 +81,13 @@ const WeekSummaryRow: FC<{
               )
             : null
           return (
-            <div key={dayIdx} className={classes.dayGroup}>
+            <div
+              key={dayIdx}
+              className={classes.dayGroup}
+              style={
+                dayWidth ? { width: dayWidth, minWidth: dayWidth } : undefined
+              }
+            >
               {daySlots
                 ? daySlots.map((slot, blockIdx) => {
                     const isBooked = slot.my_bookings_count > 0
@@ -131,13 +122,16 @@ const WeekSummaryRow: FC<{
 
 const VendorRow: FC<{
   vendor: VendorWeekData
-}> = ({ vendor }) => {
+  dayWidth?: number
+}> = ({ vendor, dayWidth }) => {
   const { t } = useTranslation()
-  const initials = getInitials(vendor.institution_user.name)
   return (
     <div className={classes.vendorRowWrapper}>
       <div className={classes.vendorLabel}>
-        <span className={classes.vendorBadge}>{initials}</span>
+        <CalendarVendorBadge
+          vendorId={vendor.id}
+          name={vendor.institution_user.name}
+        />
       </div>
       <div className={classes.slotArea}>
         {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => {
@@ -151,9 +145,17 @@ const VendorRow: FC<{
           )
           const dayUnavailable = daySlots.every((s) => s.on_vacation)
 
+          const dayGroupStyle = dayWidth
+            ? { width: dayWidth, minWidth: dayWidth }
+            : undefined
+
           if (dayUnavailable) {
             return (
-              <div key={dayIdx} className={classes.dayGroup}>
+              <div
+                key={dayIdx}
+                className={classes.dayGroup}
+                style={dayGroupStyle}
+              >
                 <div className={classes.dayUnavailableBanner}>
                   <ClockIcon className={classes.unavailableIcon} />
                   <span className={classes.unavailableLabel}>
@@ -169,7 +171,11 @@ const VendorRow: FC<{
             const m = Math.round((dayBookedHours - h) * 60)
             const bookedLabel = m === 0 ? `${h}h` : `${h}h ${m}min`
             return (
-              <div key={dayIdx} className={classes.dayGroup}>
+              <div
+                key={dayIdx}
+                className={classes.dayGroup}
+                style={dayGroupStyle}
+              >
                 <div className={classes.dayBookedBanner}>
                   <AlarmIcon className={classes.bookedIcon} />
                   <span className={classes.bookedLabel}>{bookedLabel}</span>
@@ -179,7 +185,11 @@ const VendorRow: FC<{
           }
 
           return (
-            <div key={dayIdx} className={classes.dayGroup}>
+            <div
+              key={dayIdx}
+              className={classes.dayGroup}
+              style={dayGroupStyle}
+            >
               {daySlots.map((slot, blockIdx) => (
                 <div
                   key={blockIdx}
@@ -206,12 +216,14 @@ interface Props {
   language: CalendarLanguage
   date: string // any date within the target week
   onTogglePin?: () => void
+  dayWidth?: number
 }
 
 const CalendarWeekLanguageRow: FC<Props> = ({
   language,
   date,
   onTogglePin,
+  dayWidth,
 }) => {
   const { isLanguageExpanded, toggleLanguageExpanded, openWeekBookingPanel } =
     useCalendarContext()
@@ -242,6 +254,7 @@ const CalendarWeekLanguageRow: FC<Props> = ({
         onToggle={() => toggleLanguageExpanded(language.language.id)}
         expanded={expanded}
         isTPM={isTPM}
+        dayWidth={dayWidth}
         onClickBookedSlot={
           isTranslator
             ? (slot) =>
@@ -254,7 +267,9 @@ const CalendarWeekLanguageRow: FC<Props> = ({
         }
       />
       {expanded &&
-        vendors.map((vendor) => <VendorRow key={vendor.id} vendor={vendor} />)}
+        vendors.map((vendor) => (
+          <VendorRow key={vendor.id} vendor={vendor} dayWidth={dayWidth} />
+        ))}
       {expanded && <CalendarAddVendorRow />}
     </>
   )

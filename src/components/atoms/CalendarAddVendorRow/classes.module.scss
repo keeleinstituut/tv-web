@@ -9,13 +9,25 @@ $row-height: 40px;
   align-items: center;
 }
 
+.addVendorLabel {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: 64px;
+  min-width: 64px;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .addVendorBtn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
-  margin-left: 20px;
   border: none;
   background: $color-background;
   border-radius: $border-radius-4;

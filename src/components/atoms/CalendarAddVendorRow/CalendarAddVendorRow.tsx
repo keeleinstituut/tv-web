@@ -9,13 +9,15 @@ const CalendarAddVendorRow: FC = () => {
   const navigate = useNavigate()
   return (
     <div className={classes.addVendorRow}>
-      <button
-        className={classes.addVendorBtn}
-        aria-label={t('calendar.add_translator')}
-        onClick={() => navigate('/vendors')}
-      >
-        <AddIcon className={classes.addVendorIcon} />
-      </button>
+      <div className={classes.addVendorLabel}>
+        <button
+          className={classes.addVendorBtn}
+          aria-label={t('calendar.add_translator')}
+          onClick={() => navigate('/vendors')}
+        >
+          <AddIcon className={classes.addVendorIcon} />
+        </button>
+      </div>
     </div>
   )
 }

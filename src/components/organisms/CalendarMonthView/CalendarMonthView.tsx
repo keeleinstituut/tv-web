@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/et'
@@ -11,15 +11,12 @@ import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useCalendarPinning } from 'hooks/useCalendarPinning'
 import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
 import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
+import CalendarTimeMarker from 'components/atoms/CalendarTimeMarker/CalendarTimeMarker'
 import classes from './classes.module.scss'
 
 export const LABEL_WIDTH_PX = 64
 export const WEEK_COL_WIDTH = 186
 export const TOTAL_COL_WIDTH = 186
-
-const MONTH_NAV_HEIGHT = 32
-const WEEK_HEADER_HEIGHT = 40
-const DOT_TOP_Y = MONTH_NAV_HEIGHT + WEEK_HEADER_HEIGHT - 5
 
 const ET_DAY_LETTERS = ['E', 'T', 'K', 'N', 'R', 'L', 'P']
 
@@ -42,7 +39,7 @@ export function getWeeksForMonth(date: Dayjs): WeekRange[] {
   return weeks
 }
 
-function currentNeedleX(weeks: WeekRange[]): number | null {
+function currentNeedleX(weeks: WeekRange[], weekColWidth: number): number | null {
   const now = dayjs()
   const weekIdx = weeks.findIndex(
     (w) =>
@@ -53,7 +50,7 @@ function currentNeedleX(weeks: WeekRange[]): number | null {
   const dow = now.day() // 0=Sun
   const dayIndex = dow === 0 ? 6 : dow - 1 // 0=Mon … 6=Sun
   const fraction = (dayIndex + (now.hour() + now.minute() / 60) / 24) / 7
-  return LABEL_WIDTH_PX + weekIdx * WEEK_COL_WIDTH + fraction * WEEK_COL_WIDTH
+  return LABEL_WIDTH_PX + weekIdx * weekColWidth + fraction * weekColWidth
 }
 
 const CalendarMonthView: FC = () => {
@@ -75,6 +72,24 @@ const CalendarMonthView: FC = () => {
   const dateStr = currentDate.format('YYYY-MM-DD')
   const monthStr = currentDate.format('YYYY-MM')
 
+  // Fluid column width: fills available container width, min 186px per week
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [weekColWidth, setWeekColWidth] = useState(WEEK_COL_WIDTH)
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!containerRef.current) return
+      const available = containerRef.current.clientWidth - LABEL_WIDTH_PX
+      setWeekColWidth(
+        Math.max(WEEK_COL_WIDTH, Math.floor(available / (weeks.length + 1)))
+      )
+    }
+    measure()
+    const obs = new ResizeObserver(measure)
+    if (containerRef.current) obs.observe(containerRef.current)
+    return () => obs.disconnect()
+  }, [weeks.length])
+
   // Month groups for nav label
   const monthGroups: {
     label: string
@@ -95,7 +110,10 @@ const CalendarMonthView: FC = () => {
   })
 
   // Current time needle
-  const needleX = useCurrentTimeMarker(() => currentNeedleX(weeks), [monthStr])
+  const needleX = useCurrentTimeMarker(
+    () => currentNeedleX(weeks, weekColWidth),
+    [monthStr, weekColWidth]
+  )
 
   // Scroll tracking for month label positioning
   const gridScrollRef = useRef<HTMLDivElement>(null)
@@ -115,11 +133,10 @@ const CalendarMonthView: FC = () => {
     return () => el.removeEventListener('scroll', onScroll)
   }, [])
 
-  const totalGridWidth =
-    LABEL_WIDTH_PX + weeks.length * WEEK_COL_WIDTH + TOTAL_COL_WIDTH
+  const totalGridWidth = LABEL_WIDTH_PX + (weeks.length + 1) * weekColWidth
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} ref={containerRef}>
       {/* Month nav row */}
       <div className={classes.monthNavRow}>
         <div className={classes.navLeft}>
@@ -138,7 +155,7 @@ const CalendarMonthView: FC = () => {
               className={classes.monthLabel}
               style={{
                 position: 'absolute',
-                left: g.startWeekIdx * WEEK_COL_WIDTH - scrollLeft,
+                left: g.startWeekIdx * weekColWidth - scrollLeft,
               }}
             >
               {g.label}
@@ -172,6 +189,7 @@ const CalendarMonthView: FC = () => {
             <button
               key={i}
               className={classes.weekHeader}
+              style={{ width: weekColWidth, minWidth: weekColWidth }}
               onClick={() => {
                 setCurrentDate(week.start)
                 setView('week')
@@ -180,7 +198,12 @@ const CalendarMonthView: FC = () => {
               {week.start.format('D.MM')} - {week.end.format('D.MM')}
             </button>
           ))}
-          <div className={classes.totalHeader}>{t('calendar.total')}</div>
+          <div
+            className={classes.totalHeader}
+            style={{ width: weekColWidth, minWidth: weekColWidth }}
+          >
+            {t('calendar.total')}
+          </div>
         </div>
 
         {/* Row B: day letters (sticky top: WEEK_HEADER_HEIGHT) */}
@@ -190,7 +213,11 @@ const CalendarMonthView: FC = () => {
         >
           <div className={classes.cornerCell} />
           {weeks.map((_, wi) => (
-            <div key={wi} className={classes.dayLettersGroup}>
+            <div
+              key={wi}
+              className={classes.dayLettersGroup}
+              style={{ width: weekColWidth, minWidth: weekColWidth }}
+            >
               {ET_DAY_LETTERS.map((letter, di) => (
                 <span key={di} className={classes.dayLetter}>
                   {letter}
@@ -198,7 +225,10 @@ const CalendarMonthView: FC = () => {
               ))}
             </div>
           ))}
-          <div className={classes.totalDayCell} />
+          <div
+            className={classes.totalDayCell}
+            style={{ width: weekColWidth, minWidth: weekColWidth }}
+          />
         </div>
 
         {/* Language rows */}
@@ -212,6 +242,7 @@ const CalendarMonthView: FC = () => {
               language={lang}
               date={dateStr}
               weeks={weeks}
+              weekColWidth={weekColWidth}
               onTogglePin={
                 canInteract && (lang.pinned || pinnedCount < 3)
                   ? () => handleTogglePin(lang.language.id)
@@ -222,18 +253,10 @@ const CalendarMonthView: FC = () => {
         </div>
       </div>
 
-      {/* Current time needle */}
       {needleX !== null && (
-        <div
-          className={classes.timeMarker}
-          style={{
-            left: needleX - scrollLeft,
-            top: DOT_TOP_Y,
-            height: 40,
-          }}
-        >
-          <div className={classes.timeMarkerDot} />
-        </div>
+        <CalendarTimeMarker
+          style={{ left: needleX - scrollLeft, top: 64, height: 40 }}
+        />
       )}
     </div>
   )
