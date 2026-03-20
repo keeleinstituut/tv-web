@@ -2,35 +2,26 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
-import { BookedSlot, CalendarLanguage } from 'types/calendar'
 import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
 import DeleteIcon from 'assets/icons/delete.svg?react'
+import { useSidePanel } from './SidePanelContext'
 import classes from './classes.module.scss'
 
-interface CalendarClientPastBodyProps {
-  language: CalendarLanguage | undefined
-  slot: BookedSlot | undefined
-  date: string
-  startTime: string
-  duration: string
-  isMetaOpen: boolean
-  onSetIsMetaOpen: (v: boolean) => void
-}
-
-const CalendarClientPastBody: FC<CalendarClientPastBodyProps> = ({
-  language,
-  slot,
-  date,
-  startTime,
-  duration,
-  isMetaOpen,
-  onSetIsMetaOpen,
-}) => {
+const CalendarClientPastBody: FC = () => {
   const { t } = useTranslation()
+  const {
+    language,
+    slot,
+    date,
+    startTime,
+    duration,
+    isMetaOpen,
+    setIsMetaOpen: onSetIsMetaOpen,
+  } = useSidePanel()
 
   return (
     <>

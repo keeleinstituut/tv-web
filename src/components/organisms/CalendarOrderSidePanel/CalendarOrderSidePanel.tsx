@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -24,9 +24,9 @@ import CalendarTranslatorBody from './CalendarTranslatorBody'
 import CalendarClientPastBody from './CalendarClientPastBody'
 import CalendarClientBody from './CalendarClientBody'
 import CalendarOrderFormBody from './CalendarOrderFormBody'
+import { SidePanelContext } from './SidePanelContext'
 import classes from './classes.module.scss'
-
-type ServiceType = 'kaugtolge' | 'kontakttolge' | ''
+import { ServiceType } from 'types/calendar'
 
 const CalendarOrderSidePanel: FC = () => {
   const { t } = useTranslation()
@@ -300,6 +300,73 @@ const CalendarOrderSidePanel: FC = () => {
     )
   }
 
+  const contextValue = useMemo(
+    () => ({
+      language,
+      slot,
+      date,
+      startTime,
+      duration,
+      isPastSlot,
+      isViewMode,
+      isTPM,
+      isTPMPendingView,
+      viitenumber,
+      setViitenumber,
+      serviceType,
+      setServiceType,
+      location,
+      setLocation,
+      kuupaev,
+      setKuupaev,
+      algusaeg,
+      setAlgusaeg,
+      tellija,
+      setTellija,
+      domainId,
+      setDomainId,
+      vendorId,
+      setVendorId,
+      durationMinutes,
+      setDurationMinutes,
+      durationNote,
+      setDurationNote,
+      isEditing,
+      isConfirmingCancel,
+      setIsConfirmingCancel,
+      isMetaOpen,
+      setIsMetaOpen,
+      isChangingDuration,
+      isCreating,
+      isUpdating,
+      isCancelling,
+      isConfirming,
+      isRejecting,
+      domains,
+      vendors: vendors ?? [],
+      handleSubmit,
+      handleStartEdit,
+      handleCancelEdit,
+      handleSaveEdit,
+      handleVoidConfirm,
+      handleConfirmOrder,
+      handleRejectOrder,
+      handleStartChangeDuration,
+      handleCancelChangeDuration,
+      handleSaveDuration,
+      closeSidePanel,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      language, slot, date, startTime, duration, isPastSlot, isViewMode,
+      isTPM, isTPMPendingView, viitenumber, serviceType, location, kuupaev,
+      algusaeg, tellija, domainId, vendorId, durationMinutes, durationNote,
+      isEditing, isConfirmingCancel, isMetaOpen, isChangingDuration,
+      isCreating, isUpdating, isCancelling, isConfirming, isRejecting,
+      domains, vendors,
+    ]
+  )
+
   // Determine which footer to show
   const isTPMPastView = isTPM && isViewMode && isPastSlot
   const showFooter =
@@ -338,107 +405,19 @@ const CalendarOrderSidePanel: FC = () => {
         </div>
 
         {/* Scrollable body */}
-        <div className={classes.body}>
-          {isTranslatorView ? (
-            <CalendarTranslatorBody
-              language={language}
-              slot={slot}
-              date={date}
-              startTime={startTime}
-              duration={duration}
-              isPastSlot={isPastSlot}
-              isChangingDuration={isChangingDuration}
-              isConfirmingCancel={isConfirmingCancel}
-              isMetaOpen={isMetaOpen}
-              durationMinutes={durationMinutes}
-              durationNote={durationNote}
-              isCancelling={isCancelling}
-              isUpdating={isUpdating}
-              onVoidConfirm={handleVoidConfirm}
-              onSetIsConfirmingCancel={setIsConfirmingCancel}
-              onStartChangeDuration={handleStartChangeDuration}
-              onSetIsMetaOpen={setIsMetaOpen}
-              onSetDurationMinutes={setDurationMinutes}
-              onSetDurationNote={setDurationNote}
-            />
-          ) : isClientPastView || isTPMPastView ? (
-            <CalendarClientPastBody
-              language={language}
-              slot={slot}
-              date={date}
-              startTime={startTime}
-              duration={duration}
-              isMetaOpen={isMetaOpen}
-              onSetIsMetaOpen={setIsMetaOpen}
-            />
-          ) : isClient && isViewMode ? (
-            <CalendarClientBody
-              language={language}
-              slot={slot}
-              date={date}
-              startTime={startTime}
-              duration={duration}
-              isPastSlot={isPastSlot}
-              isEditing={isEditing}
-              isConfirmingCancel={isConfirmingCancel}
-              isMetaOpen={isMetaOpen}
-              durationMinutes={durationMinutes}
-              viitenumber={viitenumber}
-              serviceType={serviceType}
-              location={location}
-              kuupaev={kuupaev}
-              algusaeg={algusaeg}
-              domainId={domainId}
-              domains={domains}
-              isUpdating={isUpdating}
-              isCancelling={isCancelling}
-              onStartEdit={handleStartEdit}
-              onCancelEdit={handleCancelEdit}
-              onSaveEdit={handleSaveEdit}
-              onVoidConfirm={handleVoidConfirm}
-              onSetIsConfirmingCancel={setIsConfirmingCancel}
-              onSetIsMetaOpen={setIsMetaOpen}
-              onSetViitenumber={setViitenumber}
-              onSetServiceType={setServiceType}
-              onSetLocation={setLocation}
-              onSetKuupaev={setKuupaev}
-              onSetAlgusaeg={setAlgusaeg}
-              onSetDomainId={setDomainId}
-              onSetDurationMinutes={setDurationMinutes}
-            />
-          ) : (
-            <CalendarOrderFormBody
-              language={language}
-              slot={slot}
-              isViewMode={isViewMode}
-              isTPMPendingView={isTPMPendingView}
-              isConfirming={isConfirming}
-              isRejecting={isRejecting}
-              onConfirmOrder={handleConfirmOrder}
-              onRejectOrder={handleRejectOrder}
-              date={date}
-              startTime={startTime}
-              duration={duration}
-              isTPM={isTPM}
-              viitenumber={viitenumber}
-              serviceType={serviceType}
-              location={location}
-              tellija={tellija}
-              domainId={domainId}
-              vendorId={vendorId}
-              durationMinutes={durationMinutes}
-              domains={domains}
-              vendors={vendors}
-              onSetDurationMinutes={setDurationMinutes}
-              onSetViitenumber={setViitenumber}
-              onSetServiceType={setServiceType}
-              onSetLocation={setLocation}
-              onSetTellija={setTellija}
-              onSetDomainId={setDomainId}
-              onSetVendorId={setVendorId}
-            />
-          )}
-        </div>
+        <SidePanelContext.Provider value={contextValue}>
+          <div className={classes.body}>
+            {isTranslatorView ? (
+              <CalendarTranslatorBody />
+            ) : isClientPastView || isTPMPastView ? (
+              <CalendarClientPastBody />
+            ) : isClient && isViewMode ? (
+              <CalendarClientBody />
+            ) : (
+              <CalendarOrderFormBody />
+            )}
+          </div>
+        </SidePanelContext.Provider>
 
         {/* Footer — hidden for Teostaja (except muuda kestus), Client past, and Client non-past view */}
         {showFooter && (

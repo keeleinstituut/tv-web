@@ -2,97 +2,53 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
-import { BookedSlot, CalendarLanguage } from 'types/calendar'
-import { ClassifierValue } from 'types/classifierValues'
+import { ServiceType } from 'types/calendar'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import { formatDurationMins } from 'helpers/calendar'
 import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
+import { useSidePanel } from './SidePanelContext'
 import classes from './classes.module.scss'
 
-export type ServiceType = 'kaugtolge' | 'kontakttolge' | ''
-
-const formatDurationMins = (mins: number): string => {
-  const h = Math.floor(mins / 60)
-  const m = mins % 60
-  const hLabel = h === 1 ? 'tund' : 'tundi'
-  if (h === 0) return `${m} minutit`
-  if (m === 0) return `${h} ${hLabel}`
-  return `${h} ${hLabel} ja ${m} minutit`
-}
-
-interface CalendarClientBodyProps {
-  language: CalendarLanguage | undefined
-  slot: BookedSlot | undefined
-  date: string
-  startTime: string
-  duration: string
-  isPastSlot: boolean
-  isEditing: boolean
-  isConfirmingCancel: boolean
-  isMetaOpen: boolean
-  durationMinutes: number
-  viitenumber: string
-  serviceType: ServiceType
-  location: string
-  kuupaev: string
-  algusaeg: string
-  domainId: string
-  domains: ClassifierValue[] | undefined
-  isUpdating: boolean
-  isCancelling: boolean
-  onStartEdit: () => void
-  onCancelEdit: () => void
-  onSaveEdit: () => void
-  onVoidConfirm: () => void
-  onSetIsConfirmingCancel: (v: boolean) => void
-  onSetIsMetaOpen: (v: boolean) => void
-  onSetViitenumber: (v: string) => void
-  onSetServiceType: (v: ServiceType) => void
-  onSetLocation: (v: string) => void
-  onSetKuupaev: (v: string) => void
-  onSetAlgusaeg: (v: string) => void
-  onSetDomainId: (v: string) => void
-  onSetDurationMinutes: (fn: (prev: number) => number) => void
-}
-
-const CalendarClientBody: FC<CalendarClientBodyProps> = ({
-  language,
-  slot,
-  date,
-  startTime,
-  duration,
-  isPastSlot,
-  isEditing,
-  isConfirmingCancel,
-  isMetaOpen,
-  durationMinutes,
-  viitenumber,
-  serviceType,
-  location,
-  kuupaev,
-  algusaeg,
-  domainId,
-  domains,
-  isUpdating,
-  isCancelling,
-  onStartEdit,
-  onCancelEdit,
-  onSaveEdit,
-  onVoidConfirm,
-  onSetIsConfirmingCancel,
-  onSetIsMetaOpen,
-  onSetViitenumber,
-  onSetServiceType,
-  onSetLocation,
-  onSetKuupaev,
-  onSetAlgusaeg,
-  onSetDomainId,
-  onSetDurationMinutes,
-}) => {
+const CalendarClientBody: FC = () => {
   const { t } = useTranslation()
+  const {
+    language,
+    slot,
+    date,
+    startTime,
+    duration,
+    isPastSlot,
+    isEditing,
+    isConfirmingCancel,
+    setIsConfirmingCancel: onSetIsConfirmingCancel,
+    isMetaOpen,
+    setIsMetaOpen: onSetIsMetaOpen,
+    durationMinutes,
+    setDurationMinutes: onSetDurationMinutes,
+    viitenumber,
+    setViitenumber: onSetViitenumber,
+    serviceType,
+    setServiceType: onSetServiceType,
+    location,
+    setLocation: onSetLocation,
+    kuupaev,
+    setKuupaev: onSetKuupaev,
+    algusaeg,
+    setAlgusaeg: onSetAlgusaeg,
+    domainId,
+    setDomainId: onSetDomainId,
+    domains,
+    isUpdating,
+    isCancelling,
+    handleStartEdit: onStartEdit,
+    handleCancelEdit: onCancelEdit,
+    handleSaveEdit: onSaveEdit,
+    handleVoidConfirm: onVoidConfirm,
+  } = useSidePanel()
 
   return (
     <>

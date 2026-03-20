@@ -2,67 +2,38 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
-import { BookedSlot, CalendarLanguage } from 'types/calendar'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import { formatDurationMins } from 'helpers/calendar'
 import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
+import { useSidePanel } from './SidePanelContext'
 import classes from './classes.module.scss'
 
-const formatDurationMins = (mins: number): string => {
-  const h = Math.floor(mins / 60)
-  const m = mins % 60
-  const hLabel = h === 1 ? 'tund' : 'tundi'
-  if (h === 0) return `${m} minutit`
-  if (m === 0) return `${h} ${hLabel}`
-  return `${h} ${hLabel} ja ${m} minutit`
-}
-
-interface CalendarTranslatorBodyProps {
-  language: CalendarLanguage | undefined
-  slot: BookedSlot | undefined
-  date: string
-  startTime: string
-  duration: string
-  isPastSlot: boolean
-  isChangingDuration: boolean
-  isConfirmingCancel: boolean
-  isMetaOpen: boolean
-  durationMinutes: number
-  durationNote: string
-  isCancelling: boolean
-  isUpdating: boolean
-  onVoidConfirm: () => void
-  onSetIsConfirmingCancel: (v: boolean) => void
-  onStartChangeDuration: () => void
-  onSetIsMetaOpen: (v: boolean) => void
-  onSetDurationMinutes: (fn: (prev: number) => number) => void
-  onSetDurationNote: (v: string) => void
-}
-
-const CalendarTranslatorBody: FC<CalendarTranslatorBodyProps> = ({
-  language,
-  slot,
-  date,
-  startTime,
-  duration,
-  isPastSlot,
-  isChangingDuration,
-  isConfirmingCancel,
-  isMetaOpen,
-  durationMinutes,
-  durationNote,
-  isCancelling,
-  onVoidConfirm,
-  onSetIsConfirmingCancel,
-  onStartChangeDuration,
-  onSetIsMetaOpen,
-  onSetDurationMinutes,
-  onSetDurationNote,
-}) => {
+const CalendarTranslatorBody: FC = () => {
   const { t } = useTranslation()
+  const {
+    language,
+    slot,
+    date,
+    startTime,
+    duration,
+    isPastSlot,
+    isChangingDuration,
+    isConfirmingCancel,
+    setIsConfirmingCancel: onSetIsConfirmingCancel,
+    isMetaOpen,
+    setIsMetaOpen: onSetIsMetaOpen,
+    durationMinutes,
+    setDurationMinutes: onSetDurationMinutes,
+    durationNote,
+    setDurationNote: onSetDurationNote,
+    isCancelling,
+    handleVoidConfirm: onVoidConfirm,
+    handleStartChangeDuration: onStartChangeDuration,
+  } = useSidePanel()
 
   return (
     <>

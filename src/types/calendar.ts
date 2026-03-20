@@ -1,5 +1,7 @@
 export type CalendarView = 'day' | 'week' | 'month'
 
+export type ServiceType = 'kaugtolge' | 'kontakttolge' | ''
+
 export type SlotType =
   | 'assignment'
   | 'external_calendar'

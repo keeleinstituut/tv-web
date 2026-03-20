@@ -1,87 +1,46 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CalendarLanguage, BookedSlot } from 'types/calendar'
-import { ClassifierValue } from 'types/classifierValues'
-import { SlotMatchingVendor } from 'types/calendar'
+import { ServiceType } from 'types/calendar'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import { formatDurationMins } from 'helpers/calendar'
 import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
+import { useSidePanel } from './SidePanelContext'
 import classes from './classes.module.scss'
 
-const formatDurationMins = (mins: number): string => {
-  const h = Math.floor(mins / 60)
-  const m = mins % 60
-  const hLabel = h === 1 ? 'tund' : 'tundi'
-  if (h === 0) return `${m} minutit`
-  if (m === 0) return `${h} ${hLabel}`
-  return `${h} ${hLabel} ja ${m} minutit`
-}
-
-export type ServiceType = 'kaugtolge' | 'kontakttolge' | ''
-
-interface CalendarOrderFormBodyProps {
-  language: CalendarLanguage | undefined
-  slot?: BookedSlot
-  isViewMode?: boolean
-  isTPMPendingView?: boolean
-  isConfirming?: boolean
-  isRejecting?: boolean
-  onConfirmOrder?: () => void
-  onRejectOrder?: () => void
-  date: string
-  startTime: string
-  duration: string
-  isTPM: boolean
-  viitenumber: string
-  serviceType: ServiceType
-  location: string
-  tellija: string
-  domainId: string
-  vendorId: string
-  durationMinutes: number
-  domains: ClassifierValue[] | undefined
-  vendors: SlotMatchingVendor[]
-  onSetDurationMinutes: (fn: (prev: number) => number) => void
-  onSetViitenumber: (v: string) => void
-  onSetServiceType: (v: ServiceType) => void
-  onSetLocation: (v: string) => void
-  onSetTellija: (v: string) => void
-  onSetDomainId: (v: string) => void
-  onSetVendorId: (v: string) => void
-}
-
-const CalendarOrderFormBody: FC<CalendarOrderFormBodyProps> = ({
-  language,
-  slot,
-  isViewMode = false,
-  isTPMPendingView = false,
-  isConfirming = false,
-  isRejecting = false,
-  onConfirmOrder,
-  onRejectOrder,
-  date,
-  startTime,
-  duration,
-  isTPM,
-  viitenumber,
-  serviceType,
-  location,
-  tellija,
-  domainId,
-  vendorId,
-  durationMinutes,
-  domains,
-  vendors,
-  onSetDurationMinutes,
-  onSetViitenumber,
-  onSetServiceType,
-  onSetLocation,
-  onSetTellija,
-  onSetDomainId,
-  onSetVendorId,
-}) => {
+const CalendarOrderFormBody: FC = () => {
   const { t } = useTranslation()
+  const {
+    language,
+    slot,
+    isViewMode,
+    isTPMPendingView,
+    isConfirming,
+    isRejecting,
+    handleConfirmOrder: onConfirmOrder,
+    handleRejectOrder: onRejectOrder,
+    date,
+    startTime,
+    duration,
+    isTPM,
+    viitenumber,
+    setViitenumber: onSetViitenumber,
+    serviceType,
+    setServiceType: onSetServiceType,
+    location,
+    setLocation: onSetLocation,
+    tellija,
+    setTellija: onSetTellija,
+    domainId,
+    setDomainId: onSetDomainId,
+    vendorId,
+    setVendorId: onSetVendorId,
+    durationMinutes,
+    setDurationMinutes: onSetDurationMinutes,
+    domains,
+    vendors,
+  } = useSidePanel()
 
   return (
     <>

@@ -30,6 +30,15 @@ export function formatMinutes(minutes: number): string {
   return `${h}h ${m}min`
 }
 
+export function formatDurationMins(mins: number): string {
+  const h = Math.floor(mins / 60)
+  const m = mins % 60
+  const hLabel = h === 1 ? 'tund' : 'tundi'
+  if (h === 0) return `${m} minutit`
+  if (m === 0) return `${h} ${hLabel}`
+  return `${h} ${hLabel} ja ${m} minutit`
+}
+
 export function getInitials(name: string): string {
   return name
     .split(' ')
