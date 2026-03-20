@@ -533,7 +533,7 @@ const CalendarOrderSidePanel: FC = () => {
                 <Button
                   appearance={AppearanceTypes.Primary}
                   onClick={handleSubmit}
-                  disabled={isCreating || !serviceType}
+                  disabled={isCreating || !serviceType || !location.trim()}
                 >
                   {isCreating
                     ? t('calendar.saving')

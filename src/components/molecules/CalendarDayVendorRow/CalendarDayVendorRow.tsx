@@ -156,9 +156,9 @@ const CalendarDayVendorRow: FC<Props> = ({
           />
         )}
 
-        {vendor.booked_slots.map((slot, i) => (
+        {vendor.booked_slots.map((slot) => (
           <BookedSlotBlock
-            key={i}
+            key={`${slot.start_at}-${slot.type}`}
             slot={slot}
             dayStartHour={dayStartHour}
             onClick={handleClickSlot}

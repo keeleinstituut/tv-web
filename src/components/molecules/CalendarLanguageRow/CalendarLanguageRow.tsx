@@ -275,7 +275,7 @@ const CalendarLanguageRow: FC<Props> = ({
       slot: match,
     })
     setPendingDeepLink(null)
-  }, [data, pendingDeepLink])
+  }, [data, pendingDeepLink, openSidePanel, language, setPendingDeepLink])
 
   const totalSlots = (dayEndHour - dayStartHour) * 2
   const totalWidth = totalSlots * sw
@@ -513,9 +513,9 @@ const CalendarLanguageRow: FC<Props> = ({
 
         {/* Booked slot blocks */}
         {!isExpanded &&
-          bookedSlots.map((slot, i) => (
+          bookedSlots.map((slot) => (
             <BookedSlotBlock
-              key={i}
+              key={`${slot.start_at}-${slot.type}`}
               slot={slot}
               dayStartHour={dayStartHour}
               onClick={onClickSlot}

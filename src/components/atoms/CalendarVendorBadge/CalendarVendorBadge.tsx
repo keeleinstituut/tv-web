@@ -10,10 +10,17 @@ interface Props {
 
 const CalendarVendorBadge: FC<Props> = ({ vendorId, name }) => {
   const navigate = useNavigate()
+  const handleNavigate = () => navigate(`/vendors/${vendorId}`)
   return (
     <span
       className={classes.badge}
-      onClick={() => navigate(`/vendors/${vendorId}`)}
+      onClick={handleNavigate}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleNavigate()
+        }
+      }}
       role="button"
       tabIndex={0}
     >
