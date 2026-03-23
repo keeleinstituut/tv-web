@@ -1,4 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import isoWeek from 'dayjs/plugin/isoWeek'
 import {
   CalendarLanguagesResponse,
   CalendarDayResponse,
@@ -12,41 +14,49 @@ import {
   CalendarMonthVendorsAllResponse,
   CalendarSearchParams,
   CalendarSearchResponse,
-  CalendarSlotMatchingResponse,
-  WeekSlotBookingsResponse,
   CalendarOrderDetail,
+  SlotMatchingVendor,
   CreateOrderPayload,
   UpdateOrderPayload,
   ApiCalendarLanguagesResponse,
   ApiCalendarDayResponse,
   ApiCalendarWeekResponse,
   ApiCalendarMonthResponse,
+  ApiSlotMatchingVendor,
+  ApiCalendarSearchResponse,
+  ApiVendorCalendarEntry,
   transformLanguages,
   transformDayResponse,
   transformWeekResponse,
   transformMonthResponse,
 } from 'types/calendar'
+
+dayjs.extend(isoWeek)
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { useCalendarRole } from 'hooks/useCalendarRole'
-import {
-  MOCK_LANGUAGES,
-  MOCK_VENDORS,
-  mockWeekVendors,
-  mockMonthVendors,
-} from './calendarMocks'
 
 // ---------------------------------------------------------------------------
 // Hooks
 // ---------------------------------------------------------------------------
 
-export const useFetchCalendarLanguages = (timeframe?: string) => {
+/**
+ * Fetch available languages for the calendar.
+ * Accepts an explicit date range; defaults to a ±2-month window around today.
+ */
+export const useFetchCalendarLanguages = (
+  dateFrom?: string,
+  dateTo?: string
+) => {
+  const from = dateFrom ?? dayjs().startOf('month').format('YYYY-MM-DD')
+  const to = dateTo ?? dayjs().add(2, 'month').endOf('month').format('YYYY-MM-DD')
+
   const { isLoading, isError, data } = useQuery<CalendarLanguagesResponse>({
-    queryKey: ['calendar-languages', timeframe],
+    queryKey: ['calendar-languages', from, to],
     queryFn: async () => {
       const raw: ApiCalendarLanguagesResponse = await apiClient.get(
         endpoints.CALENDAR_LANGUAGES,
-        timeframe ? { timeframe } : {}
+        { date_from: from, date_to: to }
       )
       return transformLanguages(raw)
     },
@@ -57,12 +67,19 @@ export const useFetchCalendarLanguages = (timeframe?: string) => {
 
 // Returns only the languages for which the current translator has assigned orders.
 // Same endpoint — backend filters based on role server-side.
-export const useFetchCalendarTranslatorLanguages = () => {
+export const useFetchCalendarTranslatorLanguages = (
+  dateFrom?: string,
+  dateTo?: string
+) => {
+  const from = dateFrom ?? dayjs().startOf('month').format('YYYY-MM-DD')
+  const to = dateTo ?? dayjs().add(2, 'month').endOf('month').format('YYYY-MM-DD')
+
   const { isLoading, isError, data } = useQuery<CalendarLanguagesResponse>({
-    queryKey: ['calendar-translator-languages'],
+    queryKey: ['calendar-translator-languages', from, to],
     queryFn: async () => {
       const raw: ApiCalendarLanguagesResponse = await apiClient.get(
-        endpoints.CALENDAR_LANGUAGES
+        endpoints.CALENDAR_LANGUAGES,
+        { date_from: from, date_to: to }
       )
       return transformLanguages(raw)
     },
@@ -88,14 +105,17 @@ export const useFetchCalendarDay = (date: string, languageId?: string) => {
 }
 
 export const useFetchCalendarWeek = (date: string) => {
+  const dateFrom = dayjs(date).startOf('isoWeek').format('YYYY-MM-DD')
+  const dateTo = dayjs(date).endOf('isoWeek').format('YYYY-MM-DD')
+
   const { isLoading, isError, data } = useQuery<CalendarWeekResponse>({
-    queryKey: ['calendar-week', date],
+    queryKey: ['calendar-week', dateFrom, dateTo],
     queryFn: async () => {
       const raw: ApiCalendarWeekResponse = await apiClient.get(
         endpoints.CALENDAR_WEEK,
-        { date }
+        { date_from: dateFrom, date_to: dateTo }
       )
-      return transformWeekResponse(raw)
+      return transformWeekResponse(raw, dateFrom, dateTo)
     },
     enabled: !!date,
   })
@@ -103,20 +123,114 @@ export const useFetchCalendarWeek = (date: string) => {
 }
 
 export const useFetchCalendarMonth = (date: string) => {
+  const dateFrom = dayjs(date).startOf('month').format('YYYY-MM-DD')
+  const dateTo = dayjs(date).endOf('month').format('YYYY-MM-DD')
+
   const { isLoading, isError, data } = useQuery<CalendarMonthResponse>({
-    queryKey: ['calendar-month', date],
+    queryKey: ['calendar-month', dateFrom, dateTo],
     queryFn: async () => {
       const raw: ApiCalendarMonthResponse = await apiClient.get(
         endpoints.CALENDAR_MONTH,
-        { date }
+        { date_from: dateFrom, date_to: dateTo }
       )
-      return transformMonthResponse(raw)
+      return transformMonthResponse(raw, dayjs(date).format('YYYY-MM'))
     },
     enabled: !!date,
   })
   return { isLoading, isError, data }
 }
 
+/**
+ * TPM only: extract per-vendor week data. Re-uses the same query key as
+ * useFetchCalendarWeek so results are shared from cache.
+ */
+export const useFetchCalendarWeekVendors = (
+  date: string,
+  languageId?: string
+) => {
+  const dateFrom = dayjs(date).startOf('isoWeek').format('YYYY-MM-DD')
+  const dateTo = dayjs(date).endOf('isoWeek').format('YYYY-MM-DD')
+
+  const { isLoading, isError, data } = useQuery<
+    CalendarWeekResponse,
+    Error,
+    CalendarWeekVendorsResponse | CalendarWeekVendorsAllResponse
+  >({
+    queryKey: ['calendar-week', dateFrom, dateTo],
+    queryFn: async () => {
+      const raw: ApiCalendarWeekResponse = await apiClient.get(
+        endpoints.CALENDAR_WEEK,
+        { date_from: dateFrom, date_to: dateTo }
+      )
+      return transformWeekResponse(raw, dateFrom, dateTo)
+    },
+    select: (
+      weekData
+    ): CalendarWeekVendorsResponse | CalendarWeekVendorsAllResponse => {
+      const tpmVendors = weekData.tpm_vendors ?? []
+      if (languageId) {
+        const langData = tpmVendors.find((l) => l.language_id === languageId)
+        return {
+          language_id: languageId,
+          week_start: weekData.week_start,
+          week_end: weekData.week_end,
+          vendors: langData?.vendors ?? [],
+        }
+      }
+      return { languages: tpmVendors }
+    },
+    enabled: !!date,
+  })
+  return { isLoading, isError, data }
+}
+
+/**
+ * TPM only: extract per-vendor month data. Re-uses the same query key as
+ * useFetchCalendarMonth so results are shared from cache.
+ */
+export const useFetchCalendarMonthVendors = (
+  date: string,
+  languageId?: string
+) => {
+  const dateFrom = dayjs(date).startOf('month').format('YYYY-MM-DD')
+  const dateTo = dayjs(date).endOf('month').format('YYYY-MM-DD')
+
+  const { isLoading, isError, data } = useQuery<
+    CalendarMonthResponse,
+    Error,
+    CalendarMonthVendorsResponse | CalendarMonthVendorsAllResponse
+  >({
+    queryKey: ['calendar-month', dateFrom, dateTo],
+    queryFn: async () => {
+      const raw: ApiCalendarMonthResponse = await apiClient.get(
+        endpoints.CALENDAR_MONTH,
+        { date_from: dateFrom, date_to: dateTo }
+      )
+      return transformMonthResponse(raw, dayjs(date).format('YYYY-MM'))
+    },
+    select: (
+      monthData
+    ): CalendarMonthVendorsResponse | CalendarMonthVendorsAllResponse => {
+      const tpmVendors = monthData.tpm_vendors ?? []
+      if (languageId) {
+        const langData = tpmVendors.find((l) => l.language_id === languageId)
+        return {
+          language_id: languageId,
+          month: monthData.month,
+          vendors: langData?.vendors ?? [],
+        }
+      }
+      return { languages: tpmVendors }
+    },
+    enabled: !!date,
+  })
+  return { isLoading, isError, data }
+}
+
+/**
+ * TPM only: extract per-vendor day data from the main day response.
+ * Re-uses the same query key as useFetchCalendarDay so results are shared.
+ */
 export const useFetchCalendarDayVendors = (
   date: string,
   languageId?: string
@@ -127,7 +241,7 @@ export const useFetchCalendarDayVendors = (
     Error,
     CalendarDayVendorsResponse | CalendarDayVendorsAllResponse
   >({
-    queryKey: ['calendar-day-vendors', date, languageId],
+    queryKey: ['calendar-day', date, languageId],
     queryFn: async () => {
       const raw: ApiCalendarDayResponse = await apiClient.get(
         endpoints.CALENDAR_DAY,
@@ -150,50 +264,6 @@ export const useFetchCalendarDayVendors = (
   return { isLoading, isError, data }
 }
 
-export const useFetchCalendarWeekVendors = (
-  date: string,
-  languageId?: string
-) => {
-  const { isLoading, isError, data } = useQuery<
-    CalendarWeekVendorsResponse | CalendarWeekVendorsAllResponse
-  >({
-    queryKey: ['calendar-week-vendors', date, languageId],
-    queryFn: () =>
-      languageId
-        ? Promise.resolve(mockWeekVendors(date, languageId))
-        : Promise.resolve({
-            languages: MOCK_LANGUAGES.languages.map((l) =>
-              mockWeekVendors(date, l.language.id)
-            ),
-          } as CalendarWeekVendorsAllResponse),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_WEEK_VENDORS, { date, language_id: languageId }),
-    enabled: !!date && !!languageId,
-  })
-  return { isLoading, isError, data }
-}
-
-export const useFetchCalendarMonthVendors = (
-  date: string,
-  languageId?: string
-) => {
-  const { isLoading, isError, data } = useQuery<
-    CalendarMonthVendorsResponse | CalendarMonthVendorsAllResponse
-  >({
-    queryKey: ['calendar-month-vendors', date, languageId],
-    queryFn: () =>
-      languageId
-        ? Promise.resolve(mockMonthVendors(date, languageId))
-        : Promise.resolve({
-            languages: MOCK_LANGUAGES.languages.map((l) =>
-              mockMonthVendors(date, l.language.id)
-            ),
-          } as CalendarMonthVendorsAllResponse),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_MONTH_VENDORS, { date, language_id: languageId }),
-    enabled: !!date && !!languageId,
-  })
-  return { isLoading, isError, data }
-}
-
 export const useCreatePrebook = () => {
   const queryClient = useQueryClient()
   return useMutation({
@@ -201,6 +271,7 @@ export const useCreatePrebook = () => {
       language_id: string
       start_at: string
       end_at: string
+      vendor_id?: string
     }) => apiClient.post(endpoints.CALENDAR_PREBOOK, params),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
@@ -212,8 +283,7 @@ export const useCreatePrebook = () => {
 export const useCancelPrebook = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (prebookId: string) =>
-      apiClient.delete(endpoints.CALENDAR_PREBOOK, { id: prebookId }),
+    mutationFn: () => apiClient.delete(endpoints.CALENDAR_PREBOOK),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
       queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
@@ -223,93 +293,112 @@ export const useCancelPrebook = () => {
 
 export const useCalendarSearch = () =>
   useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: (_params: CalendarSearchParams) =>
-      new Promise<CalendarSearchResponse>((resolve) =>
-        setTimeout(
-          () => resolve({ dates: ['2026-03-12', '2026-03-15', '2026-03-17'] }),
-          300
-        )
-      ),
-    // mutationFn: (params: CalendarSearchParams) => apiClient.get(endpoints.CALENDAR_SEARCH, params),
+    mutationFn: (params: CalendarSearchParams) =>
+      apiClient
+        .get(endpoints.CALENDAR_SEARCH, {
+          language_id: params.language_id,
+          ...(params.date_from ? { datetime: `${params.date_from}T00:00:00Z` } : {}),
+          ...(params.slot_length ? { duration_minutes: params.slot_length } : {}),
+        })
+        .then((raw: ApiCalendarSearchResponse): CalendarSearchResponse => ({
+          dates: raw.start_at ? [raw.start_at] : [],
+        })),
   })
-
-export const useFetchWeekSlotBookings = (
-  params: { start_at: string; end_at: string; language_id: string } | null
-) => {
-  const { isLoading, data } = useQuery<WeekSlotBookingsResponse>({
-    queryKey: [
-      'week-slot-bookings',
-      params?.start_at,
-      params?.end_at,
-      params?.language_id,
-    ],
-    enabled: !!params,
-    queryFn: () =>
-      new Promise<WeekSlotBookingsResponse>((resolve) =>
-        setTimeout(
-          () =>
-            resolve({
-              bookings: [
-                {
-                  id: 'proj-1',
-                  ext_id: 'PPA-2021-04-S-126',
-                  language: { id: 'lang-en', value: 'en', name: 'inglise' },
-                },
-                {
-                  id: 'proj-2',
-                  ext_id: 'PPA-225-08-T-3',
-                  language: { id: 'lang-en', value: 'en', name: 'inglise' },
-                },
-                {
-                  id: 'proj-3',
-                  ext_id: 'MRQ-225-08-T-3',
-                  language: { id: 'lang-en', value: 'en', name: 'inglise' },
-                },
-              ],
-            }),
-          300
-        )
-      ),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_WEEK_SLOT_BOOKINGS, params),
-  })
-  return { bookings: data?.bookings ?? [], isLoading }
-}
 
 export const useFetchSlotMatching = (
   params: { start_at: string; end_at: string; language_id: string } | null
 ) => {
-  const { isLoading, isError, data } = useQuery<CalendarSlotMatchingResponse>({
+  const { isLoading, isError, data } = useQuery<SlotMatchingVendor[]>({
     queryKey: ['calendar-slot-matching', params],
-    queryFn: () => Promise.resolve({ vendors: MOCK_VENDORS }),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_SLOT_MATCHING, params ?? {}),
+    queryFn: async () => {
+      const raw: ApiSlotMatchingVendor[] = await apiClient
+        .get(endpoints.CALENDAR_SLOT_MATCHING, {
+          language_id: params!.language_id,
+          start_at: params!.start_at,
+          end_at: params!.end_at,
+        })
+        .then((res: { data: ApiSlotMatchingVendor[] }) => res.data)
+      return raw.map((v) => ({
+        id: v.id,
+        institution_user_id: v.institution_user_id,
+        name: v.name,
+        is_internal: v.is_internal,
+      }))
+    },
     enabled: !!params,
   })
-  return { isLoading, isError, vendors: data?.vendors ?? [] }
+  return { isLoading, isError, vendors: data ?? [] }
 }
 
 export const useCreateCalendarOrder = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: (_payload: CreateOrderPayload) =>
-      new Promise<{ id: string }>((resolve) =>
-        setTimeout(() => resolve({ id: `order-${Date.now()}` }), 400)
-      ),
-    // mutationFn: (payload: CreateOrderPayload) => apiClient.post(endpoints.CALENDAR_ORDERS, payload),
+    mutationFn: (payload: CreateOrderPayload) =>
+      apiClient.post(endpoints.PROJECTS, {
+        is_calendar_project: true,
+        destination_language_classifier_value_ids: [payload.language_id],
+        event_start_at: payload.start_at,
+        event_end_at: payload.end_at,
+        service_type: payload.service_type,
+        ...(payload.reference_number
+          ? { reference_number: payload.reference_number }
+          : {}),
+        ...(payload.location ? { location: payload.location } : {}),
+        ...(payload.meeting_link ? { meeting_link: payload.meeting_link } : {}),
+        ...(payload.client_institution_id
+          ? { client_institution_user_id: payload.client_institution_id }
+          : {}),
+        ...(payload.vendor_id ? { candidate_vendor_id: payload.vendor_id } : {}),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
+    },
+  })
+}
+
+export const useUpdateCalendarOrder = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: UpdateOrderPayload) =>
+      apiClient.put(`${endpoints.PROJECTS}/${payload.id}`, {
+        ...(payload.service_type ? { service_type: payload.service_type } : {}),
+        ...(payload.reference_number !== undefined
+          ? { reference_number: payload.reference_number }
+          : {}),
+        ...(payload.location !== undefined ? { location: payload.location } : {}),
+        ...(payload.meeting_link !== undefined
+          ? { meeting_link: payload.meeting_link }
+          : {}),
+        ...(payload.start_at ? { event_start_at: payload.start_at } : {}),
+        ...(payload.end_at ? { event_end_at: payload.end_at } : {}),
+        ...(payload.vendor_id ? { candidate_vendor_id: payload.vendor_id } : {}),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-order-detail'] })
+    },
+  })
+}
+
+export const useCancelCalendarOrder = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient.post(`${endpoints.PROJECTS}/${id}/cancel`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
     },
   })
 }
 
+// Accept/Decline are workflow task actions (Teostaja), not calendar-specific.
+// They live in Tellimused > Minu Ülesanded and use workflow/tasks endpoints.
 export const useAcceptCalendarOrder = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: (_id: string) =>
-      new Promise<void>((resolve) => setTimeout(resolve, 400)),
-    // TODO: mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_ACCEPT(id)),
+    mutationFn: (taskId: string) =>
+      apiClient.post(`${endpoints.TASKS}/${taskId}/accept`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
     },
@@ -319,67 +408,27 @@ export const useAcceptCalendarOrder = () => {
 export const useDeclineCalendarOrder = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: (_id: string) =>
-      new Promise<void>((resolve) => setTimeout(resolve, 400)),
-    // TODO: mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_DECLINE(id)),
+    mutationFn: (taskId: string) =>
+      apiClient.post(`${endpoints.TASKS}/${taskId}/decline`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
     },
   })
 }
 
-export const useConfirmCalendarOrder = () => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: (_id: string) =>
-      new Promise<void>((resolve) => setTimeout(resolve, 400)),
-    // TODO: mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_CONFIRM(id)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
-    },
+export const useFetchCalendarOrderDetail = (id: string | null) => {
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ['calendar-order-detail', id],
+    enabled: !!id,
+    queryFn: () =>
+      apiClient
+        .get(`${endpoints.PROJECTS}/${id}`)
+        .then(
+          (res: { data: Record<string, unknown> }) =>
+            res.data as unknown as CalendarOrderDetail
+        ),
   })
-}
-
-export const useRejectCalendarOrder = () => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: (_id: string) =>
-      new Promise<void>((resolve) => setTimeout(resolve, 400)),
-    // TODO: mutationFn: (id: string) => apiClient.post(endpoints.CALENDAR_ORDER_REJECT(id)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
-    },
-  })
-}
-
-export const useUpdateCalendarOrder = () => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: (_payload: UpdateOrderPayload) =>
-      new Promise<void>((resolve) => setTimeout(resolve, 400)),
-    // mutationFn: (payload: UpdateOrderPayload) =>
-    //   apiClient.put(endpoints.CALENDAR_ORDER(payload.id), payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
-    },
-  })
-}
-
-export const useCancelCalendarOrder = () => {
-  const queryClient = useQueryClient()
-  return useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    mutationFn: (_id: string) =>
-      new Promise<void>((resolve) => setTimeout(resolve, 400)),
-    // mutationFn: (id: string) => apiClient.delete(endpoints.CALENDAR_ORDER(id)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
-    },
-  })
+  return { order: data ?? null, isLoading, isError }
 }
 
 export const useUpdatePinnedLanguages = () => {
@@ -435,52 +484,135 @@ export const useUpdatePinnedLanguages = () => {
   })
 }
 
-export const useFetchCalendarOrderDetail = (id: string | null) => {
-  const { isLoading, isError, data } = useQuery<CalendarOrderDetail>({
-    queryKey: ['calendar-order-detail', id],
-    enabled: !!id,
+// ---------------------------------------------------------------------------
+// New hooks (Step 10)
+// ---------------------------------------------------------------------------
+
+export const useFetchVendorCalendarEntries = (params: {
+  date_from: string
+  date_to: string
+  assignments_only?: boolean
+}) => {
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ['vendor-calendar-entries', params.date_from, params.date_to],
     queryFn: () =>
-      new Promise<CalendarOrderDetail>((resolve) =>
-        setTimeout(
-          () =>
-            resolve({
-              id: id!,
-              ext_id: 'PPA-2025-11-28-S-126',
-              status: 'pending',
-              language: { id: 'lang-fi', value: 'fi', name: 'Soome keel' },
-              start_at: '2025-11-28T15:00:00Z',
-              end_at: '2025-11-28T16:00:00Z',
-              service_type: 'on-site',
-              location: 'Tellija kirjutatud aadress Narva mnt 25, Tallinn',
-              domain: 'Õigus',
-              reference_number: 'PPA-2025-11-28-S-126',
-              created_at: '2025-11-25T00:00:00Z',
-              files_count: 2,
-              files_accessible: false,
-              client: {
-                name: 'Tellija Nimi',
-                institution: 'Politsei- ja piirivalveamet',
-                email: 'info@asutusenimi.ee',
-                phone: '+372 5432 1234',
-              },
-              coordinator: {
-                name: 'Malle Karu',
-                email: 'info@tõlkekorraldaja.ee',
-                phone: '+372 5432 4321',
-              },
-              comments: [
-                {
-                  author: 'Malle Karu',
-                  role: 'Tõlkekorraldaja',
-                  text: 'Tõlketeenus toimub kohapeal. Palume tõlgil saabuda vähemalt 10 minutit enne teenuse algust, et jõuaks vajadusel täpsustada korralduslikke detaile. Teenus toimub kohapeal aadressil Narva mnt 25, Tallinn. Sisenemine peauksest, turvakontrolli läbimine on kohustuslik. Palume kaasa võtta isikut tõendav dokument.',
-                  created_at: '2025-11-28T12:28:00Z',
-                },
-              ],
-            }),
-          300
-        )
-      ),
-    // queryFn: () => apiClient.get(endpoints.CALENDAR_ORDER(id!)),
+      apiClient
+        .get(endpoints.CALENDAR_VENDOR_ENTRIES, params)
+        .then((res: { data: unknown[] }) => res.data),
+    enabled: !!params.date_from && !!params.date_to,
   })
-  return { order: data ?? null, isLoading, isError }
+  return { isLoading, isError, entries: data ?? [] }
 }
+
+export const useFetchVendorCalendar = (
+  vendorId: string | null,
+  dateFrom: string,
+  dateTo: string
+) => {
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ['vendor-calendar', vendorId, dateFrom, dateTo],
+    queryFn: () =>
+      apiClient
+        .get(endpoints.VENDOR_CALENDAR(vendorId!), {
+          date_from: dateFrom,
+          date_to: dateTo,
+        })
+        .then((res: { data: unknown[] }) => res.data),
+    enabled: !!vendorId && !!dateFrom && !!dateTo,
+  })
+  return { isLoading, isError, days: data ?? [] }
+}
+
+export const useFetchEmergencySchedules = (vendorId: string | null) => {
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ['emergency-schedules', vendorId],
+    queryFn: () =>
+      apiClient
+        .get(endpoints.VENDOR_EMERGENCY_SCHEDULES(vendorId!))
+        .then((res: { data: unknown[] }) => res.data),
+    enabled: !!vendorId,
+  })
+  return { isLoading, isError, schedules: data ?? [] }
+}
+
+export const useCreateEmergencySchedule = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      vendorId,
+      start_date,
+      end_date,
+    }: {
+      vendorId: string
+      start_date: string
+      end_date: string
+    }) =>
+      apiClient.post(endpoints.VENDOR_EMERGENCY_SCHEDULES(vendorId), {
+        start_date,
+        end_date,
+      }),
+    onSuccess: (_data, { vendorId }) => {
+      queryClient.invalidateQueries({ queryKey: ['emergency-schedules', vendorId] })
+    },
+  })
+}
+
+export const useDeleteEmergencySchedule = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      vendorId,
+      scheduleId,
+    }: {
+      vendorId: string
+      scheduleId: string
+    }) =>
+      apiClient.delete(
+        endpoints.VENDOR_EMERGENCY_SCHEDULE(vendorId, scheduleId)
+      ),
+    onSuccess: (_data, { vendorId }) => {
+      queryClient.invalidateQueries({ queryKey: ['emergency-schedules', vendorId] })
+    },
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Stub hooks (endpoints not yet available in backend)
+// ---------------------------------------------------------------------------
+
+export const useFetchWeekSlotBookings = (
+  params: { start_at: string; end_at: string; language_id: string } | null
+) => {
+  const { isLoading, isError, data } = useQuery({
+    queryKey: ['calendar-week-slot-bookings', params],
+    queryFn: async () => {
+      const entries: ApiVendorCalendarEntry[] = await apiClient
+        .get(endpoints.CALENDAR_VENDOR_ENTRIES, {
+          date_from: params!.start_at.slice(0, 10),
+          date_to: params!.end_at.slice(0, 10),
+          assignments_only: true,
+        })
+        .then((res: { data: ApiVendorCalendarEntry[] }) => res.data)
+      return entries
+        .filter(
+          (e) =>
+            e.type === 'assignment' &&
+            e.assignment != null &&
+            e.start_at >= params!.start_at &&
+            e.start_at < params!.end_at
+        )
+        .map((e) => ({
+          id: e.assignment!.id,
+          ext_id: e.assignment!.ext_id,
+        }))
+    },
+    enabled: !!params,
+  })
+  return { isLoading, isError, bookings: data ?? [] }
+}
+
+// ---------------------------------------------------------------------------
+// Type re-exports for convenience
+// ---------------------------------------------------------------------------
+
+export type { SlotMatchingVendor } from 'types/calendar'

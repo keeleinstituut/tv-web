@@ -15,7 +15,6 @@ export interface SidePanelContextValue {
 
   // Role flags
   isTPM: boolean
-  isTPMPendingView: boolean
 
   // Form state
   referenceNumber: string
@@ -51,8 +50,6 @@ export interface SidePanelContextValue {
   isCreating: boolean
   isUpdating: boolean
   isCancelling: boolean
-  isConfirming: boolean
-  isRejecting: boolean
 
   // Remote data
   domains: ClassifierValue[] | undefined
@@ -64,8 +61,6 @@ export interface SidePanelContextValue {
   handleCancelEdit: () => void
   handleSaveEdit: () => void
   handleVoidConfirm: () => void
-  handleConfirmOrder: () => void
-  handleRejectOrder: () => void
   handleStartChangeDuration: () => void
   handleCancelChangeDuration: () => void
   handleSaveDuration: () => void

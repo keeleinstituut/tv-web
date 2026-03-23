@@ -9,8 +9,6 @@ import {
   useCreateCalendarOrder,
   useUpdateCalendarOrder,
   useCancelCalendarOrder,
-  useConfirmCalendarOrder,
-  useRejectCalendarOrder,
   useFetchSlotMatching,
 } from 'hooks/requests/useCalendar'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
@@ -39,10 +37,6 @@ const CalendarOrderSidePanel: FC = () => {
     useUpdateCalendarOrder()
   const { mutate: cancelOrder, isPending: isCancelling } =
     useCancelCalendarOrder()
-  const { mutate: confirmOrder, isPending: isConfirming } =
-    useConfirmCalendarOrder()
-  const { mutate: rejectOrder, isPending: isRejecting } =
-    useRejectCalendarOrder()
 
   const [referenceNumber, setReferenceNumber] = useState('')
   const [serviceType, setServiceType] = useState<ServiceType>('')
@@ -79,8 +73,6 @@ const CalendarOrderSidePanel: FC = () => {
   const canEdit = isTPM || isClient
   const isPastSlot = slot ? dayjs(slot.end_at).isBefore(dayjs()) : false
   const isClientPastView = isClient && isViewMode && isPastSlot
-  const isTPMPendingView =
-    isTPM && isViewMode && slot?.assignment?.status === 'pending'
 
   // Slot matching for TPM — only fetch in form mode
   const slotMatchingParams =
@@ -245,34 +237,6 @@ const CalendarOrderSidePanel: FC = () => {
     })
   }
 
-  const handleConfirmOrder = () => {
-    if (!projectId) return
-    confirmOrder(projectId, {
-      onSuccess: () => {
-        closeSidePanel()
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.calendar_order_confirmed'),
-        })
-      },
-    })
-  }
-
-  const handleRejectOrder = () => {
-    if (!projectId) return
-    rejectOrder(projectId, {
-      onSuccess: () => {
-        closeSidePanel()
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.calendar_order_rejected'),
-        })
-      },
-    })
-  }
-
   const handleStartChangeDuration = () => {
     setDurationMinutes(slotDurationMinutes)
     setIsMetaOpen(true)
@@ -314,7 +278,6 @@ const CalendarOrderSidePanel: FC = () => {
       isPastSlot,
       isViewMode,
       isTPM,
-      isTPMPendingView,
       referenceNumber,
       setReferenceNumber,
       serviceType,
@@ -344,8 +307,6 @@ const CalendarOrderSidePanel: FC = () => {
       isCreating,
       isUpdating,
       isCancelling,
-      isConfirming,
-      isRejecting,
       domains,
       vendors: vendors ?? [],
       handleSubmit,
@@ -353,8 +314,6 @@ const CalendarOrderSidePanel: FC = () => {
       handleCancelEdit,
       handleSaveEdit,
       handleVoidConfirm,
-      handleConfirmOrder,
-      handleRejectOrder,
       handleStartChangeDuration,
       handleCancelChangeDuration,
       handleSaveDuration,
@@ -364,7 +323,6 @@ const CalendarOrderSidePanel: FC = () => {
     [
       language, slot, date, startTime, duration, isPastSlot, isViewMode,
       isTPM,
-      isTPMPendingView,
       referenceNumber,
       serviceType,
       location,
@@ -376,7 +334,9 @@ const CalendarOrderSidePanel: FC = () => {
       durationMinutes,
       durationNote,
       isEditing, isConfirmingCancel, isMetaOpen, isChangingDuration,
-      isCreating, isUpdating, isCancelling, isConfirming, isRejecting,
+      isCreating,
+      isUpdating,
+      isCancelling,
       domains, vendors,
     ]
   )
@@ -387,7 +347,6 @@ const CalendarOrderSidePanel: FC = () => {
     (!isTranslatorView || isChangingDuration) &&
     !isClientPastView &&
     !isTPMPastView &&
-    !isTPMPendingView &&
     !(isClient && isViewMode)
 
   return (

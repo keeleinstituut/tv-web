@@ -863,7 +863,7 @@ const CalendarOrderDetail: FC = () => {
                   <option value="">{t('calendar.select_translator')}</option>
                   {vendors.map((v) => (
                     <option key={v.id} value={v.id}>
-                      {v.institution_user.name}
+                      {v.name}
                     </option>
                   ))}
                 </select>

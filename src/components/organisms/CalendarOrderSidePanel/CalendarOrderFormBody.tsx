@@ -1,7 +1,6 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ServiceType } from 'types/calendar'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { formatDurationMins } from 'helpers/calendar'
 import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
@@ -15,11 +14,6 @@ const CalendarOrderFormBody: FC = () => {
     language,
     slot,
     isViewMode,
-    isTPMPendingView,
-    isConfirming,
-    isRejecting,
-    handleConfirmOrder: onConfirmOrder,
-    handleRejectOrder: onRejectOrder,
     date,
     startTime,
     duration,
@@ -44,29 +38,9 @@ const CalendarOrderFormBody: FC = () => {
 
   return (
     <>
-      {/* TPM pending order actions */}
-      {isTPMPendingView && (
-        <div className={classes.translatorActions}>
-          <Button
-            appearance={AppearanceTypes.Primary}
-            onClick={onConfirmOrder}
-            disabled={isConfirming || isRejecting}
-          >
-            {isConfirming ? t('calendar.saving') : t('calendar.confirm_order')}
-          </Button>
-          <Button
-            appearance={AppearanceTypes.Secondary}
-            onClick={onRejectOrder}
-            disabled={isConfirming || isRejecting}
-          >
-            {isRejecting ? t('calendar.saving') : t('calendar.decline')}
-          </Button>
-        </div>
-      )}
-
       <div className={classes.form}>
-        {/* Tellija — TPM only, hidden for pending Client orders */}
-        {isTPM && !isTPMPendingView && (
+        {/* Tellija — TPM only */}
+        {isTPM && (
           <div className={classes.formGroup}>
             <label className={classes.label}>{t('calendar.client')}</label>
             <input
@@ -217,7 +191,7 @@ const CalendarOrderFormBody: FC = () => {
               <option value="">{t('calendar.select_translator')}</option>
               {vendors.map((v) => (
                 <option key={v.id} value={v.id}>
-                  {v.institution_user.name}
+                  {v.name}
                 </option>
               ))}
             </select>

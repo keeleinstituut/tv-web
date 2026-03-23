@@ -45,9 +45,6 @@ const CalendarWeekBookingPanel: FC = () => {
               >
                 <div className={classes.bookingInfo}>
                   <span className={classes.bookingId}>{booking.ext_id}</span>
-                  <span className={classes.bookingLang}>
-                    {booking.language.name}
-                  </span>
                 </div>
                 <ChevronLeft className={classes.chevron} />
               </button>

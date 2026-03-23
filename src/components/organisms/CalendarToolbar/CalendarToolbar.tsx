@@ -54,7 +54,11 @@ const CalendarToolbar: FC = () => {
     return () => document.removeEventListener('mousedown', handler)
   }, [moreOpen])
 
-  const views: { key: CalendarView; label: string; Icon: FC }[] = [
+  const views: {
+    key: CalendarView
+    label: string
+    Icon: FC<{ className?: string }>
+  }[] = [
     { key: 'day', label: t('calendar.today'), Icon: CalendarIcon },
     { key: 'week', label: t('calendar.week'), Icon: ViewWeekIcon },
     { key: 'month', label: t('calendar.month'), Icon: ViewMonthIcon },

@@ -354,6 +354,17 @@ Add column `is_internal` — boolean. `true` for internal vendors, `false` for e
 | 13  | `GET /api/calendar/summary`                      | Accepted orders statistics for a month                     | Month view is active                  |
 | 14  | `GET /api/calendar/slot-matching`                | Vendor matching for booking dropdown                       | User creates an order                 |
 | 15  | `GET /api/calendar/languages`                    | List of languages that needs to be shown for specific user | Once on calendar mount                |
+| 16  | `POST /api/calendar/prebook`                     | Reserve a slot while the user fills the order form         | User clicks/drags a slot              |
+| 17  | `DELETE /api/calendar/prebook`                   | Release a prebooked slot                                   | User cancels or submits the form      |
+| 18  | `GET /api/calendar/week/bookings`                | List orders booked in a 6h week-view block                 | User hovers/clicks a booked block     |
+| 19  | `POST /api/calendar/orders`                      | Create a new calendar order                                | User submits order creation form      |
+| 20  | `GET /api/calendar/orders/{id}`                  | Get full detail of a single order                          | Side panel opens an existing order    |
+| 21  | `PUT /api/calendar/orders/{id}`                  | Update an existing order                                   | User saves edits in the side panel    |
+| 22  | `DELETE /api/calendar/orders/{id}`               | Cancel / void an order                                     | User confirms cancellation            |
+| 23  | `POST /api/calendar/orders/{id}/accept`          | Translator accepts an assigned order                       | Translator clicks "Võta vastu"        |
+| 24  | `POST /api/calendar/orders/{id}/decline`         | Translator declines an assigned order                      | Translator clicks "Lükka tagasi"      |
+| 25  | `POST /api/calendar/orders/{id}/confirm`         | TPM/Client confirms a completed order                      | On order completion                   |
+| 26  | `POST /api/calendar/orders/{id}/reject`          | TPM/Client rejects a completed order                       | On order completion                   |
 
 ---
 
@@ -1041,6 +1052,284 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Response**: List of vendors ordered based on the matching score.
 
+```json
+{
+  "vendors": [
+    {
+      "id": "vendor-uuid",
+      "institution_user": { "id": "user-uuid", "name": "Anna Bergmann" },
+      "is_internal": true
+    }
+  ]
+}
+```
+
+---
+
+### POST `/api/calendar/prebook`
+
+**Purpose**: Temporarily reserve a slot while the user is filling the order creation form. Prevents double-booking. The prebook expires automatically if not converted to a real order within a configurable TTL (e.g. 10 minutes).
+
+**Request body**:
+
+| Field         | Type     | Required | Description                       |
+| ------------- | -------- | -------- | --------------------------------- |
+| `language_id` | UUID     | Yes      | Language classifier value ID      |
+| `start_at`    | DateTime | Yes      | Slot start (ISO 8601)             |
+| `end_at`      | DateTime | Yes      | Slot end (ISO 8601)               |
+
+**Response**:
+
+```json
+{ "id": "prebook-uuid" }
+```
+
+**Notes**:
+- The returned `id` must be stored client-side and sent with `DELETE /api/calendar/prebook` if the user cancels.
+- The prebook is stored in `vendor_calendars` with `type = 'prebook'`.
+- On successful order creation, the backend converts the prebook to an assignment record.
+
+---
+
+### DELETE `/api/calendar/prebook`
+
+**Purpose**: Release a prebooked slot before it expires (user cancelled the order form or navigated away).
+
+**Request body**:
+
+| Field | Type | Required | Description           |
+| ----- | ---- | -------- | --------------------- |
+| `id`  | UUID | Yes      | The prebook record ID |
+
+**Response**: `{ "success": true }`
+
+---
+
+### GET `/api/calendar/week/bookings`
+
+**Purpose**: Get the list of orders booked within a specific 6-hour week-view block. Used in the side panel when a user clicks a booked block in the week view to see which orders fill it.
+
+**Query Parameters**:
+
+| Parameter     | Type     | Required | Description                       |
+| ------------- | -------- | -------- | --------------------------------- |
+| `start_at`    | DateTime | Yes      | Block start datetime (ISO 8601)   |
+| `end_at`      | DateTime | Yes      | Block end datetime (ISO 8601)     |
+| `language_id` | UUID     | Yes      | Language classifier value ID      |
+
+**Response**:
+
+```json
+{
+  "bookings": [
+    {
+      "id": "project-uuid",
+      "ext_id": "PPA-2026-04-S-101",
+      "language": { "id": "lang-uuid", "value": "en", "name": "Inglise keel" }
+    }
+  ]
+}
+```
+
+---
+
+### POST `/api/calendar/orders`
+
+**Purpose**: Create a new spoken interpretation order from the calendar. On success, the prebook (if any) is converted to the assignment, day/week cache is invalidated, and a notification is sent to the assigned translator.
+
+**Request body**:
+
+| Field                   | Type     | Required | Description                                        |
+| ----------------------- | -------- | -------- | -------------------------------------------------- |
+| `language_id`           | UUID     | Yes      | Language classifier value ID                       |
+| `start_at`              | DateTime | Yes      | Order start (ISO 8601)                             |
+| `end_at`                | DateTime | Yes      | Order end (ISO 8601)                               |
+| `service_type`          | Enum     | Yes      | `"remote"` or `"on-site"`                          |
+| `reference_number`      | String   | No       | Client reference number                            |
+| `location`              | String   | No       | Physical address (when `service_type = "on-site"`) |
+| `meeting_link`          | String   | No       | Video call URL (when `service_type = "remote"`)    |
+| `client_institution_id` | UUID     | No       | Client institution (TPM only; defaults to caller)  |
+| `domain_id`             | UUID     | No       | Domain classifier value ID                         |
+| `vendor_id`             | UUID     | No       | Pre-selected translator ID                         |
+
+**Response**:
+
+```json
+{ "id": "order-uuid" }
+```
+
+---
+
+### GET `/api/calendar/orders/{id}`
+
+**Purpose**: Fetch full detail for a single calendar order. Used when the side panel needs to display an existing order (e.g. translator clicking from notification email, or TPM opening a booked slot).
+
+**Path Parameters**:
+
+| Parameter | Type | Description  |
+| --------- | ---- | ------------ |
+| `id`      | UUID | Order/project ID |
+
+**Response**:
+
+```json
+{
+  "id": "order-uuid",
+  "ext_id": "PPA-2026-04-S-101",
+  "status": "pending",
+  "language": { "id": "lang-uuid", "value": "ru", "name": "Vene keel" },
+  "start_at": "2026-04-10T09:00:00Z",
+  "end_at": "2026-04-10T10:00:00Z",
+  "service_type": "remote",
+  "meeting_link": "https://teams.microsoft.com/l/meetup-join/example",
+  "location": null,
+  "domain": "Õigus",
+  "reference_number": "PPA-2026-001",
+  "created_at": "2026-04-01T12:00:00Z",
+  "updated_at": "2026-04-01T12:00:00Z",
+  "accepted_at": null,
+  "cancelled_at": null,
+  "completed_at": null,
+  "client": {
+    "name": "Tellija Nimi",
+    "institution": "Politsei- ja piirivalveamet",
+    "email": "info@ppa.ee",
+    "phone": "+372 5432 1234"
+  },
+  "coordinator": {
+    "name": "Malle Karu",
+    "email": "info@tolkekorraldaja.ee",
+    "phone": "+372 5432 4321"
+  },
+  "files_count": 2,
+  "files_accessible": false,
+  "comments": [
+    {
+      "author": "Malle Karu",
+      "role": "Tõlkekorraldaja",
+      "text": "Palume tõlgil saabuda 10 minutit enne.",
+      "created_at": "2026-04-01T13:00:00Z"
+    }
+  ]
+}
+```
+
+**Notes**:
+- `files_accessible` is `false` for translators until they accept the order.
+- `status` values: `pending` → `confirmed` (accepted) → `completed` or `cancelled`.
+
+---
+
+### PUT `/api/calendar/orders/{id}`
+
+**Purpose**: Update an existing order (time, duration, service type, location, translator, etc.). If the assigned translator, time, or duration changes, backend sends notifications to the affected parties.
+
+**Path Parameters**:
+
+| Parameter | Type | Description   |
+| --------- | ---- | ------------- |
+| `id`      | UUID | Order/project ID |
+
+**Request body** (all fields optional):
+
+| Field                   | Type     | Description                                        |
+| ----------------------- | -------- | -------------------------------------------------- |
+| `service_type`          | Enum     | `"remote"` or `"on-site"`                          |
+| `reference_number`      | String   | Client reference number                            |
+| `location`              | String   | Physical address                                   |
+| `meeting_link`          | String   | Video call URL                                     |
+| `client_institution_id` | UUID     | Client institution ID                              |
+| `start_at`              | DateTime | New start time                                     |
+| `end_at`                | DateTime | New end time                                       |
+| `domain_id`             | UUID     | Domain classifier value ID                         |
+| `vendor_id`             | UUID     | Replacement translator ID                          |
+
+**Response**: `204 No Content`
+
+---
+
+### DELETE `/api/calendar/orders/{id}`
+
+**Purpose**: Cancel / void an order. Sends notifications to the translator (if assigned) and the client. Frees the slot in `vendor_calendars`.
+
+**Path Parameters**:
+
+| Parameter | Type | Description   |
+| --------- | ---- | ------------- |
+| `id`      | UUID | Order/project ID |
+
+**Response**: `204 No Content`
+
+---
+
+### POST `/api/calendar/orders/{id}/accept`
+
+**Purpose**: Translator accepts an assigned order. Grants the translator access to attached files and client contact details.
+
+**Path Parameters**:
+
+| Parameter | Type | Description   |
+| --------- | ---- | ------------- |
+| `id`      | UUID | Order/project ID |
+
+**Response**: `204 No Content`
+
+**Side effects**:
+- Order status → `confirmed`.
+- Translator gains `files_accessible = true` for the order.
+- Notification sent to the client and TPM.
+
+---
+
+### POST `/api/calendar/orders/{id}/decline`
+
+**Purpose**: Translator declines an assigned order. Triggers re-assignment: the current translator is excluded and the matching algorithm selects the next candidate.
+
+**Path Parameters**:
+
+| Parameter | Type | Description   |
+| --------- | ---- | ------------- |
+| `id`      | UUID | Order/project ID |
+
+**Response**: `204 No Content`
+
+**Side effects**:
+- Current assignment removed from `vendor_calendars`.
+- Matching algorithm runs again (excluding declined translator).
+- New candidate notified if found; otherwise TPM is notified.
+
+---
+
+### POST `/api/calendar/orders/{id}/confirm`
+
+**Purpose**: TPM or Client marks an order as successfully completed after the service has been delivered.
+
+**Path Parameters**:
+
+| Parameter | Type | Description   |
+| --------- | ---- | ------------- |
+| `id`      | UUID | Order/project ID |
+
+**Response**: `204 No Content`
+
+**Side effects**:
+- Order status → `completed`.
+- `completed_at` timestamp set.
+
+---
+
+### POST `/api/calendar/orders/{id}/reject`
+
+**Purpose**: TPM or Client rejects a completed order (e.g. quality issue). Triggers follow-up workflow.
+
+**Path Parameters**:
+
+| Parameter | Type | Description   |
+| --------- | ---- | ------------- |
+| `id`      | UUID | Order/project ID |
+
+**Response**: `204 No Content`
+
 ---
 
 ## Aggregation Computation
@@ -1091,8 +1380,35 @@ User clicks "Leia sobiv aeg" (fast search):
   ├── GET /calendar/day?date=SELECTED_DATE&language_id=X
   └── TPM: auto-expands vendor sub-rows → GET /calendar/day/vendors?date=SELECTED_DATE&language_id=X
 
-User starts booking:
+User starts booking (opens side panel):
+  ├── POST /calendar/prebook { language_id, start_at, end_at }   → prebook_id
   └── GET /calendar/slot-matching?start_at=X&end_at=Y&language_id=Z
+
+User cancels order form (panel closed without submitting):
+  └── DELETE /calendar/prebook { id: prebook_id }
+
+User submits order form:
+  └── POST /calendar/orders { language_id, start_at, end_at, service_type, ... }
+        └── (prebook converted server-side; calendar-day cache invalidated)
+
+User opens existing order side panel:
+  └── GET /calendar/orders/{id}
+
+User clicks a booked block in week view:
+  └── GET /calendar/week/bookings?start_at=X&end_at=Y&language_id=Z
+
+Translator accepts order:
+  └── POST /calendar/orders/{id}/accept
+
+Translator declines order:
+  └── POST /calendar/orders/{id}/decline
+        └── (re-assignment runs server-side)
+
+TPM/Client edits order:
+  └── PUT /calendar/orders/{id} { ...changed fields }
+
+TPM/Client cancels order:
+  └── DELETE /calendar/orders/{id}
 ```
 
 ---
@@ -1119,3 +1435,7 @@ If the project is created, the result of the algorithm is stored in the `candida
 
 - When a project is deleted/cancelled → remove the booking from `vendor_calendars`.
 - When a prebooking expires → remove it from `vendor_calendars`.
+- When an order is updated (time/duration/vendor changed) → update `vendor_calendars`, notify old translator, new translator, and client.
+- When a translator declines → remove assignment from `vendor_calendars`, run matching algorithm again (excluding declined translator), notify next candidate.
+- When a translator accepts → set `files_accessible = true` for that assignment, notify client and TPM.
+- When confirm/reject is called → update order status, set `completed_at`; no `vendor_calendars` change needed (slot already in the past).
