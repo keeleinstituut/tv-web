@@ -27,7 +27,6 @@ export function useVisibleCalendarLanguages() {
 
   return {
     languages,
-    allLanguages,
     visibleLanguages,
     isLoading: isTranslator ? isTranslatorLoading : isLoading,
     isError: isTranslator ? isTranslatorError : isError,
