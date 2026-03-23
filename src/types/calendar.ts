@@ -223,7 +223,12 @@ export interface CalendarOrderDetail {
   coordinator?: { name: string; email: string; phone: string }
   files_count: number
   files_accessible: boolean
-  comments: Array<{ author: string; role: string; text: string; created_at: string }>
+  comments: Array<{
+    author: string
+    role: string
+    text: string
+    created_at: string
+  }>
 }
 
 // --- Week slot bookings (Teostaja panel) ---
@@ -398,7 +403,11 @@ export interface ApiCalendarDayVendorShape {
 
 // Client day: available_slots, booked_slots, calendar_entries, unassigned_projects
 export interface ApiCalendarDayClientShape {
-  available_slots: Array<{ start_at: string; end_at: string; languages: string[] }>
+  available_slots: Array<{
+    start_at: string
+    end_at: string
+    languages: string[]
+  }>
   booked_slots: Array<{ start_at: string; end_at: string; languages: string[] }>
   calendar_entries: ApiVendorCalendarEntry[]
   unassigned_projects: ApiUnassignedProject[]
@@ -406,7 +415,11 @@ export interface ApiCalendarDayClientShape {
 
 // TPM day: available_slots (with vendor_ids), vendors metadata
 export interface ApiCalendarDayTpmShape {
-  available_slots: Array<{ start_at: string; end_at: string; vendor_ids: string[] }>
+  available_slots: Array<{
+    start_at: string
+    end_at: string
+    vendor_ids: string[]
+  }>
   vendors: ApiVendorExpand[]
 }
 
@@ -514,7 +527,7 @@ export function transformLanguages(
   api: ApiCalendarLanguagesResponse
 ): CalendarLanguagesResponse {
   const pinnedIds = new Set(
-    api.pinned_languages.map((p) => p.institution_main_language_id)
+    api.pinned_languages?.map((p) => p.institution_main_language_id)
   )
   const seen = new Set<string>()
   const languages: CalendarLanguage[] = []
@@ -571,7 +584,8 @@ function isTpmDayShape(
   const tpm = api as ApiCalendarDayTpmShape
   if (!Array.isArray(tpm.available_slots)) return false
   // Empty array: fall back to role hint
-  if (tpm.available_slots.length === 0 && 'vendors' in api) return isTPM === true
+  if (tpm.available_slots.length === 0 && 'vendors' in api)
+    return isTPM === true
   return 'vendor_ids' in (tpm.available_slots[0] ?? {})
 }
 
@@ -694,7 +708,9 @@ function buildVendorWeekData(
             if (e.type !== 'assignment') return false
             const eDate = e.start_at.slice(0, 10)
             const eHour = new Date(e.start_at).getUTCHours()
-            return eDate === dateStr && eHour >= blockHour && eHour < blockHour + 6
+            return (
+              eDate === dateStr && eHour >= blockHour && eHour < blockHour + 6
+            )
           })
           .reduce((sum, e) => {
             return (
@@ -764,11 +780,15 @@ function buildVendorMonthData(
 
 // ---- Week transforms ----
 
-function isWeekTpmShape(api: ApiCalendarWeekResponse): api is ApiCalendarWeekTpmShape {
+function isWeekTpmShape(
+  api: ApiCalendarWeekResponse
+): api is ApiCalendarWeekTpmShape {
   return 'available_slots' in api && 'vendors' in api
 }
 
-function isWeekVendorShape(api: ApiCalendarWeekResponse): api is ApiCalendarWeekVendorShape {
+function isWeekVendorShape(
+  api: ApiCalendarWeekResponse
+): api is ApiCalendarWeekVendorShape {
   if (!('slots' in api)) return false
   const s = (api as ApiCalendarWeekVendorShape).slots
   return Array.isArray(s) && (s.length === 0 || 'calendar_entries' in s[0])
@@ -788,7 +808,9 @@ export function transformWeekResponse(
       new Set(tpm.available_slots.map((s) => s.language_id))
     )
     const tpmVendors = languageIds.map((langId) => {
-      const langSlots = tpm.available_slots.filter((s) => s.language_id === langId)
+      const langSlots = tpm.available_slots.filter(
+        (s) => s.language_id === langId
+      )
       const langVendorIds = Array.from(
         new Set(langSlots.flatMap((s) => s.vendor_ids))
       )
@@ -804,10 +826,13 @@ export function transformWeekResponse(
       week_start: wStart,
       week_end: wEnd,
       languages: languageIds.map((langId) => {
-        const langSlots = tpm.available_slots.filter((s) => s.language_id === langId)
+        const langSlots = tpm.available_slots.filter(
+          (s) => s.language_id === langId
+        )
         return {
           language_id: langId,
-          total_vendors: tpm.vendors.filter((v) => v.languages.includes(langId)).length,
+          total_vendors: tpm.vendors.filter((v) => v.languages.includes(langId))
+            .length,
           slots: langSlots.map((s) => ({
             start_at: s.start_at,
             end_at: s.end_at,
@@ -823,7 +848,9 @@ export function transformWeekResponse(
 
   if (isWeekVendorShape(api)) {
     const vendor = api as ApiCalendarWeekVendorShape
-    const languageIds = Array.from(new Set(vendor.slots.map((s) => s.language_id)))
+    const languageIds = Array.from(
+      new Set(vendor.slots.map((s) => s.language_id))
+    )
     return {
       current_time: new Date().toISOString(),
       week_start: wStart,
@@ -846,7 +873,9 @@ export function transformWeekResponse(
 
   // Client shape
   const client = api as ApiCalendarWeekClientShape
-  const languageIds = Array.from(new Set(client.slots.map((s) => s.language_id)))
+  const languageIds = Array.from(
+    new Set(client.slots.map((s) => s.language_id))
+  )
   return {
     current_time: new Date().toISOString(),
     week_start: wStart,
@@ -870,7 +899,9 @@ export function transformWeekResponse(
 
 // ---- Month transforms ----
 
-function isMonthTpmShape(api: ApiCalendarMonthResponse): api is ApiCalendarMonthTpmShape {
+function isMonthTpmShape(
+  api: ApiCalendarMonthResponse
+): api is ApiCalendarMonthTpmShape {
   return 'available_slots' in api && 'vendors' in api
 }
 
@@ -886,7 +917,9 @@ export function transformMonthResponse(
       new Set(tpm.available_slots.map((s) => s.language_id))
     )
     const tpmVendors = languageIds.map((langId) => {
-      const langSlots = tpm.available_slots.filter((s) => s.language_id === langId)
+      const langSlots = tpm.available_slots.filter(
+        (s) => s.language_id === langId
+      )
       const langVendorIds = Array.from(
         new Set(langSlots.flatMap((s) => Object.keys(s.vendor_hours)))
       )
@@ -902,7 +935,8 @@ export function transformMonthResponse(
       month: m,
       languages: languageIds.map((langId) => ({
         language_id: langId,
-        total_vendors: tpm.vendors.filter((v) => v.languages.includes(langId)).length,
+        total_vendors: tpm.vendors.filter((v) => v.languages.includes(langId))
+          .length,
         slots: tpm.available_slots
           .filter((s) => s.language_id === langId)
           .map((s) => ({
@@ -918,7 +952,9 @@ export function transformMonthResponse(
 
   // Vendor/Client shape
   const client = api as ApiCalendarMonthClientShape
-  const languageIds = Array.from(new Set(client.slots.map((s) => s.language_id)))
+  const languageIds = Array.from(
+    new Set(client.slots.map((s) => s.language_id))
+  )
   return {
     current_time: new Date().toISOString(),
     month: m,

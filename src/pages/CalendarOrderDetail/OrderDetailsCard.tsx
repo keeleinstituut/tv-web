@@ -1,0 +1,232 @@
+import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
+import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import { useOrderDetail } from './OrderDetailContext'
+import classes from './classes.module.scss'
+
+const OrderDetailsCard: FC = () => {
+  const { t } = useTranslation()
+  const {
+    order,
+    isCreateMode,
+    isTPM,
+    isTranslator,
+    isClient,
+    isEditing,
+    domains,
+    vendors,
+    serviceType,
+    setServiceType,
+    address,
+    setAddress,
+    domainId,
+    setDomainId,
+    vendorId,
+    setVendorId,
+    localFiles,
+    setLocalFiles,
+    fileInputRef,
+    languageId,
+    startIso,
+    endIso,
+  } = useOrderDetail()
+
+  const isServiceEditable = isCreateMode || isEditing
+  const activeServiceType = isServiceEditable ? serviceType : order?.service_type ?? 'on-site'
+
+  return (
+    <div className={classes.card}>
+      <h2 className={classes.sectionTitle}>{t('calendar.order_details_title')}</h2>
+      <div className={classes.detailsGrid}>
+        <div className={classes.detailsLeft}>
+          <div className={classes.field}>
+            <span className={classes.fieldLabel}>{t('calendar.order_way')}</span>
+            {isServiceEditable ? (
+              <div className={classes.serviceToggle}>
+                <button
+                  className={`${classes.serviceOption} ${serviceType === 'on-site' ? classes.serviceOptionActive : ''}`}
+                  onClick={() => {
+                    setServiceType('on-site')
+                    setAddress('')
+                  }}
+                >
+                  {t('calendar.service_type_contact')}
+                </button>
+                <button
+                  className={`${classes.serviceOption} ${serviceType === 'remote' ? classes.serviceOptionActive : ''}`}
+                  onClick={() => {
+                    setServiceType('remote')
+                    setAddress('')
+                  }}
+                >
+                  {t('calendar.service_type_remote')}
+                </button>
+              </div>
+            ) : (
+              <div className={classes.serviceToggle}>
+                <span
+                  className={`${classes.serviceOption} ${order!.service_type === 'on-site' ? classes.serviceOptionActive : ''}`}
+                >
+                  {t('calendar.service_type_contact')}
+                </span>
+                <span
+                  className={`${classes.serviceOption} ${order!.service_type === 'remote' ? classes.serviceOptionActive : ''}`}
+                >
+                  {t('calendar.service_type_remote')}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className={classes.field}>
+            <span className={classes.fieldLabel}>
+              {activeServiceType === 'on-site'
+                ? t('calendar.location')
+                : t('calendar.meeting_link')}
+            </span>
+            {isServiceEditable ? (
+              <input
+                className={classes.editInput}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder={
+                  activeServiceType === 'on-site'
+                    ? t('calendar.enter_address')
+                    : t('calendar.enter_link')
+                }
+              />
+            ) : isTranslator ? (
+              order!.service_type === 'on-site' ? (
+                <div className={classes.readonlyInput}>{order!.location}</div>
+              ) : (
+                <a
+                  className={classes.meetingLink}
+                  href={order!.meeting_link}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {order!.meeting_link}
+                </a>
+              )
+            ) : (
+              <span className={classes.fieldValue}>
+                {order!.service_type === 'on-site' ? order!.location : order!.meeting_link}
+              </span>
+            )}
+          </div>
+
+          <div className={classes.field}>
+            <span className={classes.fieldLabel}>{t('calendar.domain')}</span>
+            {isCreateMode ? (
+              <select
+                className={classes.editSelect}
+                value={domainId}
+                onChange={(e) => setDomainId(e.target.value)}
+              >
+                <option value="">{t('calendar.select_domain')}</option>
+                {(domains ?? []).map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+            ) : order!.domain ? (
+              <span className={classes.domainChip}>{order!.domain}</span>
+            ) : null}
+          </div>
+
+          {isTPM && isCreateMode && (
+            <div className={classes.field}>
+              <span className={classes.fieldLabel}>{t('calendar.translator')}</span>
+              <select
+                className={classes.editSelect}
+                value={vendorId}
+                onChange={(e) => setVendorId(e.target.value)}
+                disabled={!languageId || !startIso || !endIso}
+              >
+                <option value="">{t('calendar.select_translator')}</option>
+                {vendors.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+
+        <div className={classes.detailsRight}>
+          <div className={classes.filesSection}>
+            <div className={classes.filesSectionHeader}>
+              <span className={classes.filesSectionTitle}>
+                {isClient ? t('calendar.files_and_links') : t('calendar.attachments')}
+              </span>
+              {(isTPM || isClient) && (
+                <>
+                  <Button
+                    appearance={AppearanceTypes.Primary}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {t('calendar.add_file')}
+                  </Button>
+                  <input
+                    ref={fileInputRef as React.RefObject<HTMLInputElement>}
+                    type="file"
+                    style={{ display: 'none' }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) setLocalFiles((prev) => [...prev, file])
+                      e.target.value = ''
+                    }}
+                  />
+                </>
+              )}
+            </div>
+            {((!isCreateMode && order!.files_count > 0) || localFiles.length > 0) ? (
+              <div className={classes.fileTable}>
+                <div className={classes.fileTableHeader}>
+                  <span>{t('calendar.file_list_header')}</span>
+                  <span>{t('calendar.updated_at_label')}</span>
+                </div>
+                {!isCreateMode &&
+                  Array.from({ length: order!.files_count }).map((_, i) => (
+                    <div key={i} className={classes.fileRow}>
+                      <span>Faili_nimi.doc</span>
+                      <div className={classes.fileRowActions}>
+                        <span className={classes.fileDate}>dd.mm.yyyy hh:mm</span>
+                        <button className={classes.fileIconBtn} title="Laadi alla">↓</button>
+                      </div>
+                    </div>
+                  ))}
+                {localFiles.map((file, i) => (
+                  <div key={`local-${i}`} className={classes.fileRow}>
+                    <span>{file.name}</span>
+                    <div className={classes.fileRowActions}>
+                      <span className={classes.fileDate}>
+                        {dayjs().format('DD.MM.YYYY HH:mm')}
+                      </span>
+                      <button
+                        className={classes.fileIconBtn}
+                        title={t('calendar.remove_file')}
+                        onClick={() => setLocalFiles((prev) => prev.filter((_, j) => j !== i))}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={classes.noFilesRow}>
+                <span>{t('calendar.no_files_msg')}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default OrderDetailsCard
