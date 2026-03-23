@@ -10,7 +10,7 @@ import {
   useFetchCalendarMonthVendors,
   useFetchCalendarMonth,
 } from 'hooks/requests/useCalendar'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarExpansion } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { WeekRange } from 'components/organisms/CalendarMonthView/CalendarMonthView'
 import CalendarAddVendorRow from 'components/atoms/CalendarAddVendorRow/CalendarAddVendorRow'
@@ -257,7 +257,7 @@ const CalendarMonthLanguageRow: FC<Props> = ({
   weekColWidth,
   onTogglePin,
 }) => {
-  const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarContext()
+  const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarExpansion()
   const { isTPM } = useCalendarRole()
   const expanded =
     isTPM && (language.pinned || isLanguageExpanded(language.language.id))

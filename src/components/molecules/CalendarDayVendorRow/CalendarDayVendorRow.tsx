@@ -9,7 +9,7 @@ import {
   slotIndexToIso,
   isSlotPast,
 } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
 import CalendarVendorBadge from 'components/atoms/CalendarVendorBadge/CalendarVendorBadge'
 import classes from './classes.module.scss'
@@ -32,7 +32,7 @@ const CalendarDayVendorRow: FC<Props> = ({
   slotWidth,
 }) => {
   const { t } = useTranslation()
-  const { openSidePanel } = useCalendarContext()
+  const { openSidePanel } = useCalendarPanel()
   const sw = slotWidth ?? SLOT_WIDTH_PX
   const totalSlots = (dayEndHour - dayStartHour) * 2
   const totalWidth = totalSlots * sw

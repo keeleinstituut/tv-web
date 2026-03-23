@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import CollapseExpandIcon from 'assets/icons/collapse_expand.svg?react'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarExpansion } from 'components/contexts/CalendarContext'
 import { CalendarLanguage } from 'types/calendar'
 import classes from './classes.module.scss'
 
@@ -12,7 +12,7 @@ interface Props {
 const CalendarCollapseExpandButton: FC<Props> = ({ languages }) => {
   const { t } = useTranslation()
   const { isLanguageExpanded, expandAll, collapseAll, allCollapsedOverride } =
-    useCalendarContext()
+    useCalendarExpansion()
 
   const anyExpanded =
     !allCollapsedOverride &&

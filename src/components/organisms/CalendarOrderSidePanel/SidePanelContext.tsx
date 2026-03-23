@@ -18,18 +18,18 @@ export interface SidePanelContextValue {
   isTPMPendingView: boolean
 
   // Form state
-  viitenumber: string
-  setViitenumber: (v: string) => void
+  referenceNumber: string
+  setReferenceNumber: (v: string) => void
   serviceType: ServiceType
   setServiceType: (v: ServiceType) => void
   location: string
   setLocation: (v: string) => void
-  kuupaev: string
-  setKuupaev: (v: string) => void
-  algusaeg: string
-  setAlgusaeg: (v: string) => void
-  tellija: string
-  setTellija: (v: string) => void
+  selectedDate: string
+  setSelectedDate: (v: string) => void
+  startTimeInput: string
+  setStartTimeInput: (v: string) => void
+  clientInstitutionId: string
+  setClientInstitutionId: (v: string) => void
   domainId: string
   setDomainId: (v: string) => void
   vendorId: string

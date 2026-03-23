@@ -29,16 +29,16 @@ const CalendarClientBody: FC = () => {
     setIsMetaOpen: onSetIsMetaOpen,
     durationMinutes,
     setDurationMinutes: onSetDurationMinutes,
-    viitenumber,
-    setViitenumber: onSetViitenumber,
+    referenceNumber,
+    setReferenceNumber: onSetReferenceNumber,
     serviceType,
     setServiceType: onSetServiceType,
     location,
     setLocation: onSetLocation,
-    kuupaev,
-    setKuupaev: onSetKuupaev,
-    algusaeg,
-    setAlgusaeg: onSetAlgusaeg,
+    selectedDate,
+    setSelectedDate: onSetSelectedDate,
+    startTimeInput,
+    setStartTimeInput: onSetStartTimeInput,
     domainId,
     setDomainId: onSetDomainId,
     domains,
@@ -133,8 +133,8 @@ const CalendarClientBody: FC = () => {
             </label>
             <input
               className={classes.input}
-              value={viitenumber}
-              onChange={(e) => onSetViitenumber(e.target.value)}
+              value={referenceNumber}
+              onChange={(e) => onSetReferenceNumber(e.target.value)}
             />
           </div>
         ) : slot?.assignment?.reference_number ? (
@@ -167,15 +167,15 @@ const CalendarClientBody: FC = () => {
             <div style={{ display: 'flex', gap: 8 }}>
               <input
                 className={classes.input}
-                value={kuupaev}
-                onChange={(e) => onSetKuupaev(e.target.value)}
+                value={selectedDate}
+                onChange={(e) => onSetSelectedDate(e.target.value)}
                 placeholder="pp.kk.aaaa"
               />
               <input
                 className={classes.input}
                 style={{ width: 90, flexShrink: 0 }}
-                value={algusaeg}
-                onChange={(e) => onSetAlgusaeg(e.target.value)}
+                value={startTimeInput}
+                onChange={(e) => onSetStartTimeInput(e.target.value)}
                 placeholder="hh:mm"
               />
             </div>
@@ -479,8 +479,8 @@ const CalendarClientBody: FC = () => {
           <div className={classes.fileListHeader}>
             {t('calendar.file_list_header')}
           </div>
-          {slot.assignment.files.map((f, i) => (
-            <div key={i} className={classes.fileItem}>
+          {slot.assignment.files.map((f) => (
+            <div key={f.name} className={classes.fileItem}>
               <button className={classes.fileLink}>{f.name}</button>
               <DownloadIcon className={classes.downloadIcon} />
             </div>
@@ -509,8 +509,11 @@ const CalendarClientBody: FC = () => {
       </div>
       {isPastSlot && !!slot?.assignment?.comments?.length && (
         <>
-          {slot.assignment.comments.map((c, i) => (
-            <div key={i} className={classes.commentContent}>
+          {slot.assignment.comments.map((c) => (
+            <div
+              key={`${c.author}-${c.created_at}`}
+              className={classes.commentContent}
+            >
               <span className={classes.commentAuthor}>{c.author}</span>
               <span className={classes.commentText}>{c.text}</span>
               <span className={classes.commentDate}>

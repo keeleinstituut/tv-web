@@ -423,24 +423,26 @@ function isVendorDayShape(
 }
 
 function isTpmDayShape(
-  api: ApiCalendarDayResponse
+  api: ApiCalendarDayResponse,
+  isTPM?: boolean
 ): api is ApiCalendarDayTpmShape {
-  return (
-    'languages' in api &&
-    Array.isArray((api as ApiCalendarDayTpmShape).languages) &&
-    (api as ApiCalendarDayTpmShape).languages.length > 0 &&
-    'vendors' in (api as ApiCalendarDayTpmShape).languages[0]
-  )
+  if (!('languages' in api)) return false
+  const langs = (api as ApiCalendarDayTpmShape).languages
+  if (!Array.isArray(langs)) return false
+  // Empty array: can't inspect items — fall back to the role hint
+  if (langs.length === 0) return isTPM === true
+  return 'vendors' in langs[0]
 }
 
 export function transformDayResponse(
   api: ApiCalendarDayResponse,
-  languageId?: string
+  languageId?: string,
+  isTPM?: boolean
 ): CalendarDayResponse {
   if (isVendorDayShape(api)) {
     return api
   }
-  if (isTpmDayShape(api)) {
+  if (isTpmDayShape(api, isTPM)) {
     const tpm = api as ApiCalendarDayTpmShape
     const langData = languageId
       ? tpm.languages.find((l) => l.language_id === languageId)

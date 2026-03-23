@@ -24,14 +24,14 @@ const CalendarOrderFormBody: FC = () => {
     startTime,
     duration,
     isTPM,
-    viitenumber,
-    setViitenumber: onSetViitenumber,
+    referenceNumber,
+    setReferenceNumber: onSetReferenceNumber,
     serviceType,
     setServiceType: onSetServiceType,
     location,
     setLocation: onSetLocation,
-    tellija,
-    setTellija: onSetTellija,
+    clientInstitutionId,
+    setClientInstitutionId: onSetClientInstitutionId,
     domainId,
     setDomainId: onSetDomainId,
     vendorId,
@@ -72,8 +72,8 @@ const CalendarOrderFormBody: FC = () => {
             <input
               className={classes.input}
               placeholder={t('calendar.enter_name')}
-              value={tellija}
-              onChange={(e) => onSetTellija(e.target.value)}
+              value={clientInstitutionId}
+              onChange={(e) => onSetClientInstitutionId(e.target.value)}
             />
           </div>
         )}
@@ -86,8 +86,8 @@ const CalendarOrderFormBody: FC = () => {
           <input
             className={classes.input}
             placeholder={t('calendar.enter_number')}
-            value={viitenumber}
-            onChange={(e) => onSetViitenumber(e.target.value)}
+            value={referenceNumber}
+            onChange={(e) => onSetReferenceNumber(e.target.value)}
           />
         </div>
 

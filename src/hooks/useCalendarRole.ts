@@ -13,7 +13,9 @@ export interface CalendarRole {
 export function useCalendarRole(): CalendarRole {
   const { userPrivileges } = useAuth()
 
-  const devRole = localStorage.getItem(DEV_ROLE_KEY) as DevCalendarRole | null
+  const devRole = import.meta.env.DEV
+    ? (localStorage.getItem(DEV_ROLE_KEY) as DevCalendarRole | null)
+    : null
   if (devRole) {
     return {
       isTPM: devRole === 'tpm',

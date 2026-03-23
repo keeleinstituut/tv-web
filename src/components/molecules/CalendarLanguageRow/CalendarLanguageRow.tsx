@@ -13,7 +13,7 @@ import {
   useFetchCalendarDay,
   useFetchCalendarWeek,
 } from 'hooks/requests/useCalendar'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
 import classes from './classes.module.scss'
 
@@ -72,7 +72,7 @@ export function slotIndexToIso(
 }
 
 export function isSlotPast(startIso: string): boolean {
-  return dayjs(startIso).isBefore(dayjs())
+  return dayjs(startIso).add(30, 'minute').isBefore(dayjs())
 }
 
 function getSlotClass(
@@ -239,7 +239,7 @@ const CalendarLanguageRow: FC<Props> = ({
   const { data } = useFetchCalendarDay(date, language.language.id)
   const { data: weekData } = useFetchCalendarWeek(date)
   const { pendingDeepLink, setPendingDeepLink, openSidePanel } =
-    useCalendarContext()
+    useCalendarPanel()
   const bookedSlots = data?.booked_slots ?? []
 
   const langWeekSlots =
@@ -401,7 +401,7 @@ const CalendarLanguageRow: FC<Props> = ({
           !readOnly &&
           Array.from({ length: totalSlots }).map((_, i) => {
             const slotIso = slotIndexToIso(i, date, dayStartHour)
-            const isPast = dayjs(slotIso).isBefore(dayjs())
+            const isPast = isSlotPast(slotIso)
             const isBooked = isSlotBooked(i)
             const fullyBooked = !isPast && !isBooked && isSlotFullyBooked(i)
             const isBookable = !isPast && !isBooked && !fullyBooked
@@ -442,7 +442,7 @@ const CalendarLanguageRow: FC<Props> = ({
             const nextIsPastUnbooked =
               isPast &&
               nextSlotIso !== null &&
-              dayjs(nextSlotIso).isBefore(dayjs()) &&
+              isSlotPast(nextSlotIso) &&
               !isSlotBooked(i + 1)
             const nextIsBookable =
               isBookable &&

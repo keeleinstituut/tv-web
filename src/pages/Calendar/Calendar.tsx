@@ -1,8 +1,11 @@
 import { FC, useEffect } from 'react'
 import dayjs from 'dayjs'
 import { useSearchParams } from 'react-router'
-import { CalendarProvider } from 'components/contexts/CalendarContext'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import {
+  CalendarProvider,
+  useCalendarNav,
+  useCalendarPanel,
+} from 'components/contexts/CalendarContext'
 import CalendarToolbar from 'components/organisms/CalendarToolbar/CalendarToolbar'
 import CalendarDayView from 'components/organisms/CalendarDayView/CalendarDayView'
 import CalendarWeekView from 'components/organisms/CalendarWeekView/CalendarWeekView'
@@ -13,8 +16,8 @@ import CalendarWeekBookingPanel from 'components/organisms/CalendarWeekBookingPa
 import classes from './classes.module.scss'
 
 const CalendarContent: FC = () => {
-  const { view, setView, setCurrentDate, setPendingDeepLink } =
-    useCalendarContext()
+  const { view, setView, setCurrentDate } = useCalendarNav()
+  const { setPendingDeepLink } = useCalendarPanel()
   const [searchParams] = useSearchParams()
 
   useEffect(() => {
@@ -35,7 +38,7 @@ const CalendarContent: FC = () => {
       {view === 'month' && <CalendarMonthView />}
       <CalendarOrderSidePanel />
       <CalendarWeekBookingPanel />
-      <CalendarDevRoleSelector />
+      {import.meta.env.DEV && <CalendarDevRoleSelector />}
     </div>
   )
 }

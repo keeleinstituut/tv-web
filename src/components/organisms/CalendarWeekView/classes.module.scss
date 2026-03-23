@@ -213,4 +213,12 @@ $border-color: #e2e4e9;
   min-height: calc(100% - #{$row-height} - 32px);
 }
 
+// --- Loading / error state ---
+
+.stateMessage {
+  padding: 16px 64px;
+  font-size: $font-size-14;
+  color: $color-text-secondary;
+}
+
 // --- Current time marker: see CalendarTimeMarker atom ---

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/et'
 import classNames from 'classnames'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarNav } from 'components/contexts/CalendarContext'
 import { useFetchCalendarLanguages } from 'hooks/requests/useCalendar'
 import CalendarWeekLanguageRow from 'components/molecules/CalendarWeekLanguageRow/CalendarWeekLanguageRow'
 import { LABEL_WIDTH_PX } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
@@ -81,13 +81,13 @@ const CalendarWeekView: FC = () => {
     navigateNext,
     navigatePrevMonth,
     navigateNextMonth,
-  } = useCalendarContext()
+  } = useCalendarNav()
 
   const { t } = useTranslation()
   const { isTPM, isClient } = useCalendarRole()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
-  const { visibleLanguages } = useVisibleCalendarLanguages()
+  const { visibleLanguages, isLoading, isError } = useVisibleCalendarLanguages()
 
   const weekStart = getWeekStart(currentDate)
   const days = Array.from({ length: 7 }, (_, i) => weekStart.add(i, 'day'))
@@ -277,6 +277,15 @@ const CalendarWeekView: FC = () => {
               }
             />
           ))}
+
+          {isLoading && (
+            <div className={classes.stateMessage}>{t('calendar.loading')}</div>
+          )}
+          {isError && (
+            <div className={classes.stateMessage}>
+              {t('calendar.error_loading')}
+            </div>
+          )}
 
           {needleX !== null && (
             <CalendarTimeMarker

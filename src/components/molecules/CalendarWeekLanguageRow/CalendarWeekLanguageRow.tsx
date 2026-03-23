@@ -11,7 +11,7 @@ import {
   useFetchCalendarWeekVendors,
   useFetchCalendarWeek,
 } from 'hooks/requests/useCalendar'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarExpansion, useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import CalendarAddVendorRow from 'components/atoms/CalendarAddVendorRow/CalendarAddVendorRow'
 import classes from './classes.module.scss'
@@ -159,7 +159,7 @@ const VendorRow: FC<{
                 <div className={classes.dayUnavailableBanner}>
                   <ClockIcon className={classes.unavailableIcon} />
                   <span className={classes.unavailableLabel}>
-                    {t('calendar.booked')}
+                    {t('calendar.on_vacation')}
                   </span>
                 </div>
               </div>
@@ -225,8 +225,8 @@ const CalendarWeekLanguageRow: FC<Props> = ({
   onTogglePin,
   dayWidth,
 }) => {
-  const { isLanguageExpanded, toggleLanguageExpanded, openWeekBookingPanel } =
-    useCalendarContext()
+  const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarExpansion()
+  const { openWeekBookingPanel } = useCalendarPanel()
   const { isTPM, isTranslator } = useCalendarRole()
   const expanded =
     isTPM && (language.pinned || isLanguageExpanded(language.language.id))

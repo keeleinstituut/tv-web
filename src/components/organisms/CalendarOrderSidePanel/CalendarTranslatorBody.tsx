@@ -167,7 +167,7 @@ const CalendarTranslatorBody: FC = () => {
                 className={classes.copyBtn}
                 onClick={() =>
                   navigator.clipboard.writeText(
-                    `https://${slot.assignment!.meeting_link}`
+                    `https://${slot.assignment?.meeting_link ?? ''}`
                   )
                 }
                 title={t('label.copy' as never)}
@@ -318,8 +318,8 @@ const CalendarTranslatorBody: FC = () => {
           <div className={classes.fileListHeader}>
             {t('calendar.file_list_header')}
           </div>
-          {slot.assignment.files.map((f, i) => (
-            <div key={i} className={classes.fileItem}>
+          {slot.assignment.files.map((f) => (
+            <div key={f.name} className={classes.fileItem}>
               <button className={classes.fileLink}>{f.name}</button>
               <DownloadIcon className={classes.downloadIcon} />
             </div>
@@ -349,8 +349,11 @@ const CalendarTranslatorBody: FC = () => {
       {!!(isChangingDuration || isPastSlot) &&
         !!slot?.assignment?.comments?.length && (
           <>
-            {slot.assignment.comments.map((c, i) => (
-              <div key={i} className={classes.commentContent}>
+            {slot.assignment.comments.map((c) => (
+              <div
+                key={`${c.author}-${c.created_at}`}
+                className={classes.commentContent}
+              >
                 <span className={classes.commentAuthor}>{c.author}</span>
                 <span className={classes.commentText}>{c.text}</span>
                 <span className={classes.commentDate}>

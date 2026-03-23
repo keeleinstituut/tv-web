@@ -495,7 +495,12 @@
     "rare_language_note": "Harv keel — igal ajal ja kestusega tellimuse saab esitada.",
     "remove_file": "Eemalda",
     "drag_into_past": "Ei saa valida mineviku aega.",
-    "drag_into_booked": "Valitud ajavahemikus on juba tellimus olemas."
+    "drag_into_booked": "Valitud ajavahemikus on juba tellimus olemas.",
+    "on_vacation": "Puhkusel",
+    "no_bookings": "Tellimusi ei leitud",
+    "pin_limit_reached": "Maksimaalselt saab kinnitada 3 keelt",
+    "loading": "Laadimine...",
+    "error_loading": "Andmete laadimine ebaõnnestus"
   },
   "alt": {
     "header_logo": "Logo",

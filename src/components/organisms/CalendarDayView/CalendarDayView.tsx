@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import 'dayjs/locale/et'
 import classNames from 'classnames'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarNav, useCalendarExpansion, useCalendarPanel } from 'components/contexts/CalendarContext'
 import CalendarLanguageRow, {
   SLOT_WIDTH_PX,
   LABEL_WIDTH_PX,
@@ -50,17 +50,15 @@ const CalendarDayView: FC = () => {
     navigatePrevMonth,
     navigateNextMonth,
     navigateToday,
-    openSidePanel,
-    isLanguageExpanded,
-    toggleLanguageExpanded,
-    allCollapsedOverride,
-    focusedLanguageId,
-  } = useCalendarContext()
+  } = useCalendarNav()
+  const { isLanguageExpanded, toggleLanguageExpanded, allCollapsedOverride } =
+    useCalendarExpansion()
+  const { openSidePanel } = useCalendarPanel()
   const { t } = useTranslation()
   const { isTPM, isClient } = useCalendarRole()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
-  const { languages, visibleLanguages } = useVisibleCalendarLanguages()
+  const { languages, visibleLanguages, isLoading, isError } = useVisibleCalendarLanguages()
 
   const dateStr = currentDate.format('YYYY-MM-DD')
   const isToday = currentDate.isSame(dayjs(), 'day')
@@ -265,6 +263,15 @@ const CalendarDayView: FC = () => {
               </Fragment>
             )
           })}
+
+          {isLoading && (
+            <div className={classes.stateMessage}>{t('calendar.loading')}</div>
+          )}
+          {isError && (
+            <div className={classes.stateMessage}>
+              {t('calendar.error_loading')}
+            </div>
+          )}
 
           {isToday && timeX >= 0 && (
             <CalendarTimeMarker

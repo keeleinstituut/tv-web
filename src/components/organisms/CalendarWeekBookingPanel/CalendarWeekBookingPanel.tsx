@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useFetchWeekSlotBookings } from 'hooks/requests/useCalendar'
 import CloseIcon from 'assets/icons/close.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
@@ -10,7 +10,7 @@ import classes from './classes.module.scss'
 const CalendarWeekBookingPanel: FC = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { weekBookingPanel, closeWeekBookingPanel } = useCalendarContext()
+  const { weekBookingPanel, closeWeekBookingPanel } = useCalendarPanel()
   const { bookings, isLoading } = useFetchWeekSlotBookings(weekBookingPanel)
 
   const isOpen = weekBookingPanel !== null
@@ -34,6 +34,8 @@ const CalendarWeekBookingPanel: FC = () => {
         <div className={classes.body}>
           {isLoading ? (
             <div className={classes.loading}>...</div>
+          ) : bookings.length === 0 ? (
+            <div className={classes.empty}>{t('calendar.no_bookings')}</div>
           ) : (
             bookings.map((booking) => (
               <button

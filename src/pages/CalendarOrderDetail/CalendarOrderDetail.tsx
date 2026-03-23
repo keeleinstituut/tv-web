@@ -53,14 +53,14 @@ const CalendarOrderDetail: FC = () => {
   const [editingCommentText, setEditingCommentText] = useState('')
 
   // Editable field state
-  const [kuupaev, setKuupaev] = useState('')
-  const [algusaeg, setAlgusaeg] = useState('')
+  const [selectedDate, setSelectedDate] = useState('')
+  const [startTimeInput, setStartTimeInput] = useState('')
   const [durationMinutes, setDurationMinutes] = useState(60)
   const [durationEndTime, setDurationEndTime] = useState('')
   const [serviceType, setServiceType] = useState<'remote' | 'on-site'>('on-site')
-  const [aadress, setAadress] = useState('')
-  const [tellija, setTellija] = useState('')
-  const [viitenumber, setViitenumber] = useState('')
+  const [address, setAddress] = useState('')
+  const [clientInstitutionId, setClientInstitutionId] = useState('')
+  const [referenceNumber, setReferenceNumber] = useState('')
   const [languageId, setLanguageId] = useState('')
   const [domainId, setDomainId] = useState('')
   const [vendorId, setVendorId] = useState('')
@@ -75,16 +75,16 @@ const CalendarOrderDetail: FC = () => {
 
   useEffect(() => {
     if (!order) return
-    setKuupaev(dayjs(order.start_at).format('YYYY-MM-DD'))
-    setAlgusaeg(dayjs(order.start_at).format('HH:mm'))
+    setSelectedDate(dayjs(order.start_at).format('YYYY-MM-DD'))
+    setStartTimeInput(dayjs(order.start_at).format('HH:mm'))
     setDurationMinutes(dayjs(order.end_at).diff(dayjs(order.start_at), 'minute'))
     setServiceType(order.service_type)
-    setAadress(order.service_type === 'on-site' ? (order.location ?? '') : (order.meeting_link ?? ''))
-    setTellija(order.client?.name ?? '')
-    setViitenumber(order.reference_number ?? '')
+    setAddress(order.service_type === 'on-site' ? (order.location ?? '') : (order.meeting_link ?? ''))
+    setClientInstitutionId(order.client?.name ?? '')
+    setReferenceNumber(order.reference_number ?? '')
   }, [order])
 
-  const startIso = kuupaev && algusaeg ? `${kuupaev}T${algusaeg}:00` : null
+  const startIso = selectedDate && startTimeInput ? `${selectedDate}T${startTimeInput}:00` : null
   const endIso = startIso ? dayjs(startIso).add(durationMinutes, 'minute').toISOString() : null
 
   const slotMatchingParams =
@@ -139,13 +139,13 @@ const CalendarOrderDetail: FC = () => {
 
   const resetFields = () => {
     if (!order) return
-    setKuupaev(dayjs(order.start_at).format('YYYY-MM-DD'))
-    setAlgusaeg(dayjs(order.start_at).format('HH:mm'))
+    setSelectedDate(dayjs(order.start_at).format('YYYY-MM-DD'))
+    setStartTimeInput(dayjs(order.start_at).format('HH:mm'))
     setDurationMinutes(orderDurationMins)
     setServiceType(order.service_type)
-    setAadress(order.service_type === 'on-site' ? (order.location ?? '') : (order.meeting_link ?? ''))
-    setTellija(order.client?.name ?? '')
-    setViitenumber(order.reference_number ?? '')
+    setAddress(order.service_type === 'on-site' ? (order.location ?? '') : (order.meeting_link ?? ''))
+    setClientInstitutionId(order.client?.name ?? '')
+    setReferenceNumber(order.reference_number ?? '')
   }
 
   const handleCreate = () => {
@@ -156,10 +156,10 @@ const CalendarOrderDetail: FC = () => {
         start_at: startIso,
         end_at: endIso,
         service_type: serviceType,
-        reference_number: viitenumber || undefined,
-        location: serviceType === 'on-site' ? aadress : undefined,
-        meeting_link: serviceType === 'remote' ? aadress : undefined,
-        client_institution_id: isTPM ? tellija || undefined : undefined,
+        reference_number: referenceNumber || undefined,
+        location: serviceType === 'on-site' ? address : undefined,
+        meeting_link: serviceType === 'remote' ? address : undefined,
+        client_institution_id: isTPM ? clientInstitutionId || undefined : undefined,
         domain_id: domainId || undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
       },
@@ -183,7 +183,7 @@ const CalendarOrderDetail: FC = () => {
 
   const handleSave = () => {
     if (!orderId) return
-    const saveStart = `${kuupaev}T${algusaeg}:00`
+    const saveStart = `${selectedDate}T${startTimeInput}:00`
     const saveEnd = dayjs(saveStart).add(durationMinutes, 'minute').toISOString()
     updateOrder(
       {
@@ -191,10 +191,10 @@ const CalendarOrderDetail: FC = () => {
         start_at: saveStart,
         end_at: saveEnd,
         service_type: serviceType,
-        location: serviceType === 'on-site' ? aadress : undefined,
-        meeting_link: serviceType === 'remote' ? aadress : undefined,
-        reference_number: viitenumber || undefined,
-        client_institution_id: isTPM ? tellija || undefined : undefined,
+        location: serviceType === 'on-site' ? address : undefined,
+        meeting_link: serviceType === 'remote' ? address : undefined,
+        reference_number: referenceNumber || undefined,
+        client_institution_id: isTPM ? clientInstitutionId || undefined : undefined,
       },
       {
         onSuccess: () => {
@@ -264,8 +264,8 @@ const CalendarOrderDetail: FC = () => {
               <span className={classes.fieldLabel}>{t('calendar.client')}</span>
               <input
                 className={classes.editInput}
-                value={tellija}
-                onChange={(e) => setTellija(e.target.value)}
+                value={clientInstitutionId}
+                onChange={(e) => setClientInstitutionId(e.target.value)}
                 placeholder={t('calendar.enter_name')}
               />
             </div>
@@ -274,8 +274,8 @@ const CalendarOrderDetail: FC = () => {
             <span className={classes.fieldLabel}>{t('calendar.reference_number')}</span>
             <input
               className={classes.editInput}
-              value={viitenumber}
-              onChange={(e) => setViitenumber(e.target.value)}
+              value={referenceNumber}
+              onChange={(e) => setReferenceNumber(e.target.value)}
               placeholder={t('calendar.enter_number')}
             />
           </div>
@@ -311,14 +311,14 @@ const CalendarOrderDetail: FC = () => {
               <input
                 type="date"
                 className={classes.editInput}
-                value={kuupaev}
-                onChange={(e) => setKuupaev(e.target.value)}
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
               />
               <input
                 type="time"
                 className={classes.editInputNarrow}
-                value={algusaeg}
-                onChange={(e) => setAlgusaeg(e.target.value)}
+                value={startTimeInput}
+                onChange={(e) => setStartTimeInput(e.target.value)}
               />
             </div>
           </div>
@@ -439,8 +439,8 @@ const CalendarOrderDetail: FC = () => {
               <span className={classes.fieldLabel}>{t('calendar.client')}</span>
               <input
                 className={classes.editInput}
-                value={tellija}
-                onChange={(e) => setTellija(e.target.value)}
+                value={clientInstitutionId}
+                onChange={(e) => setClientInstitutionId(e.target.value)}
                 placeholder={t('calendar.enter_name')}
               />
             </div>
@@ -448,8 +448,8 @@ const CalendarOrderDetail: FC = () => {
               <span className={classes.fieldLabel}>{t('calendar.reference_number')}</span>
               <input
                 className={classes.editInput}
-                value={viitenumber}
-                onChange={(e) => setViitenumber(e.target.value)}
+                value={referenceNumber}
+                onChange={(e) => setReferenceNumber(e.target.value)}
                 placeholder={t('calendar.enter_number')}
               />
             </div>
@@ -465,14 +465,14 @@ const CalendarOrderDetail: FC = () => {
             <input
               type="date"
               className={classes.editInput}
-              value={kuupaev}
-              onChange={(e) => setKuupaev(e.target.value)}
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
             />
             <input
               type="time"
               className={classes.editInputNarrow}
-              value={algusaeg}
-              onChange={(e) => setAlgusaeg(e.target.value)}
+              value={startTimeInput}
+              onChange={(e) => setStartTimeInput(e.target.value)}
             />
           </div>
         </div>
@@ -507,20 +507,20 @@ const CalendarOrderDetail: FC = () => {
         isTPM={isTPM}
         languageId={languageId}
         setLanguageId={setLanguageId}
-        kuupaev={kuupaev}
-        setKuupaev={setKuupaev}
-        algusaeg={algusaeg}
-        setAlgusaeg={setAlgusaeg}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        startTimeInput={startTimeInput}
+        setStartTimeInput={setStartTimeInput}
         durationMinutes={durationMinutes}
         setDurationMinutes={setDurationMinutes}
         serviceType={serviceType}
         setServiceType={setServiceType}
-        aadress={aadress}
-        setAadress={setAadress}
-        tellija={tellija}
-        setTellija={setTellija}
-        viitenumber={viitenumber}
-        setViitenumber={setViitenumber}
+        address={address}
+        setAddress={setAddress}
+        clientInstitutionId={clientInstitutionId}
+        setClientInstitutionId={setClientInstitutionId}
+        referenceNumber={referenceNumber}
+        setReferenceNumber={setReferenceNumber}
         domainId={domainId}
         setDomainId={setDomainId}
         vendorId={vendorId}
@@ -764,7 +764,7 @@ const CalendarOrderDetail: FC = () => {
                     className={`${classes.serviceOption} ${serviceType === 'on-site' ? classes.serviceOptionActive : ''}`}
                     onClick={() => {
                       setServiceType('on-site')
-                      setAadress('')
+                      setAddress('')
                     }}
                   >
                     {t('calendar.service_type_contact')}
@@ -773,7 +773,7 @@ const CalendarOrderDetail: FC = () => {
                     className={`${classes.serviceOption} ${serviceType === 'remote' ? classes.serviceOptionActive : ''}`}
                     onClick={() => {
                       setServiceType('remote')
-                      setAadress('')
+                      setAddress('')
                     }}
                   >
                     {t('calendar.service_type_remote')}
@@ -804,8 +804,8 @@ const CalendarOrderDetail: FC = () => {
               {isServiceEditable ? (
                 <input
                   className={classes.editInput}
-                  value={aadress}
-                  onChange={(e) => setAadress(e.target.value)}
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
                   placeholder={
                     activeServiceType === 'on-site'
                       ? t('calendar.enter_address')

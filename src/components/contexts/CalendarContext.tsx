@@ -5,9 +5,12 @@ import {
   createContext,
   useCallback,
   useContext,
+  useMemo,
   useState,
 } from 'react'
 import { BookedSlot, CalendarLanguage, CalendarView } from 'types/calendar'
+
+// ─── Shared types ─────────────────────────────────────────────────────────────
 
 export interface SidePanelSelection {
   language: CalendarLanguage
@@ -19,7 +22,10 @@ export interface SidePanelSelection {
   vendorId?: string
 }
 
-interface CalendarContextType {
+// ─── CalendarNavContext ───────────────────────────────────────────────────────
+// Changes on date navigation and view switching.
+
+interface CalendarNavContextType {
   view: CalendarView
   setView: (view: CalendarView) => void
   currentDate: Dayjs
@@ -29,12 +35,49 @@ interface CalendarContextType {
   navigatePrevMonth: () => void
   navigateNextMonth: () => void
   navigateToday: () => void
+}
+
+const CalendarNavContext = createContext<CalendarNavContextType>({
+  view: 'day',
+  setView: () => undefined,
+  currentDate: dayjs(),
+  setCurrentDate: () => undefined,
+  navigatePrev: () => undefined,
+  navigateNext: () => undefined,
+  navigatePrevMonth: () => undefined,
+  navigateNextMonth: () => undefined,
+  navigateToday: () => undefined,
+})
+
+export const useCalendarNav = () => useContext(CalendarNavContext)
+
+// ─── CalendarExpansionContext ─────────────────────────────────────────────────
+// Changes on row expand/collapse.
+
+interface CalendarExpansionContextType {
   expandedLanguageIds: string[]
   toggleLanguageExpanded: (languageId: string) => void
   isLanguageExpanded: (languageId: string) => boolean
   expandAll: (languageIds: string[]) => void
   collapseAll: () => void
   allCollapsedOverride: boolean
+}
+
+const CalendarExpansionContext = createContext<CalendarExpansionContextType>({
+  expandedLanguageIds: [],
+  toggleLanguageExpanded: () => undefined,
+  isLanguageExpanded: () => false,
+  expandAll: () => undefined,
+  collapseAll: () => undefined,
+  allCollapsedOverride: false,
+})
+
+export const useCalendarExpansion = () => useContext(CalendarExpansionContext)
+
+// ─── CalendarPanelContext ─────────────────────────────────────────────────────
+// Changes on panel open/close, deep-link, and language focus.
+
+interface CalendarPanelContextType {
   sidePanelSelection: SidePanelSelection | null
   openSidePanel: (selection: SidePanelSelection) => void
   closeSidePanel: () => void
@@ -47,22 +90,7 @@ interface CalendarContextType {
   closeWeekBookingPanel: () => void
 }
 
-const CalendarContext = createContext<CalendarContextType>({
-  view: 'day',
-  setView: () => undefined,
-  currentDate: dayjs(),
-  setCurrentDate: () => undefined,
-  navigatePrev: () => undefined,
-  navigateNext: () => undefined,
-  navigatePrevMonth: () => undefined,
-  navigateNextMonth: () => undefined,
-  navigateToday: () => undefined,
-  expandedLanguageIds: [],
-  toggleLanguageExpanded: () => undefined,
-  isLanguageExpanded: () => false,
-  expandAll: () => undefined,
-  collapseAll: () => undefined,
-  allCollapsedOverride: false,
+const CalendarPanelContext = createContext<CalendarPanelContextType>({
   sidePanelSelection: null,
   openSidePanel: () => undefined,
   closeSidePanel: () => undefined,
@@ -75,11 +103,20 @@ const CalendarContext = createContext<CalendarContextType>({
   closeWeekBookingPanel: () => undefined,
 })
 
+export const useCalendarPanel = () => useContext(CalendarPanelContext)
+
+// ─── Provider ─────────────────────────────────────────────────────────────────
+
 export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
+  // Nav state
   const [view, setView] = useState<CalendarView>('day')
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs())
+
+  // Expansion state
   const [expandedLanguageIds, setExpandedLanguageIds] = useState<string[]>([])
   const [allCollapsedOverride, setAllCollapsedOverride] = useState(false)
+
+  // Panel state
   const [sidePanelSelection, setSidePanelSelection] =
     useState<SidePanelSelection | null>(null)
   const [focusedLanguageId, setFocusedLanguageId] = useState<string | null>(null)
@@ -93,25 +130,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
     language_id: string
   } | null>(null)
 
-  const openWeekBookingPanel = useCallback(
-    (params: { start_at: string; end_at: string; language_id: string }) => {
-      setWeekBookingPanel(params)
-    },
-    []
-  )
-
-  const closeWeekBookingPanel = useCallback(() => {
-    setWeekBookingPanel(null)
-  }, [])
-
-  const openSidePanel = useCallback((selection: SidePanelSelection) => {
-    setSidePanelSelection(selection)
-  }, [])
-
-  const closeSidePanel = useCallback(() => {
-    setSidePanelSelection(null)
-  }, [])
-
+  // Nav callbacks
   const navigatePrev = useCallback(() => {
     setFocusedLanguageId(null)
     setCurrentDate((prev) => {
@@ -144,6 +163,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
     setCurrentDate(dayjs())
   }, [])
 
+  // Expansion callbacks
   const collapseAll = useCallback(() => {
     setExpandedLanguageIds([])
     setAllCollapsedOverride(true)
@@ -168,39 +188,77 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
     setExpandedLanguageIds(languageIds)
   }, [])
 
+  // Panel callbacks
+  const openSidePanel = useCallback((selection: SidePanelSelection) => {
+    setSidePanelSelection(selection)
+  }, [])
+
+  const closeSidePanel = useCallback(() => {
+    setSidePanelSelection(null)
+  }, [])
+
+  const openWeekBookingPanel = useCallback(
+    (params: { start_at: string; end_at: string; language_id: string }) => {
+      setWeekBookingPanel(params)
+    },
+    []
+  )
+
+  const closeWeekBookingPanel = useCallback(() => {
+    setWeekBookingPanel(null)
+  }, [])
+
+  // Memoized context values — each only updates when its own state changes
+  const navValue = useMemo<CalendarNavContextType>(
+    () => ({
+      view,
+      setView,
+      currentDate,
+      setCurrentDate,
+      navigatePrev,
+      navigateNext,
+      navigatePrevMonth,
+      navigateNextMonth,
+      navigateToday,
+    }),
+    [view, currentDate, navigatePrev, navigateNext, navigatePrevMonth, navigateNextMonth, navigateToday]
+  )
+
+  const expansionValue = useMemo<CalendarExpansionContextType>(
+    () => ({
+      expandedLanguageIds,
+      toggleLanguageExpanded,
+      isLanguageExpanded,
+      expandAll,
+      collapseAll,
+      allCollapsedOverride,
+    }),
+    [expandedLanguageIds, toggleLanguageExpanded, isLanguageExpanded, expandAll, collapseAll, allCollapsedOverride]
+  )
+
+  const panelValue = useMemo<CalendarPanelContextType>(
+    () => ({
+      sidePanelSelection,
+      openSidePanel,
+      closeSidePanel,
+      focusedLanguageId,
+      setFocusedLanguageId,
+      pendingDeepLink,
+      setPendingDeepLink,
+      weekBookingPanel,
+      openWeekBookingPanel,
+      closeWeekBookingPanel,
+    }),
+    [sidePanelSelection, openSidePanel, closeSidePanel, focusedLanguageId, pendingDeepLink, weekBookingPanel, openWeekBookingPanel, closeWeekBookingPanel]
+  )
+
   return (
-    <CalendarContext.Provider
-      value={{
-        view,
-        setView,
-        currentDate,
-        setCurrentDate,
-        navigatePrev,
-        navigateNext,
-        navigatePrevMonth,
-        navigateNextMonth,
-        navigateToday,
-        expandedLanguageIds,
-        toggleLanguageExpanded,
-        isLanguageExpanded,
-        expandAll,
-        collapseAll,
-        allCollapsedOverride,
-        sidePanelSelection,
-        openSidePanel,
-        closeSidePanel,
-        focusedLanguageId,
-        setFocusedLanguageId,
-        pendingDeepLink,
-        setPendingDeepLink,
-        weekBookingPanel,
-        openWeekBookingPanel,
-        closeWeekBookingPanel,
-      }}
-    >
-      {children}
-    </CalendarContext.Provider>
+    <CalendarNavContext.Provider value={navValue}>
+      <CalendarExpansionContext.Provider value={expansionValue}>
+        <CalendarPanelContext.Provider value={panelValue}>
+          {children}
+        </CalendarPanelContext.Provider>
+      </CalendarExpansionContext.Provider>
+    </CalendarNavContext.Provider>
   )
 }
-
-export const useCalendarContext = () => useContext(CalendarContext)

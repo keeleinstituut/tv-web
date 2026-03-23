@@ -235,8 +235,8 @@ const CalendarClientPastBody: FC = () => {
           <div className={classes.fileListHeader}>
             {t('calendar.file_list_header')}
           </div>
-          {slot.assignment.files.map((f, i) => (
-            <div key={i} className={classes.fileItem}>
+          {slot.assignment.files.map((f) => (
+            <div key={f.name} className={classes.fileItem}>
               <button className={classes.fileLink}>{f.name}</button>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className={classes.fileIconBtn}>
@@ -281,8 +281,11 @@ const CalendarClientPastBody: FC = () => {
           />
         </div>
       </div>
-      {slot?.assignment?.comments?.map((c, i) => (
-        <div key={i} className={classes.commentContent}>
+      {slot?.assignment?.comments?.map((c) => (
+        <div
+          key={`${c.author}-${c.created_at}`}
+          className={classes.commentContent}
+        >
           <span className={classes.commentAuthor}>{c.author}</span>
           <span className={classes.commentText}>{c.text}</span>
           <span className={classes.commentDate}>

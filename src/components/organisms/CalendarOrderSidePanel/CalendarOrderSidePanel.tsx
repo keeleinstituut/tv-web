@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import { formatDuration } from 'helpers/calendar'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import {
   useCreateCalendarOrder,
@@ -30,7 +30,7 @@ import { ServiceType } from 'types/calendar'
 
 const CalendarOrderSidePanel: FC = () => {
   const { t } = useTranslation()
-  const { sidePanelSelection, closeSidePanel } = useCalendarContext()
+  const { sidePanelSelection, closeSidePanel } = useCalendarPanel()
   const { isTPM, isClient, isTranslator } = useCalendarRole()
   const navigate = useNavigate()
   const { mutate: createOrder, isPending: isCreating } =
@@ -44,12 +44,12 @@ const CalendarOrderSidePanel: FC = () => {
   const { mutate: rejectOrder, isPending: isRejecting } =
     useRejectCalendarOrder()
 
-  const [viitenumber, setViitenumber] = useState('')
+  const [referenceNumber, setReferenceNumber] = useState('')
   const [serviceType, setServiceType] = useState<ServiceType>('')
   const [location, setLocation] = useState('')
-  const [kuupaev, setKuupaev] = useState('')
-  const [algusaeg, setAlgusaeg] = useState('')
-  const [tellija, setTellija] = useState('')
+  const [selectedDate, setSelectedDate] = useState('')
+  const [startTimeInput, setStartTimeInput] = useState('')
+  const [clientInstitutionId, setClientInstitutionId] = useState('')
   const [domainId, setDomainId] = useState('')
   const [vendorId, setVendorId] = useState('')
   const [isEditing, setIsEditing] = useState(false)
@@ -101,12 +101,12 @@ const CalendarOrderSidePanel: FC = () => {
   // Reset state when panel opens/closes
   useEffect(() => {
     if (!isOpen) {
-      setViitenumber('')
+      setReferenceNumber('')
       setServiceType('')
       setLocation('')
-      setKuupaev('')
-      setAlgusaeg('')
-      setTellija('')
+      setSelectedDate('')
+      setStartTimeInput('')
+      setClientInstitutionId('')
       setDomainId('')
       setVendorId('')
       setIsEditing(false)
@@ -127,7 +127,7 @@ const CalendarOrderSidePanel: FC = () => {
       // Pre-fill form for TPM pending order view
       if (isTPM && sidePanelSelection?.slot?.assignment?.status === 'pending') {
         const a = sidePanelSelection.slot.assignment
-        setViitenumber(a.reference_number ?? '')
+        setReferenceNumber(a.reference_number ?? '')
         setServiceType(
           a.service_type === 'remote'
             ? 'kaugtolge'
@@ -141,10 +141,10 @@ const CalendarOrderSidePanel: FC = () => {
     if (isOpen && isClientPastView) {
       setIsMetaOpen(true)
     }
-  }, [isOpen])
+  }, [sidePanelSelection])
 
   const handleSubmit = () => {
-    if (!language || !startIso) return
+    if (!language || !startIso || !serviceType) return
     const computedEndIso = dayjs(startIso)
       .add(durationMinutes, 'minute')
       .toISOString()
@@ -154,10 +154,12 @@ const CalendarOrderSidePanel: FC = () => {
         start_at: startIso,
         end_at: computedEndIso,
         service_type: serviceType === 'kaugtolge' ? 'remote' : 'on-site',
-        reference_number: viitenumber || undefined,
+        reference_number: referenceNumber || undefined,
         location: serviceType === 'kontakttolge' ? location : undefined,
         meeting_link: serviceType === 'kaugtolge' ? location : undefined,
-        client_institution_id: isTPM ? tellija || undefined : undefined,
+        client_institution_id: isTPM
+          ? clientInstitutionId || undefined
+          : undefined,
         domain_id: domainId || undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
       },
@@ -177,7 +179,7 @@ const CalendarOrderSidePanel: FC = () => {
   const handleStartEdit = () => {
     setIsEditing(true)
     setIsConfirmingCancel(false)
-    setViitenumber(slot?.assignment?.reference_number ?? '')
+    setReferenceNumber(slot?.assignment?.reference_number ?? '')
     setServiceType(
       slot?.assignment?.service_type === 'remote'
         ? 'kaugtolge'
@@ -188,19 +190,19 @@ const CalendarOrderSidePanel: FC = () => {
     setLocation(
       slot?.assignment?.meeting_link ?? slot?.assignment?.location ?? ''
     )
-    setKuupaev(date)
-    setAlgusaeg(startTime)
+    setSelectedDate(date)
+    setStartTimeInput(startTime)
     setDurationMinutes(slotDurationMinutes)
   }
 
   const handleCancelEdit = () => {
     setIsEditing(false)
-    setViitenumber('')
+    setReferenceNumber('')
     setServiceType('')
     setLocation('')
-    setKuupaev('')
-    setAlgusaeg('')
-    setTellija('')
+    setSelectedDate('')
+    setStartTimeInput('')
+    setClientInstitutionId('')
     setDomainId('')
     setVendorId('')
   }
@@ -216,10 +218,12 @@ const CalendarOrderSidePanel: FC = () => {
             : serviceType === 'kontakttolge'
               ? 'on-site'
               : undefined,
-        reference_number: viitenumber || undefined,
+        reference_number: referenceNumber || undefined,
         location: serviceType === 'kontakttolge' ? location : undefined,
         meeting_link: serviceType === 'kaugtolge' ? location : undefined,
-        client_institution_id: isTPM ? tellija || undefined : undefined,
+        client_institution_id: isTPM
+          ? clientInstitutionId || undefined
+          : undefined,
         domain_id: domainId || undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
       },
@@ -311,18 +315,18 @@ const CalendarOrderSidePanel: FC = () => {
       isViewMode,
       isTPM,
       isTPMPendingView,
-      viitenumber,
-      setViitenumber,
+      referenceNumber,
+      setReferenceNumber,
       serviceType,
       setServiceType,
       location,
       setLocation,
-      kuupaev,
-      setKuupaev,
-      algusaeg,
-      setAlgusaeg,
-      tellija,
-      setTellija,
+      selectedDate,
+      setSelectedDate,
+      startTimeInput,
+      setStartTimeInput,
+      clientInstitutionId,
+      setClientInstitutionId,
       domainId,
       setDomainId,
       vendorId,
@@ -359,8 +363,18 @@ const CalendarOrderSidePanel: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       language, slot, date, startTime, duration, isPastSlot, isViewMode,
-      isTPM, isTPMPendingView, viitenumber, serviceType, location, kuupaev,
-      algusaeg, tellija, domainId, vendorId, durationMinutes, durationNote,
+      isTPM,
+      isTPMPendingView,
+      referenceNumber,
+      serviceType,
+      location,
+      selectedDate,
+      startTimeInput,
+      clientInstitutionId,
+      domainId,
+      vendorId,
+      durationMinutes,
+      durationNote,
       isEditing, isConfirmingCancel, isMetaOpen, isChangingDuration,
       isCreating, isUpdating, isCancelling, isConfirming, isRejecting,
       domains, vendors,

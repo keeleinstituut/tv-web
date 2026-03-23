@@ -27,20 +27,20 @@ interface Props {
   isTPM: boolean
   languageId: string
   setLanguageId: (v: string) => void
-  kuupaev: string
-  setKuupaev: (v: string) => void
-  algusaeg: string
-  setAlgusaeg: (v: string) => void
+  selectedDate: string
+  setSelectedDate: (v: string) => void
+  startTimeInput: string
+  setStartTimeInput: (v: string) => void
   durationMinutes: number
   setDurationMinutes: (v: number) => void
   serviceType: 'remote' | 'on-site'
   setServiceType: (v: 'remote' | 'on-site') => void
-  aadress: string
-  setAadress: (v: string) => void
-  tellija: string
-  setTellija: (v: string) => void
-  viitenumber: string
-  setViitenumber: (v: string) => void
+  address: string
+  setAddress: (v: string) => void
+  clientInstitutionId: string
+  setClientInstitutionId: (v: string) => void
+  referenceNumber: string
+  setReferenceNumber: (v: string) => void
   domainId: string
   setDomainId: (v: string) => void
   vendorId: string
@@ -57,20 +57,20 @@ const CalendarMobileWizard: FC<Props> = ({
   isTPM,
   languageId,
   setLanguageId,
-  kuupaev,
-  setKuupaev,
-  algusaeg,
-  setAlgusaeg,
+  selectedDate,
+  setSelectedDate,
+  startTimeInput,
+  setStartTimeInput,
   durationMinutes,
   setDurationMinutes,
   serviceType,
   setServiceType,
-  aadress,
-  setAadress,
-  tellija,
-  setTellija,
-  viitenumber,
-  setViitenumber,
+  address,
+  setAddress,
+  clientInstitutionId,
+  setClientInstitutionId,
+  referenceNumber,
+  setReferenceNumber,
   domainId,
   setDomainId,
   vendorId,
@@ -92,7 +92,7 @@ const CalendarMobileWizard: FC<Props> = ({
     type: ClassifierValueType.TranslationDomain,
   })
 
-  const startIso = kuupaev && algusaeg ? `${kuupaev}T${algusaeg}:00` : null
+  const startIso = selectedDate && startTimeInput ? `${selectedDate}T${startTimeInput}:00` : null
   const endIso = startIso
     ? dayjs(startIso).add(durationMinutes, 'minute').toISOString()
     : null
@@ -103,7 +103,7 @@ const CalendarMobileWizard: FC<Props> = ({
       : null
   const { vendors } = useFetchSlotMatching(slotMatchingParams)
 
-  const step1Valid = !!languageId && !!kuupaev && !!algusaeg
+  const step1Valid = !!languageId && !!selectedDate && !!startTimeInput
 
   // ─── Success screen ───────────────────────────────────────────────────────
 
@@ -187,8 +187,8 @@ const CalendarMobileWizard: FC<Props> = ({
           <label className={classes.fieldLabel}>{t('calendar.client')}</label>
           <input
             className={classes.fieldInput}
-            value={tellija}
-            onChange={(e) => setTellija(e.target.value)}
+            value={clientInstitutionId}
+            onChange={(e) => setClientInstitutionId(e.target.value)}
             placeholder={t('calendar.enter_name')}
           />
         </div>
@@ -198,8 +198,8 @@ const CalendarMobileWizard: FC<Props> = ({
         <label className={classes.fieldLabel}>{t('calendar.reference_number')}</label>
         <input
           className={classes.fieldInput}
-          value={viitenumber}
-          onChange={(e) => setViitenumber(e.target.value)}
+          value={referenceNumber}
+          onChange={(e) => setReferenceNumber(e.target.value)}
           placeholder={t('calendar.enter_number')}
         />
       </div>
@@ -231,14 +231,14 @@ const CalendarMobileWizard: FC<Props> = ({
           <input
             type="date"
             className={classes.fieldInput}
-            value={kuupaev}
-            onChange={(e) => setKuupaev(e.target.value)}
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
           />
           <input
             type="time"
             className={classes.fieldInput}
-            value={algusaeg}
-            onChange={(e) => setAlgusaeg(e.target.value)}
+            value={startTimeInput}
+            onChange={(e) => setStartTimeInput(e.target.value)}
           />
         </div>
       </div>
@@ -294,7 +294,7 @@ const CalendarMobileWizard: FC<Props> = ({
             className={`${classes.serviceOption} ${serviceType === 'on-site' ? classes.serviceOptionActive : ''}`}
             onClick={() => {
               setServiceType('on-site')
-              setAadress('')
+              setAddress('')
             }}
           >
             {t('calendar.service_type_contact')}
@@ -304,7 +304,7 @@ const CalendarMobileWizard: FC<Props> = ({
             className={`${classes.serviceOption} ${serviceType === 'remote' ? classes.serviceOptionActive : ''}`}
             onClick={() => {
               setServiceType('remote')
-              setAadress('')
+              setAddress('')
             }}
           >
             {t('calendar.service_type_remote')}
@@ -321,8 +321,8 @@ const CalendarMobileWizard: FC<Props> = ({
         </label>
         <input
           className={classes.fieldInput}
-          value={aadress}
-          onChange={(e) => setAadress(e.target.value)}
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
           placeholder={
             serviceType === 'on-site'
               ? t('calendar.enter_address')

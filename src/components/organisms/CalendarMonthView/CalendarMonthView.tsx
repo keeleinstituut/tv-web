@@ -2,7 +2,7 @@ import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/et'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import { useCalendarNav } from 'components/contexts/CalendarContext'
 import { getWeekStart } from 'components/organisms/CalendarWeekView/CalendarWeekView'
 import CalendarMonthLanguageRow from 'components/molecules/CalendarMonthLanguageRow/CalendarMonthLanguageRow'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
@@ -60,13 +60,13 @@ const CalendarMonthView: FC = () => {
     setView,
     navigatePrevMonth,
     navigateNextMonth,
-  } = useCalendarContext()
+  } = useCalendarNav()
 
   const { t } = useTranslation()
   const { isTPM, isClient } = useCalendarRole()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
-  const { visibleLanguages } = useVisibleCalendarLanguages()
+  const { visibleLanguages, isLoading, isError } = useVisibleCalendarLanguages()
 
   const weeks = getWeeksForMonth(currentDate)
   const dateStr = currentDate.format('YYYY-MM-DD')
@@ -236,6 +236,14 @@ const CalendarMonthView: FC = () => {
           className={classes.rowsContainer}
           style={{ minWidth: totalGridWidth }}
         >
+          {isLoading && (
+            <div className={classes.stateMessage}>{t('calendar.loading')}</div>
+          )}
+          {isError && (
+            <div className={classes.stateMessage}>
+              {t('calendar.error_loading')}
+            </div>
+          )}
           {visibleLanguages.map((lang) => (
             <CalendarMonthLanguageRow
               key={lang.language.id}

@@ -6,8 +6,8 @@ import CalendarIcon from 'assets/icons/calender.svg?react'
 import ViewWeekIcon from 'assets/icons/view_week.svg?react'
 import ViewMonthIcon from 'assets/icons/view_month.svg?react'
 import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
-import ChevronDownIcon from 'assets/icons/chevron_left.svg?react'
-import { useCalendarContext } from 'components/contexts/CalendarContext'
+import ChevronLeftIcon from 'assets/icons/chevron_left.svg?react'
+import { useCalendarNav, useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import {
   useCalendarSearch,
@@ -27,14 +27,8 @@ const DURATION_OPTIONS = [
 
 const CalendarToolbar: FC = () => {
   const { t } = useTranslation()
-  const {
-    view,
-    setView,
-    currentDate,
-    setCurrentDate,
-    focusedLanguageId,
-    setFocusedLanguageId,
-  } = useCalendarContext()
+  const { view, setView, currentDate, setCurrentDate } = useCalendarNav()
+  const { focusedLanguageId, setFocusedLanguageId } = useCalendarPanel()
   const navigate = useNavigate()
   const { isTPM, isClient } = useCalendarRole()
   const canSearch = isTPM || isClient
@@ -141,7 +135,7 @@ const CalendarToolbar: FC = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDownIcon className={classes.searchChevron} />
+                <ChevronLeftIcon className={classes.searchChevron} />
               </div>
             </div>
 
@@ -184,7 +178,7 @@ const CalendarToolbar: FC = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronDownIcon className={classes.searchChevron} />
+                <ChevronLeftIcon className={classes.searchChevron} />
               </div>
             </div>
           </div>
