@@ -105,7 +105,9 @@ const MonthSummaryRow: FC<{
             <PinIcon />
           </button>
         )}
-        <span className={classes.badge}>{language.language.value}</span>
+        <span className={classes.badge}>
+          {language.language.value.split('-')[0]}
+        </span>
         {isTPM && (
           <button
             className={classNames(classes.collapseBtn, {

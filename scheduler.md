@@ -15,7 +15,7 @@
              2. not enabled (harvikkeeled) for which current Client has any orders within the timeframe and
        2. Translator
           1. rows with
-             1. orders assigned to the user corresponding to languages are being displayed and if the user has a blocked time in the calendar then this is displayed across the language rows orsti
+             1. orders assigned to the user corresponding to languages are being displayed and if the user has a blocked time in the calendar then this is displayed across the language rows or
              2. if the user has no assigned bookings then just one row with blocked times or empty and the row label is /forall
        3. TPM
           1. all rows are displayed as described in the next flow description.
@@ -31,7 +31,7 @@
     2.  grey with time indication icon - past slots with Client's booking
     3.  light blue with time indication icon - current and upcoming Client's bookings
     4.  dark blue with label "+ Vali aeg" - bookable slots
-    5.  red with a label "Hõivatud" - fully booked slots
+    5.  red with a label "Hõivatud" - personal booking from imported calendar or under personal settings, meaning that the person is not available for work
 4.  Actions for adding an order are available to TPM and Client through
     1.  clicking on an available slot
     2.  clicking and dragging a slot with the preferred length (in 0.5h min increments)
@@ -62,9 +62,9 @@
       3. user can pin/unpin favourite languages to the calendar;
       4. user can collapse/extend all of the rows.
 5. Fast search/filtering is enabled for Client and TPM to
-   1. filter by 1. language 2. timeframe 3. slot length.
-   2. Upon selecting tehe parameters and clicking button "Leia sobiv aeg"
-      1. corresponding rows are being displayed and
+   1. filter by 1. language - Mandatory 2. timeframe - If timeframe is not selected then search result will present the next 30 days 3. slot length. - Optional
+   2. Upon selecting the parameters and clicking button "Leia sobiv aeg"
+      1. The system will automatically navigate the user to corresponding day view, matching the filter criteria and corresponding rows are being displayed and
       2. if the user is TPM the sub rows displayed for the language are extended.
 
 ---
@@ -86,7 +86,8 @@
       1. "Kaugtõlge" - remote spoken interpretation and
       2. "Kontakttõlge" - on-site spoken interpretation
    4. "Valdkond" - a dropdown where user can select label's connected to Translator
-   5. "Teostaja" a dropdown with available Translators for the chosen time slot and if the user has a correct privilege
+   5. "Teostaja" a dropdown with available Translators for the chosen time slot and if the user has a correct privilege.
+      5.1 In addition to regular Translators, there will be EMO translators listed in selection. EMO translators are indicated with Yellow colour and with a sign - EMO.
    6. A text field called
       1. "Asukoht" if the type is "kontakttõlge" or
       2. "Koosoleku link" if the type is "kaugtõlge".
@@ -112,15 +113,15 @@
 
 ### Adding an order through order detail view
 
-**Note!** This way of adding an order can be used to add orders for any language. This also menas that this is the only way to add orders for languages that are NOT marked as main languages and are therefore not displayed in the main calendar component as rows.
+**Note!** This way of adding an order can be used to add orders for any language. This also menas that this is the only way to add orders for languages that are NOT marked as main languages and are therefore not displayed in the main calendar component as rows. Additionally, client can add orders for the main languages even all the timeslots are booked.
 
 1. User clicks on
    1. "Veel" -> "Lisa tellimus" on the toolbar or
    2. opens the detail view from the side panel "Ava" to open the detail view.
 2. All the fields are displayed using the same logic as for the side panel.
 3. Timeframe of the order can be chosen using the "kuupäev ja kellaaeg" and "kestus" and
-   if the language chosen is main language then after selecting a longer duration then notification is shown to user that chosen time slot is booked and therefore the order is treated separately or
-   if the language is not main language (harvikkeel), then any time and date (following the overall rule of not adding orders to the same day) are allowed.
+   1. if the language chosen is main language then after selecting a time slot which is not available or the duration is longer then available then notification is shown to user "Selected time slot for the order is not available, therefore the order management will be done manually by person" ("Tellimuseks valitud aeg on hõivatud. Tellimusega tegeleb tõlkekorraldaja manuaalselt. or
+   2. if the language is not main language (harvikkeel), then any time and date (following the overall rule of not adding orders to the same day) are allowed.
 4. User can void the pre order by clicking on secondary button "Katkesta" and
    1. the detail view is closed and
    2. the pre booking is voided.
@@ -132,10 +133,8 @@
 
 ### Accepting & declining an order
 
-> **Note (2026-03-17):** Per updated spec, Translator accept/decline happens in **Tellimused → Minu Ülesanded → Ootel ülesanded**, NOT in the calendar side panel. The calendar side panel has no accept/decline flow for Teostaja. The `isAcceptMode` path and `useAcceptCalendarOrder` / `useDeclineCalendarOrder` hooks have been removed from the calendar feature accordingly.
-
-1. Vendor receives an email with order details.
-   * User navigates to Tellimused > Minu Ülesanded > Ootel ülesanded
+1. Vendor receives an email containing information about assigned order: Project reference number, Title, Message
+   - User navigates to Tellimused > Minu Ülesanded > Ootel ülesanded
 2. On top of the panel buttons are displayed:
    1. secondary action button "Lükka tagasi" and
    2. primary action button "Võta vastu".
@@ -171,19 +170,15 @@
                   1. to new Translator for the order being assigned for acceptance and
                   2. to previous translator for the order being unassigned and
                   3. to the Client for the changes made.
-4. When user clicks on button "Tühista" then
-   1. the system throws a double confirmation and
-      1. if the confirmation is negative then returns to editable state or
-      2. if the confirmation is positive then
-         1. voids the order and
-         2. sends a notification about voiding to
-            1. the Client and
-            2. the Translator and
-            3. if the order had no Translator assigned (it was created for harvikkeel but not yet assigned to a translator by the TPM), then to this TPM.
+4. When user clicks on button "Tühista" then 1. the system throws a double confirmation and 1. if the confirmation is negative then returns to editable state or 2. if the confirmation is positive then 1. voids the order and 2. sends a notification about voiding to 1. the Client and 2. the Translator and 3. if the order had no Translator assigned (it was created for harvikkeel but not yet assigned to a translator by the TPM), then to this TPM.
+   Orders can be edited, changed and deleted up until the order is finished/done.
 
-## Managing EMO translators
+---
 
-Summary: In case all the available time slots are full, client must be still able to book an order. All such orders will appear in regular orders (Tellimused) list and respective notification is also sent to TPM once the order is created. TPM must manually find a translators/Vendor from the available vendors/translators list. In such list, there are regular vendors/translators and also so called EMO vendors/translators. TPM can assign manually EMO vendors to take care of the order.
+### Managing EMO translators
+
+Summary:
+In case all the available time slots are full, client must be still able to book an order. All such orders will appear in regular orders (Tellimused) list and respective notification is also sent to TPM once the order is created. TPM must manually find a translators/Vendor from the available vendors/translators list. In such list, there are regular vendors/translators and also so called EMO vendors/translators. TPM can assign manually EMO vendors to take care of the order.
 
 TPM is responsible of booking Vendors/translators to EMO shift. Once the Vendor is on EMO shift, the system does not assign any orders to them automatically, only TPM can assign orders to EMO Vendors.
 
@@ -191,16 +186,155 @@ User Flows:
 
 Scheduling EMO Vendors
 
-TPM navigates to "Teostajate andmebaas" and selects desired Vendor
-TPM selects the desired date/dates from the EMO calendar.
-All selected dates will appear under the calendar selection (as in setting personal vacation days in personal settings)
-TPM navigates to Calendar
-All EMO vendors that are assigned to work are visible only for TPM on Calendar. Rows for EMO Vendors appear in Yellow.
+- TPM navigates to "Teostajate andmebaas" and selects desired Vendor
+- TPM selects the desired date/dates from the EMO calendar.
+- All selected dates will appear under the calendar selection (as in setting personal vacation days in personal settings)
+- TPM navigates to Calendar
+- All EMO vendors that are assigned to work are visible only for TPM on Calendar. Rows for EMO Vendors appear in Yellow.
+
 Assigning orders to EMO Vendors
 
-TPM selects an order from "Tellimused"
-TPM selects a "Teostaja" (Vendor), from the dropdown. All available EMO Vendors are marked with a sign "EMO" and appear in Yellow.
-Once the order is placed and accepted, the order will appear also in Calendar on the respective EMO Vendor row.
+- TPM selects an order from "Tellimused"
+- TPM selects a "Teostaja" (Vendor), from the dropdown. All available EMO Vendors are marked with a sign "EMO" and appear in Yellow.
+- Once the order is placed and accepted, the order will appear also in Calendar on the respective EMO Vendor row.
+
+---
+
+### Slot matching algorithms (for main languages)
+
+Slot matching algorithm is the core set of rules and checks that is being used for finding and displaying available time slots for orders. Available slots are calculated when user:
+
+- navigates to to the Calendar component and
+- is adding an order from the order detail view.
+
+#### Algorithm 1: from all to available
+
+1. System gets the translation language and order date/time as and input and the language is main laguage.
+2. System does the following in this order to narrow down the potential matches:
+   1. finds the translators who support the selected language and if it matches then for this group
+   2. finds the translators who have imported their personal calendars for the given date and for those who have
+   3. finds if the found translators have a blocking event based on their personal calendars and if not then
+   4. finds if they have other prebooked or booked orders for the slot and if not then a matching translator(s) are found.
+3. System returns the list of matching translators.
+
+#### Algorithm 2: finding the best match from internal translators as a priority
+
+System then evaluates who would be the best match out of all available matches. This is needed for the cases when multiple matches are found and the matching is done by the system (and not manually by the TPM).
+
+1. System uses the output from Algorithm 1 as an input.
+2. System does the following in this order to find the sequence of the best matches:
+   1. finds if the translator is external or internal and
+      1. if there is just one internal translator then this translator is the match or
+      2. if there are multiple internal translators then the priority of matching is done based on the following priority
+         1. comparing the labels of the translators' with the labels added to the order and if there is a matching label then this is the match and if there are none matching based on label or multiple matching based on label then
+         2. comparing the total length of the orders for the same week where the best match would be the the translator who has least orders for the period and if there aren't any orders or the total length of the orders is the same for multiple translators then
+         3. comparing the total lenght oof the orders for the same day where the best match is the translator with least orders and if there are still multiple matches then
+         4. system picks the first one alphabetically.
+3. System returns the best match which is an internal translator.
+
+#### Algorithm 3: external translator sequencing and cascade method
+
+If there are no internal translators to be used for an order then TPM shall have an option to trigger the system to evaluate external translators and include them into the process. For sending out requests in a cascade for an order a certain sequence and reaction time frame is being used.
+
+1. System uses the output from Algorithm 1 and found external translators from Algorithm 2 as an input.
+2. In case TPM triggers the logic for including external translators, system does the following in this order to find the sequence of the best matches:
+   1. compares the price for the order where least is best and creates a sequence based on this.
+3. Based on the sequence, system
+   1. sends out a notification to the first external translator in the sequence and
+   2. saves the time for sending out the notification.
+4. The external translator will have a reaction time set by the institution admin to accept the order and
+   1. if the translator accepts the order then it will be assigned to this translator or
+   2. if the translator declines the order or fails to accept it within the time frame then
+      1. the system goes back to step 3 and finds the next in the sequence and the next steps are repeated.
+
+User flow - **Including External translators**
+
+- TPM opens the order
+- TPM fills in all the details needed as in handling every other order
+- TPM selects "Lepinguline tõlk/Väline tõlk" from "Teostaja" dropdown, which will trigger the algorithm 3 to include external translators.
+
+---
+
+### Notifications
+
+Notifications are sent by the system via email. Notifications are sent out in the following occasions:
+
+1. When the order is
+   1. created for
+      1. a main language – to Translator
+      2. a language not main language - to TPM.
+   2. accepted - to Client who created it.
+   3. changed by one of the parties
+      1. to Client who created it and
+      2. to assigned Ta ranslator and
+      3. to the related TPM.
+   4. declined or failed to accept within the reaction time -
+      1. to the Client and
+      2. the Translator and 3. if the order had no Translator assigned (it was created for harvikkeel but not yet assigned to a translator by the TPM), then to this TPM.
+   5. Calendar import reminder - Reminder is sent to "Teostaja" 2 working days before the imported calendar expires.
+
+---
+
+### Reaction time
+
+Reaction time is the time frame within the translator can either accept or decline the order. If the translator does not accept the order within then the order is declined automatically and goes to the next translator picked based on the algorithm.
+
+Option to set the reaction time shall be configured on the company level under the "Asutuse Sätted" page.
+Reaction time shall be defined in minutes, default shall be 30 minutes. There shall be also informative button explaining the meaning of the setting. Explanation inside the informative button: "Reaction time is the time frame within the translator can either accept or decline the order. If the translator does not accept the order within the set timeframe then the order is declined automatically and goes to the next translator picked based on the algorithm."
+
+---
+
+### Calendar import
+
+Each translator must import the calendar in order to make themselves available as a translator.
+Calendar import shall be done through Translator personal page (Teostajad). There shall be separate section called "Kalendri Sätted" under which user can see the setting "Impordi Kalender" and a button "Impordi failist", which will enable user to import the calendar to the system.
+Only supported import file type is .ics
+
+There shall be additional notification introduced. Notification shall be sent to "Teostaja" 2 working days before the imported calendar expires, reminding the "Teostaja" to import new calendar.
+
+# Sub Components
+
+## Order Detail View
+
+Oder detail view is a full page view of an order for adding, editing and voiding the order. It has an extended functionality compared to the Order Sheet but in it's core it is the same.
+
+Order detail view is the only way to add an order for adding orders for languages that are not main languages (are "harvikkeeled").
+
+### Design
+
+- [TPM view](https://www.figma.com/design/3PLabFR6bgsvqsipbClHbL/EKI-t%C3%B5lkev%C3%A4rav-2.0?node-id=126-3076&m=dev&t=AGR61h83jzMcO7kj-1)
+- [Client view](https://www.figma.com/design/3PLabFR6bgsvqsipbClHbL/EKI-t%C3%B5lkev%C3%A4rav-2.0?node-id=889-25705&m=dev&t=eESxaGeFVjXCpHRq-1)
+- [Translator view](https://www.figma.com/design/3PLabFR6bgsvqsipbClHbL/EKI-t%C3%B5lkev%C3%A4rav-2.0?node-id=14-3&m=dev&t=eESxaGeFVjXCpHRq-1)
+
+### Rules & Functional Details
+
+---
+
+| #   | Functionality | Rule | Outcome |
+| --- | ------------- | ---- | ------- |
+| 1   |               |      |         |
+
+## Order Sheet
+
+Order sheet is a side panel used to add/edit and void an order. It opens on the Calender view.
+
+### Design
+
+- [TPM view](https://www.figma.com/design/3PLabFR6bgsvqsipbClHbL/EKI-t%C3%B5lkev%C3%A4rav-2.0?node-id=893-59348&m=dev&t=eESxaGeFVjXCpHRq-1)
+- [Client view](https://www.figma.com/design/3PLabFR6bgsvqsipbClHbL/EKI-t%C3%B5lkev%C3%A4rav-2.0?node-id=881-103110&m=dev&t=eESxaGeFVjXCpHRq-1)
+- [Translator view](https://www.figma.com/design/3PLabFR6bgsvqsipbClHbL/EKI-t%C3%B5lkev%C3%A4rav-2.0?node-id=881-76375&m=dev&t=eESxaGeFVjXCpHRq-1)
+
+### Rules & Functional Details
+
+---
+
+| #   | Functionality | Rule | Outcome |
+| --- | ------------- | ---- | ------- |
+| 1   |               |      |         |
+
+## Calendar
+
+Calendar is the main component for the spoken interpretation to find available slots and find your orders. Depending on the user role, it carries a slightly different function.
 
 ## Figma
 
@@ -1072,11 +1206,11 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Request body**:
 
-| Field         | Type     | Required | Description                       |
-| ------------- | -------- | -------- | --------------------------------- |
-| `language_id` | UUID     | Yes      | Language classifier value ID      |
-| `start_at`    | DateTime | Yes      | Slot start (ISO 8601)             |
-| `end_at`      | DateTime | Yes      | Slot end (ISO 8601)               |
+| Field         | Type     | Required | Description                  |
+| ------------- | -------- | -------- | ---------------------------- |
+| `language_id` | UUID     | Yes      | Language classifier value ID |
+| `start_at`    | DateTime | Yes      | Slot start (ISO 8601)        |
+| `end_at`      | DateTime | Yes      | Slot end (ISO 8601)          |
 
 **Response**:
 
@@ -1085,6 +1219,7 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 ```
 
 **Notes**:
+
 - The returned `id` must be stored client-side and sent with `DELETE /api/calendar/prebook` if the user cancels.
 - The prebook is stored in `vendor_calendars` with `type = 'prebook'`.
 - On successful order creation, the backend converts the prebook to an assignment record.
@@ -1111,11 +1246,11 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Query Parameters**:
 
-| Parameter     | Type     | Required | Description                       |
-| ------------- | -------- | -------- | --------------------------------- |
-| `start_at`    | DateTime | Yes      | Block start datetime (ISO 8601)   |
-| `end_at`      | DateTime | Yes      | Block end datetime (ISO 8601)     |
-| `language_id` | UUID     | Yes      | Language classifier value ID      |
+| Parameter     | Type     | Required | Description                     |
+| ------------- | -------- | -------- | ------------------------------- |
+| `start_at`    | DateTime | Yes      | Block start datetime (ISO 8601) |
+| `end_at`      | DateTime | Yes      | Block end datetime (ISO 8601)   |
+| `language_id` | UUID     | Yes      | Language classifier value ID    |
 
 **Response**:
 
@@ -1166,8 +1301,8 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Path Parameters**:
 
-| Parameter | Type | Description  |
-| --------- | ---- | ------------ |
+| Parameter | Type | Description      |
+| --------- | ---- | ---------------- |
 | `id`      | UUID | Order/project ID |
 
 **Response**:
@@ -1215,6 +1350,7 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 ```
 
 **Notes**:
+
 - `files_accessible` is `false` for translators until they accept the order.
 - `status` values: `pending` → `confirmed` (accepted) → `completed` or `cancelled`.
 
@@ -1226,23 +1362,23 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Path Parameters**:
 
-| Parameter | Type | Description   |
-| --------- | ---- | ------------- |
+| Parameter | Type | Description      |
+| --------- | ---- | ---------------- |
 | `id`      | UUID | Order/project ID |
 
 **Request body** (all fields optional):
 
-| Field                   | Type     | Description                                        |
-| ----------------------- | -------- | -------------------------------------------------- |
-| `service_type`          | Enum     | `"remote"` or `"on-site"`                          |
-| `reference_number`      | String   | Client reference number                            |
-| `location`              | String   | Physical address                                   |
-| `meeting_link`          | String   | Video call URL                                     |
-| `client_institution_id` | UUID     | Client institution ID                              |
-| `start_at`              | DateTime | New start time                                     |
-| `end_at`                | DateTime | New end time                                       |
-| `domain_id`             | UUID     | Domain classifier value ID                         |
-| `vendor_id`             | UUID     | Replacement translator ID                          |
+| Field                   | Type     | Description                |
+| ----------------------- | -------- | -------------------------- |
+| `service_type`          | Enum     | `"remote"` or `"on-site"`  |
+| `reference_number`      | String   | Client reference number    |
+| `location`              | String   | Physical address           |
+| `meeting_link`          | String   | Video call URL             |
+| `client_institution_id` | UUID     | Client institution ID      |
+| `start_at`              | DateTime | New start time             |
+| `end_at`                | DateTime | New end time               |
+| `domain_id`             | UUID     | Domain classifier value ID |
+| `vendor_id`             | UUID     | Replacement translator ID  |
 
 **Response**: `204 No Content`
 
@@ -1254,8 +1390,8 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Path Parameters**:
 
-| Parameter | Type | Description   |
-| --------- | ---- | ------------- |
+| Parameter | Type | Description      |
+| --------- | ---- | ---------------- |
 | `id`      | UUID | Order/project ID |
 
 **Response**: `204 No Content`
@@ -1268,13 +1404,14 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Path Parameters**:
 
-| Parameter | Type | Description   |
-| --------- | ---- | ------------- |
+| Parameter | Type | Description      |
+| --------- | ---- | ---------------- |
 | `id`      | UUID | Order/project ID |
 
 **Response**: `204 No Content`
 
 **Side effects**:
+
 - Order status → `confirmed`.
 - Translator gains `files_accessible = true` for the order.
 - Notification sent to the client and TPM.
@@ -1287,13 +1424,14 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Path Parameters**:
 
-| Parameter | Type | Description   |
-| --------- | ---- | ------------- |
+| Parameter | Type | Description      |
+| --------- | ---- | ---------------- |
 | `id`      | UUID | Order/project ID |
 
 **Response**: `204 No Content`
 
 **Side effects**:
+
 - Current assignment removed from `vendor_calendars`.
 - Matching algorithm runs again (excluding declined translator).
 - New candidate notified if found; otherwise TPM is notified.
@@ -1306,13 +1444,14 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Path Parameters**:
 
-| Parameter | Type | Description   |
-| --------- | ---- | ------------- |
+| Parameter | Type | Description      |
+| --------- | ---- | ---------------- |
 | `id`      | UUID | Order/project ID |
 
 **Response**: `204 No Content`
 
 **Side effects**:
+
 - Order status → `completed`.
 - `completed_at` timestamp set.
 
@@ -1324,8 +1463,8 @@ Slot structure and `type` values are the same as `GET /api/calendar/day`.
 
 **Path Parameters**:
 
-| Parameter | Type | Description   |
-| --------- | ---- | ------------- |
+| Parameter | Type | Description      |
+| --------- | ---- | ---------------- |
 | `id`      | UUID | Order/project ID |
 
 **Response**: `204 No Content`

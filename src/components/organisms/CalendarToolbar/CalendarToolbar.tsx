@@ -27,13 +27,19 @@ const DURATION_OPTIONS = [
 
 const CalendarToolbar: FC = () => {
   const { t } = useTranslation()
-  const { view, setView, currentDate, setCurrentDate } = useCalendarNav()
+  const { view, setView, currentDate, setCurrentDate, setIsSearching } = useCalendarNav()
   const { focusedLanguageId, setFocusedLanguageId } = useCalendarPanel()
   const navigate = useNavigate()
   const { isTPM, isClient } = useCalendarRole()
   const canSearch = isTPM || isClient
-  const { languages } = useFetchCalendarLanguages()
+  const { languages } = useFetchCalendarLanguages(
+    currentDate.format('YYYY-MM-DD')
+  )
   const { mutate: runSearch, isPending: isSearching } = useCalendarSearch()
+
+  useEffect(() => {
+    setIsSearching(isSearching)
+  }, [isSearching])
 
   const [searchLangId, setSearchLangId] = useState('')
   const [searchFrom, setSearchFrom] = useState('')
@@ -135,7 +141,7 @@ const CalendarToolbar: FC = () => {
                   <option value="">{t('calendar.select_language')}</option>
                   {languages.map((lang) => (
                     <option key={lang.language.id} value={lang.language.id}>
-                      {lang.language.value}
+                      {lang.language.value.split('-')[0]}
                     </option>
                   ))}
                 </select>

@@ -35,6 +35,8 @@ interface CalendarNavContextType {
   navigatePrevMonth: () => void
   navigateNextMonth: () => void
   navigateToday: () => void
+  isSearching: boolean
+  setIsSearching: (v: boolean) => void
 }
 
 const CalendarNavContext = createContext<CalendarNavContextType>({
@@ -47,6 +49,8 @@ const CalendarNavContext = createContext<CalendarNavContextType>({
   navigatePrevMonth: () => undefined,
   navigateNextMonth: () => undefined,
   navigateToday: () => undefined,
+  isSearching: false,
+  setIsSearching: () => undefined,
 })
 
 export const useCalendarNav = () => useContext(CalendarNavContext)
@@ -111,6 +115,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   // Nav state
   const [view, setView] = useState<CalendarView>('day')
   const [currentDate, setCurrentDate] = useState<Dayjs>(dayjs())
+  const [isSearching, setIsSearching] = useState(false)
 
   // Expansion state
   const [expandedLanguageIds, setExpandedLanguageIds] = useState<string[]>([])
@@ -220,8 +225,10 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
       navigatePrevMonth,
       navigateNextMonth,
       navigateToday,
+      isSearching,
+      setIsSearching,
     }),
-    [view, currentDate, navigatePrev, navigateNext, navigatePrevMonth, navigateNextMonth, navigateToday]
+    [view, currentDate, navigatePrev, navigateNext, navigatePrevMonth, navigateNextMonth, navigateToday, isSearching]
   )
 
   const expansionValue = useMemo<CalendarExpansionContextType>(

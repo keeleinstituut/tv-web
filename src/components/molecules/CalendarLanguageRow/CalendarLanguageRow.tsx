@@ -8,11 +8,8 @@ import BookingBusyIcon from 'assets/icons/booking_busy.svg?react'
 import PinIcon from 'assets/icons/pin.svg?react'
 import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
 import { formatDuration } from 'helpers/calendar'
-import { BookedSlot, CalendarLanguage } from 'types/calendar'
-import {
-  useFetchCalendarDay,
-  useFetchCalendarWeek,
-} from 'hooks/requests/useCalendar'
+import { BookedSlot, CalendarDayResponse, CalendarLanguage } from 'types/calendar'
+import { useFetchCalendarWeek } from 'hooks/requests/useCalendar'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
 import classes from './classes.module.scss'
@@ -34,6 +31,7 @@ interface Props {
   /** When true the row is a header-only strip: no slot cells, no interaction */
   readOnly?: boolean
   slotWidth?: number
+  dayData?: CalendarDayResponse
 }
 
 export function timeToX(
@@ -72,7 +70,7 @@ export function slotIndexToIso(
 }
 
 export function isSlotPast(startIso: string): boolean {
-  return dayjs(startIso).add(30, 'minute').isBefore(dayjs())
+  return dayjs(startIso).isBefore(dayjs())
 }
 
 function getSlotClass(
@@ -233,14 +231,17 @@ const CalendarLanguageRow: FC<Props> = ({
   isExpanded,
   readOnly = false,
   slotWidth,
+  dayData,
 }) => {
   const sw = slotWidth ?? SLOT_WIDTH_PX
   const { t } = useTranslation()
-  const { data } = useFetchCalendarDay(date, language.language.id)
   const { data: weekData } = useFetchCalendarWeek(date)
   const { pendingDeepLink, setPendingDeepLink, openSidePanel } =
     useCalendarPanel()
-  const bookedSlots = data?.booked_slots ?? []
+  const bookedSlots =
+    dayData?.booked_slots_by_language[language.language.id] ??
+    dayData?.booked_slots ??
+    []
 
   const langWeekSlots =
     weekData?.languages.find((l) => l.language_id === language.language.id)
@@ -260,9 +261,9 @@ const CalendarLanguageRow: FC<Props> = ({
   )
 
   useEffect(() => {
-    if (!pendingDeepLink || !data?.booked_slots) return
+    if (!pendingDeepLink || !bookedSlots.length) return
     // slotId is the assignment id; fall back to start_at match
-    const match = data.booked_slots.find(
+    const match = bookedSlots.find(
       (s) =>
         s.assignment?.id === pendingDeepLink.slotId ||
         s.start_at === pendingDeepLink.slotId
@@ -275,7 +276,7 @@ const CalendarLanguageRow: FC<Props> = ({
       slot: match,
     })
     setPendingDeepLink(null)
-  }, [data, pendingDeepLink, openSidePanel, language, setPendingDeepLink])
+  }, [bookedSlots, pendingDeepLink, openSidePanel, language, setPendingDeepLink])
 
   const totalSlots = (dayEndHour - dayStartHour) * 2
   const totalWidth = totalSlots * sw
@@ -295,17 +296,23 @@ const CalendarLanguageRow: FC<Props> = ({
     [bookedSlots, date, dayStartHour]
   )
 
-  const { isDragging, selectionLeft, selectionWidth, handleMouseDown, handleMouseMove, handleMouseUp } =
-    useDragSelection({
-      rowRef,
-      date,
-      dayStartHour,
-      totalSlots,
-      slotWidth: sw,
-      isSlotBooked,
-      onDragComplete: (startIso, endIso) =>
-        onSelectRange?.(language.language.id, startIso, endIso),
-    })
+  const {
+    isDragging,
+    selectionLeft,
+    selectionWidth,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+  } = useDragSelection({
+    rowRef,
+    date,
+    dayStartHour,
+    totalSlots,
+    slotWidth: sw,
+    isSlotBooked,
+    onDragComplete: (startIso, endIso) =>
+      onSelectRange?.(language.language.id, startIso, endIso),
+  })
 
   return (
     <div className={classes.rowWrapper}>
@@ -325,7 +332,7 @@ const CalendarLanguageRow: FC<Props> = ({
             <PinIcon />
           </button>
         )}
-        <span className={classes.badge}>{language.language.value}</span>
+        <span className={classes.badge}>{language.language.value.split('-')[0]}</span>
         {onToggleExpand && (
           <button
             className={classNames(classes.collapseBtn, {

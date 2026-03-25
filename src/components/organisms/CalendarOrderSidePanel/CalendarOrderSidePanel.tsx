@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -10,6 +10,8 @@ import {
   useUpdateCalendarOrder,
   useCancelCalendarOrder,
   useFetchSlotMatching,
+  useCreatePrebook,
+  useCancelPrebook,
 } from 'hooks/requests/useCalendar'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
@@ -37,6 +39,9 @@ const CalendarOrderSidePanel: FC = () => {
     useUpdateCalendarOrder()
   const { mutate: cancelOrder, isPending: isCancelling } =
     useCancelCalendarOrder()
+  const { mutate: createPrebook } = useCreatePrebook()
+  const { mutate: cancelPrebook } = useCancelPrebook()
+  const prebookActiveRef = useRef(false)
 
   const [referenceNumber, setReferenceNumber] = useState('')
   const [serviceType, setServiceType] = useState<ServiceType>('')
@@ -135,6 +140,25 @@ const CalendarOrderSidePanel: FC = () => {
     }
   }, [sidePanelSelection])
 
+  // Create prebook when opening a new (non-view) slot
+  useEffect(() => {
+    if (!isOpen || isViewMode || !language || !startIso || !endIso) return
+    prebookActiveRef.current = true
+    createPrebook({
+      language_id: language.language.id,
+      start_at: startIso,
+      end_at: endIso,
+    })
+  }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleClose = useCallback(() => {
+    if (prebookActiveRef.current) {
+      cancelPrebook()
+      prebookActiveRef.current = false
+    }
+    closeSidePanel()
+  }, [cancelPrebook, closeSidePanel])
+
   const handleSubmit = () => {
     if (!language || !startIso || !serviceType) return
     const computedEndIso = dayjs(startIso)
@@ -157,6 +181,7 @@ const CalendarOrderSidePanel: FC = () => {
       },
       {
         onSuccess: () => {
+          prebookActiveRef.current = false
           closeSidePanel()
           showNotification({
             type: NotificationTypes.Success,
@@ -227,7 +252,7 @@ const CalendarOrderSidePanel: FC = () => {
     if (!projectId) return
     cancelOrder(projectId, {
       onSuccess: () => {
-        closeSidePanel()
+        handleClose()
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -317,7 +342,7 @@ const CalendarOrderSidePanel: FC = () => {
       handleStartChangeDuration,
       handleCancelChangeDuration,
       handleSaveDuration,
-      closeSidePanel,
+      closeSidePanel: handleClose,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -338,6 +363,7 @@ const CalendarOrderSidePanel: FC = () => {
       isUpdating,
       isCancelling,
       domains, vendors,
+      handleClose,
     ]
   )
 
@@ -351,7 +377,7 @@ const CalendarOrderSidePanel: FC = () => {
 
   return (
     <>
-      {isOpen && <div className={classes.backdrop} onClick={closeSidePanel} />}
+      {isOpen && <div className={classes.backdrop} onClick={handleClose} />}
       <div className={`${classes.panel} ${isOpen ? classes.open : ''}`}>
         {/* Header */}
         <div className={classes.header}>
@@ -370,7 +396,7 @@ const CalendarOrderSidePanel: FC = () => {
                 <OpenBookingIcon className={classes.headerBtnIcon} />
               </button>
             )}
-            <button className={classes.headerBtn} onClick={closeSidePanel}>
+            <button className={classes.headerBtn} onClick={handleClose}>
               {t('calendar.close')}
               <CloseIcon className={classes.headerBtnIcon} />
             </button>
@@ -464,7 +490,7 @@ const CalendarOrderSidePanel: FC = () => {
                   {isPastSlot ? (
                     <Button
                       appearance={AppearanceTypes.Secondary}
-                      onClick={closeSidePanel}
+                      onClick={handleClose}
                     >
                       {t('calendar.close')}
                     </Button>
@@ -493,7 +519,7 @@ const CalendarOrderSidePanel: FC = () => {
                 </Button>
                 <Button
                   appearance={AppearanceTypes.Secondary}
-                  onClick={closeSidePanel}
+                  onClick={handleClose}
                 >
                   {t('calendar.cancel')}
                 </Button>

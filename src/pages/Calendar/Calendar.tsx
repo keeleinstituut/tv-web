@@ -11,7 +11,6 @@ import CalendarDayView from 'components/organisms/CalendarDayView/CalendarDayVie
 import CalendarWeekView from 'components/organisms/CalendarWeekView/CalendarWeekView'
 import CalendarMonthView from 'components/organisms/CalendarMonthView/CalendarMonthView'
 import CalendarOrderSidePanel from 'components/organisms/CalendarOrderSidePanel/CalendarOrderSidePanel'
-import CalendarDevRoleSelector from 'components/atoms/CalendarDevRoleSelector/CalendarDevRoleSelector'
 import CalendarWeekBookingPanel from 'components/organisms/CalendarWeekBookingPanel/CalendarWeekBookingPanel'
 import classes from './classes.module.scss'
 
@@ -38,7 +37,6 @@ const CalendarContent: FC = () => {
       {view === 'month' && <CalendarMonthView />}
       <CalendarOrderSidePanel />
       <CalendarWeekBookingPanel />
-      {import.meta.env.DEV && <CalendarDevRoleSelector />}
     </div>
   )
 }

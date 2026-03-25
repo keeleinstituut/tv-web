@@ -40,64 +40,37 @@ import { useCalendarRole } from 'hooks/useCalendarRole'
 // Hooks
 // ---------------------------------------------------------------------------
 
-/**
- * Fetch available languages for the calendar.
- * Accepts an explicit date range; defaults to a ±2-month window around today.
- */
 export const useFetchCalendarLanguages = (
   dateFrom?: string,
   dateTo?: string
 ) => {
-  const from = dateFrom ?? dayjs().startOf('month').format('YYYY-MM-DD')
-  const to = dateTo ?? dayjs().add(2, 'month').endOf('month').format('YYYY-MM-DD')
-
+  const from = dateFrom ?? dayjs().format('YYYY-MM-DD')
+  const to = dateTo ?? from
   const { isLoading, isError, data } = useQuery<CalendarLanguagesResponse>({
     queryKey: ['calendar-languages', from, to],
     queryFn: async () => {
-      const raw: ApiCalendarLanguagesResponse = await apiClient.get(
+      const res: { data: ApiCalendarLanguagesResponse } = await apiClient.get(
         endpoints.CALENDAR_LANGUAGES,
         { date_from: from, date_to: to }
       )
-      return transformLanguages(raw)
+      return transformLanguages(res.data)
     },
     staleTime: Infinity,
   })
+  console.log(data, endpoints.CALENDAR_LANGUAGES, '@@@@@@@@@@', from, to)
   return { isLoading, isError, languages: data?.languages ?? [] }
 }
 
-// Returns only the languages for which the current translator has assigned orders.
-// Same endpoint — backend filters based on role server-side.
-export const useFetchCalendarTranslatorLanguages = (
-  dateFrom?: string,
-  dateTo?: string
-) => {
-  const from = dateFrom ?? dayjs().startOf('month').format('YYYY-MM-DD')
-  const to = dateTo ?? dayjs().add(2, 'month').endOf('month').format('YYYY-MM-DD')
-
-  const { isLoading, isError, data } = useQuery<CalendarLanguagesResponse>({
-    queryKey: ['calendar-translator-languages', from, to],
-    queryFn: async () => {
-      const raw: ApiCalendarLanguagesResponse = await apiClient.get(
-        endpoints.CALENDAR_LANGUAGES,
-        { date_from: from, date_to: to }
-      )
-      return transformLanguages(raw)
-    },
-    staleTime: Infinity,
-  })
-  return { isLoading, isError, languages: data?.languages ?? [] }
-}
-
-export const useFetchCalendarDay = (date: string, languageId?: string) => {
+export const useFetchCalendarDay = (date: string) => {
   const { isTPM } = useCalendarRole()
   const { isLoading, isError, data } = useQuery<CalendarDayResponse>({
-    queryKey: ['calendar-day', date, languageId],
+    queryKey: ['calendar-day', date],
     queryFn: async () => {
       const raw: ApiCalendarDayResponse = await apiClient.get(
         endpoints.CALENDAR_DAY,
-        { date, ...(languageId ? { language_id: languageId } : {}) }
+        { date }
       )
-      return transformDayResponse(raw, languageId, isTPM)
+      return transformDayResponse(raw, undefined, isTPM)
     },
     enabled: !!date,
   })
@@ -228,8 +201,8 @@ export const useFetchCalendarMonthVendors = (
 }
 
 /**
- * TPM only: extract per-vendor day data from the main day response.
- * Re-uses the same query key as useFetchCalendarDay so results are shared.
+ * TPM only: extract per-vendor day data. Re-uses the same query key as
+ * useFetchCalendarDay so results are shared from cache — no extra request.
  */
 export const useFetchCalendarDayVendors = (
   date: string,
@@ -241,13 +214,13 @@ export const useFetchCalendarDayVendors = (
     Error,
     CalendarDayVendorsResponse | CalendarDayVendorsAllResponse
   >({
-    queryKey: ['calendar-day', date, languageId],
+    queryKey: ['calendar-day', date],
     queryFn: async () => {
       const raw: ApiCalendarDayResponse = await apiClient.get(
         endpoints.CALENDAR_DAY,
-        { date, ...(languageId ? { language_id: languageId } : {}) }
+        { date }
       )
-      return transformDayResponse(raw, languageId, isTPM)
+      return transformDayResponse(raw, undefined, isTPM)
     },
     select: (
       dayData
@@ -272,7 +245,11 @@ export const useCreatePrebook = () => {
       start_at: string
       end_at: string
       vendor_id?: string
-    }) => apiClient.post(endpoints.CALENDAR_PREBOOK, params),
+    }) => apiClient.post(endpoints.CALENDAR_PREBOOK, {
+      ...params,
+      start_at: params.start_at.replace(/\.\d+Z$/, 'Z'),
+      end_at: params.end_at.replace(/\.\d+Z$/, 'Z'),
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
       queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
@@ -297,12 +274,18 @@ export const useCalendarSearch = () =>
       apiClient
         .get(endpoints.CALENDAR_SEARCH, {
           language_id: params.language_id,
-          ...(params.date_from ? { datetime: `${params.date_from}T00:00:00Z` } : {}),
-          ...(params.slot_length ? { duration_minutes: params.slot_length } : {}),
+          ...(params.date_from
+            ? { datetime: `${params.date_from}T00:00:00Z` }
+            : {}),
+          ...(params.slot_length
+            ? { duration_minutes: params.slot_length }
+            : {}),
         })
-        .then((raw: ApiCalendarSearchResponse): CalendarSearchResponse => ({
-          dates: raw.start_at ? [raw.start_at] : [],
-        })),
+        .then(
+          (raw: ApiCalendarSearchResponse): CalendarSearchResponse => ({
+            dates: raw.start_at ? [raw.start_at] : [],
+          })
+        ),
   })
 
 export const useFetchSlotMatching = (
@@ -334,21 +317,26 @@ export const useCreateCalendarOrder = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (payload: CreateOrderPayload) =>
-      apiClient.post(endpoints.PROJECTS, {
+      apiClient.postForm(endpoints.PROJECTS, {
         is_calendar_project: true,
         destination_language_classifier_value_ids: [payload.language_id],
-        event_start_at: payload.start_at,
-        event_end_at: payload.end_at,
+        event_start_at: payload.start_at.replace(/\.\d+Z$/, 'Z'),
+        event_end_at: payload.end_at.replace(/\.\d+Z$/, 'Z'),
         service_type: payload.service_type,
         ...(payload.reference_number
           ? { reference_number: payload.reference_number }
           : {}),
         ...(payload.location ? { location: payload.location } : {}),
         ...(payload.meeting_link ? { meeting_link: payload.meeting_link } : {}),
+        ...(payload.domain_id
+          ? { translation_domain_classifier_value_id: payload.domain_id }
+          : {}),
         ...(payload.client_institution_id
           ? { client_institution_user_id: payload.client_institution_id }
           : {}),
-        ...(payload.vendor_id ? { candidate_vendor_id: payload.vendor_id } : {}),
+        ...(payload.vendor_id
+          ? { candidate_vendor_id: payload.vendor_id }
+          : {}),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
@@ -366,13 +354,23 @@ export const useUpdateCalendarOrder = () => {
         ...(payload.reference_number !== undefined
           ? { reference_number: payload.reference_number }
           : {}),
-        ...(payload.location !== undefined ? { location: payload.location } : {}),
+        ...(payload.location !== undefined
+          ? { location: payload.location }
+          : {}),
         ...(payload.meeting_link !== undefined
           ? { meeting_link: payload.meeting_link }
           : {}),
-        ...(payload.start_at ? { event_start_at: payload.start_at } : {}),
-        ...(payload.end_at ? { event_end_at: payload.end_at } : {}),
-        ...(payload.vendor_id ? { candidate_vendor_id: payload.vendor_id } : {}),
+        ...(payload.start_at ? { event_start_at: payload.start_at.replace(/\.\d+Z$/, 'Z') } : {}),
+        ...(payload.end_at ? { event_end_at: payload.end_at.replace(/\.\d+Z$/, 'Z') } : {}),
+        ...(payload.domain_id
+          ? { translation_domain_classifier_value_id: payload.domain_id }
+          : {}),
+        ...(payload.client_institution_id
+          ? { client_institution_user_id: payload.client_institution_id }
+          : {}),
+        ...(payload.vendor_id
+          ? { candidate_vendor_id: payload.vendor_id }
+          : {}),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
@@ -552,7 +550,9 @@ export const useCreateEmergencySchedule = () => {
         end_date,
       }),
     onSuccess: (_data, { vendorId }) => {
-      queryClient.invalidateQueries({ queryKey: ['emergency-schedules', vendorId] })
+      queryClient.invalidateQueries({
+        queryKey: ['emergency-schedules', vendorId],
+      })
     },
   })
 }
@@ -571,7 +571,9 @@ export const useDeleteEmergencySchedule = () => {
         endpoints.VENDOR_EMERGENCY_SCHEDULE(vendorId, scheduleId)
       ),
     onSuccess: (_data, { vendorId }) => {
-      queryClient.invalidateQueries({ queryKey: ['emergency-schedules', vendorId] })
+      queryClient.invalidateQueries({
+        queryKey: ['emergency-schedules', vendorId],
+      })
     },
   })
 }

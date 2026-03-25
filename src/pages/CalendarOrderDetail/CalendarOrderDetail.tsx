@@ -35,11 +35,17 @@ const CalendarOrderDetail: FC = () => {
   const { isTPM, isTranslator } = useCalendarRole()
   const isClient = !isTPM && !isTranslator
 
-  const { order, isLoading } = useFetchCalendarOrderDetail(isCreateMode ? null : (orderId ?? null))
-  const { mutate: createOrder, isPending: isCreating } = useCreateCalendarOrder()
-  const { mutate: updateOrder, isPending: isUpdating } = useUpdateCalendarOrder()
-  const { mutate: acceptOrder, isPending: isAccepting } = useAcceptCalendarOrder()
-  const { mutate: cancelOrder, isPending: isCancelling } = useCancelCalendarOrder()
+  const { order, isLoading } = useFetchCalendarOrderDetail(
+    isCreateMode ? null : (orderId ?? null)
+  )
+  const { mutate: createOrder, isPending: isCreating } =
+    useCreateCalendarOrder()
+  const { mutate: updateOrder, isPending: isUpdating } =
+    useUpdateCalendarOrder()
+  const { mutate: acceptOrder, isPending: isAccepting } =
+    useAcceptCalendarOrder()
+  const { mutate: cancelOrder, isPending: isCancelling } =
+    useCancelCalendarOrder()
 
   const { languages } = useFetchCalendarLanguages()
   const { classifierValues: domains } = useClassifierValuesFetch({
@@ -53,7 +59,9 @@ const CalendarOrderDetail: FC = () => {
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
   const [isAddingComment, setIsAddingComment] = useState(false)
   const [commentText, setCommentText] = useState('')
-  const [editingCommentIdx, setEditingCommentIdx] = useState<number | null>(null)
+  const [editingCommentIdx, setEditingCommentIdx] = useState<number | null>(
+    null
+  )
   const [editingCommentText, setEditingCommentText] = useState('')
 
   // Editable field state
@@ -61,7 +69,9 @@ const CalendarOrderDetail: FC = () => {
   const [startTimeInput, setStartTimeInput] = useState('')
   const [durationMinutes, setDurationMinutes] = useState(60)
   const [durationEndTime, setDurationEndTime] = useState('')
-  const [serviceType, setServiceType] = useState<'remote' | 'on-site'>('on-site')
+  const [serviceType, setServiceType] = useState<'remote' | 'on-site'>(
+    'on-site'
+  )
   const [address, setAddress] = useState('')
   const [clientInstitutionId, setClientInstitutionId] = useState('')
   const [referenceNumber, setReferenceNumber] = useState('')
@@ -75,21 +85,34 @@ const CalendarOrderDetail: FC = () => {
 
   // Mobile wizard state (create mode only)
   const [mobileCreatedAt, setMobileCreatedAt] = useState<string | null>(null)
-  const [mobileCreatedOrderId, setMobileCreatedOrderId] = useState<string | null>(null)
+  const [mobileCreatedOrderId, setMobileCreatedOrderId] = useState<
+    string | null
+  >(null)
 
   useEffect(() => {
     if (!order) return
     setSelectedDate(dayjs(order.start_at).format('YYYY-MM-DD'))
     setStartTimeInput(dayjs(order.start_at).format('HH:mm'))
-    setDurationMinutes(dayjs(order.end_at).diff(dayjs(order.start_at), 'minute'))
+    setDurationMinutes(
+      dayjs(order.end_at).diff(dayjs(order.start_at), 'minute')
+    )
     setServiceType(order.service_type)
-    setAddress(order.service_type === 'on-site' ? (order.location ?? '') : (order.meeting_link ?? ''))
+    setAddress(
+      order.service_type === 'on-site'
+        ? (order.location ?? '')
+        : (order.meeting_link ?? '')
+    )
     setClientInstitutionId(order.client?.name ?? '')
     setReferenceNumber(order.reference_number ?? '')
   }, [order])
 
-  const startIso = selectedDate && startTimeInput ? `${selectedDate}T${startTimeInput}:00` : null
-  const endIso = startIso ? dayjs(startIso).add(durationMinutes, 'minute').toISOString() : null
+  const startIso =
+    selectedDate && startTimeInput
+      ? `${selectedDate}T${startTimeInput}:00`
+      : null
+  const endIso = startIso
+    ? dayjs(startIso).add(durationMinutes, 'minute').toISOString()
+    : null
 
   const slotMatchingParams =
     isTPM && isCreateMode && startIso && endIso && languageId
@@ -114,7 +137,8 @@ const CalendarOrderDetail: FC = () => {
     return `${h}h ${m}min`
   }
 
-  const fmt = (iso?: string) => (iso ? dayjs(iso).format('DD.MM.YYYY  HH:mm') : '–')
+  const fmt = (iso?: string) =>
+    iso ? dayjs(iso).format('DD.MM.YYYY  HH:mm') : '–'
 
   const startDt = order ? dayjs(order.start_at) : null
   const endDt = order ? dayjs(order.end_at) : null
@@ -146,7 +170,11 @@ const CalendarOrderDetail: FC = () => {
     setStartTimeInput(dayjs(order.start_at).format('HH:mm'))
     setDurationMinutes(orderDurationMins)
     setServiceType(order.service_type)
-    setAddress(order.service_type === 'on-site' ? (order.location ?? '') : (order.meeting_link ?? ''))
+    setAddress(
+      order.service_type === 'on-site'
+        ? (order.location ?? '')
+        : (order.meeting_link ?? '')
+    )
     setClientInstitutionId(order.client?.name ?? '')
     setReferenceNumber(order.reference_number ?? '')
   }
@@ -162,7 +190,9 @@ const CalendarOrderDetail: FC = () => {
         reference_number: referenceNumber || undefined,
         location: serviceType === 'on-site' ? address : undefined,
         meeting_link: serviceType === 'remote' ? address : undefined,
-        client_institution_id: isTPM ? clientInstitutionId || undefined : undefined,
+        client_institution_id: isTPM
+          ? clientInstitutionId || undefined
+          : undefined,
         domain_id: domainId || undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
       },
@@ -187,7 +217,9 @@ const CalendarOrderDetail: FC = () => {
   const handleSave = () => {
     if (!orderId) return
     const saveStart = `${selectedDate}T${startTimeInput}:00`
-    const saveEnd = dayjs(saveStart).add(durationMinutes, 'minute').toISOString()
+    const saveEnd = dayjs(saveStart)
+      .add(durationMinutes, 'minute')
+      .toISOString()
     updateOrder(
       {
         id: orderId,
@@ -197,7 +229,9 @@ const CalendarOrderDetail: FC = () => {
         location: serviceType === 'on-site' ? address : undefined,
         meeting_link: serviceType === 'remote' ? address : undefined,
         reference_number: referenceNumber || undefined,
-        client_institution_id: isTPM ? clientInstitutionId || undefined : undefined,
+        client_institution_id: isTPM
+          ? clientInstitutionId || undefined
+          : undefined,
       },
       {
         onSuccess: () => {

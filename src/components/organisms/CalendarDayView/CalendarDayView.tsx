@@ -1,9 +1,21 @@
-import { FC, Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import {
+  FC,
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import 'dayjs/locale/et'
 import classNames from 'classnames'
-import { useCalendarNav, useCalendarExpansion, useCalendarPanel } from 'components/contexts/CalendarContext'
+import {
+  useCalendarNav,
+  useCalendarExpansion,
+  useCalendarPanel,
+} from 'components/contexts/CalendarContext'
+import { useFetchCalendarDay } from 'hooks/requests/useCalendar'
 import CalendarLanguageRow, {
   SLOT_WIDTH_PX,
   LABEL_WIDTH_PX,
@@ -16,6 +28,7 @@ import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
 import CalendarDayVendorRows from 'components/molecules/CalendarDayVendorRows/CalendarDayVendorRows'
 import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
 import CalendarTimeMarker from 'components/atoms/CalendarTimeMarker/CalendarTimeMarker'
+import CalendarLoadingOverlay from 'components/atoms/CalendarLoadingOverlay/CalendarLoadingOverlay'
 import classes from './classes.module.scss'
 
 const DAY_START_HOUR = 9
@@ -50,6 +63,7 @@ const CalendarDayView: FC = () => {
     navigatePrevMonth,
     navigateNextMonth,
     navigateToday,
+    isSearching,
   } = useCalendarNav()
   const { isLanguageExpanded, toggleLanguageExpanded, allCollapsedOverride } =
     useCalendarExpansion()
@@ -58,10 +72,11 @@ const CalendarDayView: FC = () => {
   const { isTPM, isClient } = useCalendarRole()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
-  const { languages, visibleLanguages, isLoading, isError } = useVisibleCalendarLanguages()
-
   const dateStr = currentDate.format('YYYY-MM-DD')
+  const { languages, visibleLanguages, isLoading, isError } =
+    useVisibleCalendarLanguages(dateStr, dateStr)
   const isToday = currentDate.isSame(dayjs(), 'day')
+  const { data: dayData } = useFetchCalendarDay(dateStr)
 
   // Fluid slot width: fills available container width, min 48px per 30 min
   const containerRef = useRef<HTMLDivElement>(null)
@@ -99,6 +114,9 @@ const CalendarDayView: FC = () => {
 
   return (
     <div className={classes.container} ref={containerRef}>
+      {(isLoading || isSearching) && (
+        <CalendarLoadingOverlay searching={isSearching} />
+      )}
       {/* Month row */}
       <div className={classes.dateNavMonth}>
         <div className={classes.navLeft}>
@@ -211,6 +229,7 @@ const CalendarDayView: FC = () => {
                   dayStartHour={DAY_START_HOUR}
                   dayEndHour={DAY_END_HOUR}
                   readOnly={!canInteract || isExpanded}
+                  dayData={dayData}
                   onSelectRange={
                     canInteract && !isExpanded
                       ? (langId, start, end) => {

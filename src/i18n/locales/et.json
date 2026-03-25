@@ -492,6 +492,10 @@
     "no_bookings": "Tellimusi ei leitud",
     "pin_limit_reached": "Maksimaalselt saab kinnitada 3 keelt",
     "loading": "Laadimine...",
+    "loading_overlay_title": "Siruta end korraks – sobivad ajad on peagi leitavad",
+    "loading_overlay_subtitle": "Analüüsime keele ja aja vastavust.",
+    "searching_overlay_title": "Siruta end korraks – sobivad ajad on peagi leitavad",
+    "searching_overlay_subtitle": "Analüüsime keele ja aja vastavust.",
     "error_loading": "Andmete laadimine ebaõnnestus"
   },
   "alt": {

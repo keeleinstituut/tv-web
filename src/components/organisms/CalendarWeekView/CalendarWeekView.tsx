@@ -14,6 +14,7 @@ import { useCalendarPinning } from 'hooks/useCalendarPinning'
 import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
 import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
 import CalendarTimeMarker from 'components/atoms/CalendarTimeMarker/CalendarTimeMarker'
+import CalendarLoadingOverlay from 'components/atoms/CalendarLoadingOverlay/CalendarLoadingOverlay'
 import classes from './classes.module.scss'
 
 const MIN_DAY_WIDTH = 160
@@ -81,17 +82,21 @@ const CalendarWeekView: FC = () => {
     navigateNext,
     navigatePrevMonth,
     navigateNextMonth,
+    isSearching,
   } = useCalendarNav()
 
   const { t } = useTranslation()
   const { isTPM, isClient } = useCalendarRole()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
-  const { visibleLanguages, isLoading, isError } = useVisibleCalendarLanguages()
-
   const weekStart = getWeekStart(currentDate)
   const days = Array.from({ length: 7 }, (_, i) => weekStart.add(i, 'day'))
   const dateStr = currentDate.format('YYYY-MM-DD')
+  const weekEndStr = weekStart.add(6, 'day').format('YYYY-MM-DD')
+  const { visibleLanguages, isLoading, isError } = useVisibleCalendarLanguages(
+    weekStart.format('YYYY-MM-DD'),
+    weekEndStr
+  )
 
   // Month groups for the nav label (week can span two months)
   const monthGroups: { label: string; count: number; startIdx: number }[] = []
@@ -141,6 +146,9 @@ const CalendarWeekView: FC = () => {
 
   return (
     <div className={classes.container} ref={containerRef}>
+      {(isLoading || isSearching) && (
+        <CalendarLoadingOverlay searching={isSearching} />
+      )}
       {/* Month nav row */}
       <div className={classes.monthNavRow}>
         <div className={classes.navLeft}>

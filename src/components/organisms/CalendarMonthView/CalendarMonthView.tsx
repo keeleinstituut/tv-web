@@ -12,6 +12,7 @@ import { useCalendarPinning } from 'hooks/useCalendarPinning'
 import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
 import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
 import CalendarTimeMarker from 'components/atoms/CalendarTimeMarker/CalendarTimeMarker'
+import CalendarLoadingOverlay from 'components/atoms/CalendarLoadingOverlay/CalendarLoadingOverlay'
 import classes from './classes.module.scss'
 
 export const LABEL_WIDTH_PX = 64
@@ -60,16 +61,19 @@ const CalendarMonthView: FC = () => {
     setView,
     navigatePrevMonth,
     navigateNextMonth,
+    isSearching,
   } = useCalendarNav()
 
   const { t } = useTranslation()
   const { isTPM, isClient } = useCalendarRole()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
-  const { visibleLanguages, isLoading, isError } = useVisibleCalendarLanguages()
-
   const weeks = getWeeksForMonth(currentDate)
   const dateStr = currentDate.format('YYYY-MM-DD')
+  const { visibleLanguages, isLoading, isError } = useVisibleCalendarLanguages(
+    currentDate.startOf('month').format('YYYY-MM-DD'),
+    currentDate.endOf('month').format('YYYY-MM-DD')
+  )
   const monthStr = currentDate.format('YYYY-MM')
 
   // Fluid column width: fills available container width, min 186px per week
@@ -137,6 +141,9 @@ const CalendarMonthView: FC = () => {
 
   return (
     <div className={classes.container} ref={containerRef}>
+      {(isLoading || isSearching) && (
+        <CalendarLoadingOverlay searching={isSearching} />
+      )}
       {/* Month nav row */}
       <div className={classes.monthNavRow}>
         <div className={classes.navLeft}>

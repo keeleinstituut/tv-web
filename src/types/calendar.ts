@@ -38,7 +38,6 @@ export interface BookedSlotAssignment {
     source_language: { id: string; value: string; name: string }
     destination_language: { id: string; value: string; name: string }
   }
-  // Teostaja panel detail fields (populated by backend, mocked for now)
   service_type?: 'remote' | 'on-site'
   location?: string
   meeting_link?: string
@@ -72,8 +71,11 @@ export interface BookedSlot {
 
 export interface CalendarDayResponse {
   current_time: string
+  /** Translator role: all their own booked slots (no language key needed) */
   booked_slots: BookedSlot[]
-  /** Populated only for TPM role — vendor-level breakdown per language */
+  /** Client role: booked slots grouped by language_id */
+  booked_slots_by_language: Record<string, BookedSlot[]>
+  /** TPM role: vendor-level breakdown per language */
   tpm_vendors?: Array<{ language_id: string; vendors: VendorDayData[] }>
 }
 
@@ -595,7 +597,7 @@ export function transformDayResponse(
   isTPM?: boolean
 ): CalendarDayResponse {
   if (isVendorDayShape(api)) {
-    // Vendor shape: own calendar entries mapped to booked slots
+    // Translator shape: own calendar entries, no language breakdown available
     const vendorShape = api as ApiCalendarDayVendorShape
     return {
       current_time: new Date().toISOString(),
@@ -617,12 +619,12 @@ export function transformDayResponse(
             }
           : null,
       })),
+      booked_slots_by_language: {},
     }
   }
 
   if (isTpmDayShape(api, isTPM)) {
     const tpm = api as ApiCalendarDayTpmShape
-    // Build vendor-language map: group vendors by language they cover
     const vendorsByLanguage = new Map<string, VendorDayData[]>()
     for (const v of tpm.vendors) {
       const vendorData: VendorDayData = {
@@ -633,7 +635,7 @@ export function transformDayResponse(
             ? `${v.institutionUser.user.forename} ${v.institutionUser.user.surname}`.trim()
             : v.id,
         },
-        is_internal: v.emergency_schedules.length === 0, // approximation
+        is_internal: v.emergency_schedules.length === 0,
         booked_slots: (v.calendar_entries ?? []).map((e) => ({
           start_at: e.start_at,
           end_at: e.end_at,
@@ -658,14 +660,29 @@ export function transformDayResponse(
     return {
       current_time: new Date().toISOString(),
       booked_slots: [],
+      booked_slots_by_language: {},
       tpm_vendors: tpmVendors,
     }
   }
 
-  // Client shape
+  // Client shape: booked_slots grouped by language_id
+  const clientShape = api as ApiCalendarDayClientShape
+  const byLanguage: Record<string, BookedSlot[]> = {}
+  for (const slot of clientShape.booked_slots ?? []) {
+    for (const langId of slot.languages) {
+      if (!byLanguage[langId]) byLanguage[langId] = []
+      byLanguage[langId].push({
+        start_at: slot.start_at,
+        end_at: slot.end_at,
+        type: 'assignment',
+        assignment: null,
+      })
+    }
+  }
   return {
     current_time: new Date().toISOString(),
     booked_slots: [],
+    booked_slots_by_language: byLanguage,
   }
 }
 

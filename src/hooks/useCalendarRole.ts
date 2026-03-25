@@ -1,9 +1,6 @@
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 
-export type DevCalendarRole = 'tpm' | 'client' | 'translator'
-export const DEV_ROLE_KEY = 'dev_calendar_role'
-
 export interface CalendarRole {
   isTPM: boolean
   isTranslator: boolean
@@ -12,17 +9,6 @@ export interface CalendarRole {
 
 export function useCalendarRole(): CalendarRole {
   const { userPrivileges } = useAuth()
-
-  const devRole = import.meta.env.DEV
-    ? (localStorage.getItem(DEV_ROLE_KEY) as DevCalendarRole | null)
-    : null
-  if (devRole) {
-    return {
-      isTPM: devRole === 'tpm',
-      isTranslator: devRole === 'translator',
-      isClient: devRole === 'client',
-    }
-  }
 
   const isTPM = userPrivileges.includes(Privileges.ManageProject)
   const isTranslator =
