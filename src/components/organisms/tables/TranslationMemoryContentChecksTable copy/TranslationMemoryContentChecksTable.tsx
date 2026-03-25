@@ -46,7 +46,6 @@ const TranslationMemoryContentChecksTable: FC<TmSubProjectsTypes> = ({
     initialFilters: {
       tag_id: memoryId,
     },
-    refetchInterval: 2000,
   })
 
   const { createContextCheck } = useCreateTranslationMemoryContextCheck()
