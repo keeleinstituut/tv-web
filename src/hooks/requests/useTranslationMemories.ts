@@ -45,24 +45,14 @@ export const useFetchTranslationMemories = ({
     //handlePaginationChange,
   } = useFilters<TranslationMemoryFilters>(initialFilters, saveQueryParams)
 
-  const filterWithoutSearch = omit(filters, 'name')
-  const searchValue = pick(filters, 'name')
-  const queryString = join(
-    flatten(
-      map(filterWithoutSearch, (values, key) =>
-        map(values, (value) => (value !== 'all' ? `${key}=${value}` : ''))
-      )
-    ),
-    '&'
-  )
   const { isLoading, isError, isFetching, data, refetch } =
     useQuery<TranslationMemoryDataType>({
       enabled: !disabled,
       queryKey: ['translationMemories', ...(key ? [key] : [])],
       queryFn: () =>
         apiClient.get(
-          `${endpoints.TRANSLATION_MEMORIES}?${queryString}`,
-          searchValue
+          endpoints.TRANSLATION_MEMORIES,
+          filters
         ),
       keepPreviousData: true,
     })
@@ -79,6 +69,7 @@ export const useFetchTranslationMemories = ({
   const {
     // meta: paginationData,
     data: translationMemories,
+    segment_counts,
   } = data || {}
 
   return {
@@ -90,6 +81,7 @@ export const useFetchTranslationMemories = ({
     // paginationData,
     handleFilterChange,
     // handlePaginationChange,
+    translationMemoriesSegmentCounts: segment_counts,
   }
 }
 
@@ -228,41 +220,16 @@ export const useExportTMX = () => {
   const { isLoading, finishLoading, startLoading, waitForLoadingToFinish } =
     useWaitForLoading()
 
-  const { mutateAsync: attemptFileDownload } = useMutation({
+  const { mutateAsync: exportTMX } = useMutation({
     mutationKey: ['tmx'],
-    mutationFn: async (task_id?: string) =>
-      apiClient.get(
-        `${endpoints.EXPORT_TMX}/file/${task_id}`,
-        {},
-        { responseType: 'blob', hideError: true }
-      ),
+    mutationFn: async (payload: ExportTMXPayload) =>
+      apiClient.post(endpoints.EXPORT_TMX, payload, { responseType: 'blob' }),
     onSuccess: (data) => {
+      finishLoading()
       downloadFile({
         data,
         fileName: 'translation_memory.zip',
       })
-    },
-  })
-
-  const startFileDownloadPolling = useCallback(
-    async (job_id?: string) => {
-      if (!job_id) return null
-      try {
-        await attemptFileDownload(job_id)
-        finishLoading()
-      } catch (error) {
-        setTimeout(() => startFileDownloadPolling(job_id), 1000)
-      }
-    },
-    [attemptFileDownload, finishLoading]
-  )
-
-  const { mutateAsync: exportTMX } = useMutation({
-    mutationKey: ['tmx'],
-    mutationFn: async (payload: ExportTMXPayload) =>
-      apiClient.post(endpoints.EXPORT_TMX, payload),
-    onSuccess: ({ job_id }: { job_id?: string }) => {
-      startFileDownloadPolling(job_id)
     },
   })
 

@@ -76,7 +76,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
     const payload = {
       slang: langPair[0],
       tlang: langPair[1],
-      tag: memoryId,
+      tag: [memoryId],
     }
     try {
       await exportTMX(payload)
