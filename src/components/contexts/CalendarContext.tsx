@@ -20,6 +20,7 @@ export interface SidePanelSelection {
   slot?: BookedSlot
   /** Pre-selected vendor when booking from a vendor row (TPM) */
   vendorId?: string
+  vendorName?: string
 }
 
 // ─── CalendarNavContext ───────────────────────────────────────────────────────

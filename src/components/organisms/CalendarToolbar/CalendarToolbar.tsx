@@ -14,6 +14,8 @@ import {
   useFetchCalendarLanguages,
 } from 'hooks/requests/useCalendar'
 import { CalendarView } from 'types/calendar'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
 
@@ -42,10 +44,10 @@ const CalendarToolbar: FC = () => {
   }, [isSearching])
 
   const [searchLangId, setSearchLangId] = useState('')
-  const [searchFrom, setSearchFrom] = useState('')
+  const [searchDate, setSearchDate] = useState('')
+  const [searchTime, setSearchTime] = useState('')
   const [searchDuration, setSearchDuration] = useState(60)
   const [moreOpen, setMoreOpen] = useState(false)
-  const [noResults, setNoResults] = useState(false)
 
   const moreRef = useRef<HTMLDivElement>(null)
 
@@ -70,26 +72,35 @@ const CalendarToolbar: FC = () => {
     { key: 'month', label: t('calendar.month'), Icon: ViewMonthIcon },
   ]
 
+  const isPastDate = searchDate
+    ? dayjs(searchDate).isBefore(dayjs().startOf('day'))
+    : false
+
   const handleSearch = () => {
     if (!searchLangId) return
-    setNoResults(false)
-    const base = searchFrom ? dayjs(searchFrom) : currentDate
+    const datetime =
+      searchDate && searchTime
+        ? dayjs(`${searchDate}T${searchTime}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
+        : searchDate
+          ? dayjs(`${searchDate}T${dayjs().format('HH:mm')}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
+          : dayjs().toISOString().replace(/\.\d+Z$/, 'Z')
     runSearch(
       {
         language_id: searchLangId,
-        date_from: base.format('YYYY-MM-DD'),
-        date_to: base.add(30, 'day').format('YYYY-MM-DD'),
-        slot_length: searchDuration,
-        start_time: searchFrom ? dayjs(searchFrom).format('HH:mm') : undefined,
+        datetime,
+        duration_minutes: searchDuration,
       },
       {
-        onSuccess: ({ dates }) => {
-          if (dates.length > 0) {
-            setCurrentDate(dayjs(dates[0]))
+        onSuccess: ({ start_at }) => {
+          if (start_at) {
+            setCurrentDate(dayjs(start_at))
             setView('day')
             setFocusedLanguageId(searchLangId)
           } else {
-            setNoResults(true)
+            showNotification(
+              { type: NotificationTypes.Warning, title: t('calendar.no_slots_found') },
+              5000
+            )
           }
         },
       }
@@ -129,14 +140,17 @@ const CalendarToolbar: FC = () => {
               <span className={classes.searchLabel}>
                 {t('calendar.language')}
               </span>
-              <div className={classes.searchInput}>
+              <div className={classNames(classes.searchInput, classes.searchInputSelect)}>
+                <span className={classes.searchSelectValue}>
+                  {searchLangId
+                    ? languages.find((l) => l.language.id === searchLangId)?.language.value.split('-')[0]
+                    : t('calendar.select_language')}
+                </span>
+                <ChevronLeftIcon className={classes.searchChevron} />
                 <select
-                  className={classes.searchSelect}
+                  className={classes.searchSelectOverlay}
                   value={searchLangId}
-                  onChange={(e) => {
-                    setSearchLangId(e.target.value)
-                    setNoResults(false)
-                  }}
+                  onChange={(e) => setSearchLangId(e.target.value)}
                 >
                   <option value="">{t('calendar.select_language')}</option>
                   {languages.map((lang) => (
@@ -145,7 +159,6 @@ const CalendarToolbar: FC = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronLeftIcon className={classes.searchChevron} />
               </div>
             </div>
 
@@ -155,14 +168,17 @@ const CalendarToolbar: FC = () => {
               </span>
               <div className={classes.searchInput}>
                 <input
-                  type="datetime-local"
+                  type="date"
                   className={classes.searchDatetime}
-                  value={searchFrom}
-                  onChange={(e) => {
-                    setSearchFrom(e.target.value)
-                    setNoResults(false)
-                  }}
-                  placeholder={t('calendar.from')}
+                  value={searchDate}
+                  onChange={(e) => setSearchDate(e.target.value)}
+                />
+                <span className={classes.searchDateSep} />
+                <input
+                  type="time"
+                  className={classes.searchDatetime}
+                  value={searchTime}
+                  onChange={(e) => setSearchTime(e.target.value)}
                 />
               </div>
             </div>
@@ -174,11 +190,16 @@ const CalendarToolbar: FC = () => {
               <div
                 className={classNames(
                   classes.searchInput,
-                  classes.searchInputLast
+                  classes.searchInputLast,
+                  classes.searchInputSelect
                 )}
               >
+                <span className={classes.searchSelectValue}>
+                  {t(DURATION_OPTIONS.find((o) => o.value === searchDuration)?.labelKey as never)}
+                </span>
+                <ChevronLeftIcon className={classes.searchChevron} />
                 <select
-                  className={classes.searchSelect}
+                  className={classes.searchSelectOverlay}
                   value={searchDuration}
                   onChange={(e) => setSearchDuration(Number(e.target.value))}
                 >
@@ -188,7 +209,6 @@ const CalendarToolbar: FC = () => {
                     </option>
                   ))}
                 </select>
-                <ChevronLeftIcon className={classes.searchChevron} />
               </div>
             </div>
           </div>
@@ -198,20 +218,16 @@ const CalendarToolbar: FC = () => {
           <div className={classes.findWrapper}>
             <button
               className={classNames(classes.findButton, {
-                [classes.findButtonDisabled]: !searchLangId || isSearching,
+                [classes.findButtonDisabled]:
+                  !searchLangId || isSearching || isPastDate,
               })}
               onClick={handleSearch}
-              disabled={!searchLangId || isSearching}
+              disabled={!searchLangId || isSearching || isPastDate}
             >
               {isSearching
                 ? t('calendar.searching')
                 : t('calendar.find_slot')}
             </button>
-            {noResults && (
-              <span className={classes.noResults}>
-                {t('calendar.no_slots_found')}
-              </span>
-            )}
           </div>
         )}
 

@@ -5,8 +5,8 @@ import {
   useFetchCalendarLanguages,
   useFetchSlotMatching,
 } from 'hooks/requests/useCalendar'
-import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
-import { ClassifierValueType } from 'types/classifierValues'
+import { useFetchCalendarTags } from 'hooks/requests/useCalendar'
+import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './mobile.module.scss'
 
@@ -33,19 +33,19 @@ interface Props {
   setStartTimeInput: (v: string) => void
   durationMinutes: number
   setDurationMinutes: (v: number) => void
-  serviceType: 'remote' | 'on-site'
-  setServiceType: (v: 'remote' | 'on-site') => void
+  serviceType: 'REMOTE' | 'ON_SITE'
+  setServiceType: (v: 'REMOTE' | 'ON_SITE') => void
   address: string
   setAddress: (v: string) => void
   clientInstitutionId: string
   setClientInstitutionId: (v: string) => void
   referenceNumber: string
   setReferenceNumber: (v: string) => void
-  domainId: string
-  setDomainId: (v: string) => void
+  domainIds: string[]
+  setDomainIds: (v: string[]) => void
   vendorId: string
   setVendorId: (v: string) => void
-  onSubmit: () => void
+  onSubmit: (comment?: string) => void
   onCancel: () => void
   isCreating: boolean
   createdAt: string | null
@@ -71,8 +71,8 @@ const CalendarMobileWizard: FC<Props> = ({
   setClientInstitutionId,
   referenceNumber,
   setReferenceNumber,
-  domainId,
-  setDomainId,
+  domainIds,
+  setDomainIds,
   vendorId,
   setVendorId,
   onSubmit,
@@ -88,11 +88,12 @@ const CalendarMobileWizard: FC<Props> = ({
   const [addingComment, setAddingComment] = useState(false)
 
   const { languages } = useFetchCalendarLanguages()
-  const { classifierValues: domains } = useClassifierValuesFetch({
-    type: ClassifierValueType.TranslationDomain,
-  })
+  const { tags: domains } = useFetchCalendarTags()
 
-  const startIso = selectedDate && startTimeInput ? `${selectedDate}T${startTimeInput}:00` : null
+  const startIso =
+    selectedDate && startTimeInput
+      ? `${selectedDate}T${startTimeInput}:00`
+      : null
   const endIso = startIso
     ? dayjs(startIso).add(durationMinutes, 'minute').toISOString()
     : null
@@ -178,9 +179,7 @@ const CalendarMobileWizard: FC<Props> = ({
 
   const renderStep1 = () => (
     <div className={classes.stepContent}>
-      <p className={classes.requiredNotice}>
-        {t('calendar.required_notice')}
-      </p>
+      <p className={classes.requiredNotice}>{t('calendar.required_notice')}</p>
 
       {isTPM && (
         <div className={classes.field}>
@@ -195,7 +194,9 @@ const CalendarMobileWizard: FC<Props> = ({
       )}
 
       <div className={classes.field}>
-        <label className={classes.fieldLabel}>{t('calendar.reference_number')}</label>
+        <label className={classes.fieldLabel}>
+          {t('calendar.reference_number')}
+        </label>
         <input
           className={classes.fieldInput}
           value={referenceNumber}
@@ -226,7 +227,9 @@ const CalendarMobileWizard: FC<Props> = ({
       </div>
 
       <div className={classes.field}>
-        <label className={classes.fieldLabel}>{t('calendar.date_and_start_time')} *</label>
+        <label className={classes.fieldLabel}>
+          {t('calendar.date_and_start_time')} *
+        </label>
         <div className={classes.timeRow}>
           <input
             type="date"
@@ -260,7 +263,9 @@ const CalendarMobileWizard: FC<Props> = ({
 
       {isTPM && (
         <div className={classes.field}>
-          <label className={classes.fieldLabel}>{t('calendar.translator')} *</label>
+          <label className={classes.fieldLabel}>
+            {t('calendar.translator')} *
+          </label>
           <select
             className={classes.fieldSelect}
             value={vendorId}
@@ -282,18 +287,18 @@ const CalendarMobileWizard: FC<Props> = ({
 
   const renderStep2 = () => (
     <div className={classes.stepContent}>
-      <p className={classes.requiredNotice}>
-        {t('calendar.required_notice')}
-      </p>
+      <p className={classes.requiredNotice}>{t('calendar.required_notice')}</p>
 
       <div className={classes.field}>
-        <label className={classes.fieldLabel}>{t('calendar.order_way')} *</label>
+        <label className={classes.fieldLabel}>
+          {t('calendar.order_way')} *
+        </label>
         <div className={classes.serviceToggle}>
           <button
             type="button"
-            className={`${classes.serviceOption} ${serviceType === 'on-site' ? classes.serviceOptionActive : ''}`}
+            className={`${classes.serviceOption} ${serviceType === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
             onClick={() => {
-              setServiceType('on-site')
+              setServiceType('ON_SITE')
               setAddress('')
             }}
           >
@@ -301,9 +306,9 @@ const CalendarMobileWizard: FC<Props> = ({
           </button>
           <button
             type="button"
-            className={`${classes.serviceOption} ${serviceType === 'remote' ? classes.serviceOptionActive : ''}`}
+            className={`${classes.serviceOption} ${serviceType === 'REMOTE' ? classes.serviceOptionActive : ''}`}
             onClick={() => {
-              setServiceType('remote')
+              setServiceType('REMOTE')
               setAddress('')
             }}
           >
@@ -314,17 +319,17 @@ const CalendarMobileWizard: FC<Props> = ({
 
       <div className={classes.field}>
         <label className={classes.fieldLabel}>
-          {serviceType === 'on-site'
+          {serviceType === 'ON_SITE'
             ? t('calendar.location')
-            : t('calendar.meeting_link')}
-          {' '}*
+            : t('calendar.meeting_link')}{' '}
+          *
         </label>
         <input
           className={classes.fieldInput}
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder={
-            serviceType === 'on-site'
+            serviceType === 'ON_SITE'
               ? t('calendar.enter_address')
               : t('calendar.enter_link')
           }
@@ -333,18 +338,12 @@ const CalendarMobileWizard: FC<Props> = ({
 
       <div className={classes.field}>
         <label className={classes.fieldLabel}>{t('calendar.domain')}</label>
-        <select
-          className={classes.fieldSelect}
-          value={domainId}
-          onChange={(e) => setDomainId(e.target.value)}
-        >
-          <option value="">{t('calendar.select_domain')}</option>
-          {(domains ?? []).map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
+        <MultiSelect
+          options={domains ?? []}
+          value={domainIds}
+          onChange={setDomainIds}
+          placeholder={t('calendar.select_domain')}
+        />
       </div>
     </div>
   )
@@ -434,7 +433,7 @@ const CalendarMobileWizard: FC<Props> = ({
           <Button
             appearance={AppearanceTypes.Primary}
             className={classes.footerBtn}
-            onClick={onSubmit}
+            onClick={() => onSubmit(commentText)}
             disabled={!step1Valid || isCreating}
           >
             {isCreating ? t('calendar.saving') : t('calendar.create_order')}

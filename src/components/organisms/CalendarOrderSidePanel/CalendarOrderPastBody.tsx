@@ -1,13 +1,10 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
-import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
-import AddIcon from 'assets/icons/add.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
-import DeleteIcon from 'assets/icons/delete.svg?react'
 import { useSidePanel } from './SidePanelContext'
 import classes from './classes.module.scss'
 
@@ -21,7 +18,12 @@ const CalendarClientPastBody: FC = () => {
     duration,
     isMetaOpen,
     setIsMetaOpen: onSetIsMetaOpen,
+    order,
+    downloadFile,
   } = useSidePanel()
+
+  const [isFilesOpen, setIsFilesOpen] = useState(false)
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false)
 
   return (
     <>
@@ -75,12 +77,12 @@ const CalendarClientPastBody: FC = () => {
             <div className={classes.formGroup}>
               <span className={classes.label}>{t('calendar.order_way')}</span>
               <span className={classes.readValue}>
-                {slot.assignment.service_type === 'remote'
+                {slot.assignment.service_type === 'REMOTE'
                   ? t('calendar.service_type_remote')
                   : t('calendar.service_type_contact')}
               </span>
             </div>
-            {slot.assignment.service_type === 'on-site' &&
+            {slot.assignment.service_type === 'ON_SITE' &&
               slot.assignment.location && (
                 <div className={classes.formGroup}>
                   <span className={classes.label}>
@@ -91,7 +93,7 @@ const CalendarClientPastBody: FC = () => {
                   </span>
                 </div>
               )}
-            {slot.assignment.service_type === 'remote' &&
+            {slot.assignment.service_type === 'REMOTE' &&
               slot.assignment.meeting_link && (
                 <div className={classes.formGroup}>
                   <span className={classes.label}>
@@ -211,90 +213,87 @@ const CalendarClientPastBody: FC = () => {
       {/* Lisamaterjalid */}
       <div className={classes.divider} />
       <div className={classes.sectionRow}>
-        <div className={classes.sectionLabel}>
-          <AttachIcon className={classes.sectionIcon} />
-          <span>{t('calendar.attachments')}</span>
-          {slot?.assignment?.files?.length ? (
-            <>
-              <ChevronLeft className={classes.sectionChevron} />
-              <button className={classes.sectionLinkBtn}>
-                {t('calendar.download_files', {
-                  count: slot.assignment.files.length,
-                })}
-              </button>
-            </>
-          ) : null}
-        </div>
-        <button className={classes.sectionBtn}>
-          {t('calendar.add_short')}
-          <AddIcon style={{ width: 16, height: 16 }} />
-        </button>
+        <span className={classes.sectionLabel}>
+          {t('calendar.attachments')}
+        </span>
+        {!!order?.source_files?.length && (
+          <button
+            className={classes.sectionBtn}
+            onClick={() => setIsFilesOpen(!isFilesOpen)}
+          >
+            <span className={classes.sectionNote}>
+              {order.source_files.length}
+            </span>
+            <ChevronLeft
+              className={classNames(classes.sectionChevron, {
+                [classes.sectionChevronOpen]: isFilesOpen,
+              })}
+            />
+          </button>
+        )}
       </div>
-      {slot?.assignment?.files?.length ? (
+      {isFilesOpen && !!order?.source_files?.length && (
         <div className={classes.fileList}>
-          <div className={classes.fileListHeader}>
-            {t('calendar.file_list_header')}
-          </div>
-          {slot.assignment.files.map((f) => (
-            <div key={f.name} className={classes.fileItem}>
-              <button className={classes.fileLink}>{f.name}</button>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button className={classes.fileIconBtn}>
-                  <DownloadIcon style={{ width: 24, height: 24 }} />
-                </button>
-                <button className={classes.fileIconBtn}>
-                  <DeleteIcon style={{ width: 24, height: 24 }} />
-                </button>
-              </div>
+          {order.source_files.map((f) => (
+            <div key={f.id} className={classes.fileItem}>
+              <button
+                className={classes.fileLink}
+                onClick={() =>
+                  downloadFile({ id: f.id, file_name: f.file_name })
+                }
+              >
+                {f.name}
+              </button>
+              <DownloadIcon
+                className={classes.downloadIcon}
+                onClick={() =>
+                  downloadFile({ id: f.id, file_name: f.file_name })
+                }
+                style={{ cursor: 'pointer' }}
+              />
             </div>
           ))}
         </div>
-      ) : null}
+      )}
 
       {/* Kommentaarid */}
       <div className={classes.divider} />
       <div className={classes.sectionRow}>
-        <div className={classes.sectionLabel}>
-          <ChevronLeft className={classes.sectionChevron} />
-          <span>{t('calendar.comments')}</span>
-          {slot?.assignment?.last_comment_date && (
+        <span className={classes.sectionLabel}>{t('calendar.comments')}</span>
+        {!!slot?.assignment?.comments?.length && (
+          <button
+            className={classes.sectionBtn}
+            onClick={() => setIsCommentsOpen(!isCommentsOpen)}
+          >
             <span className={classes.sectionNote}>
-              {t('calendar.last_commented', {
-                date: slot.assignment.last_comment_date,
-              })}
+              {slot.assignment.comments.length}
             </span>
-          )}
-        </div>
-        <button className={classes.sectionBtn}>
-          {t('calendar.add_short')}
-          <AddIcon style={{ width: 16, height: 16 }} />
-        </button>
+            <ChevronLeft
+              className={classNames(classes.sectionChevron, {
+                [classes.sectionChevronOpen]: isCommentsOpen,
+              })}
+            />
+          </button>
+        )}
       </div>
-      <div className={classes.commentForm}>
-        <div className={classes.formGroup}>
-          <span className={classes.label}>
-            {t('calendar.add_comment_btn')}
-          </span>
-          <textarea
-            className={classes.textarea}
-            placeholder={t('calendar.write_text')}
-          />
-        </div>
-      </div>
-      {slot?.assignment?.comments?.map((c) => (
-        <div
-          key={`${c.author}-${c.created_at}`}
-          className={classes.commentContent}
-        >
-          <span className={classes.commentAuthor}>{c.author}</span>
-          <span className={classes.commentText}>{c.text}</span>
-          <span className={classes.commentDate}>
-            {t('calendar.added_at', {
-              date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
-            })}
-          </span>
-        </div>
-      ))}
+      {isCommentsOpen && !!slot?.assignment?.comments?.length && (
+        <>
+          {slot.assignment.comments.map((c) => (
+            <div
+              key={`${c.author}-${c.created_at}`}
+              className={classes.commentContent}
+            >
+              <span className={classes.commentAuthor}>{c.author}</span>
+              <span className={classes.commentText}>{c.text}</span>
+              <span className={classes.commentDate}>
+                {t('calendar.added_at', {
+                  date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
+                })}
+              </span>
+            </div>
+          ))}
+        </>
+      )}
     </>
   )
 }

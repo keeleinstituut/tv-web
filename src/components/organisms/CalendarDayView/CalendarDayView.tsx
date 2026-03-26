@@ -76,7 +76,7 @@ const CalendarDayView: FC = () => {
   const { languages, visibleLanguages, isLoading, isError } =
     useVisibleCalendarLanguages(dateStr, dateStr)
   const isToday = currentDate.isSame(dayjs(), 'day')
-  const { data: dayData } = useFetchCalendarDay(dateStr)
+  const { data: dayData } = useFetchCalendarDay(isTPM ? '' : dateStr)
 
   // Fluid slot width: fills available container width, min 48px per 30 min
   const containerRef = useRef<HTMLDivElement>(null)
@@ -228,10 +228,10 @@ const CalendarDayView: FC = () => {
                   date={dateStr}
                   dayStartHour={DAY_START_HOUR}
                   dayEndHour={DAY_END_HOUR}
-                  readOnly={!canInteract || isExpanded}
+                  readOnly={isTPM || !canInteract}
                   dayData={dayData}
                   onSelectRange={
-                    canInteract && !isExpanded
+                    isClient
                       ? (langId, start, end) => {
                           const l = languages.find(
                             (l) => l.language.id === langId
@@ -246,7 +246,7 @@ const CalendarDayView: FC = () => {
                       : undefined
                   }
                   onClickSlot={
-                    !isExpanded
+                    isClient
                       ? (slot) => {
                           openSidePanel({
                             language: lang,

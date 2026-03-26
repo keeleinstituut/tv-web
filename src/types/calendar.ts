@@ -31,14 +31,14 @@ export interface CalendarLanguagesResponse {
 export interface BookedSlotAssignment {
   id: string
   confirmed?: boolean
-  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed'
+  status?: 'NEW' | 'IN_PROGRESS' | 'DONE'
   sub_project: {
     id: string
     ext_id: string
     source_language: { id: string; value: string; name: string }
     destination_language: { id: string; value: string; name: string }
   }
-  service_type?: 'remote' | 'on-site'
+  service_type?: 'REMOTE' | 'ON_SITE'
   location?: string
   meeting_link?: string
   reference_number?: string
@@ -207,11 +207,11 @@ export interface CalendarMonthVendorsAllResponse {
 export interface CalendarOrderDetail {
   id: string
   ext_id: string
-  status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
+  status: 'NEW' | 'IN_PROGRESS' | 'DONE'
   language: { id: string; value: string; name: string }
   start_at: string
   end_at: string
-  service_type: 'remote' | 'on-site'
+  service_type: 'REMOTE' | 'ON_SITE'
   location?: string
   meeting_link?: string
   domain?: string
@@ -219,16 +219,23 @@ export interface CalendarOrderDetail {
   created_at: string
   updated_at?: string
   accepted_at?: string
+  cancel_at?: string
   cancelled_at?: string
   completed_at?: string
   client?: { name: string; institution: string; email: string; phone: string }
   coordinator?: { name: string; email: string; phone: string }
+  source_files?: Array<{
+    id: string
+    name: string
+    file_name: string
+    size: number
+  }>
   files_count: number
   files_accessible: boolean
-  comments: Array<{
-    author: string
-    role: string
-    text: string
+  project_comments?: Array<{
+    id: string
+    institution_user_id: string
+    comment: string
     created_at: string
   }>
 }
@@ -249,15 +256,12 @@ export interface WeekSlotBookingsResponse {
 
 export interface CalendarSearchParams {
   language_id: string
-  date_from: string
-  date_to: string
-  slot_length: number
-  start_time?: string
-  end_time?: string
+  datetime: string
+  duration_minutes: number
 }
 
 export interface CalendarSearchResponse {
-  dates: string[]
+  start_at: string | null
 }
 
 // --- Create order ---
@@ -266,27 +270,28 @@ export interface CreateOrderPayload {
   language_id: string
   start_at: string
   end_at: string
-  service_type: 'remote' | 'on-site'
+  service_type: 'REMOTE' | 'ON_SITE'
   reference_number?: string
   location?: string
   meeting_link?: string
   client_institution_id?: string
-  domain_id?: string
+  tag_ids?: string[]
   vendor_id?: string
+  comment?: string
 }
 
 // --- Update order ---
 
 export interface UpdateOrderPayload {
   id: string
-  service_type?: 'remote' | 'on-site'
+  service_type?: 'REMOTE' | 'ON_SITE'
   reference_number?: string
   location?: string
   meeting_link?: string
   client_institution_id?: string
   start_at?: string
   end_at?: string
-  domain_id?: string
+  tag_ids?: string[]
   vendor_id?: string
 }
 
@@ -358,7 +363,27 @@ export interface ApiAssignmentSummary {
   ext_id: string
   event_start_at?: string
   deadline_at?: string
-  status: string
+  status: 'NEW' | 'IN_PROGRESS' | 'DONE'
+  subProject?: {
+    id: string
+    ext_id: string
+    project?: {
+      id: string
+      ext_id: string
+      status?: 'NEW' | 'IN_PROGRESS' | 'DONE'
+      service_type?: 'REMOTE' | 'ON_SITE'
+      location?: string
+      meeting_link?: string
+      reference_number?: string
+      client_institution_user?: {
+        user: { forename: string; surname: string; email: string; phone?: string }
+        institution: { name: string }
+      }
+      manager_institution_user?: {
+        user: { forename: string; surname: string; email: string; phone?: string }
+      }
+    }
+  }
 }
 
 /** CalendarInstitutionUserResource */
@@ -640,7 +665,42 @@ export function transformDayResponse(
           start_at: e.start_at,
           end_at: e.end_at,
           type: e.type,
-          assignment: null,
+          assignment: e.assignment_id
+            ? (() => {
+                const proj = e.assignment?.subProject?.project
+                const clientUser = proj?.client_institution_user
+                const managerUser = proj?.manager_institution_user
+                return {
+                  id: e.assignment_id,
+                  status: (proj?.status ?? e.assignment?.status) as BookedSlotAssignment['status'],
+                  service_type: proj?.service_type,
+                  location: proj?.location,
+                  meeting_link: proj?.meeting_link,
+                  reference_number: proj?.reference_number,
+                  client: clientUser
+                    ? {
+                        name: [clientUser.user.forename, clientUser.user.surname].filter(Boolean).join(' '),
+                        institution: clientUser.institution.name,
+                        email: clientUser.user.email,
+                        phone: clientUser.user.phone ?? '',
+                      }
+                    : undefined,
+                  coordinator: managerUser
+                    ? {
+                        name: [managerUser.user.forename, managerUser.user.surname].filter(Boolean).join(' '),
+                        email: managerUser.user.email,
+                        phone: managerUser.user.phone ?? '',
+                      }
+                    : undefined,
+                  sub_project: {
+                    id: proj?.id ?? e.assignment_id,
+                    ext_id: proj?.ext_id ?? e.assignment?.ext_id ?? '',
+                    source_language: { id: '', value: '', name: '' },
+                    destination_language: { id: '', value: '', name: '' },
+                  },
+                }
+              })()
+            : null,
         })),
       }
       for (const langId of v.languages) {

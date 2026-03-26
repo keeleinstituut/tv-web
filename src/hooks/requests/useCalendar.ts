@@ -19,7 +19,6 @@ import {
   CreateOrderPayload,
   UpdateOrderPayload,
   ApiCalendarLanguagesResponse,
-  ApiCalendarDayResponse,
   ApiCalendarWeekResponse,
   ApiCalendarMonthResponse,
   ApiSlotMatchingVendor,
@@ -57,7 +56,6 @@ export const useFetchCalendarLanguages = (
     },
     staleTime: Infinity,
   })
-  console.log(data, endpoints.CALENDAR_LANGUAGES, '@@@@@@@@@@', from, to)
   return { isLoading, isError, languages: data?.languages ?? [] }
 }
 
@@ -66,11 +64,8 @@ export const useFetchCalendarDay = (date: string) => {
   const { isLoading, isError, data } = useQuery<CalendarDayResponse>({
     queryKey: ['calendar-day', date],
     queryFn: async () => {
-      const raw: ApiCalendarDayResponse = await apiClient.get(
-        endpoints.CALENDAR_DAY,
-        { date }
-      )
-      return transformDayResponse(raw, undefined, isTPM)
+      const res = await apiClient.get(endpoints.CALENDAR_DAY, { date })
+      return transformDayResponse(res.data, undefined, isTPM)
     },
     enabled: !!date,
   })
@@ -216,11 +211,8 @@ export const useFetchCalendarDayVendors = (
   >({
     queryKey: ['calendar-day', date],
     queryFn: async () => {
-      const raw: ApiCalendarDayResponse = await apiClient.get(
-        endpoints.CALENDAR_DAY,
-        { date }
-      )
-      return transformDayResponse(raw, undefined, isTPM)
+      const res = await apiClient.get(endpoints.CALENDAR_DAY, { date })
+      return transformDayResponse(res.data, undefined, isTPM)
     },
     select: (
       dayData
@@ -245,11 +237,12 @@ export const useCreatePrebook = () => {
       start_at: string
       end_at: string
       vendor_id?: string
-    }) => apiClient.post(endpoints.CALENDAR_PREBOOK, {
-      ...params,
-      start_at: params.start_at.replace(/\.\d+Z$/, 'Z'),
-      end_at: params.end_at.replace(/\.\d+Z$/, 'Z'),
-    }),
+    }) =>
+      apiClient.post(endpoints.CALENDAR_PREBOOK, {
+        ...params,
+        start_at: params.start_at.replace(/\.\d+Z$/, 'Z'),
+        end_at: params.end_at.replace(/\.\d+Z$/, 'Z'),
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
       queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
@@ -274,16 +267,14 @@ export const useCalendarSearch = () =>
       apiClient
         .get(endpoints.CALENDAR_SEARCH, {
           language_id: params.language_id,
-          ...(params.date_from
-            ? { datetime: `${params.date_from}T00:00:00Z` }
-            : {}),
-          ...(params.slot_length
-            ? { duration_minutes: params.slot_length }
-            : {}),
+          datetime: params.datetime,
+          duration_minutes: params.duration_minutes,
         })
         .then(
-          (raw: ApiCalendarSearchResponse): CalendarSearchResponse => ({
-            dates: raw.start_at ? [raw.start_at] : [],
+          (res: {
+            data: ApiCalendarSearchResponse
+          }): CalendarSearchResponse => ({
+            start_at: res.data?.start_at ?? null,
           })
         ),
   })
@@ -297,8 +288,8 @@ export const useFetchSlotMatching = (
       const raw: ApiSlotMatchingVendor[] = await apiClient
         .get(endpoints.CALENDAR_SLOT_MATCHING, {
           language_id: params!.language_id,
-          start_at: params!.start_at,
-          end_at: params!.end_at,
+          start_at: params!.start_at.replace(/\.\d+Z$/, 'Z'),
+          end_at: params!.end_at.replace(/\.\d+Z$/, 'Z'),
         })
         .then((res: { data: ApiSlotMatchingVendor[] }) => res.data)
       return raw.map((v) => ({
@@ -317,7 +308,7 @@ export const useCreateCalendarOrder = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (payload: CreateOrderPayload) =>
-      apiClient.postForm(endpoints.PROJECTS, {
+      apiClient.post(endpoints.PROJECTS, {
         is_calendar_project: true,
         destination_language_classifier_value_ids: [payload.language_id],
         event_start_at: payload.start_at.replace(/\.\d+Z$/, 'Z'),
@@ -328,21 +319,35 @@ export const useCreateCalendarOrder = () => {
           : {}),
         ...(payload.location ? { location: payload.location } : {}),
         ...(payload.meeting_link ? { meeting_link: payload.meeting_link } : {}),
-        ...(payload.domain_id
-          ? { translation_domain_classifier_value_id: payload.domain_id }
-          : {}),
+        ...(payload.tag_ids?.length ? { tags: payload.tag_ids } : {}),
         ...(payload.client_institution_id
           ? { client_institution_user_id: payload.client_institution_id }
           : {}),
         ...(payload.vendor_id
           ? { candidate_vendor_id: payload.vendor_id }
           : {}),
+        ...(payload.comment ? { comment: payload.comment } : {}),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
       queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
     },
   })
+}
+
+export const useFetchCalendarTags = () => {
+  const { data } = useQuery<Array<{ id: string; name: string }>>({
+    queryKey: ['calendar-tags'],
+    queryFn: async () => {
+      const res: { data: Array<{ id: string; name: string }> } =
+        await apiClient.get(endpoints.TAGS, {
+          'type[]': ['Tellimus', 'Valdkond'],
+        })
+      return res.data ?? []
+    },
+    staleTime: Infinity,
+  })
+  return { tags: data ?? [] }
 }
 
 export const useUpdateCalendarOrder = () => {
@@ -360,11 +365,13 @@ export const useUpdateCalendarOrder = () => {
         ...(payload.meeting_link !== undefined
           ? { meeting_link: payload.meeting_link }
           : {}),
-        ...(payload.start_at ? { event_start_at: payload.start_at.replace(/\.\d+Z$/, 'Z') } : {}),
-        ...(payload.end_at ? { event_end_at: payload.end_at.replace(/\.\d+Z$/, 'Z') } : {}),
-        ...(payload.domain_id
-          ? { translation_domain_classifier_value_id: payload.domain_id }
+        ...(payload.start_at
+          ? { event_start_at: payload.start_at.replace(/\.\d+Z$/, 'Z') }
           : {}),
+        ...(payload.end_at
+          ? { event_end_at: payload.end_at.replace(/\.\d+Z$/, 'Z') }
+          : {}),
+        ...(payload.tag_ids?.length ? { tags: payload.tag_ids } : {}),
         ...(payload.client_institution_id
           ? { client_institution_user_id: payload.client_institution_id }
           : {}),
@@ -382,9 +389,36 @@ export const useUpdateCalendarOrder = () => {
 export const useCancelCalendarOrder = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) =>
-      apiClient.post(`${endpoints.PROJECTS}/${id}/cancel`, {}),
+    mutationFn: ({
+      id,
+      cancellation_reason,
+      cancellation_comment,
+      is_delayed,
+    }: {
+      id: string
+      cancellation_reason: string
+      cancellation_comment?: string
+      is_delayed?: boolean
+    }) =>
+      apiClient.post(`${endpoints.PROJECTS}/${id}/cancel`, {
+        cancellation_reason,
+        ...(cancellation_comment ? { cancellation_comment } : {}),
+        ...(is_delayed !== undefined ? { is_delayed } : {}),
+      }),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-order-detail'] })
+    },
+  })
+}
+
+export const useDeclineCancelCalendarOrder = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) =>
+      apiClient.post(endpoints.PROJECT_CANCEL_DECLINE(id), {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-order-detail'] })
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
     },
   })
@@ -427,6 +461,82 @@ export const useFetchCalendarOrderDetail = (id: string | null) => {
         ),
   })
   return { order: data ?? null, isLoading, isError }
+}
+
+export const useCalendarAddFiles = (projectId: string | null | undefined) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (files: File[]) => {
+      if (!projectId) return Promise.reject(new Error('no project id'))
+      return apiClient.postForm(endpoints.MEDIA_BULK, {
+        files: files.map((f) => ({
+          content: f,
+          reference_object_id: projectId,
+          reference_object_type: 'project',
+          collection: 'source',
+        })),
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['calendar-order-detail', projectId],
+      })
+    },
+  })
+}
+
+export const useCalendarDeleteFile = (projectId: string | null | undefined) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (fileId: string) => {
+      if (!projectId) return Promise.reject(new Error('no project id'))
+      return apiClient.delete(endpoints.MEDIA_BULK, {
+        files: [
+          {
+            id: fileId,
+            reference_object_id: projectId,
+            reference_object_type: 'project',
+            collection: 'source',
+          },
+        ],
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['calendar-order-detail', projectId],
+      })
+    },
+  })
+}
+
+export const useCalendarDownloadFile = ({
+  projectId,
+}: {
+  projectId: string | null | undefined
+}) => {
+  return useMutation({
+    mutationFn: ({ id }: { id: string; file_name: string }) => {
+      if (!projectId) return Promise.reject(new Error('no project id'))
+      return apiClient.get(
+        endpoints.MEDIA_DOWNLOAD,
+        {
+          id,
+          reference_object_id: projectId,
+          reference_object_type: 'project',
+          collection: 'source',
+        },
+        { responseType: 'blob' }
+      )
+    },
+    onSuccess: (data, { file_name }) => {
+      const url = URL.createObjectURL(data as Blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = file_name
+      a.click()
+      URL.revokeObjectURL(url)
+    },
+  })
 }
 
 export const useUpdatePinnedLanguages = () => {

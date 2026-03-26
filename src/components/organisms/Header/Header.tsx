@@ -11,10 +11,13 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import { useQuery } from '@tanstack/react-query'
 import { apiClient } from 'api'
+import { useCalendarRole } from 'hooks/useCalendarRole'
 
 const Header: FC = () => {
   const { t } = useTranslation()
   const { logout, userInfo } = useAuth()
+  const { isTPM, isClient, isTranslator } = useCalendarRole()
+  const calendarRole = isTPM ? 'TPM' : isClient ? 'Client' : isTranslator ? 'Vendor' : 'Unknown'
   const { selectedInstitution } = userInfo?.tolkevarav || {}
   const institutionId = selectedInstitution?.id || ''
   const { institution } = useInstitutionFetch({
@@ -47,6 +50,11 @@ const Header: FC = () => {
     <header className={classes.header}>
       <img src={logo} alt={t('alt.header_logo')} />
       <div className={classes.rightSection}>
+        {import.meta.env.DEV && (
+          <span style={{ fontSize: 12, color: '#888', fontFamily: 'monospace' }}>
+            [{calendarRole}]
+          </span>
+        )}
         <LanguageChanger />
         <div className={classes.separator} />
         <UserRoleSection />

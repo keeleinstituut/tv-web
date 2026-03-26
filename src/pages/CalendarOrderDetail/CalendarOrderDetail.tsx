@@ -10,10 +10,9 @@ import {
   useCreateCalendarOrder,
   useFetchCalendarLanguages,
   useFetchSlotMatching,
+  useFetchCalendarTags,
 } from 'hooks/requests/useCalendar'
 import { useCalendarRole } from 'hooks/useCalendarRole'
-import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
-import { ClassifierValueType } from 'types/classifierValues'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useIsMobile } from 'hooks/useIsMobile'
@@ -48,15 +47,14 @@ const CalendarOrderDetail: FC = () => {
     useCancelCalendarOrder()
 
   const { languages } = useFetchCalendarLanguages()
-  const { classifierValues: domains } = useClassifierValuesFetch({
-    type: ClassifierValueType.TranslationDomain,
-  })
+  const { tags: domains } = useFetchCalendarTags()
 
   // UI state
   const [metaOpen, setMetaOpen] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
   const [isChangingDuration, setIsChangingDuration] = useState(false)
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
+  const [cancelReason, setCancelReason] = useState('')
   const [isAddingComment, setIsAddingComment] = useState(false)
   const [commentText, setCommentText] = useState('')
   const [editingCommentIdx, setEditingCommentIdx] = useState<number | null>(
@@ -69,14 +67,14 @@ const CalendarOrderDetail: FC = () => {
   const [startTimeInput, setStartTimeInput] = useState('')
   const [durationMinutes, setDurationMinutes] = useState(60)
   const [durationEndTime, setDurationEndTime] = useState('')
-  const [serviceType, setServiceType] = useState<'remote' | 'on-site'>(
-    'on-site'
+  const [serviceType, setServiceType] = useState<'REMOTE' | 'ON_SITE'>(
+    'ON_SITE'
   )
   const [address, setAddress] = useState('')
   const [clientInstitutionId, setClientInstitutionId] = useState('')
   const [referenceNumber, setReferenceNumber] = useState('')
   const [languageId, setLanguageId] = useState('')
-  const [domainId, setDomainId] = useState('')
+  const [domainIds, setDomainIds] = useState<string[]>([])
   const [vendorId, setVendorId] = useState('')
 
   // File upload state
@@ -98,32 +96,36 @@ const CalendarOrderDetail: FC = () => {
     )
     setServiceType(order.service_type)
     setAddress(
-      order.service_type === 'on-site'
+      order.service_type === 'ON_SITE'
         ? (order.location ?? '')
         : (order.meeting_link ?? '')
     )
     setClientInstitutionId(order.client?.name ?? '')
     setReferenceNumber(order.reference_number ?? '')
+    setLanguageId(order.language.id)
   }, [order])
 
   const startIso =
     selectedDate && startTimeInput
-      ? `${selectedDate}T${startTimeInput}:00`
+      ? dayjs(`${selectedDate}T${startTimeInput}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
       : null
   const endIso = startIso
-    ? dayjs(startIso).add(durationMinutes, 'minute').toISOString()
+    ? dayjs(startIso).add(durationMinutes, 'minute').toISOString().replace(/\.\d+Z$/, 'Z')
     : null
 
   const slotMatchingParams =
-    isTPM && isCreateMode && startIso && endIso && languageId
+    isTPM && (isCreateMode || isEditing) && startIso && endIso && languageId
       ? { start_at: startIso, end_at: endIso, language_id: languageId }
       : null
   const { vendors } = useFetchSlotMatching(slotMatchingParams)
 
-  if (isCreateMode && isTranslator) {
-    navigate('/calendar', { replace: true })
-    return null
-  }
+  useEffect(() => {
+    if (isCreateMode && isTranslator) {
+      navigate('/calendar', { replace: true })
+    }
+  }, [isCreateMode, isTranslator, navigate])
+
+  if (isCreateMode && isTranslator) return null
 
   if (!isCreateMode && (isLoading || !order)) {
     return <div className={classes.loading}>...</div>
@@ -146,23 +148,20 @@ const CalendarOrderDetail: FC = () => {
   const durationLabel = formatMins(orderDurationMins)
 
   const statusLabel = order
-    ? order.status === 'pending'
+    ? order.status === 'NEW'
       ? t('calendar.status_pending')
-      : order.status === 'confirmed'
+      : order.status === 'IN_PROGRESS'
         ? isTranslator
           ? t('calendar.status_ongoing')
           : t('calendar.status_confirmed')
-        : order.status === 'cancelled'
-          ? t('calendar.status_cancelled')
-          : t('calendar.status_completed')
+        : t('calendar.status_completed')
     : ''
 
   const isPast = order ? dayjs(order.start_at).isBefore(dayjs()) : false
   const canModify =
     (isTPM || isClient) &&
     !isPast &&
-    order?.status !== 'cancelled' &&
-    order?.status !== 'completed'
+    order?.status !== 'DONE'
 
   const resetFields = () => {
     if (!order) return
@@ -171,7 +170,7 @@ const CalendarOrderDetail: FC = () => {
     setDurationMinutes(orderDurationMins)
     setServiceType(order.service_type)
     setAddress(
-      order.service_type === 'on-site'
+      order.service_type === 'ON_SITE'
         ? (order.location ?? '')
         : (order.meeting_link ?? '')
     )
@@ -179,7 +178,7 @@ const CalendarOrderDetail: FC = () => {
     setReferenceNumber(order.reference_number ?? '')
   }
 
-  const handleCreate = () => {
+  const handleCreate = (comment?: string) => {
     if (!languageId || !startIso || !endIso) return
     createOrder(
       {
@@ -188,13 +187,14 @@ const CalendarOrderDetail: FC = () => {
         end_at: endIso,
         service_type: serviceType,
         reference_number: referenceNumber || undefined,
-        location: serviceType === 'on-site' ? address : undefined,
-        meeting_link: serviceType === 'remote' ? address : undefined,
+        location: serviceType === 'ON_SITE' ? address : undefined,
+        meeting_link: serviceType === 'REMOTE' ? address : undefined,
         client_institution_id: isTPM
           ? clientInstitutionId || undefined
           : undefined,
-        domain_id: domainId || undefined,
+        tag_ids: domainIds.length ? domainIds : undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
+        comment: comment || undefined,
       },
       {
         onSuccess: (data) => {
@@ -216,18 +216,16 @@ const CalendarOrderDetail: FC = () => {
 
   const handleSave = () => {
     if (!orderId) return
-    const saveStart = `${selectedDate}T${startTimeInput}:00`
-    const saveEnd = dayjs(saveStart)
-      .add(durationMinutes, 'minute')
-      .toISOString()
+    const saveStart = dayjs(`${selectedDate}T${startTimeInput}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
+    const saveEnd = dayjs(saveStart).add(durationMinutes, 'minute').toISOString().replace(/\.\d+Z$/, 'Z')
     updateOrder(
       {
         id: orderId,
         start_at: saveStart,
         end_at: saveEnd,
         service_type: serviceType,
-        location: serviceType === 'on-site' ? address : undefined,
-        meeting_link: serviceType === 'remote' ? address : undefined,
+        location: serviceType === 'ON_SITE' ? address : undefined,
+        meeting_link: serviceType === 'REMOTE' ? address : undefined,
         reference_number: referenceNumber || undefined,
         client_institution_id: isTPM
           ? clientInstitutionId || undefined
@@ -249,7 +247,7 @@ const CalendarOrderDetail: FC = () => {
   const handleSaveDuration = () => {
     if (!orderId || !order || !durationEndTime) return
     const date = dayjs(order.start_at).format('YYYY-MM-DD')
-    const endIsoNew = `${date}T${durationEndTime}:00`
+    const endIsoNew = dayjs(`${date}T${durationEndTime}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
     updateOrder(
       { id: orderId, end_at: endIsoNew },
       {
@@ -279,17 +277,21 @@ const CalendarOrderDetail: FC = () => {
   }
 
   const handleCancelOrder = () => {
-    if (!orderId) return
-    cancelOrder(orderId, {
-      onSuccess: () => {
-        setIsConfirmingCancel(false)
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.calendar_order_cancelled'),
-        })
-      },
-    })
+    if (!orderId || !cancelReason.trim()) return
+    cancelOrder(
+      { id: orderId, cancellation_reason: cancelReason.trim() },
+      {
+        onSuccess: () => {
+          setIsConfirmingCancel(false)
+          setCancelReason('')
+          showNotification({
+            type: NotificationTypes.Success,
+            title: t('notification.announcement'),
+            content: t('success.calendar_order_cancelled'),
+          })
+        },
+      }
+    )
   }
 
   if (isCreateMode && isMobile && (isTPM || isClient)) {
@@ -312,8 +314,8 @@ const CalendarOrderDetail: FC = () => {
         setClientInstitutionId={setClientInstitutionId}
         referenceNumber={referenceNumber}
         setReferenceNumber={setReferenceNumber}
-        domainId={domainId}
-        setDomainId={setDomainId}
+        domainIds={domainIds}
+        setDomainIds={setDomainIds}
         vendorId={vendorId}
         setVendorId={setVendorId}
         onSubmit={handleCreate}
@@ -364,8 +366,8 @@ const CalendarOrderDetail: FC = () => {
     setReferenceNumber,
     languageId,
     setLanguageId,
-    domainId,
-    setDomainId,
+    domainIds,
+    setDomainIds,
     vendorId,
     setVendorId,
     localFiles,
@@ -377,6 +379,8 @@ const CalendarOrderDetail: FC = () => {
     setIsChangingDuration,
     isConfirmingCancel,
     setIsConfirmingCancel,
+    cancelReason,
+    setCancelReason,
     isAddingComment,
     setIsAddingComment,
     commentText,
@@ -411,7 +415,7 @@ const CalendarOrderDetail: FC = () => {
           <div className={classes.editFooter}>
             <Button
               appearance={AppearanceTypes.Primary}
-              onClick={handleCreate}
+              onClick={() => handleCreate()}
               disabled={!languageId || !startIso || !endIso || isCreating}
             >
               {isCreating ? t('calendar.saving') : t('calendar.create_order')}

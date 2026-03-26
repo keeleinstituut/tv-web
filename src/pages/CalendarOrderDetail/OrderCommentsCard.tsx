@@ -27,9 +27,8 @@ const OrderCommentsCard: FC = () => {
       <h2 className={classes.sectionTitle}>{t('calendar.comments')}</h2>
       <div className={classes.comments}>
         {!isCreateMode &&
-          order!.comments.map((c, i) => (
-            <div key={i} className={classes.comment}>
-              <span className={classes.commentAuthor}>{c.role}</span>
+          order!.project_comments?.map((c, i) => (
+            <div key={c.id} className={classes.comment}>
               {editingCommentIdx === i ? (
                 <div className={classes.commentForm}>
                   <textarea
@@ -61,7 +60,7 @@ const OrderCommentsCard: FC = () => {
                   </div>
                 </div>
               ) : (
-                <span className={classes.commentText}>{c.text}</span>
+                <span className={classes.commentText}>{c.comment}</span>
               )}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span className={classes.commentDate}>
@@ -74,7 +73,7 @@ const OrderCommentsCard: FC = () => {
                     className={classes.commentEditLink}
                     onClick={() => {
                       setEditingCommentIdx(i)
-                      setEditingCommentText(c.text)
+                      setEditingCommentText(c.comment)
                     }}
                   >
                     {t('calendar.edit')}

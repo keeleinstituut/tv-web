@@ -1,10 +1,15 @@
-import { FC } from 'react'
+import { FC, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import classNames from 'classnames'
 import { ServiceType } from 'types/calendar'
 import { formatDurationMins } from 'helpers/calendar'
+import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
+import DeleteIcon from 'assets/icons/delete.svg?react'
+import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useSidePanel } from './SidePanelContext'
 import classes from './classes.module.scss'
 
@@ -12,7 +17,6 @@ const CalendarOrderFormBody: FC = () => {
   const { t } = useTranslation()
   const {
     language,
-    slot,
     isViewMode,
     date,
     startTime,
@@ -26,29 +30,57 @@ const CalendarOrderFormBody: FC = () => {
     setLocation: onSetLocation,
     clientInstitutionId,
     setClientInstitutionId: onSetClientInstitutionId,
-    domainId,
-    setDomainId: onSetDomainId,
+    domainIds,
+    setDomainIds: onSetDomainIds,
     vendorId,
+    vendorLocked,
     setVendorId: onSetVendorId,
     durationMinutes,
     setDurationMinutes: onSetDurationMinutes,
     domains,
     vendors,
+    pendingFiles,
+    setPendingFiles,
+    pendingComment,
+    setPendingComment,
   } = useSidePanel()
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isFilesOpen, setIsFilesOpen] = useState(false)
+  const [isAddingComment, setIsAddingComment] = useState(false)
+
+  const { users: clients } = useFetchInfiniteProjectPerson(
+    undefined,
+    'client',
+    isTPM
+  )
 
   return (
     <>
       <div className={classes.form}>
+        <p className={classes.requiredNotice}>
+          {t('calendar.required_notice')}
+        </p>
+
         {/* Tellija — TPM only */}
         {isTPM && (
           <div className={classes.formGroup}>
-            <label className={classes.label}>{t('calendar.client')}</label>
-            <input
-              className={classes.input}
-              placeholder={t('calendar.enter_name')}
+            <label className={classes.label}>
+              {t('calendar.client')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
+            <select
+              className={classes.select}
               value={clientInstitutionId}
               onChange={(e) => onSetClientInstitutionId(e.target.value)}
-            />
+            >
+              <option value="">{t('calendar.select_client')}</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {[c.user.forename, c.user.surname].filter(Boolean).join(' ')}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
@@ -56,6 +88,7 @@ const CalendarOrderFormBody: FC = () => {
         <div className={classes.formGroup}>
           <label className={classes.label}>
             {t('calendar.reference_number')}
+            <span className={classes.requiredMark}>*</span>
           </label>
           <input
             className={classes.input}
@@ -67,7 +100,10 @@ const CalendarOrderFormBody: FC = () => {
 
         {/* Keel */}
         <div className={classes.formGroup}>
-          <label className={classes.label}>{t('calendar.language')}</label>
+          <label className={classes.label}>
+            {t('calendar.language')}
+            <span className={classes.requiredMark}>*</span>
+          </label>
           <div className={classes.inputReadonly}>
             {language?.language.name ?? ''}
           </div>
@@ -75,18 +111,27 @@ const CalendarOrderFormBody: FC = () => {
 
         {/* Kuupäev */}
         <div className={classes.formGroup}>
-          <label className={classes.label}>{t('calendar.date')}</label>
+          <label className={classes.label}>
+            {t('calendar.date')}
+            <span className={classes.requiredMark}>*</span>
+          </label>
           <div className={classes.inputReadonly}>{date}</div>
         </div>
 
         {/* Alates + Kestus */}
         <div className={classes.formRow}>
           <div className={classes.formGroup}>
-            <label className={classes.label}>{t('calendar.from')}</label>
+            <label className={classes.label}>
+              {t('calendar.from')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
             <div className={classes.inputReadonly}>{startTime}</div>
           </div>
           <div className={classes.formGroup}>
-            <label className={classes.label}>{t('calendar.duration')}</label>
+            <label className={classes.label}>
+              {t('calendar.duration')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
             {isViewMode ? (
               <div className={classes.inputReadonly}>{duration}</div>
             ) : (
@@ -115,7 +160,10 @@ const CalendarOrderFormBody: FC = () => {
 
         {/* Tellimuse tüüp */}
         <div className={classes.formGroup}>
-          <label className={classes.label}>{t('calendar.order_type')}</label>
+          <label className={classes.label}>
+            {t('calendar.order_way')}
+            <span className={classes.requiredMark}>*</span>
+          </label>
           <select
             className={classes.select}
             value={serviceType}
@@ -139,7 +187,10 @@ const CalendarOrderFormBody: FC = () => {
         {/* Asukoht / Koosoleku link */}
         {serviceType === 'kontakttolge' && (
           <div className={classes.formGroup}>
-            <label className={classes.label}>{t('calendar.location')}</label>
+            <label className={classes.label}>
+              {t('calendar.location')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
             <input
               className={classes.input}
               placeholder={t('calendar.enter_address')}
@@ -152,6 +203,7 @@ const CalendarOrderFormBody: FC = () => {
           <div className={classes.formGroup}>
             <label className={classes.label}>
               {t('calendar.meeting_link')}
+              <span className={classes.requiredMark}>*</span>
             </label>
             <input
               className={classes.input}
@@ -165,27 +217,25 @@ const CalendarOrderFormBody: FC = () => {
         {/* Valdkond */}
         <div className={classes.formGroup}>
           <label className={classes.label}>{t('calendar.domain')}</label>
-          <select
-            className={classes.select}
-            value={domainId}
-            onChange={(e) => onSetDomainId(e.target.value)}
-          >
-            <option value="">{t('calendar.select_domain')}</option>
-            {(domains ?? []).map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </select>
+          <MultiSelect
+            options={domains ?? []}
+            value={domainIds}
+            onChange={onSetDomainIds}
+            placeholder={t('calendar.select_domain')}
+          />
         </div>
 
         {/* Teostaja — TPM only */}
         {isTPM && (
           <div className={classes.formGroup}>
-            <label className={classes.label}>{t('calendar.translator')}</label>
+            <label className={classes.label}>
+              {t('calendar.translator')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
             <select
               className={classes.select}
               value={vendorId}
+              disabled={vendorLocked}
               onChange={(e) => onSetVendorId(e.target.value)}
             >
               <option value="">{t('calendar.select_translator')}</option>
@@ -202,33 +252,118 @@ const CalendarOrderFormBody: FC = () => {
       {/* Lisamaterjal */}
       <div className={classes.divider} />
       <div className={classes.sectionRow}>
-        <div className={classes.sectionLabel}>
-          <AttachIcon className={classes.sectionIcon} />
+        <button
+          className={classes.sectionLabel}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: pendingFiles.length ? 'pointer' : 'default',
+          }}
+          onClick={() => pendingFiles.length && setIsFilesOpen(!isFilesOpen)}
+        >
           <span>{t('calendar.attachments')}</span>
-          {isViewMode && !!slot?.assignment?.files?.length && (
-            <button className={classes.sectionLinkBtn}>
-              {t('calendar.attached_files_count', {
-                count: slot.assignment.files.length,
-              })}
-            </button>
+          {!!pendingFiles.length && (
+            <>
+              <ChevronLeft
+                className={classNames(classes.sectionChevron, {
+                  [classes.sectionChevronOpen]: isFilesOpen,
+                })}
+              />
+              <span className={classes.sectionNote}>{pendingFiles.length}</span>
+            </>
           )}
-        </div>
-        <button className={classes.sectionBtn}>
-          {t('calendar.add_attachment')}
         </button>
+        <>
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              const files = Array.from(e.target.files ?? [])
+              if (files.length) {
+                setPendingFiles([...pendingFiles, ...files])
+                setIsFilesOpen(true)
+              }
+              e.target.value = ''
+            }}
+          />
+          <button
+            className={classes.sectionBtn}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {t('calendar.add_short')}
+            <AddIcon style={{ width: 16, height: 16 }} />
+          </button>
+        </>
       </div>
+      {isFilesOpen && !!pendingFiles.length && (
+        <div className={classes.fileList}>
+          {pendingFiles.map((f, i) => (
+            <div key={`${f.name}-${i}`} className={classes.fileItem}>
+              <span className={classes.fileLink}>{f.name}</span>
+              <button
+                className={classes.fileIconBtn}
+                onClick={() =>
+                  setPendingFiles(pendingFiles.filter((_, idx) => idx !== i))
+                }
+              >
+                <DeleteIcon style={{ width: 24, height: 24 }} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Kommentaarid */}
       <div className={classes.divider} />
       <div className={classes.sectionRow}>
-        <div className={classes.sectionLabel}>
-          <ChevronLeft className={classes.sectionChevron} />
-          <span>{t('calendar.comments')}</span>
-        </div>
-        <button className={classes.sectionBtn}>
-          {t('calendar.add_comment')}
-        </button>
+        <span className={classes.sectionLabel}>{t('calendar.comments')}</span>
+        {!isAddingComment && (
+          <button
+            className={classes.sectionBtn}
+            onClick={() => setIsAddingComment(true)}
+          >
+            {t('calendar.add_short')}
+            <AddIcon style={{ width: 16, height: 16 }} />
+          </button>
+        )}
       </div>
+      {pendingComment && !isAddingComment && (
+        <div className={classes.commentContent}>
+          <span className={classes.commentText}>{pendingComment}</span>
+        </div>
+      )}
+      {isAddingComment && (
+        <div className={classes.commentForm}>
+          <textarea
+            className={classes.textarea}
+            placeholder={t('calendar.write_text')}
+            value={pendingComment}
+            onChange={(e) => setPendingComment(e.target.value)}
+            autoFocus
+          />
+          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <Button
+              appearance={AppearanceTypes.Primary}
+              disabled={!pendingComment.trim()}
+              onClick={() => setIsAddingComment(false)}
+            >
+              {t('calendar.save')}
+            </Button>
+            <Button
+              appearance={AppearanceTypes.Secondary}
+              onClick={() => {
+                setIsAddingComment(false)
+                setPendingComment('')
+              }}
+            >
+              {t('calendar.cancel')}
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Tagasiside tõlketeenusele — only for existing orders */}
       {isViewMode && (

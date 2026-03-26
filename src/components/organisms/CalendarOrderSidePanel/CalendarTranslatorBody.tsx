@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
@@ -33,7 +33,11 @@ const CalendarTranslatorBody: FC = () => {
     isCancelling,
     handleVoidConfirm: onVoidConfirm,
     handleStartChangeDuration: onStartChangeDuration,
+    order,
+    downloadFile,
   } = useSidePanel()
+
+  const [isFilesOpen, setIsFilesOpen] = useState(false)
 
   return (
     <>
@@ -135,7 +139,7 @@ const CalendarTranslatorBody: FC = () => {
           <div className={classes.formGroup}>
             <label className={classes.label}>{t('calendar.order_way')}</label>
             <span className={classes.readValue}>
-              {slot.assignment.service_type === 'remote'
+              {slot.assignment.service_type === 'REMOTE'
                 ? t('calendar.service_type_remote')
                 : t('calendar.service_type_contact')}
             </span>
@@ -301,31 +305,57 @@ const CalendarTranslatorBody: FC = () => {
       {/* Lisamaterjalid */}
       <div className={classes.divider} />
       <div className={classes.sectionRow}>
-        <div className={classes.sectionLabel}>
+        <button
+          className={classes.sectionLabel}
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: order?.source_files?.length ? 'pointer' : 'default',
+          }}
+          onClick={() =>
+            order?.source_files?.length && setIsFilesOpen(!isFilesOpen)
+          }
+        >
           <AttachIcon className={classes.sectionIcon} />
           <span>{t('calendar.attachments')}</span>
-          {!!slot?.assignment?.files?.length && (
-            <button className={classes.sectionLinkBtn}>
-              {t('calendar.download_files', {
-                count: slot.assignment.files.length,
-              })}
-            </button>
+          {!!order?.source_files?.length && (
+            <>
+              <ChevronLeft
+                className={classNames(classes.sectionChevron, {
+                  [classes.sectionChevronOpen]: isFilesOpen,
+                })}
+              />
+              <span className={classes.sectionNote}>
+                {order.source_files.length}
+              </span>
+            </>
           )}
-        </div>
+        </button>
       </div>
-      {(isChangingDuration || isPastSlot) && slot?.assignment?.files?.length ? (
+      {isFilesOpen && !!order?.source_files?.length && (
         <div className={classes.fileList}>
-          <div className={classes.fileListHeader}>
-            {t('calendar.file_list_header')}
-          </div>
-          {slot.assignment.files.map((f) => (
-            <div key={f.name} className={classes.fileItem}>
-              <button className={classes.fileLink}>{f.name}</button>
-              <DownloadIcon className={classes.downloadIcon} />
+          {order.source_files.map((f) => (
+            <div key={f.id} className={classes.fileItem}>
+              <button
+                className={classes.fileLink}
+                onClick={() =>
+                  downloadFile({ id: f.id, file_name: f.file_name })
+                }
+              >
+                {f.name}
+              </button>
+              <DownloadIcon
+                className={classes.downloadIcon}
+                onClick={() =>
+                  downloadFile({ id: f.id, file_name: f.file_name })
+                }
+                style={{ cursor: 'pointer' }}
+              />
             </div>
           ))}
         </div>
-      ) : null}
+      )}
 
       {/* Kommentaarid */}
       <div className={classes.divider} />

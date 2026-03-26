@@ -18,6 +18,7 @@ export const useClassifierValuesFetch = (
     data: classifierValuesData,
   } = useQuery<ClassifierValuesDataTypes>({
     queryKey: ['classifierValues', initialFilters],
+    enabled: !!initialFilters,
     queryFn: () => apiClient.get(endpoints.CLASSIFIER_VALUES, initialFilters),
   })
 

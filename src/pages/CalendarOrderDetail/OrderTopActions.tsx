@@ -17,6 +17,8 @@ const OrderTopActions: FC = () => {
     setIsChangingDuration,
     isConfirmingCancel,
     setIsConfirmingCancel,
+    cancelReason,
+    setCancelReason,
     setIsEditing,
     durationEndTime,
     isUpdating,
@@ -31,7 +33,7 @@ const OrderTopActions: FC = () => {
 
   return (
     <div className={classes.topActions}>
-      {isTPM && order?.status === 'pending' && (
+      {isTPM && order?.status === 'NEW' && (
         <Button
           appearance={AppearanceTypes.Primary}
           onClick={handleAccept}
@@ -40,7 +42,7 @@ const OrderTopActions: FC = () => {
           {t('calendar.confirm_order')}
         </Button>
       )}
-      {isTranslator && order?.status === 'pending' && (
+      {isTranslator && order?.status === 'NEW' && (
         <Button
           appearance={AppearanceTypes.Primary}
           onClick={handleAccept}
@@ -50,7 +52,7 @@ const OrderTopActions: FC = () => {
         </Button>
       )}
       {isTranslator &&
-        (order?.status === 'confirmed' || order?.status === 'completed') &&
+        (order?.status === 'IN_PROGRESS' || order?.status === 'DONE') &&
         !isChangingDuration &&
         !isConfirmingCancel && (
           <Button
@@ -92,16 +94,25 @@ const OrderTopActions: FC = () => {
               ? t('calendar.cancel_booking_confirm')
               : t('calendar.cancel_order_confirm')}
           </span>
+          <textarea
+            className={classes.cancelReasonInput}
+            placeholder={t('calendar.cancel_reason_placeholder')}
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+          />
           <Button
             appearance={AppearanceTypes.Primary}
             onClick={handleCancelOrder}
-            disabled={isCancelling}
+            disabled={isCancelling || !cancelReason.trim()}
           >
             {t('calendar.void_confirm_yes')}
           </Button>
           <Button
             appearance={AppearanceTypes.Secondary}
-            onClick={() => setIsConfirmingCancel(false)}
+            onClick={() => {
+              setIsConfirmingCancel(false)
+              setCancelReason('')
+            }}
           >
             {t('calendar.void_confirm_no')}
           </Button>

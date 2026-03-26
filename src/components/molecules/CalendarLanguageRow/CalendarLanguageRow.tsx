@@ -235,7 +235,7 @@ const CalendarLanguageRow: FC<Props> = ({
 }) => {
   const sw = slotWidth ?? SLOT_WIDTH_PX
   const { t } = useTranslation()
-  const { data: weekData } = useFetchCalendarWeek(date)
+  const { data: weekData } = useFetchCalendarWeek(readOnly ? '' : date)
   const { pendingDeepLink, setPendingDeepLink, openSidePanel } =
     useCalendarPanel()
   const bookedSlots =
@@ -255,7 +255,7 @@ const CalendarLanguageRow: FC<Props> = ({
       const weekDayOffset = dayjs(date).diff(dayjs(weekData!.week_start), 'day')
       if (weekDayOffset < 0 || weekDayOffset > 6) return false
       const slot = langWeekSlots[weekDayOffset * 4 + blockInDay]
-      return !!slot && slot.working_hours > 0 && slot.available_vendors === 0
+      return !!slot && slot.available_vendors === 0
     },
     [langWeekSlots, weekData, date, dayStartHour]
   )
@@ -356,54 +356,6 @@ const CalendarLanguageRow: FC<Props> = ({
         onMouseLeave={readOnly ? undefined : handleMouseUp}
       >
         {/* Slot background cells */}
-        {!isExpanded &&
-          readOnly &&
-          Array.from({ length: totalSlots }).map((_, i) => {
-            const slotStart = slotIndexToIso(i, date, dayStartHour)
-            const slotEnd = slotIndexToIso(i + 1, date, dayStartHour)
-            const isCellBooked = bookedSlots.some(
-              (s) =>
-                dayjs(s.start_at).isBefore(dayjs(slotEnd)) &&
-                dayjs(s.end_at).isAfter(dayjs(slotStart))
-            )
-            if (isCellBooked) return null
-
-            if (i % 2 === 1) {
-              const prevStart = slotIndexToIso(i - 1, date, dayStartHour)
-              const prevEnd = slotIndexToIso(i, date, dayStartHour)
-              const prevBooked = bookedSlots.some(
-                (s) =>
-                  dayjs(s.start_at).isBefore(dayjs(prevEnd)) &&
-                  dayjs(s.end_at).isAfter(dayjs(prevStart))
-              )
-              if (!prevBooked) return null // merge with even cell
-            }
-
-            const nextStart = slotIndexToIso(i + 1, date, dayStartHour)
-            const nextEnd = slotIndexToIso(i + 2, date, dayStartHour)
-            const nextBooked =
-              i + 1 < totalSlots &&
-              bookedSlots.some(
-                (s) =>
-                  dayjs(s.start_at).isBefore(dayjs(nextEnd)) &&
-                  dayjs(s.end_at).isAfter(dayjs(nextStart))
-              )
-            const isWide = i % 2 === 0 && i + 1 < totalSlots && !nextBooked
-
-            return (
-              <div
-                key={i}
-                className={classNames(classes.slotCell, classes.slotCellPast)}
-                style={{
-                  left: i * sw + 4,
-                  width: isWide ? sw * 2 - 8 : sw - 8,
-                  top: 4,
-                  bottom: 4,
-                  height: 'auto',
-                }}
-              />
-            )
-          })}
         {!isExpanded &&
           !readOnly &&
           Array.from({ length: totalSlots }).map((_, i) => {

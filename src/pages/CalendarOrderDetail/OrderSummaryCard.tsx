@@ -170,7 +170,7 @@ const SummaryFields: FC = () => {
                 setDurationEndTime(endDt ? endDt.format('HH:mm') : '')
                 setIsChangingDuration(true)
               }}
-              disabled={order!.status === 'pending'}
+              disabled={order!.status === 'NEW'}
             >
               {t('calendar.change_duration_btn')}
             </Button>

@@ -5,35 +5,6 @@
   background: $color-background-main;
 }
 
-.filterBanner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 0 0;
-}
-
-.filterBannerText {
-  font-size: $font-size-12;
-  color: #004277;
-  background: #d0e1ee;
-  border-radius: $border-radius-4;
-  padding: 2px 8px;
-}
-
-.filterBannerClose {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  color: $color-text-light;
-  line-height: 1;
-  padding: 0 4px;
-
-  &:hover {
-    color: $color-text;
-  }
-}
-
 .content {
   display: flex;
   flex: 1;
@@ -316,6 +287,32 @@
   min-width: 0;
 }
 
+.searchInputSelect {
+  position: relative;
+  cursor: pointer;
+}
+
+.searchSelectValue {
+  flex: 1;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: #5d6071;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.searchSelectOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
 .searchDatetime {
   flex: 1;
   border: none;
@@ -327,10 +324,14 @@
   cursor: pointer;
   min-width: 0;
   width: 100%;
+}
 
-  &::-webkit-calendar-picker-indicator {
-    display: none;
-  }
+.searchDateSep {
+  width: 1px;
+  height: 18px;
+  background: #d2d3d8;
+  flex-shrink: 0;
+  margin: 0 4px;
 }
 
 .searchChevron {
@@ -356,11 +357,6 @@
   }
 }
 
-.noResults {
-  font-size: 11px;
-  color: #b91c1c;
-  white-space: nowrap;
-}
 
 .findButton {
   display: flex;

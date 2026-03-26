@@ -1,4 +1,6 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { apiClient } from 'api'
+import { endpoints } from 'api/endpoints'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -12,17 +14,21 @@ import {
   useFetchSlotMatching,
   useCreatePrebook,
   useCancelPrebook,
+  useFetchCalendarOrderDetail,
+  useCalendarAddFiles,
+  useCalendarDeleteFile,
+  useCalendarDownloadFile,
+  useDeclineCancelCalendarOrder,
 } from 'hooks/requests/useCalendar'
-import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
-import { ClassifierValueType } from 'types/classifierValues'
+import { useFetchCalendarTags } from 'hooks/requests/useCalendar'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import CloseIcon from 'assets/icons/close.svg?react'
 import OpenBookingIcon from 'assets/icons/open_booking.svg?react'
 import CalendarTranslatorBody from './CalendarTranslatorBody'
-import CalendarClientPastBody from './CalendarClientPastBody'
-import CalendarClientBody from './CalendarClientBody'
+import CalendarOrderPastBody from './CalendarOrderPastBody'
+import CalendarOrderViewBody from './CalendarOrderViewBody'
 import CalendarOrderFormBody from './CalendarOrderFormBody'
 import { SidePanelContext } from './SidePanelContext'
 import classes from './classes.module.scss'
@@ -39,6 +45,8 @@ const CalendarOrderSidePanel: FC = () => {
     useUpdateCalendarOrder()
   const { mutate: cancelOrder, isPending: isCancelling } =
     useCancelCalendarOrder()
+  const { mutate: declineCancelOrder, isPending: isDecliningCancel } =
+    useDeclineCancelCalendarOrder()
   const { mutate: createPrebook } = useCreatePrebook()
   const { mutate: cancelPrebook } = useCancelPrebook()
   const prebookActiveRef = useRef(false)
@@ -49,18 +57,22 @@ const CalendarOrderSidePanel: FC = () => {
   const [selectedDate, setSelectedDate] = useState('')
   const [startTimeInput, setStartTimeInput] = useState('')
   const [clientInstitutionId, setClientInstitutionId] = useState('')
-  const [domainId, setDomainId] = useState('')
+  const [domainIds, setDomainIds] = useState<string[]>([])
   const [vendorId, setVendorId] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
+  const [cancelReason, setCancelReason] = useState('')
+  const [isCancelled, setIsCancelled] = useState(false)
   const [isMetaOpen, setIsMetaOpen] = useState(false)
   const [isChangingDuration, setIsChangingDuration] = useState(false)
   const [durationMinutes, setDurationMinutes] = useState(60)
   const [durationNote, setDurationNote] = useState('')
+  const [pendingFiles, setPendingFiles] = useState<File[]>([])
+  const [pendingComment, setPendingComment] = useState('')
 
   const isOpen = sidePanelSelection !== null
   const isViewMode = !!sidePanelSelection?.slot
-  const isTranslatorView = isTranslator && isViewMode
+  const isTranslatorView = isTranslator && isViewMode && !isTPM
   const isFormMode = !isViewMode || isEditing
 
   const language = sidePanelSelection?.language
@@ -75,25 +87,49 @@ const CalendarOrderSidePanel: FC = () => {
     startIso && endIso ? dayjs(endIso).diff(dayjs(startIso), 'minute') : 60
 
   const projectId = slot?.assignment?.sub_project?.id
+
+  const { order } = useFetchCalendarOrderDetail(projectId ?? null)
+  const { mutate: addFilesMutate, isPending: isAddingFiles } =
+    useCalendarAddFiles(projectId)
+  const { mutate: deleteFileMutate, isPending: isDeletingFile } =
+    useCalendarDeleteFile(projectId)
+  const { mutate: downloadFileMutate } = useCalendarDownloadFile({ projectId })
+
   const canEdit = isTPM || isClient
+  const isRequiredFilled =
+    !!referenceNumber.trim() &&
+    !!serviceType &&
+    !!location.trim() &&
+    (!isTPM || !!clientInstitutionId) &&
+    (!isTPM || !!vendorId)
   const isPastSlot = slot ? dayjs(slot.end_at).isBefore(dayjs()) : false
   const isClientPastView = isClient && isViewMode && isPastSlot
 
   // Slot matching for TPM — only fetch in form mode
+  const vendorLocked = !!sidePanelSelection?.vendorId
   const slotMatchingParams =
-    isFormMode && isTPM && startIso && endIso && language
+    isFormMode && isTPM && !vendorLocked && startIso && endIso && language
       ? {
           start_at: startIso,
           end_at: endIso,
           language_id: language.language.id,
         }
       : null
-  const { vendors } = useFetchSlotMatching(slotMatchingParams)
+  const { vendors: fetchedVendors } = useFetchSlotMatching(slotMatchingParams)
+  const vendors =
+    vendorLocked && sidePanelSelection?.vendorId
+      ? [
+          {
+            id: sidePanelSelection.vendorId,
+            name: sidePanelSelection.vendorName ?? null,
+            institution_user_id: '',
+            is_internal: true,
+          },
+        ]
+      : fetchedVendors
 
   // Domains for Valdkond
-  const { classifierValues: domains } = useClassifierValuesFetch(
-    isFormMode ? { type: ClassifierValueType.TranslationDomain } : undefined
-  )
+  const { tags: domains } = useFetchCalendarTags()
 
   // Reset state when panel opens/closes
   useEffect(() => {
@@ -101,13 +137,17 @@ const CalendarOrderSidePanel: FC = () => {
       setReferenceNumber('')
       setServiceType('')
       setLocation('')
+      setPendingFiles([])
+      setPendingComment('')
       setSelectedDate('')
       setStartTimeInput('')
       setClientInstitutionId('')
-      setDomainId('')
+      setDomainIds([])
       setVendorId('')
       setIsEditing(false)
       setIsConfirmingCancel(false)
+      setCancelReason('')
+      setIsCancelled(false)
       setIsMetaOpen(false)
       setIsChangingDuration(false)
       setDurationMinutes(60)
@@ -122,13 +162,13 @@ const CalendarOrderSidePanel: FC = () => {
         setDurationMinutes(slotDurationMinutes)
       }
       // Pre-fill form for TPM pending order view
-      if (isTPM && sidePanelSelection?.slot?.assignment?.status === 'pending') {
+      if (isTPM && sidePanelSelection?.slot?.assignment?.status === 'NEW') {
         const a = sidePanelSelection.slot.assignment
         setReferenceNumber(a.reference_number ?? '')
         setServiceType(
-          a.service_type === 'remote'
+          a.service_type === 'REMOTE'
             ? 'kaugtolge'
-            : a.service_type === 'on-site'
+            : a.service_type === 'ON_SITE'
               ? 'kontakttolge'
               : ''
         )
@@ -144,11 +184,28 @@ const CalendarOrderSidePanel: FC = () => {
   useEffect(() => {
     if (!isOpen || isViewMode || !language || !startIso || !endIso) return
     prebookActiveRef.current = true
-    createPrebook({
-      language_id: language.language.id,
-      start_at: startIso,
-      end_at: endIso,
-    })
+    createPrebook(
+      {
+        language_id: language.language.id,
+        start_at: startIso,
+        end_at: endIso,
+        ...(sidePanelSelection?.vendorId
+          ? { vendor_id: sidePanelSelection.vendorId }
+          : {}),
+      },
+      {
+        onError: (err: unknown) => {
+          const msg = (err as { message?: string })?.message ?? ''
+          if (msg.toLowerCase().includes('only one prebook')) {
+            showNotification({
+              type: NotificationTypes.Error,
+              title: t('notification.error'),
+              content: t('calendar.prebook_limit'),
+            })
+          }
+        },
+      }
+    )
   }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleClose = useCallback(() => {
@@ -169,18 +226,32 @@ const CalendarOrderSidePanel: FC = () => {
         language_id: language.language.id,
         start_at: startIso,
         end_at: computedEndIso,
-        service_type: serviceType === 'kaugtolge' ? 'remote' : 'on-site',
+        service_type: serviceType === 'kaugtolge' ? 'REMOTE' : 'ON_SITE',
         reference_number: referenceNumber || undefined,
         location: serviceType === 'kontakttolge' ? location : undefined,
         meeting_link: serviceType === 'kaugtolge' ? location : undefined,
         client_institution_id: isTPM
           ? clientInstitutionId || undefined
           : undefined,
-        domain_id: domainId || undefined,
+        tag_ids: domainIds.length ? domainIds : undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
+        comment: pendingComment || undefined,
       },
       {
-        onSuccess: () => {
+        onSuccess: (res) => {
+          const newProjectId = (res as { data?: { id?: string } })?.data?.id
+          if (newProjectId && pendingFiles.length) {
+            apiClient.postForm(endpoints.MEDIA_BULK, {
+              files: pendingFiles.map((f) => ({
+                content: f,
+                reference_object_id: newProjectId,
+                reference_object_type: 'project',
+                collection: 'source',
+              })),
+            })
+          }
+          setPendingFiles([])
+          setPendingComment('')
           prebookActiveRef.current = false
           closeSidePanel()
           showNotification({
@@ -196,13 +267,10 @@ const CalendarOrderSidePanel: FC = () => {
   const handleStartEdit = () => {
     setIsEditing(true)
     setIsConfirmingCancel(false)
+    const st = slot?.assignment?.service_type
     setReferenceNumber(slot?.assignment?.reference_number ?? '')
     setServiceType(
-      slot?.assignment?.service_type === 'remote'
-        ? 'kaugtolge'
-        : slot?.assignment?.service_type === 'on-site'
-          ? 'kontakttolge'
-          : ''
+      st === 'REMOTE' ? 'kaugtolge' : st === 'ON_SITE' ? 'kontakttolge' : ''
     )
     setLocation(
       slot?.assignment?.meeting_link ?? slot?.assignment?.location ?? ''
@@ -220,7 +288,7 @@ const CalendarOrderSidePanel: FC = () => {
     setSelectedDate('')
     setStartTimeInput('')
     setClientInstitutionId('')
-    setDomainId('')
+    setDomainIds([])
     setVendorId('')
   }
 
@@ -231,9 +299,9 @@ const CalendarOrderSidePanel: FC = () => {
         id: projectId,
         service_type:
           serviceType === 'kaugtolge'
-            ? 'remote'
+            ? 'REMOTE'
             : serviceType === 'kontakttolge'
-              ? 'on-site'
+              ? 'ON_SITE'
               : undefined,
         reference_number: referenceNumber || undefined,
         location: serviceType === 'kontakttolge' ? location : undefined,
@@ -241,26 +309,68 @@ const CalendarOrderSidePanel: FC = () => {
         client_institution_id: isTPM
           ? clientInstitutionId || undefined
           : undefined,
-        domain_id: domainId || undefined,
+        tag_ids: domainIds.length ? domainIds : undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
       },
-      { onSuccess: () => setIsEditing(false) }
+      {
+        onSuccess: () => setIsEditing(false),
+        onError: (err: unknown) => {
+          const msg = (err as { message?: string })?.message ?? ''
+          if (msg.toLowerCase().includes('vendor is not available')) {
+            showNotification({
+              type: NotificationTypes.Error,
+              title: t('notification.error'),
+              content: t('calendar.vendor_not_available'),
+            })
+          }
+        },
+      }
     )
   }
 
   const handleVoidConfirm = () => {
+    if (!projectId || !cancelReason.trim()) return
+    cancelOrder(
+      {
+        id: projectId,
+        cancellation_reason: cancelReason.trim(),
+        ...(isTPM ? { is_delayed: true } : {}),
+      },
+      {
+        onSuccess: () => {
+          setCancelReason('')
+          if (isTPM) {
+            setIsConfirmingCancel(false)
+            // order.cancel_at drives the pending-cancel UI after refetch
+          } else {
+            handleClose()
+            showNotification({
+              type: NotificationTypes.Success,
+              title: t('notification.announcement'),
+              content: t('success.calendar_order_cancelled'),
+            })
+          }
+        },
+      }
+    )
+  }
+
+  const handleUndoCancel = useCallback(() => {
+    handleClose()
+  }, [handleClose])
+
+  const handleDeclineCancel = useCallback(() => {
     if (!projectId) return
-    cancelOrder(projectId, {
+    declineCancelOrder(projectId, {
       onSuccess: () => {
-        handleClose()
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.calendar_order_cancelled'),
+          content: t('success.calendar_cancel_declined'),
         })
       },
     })
-  }
+  }, [projectId, declineCancelOrder, t])
 
   const handleStartChangeDuration = () => {
     setDurationMinutes(slotDurationMinutes)
@@ -315,9 +425,10 @@ const CalendarOrderSidePanel: FC = () => {
       setStartTimeInput,
       clientInstitutionId,
       setClientInstitutionId,
-      domainId,
-      setDomainId,
+      domainIds,
+      setDomainIds,
       vendorId,
+      vendorLocked,
       setVendorId,
       durationMinutes,
       setDurationMinutes,
@@ -326,19 +437,38 @@ const CalendarOrderSidePanel: FC = () => {
       isEditing,
       isConfirmingCancel,
       setIsConfirmingCancel,
+      cancelReason,
+      setCancelReason,
+      isCancelled,
       isMetaOpen,
       setIsMetaOpen,
       isChangingDuration,
+      vendorName: sidePanelSelection?.vendorName,
       isCreating,
       isUpdating,
       isCancelling,
       domains,
+      isRequiredFilled,
       vendors: vendors ?? [],
+      order: order ?? null,
+      addFiles: (files: File[]) => addFilesMutate(files),
+      deleteFile: (fileId: string) => deleteFileMutate(fileId),
+      downloadFile: (file: { id: string; file_name: string }) =>
+        downloadFileMutate(file),
+      isAddingFiles,
+      isDeletingFile,
+      pendingFiles,
+      setPendingFiles,
+      pendingComment,
+      setPendingComment,
       handleSubmit,
       handleStartEdit,
       handleCancelEdit,
       handleSaveEdit,
       handleVoidConfirm,
+      handleUndoCancel,
+      handleDeclineCancel,
+      isDecliningCancel,
       handleStartChangeDuration,
       handleCancelChangeDuration,
       handleSaveDuration,
@@ -346,7 +476,13 @@ const CalendarOrderSidePanel: FC = () => {
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      language, slot, date, startTime, duration, isPastSlot, isViewMode,
+      language,
+      slot,
+      date,
+      startTime,
+      duration,
+      isPastSlot,
+      isViewMode,
       isTPM,
       referenceNumber,
       serviceType,
@@ -354,25 +490,41 @@ const CalendarOrderSidePanel: FC = () => {
       selectedDate,
       startTimeInput,
       clientInstitutionId,
-      domainId,
+      domainIds,
       vendorId,
       durationMinutes,
       durationNote,
-      isEditing, isConfirmingCancel, isMetaOpen, isChangingDuration,
+      isEditing,
+      isConfirmingCancel,
+      cancelReason,
+      isCancelled,
+      isMetaOpen,
+      isChangingDuration,
+      isRequiredFilled,
       isCreating,
       isUpdating,
       isCancelling,
-      domains, vendors,
+      isDecliningCancel,
+      domains,
+      vendors,
+      order,
+      isAddingFiles,
+      isDeletingFile,
+      pendingFiles,
+      pendingComment,
+      sidePanelSelection?.vendorName,
       handleClose,
     ]
   )
 
   // Determine which footer to show
+  const isTPMViewMode = isTPM && isViewMode
   const isTPMPastView = isTPM && isViewMode && isPastSlot
   const showFooter =
     (!isTranslatorView || isChangingDuration) &&
     !isClientPastView &&
     !isTPMPastView &&
+    !isTPMViewMode &&
     !(isClient && isViewMode)
 
   return (
@@ -383,7 +535,9 @@ const CalendarOrderSidePanel: FC = () => {
         <div className={classes.header}>
           <div className={classes.headerTitle}>
             {isViewMode
-              ? (slot?.assignment?.sub_project.ext_id ?? t('calendar.order'))
+              ? t('calendar.order') +
+                ' ' +
+                (slot?.assignment?.sub_project.ext_id ?? t('calendar.order'))
               : t('calendar.new_order')}
           </div>
           <div className={classes.headerActions}>
@@ -409,9 +563,9 @@ const CalendarOrderSidePanel: FC = () => {
             {isTranslatorView ? (
               <CalendarTranslatorBody />
             ) : isClientPastView || isTPMPastView ? (
-              <CalendarClientPastBody />
-            ) : isClient && isViewMode ? (
-              <CalendarClientBody />
+              <CalendarOrderPastBody />
+            ) : isViewMode ? (
+              <CalendarOrderViewBody />
             ) : (
               <CalendarOrderFormBody />
             )}
@@ -446,7 +600,7 @@ const CalendarOrderSidePanel: FC = () => {
                   <Button
                     appearance={AppearanceTypes.Primary}
                     onClick={handleSaveEdit}
-                    disabled={isUpdating}
+                    disabled={isUpdating || !isRequiredFilled}
                   >
                     {isUpdating ? t('calendar.saving') : t('calendar.save')}
                   </Button>
@@ -511,7 +665,7 @@ const CalendarOrderSidePanel: FC = () => {
                 <Button
                   appearance={AppearanceTypes.Primary}
                   onClick={handleSubmit}
-                  disabled={isCreating || !serviceType || !location.trim()}
+                  disabled={isCreating || !isRequiredFilled}
                 >
                   {isCreating
                     ? t('calendar.saving')

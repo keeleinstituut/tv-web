@@ -61,7 +61,7 @@ const CalendarDayVendorRow: FC<Props> = ({
       slotWidth: sw,
       isSlotBooked,
       onDragComplete: (startIso, endIso) =>
-        openSidePanel({ language, startIso, endIso, vendorId: vendor.id }),
+        openSidePanel({ language, startIso, endIso, vendorId: vendor.id, vendorName: vendor.institution_user.name }),
     })
 
   const handleClickSlot = useCallback(
@@ -72,6 +72,7 @@ const CalendarDayVendorRow: FC<Props> = ({
         endIso: slot.end_at,
         slot,
         vendorId: vendor.id,
+        vendorName: vendor.institution_user.name,
       })
     },
     [language, vendor.id, openSidePanel]

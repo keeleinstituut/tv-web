@@ -87,30 +87,17 @@ export const endpoints = {
   CALENDAR_DAY: translationOrder('calendar/day'),
   CALENDAR_WEEK: translationOrder('calendar/week'),
   CALENDAR_MONTH: translationOrder('calendar/month'),
-  CALENDAR_DAY_VENDORS: translationOrder('calendar/day/vendors'),
-  CALENDAR_WEEK_VENDORS: translationOrder('calendar/week/vendors'),
-  CALENDAR_MONTH_VENDORS: translationOrder('calendar/month/vendors'),
   CALENDAR_SEARCH: translationOrder('calendar/search'),
-  CALENDAR_SLOT_MATCHING: translationOrder('calendar/slot-matching'),
-  CALENDAR_ORDERS: translationOrder('calendar/orders'),
-  CALENDAR_ORDER: (id: string) => translationOrder(`calendar/orders/${id}`),
-  CALENDAR_ORDER_ACCEPT: (id: string) =>
-    translationOrder(`calendar/orders/${id}/accept`),
-  CALENDAR_ORDER_DECLINE: (id: string) =>
-    translationOrder(`calendar/orders/${id}/decline`),
-  CALENDAR_ORDER_CONFIRM: (id: string) =>
-    translationOrder(`calendar/orders/${id}/confirm`),
-  CALENDAR_ORDER_REJECT: (id: string) =>
-    translationOrder(`calendar/orders/${id}/reject`),
-  CALENDAR_WEEK_SLOT_BOOKINGS: translationOrder('calendar/week/bookings'),
+  CALENDAR_SLOT_MATCHING: translationOrder('calendar/slot-matching/vendors'),
   PINNED_LANGUAGES: translationOrder('institution-users/pinned-languages'),
-  VENDOR_CALENDAR_IMPORT: translationOrder('vendors/calendar/import'),
   VENDOR_CALENDAR: (vendorId: string) =>
     translationOrder(`vendors/${vendorId}/calendar`),
   VENDOR_EMERGENCY_SCHEDULES: (vendorId: string) =>
     translationOrder(`vendors/${vendorId}/emergency-schedules`),
   VENDOR_EMERGENCY_SCHEDULE: (vendorId: string, scheduleId: string) =>
     translationOrder(`vendors/${vendorId}/emergency-schedules/${scheduleId}`),
+  PROJECT_CANCEL_DECLINE: (id: string) =>
+    translationOrder(`projects/${id}/cancel-decline`),
   CALENDAR_PREBOOK: translationOrder('calendar/prebook'),
   CALENDAR_VENDOR_ENTRIES: translationOrder('calendar/vendor-entries'),
 

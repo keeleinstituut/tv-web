@@ -1,4 +1,5 @@
 import React, { FC } from 'react'
+import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -20,8 +21,8 @@ const OrderDetailsCard: FC = () => {
     setServiceType,
     address,
     setAddress,
-    domainId,
-    setDomainId,
+    domainIds,
+    setDomainIds,
     vendorId,
     setVendorId,
     localFiles,
@@ -45,18 +46,18 @@ const OrderDetailsCard: FC = () => {
             {isServiceEditable ? (
               <div className={classes.serviceToggle}>
                 <button
-                  className={`${classes.serviceOption} ${serviceType === 'on-site' ? classes.serviceOptionActive : ''}`}
+                  className={`${classes.serviceOption} ${serviceType === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
                   onClick={() => {
-                    setServiceType('on-site')
+                    setServiceType('ON_SITE')
                     setAddress('')
                   }}
                 >
                   {t('calendar.service_type_contact')}
                 </button>
                 <button
-                  className={`${classes.serviceOption} ${serviceType === 'remote' ? classes.serviceOptionActive : ''}`}
+                  className={`${classes.serviceOption} ${serviceType === 'REMOTE' ? classes.serviceOptionActive : ''}`}
                   onClick={() => {
-                    setServiceType('remote')
+                    setServiceType('REMOTE')
                     setAddress('')
                   }}
                 >
@@ -66,12 +67,12 @@ const OrderDetailsCard: FC = () => {
             ) : (
               <div className={classes.serviceToggle}>
                 <span
-                  className={`${classes.serviceOption} ${order!.service_type === 'on-site' ? classes.serviceOptionActive : ''}`}
+                  className={`${classes.serviceOption} ${order!.service_type === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
                 >
                   {t('calendar.service_type_contact')}
                 </span>
                 <span
-                  className={`${classes.serviceOption} ${order!.service_type === 'remote' ? classes.serviceOptionActive : ''}`}
+                  className={`${classes.serviceOption} ${order!.service_type === 'REMOTE' ? classes.serviceOptionActive : ''}`}
                 >
                   {t('calendar.service_type_remote')}
                 </span>
@@ -81,7 +82,7 @@ const OrderDetailsCard: FC = () => {
 
           <div className={classes.field}>
             <span className={classes.fieldLabel}>
-              {activeServiceType === 'on-site'
+              {activeServiceType === 'ON_SITE'
                 ? t('calendar.location')
                 : t('calendar.meeting_link')}
             </span>
@@ -91,13 +92,13 @@ const OrderDetailsCard: FC = () => {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder={
-                  activeServiceType === 'on-site'
+                  activeServiceType === 'ON_SITE'
                     ? t('calendar.enter_address')
                     : t('calendar.enter_link')
                 }
               />
             ) : isTranslator ? (
-              order!.service_type === 'on-site' ? (
+              order!.service_type === 'ON_SITE' ? (
                 <div className={classes.readonlyInput}>{order!.location}</div>
               ) : (
                 <a
@@ -111,7 +112,7 @@ const OrderDetailsCard: FC = () => {
               )
             ) : (
               <span className={classes.fieldValue}>
-                {order!.service_type === 'on-site' ? order!.location : order!.meeting_link}
+                {order!.service_type === 'ON_SITE' ? order!.location : order!.meeting_link}
               </span>
             )}
           </div>
@@ -119,18 +120,12 @@ const OrderDetailsCard: FC = () => {
           <div className={classes.field}>
             <span className={classes.fieldLabel}>{t('calendar.domain')}</span>
             {isCreateMode ? (
-              <select
-                className={classes.editSelect}
-                value={domainId}
-                onChange={(e) => setDomainId(e.target.value)}
-              >
-                <option value="">{t('calendar.select_domain')}</option>
-                {(domains ?? []).map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.name}
-                  </option>
-                ))}
-              </select>
+              <MultiSelect
+                options={domains ?? []}
+                value={domainIds}
+                onChange={setDomainIds}
+                placeholder={t('calendar.select_domain')}
+              />
             ) : order!.domain ? (
               <span className={classes.domainChip}>{order!.domain}</span>
             ) : null}

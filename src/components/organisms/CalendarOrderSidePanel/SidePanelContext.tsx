@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
-import { BookedSlot, CalendarLanguage, ServiceType } from 'types/calendar'
-import { ClassifierValue } from 'types/classifierValues'
+import { BookedSlot, CalendarLanguage, CalendarOrderDetail, ServiceType } from 'types/calendar'
+export interface TagOption { id: string; name: string }
 import { SlotMatchingVendor } from 'types/calendar'
 
 export interface SidePanelContextValue {
@@ -29,9 +29,10 @@ export interface SidePanelContextValue {
   setStartTimeInput: (v: string) => void
   clientInstitutionId: string
   setClientInstitutionId: (v: string) => void
-  domainId: string
-  setDomainId: (v: string) => void
+  domainIds: string[]
+  setDomainIds: (v: string[]) => void
   vendorId: string
+  vendorLocked: boolean
   setVendorId: (v: string) => void
   durationMinutes: number
   setDurationMinutes: (v: number | ((prev: number) => number)) => void
@@ -42,9 +43,16 @@ export interface SidePanelContextValue {
   isEditing: boolean
   isConfirmingCancel: boolean
   setIsConfirmingCancel: (v: boolean) => void
+  cancelReason: string
+  setCancelReason: (v: string) => void
+  isCancelled: boolean
   isMetaOpen: boolean
   setIsMetaOpen: (v: boolean) => void
   isChangingDuration: boolean
+  vendorName: string | undefined
+
+  // Validation
+  isRequiredFilled: boolean
 
   // Async flags
   isCreating: boolean
@@ -52,8 +60,20 @@ export interface SidePanelContextValue {
   isCancelling: boolean
 
   // Remote data
-  domains: ClassifierValue[] | undefined
+  domains: TagOption[] | undefined
   vendors: SlotMatchingVendor[]
+  order: CalendarOrderDetail | null
+
+  // File actions
+  addFiles: (files: File[]) => void
+  deleteFile: (fileId: string) => void
+  downloadFile: (file: { id: string; file_name: string }) => void
+  isAddingFiles: boolean
+  isDeletingFile: boolean
+  pendingFiles: File[]
+  setPendingFiles: (files: File[]) => void
+  pendingComment: string
+  setPendingComment: (v: string) => void
 
   // Actions
   handleSubmit: () => void
@@ -61,6 +81,9 @@ export interface SidePanelContextValue {
   handleCancelEdit: () => void
   handleSaveEdit: () => void
   handleVoidConfirm: () => void
+  handleUndoCancel: () => void
+  handleDeclineCancel: () => void
+  isDecliningCancel: boolean
   handleStartChangeDuration: () => void
   handleCancelChangeDuration: () => void
   handleSaveDuration: () => void

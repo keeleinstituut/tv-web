@@ -336,6 +336,16 @@
   max-width: 320px;
 }
 
+.cancelReasonInput {
+  font-size: $font-size-14;
+  border: 1px solid #878a97;
+  border-radius: 4px;
+  padding: 8px;
+  resize: vertical;
+  min-height: 64px;
+  width: 280px;
+}
+
 // --- Edit footer ---
 
 .editFooter {

@@ -2,7 +2,7 @@ import { createContext, useContext, RefObject } from 'react'
 import { Dayjs } from 'dayjs'
 import { CalendarOrderDetail } from 'types/calendar'
 import { CalendarLanguage } from 'types/calendar'
-import { ClassifierValue } from 'types/classifierValues'
+export interface TagOption { id: string; name: string }
 import { SlotMatchingVendor } from 'hooks/requests/useCalendar'
 
 export interface OrderDetailContextValue {
@@ -10,7 +10,7 @@ export interface OrderDetailContextValue {
   order: CalendarOrderDetail | null
   isLoading: boolean
   languages: CalendarLanguage[]
-  domains: ClassifierValue[] | undefined
+  domains: TagOption[]
   vendors: SlotMatchingVendor[]
 
   // Mode / role
@@ -40,8 +40,8 @@ export interface OrderDetailContextValue {
   setDurationMinutes: (v: number | ((prev: number) => number)) => void
   durationEndTime: string
   setDurationEndTime: (v: string) => void
-  serviceType: 'remote' | 'on-site'
-  setServiceType: (v: 'remote' | 'on-site') => void
+  serviceType: 'REMOTE' | 'ON_SITE'
+  setServiceType: (v: 'REMOTE' | 'ON_SITE') => void
   address: string
   setAddress: (v: string) => void
   clientInstitutionId: string
@@ -50,8 +50,8 @@ export interface OrderDetailContextValue {
   setReferenceNumber: (v: string) => void
   languageId: string
   setLanguageId: (v: string) => void
-  domainId: string
-  setDomainId: (v: string) => void
+  domainIds: string[]
+  setDomainIds: (v: string[]) => void
   vendorId: string
   setVendorId: (v: string) => void
 
@@ -67,6 +67,8 @@ export interface OrderDetailContextValue {
   setIsChangingDuration: (v: boolean) => void
   isConfirmingCancel: boolean
   setIsConfirmingCancel: (v: boolean) => void
+  cancelReason: string
+  setCancelReason: (v: string) => void
   isAddingComment: boolean
   setIsAddingComment: (v: boolean) => void
   commentText: string
