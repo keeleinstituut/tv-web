@@ -98,6 +98,7 @@ export const endpoints = {
     translationOrder(`vendors/${vendorId}/emergency-schedules/${scheduleId}`),
   PROJECT_CANCEL_DECLINE: (id: string) =>
     translationOrder(`projects/${id}/cancel-decline`),
+  PROJECT_COMMENTS: (id: string) => translationOrder(`projects/${id}/comments`),
   CALENDAR_PREBOOK: translationOrder('calendar/prebook'),
   CALENDAR_VENDOR_ENTRIES: translationOrder('calendar/vendor-entries'),
 

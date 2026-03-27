@@ -448,6 +448,21 @@ export const useDeclineCalendarOrder = () => {
   })
 }
 
+export const useAddCalendarOrderComment = (
+  projectId: string | null | undefined
+) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (comment: string) =>
+      apiClient.post(endpoints.PROJECT_COMMENTS(projectId!), { comment }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['calendar-order-detail', projectId],
+      })
+    },
+  })
+}
+
 export const useFetchCalendarOrderDetail = (id: string | null) => {
   const { isLoading, isError, data } = useQuery({
     queryKey: ['calendar-order-detail', id],

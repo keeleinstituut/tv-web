@@ -223,7 +223,9 @@ export interface CalendarOrderDetail {
   cancelled_at?: string
   completed_at?: string
   client?: { name: string; institution: string; email: string; phone: string }
+  client_institution_user?: { id: string }
   coordinator?: { name: string; email: string; phone: string }
+  tags?: Array<{ id: string; name: string }>
   source_files?: Array<{
     id: string
     name: string

@@ -10,6 +10,7 @@ import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
+import DeleteIcon from 'assets/icons/delete.svg?react'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import { useSidePanel } from './SidePanelContext'
 import classes from './classes.module.scss'
@@ -66,12 +67,14 @@ const CalendarOrderViewBody: FC = () => {
     order,
     addFiles,
     downloadFile,
+    deleteFile,
     isAddingFiles,
+    isDeletingFile,
     pendingComment,
     setPendingComment,
     isTPM,
   } = useSidePanel()
-
+  console.log(slot, '@@@@@@@@@@@@@@@@@@')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isFilesOpen, setIsFilesOpen] = useState(false)
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
@@ -433,81 +436,66 @@ const CalendarOrderViewBody: FC = () => {
               </option>
             </select>
           </div>
-        ) : slot?.assignment?.service_type ? (
+        ) : (slot?.assignment?.service_type ?? order?.service_type) ? (
           <div className={classes.formGroup}>
             <span className={classes.label}>{t('calendar.order_way')}</span>
             <span className={classes.readValue}>
-              {slot.assignment.service_type === 'REMOTE'
+              {(slot?.assignment?.service_type ?? order?.service_type) ===
+              'REMOTE'
                 ? t('calendar.service_type_remote')
                 : t('calendar.service_type_contact')}
             </span>
           </div>
         ) : null}
 
-        {/* Asukoht / Koosoleku link */}
-        {isEditing ? (
-          <>
-            {serviceType === 'kontakttolge' && (
-              <div className={classes.formGroup}>
-                <label className={classes.label}>
-                  {t('calendar.location')}
-                  <span className={classes.requiredMark}>*</span>
-                </label>
-                <input
-                  className={classes.input}
-                  value={location}
-                  onChange={(e) => onSetLocation(e.target.value)}
-                  placeholder={t('calendar.enter_address')}
-                />
-              </div>
-            )}
-            {serviceType === 'kaugtolge' && (
-              <div className={classes.formGroup}>
-                <label className={classes.label}>
-                  {t('calendar.meeting_link')}
-                  <span className={classes.requiredMark}>*</span>
-                </label>
-                <input
-                  className={classes.input}
-                  value={location}
-                  onChange={(e) => onSetLocation(e.target.value)}
-                  placeholder={t('calendar.enter_link')}
-                />
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            {slot?.assignment?.service_type === 'ON_SITE' &&
-              slot.assignment.location && (
-                <div className={classes.formGroup}>
-                  <span className={classes.label}>
-                    {t('calendar.location')}
-                  </span>
-                  <span className={classes.readValueBlue}>
-                    {slot.assignment.location}
-                  </span>
-                </div>
-              )}
-            {slot?.assignment?.service_type === 'REMOTE' &&
-              slot.assignment.meeting_link && (
-                <div className={classes.formGroup}>
-                  <span className={classes.label}>
-                    {t('calendar.meeting_link')}
-                  </span>
-                  <div className={classes.meetingLinkRow}>
-                    <a
-                      className={classes.meetingLink}
-                      href={slot.assignment.meeting_link}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {slot.assignment.meeting_link}
-                    </a>
-                  </div>
-                </div>
-              )}
-          </>
+        {!isEditing && order?.location && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.location')}</span>
+            <span className={classes.readValueBlue}>{order.location}</span>
+          </div>
+        )}
+        {!isEditing && order?.meeting_link && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.meeting_link')}</span>
+            <a
+              className={classes.meetingLink}
+              href={order.meeting_link}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {order.meeting_link}
+            </a>
+          </div>
+        )}
+
+        {/* Asukoht / Koosoleku link — edit mode only */}
+        {isEditing && serviceType === 'kontakttolge' && (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>
+              {t('calendar.location')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
+            <input
+              className={classes.input}
+              value={location}
+              onChange={(e) => onSetLocation(e.target.value)}
+              placeholder={t('calendar.enter_address')}
+            />
+          </div>
+        )}
+        {isEditing && serviceType === 'kaugtolge' && (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>
+              {t('calendar.meeting_link')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
+            <input
+              className={classes.input}
+              value={location}
+              onChange={(e) => onSetLocation(e.target.value)}
+              placeholder={t('calendar.enter_link')}
+            />
+          </div>
         )}
 
         {/* Valdkond — edit only */}
@@ -631,7 +619,22 @@ const CalendarOrderViewBody: FC = () => {
         <span className={classes.sectionLabel}>
           {t('calendar.attachments')}
         </span>
-        {isEditing && !isPastSlot && !(isTPM && isCancelled) ? (
+        {!!order?.source_files?.length && (
+          <button
+            className={classes.sectionBtn}
+            onClick={() => setIsFilesOpen(!isFilesOpen)}
+          >
+            <span className={classes.sectionNote}>
+              {order.source_files.length}
+            </span>
+            <ChevronLeft
+              className={classNames(classes.sectionChevron, {
+                [classes.sectionChevronOpen]: isFilesOpen,
+              })}
+            />
+          </button>
+        )}
+        {isEditing && !isPastSlot && !(isTPM && isCancelled) && (
           <>
             <input
               ref={fileInputRef}
@@ -653,21 +656,7 @@ const CalendarOrderViewBody: FC = () => {
               <AddIcon style={{ width: 16, height: 16 }} />
             </button>
           </>
-        ) : !!order?.source_files?.length ? (
-          <button
-            className={classes.sectionBtn}
-            onClick={() => setIsFilesOpen(!isFilesOpen)}
-          >
-            <span className={classes.sectionNote}>
-              {order.source_files.length}
-            </span>
-            <ChevronLeft
-              className={classNames(classes.sectionChevron, {
-                [classes.sectionChevronOpen]: isFilesOpen,
-              })}
-            />
-          </button>
-        ) : null}
+        )}
       </div>
       {isFilesOpen && !!order?.source_files?.length && (
         <div className={classes.fileList}>
@@ -688,6 +677,15 @@ const CalendarOrderViewBody: FC = () => {
                 }
                 style={{ cursor: 'pointer' }}
               />
+              {isEditing && (
+                <button
+                  className={classes.fileIconBtn}
+                  disabled={isDeletingFile}
+                  onClick={() => deleteFile(f.id)}
+                >
+                  <DeleteIcon style={{ width: 24, height: 24 }} />
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -697,15 +695,7 @@ const CalendarOrderViewBody: FC = () => {
       <div className={classes.divider} />
       <div className={classes.sectionRow}>
         <span className={classes.sectionLabel}>{t('calendar.comments')}</span>
-        {isEditing && !(isTPM && isCancelled) ? (
-          <button
-            className={classes.sectionBtn}
-            onClick={() => setIsAddingComment(true)}
-          >
-            {t('calendar.add_short')}
-            <AddIcon style={{ width: 16, height: 16 }} />
-          </button>
-        ) : !!order?.project_comments?.length ? (
+        {!!order?.project_comments?.length && (
           <button
             className={classes.sectionBtn}
             onClick={() => setIsCommentsOpen(!isCommentsOpen)}
@@ -719,8 +709,22 @@ const CalendarOrderViewBody: FC = () => {
               })}
             />
           </button>
-        ) : null}
+        )}
+        {isEditing && !(isTPM && isCancelled) && (
+          <button
+            className={classes.sectionBtn}
+            onClick={() => setIsAddingComment(true)}
+          >
+            {t('calendar.add_short')}
+            <AddIcon style={{ width: 16, height: 16 }} />
+          </button>
+        )}
       </div>
+      {!isAddingComment && pendingComment && (
+        <div className={classes.commentContent}>
+          <span className={classes.commentText}>{pendingComment}</span>
+        </div>
+      )}
       {isAddingComment && (
         <div className={classes.commentForm}>
           <textarea

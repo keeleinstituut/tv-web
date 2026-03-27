@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, RefObject, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import {
@@ -45,6 +45,9 @@ interface Props {
   setDomainIds: (v: string[]) => void
   vendorId: string
   setVendorId: (v: string) => void
+  localFiles: File[]
+  setLocalFiles: (v: File[] | ((prev: File[]) => File[])) => void
+  fileInputRef: RefObject<HTMLInputElement | null>
   onSubmit: (comment?: string) => void
   onCancel: () => void
   isCreating: boolean
@@ -75,6 +78,9 @@ const CalendarMobileWizard: FC<Props> = ({
   setDomainIds,
   vendorId,
   setVendorId,
+  localFiles,
+  setLocalFiles,
+  fileInputRef,
   onSubmit,
   onCancel,
   isCreating,
@@ -402,7 +408,41 @@ const CalendarMobileWizard: FC<Props> = ({
 
   const renderStep4 = () => (
     <div className={classes.stepContent}>
-      <p className={classes.emptyFiles}>{t('calendar.no_files_msg')}</p>
+      <input
+        ref={fileInputRef as React.RefObject<HTMLInputElement>}
+        type="file"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) setLocalFiles((prev) => [...prev, file])
+          e.target.value = ''
+        }}
+      />
+      {localFiles.length === 0 ? (
+        <p className={classes.emptyFiles}>{t('calendar.no_files_msg')}</p>
+      ) : (
+        <div className={classes.fileList}>
+          {localFiles.map((f, i) => (
+            <div key={i} className={classes.fileRow}>
+              <span className={classes.fileName}>{f.name}</span>
+              <button
+                className={classes.fileRemoveBtn}
+                onClick={() =>
+                  setLocalFiles((prev) => prev.filter((_, j) => j !== i))
+                }
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      <Button
+        appearance={AppearanceTypes.Secondary}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        {t('calendar.add_file')}
+      </Button>
     </div>
   )
 
@@ -422,13 +462,23 @@ const CalendarMobileWizard: FC<Props> = ({
       {renderStepContent()}
 
       <div className={classes.footer}>
-        <Button
-          appearance={AppearanceTypes.Secondary}
-          className={classes.footerBtn}
-          onClick={onCancel}
-        >
-          {t('calendar.cancel')}
-        </Button>
+        {step > 1 ? (
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            className={classes.footerBtn}
+            onClick={() => setStep((s) => s - 1)}
+          >
+            {t('calendar.back')}
+          </Button>
+        ) : (
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            className={classes.footerBtn}
+            onClick={onCancel}
+          >
+            {t('calendar.cancel')}
+          </Button>
+        )}
         {isLastStep ? (
           <Button
             appearance={AppearanceTypes.Primary}

@@ -80,6 +80,12 @@ export interface OrderDetailContextValue {
   metaOpen: boolean
   setMetaOpen: (v: boolean | ((prev: boolean) => boolean)) => void
 
+  // Pending comment (buffered for create/edit; posted directly in view mode)
+  pendingComment: string
+  setPendingComment: (v: string) => void
+  addComment: (comment: string) => void
+  isPostingComment: boolean
+
   // Async flags
   isCreating: boolean
   isUpdating: boolean
@@ -87,7 +93,7 @@ export interface OrderDetailContextValue {
   isCancelling: boolean
 
   // Handlers
-  handleCreate: () => void
+  handleCreate: (comment?: string) => void
   handleSave: () => void
   handleSaveDuration: () => void
   handleAccept: () => void

@@ -11,7 +11,11 @@ import {
   useFetchCalendarLanguages,
   useFetchSlotMatching,
   useFetchCalendarTags,
+  useCalendarAddFiles,
+  useAddCalendarOrderComment,
 } from 'hooks/requests/useCalendar'
+import { apiClient } from 'api'
+import { endpoints } from 'api/endpoints'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -45,6 +49,11 @@ const CalendarOrderDetail: FC = () => {
     useAcceptCalendarOrder()
   const { mutate: cancelOrder, isPending: isCancelling } =
     useCancelCalendarOrder()
+  const { mutate: addFiles } = useCalendarAddFiles(
+    isCreateMode ? null : (orderId ?? null)
+  )
+  const { mutate: addComment, isPending: isPostingComment } =
+    useAddCalendarOrderComment(isCreateMode ? null : (orderId ?? null))
 
   const { languages } = useFetchCalendarLanguages()
   const { tags: domains } = useFetchCalendarTags()
@@ -81,6 +90,9 @@ const CalendarOrderDetail: FC = () => {
   const [localFiles, setLocalFiles] = useState<File[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Pending comment (buffered for create / edit, posted directly in view mode)
+  const [pendingComment, setPendingComment] = useState('')
+
   // Mobile wizard state (create mode only)
   const [mobileCreatedAt, setMobileCreatedAt] = useState<string | null>(null)
   const [mobileCreatedOrderId, setMobileCreatedOrderId] = useState<
@@ -100,9 +112,10 @@ const CalendarOrderDetail: FC = () => {
         ? (order.location ?? '')
         : (order.meeting_link ?? '')
     )
-    setClientInstitutionId(order.client?.name ?? '')
+    setClientInstitutionId(order.client_institution_user?.id ?? '')
     setReferenceNumber(order.reference_number ?? '')
     setLanguageId(order.language.id)
+    setDomainIds(order.tags?.map((t) => t.id) ?? [])
   }, [order])
 
   const startIso =
@@ -120,12 +133,12 @@ const CalendarOrderDetail: FC = () => {
   const { vendors } = useFetchSlotMatching(slotMatchingParams)
 
   useEffect(() => {
-    if (isCreateMode && isTranslator) {
+    if (isCreateMode && isTranslator && !isTPM && !isClient) {
       navigate('/calendar', { replace: true })
     }
-  }, [isCreateMode, isTranslator, navigate])
+  }, [isCreateMode, isTranslator, isTPM, isClient, navigate])
 
-  if (isCreateMode && isTranslator) return null
+  if (isCreateMode && isTranslator && !isTPM && !isClient) return null
 
   if (!isCreateMode && (isLoading || !order)) {
     return <div className={classes.loading}>...</div>
@@ -174,8 +187,9 @@ const CalendarOrderDetail: FC = () => {
         ? (order.location ?? '')
         : (order.meeting_link ?? '')
     )
-    setClientInstitutionId(order.client?.name ?? '')
+    setClientInstitutionId(order.client_institution_user?.id ?? '')
     setReferenceNumber(order.reference_number ?? '')
+    setDomainIds(order.tags?.map((t) => t.id) ?? [])
   }
 
   const handleCreate = (comment?: string) => {
@@ -198,6 +212,17 @@ const CalendarOrderDetail: FC = () => {
       },
       {
         onSuccess: (data) => {
+          if (localFiles.length) {
+            apiClient.postForm(endpoints.MEDIA_BULK, {
+              files: localFiles.map((f) => ({
+                content: f,
+                reference_object_id: data.id,
+                reference_object_type: 'project',
+                collection: 'source',
+              })),
+            })
+            setLocalFiles([])
+          }
           showNotification({
             type: NotificationTypes.Success,
             title: t('notification.announcement'),
@@ -230,15 +255,34 @@ const CalendarOrderDetail: FC = () => {
         client_institution_id: isTPM
           ? clientInstitutionId || undefined
           : undefined,
+        tag_ids: domainIds.length ? domainIds : undefined,
       },
       {
         onSuccess: () => {
+          if (localFiles.length) {
+            addFiles(localFiles)
+            setLocalFiles([])
+          }
+          if (pendingComment.trim()) {
+            addComment(pendingComment.trim())
+            setPendingComment('')
+          }
           setIsEditing(false)
           showNotification({
             type: NotificationTypes.Success,
             title: t('notification.announcement'),
             content: t('success.calendar_order_updated'),
           })
+        },
+        onError: (err: unknown) => {
+          const msg = (err as { message?: string })?.message ?? ''
+          if (msg.toLowerCase().includes('vendor is not available')) {
+            showNotification({
+              type: NotificationTypes.Error,
+              title: t('notification.error'),
+              content: t('calendar.vendor_not_available'),
+            })
+          }
         },
       }
     )
@@ -318,6 +362,9 @@ const CalendarOrderDetail: FC = () => {
         setDomainIds={setDomainIds}
         vendorId={vendorId}
         setVendorId={setVendorId}
+        localFiles={localFiles}
+        setLocalFiles={setLocalFiles}
+        fileInputRef={fileInputRef}
         onSubmit={handleCreate}
         onCancel={() => navigate('/calendar')}
         isCreating={isCreating}
@@ -391,6 +438,10 @@ const CalendarOrderDetail: FC = () => {
     setEditingCommentText,
     metaOpen,
     setMetaOpen,
+    pendingComment,
+    setPendingComment,
+    addComment,
+    isPostingComment,
     isCreating,
     isUpdating,
     isAccepting,
@@ -415,7 +466,7 @@ const CalendarOrderDetail: FC = () => {
           <div className={classes.editFooter}>
             <Button
               appearance={AppearanceTypes.Primary}
-              onClick={() => handleCreate()}
+              onClick={() => handleCreate(pendingComment || undefined)}
               disabled={!languageId || !startIso || !endIso || isCreating}
             >
               {isCreating ? t('calendar.saving') : t('calendar.create_order')}

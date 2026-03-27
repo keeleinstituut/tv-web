@@ -12,6 +12,7 @@ const OrderCommentsCard: FC = () => {
     isCreateMode,
     isTPM,
     isClient,
+    isEditing,
     isAddingComment,
     setIsAddingComment,
     commentText,
@@ -20,7 +21,23 @@ const OrderCommentsCard: FC = () => {
     setEditingCommentIdx,
     editingCommentText,
     setEditingCommentText,
+    pendingComment,
+    setPendingComment,
+    addComment,
+    isPostingComment,
   } = useOrderDetail()
+
+  const handleSaveComment = () => {
+    const text = commentText.trim()
+    if (!text) return
+    if (isCreateMode || isEditing) {
+      setPendingComment(text)
+    } else {
+      addComment(text)
+    }
+    setCommentText('')
+    setIsAddingComment(false)
+  }
 
   return (
     <div className={classes.card}>
@@ -96,7 +113,8 @@ const OrderCommentsCard: FC = () => {
           <div className={classes.commentFormActions}>
             <Button
               appearance={AppearanceTypes.Primary}
-              disabled={!commentText.trim()}
+              disabled={!commentText.trim() || isPostingComment}
+              onClick={handleSaveComment}
             >
               {t('calendar.save')}
             </Button>
@@ -112,12 +130,24 @@ const OrderCommentsCard: FC = () => {
           </div>
         </div>
       ) : (
-        <Button
-          appearance={AppearanceTypes.Secondary}
-          onClick={() => setIsAddingComment(true)}
-        >
-          {t('calendar.add_comment_btn')}
-        </Button>
+        <>
+          {pendingComment && (
+            <div className={classes.comment}>
+              <span className={classes.commentText}>{pendingComment}</span>
+              <span className={classes.commentDate}>
+                {t('calendar.pending_save_notice')}
+              </span>
+            </div>
+          )}
+          {(isTPM || isClient) && (
+            <Button
+              appearance={AppearanceTypes.Secondary}
+              onClick={() => setIsAddingComment(true)}
+            >
+              {t('calendar.add_comment_btn')}
+            </Button>
+          )}
+        </>
       )}
     </div>
   )

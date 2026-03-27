@@ -19,6 +19,7 @@ import {
   useCalendarDeleteFile,
   useCalendarDownloadFile,
   useDeclineCancelCalendarOrder,
+  useAddCalendarOrderComment,
 } from 'hooks/requests/useCalendar'
 import { useFetchCalendarTags } from 'hooks/requests/useCalendar'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -32,7 +33,7 @@ import CalendarOrderViewBody from './CalendarOrderViewBody'
 import CalendarOrderFormBody from './CalendarOrderFormBody'
 import { SidePanelContext } from './SidePanelContext'
 import classes from './classes.module.scss'
-import { ServiceType } from 'types/calendar'
+import { ServiceType, UpdateOrderPayload } from 'types/calendar'
 
 const CalendarOrderSidePanel: FC = () => {
   const { t } = useTranslation()
@@ -50,6 +51,14 @@ const CalendarOrderSidePanel: FC = () => {
   const { mutate: createPrebook } = useCreatePrebook()
   const { mutate: cancelPrebook } = useCancelPrebook()
   const prebookActiveRef = useRef(false)
+  const editBaselineRef = useRef<{
+    serviceType: ServiceType
+    referenceNumber: string
+    location: string
+    clientInstitutionId: string
+    domainIds: string[]
+    vendorId: string
+  } | null>(null)
 
   const [referenceNumber, setReferenceNumber] = useState('')
   const [serviceType, setServiceType] = useState<ServiceType>('')
@@ -94,6 +103,7 @@ const CalendarOrderSidePanel: FC = () => {
   const { mutate: deleteFileMutate, isPending: isDeletingFile } =
     useCalendarDeleteFile(projectId)
   const { mutate: downloadFileMutate } = useCalendarDownloadFile({ projectId })
+  const { mutate: addComment } = useAddCalendarOrderComment(projectId)
 
   const canEdit = isTPM || isClient
   const isRequiredFilled =
@@ -208,6 +218,22 @@ const CalendarOrderSidePanel: FC = () => {
     )
   }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    if (!isOpen) return
+    console.log('[SidePanel]', {
+      order,
+      slot,
+      isViewMode,
+      isTranslatorView,
+      isClientPastView,
+      isTPMPastView,
+      isTPM,
+      isClient,
+      isTranslator,
+      isPastSlot,
+    })
+  }, [isOpen, order])
+
   const handleClose = useCallback(() => {
     if (prebookActiveRef.current) {
       cancelPrebook()
@@ -268,16 +294,32 @@ const CalendarOrderSidePanel: FC = () => {
     setIsEditing(true)
     setIsConfirmingCancel(false)
     const st = slot?.assignment?.service_type
-    setReferenceNumber(slot?.assignment?.reference_number ?? '')
-    setServiceType(
+    const initServiceType: ServiceType =
       st === 'REMOTE' ? 'kaugtolge' : st === 'ON_SITE' ? 'kontakttolge' : ''
-    )
-    setLocation(
-      slot?.assignment?.meeting_link ?? slot?.assignment?.location ?? ''
-    )
+    const initLocation =
+      slot?.assignment?.location ?? order?.meeting_link ?? order?.location ?? ''
+    const initReferenceNumber = slot?.assignment?.reference_number ?? ''
+    const initClientInstitutionId = order?.client_institution_user?.id ?? ''
+    const initDomainIds = order?.tags?.map((t) => t.id) ?? []
+    const initVendorId = vendorId
+
+    setReferenceNumber(initReferenceNumber)
+    setServiceType(initServiceType)
+    setLocation(initLocation)
     setSelectedDate(date)
     setStartTimeInput(startTime)
     setDurationMinutes(slotDurationMinutes)
+    setDomainIds(initDomainIds)
+    setClientInstitutionId(initClientInstitutionId)
+
+    editBaselineRef.current = {
+      serviceType: initServiceType,
+      referenceNumber: initReferenceNumber,
+      location: initLocation,
+      clientInstitutionId: initClientInstitutionId,
+      domainIds: initDomainIds,
+      vendorId: initVendorId,
+    }
   }
 
   const handleCancelEdit = () => {
@@ -290,42 +332,64 @@ const CalendarOrderSidePanel: FC = () => {
     setClientInstitutionId('')
     setDomainIds([])
     setVendorId('')
+    editBaselineRef.current = null
   }
 
   const handleSaveEdit = () => {
     if (!projectId) return
-    updateOrder(
-      {
-        id: projectId,
-        service_type:
-          serviceType === 'kaugtolge'
-            ? 'REMOTE'
-            : serviceType === 'kontakttolge'
-              ? 'ON_SITE'
-              : undefined,
-        reference_number: referenceNumber || undefined,
-        location: serviceType === 'kontakttolge' ? location : undefined,
-        meeting_link: serviceType === 'kaugtolge' ? location : undefined,
-        client_institution_id: isTPM
-          ? clientInstitutionId || undefined
-          : undefined,
-        tag_ids: domainIds.length ? domainIds : undefined,
-        vendor_id: isTPM ? vendorId || undefined : undefined,
+    const b = editBaselineRef.current
+    const arraysEqual = (a: string[], c: string[]) =>
+      JSON.stringify([...a].sort()) === JSON.stringify([...c].sort())
+
+    const payload: UpdateOrderPayload = { id: projectId }
+
+    if (!b || serviceType !== b.serviceType) {
+      payload.service_type =
+        serviceType === 'kaugtolge'
+          ? 'REMOTE'
+          : serviceType === 'kontakttolge'
+            ? 'ON_SITE'
+            : undefined
+    }
+    if (!b || referenceNumber !== b.referenceNumber) {
+      payload.reference_number = referenceNumber || undefined
+    }
+    if (!b || location !== b.location || serviceType !== b.serviceType) {
+      payload.location =
+        serviceType === 'kontakttolge' ? location || undefined : undefined
+      payload.meeting_link =
+        serviceType === 'kaugtolge' ? location || undefined : undefined
+    }
+    if (isTPM && (!b || clientInstitutionId !== b.clientInstitutionId)) {
+      payload.client_institution_id = clientInstitutionId || undefined
+    }
+    if (!b || !arraysEqual(domainIds, b.domainIds)) {
+      payload.tag_ids = domainIds.length ? domainIds : undefined
+    }
+    if (isTPM && !vendorLocked && (!b || vendorId !== b.vendorId)) {
+      payload.vendor_id = vendorId || undefined
+    }
+
+    updateOrder(payload, {
+      onSuccess: () => {
+        if (pendingComment.trim()) {
+          addComment(pendingComment.trim())
+          setPendingComment('')
+        }
+        setIsEditing(false)
+        editBaselineRef.current = null
       },
-      {
-        onSuccess: () => setIsEditing(false),
-        onError: (err: unknown) => {
-          const msg = (err as { message?: string })?.message ?? ''
-          if (msg.toLowerCase().includes('vendor is not available')) {
-            showNotification({
-              type: NotificationTypes.Error,
-              title: t('notification.error'),
-              content: t('calendar.vendor_not_available'),
-            })
-          }
-        },
-      }
-    )
+      onError: (err: unknown) => {
+        const msg = (err as { message?: string })?.message ?? ''
+        if (msg.toLowerCase().includes('vendor is not available')) {
+          showNotification({
+            type: NotificationTypes.Error,
+            title: t('notification.error'),
+            content: t('calendar.vendor_not_available'),
+          })
+        }
+      },
+    })
   }
 
   const handleVoidConfirm = () => {

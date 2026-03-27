@@ -3,6 +3,10 @@ import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import {
+  useCalendarDownloadFile,
+  useCalendarDeleteFile,
+} from 'hooks/requests/useCalendar'
 import { useOrderDetail } from './OrderDetailContext'
 import classes from './classes.module.scss'
 
@@ -32,6 +36,11 @@ const OrderDetailsCard: FC = () => {
     startIso,
     endIso,
   } = useOrderDetail()
+
+  const { mutate: downloadFile } = useCalendarDownloadFile({
+    projectId: order?.id,
+  })
+  const { mutate: deleteFile } = useCalendarDeleteFile(order?.id)
 
   const isServiceEditable = isCreateMode || isEditing
   const activeServiceType = isServiceEditable ? serviceType : order?.service_type ?? 'on-site'
@@ -119,15 +128,21 @@ const OrderDetailsCard: FC = () => {
 
           <div className={classes.field}>
             <span className={classes.fieldLabel}>{t('calendar.domain')}</span>
-            {isCreateMode ? (
+            {isCreateMode || isEditing ? (
               <MultiSelect
                 options={domains ?? []}
                 value={domainIds}
                 onChange={setDomainIds}
                 placeholder={t('calendar.select_domain')}
               />
-            ) : order!.domain ? (
-              <span className={classes.domainChip}>{order!.domain}</span>
+            ) : order!.tags?.length ? (
+              <div className={classes.tagList}>
+                {order!.tags.map((tag) => (
+                  <span key={tag.id} className={classes.domainChip}>
+                    {tag.name}
+                  </span>
+                ))}
+              </div>
             ) : null}
           </div>
 
@@ -178,19 +193,35 @@ const OrderDetailsCard: FC = () => {
                 </>
               )}
             </div>
-            {((!isCreateMode && order!.files_count > 0) || localFiles.length > 0) ? (
+            {((!isCreateMode && (order!.source_files?.length ?? 0) > 0) || localFiles.length > 0) ? (
               <div className={classes.fileTable}>
                 <div className={classes.fileTableHeader}>
                   <span>{t('calendar.file_list_header')}</span>
                   <span>{t('calendar.updated_at_label')}</span>
                 </div>
                 {!isCreateMode &&
-                  Array.from({ length: order!.files_count }).map((_, i) => (
-                    <div key={i} className={classes.fileRow}>
-                      <span>Faili_nimi.doc</span>
+                  order!.source_files?.map((file) => (
+                    <div key={file.id} className={classes.fileRow}>
+                      <span>{file.name || file.file_name}</span>
                       <div className={classes.fileRowActions}>
-                        <span className={classes.fileDate}>dd.mm.yyyy hh:mm</span>
-                        <button className={classes.fileIconBtn} title="Laadi alla">↓</button>
+                        <button
+                          className={classes.fileIconBtn}
+                          title={t('calendar.download_file')}
+                          onClick={() =>
+                            downloadFile({ id: file.id, file_name: file.file_name })
+                          }
+                        >
+                          ↓
+                        </button>
+                        {isEditing && (
+                          <button
+                            className={classes.fileIconBtn}
+                            title={t('calendar.remove_file')}
+                            onClick={() => deleteFile(file.id)}
+                          >
+                            ✕
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
