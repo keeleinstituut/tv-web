@@ -27,6 +27,22 @@
   background: $color-primary;
 }
 
+// --- Order header (ext_id + status) ---
+
+.orderHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.orderHeaderTitle {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
 // --- Step header ---
 
 .stepHeader {
@@ -55,6 +71,19 @@
   font-weight: $font-weight-bold;
   color: $color-primary;
   margin: 0;
+  flex: 1;
+}
+
+.stepEditBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: $font-size-14;
+  color: $color-primary;
+  text-decoration: underline;
+  padding: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 // --- Required notice ---
@@ -63,10 +92,6 @@
   font-size: $font-size-14;
   color: #ac3232;
   margin-bottom: 16px;
-
-  &::before {
-    content: '* ';
-  }
 }
 
 // --- Step content ---
@@ -270,39 +295,7 @@
 
 .footerBtn {
   flex: 1;
-}
-
-// --- Success screen ---
-
-.success {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-bottom: 32px;
-}
-
-.successTitle {
-  font-size: 22px;
-  font-weight: $font-weight-bold;
-  color: $color-primary;
-  margin: 0;
-}
-
-.successDate {
-  font-size: $font-size-14;
-  color: $cal-label;
-  margin-top: -8px;
-}
-
-.statusRow {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.statusLabel {
-  font-size: $font-size-14;
-  color: $cal-label;
+  justify-content: center;
 }
 
 .statusBadge {
@@ -314,41 +307,6 @@
   border-radius: $border-radius-4;
   padding: 4px 8px;
   width: fit-content;
-}
-
-.whatNext {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.whatNextTitle {
-  font-size: $font-size-16;
-  font-weight: $font-weight-bold;
-  color: $cal-text;
-  margin: 0;
-}
-
-.whatNextText {
-  font-size: $font-size-14;
-  color: $cal-text;
-  line-height: 1.5;
-}
-
-.contactTitle {
-  font-size: $font-size-16;
-  font-weight: $font-weight-bold;
-  color: $cal-text;
-  margin: 0;
-}
-
-.contactName {
-  font-size: $font-size-14;
-  color: $cal-text;
-}
-
-.successBtn {
-  margin-top: 8px;
 }
 
 // --- View mode ---

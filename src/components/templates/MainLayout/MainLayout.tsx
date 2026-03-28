@@ -10,7 +10,9 @@ import classes from './classes.module.scss'
 const MainLayout: FC<PropsWithChildren> = () => {
   const { pathname } = useLocation()
   const isMobile = useIsMobile()
-  const isFullscreen = isMobile && pathname === '/calendar/new-order'
+  const isFullscreen =
+    isMobile &&
+    (pathname === '/calendar/new-order' || /^\/calendar\/[^/]+$/.test(pathname))
 
   return (
     <main className={classes.mainContainer}>

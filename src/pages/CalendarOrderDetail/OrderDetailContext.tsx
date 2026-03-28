@@ -2,7 +2,10 @@ import { createContext, useContext, RefObject } from 'react'
 import { Dayjs } from 'dayjs'
 import { CalendarOrderDetail } from 'types/calendar'
 import { CalendarLanguage } from 'types/calendar'
-export interface TagOption { id: string; name: string }
+export interface TagOption {
+  id: string
+  name: string
+}
 import { SlotMatchingVendor } from 'hooks/requests/useCalendar'
 
 export interface OrderDetailContextValue {
@@ -90,7 +93,6 @@ export interface OrderDetailContextValue {
   // Async flags
   isCreating: boolean
   isUpdating: boolean
-  isAccepting: boolean
   isCancelling: boolean
   isCancelled: boolean
   isCancelPending: boolean
@@ -100,16 +102,18 @@ export interface OrderDetailContextValue {
   handleCreate: (comment?: string) => void
   handleSave: () => void
   handleSaveDuration: () => void
-  handleAccept: () => void
   handleCancelOrder: () => void
   handleUndoCancel: () => void
   resetFields: () => void
 }
 
-export const OrderDetailContext = createContext<OrderDetailContextValue | null>(null)
+export const OrderDetailContext = createContext<OrderDetailContextValue | null>(
+  null
+)
 
 export function useOrderDetail(): OrderDetailContextValue {
   const ctx = useContext(OrderDetailContext)
-  if (!ctx) throw new Error('useOrderDetail must be used inside CalendarOrderDetail')
+  if (!ctx)
+    throw new Error('useOrderDetail must be used inside CalendarOrderDetail')
   return ctx
 }

@@ -27,6 +27,10 @@ export function formatDurationMins(mins: number): string {
   return `${h} ${hLabel} ja ${m} minutit`
 }
 
+export function normalizeUrl(url: string): string {
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`
+}
+
 export function getInitials(name: string): string {
   return name
     .split(' ')

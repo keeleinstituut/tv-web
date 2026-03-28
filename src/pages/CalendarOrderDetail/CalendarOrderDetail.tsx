@@ -5,7 +5,6 @@ import dayjs from 'dayjs'
 import {
   useFetchCalendarOrderDetail,
   useUpdateCalendarOrder,
-  useAcceptCalendarOrder,
   useCancelCalendarOrder,
   useDeclineCancelCalendarOrder,
   useCreateCalendarOrder,
@@ -43,8 +42,6 @@ const CalendarOrderDetail: FC = () => {
     useCreateCalendarOrder()
   const { mutate: updateOrder, isPending: isUpdating } =
     useUpdateCalendarOrder()
-  const { mutate: acceptOrder, isPending: isAccepting } =
-    useAcceptCalendarOrder()
   const { mutate: cancelOrder, isPending: isCancelling } =
     useCancelCalendarOrder()
   const { mutate: declineCancel } = useDeclineCancelCalendarOrder()
@@ -202,13 +199,12 @@ const CalendarOrderDetail: FC = () => {
             : t('calendar.status_confirmed')
     : ''
 
-  const isPast = order ? dayjs(order.start_at).isBefore(dayjs()) : false
+  const isPast =
+    isCancelled || order?.status === 'CANCELLED' || order?.status === 'ACCEPTED'
   const canModify =
     (isTPM || isClient) &&
-    !isPast &&
     !isCancelled &&
-    order?.status !== 'ACCEPTED' &&
-    order?.status !== 'CANCELLED'
+    (order?.status === 'NEW' || order?.status === 'REGISTERED')
 
   const resetFields = () => {
     if (!order) return
@@ -343,19 +339,6 @@ const CalendarOrderDetail: FC = () => {
     )
   }
 
-  const handleAccept = () => {
-    if (!orderId) return
-    acceptOrder(orderId, {
-      onSuccess: () => {
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.calendar_order_accepted'),
-        })
-      },
-    })
-  }
-
   const handleUndoCancel = () => {
     if (!orderId) return
     declineCancel(orderId, {
@@ -457,7 +440,6 @@ const CalendarOrderDetail: FC = () => {
     isDirty,
     isCreating,
     isUpdating,
-    isAccepting,
     isCancelling,
     isCancelled,
     isCancelPending,
@@ -465,7 +447,6 @@ const CalendarOrderDetail: FC = () => {
     handleCreate,
     handleSave,
     handleSaveDuration,
-    handleAccept,
     handleCancelOrder,
     handleUndoCancel,
     resetFields,

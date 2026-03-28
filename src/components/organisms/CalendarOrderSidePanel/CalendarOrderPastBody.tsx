@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import dayjs from 'dayjs'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
+import { normalizeUrl } from 'helpers/calendar'
 import { useSidePanel } from './SidePanelContext'
 import SlotMetaSection from './SlotMetaSection'
 import classes from './classes.module.scss'
@@ -101,7 +102,7 @@ const CalendarClientPastBody: FC = () => {
                   </span>
                   <a
                     className={classes.meetingLink}
-                    href={slot.assignment.meeting_link}
+                    href={normalizeUrl(slot.assignment.meeting_link)}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -188,11 +189,8 @@ const CalendarClientPastBody: FC = () => {
       </div>
       {isCommentsOpen && !!slot?.assignment?.comments?.length && (
         <>
-          {slot.assignment.comments.map((c) => (
-            <div
-              key={`${c.author}-${c.created_at}`}
-              className={classes.commentContent}
-            >
+          {slot.assignment.comments.map((c, i) => (
+            <div key={c.created_at ?? i} className={classes.commentContent}>
               <span className={classes.commentAuthor}>{c.author}</span>
               <span className={classes.commentText}>{c.text}</span>
               <span className={classes.commentDate}>

@@ -8,6 +8,7 @@ import {
   useCalendarDownloadFile,
   useCalendarDeleteFile,
 } from 'hooks/requests/useCalendar'
+import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import { useOrderDetail } from './OrderDetailContext'
 import classes from './mobile.module.scss'
 
@@ -90,6 +91,11 @@ const CalendarMobileWizard: FC = () => {
     projectId: order?.id,
   })
   const { mutate: deleteFile } = useCalendarDeleteFile(order?.id)
+  const { users: clients } = useFetchInfiniteProjectPerson(
+    undefined,
+    'client',
+    isTPM
+  )
 
   // Reset step to 1 when entering edit mode
   useEffect(() => {
@@ -176,9 +182,9 @@ const CalendarMobileWizard: FC = () => {
     )
   }
 
-  // ─── Create / Edit wizard ─────────────────────────────────────────────────
+  // ─── Create wizard ────────────────────────────────────────────────────────
 
-  if (isCreateMode || isEditing) {
+  if (isCreateMode) {
     const step1Valid =
       !!selectedDate && !!startTimeInput && (isEditing || !!languageId)
     const isLastStep = step === TOTAL_STEPS
@@ -210,12 +216,18 @@ const CalendarMobileWizard: FC = () => {
         {isTPM && (
           <div className={classes.field}>
             <label className={classes.fieldLabel}>{t('calendar.client')}</label>
-            <input
-              className={classes.fieldInput}
+            <select
+              className={classes.fieldSelect}
               value={clientInstitutionId}
               onChange={(e) => setClientInstitutionId(e.target.value)}
-              placeholder={t('calendar.enter_name')}
-            />
+            >
+              <option value="">{t('calendar.select_client')}</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {[c.user.forename, c.user.surname].filter(Boolean).join(' ')}
+                </option>
+              ))}
+            </select>
           </div>
         )}
 
@@ -588,46 +600,150 @@ const CalendarMobileWizard: FC = () => {
     )
   }
 
-  // ─── View mode ────────────────────────────────────────────────────────────
+  // ─── View / Edit wizard (existing order) ────────────────────────────────
 
-  return (
-    <div className={classes.wizard}>
-      <div className={classes.viewHeader}>
-        <h1 className={classes.viewTitle}>
-          {t('calendar.order')} {order?.ext_id ?? ''}
-        </h1>
-        <span className={classes.statusBadge}>{statusLabel}</span>
-      </div>
+  const canEdit = canModify && (isTPM || isClient)
+  const step1Valid = !!selectedDate && !!startTimeInput
+  const isLastStep = step === TOTAL_STEPS
 
-      <div className={classes.viewSection}>
-        <div className={classes.viewField}>
-          <span className={classes.viewLabel}>
-            {t('calendar.date_and_time')}
+  const STEP_TITLES = [
+    t('calendar.step_basic_info'),
+    t('calendar.order_details_title'),
+    t('calendar.comments'),
+    t('calendar.files_and_links'),
+  ]
+
+  const renderProgress = () => (
+    <div className={classes.progress}>
+      {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+        <div
+          key={i}
+          className={`${classes.progressSegment} ${i < step ? classes.progressSegmentFilled : ''}`}
+        />
+      ))}
+    </div>
+  )
+
+  const renderStepHeader = () => (
+    <div className={classes.stepHeader}>
+      <div className={classes.stepCircle}>{step}</div>
+      <h2 className={classes.stepTitle}>{STEP_TITLES[step - 1]}</h2>
+      {canEdit && (
+        <button
+          className={classes.stepEditBtn}
+          onClick={() => {
+            if (isEditing) {
+              resetFields()
+              setIsEditing(false)
+            } else {
+              setIsEditing(true)
+            }
+          }}
+        >
+          {isEditing ? t('calendar.cancel_changes') : t('calendar.edit')}
+        </button>
+      )}
+    </div>
+  )
+
+  // Step 1: basic info
+  const renderStep1 = () => (
+    <div className={classes.stepContent}>
+      <div className={classes.viewField}>
+        <span className={classes.viewLabel}>
+          {t('calendar.reference_number')}
+        </span>
+        {isEditing ? (
+          <input
+            className={classes.fieldInput}
+            value={referenceNumber}
+            onChange={(e) => setReferenceNumber(e.target.value)}
+            placeholder={t('calendar.enter_number')}
+          />
+        ) : (
+          <span className={classes.viewValue}>
+            {order?.reference_number || '–'}
           </span>
-          <span className={classes.viewValue}>{fmt(order?.start_at)}</span>
-        </div>
-        <div className={classes.viewField}>
-          <span className={classes.viewLabel}>{t('calendar.duration')}</span>
-          <span className={classes.viewValue}>{durationLabel}</span>
-        </div>
-        <div className={classes.viewField}>
-          <span className={classes.viewLabel}>{t('calendar.language')}</span>
-          <span className={classes.viewValue}>{order?.language?.name}</span>
-        </div>
-        {order?.reference_number && (
-          <div className={classes.viewField}>
-            <span className={classes.viewLabel}>
-              {t('calendar.reference_number')}
-            </span>
-            <span className={classes.viewValue}>{order.reference_number}</span>
-          </div>
         )}
       </div>
 
-      <div className={classes.viewSection}>
-        <h3 className={classes.viewSectionTitle}>
-          {t('calendar.order_details_title')}
-        </h3>
+      <div className={classes.viewField}>
+        <span className={classes.viewLabel}>{t('calendar.language')}</span>
+        <span className={classes.viewValue}>{order?.language?.name}</span>
+      </div>
+
+      <div className={classes.viewField}>
+        <span className={classes.viewLabel}>
+          {t('calendar.date_and_start_time')}
+        </span>
+        {isEditing ? (
+          <div className={classes.timeRow}>
+            <input
+              type="date"
+              className={classes.fieldInput}
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+            <input
+              type="time"
+              className={classes.fieldInput}
+              value={startTimeInput}
+              onChange={(e) => setStartTimeInput(e.target.value)}
+            />
+          </div>
+        ) : (
+          <span className={classes.viewValue}>{fmt(order?.start_at)}</span>
+        )}
+      </div>
+
+      <div className={classes.viewField}>
+        <span className={classes.viewLabel}>{t('calendar.duration')}</span>
+        {isEditing ? (
+          <select
+            className={classes.fieldSelect}
+            value={durationMinutes}
+            onChange={(e) => setDurationMinutes(Number(e.target.value))}
+          >
+            {DURATION_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {t(label as never)}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <span className={classes.viewValue}>{durationLabel}</span>
+        )}
+      </div>
+    </div>
+  )
+
+  // Step 2: order details
+  const renderStep2 = () => (
+    <div className={classes.stepContent}>
+      {isEditing ? (
+        <div className={classes.serviceToggle}>
+          <button
+            type="button"
+            className={`${classes.serviceOption} ${serviceType === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
+            onClick={() => {
+              setServiceType('ON_SITE')
+              setAddress('')
+            }}
+          >
+            {t('calendar.service_type_contact')}
+          </button>
+          <button
+            type="button"
+            className={`${classes.serviceOption} ${serviceType === 'REMOTE' ? classes.serviceOptionActive : ''}`}
+            onClick={() => {
+              setServiceType('REMOTE')
+              setAddress('')
+            }}
+          >
+            {t('calendar.service_type_remote')}
+          </button>
+        </div>
+      ) : (
         <div className={classes.serviceToggle}>
           <span
             className={`${classes.serviceOption} ${order?.service_type === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
@@ -640,111 +756,269 @@ const CalendarMobileWizard: FC = () => {
             {t('calendar.service_type_remote')}
           </span>
         </div>
-        {(order?.location || order?.meeting_link) && (
-          <div className={classes.viewField}>
-            <span className={classes.viewLabel}>
-              {order?.service_type === 'ON_SITE'
-                ? t('calendar.location')
-                : t('calendar.meeting_link')}
-            </span>
-            <span className={classes.viewValue}>
-              {order?.service_type === 'ON_SITE'
-                ? order?.location
-                : order?.meeting_link}
-            </span>
-          </div>
+      )}
+
+      <div className={classes.viewField}>
+        <span className={classes.viewLabel}>
+          {(
+            isEditing
+              ? serviceType === 'ON_SITE'
+              : order?.service_type === 'ON_SITE'
+          )
+            ? t('calendar.location')
+            : t('calendar.meeting_link')}
+        </span>
+        {isEditing ? (
+          <input
+            className={classes.fieldInput}
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder={
+              serviceType === 'ON_SITE'
+                ? t('calendar.enter_address')
+                : t('calendar.enter_link')
+            }
+          />
+        ) : (
+          <span className={classes.viewValue}>
+            {order?.service_type === 'ON_SITE'
+              ? order?.location || '–'
+              : order?.meeting_link || '–'}
+          </span>
         )}
-        {order?.tags?.length ? (
-          <div className={classes.viewField}>
-            <span className={classes.viewLabel}>{t('calendar.domain')}</span>
-            <div className={classes.tagList}>
-              {order.tags.map((tag) => (
-                <span key={tag.id} className={classes.domainChip}>
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        ) : null}
       </div>
 
-      <div className={classes.viewSection}>
-        <h3 className={classes.viewSectionTitle}>
-          {t('calendar.attachments')}
-        </h3>
-        {order?.source_files?.length ? (
-          <div className={classes.fileTable}>
-            {order.source_files.map((file) => (
-              <div key={file.id} className={classes.fileRow}>
-                <span className={classes.fileRowName}>
-                  {file.name || file.file_name}
+      <div className={classes.viewField}>
+        <span className={classes.viewLabel}>{t('calendar.domain')}</span>
+        {isEditing ? (
+          <MultiSelect
+            options={domains ?? []}
+            value={domainIds}
+            onChange={setDomainIds}
+            placeholder={t('calendar.select_domain')}
+          />
+        ) : order?.tags?.length ? (
+          <div className={classes.tagList}>
+            {order.tags.map((tag) => (
+              <span key={tag.id} className={classes.domainChip}>
+                {tag.name}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <span className={classes.viewValue}>–</span>
+        )}
+      </div>
+    </div>
+  )
+
+  // Step 3: comments
+  const renderStep3 = () => (
+    <div className={classes.stepContent}>
+      {order?.project_comments?.length ? (
+        <>
+          {order.project_comments.map((c) => (
+            <div key={c.id} className={classes.comment}>
+              <span className={classes.commentText}>{c.comment}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {c.institution_user && (
+                  <span className={classes.commentAuthor}>
+                    {[
+                      c.institution_user.user?.forename,
+                      c.institution_user.user?.surname,
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                  </span>
+                )}
+                <span className={classes.commentDate}>
+                  {dayjs(c.created_at).format('DD.MM.YYYY HH:mm')}
                 </span>
-                <div className={classes.fileRowMeta}>
+              </div>
+            </div>
+          ))}
+        </>
+      ) : (
+        <p className={classes.emptyFiles}>{t('calendar.no_files_msg')}</p>
+      )}
+
+      {isEditing && (
+        <>
+          {addingComment ? (
+            <>
+              <textarea
+                className={classes.commentTextarea}
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder={t('calendar.write_text')}
+                autoFocus
+              />
+              <div style={{ display: 'flex', gap: 8 }}>
+                <Button
+                  appearance={AppearanceTypes.Primary}
+                  disabled={!commentText.trim()}
+                  onClick={() => setAddingComment(false)}
+                >
+                  {t('calendar.save')}
+                </Button>
+                <Button
+                  appearance={AppearanceTypes.Secondary}
+                  onClick={() => {
+                    setAddingComment(false)
+                    setCommentText('')
+                  }}
+                >
+                  {t('calendar.cancel')}
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              {commentText && (
+                <div className={classes.comment}>
+                  <span className={classes.commentText}>{commentText}</span>
+                </div>
+              )}
+              <Button
+                appearance={AppearanceTypes.Secondary}
+                onClick={() => setAddingComment(true)}
+              >
+                {t('calendar.add_comment_btn')}
+              </Button>
+            </>
+          )}
+        </>
+      )}
+    </div>
+  )
+
+  // Step 4: files
+  const renderStep4 = () => (
+    <div className={classes.stepContent}>
+      {(order?.source_files?.length ?? 0) === 0 && localFiles.length === 0 && (
+        <p className={classes.emptyFiles}>{t('calendar.no_files_msg')}</p>
+      )}
+      {(order?.source_files?.length ?? 0) > 0 && (
+        <div className={classes.fileTable}>
+          {order!.source_files!.map((file) => (
+            <div key={file.id} className={classes.fileRow}>
+              <span className={classes.fileRowName}>
+                {file.name || file.file_name}
+              </span>
+              <div className={classes.fileRowMeta}>
+                <div className={classes.fileActions}>
                   <button
                     className={classes.fileIconBtn}
                     onClick={() =>
-                      downloadFile({ id: file.id, file_name: file.file_name })
+                      downloadFile({
+                        id: file.id,
+                        file_name: file.file_name,
+                      })
                     }
                   >
                     ↓
                   </button>
+                  {isEditing && (
+                    <button
+                      className={classes.fileIconBtn}
+                      onClick={() => deleteFile(file.id)}
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
-        ) : (
-          <p className={classes.emptyFiles}>{t('calendar.no_files_msg')}</p>
-        )}
+            </div>
+          ))}
+        </div>
+      )}
+      {isEditing && (
+        <>
+          <input
+            ref={fileInputRef as React.RefObject<HTMLInputElement>}
+            type="file"
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) setLocalFiles((prev) => [...prev, file])
+              e.target.value = ''
+            }}
+          />
+          {localFiles.map((f, i) => (
+            <div key={i} className={classes.fileRow}>
+              <span className={classes.fileRowName}>{f.name}</span>
+              <div className={classes.fileRowMeta}>
+                <button
+                  className={classes.fileIconBtn}
+                  onClick={() =>
+                    setLocalFiles((prev) => prev.filter((_, j) => j !== i))
+                  }
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          ))}
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {t('calendar.add_file')}
+          </Button>
+        </>
+      )}
+    </div>
+  )
+
+  const renderStepContent = () => {
+    if (step === 1) return renderStep1()
+    if (step === 2) return renderStep2()
+    if (step === 3) return renderStep3()
+    return renderStep4()
+  }
+
+  return (
+    <div className={classes.wizard}>
+      <div className={classes.orderHeader}>
+        <span className={classes.orderHeaderTitle}>
+          {t('calendar.order')} {order?.ext_id ?? ''}
+        </span>
+        <span className={classes.statusBadge}>{statusLabel}</span>
       </div>
 
-      <div className={classes.viewSection}>
-        <h3 className={classes.viewSectionTitle}>{t('calendar.comments')}</h3>
-        {order?.project_comments?.length ? (
-          <>
-            {order.project_comments.map((c) => (
-              <div key={c.id} className={classes.comment}>
-                <span className={classes.commentText}>{c.comment}</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  {c.institution_user && (
-                    <span className={classes.commentAuthor}>
-                      {[
-                        c.institution_user.user?.forename,
-                        c.institution_user.user?.surname,
-                      ]
-                        .filter(Boolean)
-                        .join(' ')}
-                    </span>
-                  )}
-                  <span className={classes.commentDate}>
-                    {dayjs(c.created_at).format('DD.MM.YYYY HH:mm')}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </>
-        ) : (
-          <p className={classes.emptyFiles}>{t('calendar.no_files_msg')}</p>
-        )}
-      </div>
+      {renderProgress()}
+      {renderStepHeader()}
+      {renderStepContent()}
 
       <div className={classes.footer}>
-        {canModify && (isTPM || isClient) ? (
-          <>
-            <Button
-              appearance={AppearanceTypes.Primary}
-              className={classes.footerBtn}
-              onClick={() => setIsEditing(true)}
-            >
-              {t('calendar.edit')}
-            </Button>
-            <Button
-              appearance={AppearanceTypes.Secondary}
-              className={classes.footerBtn}
-              onClick={() => setIsConfirmingCancel(true)}
-            >
-              {t('calendar.cancel_order')}
-            </Button>
-          </>
+        {/* Left button */}
+        {step > 1 ? (
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            className={classes.footerBtn}
+            onClick={() => setStep((s) => s - 1)}
+          >
+            {t('calendar.back')}
+          </Button>
+        ) : isEditing ? (
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            className={classes.footerBtn}
+            onClick={() => {
+              resetFields()
+              setIsEditing(false)
+            }}
+          >
+            {t('calendar.cancel_changes')}
+          </Button>
+        ) : canEdit ? (
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            className={classes.footerBtn}
+            onClick={() => setIsConfirmingCancel(true)}
+          >
+            {t('calendar.cancel_order')}
+          </Button>
         ) : (
           <Button
             appearance={AppearanceTypes.Secondary}
@@ -752,6 +1026,42 @@ const CalendarMobileWizard: FC = () => {
             onClick={() => navigate('/calendar')}
           >
             {t('calendar.back_to_calendar')}
+          </Button>
+        )}
+
+        {/* Right button */}
+        {isLastStep ? (
+          isEditing ? (
+            <Button
+              appearance={AppearanceTypes.Primary}
+              className={classes.footerBtn}
+              onClick={() => {
+                if (commentText.trim()) setPendingComment(commentText)
+                handleSave()
+              }}
+              disabled={isUpdating || !isDirty}
+            >
+              {isUpdating
+                ? t('calendar.saving')
+                : t('calendar.save_changes_btn')}
+            </Button>
+          ) : (
+            <Button
+              appearance={AppearanceTypes.Secondary}
+              className={classes.footerBtn}
+              onClick={() => navigate('/calendar')}
+            >
+              {t('calendar.back_to_calendar')}
+            </Button>
+          )
+        ) : (
+          <Button
+            appearance={AppearanceTypes.Primary}
+            className={classes.footerBtn}
+            onClick={() => setStep((s) => s + 1)}
+            disabled={isEditing && step === 1 && !step1Valid}
+          >
+            {t('calendar.next')}
           </Button>
         )}
       </div>

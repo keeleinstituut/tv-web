@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import { ServiceType } from 'types/calendar'
+import { normalizeUrl } from 'helpers/calendar'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
@@ -446,7 +447,7 @@ const CalendarOrderViewBody: FC = () => {
             <span className={classes.label}>{t('calendar.meeting_link')}</span>
             <a
               className={classes.meetingLink}
-              href={order.meeting_link}
+              href={normalizeUrl(order.meeting_link)}
               target="_blank"
               rel="noreferrer"
             >

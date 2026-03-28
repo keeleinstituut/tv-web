@@ -115,7 +115,11 @@ const CalendarOrderSidePanel: FC = () => {
     !!location.trim() &&
     (!isTPM || !!clientInstitutionId) &&
     (!isTPM || !!vendorId)
-  const isPastSlot = slot ? dayjs(slot.end_at).isBefore(dayjs()) : false
+  const isPastSlot =
+    isCancelled ||
+    slot?.assignment?.status === 'DONE' ||
+    slot?.assignment?.status === 'ACCEPTED' ||
+    slot?.assignment?.status === 'CANCELLED'
   const isClientPastView = isClient && isViewMode && isPastSlot
 
   // Slot matching for TPM — only fetch in form mode
@@ -209,7 +213,14 @@ const CalendarOrderSidePanel: FC = () => {
           : {}),
       },
       {
+        onSuccess: () => {
+          // Panel closed before prebook resolved — cancel the orphaned prebook
+          if (!prebookActiveRef.current) {
+            cancelPrebook()
+          }
+        },
         onError: (err: unknown) => {
+          prebookActiveRef.current = false
           const msg = (err as { message?: string })?.message ?? ''
           if (msg.toLowerCase().includes('only one prebook')) {
             showNotification({

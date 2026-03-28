@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import { normalizeUrl } from 'helpers/calendar'
 import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
@@ -158,7 +159,7 @@ const CalendarTranslatorBody: FC = () => {
             <div className={classes.meetingLinkRow}>
               <a
                 className={classes.meetingLink}
-                href={`https://${slot.assignment.meeting_link}`}
+                href={normalizeUrl(slot.assignment.meeting_link)}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -168,7 +169,7 @@ const CalendarTranslatorBody: FC = () => {
                 className={classes.copyBtn}
                 onClick={() =>
                   navigator.clipboard.writeText(
-                    `https://${slot.assignment?.meeting_link ?? ''}`
+                    normalizeUrl(slot.assignment?.meeting_link ?? '')
                   )
                 }
                 title={t('label.copy' as never)}

@@ -330,7 +330,6 @@
 .cancelPendingText {
   font-size: $font-size-14;
   color: $cal-label;
-  padding: 6px 24px;
 }
 
 // --- Cancel prompt ---
@@ -358,16 +357,6 @@
   &:focus {
     border-color: $color-primary;
   }
-}
-
-// --- Edit footer ---
-
-.editFooter {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid $cal-card-border;
 }
 
 // --- Time row (date + time side by side) ---

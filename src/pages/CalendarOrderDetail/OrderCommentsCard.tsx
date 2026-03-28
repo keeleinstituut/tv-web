@@ -15,6 +15,7 @@ const OrderCommentsCard: FC = () => {
     isTPM,
     isClient,
     isTranslator,
+    isPast,
     isEditing,
     isAddingComment,
     setIsAddingComment,
@@ -111,7 +112,7 @@ const OrderCommentsCard: FC = () => {
                     date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
                   })}
                 </span>
-                {(isTPM || isClient) && editingCommentIdx !== i && (
+                {(isTPM || isClient) && !isPast && editingCommentIdx !== i && (
                   <button
                     className={classes.commentEditLink}
                     onClick={() => {

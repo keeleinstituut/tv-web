@@ -1,5 +1,14 @@
 export type CalendarView = 'day' | 'week' | 'month'
 
+export type CalendarProjectStatus =
+  | 'NEW'
+  | 'REGISTERED'
+  | 'CANCELLED'
+  | 'SUBMITTED_TO_CLIENT'
+  | 'REJECTED'
+  | 'CORRECTED'
+  | 'ACCEPTED'
+
 export type ServiceType = 'kaugtolge' | 'kontakttolge' | ''
 
 export type SlotType =
@@ -31,7 +40,7 @@ export interface CalendarLanguagesResponse {
 export interface BookedSlotAssignment {
   id: string
   confirmed?: boolean
-  status?: 'NEW' | 'IN_PROGRESS' | 'DONE'
+  status?: 'NEW' | 'IN_PROGRESS' | 'DONE' | CalendarProjectStatus
   sub_project: {
     id: string
     ext_id: string
@@ -207,14 +216,7 @@ export interface CalendarMonthVendorsAllResponse {
 export interface CalendarOrderDetail {
   id: string
   ext_id: string
-  status:
-    | 'NEW'
-    | 'REGISTERED'
-    | 'CANCELLED'
-    | 'SUBMITTED_TO_CLIENT'
-    | 'REJECTED'
-    | 'CORRECTED'
-    | 'ACCEPTED'
+  status: CalendarProjectStatus
   language: { id: string; value: string; name: string }
   start_at: string
   end_at: string
@@ -383,17 +385,27 @@ export interface ApiAssignmentSummary {
     project?: {
       id: string
       ext_id: string
-      status?: 'NEW' | 'IN_PROGRESS' | 'DONE'
+      status?: CalendarProjectStatus
       service_type?: 'REMOTE' | 'ON_SITE'
       location?: string
       meeting_link?: string
       reference_number?: string
       client_institution_user?: {
-        user: { forename: string; surname: string; email: string; phone?: string }
+        user: {
+          forename: string
+          surname: string
+          email: string
+          phone?: string
+        }
         institution: { name: string }
       }
       manager_institution_user?: {
-        user: { forename: string; surname: string; email: string; phone?: string }
+        user: {
+          forename: string
+          surname: string
+          email: string
+          phone?: string
+        }
       }
     }
   }
@@ -685,14 +697,20 @@ export function transformDayResponse(
                 const managerUser = proj?.manager_institution_user
                 return {
                   id: e.assignment_id,
-                  status: (proj?.status ?? e.assignment?.status) as BookedSlotAssignment['status'],
+                  status: (proj?.status ??
+                    e.assignment?.status) as BookedSlotAssignment['status'],
                   service_type: proj?.service_type,
                   location: proj?.location,
                   meeting_link: proj?.meeting_link,
                   reference_number: proj?.reference_number,
                   client: clientUser
                     ? {
-                        name: [clientUser.user.forename, clientUser.user.surname].filter(Boolean).join(' '),
+                        name: [
+                          clientUser.user.forename,
+                          clientUser.user.surname,
+                        ]
+                          .filter(Boolean)
+                          .join(' '),
                         institution: clientUser.institution.name,
                         email: clientUser.user.email,
                         phone: clientUser.user.phone ?? '',
@@ -700,7 +718,12 @@ export function transformDayResponse(
                     : undefined,
                   coordinator: managerUser
                     ? {
-                        name: [managerUser.user.forename, managerUser.user.surname].filter(Boolean).join(' '),
+                        name: [
+                          managerUser.user.forename,
+                          managerUser.user.surname,
+                        ]
+                          .filter(Boolean)
+                          .join(' '),
                         email: managerUser.user.email,
                         phone: managerUser.user.phone ?? '',
                       }
