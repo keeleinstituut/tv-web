@@ -3,16 +3,16 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import { ServiceType } from 'types/calendar'
-import { formatDurationMins } from 'helpers/calendar'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
-import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
 import DeleteIcon from 'assets/icons/delete.svg?react'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import { useSidePanel } from './SidePanelContext'
+import DurationStepper from './DurationStepper'
+import SlotMetaSection from './SlotMetaSection'
 import classes from './classes.module.scss'
 
 const CalendarOrderViewBody: FC = () => {
@@ -72,13 +72,15 @@ const CalendarOrderViewBody: FC = () => {
     isDeletingFile,
     pendingComment,
     setPendingComment,
+    addComment,
+    isPostingComment,
     isTPM,
   } = useSidePanel()
-  console.log(slot, '@@@@@@@@@@@@@@@@@@')
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isFilesOpen, setIsFilesOpen] = useState(false)
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const [isAddingComment, setIsAddingComment] = useState(false)
+  const [commentText, setCommentText] = useState('')
 
   const { users: clients } = useFetchInfiniteProjectPerson(
     undefined,
@@ -340,25 +342,10 @@ const CalendarOrderViewBody: FC = () => {
               {t('calendar.duration')}
               <span className={classes.requiredMark}>*</span>
             </label>
-            <div className={classes.durationStepper}>
-              <button
-                className={classes.stepperBtn}
-                onClick={() =>
-                  onSetDurationMinutes((v) => Math.max(30, v - 30))
-                }
-              >
-                −
-              </button>
-              <span className={classes.stepperValue}>
-                {formatDurationMins(durationMinutes)}
-              </span>
-              <button
-                className={classes.stepperBtn}
-                onClick={() => onSetDurationMinutes((v) => v + 30)}
-              >
-                +
-              </button>
-            </div>
+            <DurationStepper
+              durationMinutes={durationMinutes}
+              onSetDurationMinutes={onSetDurationMinutes}
+            />
             {!isTPM && (
               <span className={classes.sectionNote}>
                 {t('calendar.cannot_extend_time')}
@@ -513,103 +500,11 @@ const CalendarOrderViewBody: FC = () => {
 
         {/* Metaandmed — view only */}
         {!isEditing && (
-          <>
-            <button
-              className={classes.metaToggle}
-              onClick={() => onSetIsMetaOpen(!isMetaOpen)}
-            >
-              <ArrowDownIcon
-                className={classNames(classes.metaIcon, {
-                  [classes.metaIconOpen]: isMetaOpen,
-                })}
-              />
-              <span>{t('calendar.order_meta')}</span>
-            </button>
-            {isMetaOpen && (
-              <div className={classes.metaContent}>
-                {slot?.assignment?.reference_number && (
-                  <div className={classes.metaGroup}>
-                    <span className={classes.metaLabel}>
-                      {t('calendar.reference_number')}
-                    </span>
-                    <span className={classes.metaValue}>
-                      {slot.assignment.reference_number}
-                    </span>
-                  </div>
-                )}
-                {slot?.assignment?.client && (
-                  <>
-                    <div className={classes.metaRow}>
-                      <div className={classes.metaGroup}>
-                        <span className={classes.metaLabel}>
-                          {t('calendar.client_name')}
-                        </span>
-                        <span className={classes.metaValue}>
-                          {slot.assignment.client.name}
-                        </span>
-                      </div>
-                      <div className={classes.metaGroup}>
-                        <span className={classes.metaLabel}>
-                          {t('calendar.institution')}
-                        </span>
-                        <span className={classes.metaValue}>
-                          {slot.assignment.client.institution}
-                        </span>
-                      </div>
-                    </div>
-                    <div className={classes.metaRow}>
-                      <div className={classes.metaGroup}>
-                        <span className={classes.metaLabel}>
-                          {t('calendar.email')}
-                        </span>
-                        <span className={classes.metaValue}>
-                          {slot.assignment.client.email}
-                        </span>
-                      </div>
-                      <div className={classes.metaGroup}>
-                        <span className={classes.metaLabel}>
-                          {t('calendar.phone')}
-                        </span>
-                        <span className={classes.metaValue}>
-                          {slot.assignment.client.phone}
-                        </span>
-                      </div>
-                    </div>
-                  </>
-                )}
-                {slot?.assignment?.coordinator && (
-                  <>
-                    <div className={classes.metaGroup}>
-                      <span className={classes.metaLabel}>
-                        {t('calendar.coordinator_name')}
-                      </span>
-                      <span className={classes.metaValue}>
-                        {slot.assignment.coordinator.name}
-                      </span>
-                    </div>
-                    <div className={classes.metaRow}>
-                      <div className={classes.metaGroup}>
-                        <span className={classes.metaLabel}>
-                          {t('calendar.email')}
-                        </span>
-                        <span className={classes.metaValue}>
-                          {slot.assignment.coordinator.email}
-                        </span>
-                      </div>
-                      <div className={classes.metaGroup}>
-                        <span className={classes.metaLabel}>
-                          {t('calendar.phone')}
-                        </span>
-                        <span className={classes.metaValue}>
-                          {slot.assignment.coordinator.phone}
-                        </span>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </>
+          <SlotMetaSection
+            source={order}
+            isMetaOpen={isMetaOpen}
+            onToggle={() => onSetIsMetaOpen(!isMetaOpen)}
+          />
         )}
       </div>
 
@@ -710,7 +605,7 @@ const CalendarOrderViewBody: FC = () => {
             />
           </button>
         )}
-        {isEditing && !(isTPM && isCancelled) && (
+        {!isAddingComment && !(isTPM && isCancelled) && !isPastSlot && (
           <button
             className={classes.sectionBtn}
             onClick={() => setIsAddingComment(true)}
@@ -720,7 +615,7 @@ const CalendarOrderViewBody: FC = () => {
           </button>
         )}
       </div>
-      {!isAddingComment && pendingComment && (
+      {!isAddingComment && isEditing && pendingComment && (
         <div className={classes.commentContent}>
           <span className={classes.commentText}>{pendingComment}</span>
         </div>
@@ -730,15 +625,31 @@ const CalendarOrderViewBody: FC = () => {
           <textarea
             className={classes.textarea}
             placeholder={t('calendar.write_text')}
-            value={pendingComment}
-            onChange={(e) => setPendingComment(e.target.value)}
+            value={isEditing ? pendingComment : commentText}
+            onChange={(e) =>
+              isEditing
+                ? setPendingComment(e.target.value)
+                : setCommentText(e.target.value)
+            }
             autoFocus
           />
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <Button
               appearance={AppearanceTypes.Primary}
-              disabled={!pendingComment.trim()}
-              onClick={() => setIsAddingComment(false)}
+              disabled={
+                isEditing
+                  ? !pendingComment.trim()
+                  : !commentText.trim() || isPostingComment
+              }
+              onClick={() => {
+                if (isEditing) {
+                  setIsAddingComment(false)
+                } else {
+                  addComment(commentText.trim())
+                  setCommentText('')
+                  setIsAddingComment(false)
+                }
+              }}
             >
               {t('calendar.save')}
             </Button>
@@ -746,7 +657,8 @@ const CalendarOrderViewBody: FC = () => {
               appearance={AppearanceTypes.Secondary}
               onClick={() => {
                 setIsAddingComment(false)
-                setPendingComment('')
+                if (isEditing) setPendingComment('')
+                else setCommentText('')
               }}
             >
               {t('calendar.cancel')}

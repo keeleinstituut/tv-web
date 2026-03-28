@@ -52,17 +52,29 @@ const CalendarDayVendorRow: FC<Props> = ({
     [vendor.booked_slots, date, dayStartHour]
   )
 
-  const { isDragging, selectionLeft, selectionWidth, handleMouseDown, handleMouseMove, handleMouseUp } =
-    useDragSelection({
-      rowRef,
-      date,
-      dayStartHour,
-      totalSlots,
-      slotWidth: sw,
-      isSlotBooked,
-      onDragComplete: (startIso, endIso) =>
-        openSidePanel({ language, startIso, endIso, vendorId: vendor.id, vendorName: vendor.institution_user.name }),
-    })
+  const {
+    isDragging,
+    selectionLeft,
+    selectionWidth,
+    handleMouseDown,
+    handleMouseMove,
+    handleMouseUp,
+  } = useDragSelection({
+    rowRef,
+    date,
+    dayStartHour,
+    totalSlots,
+    slotWidth: sw,
+    isSlotBooked,
+    onDragComplete: (startIso, endIso) =>
+      openSidePanel({
+        language,
+        startIso,
+        endIso,
+        vendorId: vendor.id,
+        vendorName: vendor.institution_user.name,
+      }),
+  })
 
   const handleClickSlot = useCallback(
     (slot: BookedSlot) => {
@@ -78,17 +90,26 @@ const CalendarDayVendorRow: FC<Props> = ({
     [language, vendor.id, openSidePanel]
   )
 
+  const isEmo = !vendor.is_internal
+
   return (
     <div className={classes.vendorRowWrapper}>
-      <div className={classes.vendorLabel}>
+      <div
+        className={classNames(classes.vendorLabel, {
+          [classes.vendorLabelEmo]: isEmo,
+        })}
+      >
         <CalendarVendorBadge
           vendorId={vendor.id}
           name={vendor.institution_user.name}
+          isEmo={isEmo}
         />
       </div>
       <div
         ref={rowRef}
-        className={classes.slotArea}
+        className={classNames(classes.slotArea, {
+          [classes.slotAreaEmo]: isEmo,
+        })}
         style={{ width: totalWidth }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

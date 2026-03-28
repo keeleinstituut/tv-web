@@ -20,21 +20,15 @@ const OrderDetailsCard: FC = () => {
     isClient,
     isEditing,
     domains,
-    vendors,
     serviceType,
     setServiceType,
     address,
     setAddress,
     domainIds,
     setDomainIds,
-    vendorId,
-    setVendorId,
     localFiles,
     setLocalFiles,
     fileInputRef,
-    languageId,
-    startIso,
-    endIso,
   } = useOrderDetail()
 
   const { mutate: downloadFile } = useCalendarDownloadFile({
@@ -146,24 +140,6 @@ const OrderDetailsCard: FC = () => {
             ) : null}
           </div>
 
-          {isTPM && isCreateMode && (
-            <div className={classes.field}>
-              <span className={classes.fieldLabel}>{t('calendar.translator')}</span>
-              <select
-                className={classes.editSelect}
-                value={vendorId}
-                onChange={(e) => setVendorId(e.target.value)}
-                disabled={!languageId || !startIso || !endIso}
-              >
-                <option value="">{t('calendar.select_translator')}</option>
-                {vendors.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
         </div>
 
         <div className={classes.detailsRight}>
@@ -172,7 +148,7 @@ const OrderDetailsCard: FC = () => {
               <span className={classes.filesSectionTitle}>
                 {isClient ? t('calendar.files_and_links') : t('calendar.attachments')}
               </span>
-              {(isTPM || isClient) && (
+              {(isCreateMode || isEditing) && (isTPM || isClient) && (
                 <>
                   <Button
                     appearance={AppearanceTypes.Primary}

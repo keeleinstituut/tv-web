@@ -25,11 +25,19 @@ $border-color: #e2e4e9;
   flex-shrink: 0;
 }
 
+.vendorLabelEmo {
+  background: #fffbea;
+}
+
 .slotArea {
   position: relative;
   height: $row-height;
   flex-shrink: 0;
   background: $color-white;
+}
+
+.slotAreaEmo {
+  background: #fffbea;
 }
 
 .slotCell {

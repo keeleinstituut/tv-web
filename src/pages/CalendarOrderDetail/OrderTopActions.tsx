@@ -13,6 +13,7 @@ const OrderTopActions: FC = () => {
     isTranslator,
     canModify,
     isEditing,
+    isDirty,
     isChangingDuration,
     setIsChangingDuration,
     isConfirmingCancel,
@@ -22,37 +23,64 @@ const OrderTopActions: FC = () => {
     setIsEditing,
     durationEndTime,
     isUpdating,
-    isAccepting,
     isCancelling,
+    isCancelled,
+    isCancelPending,
+    cancelCountdown,
+    handleSave,
     handleSaveDuration,
-    handleAccept,
     handleCancelOrder,
+    handleUndoCancel,
+    resetFields,
   } = useOrderDetail()
 
   if (isCreateMode) return null
 
+  if (isCancelPending) {
+    return (
+      <div className={classes.topActions}>
+        <span className={classes.cancelPendingText}>
+          {t('calendar.cancel_confirmed_body').replace(
+            '30 s',
+            `${cancelCountdown}s`
+          )}
+        </span>
+        <Button
+          appearance={AppearanceTypes.Secondary}
+          onClick={handleUndoCancel}
+        >
+          {t('calendar.undo_cancel')}
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div className={classes.topActions}>
-      {isTPM && order?.status === 'NEW' && (
-        <Button
-          appearance={AppearanceTypes.Primary}
-          onClick={handleAccept}
-          disabled={isAccepting}
-        >
-          {t('calendar.confirm_order')}
-        </Button>
-      )}
-      {isTranslator && order?.status === 'NEW' && (
-        <Button
-          appearance={AppearanceTypes.Primary}
-          onClick={handleAccept}
-          disabled={isAccepting}
-        >
-          {t('calendar.confirm_order')}
-        </Button>
+      {isEditing && (
+        <>
+          <Button
+            appearance={AppearanceTypes.Primary}
+            onClick={handleSave}
+            disabled={isUpdating || !isDirty}
+          >
+            {isUpdating ? t('calendar.saving') : t('calendar.save')}
+          </Button>
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            onClick={() => {
+              resetFields()
+              setIsEditing(false)
+            }}
+          >
+            {t('calendar.cancel_changes')}
+          </Button>
+        </>
       )}
       {isTranslator &&
-        (order?.status === 'IN_PROGRESS' || order?.status === 'DONE') &&
+        !isCancelled &&
+        order?.status !== 'ACCEPTED' &&
+        order?.status !== 'CANCELLED' &&
         !isChangingDuration &&
         !isConfirmingCancel && (
           <Button
@@ -89,17 +117,20 @@ const OrderTopActions: FC = () => {
       )}
       {isConfirmingCancel && (
         <>
-          <span className={classes.cancelPrompt}>
-            {isTranslator
-              ? t('calendar.cancel_booking_confirm')
-              : t('calendar.cancel_order_confirm')}
-          </span>
-          <textarea
-            className={classes.cancelReasonInput}
-            placeholder={t('calendar.cancel_reason_placeholder')}
-            value={cancelReason}
-            onChange={(e) => setCancelReason(e.target.value)}
-          />
+          <div className={classes.cancelPromptGroup}>
+            <span className={classes.cancelPrompt}>
+              {isTranslator
+                ? t('calendar.cancel_booking_confirm')
+                : t('calendar.cancel_order_confirm')}
+            </span>
+            <input
+              type="text"
+              className={classes.cancelReasonInput}
+              placeholder={t('calendar.cancel_reason_placeholder')}
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+            />
+          </div>
           <Button
             appearance={AppearanceTypes.Primary}
             onClick={handleCancelOrder}

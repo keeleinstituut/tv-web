@@ -2,7 +2,6 @@ import { FC, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import { ServiceType } from 'types/calendar'
-import { formatDurationMins } from 'helpers/calendar'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import AttachIcon from 'assets/icons/attach.svg?react'
@@ -11,6 +10,7 @@ import AddIcon from 'assets/icons/add.svg?react'
 import DeleteIcon from 'assets/icons/delete.svg?react'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useSidePanel } from './SidePanelContext'
+import DurationStepper from './DurationStepper'
 import classes from './classes.module.scss'
 
 const CalendarOrderFormBody: FC = () => {
@@ -135,25 +135,10 @@ const CalendarOrderFormBody: FC = () => {
             {isViewMode ? (
               <div className={classes.inputReadonly}>{duration}</div>
             ) : (
-              <div className={classes.durationStepper}>
-                <button
-                  className={classes.stepperBtn}
-                  onClick={() =>
-                    onSetDurationMinutes((v) => Math.max(30, v - 30))
-                  }
-                >
-                  −
-                </button>
-                <span className={classes.stepperValue}>
-                  {formatDurationMins(durationMinutes)}
-                </span>
-                <button
-                  className={classes.stepperBtn}
-                  onClick={() => onSetDurationMinutes((v) => v + 30)}
-                >
-                  +
-                </button>
-              </div>
+              <DurationStepper
+                durationMinutes={durationMinutes}
+                onSetDurationMinutes={onSetDurationMinutes}
+              />
             )}
           </div>
         </div>

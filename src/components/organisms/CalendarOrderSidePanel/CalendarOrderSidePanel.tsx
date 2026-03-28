@@ -72,6 +72,8 @@ const CalendarOrderSidePanel: FC = () => {
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
   const [cancelReason, setCancelReason] = useState('')
   const [isCancelled, setIsCancelled] = useState(false)
+  const [isCancelPending, setIsCancelPending] = useState(false)
+  const [cancelCountdown, setCancelCountdown] = useState(30)
   const [isMetaOpen, setIsMetaOpen] = useState(false)
   const [isChangingDuration, setIsChangingDuration] = useState(false)
   const [durationMinutes, setDurationMinutes] = useState(60)
@@ -103,7 +105,8 @@ const CalendarOrderSidePanel: FC = () => {
   const { mutate: deleteFileMutate, isPending: isDeletingFile } =
     useCalendarDeleteFile(projectId)
   const { mutate: downloadFileMutate } = useCalendarDownloadFile({ projectId })
-  const { mutate: addComment } = useAddCalendarOrderComment(projectId)
+  const { mutate: addComment, isPending: isPostingComment } =
+    useAddCalendarOrderComment(projectId)
 
   const canEdit = isTPM || isClient
   const isRequiredFilled =
@@ -158,6 +161,8 @@ const CalendarOrderSidePanel: FC = () => {
       setIsConfirmingCancel(false)
       setCancelReason('')
       setIsCancelled(false)
+      setIsCancelPending(false)
+      setCancelCountdown(30)
       setIsMetaOpen(false)
       setIsChangingDuration(false)
       setDurationMinutes(60)
@@ -219,20 +224,14 @@ const CalendarOrderSidePanel: FC = () => {
   }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!isOpen) return
-    console.log('[SidePanel]', {
-      order,
-      slot,
-      isViewMode,
-      isTranslatorView,
-      isClientPastView,
-      isTPMPastView,
-      isTPM,
-      isClient,
-      isTranslator,
-      isPastSlot,
-    })
-  }, [isOpen, order])
+    if (!isCancelPending) return
+    if (cancelCountdown <= 0) {
+      setIsCancelPending(false)
+      return
+    }
+    const timer = setTimeout(() => setCancelCountdown((v) => v - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [isCancelPending, cancelCountdown])
 
   const handleClose = useCallback(() => {
     if (prebookActiveRef.current) {
@@ -398,30 +397,35 @@ const CalendarOrderSidePanel: FC = () => {
       {
         id: projectId,
         cancellation_reason: cancelReason.trim(),
-        ...(isTPM ? { is_delayed: true } : {}),
+        is_delayed: true,
       },
       {
         onSuccess: () => {
           setCancelReason('')
-          if (isTPM) {
-            setIsConfirmingCancel(false)
-            // order.cancel_at drives the pending-cancel UI after refetch
-          } else {
-            handleClose()
-            showNotification({
-              type: NotificationTypes.Success,
-              title: t('notification.announcement'),
-              content: t('success.calendar_order_cancelled'),
-            })
-          }
+          setIsConfirmingCancel(false)
+          setIsCancelled(true)
+          setIsCancelPending(true)
+          setCancelCountdown(30)
         },
       }
     )
   }
 
   const handleUndoCancel = useCallback(() => {
-    handleClose()
-  }, [handleClose])
+    if (!projectId) return
+    declineCancelOrder(projectId, {
+      onSuccess: () => {
+        setIsCancelled(false)
+        setIsCancelPending(false)
+        setCancelCountdown(30)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.calendar_cancel_declined'),
+        })
+      },
+    })
+  }, [projectId, declineCancelOrder, t])
 
   const handleDeclineCancel = useCallback(() => {
     if (!projectId) return
@@ -504,6 +508,8 @@ const CalendarOrderSidePanel: FC = () => {
       cancelReason,
       setCancelReason,
       isCancelled,
+      isCancelPending,
+      cancelCountdown,
       isMetaOpen,
       setIsMetaOpen,
       isChangingDuration,
@@ -525,6 +531,8 @@ const CalendarOrderSidePanel: FC = () => {
       setPendingFiles,
       pendingComment,
       setPendingComment,
+      addComment,
+      isPostingComment,
       handleSubmit,
       handleStartEdit,
       handleCancelEdit,
@@ -562,6 +570,8 @@ const CalendarOrderSidePanel: FC = () => {
       isConfirmingCancel,
       cancelReason,
       isCancelled,
+      isCancelPending,
+      cancelCountdown,
       isMetaOpen,
       isChangingDuration,
       isRequiredFilled,
@@ -576,6 +586,7 @@ const CalendarOrderSidePanel: FC = () => {
       isDeletingFile,
       pendingFiles,
       pendingComment,
+      isPostingComment,
       sidePanelSelection?.vendorName,
       handleClose,
     ]
@@ -659,7 +670,20 @@ const CalendarOrderSidePanel: FC = () => {
                 </Button>
               </>
             ) : isViewMode ? (
-              isEditing ? (
+              isCancelPending ? (
+                <>
+                  <span className={classes.cancelPendingText}>
+                    {cancelCountdown}s
+                  </span>
+                  <Button
+                    appearance={AppearanceTypes.Secondary}
+                    onClick={handleUndoCancel}
+                    disabled={isDecliningCancel}
+                  >
+                    {t('calendar.undo_cancel')}
+                  </Button>
+                </>
+              ) : isEditing ? (
                 <>
                   <Button
                     appearance={AppearanceTypes.Primary}

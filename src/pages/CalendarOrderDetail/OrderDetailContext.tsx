@@ -86,11 +86,15 @@ export interface OrderDetailContextValue {
   addComment: (comment: string) => void
   isPostingComment: boolean
 
+  isDirty: boolean
   // Async flags
   isCreating: boolean
   isUpdating: boolean
   isAccepting: boolean
   isCancelling: boolean
+  isCancelled: boolean
+  isCancelPending: boolean
+  cancelCountdown: number
 
   // Handlers
   handleCreate: (comment?: string) => void
@@ -98,6 +102,7 @@ export interface OrderDetailContextValue {
   handleSaveDuration: () => void
   handleAccept: () => void
   handleCancelOrder: () => void
+  handleUndoCancel: () => void
   resetFields: () => void
 }
 

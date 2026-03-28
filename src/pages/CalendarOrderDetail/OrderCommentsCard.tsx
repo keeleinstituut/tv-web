@@ -2,6 +2,8 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import EditIcon from 'assets/icons/edit.svg?react'
+import { useUpdateCalendarOrderComment } from 'hooks/requests/useCalendar'
 import { useOrderDetail } from './OrderDetailContext'
 import classes from './classes.module.scss'
 
@@ -12,6 +14,7 @@ const OrderCommentsCard: FC = () => {
     isCreateMode,
     isTPM,
     isClient,
+    isTranslator,
     isEditing,
     isAddingComment,
     setIsAddingComment,
@@ -26,6 +29,9 @@ const OrderCommentsCard: FC = () => {
     addComment,
     isPostingComment,
   } = useOrderDetail()
+
+  const { mutate: updateComment, isPending: isUpdatingComment } =
+    useUpdateCalendarOrderComment(order?.id)
 
   const handleSaveComment = () => {
     const text = commentText.trim()
@@ -57,10 +63,20 @@ const OrderCommentsCard: FC = () => {
                   <div className={classes.commentFormActions}>
                     <Button
                       appearance={AppearanceTypes.Primary}
-                      disabled={!editingCommentText.trim()}
+                      disabled={!editingCommentText.trim() || isUpdatingComment}
                       onClick={() => {
-                        setEditingCommentIdx(null)
-                        setEditingCommentText('')
+                        updateComment(
+                          {
+                            commentId: c.id,
+                            comment: editingCommentText.trim(),
+                          },
+                          {
+                            onSuccess: () => {
+                              setEditingCommentIdx(null)
+                              setEditingCommentText('')
+                            },
+                          }
+                        )
                       }}
                     >
                       {t('calendar.save')}
@@ -80,6 +96,16 @@ const OrderCommentsCard: FC = () => {
                 <span className={classes.commentText}>{c.comment}</span>
               )}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                {c.institution_user && (
+                  <span className={classes.commentAuthor}>
+                    {[
+                      c.institution_user.user?.forename,
+                      c.institution_user.user?.surname,
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                  </span>
+                )}
                 <span className={classes.commentDate}>
                   {t('calendar.added_at_label', {
                     date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
@@ -94,6 +120,7 @@ const OrderCommentsCard: FC = () => {
                     }}
                   >
                     {t('calendar.edit')}
+                    <EditIcon className={classes.commentEditIcon} />
                   </button>
                 )}
               </div>
@@ -139,14 +166,16 @@ const OrderCommentsCard: FC = () => {
               </span>
             </div>
           )}
-          {(isTPM || isClient) && (
-            <Button
-              appearance={AppearanceTypes.Secondary}
-              onClick={() => setIsAddingComment(true)}
-            >
-              {t('calendar.add_comment_btn')}
-            </Button>
-          )}
+          {(isCreateMode || isEditing) &&
+            (isTPM || isClient || isTranslator) && (
+              <Button
+                style={{ width: '209px' }}
+                appearance={AppearanceTypes.Secondary}
+                onClick={() => setIsAddingComment(true)}
+              >
+                {t('calendar.add_comment_btn')}
+              </Button>
+            )}
         </>
       )}
     </div>

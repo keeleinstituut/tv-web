@@ -1,6 +1,14 @@
 import { createContext, useContext } from 'react'
-import { BookedSlot, CalendarLanguage, CalendarOrderDetail, ServiceType } from 'types/calendar'
-export interface TagOption { id: string; name: string }
+import {
+  BookedSlot,
+  CalendarLanguage,
+  CalendarOrderDetail,
+  ServiceType,
+} from 'types/calendar'
+export interface TagOption {
+  id: string
+  name: string
+}
 import { SlotMatchingVendor } from 'types/calendar'
 
 export interface SidePanelContextValue {
@@ -46,6 +54,8 @@ export interface SidePanelContextValue {
   cancelReason: string
   setCancelReason: (v: string) => void
   isCancelled: boolean
+  isCancelPending: boolean
+  cancelCountdown: number
   isMetaOpen: boolean
   setIsMetaOpen: (v: boolean) => void
   isChangingDuration: boolean
@@ -74,6 +84,8 @@ export interface SidePanelContextValue {
   setPendingFiles: (files: File[]) => void
   pendingComment: string
   setPendingComment: (v: string) => void
+  addComment: (comment: string) => void
+  isPostingComment: boolean
 
   // Actions
   handleSubmit: () => void
@@ -90,10 +102,13 @@ export interface SidePanelContextValue {
   closeSidePanel: () => void
 }
 
-export const SidePanelContext = createContext<SidePanelContextValue | null>(null)
+export const SidePanelContext = createContext<SidePanelContextValue | null>(
+  null
+)
 
 export function useSidePanel(): SidePanelContextValue {
   const ctx = useContext(SidePanelContext)
-  if (!ctx) throw new Error('useSidePanel must be used inside CalendarOrderSidePanel')
+  if (!ctx)
+    throw new Error('useSidePanel must be used inside CalendarOrderSidePanel')
   return ctx
 }

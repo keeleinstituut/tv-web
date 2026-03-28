@@ -320,6 +320,14 @@ $footer-height: 64px;
 
 .commentForm {
   padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.commentFormActions {
+  display: flex;
+  gap: 12px;
 }
 
 // --- Translator (Teostaja) view ---
@@ -408,16 +416,6 @@ $footer-height: 64px;
   margin-left: 4px;
 }
 
-.sectionLinkBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: $color-primary;
-  font-size: $font-size-14;
-  font-weight: $font-weight-bold;
-  text-decoration: underline;
-  padding: 0;
-}
 
 // --- Duration stepper ---
 
@@ -481,13 +479,6 @@ $footer-height: 64px;
   padding: 8px 24px 24px;
 }
 
-.fileListHeader {
-  font-size: $font-size-16;
-  color: #09090b;
-  line-height: 30px;
-  border-bottom: 2px solid $color-border;
-  padding-bottom: 4px;
-}
 
 .fileItem {
   display: flex;
@@ -681,6 +672,12 @@ $footer-height: 64px;
 }
 
 // --- Footer ---
+
+.cancelPendingText {
+  font-size: $font-size-14;
+  color: $cal-label;
+  flex: 1;
+}
 
 .footer {
   height: $footer-height;

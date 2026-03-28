@@ -3,9 +3,9 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
-import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
 import { useSidePanel } from './SidePanelContext'
+import SlotMetaSection from './SlotMetaSection'
 import classes from './classes.module.scss'
 
 const CalendarClientPastBody: FC = () => {
@@ -113,101 +113,11 @@ const CalendarClientPastBody: FC = () => {
         )}
 
         {/* Collapsible metaandmed */}
-        <button
-          className={classes.metaToggle}
-          onClick={() => onSetIsMetaOpen(!isMetaOpen)}
-        >
-          <ArrowDownIcon
-            className={classNames(classes.metaIcon, {
-              [classes.metaIconOpen]: isMetaOpen,
-            })}
-          />
-          <span>{t('calendar.order_meta')}</span>
-        </button>
-        {isMetaOpen && (
-          <div className={classes.metaContent}>
-            {slot?.assignment?.reference_number && (
-              <div className={classes.metaGroup}>
-                <span className={classes.metaLabel}>
-                  {t('calendar.reference_number')}
-                </span>
-                <span className={classes.metaValue}>
-                  {slot.assignment.reference_number}
-                </span>
-              </div>
-            )}
-            {slot?.assignment?.client && (
-              <>
-                <div className={classes.metaRow}>
-                  <div className={classes.metaGroup}>
-                    <span className={classes.metaLabel}>
-                      {t('calendar.client_name')}
-                    </span>
-                    <span className={classes.metaValue}>
-                      {slot.assignment.client.name}
-                    </span>
-                  </div>
-                  <div className={classes.metaGroup}>
-                    <span className={classes.metaLabel}>
-                      {t('calendar.institution')}
-                    </span>
-                    <span className={classes.metaValue}>
-                      {slot.assignment.client.institution}
-                    </span>
-                  </div>
-                </div>
-                <div className={classes.metaRow}>
-                  <div className={classes.metaGroup}>
-                    <span className={classes.metaLabel}>
-                      {t('calendar.email')}
-                    </span>
-                    <span className={classes.metaValue}>
-                      {slot.assignment.client.email}
-                    </span>
-                  </div>
-                  <div className={classes.metaGroup}>
-                    <span className={classes.metaLabel}>
-                      {t('calendar.phone')}
-                    </span>
-                    <span className={classes.metaValue}>
-                      {slot.assignment.client.phone}
-                    </span>
-                  </div>
-                </div>
-              </>
-            )}
-            {slot?.assignment?.coordinator && (
-              <>
-                <div className={classes.metaGroup}>
-                  <span className={classes.metaLabel}>
-                    {t('calendar.coordinator_name')}
-                  </span>
-                  <span className={classes.metaValue}>
-                    {slot.assignment.coordinator.name}
-                  </span>
-                </div>
-                <div className={classes.metaRow}>
-                  <div className={classes.metaGroup}>
-                    <span className={classes.metaLabel}>
-                      {t('calendar.email')}
-                    </span>
-                    <span className={classes.metaValue}>
-                      {slot.assignment.coordinator.email}
-                    </span>
-                  </div>
-                  <div className={classes.metaGroup}>
-                    <span className={classes.metaLabel}>
-                      {t('calendar.phone')}
-                    </span>
-                    <span className={classes.metaValue}>
-                      {slot.assignment.coordinator.phone}
-                    </span>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+        <SlotMetaSection
+          source={order}
+          isMetaOpen={isMetaOpen}
+          onToggle={() => onSetIsMetaOpen(!isMetaOpen)}
+        />
       </div>
 
       {/* Lisamaterjalid */}

@@ -4,6 +4,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 3px;
   padding: 6px;
   background: $color-background;
   color: $color-text;
@@ -13,4 +14,15 @@
   line-height: 18px;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.badgeEmo {
+  background: #fde68a;
+  color: #78350f;
+}
+
+.emoLabel {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.03em;
 }

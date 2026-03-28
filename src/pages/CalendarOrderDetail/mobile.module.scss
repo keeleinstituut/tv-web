@@ -350,3 +350,117 @@
 .successBtn {
   margin-top: 8px;
 }
+
+// --- View mode ---
+
+.viewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.viewTitle {
+  font-size: 20px;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin: 0;
+}
+
+.viewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid $cal-card-border;
+}
+
+.viewSectionTitle {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin: 0;
+}
+
+.viewField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viewLabel {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+.viewValue {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+}
+
+.fieldReadonly {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.domainChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: $color-background;
+  border: 1px solid $cal-card-border;
+  border-radius: 12px;
+  font-size: $font-size-14;
+  color: $cal-text;
+}
+
+// --- Cancel screens ---
+
+.cancelScreen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 0;
+}
+
+.cancelScreenTitle {
+  font-size: 20px;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+  margin: 0;
+}
+
+.cancelScreenBody {
+  font-size: $font-size-16;
+  color: $cal-label;
+  line-height: 1.5;
+}
+
+.cancelScreenPrompt {
+  font-size: $font-size-16;
+  color: #ac3232;
+}
+
+.cancelReasonInput {
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 10px 12px;
+  font-size: $font-size-16;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}

@@ -207,7 +207,14 @@ export interface CalendarMonthVendorsAllResponse {
 export interface CalendarOrderDetail {
   id: string
   ext_id: string
-  status: 'NEW' | 'IN_PROGRESS' | 'DONE'
+  status:
+    | 'NEW'
+    | 'REGISTERED'
+    | 'CANCELLED'
+    | 'SUBMITTED_TO_CLIENT'
+    | 'REJECTED'
+    | 'CORRECTED'
+    | 'ACCEPTED'
   language: { id: string; value: string; name: string }
   start_at: string
   end_at: string
@@ -239,6 +246,10 @@ export interface CalendarOrderDetail {
     institution_user_id: string
     comment: string
     created_at: string
+    institution_user?: {
+      id: string
+      user?: { forename?: string; surname?: string }
+    } | null
   }>
 }
 

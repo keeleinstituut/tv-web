@@ -2,8 +2,37 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
+import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import { useOrderDetail } from './OrderDetailContext'
+import OrderTopActions from './OrderTopActions'
 import classes from './classes.module.scss'
+
+const ClientSelect: FC<{
+  value: string
+  onChange: (v: string) => void
+  isTPM: boolean
+}> = ({ value, onChange, isTPM }) => {
+  const { t } = useTranslation()
+  const { users: clients } = useFetchInfiniteProjectPerson(
+    undefined,
+    'client',
+    isTPM
+  )
+  return (
+    <select
+      className={classes.editSelect}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      <option value="">{t('calendar.select_client')}</option>
+      {clients.map((c) => (
+        <option key={c.id} value={c.id}>
+          {[c.user.forename, c.user.surname].filter(Boolean).join(' ')}
+        </option>
+      ))}
+    </select>
+  )
+}
 
 const SummaryFields: FC = () => {
   const { t } = useTranslation()
@@ -17,6 +46,7 @@ const SummaryFields: FC = () => {
     setIsChangingDuration,
     isUpdating,
     languages,
+    vendors,
     selectedDate,
     setSelectedDate,
     startTimeInput,
@@ -31,7 +61,10 @@ const SummaryFields: FC = () => {
     setReferenceNumber,
     languageId,
     setLanguageId,
+    vendorId,
     setVendorId,
+    startIso,
+    endIso,
     startDt,
     endDt,
     durationLabel,
@@ -45,16 +78,17 @@ const SummaryFields: FC = () => {
         {isTPM && (
           <div className={classes.field}>
             <span className={classes.fieldLabel}>{t('calendar.client')}</span>
-            <input
-              className={classes.editInput}
+            <ClientSelect
               value={clientInstitutionId}
-              onChange={(e) => setClientInstitutionId(e.target.value)}
-              placeholder={t('calendar.enter_name')}
+              onChange={setClientInstitutionId}
+              isTPM={isTPM}
             />
           </div>
         )}
         <div className={classes.field}>
-          <span className={classes.fieldLabel}>{t('calendar.reference_number')}</span>
+          <span className={classes.fieldLabel}>
+            {t('calendar.reference_number')}
+          </span>
           <input
             className={classes.editInput}
             value={referenceNumber}
@@ -82,14 +116,17 @@ const SummaryFields: FC = () => {
               </option>
             ))}
           </select>
-          {languageId && languages.find((l) => l.language.id === languageId)?.is_rare && (
-            <span className={classes.rareLanguageNote}>
-              {t('calendar.rare_language_note')}
-            </span>
-          )}
+          {languageId &&
+            languages.find((l) => l.language.id === languageId)?.is_rare && (
+              <span className={classes.rareLanguageNote}>
+                {t('calendar.rare_language_note')}
+              </span>
+            )}
         </div>
         <div className={classes.field}>
-          <span className={classes.fieldLabel}>{t('calendar.date_and_start_time')}</span>
+          <span className={classes.fieldLabel}>
+            {t('calendar.date_and_start_time')}
+          </span>
           <div className={classes.timeRow}>
             <input
               type="date"
@@ -114,7 +151,9 @@ const SummaryFields: FC = () => {
             >
               −
             </button>
-            <span className={classes.stepperValue}>{formatMins(durationMinutes)}</span>
+            <span className={classes.stepperValue}>
+              {formatMins(durationMinutes)}
+            </span>
             <button
               className={classes.stepperBtn}
               onClick={() => setDurationMinutes((v) => v + 30)}
@@ -123,6 +162,26 @@ const SummaryFields: FC = () => {
             </button>
           </div>
         </div>
+        {isTPM && (
+          <div className={classes.field}>
+            <span className={classes.fieldLabel}>
+              {t('calendar.translator')}
+            </span>
+            <select
+              className={classes.editSelect}
+              value={vendorId}
+              onChange={(e) => setVendorId(e.target.value)}
+              disabled={!languageId || !startIso || !endIso}
+            >
+              <option value="">{t('calendar.select_translator')}</option>
+              {vendors.map((v) => (
+                <option key={v.id} value={v.id}>
+                  {v.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </>
     )
   }
@@ -135,14 +194,18 @@ const SummaryFields: FC = () => {
           <span className={classes.fieldValue}>{order!.language.name}</span>
         </div>
         <div className={classes.field}>
-          <span className={classes.fieldLabel}>{t('calendar.date_and_time')}</span>
+          <span className={classes.fieldLabel}>
+            {t('calendar.date_and_time')}
+          </span>
           <span className={classes.fieldValue}>
             {startDt!.format('DD.MM.YYYY')} / {startDt!.format('HH:mm')}
           </span>
         </div>
         {isChangingDuration ? (
           <div className={classes.field}>
-            <span className={classes.fieldLabel}>{t('calendar.duration_until')} *</span>
+            <span className={classes.fieldLabel}>
+              {t('calendar.duration_until')} *
+            </span>
             <input
               type="time"
               className={classes.editInputNarrow}
@@ -187,11 +250,17 @@ const SummaryFields: FC = () => {
           <>
             <div className={classes.field}>
               <span className={classes.fieldLabel}>{t('calendar.client')}</span>
-              <span className={classes.fieldValue}>{order!.client?.name || '–'}</span>
+              <span className={classes.fieldValue}>
+                {order!.client?.name || '–'}
+              </span>
             </div>
             <div className={classes.field}>
-              <span className={classes.fieldLabel}>{t('calendar.reference_number')}</span>
-              <span className={classes.fieldValue}>{order!.reference_number || '–'}</span>
+              <span className={classes.fieldLabel}>
+                {t('calendar.reference_number')}
+              </span>
+              <span className={classes.fieldValue}>
+                {order!.reference_number || '–'}
+              </span>
             </div>
           </>
         )}
@@ -200,7 +269,9 @@ const SummaryFields: FC = () => {
           <span className={classes.fieldValue}>{order!.language.name}</span>
         </div>
         <div className={classes.field}>
-          <span className={classes.fieldLabel}>{t('calendar.date_and_time')}</span>
+          <span className={classes.fieldLabel}>
+            {t('calendar.date_and_time')}
+          </span>
           <span className={classes.fieldValue}>
             {startDt!.format('DD.MM.YYYY')} / {startDt!.format('HH:mm')}
           </span>
@@ -220,15 +291,16 @@ const SummaryFields: FC = () => {
         <>
           <div className={classes.field}>
             <span className={classes.fieldLabel}>{t('calendar.client')}</span>
-            <input
-              className={classes.editInput}
+            <ClientSelect
               value={clientInstitutionId}
-              onChange={(e) => setClientInstitutionId(e.target.value)}
-              placeholder={t('calendar.enter_name')}
+              onChange={setClientInstitutionId}
+              isTPM={isTPM}
             />
           </div>
           <div className={classes.field}>
-            <span className={classes.fieldLabel}>{t('calendar.reference_number')}</span>
+            <span className={classes.fieldLabel}>
+              {t('calendar.reference_number')}
+            </span>
             <input
               className={classes.editInput}
               value={referenceNumber}
@@ -243,7 +315,9 @@ const SummaryFields: FC = () => {
         <span className={classes.fieldValue}>{order!.language.name}</span>
       </div>
       <div className={classes.field}>
-        <span className={classes.fieldLabel}>{t('calendar.date_and_start_time')}</span>
+        <span className={classes.fieldLabel}>
+          {t('calendar.date_and_start_time')}
+        </span>
         <div className={classes.timeRow}>
           <input
             type="date"
@@ -268,7 +342,9 @@ const SummaryFields: FC = () => {
           >
             −
           </button>
-          <span className={classes.stepperValue}>{formatMins(durationMinutes)}</span>
+          <span className={classes.stepperValue}>
+            {formatMins(durationMinutes)}
+          </span>
           <button
             className={classes.stepperBtn}
             onClick={() => setDurationMinutes((v) => v + 30)}
@@ -277,6 +353,24 @@ const SummaryFields: FC = () => {
           </button>
         </div>
       </div>
+      {isTPM && (
+        <div className={classes.field}>
+          <span className={classes.fieldLabel}>{t('calendar.translator')}</span>
+          <select
+            className={classes.editSelect}
+            value={vendorId}
+            onChange={(e) => setVendorId(e.target.value)}
+            disabled={!languageId || !startIso || !endIso}
+          >
+            <option value="">{t('calendar.select_translator')}</option>
+            {vendors.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </>
   )
 }
@@ -287,27 +381,50 @@ const OrderSummaryCard: FC = () => {
     order,
     isCreateMode,
     isEditing,
-    setIsEditing,
     isUpdating,
+    isCreating,
     metaOpen,
     setMetaOpen,
     statusLabel,
     fmt,
-    resetFields,
-    handleSave,
+    handleCreate,
+    pendingComment,
+    languageId,
+    startIso,
+    endIso,
   } = useOrderDetail()
 
   return (
     <div className={classes.card}>
       <div className={classes.cardHeader}>
         {isCreateMode ? (
-          <h1 className={classes.orderTitle}>{t('calendar.add_order')}</h1>
+          <>
+            <h1 className={classes.orderTitle}>{t('calendar.add_order')}</h1>
+            <div className={classes.cardHeaderActions}>
+              <Button
+                appearance={AppearanceTypes.Primary}
+                onClick={() => handleCreate(pendingComment || undefined)}
+                disabled={!languageId || !startIso || !endIso || isCreating}
+              >
+                {isCreating ? t('calendar.saving') : t('calendar.create_order')}
+              </Button>
+              <Button
+                appearance={AppearanceTypes.Secondary}
+                onClick={() => window.history.back()}
+              >
+                {t('calendar.cancel')}
+              </Button>
+            </div>
+          </>
         ) : (
           <>
-            <h1 className={classes.orderTitle}>
-              {t('calendar.order_prefix')} {order!.ext_id}
-            </h1>
-            <span className={classes.statusBadge}>{statusLabel}</span>
+            <div className={classes.cardHeaderLeft}>
+              <h1 className={classes.orderTitle}>
+                {t('calendar.order_prefix')} {order!.ext_id}
+              </h1>
+              <span className={classes.statusBadge}>{statusLabel}</span>
+            </div>
+            <OrderTopActions />
           </>
         )}
       </div>
@@ -317,52 +434,33 @@ const OrderSummaryCard: FC = () => {
           <SummaryFields />
         </div>
 
-        {!isCreateMode && (
-          <div className={classes.timestamps}>
-            <div className={classes.tsRow}>
-              <span className={classes.tsLabel}>{t('calendar.created_at_label')}</span>
-              <span className={classes.tsValue}>{fmt(order!.created_at)}</span>
-            </div>
-            <div className={classes.tsRow}>
-              <span className={classes.tsLabel}>{t('calendar.updated_at_label')}</span>
-              <span className={classes.tsValue}>{fmt(order!.updated_at)}</span>
-            </div>
-            <div className={classes.tsRow}>
-              <span className={classes.tsLabel}>{t('calendar.accepted_at_label')}</span>
-              <span className={classes.tsValue}>{fmt(order!.accepted_at)}</span>
-            </div>
-            <div className={classes.tsRow}>
-              <span className={classes.tsLabel}>{t('calendar.cancelled_at_label')}</span>
-              <span className={classes.tsValue}>{fmt(order!.cancelled_at)}</span>
-            </div>
-            <div className={classes.tsRow}>
-              <span className={classes.tsLabel}>{t('calendar.completed_at_label')}</span>
-              <span className={classes.tsValue}>{fmt(order!.completed_at)}</span>
-            </div>
+        <div className={classes.timestamps}>
+          <div className={classes.tsLabels}>
+            <span className={classes.tsLabel}>
+              {t('calendar.created_at_label')}
+            </span>
+            <span className={classes.tsLabel}>
+              {t('calendar.updated_at_label')}
+            </span>
+            <span className={classes.tsLabel}>
+              {t('calendar.accepted_at_label')}
+            </span>
+            <span className={classes.tsLabel}>
+              {t('calendar.cancelled_at_label')}
+            </span>
+            <span className={classes.tsLabel}>
+              {t('calendar.completed_at_label')}
+            </span>
           </div>
-        )}
-      </div>
-
-      {isEditing && (
-        <div className={classes.editFooter}>
-          <Button
-            appearance={AppearanceTypes.Primary}
-            onClick={handleSave}
-            disabled={isUpdating}
-          >
-            {isUpdating ? t('calendar.saving') : t('calendar.save')}
-          </Button>
-          <Button
-            appearance={AppearanceTypes.Secondary}
-            onClick={() => {
-              resetFields()
-              setIsEditing(false)
-            }}
-          >
-            {t('calendar.cancel_changes')}
-          </Button>
+          <div className={classes.tsValues}>
+            <span className={classes.tsValue}>{fmt(order?.created_at)}</span>
+            <span className={classes.tsValue}>{fmt(order?.updated_at)}</span>
+            <span className={classes.tsValue}>{fmt(order?.accepted_at)}</span>
+            <span className={classes.tsValue}>{fmt(order?.cancelled_at)}</span>
+            <span className={classes.tsValue}>{fmt(order?.completed_at)}</span>
+          </div>
         </div>
-      )}
+      </div>
 
       {!isCreateMode && (
         <>
@@ -380,30 +478,50 @@ const OrderSummaryCard: FC = () => {
             <div className={classes.metaContent}>
               {order!.reference_number && (
                 <div className={classes.metaField}>
-                  <span className={classes.metaLabel}>{t('calendar.order_id_label')}</span>
-                  <span className={classes.metaValue}>{order!.reference_number}</span>
+                  <span className={classes.metaLabel}>
+                    {t('calendar.order_id_label')}
+                  </span>
+                  <span className={classes.metaValue}>
+                    {order!.reference_number}
+                  </span>
                 </div>
               )}
               {order!.client && (
                 <>
                   <div className={classes.metaRow}>
                     <div className={classes.metaField}>
-                      <span className={classes.metaLabel}>{t('calendar.client_name')}</span>
-                      <span className={classes.metaValue}>{order!.client.name}</span>
+                      <span className={classes.metaLabel}>
+                        {t('calendar.client_name')}
+                      </span>
+                      <span className={classes.metaValue}>
+                        {order!.client.name}
+                      </span>
                     </div>
                     <div className={classes.metaField}>
-                      <span className={classes.metaLabel}>{t('calendar.institution')}</span>
-                      <span className={classes.metaValue}>{order!.client.institution}</span>
+                      <span className={classes.metaLabel}>
+                        {t('calendar.institution')}
+                      </span>
+                      <span className={classes.metaValue}>
+                        {order!.client.institution}
+                      </span>
                     </div>
                   </div>
                   <div className={classes.metaRow}>
                     <div className={classes.metaField}>
-                      <span className={classes.metaLabel}>{t('calendar.email')}</span>
-                      <span className={classes.metaValue}>{order!.client.email}</span>
+                      <span className={classes.metaLabel}>
+                        {t('calendar.email')}
+                      </span>
+                      <span className={classes.metaValue}>
+                        {order!.client.email}
+                      </span>
                     </div>
                     <div className={classes.metaField}>
-                      <span className={classes.metaLabel}>{t('calendar.phone')}</span>
-                      <span className={classes.metaValue}>{order!.client.phone}</span>
+                      <span className={classes.metaLabel}>
+                        {t('calendar.phone')}
+                      </span>
+                      <span className={classes.metaValue}>
+                        {order!.client.phone}
+                      </span>
                     </div>
                   </div>
                 </>
@@ -411,17 +529,29 @@ const OrderSummaryCard: FC = () => {
               {order!.coordinator && (
                 <>
                   <div className={classes.metaField}>
-                    <span className={classes.metaLabel}>{t('calendar.coordinator_name')}</span>
-                    <span className={classes.metaValue}>{order!.coordinator.name}</span>
+                    <span className={classes.metaLabel}>
+                      {t('calendar.coordinator_name')}
+                    </span>
+                    <span className={classes.metaValue}>
+                      {order!.coordinator.name}
+                    </span>
                   </div>
                   <div className={classes.metaRow}>
                     <div className={classes.metaField}>
-                      <span className={classes.metaLabel}>{t('calendar.email')}</span>
-                      <span className={classes.metaValue}>{order!.coordinator.email}</span>
+                      <span className={classes.metaLabel}>
+                        {t('calendar.email')}
+                      </span>
+                      <span className={classes.metaValue}>
+                        {order!.coordinator.email}
+                      </span>
                     </div>
                     <div className={classes.metaField}>
-                      <span className={classes.metaLabel}>{t('calendar.phone')}</span>
-                      <span className={classes.metaValue}>{order!.coordinator.phone}</span>
+                      <span className={classes.metaLabel}>
+                        {t('calendar.phone')}
+                      </span>
+                      <span className={classes.metaValue}>
+                        {order!.coordinator.phone}
+                      </span>
                     </div>
                   </div>
                 </>

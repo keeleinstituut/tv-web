@@ -3,8 +3,6 @@ const clean = (path: string) => path.replace(/^\//, '').replace('/$', '')
 const gateway = (path: string) => {
   return (
     import.meta.env.REACT_APP_GATEWAY_BASE?.replace(/\/$/, '') +
-   
-   
     '/' +
     clean(path)
   )
@@ -99,6 +97,8 @@ export const endpoints = {
   PROJECT_CANCEL_DECLINE: (id: string) =>
     translationOrder(`projects/${id}/cancel-decline`),
   PROJECT_COMMENTS: (id: string) => translationOrder(`projects/${id}/comments`),
+  PROJECT_COMMENT: (projectId: string, commentId: string) =>
+    translationOrder(`projects/${projectId}/comments/${commentId}`),
   CALENDAR_PREBOOK: translationOrder('calendar/prebook'),
   CALENDAR_VENDOR_ENTRIES: translationOrder('calendar/vendor-entries'),
 

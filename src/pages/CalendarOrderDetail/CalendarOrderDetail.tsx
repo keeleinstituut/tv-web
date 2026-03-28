@@ -7,6 +7,7 @@ import {
   useUpdateCalendarOrder,
   useAcceptCalendarOrder,
   useCancelCalendarOrder,
+  useDeclineCancelCalendarOrder,
   useCreateCalendarOrder,
   useFetchCalendarLanguages,
   useFetchSlotMatching,
@@ -21,12 +22,10 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useIsMobile } from 'hooks/useIsMobile'
 import { OrderDetailContext } from './OrderDetailContext'
-import OrderTopActions from './OrderTopActions'
 import OrderSummaryCard from './OrderSummaryCard'
 import OrderDetailsCard from './OrderDetailsCard'
 import OrderCommentsCard from './OrderCommentsCard'
 import CalendarMobileWizard from './CalendarMobileWizard'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './classes.module.scss'
 
 const CalendarOrderDetail: FC = () => {
@@ -35,8 +34,7 @@ const CalendarOrderDetail: FC = () => {
   const { orderId } = useParams<{ orderId: string }>()
   const isCreateMode = !orderId
   const isMobile = useIsMobile()
-  const { isTPM, isTranslator } = useCalendarRole()
-  const isClient = !isTPM && !isTranslator
+  const { isTPM, isTranslator, isClient } = useCalendarRole()
 
   const { order, isLoading } = useFetchCalendarOrderDetail(
     isCreateMode ? null : (orderId ?? null)
@@ -49,6 +47,7 @@ const CalendarOrderDetail: FC = () => {
     useAcceptCalendarOrder()
   const { mutate: cancelOrder, isPending: isCancelling } =
     useCancelCalendarOrder()
+  const { mutate: declineCancel } = useDeclineCancelCalendarOrder()
   const { mutate: addFiles } = useCalendarAddFiles(
     isCreateMode ? null : (orderId ?? null)
   )
@@ -63,6 +62,9 @@ const CalendarOrderDetail: FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [isChangingDuration, setIsChangingDuration] = useState(false)
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
+  const [isCancelled, setIsCancelled] = useState(false)
+  const [isCancelPending, setIsCancelPending] = useState(false)
+  const [cancelCountdown, setCancelCountdown] = useState(30)
   const [cancelReason, setCancelReason] = useState('')
   const [isAddingComment, setIsAddingComment] = useState(false)
   const [commentText, setCommentText] = useState('')
@@ -93,12 +95,6 @@ const CalendarOrderDetail: FC = () => {
   // Pending comment (buffered for create / edit, posted directly in view mode)
   const [pendingComment, setPendingComment] = useState('')
 
-  // Mobile wizard state (create mode only)
-  const [mobileCreatedAt, setMobileCreatedAt] = useState<string | null>(null)
-  const [mobileCreatedOrderId, setMobileCreatedOrderId] = useState<
-    string | null
-  >(null)
-
   useEffect(() => {
     if (!order) return
     setSelectedDate(dayjs(order.start_at).format('YYYY-MM-DD'))
@@ -118,12 +114,36 @@ const CalendarOrderDetail: FC = () => {
     setDomainIds(order.tags?.map((t) => t.id) ?? [])
   }, [order])
 
+  const isDirty =
+    isEditing &&
+    !!order &&
+    (selectedDate !== dayjs(order.start_at).format('YYYY-MM-DD') ||
+      startTimeInput !== dayjs(order.start_at).format('HH:mm') ||
+      durationMinutes !==
+        dayjs(order.end_at).diff(dayjs(order.start_at), 'minute') ||
+      serviceType !== order.service_type ||
+      address !==
+        (order.service_type === 'ON_SITE'
+          ? (order.location ?? '')
+          : (order.meeting_link ?? '')) ||
+      clientInstitutionId !== (order.client_institution_user?.id ?? '') ||
+      referenceNumber !== (order.reference_number ?? '') ||
+      languageId !== order.language.id ||
+      JSON.stringify([...domainIds].sort()) !==
+        JSON.stringify([...(order.tags?.map((tag) => tag.id) ?? [])].sort()) ||
+      localFiles.length > 0)
+
   const startIso =
     selectedDate && startTimeInput
-      ? dayjs(`${selectedDate}T${startTimeInput}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
+      ? dayjs(`${selectedDate}T${startTimeInput}:00`)
+          .toISOString()
+          .replace(/\.\d+Z$/, 'Z')
       : null
   const endIso = startIso
-    ? dayjs(startIso).add(durationMinutes, 'minute').toISOString().replace(/\.\d+Z$/, 'Z')
+    ? dayjs(startIso)
+        .add(durationMinutes, 'minute')
+        .toISOString()
+        .replace(/\.\d+Z$/, 'Z')
     : null
 
   const slotMatchingParams =
@@ -137,6 +157,16 @@ const CalendarOrderDetail: FC = () => {
       navigate('/calendar', { replace: true })
     }
   }, [isCreateMode, isTranslator, isTPM, isClient, navigate])
+
+  useEffect(() => {
+    if (!isCancelPending) return
+    if (cancelCountdown <= 0) {
+      setIsCancelPending(false)
+      return
+    }
+    const timer = setTimeout(() => setCancelCountdown((v) => v - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [isCancelPending, cancelCountdown])
 
   if (isCreateMode && isTranslator && !isTPM && !isClient) return null
 
@@ -163,18 +193,22 @@ const CalendarOrderDetail: FC = () => {
   const statusLabel = order
     ? order.status === 'NEW'
       ? t('calendar.status_pending')
-      : order.status === 'IN_PROGRESS'
-        ? isTranslator
-          ? t('calendar.status_ongoing')
-          : t('calendar.status_confirmed')
-        : t('calendar.status_completed')
+      : order.status === 'CANCELLED'
+        ? t('calendar.status_cancelled')
+        : order.status === 'ACCEPTED'
+          ? t('calendar.status_completed')
+          : isTranslator
+            ? t('calendar.status_ongoing')
+            : t('calendar.status_confirmed')
     : ''
 
   const isPast = order ? dayjs(order.start_at).isBefore(dayjs()) : false
   const canModify =
     (isTPM || isClient) &&
     !isPast &&
-    order?.status !== 'DONE'
+    !isCancelled &&
+    order?.status !== 'ACCEPTED' &&
+    order?.status !== 'CANCELLED'
 
   const resetFields = () => {
     if (!order) return
@@ -228,12 +262,7 @@ const CalendarOrderDetail: FC = () => {
             title: t('notification.announcement'),
             content: t('success.calendar_order_created'),
           })
-          if (isMobile) {
-            setMobileCreatedAt(data.created_at ?? new Date().toISOString())
-            setMobileCreatedOrderId(data.id)
-          } else {
-            navigate(`/calendar/${data.id}`)
-          }
+          navigate(`/calendar/${data.id}`)
         },
       }
     )
@@ -241,8 +270,13 @@ const CalendarOrderDetail: FC = () => {
 
   const handleSave = () => {
     if (!orderId) return
-    const saveStart = dayjs(`${selectedDate}T${startTimeInput}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
-    const saveEnd = dayjs(saveStart).add(durationMinutes, 'minute').toISOString().replace(/\.\d+Z$/, 'Z')
+    const saveStart = dayjs(`${selectedDate}T${startTimeInput}:00`)
+      .toISOString()
+      .replace(/\.\d+Z$/, 'Z')
+    const saveEnd = dayjs(saveStart)
+      .add(durationMinutes, 'minute')
+      .toISOString()
+      .replace(/\.\d+Z$/, 'Z')
     updateOrder(
       {
         id: orderId,
@@ -291,7 +325,9 @@ const CalendarOrderDetail: FC = () => {
   const handleSaveDuration = () => {
     if (!orderId || !order || !durationEndTime) return
     const date = dayjs(order.start_at).format('YYYY-MM-DD')
-    const endIsoNew = dayjs(`${date}T${durationEndTime}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
+    const endIsoNew = dayjs(`${date}T${durationEndTime}:00`)
+      .toISOString()
+      .replace(/\.\d+Z$/, 'Z')
     updateOrder(
       { id: orderId, end_at: endIsoNew },
       {
@@ -320,58 +356,34 @@ const CalendarOrderDetail: FC = () => {
     })
   }
 
+  const handleUndoCancel = () => {
+    if (!orderId) return
+    declineCancel(orderId, {
+      onSuccess: () => {
+        setIsCancelled(false)
+        setIsCancelPending(false)
+        setCancelCountdown(30)
+      },
+    })
+  }
+
   const handleCancelOrder = () => {
     if (!orderId || !cancelReason.trim()) return
     cancelOrder(
-      { id: orderId, cancellation_reason: cancelReason.trim() },
+      {
+        id: orderId,
+        cancellation_reason: cancelReason.trim(),
+        is_delayed: true,
+      },
       {
         onSuccess: () => {
+          setIsCancelled(true)
+          setIsCancelPending(true)
+          setCancelCountdown(30)
           setIsConfirmingCancel(false)
           setCancelReason('')
-          showNotification({
-            type: NotificationTypes.Success,
-            title: t('notification.announcement'),
-            content: t('success.calendar_order_cancelled'),
-          })
         },
       }
-    )
-  }
-
-  if (isCreateMode && isMobile && (isTPM || isClient)) {
-    return (
-      <CalendarMobileWizard
-        isTPM={isTPM}
-        languageId={languageId}
-        setLanguageId={setLanguageId}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        startTimeInput={startTimeInput}
-        setStartTimeInput={setStartTimeInput}
-        durationMinutes={durationMinutes}
-        setDurationMinutes={setDurationMinutes}
-        serviceType={serviceType}
-        setServiceType={setServiceType}
-        address={address}
-        setAddress={setAddress}
-        clientInstitutionId={clientInstitutionId}
-        setClientInstitutionId={setClientInstitutionId}
-        referenceNumber={referenceNumber}
-        setReferenceNumber={setReferenceNumber}
-        domainIds={domainIds}
-        setDomainIds={setDomainIds}
-        vendorId={vendorId}
-        setVendorId={setVendorId}
-        localFiles={localFiles}
-        setLocalFiles={setLocalFiles}
-        fileInputRef={fileInputRef}
-        onSubmit={handleCreate}
-        onCancel={() => navigate('/calendar')}
-        isCreating={isCreating}
-        createdAt={mobileCreatedAt}
-        createdOrderId={mobileCreatedOrderId}
-        onBackToCalendar={() => navigate('/calendar')}
-      />
     )
   }
 
@@ -442,43 +454,37 @@ const CalendarOrderDetail: FC = () => {
     setPendingComment,
     addComment,
     isPostingComment,
+    isDirty,
     isCreating,
     isUpdating,
     isAccepting,
     isCancelling,
+    isCancelled,
+    isCancelPending,
+    cancelCountdown,
     handleCreate,
     handleSave,
     handleSaveDuration,
     handleAccept,
     handleCancelOrder,
+    handleUndoCancel,
     resetFields,
+  }
+
+  if (isMobile) {
+    return (
+      <OrderDetailContext.Provider value={contextValue}>
+        <CalendarMobileWizard />
+      </OrderDetailContext.Provider>
+    )
   }
 
   return (
     <OrderDetailContext.Provider value={contextValue}>
       <div className={classes.page}>
-        <OrderTopActions />
         <OrderSummaryCard />
         <OrderDetailsCard />
         <OrderCommentsCard />
-
-        {isCreateMode && (
-          <div className={classes.editFooter}>
-            <Button
-              appearance={AppearanceTypes.Primary}
-              onClick={() => handleCreate(pendingComment || undefined)}
-              disabled={!languageId || !startIso || !endIso || isCreating}
-            >
-              {isCreating ? t('calendar.saving') : t('calendar.create_order')}
-            </Button>
-            <Button
-              appearance={AppearanceTypes.Secondary}
-              onClick={() => navigate('/calendar')}
-            >
-              {t('calendar.cancel')}
-            </Button>
-          </div>
-        )}
       </div>
     </OrderDetailContext.Provider>
   )

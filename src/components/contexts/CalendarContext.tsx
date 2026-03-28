@@ -90,8 +90,16 @@ interface CalendarPanelContextType {
   setFocusedLanguageId: (id: string | null) => void
   pendingDeepLink: { slotId: string; date: string } | null
   setPendingDeepLink: (link: { slotId: string; date: string } | null) => void
-  weekBookingPanel: { start_at: string; end_at: string; language_id: string } | null
-  openWeekBookingPanel: (params: { start_at: string; end_at: string; language_id: string }) => void
+  weekBookingPanel: {
+    start_at: string
+    end_at: string
+    language_id: string
+  } | null
+  openWeekBookingPanel: (params: {
+    start_at: string
+    end_at: string
+    language_id: string
+  }) => void
   closeWeekBookingPanel: () => void
 }
 
@@ -125,7 +133,9 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   // Panel state
   const [sidePanelSelection, setSidePanelSelection] =
     useState<SidePanelSelection | null>(null)
-  const [focusedLanguageId, setFocusedLanguageId] = useState<string | null>(null)
+  const [focusedLanguageId, setFocusedLanguageId] = useState<string | null>(
+    null
+  )
   const [pendingDeepLink, setPendingDeepLink] = useState<{
     slotId: string
     date: string
@@ -229,7 +239,16 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
       isSearching,
       setIsSearching,
     }),
-    [view, currentDate, navigatePrev, navigateNext, navigatePrevMonth, navigateNextMonth, navigateToday, isSearching]
+    [
+      view,
+      currentDate,
+      navigatePrev,
+      navigateNext,
+      navigatePrevMonth,
+      navigateNextMonth,
+      navigateToday,
+      isSearching,
+    ]
   )
 
   const expansionValue = useMemo<CalendarExpansionContextType>(
@@ -241,7 +260,14 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
       collapseAll,
       allCollapsedOverride,
     }),
-    [expandedLanguageIds, toggleLanguageExpanded, isLanguageExpanded, expandAll, collapseAll, allCollapsedOverride]
+    [
+      expandedLanguageIds,
+      toggleLanguageExpanded,
+      isLanguageExpanded,
+      expandAll,
+      collapseAll,
+      allCollapsedOverride,
+    ]
   )
 
   const panelValue = useMemo<CalendarPanelContextType>(
@@ -257,7 +283,16 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
       openWeekBookingPanel,
       closeWeekBookingPanel,
     }),
-    [sidePanelSelection, openSidePanel, closeSidePanel, focusedLanguageId, pendingDeepLink, weekBookingPanel, openWeekBookingPanel, closeWeekBookingPanel]
+    [
+      sidePanelSelection,
+      openSidePanel,
+      closeSidePanel,
+      focusedLanguageId,
+      pendingDeepLink,
+      weekBookingPanel,
+      openWeekBookingPanel,
+      closeWeekBookingPanel,
+    ]
   )
 
   return (
