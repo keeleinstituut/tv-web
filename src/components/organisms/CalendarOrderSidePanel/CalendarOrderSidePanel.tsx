@@ -1,6 +1,4 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { apiClient } from 'api'
-import { endpoints } from 'api/endpoints'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
@@ -8,7 +6,6 @@ import {
   apiServiceTypeToForm,
   areSortedIdArraysEqual,
   formatDuration,
-  toCalendarApiDateTime,
 } from 'helpers/calendar'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
@@ -82,9 +79,7 @@ const CalendarOrderSidePanel: FC = () => {
   const [isCancelPending, setIsCancelPending] = useState(false)
   const [cancelCountdown, setCancelCountdown] = useState(30)
   const [isMetaOpen, setIsMetaOpen] = useState(false)
-  const [isChangingDuration, setIsChangingDuration] = useState(false)
   const [durationMinutes, setDurationMinutes] = useState(60)
-  const [durationNote, setDurationNote] = useState('')
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [pendingComment, setPendingComment] = useState('')
 
@@ -125,13 +120,13 @@ const CalendarOrderSidePanel: FC = () => {
     (!isTPM || !!clientInstitutionId) &&
     (!isTPM || !!vendorId)
   const assignmentStatus = slot?.assignment?.status
-  const assignmentTerminal =
-    assignmentStatus === 'DONE' ||
-    assignmentStatus === 'ACCEPTED' ||
-    assignmentStatus === 'CANCELLED'
+  // Assignment ACCEPTED is workflow (vendor took the task), not project complete — teostaja
+  // may still change duration until the order is ACCEPTED/CANCELLED at project level.
+  const assignmentWorkEnded =
+    assignmentStatus === 'DONE' || assignmentStatus === 'CANCELLED'
   const orderTerminal =
     order?.status === 'ACCEPTED' || order?.status === 'CANCELLED'
-  const isPastSlot = isCancelled || assignmentTerminal || orderTerminal
+  const isPastSlot = isCancelled || assignmentWorkEnded || orderTerminal
   const isClientPastView = isClient && isViewMode && isPastSlot
 
   // Slot matching for TPM — only fetch in form mode
@@ -180,9 +175,7 @@ const CalendarOrderSidePanel: FC = () => {
       setIsCancelPending(false)
       setCancelCountdown(30)
       setIsMetaOpen(false)
-      setIsChangingDuration(false)
       setDurationMinutes(60)
-      setDurationNote('')
     } else {
       // Pre-fill vendor when opening from a vendor row
       if (sidePanelSelection?.vendorId) {
@@ -278,20 +271,10 @@ const CalendarOrderSidePanel: FC = () => {
         tag_ids: domainIds.length ? domainIds : undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
         comment: pendingComment || undefined,
+        help_files: pendingFiles.length ? pendingFiles : undefined,
       },
       {
-        onSuccess: (res) => {
-          const newProjectId = (res as { data?: { id?: string } })?.data?.id
-          if (newProjectId && pendingFiles.length) {
-            apiClient.postForm(endpoints.MEDIA_BULK, {
-              files: pendingFiles.map((f) => ({
-                content: f,
-                reference_object_id: newProjectId,
-                reference_object_type: 'project',
-                collection: 'source',
-              })),
-            })
-          }
+        onSuccess: () => {
           setPendingFiles([])
           setPendingComment('')
           prebookActiveRef.current = false
@@ -308,6 +291,7 @@ const CalendarOrderSidePanel: FC = () => {
 
   const handleStartEdit = () => {
     setIsEditing(true)
+    setPendingComment('')
     setIsConfirmingCancel(false)
     const st = slot?.assignment?.service_type
     const initServiceType = apiServiceTypeToForm(st)
@@ -385,10 +369,6 @@ const CalendarOrderSidePanel: FC = () => {
 
     updateOrder(payload, {
       onSuccess: () => {
-        if (pendingComment.trim()) {
-          addComment(pendingComment.trim())
-          setPendingComment('')
-        }
         setIsEditing(false)
         editBaselineRef.current = null
       },
@@ -454,37 +434,6 @@ const CalendarOrderSidePanel: FC = () => {
     })
   }, [projectId, declineCancelOrder, t])
 
-  const handleStartChangeDuration = () => {
-    setDurationMinutes(slotDurationMinutes)
-    setIsMetaOpen(true)
-    setIsChangingDuration(true)
-  }
-
-  const handleCancelChangeDuration = () => {
-    setIsChangingDuration(false)
-    setDurationNote('')
-  }
-
-  const handleSaveDuration = () => {
-    if (!projectId || !startIso) return
-    const newEndIso = toCalendarApiDateTime(
-      dayjs(startIso).add(durationMinutes, 'minute').toISOString()
-    )
-    updateOrder(
-      { id: projectId, end_at: newEndIso },
-      {
-        onSuccess: () => {
-          setIsChangingDuration(false)
-          showNotification({
-            type: NotificationTypes.Success,
-            title: t('notification.announcement'),
-            content: t('success.calendar_duration_saved'),
-          })
-        },
-      }
-    )
-  }
-
   const contextValue = useMemo(
     () => ({
       language,
@@ -514,8 +463,6 @@ const CalendarOrderSidePanel: FC = () => {
       setVendorId,
       durationMinutes,
       setDurationMinutes,
-      durationNote,
-      setDurationNote,
       isEditing,
       isConfirmingCancel,
       setIsConfirmingCancel,
@@ -526,7 +473,6 @@ const CalendarOrderSidePanel: FC = () => {
       cancelCountdown,
       isMetaOpen,
       setIsMetaOpen,
-      isChangingDuration,
       vendorName: sidePanelSelection?.vendorName,
       isCreating,
       isUpdating,
@@ -536,9 +482,15 @@ const CalendarOrderSidePanel: FC = () => {
       vendors: vendors ?? [],
       order: order ?? null,
       addFiles: (files: File[]) => addFilesMutate(files),
-      deleteFile: (fileId: string) => deleteFileMutate(fileId),
-      downloadFile: (file: { id: string; file_name: string }) =>
-        downloadFileMutate(file),
+      deleteFile: (arg: {
+        id: string
+        collection?: 'help' | 'source' | 'final'
+      }) => deleteFileMutate(arg),
+      downloadFile: (file: {
+        id: string
+        file_name: string
+        collection?: 'help' | 'source' | 'final'
+      }) => downloadFileMutate(file),
       isAddingFiles,
       isDeletingFile,
       pendingFiles,
@@ -555,9 +507,6 @@ const CalendarOrderSidePanel: FC = () => {
       handleUndoCancel,
       handleDeclineCancel,
       isDecliningCancel,
-      handleStartChangeDuration,
-      handleCancelChangeDuration,
-      handleSaveDuration,
       closeSidePanel: handleClose,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -579,7 +528,6 @@ const CalendarOrderSidePanel: FC = () => {
       domainIds,
       vendorId,
       durationMinutes,
-      durationNote,
       isEditing,
       isConfirmingCancel,
       cancelReason,
@@ -587,7 +535,6 @@ const CalendarOrderSidePanel: FC = () => {
       isCancelPending,
       cancelCountdown,
       isMetaOpen,
-      isChangingDuration,
       isRequiredFilled,
       isCreating,
       isUpdating,
@@ -610,7 +557,7 @@ const CalendarOrderSidePanel: FC = () => {
   const isTPMViewMode = isTPM && isViewMode
   const isTPMPastView = isTPM && isViewMode && isPastSlot
   const showFooter =
-    (!isTranslatorView || isChangingDuration) &&
+    !isTranslatorView &&
     !isClientPastView &&
     !isTPMPastView &&
     !isTPMViewMode &&
@@ -661,29 +608,10 @@ const CalendarOrderSidePanel: FC = () => {
           </div>
         </SidePanelContext.Provider>
 
-        {/* Footer — hidden for Teostaja (except muuda kestus), Client past, and Client non-past view */}
+        {/* Footer — hidden for Teostaja, Client past, and Client non-past view */}
         {showFooter && (
           <div className={classes.footer}>
-            {isChangingDuration ? (
-              <>
-                <Button
-                  appearance={AppearanceTypes.Primary}
-                  onClick={handleSaveDuration}
-                  disabled={isUpdating}
-                >
-                  {isUpdating
-                    ? t('calendar.saving')
-                    : t('calendar.save_duration')}
-                </Button>
-                <Button
-                  appearance={AppearanceTypes.Secondary}
-                  onClick={handleCancelChangeDuration}
-                  disabled={isUpdating}
-                >
-                  {t('calendar.cancel_changes')}
-                </Button>
-              </>
-            ) : isViewMode ? (
+            {isViewMode ? (
               isCancelPending ? (
                 <>
                   <span className={classes.cancelPendingText}>

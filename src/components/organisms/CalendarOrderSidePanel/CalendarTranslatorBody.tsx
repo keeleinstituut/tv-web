@@ -2,14 +2,10 @@ import { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
-import AddIcon from 'assets/icons/add.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
 import { useSidePanel } from './SidePanelContext'
 import OrderServiceLocationReadonly from './OrderServiceLocationReadonly'
-import DurationStepper from './DurationStepper'
 import SlotMetaSection from './SlotMetaSection'
 import classes from './classes.module.scss'
 
@@ -22,89 +18,40 @@ const CalendarTranslatorBody: FC = () => {
     startTime,
     duration,
     isPastSlot,
-    isChangingDuration,
-    isConfirmingCancel,
-    setIsConfirmingCancel: onSetIsConfirmingCancel,
     isMetaOpen,
     setIsMetaOpen: onSetIsMetaOpen,
-    durationMinutes,
-    setDurationMinutes: onSetDurationMinutes,
-    durationNote,
-    setDurationNote: onSetDurationNote,
-    isCancelling,
-    handleVoidConfirm: onVoidConfirm,
-    handleStartChangeDuration: onStartChangeDuration,
     order,
     downloadFile,
-    addComment,
-    isPostingComment,
+    isCancelled,
   } = useSidePanel()
 
-  const [isFilesOpen, setIsFilesOpen] = useState(false)
-  const [isAddingComment, setIsAddingComment] = useState(false)
-  const [commentText, setCommentText] = useState('')
+  const assignment = slot?.assignment
 
-  const handleSaveComment = () => {
-    const text = commentText.trim()
-    if (!text) return
-    addComment(text)
-    setCommentText('')
-    setIsAddingComment(false)
-  }
+  const [isFilesOpen, setIsFilesOpen] = useState(false)
+  const [isCommentsOpen, setIsCommentsOpen] = useState(false)
+
+  const showCostSection =
+    !!slot?.assignment?.price_per_minute ||
+    !!slot?.assignment?.billing_method ||
+    isPastSlot
 
   return (
     <>
-      {/* Action buttons — hidden for past slots */}
-      {!isPastSlot && (
-        <div className={classes.translatorActions}>
-          {isChangingDuration ? (
-            <Button
-              appearance={AppearanceTypes.Secondary}
-              onClick={() => onSetIsConfirmingCancel(true)}
-              disabled={isCancelling}
-            >
-              {t('calendar.cancel_order')}
-            </Button>
-          ) : isConfirmingCancel ? (
-            <>
-              <Button
-                appearance={AppearanceTypes.Primary}
-                onClick={onVoidConfirm}
-                disabled={isCancelling}
-              >
-                {isCancelling
-                  ? t('calendar.voiding')
-                  : t('calendar.void_confirm_yes')}
-              </Button>
-              <Button
-                appearance={AppearanceTypes.Secondary}
-                onClick={() => onSetIsConfirmingCancel(false)}
-                disabled={isCancelling}
-              >
-                {t('calendar.void_confirm_no')}
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                appearance={AppearanceTypes.Primary}
-                onClick={onStartChangeDuration}
-              >
-                {t('calendar.change_duration')}
-              </Button>
-              <Button
-                appearance={AppearanceTypes.Secondary}
-                onClick={() => onSetIsConfirmingCancel(true)}
-              >
-                {t('calendar.cancel_order')}
-              </Button>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Read-only order fields */}
       <div className={classes.form}>
+        <div className={classes.statusBadgeGrey}>
+          {order?.cancel_at
+            ? t('calendar.status_cancelling')
+            : order?.status === 'CANCELLED' || isCancelled
+              ? t('calendar.status_cancelled')
+              : assignment?.status === 'DONE'
+                ? t('calendar.status_completed')
+                : assignment?.status === 'IN_PROGRESS'
+                  ? t('calendar.status_forwarded')
+                  : assignment?.status === 'CANCELLED'
+                    ? t('calendar.status_cancelled')
+                    : t('calendar.status_pending')}
+        </div>
+
         <div className={classes.formGroup}>
           <label className={classes.label}>{t('calendar.language')}</label>
           <span className={classes.readValue}>
@@ -120,17 +67,9 @@ const CalendarTranslatorBody: FC = () => {
           <span className={classes.readValue}>{startTime}</span>
         </div>
 
-        {/* Kestus — stepper in change mode, read-only otherwise */}
         <div className={classes.durationGroup}>
           <label className={classes.label}>{t('calendar.duration')}</label>
-          {isChangingDuration ? (
-            <DurationStepper
-              durationMinutes={durationMinutes}
-              onSetDurationMinutes={onSetDurationMinutes}
-            />
-          ) : (
-            <span className={classes.readValue}>{duration}</span>
-          )}
+          <span className={classes.readValue}>{duration}</span>
         </div>
 
         <OrderServiceLocationReadonly
@@ -140,7 +79,6 @@ const CalendarTranslatorBody: FC = () => {
           meetingLink={slot?.assignment?.meeting_link}
         />
 
-        {/* Collapsible metaandmed */}
         <SlotMetaSection
           source={order}
           isMetaOpen={isMetaOpen}
@@ -148,7 +86,6 @@ const CalendarTranslatorBody: FC = () => {
         />
       </div>
 
-      {/* Lisamaterjalid */}
       <div className={classes.divider} />
       <div className={classes.sectionRow}>
         <button
@@ -159,25 +96,31 @@ const CalendarTranslatorBody: FC = () => {
             padding: 0,
             cursor: order?.source_files?.length ? 'pointer' : 'default',
           }}
-          onClick={() =>
-            order?.source_files?.length && setIsFilesOpen(!isFilesOpen)
-          }
         >
-          <AttachIcon className={classes.sectionIcon} />
           <span>{t('calendar.attachments')}</span>
-          {!!order?.source_files?.length && (
-            <>
-              <ChevronLeft
-                className={classNames(classes.sectionChevron, {
-                  [classes.sectionChevronOpen]: isFilesOpen,
-                })}
-              />
-              <span className={classes.sectionNote}>
-                {order.source_files.length}
-              </span>
-            </>
-          )}
         </button>
+        {!!order?.source_files?.length && (
+          <div
+            style={{
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+            onClick={() =>
+              order?.source_files?.length && setIsFilesOpen(!isFilesOpen)
+            }
+          >
+            <span className={classes.sectionNote}>
+              {order.source_files.length}
+            </span>
+            <ChevronLeft
+              className={classNames(classes.sectionChevron, {
+                [classes.sectionChevronOpen]: isFilesOpen,
+              })}
+            />
+          </div>
+        )}
       </div>
       {isFilesOpen && !!order?.source_files?.length && (
         <div className={classes.fileList}>
@@ -186,7 +129,11 @@ const CalendarTranslatorBody: FC = () => {
               <button
                 className={classes.fileLink}
                 onClick={() =>
-                  downloadFile({ id: f.id, file_name: f.file_name })
+                  downloadFile({
+                    id: f.id,
+                    file_name: f.file_name,
+                    collection: f.collection_name ?? 'help',
+                  })
                 }
               >
                 {f.name}
@@ -194,7 +141,11 @@ const CalendarTranslatorBody: FC = () => {
               <DownloadIcon
                 className={classes.downloadIcon}
                 onClick={() =>
-                  downloadFile({ id: f.id, file_name: f.file_name })
+                  downloadFile({
+                    id: f.id,
+                    file_name: f.file_name,
+                    collection: f.collection_name ?? 'help',
+                  })
                 }
                 style={{ cursor: 'pointer' }}
               />
@@ -203,65 +154,40 @@ const CalendarTranslatorBody: FC = () => {
         </div>
       )}
 
-      {/* Kommentaarid */}
       <div className={classes.divider} />
       <div className={classes.sectionRow}>
-        <div className={classes.sectionLabel}>
-          <ChevronLeft className={classes.sectionChevron} />
-          <span>{t('calendar.comments')}</span>
-        </div>
-        {!isAddingComment && (
+        <span className={classes.sectionLabel}>{t('calendar.comments')}</span>
+        {!!order?.project_comments?.length && (
           <button
+            type="button"
             className={classes.sectionBtn}
-            onClick={() => setIsAddingComment(true)}
+            onClick={() => setIsCommentsOpen(!isCommentsOpen)}
           >
-            {t('calendar.add_short')}
-            <AddIcon style={{ width: 16, height: 16 }} />
+            <span className={classes.sectionNote}>
+              {order.project_comments!.length}
+            </span>
+            <ChevronLeft
+              className={classNames(classes.sectionChevron, {
+                [classes.sectionChevronOpen]: isCommentsOpen,
+              })}
+            />
           </button>
         )}
       </div>
-      {order?.project_comments?.map((c) => (
-        <div key={c.id} className={classes.commentContent}>
-          <span className={classes.commentText}>{c.comment}</span>
-          <span className={classes.commentDate}>
-            {t('calendar.added_at', {
-              date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
-            })}
-          </span>
-        </div>
-      ))}
-      {isAddingComment && (
-        <div className={classes.commentForm}>
-          <textarea
-            className={classes.textarea}
-            placeholder={t('calendar.write_text')}
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            autoFocus
-          />
-          <div className={classes.commentFormActions}>
-            <Button
-              appearance={AppearanceTypes.Primary}
-              disabled={!commentText.trim() || isPostingComment}
-              onClick={handleSaveComment}
-            >
-              {t('calendar.save')}
-            </Button>
-            <Button
-              appearance={AppearanceTypes.Secondary}
-              onClick={() => {
-                setIsAddingComment(false)
-                setCommentText('')
-              }}
-            >
-              {t('calendar.cancel')}
-            </Button>
+      {isCommentsOpen &&
+        !!order?.project_comments?.length &&
+        order.project_comments.map((c) => (
+          <div key={c.id} className={classes.commentContent}>
+            <span className={classes.commentText}>{c.comment}</span>
+            <span className={classes.commentDate}>
+              {t('calendar.added_at', {
+                date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
+              })}
+            </span>
           </div>
-        </div>
-      )}
+        ))}
 
-      {/* Tõlketeenuse maksumus */}
-      {(isChangingDuration || isPastSlot) && (
+      {showCostSection && (
         <>
           <div className={classes.divider} />
           <div className={classes.sectionRow}>
@@ -289,19 +215,6 @@ const CalendarTranslatorBody: FC = () => {
                 <div className={classes.inputReadonly}>
                   {slot.assignment.billing_method}
                 </div>
-              </div>
-            )}
-            {isChangingDuration && (
-              <div className={classes.costGroup}>
-                <span className={classes.costLabel}>
-                  {t('calendar.add_note')}
-                </span>
-                <textarea
-                  className={classes.textarea}
-                  placeholder={t('calendar.write_text')}
-                  value={durationNote}
-                  onChange={(e) => onSetDurationNote(e.target.value)}
-                />
               </div>
             )}
           </div>

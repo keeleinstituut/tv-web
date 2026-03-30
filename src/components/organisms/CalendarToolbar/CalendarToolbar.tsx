@@ -7,7 +7,10 @@ import ViewWeekIcon from 'assets/icons/view_week.svg?react'
 import ViewMonthIcon from 'assets/icons/view_month.svg?react'
 import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
 import ChevronLeftIcon from 'assets/icons/chevron_left.svg?react'
-import { useCalendarNav, useCalendarPanel } from 'components/contexts/CalendarContext'
+import {
+  useCalendarNav,
+  useCalendarPanel,
+} from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import {
   useCalendarSearch,
@@ -30,7 +33,8 @@ const DURATION_OPTIONS = [
 
 const CalendarToolbar: FC = () => {
   const { t } = useTranslation()
-  const { view, setView, currentDate, setCurrentDate, setIsSearching } = useCalendarNav()
+  const { view, setView, currentDate, setCurrentDate, setIsSearching } =
+    useCalendarNav()
   const { focusedLanguageId, setFocusedLanguageId } = useCalendarPanel()
   const navigate = useNavigate()
   const { isTPM, isClient } = useCalendarRole()
@@ -103,7 +107,10 @@ const CalendarToolbar: FC = () => {
             setFocusedLanguageId(searchLangId)
           } else {
             showNotification(
-              { type: NotificationTypes.Warning, title: t('calendar.no_slots_found') },
+              {
+                type: NotificationTypes.Warning,
+                title: t('calendar.no_slots_found'),
+              },
               5000
             )
           }
@@ -145,10 +152,17 @@ const CalendarToolbar: FC = () => {
               <span className={classes.searchLabel}>
                 {t('calendar.language')}
               </span>
-              <div className={classNames(classes.searchInput, classes.searchInputSelect)}>
+              <div
+                className={classNames(
+                  classes.searchInput,
+                  classes.searchInputSelect
+                )}
+              >
                 <span className={classes.searchSelectValue}>
                   {searchLangId
-                    ? languages.find((l) => l.language.id === searchLangId)?.language.value.split('-')[0]
+                    ? languages
+                        .find((l) => l.language.id === searchLangId)
+                        ?.language.value.split('-')[0]
                     : t('calendar.select_language')}
                 </span>
                 <ChevronLeftIcon className={classes.searchChevron} />
@@ -200,7 +214,10 @@ const CalendarToolbar: FC = () => {
                 )}
               >
                 <span className={classes.searchSelectValue}>
-                  {t(DURATION_OPTIONS.find((o) => o.value === searchDuration)?.labelKey as never)}
+                  {t(
+                    DURATION_OPTIONS.find((o) => o.value === searchDuration)
+                      ?.labelKey as never
+                  )}
                 </span>
                 <ChevronLeftIcon className={classes.searchChevron} />
                 <select
@@ -229,9 +246,7 @@ const CalendarToolbar: FC = () => {
               onClick={handleSearch}
               disabled={!searchLangId || isSearching || isPastDate}
             >
-              {isSearching
-                ? t('calendar.searching')
-                : t('calendar.find_slot')}
+              {isSearching ? t('calendar.searching') : t('calendar.find_slot')}
             </button>
           </div>
         )}

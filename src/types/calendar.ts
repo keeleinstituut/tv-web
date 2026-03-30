@@ -249,6 +249,8 @@ export interface CalendarOrderDetail {
     name: string
     file_name: string
     size: number
+    /** From API `collection_name` — used for media download/delete. */
+    collection_name?: 'help' | 'source' | 'final'
   }>
   files_count: number
   files_accessible: boolean
@@ -290,6 +292,8 @@ export interface CreateOrderPayload {
   tag_ids?: string[]
   vendor_id?: string
   comment?: string
+  /** Calendar attachments — sent as `help_files[]` on POST /projects (multipart). */
+  help_files?: File[]
 }
 
 // --- Update order ---
@@ -381,6 +385,7 @@ export interface ApiAssignmentSummary {
     id: string
     ext_id: string
     project_id?: string
+    destination_language_classifier_value_id?: string
     project?: {
       id: string
       ext_id: string
@@ -684,6 +689,26 @@ function buildAssignmentFromEntry(
   }
 }
 
+function destinationLangIdsFromCalendarEntry(
+  e: ApiVendorCalendarEntry
+): string[] {
+  const id = e.assignment?.subProject?.destination_language_classifier_value_id
+  return id ? [id] : []
+}
+
+function appendClientBookingIfNew(
+  byLanguage: Record<string, BookedSlot[]>,
+  langId: string,
+  slot: BookedSlot,
+  dedupeAssignmentId: string
+) {
+  if (!byLanguage[langId]) byLanguage[langId] = []
+  const exists = byLanguage[langId].some(
+    (s) => s.type === 'assignment' && s.assignment?.id === dedupeAssignmentId
+  )
+  if (!exists) byLanguage[langId].push(slot)
+}
+
 export function transformDayResponse(
   api: ApiCalendarDayResponse,
   isTPM?: boolean
@@ -812,6 +837,43 @@ export function transformDayResponse(
       })
     }
   }
+
+  // When the API omits vendor busy windows in booked_slots (common for clients),
+  // calendar_entries + unassigned_projects still list the user's orders — merge
+  // them so rows show clickable assignment blocks instead of generic "Hõivatud".
+  const assignedProjectIds = new Set(
+    assignmentEntries
+      .map((e) => e.assignment?.subProject?.project?.id)
+      .filter((id): id is string => !!id)
+  )
+
+  for (const e of assignmentEntries) {
+    const built = buildAssignmentFromEntry(e)
+    if (!built || !e.assignment_id) continue
+    const slot: BookedSlot = {
+      start_at: e.start_at,
+      end_at: e.end_at,
+      type: 'assignment',
+      assignment: built,
+    }
+    for (const langId of destinationLangIdsFromCalendarEntry(e)) {
+      appendClientBookingIfNew(byLanguage, langId, slot, e.assignment_id)
+    }
+  }
+
+  for (const p of unassigned) {
+    if (assignedProjectIds.has(p.id)) continue
+    const slot: BookedSlot = {
+      start_at: p.event_start_at,
+      end_at: p.event_end_at ?? p.event_start_at,
+      type: 'assignment',
+      assignment: buildAssignmentFromUnassigned(p),
+    }
+    for (const langId of p.destination_language_classifier_value_ids ?? []) {
+      appendClientBookingIfNew(byLanguage, langId, slot, p.id)
+    }
+  }
+
   const availByLanguage: Record<
     string,
     Array<{ start_at: string; end_at: string }>

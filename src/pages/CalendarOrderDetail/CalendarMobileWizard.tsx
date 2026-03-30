@@ -36,7 +36,6 @@ const CalendarMobileWizard: FC = () => {
     isCreateMode,
     isTPM,
     isClient,
-    isTranslator,
     canModify,
     isPast,
     statusLabel,
@@ -53,8 +52,6 @@ const CalendarMobileWizard: FC = () => {
     setStartTimeInput,
     durationMinutes,
     setDurationMinutes,
-    durationEndTime,
-    setDurationEndTime,
     serviceType,
     setServiceType,
     address,
@@ -72,8 +69,6 @@ const CalendarMobileWizard: FC = () => {
     fileInputRef,
     isEditing,
     setIsEditing,
-    isChangingDuration,
-    setIsChangingDuration,
     isConfirmingCancel,
     setIsConfirmingCancel,
     cancelReason,
@@ -81,12 +76,11 @@ const CalendarMobileWizard: FC = () => {
     isCancelPending,
     cancelCountdown,
     canSaveEdits,
+    canCreateOrder,
     startIso,
     endIso,
-    setPendingComment,
     handleCreate,
     handleSave,
-    handleSaveDuration,
     handleCancelOrder,
     handleUndoCancel,
     resetFields,
@@ -116,10 +110,11 @@ const CalendarMobileWizard: FC = () => {
     isTPM
   )
 
-  // Reset step to 1 when entering edit mode
   useEffect(() => {
-    if (isEditing) setStep(1)
-  }, [isEditing])
+    if (!isEditing || isCreateMode) return
+    setAddingComment(false)
+    setCommentText('')
+  }, [isEditing, isCreateMode])
 
   // ─── Cancel pending screen ────────────────────────────────────────────────
 
@@ -164,9 +159,7 @@ const CalendarMobileWizard: FC = () => {
       <div className={classes.wizard}>
         <div className={classes.cancelScreen}>
           <p className={classes.cancelScreenPrompt}>
-            {isTranslator
-              ? t('calendar.cancel_booking_confirm')
-              : t('calendar.cancel_order_confirm')}
+            {t('calendar.cancel_order_confirm')}
           </p>
           <input
             type="text"
@@ -207,7 +200,11 @@ const CalendarMobileWizard: FC = () => {
 
   if (isCreateMode) {
     const step1Valid =
-      !!selectedDate && !!startTimeInput && (isEditing || !!languageId)
+      !!selectedDate &&
+      !!startTimeInput &&
+      !!languageId &&
+      referenceNumber.trim().length > 0 &&
+      (!isTPM || (!!clientInstitutionId && !!vendorId))
     const isLastStep = step === TOTAL_STEPS
 
     const renderProgress = () => (
@@ -491,7 +488,12 @@ const CalendarMobileWizard: FC = () => {
                   <div className={classes.fileActions}>
                     <button
                       className={classes.fileIconBtn}
-                      onClick={() => deleteFile(file.id)}
+                      onClick={() =>
+                        deleteFile({
+                          id: file.id,
+                          collection: file.collection_name ?? 'help',
+                        })
+                      }
                     >
                       ✕
                     </button>
@@ -586,10 +588,7 @@ const CalendarMobileWizard: FC = () => {
               <Button
                 appearance={AppearanceTypes.Primary}
                 className={classes.footerBtn}
-                onClick={() => {
-                  if (commentText.trim()) setPendingComment(commentText)
-                  handleSave()
-                }}
+                onClick={() => handleSave()}
                 disabled={isUpdating || !canSaveEdits}
               >
                 {isUpdating
@@ -601,7 +600,7 @@ const CalendarMobileWizard: FC = () => {
                 appearance={AppearanceTypes.Primary}
                 className={classes.footerBtn}
                 onClick={() => handleCreate(commentText)}
-                disabled={!step1Valid || isCreating}
+                disabled={!canCreateOrder || isCreating}
               >
                 {isCreating ? t('calendar.saving') : t('calendar.create_order')}
               </Button>
@@ -743,18 +742,12 @@ const CalendarMobileWizard: FC = () => {
 
       <div className={classes.viewField}>
         <span className={classes.viewLabel}>{t('calendar.duration')}</span>
-        {isEditing || isChangingDuration ? (
+        {isEditing ? (
           <select
             className={classes.fieldSelect}
             value={durationMinutes}
             onChange={(e) => {
               setDurationMinutes(Number(e.target.value))
-              if (isChangingDuration && startIso) {
-                const end = dayjs(startIso)
-                  .add(Number(e.target.value), 'minute')
-                  .toISOString()
-                setDurationEndTime(end)
-              }
             }}
           >
             {DURATION_OPTIONS.map(({ value, label }) => (
@@ -764,17 +757,7 @@ const CalendarMobileWizard: FC = () => {
             ))}
           </select>
         ) : (
-          <span className={classes.viewValue}>
-            {durationLabel}
-            {isTranslator && !isPast && (
-              <button
-                className={classes.changeDurationLink}
-                onClick={() => setIsChangingDuration(true)}
-              >
-                {t('calendar.change_duration')}
-              </button>
-            )}
-          </span>
+          <span className={classes.viewValue}>{durationLabel}</span>
         )}
       </div>
 
@@ -990,7 +973,7 @@ const CalendarMobileWizard: FC = () => {
         <p className={classes.emptyFiles}>{t('calendar.no_files_msg')}</p>
       )}
 
-      {(isEditing || !isPast) && (
+      {(isTPM || isClient) && !isEditing && !isPast && (
         <>
           {addingComment ? (
             <>
@@ -1061,6 +1044,7 @@ const CalendarMobileWizard: FC = () => {
                       downloadFile({
                         id: file.id,
                         file_name: file.file_name,
+                        collection: file.collection_name ?? 'help',
                       })
                     }
                   >
@@ -1069,7 +1053,12 @@ const CalendarMobileWizard: FC = () => {
                   {isEditing && (
                     <button
                       className={classes.fileIconBtn}
-                      onClick={() => deleteFile(file.id)}
+                      onClick={() =>
+                        deleteFile({
+                          id: file.id,
+                          collection: file.collection_name ?? 'help',
+                        })
+                      }
                     >
                       ✕
                     </button>
@@ -1176,14 +1165,6 @@ const CalendarMobileWizard: FC = () => {
           >
             {t('calendar.cancel_changes')}
           </Button>
-        ) : isChangingDuration ? (
-          <Button
-            appearance={AppearanceTypes.Secondary}
-            className={classes.footerBtn}
-            onClick={() => setIsChangingDuration(false)}
-          >
-            {t('calendar.cancel_changes')}
-          </Button>
         ) : canEdit ? (
           <Button
             appearance={AppearanceTypes.Secondary}
@@ -1191,14 +1172,6 @@ const CalendarMobileWizard: FC = () => {
             onClick={() => setIsConfirmingCancel(true)}
           >
             {t('calendar.cancel_order')}
-          </Button>
-        ) : isTranslator && !isPast ? (
-          <Button
-            appearance={AppearanceTypes.Secondary}
-            className={classes.footerBtn}
-            onClick={() => setIsConfirmingCancel(true)}
-          >
-            {t('calendar.cancel_booking')}
           </Button>
         ) : (
           <Button
@@ -1216,10 +1189,7 @@ const CalendarMobileWizard: FC = () => {
             <Button
               appearance={AppearanceTypes.Primary}
               className={classes.footerBtn}
-              onClick={() => {
-                if (commentText.trim()) setPendingComment(commentText)
-                handleSave()
-              }}
+              onClick={() => handleSave()}
               disabled={isUpdating || !canSaveEdits}
             >
               {isUpdating
@@ -1235,15 +1205,6 @@ const CalendarMobileWizard: FC = () => {
               {t('calendar.back_to_calendar')}
             </Button>
           )
-        ) : isChangingDuration ? (
-          <Button
-            appearance={AppearanceTypes.Primary}
-            className={classes.footerBtn}
-            onClick={handleSaveDuration}
-            disabled={isUpdating || !durationEndTime}
-          >
-            {isUpdating ? t('calendar.saving') : t('calendar.save_changes_btn')}
-          </Button>
         ) : (
           <Button
             appearance={AppearanceTypes.Primary}

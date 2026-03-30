@@ -117,7 +117,11 @@ const CalendarClientPastBody: FC = () => {
               <button
                 className={classes.fileLink}
                 onClick={() =>
-                  downloadFile({ id: f.id, file_name: f.file_name })
+                  downloadFile({
+                    id: f.id,
+                    file_name: f.file_name,
+                    collection: f.collection_name ?? 'help',
+                  })
                 }
               >
                 {f.name}
@@ -125,7 +129,11 @@ const CalendarClientPastBody: FC = () => {
               <DownloadIcon
                 className={classes.downloadIcon}
                 onClick={() =>
-                  downloadFile({ id: f.id, file_name: f.file_name })
+                  downloadFile({
+                    id: f.id,
+                    file_name: f.file_name,
+                    collection: f.collection_name ?? 'help',
+                  })
                 }
                 style={{ cursor: 'pointer' }}
               />

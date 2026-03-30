@@ -14,8 +14,6 @@ import {
   useCalendarAddFiles,
   useAddCalendarOrderComment,
 } from 'hooks/requests/useCalendar'
-import { apiClient } from 'api'
-import { endpoints } from 'api/endpoints'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useAuth } from 'components/contexts/AuthContext'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -60,7 +58,6 @@ const CalendarOrderDetail: FC = () => {
   // UI state
   const [metaOpen, setMetaOpen] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
-  const [isChangingDuration, setIsChangingDuration] = useState(false)
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
   const [isCancelled, setIsCancelled] = useState(false)
   const [isCancelPending, setIsCancelPending] = useState(false)
@@ -77,7 +74,6 @@ const CalendarOrderDetail: FC = () => {
   const [selectedDate, setSelectedDate] = useState('')
   const [startTimeInput, setStartTimeInput] = useState('')
   const [durationMinutes, setDurationMinutes] = useState(60)
-  const [durationEndTime, setDurationEndTime] = useState('')
   const [serviceType, setServiceType] = useState<'REMOTE' | 'ON_SITE'>(
     'ON_SITE'
   )
@@ -92,8 +88,15 @@ const CalendarOrderDetail: FC = () => {
   const [localFiles, setLocalFiles] = useState<File[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Pending comment (buffered for create / edit, posted directly in view mode)
+  // Pending comment (buffered for create, posted on submit)
   const [pendingComment, setPendingComment] = useState('')
+
+  useEffect(() => {
+    if (!isEditing || isCreateMode) return
+    setIsAddingComment(false)
+    setCommentText('')
+    setPendingComment('')
+  }, [isEditing, isCreateMode])
 
   useEffect(() => {
     if (!order) return
@@ -146,6 +149,15 @@ const CalendarOrderDetail: FC = () => {
         dayjs(startIso).add(durationMinutes, 'minute').toISOString()
       )
     : null
+
+  const canCreateOrder =
+    isCreateMode &&
+    Boolean(languageId) &&
+    referenceNumber.trim().length > 0 &&
+    Boolean(startIso) &&
+    Boolean(endIso) &&
+    address.trim().length > 0 &&
+    (!isTPM || (Boolean(clientInstitutionId) && Boolean(vendorId)))
 
   const slotMatchingParams =
     isTPM && (isCreateMode || isEditing) && startIso && endIso && languageId
@@ -234,7 +246,7 @@ const CalendarOrderDetail: FC = () => {
   }
 
   const handleCreate = (comment?: string) => {
-    if (!languageId || !startIso || !endIso) return
+    if (!canCreateOrder || !startIso || !endIso) return
     createOrder(
       {
         language_id: languageId,
@@ -250,20 +262,11 @@ const CalendarOrderDetail: FC = () => {
         tag_ids: domainIds.length ? domainIds : undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
         comment: comment || undefined,
+        help_files: localFiles.length ? localFiles : undefined,
       },
       {
         onSuccess: (data) => {
-          if (localFiles.length) {
-            apiClient.postForm(endpoints.MEDIA_BULK, {
-              files: localFiles.map((f) => ({
-                content: f,
-                reference_object_id: data.id,
-                reference_object_type: 'project',
-                collection: 'source',
-              })),
-            })
-            setLocalFiles([])
-          }
+          setLocalFiles([])
           showNotification({
             type: NotificationTypes.Success,
             title: t('notification.announcement'),
@@ -303,10 +306,6 @@ const CalendarOrderDetail: FC = () => {
             addFiles(localFiles)
             setLocalFiles([])
           }
-          if (pendingComment.trim()) {
-            addComment(pendingComment.trim())
-            setPendingComment('')
-          }
           setIsEditing(false)
           showNotification({
             type: NotificationTypes.Success,
@@ -323,27 +322,6 @@ const CalendarOrderDetail: FC = () => {
               content: t('calendar.vendor_not_available'),
             })
           }
-        },
-      }
-    )
-  }
-
-  const handleSaveDuration = () => {
-    if (!orderId || !order || !durationEndTime) return
-    const date = dayjs(order.start_at).format('YYYY-MM-DD')
-    const endIsoNew = toCalendarApiDateTime(
-      dayjs(`${date}T${durationEndTime}:00`).toISOString()
-    )
-    updateOrder(
-      { id: orderId, end_at: endIsoNew },
-      {
-        onSuccess: () => {
-          setIsChangingDuration(false)
-          showNotification({
-            type: NotificationTypes.Success,
-            title: t('notification.announcement'),
-            content: t('success.calendar_order_updated'),
-          })
         },
       }
     )
@@ -406,8 +384,6 @@ const CalendarOrderDetail: FC = () => {
     setStartTimeInput,
     durationMinutes,
     setDurationMinutes,
-    durationEndTime,
-    setDurationEndTime,
     serviceType,
     setServiceType,
     address,
@@ -427,8 +403,6 @@ const CalendarOrderDetail: FC = () => {
     fileInputRef,
     isEditing,
     setIsEditing,
-    isChangingDuration,
-    setIsChangingDuration,
     isConfirmingCancel,
     setIsConfirmingCancel,
     cancelReason,
@@ -449,6 +423,7 @@ const CalendarOrderDetail: FC = () => {
     isPostingComment,
     hasFieldChanges,
     canSaveEdits,
+    canCreateOrder,
     isCreating,
     isUpdating,
     isCancelling,
@@ -457,7 +432,6 @@ const CalendarOrderDetail: FC = () => {
     cancelCountdown,
     handleCreate,
     handleSave,
-    handleSaveDuration,
     handleCancelOrder,
     handleUndoCancel,
     resetFields,

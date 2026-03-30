@@ -125,8 +125,8 @@ const MenuItems: FC<MenuItemsProps> = ({
 const SideBar: FC = () => {
   const { t } = useTranslation()
   const location = useLocation()
-  const [navCollapsed, setNavCollapsed] = useState(
-    () => location.pathname.startsWith('/calendar')
+  const [navCollapsed, setNavCollapsed] = useState(() =>
+    location.pathname.startsWith('/calendar')
   )
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
@@ -74,8 +74,6 @@ const CalendarOrderViewBody: FC = () => {
     deleteFile,
     isAddingFiles,
     isDeletingFile,
-    pendingComment,
-    setPendingComment,
     addComment,
     isPostingComment,
     isTPM,
@@ -90,6 +88,10 @@ const CalendarOrderViewBody: FC = () => {
   const [editingCommentText, setEditingCommentText] = useState('')
   const { mutate: updateComment, isPending: isUpdatingComment } =
     useUpdateCalendarOrderComment(order?.id)
+
+  useEffect(() => {
+    if (isEditing) setIsAddingComment(false)
+  }, [isEditing])
 
   const { users: clients } = useFetchInfiniteProjectPerson(
     undefined,
@@ -561,7 +563,11 @@ const CalendarOrderViewBody: FC = () => {
               <button
                 className={classes.fileLink}
                 onClick={() =>
-                  downloadFile({ id: f.id, file_name: f.file_name })
+                  downloadFile({
+                    id: f.id,
+                    file_name: f.file_name,
+                    collection: f.collection_name ?? 'help',
+                  })
                 }
               >
                 {f.name}
@@ -569,7 +575,11 @@ const CalendarOrderViewBody: FC = () => {
               <DownloadIcon
                 className={classes.downloadIcon}
                 onClick={() =>
-                  downloadFile({ id: f.id, file_name: f.file_name })
+                  downloadFile({
+                    id: f.id,
+                    file_name: f.file_name,
+                    collection: f.collection_name ?? 'help',
+                  })
                 }
                 style={{ cursor: 'pointer' }}
               />
@@ -577,7 +587,12 @@ const CalendarOrderViewBody: FC = () => {
                 <button
                   className={classes.fileIconBtn}
                   disabled={isDeletingFile}
-                  onClick={() => deleteFile(f.id)}
+                  onClick={() =>
+                    deleteFile({
+                      id: f.id,
+                      collection: f.collection_name ?? 'help',
+                    })
+                  }
                 >
                   <DeleteIcon style={{ width: 24, height: 24 }} />
                 </button>
@@ -606,50 +621,36 @@ const CalendarOrderViewBody: FC = () => {
             />
           </button>
         )}
-        {!isAddingComment && !(isTPM && isCancelled) && !isPastSlot && (
-          <button
-            className={classes.sectionBtn}
-            onClick={() => setIsAddingComment(true)}
-          >
-            {t('calendar.add_short')}
-            <AddIcon style={{ width: 16, height: 16 }} />
-          </button>
-        )}
+        {!isAddingComment &&
+          !(isTPM && isCancelled) &&
+          !isPastSlot &&
+          !isEditing && (
+            <button
+              className={classes.sectionBtn}
+              onClick={() => setIsAddingComment(true)}
+            >
+              {t('calendar.add_short')}
+              <AddIcon style={{ width: 16, height: 16 }} />
+            </button>
+          )}
       </div>
-      {!isAddingComment && isEditing && pendingComment && (
-        <div className={classes.commentContent}>
-          <span className={classes.commentText}>{pendingComment}</span>
-        </div>
-      )}
-      {isAddingComment && (
+      {isAddingComment && !isEditing && (
         <div className={classes.commentForm}>
           <textarea
             className={classes.textarea}
             placeholder={t('calendar.write_text')}
-            value={isEditing ? pendingComment : commentText}
-            onChange={(e) =>
-              isEditing
-                ? setPendingComment(e.target.value)
-                : setCommentText(e.target.value)
-            }
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
             autoFocus
           />
           <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
             <Button
               appearance={AppearanceTypes.Primary}
-              disabled={
-                isEditing
-                  ? !pendingComment.trim()
-                  : !commentText.trim() || isPostingComment
-              }
+              disabled={!commentText.trim() || isPostingComment}
               onClick={() => {
-                if (isEditing) {
-                  setIsAddingComment(false)
-                } else {
-                  addComment(commentText.trim())
-                  setCommentText('')
-                  setIsAddingComment(false)
-                }
+                addComment(commentText.trim())
+                setCommentText('')
+                setIsAddingComment(false)
               }}
             >
               {t('calendar.save')}
@@ -658,8 +659,7 @@ const CalendarOrderViewBody: FC = () => {
               appearance={AppearanceTypes.Secondary}
               onClick={() => {
                 setIsAddingComment(false)
-                if (isEditing) setPendingComment('')
-                else setCommentText('')
+                setCommentText('')
               }}
             >
               {t('calendar.cancel')}

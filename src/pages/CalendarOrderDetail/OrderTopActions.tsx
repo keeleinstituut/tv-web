@@ -10,24 +10,19 @@ const OrderTopActions: FC = () => {
   const {
     order,
     isCreateMode,
-    isTranslator,
     canModify,
     isEditing,
     canSaveEdits,
-    isChangingDuration,
     isConfirmingCancel,
     setIsConfirmingCancel,
     cancelReason,
     setCancelReason,
     setIsEditing,
-    durationEndTime,
     isUpdating,
     isCancelling,
-    isPast,
     isCancelPending,
     cancelCountdown,
     handleSave,
-    handleSaveDuration,
     handleCancelOrder,
     handleUndoCancel,
     resetFields,
@@ -92,26 +87,6 @@ const OrderTopActions: FC = () => {
           </Button>
         </>
       )}
-      {isTranslator &&
-        !isPast &&
-        !isChangingDuration &&
-        !isConfirmingCancel && (
-          <Button
-            appearance={AppearanceTypes.Secondary}
-            onClick={() => setIsConfirmingCancel(true)}
-          >
-            {t('calendar.cancel_booking')}
-          </Button>
-        )}
-      {isTranslator && isChangingDuration && (
-        <Button
-          appearance={AppearanceTypes.Primary}
-          onClick={handleSaveDuration}
-          disabled={isUpdating || !durationEndTime}
-        >
-          {isUpdating ? t('calendar.saving') : t('calendar.save_changes_btn')}
-        </Button>
-      )}
       {canModify && !isEditing && !isConfirmingCancel && (
         <>
           <Button
@@ -132,9 +107,7 @@ const OrderTopActions: FC = () => {
         <>
           <div className={classes.cancelPromptGroup}>
             <span className={classes.cancelPrompt}>
-              {isTranslator
-                ? t('calendar.cancel_booking_confirm')
-                : t('calendar.cancel_order_confirm')}
+              {t('calendar.cancel_order_confirm')}
             </span>
             <input
               type="text"

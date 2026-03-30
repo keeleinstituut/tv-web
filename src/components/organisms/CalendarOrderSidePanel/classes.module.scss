@@ -236,7 +236,6 @@ $footer-height: 64px;
   cursor: pointer;
   color: $color-primary;
   font-size: $font-size-14;
-  padding: 8px;
   border-radius: $border-radius-4;
   display: flex;
   align-items: center;
@@ -416,7 +415,6 @@ $footer-height: 64px;
   margin-left: 4px;
 }
 
-
 // --- Duration stepper ---
 
 .durationGroup {
@@ -478,7 +476,6 @@ $footer-height: 64px;
   gap: 16px;
   padding: 8px 24px 24px;
 }
-
 
 .fileItem {
   display: flex;

@@ -44,8 +44,6 @@ export interface SidePanelContextValue {
   setVendorId: (v: string) => void
   durationMinutes: number
   setDurationMinutes: (v: number | ((prev: number) => number)) => void
-  durationNote: string
-  setDurationNote: (v: string) => void
 
   // UI state
   isEditing: boolean
@@ -58,7 +56,6 @@ export interface SidePanelContextValue {
   cancelCountdown: number
   isMetaOpen: boolean
   setIsMetaOpen: (v: boolean) => void
-  isChangingDuration: boolean
   vendorName: string | undefined
 
   // Validation
@@ -76,8 +73,15 @@ export interface SidePanelContextValue {
 
   // File actions
   addFiles: (files: File[]) => void
-  deleteFile: (fileId: string) => void
-  downloadFile: (file: { id: string; file_name: string }) => void
+  deleteFile: (arg: {
+    id: string
+    collection?: 'help' | 'source' | 'final'
+  }) => void
+  downloadFile: (file: {
+    id: string
+    file_name: string
+    collection?: 'help' | 'source' | 'final'
+  }) => void
   isAddingFiles: boolean
   isDeletingFile: boolean
   pendingFiles: File[]
@@ -96,9 +100,6 @@ export interface SidePanelContextValue {
   handleUndoCancel: () => void
   handleDeclineCancel: () => void
   isDecliningCancel: boolean
-  handleStartChangeDuration: () => void
-  handleCancelChangeDuration: () => void
-  handleSaveDuration: () => void
   closeSidePanel: () => void
 }
 

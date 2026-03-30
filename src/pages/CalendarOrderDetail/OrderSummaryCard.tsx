@@ -42,9 +42,6 @@ const SummaryFields: FC = () => {
     isTPM,
     isTranslator,
     isEditing,
-    isChangingDuration,
-    setIsChangingDuration,
-    isUpdating,
     languages,
     vendors,
     selectedDate,
@@ -53,8 +50,6 @@ const SummaryFields: FC = () => {
     setStartTimeInput,
     durationMinutes,
     setDurationMinutes,
-    durationEndTime,
-    setDurationEndTime,
     clientInstitutionId,
     setClientInstitutionId,
     referenceNumber,
@@ -66,10 +61,8 @@ const SummaryFields: FC = () => {
     startIso,
     endIso,
     startDt,
-    endDt,
     durationLabel,
     formatMins,
-    handleSaveDuration,
   } = useOrderDetail()
 
   if (isCreateMode) {
@@ -77,7 +70,10 @@ const SummaryFields: FC = () => {
       <>
         {isTPM && (
           <div className={classes.field}>
-            <span className={classes.fieldLabel}>{t('calendar.client')}</span>
+            <span className={classes.fieldLabel}>
+              {t('calendar.client')}
+              <span className={classes.requiredMark}>*</span>
+            </span>
             <ClientSelect
               value={clientInstitutionId}
               onChange={setClientInstitutionId}
@@ -88,6 +84,7 @@ const SummaryFields: FC = () => {
         <div className={classes.field}>
           <span className={classes.fieldLabel}>
             {t('calendar.reference_number')}
+            <span className={classes.requiredMark}>*</span>
           </span>
           <input
             className={classes.editInput}
@@ -97,7 +94,10 @@ const SummaryFields: FC = () => {
           />
         </div>
         <div className={classes.field}>
-          <span className={classes.fieldLabel}>{t('calendar.language')}</span>
+          <span className={classes.fieldLabel}>
+            {t('calendar.language')}
+            <span className={classes.requiredMark}>*</span>
+          </span>
           <select
             className={classes.editSelect}
             value={languageId}
@@ -126,6 +126,7 @@ const SummaryFields: FC = () => {
         <div className={classes.field}>
           <span className={classes.fieldLabel}>
             {t('calendar.date_and_start_time')}
+            <span className={classes.requiredMark}>*</span>
           </span>
           <div className={classes.timeRow}>
             <input
@@ -143,7 +144,10 @@ const SummaryFields: FC = () => {
           </div>
         </div>
         <div className={classes.field}>
-          <span className={classes.fieldLabel}>{t('calendar.duration')}</span>
+          <span className={classes.fieldLabel}>
+            {t('calendar.duration')}
+            <span className={classes.requiredMark}>*</span>
+          </span>
           <div className={classes.durationStepper}>
             <button
               className={classes.stepperBtn}
@@ -166,6 +170,7 @@ const SummaryFields: FC = () => {
           <div className={classes.field}>
             <span className={classes.fieldLabel}>
               {t('calendar.translator')}
+              <span className={classes.requiredMark}>*</span>
             </span>
             <select
               className={classes.editSelect}
@@ -201,44 +206,10 @@ const SummaryFields: FC = () => {
             {startDt!.format('DD.MM.YYYY')} / {startDt!.format('HH:mm')}
           </span>
         </div>
-        {isChangingDuration ? (
-          <div className={classes.field}>
-            <span className={classes.fieldLabel}>
-              {t('calendar.duration_until')} *
-            </span>
-            <input
-              type="time"
-              className={classes.editInputNarrow}
-              value={durationEndTime}
-              onChange={(e) => setDurationEndTime(e.target.value)}
-              autoFocus
-            />
-            <div style={{ marginTop: 8 }}>
-              <Button
-                appearance={AppearanceTypes.Primary}
-                onClick={handleSaveDuration}
-                disabled={isUpdating || !durationEndTime}
-              >
-                {isUpdating ? t('calendar.saving') : t('calendar.save')}
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className={classes.field}>
-            <span className={classes.fieldLabel}>{t('calendar.duration')}</span>
-            <span className={classes.fieldValue}>{durationLabel}</span>
-            <Button
-              appearance={AppearanceTypes.Secondary}
-              onClick={() => {
-                setDurationEndTime(endDt ? endDt.format('HH:mm') : '')
-                setIsChangingDuration(true)
-              }}
-              disabled={order?.status === 'NEW'}
-            >
-              {t('calendar.change_duration_btn')}
-            </Button>
-          </div>
-        )}
+        <div className={classes.field}>
+          <span className={classes.fieldLabel}>{t('calendar.duration')}</span>
+          <span className={classes.fieldValue}>{durationLabel}</span>
+        </div>
       </>
     )
   }
@@ -385,9 +356,7 @@ const OrderSummaryCard: FC = () => {
     fmt,
     handleCreate,
     pendingComment,
-    languageId,
-    startIso,
-    endIso,
+    canCreateOrder,
   } = useOrderDetail()
 
   return (
@@ -400,7 +369,7 @@ const OrderSummaryCard: FC = () => {
               <Button
                 appearance={AppearanceTypes.Primary}
                 onClick={() => handleCreate(pendingComment || undefined)}
-                disabled={!languageId || !startIso || !endIso || isCreating}
+                disabled={!canCreateOrder || isCreating}
               >
                 {isCreating ? t('calendar.saving') : t('calendar.create_order')}
               </Button>
@@ -424,6 +393,12 @@ const OrderSummaryCard: FC = () => {
           </>
         )}
       </div>
+
+      {isCreateMode && (
+        <p className={classes.requiredNotice}>
+          {t('calendar.required_notice')}
+        </p>
+      )}
 
       <div className={classes.summaryGrid}>
         <div className={classes.summaryLeft}>

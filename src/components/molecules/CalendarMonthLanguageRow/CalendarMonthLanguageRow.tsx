@@ -70,9 +70,8 @@ const MonthSummaryRow: FC<{
 }) => {
   const { t } = useTranslation()
 
-  const weekHours = monthSlots
-    ? weeks.map((w) => getWeekHours(monthSlots, w))
-    : []
+  const weekHours =
+    !isTPM && monthSlots ? weeks.map((w) => getWeekHours(monthSlots, w)) : []
   const totalHours = weekHours.reduce((s, h) => s + h, 0)
 
   return (
@@ -108,35 +107,53 @@ const MonthSummaryRow: FC<{
           </button>
         )}
       </div>
-      {weeks.map((_, i) => (
-        <div
-          key={i}
-          className={classes.weekCell}
-          style={{ width: weekColWidth, minWidth: weekColWidth }}
-        >
-          {monthSlots && weekHours[i] > 0 && (
-            <div className={classes.weekCellAvailable}>
-              <ClockIcon className={classes.cellIcon} />
-              <span className={classes.cellLabel}>
-                {formatMinutes(weekHours[i] * 60)}
-              </span>
+      {isTPM ? (
+        <>
+          {weeks.map((_, i) => (
+            <div
+              key={i}
+              className={classes.weekCell}
+              style={{ width: weekColWidth, minWidth: weekColWidth }}
+            />
+          ))}
+          <div
+            className={classes.totalCell}
+            style={{ width: weekColWidth, minWidth: weekColWidth }}
+          />
+        </>
+      ) : (
+        <>
+          {weeks.map((_, i) => (
+            <div
+              key={i}
+              className={classes.weekCell}
+              style={{ width: weekColWidth, minWidth: weekColWidth }}
+            >
+              {monthSlots && weekHours[i] > 0 && (
+                <div className={classes.weekCellAvailable}>
+                  <ClockIcon className={classes.cellIcon} />
+                  <span className={classes.cellLabel}>
+                    {formatMinutes(weekHours[i] * 60)}
+                  </span>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
-      <div
-        className={classes.totalCell}
-        style={{ width: weekColWidth, minWidth: weekColWidth }}
-      >
-        {monthSlots && totalHours > 0 && (
-          <div className={classes.weekCellAvailable}>
-            <ClockIcon className={classes.cellIcon} />
-            <span className={classes.cellLabel}>
-              {formatMinutes(totalHours * 60)}
-            </span>
+          ))}
+          <div
+            className={classes.totalCell}
+            style={{ width: weekColWidth, minWidth: weekColWidth }}
+          >
+            {monthSlots && totalHours > 0 && (
+              <div className={classes.weekCellAvailable}>
+                <ClockIcon className={classes.cellIcon} />
+                <span className={classes.cellLabel}>
+                  {formatMinutes(totalHours * 60)}
+                </span>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   )
 }

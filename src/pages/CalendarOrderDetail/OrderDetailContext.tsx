@@ -41,8 +41,6 @@ export interface OrderDetailContextValue {
   setStartTimeInput: (v: string) => void
   durationMinutes: number
   setDurationMinutes: (v: number | ((prev: number) => number)) => void
-  durationEndTime: string
-  setDurationEndTime: (v: string) => void
   serviceType: 'REMOTE' | 'ON_SITE'
   setServiceType: (v: 'REMOTE' | 'ON_SITE') => void
   address: string
@@ -66,8 +64,6 @@ export interface OrderDetailContextValue {
   // UI state
   isEditing: boolean
   setIsEditing: (v: boolean) => void
-  isChangingDuration: boolean
-  setIsChangingDuration: (v: boolean) => void
   isConfirmingCancel: boolean
   setIsConfirmingCancel: (v: boolean) => void
   cancelReason: string
@@ -93,6 +89,8 @@ export interface OrderDetailContextValue {
   hasFieldChanges: boolean
   /** Save should be enabled when fields changed and/or files are staged. */
   canSaveEdits: boolean
+  /** Create order: all required fields filled (desktop + mobile create). */
+  canCreateOrder: boolean
   // Async flags
   isCreating: boolean
   isUpdating: boolean
@@ -104,7 +102,6 @@ export interface OrderDetailContextValue {
   // Handlers
   handleCreate: (comment?: string) => void
   handleSave: () => void
-  handleSaveDuration: () => void
   handleCancelOrder: () => void
   handleUndoCancel: () => void
   resetFields: () => void

@@ -37,15 +37,22 @@ const OrderDetailsCard: FC = () => {
   const { mutate: deleteFile } = useCalendarDeleteFile(order?.id)
 
   const isServiceEditable = isCreateMode || isEditing
-  const activeServiceType = isServiceEditable ? serviceType : order?.service_type ?? 'on-site'
+  const activeServiceType = isServiceEditable
+    ? serviceType
+    : (order?.service_type ?? 'on-site')
 
   return (
     <div className={classes.card}>
-      <h2 className={classes.sectionTitle}>{t('calendar.order_details_title')}</h2>
+      <h2 className={classes.sectionTitle}>
+        {t('calendar.order_details_title')}
+      </h2>
       <div className={classes.detailsGrid}>
         <div className={classes.detailsLeft}>
           <div className={classes.field}>
-            <span className={classes.fieldLabel}>{t('calendar.order_way')}</span>
+            <span className={classes.fieldLabel}>
+              {t('calendar.order_way')}
+              {isCreateMode && <span className={classes.requiredMark}>*</span>}
+            </span>
             {isServiceEditable ? (
               <div className={classes.serviceToggle}>
                 <button
@@ -88,6 +95,7 @@ const OrderDetailsCard: FC = () => {
               {activeServiceType === 'ON_SITE'
                 ? t('calendar.location')
                 : t('calendar.meeting_link')}
+              {isCreateMode && <span className={classes.requiredMark}>*</span>}
             </span>
             {isServiceEditable ? (
               <input
@@ -115,7 +123,9 @@ const OrderDetailsCard: FC = () => {
               )
             ) : (
               <span className={classes.fieldValue}>
-                {order!.service_type === 'ON_SITE' ? order!.location : order!.meeting_link}
+                {order!.service_type === 'ON_SITE'
+                  ? order!.location
+                  : order!.meeting_link}
               </span>
             )}
           </div>
@@ -139,14 +149,15 @@ const OrderDetailsCard: FC = () => {
               </div>
             ) : null}
           </div>
-
         </div>
 
         <div className={classes.detailsRight}>
           <div className={classes.filesSection}>
             <div className={classes.filesSectionHeader}>
               <span className={classes.filesSectionTitle}>
-                {isClient ? t('calendar.files_and_links') : t('calendar.attachments')}
+                {isClient
+                  ? t('calendar.files_and_links')
+                  : t('calendar.attachments')}
               </span>
               {(isCreateMode || isEditing) && (isTPM || isClient) && (
                 <>
@@ -169,7 +180,8 @@ const OrderDetailsCard: FC = () => {
                 </>
               )}
             </div>
-            {((!isCreateMode && (order!.source_files?.length ?? 0) > 0) || localFiles.length > 0) ? (
+            {(!isCreateMode && (order!.source_files?.length ?? 0) > 0) ||
+            localFiles.length > 0 ? (
               <div className={classes.fileTable}>
                 <div className={classes.fileTableHeader}>
                   <span>{t('calendar.file_list_header')}</span>
@@ -184,7 +196,11 @@ const OrderDetailsCard: FC = () => {
                           className={classes.fileIconBtn}
                           title={t('calendar.download_file')}
                           onClick={() =>
-                            downloadFile({ id: file.id, file_name: file.file_name })
+                            downloadFile({
+                              id: file.id,
+                              file_name: file.file_name,
+                              collection: file.collection_name ?? 'help',
+                            })
                           }
                         >
                           ↓
@@ -193,7 +209,12 @@ const OrderDetailsCard: FC = () => {
                           <button
                             className={classes.fileIconBtn}
                             title={t('calendar.remove_file')}
-                            onClick={() => deleteFile(file.id)}
+                            onClick={() =>
+                              deleteFile({
+                                id: file.id,
+                                collection: file.collection_name ?? 'help',
+                              })
+                            }
                           >
                             ✕
                           </button>
@@ -211,7 +232,11 @@ const OrderDetailsCard: FC = () => {
                       <button
                         className={classes.fileIconBtn}
                         title={t('calendar.remove_file')}
-                        onClick={() => setLocalFiles((prev) => prev.filter((_, j) => j !== i))}
+                        onClick={() =>
+                          setLocalFiles((prev) =>
+                            prev.filter((_, j) => j !== i)
+                          )
+                        }
                       >
                         ✕
                       </button>

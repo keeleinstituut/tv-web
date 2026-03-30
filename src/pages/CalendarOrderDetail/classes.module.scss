@@ -93,6 +93,17 @@
   color: $cal-label;
 }
 
+.requiredNotice {
+  font-size: $font-size-14;
+  color: $cal-text;
+  margin: 0;
+}
+
+.requiredMark {
+  color: #d93025;
+  margin-left: 2px;
+}
+
 .fieldValue {
   font-size: $font-size-16;
   font-weight: $font-weight-bold;

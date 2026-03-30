@@ -16,7 +16,6 @@ const OrderCommentsCard: FC = () => {
     isCreateMode,
     isTPM,
     isClient,
-    isTranslator,
     isPast,
     isEditing,
     isAddingComment,
@@ -39,7 +38,7 @@ const OrderCommentsCard: FC = () => {
   const handleSaveComment = () => {
     const text = commentText.trim()
     if (!text) return
-    if (isCreateMode || isEditing) {
+    if (isCreateMode) {
       setPendingComment(text)
     } else {
       addComment(text)
@@ -172,16 +171,15 @@ const OrderCommentsCard: FC = () => {
               </span>
             </div>
           )}
-          {(isCreateMode || isEditing || !isPast) &&
-            (isTPM || isClient || isTranslator) && (
-              <Button
-                style={{ width: '209px' }}
-                appearance={AppearanceTypes.Secondary}
-                onClick={() => setIsAddingComment(true)}
-              >
-                {t('calendar.add_comment_btn')}
-              </Button>
-            )}
+          {(isCreateMode || (!isEditing && !isPast)) && (isTPM || isClient) && (
+            <Button
+              style={{ width: '209px' }}
+              appearance={AppearanceTypes.Secondary}
+              onClick={() => setIsAddingComment(true)}
+            >
+              {t('calendar.add_comment_btn')}
+            </Button>
+          )}
         </>
       )}
     </div>

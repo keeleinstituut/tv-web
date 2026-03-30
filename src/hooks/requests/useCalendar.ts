@@ -331,34 +331,56 @@ export const useFetchSlotMatching = (
   return { isLoading, isError, vendors: data ?? [] }
 }
 
+function buildCalendarProjectCreateFormData(
+  payload: CreateOrderPayload
+): FormData {
+  const fd = new FormData()
+  fd.append('is_calendar_project', '1')
+  fd.append('destination_language_classifier_value_ids[]', payload.language_id)
+  fd.append('event_start_at', toCalendarApiDateTime(payload.start_at))
+  fd.append('event_end_at', toCalendarApiDateTime(payload.end_at))
+  fd.append('service_type', payload.service_type)
+  if (payload.reference_number)
+    fd.append('reference_number', payload.reference_number)
+  if (payload.location) fd.append('location', payload.location)
+  if (payload.meeting_link) fd.append('meeting_link', payload.meeting_link)
+  if (payload.tag_ids?.length) {
+    for (const tagId of payload.tag_ids) {
+      fd.append('tags[]', tagId)
+    }
+  }
+  if (payload.client_institution_id) {
+    fd.append('client_institution_user_id', payload.client_institution_id)
+  }
+  if (payload.vendor_id) {
+    fd.append('candidate_vendor_id', payload.vendor_id)
+  }
+  if (payload.comment) {
+    fd.append('comment', payload.comment)
+  }
+  for (const file of payload.help_files ?? []) {
+    fd.append('help_files[]', file)
+    fd.append('help_file_types[]', 'REFERENCE_FILE')
+  }
+  return fd
+}
+
 export const useCreateCalendarOrder = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (payload: CreateOrderPayload) =>
       apiClient
-        .post(endpoints.PROJECTS, {
-          is_calendar_project: true,
-          destination_language_classifier_value_ids: [payload.language_id],
-          event_start_at: toCalendarApiDateTime(payload.start_at),
-          event_end_at: toCalendarApiDateTime(payload.end_at),
-          service_type: payload.service_type,
-          ...(payload.reference_number
-            ? { reference_number: payload.reference_number }
-            : {}),
-          ...(payload.location ? { location: payload.location } : {}),
-          ...(payload.meeting_link
-            ? { meeting_link: payload.meeting_link }
-            : {}),
-          ...(payload.tag_ids?.length ? { tags: payload.tag_ids } : {}),
-          ...(payload.client_institution_id
-            ? { client_institution_user_id: payload.client_institution_id }
-            : {}),
-          ...(payload.vendor_id
-            ? { candidate_vendor_id: payload.vendor_id }
-            : {}),
-          ...(payload.comment ? { comment: payload.comment } : {}),
-        })
-        .then((res: { data: { id: string; created_at: string } }) => res.data),
+        .post(endpoints.PROJECTS, buildCalendarProjectCreateFormData(payload))
+        .then((body: unknown) => {
+          const b = body as {
+            data?: { id: string; created_at?: string }
+            id?: string
+            created_at?: string
+          }
+          if (b.data?.id) return b.data
+          if (b.id) return { id: b.id, created_at: b.created_at ?? '' }
+          throw new Error('Invalid create project response')
+        }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
       queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
@@ -517,6 +539,24 @@ export const useUpdateCalendarOrderComment = (
   })
 }
 
+function mapProjectMediaList(
+  raw: unknown
+): NonNullable<CalendarOrderDetail['source_files']> {
+  if (!Array.isArray(raw)) return []
+  return raw.map((item) => {
+    const f = item as Record<string, unknown>
+    const cn = f.collection_name as string | undefined
+    return {
+      id: String(f.id ?? ''),
+      name: String(f.name ?? ''),
+      file_name: String(f.file_name ?? ''),
+      size: Number(f.size ?? 0),
+      collection_name:
+        cn === 'help' || cn === 'source' || cn === 'final' ? cn : undefined,
+    }
+  })
+}
+
 const transformProjectDetail = (
   raw: Record<string, unknown>
 ): CalendarOrderDetail => {
@@ -600,7 +640,10 @@ const transformProjectDetail = (
         }
       : undefined,
     tags: raw.tags as CalendarOrderDetail['tags'],
-    source_files: raw.source_files as CalendarOrderDetail['source_files'],
+    source_files: [
+      ...mapProjectMediaList(raw.help_files),
+      ...mapProjectMediaList(raw.source_files),
+    ],
     files_count: (raw.files_count as number) ?? 0,
     files_accessible: (raw.files_accessible as boolean) ?? false,
     project_comments:
@@ -632,7 +675,8 @@ export const useCalendarAddFiles = (projectId: string | null | undefined) => {
           content: f,
           reference_object_id: projectId,
           reference_object_type: 'project',
-          collection: 'source',
+          collection: 'help',
+          help_file_type: 'REFERENCE_FILE' as const,
         })),
       })
     },
@@ -647,15 +691,21 @@ export const useCalendarAddFiles = (projectId: string | null | undefined) => {
 export const useCalendarDeleteFile = (projectId: string | null | undefined) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (fileId: string) => {
+    mutationFn: ({
+      id,
+      collection = 'help',
+    }: {
+      id: string
+      collection?: 'help' | 'source' | 'final'
+    }) => {
       if (!projectId) return Promise.reject(new Error('no project id'))
       return apiClient.delete(endpoints.MEDIA_BULK, {
         files: [
           {
-            id: fileId,
+            id,
             reference_object_id: projectId,
             reference_object_type: 'project',
-            collection: 'source',
+            collection,
           },
         ],
       })
@@ -674,7 +724,14 @@ export const useCalendarDownloadFile = ({
   projectId: string | null | undefined
 }) => {
   return useMutation({
-    mutationFn: ({ id }: { id: string; file_name: string }) => {
+    mutationFn: ({
+      id,
+      collection = 'help',
+    }: {
+      id: string
+      file_name: string
+      collection?: 'help' | 'source' | 'final'
+    }) => {
       if (!projectId) return Promise.reject(new Error('no project id'))
       return apiClient.get(
         endpoints.MEDIA_DOWNLOAD,
@@ -682,7 +739,7 @@ export const useCalendarDownloadFile = ({
           id,
           reference_object_id: projectId,
           reference_object_type: 'project',
-          collection: 'source',
+          collection,
         },
         { responseType: 'blob' }
       )
