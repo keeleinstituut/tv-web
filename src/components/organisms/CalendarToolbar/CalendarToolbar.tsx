@@ -35,7 +35,7 @@ const CalendarToolbar: FC = () => {
   const { t } = useTranslation()
   const { view, setView, currentDate, setCurrentDate, setIsSearching } =
     useCalendarNav()
-  const { focusedLanguageId, setFocusedLanguageId } = useCalendarPanel()
+  const { setFocusedLanguageId } = useCalendarPanel()
   const navigate = useNavigate()
   const { isTPM, isClient } = useCalendarRole()
   const canSearch = isTPM || isClient
@@ -123,10 +123,6 @@ const CalendarToolbar: FC = () => {
     setMoreOpen(false)
     navigate('/calendar/new-order')
   }
-
-  const focusedLang = focusedLanguageId
-    ? languages.find((l) => l.language.id === focusedLanguageId)
-    : null
 
   return (
     <div className={classes.toolbar}>

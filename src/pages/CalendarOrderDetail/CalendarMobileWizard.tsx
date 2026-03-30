@@ -13,20 +13,15 @@ import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import { useAuth } from 'components/contexts/AuthContext'
 import EditIcon from 'assets/icons/edit.svg?react'
 import { useOrderDetail } from './OrderDetailContext'
+import {
+  CALENDAR_MOBILE_DURATION_OPTIONS as DURATION_OPTIONS,
+  CALENDAR_MOBILE_WIZARD_TOTAL_STEPS as TOTAL_STEPS,
+} from './calendarMobileWizardConstants'
+import {
+  CalendarMobileWizardCancelConfirmScreen,
+  CalendarMobileWizardCancelPendingScreen,
+} from './CalendarMobileWizardCancelScreens'
 import classes from './mobile.module.scss'
-
-const TOTAL_STEPS = 4
-
-const DURATION_OPTIONS = [
-  { value: 30, label: 'calendar.up_to_30min' },
-  { value: 60, label: 'calendar.up_to_1h' },
-  { value: 90, label: 'calendar.up_to_1h30min' },
-  { value: 120, label: 'calendar.up_to_2h' },
-  { value: 150, label: 'calendar.up_to_2h30min' },
-  { value: 180, label: 'calendar.up_to_3h' },
-  { value: 240, label: 'calendar.up_to_4h' },
-  { value: 300, label: 'calendar.up_to_5h' },
-]
 
 const CalendarMobileWizard: FC = () => {
   const { t } = useTranslation()
@@ -120,79 +115,25 @@ const CalendarMobileWizard: FC = () => {
 
   if (isCancelPending) {
     return (
-      <div className={classes.wizard}>
-        <div className={classes.cancelScreen}>
-          <h2 className={classes.cancelScreenTitle}>
-            {t('calendar.cancel_pending_title')}
-          </h2>
-          <p className={classes.cancelScreenBody}>
-            {t('calendar.cancel_confirmed_body').replace(
-              '30 s',
-              `${cancelCountdown}s`
-            )}
-          </p>
-        </div>
-        <div className={classes.footer}>
-          <Button
-            appearance={AppearanceTypes.Primary}
-            className={classes.footerBtn}
-            onClick={handleUndoCancel}
-          >
-            {t('calendar.undo_cancel')}
-          </Button>
-          <Button
-            appearance={AppearanceTypes.Secondary}
-            className={classes.footerBtn}
-            onClick={() => navigate('/calendar')}
-          >
-            {t('calendar.back_to_calendar')}
-          </Button>
-        </div>
-      </div>
+      <CalendarMobileWizardCancelPendingScreen
+        cancelCountdown={cancelCountdown}
+        onUndoCancel={handleUndoCancel}
+      />
     )
   }
 
-  // ─── Cancel confirmation screen ───────────────────────────────────────────
-
   if (isConfirmingCancel) {
     return (
-      <div className={classes.wizard}>
-        <div className={classes.cancelScreen}>
-          <p className={classes.cancelScreenPrompt}>
-            {t('calendar.cancel_order_confirm')}
-          </p>
-          <input
-            type="text"
-            className={classes.cancelReasonInput}
-            placeholder={t('calendar.cancel_reason_placeholder')}
-            value={cancelReason}
-            onChange={(e) => setCancelReason(e.target.value)}
-            autoFocus
-          />
-        </div>
-        <div className={classes.footer}>
-          <Button
-            appearance={AppearanceTypes.Primary}
-            className={classes.footerBtn}
-            onClick={handleCancelOrder}
-            disabled={isCancelling || !cancelReason.trim()}
-          >
-            {isCancelling
-              ? t('calendar.voiding')
-              : t('calendar.void_confirm_yes')}
-          </Button>
-          <Button
-            appearance={AppearanceTypes.Secondary}
-            className={classes.footerBtn}
-            onClick={() => {
-              setIsConfirmingCancel(false)
-              setCancelReason('')
-            }}
-          >
-            {t('calendar.void_confirm_no')}
-          </Button>
-        </div>
-      </div>
+      <CalendarMobileWizardCancelConfirmScreen
+        cancelReason={cancelReason}
+        onCancelReasonChange={setCancelReason}
+        isCancelling={isCancelling}
+        onConfirmCancel={handleCancelOrder}
+        onDismiss={() => {
+          setIsConfirmingCancel(false)
+          setCancelReason('')
+        }}
+      />
     )
   }
 

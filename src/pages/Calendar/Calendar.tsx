@@ -18,16 +18,22 @@ const CalendarContent: FC = () => {
   const { view, setView, setCurrentDate } = useCalendarNav()
   const { setPendingDeepLink } = useCalendarPanel()
   const [searchParams] = useSearchParams()
+  const deepLinkSlotId = searchParams.get('slotId')
+  const deepLinkDate = searchParams.get('date')
 
   useEffect(() => {
-    const slotId = searchParams.get('slotId')
-    const date = searchParams.get('date')
-    if (slotId && date) {
-      setCurrentDate(dayjs(date))
+    if (deepLinkSlotId && deepLinkDate) {
+      setCurrentDate(dayjs(deepLinkDate))
       setView('day')
-      setPendingDeepLink({ slotId, date })
+      setPendingDeepLink({ slotId: deepLinkSlotId, date: deepLinkDate })
     }
-  }, [])
+  }, [
+    deepLinkSlotId,
+    deepLinkDate,
+    setCurrentDate,
+    setView,
+    setPendingDeepLink,
+  ])
 
   return (
     <div className={classes.container}>
