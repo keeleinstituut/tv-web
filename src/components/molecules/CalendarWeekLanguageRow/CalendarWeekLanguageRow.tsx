@@ -6,12 +6,9 @@ import PinIcon from 'assets/icons/pin.svg?react'
 import AlarmIcon from 'assets/icons/alarm.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
 import CalendarVendorBadge from 'components/atoms/CalendarVendorBadge/CalendarVendorBadge'
-import { CalendarLanguage, VendorWeekData, WeekSlot } from 'types/calendar'
-import {
-  useFetchCalendarWeekVendors,
-  useFetchCalendarWeek,
-} from 'hooks/requests/useCalendar'
-import { useCalendarExpansion, useCalendarPanel } from 'components/contexts/CalendarContext'
+import { CalendarLanguage, VendorWeekData } from 'types/calendar'
+import { useFetchCalendarWeekVendors } from 'hooks/requests/useCalendar'
+import { useCalendarExpansion } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import CalendarAddVendorRow from 'components/atoms/CalendarAddVendorRow/CalendarAddVendorRow'
 import classes from './classes.module.scss'
@@ -23,23 +20,12 @@ const DAYS_IN_WEEK = 7
 
 const WeekSummaryRow: FC<{
   language: CalendarLanguage
-  langSlots: WeekSlot[] | null
   onTogglePin?: () => void
   onToggle: () => void
   expanded: boolean
   isTPM: boolean
-  onClickBookedSlot?: (slot: WeekSlot) => void
   dayWidth?: number
-}> = ({
-  language,
-  langSlots,
-  onTogglePin,
-  onToggle,
-  expanded,
-  isTPM,
-  onClickBookedSlot,
-  dayWidth,
-}) => {
+}> = ({ language, onTogglePin, onToggle, expanded, isTPM, dayWidth }) => {
   const { t } = useTranslation()
   return (
     <div className={classes.rowWrapper}>
@@ -75,46 +61,15 @@ const WeekSummaryRow: FC<{
         )}
       </div>
       <div className={classes.slotArea}>
-        {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => {
-          const daySlots = langSlots
-            ? langSlots.slice(
-                dayIdx * BLOCK_COUNT,
-                dayIdx * BLOCK_COUNT + BLOCK_COUNT
-              )
-            : null
-          return (
-            <div
-              key={dayIdx}
-              className={classes.dayGroup}
-              style={
-                dayWidth ? { width: dayWidth, minWidth: dayWidth } : undefined
-              }
-            >
-              {daySlots
-                ? daySlots.map((slot, blockIdx) => {
-                    const isBooked = slot.my_bookings_count > 0
-                    const clickable = isBooked && !!onClickBookedSlot
-                    return (
-                      <div
-                        key={blockIdx}
-                        className={classNames(classes.block, {
-                          [classes.blockVendorAvail]:
-                            slot.working_hours > 0 &&
-                            slot.available_vendors > 0,
-                          [classes.blockBooked]: isBooked,
-                          [classes.blockClickable]: clickable,
-                        })}
-                        onClick={
-                          clickable ? () => onClickBookedSlot(slot) : undefined
-                        }
-                      />
-                    )
-                  })
-                : null}
-              <div className={classes.block} />
-            </div>
-          )
-        })}
+        {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => (
+          <div
+            key={dayIdx}
+            className={classes.dayGroup}
+            style={
+              dayWidth ? { width: dayWidth, minWidth: dayWidth } : undefined
+            }
+          />
+        ))}
       </div>
     </div>
   )
@@ -203,7 +158,7 @@ const VendorRow: FC<{
                   })}
                 />
               ))}
-              <div className={classes.block} />
+              <div className={classNames(classes.block, classes.blockOff)} />
             </div>
           )
         })}
@@ -228,16 +183,9 @@ const CalendarWeekLanguageRow: FC<Props> = ({
   dayWidth,
 }) => {
   const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarExpansion()
-  const { openWeekBookingPanel } = useCalendarPanel()
-  const { isTPM, isTranslator } = useCalendarRole()
+  const { isTPM } = useCalendarRole()
   const expanded =
     isTPM && (language.pinned || isLanguageExpanded(language.language.id))
-
-  const { data: weekData } = useFetchCalendarWeek(date)
-  const langWeekData = weekData?.languages.find(
-    (l) => l.language_id === language.language.id
-  )
-  const langSlots = langWeekData?.slots ?? null
 
   const { data: vendorData } = useFetchCalendarWeekVendors(
     date,
@@ -251,22 +199,11 @@ const CalendarWeekLanguageRow: FC<Props> = ({
     <>
       <WeekSummaryRow
         language={language}
-        langSlots={langSlots}
         onTogglePin={onTogglePin}
         onToggle={() => toggleLanguageExpanded(language.language.id)}
         expanded={expanded}
         isTPM={isTPM}
         dayWidth={dayWidth}
-        onClickBookedSlot={
-          isTranslator
-            ? (slot) =>
-                openWeekBookingPanel({
-                  start_at: slot.start_at,
-                  end_at: slot.end_at,
-                  language_id: language.language.id,
-                })
-            : undefined
-        }
       />
       {expanded &&
         vendors.map((vendor) => (

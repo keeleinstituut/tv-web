@@ -4,12 +4,10 @@ import classNames from 'classnames'
 import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
 import PinIcon from 'assets/icons/pin.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
+import AlarmIcon from 'assets/icons/alarm.svg?react'
 import { formatMinutes } from 'helpers/calendar'
-import { CalendarLanguage, VendorMonthData, MonthSlot } from 'types/calendar'
-import {
-  useFetchCalendarMonthVendors,
-  useFetchCalendarMonth,
-} from 'hooks/requests/useCalendar'
+import { CalendarLanguage, VendorMonthData } from 'types/calendar'
+import { useFetchCalendarMonthVendors } from 'hooks/requests/useCalendar'
 import { useCalendarExpansion } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { WeekRange } from 'components/organisms/CalendarMonthView/CalendarMonthView'
@@ -25,32 +23,15 @@ interface WeekData {
 function getVendorWeekData(vendor: VendorMonthData, week: WeekRange): WeekData {
   const weekStart = week.start.format('YYYY-MM-DD')
   const weekEnd = week.end.format('YYYY-MM-DD')
-  let freeMinutes = 0
   let bookedMinutes = 0
 
   for (const slot of vendor.slots) {
     if (slot.date < weekStart || slot.date > weekEnd) continue
     if (slot.on_vacation || !slot.available) continue
-    const booked = (slot.booked_hours ?? 0) * 60
-    bookedMinutes += booked
-    freeMinutes += Math.max(0, 8 * 60 - booked)
+    bookedMinutes += (slot.booked_hours ?? 0) * 60
   }
 
-  return { freeMinutes, bookedMinutes }
-}
-
-function getLangWeekAvailableMinutes(
-  langSlots: MonthSlot[],
-  week: WeekRange
-): number {
-  const weekStart = week.start.format('YYYY-MM-DD')
-  const weekEnd = week.end.format('YYYY-MM-DD')
-  let minutes = 0
-  for (const slot of langSlots) {
-    if (slot.date < weekStart || slot.date > weekEnd) continue
-    if (slot.available_vendors > 0) minutes += slot.working_hours * 60
-  }
-  return minutes
+  return { freeMinutes: 0, bookedMinutes }
 }
 
 // ─── Summary row (collapsed) ──────────────────────────────────────────────────
@@ -58,8 +39,6 @@ function getLangWeekAvailableMinutes(
 const MonthSummaryRow: FC<{
   language: CalendarLanguage
   weeks: WeekRange[]
-  langSlots: MonthSlot[] | null
-  vendorWeekTotals: WeekData[] | null
   onTogglePin?: () => void
   onToggle: () => void
   expanded: boolean
@@ -68,8 +47,6 @@ const MonthSummaryRow: FC<{
 }> = ({
   language,
   weeks,
-  langSlots,
-  vendorWeekTotals,
   onTogglePin,
   onToggle,
   expanded,
@@ -77,15 +54,6 @@ const MonthSummaryRow: FC<{
   weekColWidth,
 }) => {
   const { t } = useTranslation()
-
-  const weekMinutes = weeks.map((week, i) =>
-    vendorWeekTotals
-      ? vendorWeekTotals[i].bookedMinutes
-      : langSlots
-        ? getLangWeekAvailableMinutes(langSlots, week)
-        : 0
-  )
-  const totalMinutes = weekMinutes.reduce((sum, m) => sum + m, 0)
 
   return (
     <div className={classes.rowWrapper}>
@@ -120,35 +88,17 @@ const MonthSummaryRow: FC<{
           </button>
         )}
       </div>
-      {weekMinutes.map((minutes, i) => (
+      {weeks.map((_, i) => (
         <div
           key={i}
           className={classes.weekCell}
           style={{ width: weekColWidth, minWidth: weekColWidth }}
-        >
-          {minutes > 0 && (
-            <div className={classes.weekCellAvailable}>
-              <ClockIcon className={classes.cellIcon} />
-              <span className={classes.cellLabel}>
-                {formatMinutes(minutes)}
-              </span>
-            </div>
-          )}
-        </div>
+        />
       ))}
       <div
         className={classes.totalCell}
         style={{ width: weekColWidth, minWidth: weekColWidth }}
-      >
-        {totalMinutes > 0 && (
-          <div className={classes.weekCellAvailable}>
-            <ClockIcon className={classes.cellIcon} />
-            <span className={classes.cellLabel}>
-              {formatMinutes(totalMinutes)}
-            </span>
-          </div>
-        )}
-      </div>
+      />
     </div>
   )
 }
@@ -160,9 +110,17 @@ const VendorRow: FC<{
   weeks: WeekRange[]
   weekColWidth?: number
 }> = ({ vendor, weeks, weekColWidth }) => {
+  const isEmo = !vendor.is_internal
   const weekData = weeks.map((week) => getVendorWeekData(vendor, week))
-  const totalFree = weekData.reduce((sum, w) => sum + w.freeMinutes, 0)
   const totalBooked = weekData.reduce((sum, w) => sum + w.bookedMinutes, 0)
+  const cellClass = isEmo ? classes.weekCellBooked : classes.weekCellAvailable
+  const iconClass = classNames(classes.cellIcon, {
+    [classes.cellIconBooked]: isEmo,
+  })
+  const labelClass = classNames(classes.cellLabel, {
+    [classes.cellLabelBooked]: isEmo,
+  })
+  const Icon = isEmo ? AlarmIcon : ClockIcon
 
   return (
     <div className={classes.vendorRowWrapper}>
@@ -170,73 +128,37 @@ const VendorRow: FC<{
         <CalendarVendorBadge
           vendorId={vendor.id}
           name={vendor.institution_user.name}
+          isEmo={isEmo}
         />
       </div>
 
-      {weekData.map((wd, i) => {
-        const hasData = wd.freeMinutes > 0 || wd.bookedMinutes > 0
-        const isBooked = wd.bookedMinutes > wd.freeMinutes
-        const minutes = isBooked ? wd.bookedMinutes : wd.freeMinutes
-        return (
-          <div
-            key={i}
-            className={classes.weekCell}
-            style={{ width: weekColWidth, minWidth: weekColWidth }}
-          >
-            {hasData && (
-              <div
-                className={
-                  isBooked ? classes.weekCellBooked : classes.weekCellAvailable
-                }
-              >
-                <ClockIcon
-                  className={classNames(classes.cellIcon, {
-                    [classes.cellIconBooked]: isBooked,
-                  })}
-                />
-                <span
-                  className={classNames(classes.cellLabel, {
-                    [classes.cellLabelBooked]: isBooked,
-                  })}
-                >
-                  {formatMinutes(minutes)}
-                </span>
-              </div>
-            )}
-          </div>
-        )
-      })}
+      {weekData.map((wd, i) => (
+        <div
+          key={i}
+          className={classes.weekCell}
+          style={{ width: weekColWidth, minWidth: weekColWidth }}
+        >
+          {wd.bookedMinutes > 0 && (
+            <div className={cellClass}>
+              <Icon className={iconClass} />
+              <span className={labelClass}>
+                {formatMinutes(wd.bookedMinutes)}
+              </span>
+            </div>
+          )}
+        </div>
+      ))}
 
-      {/* Total cell */}
       <div
         className={classes.totalCell}
         style={{ width: weekColWidth, minWidth: weekColWidth }}
       >
-        {(totalFree > 0 || totalBooked > 0) &&
-          (() => {
-            const isBooked = totalBooked > totalFree
-            const minutes = isBooked ? totalBooked : totalFree
-            return (
-              <div
-                className={
-                  isBooked ? classes.weekCellBooked : classes.weekCellAvailable
-                }
-              >
-                <ClockIcon
-                  className={classNames(classes.cellIcon, {
-                    [classes.cellIconBooked]: isBooked,
-                  })}
-                />
-                <span
-                  className={classNames(classes.cellLabel, {
-                    [classes.cellLabelBooked]: isBooked,
-                  })}
-                >
-                  {formatMinutes(minutes)}
-                </span>
-              </div>
-            )
-          })()}
+        {totalBooked > 0 && (
+          <div className={cellClass}>
+            <Icon className={iconClass} />
+            <span className={labelClass}>{formatMinutes(totalBooked)}</span>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -264,12 +186,6 @@ const CalendarMonthLanguageRow: FC<Props> = ({
   const expanded =
     isTPM && (language.pinned || isLanguageExpanded(language.language.id))
 
-  const { data: monthData } = useFetchCalendarMonth(date)
-  const langMonthData = monthData?.languages.find(
-    (l) => l.language_id === language.language.id
-  )
-  const langSlots = langMonthData?.slots ?? null
-
   const { data: vendorData } = useFetchCalendarMonthVendors(
     date,
     isTPM ? language.language.id : undefined
@@ -278,29 +194,11 @@ const CalendarMonthLanguageRow: FC<Props> = ({
   const vendors =
     vendorData && 'vendors' in vendorData ? vendorData.vendors : []
 
-  const vendorWeekTotals: WeekData[] | null =
-    isTPM && vendors.length > 0
-      ? weeks.map((week) =>
-          vendors.reduce(
-            (acc, vendor) => {
-              const wd = getVendorWeekData(vendor, week)
-              return {
-                freeMinutes: acc.freeMinutes + wd.freeMinutes,
-                bookedMinutes: acc.bookedMinutes + wd.bookedMinutes,
-              }
-            },
-            { freeMinutes: 0, bookedMinutes: 0 }
-          )
-        )
-      : null
-
   return (
     <>
       <MonthSummaryRow
         language={language}
         weeks={weeks}
-        langSlots={langSlots}
-        vendorWeekTotals={vendorWeekTotals}
         onTogglePin={onTogglePin}
         onToggle={() => toggleLanguageExpanded(language.language.id)}
         expanded={expanded}

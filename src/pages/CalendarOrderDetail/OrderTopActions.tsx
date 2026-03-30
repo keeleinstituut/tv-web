@@ -7,7 +7,6 @@ import classes from './classes.module.scss'
 const OrderTopActions: FC = () => {
   const { t } = useTranslation()
   const {
-    order,
     isCreateMode,
     isTPM,
     isTranslator,
@@ -24,7 +23,7 @@ const OrderTopActions: FC = () => {
     durationEndTime,
     isUpdating,
     isCancelling,
-    isCancelled,
+    isPast,
     isCancelPending,
     cancelCountdown,
     handleSave,
@@ -78,9 +77,7 @@ const OrderTopActions: FC = () => {
         </>
       )}
       {isTranslator &&
-        !isCancelled &&
-        order?.status !== 'ACCEPTED' &&
-        order?.status !== 'CANCELLED' &&
+        !isPast &&
         !isChangingDuration &&
         !isConfirmingCancel && (
           <Button

@@ -65,7 +65,7 @@ export const useFetchCalendarDay = (date: string) => {
     queryKey: ['calendar-day', date],
     queryFn: async () => {
       const res = await apiClient.get(endpoints.CALENDAR_DAY, { date })
-      return transformDayResponse(res.data, undefined, isTPM)
+      return transformDayResponse(res.data, isTPM)
     },
     enabled: !!date,
   })
@@ -79,11 +79,15 @@ export const useFetchCalendarWeek = (date: string) => {
   const { isLoading, isError, data } = useQuery<CalendarWeekResponse>({
     queryKey: ['calendar-week', dateFrom, dateTo],
     queryFn: async () => {
-      const raw: ApiCalendarWeekResponse = await apiClient.get(
-        endpoints.CALENDAR_WEEK,
-        { date_from: dateFrom, date_to: dateTo }
+      const res = await apiClient.get(endpoints.CALENDAR_WEEK, {
+        date_from: dateFrom,
+        date_to: dateTo,
+      })
+      return transformWeekResponse(
+        res.data as ApiCalendarWeekResponse,
+        dateFrom,
+        dateTo
       )
-      return transformWeekResponse(raw, dateFrom, dateTo)
     },
     enabled: !!date,
   })
@@ -97,11 +101,14 @@ export const useFetchCalendarMonth = (date: string) => {
   const { isLoading, isError, data } = useQuery<CalendarMonthResponse>({
     queryKey: ['calendar-month', dateFrom, dateTo],
     queryFn: async () => {
-      const raw: ApiCalendarMonthResponse = await apiClient.get(
-        endpoints.CALENDAR_MONTH,
-        { date_from: dateFrom, date_to: dateTo }
+      const res = await apiClient.get(endpoints.CALENDAR_MONTH, {
+        date_from: dateFrom,
+        date_to: dateTo,
+      })
+      return transformMonthResponse(
+        res.data as ApiCalendarMonthResponse,
+        dayjs(date).format('YYYY-MM')
       )
-      return transformMonthResponse(raw, dayjs(date).format('YYYY-MM'))
     },
     enabled: !!date,
   })
@@ -126,11 +133,15 @@ export const useFetchCalendarWeekVendors = (
   >({
     queryKey: ['calendar-week', dateFrom, dateTo],
     queryFn: async () => {
-      const raw: ApiCalendarWeekResponse = await apiClient.get(
-        endpoints.CALENDAR_WEEK,
-        { date_from: dateFrom, date_to: dateTo }
+      const res = await apiClient.get(endpoints.CALENDAR_WEEK, {
+        date_from: dateFrom,
+        date_to: dateTo,
+      })
+      return transformWeekResponse(
+        res.data as ApiCalendarWeekResponse,
+        dateFrom,
+        dateTo
       )
-      return transformWeekResponse(raw, dateFrom, dateTo)
     },
     select: (
       weekData
@@ -170,11 +181,14 @@ export const useFetchCalendarMonthVendors = (
   >({
     queryKey: ['calendar-month', dateFrom, dateTo],
     queryFn: async () => {
-      const raw: ApiCalendarMonthResponse = await apiClient.get(
-        endpoints.CALENDAR_MONTH,
-        { date_from: dateFrom, date_to: dateTo }
+      const res = await apiClient.get(endpoints.CALENDAR_MONTH, {
+        date_from: dateFrom,
+        date_to: dateTo,
+      })
+      return transformMonthResponse(
+        res.data as ApiCalendarMonthResponse,
+        dayjs(date).format('YYYY-MM')
       )
-      return transformMonthResponse(raw, dayjs(date).format('YYYY-MM'))
     },
     select: (
       monthData
@@ -212,7 +226,7 @@ export const useFetchCalendarDayVendors = (
     queryKey: ['calendar-day', date],
     queryFn: async () => {
       const res = await apiClient.get(endpoints.CALENDAR_DAY, { date })
-      return transformDayResponse(res.data, undefined, isTPM)
+      return transformDayResponse(res.data, isTPM)
     },
     select: (
       dayData

@@ -141,6 +141,7 @@ export interface VendorDayData {
   institution_user: { id: string; name: string }
   is_internal: boolean
   booked_slots: BookedSlot[]
+  available_slots: Array<{ start_at: string; end_at: string }>
 }
 
 export interface CalendarDayVendorsResponse {
@@ -643,7 +644,6 @@ function isTpmDayShape(
 
 export function transformDayResponse(
   api: ApiCalendarDayResponse,
-  languageId?: string,
   isTPM?: boolean
 ): CalendarDayResponse {
   if (isVendorDayShape(api)) {
@@ -738,6 +738,9 @@ export function transformDayResponse(
               })()
             : null,
         })),
+        available_slots: tpm.available_slots
+          .filter((s) => s.vendor_ids.includes(v.id))
+          .map((s) => ({ start_at: s.start_at, end_at: s.end_at })),
       }
       for (const langId of v.languages) {
         if (!vendorsByLanguage.has(langId)) vendorsByLanguage.set(langId, [])
@@ -851,7 +854,7 @@ function buildVendorWeekData(
   return {
     id: v.id,
     institution_user: { id: v.institutionUser?.id ?? '', name: vendorName(v) },
-    is_internal: false,
+    is_internal: v.emergency_schedules.length === 0,
     slots,
   }
 }
@@ -886,7 +889,7 @@ function buildVendorMonthData(
   return {
     id: v.id,
     institution_user: { id: v.institutionUser?.id ?? '', name: vendorName(v) },
-    is_internal: false,
+    is_internal: v.emergency_schedules.length === 0,
     slots,
   }
 }

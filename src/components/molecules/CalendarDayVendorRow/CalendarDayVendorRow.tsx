@@ -52,6 +52,25 @@ const CalendarDayVendorRow: FC<Props> = ({
     [vendor.booked_slots, date, dayStartHour]
   )
 
+  const isSlotAvailable = useCallback(
+    (slotIndex: number): boolean => {
+      const slotStart = slotIndexToIso(slotIndex, date, dayStartHour)
+      const slotEnd = slotIndexToIso(slotIndex + 1, date, dayStartHour)
+      return vendor.available_slots.some(
+        (s) =>
+          dayjs(s.start_at).isBefore(dayjs(slotEnd)) &&
+          dayjs(s.end_at).isAfter(dayjs(slotStart))
+      )
+    },
+    [vendor.available_slots, date, dayStartHour]
+  )
+
+  const isSlotBlocked = useCallback(
+    (slotIndex: number): boolean =>
+      isSlotBooked(slotIndex) || !isSlotAvailable(slotIndex),
+    [isSlotBooked, isSlotAvailable]
+  )
+
   const {
     isDragging,
     selectionLeft,
@@ -65,7 +84,7 @@ const CalendarDayVendorRow: FC<Props> = ({
     dayStartHour,
     totalSlots,
     slotWidth: sw,
-    isSlotBooked,
+    isSlotBooked: isSlotBlocked,
     onDragComplete: (startIso, endIso) =>
       openSidePanel({
         language,
@@ -120,6 +139,7 @@ const CalendarDayVendorRow: FC<Props> = ({
           const slotIso = slotIndexToIso(i, date, dayStartHour)
           const isPast = isSlotPast(slotIso)
           const isBooked = isSlotBooked(i)
+          const isAvailable = isSlotAvailable(i)
 
           if (isBooked) return null
 
@@ -129,7 +149,9 @@ const CalendarDayVendorRow: FC<Props> = ({
               const prevPast = isSlotPast(
                 slotIndexToIso(i - 1, date, dayStartHour)
               )
-              if (isPast === prevPast) return null
+              const prevAvailable = isSlotAvailable(i - 1)
+              if (isPast === prevPast && isAvailable === prevAvailable)
+                return null
             }
           }
 
@@ -141,14 +163,16 @@ const CalendarDayVendorRow: FC<Props> = ({
             i % 2 === 0 &&
             nextSlotIso !== null &&
             !isSlotBooked(i + 1) &&
-            isSlotPast(nextSlotIso) === isPast
-          const isBookable = !isPast
+            isSlotPast(nextSlotIso) === isPast &&
+            isSlotAvailable(i + 1) === isAvailable
+          const isBookable = !isPast && isAvailable
 
           return (
             <div
               key={i}
               className={classNames(classes.slotCell, {
                 [classes.slotCellPast]: isPast,
+                [classes.slotCellUnavailable]: !isPast && !isAvailable,
                 [classes.slotCellFuture]: isBookable,
               })}
               style={{
