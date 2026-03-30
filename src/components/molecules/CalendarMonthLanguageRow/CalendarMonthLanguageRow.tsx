@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
@@ -6,8 +6,11 @@ import PinIcon from 'assets/icons/pin.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
 import AlarmIcon from 'assets/icons/alarm.svg?react'
 import { formatMinutes } from 'helpers/calendar'
-import { CalendarLanguage, VendorMonthData } from 'types/calendar'
-import { useFetchCalendarMonthVendors } from 'hooks/requests/useCalendar'
+import { CalendarLanguage, MonthSlot, VendorMonthData } from 'types/calendar'
+import {
+  useFetchCalendarMonth,
+  useFetchCalendarMonthVendors,
+} from 'hooks/requests/useCalendar'
 import { useCalendarExpansion } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { WeekRange } from 'components/organisms/CalendarMonthView/CalendarMonthView'
@@ -36,6 +39,16 @@ function getVendorWeekData(vendor: VendorMonthData, week: WeekRange): WeekData {
 
 // ─── Summary row (collapsed) ──────────────────────────────────────────────────
 
+function getWeekHours(monthSlots: MonthSlot[], week: WeekRange): number {
+  const ws = week.start.format('YYYY-MM-DD')
+  const we = week.end.format('YYYY-MM-DD')
+  let hours = 0
+  for (const slot of monthSlots) {
+    if (slot.date >= ws && slot.date <= we) hours += slot.working_hours
+  }
+  return hours
+}
+
 const MonthSummaryRow: FC<{
   language: CalendarLanguage
   weeks: WeekRange[]
@@ -44,6 +57,7 @@ const MonthSummaryRow: FC<{
   expanded: boolean
   isTPM: boolean
   weekColWidth?: number
+  monthSlots?: MonthSlot[]
 }> = ({
   language,
   weeks,
@@ -52,8 +66,14 @@ const MonthSummaryRow: FC<{
   expanded,
   isTPM,
   weekColWidth,
+  monthSlots,
 }) => {
   const { t } = useTranslation()
+
+  const weekHours = monthSlots
+    ? weeks.map((w) => getWeekHours(monthSlots, w))
+    : []
+  const totalHours = weekHours.reduce((s, h) => s + h, 0)
 
   return (
     <div className={classes.rowWrapper}>
@@ -93,12 +113,30 @@ const MonthSummaryRow: FC<{
           key={i}
           className={classes.weekCell}
           style={{ width: weekColWidth, minWidth: weekColWidth }}
-        />
+        >
+          {monthSlots && weekHours[i] > 0 && (
+            <div className={classes.weekCellAvailable}>
+              <ClockIcon className={classes.cellIcon} />
+              <span className={classes.cellLabel}>
+                {formatMinutes(weekHours[i] * 60)}
+              </span>
+            </div>
+          )}
+        </div>
       ))}
       <div
         className={classes.totalCell}
         style={{ width: weekColWidth, minWidth: weekColWidth }}
-      />
+      >
+        {monthSlots && totalHours > 0 && (
+          <div className={classes.weekCellAvailable}>
+            <ClockIcon className={classes.cellIcon} />
+            <span className={classes.cellLabel}>
+              {formatMinutes(totalHours * 60)}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -191,6 +229,16 @@ const CalendarMonthLanguageRow: FC<Props> = ({
     isTPM ? language.language.id : undefined
   )
 
+  const { data: monthData } = useFetchCalendarMonth(date)
+
+  const monthSlots = useMemo(() => {
+    if (!monthData) return undefined
+    const langData = monthData.languages.find(
+      (l) => l.language_id === language.language.id
+    )
+    return langData?.slots
+  }, [monthData, language.language.id])
+
   const vendors =
     vendorData && 'vendors' in vendorData ? vendorData.vendors : []
 
@@ -204,6 +252,7 @@ const CalendarMonthLanguageRow: FC<Props> = ({
         expanded={expanded}
         isTPM={isTPM}
         weekColWidth={weekColWidth}
+        monthSlots={monthSlots}
       />
       {expanded &&
         vendors.map((vendor) => (

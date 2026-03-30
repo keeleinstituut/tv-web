@@ -332,6 +332,18 @@
   color: $cal-label;
 }
 
+.pendingCancelBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 6px;
+  font-size: $font-size-14;
+  width: 100%;
+}
+
 // --- Cancel prompt ---
 
 .cancelPromptGroup {

@@ -13,6 +13,7 @@ import {
   useCalendarSearch,
   useFetchCalendarLanguages,
 } from 'hooks/requests/useCalendar'
+import { toCalendarApiDateTime } from 'helpers/calendar'
 import { CalendarView } from 'types/calendar'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -80,10 +81,14 @@ const CalendarToolbar: FC = () => {
     if (!searchLangId) return
     const datetime =
       searchDate && searchTime
-        ? dayjs(`${searchDate}T${searchTime}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
+        ? toCalendarApiDateTime(
+            dayjs(`${searchDate}T${searchTime}:00`).toISOString()
+          )
         : searchDate
-          ? dayjs(`${searchDate}T${dayjs().format('HH:mm')}:00`).toISOString().replace(/\.\d+Z$/, 'Z')
-          : dayjs().toISOString().replace(/\.\d+Z$/, 'Z')
+          ? toCalendarApiDateTime(
+              dayjs(`${searchDate}T${dayjs().format('HH:mm')}:00`).toISOString()
+            )
+          : toCalendarApiDateTime(dayjs().toISOString())
     runSearch(
       {
         language_id: searchLangId,

@@ -2,11 +2,6 @@
 
 ## Needs BE Confirmation
 
-- **`IN_PROGRESS` project status** — currently only `NEW`, `REGISTERED`, `CANCELLED`, `ACCEPTED` are used
-  for project-level status logic (`isPast`, `canModify`). If the BE adds `IN_PROGRESS` as a project
-  status (distinct from the assignment-level `IN_PROGRESS`), the frontend logic needs to be updated:
-  `isPast` and `canModify` in `CalendarOrderDetail` and `isPastSlot` in `CalendarOrderSidePanel`.
-
 - **`ACCEPTED` = `COMPLETED`** — treating `ACCEPTED` as the terminal "completed" project status.
   Pending explicit BE confirmation.
 
@@ -24,7 +19,8 @@
      isn't excluded when editing their own booking.
   2. FE: `ProjectResource` has no embedded vendor/assignment data, so `CalendarOrderDetail`
      can't pre-populate `vendorId`. Once BE exposes vendor info on `GET /projects/:id`, map it
-     in `transformProjectDetail` and seed `vendorId` in the `useEffect`.
+     in `transformProjectDetail` and seed `vendorId` in the `useEffect`. Then optionally lock the
+     translator dropdown when editing (parity with side panel `vendorLocked`).
 
 - **External translator cascade** — `use_external_vendor: bool` exists in `PUT /projects/:id`
   body but the full cascade algorithm (Algorithm 3) is a backend concern. On the FE side,
@@ -33,39 +29,14 @@
 
 ## Code Quality / Tech Debt
 
-- **ISO string formatting is fragile** — `.replace(/\.\d+Z$/, 'Z')` appears in 4+ places in
-  `CalendarOrderDetail.tsx`. If dayjs ever returns a string without milliseconds or with a
-  non-UTC offset, the regex silently passes the unmodified string to the API.
-
-- **`isDirty` — `localFiles.length > 0` marks form dirty** — adding a file in edit mode enables
-  Save even if no other fields changed. Consider tracking file additions separately from field changes.
-
-- **`JSON.stringify([...].sort())` for array equality** — used in both the side panel and
-  `CalendarOrderDetail.tsx` isDirty check, computed on every render. Fine for now but brittle.
-
 - **`OrderDetailContextValue` is very large (~80 props)** — consider splitting into smaller focused
   contexts (form state, async state, handlers) to reduce re-render surface and improve readability.
 
-- **Side panel `useMemo` contextValue has 22 deps** — high churn, fragile dep array. Related to the
+- **Side panel `useMemo` contextValue has many deps** — high churn, fragile dep array. Related to the
   large context shape above.
 
-- **`serviceType` cast in `CalendarOrderSidePanel`** — when pre-filling a pending order (TPM view),
-  `a.service_type` is mapped to `'kaugtolge'`/`'kontakttolge'` with no fallback validation. An
-  unexpected API value silently sets `serviceType = ''` and makes the form unsubmittable.
-
-- **File download cast `data as Blob`** — in `useCalendar.ts`. If the API returns a JSON error
-  with `responseType: 'blob'`, the cast succeeds and produces a malformed download with no
-  error notification to the user.
-
-- **`slot.assignment` TypeScript narrowing** — multiple places in `CalendarOrderViewBody.tsx` use
-  `slot.assignment.x` inside JSX ternaries where TypeScript doesn't narrow through the parent check.
-  Runtime behaviour is safe (parent conditionals guard them) but TS can't verify it.
-
-- **Location/meeting link conditional rendering is duplicated** across `CalendarOrderPastBody`,
-  `CalendarOrderViewBody`, and `CalendarTranslatorBody`. Any logic change needs updating in all three.
-
-- **Vendor immutability inconsistency** — side panel prevents re-selecting a vendor once locked
-  from a vendor row click; the order detail view has no equivalent protection for TPMs.
+- **`apiServiceTypeToForm`** — unknown `service_type` values map to `''` and block submit until the
+  user picks a type; acceptable until the API documents additional enum values.
 
 ## Frontend Work Remaining
 
@@ -85,6 +56,20 @@
   (multipart: `file` + `import_end_date`). An expiry reminder email is sent by the backend
   2 working days before the imported calendar expires.
 
-- **Comment edit/delete** — the API supports `PUT` and `DELETE /projects/:project/comments/:comment`
-  (author only). The edit pencil is wired in the order detail view UI but the actual `PUT`
-  call is not hooked up yet (clicking Save in edit mode currently does nothing).
+- ~~**Comment edit**~~ — done. `PUT /projects/:project/comments/:comment` is wired via
+  `useUpdateCalendarOrderComment` in `OrderCommentsCard.tsx`. Edit button is author-only
+  (checks `institution_user_id === institutionUserId`). Delete is not in the business spec
+  and intentionally omitted.
+
+### Done recently (keep for reference)
+
+- **`IN_PROGRESS` project status** — added to `CalendarProjectStatus`; `canModify` includes it;
+  `statusLabel` uses `calendar.status_in_progress`; side panel `isPastSlot` respects loaded
+  `order.status` (`ACCEPTED` / `CANCELLED`).
+- **ISO datetimes for calendar API** — centralized in `toCalendarApiDateTime` (`helpers/calendar.ts`).
+- **Order edit dirty state** — `hasFieldChanges` vs `canSaveEdits` (includes staged files);
+  cancel/reset clears staged files.
+- **Tag id equality** — `areSortedIdArraysEqual` replaces `JSON.stringify` sorts.
+- **File download errors** — blob responses with JSON body surface a notification.
+- **Location / meeting link UI** — shared `OrderServiceLocationReadonly` for past/translator/TPM view bodies.
+- **`slot.assignment` narrowing** — `CalendarOrderViewBody` uses a local `assignment` alias.

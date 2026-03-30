@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useOrderDetail } from './OrderDetailContext'
 import classes from './classes.module.scss'
@@ -7,14 +8,13 @@ import classes from './classes.module.scss'
 const OrderTopActions: FC = () => {
   const { t } = useTranslation()
   const {
+    order,
     isCreateMode,
-    isTPM,
     isTranslator,
     canModify,
     isEditing,
-    isDirty,
+    canSaveEdits,
     isChangingDuration,
-    setIsChangingDuration,
     isConfirmingCancel,
     setIsConfirmingCancel,
     cancelReason,
@@ -56,12 +56,28 @@ const OrderTopActions: FC = () => {
 
   return (
     <div className={classes.topActions}>
+      {order?.cancel_at && !isCancelPending && (
+        <div className={classes.pendingCancelBanner}>
+          <strong>{t('calendar.cancel_pending_title')}</strong>
+          <span>
+            {t('calendar.cancel_pending_body', {
+              date: dayjs(order.cancel_at).format('DD.MM.YYYY [kell] HH:mm'),
+            })}
+          </span>
+          <Button
+            appearance={AppearanceTypes.Secondary}
+            onClick={handleUndoCancel}
+          >
+            {t('calendar.decline_cancel')}
+          </Button>
+        </div>
+      )}
       {isEditing && (
         <>
           <Button
             appearance={AppearanceTypes.Primary}
             onClick={handleSave}
-            disabled={isUpdating || !isDirty}
+            disabled={isUpdating || !canSaveEdits}
           >
             {isUpdating ? t('calendar.saving') : t('calendar.save')}
           </Button>

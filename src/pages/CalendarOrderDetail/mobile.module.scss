@@ -27,6 +27,19 @@
   background: $color-primary;
 }
 
+.pendingCancelBanner {
+  padding: 10px 14px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 6px;
+  font-size: $font-size-14;
+  margin-bottom: 12px;
+
+  p {
+    margin: 4px 0 8px;
+  }
+}
+
 // --- Order header (ext_id + status) ---
 
 .orderHeader {
@@ -200,6 +213,34 @@
   color: $cal-label;
 }
 
+.commentEditLink {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-primary;
+  font-size: $font-size-14;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.changeDurationLink {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-primary;
+  font-size: $font-size-14;
+  padding: 0;
+  margin-left: 8px;
+}
+
+.commentEditIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
 .commentTextarea {
   border: 1px solid $cal-input-border;
   border-radius: $border-radius-4;
@@ -249,11 +290,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.fileDate {
-  font-size: $font-size-14;
-  color: $cal-label;
 }
 
 .fileActions {
@@ -310,36 +346,6 @@
 }
 
 // --- View mode ---
-
-.viewHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.viewTitle {
-  font-size: 20px;
-  font-weight: $font-weight-bold;
-  color: $color-primary;
-  margin: 0;
-}
-
-.viewSection {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 16px 0;
-  border-bottom: 1px solid $cal-card-border;
-}
-
-.viewSectionTitle {
-  font-size: $font-size-16;
-  font-weight: $font-weight-bold;
-  color: $color-primary;
-  margin: 0;
-}
 
 .viewField {
   display: flex;

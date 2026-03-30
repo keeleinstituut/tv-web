@@ -9,7 +9,6 @@ export interface CalendarRole {
 
 export function useCalendarRole(): CalendarRole {
   const { userPrivileges } = useAuth()
-
   const isTPM = userPrivileges.includes(Privileges.ManageProject)
   const isTranslator =
     !isTPM && userPrivileges.includes(Privileges.ReceiveProject)

@@ -69,7 +69,7 @@ const CalendarDayView: FC = () => {
     useCalendarExpansion()
   const { openSidePanel } = useCalendarPanel()
   const { t } = useTranslation()
-  const { isTPM, isClient } = useCalendarRole()
+  const { isTPM, isClient, isTranslator } = useCalendarRole()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
   const dateStr = currentDate.format('YYYY-MM-DD')
@@ -246,7 +246,7 @@ const CalendarDayView: FC = () => {
                       : undefined
                   }
                   onClickSlot={
-                    isClient
+                    isClient || isTranslator
                       ? (slot) => {
                           openSidePanel({
                             language: lang,

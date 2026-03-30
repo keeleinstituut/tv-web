@@ -4,11 +4,13 @@ import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import EditIcon from 'assets/icons/edit.svg?react'
 import { useUpdateCalendarOrderComment } from 'hooks/requests/useCalendar'
+import { useAuth } from 'components/contexts/AuthContext'
 import { useOrderDetail } from './OrderDetailContext'
 import classes from './classes.module.scss'
 
 const OrderCommentsCard: FC = () => {
   const { t } = useTranslation()
+  const { institutionUserId } = useAuth()
   const {
     order,
     isCreateMode,
@@ -112,18 +114,21 @@ const OrderCommentsCard: FC = () => {
                     date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
                   })}
                 </span>
-                {(isTPM || isClient) && !isPast && editingCommentIdx !== i && (
-                  <button
-                    className={classes.commentEditLink}
-                    onClick={() => {
-                      setEditingCommentIdx(i)
-                      setEditingCommentText(c.comment)
-                    }}
-                  >
-                    {t('calendar.edit')}
-                    <EditIcon className={classes.commentEditIcon} />
-                  </button>
-                )}
+                {isEditing &&
+                  c.institution_user_id === institutionUserId &&
+                  !isPast &&
+                  editingCommentIdx !== i && (
+                    <button
+                      className={classes.commentEditLink}
+                      onClick={() => {
+                        setEditingCommentIdx(i)
+                        setEditingCommentText(c.comment)
+                      }}
+                    >
+                      {t('calendar.edit')}
+                      <EditIcon className={classes.commentEditIcon} />
+                    </button>
+                  )}
               </div>
             </div>
           ))}
@@ -167,7 +172,7 @@ const OrderCommentsCard: FC = () => {
               </span>
             </div>
           )}
-          {(isCreateMode || isEditing) &&
+          {(isCreateMode || isEditing || !isPast) &&
             (isTPM || isClient || isTranslator) && (
               <Button
                 style={{ width: '209px' }}

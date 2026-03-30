@@ -1,4 +1,34 @@
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import type { ServiceType } from 'types/calendar'
+
+dayjs.extend(utc)
+
+export function apiServiceTypeToForm(
+  st?: 'REMOTE' | 'ON_SITE' | null
+): ServiceType {
+  if (st === 'REMOTE') return 'kaugtolge'
+  if (st === 'ON_SITE') return 'kontakttolge'
+  return ''
+}
+
+/** UTC ISO-8601 without fractional seconds (calendar API). */
+export function toCalendarApiDateTime(isoOrLocal: string): string {
+  const d = dayjs(isoOrLocal)
+  if (!d.isValid()) return isoOrLocal
+  return d.utc().format('YYYY-MM-DDTHH:mm:ss') + 'Z'
+}
+
+/** Compare two id lists regardless of order (e.g. domain tag ids). */
+export function areSortedIdArraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false
+  const sa = [...a].sort()
+  const sb = [...b].sort()
+  for (let i = 0; i < sa.length; i++) {
+    if (sa[i] !== sb[i]) return false
+  }
+  return true
+}
 
 export function formatDuration(startIso: string, endIso: string): string {
   const minutes = dayjs(endIso).diff(dayjs(startIso), 'minute')

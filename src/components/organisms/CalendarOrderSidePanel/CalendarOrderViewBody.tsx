@@ -3,15 +3,18 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import { ServiceType } from 'types/calendar'
-import { normalizeUrl } from 'helpers/calendar'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import { useUpdateCalendarOrderComment } from 'hooks/requests/useCalendar'
+import { useAuth } from 'components/contexts/AuthContext'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
 import DeleteIcon from 'assets/icons/delete.svg?react'
+import EditIcon from 'assets/icons/edit.svg?react'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import { useSidePanel } from './SidePanelContext'
+import OrderServiceLocationReadonly from './OrderServiceLocationReadonly'
 import DurationStepper from './DurationStepper'
 import SlotMetaSection from './SlotMetaSection'
 import classes from './classes.module.scss'
@@ -77,17 +80,24 @@ const CalendarOrderViewBody: FC = () => {
     isPostingComment,
     isTPM,
   } = useSidePanel()
+  const { institutionUserId } = useAuth()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isFilesOpen, setIsFilesOpen] = useState(false)
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
   const [isAddingComment, setIsAddingComment] = useState(false)
   const [commentText, setCommentText] = useState('')
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
+  const [editingCommentText, setEditingCommentText] = useState('')
+  const { mutate: updateComment, isPending: isUpdatingComment } =
+    useUpdateCalendarOrderComment(order?.id)
 
   const { users: clients } = useFetchInfiniteProjectPerson(
     undefined,
     'client',
     isTPM && isEditing
   )
+
+  const assignment = slot?.assignment
 
   return (
     <>
@@ -164,7 +174,7 @@ const CalendarOrderViewBody: FC = () => {
                 appearance={AppearanceTypes.Secondary}
                 onClick={() => onSetIsConfirmingCancel(true)}
               >
-                {t('calendar.void')}
+                {isTPM ? t('calendar.void') : t('calendar.cancel_order')}
               </Button>
             </>
           )}
@@ -219,9 +229,9 @@ const CalendarOrderViewBody: FC = () => {
             ? t('calendar.status_cancelling')
             : isTPM && isCancelled
               ? t('calendar.status_cancelled')
-              : slot?.assignment?.status === 'DONE'
+              : assignment?.status === 'DONE'
                 ? t('calendar.status_completed')
-                : slot?.assignment?.status === 'IN_PROGRESS'
+                : assignment?.status === 'IN_PROGRESS'
                   ? t('calendar.status_forwarded')
                   : t('calendar.status_pending')}
         </div>
@@ -255,11 +265,11 @@ const CalendarOrderViewBody: FC = () => {
                 ))}
               </select>
             </div>
-          ) : slot?.assignment?.client ? (
+          ) : assignment?.client ? (
             <div className={classes.formGroup}>
               <span className={classes.label}>{t('calendar.client')}</span>
               <span className={classes.readValue}>
-                {slot.assignment.client.name}
+                {assignment.client.name}
               </span>
             </div>
           ) : null)}
@@ -277,13 +287,13 @@ const CalendarOrderViewBody: FC = () => {
               onChange={(e) => onSetReferenceNumber(e.target.value)}
             />
           </div>
-        ) : slot?.assignment?.reference_number ? (
+        ) : assignment?.reference_number ? (
           <div className={classes.formGroup}>
             <span className={classes.label}>
               {t('calendar.reference_number')}
             </span>
             <span className={classes.readValue}>
-              {slot.assignment.reference_number}
+              {assignment.reference_number}
             </span>
           </div>
         ) : null}
@@ -357,10 +367,10 @@ const CalendarOrderViewBody: FC = () => {
           <div className={classes.formGroup}>
             <span className={classes.label}>{t('calendar.duration')}</span>
             <span className={classes.readValue}>{duration}</span>
-            {slot?.assignment?.updated_at && (
+            {assignment?.updated_at && (
               <span className={classes.sectionNote}>
                 {t('calendar.last_modified', {
-                  date: dayjs(slot.assignment.updated_at).format(
+                  date: dayjs(assignment.updated_at).format(
                     'DD.MM.YYYY [kell] HH:mm'
                   ),
                 })}
@@ -391,7 +401,7 @@ const CalendarOrderViewBody: FC = () => {
                 ))}
               </select>
             </div>
-          ) : vendorName || slot?.assignment ? (
+          ) : vendorName || assignment ? (
             <div className={classes.formGroup}>
               <span className={classes.label}>{t('calendar.translator')}</span>
               <span className={classes.readValue}>{vendorName ?? '—'}</span>
@@ -424,37 +434,16 @@ const CalendarOrderViewBody: FC = () => {
               </option>
             </select>
           </div>
-        ) : (slot?.assignment?.service_type ?? order?.service_type) ? (
-          <div className={classes.formGroup}>
-            <span className={classes.label}>{t('calendar.order_way')}</span>
-            <span className={classes.readValue}>
-              {(slot?.assignment?.service_type ?? order?.service_type) ===
-              'REMOTE'
-                ? t('calendar.service_type_remote')
-                : t('calendar.service_type_contact')}
-            </span>
-          </div>
+        ) : (assignment?.service_type ?? order?.service_type) ? (
+          <OrderServiceLocationReadonly
+            variant="view"
+            serviceType={
+              assignment?.service_type ?? order?.service_type ?? null
+            }
+            location={order?.location}
+            meetingLink={order?.meeting_link}
+          />
         ) : null}
-
-        {!isEditing && order?.location && (
-          <div className={classes.formGroup}>
-            <span className={classes.label}>{t('calendar.location')}</span>
-            <span className={classes.readValueBlue}>{order.location}</span>
-          </div>
-        )}
-        {!isEditing && order?.meeting_link && (
-          <div className={classes.formGroup}>
-            <span className={classes.label}>{t('calendar.meeting_link')}</span>
-            <a
-              className={classes.meetingLink}
-              href={normalizeUrl(order.meeting_link)}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {order.meeting_link}
-            </a>
-          </div>
-        )}
 
         {/* Asukoht / Koosoleku link — edit mode only */}
         {isEditing && serviceType === 'kontakttolge' && (
@@ -486,8 +475,8 @@ const CalendarOrderViewBody: FC = () => {
           </div>
         )}
 
-        {/* Valdkond — edit only */}
-        {isEditing && (
+        {/* Valdkond */}
+        {isEditing ? (
           <div className={classes.formGroup}>
             <label className={classes.label}>{t('calendar.domain')}</label>
             <MultiSelect
@@ -497,7 +486,18 @@ const CalendarOrderViewBody: FC = () => {
               placeholder={t('calendar.select_domain')}
             />
           </div>
-        )}
+        ) : order?.tags?.length ? (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.domain')}</span>
+            <div className={classes.tagList}>
+              {order.tags.map((tag) => (
+                <span key={tag.id} className={classes.domainChip}>
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {/* Metaandmed — view only */}
         {!isEditing && (
@@ -671,12 +671,75 @@ const CalendarOrderViewBody: FC = () => {
         <>
           {order.project_comments.map((c) => (
             <div key={c.id} className={classes.commentContent}>
-              <span className={classes.commentText}>{c.comment}</span>
-              <span className={classes.commentDate}>
-                {t('calendar.added_at', {
-                  date: dayjs(c.created_at).format('DD.MM.YYYY [kell] HH:mm'),
-                })}
-              </span>
+              {editingCommentId === c.id ? (
+                <>
+                  <textarea
+                    className={classes.textarea}
+                    value={editingCommentText}
+                    onChange={(e) => setEditingCommentText(e.target.value)}
+                    autoFocus
+                  />
+                  <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                    <Button
+                      appearance={AppearanceTypes.Primary}
+                      disabled={!editingCommentText.trim() || isUpdatingComment}
+                      onClick={() => {
+                        updateComment(
+                          {
+                            commentId: c.id,
+                            comment: editingCommentText.trim(),
+                          },
+                          {
+                            onSuccess: () => {
+                              setEditingCommentId(null)
+                              setEditingCommentText('')
+                            },
+                          }
+                        )
+                      }}
+                    >
+                      {t('calendar.save')}
+                    </Button>
+                    <Button
+                      appearance={AppearanceTypes.Secondary}
+                      onClick={() => {
+                        setEditingCommentId(null)
+                        setEditingCommentText('')
+                      }}
+                    >
+                      {t('calendar.cancel')}
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className={classes.commentText}>{c.comment}</span>
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                  >
+                    <span className={classes.commentDate}>
+                      {t('calendar.added_at', {
+                        date: dayjs(c.created_at).format(
+                          'DD.MM.YYYY [kell] HH:mm'
+                        ),
+                      })}
+                    </span>
+                    {isEditing &&
+                      c.institution_user_id === institutionUserId &&
+                      !isPastSlot && (
+                        <button
+                          className={classes.commentEditLink}
+                          onClick={() => {
+                            setEditingCommentId(c.id)
+                            setEditingCommentText(c.comment)
+                          }}
+                        >
+                          <EditIcon style={{ width: 14, height: 14 }} />
+                        </button>
+                      )}
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </>

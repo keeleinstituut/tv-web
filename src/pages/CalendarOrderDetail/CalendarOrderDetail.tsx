@@ -17,6 +17,7 @@ import {
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { useCalendarRole } from 'hooks/useCalendarRole'
+import { useAuth } from 'components/contexts/AuthContext'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useIsMobile } from 'hooks/useIsMobile'
@@ -25,6 +26,7 @@ import OrderSummaryCard from './OrderSummaryCard'
 import OrderDetailsCard from './OrderDetailsCard'
 import OrderCommentsCard from './OrderCommentsCard'
 import CalendarMobileWizard from './CalendarMobileWizard'
+import { areSortedIdArraysEqual, toCalendarApiDateTime } from 'helpers/calendar'
 import classes from './classes.module.scss'
 
 const CalendarOrderDetail: FC = () => {
@@ -34,6 +36,7 @@ const CalendarOrderDetail: FC = () => {
   const isCreateMode = !orderId
   const isMobile = useIsMobile()
   const { isTPM, isTranslator, isClient } = useCalendarRole()
+  const { institutionUserId } = useAuth()
 
   const { order, isLoading } = useFetchCalendarOrderDetail(
     isCreateMode ? null : (orderId ?? null)
@@ -111,7 +114,7 @@ const CalendarOrderDetail: FC = () => {
     setDomainIds(order.tags?.map((t) => t.id) ?? [])
   }, [order])
 
-  const isDirty =
+  const hasFieldChanges =
     isEditing &&
     !!order &&
     (selectedDate !== dayjs(order.start_at).format('YYYY-MM-DD') ||
@@ -126,21 +129,22 @@ const CalendarOrderDetail: FC = () => {
       clientInstitutionId !== (order.client_institution_user?.id ?? '') ||
       referenceNumber !== (order.reference_number ?? '') ||
       languageId !== order.language.id ||
-      JSON.stringify([...domainIds].sort()) !==
-        JSON.stringify([...(order.tags?.map((tag) => tag.id) ?? [])].sort()) ||
-      localFiles.length > 0)
+      !areSortedIdArraysEqual(
+        domainIds,
+        order.tags?.map((tag) => tag.id) ?? []
+      ))
+  const canSaveEdits = hasFieldChanges || localFiles.length > 0
 
   const startIso =
     selectedDate && startTimeInput
-      ? dayjs(`${selectedDate}T${startTimeInput}:00`)
-          .toISOString()
-          .replace(/\.\d+Z$/, 'Z')
+      ? toCalendarApiDateTime(
+          dayjs(`${selectedDate}T${startTimeInput}:00`).toISOString()
+        )
       : null
   const endIso = startIso
-    ? dayjs(startIso)
-        .add(durationMinutes, 'minute')
-        .toISOString()
-        .replace(/\.\d+Z$/, 'Z')
+    ? toCalendarApiDateTime(
+        dayjs(startIso).add(durationMinutes, 'minute').toISOString()
+      )
     : null
 
   const slotMatchingParams =
@@ -194,20 +198,27 @@ const CalendarOrderDetail: FC = () => {
         ? t('calendar.status_cancelled')
         : order.status === 'ACCEPTED'
           ? t('calendar.status_completed')
-          : isTranslator
-            ? t('calendar.status_ongoing')
-            : t('calendar.status_confirmed')
+          : order.status === 'IN_PROGRESS'
+            ? t('calendar.status_in_progress')
+            : isTranslator
+              ? t('calendar.status_ongoing')
+              : t('calendar.status_confirmed')
     : ''
 
   const isPast =
     isCancelled || order?.status === 'CANCELLED' || order?.status === 'ACCEPTED'
+  const isOwner =
+    !isClient || order?.client_institution_user?.id === institutionUserId
   const canModify =
-    (isTPM || isClient) &&
+    (isTPM || (isClient && isOwner)) &&
     !isCancelled &&
-    (order?.status === 'NEW' || order?.status === 'REGISTERED')
+    (order?.status === 'NEW' ||
+      order?.status === 'REGISTERED' ||
+      order?.status === 'IN_PROGRESS')
 
   const resetFields = () => {
     if (!order) return
+    setLocalFiles([])
     setSelectedDate(dayjs(order.start_at).format('YYYY-MM-DD'))
     setStartTimeInput(dayjs(order.start_at).format('HH:mm'))
     setDurationMinutes(orderDurationMins)
@@ -266,13 +277,12 @@ const CalendarOrderDetail: FC = () => {
 
   const handleSave = () => {
     if (!orderId) return
-    const saveStart = dayjs(`${selectedDate}T${startTimeInput}:00`)
-      .toISOString()
-      .replace(/\.\d+Z$/, 'Z')
-    const saveEnd = dayjs(saveStart)
-      .add(durationMinutes, 'minute')
-      .toISOString()
-      .replace(/\.\d+Z$/, 'Z')
+    const saveStart = toCalendarApiDateTime(
+      dayjs(`${selectedDate}T${startTimeInput}:00`).toISOString()
+    )
+    const saveEnd = toCalendarApiDateTime(
+      dayjs(saveStart).add(durationMinutes, 'minute').toISOString()
+    )
     updateOrder(
       {
         id: orderId,
@@ -321,9 +331,9 @@ const CalendarOrderDetail: FC = () => {
   const handleSaveDuration = () => {
     if (!orderId || !order || !durationEndTime) return
     const date = dayjs(order.start_at).format('YYYY-MM-DD')
-    const endIsoNew = dayjs(`${date}T${durationEndTime}:00`)
-      .toISOString()
-      .replace(/\.\d+Z$/, 'Z')
+    const endIsoNew = toCalendarApiDateTime(
+      dayjs(`${date}T${durationEndTime}:00`).toISOString()
+    )
     updateOrder(
       { id: orderId, end_at: endIsoNew },
       {
@@ -437,7 +447,8 @@ const CalendarOrderDetail: FC = () => {
     setPendingComment,
     addComment,
     isPostingComment,
-    isDirty,
+    hasFieldChanges,
+    canSaveEdits,
     isCreating,
     isUpdating,
     isCancelling,

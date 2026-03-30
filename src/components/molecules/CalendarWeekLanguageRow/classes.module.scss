@@ -133,12 +133,21 @@ $block-gap: 4px;
   flex-shrink: 0;
 }
 
+.vendorLabelEmo {
+  background: #fffbea;
+}
+
 // ─── Slot area ────────────────────────────────────────────────────────────────
 
 .slotArea {
   display: flex;
   height: $row-height;
   flex-shrink: 0;
+  background: $color-white;
+}
+
+.slotAreaEmo {
+  background: #fffbea;
 }
 
 .dayGroup {
@@ -227,9 +236,12 @@ $block-gap: 4px;
   background: $color-secondary;
 }
 
-// Booked slot (my_bookings_count > 0) — darker blue
+// Booked slot — internal vendor (TPM week row per-block)
 .blockBooked {
   background: #1769ab;
+  flex-direction: row;
+  gap: 2px;
+  min-width: 0;
 }
 
 // Clickable booked slot
@@ -244,4 +256,45 @@ $block-gap: 4px;
 // Vendor unavailable block (partial-day vacation)
 .blockUnavailable {
   background: #efdbdb;
+}
+
+// Booked hours within a single 6h block (TPM vendor week row)
+.blockBookedWeek {
+  background: #fdebd8;
+  flex-direction: row;
+  gap: 2px;
+  padding: 0 4px;
+  min-width: 0;
+}
+
+.bookedBlockIcon {
+  width: 10px;
+  height: 10px;
+  color: #c07a30;
+  flex-shrink: 0;
+}
+
+.bookedBlockLabel {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: #c07a30;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bookedBlockIconInternal {
+  width: 10px;
+  height: 10px;
+  color: rgba(255, 255, 255, 0.92);
+  flex-shrink: 0;
+}
+
+.bookedBlockLabelInternal {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: rgba(255, 255, 255, 0.95);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

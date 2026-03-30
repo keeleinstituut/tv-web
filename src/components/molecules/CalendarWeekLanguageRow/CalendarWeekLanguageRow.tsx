@@ -1,20 +1,38 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
 import classNames from 'classnames'
 import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
 import PinIcon from 'assets/icons/pin.svg?react'
 import AlarmIcon from 'assets/icons/alarm.svg?react'
 import ClockIcon from 'assets/icons/clock.svg?react'
 import CalendarVendorBadge from 'components/atoms/CalendarVendorBadge/CalendarVendorBadge'
-import { CalendarLanguage, VendorWeekData } from 'types/calendar'
-import { useFetchCalendarWeekVendors } from 'hooks/requests/useCalendar'
-import { useCalendarExpansion } from 'components/contexts/CalendarContext'
+import {
+  BookedSlot,
+  CalendarLanguage,
+  VendorWeekData,
+  WeekSlot,
+} from 'types/calendar'
+import {
+  useFetchCalendarWeek,
+  useFetchCalendarWeekVendors,
+} from 'hooks/requests/useCalendar'
+import {
+  useCalendarExpansion,
+  useCalendarPanel,
+} from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import CalendarAddVendorRow from 'components/atoms/CalendarAddVendorRow/CalendarAddVendorRow'
 import classes from './classes.module.scss'
 
 const BLOCK_COUNT = 4 // 4 × 6h blocks per day
 const DAYS_IN_WEEK = 7
+
+function formatBookedHoursLabel(hours: number): string {
+  const h = Math.floor(hours)
+  const m = Math.round((hours - h) * 60)
+  return m === 0 ? `${h}h` : `${h}h ${m}min`
+}
 
 // ─── Summary block row (collapsed) ────────────────────────────────────────────
 
@@ -24,8 +42,30 @@ const WeekSummaryRow: FC<{
   onToggle: () => void
   expanded: boolean
   isTPM: boolean
+  /** Client "my bookings" uses orange; translator/vendor uses blue (not EMO). */
+  isClient: boolean
+  isTranslator: boolean
+  openWeekBookingPanel: (params: {
+    start_at: string
+    end_at: string
+    language_id: string
+    language: CalendarLanguage
+    bookings: BookedSlot[]
+  }) => void
   dayWidth?: number
-}> = ({ language, onTogglePin, onToggle, expanded, isTPM, dayWidth }) => {
+  slotsByDay?: Record<number, WeekSlot[]>
+}> = ({
+  language,
+  onTogglePin,
+  onToggle,
+  expanded,
+  isTPM,
+  isClient,
+  isTranslator,
+  openWeekBookingPanel,
+  dayWidth,
+  slotsByDay,
+}) => {
   const { t } = useTranslation()
   return (
     <div className={classes.rowWrapper}>
@@ -61,15 +101,126 @@ const WeekSummaryRow: FC<{
         )}
       </div>
       <div className={classes.slotArea}>
-        {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => (
-          <div
-            key={dayIdx}
-            className={classes.dayGroup}
-            style={
-              dayWidth ? { width: dayWidth, minWidth: dayWidth } : undefined
-            }
-          />
-        ))}
+        {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => {
+          const daySlots = slotsByDay?.[dayIdx] ?? []
+          const dayGroupStyle = dayWidth
+            ? { width: dayWidth, minWidth: dayWidth }
+            : undefined
+
+          if (!slotsByDay || daySlots.length === 0) {
+            return (
+              <div
+                key={dayIdx}
+                className={classes.dayGroup}
+                style={dayGroupStyle}
+              />
+            )
+          }
+
+          const dayBookings = daySlots.reduce(
+            (sum, s) => sum + s.my_bookings_count,
+            0
+          )
+          // Client: one orange banner for the whole day when "my bookings" exist.
+          // Translator/vendor: never use a day-wide banner — show blue per 6h slot only.
+          if (dayBookings > 0 && isClient) {
+            const hrs = daySlots.reduce((sum, s) => {
+              return sum + (s.my_bookings_count > 0 ? s.working_hours : 0)
+            }, 0)
+            const h = Math.floor(hrs)
+            const m = Math.round((hrs - h) * 60)
+            const label = m === 0 ? `${h}h` : `${h}h ${m}min`
+            return (
+              <div
+                key={dayIdx}
+                className={classes.dayGroup}
+                style={dayGroupStyle}
+              >
+                <div className={classes.dayBookedBanner}>
+                  <AlarmIcon className={classes.bookedIcon} />
+                  <span className={classes.bookedLabel}>{label}</span>
+                </div>
+              </div>
+            )
+          }
+
+          const blockSlots: Array<WeekSlot | undefined> =
+            Array(BLOCK_COUNT).fill(undefined)
+          for (const slot of daySlots) {
+            const h = dayjs(slot.start_at).hour()
+            const idx = Math.floor(h / 6)
+            if (idx >= 0 && idx < BLOCK_COUNT) blockSlots[idx] = slot
+          }
+
+          return (
+            <div
+              key={dayIdx}
+              className={classes.dayGroup}
+              style={dayGroupStyle}
+            >
+              {blockSlots.map((slot, blockIdx) => {
+                const hasVendorBooking =
+                  !isClient && !!slot && slot.my_bookings_count > 0
+                const hasAvail = !!slot && slot.available_vendors > 0
+                const title =
+                  hasVendorBooking && slot
+                    ? formatBookedHoursLabel(slot.working_hours)
+                    : undefined
+                const bookingList = slot?.my_bookings ?? []
+                const isClickableTranslatorSlot =
+                  isTranslator &&
+                  hasVendorBooking &&
+                  bookingList.length > 0 &&
+                  !!slot
+                const openPicker = () => {
+                  if (!slot || bookingList.length === 0) return
+                  openWeekBookingPanel({
+                    start_at: slot.start_at,
+                    end_at: slot.end_at,
+                    language_id: language.language.id,
+                    language,
+                    bookings: bookingList,
+                  })
+                }
+                return (
+                  <div
+                    key={blockIdx}
+                    role={isClickableTranslatorSlot ? 'button' : undefined}
+                    tabIndex={isClickableTranslatorSlot ? 0 : undefined}
+                    className={classNames(classes.block, {
+                      [classes.blockBooked]: hasVendorBooking,
+                      [classes.blockVendorAvail]: hasAvail && !hasVendorBooking,
+                      [classes.blockOff]:
+                        !slot || (!hasVendorBooking && !hasAvail),
+                      [classes.blockClickable]: isClickableTranslatorSlot,
+                    })}
+                    title={title}
+                    onClick={
+                      isClickableTranslatorSlot
+                        ? (e) => {
+                            e.stopPropagation()
+                            openPicker()
+                          }
+                        : undefined
+                    }
+                    onKeyDown={
+                      isClickableTranslatorSlot
+                        ? (e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              openPicker()
+                            }
+                          }
+                        : undefined
+                    }
+                  />
+                )
+              })}
+              <div className={classNames(classes.block, classes.blockOff)} />
+            </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -82,23 +233,29 @@ const VendorRow: FC<{
   dayWidth?: number
 }> = ({ vendor, dayWidth }) => {
   const { t } = useTranslation()
+  const isEmo = !vendor.is_internal
   return (
     <div className={classes.vendorRowWrapper}>
-      <div className={classes.vendorLabel}>
+      <div
+        className={classNames(classes.vendorLabel, {
+          [classes.vendorLabelEmo]: isEmo,
+        })}
+      >
         <CalendarVendorBadge
           vendorId={vendor.id}
           name={vendor.institution_user.name}
+          isEmo={isEmo}
         />
       </div>
-      <div className={classes.slotArea}>
+      <div
+        className={classNames(classes.slotArea, {
+          [classes.slotAreaEmo]: isEmo,
+        })}
+      >
         {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => {
           const daySlots = vendor.slots.slice(
             dayIdx * BLOCK_COUNT,
             dayIdx * BLOCK_COUNT + BLOCK_COUNT
-          )
-          const dayBookedHours = daySlots.reduce(
-            (sum, s) => sum + (s.booked_hours ?? 0),
-            0
           )
           const dayUnavailable = daySlots.every((s) => s.on_vacation)
 
@@ -123,41 +280,52 @@ const VendorRow: FC<{
             )
           }
 
-          if (dayBookedHours > 0) {
-            const h = Math.floor(dayBookedHours)
-            const m = Math.round((dayBookedHours - h) * 60)
-            const bookedLabel = m === 0 ? `${h}h` : `${h}h ${m}min`
-            return (
-              <div
-                key={dayIdx}
-                className={classes.dayGroup}
-                style={dayGroupStyle}
-              >
-                <div className={classes.dayBookedBanner}>
-                  <AlarmIcon className={classes.bookedIcon} />
-                  <span className={classes.bookedLabel}>{bookedLabel}</span>
-                </div>
-              </div>
-            )
-          }
-
           return (
             <div
               key={dayIdx}
               className={classes.dayGroup}
               style={dayGroupStyle}
             >
-              {daySlots.map((slot, blockIdx) => (
-                <div
-                  key={blockIdx}
-                  className={classNames(classes.block, {
-                    [classes.blockUnavailable]: slot.on_vacation,
-                    [classes.blockVendorAvail]:
-                      !slot.on_vacation && slot.available,
-                    [classes.blockOff]: !slot.on_vacation && !slot.available,
-                  })}
-                />
-              ))}
+              {daySlots.map((slot, blockIdx) => {
+                const booked = (slot.booked_hours ?? 0) > 0
+                return (
+                  <div
+                    key={blockIdx}
+                    className={classNames(classes.block, {
+                      [classes.blockBookedWeek]:
+                        booked && !slot.on_vacation && isEmo,
+                      [classes.blockBooked]:
+                        booked && !slot.on_vacation && !isEmo,
+                      [classes.blockUnavailable]: slot.on_vacation,
+                      [classes.blockVendorAvail]:
+                        !slot.on_vacation && !booked && slot.available,
+                      [classes.blockOff]:
+                        !slot.on_vacation && !booked && !slot.available,
+                    })}
+                  >
+                    {booked && !slot.on_vacation && (
+                      <>
+                        <AlarmIcon
+                          className={
+                            isEmo
+                              ? classes.bookedBlockIcon
+                              : classes.bookedBlockIconInternal
+                          }
+                        />
+                        <span
+                          className={
+                            isEmo
+                              ? classes.bookedBlockLabel
+                              : classes.bookedBlockLabelInternal
+                          }
+                        >
+                          {formatBookedHoursLabel(slot.booked_hours ?? 0)}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )
+              })}
               <div className={classNames(classes.block, classes.blockOff)} />
             </div>
           )
@@ -183,7 +351,8 @@ const CalendarWeekLanguageRow: FC<Props> = ({
   dayWidth,
 }) => {
   const { isLanguageExpanded, toggleLanguageExpanded } = useCalendarExpansion()
-  const { isTPM } = useCalendarRole()
+  const { openWeekBookingPanel } = useCalendarPanel()
+  const { isTPM, isClient, isTranslator } = useCalendarRole()
   const expanded =
     isTPM && (language.pinned || isLanguageExpanded(language.language.id))
 
@@ -191,6 +360,32 @@ const CalendarWeekLanguageRow: FC<Props> = ({
     date,
     expanded ? language.language.id : undefined
   )
+
+  const { data: weekData } = useFetchCalendarWeek(date)
+
+  const slotsByDay = useMemo(() => {
+    if (!weekData) return undefined
+    const langData = weekData.languages.find(
+      (l) => l.language_id === language.language.id
+    )
+    if (!langData?.slots.length) return undefined
+    const ws = dayjs(weekData.week_start).startOf('day')
+    const grouped: Record<number, WeekSlot[]> = {}
+    for (const slot of langData.slots) {
+      const localStart = dayjs(slot.start_at)
+      const dayIdx = localStart.startOf('day').diff(ws, 'day')
+      if (dayIdx < 0 || dayIdx > 6) continue
+      if (!grouped[dayIdx]) grouped[dayIdx] = []
+      grouped[dayIdx].push(slot)
+    }
+    for (const key of Object.keys(grouped)) {
+      grouped[Number(key)].sort(
+        (a, b) =>
+          new Date(a.start_at).getTime() - new Date(b.start_at).getTime()
+      )
+    }
+    return grouped
+  }, [weekData, language.language.id])
 
   const vendors =
     expanded && vendorData && 'vendors' in vendorData ? vendorData.vendors : []
@@ -203,7 +398,11 @@ const CalendarWeekLanguageRow: FC<Props> = ({
         onToggle={() => toggleLanguageExpanded(language.language.id)}
         expanded={expanded}
         isTPM={isTPM}
+        isClient={isClient}
+        isTranslator={isTranslator}
+        openWeekBookingPanel={openWeekBookingPanel}
         dayWidth={dayWidth}
+        slotsByDay={slotsByDay}
       />
       {expanded &&
         vendors.map((vendor) => (

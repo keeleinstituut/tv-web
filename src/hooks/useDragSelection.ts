@@ -12,6 +12,7 @@ interface Options {
   totalSlots: number
   slotWidth: number
   isSlotBooked: (slotIndex: number) => boolean
+  isSlotFullyBooked?: (slotIndex: number) => boolean
   onDragComplete: (startIso: string, endIso: string) => void
 }
 
@@ -22,6 +23,7 @@ export function useDragSelection({
   totalSlots,
   slotWidth,
   isSlotBooked,
+  isSlotFullyBooked,
   onDragComplete,
 }: Options) {
   const { t } = useTranslation()
@@ -97,12 +99,25 @@ export function useDragSelection({
       }
     }
 
+    if (isSlotFullyBooked) {
+      for (let i = startIdx; i < endIdx; i++) {
+        if (isSlotFullyBooked(i)) {
+          showNotification({
+            type: NotificationTypes.Warning,
+            title: t('notification.announcement'),
+            content: t('calendar.slot_fully_booked_warning'),
+          })
+          break
+        }
+      }
+    }
+
     const startIso = slotIndexToIso(startIdx, date, dayStartHour)
     const endIso = slotIndexToIso(endIdx, date, dayStartHour)
     onDragComplete(startIso, endIso)
     setDragStart(null)
     setDragEnd(null)
-  }, [dragStart, dragEnd, date, dayStartHour, isSlotBooked, onDragComplete, t])
+  }, [dragStart, dragEnd, date, dayStartHour, isSlotBooked, isSlotFullyBooked, onDragComplete, t])
 
   const selectionLeft = isDragging
     ? Math.min(dragStart!, dragEnd!) * slotWidth + 4

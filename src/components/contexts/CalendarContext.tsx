@@ -94,11 +94,15 @@ interface CalendarPanelContextType {
     start_at: string
     end_at: string
     language_id: string
+    language: CalendarLanguage
+    bookings: BookedSlot[]
   } | null
   openWeekBookingPanel: (params: {
     start_at: string
     end_at: string
     language_id: string
+    language: CalendarLanguage
+    bookings: BookedSlot[]
   }) => void
   closeWeekBookingPanel: () => void
 }
@@ -144,6 +148,8 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
     start_at: string
     end_at: string
     language_id: string
+    language: CalendarLanguage
+    bookings: BookedSlot[]
   } | null>(null)
 
   // Nav callbacks
@@ -214,7 +220,13 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [])
 
   const openWeekBookingPanel = useCallback(
-    (params: { start_at: string; end_at: string; language_id: string }) => {
+    (params: {
+      start_at: string
+      end_at: string
+      language_id: string
+      language: CalendarLanguage
+      bookings: BookedSlot[]
+    }) => {
       setWeekBookingPanel(params)
     },
     []

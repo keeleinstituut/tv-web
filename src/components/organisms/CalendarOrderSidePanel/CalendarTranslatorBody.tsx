@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
-import { normalizeUrl } from 'helpers/calendar'
 import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
 import { useSidePanel } from './SidePanelContext'
+import OrderServiceLocationReadonly from './OrderServiceLocationReadonly'
 import DurationStepper from './DurationStepper'
 import SlotMetaSection from './SlotMetaSection'
 import classes from './classes.module.scss'
@@ -133,74 +133,12 @@ const CalendarTranslatorBody: FC = () => {
           )}
         </div>
 
-        {slot?.assignment?.service_type && (
-          <div className={classes.formGroup}>
-            <label className={classes.label}>{t('calendar.order_way')}</label>
-            <span className={classes.readValue}>
-              {slot.assignment.service_type === 'REMOTE'
-                ? t('calendar.service_type_remote')
-                : t('calendar.service_type_contact')}
-            </span>
-          </div>
-        )}
-        {slot?.assignment?.location && (
-          <div className={classes.formGroup}>
-            <label className={classes.label}>{t('calendar.location')}</label>
-            <span className={classes.readValue}>
-              {slot.assignment.location}
-            </span>
-          </div>
-        )}
-        {slot?.assignment?.meeting_link && (
-          <div className={classes.formGroup}>
-            <label className={classes.label}>
-              {t('calendar.meeting_link')}
-            </label>
-            <div className={classes.meetingLinkRow}>
-              <a
-                className={classes.meetingLink}
-                href={normalizeUrl(slot.assignment.meeting_link)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {slot.assignment.meeting_link}
-              </a>
-              <button
-                className={classes.copyBtn}
-                onClick={() =>
-                  navigator.clipboard.writeText(
-                    normalizeUrl(slot.assignment?.meeting_link ?? '')
-                  )
-                }
-                title={t('label.copy' as never)}
-              >
-                <svg
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                >
-                  <rect
-                    x="7"
-                    y="7"
-                    width="10"
-                    height="10"
-                    rx="1.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M13 7V5C13 4.17 12.33 3.5 11.5 3.5H4.5C3.67 3.5 3 4.17 3 5v7c0 .83.67 1.5 1.5 1.5H7"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
+        <OrderServiceLocationReadonly
+          variant="translator"
+          serviceType={slot?.assignment?.service_type}
+          location={slot?.assignment?.location}
+          meetingLink={slot?.assignment?.meeting_link}
+        />
 
         {/* Collapsible metaandmed */}
         <SlotMetaSection

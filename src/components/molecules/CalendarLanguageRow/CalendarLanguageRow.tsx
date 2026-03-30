@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef } from 'react'
+import { FC, useCallback, useEffect, useMemo, useRef } from 'react'
 import dayjs from 'dayjs'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -9,7 +9,6 @@ import PinIcon from 'assets/icons/pin.svg?react'
 import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
 import { formatDuration } from 'helpers/calendar'
 import { BookedSlot, CalendarDayResponse, CalendarLanguage } from 'types/calendar'
-import { useFetchCalendarWeek } from 'hooks/requests/useCalendar'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
 import classes from './classes.module.scss'
@@ -235,29 +234,47 @@ const CalendarLanguageRow: FC<Props> = ({
 }) => {
   const sw = slotWidth ?? SLOT_WIDTH_PX
   const { t } = useTranslation()
-  const { data: weekData } = useFetchCalendarWeek(readOnly ? '' : date)
-  const { pendingDeepLink, setPendingDeepLink, openSidePanel } =
+  const { sidePanelSelection, pendingDeepLink, setPendingDeepLink, openSidePanel } =
     useCalendarPanel()
-  const bookedSlots =
+
+  const rawBookedSlots =
     dayData?.booked_slots_by_language[language.language.id] ??
     dayData?.booked_slots ??
     []
 
-  const langWeekSlots =
-    weekData?.languages.find((l) => l.language_id === language.language.id)
-      ?.slots ?? null
+  const activePrebookForLang =
+    sidePanelSelection &&
+    !sidePanelSelection.slot &&
+    sidePanelSelection.language.language.id === language.language.id &&
+    sidePanelSelection.startIso &&
+    sidePanelSelection.endIso
+
+  const bookedSlots = useMemo(() => {
+    if (!activePrebookForLang) return rawBookedSlots
+    const syntheticPrebook: BookedSlot = {
+      start_at: sidePanelSelection!.startIso,
+      end_at: sidePanelSelection!.endIso,
+      type: 'prebook',
+      assignment: null,
+    }
+    return [...rawBookedSlots, syntheticPrebook]
+  }, [rawBookedSlots, activePrebookForLang, sidePanelSelection])
+
+  const langAvailSlots =
+    dayData?.available_slots_by_language?.[language.language.id]
 
   const isSlotFullyBooked = useCallback(
     (slotIndex: number): boolean => {
-      if (!langWeekSlots) return false
-      const hourOfDay = dayStartHour + slotIndex * 0.5
-      const blockInDay = Math.floor(hourOfDay / 6)
-      const weekDayOffset = dayjs(date).diff(dayjs(weekData!.week_start), 'day')
-      if (weekDayOffset < 0 || weekDayOffset > 6) return false
-      const slot = langWeekSlots[weekDayOffset * 4 + blockInDay]
-      return !!slot && slot.available_vendors === 0
+      if (!langAvailSlots) return false
+      const slotStart = dayjs(slotIndexToIso(slotIndex, date, dayStartHour))
+      const slotEnd = dayjs(slotIndexToIso(slotIndex + 1, date, dayStartHour))
+      return !langAvailSlots.some(
+        (a) =>
+          dayjs(a.start_at).isBefore(slotEnd) &&
+          dayjs(a.end_at).isAfter(slotStart)
+      )
     },
-    [langWeekSlots, weekData, date, dayStartHour]
+    [langAvailSlots, date, dayStartHour]
   )
 
   useEffect(() => {
@@ -310,6 +327,7 @@ const CalendarLanguageRow: FC<Props> = ({
     totalSlots,
     slotWidth: sw,
     isSlotBooked,
+    isSlotFullyBooked,
     onDragComplete: (startIso, endIso) =>
       onSelectRange?.(language.language.id, startIso, endIso),
   })
@@ -472,9 +490,9 @@ const CalendarLanguageRow: FC<Props> = ({
 
         {/* Booked slot blocks */}
         {!isExpanded &&
-          bookedSlots.map((slot) => (
+          bookedSlots.map((slot, idx) => (
             <BookedSlotBlock
-              key={`${slot.start_at}-${slot.type}`}
+              key={`${slot.start_at}-${slot.type}-${idx}`}
               slot={slot}
               dayStartHour={dayStartHour}
               onClick={onClickSlot}

@@ -4,8 +4,8 @@ import classNames from 'classnames'
 import dayjs from 'dayjs'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
-import { normalizeUrl } from 'helpers/calendar'
 import { useSidePanel } from './SidePanelContext'
+import OrderServiceLocationReadonly from './OrderServiceLocationReadonly'
 import SlotMetaSection from './SlotMetaSection'
 import classes from './classes.module.scss'
 
@@ -73,45 +73,12 @@ const CalendarClientPastBody: FC = () => {
           )}
         </div>
 
-        {slot?.assignment?.service_type && (
-          <>
-            <div className={classes.formGroup}>
-              <span className={classes.label}>{t('calendar.order_way')}</span>
-              <span className={classes.readValue}>
-                {slot.assignment.service_type === 'REMOTE'
-                  ? t('calendar.service_type_remote')
-                  : t('calendar.service_type_contact')}
-              </span>
-            </div>
-            {slot.assignment.service_type === 'ON_SITE' &&
-              slot.assignment.location && (
-                <div className={classes.formGroup}>
-                  <span className={classes.label}>
-                    {t('calendar.location')}
-                  </span>
-                  <span className={classes.readValueBlue}>
-                    {slot.assignment.location}
-                  </span>
-                </div>
-              )}
-            {slot.assignment.service_type === 'REMOTE' &&
-              slot.assignment.meeting_link && (
-                <div className={classes.formGroup}>
-                  <span className={classes.label}>
-                    {t('calendar.meeting_link')}
-                  </span>
-                  <a
-                    className={classes.meetingLink}
-                    href={normalizeUrl(slot.assignment.meeting_link)}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {slot.assignment.meeting_link}
-                  </a>
-                </div>
-              )}
-          </>
-        )}
+        <OrderServiceLocationReadonly
+          variant="past"
+          serviceType={slot?.assignment?.service_type}
+          location={slot?.assignment?.location}
+          meetingLink={slot?.assignment?.meeting_link}
+        />
 
         {/* Collapsible metaandmed */}
         <SlotMetaSection

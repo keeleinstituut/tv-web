@@ -23,7 +23,6 @@ import {
   ApiCalendarMonthResponse,
   ApiSlotMatchingVendor,
   ApiCalendarSearchResponse,
-  ApiVendorCalendarEntry,
   transformLanguages,
   transformDayResponse,
   transformWeekResponse,
@@ -33,7 +32,11 @@ import {
 dayjs.extend(isoWeek)
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
+import { toCalendarApiDateTime } from 'helpers/calendar'
 import { useCalendarRole } from 'hooks/useCalendarRole'
+import { t } from 'i18next'
+import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
+import { NotificationTypes } from 'components/molecules/Notification/Notification'
 
 // ---------------------------------------------------------------------------
 // Hooks
@@ -94,9 +97,17 @@ export const useFetchCalendarWeek = (date: string) => {
   return { isLoading, isError, data }
 }
 
+function mondayOf(d: dayjs.Dayjs) {
+  const day = d.day()
+  return d.add(day === 0 ? -6 : 1 - day, 'day')
+}
+
 export const useFetchCalendarMonth = (date: string) => {
-  const dateFrom = dayjs(date).startOf('month').format('YYYY-MM-DD')
-  const dateTo = dayjs(date).endOf('month').format('YYYY-MM-DD')
+  const firstVisibleDay = mondayOf(dayjs(date).startOf('month'))
+  const lastDay = dayjs(date).endOf('month')
+  const lastVisibleDay = mondayOf(lastDay).add(6, 'day')
+  const dateFrom = firstVisibleDay.format('YYYY-MM-DD')
+  const dateTo = lastVisibleDay.format('YYYY-MM-DD')
 
   const { isLoading, isError, data } = useQuery<CalendarMonthResponse>({
     queryKey: ['calendar-month', dateFrom, dateTo],
@@ -171,8 +182,10 @@ export const useFetchCalendarMonthVendors = (
   date: string,
   languageId?: string
 ) => {
-  const dateFrom = dayjs(date).startOf('month').format('YYYY-MM-DD')
-  const dateTo = dayjs(date).endOf('month').format('YYYY-MM-DD')
+  const firstVisibleDay = mondayOf(dayjs(date).startOf('month'))
+  const lastVisibleDay = mondayOf(dayjs(date).endOf('month')).add(6, 'day')
+  const dateFrom = firstVisibleDay.format('YYYY-MM-DD')
+  const dateTo = lastVisibleDay.format('YYYY-MM-DD')
 
   const { isLoading, isError, data } = useQuery<
     CalendarMonthResponse,
@@ -254,8 +267,8 @@ export const useCreatePrebook = () => {
     }) =>
       apiClient.post(endpoints.CALENDAR_PREBOOK, {
         ...params,
-        start_at: params.start_at.replace(/\.\d+Z$/, 'Z'),
-        end_at: params.end_at.replace(/\.\d+Z$/, 'Z'),
+        start_at: toCalendarApiDateTime(params.start_at),
+        end_at: toCalendarApiDateTime(params.end_at),
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
@@ -302,8 +315,8 @@ export const useFetchSlotMatching = (
       const raw: ApiSlotMatchingVendor[] = await apiClient
         .get(endpoints.CALENDAR_SLOT_MATCHING, {
           language_id: params!.language_id,
-          start_at: params!.start_at.replace(/\.\d+Z$/, 'Z'),
-          end_at: params!.end_at.replace(/\.\d+Z$/, 'Z'),
+          start_at: toCalendarApiDateTime(params!.start_at),
+          end_at: toCalendarApiDateTime(params!.end_at),
         })
         .then((res: { data: ApiSlotMatchingVendor[] }) => res.data)
       return raw.map((v) => ({
@@ -326,8 +339,8 @@ export const useCreateCalendarOrder = () => {
         .post(endpoints.PROJECTS, {
           is_calendar_project: true,
           destination_language_classifier_value_ids: [payload.language_id],
-          event_start_at: payload.start_at.replace(/\.\d+Z$/, 'Z'),
-          event_end_at: payload.end_at.replace(/\.\d+Z$/, 'Z'),
+          event_start_at: toCalendarApiDateTime(payload.start_at),
+          event_end_at: toCalendarApiDateTime(payload.end_at),
           service_type: payload.service_type,
           ...(payload.reference_number
             ? { reference_number: payload.reference_number }
@@ -384,10 +397,10 @@ export const useUpdateCalendarOrder = () => {
           ? { meeting_link: payload.meeting_link }
           : {}),
         ...(payload.start_at
-          ? { event_start_at: payload.start_at.replace(/\.\d+Z$/, 'Z') }
+          ? { event_start_at: toCalendarApiDateTime(payload.start_at) }
           : {}),
         ...(payload.end_at
-          ? { event_end_at: payload.end_at.replace(/\.\d+Z$/, 'Z') }
+          ? { event_end_at: toCalendarApiDateTime(payload.end_at) }
           : {}),
         ...(payload.tag_ids?.length ? { tags: payload.tag_ids } : {}),
         ...(payload.client_institution_id
@@ -513,7 +526,19 @@ const transformProjectDetail = (
       value: string
       name: string
     }>) ?? []
-  const lang = langs[0] ?? { id: '', value: '', name: '' }
+  const subProjects = (raw.sub_projects ?? []) as Array<{
+    destination_language_classifier_value?: {
+      id: string
+      value: string
+      name: string
+    }
+  }>
+  const lang = langs[0] ??
+    subProjects[0]?.destination_language_classifier_value ?? {
+      id: '',
+      value: '',
+      name: '',
+    }
 
   const clientUser = raw.client_institution_user as
     | {
@@ -662,8 +687,34 @@ export const useCalendarDownloadFile = ({
         { responseType: 'blob' }
       )
     },
-    onSuccess: (data, { file_name }) => {
-      const url = URL.createObjectURL(data as Blob)
+    onSuccess: async (data, { file_name }) => {
+      if (!(data instanceof Blob)) {
+        showNotification({
+          type: NotificationTypes.Error,
+          title: t('notification.error'),
+          content: t('calendar.download_failed'),
+        })
+        return
+      }
+      if (data.type.includes('json')) {
+        try {
+          const text = await data.text()
+          const parsed = JSON.parse(text) as { message?: string }
+          showNotification({
+            type: NotificationTypes.Error,
+            title: t('notification.error'),
+            content: parsed.message ?? t('calendar.download_failed'),
+          })
+        } catch {
+          showNotification({
+            type: NotificationTypes.Error,
+            title: t('notification.error'),
+            content: t('calendar.download_failed'),
+          })
+        }
+        return
+      }
+      const url = URL.createObjectURL(data)
       const a = document.createElement('a')
       a.href = url
       a.download = file_name
@@ -820,41 +871,6 @@ export const useDeleteEmergencySchedule = () => {
       })
     },
   })
-}
-
-// ---------------------------------------------------------------------------
-// Stub hooks (endpoints not yet available in backend)
-// ---------------------------------------------------------------------------
-
-export const useFetchWeekSlotBookings = (
-  params: { start_at: string; end_at: string; language_id: string } | null
-) => {
-  const { isLoading, isError, data } = useQuery({
-    queryKey: ['calendar-week-slot-bookings', params],
-    queryFn: async () => {
-      const entries: ApiVendorCalendarEntry[] = await apiClient
-        .get(endpoints.CALENDAR_VENDOR_ENTRIES, {
-          date_from: params!.start_at.slice(0, 10),
-          date_to: params!.end_at.slice(0, 10),
-          assignments_only: true,
-        })
-        .then((res: { data: ApiVendorCalendarEntry[] }) => res.data)
-      return entries
-        .filter(
-          (e) =>
-            e.type === 'assignment' &&
-            e.assignment != null &&
-            e.start_at >= params!.start_at &&
-            e.start_at < params!.end_at
-        )
-        .map((e) => ({
-          id: e.assignment!.id,
-          ext_id: e.assignment!.ext_id,
-        }))
-    },
-    enabled: !!params,
-  })
-  return { isLoading, isError, bookings: data ?? [] }
 }
 
 // ---------------------------------------------------------------------------

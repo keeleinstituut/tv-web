@@ -1,12 +1,12 @@
 import { createContext, useContext, RefObject } from 'react'
 import { Dayjs } from 'dayjs'
-import { CalendarOrderDetail } from 'types/calendar'
-import { CalendarLanguage } from 'types/calendar'
+import { SlotMatchingVendor } from 'hooks/requests/useCalendar'
+import { CalendarLanguage, CalendarOrderDetail } from 'types/calendar'
+
 export interface TagOption {
   id: string
   name: string
 }
-import { SlotMatchingVendor } from 'hooks/requests/useCalendar'
 
 export interface OrderDetailContextValue {
   // Remote data
@@ -89,7 +89,10 @@ export interface OrderDetailContextValue {
   addComment: (comment: string) => void
   isPostingComment: boolean
 
-  isDirty: boolean
+  /** Form fields differ from loaded order (excludes pending file uploads). */
+  hasFieldChanges: boolean
+  /** Save should be enabled when fields changed and/or files are staged. */
+  canSaveEdits: boolean
   // Async flags
   isCreating: boolean
   isUpdating: boolean

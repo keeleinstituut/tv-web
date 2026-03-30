@@ -247,23 +247,21 @@ const SummaryFields: FC = () => {
     return (
       <>
         {isTPM && (
-          <>
-            <div className={classes.field}>
-              <span className={classes.fieldLabel}>{t('calendar.client')}</span>
-              <span className={classes.fieldValue}>
-                {order!.client?.name || '–'}
-              </span>
-            </div>
-            <div className={classes.field}>
-              <span className={classes.fieldLabel}>
-                {t('calendar.reference_number')}
-              </span>
-              <span className={classes.fieldValue}>
-                {order!.reference_number || '–'}
-              </span>
-            </div>
-          </>
+          <div className={classes.field}>
+            <span className={classes.fieldLabel}>{t('calendar.client')}</span>
+            <span className={classes.fieldValue}>
+              {order!.client?.name || '–'}
+            </span>
+          </div>
         )}
+        <div className={classes.field}>
+          <span className={classes.fieldLabel}>
+            {t('calendar.reference_number')}
+          </span>
+          <span className={classes.fieldValue}>
+            {order!.reference_number || '–'}
+          </span>
+        </div>
         <div className={classes.field}>
           <span className={classes.fieldLabel}>{t('calendar.language')}</span>
           <span className={classes.fieldValue}>{order!.language.name}</span>
@@ -380,8 +378,6 @@ const OrderSummaryCard: FC = () => {
   const {
     order,
     isCreateMode,
-    isEditing,
-    isUpdating,
     isCreating,
     metaOpen,
     setMetaOpen,

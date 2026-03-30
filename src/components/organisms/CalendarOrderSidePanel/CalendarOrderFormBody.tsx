@@ -4,7 +4,6 @@ import classNames from 'classnames'
 import { ServiceType } from 'types/calendar'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
-import AttachIcon from 'assets/icons/attach.svg?react'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DeleteIcon from 'assets/icons/delete.svg?react'
@@ -348,23 +347,6 @@ const CalendarOrderFormBody: FC = () => {
             </Button>
           </div>
         </div>
-      )}
-
-      {/* Tagasiside tõlketeenusele — only for existing orders */}
-      {isViewMode && (
-        <>
-          <div className={classes.divider} />
-          <div className={classes.sectionRow}>
-            <div className={classes.sectionLabel}>
-              <AttachIcon className={classes.sectionIcon} />
-              <span>{t('calendar.translation_feedback')}</span>
-            </div>
-            <button className={classes.sectionBtn}>
-              {t('calendar.add_short')}
-              <AddIcon style={{ width: 16, height: 16 }} />
-            </button>
-          </div>
-        </>
       )}
     </>
   )

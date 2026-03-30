@@ -3,6 +3,7 @@ export type CalendarView = 'day' | 'week' | 'month'
 export type CalendarProjectStatus =
   | 'NEW'
   | 'REGISTERED'
+  | 'IN_PROGRESS'
   | 'CANCELLED'
   | 'SUBMITTED_TO_CLIENT'
   | 'REJECTED'
@@ -86,6 +87,11 @@ export interface CalendarDayResponse {
   booked_slots_by_language: Record<string, BookedSlot[]>
   /** TPM role: vendor-level breakdown per language */
   tpm_vendors?: Array<{ language_id: string; vendors: VendorDayData[] }>
+  /** Client role: time ranges with available vendors, grouped by language_id */
+  available_slots_by_language?: Record<
+    string,
+    Array<{ start_at: string; end_at: string }>
+  >
 }
 
 // --- Week view ---
@@ -96,6 +102,8 @@ export interface WeekSlot {
   working_hours: number
   available_vendors: number
   my_bookings_count: number
+  /** Translator week: assignment entries for this 6h slot (from week API). */
+  my_bookings?: BookedSlot[]
 }
 
 export interface LanguageWeekData {
@@ -256,18 +264,6 @@ export interface CalendarOrderDetail {
   }>
 }
 
-// --- Week slot bookings (Teostaja panel) ---
-
-export interface WeekSlotBooking {
-  id: string
-  ext_id: string
-  language: { id: string; value: string; name: string }
-}
-
-export interface WeekSlotBookingsResponse {
-  bookings: WeekSlotBooking[]
-}
-
 // --- Search ---
 
 export interface CalendarSearchParams {
@@ -377,12 +373,14 @@ export interface ApiVendorCalendarEntry {
 export interface ApiAssignmentSummary {
   id: string
   ext_id: string
+  sub_project_id?: string
   event_start_at?: string
   deadline_at?: string
   status: 'NEW' | 'IN_PROGRESS' | 'DONE'
   subProject?: {
     id: string
     ext_id: string
+    project_id?: string
     project?: {
       id: string
       ext_id: string
@@ -392,21 +390,16 @@ export interface ApiAssignmentSummary {
       meeting_link?: string
       reference_number?: string
       client_institution_user?: {
-        user: {
-          forename: string
-          surname: string
-          email: string
-          phone?: string
-        }
-        institution: { name: string }
+        id: string
+        email?: string
+        phone?: string
+        user?: { forename?: string; surname?: string }
+        institution?: { name?: string }
       }
       manager_institution_user?: {
-        user: {
-          forename: string
-          surname: string
-          email: string
-          phone?: string
-        }
+        email?: string
+        phone?: string
+        user?: { forename?: string; surname?: string }
       }
     }
   }
@@ -642,6 +635,55 @@ function isTpmDayShape(
   return 'vendor_ids' in (tpm.available_slots[0] ?? {})
 }
 
+function buildAssignmentFromEntry(
+  e: ApiVendorCalendarEntry
+): BookedSlotAssignment | null {
+  if (!e.assignment_id) return null
+  const subProj = e.assignment?.subProject
+  const proj = subProj?.project
+  const clientUser = proj?.client_institution_user
+  const managerUser = proj?.manager_institution_user
+  const projectId =
+    proj?.id ??
+    subProj?.project_id ??
+    e.assignment?.sub_project_id ??
+    e.assignment_id
+  return {
+    id: e.assignment_id,
+    status: (proj?.status ??
+      e.assignment?.status) as BookedSlotAssignment['status'],
+    service_type: proj?.service_type,
+    location: proj?.location,
+    meeting_link: proj?.meeting_link,
+    reference_number: proj?.reference_number,
+    client: clientUser
+      ? {
+          name: [clientUser.user?.forename, clientUser.user?.surname]
+            .filter(Boolean)
+            .join(' '),
+          institution: clientUser.institution?.name ?? '',
+          email: clientUser.email ?? '',
+          phone: clientUser.phone ?? '',
+        }
+      : undefined,
+    coordinator: managerUser
+      ? {
+          name: [managerUser.user?.forename, managerUser.user?.surname]
+            .filter(Boolean)
+            .join(' '),
+          email: managerUser.email ?? '',
+          phone: managerUser.phone ?? '',
+        }
+      : undefined,
+    sub_project: {
+      id: projectId,
+      ext_id: proj?.ext_id ?? e.assignment?.ext_id ?? '',
+      source_language: { id: '', value: '', name: '' },
+      destination_language: { id: '', value: '', name: '' },
+    },
+  }
+}
+
 export function transformDayResponse(
   api: ApiCalendarDayResponse,
   isTPM?: boolean
@@ -655,19 +697,7 @@ export function transformDayResponse(
         start_at: e.start_at,
         end_at: e.end_at,
         type: e.type,
-        assignment: e.assignment
-          ? {
-              id: e.assignment.id,
-              ext_id: e.assignment.ext_id,
-              status: e.assignment.status as BookedSlotAssignment['status'],
-              sub_project: {
-                id: e.assignment.id,
-                ext_id: e.assignment.ext_id,
-                source_language: { id: '', value: '', name: '' },
-                destination_language: { id: '', value: '', name: '' },
-              },
-            }
-          : null,
+        assignment: buildAssignmentFromEntry(e),
       })),
       booked_slots_by_language: {},
     }
@@ -690,53 +720,7 @@ export function transformDayResponse(
           start_at: e.start_at,
           end_at: e.end_at,
           type: e.type,
-          assignment: e.assignment_id
-            ? (() => {
-                const proj = e.assignment?.subProject?.project
-                const clientUser = proj?.client_institution_user
-                const managerUser = proj?.manager_institution_user
-                return {
-                  id: e.assignment_id,
-                  status: (proj?.status ??
-                    e.assignment?.status) as BookedSlotAssignment['status'],
-                  service_type: proj?.service_type,
-                  location: proj?.location,
-                  meeting_link: proj?.meeting_link,
-                  reference_number: proj?.reference_number,
-                  client: clientUser
-                    ? {
-                        name: [
-                          clientUser.user.forename,
-                          clientUser.user.surname,
-                        ]
-                          .filter(Boolean)
-                          .join(' '),
-                        institution: clientUser.institution.name,
-                        email: clientUser.user.email,
-                        phone: clientUser.user.phone ?? '',
-                      }
-                    : undefined,
-                  coordinator: managerUser
-                    ? {
-                        name: [
-                          managerUser.user.forename,
-                          managerUser.user.surname,
-                        ]
-                          .filter(Boolean)
-                          .join(' '),
-                        email: managerUser.user.email,
-                        phone: managerUser.user.phone ?? '',
-                      }
-                    : undefined,
-                  sub_project: {
-                    id: proj?.id ?? e.assignment_id,
-                    ext_id: proj?.ext_id ?? e.assignment?.ext_id ?? '',
-                    source_language: { id: '', value: '', name: '' },
-                    destination_language: { id: '', value: '', name: '' },
-                  },
-                }
-              })()
-            : null,
+          assignment: buildAssignmentFromEntry(e),
         })),
         available_slots: tpm.available_slots
           .filter((s) => s.vendor_ids.includes(v.id))
@@ -766,15 +750,78 @@ export function transformDayResponse(
 
   // Client shape: booked_slots grouped by language_id
   const clientShape = api as ApiCalendarDayClientShape
+
+  const assignmentEntries = (clientShape.calendar_entries ?? []).filter(
+    (e) => e.type === 'assignment' && e.assignment_id
+  )
+
+  const findOverlappingEntry = (startAt: string, endAt: string) =>
+    assignmentEntries.find(
+      (e) =>
+        new Date(e.start_at) < new Date(endAt) &&
+        new Date(e.end_at) > new Date(startAt)
+    )
+
+  const unassigned = clientShape.unassigned_projects ?? []
+  const findOverlappingUnassigned = (startAt: string, endAt: string) =>
+    unassigned.find((p) => {
+      const pStart = new Date(p.event_start_at)
+      const pEnd = p.event_end_at ? new Date(p.event_end_at) : null
+      if (pEnd) {
+        return pStart < new Date(endAt) && pEnd > new Date(startAt)
+      }
+      return pStart >= new Date(startAt) && pStart < new Date(endAt)
+    })
+
+  function buildAssignmentFromUnassigned(
+    p: ApiUnassignedProject
+  ): BookedSlotAssignment {
+    return {
+      id: p.id,
+      status: p.status as BookedSlotAssignment['status'],
+      sub_project: {
+        id: p.id,
+        ext_id: p.ext_id,
+        source_language: { id: '', value: '', name: '' },
+        destination_language: { id: '', value: '', name: '' },
+      },
+      service_type: (p.service_type as 'REMOTE' | 'ON_SITE') ?? undefined,
+      location: p.location ?? undefined,
+      meeting_link: p.meeting_link ?? undefined,
+    }
+  }
+
   const byLanguage: Record<string, BookedSlot[]> = {}
   for (const slot of clientShape.booked_slots ?? []) {
+    const entry = findOverlappingEntry(slot.start_at, slot.end_at)
+    const unassignedProject = !entry
+      ? findOverlappingUnassigned(slot.start_at, slot.end_at)
+      : null
+    const isOwn = !!entry || !!unassignedProject
     for (const langId of slot.languages) {
       if (!byLanguage[langId]) byLanguage[langId] = []
       byLanguage[langId].push({
+        start_at: entry?.start_at ?? slot.start_at,
+        end_at: entry?.end_at ?? slot.end_at,
+        type: isOwn ? (entry?.type ?? 'assignment') : 'external_calendar',
+        assignment: entry
+          ? buildAssignmentFromEntry(entry)
+          : unassignedProject
+            ? buildAssignmentFromUnassigned(unassignedProject)
+            : null,
+      })
+    }
+  }
+  const availByLanguage: Record<
+    string,
+    Array<{ start_at: string; end_at: string }>
+  > = {}
+  for (const slot of clientShape.available_slots ?? []) {
+    for (const langId of slot.languages) {
+      if (!availByLanguage[langId]) availByLanguage[langId] = []
+      availByLanguage[langId].push({
         start_at: slot.start_at,
         end_at: slot.end_at,
-        type: 'assignment',
-        assignment: null,
       })
     }
   }
@@ -782,6 +829,7 @@ export function transformDayResponse(
     current_time: new Date().toISOString(),
     booked_slots: [],
     booked_slots_by_language: byLanguage,
+    available_slots_by_language: availByLanguage,
   }
 }
 
@@ -967,6 +1015,16 @@ export function transformWeekResponse(
     const languageIds = Array.from(
       new Set(vendor.slots.map((s) => s.language_id))
     )
+    const assignmentHours = (entries: ApiVendorCalendarEntry[]) =>
+      entries
+        .filter((e) => e.type === 'assignment')
+        .reduce(
+          (sum, e) =>
+            sum +
+            (new Date(e.end_at).getTime() - new Date(e.start_at).getTime()) /
+              3600000,
+          0
+        )
     return {
       current_time: new Date().toISOString(),
       week_start: wStart,
@@ -976,13 +1034,26 @@ export function transformWeekResponse(
         total_vendors: 0,
         slots: vendor.slots
           .filter((s) => s.language_id === langId)
-          .map((s) => ({
-            start_at: s.start_at,
-            end_at: s.end_at,
-            working_hours: 6,
-            available_vendors: 0,
-            my_bookings_count: s.calendar_entries.length,
-          })),
+          .map((s) => {
+            const entries = s.calendar_entries ?? []
+            const assignmentEntries = entries.filter(
+              (e) => e.type === 'assignment'
+            )
+            const bookingCount = assignmentEntries.length
+            return {
+              start_at: s.start_at,
+              end_at: s.end_at,
+              working_hours: assignmentHours(entries),
+              available_vendors: 0,
+              my_bookings_count: bookingCount,
+              my_bookings: assignmentEntries.map((e) => ({
+                start_at: e.start_at,
+                end_at: e.end_at,
+                type: e.type,
+                assignment: buildAssignmentFromEntry(e),
+              })),
+            }
+          }),
       })),
     }
   }

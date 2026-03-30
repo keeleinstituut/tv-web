@@ -4,9 +4,15 @@ import { endpoints } from 'api/endpoints'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
-import { formatDuration } from 'helpers/calendar'
+import {
+  apiServiceTypeToForm,
+  areSortedIdArraysEqual,
+  formatDuration,
+  toCalendarApiDateTime,
+} from 'helpers/calendar'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
+import { useAuth } from 'components/contexts/AuthContext'
 import {
   useCreateCalendarOrder,
   useUpdateCalendarOrder,
@@ -40,6 +46,7 @@ const CalendarOrderSidePanel: FC = () => {
   const { sidePanelSelection, closeSidePanel } = useCalendarPanel()
   const { isTPM, isClient, isTranslator } = useCalendarRole()
   const navigate = useNavigate()
+  const { institutionUserId } = useAuth()
   const { mutate: createOrder, isPending: isCreating } =
     useCreateCalendarOrder()
   const { mutate: updateOrder, isPending: isUpdating } =
@@ -108,18 +115,23 @@ const CalendarOrderSidePanel: FC = () => {
   const { mutate: addComment, isPending: isPostingComment } =
     useAddCalendarOrderComment(projectId)
 
-  const canEdit = isTPM || isClient
+  const isOwner =
+    !isClient || order?.client_institution_user?.id === institutionUserId
+  const canEdit = isTPM || (isClient && isOwner)
   const isRequiredFilled =
     !!referenceNumber.trim() &&
     !!serviceType &&
     !!location.trim() &&
     (!isTPM || !!clientInstitutionId) &&
     (!isTPM || !!vendorId)
-  const isPastSlot =
-    isCancelled ||
-    slot?.assignment?.status === 'DONE' ||
-    slot?.assignment?.status === 'ACCEPTED' ||
-    slot?.assignment?.status === 'CANCELLED'
+  const assignmentStatus = slot?.assignment?.status
+  const assignmentTerminal =
+    assignmentStatus === 'DONE' ||
+    assignmentStatus === 'ACCEPTED' ||
+    assignmentStatus === 'CANCELLED'
+  const orderTerminal =
+    order?.status === 'ACCEPTED' || order?.status === 'CANCELLED'
+  const isPastSlot = isCancelled || assignmentTerminal || orderTerminal
   const isClientPastView = isClient && isViewMode && isPastSlot
 
   // Slot matching for TPM — only fetch in form mode
@@ -184,13 +196,7 @@ const CalendarOrderSidePanel: FC = () => {
       if (isTPM && sidePanelSelection?.slot?.assignment?.status === 'NEW') {
         const a = sidePanelSelection.slot.assignment
         setReferenceNumber(a.reference_number ?? '')
-        setServiceType(
-          a.service_type === 'REMOTE'
-            ? 'kaugtolge'
-            : a.service_type === 'ON_SITE'
-              ? 'kontakttolge'
-              : ''
-        )
+        setServiceType(apiServiceTypeToForm(a.service_type))
         setLocation(a.meeting_link ?? a.location ?? '')
       }
     }
@@ -304,8 +310,7 @@ const CalendarOrderSidePanel: FC = () => {
     setIsEditing(true)
     setIsConfirmingCancel(false)
     const st = slot?.assignment?.service_type
-    const initServiceType: ServiceType =
-      st === 'REMOTE' ? 'kaugtolge' : st === 'ON_SITE' ? 'kontakttolge' : ''
+    const initServiceType = apiServiceTypeToForm(st)
     const initLocation =
       slot?.assignment?.location ?? order?.meeting_link ?? order?.location ?? ''
     const initReferenceNumber = slot?.assignment?.reference_number ?? ''
@@ -348,8 +353,6 @@ const CalendarOrderSidePanel: FC = () => {
   const handleSaveEdit = () => {
     if (!projectId) return
     const b = editBaselineRef.current
-    const arraysEqual = (a: string[], c: string[]) =>
-      JSON.stringify([...a].sort()) === JSON.stringify([...c].sort())
 
     const payload: UpdateOrderPayload = { id: projectId }
 
@@ -373,7 +376,7 @@ const CalendarOrderSidePanel: FC = () => {
     if (isTPM && (!b || clientInstitutionId !== b.clientInstitutionId)) {
       payload.client_institution_id = clientInstitutionId || undefined
     }
-    if (!b || !arraysEqual(domainIds, b.domainIds)) {
+    if (!b || !areSortedIdArraysEqual(domainIds, b.domainIds)) {
       payload.tag_ids = domainIds.length ? domainIds : undefined
     }
     if (isTPM && !vendorLocked && (!b || vendorId !== b.vendorId)) {
@@ -464,9 +467,9 @@ const CalendarOrderSidePanel: FC = () => {
 
   const handleSaveDuration = () => {
     if (!projectId || !startIso) return
-    const newEndIso = dayjs(startIso)
-      .add(durationMinutes, 'minute')
-      .toISOString()
+    const newEndIso = toCalendarApiDateTime(
+      dayjs(startIso).add(durationMinutes, 'minute').toISOString()
+    )
     updateOrder(
       { id: projectId, end_at: newEndIso },
       {
