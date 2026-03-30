@@ -102,11 +102,11 @@ export const endpoints = {
   CALENDAR_PREBOOK: translationOrder('calendar/prebook'),
   CALENDAR_VENDOR_ENTRIES: translationOrder('calendar/vendor-entries'),
 
-  TRANSLATION_MEMORIES: translationMemory('tags'),
-  IMPORT_TMX: translationMemory('tm/import'),
-  EXPORT_TMX: translationMemory('tm/export'),
+  TRANSLATION_MEMORIES: translationOrder('catv2/translation-memories'),
+  IMPORT_TMX: translationOrder('catv2/translation-memories/import'),
+  EXPORT_TMX: translationOrder('catv2/translation-memories/export'),
   TM_STATS: translationMemory('tm/stats'),
-  TM_CONTENT_CHECKS: translationMemory('content-checks'),
+  TM_CONTENT_CHECKS: translationOrder('catv2/translation-memories/content-checks'),
 
   AUDIT_LOGS: auditLog('event-records'),
   AUDIT_LOG_ACTIONS: auditLog('event-records/actions'),

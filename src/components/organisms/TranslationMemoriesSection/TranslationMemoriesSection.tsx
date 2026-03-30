@@ -153,23 +153,21 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   isVendor,
 }: TranslationMemoriesSectionProps<TFormValues>) => {
   const { t } = useTranslation()
-  const { translationMemories = [] } = useFetchTranslationMemories({
+  const { translationMemories = [], translationMemoriesSegmentCounts } = useFetchTranslationMemories({
+    initialFilters: {
+      with_segment_count: 1
+    },
     disabled: isVendor || hidden,
     key: 'sectionKey',
   })
   const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys({ subProjectId })
   const { toggleTmWritable } = useToggleTmWritable({ subProjectId })
-  const { tmChunkAmounts } = useFetchTmChunkAmounts({
-    disabled: isVendor || hidden,
-  })
   const { userInfo } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
 
   const translationMemoriesToUse = isVendor
     ? cat_tm_keys_meta?.tags
     : translationMemories
-
-  const chunksToUse = isVendor ? cat_tm_keys_stats?.tag : tmChunkAmounts
 
   const tmIds = map(subProjectTmKeyObjectsArray, 'key')
   const filteredData = filter(translationMemoriesToUse, ({ id }) =>
@@ -185,14 +183,14 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
           name: tm?.name,
           main_write: find(subProjectTmKeyObjectsArray, { key: tm.id })
             ?.is_writable,
-          chunk_amount: chunksToUse?.[tm.id] || 0,
+          chunk_amount: translationMemoriesSegmentCounts![tm.id],
           delete_button: tm?.id,
           institution_id: tm?.institution_id,
           tm_key_id: find(subProjectTmKeyObjectsArray, { key: tm.id })?.id,
           type: tm.type,
         }
       }),
-    [filteredData, subProjectTmKeyObjectsArray, chunksToUse]
+    [filteredData, subProjectTmKeyObjectsArray]
   )
 
   const handleDelete = useCallback(

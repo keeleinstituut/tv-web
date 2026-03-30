@@ -27,6 +27,7 @@ export interface TranslationMemoryType {
 export interface TranslationMemoryDataType {
   tags?: TranslationMemoryType[]
   data?: TranslationMemoryType[]
+  segment_counts?: Record<string, number>
 }
 
 export interface TranslationMemoryPostType {
@@ -54,6 +55,7 @@ export type TranslationMemoryFilters = {
   type?: TMType | TMType[]
   tv_domain?: string | string[]
   tv_tags?: string[]
+  with_segment_count?: number
 } & PaginationFunctionType &
   SortingFunctionType
 
