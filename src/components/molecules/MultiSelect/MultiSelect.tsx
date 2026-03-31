@@ -1,5 +1,6 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useRef, useState } from 'react'
 import classNames from 'classnames'
+import { useClickAway } from 'ahooks'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import classes from './classes.module.scss'
 
@@ -28,18 +29,7 @@ const MultiSelect: FC<Props> = ({
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
-        setIsOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  useClickAway(() => setIsOpen(false), containerRef)
 
   const toggleOption = (id: string) => {
     onChange(

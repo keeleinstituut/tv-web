@@ -66,6 +66,7 @@ export const useFetchCalendarDay = (date: string) => {
       return transformDayResponse(res.data, isTPM)
     },
     enabled: !!date,
+    staleTime: 2 * 60 * 1000,
   })
   return { isLoading, isError, data }
 }
@@ -88,6 +89,7 @@ export const useFetchCalendarWeek = (date: string) => {
       )
     },
     enabled: !!date,
+    staleTime: 2 * 60 * 1000,
   })
   return { isLoading, isError, data }
 }
@@ -117,6 +119,7 @@ export const useFetchCalendarMonth = (date: string) => {
       )
     },
     enabled: !!date,
+    staleTime: 2 * 60 * 1000,
   })
   return { isLoading, isError, data }
 }

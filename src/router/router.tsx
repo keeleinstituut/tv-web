@@ -58,8 +58,7 @@ import InstitutionIcon from 'assets/icons/settings.svg?react'
 import TechnicalIcon from 'assets/icons/technical.svg?react'
 import ManualIcon from 'assets/icons/question_mark.svg?react'
 import TermsIcon from 'assets/icons/terms_icon.svg?react'
-// Re-enable when calendar should appear in the side menu again:
-// import CalendarIcon from 'assets/icons/calendar_menu.svg?react'
+import CalendarIcon from 'assets/icons/calendar_menu.svg?react'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,
@@ -156,10 +155,8 @@ export const protectedRoutes: FullRouteObject[] = [
   },
   {
     path: 'calendar',
-    // Hidden from side menu: MenuItems renders null when `label` is missing (see SideBar).
-    // Routes below stay active; direct URLs e.g. /calendar still work.
-    // label: i18n.t('menu.calendar'),
-    // Icon: CalendarIcon,
+    label: i18n.t('menu.calendar'),
+    Icon: CalendarIcon,
     element: (
       <CalendarAccessGuard>
         <Outlet />

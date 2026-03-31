@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useFetchCalendarLanguages } from 'hooks/requests/useCalendar'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 
@@ -11,18 +12,14 @@ export function useVisibleCalendarLanguages(
     dateTo
   )
 
-  const sorted = [...languages].sort(
-    (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0)
-  )
+  const visibleLanguages = useMemo(() => {
+    const sorted = [...languages].sort(
+      (a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0)
+    )
+    return focusedLanguageId
+      ? sorted.filter((l) => l.language.id === focusedLanguageId)
+      : sorted
+  }, [languages, focusedLanguageId])
 
-  const visibleLanguages = focusedLanguageId
-    ? sorted.filter((l) => l.language.id === focusedLanguageId)
-    : sorted
-
-  return {
-    languages,
-    visibleLanguages,
-    isLoading,
-    isError,
-  }
+  return { languages, visibleLanguages, isLoading, isError }
 }

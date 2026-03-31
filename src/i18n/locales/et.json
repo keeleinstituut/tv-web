@@ -872,13 +872,15 @@
       "Tõlkemälud": "Tõlkemälu",
       "Teostaja": "Teostaja",
       "Tellimus": "Tellimuse",
-      "Oskused": "Oskuse"
+      "Oskused": "Oskuse",
+      "Valdkond": "Valdkonnad"
     },
     "type": {
       "Tõlkemälud": "Tõlkemälud",
       "Teostaja": "Teostaja",
       "Tellimus": "Tellimus",
-      "Oskused": "Oskused"
+      "Oskused": "Oskused",
+      "Valdkond": "Valdkond"
     }
   },
   "projects": {

@@ -48,7 +48,7 @@ const CalendarToolbar: FC = () => {
 
   useEffect(() => {
     setIsSearching(isSearching)
-  }, [isSearching])
+  }, [isSearching, setIsSearching])
 
   const [searchLangId, setSearchLangId] = useState('')
   const [searchDate, setSearchDate] = useState('')
