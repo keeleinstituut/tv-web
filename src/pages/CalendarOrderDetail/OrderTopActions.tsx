@@ -20,30 +20,43 @@ const OrderTopActions: FC = () => {
     setIsEditing,
     isUpdating,
     isCancelling,
-    isCancelPending,
     cancelCountdown,
     handleSave,
     handleCancelOrder,
     handleUndoCancel,
     resetFields,
+    showScheduledCancelBanner,
+    isRefetchingOrder,
   } = useOrderDetail()
 
+  const refetchBusy = isRefetchingOrder
+
   if (isCreateMode) return null
-  console.log('isCancelPending', isCancelPending, order?.cancel_at)
   return (
     <div className={classes.topActions}>
-      {order?.cancel_at && isCancelPending && (
-        <div className={classes.pendingCancelBanner}>
+      {showScheduledCancelBanner && (
+        <div
+          className={classes.pendingCancelBanner}
+          role="status"
+          aria-live="polite"
+        >
           <strong>{t('calendar.cancel_pending_title')}</strong>
           <span className={classes.cancelPendingText}>
-            {t('calendar.cancel_confirmed_body').replace(
-              '30 s',
-              `${cancelCountdown}s`
-            )}
+            {order?.cancel_at
+              ? t('calendar.cancel_pending_body', {
+                  date: dayjs(order.cancel_at).format(
+                    'DD.MM.YYYY [kell] HH:mm'
+                  ),
+                })
+              : t('calendar.cancel_confirmed_body').replace(
+                  '30 s',
+                  `${cancelCountdown}s`
+                )}
           </span>
           <Button
             appearance={AppearanceTypes.Secondary}
             onClick={handleUndoCancel}
+            disabled={refetchBusy}
           >
             {t('calendar.decline_cancel')}
           </Button>
@@ -54,7 +67,7 @@ const OrderTopActions: FC = () => {
           <Button
             appearance={AppearanceTypes.Primary}
             onClick={handleSave}
-            disabled={isUpdating || !canSaveEdits}
+            disabled={refetchBusy || isUpdating || !canSaveEdits}
           >
             {isUpdating ? t('calendar.saving') : t('calendar.save')}
           </Button>
@@ -64,6 +77,7 @@ const OrderTopActions: FC = () => {
               resetFields()
               setIsEditing(false)
             }}
+            disabled={refetchBusy}
           >
             {t('calendar.cancel_changes')}
           </Button>
@@ -74,12 +88,14 @@ const OrderTopActions: FC = () => {
           <Button
             appearance={AppearanceTypes.Secondary}
             onClick={() => setIsEditing(true)}
+            disabled={refetchBusy}
           >
             {t('calendar.edit')}
           </Button>
           <Button
             appearance={AppearanceTypes.Secondary}
             onClick={() => setIsConfirmingCancel(true)}
+            disabled={refetchBusy}
           >
             {t('calendar.cancel_order')}
           </Button>
@@ -97,12 +113,13 @@ const OrderTopActions: FC = () => {
               placeholder={t('calendar.cancel_reason_placeholder')}
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
+              disabled={refetchBusy}
             />
           </div>
           <Button
             appearance={AppearanceTypes.Primary}
             onClick={handleCancelOrder}
-            disabled={isCancelling || !cancelReason.trim()}
+            disabled={refetchBusy || isCancelling || !cancelReason.trim()}
           >
             {t('calendar.void_confirm_yes')}
           </Button>
@@ -112,6 +129,7 @@ const OrderTopActions: FC = () => {
               setIsConfirmingCancel(false)
               setCancelReason('')
             }}
+            disabled={refetchBusy}
           >
             {t('calendar.void_confirm_no')}
           </Button>

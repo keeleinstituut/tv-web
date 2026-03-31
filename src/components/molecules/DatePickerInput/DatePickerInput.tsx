@@ -87,6 +87,11 @@ const DatePickerComponent = ({
         minDate={minDate ? minDate : undefined}
         maxDate={maxDate ? maxDate : undefined}
         preventOpenOnFocus={true}
+        onInputClick={() => {
+          if (!disabled) {
+            calendarRef.current?.setOpen(true)
+          }
+        }}
         onKeyDown={handleKeyDown}
         onBlur={onBlur}
         {...rest}

@@ -12,6 +12,8 @@ export interface OrderDetailContextValue {
   // Remote data
   order: CalendarOrderDetail | null
   isLoading: boolean
+  /** Background refetch of order (e.g. after cancel). */
+  isRefetchingOrder: boolean
   languages: CalendarLanguage[]
   domains: TagOption[]
   vendors: SlotMatchingVendor[]
@@ -24,6 +26,8 @@ export interface OrderDetailContextValue {
 
   // Derived
   isPast: boolean
+  /** Same rule as calendar side panel pending-cancel yellow banner. */
+  showScheduledCancelBanner: boolean
   canModify: boolean
   startDt: Dayjs | null
   endDt: Dayjs | null

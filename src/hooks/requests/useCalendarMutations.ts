@@ -35,6 +35,10 @@ function invalidateCalendarProjectCaches(
     queryClient.invalidateQueries({ queryKey: ['calendar-week'] }),
     queryClient.invalidateQueries({ queryKey: ['calendar-month'] }),
     queryClient.invalidateQueries({ queryKey: ['projects', projectId] }),
+    queryClient.invalidateQueries({ queryKey: ['calendar-slot-matching'] }),
+    queryClient.invalidateQueries({ queryKey: ['vendor-calendar-entries'] }),
+    queryClient.invalidateQueries({ queryKey: ['vendor-calendar'] }),
+    queryClient.invalidateQueries({ queryKey: ['emergency-schedules'] }),
   ])
 }
 
@@ -57,7 +61,6 @@ export const useCreatePrebook = () => {
         end_at: toCalendarApiDateTime(params.end_at),
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
       queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
     },
   })

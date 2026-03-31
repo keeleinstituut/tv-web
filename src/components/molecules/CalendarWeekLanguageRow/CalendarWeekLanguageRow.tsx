@@ -239,19 +239,22 @@ const WeekSummaryRow: FC<{
                       ? formatBookedHoursLabel(slot.working_hours)
                       : undefined
                   const bookingList = slot?.my_bookings ?? []
+                  const selectableBookings = bookingList.filter(
+                    (b) => b.assignment?.sub_project?.id
+                  )
                   const isClickableTranslatorSlot =
                     isTranslator &&
                     hasVendorBooking &&
-                    bookingList.length > 0 &&
+                    selectableBookings.length > 0 &&
                     !!slot
                   const openPicker = () => {
-                    if (!slot || bookingList.length === 0) return
+                    if (!slot || selectableBookings.length === 0) return
                     openWeekBookingPanel({
                       start_at: slot.start_at,
                       end_at: slot.end_at,
                       language_id: language.language.id,
                       language,
-                      bookings: bookingList,
+                      bookings: selectableBookings,
                     })
                   }
                   return (

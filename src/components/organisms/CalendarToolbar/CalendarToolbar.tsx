@@ -16,7 +16,9 @@ import {
   useCalendarSearch,
   useFetchCalendarLanguages,
 } from 'hooks/requests/useCalendar'
+import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
 import { toCalendarApiDateTime } from 'helpers/calendar'
+import { openNativeDateTimePicker } from 'helpers/nativeDateTimeInput'
 import { CalendarView } from 'types/calendar'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -187,14 +189,17 @@ const CalendarToolbar: FC = () => {
                   className={classes.searchDatetime}
                   value={searchDate}
                   onChange={(e) => setSearchDate(e.target.value)}
+                  onClick={openNativeDateTimePicker}
                 />
                 <span className={classes.searchDateSep} />
-                <input
-                  type="time"
-                  className={classes.searchDatetime}
-                  value={searchTime}
-                  onChange={(e) => setSearchTime(e.target.value)}
-                />
+                <div className={classes.searchDatetimeSlot}>
+                  <CalendarTimeSelect
+                    allowEmpty
+                    className={classes.searchDatetime}
+                    value={searchTime}
+                    onChange={setSearchTime}
+                  />
+                </div>
               </div>
             </div>
 

@@ -292,7 +292,7 @@ export const useFetchCalendarTags = () => {
 }
 
 export const useFetchCalendarOrderDetail = (id: string | null) => {
-  const { isLoading, isError, data } = useQuery({
+  const { isLoading, isFetching, isError, data } = useQuery({
     queryKey: ['calendar-order-detail', id],
     enabled: !!id,
     queryFn: () =>
@@ -302,7 +302,12 @@ export const useFetchCalendarOrderDetail = (id: string | null) => {
           transformProjectDetail(unwrapCalendarProjectPayload(res))
         ),
   })
-  return { order: data ?? null, isLoading, isError }
+  return {
+    order: data ?? null,
+    isLoading,
+    isFetching,
+    isError,
+  }
 }
 
 export const useFetchVendorCalendarEntries = (params: {

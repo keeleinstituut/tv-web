@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import dayjs from 'dayjs'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import DownloadIcon from 'assets/icons/download.svg?react'
+import { calendarBookingStatusLabelKey } from 'helpers/calendarBookingStatus'
 import { useSidePanel } from './SidePanelContext'
 import OrderServiceLocationReadonly from './OrderServiceLocationReadonly'
 import SlotMetaSection from './SlotMetaSection'
@@ -43,13 +44,15 @@ const CalendarTranslatorBody: FC = () => {
             ? t('calendar.status_cancelling')
             : order?.status === 'CANCELLED' || isCancelled
               ? t('calendar.status_cancelled')
-              : assignment?.status === 'DONE'
-                ? t('calendar.status_completed')
-                : assignment?.status === 'IN_PROGRESS'
-                  ? t('calendar.status_forwarded')
-                  : assignment?.status === 'CANCELLED'
-                    ? t('calendar.status_cancelled')
-                    : t('calendar.status_pending')}
+              : (t(
+                  calendarBookingStatusLabelKey(
+                    order?.status ?? assignment?.project_status ?? null,
+                    order?.sub_project_status ??
+                      assignment?.sub_project?.status ??
+                      null,
+                    'translator'
+                  ) as never
+                ) as string)}
         </div>
 
         <div className={classes.formGroup}>

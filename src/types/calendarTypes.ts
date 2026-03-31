@@ -10,6 +10,18 @@ export type CalendarProjectStatus =
   | 'CORRECTED'
   | 'ACCEPTED'
 
+/** Sub-project (language leg) status — drives calendar label while project is NEW/REGISTERED. */
+export type CalendarSubProjectStatus =
+  | 'REGISTERED'
+  | 'CANCELLED'
+  | 'TASKS_SUBMITTED_TO_VENDORS'
+  | 'TASKS_IN_PROGRESS'
+  | 'TASKS_COMPLETED'
+  | 'COMPLETED'
+
+/** Assignment row status (Teostaja task), distinct from project / sub-project. */
+export type BookedSlotAssignmentWorkflowStatus = 'NEW' | 'IN_PROGRESS' | 'DONE'
+
 export type ServiceType = 'kaugtolge' | 'kontakttolge' | ''
 
 export type SlotType =
@@ -41,12 +53,16 @@ export interface CalendarLanguagesResponse {
 export interface BookedSlotAssignment {
   id: string
   confirmed?: boolean
-  status?: 'NEW' | 'IN_PROGRESS' | 'DONE' | CalendarProjectStatus
+  /** Task / assignment workflow (calendar entry), not project status. */
+  status?: BookedSlotAssignmentWorkflowStatus
+  /** Parent project status from API (when embedded on calendar entry). */
+  project_status?: CalendarProjectStatus
   sub_project: {
     id: string
     ext_id: string
     source_language: { id: string; value: string; name: string }
     destination_language: { id: string; value: string; name: string }
+    status?: CalendarSubProjectStatus
   }
   service_type?: 'REMOTE' | 'ON_SITE'
   location?: string
@@ -226,6 +242,8 @@ export interface CalendarOrderDetail {
   id: string
   ext_id: string
   status: CalendarProjectStatus
+  /** First sub-project status — used with project NEW/REGISTERED for display. */
+  sub_project_status?: CalendarSubProjectStatus
   language: { id: string; value: string; name: string }
   start_at: string
   end_at: string
@@ -386,6 +404,7 @@ export interface ApiAssignmentSummary {
     ext_id: string
     project_id?: string
     destination_language_classifier_value_id?: string
+    status?: string
     project?: {
       id: string
       ext_id: string

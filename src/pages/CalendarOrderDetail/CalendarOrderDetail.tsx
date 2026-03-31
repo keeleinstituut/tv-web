@@ -25,6 +25,11 @@ import OrderDetailsCard from './OrderDetailsCard'
 import OrderCommentsCard from './OrderCommentsCard'
 import CalendarMobileWizard from './CalendarMobileWizard'
 import { areSortedIdArraysEqual, toCalendarApiDateTime } from 'helpers/calendar'
+import { calendarBookingStatusLabelKey } from 'helpers/calendarBookingStatus'
+import {
+  orderDetailIsPast,
+  showScheduledCancelBanner,
+} from 'helpers/calendarCancelUi'
 import classes from './classes.module.scss'
 
 const CalendarOrderDetail: FC = () => {
@@ -36,9 +41,11 @@ const CalendarOrderDetail: FC = () => {
   const { isTPM, isTranslator, isClient } = useCalendarRole()
   const { institutionUserId } = useAuth()
 
-  const { order, isLoading } = useFetchCalendarOrderDetail(
-    isCreateMode ? null : (orderId ?? null)
-  )
+  const {
+    order,
+    isLoading,
+    isFetching: isRefetchingOrder,
+  } = useFetchCalendarOrderDetail(isCreateMode ? null : (orderId ?? null))
   const { mutate: createOrder, isPending: isCreating } =
     useCreateCalendarOrder()
   const { mutate: updateOrder, isPending: isUpdating } =
@@ -203,27 +210,37 @@ const CalendarOrderDetail: FC = () => {
   const orderDurationMins = startDt && endDt ? endDt.diff(startDt, 'minute') : 0
   const durationLabel = formatMins(orderDurationMins)
 
+  const bookingStatusRole = isTPM
+    ? 'tpm'
+    : isTranslator
+      ? 'translator'
+      : 'client'
   const statusLabel = order
-    ? order.status === 'NEW'
-      ? t('calendar.status_pending')
-      : order.status === 'CANCELLED'
-        ? t('calendar.status_cancelled')
-        : order.status === 'ACCEPTED'
-          ? t('calendar.status_completed')
-          : order.status === 'IN_PROGRESS'
-            ? t('calendar.status_in_progress')
-            : isTranslator
-              ? t('calendar.status_ongoing')
-              : t('calendar.status_confirmed')
+    ? (t(
+        calendarBookingStatusLabelKey(
+          order.status,
+          order.sub_project_status,
+          bookingStatusRole
+        ) as never
+      ) as string)
     : ''
 
-  const isPast =
-    isCancelled || order?.status === 'CANCELLED' || order?.status === 'ACCEPTED'
+  const isPast = orderDetailIsPast({
+    order,
+    isCancelled,
+    isCancelPending,
+  })
+  const scheduledCancelBannerVisible = showScheduledCancelBanner({
+    order,
+    isCancelled,
+    isCancelPending,
+  })
   const isOwner =
     !isClient || order?.client_institution_user?.id === institutionUserId
   const canModify =
     (isTPM || (isClient && isOwner)) &&
     !isCancelled &&
+    !isPast &&
     (order?.status === 'NEW' ||
       order?.status === 'REGISTERED' ||
       order?.status === 'IN_PROGRESS')
@@ -334,6 +351,11 @@ const CalendarOrderDetail: FC = () => {
         setIsCancelled(false)
         setIsCancelPending(false)
         setCancelCountdown(30)
+        showNotification({
+          type: NotificationTypes.Success,
+          title: t('notification.announcement'),
+          content: t('success.calendar_cancel_declined'),
+        })
       },
     })
   }
@@ -361,6 +383,7 @@ const CalendarOrderDetail: FC = () => {
   const contextValue = {
     order: order ?? null,
     isLoading,
+    isRefetchingOrder,
     languages,
     domains,
     vendors,
@@ -369,6 +392,7 @@ const CalendarOrderDetail: FC = () => {
     isTranslator,
     isClient,
     isPast,
+    showScheduledCancelBanner: scheduledCancelBannerVisible,
     canModify,
     startDt,
     endDt,

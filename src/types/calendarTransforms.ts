@@ -27,6 +27,10 @@ import type {
   VendorWeekData,
   VendorWeekSlot,
 } from './calendarTypes'
+import {
+  normalizeCalendarProjectStatus,
+  normalizeCalendarSubProjectStatus,
+} from 'helpers/calendarBookingStatus'
 
 export function transformLanguages(
   api: ApiCalendarLanguagesResponse
@@ -109,8 +113,8 @@ function buildAssignmentFromEntry(
     e.assignment_id
   return {
     id: e.assignment_id,
-    status: (proj?.status ??
-      e.assignment?.status) as BookedSlotAssignment['status'],
+    status: e.assignment?.status as BookedSlotAssignment['status'],
+    project_status: normalizeCalendarProjectStatus(proj?.status ?? null),
     service_type: proj?.service_type,
     location: proj?.location,
     meeting_link: proj?.meeting_link,
@@ -139,6 +143,7 @@ function buildAssignmentFromEntry(
       ext_id: proj?.ext_id ?? e.assignment?.ext_id ?? '',
       source_language: { id: '', value: '', name: '' },
       destination_language: { id: '', value: '', name: '' },
+      status: normalizeCalendarSubProjectStatus(subProj?.status ?? null),
     },
   }
 }
@@ -257,7 +262,7 @@ export function transformDayResponse(
   ): BookedSlotAssignment {
     return {
       id: p.id,
-      status: p.status as BookedSlotAssignment['status'],
+      project_status: normalizeCalendarProjectStatus(p.status),
       sub_project: {
         id: p.id,
         ext_id: p.ext_id,

@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import { openNativeDateTimePicker } from 'helpers/nativeDateTimeInput'
 import { useOrderDetail } from './OrderDetailContext'
 import OrderTopActions from './OrderTopActions'
 import classes from './classes.module.scss'
@@ -134,12 +136,12 @@ const SummaryFields: FC = () => {
               className={classes.editInput}
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
+              onClick={openNativeDateTimePicker}
             />
-            <input
-              type="time"
-              className={classes.editInputNarrow}
+            <CalendarTimeSelect
+              className={classes.editTimeSelect}
               value={startTimeInput}
-              onChange={(e) => setStartTimeInput(e.target.value)}
+              onChange={setStartTimeInput}
             />
           </div>
         </div>
@@ -293,12 +295,12 @@ const SummaryFields: FC = () => {
             className={classes.editInput}
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
+            onClick={openNativeDateTimePicker}
           />
-          <input
-            type="time"
-            className={classes.editInputNarrow}
+          <CalendarTimeSelect
+            className={classes.editTimeSelect}
             value={startTimeInput}
-            onChange={(e) => setStartTimeInput(e.target.value)}
+            onChange={setStartTimeInput}
           />
         </div>
       </div>
@@ -357,6 +359,7 @@ const OrderSummaryCard: FC = () => {
     handleCreate,
     pendingComment,
     canCreateOrder,
+    isRefetchingOrder,
   } = useOrderDetail()
 
   return (
@@ -388,6 +391,11 @@ const OrderSummaryCard: FC = () => {
                 {t('calendar.order_prefix')} {order!.ext_id}
               </h1>
               <span className={classes.statusBadge}>{statusLabel}</span>
+              {isRefetchingOrder && (
+                <span className={classes.refetchingHint} aria-live="polite">
+                  {t('calendar.refetching_order')}
+                </span>
+              )}
             </div>
             <OrderTopActions />
           </>

@@ -7,13 +7,15 @@ import classes from './mobile.module.scss'
 type CancelPendingScreenProps = {
   cancelCountdown: number
   onUndoCancel: () => void
+  isRefetchingOrder?: boolean
 }
 
 export const CalendarMobileWizardCancelPendingScreen: FC<
   CancelPendingScreenProps
-> = ({ cancelCountdown, onUndoCancel }) => {
+> = ({ cancelCountdown, onUndoCancel, isRefetchingOrder }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const refetchBusy = Boolean(isRefetchingOrder)
   return (
     <div className={classes.wizard}>
       <div className={classes.cancelScreen}>
@@ -32,6 +34,7 @@ export const CalendarMobileWizardCancelPendingScreen: FC<
           appearance={AppearanceTypes.Primary}
           className={classes.footerBtn}
           onClick={onUndoCancel}
+          disabled={refetchBusy}
         >
           {t('calendar.undo_cancel')}
         </Button>
@@ -39,6 +42,7 @@ export const CalendarMobileWizardCancelPendingScreen: FC<
           appearance={AppearanceTypes.Secondary}
           className={classes.footerBtn}
           onClick={() => navigate('/calendar')}
+          disabled={refetchBusy}
         >
           {t('calendar.back_to_calendar')}
         </Button>
@@ -53,6 +57,7 @@ type CancelConfirmScreenProps = {
   isCancelling: boolean
   onConfirmCancel: () => void
   onDismiss: () => void
+  isRefetchingOrder?: boolean
 }
 
 export const CalendarMobileWizardCancelConfirmScreen: FC<
@@ -63,8 +68,10 @@ export const CalendarMobileWizardCancelConfirmScreen: FC<
   isCancelling,
   onConfirmCancel,
   onDismiss,
+  isRefetchingOrder,
 }) => {
   const { t } = useTranslation()
+  const refetchBusy = Boolean(isRefetchingOrder)
   return (
     <div className={classes.wizard}>
       <div className={classes.cancelScreen}>
@@ -78,6 +85,7 @@ export const CalendarMobileWizardCancelConfirmScreen: FC<
           value={cancelReason}
           onChange={(e) => onCancelReasonChange(e.target.value)}
           autoFocus
+          disabled={refetchBusy}
         />
       </div>
       <div className={classes.footer}>
@@ -85,7 +93,7 @@ export const CalendarMobileWizardCancelConfirmScreen: FC<
           appearance={AppearanceTypes.Primary}
           className={classes.footerBtn}
           onClick={onConfirmCancel}
-          disabled={isCancelling || !cancelReason.trim()}
+          disabled={refetchBusy || isCancelling || !cancelReason.trim()}
         >
           {isCancelling
             ? t('calendar.voiding')
@@ -95,6 +103,7 @@ export const CalendarMobileWizardCancelConfirmScreen: FC<
           appearance={AppearanceTypes.Secondary}
           className={classes.footerBtn}
           onClick={onDismiss}
+          disabled={refetchBusy}
         >
           {t('calendar.void_confirm_no')}
         </Button>

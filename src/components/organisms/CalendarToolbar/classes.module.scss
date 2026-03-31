@@ -1,4 +1,5 @@
 @use 'styles/variables' as *;
+@use 'styles/nativeDateTimeInput' as native;
 
 .toolbar {
   padding: 0 spacing(8);
@@ -324,6 +325,16 @@
   cursor: pointer;
   min-width: 0;
   width: 100%;
+
+  &[type='date'] {
+    @include native.native-date-time-picker-hit-area;
+  }
+}
+
+/* Flex sibling for CalendarTimeSelect so it shares the row with the date input (root must not use width: 100%). */
+.searchDatetimeSlot {
+  flex: 1;
+  min-width: 0;
 }
 
 .searchDateSep {

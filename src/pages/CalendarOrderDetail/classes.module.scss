@@ -1,5 +1,6 @@
 @use 'styles/variables' as *;
 @use 'styles/calendarShared' as *;
+@use 'styles/nativeDateTimeInput' as native;
 
 .page {
   display: flex;
@@ -44,6 +45,7 @@
 .cardHeaderLeft {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
@@ -68,6 +70,12 @@
   border-radius: $border-radius-4;
   padding: 2px 6px;
   white-space: nowrap;
+}
+
+.refetchingHint {
+  font-size: $font-size-14;
+  color: $cal-label;
+  font-style: italic;
 }
 
 .summaryGrid {
@@ -387,6 +395,11 @@
 .timeRow {
   display: flex;
   gap: 8px;
+
+  > input[type='date'] {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 // --- Duration stepper ---
@@ -438,16 +451,21 @@
   &::placeholder {
     color: $color-text-light;
   }
+
+  &[type='date'] {
+    @include native.native-date-time-picker-hit-area;
+  }
 }
 
-.editInputNarrow {
+.editTimeSelect {
   border: 1px solid $cal-input-border;
   border-radius: $border-radius-4;
   padding: 8px;
   font-size: $font-size-16;
   color: $cal-text;
   background: $color-white;
-  width: 120px;
+  width: 300px;
+  max-width: 100%;
   flex-shrink: 0;
   box-sizing: border-box;
 }

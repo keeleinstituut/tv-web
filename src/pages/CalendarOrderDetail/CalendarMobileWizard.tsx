@@ -12,6 +12,8 @@ import {
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import { useAuth } from 'components/contexts/AuthContext'
 import EditIcon from 'assets/icons/edit.svg?react'
+import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import { openNativeDateTimePicker } from 'helpers/nativeDateTimeInput'
 import { useOrderDetail } from './OrderDetailContext'
 import {
   CALENDAR_MOBILE_DURATION_OPTIONS as DURATION_OPTIONS,
@@ -82,6 +84,8 @@ const CalendarMobileWizard: FC = () => {
     isCreating,
     isUpdating,
     isCancelling,
+    isRefetchingOrder,
+    showScheduledCancelBanner,
   } = useOrderDetail()
 
   const { institutionUserId } = useAuth()
@@ -118,6 +122,7 @@ const CalendarMobileWizard: FC = () => {
       <CalendarMobileWizardCancelPendingScreen
         cancelCountdown={cancelCountdown}
         onUndoCancel={handleUndoCancel}
+        isRefetchingOrder={isRefetchingOrder}
       />
     )
   }
@@ -133,6 +138,7 @@ const CalendarMobileWizard: FC = () => {
           setIsConfirmingCancel(false)
           setCancelReason('')
         }}
+        isRefetchingOrder={isRefetchingOrder}
       />
     )
   }
@@ -241,12 +247,12 @@ const CalendarMobileWizard: FC = () => {
               className={classes.fieldInput}
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
+              onClick={openNativeDateTimePicker}
             />
-            <input
-              type="time"
-              className={classes.fieldInput}
+            <CalendarTimeSelect
+              className={classes.fieldSelect}
               value={startTimeInput}
-              onChange={(e) => setStartTimeInput(e.target.value)}
+              onChange={setStartTimeInput}
             />
           </div>
         </div>
@@ -668,12 +674,12 @@ const CalendarMobileWizard: FC = () => {
               className={classes.fieldInput}
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
+              onClick={openNativeDateTimePicker}
             />
-            <input
-              type="time"
-              className={classes.fieldInput}
+            <CalendarTimeSelect
+              className={classes.fieldSelect}
               value={startTimeInput}
-              onChange={(e) => setStartTimeInput(e.target.value)}
+              onChange={setStartTimeInput}
             />
           </div>
         ) : (
@@ -1057,17 +1063,26 @@ const CalendarMobileWizard: FC = () => {
 
   return (
     <div className={classes.wizard}>
-      {order?.cancel_at && !isCancelPending && (
-        <div className={classes.pendingCancelBanner}>
+      {showScheduledCancelBanner && !isCancelPending && (
+        <div
+          className={classes.pendingCancelBanner}
+          role="status"
+          aria-live="polite"
+        >
           <strong>{t('calendar.cancel_pending_title')}</strong>
           <p>
-            {t('calendar.cancel_pending_body', {
-              date: dayjs(order.cancel_at).format('DD.MM.YYYY [kell] HH:mm'),
-            })}
+            {order?.cancel_at
+              ? t('calendar.cancel_pending_body', {
+                  date: dayjs(order.cancel_at).format(
+                    'DD.MM.YYYY [kell] HH:mm'
+                  ),
+                })
+              : t('calendar.cancel_confirmed_body')}
           </p>
           <Button
             appearance={AppearanceTypes.Secondary}
             onClick={handleUndoCancel}
+            disabled={isRefetchingOrder}
           >
             {t('calendar.decline_cancel')}
           </Button>
@@ -1079,6 +1094,11 @@ const CalendarMobileWizard: FC = () => {
           {t('calendar.order')} {order?.ext_id ?? ''}
         </span>
         <span className={classes.statusBadge}>{statusLabel}</span>
+        {isRefetchingOrder && (
+          <span className={classes.refetchingHint} aria-live="polite">
+            {t('calendar.refetching_order')}
+          </span>
+        )}
       </div>
 
       {renderProgress()}

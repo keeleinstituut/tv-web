@@ -228,6 +228,8 @@ export interface ProjectDetail extends ListProject {
   accepted_at?: string
   corrected_at?: string
   rejected_at?: string
+  /** Delayed calendar cancellation executes at this time (ISO); absent if not scheduled. */
+  cancel_at?: string
   cancelled_at?: string
   reviews?: Review[]
 }

@@ -7,6 +7,10 @@ import {
   areSortedIdArraysEqual,
   formatDuration,
 } from 'helpers/calendar'
+import {
+  isCalendarBookingEventEnded,
+  sidePanelIsPastSlot,
+} from 'helpers/calendarCancelUi'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useAuth } from 'components/contexts/AuthContext'
@@ -122,8 +126,7 @@ const CalendarOrderSidePanel: FC = () => {
   const assignmentStatus = slot?.assignment?.status
   // Assignment ACCEPTED is workflow (vendor took the task), not project complete — teostaja
   // may still change duration until the order is ACCEPTED/CANCELLED at project level.
-  const assignmentWorkEnded =
-    assignmentStatus === 'DONE' || assignmentStatus === 'CANCELLED'
+  const assignmentWorkEnded = assignmentStatus === 'DONE'
   const orderTerminal =
     order?.status === 'ACCEPTED' || order?.status === 'CANCELLED'
   const hasScheduledCancelAt =
@@ -132,10 +135,16 @@ const CalendarOrderSidePanel: FC = () => {
   // (banner + undo) — do not swap to PastBody just because isCancelled flipped true.
   const inReversibleCancelWindow =
     (isCancelled && isCancelPending) || hasScheduledCancelAt
-  const isPastSlot =
-    assignmentWorkEnded ||
-    orderTerminal ||
-    (isCancelled && !inReversibleCancelWindow)
+  const eventEndedByClock = isCalendarBookingEventEnded(
+    order?.end_at ?? endIso ?? slot?.end_at
+  )
+  const isPastSlot = sidePanelIsPastSlot({
+    assignmentWorkEnded,
+    orderTerminal,
+    isCancelled,
+    inReversibleCancelWindow,
+    eventEndedByClock,
+  })
   const isClientPastView = isClient && isViewMode && isPastSlot
 
   // Slot matching for TPM — only fetch in form mode

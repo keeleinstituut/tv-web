@@ -13,6 +13,8 @@ import DownloadIcon from 'assets/icons/download.svg?react'
 import DeleteIcon from 'assets/icons/delete.svg?react'
 import EditIcon from 'assets/icons/edit.svg?react'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
+import { calendarBookingStatusLabelKey } from 'helpers/calendarBookingStatus'
+import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useSidePanel } from './SidePanelContext'
 import OrderServiceLocationReadonly from './OrderServiceLocationReadonly'
 import DurationStepper from './DurationStepper'
@@ -78,6 +80,7 @@ const CalendarOrderViewBody: FC = () => {
     isPostingComment,
     isTPM,
   } = useSidePanel()
+  const { isTranslator } = useCalendarRole()
   const { institutionUserId } = useAuth()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isFilesOpen, setIsFilesOpen] = useState(false)
@@ -89,6 +92,18 @@ const CalendarOrderViewBody: FC = () => {
   const { mutate: updateComment, isPending: isUpdatingComment } =
     useUpdateCalendarOrderComment(order?.id)
 
+  const assignment = slot?.assignment
+  const bookingStatusRole = isTPM
+    ? 'tpm'
+    : isTranslator
+      ? 'translator'
+      : 'client'
+  const bookingStatusKey = calendarBookingStatusLabelKey(
+    order?.status ?? assignment?.project_status ?? null,
+    order?.sub_project_status ?? assignment?.sub_project?.status ?? null,
+    bookingStatusRole
+  )
+
   useEffect(() => {
     if (isEditing) setIsAddingComment(false)
   }, [isEditing])
@@ -99,7 +114,6 @@ const CalendarOrderViewBody: FC = () => {
     isTPM && isEditing
   )
 
-  const assignment = slot?.assignment
   const hasScheduledCancelAt =
     typeof order?.cancel_at === 'string' && order.cancel_at.trim().length > 0
   const showScheduledCancelBanner =
@@ -234,11 +248,7 @@ const CalendarOrderViewBody: FC = () => {
             ? t('calendar.status_cancelling')
             : isTPM && isCancelled
               ? t('calendar.status_cancelled')
-              : assignment?.status === 'DONE'
-                ? t('calendar.status_completed')
-                : assignment?.status === 'IN_PROGRESS'
-                  ? t('calendar.status_forwarded')
-                  : t('calendar.status_pending')}
+              : (t(bookingStatusKey as never) as string)}
         </div>
 
         {isEditing && (

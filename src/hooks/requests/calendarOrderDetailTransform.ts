@@ -1,3 +1,4 @@
+import { normalizeCalendarSubProjectStatus } from 'helpers/calendarBookingStatus'
 import type { CalendarOrderDetail } from 'types/calendar'
 
 /** Walk nested `{ data: { id, ... } }` bodies from the translation-order API. */
@@ -86,6 +87,7 @@ export function transformProjectDetail(
       name: string
     }>) ?? []
   const subProjects = (raw.sub_projects ?? []) as Array<{
+    status?: string
     destination_language_classifier_value?: {
       id: string
       value: string
@@ -117,10 +119,15 @@ export function transformProjectDetail(
       }
     | undefined
 
+  const sub_project_status = normalizeCalendarSubProjectStatus(
+    subProjects[0]?.status ?? null
+  )
+
   return {
     id: raw.id as string,
     ext_id: raw.ext_id as string,
     status: raw.status as CalendarOrderDetail['status'],
+    sub_project_status,
     language: lang,
     start_at: (raw.event_start_at as string) ?? (raw.start_at as string),
     end_at: (raw.event_end_at as string) ?? (raw.end_at as string),
