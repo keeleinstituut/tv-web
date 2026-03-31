@@ -191,6 +191,37 @@ $border-color: #e2e4e9;
   @include selectionHighlight;
 }
 
+// --- Collapsed overlap hint (client day, parallel bookings) ---
+
+.overlapCollapsedStrip {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: $border-radius-4;
+  background: #f5e6c8;
+  border: 1px dashed #b8860b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  min-width: 12px;
+  box-sizing: border-box;
+}
+
+.overlapCollapsedLabel {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: #5c4510;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 4px;
+  pointer-events: none;
+  user-select: none;
+}
+
 // --- Booked slot blocks ---
 
 .slotBlock {

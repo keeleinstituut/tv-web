@@ -8,6 +8,10 @@ import BookingBusyIcon from 'assets/icons/booking_busy.svg?react'
 import PinIcon from 'assets/icons/pin.svg?react'
 import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
 import { formatDuration } from 'helpers/calendar'
+import {
+  mergeClientPrebookSlot,
+  mergedOverlapIntervals,
+} from 'helpers/calendarDayOverlaps'
 import { BookedSlot, CalendarDayResponse, CalendarLanguage } from 'types/calendar'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
@@ -27,6 +31,10 @@ interface Props {
   onTogglePin?: () => void
   onToggleExpand?: () => void
   isExpanded?: boolean
+  /** Client day: hide booking blocks on the header row when collapsed with overlapping bookings */
+  omitBookedSlotBlocks?: boolean
+  /** Tooltip on the row when omitBookedSlotBlocks is set */
+  collapsedOverlapTitle?: string
   /** When true the row is a header-only strip: no slot cells, no interaction */
   readOnly?: boolean
   slotWidth?: number
@@ -228,6 +236,8 @@ const CalendarLanguageRow: FC<Props> = ({
   onTogglePin,
   onToggleExpand,
   isExpanded,
+  omitBookedSlotBlocks = false,
+  collapsedOverlapTitle,
   readOnly = false,
   slotWidth,
   dayData,
@@ -242,23 +252,10 @@ const CalendarLanguageRow: FC<Props> = ({
     dayData?.booked_slots ??
     []
 
-  const activePrebookForLang =
-    sidePanelSelection &&
-    !sidePanelSelection.slot &&
-    sidePanelSelection.language.language.id === language.language.id &&
-    sidePanelSelection.startIso &&
-    sidePanelSelection.endIso
-
-  const bookedSlots = useMemo(() => {
-    if (!activePrebookForLang) return rawBookedSlots
-    const syntheticPrebook: BookedSlot = {
-      start_at: sidePanelSelection!.startIso,
-      end_at: sidePanelSelection!.endIso,
-      type: 'prebook',
-      assignment: null,
-    }
-    return [...rawBookedSlots, syntheticPrebook]
-  }, [rawBookedSlots, activePrebookForLang, sidePanelSelection])
+  const bookedSlots = useMemo(
+    () => mergeClientPrebookSlot(language, rawBookedSlots, sidePanelSelection),
+    [language, rawBookedSlots, sidePanelSelection]
+  )
 
   const langAvailSlots =
     dayData?.available_slots_by_language?.[language.language.id]
@@ -313,6 +310,12 @@ const CalendarLanguageRow: FC<Props> = ({
     [bookedSlots, date, dayStartHour]
   )
 
+  const overlapCollapsedIntervals = useMemo(
+    () =>
+      omitBookedSlotBlocks ? mergedOverlapIntervals(bookedSlots) : [],
+    [omitBookedSlotBlocks, bookedSlots]
+  )
+
   const {
     isDragging,
     selectionLeft,
@@ -333,7 +336,10 @@ const CalendarLanguageRow: FC<Props> = ({
   })
 
   return (
-    <div className={classes.rowWrapper}>
+    <div
+      className={classes.rowWrapper}
+      title={collapsedOverlapTitle}
+    >
       <div className={classes.label}>
         {onTogglePin && (
           <button
@@ -488,8 +494,35 @@ const CalendarLanguageRow: FC<Props> = ({
           />
         )}
 
+        {/* Collapsed client row: show where parallel bookings overlap */}
+        {!isExpanded &&
+          omitBookedSlotBlocks &&
+          overlapCollapsedIntervals.map((r, idx) => {
+            const left = timeToX(r.start_at, dayStartHour, sw)
+            const w = durationToWidth(r.start_at, r.end_at, sw)
+            const innerW = Math.max(w - 8, 16)
+            return (
+              <div
+                key={`overlap-${r.start_at}-${r.end_at}-${idx}`}
+                className={classes.overlapCollapsedStrip}
+                style={{ left: left + 4, width: innerW }}
+                title={t('calendar.parallel_bookings_expand', {
+                  count: bookedSlots.length,
+                })}
+                aria-label={t('calendar.overlaps_short')}
+              >
+                {innerW >= sw * 0.5 && (
+                  <span className={classes.overlapCollapsedLabel}>
+                    {t('calendar.overlaps_short')}
+                  </span>
+                )}
+              </div>
+            )
+          })}
+
         {/* Booked slot blocks */}
         {!isExpanded &&
+          !omitBookedSlotBlocks &&
           bookedSlots.map((slot, idx) => (
             <BookedSlotBlock
               key={`${slot.start_at}-${slot.type}-${idx}`}

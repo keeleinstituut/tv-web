@@ -64,6 +64,8 @@ interface CalendarExpansionContextType {
   toggleLanguageExpanded: (languageId: string) => void
   isLanguageExpanded: (languageId: string) => boolean
   expandAll: (languageIds: string[]) => void
+  /** Merges ids into the expanded set (e.g. auto-open client rows with overlapping bookings). */
+  expandLanguageIds: (languageIds: string[]) => void
   collapseAll: () => void
   allCollapsedOverride: boolean
 }
@@ -73,6 +75,7 @@ const CalendarExpansionContext = createContext<CalendarExpansionContextType>({
   toggleLanguageExpanded: () => undefined,
   isLanguageExpanded: () => false,
   expandAll: () => undefined,
+  expandLanguageIds: () => undefined,
   collapseAll: () => undefined,
   allCollapsedOverride: false,
 })
@@ -210,6 +213,16 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
     setExpandedLanguageIds(languageIds)
   }, [])
 
+  const expandLanguageIds = useCallback((languageIds: string[]) => {
+    if (!languageIds.length) return
+    setAllCollapsedOverride(false)
+    setExpandedLanguageIds((prev) => {
+      const added = languageIds.filter((id) => !prev.includes(id))
+      if (!added.length) return prev
+      return [...prev, ...added]
+    })
+  }, [])
+
   // Panel callbacks
   const openSidePanel = useCallback((selection: SidePanelSelection) => {
     setSidePanelSelection(selection)
@@ -269,6 +282,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
       toggleLanguageExpanded,
       isLanguageExpanded,
       expandAll,
+      expandLanguageIds,
       collapseAll,
       allCollapsedOverride,
     }),
@@ -277,6 +291,7 @@ export const CalendarProvider: FC<PropsWithChildren> = ({ children }) => {
       toggleLanguageExpanded,
       isLanguageExpanded,
       expandAll,
+      expandLanguageIds,
       collapseAll,
       allCollapsedOverride,
     ]
