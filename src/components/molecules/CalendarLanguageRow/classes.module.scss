@@ -1,0 +1,328 @@
+@use 'styles/variables' as *;
+@use 'styles/calendarMixins' as *;
+
+$label-width: 64px;
+$row-height: 40px;
+$border-color: #e2e4e9;
+
+.rowWrapper {
+  display: flex;
+  height: $row-height;
+  position: relative;
+  min-width: calc(64px + 1248px); // label + 26 slots × 48px
+}
+
+// --- Left label column (sticky) ---
+
+.label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  flex-shrink: 0;
+  gap: 2px;
+}
+
+.pinIcon {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+  background: $color-white;
+  border: 1px solid #7aaac8;
+  color: #004277;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  flex-shrink: 0;
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    background: #a8c4da;
+  }
+}
+
+.pinIconActive {
+  background: #005aa3;
+  color: $color-white;
+
+  &:hover {
+    background: #004277;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  padding: 2px 0;
+  background: #b9d2e5;
+  color: #004277;
+  border-radius: $border-radius-4;
+  font-size: 16px;
+  font-weight: $font-weight-bold;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
+.collapseBtn {
+  width: 14px;
+  height: 14px;
+  border: none;
+  background: #09090b;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.collapseBtnExpanded {
+  .collapseIcon {
+    transform: rotate(0deg);
+  }
+}
+
+.collapseIcon {
+  width: 6px;
+  height: 6px;
+  fill: $color-white;
+  color: $color-white;
+  transform: rotate(180deg);
+  transition: transform 0.2s;
+}
+
+// --- Slot area ---
+
+.slotArea {
+  position: relative;
+  height: $row-height;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.slotCell {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.slotCellHour {
+  border-left: 1px solid $border-color;
+}
+
+.slotCellPast {
+  cursor: default;
+  background: $color-background-dark;
+  border-radius: $border-radius-4;
+}
+
+.slotCellBookable {
+  cursor: pointer;
+  background: $color-primary;
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s;
+
+  &:hover {
+    background: $color-secondary-dark;
+  }
+}
+
+.slotCellBookableLabel {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: $color-white;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.slotCellFullyBooked {
+  cursor: default;
+  background: #efdbdb;
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.slotCellFullyBookedIcon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  color: #8a4b4b;
+}
+
+.slotCellFullyBookedLabel {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: #8a4b4b;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+// --- Drag selection ---
+
+.selectionHighlight {
+  @include selectionHighlight;
+}
+
+// --- Collapsed overlap hint (client day, parallel bookings) ---
+
+.overlapCollapsedStrip {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: $border-radius-4;
+  background: #f5e6c8;
+  border: 1px dashed #b8860b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  min-width: 12px;
+  box-sizing: border-box;
+}
+
+.overlapCollapsedLabel {
+  font-size: 10px;
+  font-weight: $font-weight-bold;
+  color: #5c4510;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 4px;
+  pointer-events: none;
+  user-select: none;
+}
+
+// --- Booked slot blocks ---
+
+.slotBlock {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  padding: 0 spacing(2);
+  gap: spacing(1);
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.slotBlockNarrow {
+  justify-content: center;
+  padding: 0;
+}
+
+.slotClickable {
+  pointer-events: auto;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(0.93);
+  }
+}
+
+.slotAssignmentFuture {
+  background: #b8d8ef;
+  color: $color-secondary-dark;
+}
+
+.slotAssignmentConfirmed {
+  background: #b8d8ef;
+  color: $color-secondary-dark;
+}
+
+.slotAssignmentPast {
+  background: $color-background-dark;
+  color: $color-text;
+}
+
+.slotExternal {
+  background: #efdbdb;
+  color: #8a4b4b;
+}
+
+.slotVacation {
+  background: $color-warning-light;
+  border-left: 3px solid $color-warning;
+}
+
+.slotPrebook {
+  background: $color-warning-light;
+  border: 1px dashed $color-warning;
+}
+
+.slotIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: $color-secondary-dark;
+}
+
+.slotIconExternal {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #8a4b4b;
+}
+
+.slotIconMuted {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: $color-text;
+}
+
+.slotIconVacation {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: $color-warning;
+}
+
+.slotLabel {
+  font-size: $font-size-12;
+  color: $color-secondary-dark;
+}
+
+.slotLabelMuted {
+  font-size: $font-size-12;
+  color: $color-text;
+}
+
+.slotLabelExternal {
+  font-size: 10px;
+  color: #8a4b4b;
+  white-space: nowrap;
+}

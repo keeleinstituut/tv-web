@@ -5,7 +5,7 @@ import { FC, SVGProps } from 'react'
 import { map } from 'lodash'
 import { deepOmit } from 'helpers'
 import i18n from 'i18n/i18n'
-import { createBrowserRouter, RouteObject } from 'react-router-dom'
+import { createBrowserRouter, Outlet, RouteObject } from 'react-router-dom'
 import { Privileges } from 'types/privileges'
 import BreadcrumbsTitle from 'components/molecules/Breadcrumbs/BreadcrumbsTitle'
 import { BreadcrumbComponentType } from 'use-react-router-breadcrumbs'
@@ -35,6 +35,10 @@ import ProjectPage from 'pages/ProjectPage/ProjectPage'
 import UserDetails from 'pages/UserDetails/UserDetails'
 import Manual from 'pages/Manual/Manual'
 import TaskPage from 'pages/TaskPage/TaskPage'
+import Calendar from 'pages/Calendar/Calendar'
+import CalendarAccessGuard from 'components/templates/CalendarAccessGuard/CalendarAccessGuard'
+import CalendarOrderDetail from 'pages/CalendarOrderDetail/CalendarOrderDetail'
+import CalendarOrderBreadcrumb from 'components/molecules/Breadcrumbs/CalendarOrderBreadcrumb'
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
 import Terms from 'pages/Terms/Terms'
@@ -54,6 +58,7 @@ import InstitutionIcon from 'assets/icons/settings.svg?react'
 import TechnicalIcon from 'assets/icons/technical.svg?react'
 import ManualIcon from 'assets/icons/question_mark.svg?react'
 import TermsIcon from 'assets/icons/terms_icon.svg?react'
+import CalendarIcon from 'assets/icons/calendar_menu.svg?react'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,
@@ -145,6 +150,33 @@ export const protectedRoutes: FullRouteObject[] = [
             ],
           },
         ],
+      },
+    ],
+  },
+  {
+    path: 'calendar',
+    label: i18n.t('menu.calendar'),
+    Icon: CalendarIcon,
+    element: (
+      <CalendarAccessGuard>
+        <Outlet />
+      </CalendarAccessGuard>
+    ),
+    children: [
+      {
+        path: '',
+        element: <Calendar />,
+        breadcrumb: i18n.t('menu.calendar'),
+      },
+      {
+        path: 'new-order',
+        element: <CalendarOrderDetail />,
+        breadcrumb: i18n.t('calendar.add_order'),
+      },
+      {
+        path: ':orderId',
+        element: <CalendarOrderDetail />,
+        breadcrumb: CalendarOrderBreadcrumb,
       },
     ],
   },

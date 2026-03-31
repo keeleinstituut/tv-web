@@ -1,0 +1,702 @@
+@use 'styles/variables' as *;
+@use 'styles/calendarShared' as *;
+
+$panel-width: 522px;
+$header-height: 59px;
+$footer-height: 64px;
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 19;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: $panel-width;
+  background: $color-white;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  z-index: 999;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    width: 100%;
+  }
+}
+
+.open {
+  transform: translateX(0);
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+  border-left: 1px solid $color-border;
+}
+
+// --- Header ---
+
+.header {
+  height: $header-height;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid $color-border;
+  gap: 8px;
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: $font-weight-normal;
+  color: $color-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.headerBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-primary;
+  font-size: $font-size-14;
+  padding: 8px;
+  border-radius: $border-radius-4;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.headerBtnIcon {
+  width: 18px;
+  height: 18px;
+  color: $color-primary;
+}
+
+// --- Body (scrollable) ---
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.formRow {
+  display: flex;
+  gap: 24px;
+
+  .formGroup {
+    flex: 1;
+  }
+}
+
+.label {
+  font-size: $font-size-16;
+  color: $cal-text;
+  font-weight: $font-weight-normal;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $color-text;
+  background: $color-white;
+  outline: none;
+
+  &::placeholder {
+    color: $color-text-light;
+  }
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+.inputReadonly {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $color-text;
+  background: $color-background;
+  user-select: none;
+}
+
+.select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $color-text;
+  background: $color-white;
+  outline: none;
+  cursor: pointer;
+  appearance: auto;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+// --- Section rows ---
+
+.divider {
+  height: 2px;
+  background: $color-border;
+  margin: 0 24px;
+  flex-shrink: 0;
+}
+
+.sectionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+
+.sectionLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: $font-size-14;
+  color: $color-text;
+}
+
+.sectionChevron {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+  transform: rotate(-90deg);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.sectionChevronOpen {
+  transform: rotate(90deg);
+}
+
+.sectionBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-primary;
+  font-size: $font-size-14;
+  border-radius: $border-radius-4;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  &:hover {
+    background: $color-background;
+  }
+}
+
+// --- Client non-past view/edit top bar ---
+
+.clientEditBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px 0;
+  flex-shrink: 0;
+}
+
+.loobuLink {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-primary;
+  font-size: $font-size-16;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.requiredNotice {
+  font-size: $font-size-14;
+  color: $cal-text;
+  margin: 0;
+}
+
+.requiredMark {
+  color: #d93025;
+  margin-left: 2px;
+}
+
+// --- Status badge (Client past view) ---
+
+.statusBadgeGrey {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: $border-radius-4;
+  background: #f0f0f2;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: #5d6071;
+  line-height: 21px;
+  align-self: flex-start;
+}
+
+.readValueBlue {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  line-height: 24px;
+}
+
+.fileIconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: $color-text;
+  flex-shrink: 0;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+.commentForm {
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// --- Translator (Teostaja) view ---
+
+.translatorActions {
+  display: flex;
+  gap: 16px;
+  padding: 24px 24px 0;
+  flex-shrink: 0;
+}
+
+.readValue {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+  line-height: 24px;
+}
+
+.metaToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 24px 0 0;
+  font-size: $font-size-16;
+  color: #09090b;
+  width: 100%;
+  text-align: left;
+  border-top: 1px solid $color-border;
+}
+
+.metaIcon {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.metaIconOpen {
+  transform: rotate(180deg);
+}
+
+.metaContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-top: none;
+}
+
+.metaGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metaRow {
+  display: flex;
+  gap: 16px;
+
+  .metaGroup {
+    flex: 1;
+  }
+}
+
+.metaLabel {
+  font-size: $font-size-14;
+  font-weight: $font-weight-normal;
+  color: $cal-text;
+  line-height: 21px;
+}
+
+.metaValue {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+  line-height: 21px;
+}
+
+.sectionNote {
+  font-size: $font-size-14;
+  color: #4d4f5d;
+  margin-left: 4px;
+}
+
+// --- Duration stepper ---
+
+.durationGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.durationStepper {
+  display: flex;
+  align-items: center;
+}
+
+.stepperBtn {
+  @include calStepperBtn;
+}
+
+.stepperValue {
+  @include calStepperValue;
+}
+
+// --- Meeting link ---
+
+.meetingLinkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meetingLink {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.copyBtn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  color: $color-primary;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+// --- File list ---
+
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 24px 24px;
+}
+
+.fileItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 16px;
+}
+
+.fileLink {
+  flex: 1;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: #09090b;
+  text-decoration: underline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.downloadIcon {
+  width: 24px;
+  height: 24px;
+  color: $color-primary;
+  flex-shrink: 0;
+}
+
+// --- Comment content ---
+
+.commentContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 24px 24px;
+}
+
+.commentAuthor {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+  line-height: 24px;
+}
+
+.commentText {
+  font-size: $font-size-16;
+  font-weight: $font-weight-normal;
+  color: $cal-text;
+  line-height: 24px;
+}
+
+.commentDate {
+  font-size: $font-size-14;
+  color: #4d4f5d;
+  line-height: 21px;
+}
+
+.commentEditLink {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-primary;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.domainChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: $color-background;
+  border: 1px solid $cal-card-border;
+  border-radius: 12px;
+  font-size: $font-size-14;
+  color: $cal-text;
+}
+
+// --- Cost section ---
+
+.costContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 24px 24px;
+}
+
+.costGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.costLabel {
+  font-size: $font-size-14;
+  color: $cal-text;
+  line-height: 21px;
+}
+
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $color-text;
+  background: $color-white;
+  outline: none;
+  min-height: 136px;
+  resize: vertical;
+  font-family: inherit;
+
+  &::placeholder {
+    color: $color-text-light;
+  }
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+// --- TPM cancel / cancelled banners ---
+
+.cancelWarning {
+  margin: 16px 24px 0;
+  padding: 12px 16px;
+  border-radius: $border-radius-4;
+  background: #fff8e1;
+  border: 1px solid #f9a825;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: $font-size-14;
+  color: $cal-text;
+
+  strong {
+    font-weight: $font-weight-bold;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.cancelledBanner {
+  margin: 16px 24px 0;
+  padding: 12px 16px;
+  border-radius: $border-radius-4;
+  background: #e8f4fd;
+  border: 1px solid #4fa3d1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: $font-size-14;
+  color: $cal-text;
+
+  strong {
+    font-weight: $font-weight-bold;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.pendingCancelBanner {
+  margin: 16px 24px 0;
+  padding: 12px 16px;
+  border-radius: $border-radius-4;
+  background: #fff8e1;
+  border: 1px solid #f9a825;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: $font-size-14;
+  color: $cal-text;
+
+  strong {
+    font-weight: $font-weight-bold;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+.dangerBtn {
+  background: #f9a825;
+  color: #fff;
+  border: none;
+  border-radius: $border-radius-4;
+  padding: 8px 16px;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  cursor: pointer;
+
+  &:hover {
+    background: #f57f17;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// --- Footer ---
+
+.cancelPendingText {
+  font-size: $font-size-14;
+  color: $cal-label;
+  flex: 1;
+}
+
+.footer {
+  height: $footer-height;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px;
+  border-top: 1px solid $color-border;
+}

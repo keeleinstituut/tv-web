@@ -1,0 +1,593 @@
+@use 'styles/variables' as *;
+@use 'styles/calendarShared' as *;
+@use 'styles/nativeDateTimeInput' as native;
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.loading {
+  padding: 24px;
+  color: $color-text-light;
+}
+
+// --- Top actions ---
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// --- Cards ---
+
+.card {
+  background: $color-white;
+  border: 1px solid $cal-card-border;
+  border-radius: $border-radius-4;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// --- Card 1: Summary ---
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cardHeaderLeft {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cardHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.orderTitle {
+  font-size: 22px;
+  font-weight: $font-weight-normal;
+  color: $color-primary;
+  margin: 0;
+}
+
+.statusBadge {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  background: #e7f0f6;
+  border-radius: $border-radius-4;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.refetchingHint {
+  font-size: $font-size-14;
+  color: $cal-label;
+  font-style: italic;
+}
+
+.summaryGrid {
+  display: flex;
+  gap: 48px;
+}
+
+.summaryLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fieldLabel {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+.requiredNotice {
+  font-size: $font-size-14;
+  color: $cal-text;
+  margin: 0;
+}
+
+.requiredMark {
+  color: #d93025;
+  margin-left: 2px;
+}
+
+.fieldValue {
+  font-size: $font-size-16;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+}
+
+// --- Timestamps ---
+
+.timestamps {
+  display: flex;
+  gap: 16px;
+  flex: 1 0 0;
+  background: #f0f0f2;
+  border-radius: $border-radius-4;
+  padding: 24px;
+  align-self: flex-start;
+}
+
+.tsLabels {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.tsValues {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.tsLabel {
+  font-size: $font-size-16;
+  color: $cal-label;
+  line-height: 24px;
+}
+
+.tsValue {
+  font-size: $font-size-16;
+  color: $cal-label;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+// --- Metadata collapsible ---
+
+.metaToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  border-top: 1px solid $cal-card-border;
+  cursor: pointer;
+  padding: 16px 0 0;
+  font-size: $font-size-16;
+  color: $cal-text;
+  width: 100%;
+  text-align: left;
+}
+
+.metaIcon {
+  width: 16px;
+  height: 16px;
+  color: $color-text;
+  transition: transform 0.2s;
+  transform: rotate(180deg); // default: pointing up = open
+}
+
+.metaIconOpen {
+  transform: rotate(0deg);
+}
+
+.metaContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.metaRow {
+  display: flex;
+  gap: 32px;
+
+  .metaField {
+    flex: 1;
+  }
+}
+
+.metaField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metaLabel {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+.metaValue {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: $cal-text;
+}
+
+// --- Card 2: Details ---
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin: 0;
+}
+
+.detailsGrid {
+  display: flex;
+  gap: 48px;
+}
+
+.detailsLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.detailsRight {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+// --- Service type toggle (read-only) ---
+
+.serviceToggle {
+  display: flex;
+  border: 1px solid $cal-card-border;
+  border-radius: $border-radius-4;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.serviceOption {
+  padding: 8px 20px;
+  font-size: $font-size-14;
+  color: $color-text-light;
+  background: $color-white;
+}
+
+.serviceOptionActive {
+  background: $color-background;
+  color: $cal-text;
+  font-weight: $font-weight-bold;
+}
+
+// --- Readonly input ---
+
+.readonlyInput {
+  border: 1px solid $cal-card-border;
+  border-radius: $border-radius-4;
+  padding: 8px 12px;
+  font-size: $font-size-14;
+  color: $cal-text;
+  background: $color-background;
+}
+
+.meetingLink {
+  font-size: $font-size-14;
+  color: $color-primary;
+  word-break: break-all;
+}
+
+// --- Domain chip ---
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.domainChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  background: $color-background;
+  border: 1px solid $cal-card-border;
+  border-radius: 12px;
+  font-size: $font-size-14;
+  color: $cal-text;
+}
+
+// --- Card 3: Comments ---
+
+.comments {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.comment {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.commentText {
+  font-size: $font-size-16;
+  color: $cal-text;
+  line-height: 1.5;
+}
+
+.commentAuthor {
+  font-size: $font-size-14;
+  font-weight: 600;
+  color: $cal-text;
+}
+
+.commentDate {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+// --- Rare language note ---
+
+.rareLanguageNote {
+  font-size: $font-size-12;
+  color: $color-primary;
+  margin-top: 2px;
+}
+
+// --- Cancel pending ---
+
+.cancelPendingText {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+.pendingCancelBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 6px;
+  font-size: $font-size-14;
+  width: 100%;
+}
+
+// --- Cancel prompt ---
+
+.cancelPromptGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cancelPrompt {
+  font-size: $font-size-14;
+  color: #ac3232;
+}
+
+.cancelReasonInput {
+  font-size: $font-size-14;
+  border: 1px solid #878a97;
+  border-radius: 4px;
+  padding: 8px 12px;
+  height: 36px;
+  width: 260px;
+  outline: none;
+
+  &:focus {
+    border-color: $color-primary;
+  }
+}
+
+// --- Time row (date + time side by side) ---
+
+.timeRow {
+  display: flex;
+  gap: 8px;
+
+  > input[type='date'] {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+// --- Duration stepper ---
+
+.durationStepper {
+  display: flex;
+  align-items: center;
+}
+
+.stepperBtn {
+  @include calStepperBtn;
+}
+
+.stepperValue {
+  @include calStepperValue;
+}
+
+// --- Comment form actions ---
+
+.commentFormActions {
+  display: flex;
+  gap: 12px;
+}
+
+// --- Editable input ---
+
+.editSelect {
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $cal-text;
+  background: $color-white;
+  width: 100%;
+  box-sizing: border-box;
+  appearance: auto;
+}
+
+.editInput {
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $cal-text;
+  background: $color-white;
+  width: 100%;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: $color-text-light;
+  }
+
+  &[type='date'] {
+    @include native.native-date-time-picker-hit-area;
+  }
+}
+
+.editTimeSelect {
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  color: $cal-text;
+  background: $color-white;
+  width: 300px;
+  max-width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+// --- File table ---
+
+.fileTable {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fileTableHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: $font-size-16;
+  color: $cal-text;
+  padding-bottom: 4px;
+  border-bottom: 2px solid $cal-card-border;
+}
+
+.fileRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid $cal-card-border;
+  font-size: $font-size-16;
+  color: $cal-text;
+}
+
+.fileRowActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fileDate {
+  font-size: $font-size-14;
+  color: $cal-label;
+}
+
+.fileIconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: $color-text;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+.noFilesRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: $font-size-16;
+  color: #4d4f5d;
+}
+
+// --- Comment textarea form ---
+
+.commentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.commentTextarea {
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  padding: 8px;
+  font-size: $font-size-16;
+  min-height: 100px;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+
+  &::placeholder {
+    color: $color-text-light;
+  }
+}
+
+.commentEditLink {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-primary;
+  font-size: $font-size-14;
+  text-decoration: underline;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.commentEditIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.filesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filesSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filesSectionTitle {
+  font-size: 20px;
+  font-weight: $font-weight-normal;
+  color: $cal-text;
+}

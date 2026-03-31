@@ -1,0 +1,210 @@
+@use 'styles/variables' as *;
+@use 'styles/calendarShared' as *;
+
+$label-width: 64px;
+$slot-width: 48px;
+$row-height: 40px;
+$header-height: 40px;
+$border-color: #f0f0f2;
+
+.container {
+  @include calContainer;
+}
+
+// --- Date navigation: two rows ---
+
+// Row 1: month name (h-32px) with its own arrows
+.dateNavMonth {
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  background: $color-white;
+  flex-shrink: 0;
+}
+
+.navMonthCenter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.monthLabel {
+  font-size: $font-size-12;
+  color: $color-text;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+// Row 2: day navigation (h-32px) with arrows + day info
+.dateNav {
+  display: flex;
+  align-items: stretch;
+  height: 32px;
+  background: $color-white;
+  flex-shrink: 0;
+}
+
+.navLeft {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $label-width;
+  flex-shrink: 0;
+}
+
+.navCenter {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+}
+
+.navRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  flex-shrink: 0;
+}
+
+.navBtn {
+  @include calNavBtn;
+}
+
+.navIcon {
+  @include calNavIcon;
+}
+
+.navIconFlip {
+  @include calNavIconFlip;
+}
+
+.dayLetter {
+  font-size: $font-size-12;
+  color: $color-text;
+  white-space: nowrap;
+}
+
+.dateLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: $border-radius-4;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.dateShort {
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: #09090b;
+  white-space: nowrap;
+}
+
+.todayDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $color-primary;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+// --- Grid scroll area ---
+
+.gridScroll {
+  @include calGridScroll;
+}
+
+// --- Time header row ---
+
+.headerRow {
+  display: flex;
+  height: $header-height;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: $color-white;
+  width: max-content;
+}
+
+.cornerCell {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timeHeader {
+  position: relative;
+  flex-shrink: 0;
+  height: $header-height;
+}
+
+.hourCell {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: #{$slot-width * 2};
+  border-left: 1px solid $border-color;
+  display: flex;
+  align-items: center;
+  padding: 8px 0 8px 16px;
+  box-sizing: border-box;
+  font-size: $font-size-12;
+  color: #4d4f5d;
+  font-weight: $font-weight-normal;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.hourCellBold {
+  color: #09090b;
+  font-weight: $font-weight-bold;
+}
+
+// --- Rows container ---
+
+.rowsContainer {
+  position: relative;
+  width: max-content;
+  min-width: calc(#{$label-width} + #{$slot-width * 26});
+  min-height: calc(100% - #{$header-height});
+}
+
+// --- Full-height hour guides ---
+
+.hourGuide {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: $border-color;
+  pointer-events: none;
+  z-index: 2;
+}
+
+// --- Loading / error state ---
+
+.stateMessage {
+  padding: 16px 64px;
+  font-size: $font-size-14;
+  color: $color-text-light;
+}
+
+// --- Current time marker: see CalendarTimeMarker atom ---

@@ -2,7 +2,9 @@ const clean = (path: string) => path.replace(/^\//, '').replace('/$', '')
 
 const gateway = (path: string) => {
   return (
-    import.meta.env.REACT_APP_GATEWAY_BASE?.replace(/\/$/, '') + '/' + clean(path)
+    import.meta.env.REACT_APP_GATEWAY_BASE?.replace(/\/$/, '') +
+    '/' +
+    clean(path)
   )
 }
 
@@ -78,6 +80,27 @@ export const endpoints = {
   TM_SUB_PROJECTS: translationOrder('tm-keys/subprojects'),
   UPDATE_TM_KEYS: translationOrder('tm-keys/sync'),
   TOGGLE_TM_WRITABLE: translationOrder('tm-keys/toggle-writable'),
+
+  CALENDAR_LANGUAGES: translationOrder('calendar/languages'),
+  CALENDAR_DAY: translationOrder('calendar/day'),
+  CALENDAR_WEEK: translationOrder('calendar/week'),
+  CALENDAR_MONTH: translationOrder('calendar/month'),
+  CALENDAR_SEARCH: translationOrder('calendar/search'),
+  CALENDAR_SLOT_MATCHING: translationOrder('calendar/slot-matching/vendors'),
+  PINNED_LANGUAGES: translationOrder('institution-users/pinned-languages'),
+  VENDOR_CALENDAR: (vendorId: string) =>
+    translationOrder(`vendors/${vendorId}/calendar`),
+  VENDOR_EMERGENCY_SCHEDULES: (vendorId: string) =>
+    translationOrder(`vendors/${vendorId}/emergency-schedules`),
+  VENDOR_EMERGENCY_SCHEDULE: (vendorId: string, scheduleId: string) =>
+    translationOrder(`vendors/${vendorId}/emergency-schedules/${scheduleId}`),
+  PROJECT_CANCEL_DECLINE: (id: string) =>
+    translationOrder(`projects/${id}/cancel-decline`),
+  PROJECT_COMMENTS: (id: string) => translationOrder(`projects/${id}/comments`),
+  PROJECT_COMMENT: (projectId: string, commentId: string) =>
+    translationOrder(`projects/${projectId}/comments/${commentId}`),
+  CALENDAR_PREBOOK: translationOrder('calendar/prebook'),
+  CALENDAR_VENDOR_ENTRIES: translationOrder('calendar/vendor-entries'),
 
   TRANSLATION_MEMORIES: translationOrder('catv2/translation-memories'),
   IMPORT_TMX: translationOrder('catv2/translation-memories/import'),

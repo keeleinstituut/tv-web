@@ -1,0 +1,206 @@
+@use 'styles/variables' as *;
+
+$label-width: 64px;
+$week-col-width: 186px;
+$total-col-width: 186px;
+$row-height: 40px;
+$cell-pad: 4px;
+$border-color: #e2e4e9;
+
+// ─── Summary row ──────────────────────────────────────────────────────────────
+
+.rowWrapper {
+  display: flex;
+  height: $row-height;
+}
+
+.label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.pinIcon {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: $color-white;
+  border: 1px solid #7aaac8;
+  color: #004277;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  flex-shrink: 0;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  &:hover {
+    background: #a8c4da;
+  }
+}
+
+.pinIconActive {
+  background: #005aa3;
+  color: $color-white;
+
+  &:hover {
+    background: #004277;
+  }
+}
+
+.collapseBtn {
+  width: 14px;
+  height: 14px;
+  border: none;
+  background: #09090b;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.collapseBtnExpanded {
+  .collapseIcon {
+    transform: rotate(0deg);
+  }
+}
+
+.collapseIcon {
+  width: 6px;
+  height: 6px;
+  fill: $color-white;
+  color: $color-white;
+  transform: rotate(180deg);
+  transition: transform 0.2s;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  background: #b9d2e5;
+  color: #004277;
+  border-radius: $border-radius-4;
+  font-size: 16px;
+  font-weight: $font-weight-bold;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+// ─── Vendor row ───────────────────────────────────────────────────────────────
+
+.vendorRowWrapper {
+  display: flex;
+  height: $row-height;
+}
+
+.vendorLabel {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  width: $label-width;
+  min-width: $label-width;
+  background: $color-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 spacing(2);
+  flex-shrink: 0;
+}
+
+// ─── Week data cells ──────────────────────────────────────────────────────────
+
+// Container slot (always present, provides the border-left divider)
+.weekCell {
+  width: $week-col-width;
+  min-width: $week-col-width;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: $cell-pad;
+  border-left: 1px solid $border-color;
+  box-sizing: border-box;
+}
+
+// Filled inner pill — shared base
+%dataPill {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: $border-radius-4;
+}
+
+.weekCellAvailable {
+  @extend %dataPill;
+  background: #e7f0f6;
+}
+
+.weekCellBooked {
+  @extend %dataPill;
+  background: #fdebd8;
+}
+
+// ─── Total cell ───────────────────────────────────────────────────────────────
+
+.totalCell {
+  width: $total-col-width;
+  min-width: $total-col-width;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: $cell-pad;
+  border-left: 1px solid $border-color;
+  box-sizing: border-box;
+
+  .weekCellAvailable {
+    background: #d0e1ee;
+  }
+}
+
+// ─── Cell content ─────────────────────────────────────────────────────────────
+
+.cellIcon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  color: #004277;
+}
+
+.cellIconBooked {
+  color: #c07a30;
+}
+
+.cellLabel {
+  font-size: $font-size-12;
+  color: #004277;
+  white-space: nowrap;
+}
+
+.cellLabelBooked {
+  color: #c07a30;
+}

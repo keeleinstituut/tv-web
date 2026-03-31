@@ -1,0 +1,76 @@
+@use 'styles/variables' as *;
+
+/* Avoid width: 100% here: in a flex row it steals the whole row and collapses siblings (e.g. toolbar date). */
+.root {
+  position: relative;
+  min-width: 0;
+}
+
+.trigger {
+  display: block;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  line-height: inherit;
+  appearance: none;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 1px;
+  }
+}
+
+.dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 2px);
+  z-index: 100;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: $color-white;
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  box-shadow: 0 4px 12px rgb(19 19 23 / 0.12);
+  list-style: none;
+}
+
+.option {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: $font-size-14;
+  text-align: left;
+  color: $cal-text;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  &:hover,
+  &:focus-visible {
+    background: #e7f0f6;
+    outline: none;
+  }
+}
+
+.optionSelected {
+  font-weight: $font-weight-bold;
+  background: #e7f0f6;
+}

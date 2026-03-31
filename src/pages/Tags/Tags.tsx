@@ -49,12 +49,14 @@ const Tags: FC = () => {
 
   const groupedData = groupBy(tags, 'type')
 
+  const domains = { [TagTypes.Domain]: groupedData[TagTypes.Domain] }
   const sortedData = {
     ...skills,
-    ...fromPairs(sortBy(toPairs(groupedData), 0)),
+    ...domains,
+    ...fromPairs(sortBy(toPairs(omit(groupedData, TagTypes.Domain)), 0)),
   }
 
-  const tagCategoryOptions = map(omit(TagTypes, 'Skills'), (type) => {
+  const tagCategoryOptions = map(omit(TagTypes, 'Skills', 'Domain'), (type) => {
     return {
       label: t(`tag.type.${type}`),
       value: type || '',
@@ -125,7 +127,7 @@ const Tags: FC = () => {
   )
 
   const isEditable = (type: TagTypes) => {
-    if (type === TagTypes.Skills) {
+    if (type === TagTypes.Skills || type === TagTypes.Domain) {
       return false
     }
     return (

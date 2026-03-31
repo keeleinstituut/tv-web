@@ -1,0 +1,280 @@
+import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import dayjs, { Dayjs } from 'dayjs'
+import 'dayjs/locale/et'
+import { useCalendarNav } from 'components/contexts/CalendarContext'
+import { getWeekStart } from 'components/organisms/CalendarWeekView/CalendarWeekView'
+import CalendarMonthLanguageRow from 'components/molecules/CalendarMonthLanguageRow/CalendarMonthLanguageRow'
+import ChevronLeft from 'assets/icons/chevron_left.svg?react'
+import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
+import { useCalendarRole } from 'hooks/useCalendarRole'
+import { useCalendarPinning } from 'hooks/useCalendarPinning'
+import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
+import CalendarCollapseExpandButton from 'components/atoms/CalendarCollapseExpandButton/CalendarCollapseExpandButton'
+import CalendarTimeMarker from 'components/atoms/CalendarTimeMarker/CalendarTimeMarker'
+import CalendarLoadingOverlay from 'components/atoms/CalendarLoadingOverlay/CalendarLoadingOverlay'
+import classes from './classes.module.scss'
+
+export const LABEL_WIDTH_PX = 64
+export const WEEK_COL_WIDTH = 186
+export const TOTAL_COL_WIDTH = 186
+
+const ET_DAY_LETTERS = ['E', 'T', 'K', 'N', 'R', 'L', 'P']
+
+export interface WeekRange {
+  start: Dayjs
+  end: Dayjs
+}
+
+export function getWeeksForMonth(date: Dayjs): WeekRange[] {
+  const firstDay = date.startOf('month')
+  const lastDay = date.endOf('month')
+  const firstWeekStart = getWeekStart(firstDay)
+
+  const weeks: WeekRange[] = []
+  let weekStart = firstWeekStart
+  while (weekStart.isBefore(lastDay) || weekStart.isSame(lastDay, 'day')) {
+    weeks.push({ start: weekStart, end: weekStart.add(6, 'day') })
+    weekStart = weekStart.add(7, 'day')
+  }
+  return weeks
+}
+
+function currentNeedleX(weeks: WeekRange[], weekColWidth: number): number | null {
+  const now = dayjs()
+  const weekIdx = weeks.findIndex(
+    (w) =>
+      (now.isSame(w.start, 'day') || now.isAfter(w.start)) &&
+      (now.isSame(w.end, 'day') || now.isBefore(w.end))
+  )
+  if (weekIdx < 0) return null
+  const dow = now.day() // 0=Sun
+  const dayIndex = dow === 0 ? 6 : dow - 1 // 0=Mon … 6=Sun
+  const fraction = (dayIndex + (now.hour() + now.minute() / 60) / 24) / 7
+  return LABEL_WIDTH_PX + weekIdx * weekColWidth + fraction * weekColWidth
+}
+
+const CalendarMonthView: FC = () => {
+  const {
+    currentDate,
+    setCurrentDate,
+    setView,
+    navigatePrevMonth,
+    navigateNextMonth,
+    isSearching,
+  } = useCalendarNav()
+
+  const { t } = useTranslation()
+  const { isTPM, isClient } = useCalendarRole()
+  const canInteract = isTPM || isClient
+  const { handleTogglePin, pinnedCount } = useCalendarPinning()
+  const weeks = getWeeksForMonth(currentDate)
+  const dateStr = currentDate.format('YYYY-MM-DD')
+  const { visibleLanguages, isLoading, isError } = useVisibleCalendarLanguages(
+    currentDate.startOf('month').format('YYYY-MM-DD'),
+    currentDate.endOf('month').format('YYYY-MM-DD')
+  )
+  const monthStr = currentDate.format('YYYY-MM')
+
+  // Fluid column width: fills available container width, min 186px per week
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [weekColWidth, setWeekColWidth] = useState(WEEK_COL_WIDTH)
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!containerRef.current) return
+      const available = containerRef.current.clientWidth - LABEL_WIDTH_PX
+      setWeekColWidth(
+        Math.max(WEEK_COL_WIDTH, Math.floor(available / (weeks.length + 1)))
+      )
+    }
+    measure()
+    const obs = new ResizeObserver(measure)
+    if (containerRef.current) obs.observe(containerRef.current)
+    return () => obs.disconnect()
+  }, [weeks.length])
+
+  // Month groups for nav label
+  const monthGroups: {
+    label: string
+    weekCount: number
+    startWeekIdx: number
+  }[] = []
+  weeks.forEach((week, i) => {
+    // Assign week to the month containing its middle day
+    const midDay = week.start.add(3, 'day')
+    const label = midDay.locale('et').format('MMMM')
+    const capitalized = label.charAt(0).toUpperCase() + label.slice(1)
+    const last = monthGroups[monthGroups.length - 1]
+    if (last && last.label === capitalized) {
+      last.weekCount++
+    } else {
+      monthGroups.push({ label: capitalized, weekCount: 1, startWeekIdx: i })
+    }
+  })
+
+  // Current time needle
+  const needleX = useCurrentTimeMarker(
+    () => currentNeedleX(weeks, weekColWidth),
+    [monthStr, weekColWidth]
+  )
+
+  // Scroll tracking for month label positioning
+  const gridScrollRef = useRef<HTMLDivElement>(null)
+  const [scrollLeft, setScrollLeft] = useState(0)
+
+  useEffect(() => {
+    if (!gridScrollRef.current) return
+    gridScrollRef.current.scrollLeft = 0
+    setScrollLeft(0)
+  }, [monthStr])
+
+  useEffect(() => {
+    const el = gridScrollRef.current
+    if (!el) return
+    const onScroll = () => setScrollLeft(el.scrollLeft)
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [])
+
+  const totalGridWidth = LABEL_WIDTH_PX + (weeks.length + 1) * weekColWidth
+
+  return (
+    <div className={classes.container} ref={containerRef}>
+      {(isLoading || isSearching) && (
+        <CalendarLoadingOverlay searching={isSearching} />
+      )}
+      {/* Month nav row */}
+      <div className={classes.monthNavRow}>
+        <div className={classes.navLeft}>
+          <button
+            className={classes.navBtn}
+            onClick={navigatePrevMonth}
+            aria-label={t('calendar.prev_month')}
+          >
+            <ChevronLeft className={classes.navIcon} />
+          </button>
+        </div>
+        <div className={classes.monthCenter}>
+          {monthGroups.map((g, i) => (
+            <span
+              key={i}
+              className={classes.monthLabel}
+              style={{
+                position: 'absolute',
+                left: g.startWeekIdx * weekColWidth - scrollLeft,
+              }}
+            >
+              {g.label}
+            </span>
+          ))}
+        </div>
+        <div className={classes.navRight}>
+          <button
+            className={classes.navBtn}
+            onClick={navigateNextMonth}
+            aria-label={t('calendar.next_month')}
+          >
+            <ChevronLeft className={classes.navIconFlip} />
+          </button>
+        </div>
+      </div>
+
+      {/* Grid scroll area */}
+      <div className={classes.gridScroll} ref={gridScrollRef}>
+        {/* Row A: week headers + Total (sticky top: 0) */}
+        <div
+          className={classes.weekHeaderRow}
+          style={{ minWidth: totalGridWidth }}
+        >
+          <div className={classes.cornerCell}>
+            {isTPM && (
+              <CalendarCollapseExpandButton languages={visibleLanguages} />
+            )}
+          </div>
+          {weeks.map((week, i) => (
+            <button
+              key={i}
+              className={classes.weekHeader}
+              style={{ width: weekColWidth, minWidth: weekColWidth }}
+              onClick={() => {
+                setCurrentDate(week.start)
+                setView('week')
+              }}
+            >
+              {week.start.format('D.MM')} - {week.end.format('D.MM')}
+            </button>
+          ))}
+          <div
+            className={classes.totalHeader}
+            style={{ width: weekColWidth, minWidth: weekColWidth }}
+          >
+            {t('calendar.total')}
+          </div>
+        </div>
+
+        {/* Row B: day letters (sticky top: WEEK_HEADER_HEIGHT) */}
+        <div
+          className={classes.dayLettersRow}
+          style={{ minWidth: totalGridWidth }}
+        >
+          <div className={classes.cornerCell} />
+          {weeks.map((_, wi) => (
+            <div
+              key={wi}
+              className={classes.dayLettersGroup}
+              style={{ width: weekColWidth, minWidth: weekColWidth }}
+            >
+              {ET_DAY_LETTERS.map((letter, di) => (
+                <span key={di} className={classes.dayLetter}>
+                  {letter}
+                </span>
+              ))}
+            </div>
+          ))}
+          <div
+            className={classes.totalDayCell}
+            style={{ width: weekColWidth, minWidth: weekColWidth }}
+          />
+        </div>
+
+        {/* Language rows */}
+        <div
+          className={classes.rowsContainer}
+          style={{ minWidth: totalGridWidth }}
+        >
+          {isLoading && (
+            <div className={classes.stateMessage}>{t('calendar.loading')}</div>
+          )}
+          {isError && (
+            <div className={classes.stateMessage}>
+              {t('calendar.error_loading')}
+            </div>
+          )}
+          {visibleLanguages.map((lang) => (
+            <CalendarMonthLanguageRow
+              key={lang.language.id}
+              language={lang}
+              date={dateStr}
+              weeks={weeks}
+              weekColWidth={weekColWidth}
+              onTogglePin={
+                canInteract && (lang.pinned || pinnedCount < 3)
+                  ? () => handleTogglePin(lang.language.id)
+                  : undefined
+              }
+            />
+          ))}
+        </div>
+      </div>
+
+      {needleX !== null && (
+        <CalendarTimeMarker
+          style={{ left: needleX - scrollLeft, top: 64, height: 40 }}
+        />
+      )}
+    </div>
+  )
+}
+
+export default CalendarMonthView

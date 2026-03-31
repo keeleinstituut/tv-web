@@ -1,0 +1,14 @@
+@use 'styles/variables' as *;
+
+/// Drag selection highlight overlay used in day-view slot areas.
+@mixin selectionHighlight {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  height: auto;
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid $color-primary;
+  border-radius: $border-radius-4;
+  pointer-events: none;
+  z-index: 3;
+}

@@ -1,0 +1,472 @@
+@use 'styles/variables' as *;
+@use 'styles/nativeDateTimeInput' as native;
+
+.toolbar {
+  padding: 0 spacing(8);
+  background: $color-background-main;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  gap: 24px;
+  padding-top: 8px;
+  padding-bottom: 16px;
+
+  @media (max-width: 900px) {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    row-gap: 10px;
+  }
+}
+
+// --- Segmented tab group ---
+
+.tabs {
+  display: flex;
+  height: 37px;
+  flex-shrink: 0;
+
+  @media (max-width: 900px) {
+    order: 1;
+  }
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 12px;
+  border: 1px solid #5d6071;
+  background: $color-white;
+  cursor: pointer;
+  font-size: $font-size-14;
+  font-weight: $font-weight-bold;
+  color: #5d6071;
+  line-height: 21px;
+  white-space: nowrap;
+  transition:
+    background 0.1s,
+    border-color 0.1s,
+    color 0.1s;
+
+  // Connected group: share borders
+  &:not(:first-child) {
+    margin-left: -1px;
+  }
+
+  &:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  &:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+
+  &:focus {
+    outline: none;
+    z-index: 1;
+    position: relative;
+  }
+}
+
+.tabActive {
+  background: #d0e1ee;
+  border: 2px solid #1769ab;
+  color: #004277;
+  z-index: 1;
+  position: relative;
+
+  // Compensate for thicker border so tabs don't shift
+  &:not(:first-child) {
+    margin-left: -2px;
+  }
+
+  .tabIcon {
+    color: #004277;
+  }
+}
+
+.tabIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #5d6071;
+}
+
+// --- Language filter ---
+
+.filterWrapper {
+  position: relative;
+  flex-shrink: 0;
+
+  @media (max-width: 900px) {
+    order: 2;
+  }
+}
+
+.filterButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 37px;
+  padding: 0 12px;
+  border: 1px solid #9799a4;
+  border-radius: $border-radius-4;
+  background: $color-white;
+  cursor: pointer;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: #5d6071;
+  white-space: nowrap;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.filterButtonActive {
+  border-color: $color-primary;
+  color: $color-primary;
+  background: #e7f0f6;
+}
+
+.filterIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.filterBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: $color-primary;
+  color: $color-white;
+  font-size: 11px;
+  font-weight: $font-weight-bold;
+  line-height: 1;
+}
+
+.filterDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: $color-white;
+  border: 1px solid #e2e4e9;
+  border-radius: $border-radius-4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 180px;
+  padding: 8px 0;
+}
+
+.filterDropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: $color-text;
+  cursor: pointer;
+
+  &:hover {
+    background: $color-background;
+  }
+}
+
+.filterDropdownClear {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 4px 16px 0;
+  padding: 6px 0 0;
+  border: none;
+  border-top: 1px solid #e2e4e9;
+  background: transparent;
+  text-align: left;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: $color-primary;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// --- Search group (TPM + Tellija only) ---
+
+.searchGroup {
+  display: flex;
+  align-items: flex-end;
+  flex: 1;
+
+  @media (max-width: 900px) {
+    order: 3;
+    width: 100%;
+    flex: none;
+  }
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    // Reset connected-group borders when stacked
+    & .searchField:not(:first-child) .searchInput {
+      margin-left: 0;
+      margin-top: -1px;
+    }
+
+    & .searchField:first-child .searchInput {
+      border-radius: 4px 4px 0 0;
+    }
+
+    & .searchInputLast {
+      border-radius: 0 0 4px 4px;
+    }
+  }
+}
+
+.searchField {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+
+  // Connected group: share borders
+  &:not(:first-child) .searchInput {
+    margin-left: -1px;
+  }
+
+  &:first-child .searchInput {
+    border-radius: 4px 0 0 4px;
+  }
+}
+
+.searchLabel {
+  font-size: 10px;
+  font-weight: $font-weight-normal;
+  color: $color-text;
+  white-space: nowrap;
+}
+
+.searchInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 37px;
+  border: 1px solid #9799a4;
+  background: $color-white;
+  padding: 0 12px 0 16px;
+  box-sizing: border-box;
+}
+
+.searchInputLast {
+  border-radius: 0 4px 4px 0;
+}
+
+.searchSelect {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: #5d6071;
+  appearance: none;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.searchInputSelect {
+  position: relative;
+  cursor: pointer;
+}
+
+.searchSelectValue {
+  flex: 1;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: #5d6071;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.searchSelectOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.searchDatetime {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: #5d6071;
+  cursor: pointer;
+  min-width: 0;
+  width: 100%;
+
+  &[type='date'] {
+    @include native.native-date-time-picker-hit-area;
+  }
+}
+
+/* Flex sibling for CalendarTimeSelect so it shares the row with the date input (root must not use width: 100%). */
+.searchDatetimeSlot {
+  flex: 1;
+  min-width: 0;
+}
+
+.searchDateSep {
+  width: 1px;
+  height: 18px;
+  background: #d2d3d8;
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+.searchChevron {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #5d6071;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+// --- Right side actions ---
+
+.findWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  @media (max-width: 900px) {
+    order: 4;
+    width: 100%;
+  }
+}
+
+.findButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 8px 24px;
+  background: #005aa3;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+  color: $color-white;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #004d8a;
+  }
+
+  @media (max-width: 900px) {
+    width: 100%;
+    border-radius: 8px;
+  }
+}
+
+.findButtonDisabled {
+  background: #9799a4;
+  cursor: not-allowed;
+
+  &:hover {
+    background: #9799a4;
+  }
+}
+
+.moreWrapper {
+  position: relative;
+
+  @media (max-width: 900px) {
+    order: 2;
+    margin-left: auto;
+  }
+}
+
+.moreButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 24px;
+  height: 40px;
+  border: 2px solid #5d6071;
+  border-radius: 20px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: inherit;
+  color: #4d4f5d;
+  line-height: 19px;
+  white-space: nowrap;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.moreIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transform: rotate(90deg);
+}
+
+.moreDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: $color-white;
+  border: 1px solid #e2e4e9;
+  border-radius: $border-radius-4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  min-width: 160px;
+}
+
+.moreDropdownItem {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: $font-size-14;
+  font-family: inherit;
+  color: $color-text;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: $color-background;
+  }
+}

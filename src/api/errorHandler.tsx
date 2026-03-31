@@ -52,7 +52,12 @@ const handleError = async (error?: AxiosError) => {
   }
   const code = response?.status
   const specificErrors = get(response, 'data.errors', {})
-  const genericErrorMessage = get(response, 'data.message', '')
+  const rawMessage = get(response, 'data.message', '')
+  const genericErrorMessage =
+    typeof rawMessage === 'string' &&
+    rawMessage.toLowerCase() === 'this action is unauthorized.'
+      ? i18n.t('error.unauthorized_action')
+      : rawMessage
   const mappedErrors = compact(
     map(specificErrors, (value) => get(value, '[0]', null))
   )

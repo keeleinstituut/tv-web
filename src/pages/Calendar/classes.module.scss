@@ -1,0 +1,13 @@
+@use 'styles/variables' as *;
+
+$layout-padding: 24px; // spacing(6) from MainLayout
+
+.container {
+  display: flex;
+  flex-direction: column;
+  // Negate the padding from .scrollableContent in MainLayout
+  margin: -$layout-padding;
+  height: calc(100% + #{$layout-padding * 2});
+  overflow: hidden;
+  position: relative;
+}
