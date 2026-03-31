@@ -1227,6 +1227,14 @@
       "The help files field must not have more than 20 items.": "Abifailides ei tohi sisalduda rohkem kui 20 faili."
     }
   },
+  "calendar_settings": {
+    "title": "Kalendri Sätted",
+    "import_title": "Impordi kalender",
+    "import_description": "Lisa oma kalender, et näha tõlketellimusi ja vältida kattuvaid broneeringuid.",
+    "import_button": "Impordi failist",
+    "import_success": "Kalender edukalt imporditud ({{count}} sündmust).",
+    "last_import_info": "Viimati imporditud: {{count}} sündmust kuni {{date}}"
+  },
   "sessions": {
     "active_sessions": "Aktiivsed sessioonid",
     "no_active_sessions": "Aktiivseid sessioone pole",

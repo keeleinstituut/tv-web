@@ -493,6 +493,16 @@ export const useCreateEmergencySchedule = () => {
   })
 }
 
+export const useImportCalendar = () => {
+  return useMutation({
+    mutationFn: ({ file, importEndDate }: { file: File; importEndDate: string }) =>
+      apiClient.postForm(endpoints.CALENDAR_IMPORT, {
+        file,
+        import_end_date: importEndDate,
+      }),
+  })
+}
+
 export const useDeleteEmergencySchedule = () => {
   const queryClient = useQueryClient()
   return useMutation({
