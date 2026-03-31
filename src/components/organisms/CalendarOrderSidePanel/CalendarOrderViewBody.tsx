@@ -58,11 +58,11 @@ const CalendarOrderViewBody: FC = () => {
     vendorName,
     isUpdating,
     isCancelling,
+    isCancelPending,
     handleStartEdit: onStartEdit,
     handleCancelEdit: onCancelEdit,
     handleSaveEdit: onSaveEdit,
     handleVoidConfirm: onVoidConfirm,
-    handleUndoCancel: onUndoCancel,
     handleDeclineCancel: onDeclineCancel,
     isDecliningCancel,
     isRequiredFilled,
@@ -100,17 +100,16 @@ const CalendarOrderViewBody: FC = () => {
   )
 
   const assignment = slot?.assignment
+  const hasScheduledCancelAt =
+    typeof order?.cancel_at === 'string' && order.cancel_at.trim().length > 0
+  const showScheduledCancelBanner =
+    hasScheduledCancelAt || (isCancelled && isCancelPending)
 
   return (
     <>
       {/* ── Top action bar ── */}
-      {isTPM && isCancelled ? (
-        <div className={classes.translatorActions}>
-          <Button appearance={AppearanceTypes.Secondary} onClick={onUndoCancel}>
-            {t('calendar.undo_cancel')}
-          </Button>
-        </div>
-      ) : order?.cancel_at ? null : isEditing ? (
+      {showScheduledCancelBanner ||
+      (isTPM && isCancelled) ? null : isEditing ? (
         <div className={classes.clientEditBar}>
           <button className={classes.loobuLink} onClick={onCancelEdit}>
             <ChevronLeft style={{ width: 14, height: 14 }} />
@@ -197,14 +196,18 @@ const CalendarOrderViewBody: FC = () => {
         </div>
       )}
 
-      {/* Pending cancel banner — delayed cancel scheduled */}
-      {order?.cancel_at && (
+      {/* Pending cancel banner — delayed cancel scheduled (or grace period before order refetch) */}
+      {showScheduledCancelBanner && (
         <div className={classes.pendingCancelBanner}>
           <strong>{t('calendar.cancel_pending_title')}</strong>
           <p>
-            {t('calendar.cancel_pending_body', {
-              date: dayjs(order.cancel_at).format('DD.MM.YYYY [kell] HH:mm'),
-            })}
+            {hasScheduledCancelAt && order?.cancel_at
+              ? t('calendar.cancel_pending_body', {
+                  date: dayjs(order.cancel_at).format(
+                    'DD.MM.YYYY [kell] HH:mm'
+                  ),
+                })
+              : t('calendar.cancel_confirmed_body')}
           </p>
           <Button
             appearance={AppearanceTypes.Secondary}
@@ -217,7 +220,7 @@ const CalendarOrderViewBody: FC = () => {
       )}
 
       {/* Post-cancel banner — TPM only (immediate cancel fallback) */}
-      {isTPM && isCancelled && !order?.cancel_at && (
+      {isTPM && isCancelled && !hasScheduledCancelAt && !isCancelPending && (
         <div className={classes.cancelledBanner}>
           <strong>{t('calendar.cancel_confirmed_title')}</strong>
           <p>{t('calendar.cancel_confirmed_body')}</p>
@@ -227,7 +230,7 @@ const CalendarOrderViewBody: FC = () => {
       <div className={classes.form}>
         {/* Status badge */}
         <div className={classes.statusBadgeGrey}>
-          {order?.cancel_at
+          {hasScheduledCancelAt
             ? t('calendar.status_cancelling')
             : isTPM && isCancelled
               ? t('calendar.status_cancelled')

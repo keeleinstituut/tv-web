@@ -26,7 +26,10 @@ import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { toCalendarApiDateTime } from 'helpers/calendar'
 import { useCalendarRole } from 'hooks/useCalendarRole'
-import { transformProjectDetail } from './calendarOrderDetailTransform'
+import {
+  transformProjectDetail,
+  unwrapCalendarProjectPayload,
+} from './calendarOrderDetailTransform'
 
 dayjs.extend(isoWeek)
 
@@ -295,8 +298,8 @@ export const useFetchCalendarOrderDetail = (id: string | null) => {
     queryFn: () =>
       apiClient
         .get(`${endpoints.PROJECTS}/${id}`)
-        .then((res: { data: Record<string, unknown> }) =>
-          transformProjectDetail(res.data)
+        .then((res) =>
+          transformProjectDetail(unwrapCalendarProjectPayload(res))
         ),
   })
   return { order: data ?? null, isLoading, isError }

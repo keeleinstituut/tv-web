@@ -29,35 +29,17 @@ const OrderTopActions: FC = () => {
   } = useOrderDetail()
 
   if (isCreateMode) return null
-
-  if (isCancelPending) {
-    return (
-      <div className={classes.topActions}>
-        <span className={classes.cancelPendingText}>
-          {t('calendar.cancel_confirmed_body').replace(
-            '30 s',
-            `${cancelCountdown}s`
-          )}
-        </span>
-        <Button
-          appearance={AppearanceTypes.Secondary}
-          onClick={handleUndoCancel}
-        >
-          {t('calendar.undo_cancel')}
-        </Button>
-      </div>
-    )
-  }
-
+  console.log('isCancelPending', isCancelPending, order?.cancel_at)
   return (
     <div className={classes.topActions}>
-      {order?.cancel_at && !isCancelPending && (
+      {order?.cancel_at && isCancelPending && (
         <div className={classes.pendingCancelBanner}>
           <strong>{t('calendar.cancel_pending_title')}</strong>
-          <span>
-            {t('calendar.cancel_pending_body', {
-              date: dayjs(order.cancel_at).format('DD.MM.YYYY [kell] HH:mm'),
-            })}
+          <span className={classes.cancelPendingText}>
+            {t('calendar.cancel_confirmed_body').replace(
+              '30 s',
+              `${cancelCountdown}s`
+            )}
           </span>
           <Button
             appearance={AppearanceTypes.Secondary}

@@ -1,5 +1,62 @@
 import type { CalendarOrderDetail } from 'types/calendar'
 
+/** Walk nested `{ data: { id, ... } }` bodies from the translation-order API. */
+export function unwrapCalendarProjectPayload(res: unknown): Record<string, unknown> {
+  let cur: Record<string, unknown> =
+    res && typeof res === 'object' && !Array.isArray(res)
+      ? (res as Record<string, unknown>)
+      : {}
+  for (let i = 0; i < 5; i++) {
+    const inner = cur.data
+    if (
+      inner &&
+      typeof inner === 'object' &&
+      !Array.isArray(inner) &&
+      typeof (inner as Record<string, unknown>).id === 'string'
+    ) {
+      cur = inner as Record<string, unknown>
+    } else {
+      break
+    }
+  }
+  return cur
+}
+
+/** Merge JSON:API-style `attributes` onto the root for field reads. */
+function mergeResourceAttributes(
+  raw: Record<string, unknown>
+): Record<string, unknown> {
+  const attrs = raw.attributes
+  if (attrs && typeof attrs === 'object' && !Array.isArray(attrs)) {
+    return { ...raw, ...(attrs as Record<string, unknown>) }
+  }
+  return raw
+}
+
+function pickOptionalIsoString(
+  raw: Record<string, unknown>,
+  ...keys: string[]
+): string | undefined {
+  for (const k of keys) {
+    const v = raw[k]
+    if (typeof v === 'string' && v.length > 0) return v
+  }
+  return undefined
+}
+
+function pickCancelAt(raw: Record<string, unknown>): string | undefined {
+  let v = pickOptionalIsoString(raw, 'cancel_at', 'cancelAt')
+  if (v) return v
+  const sps = raw.sub_projects
+  if (!Array.isArray(sps)) return undefined
+  for (const sp of sps) {
+    if (!sp || typeof sp !== 'object' || Array.isArray(sp)) continue
+    v = pickOptionalIsoString(sp as Record<string, unknown>, 'cancel_at', 'cancelAt')
+    if (v) return v
+  }
+  return undefined
+}
+
 function mapProjectMediaList(
   raw: unknown
 ): NonNullable<CalendarOrderDetail['source_files']> {
@@ -19,8 +76,9 @@ function mapProjectMediaList(
 }
 
 export function transformProjectDetail(
-  raw: Record<string, unknown>
+  rawInput: Record<string, unknown>
 ): CalendarOrderDetail {
+  const raw = mergeResourceAttributes(rawInput)
   const langs =
     (raw.destination_languages_classifier_values as Array<{
       id: string
@@ -75,8 +133,8 @@ export function transformProjectDetail(
     created_at: raw.created_at as string,
     updated_at: raw.updated_at as string | undefined,
     accepted_at: raw.accepted_at as string | undefined,
-    cancel_at: raw.cancel_at as string | undefined,
-    cancelled_at: raw.cancelled_at as string | undefined,
+    cancel_at: pickCancelAt(raw),
+    cancelled_at: pickOptionalIsoString(raw, 'cancelled_at', 'cancelledAt'),
     completed_at: raw.completed_at as string | undefined,
     client_institution_user: clientUser ? { id: clientUser.id } : undefined,
     client: clientUser

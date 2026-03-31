@@ -126,7 +126,16 @@ const CalendarOrderSidePanel: FC = () => {
     assignmentStatus === 'DONE' || assignmentStatus === 'CANCELLED'
   const orderTerminal =
     order?.status === 'ACCEPTED' || order?.status === 'CANCELLED'
-  const isPastSlot = isCancelled || assignmentWorkEnded || orderTerminal
+  const hasScheduledCancelAt =
+    typeof order?.cancel_at === 'string' && order.cancel_at.trim().length > 0
+  // During local undo window or server-scheduled cancel, keep the normal order view
+  // (banner + undo) — do not swap to PastBody just because isCancelled flipped true.
+  const inReversibleCancelWindow =
+    (isCancelled && isCancelPending) || hasScheduledCancelAt
+  const isPastSlot =
+    assignmentWorkEnded ||
+    orderTerminal ||
+    (isCancelled && !inReversibleCancelWindow)
   const isClientPastView = isClient && isViewMode && isPastSlot
 
   // Slot matching for TPM — only fetch in form mode
@@ -405,26 +414,13 @@ const CalendarOrderSidePanel: FC = () => {
     )
   }
 
-  const handleUndoCancel = useCallback(() => {
+  const handleDeclineCancel = useCallback(() => {
     if (!projectId) return
     declineCancelOrder(projectId, {
       onSuccess: () => {
         setIsCancelled(false)
         setIsCancelPending(false)
         setCancelCountdown(30)
-        showNotification({
-          type: NotificationTypes.Success,
-          title: t('notification.announcement'),
-          content: t('success.calendar_cancel_declined'),
-        })
-      },
-    })
-  }, [projectId, declineCancelOrder, t])
-
-  const handleDeclineCancel = useCallback(() => {
-    if (!projectId) return
-    declineCancelOrder(projectId, {
-      onSuccess: () => {
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -504,7 +500,6 @@ const CalendarOrderSidePanel: FC = () => {
       handleCancelEdit,
       handleSaveEdit,
       handleVoidConfirm,
-      handleUndoCancel,
       handleDeclineCancel,
       isDecliningCancel,
       closeSidePanel: handleClose,
@@ -612,20 +607,7 @@ const CalendarOrderSidePanel: FC = () => {
         {showFooter && (
           <div className={classes.footer}>
             {isViewMode ? (
-              isCancelPending ? (
-                <>
-                  <span className={classes.cancelPendingText}>
-                    {cancelCountdown}s
-                  </span>
-                  <Button
-                    appearance={AppearanceTypes.Secondary}
-                    onClick={handleUndoCancel}
-                    disabled={isDecliningCancel}
-                  >
-                    {t('calendar.undo_cancel')}
-                  </Button>
-                </>
-              ) : isEditing ? (
+              isCancelPending ? null : isEditing ? (
                 <>
                   <Button
                     appearance={AppearanceTypes.Primary}

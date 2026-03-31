@@ -1,4 +1,8 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { toCalendarApiDateTime } from 'helpers/calendar'
@@ -13,6 +17,26 @@ import type {
   CreateOrderPayload,
   UpdateOrderPayload,
 } from 'types/calendar'
+import {
+  transformProjectDetail,
+  unwrapCalendarProjectPayload,
+} from './calendarOrderDetailTransform'
+
+/** Refetch project + calendar aggregates after cancel/decline (POST body can be incomplete). */
+function invalidateCalendarProjectCaches(
+  queryClient: QueryClient,
+  projectId: string
+) {
+  return Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: ['calendar-order-detail', projectId],
+    }),
+    queryClient.invalidateQueries({ queryKey: ['calendar-day'] }),
+    queryClient.invalidateQueries({ queryKey: ['calendar-week'] }),
+    queryClient.invalidateQueries({ queryKey: ['calendar-month'] }),
+    queryClient.invalidateQueries({ queryKey: ['projects', projectId] }),
+  ])
+}
 
 // ---------------------------------------------------------------------------
 // Mutations
@@ -180,9 +204,15 @@ export const useCancelCalendarOrder = () => {
         ...(cancellation_comment ? { cancellation_comment } : {}),
         ...(is_delayed !== undefined ? { is_delayed } : {}),
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
-      queryClient.invalidateQueries({ queryKey: ['calendar-order-detail'] })
+    onSuccess: (response, variables) => {
+      const raw = unwrapCalendarProjectPayload(response)
+      if (typeof raw.id === 'string') {
+        queryClient.setQueryData(
+          ['calendar-order-detail', variables.id],
+          transformProjectDetail(raw)
+        )
+      }
+      void invalidateCalendarProjectCaches(queryClient, variables.id)
     },
   })
 }
@@ -192,9 +222,15 @@ export const useDeclineCancelCalendarOrder = () => {
   return useMutation({
     mutationFn: (id: string) =>
       apiClient.post(endpoints.PROJECT_CANCEL_DECLINE(id), {}),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['calendar-order-detail'] })
-      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+    onSuccess: (response, projectId) => {
+      const raw = unwrapCalendarProjectPayload(response)
+      if (typeof raw.id === 'string') {
+        queryClient.setQueryData(
+          ['calendar-order-detail', projectId],
+          transformProjectDetail(raw)
+        )
+      }
+      void invalidateCalendarProjectCaches(queryClient, projectId)
     },
   })
 }

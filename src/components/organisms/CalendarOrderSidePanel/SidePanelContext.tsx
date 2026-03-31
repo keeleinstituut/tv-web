@@ -97,7 +97,6 @@ export interface SidePanelContextValue {
   handleCancelEdit: () => void
   handleSaveEdit: () => void
   handleVoidConfirm: () => void
-  handleUndoCancel: () => void
   handleDeclineCancel: () => void
   isDecliningCancel: boolean
   closeSidePanel: () => void
