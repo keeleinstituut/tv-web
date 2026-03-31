@@ -320,13 +320,6 @@ const CalendarDayView: FC = () => {
                   omitBookedSlotBlocks={
                     hasClientOverlap && !isClientOverlapExpanded
                   }
-                  collapsedOverlapTitle={
-                    hasClientOverlap && !isClientOverlapExpanded
-                      ? t('calendar.parallel_bookings_expand', {
-                          count: mergedSlots.length,
-                        })
-                      : undefined
-                  }
                   slotWidth={slotWidth}
                 />
                 {isTPM && isTPMExpanded && (

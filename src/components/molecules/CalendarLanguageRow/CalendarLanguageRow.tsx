@@ -33,8 +33,6 @@ interface Props {
   isExpanded?: boolean
   /** Client day: hide booking blocks on the header row when collapsed with overlapping bookings */
   omitBookedSlotBlocks?: boolean
-  /** Tooltip on the row when omitBookedSlotBlocks is set */
-  collapsedOverlapTitle?: string
   /** When true the row is a header-only strip: no slot cells, no interaction */
   readOnly?: boolean
   slotWidth?: number
@@ -237,7 +235,6 @@ const CalendarLanguageRow: FC<Props> = ({
   onToggleExpand,
   isExpanded,
   omitBookedSlotBlocks = false,
-  collapsedOverlapTitle,
   readOnly = false,
   slotWidth,
   dayData,
@@ -335,11 +332,13 @@ const CalendarLanguageRow: FC<Props> = ({
       onSelectRange?.(language.language.id, startIso, endIso),
   })
 
+  const overlapRowTitle =
+    omitBookedSlotBlocks && bookedSlots.length
+      ? t('calendar.parallel_bookings_expand', { count: bookedSlots.length })
+      : undefined
+
   return (
-    <div
-      className={classes.rowWrapper}
-      title={collapsedOverlapTitle}
-    >
+    <div className={classes.rowWrapper} title={overlapRowTitle}>
       <div className={classes.label}>
         {onTogglePin && (
           <button
@@ -506,9 +505,7 @@ const CalendarLanguageRow: FC<Props> = ({
                 key={`overlap-${r.start_at}-${r.end_at}-${idx}`}
                 className={classes.overlapCollapsedStrip}
                 style={{ left: left + 4, width: innerW }}
-                title={t('calendar.parallel_bookings_expand', {
-                  count: bookedSlots.length,
-                })}
+                title={overlapRowTitle}
                 aria-label={t('calendar.overlaps_short')}
               >
                 {innerW >= sw * 0.5 && (

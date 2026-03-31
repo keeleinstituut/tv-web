@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import type { SidePanelSelection } from 'components/contexts/CalendarContext'
 import type { BookedSlot, CalendarLanguage } from 'types/calendar'
 
-export function intervalsOverlapIso(
+function intervalsOverlapIso(
   aStart: string,
   aEnd: string,
   bStart: string,
