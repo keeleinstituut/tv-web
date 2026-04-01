@@ -237,8 +237,12 @@ const CalendarOrderDetail: FC = () => {
   })
   const isOwner =
     !isClient || order?.client_institution_user?.id === institutionUserId
+  const clientOrderNotYetAccepted =
+    order?.sub_project_status == null ||
+    order.sub_project_status === 'REGISTERED' ||
+    order.sub_project_status === 'TASKS_SUBMITTED_TO_VENDORS'
   const canModify =
-    (isTPM || (isClient && isOwner)) &&
+    (isTPM || (isClient && isOwner && clientOrderNotYetAccepted)) &&
     !isCancelled &&
     !isPast &&
     (order?.status === 'NEW' ||
