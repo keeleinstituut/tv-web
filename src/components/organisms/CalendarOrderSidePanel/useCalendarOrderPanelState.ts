@@ -31,6 +31,8 @@ import {
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ServiceType, UpdateOrderPayload } from 'types/calendar'
+import { apiClient } from 'api'
+import { endpoints } from 'api/endpoints'
 import { SidePanelContextValue } from './SidePanelContext'
 
 interface FormState {
@@ -96,6 +98,29 @@ export function useCalendarOrderPanelState(): {
   const { mutate: cancelPrebook } = useCancelPrebook()
 
   const prebookActiveRef = useRef(false)
+
+  // Cancel prebook on browser/tab close and on in-app navigation (component unmount).
+  // fetch + keepalive ensures the request outlives the page lifecycle.
+  useEffect(() => {
+    const cancelPrebookOnUnload = () => {
+      if (!prebookActiveRef.current) return
+      const csrfToken = apiClient.instance.defaults.headers.common[
+        'X-CSRF-Token'
+      ] as string | undefined
+      fetch(endpoints.CALENDAR_PREBOOK, {
+        method: 'DELETE',
+        credentials: 'include',
+        keepalive: true,
+        headers: csrfToken ? { 'X-CSRF-Token': csrfToken } : undefined,
+      })
+    }
+    window.addEventListener('beforeunload', cancelPrebookOnUnload)
+    return () => {
+      window.removeEventListener('beforeunload', cancelPrebookOnUnload)
+      cancelPrebookOnUnload()
+    }
+  }, [])
+
   const editBaselineRef = useRef<{
     serviceType: ServiceType
     referenceNumber: string
