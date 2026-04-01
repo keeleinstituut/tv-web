@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { slotIndexToIso } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
+import { slotIndexToIso } from 'helpers/calendarSlotUtils'
 
 interface Options {
   rowRef: RefObject<HTMLDivElement>
