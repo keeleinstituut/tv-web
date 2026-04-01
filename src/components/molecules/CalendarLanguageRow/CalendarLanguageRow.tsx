@@ -12,7 +12,11 @@ import {
   mergeClientPrebookSlot,
   mergedOverlapIntervals,
 } from 'helpers/calendarDayOverlaps'
-import { BookedSlot, CalendarDayResponse, CalendarLanguage } from 'types/calendar'
+import {
+  BookedSlot,
+  CalendarDayResponse,
+  CalendarLanguage,
+} from 'types/calendar'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
 import classes from './classes.module.scss'
@@ -107,7 +111,15 @@ export const BookedSlotBlock: FC<{
   onClick?: (slot: BookedSlot) => void
   alwaysLightBlue?: boolean
   slotWidth?: number
-}> = ({ slot, dayStartHour, onClick, alwaysLightBlue, slotWidth }) => {
+  rowWidth?: number
+}> = ({
+  slot,
+  dayStartHour,
+  onClick,
+  alwaysLightBlue,
+  slotWidth,
+  rowWidth,
+}) => {
   const { t } = useTranslation()
   const sw = slotWidth ?? SLOT_WIDTH_PX
   const left = timeToX(slot.start_at, dayStartHour, sw)
@@ -173,19 +185,29 @@ export const BookedSlotBlock: FC<{
   }
 
   if (slot.type === 'vacation') {
+    const vacLeft = rowWidth !== undefined ? Math.max(left, 0) : left
+    const vacWidth =
+      rowWidth !== undefined
+        ? Math.max(Math.min(left + width, rowWidth) - vacLeft, 0)
+        : width
     return (
       <div
         className={classNames(
           classes.slotBlock,
           getSlotClass(slot, isPast, isOngoing),
           {
-            [classes.slotBlockNarrow]: isNarrow,
+            [classes.slotBlockNarrow]: vacWidth <= sw,
           }
         )}
-        style={{ left: left + 4, width: width - 8 }}
+        style={{ left: vacLeft + 4, width: vacWidth - 8 }}
         title={slot.meta}
       >
         <BookingBusyIcon className={classes.slotIconVacation} />
+        {!isNarrow && (
+          <span className={classes.slotLabelExternal}>
+            {t('calendar.booked')}
+          </span>
+        )}
       </div>
     )
   }
@@ -241,8 +263,12 @@ const CalendarLanguageRow: FC<Props> = ({
 }) => {
   const sw = slotWidth ?? SLOT_WIDTH_PX
   const { t } = useTranslation()
-  const { sidePanelSelection, pendingDeepLink, setPendingDeepLink, openSidePanel } =
-    useCalendarPanel()
+  const {
+    sidePanelSelection,
+    pendingDeepLink,
+    setPendingDeepLink,
+    openSidePanel,
+  } = useCalendarPanel()
 
   const rawBookedSlots =
     dayData?.booked_slots_by_language[language.language.id] ??
@@ -287,7 +313,13 @@ const CalendarLanguageRow: FC<Props> = ({
       slot: match,
     })
     setPendingDeepLink(null)
-  }, [bookedSlots, pendingDeepLink, openSidePanel, language, setPendingDeepLink])
+  }, [
+    bookedSlots,
+    pendingDeepLink,
+    openSidePanel,
+    language,
+    setPendingDeepLink,
+  ])
 
   const totalSlots = (dayEndHour - dayStartHour) * 2
   const totalWidth = totalSlots * sw
@@ -308,8 +340,7 @@ const CalendarLanguageRow: FC<Props> = ({
   )
 
   const overlapCollapsedIntervals = useMemo(
-    () =>
-      omitBookedSlotBlocks ? mergedOverlapIntervals(bookedSlots) : [],
+    () => (omitBookedSlotBlocks ? mergedOverlapIntervals(bookedSlots) : []),
     [omitBookedSlotBlocks, bookedSlots]
   )
 
@@ -355,7 +386,9 @@ const CalendarLanguageRow: FC<Props> = ({
             <PinIcon />
           </button>
         )}
-        <span className={classes.badge}>{language.language.value.split('-')[0]}</span>
+        <span className={classes.badge}>
+          {language.language.value.split('-')[0]}
+        </span>
         {onToggleExpand && (
           <button
             className={classNames(classes.collapseBtn, {
@@ -528,6 +561,7 @@ const CalendarLanguageRow: FC<Props> = ({
               onClick={onClickSlot}
               alwaysLightBlue={readOnly}
               slotWidth={sw}
+              rowWidth={totalWidth}
             />
           ))}
       </div>
