@@ -289,6 +289,35 @@ export function useCalendarOrderPanelState(): {
     )
   }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Re-issue prebook when duration changes so the reserved range matches the order end time
+  useEffect(() => {
+    if (!isOpen || isViewMode || !language || !startIso) return
+    const computedEnd = dayjs(startIso).add(durationMinutes, 'minute').toISOString()
+    const timer = setTimeout(() => {
+      cancelPrebook()
+      prebookActiveRef.current = true
+      createPrebook(
+        {
+          language_id: language.language.id,
+          start_at: startIso,
+          end_at: computedEnd,
+          ...(sidePanelSelection?.vendorId
+            ? { vendor_id: sidePanelSelection.vendorId }
+            : {}),
+        },
+        {
+          onSuccess: () => {
+            if (!prebookActiveRef.current) cancelPrebook()
+          },
+          onError: () => {
+            prebookActiveRef.current = false
+          },
+        }
+      )
+    }, 600)
+    return () => clearTimeout(timer)
+  }, [durationMinutes]) // eslint-disable-line react-hooks/exhaustive-deps
+
   // Cancel countdown tick
   useEffect(() => {
     if (!isCancelPending) return
