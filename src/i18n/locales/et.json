@@ -1233,7 +1233,8 @@
     "import_description": "Lisa oma kalender, et näha tõlketellimusi ja vältida kattuvaid broneeringuid.",
     "import_button": "Impordi ics.",
     "import_success": "Kalender edukalt imporditud ({{count}} sündmust).",
-    "last_import_info": "Viimati imporditud: {{count}} sündmust kuni {{date}}"
+    "last_import_info": "Viimati imporditud: {{count}} sündmust kuni {{date}}",
+    "import_end_date": "Määra impordi lõpukuupäev"
   },
   "sessions": {
     "active_sessions": "Aktiivsed sessioonid",
