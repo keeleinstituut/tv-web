@@ -101,6 +101,7 @@ export const endpoints = {
     translationOrder(`projects/${projectId}/comments/${commentId}`),
   CALENDAR_PREBOOK: translationOrder('calendar/prebook'),
   CALENDAR_VENDOR_ENTRIES: translationOrder('calendar/vendor-entries'),
+  CALENDAR_IMPORT: translationOrder('calendar/import'),
 
   TRANSLATION_MEMORIES: translationOrder('catv2/translation-memories'),
   IMPORT_TMX: translationOrder('catv2/translation-memories/import'),
