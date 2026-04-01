@@ -10,19 +10,15 @@ import VacationTimes from 'components/molecules/VacationTimes/VacationTimes'
 import { useInstitutionUserVacationsFetch } from 'hooks/requests/useInstitutions'
 import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 import SessionManagement from 'components/organisms/SessionManagement/SessionManagement'
-import CalendarSettings from 'components/organisms/CalendarSettings/CalendarSettings'
-import { useCalendarRole } from 'hooks/useCalendarRole'
 
 const UserDetails: FC = () => {
   const { t } = useTranslation()
   const { userInfo } = useAuth()
-  const { isTranslator } = useCalendarRole()
   const userId = userInfo?.tolkevarav?.institutionUserId || ''
   const { isLoading, user } = useFetchUser({
     id: userId,
   })
   const { userVacations } = useInstitutionUserVacationsFetch({ id: userId })
-
   const userName = {
     surname: user?.user.surname,
     forename: user?.user.forename,
@@ -99,7 +95,6 @@ const UserDetails: FC = () => {
           time: dayjs(user?.updated_at).format('DD.MM.YYYY HH:mm') || '',
         })}
       </p>
-      {isTranslator && <CalendarSettings />}
       <SessionManagement />
     </>
   )

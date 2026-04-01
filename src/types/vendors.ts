@@ -27,6 +27,7 @@ export type Vendor = {
   skills: SkillsData[]
   comment: string
   institution_user_id: string
+  is_internal: boolean
   created_at: string
   updated_at: string
 } & DiscountPercentages

@@ -38,6 +38,7 @@ import TaskPage from 'pages/TaskPage/TaskPage'
 import Calendar from 'pages/Calendar/Calendar'
 import CalendarAccessGuard from 'components/templates/CalendarAccessGuard/CalendarAccessGuard'
 import CalendarOrderDetail from 'pages/CalendarOrderDetail/CalendarOrderDetail'
+import CalendarSettingsPage from 'pages/CalendarSettingsPage/CalendarSettingsPage'
 import CalendarOrderBreadcrumb from 'components/molecules/Breadcrumbs/CalendarOrderBreadcrumb'
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
@@ -259,6 +260,11 @@ export const protectedRoutes: FullRouteObject[] = [
   {
     path: 'user-details',
     element: <UserDetails />,
+  },
+  {
+    path: 'calendar-settings',
+    element: <CalendarSettingsPage />,
+    breadcrumb: i18n.t('calendar_settings.title'),
   },
   {
     path: 'settings',

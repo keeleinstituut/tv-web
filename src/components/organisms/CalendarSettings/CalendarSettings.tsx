@@ -44,9 +44,7 @@ const CalendarSettings: FC = () => {
   }
 
   return (
-    <>
-      <h3 className={classes.title}>{t('calendar_settings.title')}</h3>
-      <Container className={classes.container}>
+    <Container className={classes.container}>
         <p className={classes.sectionTitle}>
           {t('calendar_settings.import_title')}
         </p>
@@ -76,8 +74,7 @@ const CalendarSettings: FC = () => {
         >
           {t('calendar_settings.import_button')}
         </Button>
-      </Container>
-    </>
+    </Container>
   )
 }
 
