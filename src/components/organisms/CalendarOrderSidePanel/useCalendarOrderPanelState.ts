@@ -33,6 +33,30 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { ServiceType, UpdateOrderPayload } from 'types/calendar'
 import { SidePanelContextValue } from './SidePanelContext'
 
+interface FormState {
+  referenceNumber: string
+  serviceType: ServiceType
+  location: string
+  selectedDate: string
+  startTimeInput: string
+  clientInstitutionId: string
+  domainIds: string[]
+  vendorId: string
+  durationMinutes: number
+}
+
+const INITIAL_FORM: FormState = {
+  referenceNumber: '',
+  serviceType: '',
+  location: '',
+  selectedDate: '',
+  startTimeInput: '',
+  clientInstitutionId: '',
+  domainIds: [],
+  vendorId: '',
+  durationMinutes: 60,
+}
+
 export interface PanelDisplayState {
   isOpen: boolean
   isViewMode: boolean
@@ -81,14 +105,39 @@ export function useCalendarOrderPanelState(): {
     vendorId: string
   } | null>(null)
 
-  const [referenceNumber, setReferenceNumber] = useState('')
-  const [serviceType, setServiceType] = useState<ServiceType>('')
-  const [location, setLocation] = useState('')
-  const [selectedDate, setSelectedDate] = useState('')
-  const [startTimeInput, setStartTimeInput] = useState('')
-  const [clientInstitutionId, setClientInstitutionId] = useState('')
-  const [domainIds, setDomainIds] = useState<string[]>([])
-  const [vendorId, setVendorId] = useState('')
+  const [form, setForm] = useState<FormState>(INITIAL_FORM)
+  const {
+    referenceNumber,
+    serviceType,
+    location,
+    selectedDate,
+    startTimeInput,
+    clientInstitutionId,
+    domainIds,
+    vendorId,
+    durationMinutes,
+  } = form
+
+  const setReferenceNumber = (v: string) =>
+    setForm((f) => ({ ...f, referenceNumber: v }))
+  const setServiceType = (v: ServiceType) =>
+    setForm((f) => ({ ...f, serviceType: v }))
+  const setLocation = (v: string) => setForm((f) => ({ ...f, location: v }))
+  const setSelectedDate = (v: string) =>
+    setForm((f) => ({ ...f, selectedDate: v }))
+  const setStartTimeInput = (v: string) =>
+    setForm((f) => ({ ...f, startTimeInput: v }))
+  const setClientInstitutionId = (v: string) =>
+    setForm((f) => ({ ...f, clientInstitutionId: v }))
+  const setDomainIds = (v: string[]) =>
+    setForm((f) => ({ ...f, domainIds: v }))
+  const setVendorId = (v: string) => setForm((f) => ({ ...f, vendorId: v }))
+  const setDurationMinutes = (v: number | ((prev: number) => number)) =>
+    setForm((f) => ({
+      ...f,
+      durationMinutes: typeof v === 'function' ? v(f.durationMinutes) : v,
+    }))
+
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
   const [cancelReason, setCancelReason] = useState('')
@@ -96,7 +145,6 @@ export function useCalendarOrderPanelState(): {
   const [isCancelPending, setIsCancelPending] = useState(false)
   const [cancelCountdown, setCancelCountdown] = useState(30)
   const [isMetaOpen, setIsMetaOpen] = useState(false)
-  const [durationMinutes, setDurationMinutes] = useState(60)
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [pendingComment, setPendingComment] = useState('')
 
@@ -180,16 +228,9 @@ export function useCalendarOrderPanelState(): {
   // Reset state when panel opens/closes
   useEffect(() => {
     if (!isOpen) {
-      setReferenceNumber('')
-      setServiceType('')
-      setLocation('')
+      setForm(INITIAL_FORM)
       setPendingFiles([])
       setPendingComment('')
-      setSelectedDate('')
-      setStartTimeInput('')
-      setClientInstitutionId('')
-      setDomainIds([])
-      setVendorId('')
       setIsEditing(false)
       setIsConfirmingCancel(false)
       setCancelReason('')
@@ -197,7 +238,6 @@ export function useCalendarOrderPanelState(): {
       setIsCancelPending(false)
       setCancelCountdown(30)
       setIsMetaOpen(false)
-      setDurationMinutes(60)
     } else {
       if (sidePanelSelection?.vendorId) {
         setVendorId(sidePanelSelection.vendorId)
@@ -303,23 +343,25 @@ export function useCalendarOrderPanelState(): {
     setIsEditing(true)
     setPendingComment('')
     setIsConfirmingCancel(false)
-    const st = slot?.assignment?.service_type
-    const initServiceType = apiServiceTypeToForm(st)
+
+    const initServiceType = apiServiceTypeToForm(slot?.assignment?.service_type)
+    const initReferenceNumber = slot?.assignment?.reference_number ?? ''
     const initLocation =
       slot?.assignment?.location ?? order?.meeting_link ?? order?.location ?? ''
-    const initReferenceNumber = slot?.assignment?.reference_number ?? ''
     const initClientInstitutionId = order?.client_institution_user?.id ?? ''
     const initDomainIds = order?.tags?.map((tag) => tag.id) ?? []
-    const initVendorId = vendorId
 
-    setReferenceNumber(initReferenceNumber)
-    setServiceType(initServiceType)
-    setLocation(initLocation)
-    setSelectedDate(date)
-    setStartTimeInput(startTime)
-    setDurationMinutes(slotDurationMinutes)
-    setDomainIds(initDomainIds)
-    setClientInstitutionId(initClientInstitutionId)
+    setForm({
+      referenceNumber: initReferenceNumber,
+      serviceType: initServiceType,
+      location: initLocation,
+      selectedDate: date,
+      startTimeInput: startTime,
+      durationMinutes: slotDurationMinutes,
+      clientInstitutionId: initClientInstitutionId,
+      domainIds: initDomainIds,
+      vendorId: form.vendorId,
+    })
 
     editBaselineRef.current = {
       serviceType: initServiceType,
@@ -327,20 +369,13 @@ export function useCalendarOrderPanelState(): {
       location: initLocation,
       clientInstitutionId: initClientInstitutionId,
       domainIds: initDomainIds,
-      vendorId: initVendorId,
+      vendorId: form.vendorId,
     }
   }
 
   const handleCancelEdit = () => {
     setIsEditing(false)
-    setReferenceNumber('')
-    setServiceType('')
-    setLocation('')
-    setSelectedDate('')
-    setStartTimeInput('')
-    setClientInstitutionId('')
-    setDomainIds([])
-    setVendorId('')
+    setForm(INITIAL_FORM)
     editBaselineRef.current = null
   }
 

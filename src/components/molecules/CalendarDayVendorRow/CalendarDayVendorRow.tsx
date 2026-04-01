@@ -1,12 +1,10 @@
 import { FC, useCallback, useRef } from 'react'
+import { useCalendarDay } from 'components/contexts/CalendarDayContext'
 import { useSlotStateCheckers } from 'hooks/useSlotStateCheckers'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import { BookedSlot, CalendarLanguage, VendorDayData } from 'types/calendar'
-import {
-  BookedSlotBlock,
-  SLOT_WIDTH_PX,
-} from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
+import { BookedSlotBlock } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
 import { slotIndexToIso, isSlotPast } from 'helpers/calendarSlotUtils'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
@@ -16,23 +14,12 @@ import classes from './classes.module.scss'
 interface Props {
   vendor: VendorDayData
   language: CalendarLanguage
-  date: string
-  dayStartHour: number
-  dayEndHour: number
-  slotWidth?: number
 }
 
-const CalendarDayVendorRow: FC<Props> = ({
-  vendor,
-  language,
-  date,
-  dayStartHour,
-  dayEndHour,
-  slotWidth,
-}) => {
+const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
+  const { date, dayStartHour, dayEndHour, slotWidth: sw } = useCalendarDay()
   const { t } = useTranslation()
   const { openSidePanel } = useCalendarPanel()
-  const sw = slotWidth ?? SLOT_WIDTH_PX
   const totalSlots = (dayEndHour - dayStartHour) * 2
   const totalWidth = totalSlots * sw
 

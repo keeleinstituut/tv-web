@@ -1,4 +1,5 @@
 import { FC, useRef } from 'react'
+import { useCalendarDay } from 'components/contexts/CalendarDayContext'
 import { useSlotStateCheckers } from 'hooks/useSlotStateCheckers'
 import { BookedSlotBlock } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
 import CalendarSlotCells from 'components/molecules/CalendarSlotCells/CalendarSlotCells'
@@ -8,10 +9,6 @@ import type { BookedSlot, CalendarLanguage } from 'types/calendar'
 
 interface Props {
   language: CalendarLanguage
-  date: string
-  dayStartHour: number
-  dayEndHour: number
-  slotWidth: number
   /** The single booking rendered on this track */
   rowSlot: BookedSlot
   /** All bookings for the language (for blocking drag / cell state) */
@@ -23,16 +20,13 @@ interface Props {
 
 const CalendarDayClientBookingRow: FC<Props> = ({
   language,
-  date,
-  dayStartHour,
-  dayEndHour,
-  slotWidth: sw,
   rowSlot,
   allBookedSlots,
   langAvailSlots,
   onSelectRange,
   onClickSlot,
 }) => {
+  const { date, dayStartHour, dayEndHour, slotWidth: sw } = useCalendarDay()
   const totalSlots = (dayEndHour - dayStartHour) * 2
   const totalWidth = totalSlots * sw
   const rowRef = useRef<HTMLDivElement>(null)
