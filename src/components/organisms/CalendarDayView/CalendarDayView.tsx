@@ -1,11 +1,4 @@
-import {
-  FC,
-  Fragment,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import { FC, Fragment, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import 'dayjs/locale/et'
@@ -15,6 +8,7 @@ import {
   useCalendarExpansion,
   useCalendarPanel,
 } from 'components/contexts/CalendarContext'
+import { useResponsiveCalendarWidth } from 'hooks/useResponsiveCalendarWidth'
 import { useFetchCalendarDay } from 'hooks/requests/useCalendar'
 import CalendarLanguageRow, {
   SLOT_WIDTH_PX,
@@ -23,6 +17,7 @@ import CalendarLanguageRow, {
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
 import { useCalendarRole } from 'hooks/useCalendarRole'
+import { CalendarDayProvider } from 'components/contexts/CalendarDayContext'
 import { useCalendarPinning } from 'hooks/useCalendarPinning'
 import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
 import CalendarDayVendorRows from 'components/molecules/CalendarDayVendorRows/CalendarDayVendorRows'
@@ -110,19 +105,12 @@ const CalendarDayView: FC = () => {
 
   // Fluid slot width: fills available container width, min 48px per 30 min
   const containerRef = useRef<HTMLDivElement>(null)
-  const [slotWidth, setSlotWidth] = useState(SLOT_WIDTH_PX)
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      if (!containerRef.current) return
-      const available = containerRef.current.clientWidth - LABEL_WIDTH_PX
-      setSlotWidth(Math.max(SLOT_WIDTH_PX, Math.floor(available / TOTAL_SLOTS)))
-    }
-    measure()
-    const obs = new ResizeObserver(measure)
-    if (containerRef.current) obs.observe(containerRef.current)
-    return () => obs.disconnect()
-  }, [])
+  const slotWidth = useResponsiveCalendarWidth(
+    containerRef,
+    LABEL_WIDTH_PX,
+    TOTAL_SLOTS,
+    SLOT_WIDTH_PX
+  )
 
   // Current time marker — updates every minute
   const timeX = useCurrentTimeMarker(
@@ -234,113 +222,110 @@ const CalendarDayView: FC = () => {
         </div>
 
         {/* Language rows */}
-        <div className={classes.rowsContainer}>
-          {/* Full-height vertical hour guides */}
-          {HOUR_LABELS.map((hour) => (
-            <div
-              key={hour}
-              className={classes.hourGuide}
-              style={{
-                left: LABEL_WIDTH_PX + (hour - DAY_START_HOUR) * slotWidth * 2,
-              }}
-            />
-          ))}
+        <CalendarDayProvider
+          value={{
+            date: dateStr,
+            dayStartHour: DAY_START_HOUR,
+            dayEndHour: DAY_END_HOUR,
+            slotWidth,
+          }}
+        >
+          <div className={classes.rowsContainer}>
+            {/* Full-height vertical hour guides */}
+            {HOUR_LABELS.map((hour) => (
+              <div
+                key={hour}
+                className={classes.hourGuide}
+                style={{
+                  left:
+                    LABEL_WIDTH_PX + (hour - DAY_START_HOUR) * slotWidth * 2,
+                }}
+              />
+            ))}
 
-          {visibleLanguages.map((lang) => {
-            const rawSlots = slotsForLanguageFromDay(lang.language.id, dayData)
-            const mergedSlots = mergeClientPrebookSlot(
-              lang,
-              rawSlots,
-              sidePanelSelection
-            )
-            const hasClientOverlap =
-              isClient && !!dayData && bookedSlotsOverlap(mergedSlots)
+            {visibleLanguages.map((lang) => {
+              const rawSlots = slotsForLanguageFromDay(
+                lang.language.id,
+                dayData
+              )
+              const mergedSlots = mergeClientPrebookSlot(
+                lang,
+                rawSlots,
+                sidePanelSelection
+              )
+              const hasClientOverlap =
+                isClient && !!dayData && bookedSlotsOverlap(mergedSlots)
 
-            const isTPMExpanded =
-              isTPM &&
-              !allCollapsedOverride &&
-              (lang.pinned || isLanguageExpanded(lang.language.id))
+              const isTPMExpanded =
+                isTPM &&
+                !allCollapsedOverride &&
+                (lang.pinned || isLanguageExpanded(lang.language.id))
 
-            const isClientOverlapExpanded =
-              hasClientOverlap &&
-              !allCollapsedOverride &&
-              isLanguageExpanded(lang.language.id)
+              const isClientOverlapExpanded =
+                hasClientOverlap &&
+                !allCollapsedOverride &&
+                isLanguageExpanded(lang.language.id)
 
-            const isExpanded = isTPM ? isTPMExpanded : isClientOverlapExpanded
+              const isExpanded = isTPM ? isTPMExpanded : isClientOverlapExpanded
 
-            const openSlotPanel = (slot: BookedSlot) => {
-              openSidePanel({
-                language: lang,
-                startIso: slot.start_at,
-                endIso: slot.end_at,
-                slot,
-              })
-            }
+              const openSlotPanel = (slot: BookedSlot) => {
+                openSidePanel({
+                  language: lang,
+                  startIso: slot.start_at,
+                  endIso: slot.end_at,
+                  slot,
+                })
+              }
 
-            return (
-              <Fragment key={lang.language.id}>
-                <CalendarLanguageRow
-                  language={lang}
-                  date={dateStr}
-                  dayStartHour={DAY_START_HOUR}
-                  dayEndHour={DAY_END_HOUR}
-                  readOnly={isTPM || !canInteract}
-                  dayData={dayData}
-                  onSelectRange={
-                    isClient
-                      ? (langId, start, end) => {
-                          const l = languages.find(
-                            (l) => l.language.id === langId
-                          )
-                          if (l)
-                            openSidePanel({
-                              language: l,
-                              startIso: start,
-                              endIso: end,
-                            })
-                        }
-                      : undefined
-                  }
-                  onClickSlot={
-                    isClient || isTranslator ? openSlotPanel : undefined
-                  }
-                  onTogglePin={
-                    canInteract && (lang.pinned || pinnedCount < 3)
-                      ? () => handleTogglePin(lang.language.id)
-                      : undefined
-                  }
-                  onToggleExpand={
-                    isTPM
-                      ? () => toggleLanguageExpanded(lang.language.id)
-                      : hasClientOverlap
-                        ? () => toggleLanguageExpanded(lang.language.id)
-                        : undefined
-                  }
-                  isExpanded={isExpanded}
-                  omitBookedSlotBlocks={
-                    hasClientOverlap && !isClientOverlapExpanded
-                  }
-                  slotWidth={slotWidth}
-                />
-                {isTPM && isTPMExpanded && (
-                  <CalendarDayVendorRows
+              return (
+                <Fragment key={lang.language.id}>
+                  <CalendarLanguageRow
                     language={lang}
-                    date={dateStr}
-                    dayStartHour={DAY_START_HOUR}
-                    dayEndHour={DAY_END_HOUR}
-                    slotWidth={slotWidth}
-                  />
-                )}
-                {hasClientOverlap && isClientOverlapExpanded && (
-                  <CalendarDayClientBookingRows
-                    language={lang}
-                    date={dateStr}
-                    dayStartHour={DAY_START_HOUR}
-                    dayEndHour={DAY_END_HOUR}
-                    slotWidth={slotWidth}
+                    readOnly={isTPM || !canInteract}
                     dayData={dayData}
                     onSelectRange={
-                      (langId, start, end) => {
+                      isClient
+                        ? (langId, start, end) => {
+                            const l = languages.find(
+                              (l) => l.language.id === langId
+                            )
+                            if (l)
+                              openSidePanel({
+                                language: l,
+                                startIso: start,
+                                endIso: end,
+                              })
+                          }
+                        : undefined
+                    }
+                    onClickSlot={
+                      isClient || isTranslator ? openSlotPanel : undefined
+                    }
+                    onTogglePin={
+                      canInteract && (lang.pinned || pinnedCount < 3)
+                        ? () => handleTogglePin(lang.language.id)
+                        : undefined
+                    }
+                    onToggleExpand={
+                      isTPM
+                        ? () => toggleLanguageExpanded(lang.language.id)
+                        : hasClientOverlap
+                          ? () => toggleLanguageExpanded(lang.language.id)
+                          : undefined
+                    }
+                    isExpanded={isExpanded}
+                    omitBookedSlotBlocks={
+                      hasClientOverlap && !isClientOverlapExpanded
+                    }
+                  />
+                  {isTPM && isTPMExpanded && (
+                    <CalendarDayVendorRows language={lang} />
+                  )}
+                  {hasClientOverlap && isClientOverlapExpanded && (
+                    <CalendarDayClientBookingRows
+                      language={lang}
+                      dayData={dayData}
+                      onSelectRange={(langId, start, end) => {
                         const l = languages.find(
                           (l) => l.language.id === langId
                         )
@@ -350,30 +335,32 @@ const CalendarDayView: FC = () => {
                             startIso: start,
                             endIso: end,
                           })
-                      }
-                    }
-                    onClickSlot={openSlotPanel}
-                  />
-                )}
-              </Fragment>
-            )
-          })}
+                      }}
+                      onClickSlot={openSlotPanel}
+                    />
+                  )}
+                </Fragment>
+              )
+            })}
 
-          {isLoading && (
-            <div className={classes.stateMessage}>{t('calendar.loading')}</div>
-          )}
-          {isError && (
-            <div className={classes.stateMessage}>
-              {t('calendar.error_loading')}
-            </div>
-          )}
+            {isLoading && (
+              <div className={classes.stateMessage}>
+                {t('calendar.loading')}
+              </div>
+            )}
+            {isError && (
+              <div className={classes.stateMessage}>
+                {t('calendar.error_loading')}
+              </div>
+            )}
 
-          {isToday && timeX >= 0 && (
-            <CalendarTimeMarker
-              style={{ left: LABEL_WIDTH_PX + timeX, top: -40, height: 40 }}
-            />
-          )}
-        </div>
+            {isToday && timeX >= 0 && (
+              <CalendarTimeMarker
+                style={{ left: LABEL_WIDTH_PX + timeX, top: -40, height: 40 }}
+              />
+            )}
+          </div>
+        </CalendarDayProvider>
       </div>
     </div>
   )

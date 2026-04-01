@@ -1,4 +1,6 @@
-import { FC, useCallback, useEffect, useMemo, useRef } from 'react'
+import { FC, useEffect, useMemo, useRef } from 'react'
+import { useCalendarDay } from 'components/contexts/CalendarDayContext'
+import { useSlotStateCheckers } from 'hooks/useSlotStateCheckers'
 import dayjs from 'dayjs'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
@@ -12,24 +14,25 @@ import {
   mergeClientPrebookSlot,
   mergedOverlapIntervals,
 } from 'helpers/calendarDayOverlaps'
+import CalendarSlotCells from 'components/molecules/CalendarSlotCells/CalendarSlotCells'
 import {
-  BookedSlot,
-  CalendarDayResponse,
-  CalendarLanguage,
-} from 'types/calendar'
+  timeToX,
+  durationToWidth,
+  slotIndexToIso,
+  isSlotPast,
+  SLOT_WIDTH_PX,
+} from 'helpers/calendarSlotUtils'
+export { SLOT_WIDTH_PX, timeToX, slotIndexToIso, isSlotPast }
+import { BookedSlot, CalendarDayResponse, CalendarLanguage } from 'types/calendar'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
 import classes from './classes.module.scss'
 
-export const SLOT_WIDTH_PX = 48 // px per 30 min
 export const ROW_HEIGHT_PX = 40
 export const LABEL_WIDTH_PX = 64
 
 interface Props {
   language: CalendarLanguage
-  date: string // YYYY-MM-DD
-  dayStartHour: number
-  dayEndHour: number
   onSelectRange?: (langId: string, startIso: string, endIso: string) => void
   onClickSlot?: (slot: BookedSlot) => void
   onTogglePin?: () => void
@@ -39,47 +42,7 @@ interface Props {
   omitBookedSlotBlocks?: boolean
   /** When true the row is a header-only strip: no slot cells, no interaction */
   readOnly?: boolean
-  slotWidth?: number
   dayData?: CalendarDayResponse
-}
-
-export function timeToX(
-  isoTime: string,
-  dayStartHour: number,
-  slotWidthPx = SLOT_WIDTH_PX
-): number {
-  const t = dayjs(isoTime)
-  const hoursFromStart = t.hour() + t.minute() / 60 - dayStartHour
-  return hoursFromStart * slotWidthPx * 2
-}
-
-function durationToWidth(
-  startIso: string,
-  endIso: string,
-  slotWidthPx = SLOT_WIDTH_PX
-): number {
-  const minutes = dayjs(endIso).diff(dayjs(startIso), 'minute')
-  return (minutes / 30) * slotWidthPx
-}
-
-export function slotIndexToIso(
-  index: number,
-  date: string,
-  dayStartHour: number
-): string {
-  const totalMinutes = index * 30
-  const hours = dayStartHour + Math.floor(totalMinutes / 60)
-  const minutes = totalMinutes % 60
-  return dayjs(date)
-    .hour(hours)
-    .minute(minutes)
-    .second(0)
-    .millisecond(0)
-    .toISOString()
-}
-
-export function isSlotPast(startIso: string): boolean {
-  return dayjs(startIso).isBefore(dayjs())
 }
 
 function getSlotClass(
@@ -248,9 +211,6 @@ export const BookedSlotBlock: FC<{
 
 const CalendarLanguageRow: FC<Props> = ({
   language,
-  date,
-  dayStartHour,
-  dayEndHour,
   onSelectRange,
   onClickSlot,
   onTogglePin,
@@ -258,10 +218,9 @@ const CalendarLanguageRow: FC<Props> = ({
   isExpanded,
   omitBookedSlotBlocks = false,
   readOnly = false,
-  slotWidth,
   dayData,
 }) => {
-  const sw = slotWidth ?? SLOT_WIDTH_PX
+  const { date, dayStartHour, dayEndHour, slotWidth: sw } = useCalendarDay()
   const { t } = useTranslation()
   const {
     sidePanelSelection,
@@ -283,18 +242,11 @@ const CalendarLanguageRow: FC<Props> = ({
   const langAvailSlots =
     dayData?.available_slots_by_language?.[language.language.id]
 
-  const isSlotFullyBooked = useCallback(
-    (slotIndex: number): boolean => {
-      if (!langAvailSlots) return false
-      const slotStart = dayjs(slotIndexToIso(slotIndex, date, dayStartHour))
-      const slotEnd = dayjs(slotIndexToIso(slotIndex + 1, date, dayStartHour))
-      return !langAvailSlots.some(
-        (a) =>
-          dayjs(a.start_at).isBefore(slotEnd) &&
-          dayjs(a.end_at).isAfter(slotStart)
-      )
-    },
-    [langAvailSlots, date, dayStartHour]
+  const { isSlotFullyBooked } = useSlotStateCheckers(
+    date,
+    dayStartHour,
+    [],
+    langAvailSlots
   )
 
   useEffect(() => {
@@ -326,18 +278,7 @@ const CalendarLanguageRow: FC<Props> = ({
 
   const rowRef = useRef<HTMLDivElement>(null)
 
-  const isSlotBooked = useCallback(
-    (slotIndex: number): boolean => {
-      const slotStart = slotIndexToIso(slotIndex, date, dayStartHour)
-      const slotEnd = slotIndexToIso(slotIndex + 1, date, dayStartHour)
-      return bookedSlots.some(
-        (s) =>
-          dayjs(s.start_at).isBefore(dayjs(slotEnd)) &&
-          dayjs(s.end_at).isAfter(dayjs(slotStart))
-      )
-    },
-    [bookedSlots, date, dayStartHour]
-  )
+  const { isSlotBooked } = useSlotStateCheckers(date, dayStartHour, bookedSlots)
 
   const overlapCollapsedIntervals = useMemo(
     () => (omitBookedSlotBlocks ? mergedOverlapIntervals(bookedSlots) : []),
@@ -412,111 +353,16 @@ const CalendarLanguageRow: FC<Props> = ({
         onMouseLeave={readOnly ? undefined : handleMouseUp}
       >
         {/* Slot background cells */}
-        {!isExpanded &&
-          !readOnly &&
-          Array.from({ length: totalSlots }).map((_, i) => {
-            const slotIso = slotIndexToIso(i, date, dayStartHour)
-            const isPast = isSlotPast(slotIso)
-            const isBooked = isSlotBooked(i)
-            const fullyBooked = !isPast && !isBooked && isSlotFullyBooked(i)
-            const isBookable = !isPast && !isBooked && !fullyBooked
-
-            // Booked cells have no background pill — BookedSlotBlock renders instead
-            if (isBooked) return null
-
-            // Odd slots merge into the preceding even cell, but only when
-            // the even pair will also render as a pill (not booked).
-            if (i % 2 === 1) {
-              const prevBooked = isSlotBooked(i - 1)
-              const prevIso = slotIndexToIso(i - 1, date, dayStartHour)
-              const prevIsPast = isSlotPast(prevIso)
-              if (isPast && !prevBooked && prevIsPast) return null
-              if (
-                isBookable &&
-                !prevBooked &&
-                !prevIsPast &&
-                !isSlotFullyBooked(i - 1)
-              )
-                return null
-              if (
-                fullyBooked &&
-                !prevBooked &&
-                !prevIsPast &&
-                isSlotFullyBooked(i - 1)
-              )
-                return null
-              // Even pair is booked — render this odd slot independently below
-            }
-
-            // Pill cells: even (or independent odd) past/bookable/fullyBooked
-            const isPill = isPast || isBookable || fullyBooked
-            const nextSlotIso =
-              i + 1 < totalSlots
-                ? slotIndexToIso(i + 1, date, dayStartHour)
-                : null
-            const nextIsPastUnbooked =
-              isPast &&
-              nextSlotIso !== null &&
-              isSlotPast(nextSlotIso) &&
-              !isSlotBooked(i + 1)
-            const nextIsBookable =
-              isBookable &&
-              nextSlotIso !== null &&
-              !isSlotPast(nextSlotIso) &&
-              !isSlotBooked(i + 1) &&
-              !isSlotFullyBooked(i + 1)
-            const nextIsFullyBooked =
-              fullyBooked &&
-              nextSlotIso !== null &&
-              !isSlotPast(nextSlotIso) &&
-              !isSlotBooked(i + 1) &&
-              isSlotFullyBooked(i + 1)
-            // Wide only for even slots (odd independent slots are always narrow)
-            const isWide =
-              i % 2 === 0 &&
-              (nextIsPastUnbooked || nextIsBookable || nextIsFullyBooked)
-
-            return (
-              <div
-                key={i}
-                className={classNames(classes.slotCell, {
-                  [classes.slotCellPast]: isPast,
-                  [classes.slotCellBookable]: isBookable,
-                  [classes.slotCellFullyBooked]: fullyBooked,
-                  [classes.slotCellHour]: i % 2 === 0,
-                })}
-                style={
-                  isPill
-                    ? {
-                        left: i * sw + 4,
-                        width: isWide ? sw * 2 - 8 : sw - 8,
-                        top: 4,
-                        bottom: 4,
-                        height: 'auto',
-                      }
-                    : { left: i * sw, width: sw }
-                }
-              >
-                {isBookable && (
-                  <span className={classes.slotCellBookableLabel}>
-                    {isWide ? t('calendar.select_time') : '+'}
-                  </span>
-                )}
-                {fullyBooked && (
-                  <>
-                    <BookingBusyIcon
-                      className={classes.slotCellFullyBookedIcon}
-                    />
-                    {isWide && (
-                      <span className={classes.slotCellFullyBookedLabel}>
-                        {t('calendar.booked')}
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
-            )
-          })}
+        {!isExpanded && !readOnly && (
+          <CalendarSlotCells
+            totalSlots={totalSlots}
+            date={date}
+            dayStartHour={dayStartHour}
+            slotWidth={sw}
+            isSlotBooked={isSlotBooked}
+            isSlotFullyBooked={isSlotFullyBooked}
+          />
+        )}
 
         {/* Drag selection highlight */}
         {!isExpanded && !readOnly && isDragging && (
