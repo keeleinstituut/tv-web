@@ -1,4 +1,5 @@
 import { FC, useEffect, useMemo, useRef } from 'react'
+import { useCalendarDay } from 'components/contexts/CalendarDayContext'
 import { useSlotStateCheckers } from 'hooks/useSlotStateCheckers'
 import dayjs from 'dayjs'
 import classNames from 'classnames'
@@ -32,9 +33,6 @@ export const LABEL_WIDTH_PX = 64
 
 interface Props {
   language: CalendarLanguage
-  date: string // YYYY-MM-DD
-  dayStartHour: number
-  dayEndHour: number
   onSelectRange?: (langId: string, startIso: string, endIso: string) => void
   onClickSlot?: (slot: BookedSlot) => void
   onTogglePin?: () => void
@@ -44,7 +42,6 @@ interface Props {
   omitBookedSlotBlocks?: boolean
   /** When true the row is a header-only strip: no slot cells, no interaction */
   readOnly?: boolean
-  slotWidth?: number
   dayData?: CalendarDayResponse
 }
 
@@ -196,9 +193,6 @@ export const BookedSlotBlock: FC<{
 
 const CalendarLanguageRow: FC<Props> = ({
   language,
-  date,
-  dayStartHour,
-  dayEndHour,
   onSelectRange,
   onClickSlot,
   onTogglePin,
@@ -206,10 +200,9 @@ const CalendarLanguageRow: FC<Props> = ({
   isExpanded,
   omitBookedSlotBlocks = false,
   readOnly = false,
-  slotWidth,
   dayData,
 }) => {
-  const sw = slotWidth ?? SLOT_WIDTH_PX
+  const { date, dayStartHour, dayEndHour, slotWidth: sw } = useCalendarDay()
   const { t } = useTranslation()
   const { sidePanelSelection, pendingDeepLink, setPendingDeepLink, openSidePanel } =
     useCalendarPanel()

@@ -1,15 +1,11 @@
 import { FC, useMemo } from 'react'
-import CalendarDayClientBookingRow from './CalendarDayClientBookingRow'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { mergeClientPrebookSlot, sortBookedSlotsByStart } from 'helpers/calendarDayOverlaps'
+import CalendarDayClientBookingRow from './CalendarDayClientBookingRow'
 import type { BookedSlot, CalendarDayResponse, CalendarLanguage } from 'types/calendar'
 
 interface Props {
   language: CalendarLanguage
-  date: string
-  dayStartHour: number
-  dayEndHour: number
-  slotWidth: number
   dayData?: CalendarDayResponse
   onSelectRange?: (langId: string, startIso: string, endIso: string) => void
   onClickSlot?: (slot: BookedSlot) => void
@@ -17,10 +13,6 @@ interface Props {
 
 const CalendarDayClientBookingRows: FC<Props> = ({
   language,
-  date,
-  dayStartHour,
-  dayEndHour,
-  slotWidth,
   dayData,
   onSelectRange,
   onClickSlot,
@@ -49,10 +41,6 @@ const CalendarDayClientBookingRows: FC<Props> = ({
         <CalendarDayClientBookingRow
           key={`${language.language.id}-expanded-${idx}-${rowSlot.start_at}-${rowSlot.end_at}`}
           language={language}
-          date={date}
-          dayStartHour={dayStartHour}
-          dayEndHour={dayEndHour}
-          slotWidth={slotWidth}
           rowSlot={rowSlot}
           allBookedSlots={allBookedSlots}
           langAvailSlots={langAvailSlots}

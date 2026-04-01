@@ -14,9 +14,7 @@ import {
   WeekSlot,
 } from 'types/calendar'
 
-function bookingTimeKey(bk: BookedSlot): string {
-  return `${bk.start_at}|${bk.end_at}`
-}
+import { buildBlockSlots } from 'helpers/calendarWeekBlocks'
 import {
   useFetchCalendarWeek,
   useFetchCalendarWeekVendors,
@@ -166,63 +164,7 @@ const WeekSummaryRow: FC<{
               )
             }
 
-            const blockSlots: Array<WeekSlot | undefined> =
-              Array(BLOCK_COUNT).fill(undefined)
-
-            if (!isClient && weekStart) {
-              // Vendor: paint each 6h *local* block that overlaps any assignment.
-              // API windows (e.g. 12–18 UTC) used to map to one block via window
-              // start only, hiding bookings in later local blocks (e.g. 20:25 local).
-              const dayStart = dayjs(weekStart)
-                .startOf('day')
-                .add(dayIdx, 'day')
-              for (let b = 0; b < BLOCK_COUNT; b++) {
-                const rangeStart = dayStart.add(b * 6, 'hour')
-                const rangeEnd = dayStart.add((b + 1) * 6, 'hour')
-                const seen = new Set<string>()
-                const bookingsInBlock: BookedSlot[] = []
-                for (const slot of daySlots) {
-                  for (const bk of slot.my_bookings ?? []) {
-                    const key = bookingTimeKey(bk)
-                    if (seen.has(key)) continue
-                    const bs = dayjs(bk.start_at)
-                    const be = dayjs(bk.end_at)
-                    if (bs.isBefore(rangeEnd) && be.isAfter(rangeStart)) {
-                      seen.add(key)
-                      bookingsInBlock.push(bk)
-                    }
-                  }
-                }
-                if (bookingsInBlock.length === 0) continue
-                const workingMinutes = bookingsInBlock.reduce(
-                  (sum, bk) =>
-                    sum + dayjs(bk.end_at).diff(dayjs(bk.start_at), 'minute'),
-                  0
-                )
-                const sourceSlot =
-                  daySlots.find((s) =>
-                    (s.my_bookings ?? []).some((bk) =>
-                      bookingsInBlock.some(
-                        (x) => bookingTimeKey(x) === bookingTimeKey(bk)
-                      )
-                    )
-                  ) ?? daySlots[0]
-                blockSlots[b] = {
-                  ...sourceSlot,
-                  start_at: rangeStart.toISOString(),
-                  end_at: rangeEnd.toISOString(),
-                  my_bookings: bookingsInBlock,
-                  my_bookings_count: bookingsInBlock.length,
-                  working_hours: workingMinutes / 60,
-                }
-              }
-            } else {
-              for (const slot of daySlots) {
-                const h = dayjs(slot.start_at).hour()
-                const idx = Math.floor(h / 6)
-                if (idx >= 0 && idx < BLOCK_COUNT) blockSlots[idx] = slot
-              }
-            }
+            const blockSlots = buildBlockSlots(daySlots, dayIdx, weekStart)
 
             return (
               <div
