@@ -46,6 +46,10 @@ const InstitutionSettings: FC = () => {
       </p>
       <DepartmentManagement />
       <AuditLogManagement />
+
+      <Container className={classes.container}>
+        <h3 className={classes.title}>{t('calendar_settings.title')}</h3>
+      </Container>
     </>
   )
 }
