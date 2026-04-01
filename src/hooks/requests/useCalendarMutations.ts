@@ -101,6 +101,7 @@ function buildCalendarProjectCreateFormData(
   const fd = new FormData()
   fd.append('is_calendar_project', '1')
   fd.append('destination_language_classifier_value_ids[]', payload.language_id)
+  fd.append('source_language_classifier_value_id', payload.source_language_id)
   fd.append('event_start_at', toCalendarApiDateTime(payload.start_at))
   fd.append('event_end_at', toCalendarApiDateTime(payload.end_at))
   fd.append('service_type', payload.service_type)
@@ -157,6 +158,9 @@ export const useUpdateCalendarOrder = () => {
   return useMutation({
     mutationFn: (payload: UpdateOrderPayload) =>
       apiClient.put(`${endpoints.PROJECTS}/${payload.id}`, {
+        ...(payload.source_language_id
+          ? { source_language_classifier_value_id: payload.source_language_id }
+          : {}),
         ...(payload.service_type ? { service_type: payload.service_type } : {}),
         ...(payload.reference_number !== undefined
           ? { reference_number: payload.reference_number }

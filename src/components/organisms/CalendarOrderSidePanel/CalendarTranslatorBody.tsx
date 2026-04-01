@@ -61,6 +61,17 @@ const CalendarTranslatorBody: FC = () => {
             {language?.language.name ?? ''}
           </span>
         </div>
+
+        {order?.source_language && (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>
+              {t('calendar.source_language')}
+            </label>
+            <span className={classes.readValue}>
+              {order.source_language.name}
+            </span>
+          </div>
+        )}
         <div className={classes.formGroup}>
           <label className={classes.label}>{t('calendar.date')}</label>
           <span className={classes.readValue}>{date}</span>

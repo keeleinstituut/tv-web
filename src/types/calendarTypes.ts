@@ -245,6 +245,7 @@ export interface CalendarOrderDetail {
   /** First sub-project status — used with project NEW/REGISTERED for display. */
   sub_project_status?: CalendarSubProjectStatus
   language: { id: string; value: string; name: string }
+  source_language?: { id: string; value: string; name: string }
   start_at: string
   end_at: string
   service_type: 'REMOTE' | 'ON_SITE'
@@ -300,6 +301,7 @@ export interface CalendarSearchResponse {
 
 export interface CreateOrderPayload {
   language_id: string
+  source_language_id: string
   start_at: string
   end_at: string
   service_type: 'REMOTE' | 'ON_SITE'
@@ -318,6 +320,7 @@ export interface CreateOrderPayload {
 
 export interface UpdateOrderPayload {
   id: string
+  source_language_id?: string
   service_type?: 'REMOTE' | 'ON_SITE'
   reference_number?: string
   location?: string

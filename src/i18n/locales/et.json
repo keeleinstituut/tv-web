@@ -350,6 +350,8 @@
     "date": "Kuupäev",
     "language": "Keel",
     "select_language": "Vali keel",
+    "source_language": "Lähtekeel",
+    "select_source_language": "Vali lähtekeel",
     "date_and_time": "Kuupäev ja kellaaeg",
     "from": "Alates",
     "duration": "Kestus",

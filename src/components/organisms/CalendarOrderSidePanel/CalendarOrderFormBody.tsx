@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import { ServiceType } from 'types/calendar'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
+import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DeleteIcon from 'assets/icons/delete.svg?react'
@@ -21,6 +22,9 @@ const CalendarOrderFormBody: FC = () => {
     startTime,
     duration,
     isTPM,
+    sourceLanguageId,
+    setSourceLanguageId: onSetSourceLanguageId,
+    sourceLanguageOptions,
     referenceNumber,
     setReferenceNumber: onSetReferenceNumber,
     serviceType,
@@ -68,18 +72,17 @@ const CalendarOrderFormBody: FC = () => {
               {t('calendar.client')}
               <span className={classes.requiredMark}>*</span>
             </label>
-            <select
-              className={classes.select}
+            <CalendarSelect
               value={clientInstitutionId}
-              onChange={(e) => onSetClientInstitutionId(e.target.value)}
-            >
-              <option value="">{t('calendar.select_client')}</option>
-              {clients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {[c.user.forename, c.user.surname].filter(Boolean).join(' ')}
-                </option>
-              ))}
-            </select>
+              onChange={onSetClientInstitutionId}
+              options={clients.map((c) => ({
+                value: c.id,
+                label: [c.user.forename, c.user.surname]
+                  .filter(Boolean)
+                  .join(' '),
+              }))}
+              placeholder={t('calendar.select_client')}
+            />
           </div>
         )}
 
@@ -94,6 +97,20 @@ const CalendarOrderFormBody: FC = () => {
             placeholder={t('calendar.enter_number')}
             value={referenceNumber}
             onChange={(e) => onSetReferenceNumber(e.target.value)}
+          />
+        </div>
+
+        {/* Lähtekeel */}
+        <div className={classes.formGroup}>
+          <label className={classes.label}>
+            {t('calendar.source_language')}
+            <span className={classes.requiredMark}>*</span>
+          </label>
+          <CalendarSelect
+            value={sourceLanguageId}
+            onChange={onSetSourceLanguageId}
+            options={sourceLanguageOptions}
+            placeholder={t('calendar.select_source_language')}
           />
         </div>
 
@@ -148,24 +165,24 @@ const CalendarOrderFormBody: FC = () => {
             {t('calendar.order_way')}
             <span className={classes.requiredMark}>*</span>
           </label>
-          <select
-            className={classes.select}
+          <CalendarSelect
             value={serviceType}
-            onChange={(e) => {
-              onSetServiceType(e.target.value as ServiceType)
+            onChange={(v) => {
+              onSetServiceType(v as ServiceType)
               onSetLocation('')
             }}
-          >
-            <option value="" disabled>
-              {t('calendar.select_type')}
-            </option>
-            <option value="kaugtolge">
-              {t('calendar.service_type_remote')}
-            </option>
-            <option value="kontakttolge">
-              {t('calendar.service_type_contact')}
-            </option>
-          </select>
+            options={[
+              {
+                value: 'kaugtolge',
+                label: t('calendar.service_type_remote'),
+              },
+              {
+                value: 'kontakttolge',
+                label: t('calendar.service_type_contact'),
+              },
+            ]}
+            placeholder={t('calendar.select_type')}
+          />
         </div>
 
         {/* Asukoht / Koosoleku link */}
@@ -216,19 +233,16 @@ const CalendarOrderFormBody: FC = () => {
               {t('calendar.translator')}
               <span className={classes.requiredMark}>*</span>
             </label>
-            <select
-              className={classes.select}
+            <CalendarSelect
               value={vendorId}
+              onChange={onSetVendorId}
+              options={vendors.map((v) => ({
+                value: v.id,
+                label: v.name ?? '',
+              }))}
+              placeholder={t('calendar.select_translator')}
               disabled={vendorLocked}
-              onChange={(e) => onSetVendorId(e.target.value)}
-            >
-              <option value="">{t('calendar.select_translator')}</option>
-              {vendors.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         )}
       </div>

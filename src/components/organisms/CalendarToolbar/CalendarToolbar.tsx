@@ -6,7 +6,6 @@ import CalendarIcon from 'assets/icons/calender.svg?react'
 import ViewWeekIcon from 'assets/icons/view_week.svg?react'
 import ViewMonthIcon from 'assets/icons/view_month.svg?react'
 import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
-import ChevronLeftIcon from 'assets/icons/chevron_left.svg?react'
 import {
   useCalendarNav,
   useCalendarPanel,
@@ -17,6 +16,7 @@ import {
   useFetchCalendarLanguages,
 } from 'hooks/requests/useCalendar'
 import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import { toCalendarApiDateTime } from 'helpers/calendar'
 import { openNativeDateTimePicker } from 'helpers/nativeDateTimeInput'
 import { CalendarView } from 'types/calendar'
@@ -156,26 +156,16 @@ const CalendarToolbar: FC = () => {
                   classes.searchInputSelect
                 )}
               >
-                <span className={classes.searchSelectValue}>
-                  {searchLangId
-                    ? languages
-                        .find((l) => l.language.id === searchLangId)
-                        ?.language.value.split('-')[0]
-                    : t('calendar.select_language')}
-                </span>
-                <ChevronLeftIcon className={classes.searchChevron} />
-                <select
-                  className={classes.searchSelectOverlay}
+                <CalendarSelect
+                  flat
                   value={searchLangId}
-                  onChange={(e) => setSearchLangId(e.target.value)}
-                >
-                  <option value="">{t('calendar.select_language')}</option>
-                  {languages.map((lang) => (
-                    <option key={lang.language.id} value={lang.language.id}>
-                      {lang.language.value.split('-')[0]}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setSearchLangId}
+                  options={languages.map((lang) => ({
+                    value: lang.language.id,
+                    label: lang.language.value.split('-')[0],
+                  }))}
+                  placeholder={t('calendar.select_language')}
+                />
               </div>
             </div>
 
@@ -214,24 +204,15 @@ const CalendarToolbar: FC = () => {
                   classes.searchInputSelect
                 )}
               >
-                <span className={classes.searchSelectValue}>
-                  {t(
-                    DURATION_OPTIONS.find((o) => o.value === searchDuration)
-                      ?.labelKey as never
-                  )}
-                </span>
-                <ChevronLeftIcon className={classes.searchChevron} />
-                <select
-                  className={classes.searchSelectOverlay}
-                  value={searchDuration}
-                  onChange={(e) => setSearchDuration(Number(e.target.value))}
-                >
-                  {DURATION_OPTIONS.map(({ value, labelKey }) => (
-                    <option key={value} value={value}>
-                      {t(labelKey as never)}
-                    </option>
-                  ))}
-                </select>
+                <CalendarSelect
+                  flat
+                  value={String(searchDuration)}
+                  onChange={(v) => setSearchDuration(Number(v))}
+                  options={DURATION_OPTIONS.map(({ value, labelKey }) => ({
+                    value: String(value),
+                    label: t(labelKey as never) as string,
+                  }))}
+                />
               </div>
             </div>
           </div>

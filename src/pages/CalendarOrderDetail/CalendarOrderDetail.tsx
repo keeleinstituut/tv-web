@@ -14,6 +14,8 @@ import {
   useCalendarAddFiles,
   useAddCalendarOrderComment,
 } from 'hooks/requests/useCalendar'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useAuth } from 'components/contexts/AuthContext'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -61,6 +63,8 @@ const CalendarOrderDetail: FC = () => {
 
   const { languages } = useFetchCalendarLanguages()
   const { tags: domains } = useFetchCalendarTags()
+  const { classifierValuesFilters: sourceLanguageOptions } =
+    useClassifierValuesFetch({ type: ClassifierValueType.Language })
 
   // UI state
   const [metaOpen, setMetaOpen] = useState(true)
@@ -87,6 +91,7 @@ const CalendarOrderDetail: FC = () => {
   const [address, setAddress] = useState('')
   const [clientInstitutionId, setClientInstitutionId] = useState('')
   const [referenceNumber, setReferenceNumber] = useState('')
+  const [sourceLanguageId, setSourceLanguageId] = useState('')
   const [languageId, setLanguageId] = useState('')
   const [domainIds, setDomainIds] = useState<string[]>([])
   const [vendorId, setVendorId] = useState('')
@@ -118,6 +123,7 @@ const CalendarOrderDetail: FC = () => {
         ? (order.location ?? '')
         : (order.meeting_link ?? '')
     )
+    setSourceLanguageId(order.source_language?.id ?? '')
     setClientInstitutionId(order.client_institution_user?.id ?? '')
     setReferenceNumber(order.reference_number ?? '')
     setLanguageId(order.language.id)
@@ -159,6 +165,7 @@ const CalendarOrderDetail: FC = () => {
 
   const canCreateOrder =
     isCreateMode &&
+    Boolean(sourceLanguageId) &&
     Boolean(languageId) &&
     referenceNumber.trim().length > 0 &&
     Boolean(startIso) &&
@@ -267,6 +274,7 @@ const CalendarOrderDetail: FC = () => {
     createOrder(
       {
         language_id: languageId,
+        source_language_id: sourceLanguageId,
         start_at: startIso,
         end_at: endIso,
         service_type: serviceType,
@@ -306,6 +314,7 @@ const CalendarOrderDetail: FC = () => {
     updateOrder(
       {
         id: orderId,
+        source_language_id: sourceLanguageId || undefined,
         start_at: saveStart,
         end_at: saveEnd,
         service_type: serviceType,
@@ -402,6 +411,9 @@ const CalendarOrderDetail: FC = () => {
     endIso,
     formatMins,
     fmt,
+    sourceLanguageId,
+    setSourceLanguageId,
+    sourceLanguageOptions: sourceLanguageOptions ?? [],
     selectedDate,
     setSelectedDate,
     startTimeInput,
