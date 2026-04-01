@@ -4,7 +4,7 @@ import { useAuth } from 'components/contexts/AuthContext'
 import { useFetchInstitutionUserVendor } from 'hooks/requests/useVendors'
 import Loader from 'components/atoms/Loader/Loader'
 import PageNotFound from 'pages/PageNotFound/PageNotFound'
-import CalendarSettings from 'components/organisms/CalendarSettings/CalendarSettings'
+import VendorCalendarImport from 'components/organisms/VendorCalendarImport/VendorCalendarImport'
 
 const CalendarSettingsPage: FC = () => {
   const { t } = useTranslation()
@@ -18,7 +18,7 @@ const CalendarSettingsPage: FC = () => {
   return (
     <>
       <h1>{t('calendar_settings.title')}</h1>
-      <CalendarSettings />
+      <VendorCalendarImport />
     </>
   )
 }

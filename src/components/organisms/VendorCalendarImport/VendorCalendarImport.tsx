@@ -7,9 +7,9 @@ import { useImportCalendar } from 'hooks/requests/useCalendar'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import classes from './classes.module.scss'
+import classes from './VendorCalendarImport.module.scss'
 
-const CalendarSettings: FC = () => {
+const VendorCalendarImport: FC = () => {
   const { t } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { mutateAsync: importCalendar, isLoading } = useImportCalendar()
@@ -78,4 +78,4 @@ const CalendarSettings: FC = () => {
   )
 }
 
-export default CalendarSettings
+export default VendorCalendarImport
