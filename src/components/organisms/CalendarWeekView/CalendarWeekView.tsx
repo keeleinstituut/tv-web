@@ -1,4 +1,5 @@
-import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { FC, useEffect, useRef } from 'react'
+import { useResponsiveCalendarWidth } from 'hooks/useResponsiveCalendarWidth'
 import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/et'
@@ -112,20 +113,13 @@ const CalendarWeekView: FC = () => {
 
   // Fluid column width: fills available container width, min 160px per day
   const containerRef = useRef<HTMLDivElement>(null)
-  const [dayWidth, setDayWidth] = useState(MIN_DAY_WIDTH)
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      if (!containerRef.current) return
-      const available =
-        containerRef.current.clientWidth - LABEL_WIDTH_PX - LABEL_RIGHT_WIDTH
-      setDayWidth(Math.max(MIN_DAY_WIDTH, Math.floor(available / 7)))
-    }
-    measure()
-    const obs = new ResizeObserver(measure)
-    if (containerRef.current) obs.observe(containerRef.current)
-    return () => obs.disconnect()
-  }, [])
+  const dayWidth = useResponsiveCalendarWidth(
+    containerRef,
+    LABEL_WIDTH_PX,
+    7,
+    MIN_DAY_WIDTH,
+    LABEL_RIGHT_WIDTH
+  )
 
   // Current time needle
   const weekStartStr = weekStart.format('YYYY-MM-DD')

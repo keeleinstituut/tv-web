@@ -1,14 +1,13 @@
 import { FC, useCallback, useRef } from 'react'
-import dayjs from 'dayjs'
+import { useSlotStateCheckers } from 'hooks/useSlotStateCheckers'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import { BookedSlot, CalendarLanguage, VendorDayData } from 'types/calendar'
 import {
   BookedSlotBlock,
   SLOT_WIDTH_PX,
-  slotIndexToIso,
-  isSlotPast,
 } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
+import { slotIndexToIso, isSlotPast } from 'helpers/calendarSlotUtils'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
 import CalendarVendorBadge from 'components/atoms/CalendarVendorBadge/CalendarVendorBadge'
@@ -39,37 +38,16 @@ const CalendarDayVendorRow: FC<Props> = ({
 
   const rowRef = useRef<HTMLDivElement>(null)
 
-  const isSlotBooked = useCallback(
-    (slotIndex: number): boolean => {
-      const slotStart = slotIndexToIso(slotIndex, date, dayStartHour)
-      const slotEnd = slotIndexToIso(slotIndex + 1, date, dayStartHour)
-      return vendor.booked_slots.some(
-        (s) =>
-          dayjs(s.start_at).isBefore(dayjs(slotEnd)) &&
-          dayjs(s.end_at).isAfter(dayjs(slotStart))
-      )
-    },
-    [vendor.booked_slots, date, dayStartHour]
+  const { isSlotBooked, isSlotFullyBooked } = useSlotStateCheckers(
+    date,
+    dayStartHour,
+    vendor.booked_slots,
+    vendor.available_slots
   )
 
-  const isSlotAvailable = useCallback(
-    (slotIndex: number): boolean => {
-      const slotStart = slotIndexToIso(slotIndex, date, dayStartHour)
-      const slotEnd = slotIndexToIso(slotIndex + 1, date, dayStartHour)
-      return vendor.available_slots.some(
-        (s) =>
-          dayjs(s.start_at).isBefore(dayjs(slotEnd)) &&
-          dayjs(s.end_at).isAfter(dayjs(slotStart))
-      )
-    },
-    [vendor.available_slots, date, dayStartHour]
-  )
-
-  const isSlotBlocked = useCallback(
-    (slotIndex: number): boolean =>
-      isSlotBooked(slotIndex) || !isSlotAvailable(slotIndex),
-    [isSlotBooked, isSlotAvailable]
-  )
+  const isSlotAvailable = (slotIndex: number) => !isSlotFullyBooked(slotIndex)
+  const isSlotBlocked = (slotIndex: number) =>
+    isSlotBooked(slotIndex) || isSlotFullyBooked(slotIndex)
 
   const {
     isDragging,

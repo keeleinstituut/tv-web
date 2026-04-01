@@ -1,11 +1,4 @@
-import {
-  FC,
-  Fragment,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import { FC, Fragment, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import 'dayjs/locale/et'
@@ -15,6 +8,7 @@ import {
   useCalendarExpansion,
   useCalendarPanel,
 } from 'components/contexts/CalendarContext'
+import { useResponsiveCalendarWidth } from 'hooks/useResponsiveCalendarWidth'
 import { useFetchCalendarDay } from 'hooks/requests/useCalendar'
 import CalendarLanguageRow, {
   SLOT_WIDTH_PX,
@@ -110,19 +104,12 @@ const CalendarDayView: FC = () => {
 
   // Fluid slot width: fills available container width, min 48px per 30 min
   const containerRef = useRef<HTMLDivElement>(null)
-  const [slotWidth, setSlotWidth] = useState(SLOT_WIDTH_PX)
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      if (!containerRef.current) return
-      const available = containerRef.current.clientWidth - LABEL_WIDTH_PX
-      setSlotWidth(Math.max(SLOT_WIDTH_PX, Math.floor(available / TOTAL_SLOTS)))
-    }
-    measure()
-    const obs = new ResizeObserver(measure)
-    if (containerRef.current) obs.observe(containerRef.current)
-    return () => obs.disconnect()
-  }, [])
+  const slotWidth = useResponsiveCalendarWidth(
+    containerRef,
+    LABEL_WIDTH_PX,
+    TOTAL_SLOTS,
+    SLOT_WIDTH_PX
+  )
 
   // Current time marker — updates every minute
   const timeX = useCurrentTimeMarker(
@@ -339,19 +326,15 @@ const CalendarDayView: FC = () => {
                     dayEndHour={DAY_END_HOUR}
                     slotWidth={slotWidth}
                     dayData={dayData}
-                    onSelectRange={
-                      (langId, start, end) => {
-                        const l = languages.find(
-                          (l) => l.language.id === langId
-                        )
-                        if (l)
-                          openSidePanel({
-                            language: l,
-                            startIso: start,
-                            endIso: end,
-                          })
-                      }
-                    }
+                    onSelectRange={(langId, start, end) => {
+                      const l = languages.find((l) => l.language.id === langId)
+                      if (l)
+                        openSidePanel({
+                          language: l,
+                          startIso: start,
+                          endIso: end,
+                        })
+                    }}
                     onClickSlot={openSlotPanel}
                   />
                 )}

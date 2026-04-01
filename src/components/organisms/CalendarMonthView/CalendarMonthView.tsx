@@ -1,4 +1,5 @@
-import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
+import { useResponsiveCalendarWidth } from 'hooks/useResponsiveCalendarWidth'
 import { useTranslation } from 'react-i18next'
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/et'
@@ -78,21 +79,12 @@ const CalendarMonthView: FC = () => {
 
   // Fluid column width: fills available container width, min 186px per week
   const containerRef = useRef<HTMLDivElement>(null)
-  const [weekColWidth, setWeekColWidth] = useState(WEEK_COL_WIDTH)
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      if (!containerRef.current) return
-      const available = containerRef.current.clientWidth - LABEL_WIDTH_PX
-      setWeekColWidth(
-        Math.max(WEEK_COL_WIDTH, Math.floor(available / (weeks.length + 1)))
-      )
-    }
-    measure()
-    const obs = new ResizeObserver(measure)
-    if (containerRef.current) obs.observe(containerRef.current)
-    return () => obs.disconnect()
-  }, [weeks.length])
+  const weekColWidth = useResponsiveCalendarWidth(
+    containerRef,
+    LABEL_WIDTH_PX,
+    weeks.length + 1,
+    WEEK_COL_WIDTH
+  )
 
   // Month groups for nav label
   const monthGroups: {
