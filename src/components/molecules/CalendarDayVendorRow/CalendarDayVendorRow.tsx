@@ -174,6 +174,7 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
             dayStartHour={dayStartHour}
             onClick={handleClickSlot}
             slotWidth={sw}
+            rowWidth={totalWidth}
           />
         ))}
       </div>
