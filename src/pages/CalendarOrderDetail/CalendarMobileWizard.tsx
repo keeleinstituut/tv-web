@@ -294,28 +294,18 @@ const CalendarMobileWizard: FC = () => {
           <label className={classes.fieldLabel}>
             {t('calendar.order_way')} *
           </label>
-          <div className={classes.serviceToggle}>
-            <button
-              type="button"
-              className={`${classes.serviceOption} ${serviceType === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
-              onClick={() => {
-                setServiceType('ON_SITE')
-                setAddress('')
-              }}
-            >
-              {t('calendar.service_type_contact')}
-            </button>
-            <button
-              type="button"
-              className={`${classes.serviceOption} ${serviceType === 'REMOTE' ? classes.serviceOptionActive : ''}`}
-              onClick={() => {
-                setServiceType('REMOTE')
-                setAddress('')
-              }}
-            >
-              {t('calendar.service_type_remote')}
-            </button>
-          </div>
+          <CalendarSelect
+            value={serviceType}
+            onChange={(v) => {
+              setServiceType(v as 'REMOTE' | 'ON_SITE')
+              setAddress('')
+            }}
+            options={[
+              { value: 'ON_SITE', label: t('calendar.service_type_contact') },
+              { value: 'REMOTE', label: t('calendar.service_type_remote') },
+            ]}
+            placeholder={t('calendar.select_type')}
+          />
         </div>
 
         <div className={classes.field}>
@@ -718,41 +708,24 @@ const CalendarMobileWizard: FC = () => {
   const renderStep2 = () => (
     <div className={classes.stepContent}>
       {isEditing ? (
-        <div className={classes.serviceToggle}>
-          <button
-            type="button"
-            className={`${classes.serviceOption} ${serviceType === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
-            onClick={() => {
-              setServiceType('ON_SITE')
-              setAddress('')
-            }}
-          >
-            {t('calendar.service_type_contact')}
-          </button>
-          <button
-            type="button"
-            className={`${classes.serviceOption} ${serviceType === 'REMOTE' ? classes.serviceOptionActive : ''}`}
-            onClick={() => {
-              setServiceType('REMOTE')
-              setAddress('')
-            }}
-          >
-            {t('calendar.service_type_remote')}
-          </button>
-        </div>
+        <CalendarSelect
+          value={serviceType}
+          onChange={(v) => {
+            setServiceType(v as 'REMOTE' | 'ON_SITE')
+            setAddress('')
+          }}
+          options={[
+            { value: 'ON_SITE', label: t('calendar.service_type_contact') },
+            { value: 'REMOTE', label: t('calendar.service_type_remote') },
+          ]}
+          placeholder={t('calendar.select_type')}
+        />
       ) : (
-        <div className={classes.serviceToggle}>
-          <span
-            className={`${classes.serviceOption} ${order?.service_type === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
-          >
-            {t('calendar.service_type_contact')}
-          </span>
-          <span
-            className={`${classes.serviceOption} ${order?.service_type === 'REMOTE' ? classes.serviceOptionActive : ''}`}
-          >
-            {t('calendar.service_type_remote')}
-          </span>
-        </div>
+        <span className={classes.viewValue}>
+          {order?.service_type === 'ON_SITE'
+            ? t('calendar.service_type_contact')
+            : t('calendar.service_type_remote')}
+        </span>
       )}
 
       <div className={classes.viewField}>
