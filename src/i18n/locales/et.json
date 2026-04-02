@@ -885,6 +885,8 @@
   },
   "projects": {
     "project_tile": "Tellimused",
+    "order_category_translation": "Tõlke tellimused",
+    "order_category_verbal": "Suulise tõlke tellimused",
     "project": "Tellimus",
     "new_project_title": "Tellimuse lisamine",
     "client_details": "Tellija andmed",

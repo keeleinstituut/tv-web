@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useCallback } from 'react'
+import { FC, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -14,7 +14,7 @@ import classNames from 'classnames'
 import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import {
   FormInput,
   InputTypes,
@@ -41,6 +41,13 @@ import {
   TableSelectFilter,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import { TypesWithStartTime } from 'types/projects'
+
+const VERBAL_TYPE_VALUES = [
+  TypesWithStartTime.OralTranslation,
+  TypesWithStartTime.SynchronousTranslation,
+  TypesWithStartTime.SignLanguage,
+]
 
 // TODO: statuses might come from BE instead
 // Currently unclear
@@ -67,6 +74,7 @@ interface FormValues {
   statuses: ProjectStatus[]
   only_show_personal_projects: boolean
   q: string
+  order_category: string[]
 }
 
 const ProjectsTable: FC = () => {
@@ -128,9 +136,8 @@ const ProjectsTable: FC = () => {
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
   })
-  const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
-    type: ClassifierValueType.ProjectType,
-  })
+  const { classifierValues: allProjectTypes, classifierValuesFilters: allTypeFilters } =
+    useClassifierValuesFetch({ type: ClassifierValueType.ProjectType })
   const {
     languageDirectionFilters,
     loadMore,
@@ -224,6 +231,39 @@ const ProjectsTable: FC = () => {
     [projects]
   )
 
+  const verbalTypeIds = useMemo(
+    () =>
+      (allProjectTypes ?? [])
+        .filter((t) => includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime))
+        .map((t) => t.id),
+    [allProjectTypes]
+  )
+
+  const nonVerbalTypeIds = useMemo(
+    () =>
+      (allProjectTypes ?? [])
+        .filter((t) => !includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime))
+        .map((t) => t.id),
+    [allProjectTypes]
+  )
+
+  const typeFilters = useMemo(
+    () =>
+      (allTypeFilters ?? []).filter(
+        (_, i) =>
+          !includes(VERBAL_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+      ),
+    [allTypeFilters, allProjectTypes]
+  )
+
+  const verbalTypeFilters = useMemo(
+    () =>
+      (allTypeFilters ?? []).filter((_, i) =>
+        includes(VERBAL_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+      ),
+    [allTypeFilters, allProjectTypes]
+  )
+
   const defaultFilterValues = useMemo(
     () => ({
       statuses: (filters?.statuses as ProjectStatus[]) || [],
@@ -231,6 +271,7 @@ const ProjectsTable: FC = () => {
         ? 1
         : Number(filters?.only_show_personal_projects) || 0),
       ext_id: filters?.ext_id || '',
+      order_category: ['translation'],
     }),
     [
       filters?.ext_id,
@@ -240,13 +281,28 @@ const ProjectsTable: FC = () => {
     ]
   )
 
-  const { control, handleSubmit, watch } = useForm<FormValues>({
+  const { control, handleSubmit, watch, setValue } = useForm<FormValues>({
     mode: 'onChange',
     defaultValues: defaultFilterValues,
     resetOptions: {
       keepErrors: true,
     },
   })
+
+  const orderCategory = useWatch({ control, name: 'order_category' })
+
+  // Enforce single-selection: when a new item is added alongside an existing one, keep only the latest
+  const prevCategoryRef = useRef<string[]>(['translation'])
+  useEffect(() => {
+    const prev = prevCategoryRef.current
+    const added = orderCategory?.filter((v) => !includes(prev, v))
+    if (added?.length && orderCategory.length > 1) {
+      prevCategoryRef.current = [added[0]]
+      setValue('order_category', [added[0]])
+    } else {
+      prevCategoryRef.current = orderCategory ?? prev
+    }
+  }, [orderCategory, setValue])
 
   const handleModifiedFilterChange = useCallback(
     (filters?: FilterFunctionType) => {
@@ -270,12 +326,13 @@ const ProjectsTable: FC = () => {
 
       if (filters && 'type_classifier_value_ids' in filters) {
         const { type_classifier_value_ids, ...rest } = currentFilters || {}
-        const typedTypeClassifierValueId = type_classifier_value_ids as string
 
         currentFilters = {
-          type_classifier_value_ids: !!typedTypeClassifierValueId
-            ? [typedTypeClassifierValueId]
-            : [],
+          type_classifier_value_ids: Array.isArray(type_classifier_value_ids)
+            ? type_classifier_value_ids
+            : type_classifier_value_ids
+              ? [type_classifier_value_ids as string]
+              : [],
           ...rest,
         }
       }
@@ -289,14 +346,19 @@ const ProjectsTable: FC = () => {
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     (payload) => {
+      const { order_category, ...rest } = payload
+      const categoryTypeIds = includes(order_category, 'verbal')
+        ? verbalTypeIds
+        : includes(order_category, 'translation')
+          ? nonVerbalTypeIds
+          : []
       handleFilterChange({
-        ...payload,
-        only_show_personal_projects: payload?.only_show_personal_projects
-          ? 1
-          : 0,
+        ...rest,
+        only_show_personal_projects: payload?.only_show_personal_projects ? 1 : 0,
+        type_classifier_value_ids: categoryTypeIds,
       })
     },
-    [handleFilterChange]
+    [handleFilterChange, verbalTypeIds, nonVerbalTypeIds]
   )
 
   useEffect(() => {
@@ -380,7 +442,7 @@ const ProjectsTable: FC = () => {
         FilteringComponent: (
           <TableSelectFilter
             filterKey="type_classifier_value_ids"
-            options={typeFilters}
+            options={includes(orderCategory, 'verbal') ? verbalTypeFilters : typeFilters}
             value={filters?.type_classifier_value_ids || []}
             isCustomSingleDropdown
           />
@@ -555,6 +617,15 @@ const ProjectsTable: FC = () => {
         defaultPaginationData={defaultPaginationData}
         headComponent={
           <div className={classes.topSection}>
+            <FormInput
+              name="order_category"
+              control={control}
+              options={[
+                { value: 'translation', label: t('projects.order_category_translation') },
+                { value: 'verbal', label: t('projects.order_category_verbal') },
+              ]}
+              inputType={InputTypes.TagsSelect}
+            />
             <FormInput
               name="statuses"
               control={control}
