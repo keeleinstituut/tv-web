@@ -1,6 +1,6 @@
-import TimePickerInput from 'components/molecules/TimePickerInput/TimePickerInput'
+import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
 import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInput'
-import { Ref, forwardRef, useCallback, useEffect, useState } from 'react'
+import { Ref, forwardRef, useCallback } from 'react'
 import { FieldError } from 'react-hook-form'
 import classNames from 'classnames'
 import classes from './classes.module.scss'
@@ -37,40 +37,24 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
     } = props
 
     const { t } = useTranslation()
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
-    const [wasModalOpen, setWasModalOpen] = useState(false)
 
     const onChangeDate = useCallback(
       (newDateValue: string) => {
-        const newValue = {
-          ...value,
-          date: newDateValue,
-        }
+        const newValue = { ...value, date: newDateValue }
         onChange(newValue)
-        setWasModalOpen(true)
+        onDateTimeChange?.({ date: newDateValue, time: value?.time || '' })
       },
-      [onChange, value]
+      [onChange, onDateTimeChange, value]
     )
 
     const onChangeTime = useCallback(
-      (newDateValue: string) => {
-        const newValue = {
-          ...value,
-          time: newDateValue,
-        }
+      (newTimeValue: string) => {
+        const newValue = { ...value, time: newTimeValue }
         onChange(newValue)
-        setWasModalOpen(true)
+        onDateTimeChange?.({ date: value?.date || '', time: newTimeValue })
       },
-      [onChange, value]
+      [onChange, onDateTimeChange, value]
     )
-
-    useEffect(() => {
-      if (onDateTimeChange && wasModalOpen && !isModalOpen) {
-        onDateTimeChange({ date: value?.date || '', time: value?.time || '' })
-        setWasModalOpen(!wasModalOpen)
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isModalOpen, value?.date, value?.time, wasModalOpen])
 
     if (hidden) return null
 
@@ -91,17 +75,18 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             maxDate={maxDate}
             disabled={disabled}
             ref={ref as unknown as Ref<HTMLInputElement>}
+            className={classes.datePickerContainer}
           />
-          <TimePickerInput
-            ariaLabel={t('label.time')}
-            onChange={onChangeTime}
-            name={`${name}.time`}
-            value={value?.time}
-            className={classes.timePicker}
-            setIsModalOpen={setIsModalOpen}
-            disabled={disabled}
-            showSeconds
-          />
+          <div className={classes.timeSelectWrapper}>
+            <CalendarTimeSelect
+              value={value?.time ?? ''}
+              onChange={onChangeTime}
+              disabled={disabled}
+              id={`${name}.time`}
+              aria-label={t('label.time')}
+              className={classes.timeSelectTrigger}
+            />
+          </div>
         </div>
       </div>
     )
