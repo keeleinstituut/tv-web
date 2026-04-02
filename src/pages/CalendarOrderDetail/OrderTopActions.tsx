@@ -49,8 +49,8 @@ const OrderTopActions: FC = () => {
                   ),
                 })
               : t('calendar.cancel_confirmed_body').replace(
-                  '30 s',
-                  `${cancelCountdown}s`
+                  '1 min',
+                  `${Math.ceil(cancelCountdown / 60)} min`
                 )}
           </span>
           <Button

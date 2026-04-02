@@ -419,7 +419,7 @@
     "cancel_reason_placeholder": "Tühistamise põhjus",
     "undo_cancel": "Võta tagasi",
     "cancel_confirmed_title": "Tühistamine on kinnitatud",
-    "cancel_confirmed_body": "Saad 30 s jooksul tagasi võtta. Pärast seda vabastatakse ressurss ja tellimus eemaldatakse tõlkekorralduse menüüst.",
+    "cancel_confirmed_body": "Saad 1 min jooksul tagasi võtta. Pärast seda vabastatakse ressurss ja tellimus eemaldatakse tõlkekorralduse menüüst.",
     "select_client": "Vali tellija",
     "select_domain": "Vali valdkond",
     "select_translator": "Vali teostaja",

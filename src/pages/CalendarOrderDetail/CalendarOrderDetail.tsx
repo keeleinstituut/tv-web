@@ -68,7 +68,7 @@ const CalendarOrderDetail: FC = () => {
   const [isConfirmingCancel, setIsConfirmingCancel] = useState(false)
   const [isCancelled, setIsCancelled] = useState(false)
   const [isCancelPending, setIsCancelPending] = useState(false)
-  const [cancelCountdown, setCancelCountdown] = useState(30)
+  const [cancelCountdown, setCancelCountdown] = useState(60)
   const [cancelReason, setCancelReason] = useState('')
   const [isAddingComment, setIsAddingComment] = useState(false)
   const [commentText, setCommentText] = useState('')
@@ -350,7 +350,7 @@ const CalendarOrderDetail: FC = () => {
       onSuccess: () => {
         setIsCancelled(false)
         setIsCancelPending(false)
-        setCancelCountdown(30)
+        setCancelCountdown(60)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -372,7 +372,7 @@ const CalendarOrderDetail: FC = () => {
         onSuccess: () => {
           setIsCancelled(true)
           setIsCancelPending(true)
-          setCancelCountdown(30)
+          setCancelCountdown(60)
           setIsConfirmingCancel(false)
           setCancelReason('')
         },
