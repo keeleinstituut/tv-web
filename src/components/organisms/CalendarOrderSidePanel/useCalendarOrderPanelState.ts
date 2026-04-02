@@ -168,7 +168,7 @@ export function useCalendarOrderPanelState(): {
   const [cancelReason, setCancelReason] = useState('')
   const [isCancelled, setIsCancelled] = useState(false)
   const [isCancelPending, setIsCancelPending] = useState(false)
-  const [cancelCountdown, setCancelCountdown] = useState(30)
+  const [cancelCountdown, setCancelCountdown] = useState(60)
   const [isMetaOpen, setIsMetaOpen] = useState(false)
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [pendingComment, setPendingComment] = useState('')
@@ -265,7 +265,7 @@ export function useCalendarOrderPanelState(): {
       setCancelReason('')
       setIsCancelled(false)
       setIsCancelPending(false)
-      setCancelCountdown(30)
+      setCancelCountdown(60)
       setIsMetaOpen(false)
     } else {
       if (sidePanelSelection?.vendorId) {
@@ -497,7 +497,7 @@ export function useCalendarOrderPanelState(): {
           setIsConfirmingCancel(false)
           setIsCancelled(true)
           setIsCancelPending(true)
-          setCancelCountdown(30)
+          setCancelCountdown(60)
         },
       }
     )
@@ -509,7 +509,7 @@ export function useCalendarOrderPanelState(): {
       onSuccess: () => {
         setIsCancelled(false)
         setIsCancelPending(false)
-        setCancelCountdown(30)
+        setCancelCountdown(60)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
