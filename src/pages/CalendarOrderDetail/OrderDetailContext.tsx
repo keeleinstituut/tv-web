@@ -39,9 +39,6 @@ export interface OrderDetailContextValue {
   fmt: (iso?: string) => string
 
   // Form state
-  sourceLanguageId: string
-  setSourceLanguageId: (v: string) => void
-  sourceLanguageOptions: { value: string; label: string }[]
   selectedDate: string
   setSelectedDate: (v: string) => void
   startTimeInput: string

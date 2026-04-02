@@ -22,9 +22,6 @@ const CalendarOrderFormBody: FC = () => {
     startTime,
     duration,
     isTPM,
-    sourceLanguageId,
-    setSourceLanguageId: onSetSourceLanguageId,
-    sourceLanguageOptions,
     referenceNumber,
     setReferenceNumber: onSetReferenceNumber,
     serviceType,
@@ -97,20 +94,6 @@ const CalendarOrderFormBody: FC = () => {
             placeholder={t('calendar.enter_number')}
             value={referenceNumber}
             onChange={(e) => onSetReferenceNumber(e.target.value)}
-          />
-        </div>
-
-        {/* Lähtekeel */}
-        <div className={classes.formGroup}>
-          <label className={classes.label}>
-            {t('calendar.source_language')}
-            <span className={classes.requiredMark}>*</span>
-          </label>
-          <CalendarSelect
-            value={sourceLanguageId}
-            onChange={onSetSourceLanguageId}
-            options={sourceLanguageOptions}
-            placeholder={t('calendar.select_source_language')}
           />
         </div>
 

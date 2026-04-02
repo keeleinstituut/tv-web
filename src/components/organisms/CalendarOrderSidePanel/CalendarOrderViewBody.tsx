@@ -29,9 +29,6 @@ const CalendarOrderViewBody: FC = () => {
     isCancelled,
     durationMinutes,
     setDurationMinutes: onSetDurationMinutes,
-    sourceLanguageId,
-    setSourceLanguageId: onSetSourceLanguageId,
-    sourceLanguageOptions,
     referenceNumber,
     setReferenceNumber: onSetReferenceNumber,
     serviceType,
@@ -149,31 +146,6 @@ const CalendarOrderViewBody: FC = () => {
             </span>
             <span className={classes.readValue}>
               {assignment.reference_number}
-            </span>
-          </div>
-        ) : null}
-
-        {/* Lähtekeel */}
-        {isEditing ? (
-          <div className={classes.formGroup}>
-            <label className={classes.label}>
-              {t('calendar.source_language')}
-              <span className={classes.requiredMark}>*</span>
-            </label>
-            <CalendarSelect
-              value={sourceLanguageId}
-              onChange={onSetSourceLanguageId}
-              options={sourceLanguageOptions}
-              placeholder={t('calendar.select_source_language')}
-            />
-          </div>
-        ) : order?.source_language ? (
-          <div className={classes.formGroup}>
-            <span className={classes.label}>
-              {t('calendar.source_language')}
-            </span>
-            <span className={classes.readValue}>
-              {order.source_language.name}
             </span>
           </div>
         ) : null}

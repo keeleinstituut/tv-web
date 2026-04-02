@@ -25,8 +25,6 @@ export interface SidePanelContextValue {
   isTPM: boolean
 
   // Form state
-  sourceLanguageId: string
-  setSourceLanguageId: (v: string) => void
   referenceNumber: string
   setReferenceNumber: (v: string) => void
   serviceType: ServiceType
@@ -69,7 +67,6 @@ export interface SidePanelContextValue {
   isCancelling: boolean
 
   // Remote data
-  sourceLanguageOptions: { value: string; label: string }[]
   domains: TagOption[] | undefined
   vendors: SlotMatchingVendor[]
   order: CalendarOrderDetail | null

@@ -42,9 +42,6 @@ const CalendarMobileWizard: FC = () => {
     languages,
     vendors,
     domains,
-    sourceLanguageId,
-    setSourceLanguageId,
-    sourceLanguageOptions,
     languageId,
     setLanguageId,
     selectedDate,
@@ -151,7 +148,6 @@ const CalendarMobileWizard: FC = () => {
 
   if (isCreateMode) {
     const step1Valid =
-      !!sourceLanguageId &&
       !!selectedDate &&
       !!startTimeInput &&
       !!languageId &&
@@ -209,18 +205,6 @@ const CalendarMobileWizard: FC = () => {
             value={referenceNumber}
             onChange={(e) => setReferenceNumber(e.target.value)}
             placeholder={t('calendar.enter_number')}
-          />
-        </div>
-
-        <div className={classes.field}>
-          <label className={classes.fieldLabel}>
-            {t('calendar.source_language')} *
-          </label>
-          <CalendarSelect
-            value={sourceLanguageId}
-            onChange={setSourceLanguageId}
-            options={sourceLanguageOptions}
-            placeholder={t('calendar.select_source_language')}
           />
         </div>
 
@@ -661,26 +645,6 @@ const CalendarMobileWizard: FC = () => {
           </span>
         )}
       </div>
-
-      {(order?.source_language || isEditing) && (
-        <div className={classes.viewField}>
-          <span className={classes.viewLabel}>
-            {t('calendar.source_language')}
-          </span>
-          {isEditing ? (
-            <CalendarSelect
-              value={sourceLanguageId}
-              onChange={setSourceLanguageId}
-              options={sourceLanguageOptions}
-              placeholder={t('calendar.select_source_language')}
-            />
-          ) : (
-            <span className={classes.viewValue}>
-              {order?.source_language?.name || '–'}
-            </span>
-          )}
-        </div>
-      )}
 
       <div className={classes.viewField}>
         <span className={classes.viewLabel}>{t('calendar.language')}</span>

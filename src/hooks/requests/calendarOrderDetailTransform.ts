@@ -93,11 +93,6 @@ export function transformProjectDetail(
       value: string
       name: string
     }
-    source_language_classifier_value?: {
-      id: string
-      value: string
-      name: string
-    }
   }>
   const lang = langs[0] ??
     subProjects[0]?.destination_language_classifier_value ?? {
@@ -105,16 +100,6 @@ export function transformProjectDetail(
       value: '',
       name: '',
     }
-
-  const sourceLangRaw = subProjects[0]?.source_language_classifier_value
-  const sourceLanguage =
-    sourceLangRaw?.id
-      ? {
-          id: String(sourceLangRaw.id),
-          value: String(sourceLangRaw.value ?? ''),
-          name: String(sourceLangRaw.name ?? ''),
-        }
-      : undefined
 
   const clientUser = raw.client_institution_user as
     | {
@@ -144,7 +129,6 @@ export function transformProjectDetail(
     status: raw.status as CalendarOrderDetail['status'],
     sub_project_status,
     language: lang,
-    source_language: sourceLanguage,
     start_at: (raw.event_start_at as string) ?? (raw.start_at as string),
     end_at: (raw.event_end_at as string) ?? (raw.end_at as string),
     service_type: ((raw.service_type as string) ?? '').toUpperCase() as

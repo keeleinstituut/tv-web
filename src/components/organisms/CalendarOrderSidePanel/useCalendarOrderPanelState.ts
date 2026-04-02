@@ -31,12 +31,9 @@ import {
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ServiceType, UpdateOrderPayload } from 'types/calendar'
-import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
-import { ClassifierValueType } from 'types/classifierValues'
 import { SidePanelContextValue } from './SidePanelContext'
 
 interface FormState {
-  sourceLanguageId: string
   referenceNumber: string
   serviceType: ServiceType
   location: string
@@ -49,7 +46,6 @@ interface FormState {
 }
 
 const INITIAL_FORM: FormState = {
-  sourceLanguageId: '',
   referenceNumber: '',
   serviceType: '',
   location: '',
@@ -101,7 +97,6 @@ export function useCalendarOrderPanelState(): {
 
   const prebookActiveRef = useRef(false)
   const editBaselineRef = useRef<{
-    sourceLanguageId: string
     serviceType: ServiceType
     referenceNumber: string
     location: string
@@ -112,7 +107,6 @@ export function useCalendarOrderPanelState(): {
 
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
   const {
-    sourceLanguageId,
     referenceNumber,
     serviceType,
     location,
@@ -124,8 +118,6 @@ export function useCalendarOrderPanelState(): {
     durationMinutes,
   } = form
 
-  const setSourceLanguageId = (v: string) =>
-    setForm((f) => ({ ...f, sourceLanguageId: v }))
   const setReferenceNumber = (v: string) =>
     setForm((f) => ({ ...f, referenceNumber: v }))
   const setServiceType = (v: ServiceType) =>
@@ -183,16 +175,10 @@ export function useCalendarOrderPanelState(): {
   const { mutate: addComment, isPending: isPostingComment } =
     useAddCalendarOrderComment(projectId)
 
-  const { classifierValuesFilters: sourceLanguageOptions } =
-    useClassifierValuesFetch(
-      isFormMode ? { type: ClassifierValueType.Language } : undefined
-    )
-
   const isOwner =
     !isClient || order?.client_institution_user?.id === institutionUserId
   const canEdit = isTPM || (isClient && isOwner)
   const isRequiredFilled =
-    !!sourceLanguageId &&
     !!referenceNumber.trim() &&
     !!serviceType &&
     !!location.trim() &&
@@ -320,12 +306,11 @@ export function useCalendarOrderPanelState(): {
   }, [cancelPrebook, closeSidePanel])
 
   const handleSubmit = () => {
-    if (!language || !startIso || !serviceType || !sourceLanguageId) return
+    if (!language || !startIso || !serviceType) return
     const computedEndIso = dayjs(startIso).add(durationMinutes, 'minute').toISOString()
     createOrder(
       {
         language_id: language.language.id,
-        source_language_id: sourceLanguageId,
         start_at: startIso,
         end_at: computedEndIso,
         service_type: serviceType === 'kaugtolge' ? 'REMOTE' : 'ON_SITE',
@@ -365,10 +350,8 @@ export function useCalendarOrderPanelState(): {
       slot?.assignment?.location ?? order?.meeting_link ?? order?.location ?? ''
     const initClientInstitutionId = order?.client_institution_user?.id ?? ''
     const initDomainIds = order?.tags?.map((tag) => tag.id) ?? []
-    const initSourceLanguageId = order?.source_language?.id ?? ''
 
     setForm({
-      sourceLanguageId: initSourceLanguageId,
       referenceNumber: initReferenceNumber,
       serviceType: initServiceType,
       location: initLocation,
@@ -381,7 +364,6 @@ export function useCalendarOrderPanelState(): {
     })
 
     editBaselineRef.current = {
-      sourceLanguageId: initSourceLanguageId,
       serviceType: initServiceType,
       referenceNumber: initReferenceNumber,
       location: initLocation,
@@ -402,9 +384,6 @@ export function useCalendarOrderPanelState(): {
     const b = editBaselineRef.current
     const payload: UpdateOrderPayload = { id: projectId }
 
-    if (!b || sourceLanguageId !== b.sourceLanguageId) {
-      payload.source_language_id = sourceLanguageId || undefined
-    }
     if (!b || serviceType !== b.serviceType) {
       payload.service_type =
         serviceType === 'kaugtolge'
@@ -492,8 +471,6 @@ export function useCalendarOrderPanelState(): {
       isPastSlot,
       isViewMode,
       isTPM,
-      sourceLanguageId,
-      setSourceLanguageId,
       referenceNumber,
       setReferenceNumber,
       serviceType,
@@ -527,7 +504,6 @@ export function useCalendarOrderPanelState(): {
       isCreating,
       isUpdating,
       isCancelling,
-      sourceLanguageOptions: sourceLanguageOptions ?? [],
       domains,
       isRequiredFilled,
       vendors: vendors ?? [],
@@ -555,11 +531,11 @@ export function useCalendarOrderPanelState(): {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       language, slot, date, startTime, duration, isPastSlot, isViewMode, isTPM,
-      sourceLanguageId, referenceNumber, serviceType, location, selectedDate, startTimeInput,
+      referenceNumber, serviceType, location, selectedDate, startTimeInput,
       clientInstitutionId, domainIds, vendorId, durationMinutes, isEditing,
       isConfirmingCancel, cancelReason, isCancelled, isCancelPending,
       cancelCountdown, isMetaOpen, isRequiredFilled, isCreating, isUpdating,
-      isCancelling, isDecliningCancel, sourceLanguageOptions, domains, vendors, order, isAddingFiles,
+      isCancelling, isDecliningCancel, domains, vendors, order, isAddingFiles,
       isDeletingFile, pendingFiles, pendingComment, isPostingComment,
       sidePanelSelection?.vendorName, handleClose, projectId,
     ]
