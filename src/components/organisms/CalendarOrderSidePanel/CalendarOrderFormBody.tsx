@@ -87,7 +87,6 @@ const CalendarOrderFormBody: FC = () => {
         <div className={classes.formGroup}>
           <label className={classes.label}>
             {t('calendar.reference_number')}
-            <span className={classes.requiredMark}>*</span>
           </label>
           <input
             className={classes.input}

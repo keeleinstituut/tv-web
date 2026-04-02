@@ -209,7 +209,6 @@ export function useCalendarOrderPanelState(): {
   const canEdit =
     isTPM || (isClient && isOwner && clientOrderNotYetAccepted)
   const isRequiredFilled =
-    !!referenceNumber.trim() &&
     !!serviceType &&
     !!location.trim() &&
     (!isTPM || !!clientInstitutionId) &&

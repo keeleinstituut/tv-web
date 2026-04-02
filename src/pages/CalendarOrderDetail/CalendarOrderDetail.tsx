@@ -159,7 +159,6 @@ const CalendarOrderDetail: FC = () => {
   const canCreateOrder =
     isCreateMode &&
     Boolean(languageId) &&
-    referenceNumber.trim().length > 0 &&
     Boolean(startIso) &&
     Boolean(endIso) &&
     address.trim().length > 0 &&
