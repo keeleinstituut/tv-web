@@ -5,7 +5,7 @@ import DynamicForm, {
   InputTypes,
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { find, includes, values } from 'lodash'
+import { find, includes, values, without } from 'lodash'
 import classNames from 'classnames'
 import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
@@ -53,12 +53,21 @@ const DetailsSection = <TFormValues extends FieldValues>({
   // TODO: depends on the picked type classifier
   // const shouldShowStartTimeFields = true
 
-  const selectedProjectTypeId = useWatch({
+  const [selectedProjectTypeId, selectedServiceType] = useWatch({
     control,
-    name: 'type_classifier_value_id' as Path<TFormValues>,
+    name: [
+      'type_classifier_value_id' as Path<TFormValues>,
+      'service_type' as Path<TFormValues>,
+    ],
   })
 
   const selectedProjectType = find(projectTypes, { id: selectedProjectTypeId })
+
+  const VERBAL_TYPES = without(
+    values(TypesWithStartTime),
+    TypesWithStartTime.PostTranslation
+  )
+  const isVerbalType = includes(VERBAL_TYPES, selectedProjectType?.value)
 
   const fields: FieldProps<TFormValues>[] = useMemo(
     () => [
@@ -125,6 +134,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         rules: {
           required: true,
           validate: (value: { date?: string; time?: string }, formValues) => {
+            if (!formValues.deadline_at?.date) return true
             const deadline_at = dayjs(
               formValues.deadline_at.date + ' ' + formValues.deadline_at.time
             )
@@ -141,6 +151,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         label: `${t('label.deadline')}${!isEditable ? '' : '*'}`,
+        hidden: isVerbalType,
         className: classes.customInternalClass,
         name: 'deadline_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
@@ -148,6 +159,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         rules: {
           required: true,
           validate: (value: { date?: string; time?: string }, formValues) => {
+            if (!formValues.event_start_at?.date) return true
             const deadline_at = dayjs(value.date + ' ' + value.time)
             const event_start_at = dayjs(
               formValues.event_start_at.date +
@@ -160,6 +172,60 @@ const DetailsSection = <TFormValues extends FieldValues>({
             }
             return true
           },
+        },
+      },
+      {
+        inputType: InputTypes.Selections,
+        ariaLabel: t('calendar.service_type'),
+        placeholder: t('placeholder.pick'),
+        label: `${t('calendar.service_type')}${!isEditable ? '' : '*'}`,
+        name: 'service_type' as Path<TFormValues>,
+        className: classes.inputSearch,
+        options: [
+          {
+            value: 'contact',
+            label: t('calendar.service_type_contact'),
+          },
+          {
+            value: 'remote',
+            label: t('calendar.service_type_remote'),
+          },
+        ],
+        hidden: !isVerbalType,
+        onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
+        rules: {
+          required: isVerbalType,
+        },
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('calendar.location'),
+        placeholder: t('calendar.enter_address'),
+        label: `${t('calendar.location')}${!isEditable ? '' : '*'}`,
+        name: 'event_location' as Path<TFormValues>,
+        className: classes.inputInternalPosition,
+        hidden:
+          !isVerbalType || (isEditable && selectedServiceType !== 'contact'),
+        onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
+        rules: {
+          required: isVerbalType && selectedServiceType === 'contact',
+        },
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('calendar.meeting_link'),
+        placeholder: t('calendar.enter_link'),
+        label: `${t('calendar.meeting_link')}${!isEditable ? '' : '*'}`,
+        name: 'meeting_link' as Path<TFormValues>,
+        className: classes.inputInternalPosition,
+        hidden:
+          !isVerbalType || (isEditable && selectedServiceType !== 'remote'),
+        onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
+        rules: {
+          required: isVerbalType && selectedServiceType === 'remote',
         },
       },
       // TODO: not sure if comment field is correct for this
@@ -229,6 +295,8 @@ const DetailsSection = <TFormValues extends FieldValues>({
       selectedProjectType?.value,
       selectedProjectType?.project_type_config?.is_start_date_supported,
       languageFilters,
+      isVerbalType,
+      selectedServiceType,
     ]
   )
 

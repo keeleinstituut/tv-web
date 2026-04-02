@@ -209,6 +209,9 @@ export interface ListProject {
   workflow_instance_ref: string | null
   deadline_at: string
   event_start_at?: string
+  event_location?: string
+  meeting_link?: string
+  service_type?: string
   created_at: string
   updated_at: string
   sub_projects: ListSubProjectDetail[]
@@ -305,7 +308,7 @@ export interface CatProjectPayload {
 export interface NewProjectPayload {
   client_institution_user_id: string
   manager_institution_user_id: string
-  deadline_at: string
+  deadline_at?: string | null
   source_files: (File | SourceFile)[]
   reference_number?: string
   source_language_classifier_value_id: string
@@ -315,6 +318,8 @@ export interface NewProjectPayload {
   translation_domain_classifier_value_id: string
   type_classifier_value_id: string
   event_start_at?: string
+  event_location?: string
+  meeting_link?: string
   // TODO: Following are currently missing
   comments?: string
 }

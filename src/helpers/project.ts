@@ -39,6 +39,9 @@ export const getProjectDefaultValues = ({
     cancelled_at = '',
     created_at = '',
     tags = [],
+    event_location = '',
+    meeting_link = '',
+    service_type = '',
   } = project || {}
   const source_language_classifier_value_id =
     sub_projects?.[0]?.source_language_classifier_value_id || ''
@@ -81,6 +84,9 @@ export const getProjectDefaultValues = ({
     translation_domain_classifier_value_id:
       translation_domain_classifier_value?.id || defaultDomainClassifier?.id,
     comments,
+    event_location,
+    meeting_link,
+    service_type,
     tags: map(tags, 'id'),
     accepted_at: accepted_at ? dayjs(accepted_at).format('DD.MM.YYYY') : '',
     corrected_at: corrected_at ? dayjs(corrected_at).format('DD.MM.YYYY') : '',

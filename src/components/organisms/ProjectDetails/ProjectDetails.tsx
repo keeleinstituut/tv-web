@@ -67,6 +67,9 @@ interface FormValues {
   help_file_types: HelperFileTypes[]
   translation_domain_classifier_value_id: string
   event_start_at?: { date?: string; time?: string }
+  service_type?: string
+  event_location?: string
+  meeting_link?: string
   comments?: string
   ext_id?: string
   tags?: string[]
@@ -347,21 +350,31 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
       help_files,
       tags,
       ext_id,
+      service_type,
+      event_location,
+      meeting_link,
       ...rest
     }) => {
-      const deadline_at = getUtcDateStringFromLocalDateObject(deadlineObject)
+      const deadline_at =
+        deadlineObject?.date || deadlineObject?.time
+          ? getUtcDateStringFromLocalDateObject(deadlineObject)
+          : null
       const event_start_at =
         startObject?.date || startObject?.time
           ? getUtcDateStringFromLocalDateObject(startObject)
           : null
 
       const payload: NewProjectPayload = {
-        deadline_at,
+        ...(deadline_at ? { deadline_at } : {}),
         source_files: compact(source_files),
         help_files: compact(help_files),
         ...rest,
         ...(!isNew ? { tags } : {}),
         ...(event_start_at ? { event_start_at } : {}),
+        ...(service_type === 'contact' && event_location
+          ? { event_location }
+          : {}),
+        ...(service_type === 'remote' && meeting_link ? { meeting_link } : {}),
       }
 
       if (isNew) {
