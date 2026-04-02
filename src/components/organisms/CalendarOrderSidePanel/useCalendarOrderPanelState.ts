@@ -179,7 +179,6 @@ export function useCalendarOrderPanelState(): {
     !isClient || order?.client_institution_user?.id === institutionUserId
   const canEdit = isTPM || (isClient && isOwner)
   const isRequiredFilled =
-    !!referenceNumber.trim() &&
     !!serviceType &&
     !!location.trim() &&
     (!isTPM || !!clientInstitutionId) &&

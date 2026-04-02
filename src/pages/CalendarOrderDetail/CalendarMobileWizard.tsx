@@ -150,7 +150,6 @@ const CalendarMobileWizard: FC = () => {
       !!selectedDate &&
       !!startTimeInput &&
       !!languageId &&
-      referenceNumber.trim().length > 0 &&
       (!isTPM || (!!clientInstitutionId && !!vendorId))
     const isLastStep = step === TOTAL_STEPS
 
