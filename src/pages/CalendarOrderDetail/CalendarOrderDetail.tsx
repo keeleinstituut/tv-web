@@ -61,7 +61,6 @@ const CalendarOrderDetail: FC = () => {
 
   const { languages } = useFetchCalendarLanguages()
   const { tags: domains } = useFetchCalendarTags()
-
   // UI state
   const [metaOpen, setMetaOpen] = useState(true)
   const [isEditing, setIsEditing] = useState(false)

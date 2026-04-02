@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import dayjs from 'dayjs'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
+import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import {
   useCalendarDownloadFile,
@@ -181,18 +182,17 @@ const CalendarMobileWizard: FC = () => {
         {isTPM && (
           <div className={classes.field}>
             <label className={classes.fieldLabel}>{t('calendar.client')}</label>
-            <select
-              className={classes.fieldSelect}
+            <CalendarSelect
               value={clientInstitutionId}
-              onChange={(e) => setClientInstitutionId(e.target.value)}
-            >
-              <option value="">{t('calendar.select_client')}</option>
-              {clients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {[c.user.forename, c.user.surname].filter(Boolean).join(' ')}
-                </option>
-              ))}
-            </select>
+              onChange={setClientInstitutionId}
+              options={clients.map((c) => ({
+                value: c.id,
+                label: [c.user.forename, c.user.surname]
+                  .filter(Boolean)
+                  .join(' '),
+              }))}
+              placeholder={t('calendar.select_client')}
+            />
           </div>
         )}
 
@@ -213,23 +213,18 @@ const CalendarMobileWizard: FC = () => {
             {t('calendar.language')} {isCreateMode ? '*' : ''}
           </label>
           {isCreateMode ? (
-            <select
-              className={classes.fieldSelect}
+            <CalendarSelect
               value={languageId}
-              onChange={(e) => {
-                setLanguageId(e.target.value)
+              onChange={(v) => {
+                setLanguageId(v)
                 setVendorId('')
               }}
-            >
-              <option value="" disabled>
-                {t('calendar.select_language')}
-              </option>
-              {languages.map((lang) => (
-                <option key={lang.language.id} value={lang.language.id}>
-                  {lang.language.name}
-                </option>
-              ))}
-            </select>
+              options={languages.map((lang) => ({
+                value: lang.language.id,
+                label: lang.language.name,
+              }))}
+              placeholder={t('calendar.select_language')}
+            />
           ) : (
             <span className={classes.fieldReadonly}>
               {order?.language?.name}
@@ -261,17 +256,14 @@ const CalendarMobileWizard: FC = () => {
           <label className={classes.fieldLabel}>
             {t('calendar.duration')} *
           </label>
-          <select
-            className={classes.fieldSelect}
-            value={durationMinutes}
-            onChange={(e) => setDurationMinutes(Number(e.target.value))}
-          >
-            {DURATION_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {t(label as never)}
-              </option>
-            ))}
-          </select>
+          <CalendarSelect
+            value={String(durationMinutes)}
+            onChange={(v) => setDurationMinutes(Number(v))}
+            options={DURATION_OPTIONS.map(({ value, label }) => ({
+              value: String(value),
+              label: t(label as never) as string,
+            }))}
+          />
         </div>
 
         {isTPM && (
@@ -279,18 +271,15 @@ const CalendarMobileWizard: FC = () => {
             <label className={classes.fieldLabel}>
               {t('calendar.translator')} *
             </label>
-            <select
-              className={classes.fieldSelect}
+            <CalendarSelect
               value={vendorId}
-              onChange={(e) => setVendorId(e.target.value)}
-            >
-              <option value="">{t('calendar.select_translator')}</option>
-              {vendors.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
+              onChange={setVendorId}
+              options={vendors.map((v) => ({
+                value: v.id,
+                label: v.name ?? '',
+              }))}
+              placeholder={t('calendar.select_translator')}
+            />
           </div>
         )}
       </div>
@@ -620,18 +609,17 @@ const CalendarMobileWizard: FC = () => {
         <div className={classes.viewField}>
           <span className={classes.viewLabel}>{t('calendar.client')}</span>
           {isEditing ? (
-            <select
-              className={classes.fieldSelect}
+            <CalendarSelect
               value={clientInstitutionId}
-              onChange={(e) => setClientInstitutionId(e.target.value)}
-            >
-              <option value="">{t('calendar.select_client')}</option>
-              {clients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {[c.user.forename, c.user.surname].filter(Boolean).join(' ')}
-                </option>
-              ))}
-            </select>
+              onChange={setClientInstitutionId}
+              options={clients.map((c) => ({
+                value: c.id,
+                label: [c.user.forename, c.user.surname]
+                  .filter(Boolean)
+                  .join(' '),
+              }))}
+              placeholder={t('calendar.select_client')}
+            />
           ) : (
             <span className={classes.viewValue}>
               {order?.client?.name || '–'}
@@ -690,19 +678,14 @@ const CalendarMobileWizard: FC = () => {
       <div className={classes.viewField}>
         <span className={classes.viewLabel}>{t('calendar.duration')}</span>
         {isEditing ? (
-          <select
-            className={classes.fieldSelect}
-            value={durationMinutes}
-            onChange={(e) => {
-              setDurationMinutes(Number(e.target.value))
-            }}
-          >
-            {DURATION_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {t(label as never)}
-              </option>
-            ))}
-          </select>
+          <CalendarSelect
+            value={String(durationMinutes)}
+            onChange={(v) => setDurationMinutes(Number(v))}
+            options={DURATION_OPTIONS.map(({ value, label }) => ({
+              value: String(value),
+              label: t(label as never) as string,
+            }))}
+          />
         ) : (
           <span className={classes.viewValue}>{durationLabel}</span>
         )}
@@ -712,19 +695,16 @@ const CalendarMobileWizard: FC = () => {
         <div className={classes.viewField}>
           <span className={classes.viewLabel}>{t('calendar.translator')}</span>
           {isEditing ? (
-            <select
-              className={classes.fieldSelect}
+            <CalendarSelect
               value={vendorId}
-              onChange={(e) => setVendorId(e.target.value)}
+              onChange={setVendorId}
+              options={vendors.map((v) => ({
+                value: v.id,
+                label: v.name ?? '',
+              }))}
+              placeholder={t('calendar.select_translator')}
               disabled={!languageId || !startIso || !endIso}
-            >
-              <option value="">{t('calendar.select_translator')}</option>
-              {vendors.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
+            />
           ) : (
             <span className={classes.viewValue}>
               {order?.coordinator?.name || '–'}

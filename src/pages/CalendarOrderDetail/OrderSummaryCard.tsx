@@ -4,37 +4,11 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import { openNativeDateTimePicker } from 'helpers/nativeDateTimeInput'
 import { useOrderDetail } from './OrderDetailContext'
 import OrderTopActions from './OrderTopActions'
 import classes from './classes.module.scss'
-
-const ClientSelect: FC<{
-  value: string
-  onChange: (v: string) => void
-  isTPM: boolean
-}> = ({ value, onChange, isTPM }) => {
-  const { t } = useTranslation()
-  const { users: clients } = useFetchInfiniteProjectPerson(
-    undefined,
-    'client',
-    isTPM
-  )
-  return (
-    <select
-      className={classes.editSelect}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    >
-      <option value="">{t('calendar.select_client')}</option>
-      {clients.map((c) => (
-        <option key={c.id} value={c.id}>
-          {[c.user.forename, c.user.surname].filter(Boolean).join(' ')}
-        </option>
-      ))}
-    </select>
-  )
-}
 
 const SummaryFields: FC = () => {
   const { t } = useTranslation()
@@ -56,6 +30,9 @@ const SummaryFields: FC = () => {
     setClientInstitutionId,
     referenceNumber,
     setReferenceNumber,
+    sourceLanguageId,
+    setSourceLanguageId,
+    sourceLanguageOptions,
     languageId,
     setLanguageId,
     vendorId,
@@ -67,6 +44,12 @@ const SummaryFields: FC = () => {
     formatMins,
   } = useOrderDetail()
 
+  const { users: clients } = useFetchInfiniteProjectPerson(
+    undefined,
+    'client',
+    isTPM
+  )
+
   if (isCreateMode) {
     return (
       <>
@@ -76,10 +59,16 @@ const SummaryFields: FC = () => {
               {t('calendar.client')}
               <span className={classes.requiredMark}>*</span>
             </span>
-            <ClientSelect
+            <CalendarSelect
               value={clientInstitutionId}
               onChange={setClientInstitutionId}
-              isTPM={isTPM}
+              options={clients.map((c) => ({
+                value: c.id,
+                label: [c.user.forename, c.user.surname]
+                  .filter(Boolean)
+                  .join(' '),
+              }))}
+              placeholder={t('calendar.select_client')}
             />
           </div>
         )}
@@ -97,27 +86,35 @@ const SummaryFields: FC = () => {
         </div>
         <div className={classes.field}>
           <span className={classes.fieldLabel}>
+            {t('calendar.source_language')}
+            <span className={classes.requiredMark}>*</span>
+          </span>
+          <CalendarSelect
+            value={sourceLanguageId}
+            onChange={setSourceLanguageId}
+            options={sourceLanguageOptions}
+            placeholder={t('calendar.select_source_language')}
+          />
+        </div>
+        <div className={classes.field}>
+          <span className={classes.fieldLabel}>
             {t('calendar.language')}
             <span className={classes.requiredMark}>*</span>
           </span>
-          <select
-            className={classes.editSelect}
+          <CalendarSelect
             value={languageId}
-            onChange={(e) => {
-              setLanguageId(e.target.value)
+            onChange={(v) => {
+              setLanguageId(v)
               setVendorId('')
             }}
-          >
-            <option value="" disabled>
-              {t('calendar.select_language')}
-            </option>
-            {languages.map((lang) => (
-              <option key={lang.language.id} value={lang.language.id}>
-                {lang.language.name}
-                {lang.is_rare ? ` (${t('calendar.rare_language')})` : ''}
-              </option>
-            ))}
-          </select>
+            options={languages.map((lang) => ({
+              value: lang.language.id,
+              label:
+                lang.language.name +
+                (lang.is_rare ? ` (${t('calendar.rare_language')})` : ''),
+            }))}
+            placeholder={t('calendar.select_language')}
+          />
           {languageId &&
             languages.find((l) => l.language.id === languageId)?.is_rare && (
               <span className={classes.rareLanguageNote}>
@@ -174,19 +171,16 @@ const SummaryFields: FC = () => {
               {t('calendar.translator')}
               <span className={classes.requiredMark}>*</span>
             </span>
-            <select
-              className={classes.editSelect}
+            <CalendarSelect
               value={vendorId}
-              onChange={(e) => setVendorId(e.target.value)}
+              onChange={setVendorId}
+              options={vendors.map((v) => ({
+                value: v.id,
+                label: v.name ?? '',
+              }))}
+              placeholder={t('calendar.select_translator')}
               disabled={!languageId || !startIso || !endIso}
-            >
-              <option value="">{t('calendar.select_translator')}</option>
-              {vendors.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         )}
       </>
@@ -235,6 +229,16 @@ const SummaryFields: FC = () => {
             {order!.reference_number || '–'}
           </span>
         </div>
+        {order!.source_language && (
+          <div className={classes.field}>
+            <span className={classes.fieldLabel}>
+              {t('calendar.source_language')}
+            </span>
+            <span className={classes.fieldValue}>
+              {order!.source_language.name}
+            </span>
+          </div>
+        )}
         <div className={classes.field}>
           <span className={classes.fieldLabel}>{t('calendar.language')}</span>
           <span className={classes.fieldValue}>{order!.language.name}</span>
@@ -262,10 +266,16 @@ const SummaryFields: FC = () => {
         <>
           <div className={classes.field}>
             <span className={classes.fieldLabel}>{t('calendar.client')}</span>
-            <ClientSelect
+            <CalendarSelect
               value={clientInstitutionId}
               onChange={setClientInstitutionId}
-              isTPM={isTPM}
+              options={clients.map((c) => ({
+                value: c.id,
+                label: [c.user.forename, c.user.surname]
+                  .filter(Boolean)
+                  .join(' '),
+              }))}
+              placeholder={t('calendar.select_client')}
             />
           </div>
           <div className={classes.field}>
@@ -281,6 +291,17 @@ const SummaryFields: FC = () => {
           </div>
         </>
       )}
+      <div className={classes.field}>
+        <span className={classes.fieldLabel}>
+          {t('calendar.source_language')}
+        </span>
+        <CalendarSelect
+          value={sourceLanguageId}
+          onChange={setSourceLanguageId}
+          options={sourceLanguageOptions}
+          placeholder={t('calendar.select_source_language')}
+        />
+      </div>
       <div className={classes.field}>
         <span className={classes.fieldLabel}>{t('calendar.language')}</span>
         <span className={classes.fieldValue}>{order!.language.name}</span>
@@ -327,19 +348,16 @@ const SummaryFields: FC = () => {
       {isTPM && (
         <div className={classes.field}>
           <span className={classes.fieldLabel}>{t('calendar.translator')}</span>
-          <select
-            className={classes.editSelect}
+          <CalendarSelect
             value={vendorId}
-            onChange={(e) => setVendorId(e.target.value)}
+            onChange={setVendorId}
+            options={vendors.map((v) => ({
+              value: v.id,
+              label: v.name ?? '',
+            }))}
+            placeholder={t('calendar.select_translator')}
             disabled={!languageId || !startIso || !endIso}
-          >
-            <option value="">{t('calendar.select_translator')}</option>
-            {vendors.map((v) => (
-              <option key={v.id} value={v.id}>
-                {v.name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
       )}
     </>
