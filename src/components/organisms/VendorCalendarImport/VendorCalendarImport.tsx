@@ -1,18 +1,21 @@
 import { FC, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
+import { Root } from '@radix-ui/react-form'
 import Container from 'components/atoms/Container/Container'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInput'
 import { useImportCalendar } from 'hooks/requests/useCalendar'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import classes from './classes.module.scss'
+import classes from './VendorCalendarImport.module.scss'
 
-const CalendarSettings: FC = () => {
+const VendorCalendarImport: FC = () => {
   const { t } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { mutateAsync: importCalendar, isLoading } = useImportCalendar()
+  const [endDate, setEndDate] = useState('')
   const [lastImport, setLastImport] = useState<{
     eventsCount: number
     dateTo: string
@@ -23,7 +26,7 @@ const CalendarSettings: FC = () => {
     if (!file) return
     e.target.value = ''
 
-    const importEndDate = dayjs().add(1, 'year').format('YYYY-MM-DD')
+    const importEndDate = dayjs(endDate, 'DD/MM/YYYY').format('YYYY-MM-DD')
     try {
       const res = await importCalendar({ file, importEndDate })
       const data = res?.data
@@ -44,15 +47,27 @@ const CalendarSettings: FC = () => {
   }
 
   return (
-    <>
-      <h3 className={classes.title}>{t('calendar_settings.title')}</h3>
-      <Container className={classes.container}>
+    <Container className={classes.container}>
         <p className={classes.sectionTitle}>
           {t('calendar_settings.import_title')}
         </p>
         <p className={classes.description}>
           {t('calendar_settings.import_description')}
         </p>
+        <Root>
+          <div className={classes.endDatePicker}>
+            <p className={classes.endDateLabel}>
+              {t('calendar_settings.import_end_date')}
+              <span className={classes.required}>*</span>
+            </p>
+            <DatePickerInput
+              name="import_end_date"
+              value={endDate}
+              onChange={(val) => setEndDate(val)}
+              minDate={new Date()}
+            />
+          </div>
+        </Root>
         {lastImport && (
           <p className={classes.lastImport}>
             {t('calendar_settings.last_import_info', {
@@ -72,13 +87,13 @@ const CalendarSettings: FC = () => {
           appearance={AppearanceTypes.Primary}
           onClick={() => fileInputRef.current?.click()}
           loading={isLoading}
+          disabled={!endDate}
           className={classes.importButton}
         >
           {t('calendar_settings.import_button')}
         </Button>
-      </Container>
-    </>
+    </Container>
   )
 }
 
-export default CalendarSettings
+export default VendorCalendarImport

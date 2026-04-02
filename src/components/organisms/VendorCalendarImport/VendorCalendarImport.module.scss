@@ -32,9 +32,28 @@
   display: none;
 }
 
+.endDatePicker {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(1);
+}
+
+.endDateLabel {
+  @include mixins.bodyTextSmallStyle;
+  font-weight: 600;
+  color: variables.$color-dark;
+}
+
+
 .importButton {
   align-self: flex-start;
   display: flex;
   align-items: center;
   gap: variables.spacing(1);
+  margin-top: variables.spacing(2);
+}
+
+.required {
+  color: variables.$color-error;
+  margin-left: 2px;
 }

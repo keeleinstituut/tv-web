@@ -46,6 +46,8 @@ export const endpoints = {
 
   CAT_TOOL: translationOrder('cat-tool'),
   TRANSLATION_USERS: translationOrder('institution-users'),
+  INSTITUTION_USER_VENDOR: (id: string) =>
+    translationOrder(`institution-users/${id}/vendor`),
   TAGS: translationOrder('tags'),
   CREATE_TAGS: translationOrder('tags/bulk-create'),
   UPDATE_TAGS: translationOrder('tags/bulk-update'),

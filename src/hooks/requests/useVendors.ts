@@ -178,6 +178,18 @@ export const useFetchVendor = ({ id }: { id?: string }) => {
   }
 }
 
+export const useFetchInstitutionUserVendor = (institutionUserId?: string) => {
+  const { isLoading, data } = useQuery<VendorResponse>({
+    enabled: !!institutionUserId,
+    queryKey: ['institution-user-vendor', institutionUserId],
+    queryFn: () =>
+      apiClient.get(endpoints.INSTITUTION_USER_VENDOR(institutionUserId!)),
+    staleTime: Infinity,
+    retry: false,
+  })
+  return { isLoading, vendor: data?.data ?? null }
+}
+
 export const useVendorCache = (id?: string): Vendor | undefined => {
   const queryClient = useQueryClient()
   const vendorCache: { data: Vendor } | undefined = queryClient.getQueryData([
