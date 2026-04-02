@@ -1,5 +1,6 @@
 import React, { FC } from 'react'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
+import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -54,39 +55,24 @@ const OrderDetailsCard: FC = () => {
               {isCreateMode && <span className={classes.requiredMark}>*</span>}
             </span>
             {isServiceEditable ? (
-              <div className={classes.serviceToggle}>
-                <button
-                  className={`${classes.serviceOption} ${serviceType === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
-                  onClick={() => {
-                    setServiceType('ON_SITE')
-                    setAddress('')
-                  }}
-                >
-                  {t('calendar.service_type_contact')}
-                </button>
-                <button
-                  className={`${classes.serviceOption} ${serviceType === 'REMOTE' ? classes.serviceOptionActive : ''}`}
-                  onClick={() => {
-                    setServiceType('REMOTE')
-                    setAddress('')
-                  }}
-                >
-                  {t('calendar.service_type_remote')}
-                </button>
-              </div>
+              <CalendarSelect
+                value={serviceType}
+                onChange={(v) => {
+                  setServiceType(v as 'REMOTE' | 'ON_SITE')
+                  setAddress('')
+                }}
+                options={[
+                  { value: 'ON_SITE', label: t('calendar.service_type_contact') },
+                  { value: 'REMOTE', label: t('calendar.service_type_remote') },
+                ]}
+                placeholder={t('calendar.select_type')}
+              />
             ) : (
-              <div className={classes.serviceToggle}>
-                <span
-                  className={`${classes.serviceOption} ${order!.service_type === 'ON_SITE' ? classes.serviceOptionActive : ''}`}
-                >
-                  {t('calendar.service_type_contact')}
-                </span>
-                <span
-                  className={`${classes.serviceOption} ${order!.service_type === 'REMOTE' ? classes.serviceOptionActive : ''}`}
-                >
-                  {t('calendar.service_type_remote')}
-                </span>
-              </div>
+              <span className={classes.fieldValue}>
+                {order!.service_type === 'ON_SITE'
+                  ? t('calendar.service_type_contact')
+                  : t('calendar.service_type_remote')}
+              </span>
             )}
           </div>
 
