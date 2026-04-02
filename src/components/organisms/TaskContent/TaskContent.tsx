@@ -80,7 +80,12 @@ const TaskContent: FC<TaskContentProps> = ({
     source_files,
     final_files,
     cat_tm_keys,
+    project: taskProject,
   } = subProject || {}
+
+  const isVerbalType =
+    !!taskProject?.type_classifier_value?.project_type_config?.is_start_date_supported &&
+    taskProject?.type_classifier_value?.value !== 'POST_TRANSLATION'
 
   const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
     id: sub_project_id,
@@ -249,12 +254,14 @@ const TaskContent: FC<TaskContentProps> = ({
             {event_start_at ? formattedDate(event_start_at) : '-'}
           </p>
         </span>
-        <span className={classes.taskContainer}>
-          <p className={classes.taskDetails}>{t('label.deadline_at')}</p>
-          <p className={classes.taskContent}>
-            {deadline_at ? formattedDate(deadline_at) : '-'}
-          </p>
-        </span>
+        {!isVerbalType && (
+          <span className={classes.taskContainer}>
+            <p className={classes.taskDetails}>{t('label.deadline_at')}</p>
+            <p className={classes.taskContent}>
+              {deadline_at ? formattedDate(deadline_at) : '-'}
+            </p>
+          </span>
+        )}
         <span className={classes.taskContainer}>
           <p className={classes.taskDetails}>
             {t('label.special_instructions')}

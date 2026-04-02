@@ -77,6 +77,10 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
   const shouldShowStartTimeFields =
     type_classifier_value?.project_type_config?.is_start_date_supported
 
+  const isVerbalType =
+    !!shouldShowStartTimeFields &&
+    type_classifier_value?.value !== 'POST_TRANSLATION'
+
   const defaultValues = useMemo(
     () => ({
       ...(deadline_at
@@ -258,6 +262,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         label: t('label.deadline'),
+        hidden: isVerbalType,
         className: classes.customInternalClass,
         name: 'deadline_at',
         maxDate: dayjs(subProjectDeadline).toDate(),
@@ -309,6 +314,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       isEditable,
       isAssignmentFinished,
       shouldShowStartTimeFields,
+      isVerbalType,
       handleAddStartTime,
       id,
       handleAddComment,
