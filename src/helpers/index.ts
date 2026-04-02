@@ -183,8 +183,8 @@ export const getUtcDateStringFromLocalDateObject = ({
   time?: string
 }) => {
   const dayjsObject = dayjs(
-    trim(`${date || ''} ${time || '12:00:00'}`),
-    'DD/MM/YYYY HH:mm:ss'
+    trim(`${date || ''} ${time || '12:00'}`),
+    ['DD/MM/YYYY HH:mm:ss', 'DD/MM/YYYY HH:mm']
   )
   const formattedString = dayjsObject.utc().format('YYYY-MM-DDTHH:mm:ss[Z]')
   return formattedString

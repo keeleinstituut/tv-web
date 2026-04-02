@@ -94,6 +94,7 @@ const CalendarDayClientBookingRow: FC<Props> = ({
           onClick={onClickSlot}
           alwaysLightBlue={false}
           slotWidth={sw}
+          rowWidth={totalWidth}
         />
       </div>
     </div>

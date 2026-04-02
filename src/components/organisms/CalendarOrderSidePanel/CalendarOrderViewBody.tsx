@@ -6,6 +6,7 @@ import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import { calendarBookingStatusLabelKey } from 'helpers/calendarBookingStatus'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
+import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import DurationStepper from './DurationStepper'
 import SlotMetaSection from './SlotMetaSection'
 import OrderServiceLocationReadonly from './OrderServiceLocationReadonly'
@@ -104,20 +105,17 @@ const CalendarOrderViewBody: FC = () => {
                 {t('calendar.client')}
                 <span className={classes.requiredMark}>*</span>
               </label>
-              <select
-                className={classes.select}
+              <CalendarSelect
                 value={clientInstitutionId}
-                onChange={(e) => onSetClientInstitutionId(e.target.value)}
-              >
-                <option value="">{t('calendar.select_client')}</option>
-                {clients.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {[c.user.forename, c.user.surname]
-                      .filter(Boolean)
-                      .join(' ')}
-                  </option>
-                ))}
-              </select>
+                onChange={onSetClientInstitutionId}
+                options={clients.map((c) => ({
+                  value: c.id,
+                  label: [c.user.forename, c.user.surname]
+                    .filter(Boolean)
+                    .join(' '),
+                }))}
+                placeholder={t('calendar.select_client')}
+              />
             </div>
           ) : assignment?.client ? (
             <div className={classes.formGroup}>
@@ -241,19 +239,16 @@ const CalendarOrderViewBody: FC = () => {
                 {t('calendar.translator')}
                 <span className={classes.requiredMark}>*</span>
               </label>
-              <select
-                className={classes.select}
+              <CalendarSelect
                 value={vendorId}
+                onChange={onSetVendorId}
+                options={vendors.map((v) => ({
+                  value: v.id,
+                  label: v.name ?? '',
+                }))}
+                placeholder={t('calendar.select_translator')}
                 disabled={vendorLocked}
-                onChange={(e) => onSetVendorId(e.target.value)}
-              >
-                <option value="">{t('calendar.select_translator')}</option>
-                {vendors.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {v.name}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
           ) : vendorName || assignment ? (
             <div className={classes.formGroup}>
@@ -269,24 +264,24 @@ const CalendarOrderViewBody: FC = () => {
               {t('calendar.order_way')}
               <span className={classes.requiredMark}>*</span>
             </label>
-            <select
-              className={classes.select}
+            <CalendarSelect
               value={serviceType}
-              onChange={(e) => {
-                onSetServiceType(e.target.value as ServiceType)
+              onChange={(v) => {
+                onSetServiceType(v as ServiceType)
                 onSetLocation('')
               }}
-            >
-              <option value="" disabled>
-                {t('calendar.select_type')}
-              </option>
-              <option value="kaugtolge">
-                {t('calendar.service_type_remote')}
-              </option>
-              <option value="kontakttolge">
-                {t('calendar.service_type_contact')}
-              </option>
-            </select>
+              options={[
+                {
+                  value: 'kaugtolge',
+                  label: t('calendar.service_type_remote'),
+                },
+                {
+                  value: 'kontakttolge',
+                  label: t('calendar.service_type_contact'),
+                },
+              ]}
+              placeholder={t('calendar.select_type')}
+            />
           </div>
         ) : (assignment?.service_type ?? order?.service_type) ? (
           <OrderServiceLocationReadonly

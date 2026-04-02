@@ -16,6 +16,8 @@ interface Props {
   placeholder?: string
   className?: string
   disabled?: boolean
+  /** Remove trigger border/padding so the parent container provides the visual frame. */
+  flat?: boolean
 }
 
 const CalendarSelect: FC<Props> = ({
@@ -25,6 +27,7 @@ const CalendarSelect: FC<Props> = ({
   placeholder = '—',
   className,
   disabled,
+  flat,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -42,7 +45,10 @@ const CalendarSelect: FC<Props> = ({
     >
       <button
         type="button"
-        className={classNames(classes.trigger, { [classes.open]: isOpen })}
+        className={classNames(classes.trigger, {
+          [classes.open]: isOpen,
+          [classes.flat]: flat,
+        })}
         onClick={() => !disabled && setIsOpen((v) => !v)}
         disabled={disabled}
       >

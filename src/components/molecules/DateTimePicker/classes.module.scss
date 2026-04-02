@@ -15,10 +15,31 @@
 
 .innerWrapper {
   display: flex;
-  width: 274px;
-  justify-content: space-between;
+  gap: 12px;
+}
 
-  .timePicker {
-    width: unset;
+.datePickerContainer {
+  flex: 0 0 125px;
+  max-width: 125px;
+}
+
+.timeSelectWrapper {
+  width: 125px;
+  position: relative;
+}
+
+.timeSelectTrigger {
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+  padding: variables.spacing(2);
+  background-color: variables.$color-white;
+  border: 1px solid variables.$color-input-border;
+  border-radius: 4px;
+  @include mixins.buttonTextStyle;
+
+  &:disabled {
+    background-color: variables.$color-background;
+    cursor: not-allowed;
   }
 }

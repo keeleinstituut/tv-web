@@ -31,6 +31,8 @@ import {
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ServiceType, UpdateOrderPayload } from 'types/calendar'
+import { apiClient } from 'api'
+import { endpoints } from 'api/endpoints'
 import { SidePanelContextValue } from './SidePanelContext'
 
 interface FormState {
@@ -96,6 +98,29 @@ export function useCalendarOrderPanelState(): {
   const { mutate: cancelPrebook } = useCancelPrebook()
 
   const prebookActiveRef = useRef(false)
+
+  // Cancel prebook on browser/tab close and on in-app navigation (component unmount).
+  // fetch + keepalive ensures the request outlives the page lifecycle.
+  useEffect(() => {
+    const cancelPrebookOnUnload = () => {
+      if (!prebookActiveRef.current) return
+      const csrfToken = apiClient.instance.defaults.headers.common[
+        'X-CSRF-Token'
+      ] as string | undefined
+      fetch(endpoints.CALENDAR_PREBOOK, {
+        method: 'DELETE',
+        credentials: 'include',
+        keepalive: true,
+        headers: csrfToken ? { 'X-CSRF-Token': csrfToken } : undefined,
+      })
+    }
+    window.addEventListener('beforeunload', cancelPrebookOnUnload)
+    return () => {
+      window.removeEventListener('beforeunload', cancelPrebookOnUnload)
+      cancelPrebookOnUnload()
+    }
+  }, [])
+
   const editBaselineRef = useRef<{
     serviceType: ServiceType
     referenceNumber: string
@@ -177,9 +202,13 @@ export function useCalendarOrderPanelState(): {
 
   const isOwner =
     !isClient || order?.client_institution_user?.id === institutionUserId
-  const canEdit = isTPM || (isClient && isOwner)
+  const clientOrderNotYetAccepted =
+    order?.sub_project_status == null ||
+    order.sub_project_status === 'REGISTERED' ||
+    order.sub_project_status === 'TASKS_SUBMITTED_TO_VENDORS'
+  const canEdit =
+    isTPM || (isClient && isOwner && clientOrderNotYetAccepted)
   const isRequiredFilled =
-    !!referenceNumber.trim() &&
     !!serviceType &&
     !!location.trim() &&
     (!isTPM || !!clientInstitutionId) &&
@@ -288,6 +317,35 @@ export function useCalendarOrderPanelState(): {
       }
     )
   }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Re-issue prebook when duration changes so the reserved range matches the order end time
+  useEffect(() => {
+    if (!isOpen || isViewMode || !language || !startIso) return
+    const computedEnd = dayjs(startIso).add(durationMinutes, 'minute').toISOString()
+    const timer = setTimeout(() => {
+      cancelPrebook()
+      prebookActiveRef.current = true
+      createPrebook(
+        {
+          language_id: language.language.id,
+          start_at: startIso,
+          end_at: computedEnd,
+          ...(sidePanelSelection?.vendorId
+            ? { vendor_id: sidePanelSelection.vendorId }
+            : {}),
+        },
+        {
+          onSuccess: () => {
+            if (!prebookActiveRef.current) cancelPrebook()
+          },
+          onError: () => {
+            prebookActiveRef.current = false
+          },
+        }
+      )
+    }, 600)
+    return () => clearTimeout(timer)
+  }, [durationMinutes]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cancel countdown tick
   useEffect(() => {

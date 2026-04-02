@@ -61,7 +61,6 @@ const CalendarOrderDetail: FC = () => {
 
   const { languages } = useFetchCalendarLanguages()
   const { tags: domains } = useFetchCalendarTags()
-
   // UI state
   const [metaOpen, setMetaOpen] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
@@ -160,7 +159,6 @@ const CalendarOrderDetail: FC = () => {
   const canCreateOrder =
     isCreateMode &&
     Boolean(languageId) &&
-    referenceNumber.trim().length > 0 &&
     Boolean(startIso) &&
     Boolean(endIso) &&
     address.trim().length > 0 &&
@@ -237,8 +235,12 @@ const CalendarOrderDetail: FC = () => {
   })
   const isOwner =
     !isClient || order?.client_institution_user?.id === institutionUserId
+  const clientOrderNotYetAccepted =
+    order?.sub_project_status == null ||
+    order.sub_project_status === 'REGISTERED' ||
+    order.sub_project_status === 'TASKS_SUBMITTED_TO_VENDORS'
   const canModify =
-    (isTPM || (isClient && isOwner)) &&
+    (isTPM || (isClient && isOwner && clientOrderNotYetAccepted)) &&
     !isCancelled &&
     !isPast &&
     (order?.status === 'NEW' ||
