@@ -27,6 +27,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import useValidators from 'hooks/useValidators'
+import { formatDuration } from 'helpers/calendar'
 
 dayjs.extend(utc)
 
@@ -44,6 +45,7 @@ interface FormValues {
   comments?: string
   volume?: VolumeValue[]
   assignee_comments?: string
+  duration?: string
 }
 
 const AssignmentForm: FC<AssignmentFormProps> = ({
@@ -77,6 +79,10 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
   const shouldShowStartTimeFields =
     type_classifier_value?.project_type_config?.is_start_date_supported
 
+  const isVerbalType =
+    !!shouldShowStartTimeFields &&
+    type_classifier_value?.value !== 'POST_TRANSLATION'
+
   const defaultValues = useMemo(
     () => ({
       ...(deadline_at
@@ -92,6 +98,10 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       volume: volumes,
       comments,
       assignee_comments,
+      duration:
+        isVerbalType && event_start_at && deadline_at
+          ? formatDuration(event_start_at, deadline_at)
+          : undefined,
     }),
     [
       comments,
@@ -100,6 +110,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       volumes,
       assignee_comments,
       shouldShowStartTimeFields,
+      isVerbalType,
     ]
   )
 
@@ -255,9 +266,19 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         disabled: !isEditable || isAssignmentFinished,
       },
       {
+        inputType: InputTypes.Text,
+        ariaLabel: t('calendar.duration'),
+        label: t('calendar.duration'),
+        hidden: !isVerbalType,
+        name: 'duration',
+        className: classes.customInternalClass,
+        onlyDisplay: true,
+      },
+      {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         label: t('label.deadline'),
+        hidden: isVerbalType,
         className: classes.customInternalClass,
         name: 'deadline_at',
         maxDate: dayjs(subProjectDeadline).toDate(),
@@ -309,6 +330,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       isEditable,
       isAssignmentFinished,
       shouldShowStartTimeFields,
+      isVerbalType,
       handleAddStartTime,
       id,
       handleAddComment,
