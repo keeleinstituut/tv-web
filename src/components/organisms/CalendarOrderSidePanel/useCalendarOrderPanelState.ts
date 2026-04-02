@@ -177,7 +177,12 @@ export function useCalendarOrderPanelState(): {
 
   const isOwner =
     !isClient || order?.client_institution_user?.id === institutionUserId
-  const canEdit = isTPM || (isClient && isOwner)
+  const clientOrderNotYetAccepted =
+    order?.sub_project_status == null ||
+    order.sub_project_status === 'REGISTERED' ||
+    order.sub_project_status === 'TASKS_SUBMITTED_TO_VENDORS'
+  const canEdit =
+    isTPM || (isClient && isOwner && clientOrderNotYetAccepted)
   const isRequiredFilled =
     !!referenceNumber.trim() &&
     !!serviceType &&
