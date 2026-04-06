@@ -720,43 +720,45 @@ const CalendarMobileWizard: FC = () => {
           ]}
           placeholder={t('calendar.select_type')}
         />
-      ) : (
+      ) : order?.service_type ? (
         <span className={classes.viewValue}>
-          {order?.service_type === 'ON_SITE'
+          {order.service_type === 'ON_SITE'
             ? t('calendar.service_type_contact')
             : t('calendar.service_type_remote')}
         </span>
-      )}
+      ) : null}
 
-      <div className={classes.viewField}>
-        <span className={classes.viewLabel}>
-          {(
-            isEditing
-              ? serviceType === 'ON_SITE'
-              : order?.service_type === 'ON_SITE'
-          )
-            ? t('calendar.location')
-            : t('calendar.meeting_link')}
-        </span>
-        {isEditing ? (
-          <input
-            className={classes.fieldInput}
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder={
-              serviceType === 'ON_SITE'
-                ? t('calendar.enter_address')
-                : t('calendar.enter_link')
-            }
-          />
-        ) : (
-          <span className={classes.viewValue}>
-            {order?.service_type === 'ON_SITE'
-              ? order?.location || '–'
-              : order?.meeting_link || '–'}
+      {(isEditing || order?.service_type) && (
+        <div className={classes.viewField}>
+          <span className={classes.viewLabel}>
+            {(
+              isEditing
+                ? serviceType === 'ON_SITE'
+                : order?.service_type === 'ON_SITE'
+            )
+              ? t('calendar.location')
+              : t('calendar.meeting_link')}
           </span>
-        )}
-      </div>
+          {isEditing ? (
+            <input
+              className={classes.fieldInput}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder={
+                serviceType === 'ON_SITE'
+                  ? t('calendar.enter_address')
+                  : t('calendar.enter_link')
+              }
+            />
+          ) : (
+            <span className={classes.viewValue}>
+              {order?.service_type === 'ON_SITE'
+                ? order?.location || '–'
+                : order?.meeting_link || '–'}
+            </span>
+          )}
+        </div>
+      )}
 
       <div className={classes.viewField}>
         <span className={classes.viewLabel}>{t('calendar.domain')}</span>

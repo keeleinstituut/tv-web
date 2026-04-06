@@ -40,7 +40,7 @@ const OrderDetailsCard: FC = () => {
   const isServiceEditable = isCreateMode || isEditing
   const activeServiceType = isServiceEditable
     ? serviceType
-    : (order?.service_type ?? 'on-site')
+    : order?.service_type
 
   return (
     <div className={classes.card}>
@@ -67,15 +67,16 @@ const OrderDetailsCard: FC = () => {
                 ]}
                 placeholder={t('calendar.select_type')}
               />
-            ) : (
+            ) : order?.service_type ? (
               <span className={classes.fieldValue}>
-                {order!.service_type === 'ON_SITE'
+                {order.service_type === 'ON_SITE'
                   ? t('calendar.service_type_contact')
                   : t('calendar.service_type_remote')}
               </span>
-            )}
+            ) : null}
           </div>
 
+          {(isServiceEditable || order?.service_type) && (
           <div className={classes.field}>
             <span className={classes.fieldLabel}>
               {activeServiceType === 'ON_SITE'
@@ -96,25 +97,28 @@ const OrderDetailsCard: FC = () => {
               />
             ) : isTranslator ? (
               order!.service_type === 'ON_SITE' ? (
-                <div className={classes.readonlyInput}>{order!.location}</div>
-              ) : (
+                <div className={classes.readonlyInput}>{order!.location || '–'}</div>
+              ) : order?.meeting_link ? (
                 <a
                   className={classes.meetingLink}
-                  href={order!.meeting_link}
+                  href={order.meeting_link}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {order!.meeting_link}
+                  {order.meeting_link}
                 </a>
+              ) : (
+                <span className={classes.fieldValue}>–</span>
               )
             ) : (
               <span className={classes.fieldValue}>
                 {order!.service_type === 'ON_SITE'
-                  ? order!.location
-                  : order!.meeting_link}
+                  ? order!.location || '–'
+                  : order!.meeting_link || '–'}
               </span>
             )}
           </div>
+          )}
 
           <div className={classes.field}>
             <span className={classes.fieldLabel}>{t('calendar.domain')}</span>
