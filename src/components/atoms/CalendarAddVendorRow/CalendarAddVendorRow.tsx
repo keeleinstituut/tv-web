@@ -4,7 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import AddIcon from 'assets/icons/add.svg?react'
 import classes from './classes.module.scss'
 
-const CalendarAddVendorRow: FC = () => {
+interface Props {
+  weekCount?: number
+  weekColWidth?: number
+}
+
+const CalendarAddVendorRow: FC<Props> = ({ weekCount = 0, weekColWidth }) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   return (
@@ -18,6 +23,13 @@ const CalendarAddVendorRow: FC = () => {
           <AddIcon className={classes.addVendorIcon} />
         </button>
       </div>
+      {Array.from({ length: weekCount + 1 }).map((_, i) => (
+        <div
+          key={i}
+          className={classes.addVendorCell}
+          style={{ width: weekColWidth, minWidth: weekColWidth }}
+        />
+      ))}
     </div>
   )
 }

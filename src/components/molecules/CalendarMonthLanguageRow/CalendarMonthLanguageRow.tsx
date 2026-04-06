@@ -280,7 +280,12 @@ const CalendarMonthLanguageRow: FC<Props> = ({
             weekColWidth={weekColWidth}
           />
         ))}
-      {expanded && <CalendarAddVendorRow />}
+      {expanded && (
+        <CalendarAddVendorRow
+          weekCount={weeks.length}
+          weekColWidth={weekColWidth}
+        />
+      )}
     </>
   )
 }

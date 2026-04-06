@@ -44,3 +44,10 @@ $row-height: 40px;
   width: 14px;
   height: 14px;
 }
+
+.addVendorCell {
+  flex-shrink: 0;
+  height: $row-height;
+  border-left: 1px solid #e2e4e9;
+  box-sizing: border-box;
+}
