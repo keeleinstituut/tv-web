@@ -612,6 +612,7 @@ const SubProjectsTable: FC = () => {
                 { value: 'verbal', label: t('projects.order_category_verbal') },
               ]}
               inputType={InputTypes.TagsSelect}
+              hideAll
             />
             <FormInput
               name="status"
