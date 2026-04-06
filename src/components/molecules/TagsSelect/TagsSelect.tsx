@@ -19,6 +19,7 @@ export interface TagsSelectProps {
   className?: string
   label?: string
   disabled?: boolean
+  hideAll?: boolean
 }
 
 const TagsSelect: FC<TagsSelectProps> = ({
@@ -27,6 +28,7 @@ const TagsSelect: FC<TagsSelectProps> = ({
   onChange,
   className,
   disabled,
+  hideAll,
 }) => {
   const { t } = useTranslation()
   const currentValue = value || []
@@ -35,6 +37,8 @@ const TagsSelect: FC<TagsSelectProps> = ({
       // All button clears choices, if any are picked
       onChange && onChange([])
     } else if (includes(currentValue, optionValue)) {
+      // If hideAll, don't allow deselecting the last item
+      if (hideAll && currentValue.length === 1) return
       // If option is selected, we remove it
       onChange && onChange(without(currentValue, optionValue))
     } else {
@@ -44,14 +48,16 @@ const TagsSelect: FC<TagsSelectProps> = ({
   }
   return (
     <div className={classNames(classes.tagsContainer, className)}>
-      <Tag
-        label={t('label.all')}
-        value={isEmpty(currentValue)}
-        onChange={() => handleChange('all')}
-        withBorder
-        className={classes.tag}
-        disabled={disabled}
-      />
+      {!hideAll && (
+        <Tag
+          label={t('label.all')}
+          value={isEmpty(currentValue)}
+          onChange={() => handleChange('all')}
+          withBorder
+          className={classes.tag}
+          disabled={disabled}
+        />
+      )}
       {map(compact(options), ({ label, value: optionValue }) => (
         <Tag
           label={label}
