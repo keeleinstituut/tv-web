@@ -30,9 +30,6 @@ const SummaryFields: FC = () => {
     setClientInstitutionId,
     referenceNumber,
     setReferenceNumber,
-    sourceLanguageId,
-    setSourceLanguageId,
-    sourceLanguageOptions,
     languageId,
     setLanguageId,
     vendorId,
@@ -82,18 +79,6 @@ const SummaryFields: FC = () => {
             value={referenceNumber}
             onChange={(e) => setReferenceNumber(e.target.value)}
             placeholder={t('calendar.enter_number')}
-          />
-        </div>
-        <div className={classes.field}>
-          <span className={classes.fieldLabel}>
-            {t('calendar.source_language')}
-            <span className={classes.requiredMark}>*</span>
-          </span>
-          <CalendarSelect
-            value={sourceLanguageId}
-            onChange={setSourceLanguageId}
-            options={sourceLanguageOptions}
-            placeholder={t('calendar.select_source_language')}
           />
         </div>
         <div className={classes.field}>
@@ -229,16 +214,6 @@ const SummaryFields: FC = () => {
             {order!.reference_number || '–'}
           </span>
         </div>
-        {order!.source_language && (
-          <div className={classes.field}>
-            <span className={classes.fieldLabel}>
-              {t('calendar.source_language')}
-            </span>
-            <span className={classes.fieldValue}>
-              {order!.source_language.name}
-            </span>
-          </div>
-        )}
         <div className={classes.field}>
           <span className={classes.fieldLabel}>{t('calendar.language')}</span>
           <span className={classes.fieldValue}>{order!.language.name}</span>
@@ -291,17 +266,6 @@ const SummaryFields: FC = () => {
           </div>
         </>
       )}
-      <div className={classes.field}>
-        <span className={classes.fieldLabel}>
-          {t('calendar.source_language')}
-        </span>
-        <CalendarSelect
-          value={sourceLanguageId}
-          onChange={setSourceLanguageId}
-          options={sourceLanguageOptions}
-          placeholder={t('calendar.select_source_language')}
-        />
-      </div>
       <div className={classes.field}>
         <span className={classes.fieldLabel}>{t('calendar.language')}</span>
         <span className={classes.fieldValue}>{order!.language.name}</span>

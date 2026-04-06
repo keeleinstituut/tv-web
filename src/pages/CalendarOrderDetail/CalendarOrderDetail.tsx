@@ -86,7 +86,6 @@ const CalendarOrderDetail: FC = () => {
   const [address, setAddress] = useState('')
   const [clientInstitutionId, setClientInstitutionId] = useState('')
   const [referenceNumber, setReferenceNumber] = useState('')
-  const [sourceLanguageId, setSourceLanguageId] = useState('')
   const [languageId, setLanguageId] = useState('')
   const [domainIds, setDomainIds] = useState<string[]>([])
   const [vendorId, setVendorId] = useState('')
@@ -419,12 +418,6 @@ const CalendarOrderDetail: FC = () => {
     setClientInstitutionId,
     referenceNumber,
     setReferenceNumber,
-    sourceLanguageId,
-    setSourceLanguageId,
-    sourceLanguageOptions: languages.map((lang) => ({
-      value: lang.language.id,
-      label: lang.language.name,
-    })),
     languageId,
     setLanguageId,
     domainIds,

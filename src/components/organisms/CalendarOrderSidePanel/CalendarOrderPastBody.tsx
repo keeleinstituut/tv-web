@@ -52,17 +52,6 @@ const CalendarClientPastBody: FC = () => {
           </span>
         </div>
 
-        {order?.source_language && (
-          <div className={classes.formGroup}>
-            <span className={classes.label}>
-              {t('calendar.source_language')}
-            </span>
-            <span className={classes.readValue}>
-              {order.source_language.name}
-            </span>
-          </div>
-        )}
-
         <div className={classes.formGroup}>
           <span className={classes.label}>{t('calendar.date_and_time')}</span>
           <span className={classes.readValue}>

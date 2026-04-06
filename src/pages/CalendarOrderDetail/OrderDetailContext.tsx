@@ -54,9 +54,6 @@ export interface OrderDetailContextValue {
   setClientInstitutionId: (v: string) => void
   referenceNumber: string
   setReferenceNumber: (v: string) => void
-  sourceLanguageId: string
-  setSourceLanguageId: (v: string) => void
-  sourceLanguageOptions: CalendarSelectOption[]
   languageId: string
   setLanguageId: (v: string) => void
   domainIds: string[]
