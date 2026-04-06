@@ -73,7 +73,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
 
   const nonVerbalProjectTypeFilter = useMemo(
     () =>
-      projectTypeFilter.filter(
+      (projectTypeFilter ?? []).filter(
         (_, i) => !includes(VERBAL_TYPES, projectTypes?.[i]?.value)
       ),
     [projectTypeFilter, projectTypes]
