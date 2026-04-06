@@ -41,8 +41,20 @@ export const getProjectDefaultValues = ({
     tags = [],
     event_location = '',
     meeting_link = '',
-    service_type = '',
+    service_type: rawServiceType = '',
   } = project || {}
+
+  // Normalize service_type: API stores ON_SITE/REMOTE (calendar), form uses contact/remote.
+  // Also derive from event_location/meeting_link for orders created via Tellimused
+  // where service_type was never stored.
+  const service_type = (() => {
+    if (rawServiceType === 'ON_SITE') return 'contact'
+    if (rawServiceType === 'REMOTE') return 'remote'
+    if (rawServiceType) return rawServiceType
+    if (event_location) return 'contact'
+    if (meeting_link) return 'remote'
+    return ''
+  })()
   const source_language_classifier_value_id =
     sub_projects?.[0]?.source_language_classifier_value_id || ''
   const destination_language_classifier_value_ids =
