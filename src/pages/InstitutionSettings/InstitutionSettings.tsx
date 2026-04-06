@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import DepartmentManagement from 'components/molecules/DepartmentManagement/DepartmentManagement'
 import AuditLogManagement from 'components/molecules/AuditLogManagement/AuditLogManagement'
+import CalendarSettingsManagement from 'components/molecules/CalendarSettingsManagement/CalendarSettingsManagement'
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
@@ -46,10 +47,7 @@ const InstitutionSettings: FC = () => {
       </p>
       <DepartmentManagement />
       <AuditLogManagement />
-
-      <Container className={classes.container}>
-        <h3 className={classes.title}>{t('calendar_settings.title')}</h3>
-      </Container>
+      <CalendarSettingsManagement />
     </>
   )
 }

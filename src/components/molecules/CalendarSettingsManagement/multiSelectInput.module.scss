@@ -1,0 +1,129 @@
+@use 'styles/variables' as *;
+
+.container {
+  position: relative;
+  width: 100%;
+}
+
+.disabled {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  padding: 6px 10px 6px 6px;
+  box-sizing: border-box;
+  background: $color-white;
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  cursor: pointer;
+  gap: 6px;
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 1px;
+  }
+
+  &.open {
+    border-color: $color-primary;
+  }
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.placeholder {
+  color: $cal-input-border;
+  font-size: $font-size-16;
+  padding: 2px 4px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: $color-primary;
+  color: $color-white;
+  border-radius: $border-radius-4;
+  padding: 2px 6px 2px 8px;
+  font-size: $font-size-14;
+  white-space: nowrap;
+}
+
+.chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: $color-white;
+  line-height: 1;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.closeIcon {
+  width: 12px;
+  height: 12px;
+
+  path {
+    fill: $color-white;
+  }
+}
+
+.chevron {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  transform: rotate(-90deg);
+  transition: transform 0.15s ease;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 2px);
+  z-index: 100;
+  padding: 4px 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: $color-white;
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  box-shadow: 0 4px 12px rgb(19 19 23 / 0.12);
+}
+
+.option {
+  padding: 8px 12px;
+  font-size: $font-size-14;
+  color: $color-text-dark;
+  cursor: pointer;
+
+  &:hover {
+    background: #e7f0f6;
+  }
+}
+
+.empty {
+  display: block;
+  padding: 8px 12px;
+  color: $cal-input-border;
+  font-size: $font-size-14;
+}
