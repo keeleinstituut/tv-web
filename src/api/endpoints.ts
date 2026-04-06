@@ -84,6 +84,7 @@ export const endpoints = {
   TOGGLE_TM_WRITABLE: translationOrder('tm-keys/toggle-writable'),
 
   CALENDAR_LANGUAGES: translationOrder('calendar/languages'),
+  INSTITUTION_MAIN_LANGUAGES: translationOrder('institutions/main-languages'),
   CALENDAR_DAY: translationOrder('calendar/day'),
   CALENDAR_WEEK: translationOrder('calendar/week'),
   CALENDAR_MONTH: translationOrder('calendar/month'),

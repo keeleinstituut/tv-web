@@ -766,6 +766,7 @@
     "department_changed": "Üksus {{name}} edukalt uuendatud",
     "department_updated": "Üksused edukalt uuendatud",
     "audit_log_settings_updated": "Audit logi sätted edukalt uuendatud",
+    "calendar_settings_updated": "Kalendri sätted edukalt salvestatud",
     "tag_updated": "Silt on edukalt uuendatud.",
     "vendor_updated": "Teostaja uuendatud",
     "project_updated": "Tellimus on edukalt uuendatud",
@@ -1228,7 +1229,10 @@
     }
   },
   "calendar_settings": {
-    "title": "Kalendri Sätted",
+    "title": "Kalendri sätted",
+    "description": "Määra, mis keeled on suulise tõlke kalendris nähtavad",
+    "calendar_languages": "Kalendri keeled",
+    "save_and_close": "Salvesta ja sulge",
     "import_title": "Impordi kalender",
     "import_description": "Lisa oma kalender, et näha tõlketellimusi ja vältida kattuvaid broneeringuid.",
     "import_button": "Impordi ics.",

@@ -15,6 +15,12 @@ import { TagTypes } from 'types/tags'
 import { TypesWithStartTime } from 'types/projects'
 import { orderClassifierByLangPriority } from 'helpers'
 import dayjs from 'dayjs'
+
+const VERBAL_TYPES = without(
+  values(TypesWithStartTime),
+  TypesWithStartTime.PostTranslation
+)
+
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
@@ -63,11 +69,15 @@ const DetailsSection = <TFormValues extends FieldValues>({
 
   const selectedProjectType = find(projectTypes, { id: selectedProjectTypeId })
 
-  const VERBAL_TYPES = without(
-    values(TypesWithStartTime),
-    TypesWithStartTime.PostTranslation
-  )
   const isVerbalType = includes(VERBAL_TYPES, selectedProjectType?.value)
+
+  const nonVerbalProjectTypeFilter = useMemo(
+    () =>
+      projectTypeFilter.filter(
+        (_, i) => !includes(VERBAL_TYPES, projectTypes?.[i]?.value)
+      ),
+    [projectTypeFilter, projectTypes]
+  )
 
   const fields: FieldProps<TFormValues>[] = useMemo(
     () => [
@@ -95,7 +105,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         label: `${t('label.project_type')}${!isEditable ? '' : '*'}`,
         name: 'type_classifier_value_id' as Path<TFormValues>,
         className: classes.inputSearch,
-        options: projectTypeFilter,
+        options: isNew ? nonVerbalProjectTypeFilter : projectTypeFilter,
         showSearch: true,
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
@@ -157,7 +167,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
-          required: true,
+          required: !isVerbalType,
           validate: (value: { date?: string; time?: string }, formValues) => {
             if (!formValues.event_start_at?.date) return true
             const deadline_at = dayjs(value.date + ' ' + value.time)
@@ -205,8 +215,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         label: `${t('calendar.location')}${!isEditable ? '' : '*'}`,
         name: 'event_location' as Path<TFormValues>,
         className: classes.inputInternalPosition,
-        hidden:
-          !isVerbalType || (isEditable && selectedServiceType !== 'contact'),
+        hidden: !isVerbalType || selectedServiceType !== 'contact',
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
@@ -220,8 +229,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         label: `${t('calendar.meeting_link')}${!isEditable ? '' : '*'}`,
         name: 'meeting_link' as Path<TFormValues>,
         className: classes.inputInternalPosition,
-        hidden:
-          !isVerbalType || (isEditable && selectedServiceType !== 'remote'),
+        hidden: !isVerbalType || selectedServiceType !== 'remote',
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
@@ -290,6 +298,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
       t,
       isEditable,
       projectTypeFilter,
+      nonVerbalProjectTypeFilter,
       workflow_started,
       domainValuesFilter,
       selectedProjectType?.value,

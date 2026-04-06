@@ -36,6 +36,13 @@ import { FilterFunctionType } from 'types/collective'
 import { useSearchParams } from 'react-router-dom'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
+import { TypesWithStartTime } from 'types/projects'
+
+const VERBAL_TYPE_VALUES = [
+  TypesWithStartTime.OralTranslation,
+  TypesWithStartTime.SynchronousTranslation,
+  TypesWithStartTime.SignLanguage,
+]
 import {
   TableDateFilter,
   TableSelectFilter,
@@ -128,9 +135,16 @@ const ProjectsTable: FC = () => {
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
   })
-  const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
-    type: ClassifierValueType.ProjectType,
-  })
+  const { classifierValues: projectTypes, classifierValuesFilters: allTypeFilters } =
+    useClassifierValuesFetch({ type: ClassifierValueType.ProjectType })
+
+  const typeFilters = useMemo(
+    () =>
+      allTypeFilters.filter((_, i) =>
+        !VERBAL_TYPE_VALUES.includes(projectTypes?.[i]?.value as TypesWithStartTime)
+      ),
+    [allTypeFilters, projectTypes]
+  )
   const {
     languageDirectionFilters,
     loadMore,

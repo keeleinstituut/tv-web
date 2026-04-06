@@ -100,6 +100,17 @@ export enum DayTypes {
   sunday = 'sunday',
 }
 
+export interface InstitutionMainLanguage {
+  id: string
+  institution_id: string
+  language_id: string
+  language: { id: string; value: string; name: string }
+}
+
+export interface SyncMainLanguagesPayload {
+  languages: string[]
+}
+
 export interface InstitutionDiscountsDataType {
   data: DiscountPercentages
 }

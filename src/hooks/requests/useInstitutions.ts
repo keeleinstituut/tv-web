@@ -10,6 +10,8 @@ import {
   InstitutionUserVacationResponse,
   InstitutionUserVacationsPostType,
   InstitutionVacationsPostType,
+  InstitutionMainLanguage,
+  SyncMainLanguagesPayload,
 } from 'types/institutions'
 import { DiscountPercentages } from 'types/vendors'
 
@@ -201,4 +203,24 @@ export const useInstitutionUserVacationsUpdate = ({
     updateInstitutionUserVacations,
     isLoading,
   }
+}
+
+export const useFetchInstitutionMainLanguages = () => {
+  const { isLoading, data } = useQuery<{ data: InstitutionMainLanguage[] }>({
+    queryKey: ['institution-main-languages'],
+    queryFn: () => apiClient.get(endpoints.INSTITUTION_MAIN_LANGUAGES),
+  })
+  return { mainLanguages: data?.data ?? [], isLoading }
+}
+
+export const useSyncInstitutionMainLanguages = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: syncMainLanguages, isLoading } = useMutation({
+    mutationFn: (payload: SyncMainLanguagesPayload) =>
+      apiClient.post(endpoints.INSTITUTION_MAIN_LANGUAGES, payload),
+    onSuccess: ({ data }) => {
+      queryClient.setQueryData(['institution-main-languages'], { data })
+    },
+  })
+  return { syncMainLanguages, isLoading }
 }
