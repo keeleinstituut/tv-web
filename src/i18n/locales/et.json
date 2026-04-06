@@ -1068,6 +1068,30 @@
     "object_type": "Object tüüp",
     "successful": "Edukas",
     "failed": "Viga",
+    "sent": "Saadetud",
+    "email_notification_prefix": "E-posti teavitus: ",
+    "notification_types": {
+      "PROJECT_CREATED": "Projekt loodud",
+      "PROJECT_SENT_TO_CLIENT": "Projekt saadetud kliendile",
+      "SUBPROJECT_SENT_TO_PM": "Allprojekt saadetud projektijuhile",
+      "PROJECT_REJECTED": "Projekt tagasi lükatud",
+      "TASK_DECLINED_BY_VENDOR": "Teenusepakkuja lükkas ülesande tagasi",
+      "NO_EXTERNAL_VENDORS_AVAILABLE": "Välised teenusepakkujad pole saadaval",
+      "PROJECT_TIMESLOT_PASSED_WITH_NO_ASSIGNEE": "Projekti ajavahemik möödus määramata täitjaga",
+      "PROJECT_REGISTERED": "Projekt registreeritud",
+      "PROJECT_READY_FOR_REVIEW": "Projekt ülevaatamiseks valmis",
+      "INSTITUTION_USER_ASSIGNED_TO_PROJECT": "Kasutaja lisatud projekti",
+      "TASK_ACCEPTED": "Ülesanne vastu võetud",
+      "SUBPROJECT_TASK_MARKED_AS_DONE": "Allprojekti ülesanne märgitud tehtuks",
+      "PROJECT_ACCEPTED": "Projekt vastu võetud",
+      "PROJECT_DEADLINE_REACHED": "Projekti tähtaeg saabunud",
+      "PROJECT_CANCELLED": "Projekt tühistatud",
+      "TASK_CREATED": "Ülesanne loodud",
+      "TASK_REJECTED": "Ülesanne tagasi lükatud",
+      "TASK_CANCELLED": "Ülesanne tühistatud",
+      "INSTITUTION_USER_CREATED": "Kasutaja loodud",
+      "INSTITUTION_USER_ACTIVATED": "Kasutaja aktiveeritud"
+    },
     "event_record": {
       "id": "Logikirje ID",
       "action": "Tegevus",
@@ -1080,7 +1104,11 @@
       "web_path": "Veebi aadress",
       "response_status_code": "Vastuse HTTP kood",
       "request_query": "Päringu parameetrid",
-      "request_body": "Päringu sisu"
+      "request_body": "Päringu sisu",
+      "notification_type": "Teavituse tüüp",
+      "receiver_email": "Saaja e-post",
+      "receiver_name": "Saaja nimi",
+      "notification_variables": "Teavituse parameetrid"
     },
     "event_type2": {
       "audit.event_records.index": "Auditlogide vaatamine",

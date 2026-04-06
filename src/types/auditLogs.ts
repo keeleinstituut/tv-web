@@ -63,6 +63,24 @@ export type AuditLogsResponse = {
   failure_type: string | unknown | null
   event_type: EventTypes
   event_parameters?: EventParameters | null
+  actor_pic: string
+  actor_name: string
+  actor_session: string | null
+  action: string | null
+  path: string | null
+  request_method: string | null
+  request_query: Record<string, any> | null
+  request_body: Record<string, any> | null
+  response_status_code: number | null
+  web_path: string | null
+  // Notification fields (null for HTTP request records)
+  notification_type: string | null
+  notification_params: {
+    receiver_email: string
+    receiver_name: string | null
+    type: string
+    variables: Record<string, any> | null
+  } | null
 }
 export type EventParameters = {
   //"REJECT_ASSIGNMENT_RESULT
