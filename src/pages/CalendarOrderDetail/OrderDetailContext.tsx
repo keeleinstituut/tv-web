@@ -2,6 +2,7 @@ import { createContext, useContext, RefObject } from 'react'
 import { Dayjs } from 'dayjs'
 import { SlotMatchingVendor } from 'hooks/requests/useCalendar'
 import { CalendarLanguage, CalendarOrderDetail } from 'types/calendar'
+import { CalendarSelectOption } from 'components/molecules/CalendarSelect/CalendarSelect'
 
 export interface TagOption {
   id: string
@@ -53,6 +54,9 @@ export interface OrderDetailContextValue {
   setClientInstitutionId: (v: string) => void
   referenceNumber: string
   setReferenceNumber: (v: string) => void
+  sourceLanguageId: string
+  setSourceLanguageId: (v: string) => void
+  sourceLanguageOptions: CalendarSelectOption[]
   languageId: string
   setLanguageId: (v: string) => void
   domainIds: string[]
