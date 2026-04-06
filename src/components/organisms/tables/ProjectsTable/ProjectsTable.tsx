@@ -367,6 +367,15 @@ const ProjectsTable: FC = () => {
     return () => subscription.unsubscribe()
   }, [handleSubmit, watch, onSubmit])
 
+  // Re-submit when type lists load (initial render fires before types are fetched)
+  const prevNonVerbalLengthRef = useRef(0)
+  useEffect(() => {
+    if (nonVerbalTypeIds.length > 0 && prevNonVerbalLengthRef.current === 0) {
+      prevNonVerbalLengthRef.current = nonVerbalTypeIds.length
+      handleSubmit(onSubmit)()
+    }
+  }, [nonVerbalTypeIds, handleSubmit, onSubmit])
+
   const columns = [
     columnHelper.accessor('ext_id', {
       header: () => t('label.project_id'),
