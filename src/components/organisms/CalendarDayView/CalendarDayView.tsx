@@ -33,12 +33,12 @@ import CalendarLoadingOverlay from 'components/atoms/CalendarLoadingOverlay/Cale
 import type { BookedSlot } from 'types/calendar'
 import classes from './classes.module.scss'
 
-const DAY_START_HOUR = 9
-const DAY_END_HOUR = 22
+const DAY_START_HOUR = 8
+const DAY_END_HOUR = 20
 const TOTAL_SLOTS = (DAY_END_HOUR - DAY_START_HOUR) * 2
 
 // Bold at quarter-day boundaries; regular for others
-const BOLD_HOURS = new Set([9, 12, 15, 18, 21])
+const BOLD_HOURS = new Set([8, 12, 16, 20])
 
 // Hours to display on the time axis (every full hour)
 const HOUR_LABELS = Array.from(

@@ -54,9 +54,11 @@ type GeneralInformationFeatureProps = Pick<
   | 'source_files'
   | 'final_files'
   | 'deadline_at'
+  | 'event_start_at'
   | 'source_language_classifier_value'
   | 'destination_language_classifier_value'
   | 'project_id'
+  | 'project'
   | 'id'
 > & {
   catSupported?: boolean
@@ -65,6 +67,7 @@ type GeneralInformationFeatureProps = Pick<
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
+  event_start_at: { date?: string; time?: string }
   cat_files: SourceFile[]
   source_files: SourceFile[]
   final_files: SourceFile[]
@@ -79,11 +82,16 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   source_files,
   final_files,
   deadline_at,
+  event_start_at,
   source_language_classifier_value,
   destination_language_classifier_value,
   projectDomain,
   project_id,
+  project,
 }) => {
+  const isVerbalType =
+    !!project?.type_classifier_value?.project_type_config?.is_start_date_supported &&
+    project?.type_classifier_value?.value !== 'POST_TRANSLATION'
   const { t } = useTranslation()
   const { dateTimePickerValidator } = useValidators()
   const { deadline_at: projectDeadlineAt } = useProjectCache(project_id) || {}
@@ -105,6 +113,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       deadline_at: getLocalDateObjectFromUtcDateString(
         deadline_at || projectDeadlineAt || ''
       ),
+      event_start_at: getLocalDateObjectFromUtcDateString(event_start_at || ''),
       cat_files,
       source_files: map(source_files, (file) => ({
         ...file,
@@ -123,6 +132,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     }),
     [
       deadline_at,
+      event_start_at,
       projectDeadlineAt,
       cat_files,
       source_files,
@@ -208,18 +218,31 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   return (
     <Root>
-      <FormInput
-        {...{
-          inputType: InputTypes.DateTime,
-          ariaLabel: t('label.deadline_at'),
-          label: `${t('label.deadline_at')}`,
-          control: control,
-          name: 'deadline_at',
-          maxDate: projectDeadlineAt ? dayjs(projectDeadlineAt).toDate() : undefined,
-          onDateTimeChange: handleChangeDeadline,
-          onlyDisplay: !isSomethingEditable,
-        }}
-      />
+      {isVerbalType ? (
+        <FormInput
+          {...{
+            inputType: InputTypes.DateTime,
+            ariaLabel: t('label.start_date'),
+            label: `${t('label.start_date')}`,
+            control: control,
+            name: 'event_start_at',
+            onlyDisplay: true,
+          }}
+        />
+      ) : (
+        <FormInput
+          {...{
+            inputType: InputTypes.DateTime,
+            ariaLabel: t('label.deadline_at'),
+            label: `${t('label.deadline_at')}`,
+            control: control,
+            name: 'deadline_at',
+            maxDate: projectDeadlineAt ? dayjs(projectDeadlineAt).toDate() : undefined,
+            onDateTimeChange: handleChangeDeadline,
+            onlyDisplay: !isSomethingEditable,
+          }}
+        />
+      )}
       <div className={classes.grid}>
         <SourceFilesList
           name="source_files"
