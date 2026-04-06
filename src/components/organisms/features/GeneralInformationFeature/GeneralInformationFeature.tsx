@@ -9,6 +9,7 @@ import {
   reduce,
   includes,
 } from 'lodash'
+import { formatDuration } from 'helpers/calendar'
 import {
   useUpdateSubProject,
   useFetchSubProjectCatToolJobs,
@@ -75,6 +76,7 @@ interface FormValues {
   service_type?: string
   event_location?: string
   meeting_link?: string
+  duration?: string
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
@@ -121,12 +123,15 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const isSomethingEditable = true
 
+  const effectiveStartAt = event_start_at || project?.event_start_at
+  const effectiveDeadlineAt = deadline_at || projectDeadlineAt
+
   const defaultValues = useMemo(
     () => ({
-      deadline_at: getLocalDateObjectFromUtcDateString(
-        deadline_at || projectDeadlineAt || ''
-      ),
-      event_start_at: getLocalDateObjectFromUtcDateString(event_start_at || ''),
+      deadline_at: getLocalDateObjectFromUtcDateString(effectiveDeadlineAt || ''),
+      event_start_at: effectiveStartAt
+        ? getLocalDateObjectFromUtcDateString(effectiveStartAt)
+        : { date: '', time: '' },
       cat_files,
       source_files: map(source_files, (file) => ({
         ...file,
@@ -137,6 +142,10 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       service_type: normalizedServiceType,
       event_location: project?.event_location || '',
       meeting_link: project?.meeting_link || '',
+      duration:
+        isVerbalType && effectiveStartAt && effectiveDeadlineAt
+          ? formatDuration(effectiveStartAt, effectiveDeadlineAt)
+          : undefined,
       write_to_memory: reduce(
         subProjectTmKeyObjectsArray,
         (result, { key, is_writable }) => {
@@ -147,9 +156,8 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       ),
     }),
     [
-      deadline_at,
-      event_start_at,
-      projectDeadlineAt,
+      effectiveDeadlineAt,
+      effectiveStartAt,
       cat_files,
       source_files,
       final_files,
@@ -158,6 +166,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       normalizedServiceType,
       project?.event_location,
       project?.meeting_link,
+      isVerbalType,
     ]
   )
 
@@ -247,6 +256,17 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
               control: control,
               name: 'event_start_at',
               onlyDisplay: true,
+            }}
+          />
+          <FormInput
+            {...{
+              inputType: InputTypes.Text,
+              ariaLabel: t('calendar.duration'),
+              label: t('calendar.duration'),
+              control: control,
+              name: 'duration',
+              onlyDisplay: true,
+              emptyDisplayText: '-',
             }}
           />
           {normalizedServiceType && (

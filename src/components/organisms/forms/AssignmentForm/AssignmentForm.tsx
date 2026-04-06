@@ -46,6 +46,9 @@ interface FormValues {
   volume?: VolumeValue[]
   assignee_comments?: string
   duration?: string
+  service_type?: string
+  event_location?: string
+  meeting_link?: string
 }
 
 const AssignmentForm: FC<AssignmentFormProps> = ({
@@ -70,9 +73,19 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     destination_language_classifier_value_id,
     source_language_classifier_value_id,
     deadline_at: subProjectDeadline,
+    event_start_at: subProjectEventStartAt,
     project,
   } = useSubProjectCache(sub_project_id) || {}
-  const { type_classifier_value } = project || {}
+  const { type_classifier_value, service_type: projectServiceType, event_location, meeting_link } = project || {}
+
+  const normalizedServiceType = (() => {
+    if (projectServiceType === 'ON_SITE') return 'contact'
+    if (projectServiceType === 'REMOTE') return 'remote'
+    if (projectServiceType) return projectServiceType
+    if (event_location) return 'contact'
+    if (meeting_link) return 'remote'
+    return ''
+  })()
 
   const { updateAssignment } = useAssignmentUpdate({ id })
 
@@ -83,34 +96,39 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     !!shouldShowStartTimeFields &&
     type_classifier_value?.value !== 'POST_TRANSLATION'
 
+  const effectiveStartAt = event_start_at || subProjectEventStartAt
+  const effectiveDeadlineAt = deadline_at || subProjectDeadline
+
   const defaultValues = useMemo(
     () => ({
-      ...(deadline_at
-        ? {
-            deadline_at: getLocalDateObjectFromUtcDateString(deadline_at),
-          }
+      ...(effectiveDeadlineAt
+        ? { deadline_at: getLocalDateObjectFromUtcDateString(effectiveDeadlineAt) }
         : {}),
-      ...(shouldShowStartTimeFields && event_start_at
-        ? {
-            event_start_at: getLocalDateObjectFromUtcDateString(event_start_at),
-          }
+      ...(shouldShowStartTimeFields && effectiveStartAt
+        ? { event_start_at: getLocalDateObjectFromUtcDateString(effectiveStartAt) }
         : {}),
       volume: volumes,
       comments,
       assignee_comments,
       duration:
-        isVerbalType && event_start_at && deadline_at
-          ? formatDuration(event_start_at, deadline_at)
+        isVerbalType && effectiveStartAt && effectiveDeadlineAt
+          ? formatDuration(effectiveStartAt, effectiveDeadlineAt)
           : undefined,
+      service_type: normalizedServiceType,
+      event_location: event_location || '',
+      meeting_link: meeting_link || '',
     }),
     [
       comments,
-      deadline_at,
-      event_start_at,
+      effectiveDeadlineAt,
+      effectiveStartAt,
       volumes,
       assignee_comments,
       shouldShowStartTimeFields,
       isVerbalType,
+      normalizedServiceType,
+      event_location,
+      meeting_link,
     ]
   )
 
@@ -255,6 +273,37 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
       {
+        inputType: InputTypes.Selections,
+        ariaLabel: t('calendar.service_type'),
+        label: t('calendar.service_type'),
+        name: 'service_type',
+        hidden: !isVerbalType || !normalizedServiceType,
+        options: [
+          { value: 'contact', label: t('calendar.service_type_contact') },
+          { value: 'remote', label: t('calendar.service_type_remote') },
+        ],
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('calendar.location'),
+        label: t('calendar.location'),
+        name: 'event_location',
+        hidden: !isVerbalType || normalizedServiceType !== 'contact',
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('calendar.meeting_link'),
+        label: t('calendar.meeting_link'),
+        name: 'meeting_link',
+        hidden: !isVerbalType || normalizedServiceType !== 'remote',
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}`,
@@ -344,6 +393,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       vendorName,
       volumes,
       sub_project_id,
+      normalizedServiceType,
     ]
   )
 
