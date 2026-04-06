@@ -157,7 +157,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
-          required: true,
+          required: !isVerbalType,
           validate: (value: { date?: string; time?: string }, formValues) => {
             if (!formValues.event_start_at?.date) return true
             const deadline_at = dayjs(value.date + ' ' + value.time)
@@ -205,8 +205,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         label: `${t('calendar.location')}${!isEditable ? '' : '*'}`,
         name: 'event_location' as Path<TFormValues>,
         className: classes.inputInternalPosition,
-        hidden:
-          !isVerbalType || (isEditable && selectedServiceType !== 'contact'),
+        hidden: !isVerbalType || selectedServiceType !== 'contact',
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
@@ -220,8 +219,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         label: `${t('calendar.meeting_link')}${!isEditable ? '' : '*'}`,
         name: 'meeting_link' as Path<TFormValues>,
         className: classes.inputInternalPosition,
-        hidden:
-          !isVerbalType || (isEditable && selectedServiceType !== 'remote'),
+        hidden: !isVerbalType || selectedServiceType !== 'remote',
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {

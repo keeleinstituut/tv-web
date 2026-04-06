@@ -215,7 +215,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           label: `${t('label.deadline_at')}`,
           control: control,
           name: 'deadline_at',
-          maxDate: dayjs(projectDeadlineAt).toDate(),
+          maxDate: projectDeadlineAt
+          ? dayjs(projectDeadlineAt).toDate()
+          : undefined,
           onDateTimeChange: handleChangeDeadline,
           onlyDisplay: !isSomethingEditable,
         }}

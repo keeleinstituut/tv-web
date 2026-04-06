@@ -250,7 +250,9 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         hidden: !shouldShowStartTimeFields,
         className: classes.customInternalClass,
         name: 'event_start_at',
-        maxDate: dayjs(subProjectDeadline).toDate(),
+        maxDate: subProjectDeadline
+          ? dayjs(subProjectDeadline).toDate()
+          : undefined,
         onDateTimeChange: handleAddStartTime,
         disabled: !isEditable || isAssignmentFinished,
       },
@@ -260,7 +262,9 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         label: t('label.deadline'),
         className: classes.customInternalClass,
         name: 'deadline_at',
-        maxDate: dayjs(subProjectDeadline).toDate(),
+        maxDate: subProjectDeadline
+          ? dayjs(subProjectDeadline).toDate()
+          : undefined,
         onDateTimeChange: handleAddDateTime,
         disabled: !isEditable || isAssignmentFinished,
       },
