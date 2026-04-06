@@ -37,6 +37,18 @@
   }
 }
 
+.flat {
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
 .triggerLabel {
   flex: 1;
   overflow: hidden;
