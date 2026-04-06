@@ -124,6 +124,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   const isSomethingEditable = true
 
   const effectiveStartAt = event_start_at || project?.event_start_at
+  const effectiveEndAt = project?.event_end_at
   const effectiveDeadlineAt = deadline_at || projectDeadlineAt
 
   const defaultValues = useMemo(
@@ -143,8 +144,8 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       event_location: project?.event_location || '',
       meeting_link: project?.meeting_link || '',
       duration:
-        isVerbalType && effectiveStartAt && effectiveDeadlineAt
-          ? formatDuration(effectiveStartAt, effectiveDeadlineAt)
+        isVerbalType && effectiveStartAt && effectiveEndAt
+          ? formatDuration(effectiveStartAt, effectiveEndAt)
           : undefined,
       write_to_memory: reduce(
         subProjectTmKeyObjectsArray,
@@ -158,6 +159,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     [
       effectiveDeadlineAt,
       effectiveStartAt,
+      effectiveEndAt,
       cat_files,
       source_files,
       final_files,

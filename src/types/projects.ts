@@ -209,6 +209,7 @@ export interface ListProject {
   workflow_instance_ref: string | null
   deadline_at: string
   event_start_at?: string
+  event_end_at?: string
   event_location?: string
   meeting_link?: string
   service_type?: string

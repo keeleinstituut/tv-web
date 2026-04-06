@@ -42,6 +42,7 @@ export const getProjectDefaultValues = ({
     event_location = '',
     meeting_link = '',
     service_type: rawServiceType = '',
+    event_end_at,
   } = project || {}
 
   // Normalize service_type: API stores ON_SITE/REMOTE (calendar), form uses contact/remote.
@@ -89,6 +90,9 @@ export const getProjectDefaultValues = ({
       : { date: '', time: '' },
     event_start_at: event_start_at
       ? getLocalDateObjectFromUtcDateString(event_start_at)
+      : { date: '', time: '' },
+    event_end_at: event_end_at
+      ? getLocalDateObjectFromUtcDateString(event_end_at)
       : { date: '', time: '' },
     source_language_classifier_value_id,
     destination_language_classifier_value_ids,

@@ -61,13 +61,18 @@ const DetailsSection = <TFormValues extends FieldValues>({
   // TODO: depends on the picked type classifier
   // const shouldShowStartTimeFields = true
 
-  const [selectedProjectTypeId, selectedServiceType, watchedEventStartAt, watchedDeadlineAt] = useWatch({
+  const [
+    selectedProjectTypeId,
+    selectedServiceType,
+    watchedEventStartAt,
+    watchedEventEndAt,
+  ] = useWatch({
     control,
     name: [
       'type_classifier_value_id' as Path<TFormValues>,
       'service_type' as Path<TFormValues>,
       'event_start_at' as Path<TFormValues>,
-      'deadline_at' as Path<TFormValues>,
+      'event_end_at' as Path<TFormValues>,
     ],
   })
 
@@ -77,14 +82,20 @@ const DetailsSection = <TFormValues extends FieldValues>({
 
   const durationDisplay = useMemo(() => {
     if (!isVerbalType) return ''
-    const start = watchedEventStartAt as { date?: string; time?: string } | undefined
-    const end = watchedDeadlineAt as { date?: string; time?: string } | undefined
+    const start = watchedEventStartAt as
+      | { date?: string; time?: string }
+      | undefined
+    const end = watchedEventEndAt as
+      | { date?: string; time?: string }
+      | undefined
+
     if (!start?.date || !start?.time || !end?.date || !end?.time) return ''
     const startDt = dayjs(`${start.date} ${start.time}`)
     const endDt = dayjs(`${end.date} ${end.time}`)
-    if (!startDt.isValid() || !endDt.isValid() || !endDt.isAfter(startDt)) return ''
+    if (!startDt.isValid() || !endDt.isValid() || !endDt.isAfter(startDt))
+      return ''
     return formatDuration(startDt.toISOString(), endDt.toISOString())
-  }, [isVerbalType, watchedEventStartAt, watchedDeadlineAt])
+  }, [isVerbalType, watchedEventStartAt, watchedEventEndAt])
 
   const nonVerbalProjectTypeFilter = useMemo(
     () =>

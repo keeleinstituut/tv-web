@@ -76,7 +76,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     event_start_at: subProjectEventStartAt,
     project,
   } = useSubProjectCache(sub_project_id) || {}
-  const { type_classifier_value, service_type: projectServiceType, event_location, meeting_link } = project || {}
+  const { type_classifier_value, service_type: projectServiceType, event_location, meeting_link, event_end_at: projectEventEndAt } = project || {}
 
   const normalizedServiceType = (() => {
     if (projectServiceType === 'ON_SITE') return 'contact'
@@ -97,6 +97,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     type_classifier_value?.value !== 'POST_TRANSLATION'
 
   const effectiveStartAt = event_start_at || subProjectEventStartAt
+  const effectiveEndAt = projectEventEndAt
   const effectiveDeadlineAt = deadline_at || subProjectDeadline
 
   const defaultValues = useMemo(
@@ -111,8 +112,8 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       comments,
       assignee_comments,
       duration:
-        isVerbalType && effectiveStartAt && effectiveDeadlineAt
-          ? formatDuration(effectiveStartAt, effectiveDeadlineAt)
+        isVerbalType && effectiveStartAt && effectiveEndAt
+          ? formatDuration(effectiveStartAt, effectiveEndAt)
           : undefined,
       service_type: normalizedServiceType,
       event_location: event_location || '',
@@ -122,6 +123,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       comments,
       effectiveDeadlineAt,
       effectiveStartAt,
+      effectiveEndAt,
       volumes,
       assignee_comments,
       shouldShowStartTimeFields,
