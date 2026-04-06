@@ -37,18 +37,11 @@ import { useSearchParams } from 'react-router-dom'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { TypesWithStartTime } from 'types/projects'
-
-const VERBAL_TYPE_VALUES = [
-  TypesWithStartTime.OralTranslation,
-  TypesWithStartTime.SynchronousTranslation,
-  TypesWithStartTime.SignLanguage,
-]
 import {
   TableDateFilter,
   TableSelectFilter,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
-import { TypesWithStartTime } from 'types/projects'
 
 const VERBAL_TYPE_VALUES = [
   TypesWithStartTime.OralTranslation,
@@ -145,13 +138,6 @@ const ProjectsTable: FC = () => {
   })
   const { classifierValues: allProjectTypes, classifierValuesFilters: allTypeFilters } =
     useClassifierValuesFetch({ type: ClassifierValueType.ProjectType })
-  const typeFilters = useMemo(
-    () =>
-      allTypeFilters.filter((_, i) =>
-        !VERBAL_TYPE_VALUES.includes(projectTypes?.[i]?.value as TypesWithStartTime)
-      ),
-    [allTypeFilters, projectTypes]
-  )
   const {
     languageDirectionFilters,
     loadMore,
