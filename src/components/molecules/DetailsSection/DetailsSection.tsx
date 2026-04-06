@@ -14,6 +14,8 @@ import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { TypesWithStartTime } from 'types/projects'
 import { orderClassifierByLangPriority } from 'helpers'
+import { formatDuration } from 'helpers/calendar'
+import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
 import dayjs from 'dayjs'
 
 const VERBAL_TYPES = without(
@@ -59,17 +61,30 @@ const DetailsSection = <TFormValues extends FieldValues>({
   // TODO: depends on the picked type classifier
   // const shouldShowStartTimeFields = true
 
-  const [selectedProjectTypeId, selectedServiceType] = useWatch({
+  const [selectedProjectTypeId, selectedServiceType, watchedEventStartAt, watchedDeadlineAt] = useWatch({
     control,
     name: [
       'type_classifier_value_id' as Path<TFormValues>,
       'service_type' as Path<TFormValues>,
+      'event_start_at' as Path<TFormValues>,
+      'deadline_at' as Path<TFormValues>,
     ],
   })
 
   const selectedProjectType = find(projectTypes, { id: selectedProjectTypeId })
 
   const isVerbalType = includes(VERBAL_TYPES, selectedProjectType?.value)
+
+  const durationDisplay = useMemo(() => {
+    if (!isVerbalType) return ''
+    const start = watchedEventStartAt as { date?: string; time?: string } | undefined
+    const end = watchedDeadlineAt as { date?: string; time?: string } | undefined
+    if (!start?.date || !start?.time || !end?.date || !end?.time) return ''
+    const startDt = dayjs(`${start.date} ${start.time}`)
+    const endDt = dayjs(`${end.date} ${end.time}`)
+    if (!startDt.isValid() || !endDt.isValid() || !endDt.isAfter(startDt)) return ''
+    return formatDuration(startDt.toISOString(), endDt.toISOString())
+  }, [isVerbalType, watchedEventStartAt, watchedDeadlineAt])
 
   const nonVerbalProjectTypeFilter = useMemo(
     () =>
@@ -156,6 +171,17 @@ const DetailsSection = <TFormValues extends FieldValues>({
             return true
           },
         },
+      },
+      {
+        hidden: !isVerbalType || !durationDisplay,
+        component: (
+          <DisplayValue
+            name="duration"
+            label={t('calendar.duration')}
+            value={durationDisplay}
+            className={classes.inputInternalPosition}
+          />
+        ),
       },
       {
         inputType: InputTypes.DateTime,
@@ -306,6 +332,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
       languageFilters,
       isVerbalType,
       selectedServiceType,
+      durationDisplay,
     ]
   )
 
