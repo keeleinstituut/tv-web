@@ -72,6 +72,9 @@ interface FormValues {
   source_files: SourceFile[]
   final_files: SourceFile[]
   write_to_memory: { [key: string]: boolean }
+  service_type?: string
+  event_location?: string
+  meeting_link?: string
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
@@ -98,6 +101,16 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   const { updateSubProject, isLoading } = useUpdateSubProject({
     id,
   })
+
+  const normalizedServiceType = (() => {
+    const st = project?.service_type
+    if (st === 'ON_SITE') return 'contact'
+    if (st === 'REMOTE') return 'remote'
+    if (st) return st
+    if (project?.event_location) return 'contact'
+    if (project?.meeting_link) return 'remote'
+    return ''
+  })()
   const { catToolJobs, catSetupStatus, startPolling, isPolling } =
     useFetchSubProjectCatToolJobs({
       id,
@@ -121,6 +134,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       })),
       final_files,
       cat_jobs: catToolJobs,
+      service_type: normalizedServiceType,
+      event_location: project?.event_location || '',
+      meeting_link: project?.meeting_link || '',
       write_to_memory: reduce(
         subProjectTmKeyObjectsArray,
         (result, { key, is_writable }) => {
@@ -139,6 +155,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       final_files,
       catToolJobs,
       subProjectTmKeyObjectsArray,
+      normalizedServiceType,
+      project?.event_location,
+      project?.meeting_link,
     ]
   )
 
@@ -219,16 +238,61 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   return (
     <Root>
       {isVerbalType ? (
-        <FormInput
-          {...{
-            inputType: InputTypes.DateTime,
-            ariaLabel: t('label.start_date'),
-            label: `${t('label.start_date')}`,
-            control: control,
-            name: 'event_start_at',
-            onlyDisplay: true,
-          }}
-        />
+        <>
+          <FormInput
+            {...{
+              inputType: InputTypes.DateTime,
+              ariaLabel: t('label.start_date'),
+              label: `${t('label.start_date')}`,
+              control: control,
+              name: 'event_start_at',
+              onlyDisplay: true,
+            }}
+          />
+          {normalizedServiceType && (
+            <FormInput
+              {...{
+                inputType: InputTypes.Selections,
+                ariaLabel: t('calendar.service_type'),
+                label: t('calendar.service_type'),
+                control: control,
+                name: 'service_type',
+                options: [
+                  { value: 'contact', label: t('calendar.service_type_contact') },
+                  { value: 'remote', label: t('calendar.service_type_remote') },
+                ],
+                onlyDisplay: true,
+                emptyDisplayText: '-',
+              }}
+            />
+          )}
+          {normalizedServiceType === 'contact' && (
+            <FormInput
+              {...{
+                inputType: InputTypes.Text,
+                ariaLabel: t('calendar.location'),
+                label: t('calendar.location'),
+                control: control,
+                name: 'event_location',
+                onlyDisplay: true,
+                emptyDisplayText: '-',
+              }}
+            />
+          )}
+          {normalizedServiceType === 'remote' && (
+            <FormInput
+              {...{
+                inputType: InputTypes.Text,
+                ariaLabel: t('calendar.meeting_link'),
+                label: t('calendar.meeting_link'),
+                control: control,
+                name: 'meeting_link',
+                onlyDisplay: true,
+                emptyDisplayText: '-',
+              }}
+            />
+          )}
+        </>
       ) : (
         <FormInput
           {...{
