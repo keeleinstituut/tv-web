@@ -1,5 +1,5 @@
 @use 'styles/variables' as *;
-@use 'styles/nativeDateTimeInput' as native;
+
 
 .wizard {
   display: flex;
@@ -151,9 +151,6 @@
     color: $color-text-light;
   }
 
-  &[type='date'] {
-    @include native.native-date-time-picker-hit-area;
-  }
 }
 
 .fieldSelect {
@@ -172,14 +169,18 @@
   display: flex;
   gap: 8px;
 
-  > input[type='date'] {
-    flex: 1;
+  > * {
+    flex: 1 1 0;
     min-width: 0;
   }
+}
 
-  > *:last-child {
-    flex: 1;
-    min-width: 0;
+.datePickerWrap {
+  position: relative;
+
+  :global(.react-datepicker-wrapper),
+  :global(.react-datepicker__input-container) {
+    width: 100%;
   }
 }
 

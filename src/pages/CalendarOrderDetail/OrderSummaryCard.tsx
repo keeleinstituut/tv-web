@@ -5,10 +5,15 @@ import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
 import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
-import { openNativeDateTimePicker } from 'helpers/nativeDateTimeInput'
+import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
+
 import { useOrderDetail } from './OrderDetailContext'
 import OrderTopActions from './OrderTopActions'
 import classes from './classes.module.scss'
+
+dayjs.extend(customParseFormat)
 
 const SummaryFields: FC = () => {
   const { t } = useTranslation()
@@ -114,17 +119,23 @@ const SummaryFields: FC = () => {
             <span className={classes.requiredMark}>*</span>
           </span>
           <div className={classes.timeRow}>
-            <input
-              type="date"
-              className={classes.editInput}
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              onClick={openNativeDateTimePicker}
-            />
+            <div className={classes.datePickerWrap}>
+              <DatePickerComponent
+                name="selectedDate"
+                value={
+                  selectedDate ? dayjs(selectedDate).format('DD/MM/YYYY') : ''
+                }
+                onChange={(v) => {
+                  const d = dayjs(v, 'DD/MM/YYYY')
+                  setSelectedDate(d.isValid() ? d.format('YYYY-MM-DD') : '')
+                }}
+              />
+            </div>
             <CalendarTimeSelect
               className={classes.editTimeSelect}
               value={startTimeInput}
               onChange={setStartTimeInput}
+              freeInput
             />
           </div>
         </div>
@@ -277,17 +288,23 @@ const SummaryFields: FC = () => {
           {t('calendar.date_and_start_time')}
         </span>
         <div className={classes.timeRow}>
-          <input
-            type="date"
-            className={classes.editInput}
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            onClick={openNativeDateTimePicker}
-          />
+          <div className={classes.datePickerWrap}>
+            <DatePickerComponent
+              name="editDate"
+              value={
+                selectedDate ? dayjs(selectedDate).format('DD/MM/YYYY') : ''
+              }
+              onChange={(v) => {
+                const d = dayjs(v, 'DD/MM/YYYY')
+                setSelectedDate(d.isValid() ? d.format('YYYY-MM-DD') : '')
+              }}
+            />
+          </div>
           <CalendarTimeSelect
             className={classes.editTimeSelect}
             value={startTimeInput}
             onChange={setStartTimeInput}
+            freeInput
           />
         </div>
       </div>

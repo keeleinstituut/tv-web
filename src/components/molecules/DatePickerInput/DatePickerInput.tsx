@@ -37,7 +37,7 @@ dayjs.extend(customParseFormat)
 const changeDateToString = (dateObject: Date | null | undefined) =>
   dayjs(dateObject).format('DD/MM/YYYY')
 
-const DatePickerComponent = ({
+export const DatePickerComponent = ({
   name,
   value,
   placeholder,

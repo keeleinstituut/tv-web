@@ -54,6 +54,15 @@ function normalizeToHalfHourValue(raw: string): string {
   return `${String(nh).padStart(2, '0')}:${String(nm).padStart(2, '0')}`
 }
 
+function normalizeToMinuteValue(raw: string): string {
+  const m = /^(\d{1,2}):(\d{2})/.exec(raw.trim())
+  if (!m) return ''
+  const h = Number(m[1])
+  const min = Number(m[2])
+  if (h < 0 || h > 23 || min < 0 || min > 59) return ''
+  return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`
+}
+
 export type CalendarTimeSelectProps = {
   value: string
   onChange: (value: string) => void
@@ -61,13 +70,14 @@ export type CalendarTimeSelectProps = {
   disabled?: boolean
   allowEmpty?: boolean
   emptyLabel?: string
+  freeInput?: boolean
   id?: string
   'aria-label'?: string
 }
 
 /**
- * 24h times in 30-minute steps only (:00 / :30). Custom scrollable list — no native
- * time input or select chrome (no chevron).
+ * 24h time picker. Default: 30-minute steps (:00 / :30).
+ * With freeInput: accepts any HH:MM value typed by the user.
  */
 const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
   value,
@@ -76,6 +86,7 @@ const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
   disabled,
   allowEmpty,
   emptyLabel = '–',
+  freeInput,
   id,
   'aria-label': ariaLabel,
 }) => {
@@ -89,21 +100,23 @@ const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
   useClickAway(() => setOpen(false), rootRef)
 
   useEffect(() => {
+    if (freeInput) return
     if (!value) return
     if (HALF_HOUR_VALUES.includes(value)) return
     onChange(normalizeToHalfHourValue(value))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value])
+  }, [value, freeInput])
 
   const selectValue = (() => {
-    if (!value.trim()) return allowEmpty ? '' : HALF_HOUR_VALUES[0]
+    if (!value.trim()) return allowEmpty ? '' : (freeInput ? '' : HALF_HOUR_VALUES[0])
+    if (freeInput) return value
     return HALF_HOUR_VALUES.includes(value)
       ? value
       : normalizeToHalfHourValue(value)
   })()
 
   const triggerLabel =
-    allowEmpty && !selectValue ? emptyLabel : selectValue
+    allowEmpty && !selectValue ? emptyLabel : (selectValue || emptyLabel)
 
   useLayoutEffect(() => {
     if (!open || !listRef.current) return
@@ -158,7 +171,13 @@ const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
             value={filterQuery}
             onChange={(e) => setFilterQuery(e.target.value)}
             onMouseDown={(e) => e.stopPropagation()}
-            placeholder="..."
+            onKeyDown={(e) => {
+              if (freeInput && e.key === 'Enter') {
+                const normalized = normalizeToMinuteValue(filterQuery)
+                if (normalized) pick(normalized)
+              }
+            }}
+            placeholder={freeInput ? 'HH:MM' : '...'}
           />
           <ul
             ref={listRef}

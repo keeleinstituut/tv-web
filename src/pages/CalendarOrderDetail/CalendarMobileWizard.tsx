@@ -14,8 +14,8 @@ import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import { useAuth } from 'components/contexts/AuthContext'
 import EditIcon from 'assets/icons/edit.svg?react'
 import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
-import { openNativeDateTimePicker } from 'helpers/nativeDateTimeInput'
-import { useOrderDetail } from './OrderDetailContext'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
+import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
 import {
   CALENDAR_MOBILE_DURATION_OPTIONS as DURATION_OPTIONS,
   CALENDAR_MOBILE_WIZARD_TOTAL_STEPS as TOTAL_STEPS,
@@ -25,6 +25,9 @@ import {
   CalendarMobileWizardCancelPendingScreen,
 } from './CalendarMobileWizardCancelScreens'
 import classes from './mobile.module.scss'
+import { useOrderDetail } from './OrderDetailContext'
+
+dayjs.extend(customParseFormat)
 
 const CalendarMobileWizard: FC = () => {
   const { t } = useTranslation()
@@ -237,17 +240,23 @@ const CalendarMobileWizard: FC = () => {
             {t('calendar.date_and_start_time')} *
           </label>
           <div className={classes.timeRow}>
-            <input
-              type="date"
-              className={classes.fieldInput}
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              onClick={openNativeDateTimePicker}
-            />
+            <div className={classes.datePickerWrap}>
+              <DatePickerComponent
+                name="mobileDate"
+                value={
+                  selectedDate ? dayjs(selectedDate).format('DD/MM/YYYY') : ''
+                }
+                onChange={(v) => {
+                  const d = dayjs(v, 'DD/MM/YYYY')
+                  setSelectedDate(d.isValid() ? d.format('YYYY-MM-DD') : '')
+                }}
+              />
+            </div>
             <CalendarTimeSelect
               className={classes.fieldSelect}
               value={startTimeInput}
               onChange={setStartTimeInput}
+              freeInput
             />
           </div>
         </div>
@@ -648,17 +657,23 @@ const CalendarMobileWizard: FC = () => {
         </span>
         {isEditing ? (
           <div className={classes.timeRow}>
-            <input
-              type="date"
-              className={classes.fieldInput}
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              onClick={openNativeDateTimePicker}
-            />
+            <div className={classes.datePickerWrap}>
+              <DatePickerComponent
+                name="mobileEditDate"
+                value={
+                  selectedDate ? dayjs(selectedDate).format('DD/MM/YYYY') : ''
+                }
+                onChange={(v) => {
+                  const d = dayjs(v, 'DD/MM/YYYY')
+                  setSelectedDate(d.isValid() ? d.format('YYYY-MM-DD') : '')
+                }}
+              />
+            </div>
             <CalendarTimeSelect
               className={classes.fieldSelect}
               value={startTimeInput}
               onChange={setStartTimeInput}
+              freeInput
             />
           </div>
         ) : (
