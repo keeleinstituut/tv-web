@@ -1,6 +1,7 @@
 import { FC, useEffect } from 'react'
 import dayjs from 'dayjs'
 import { useSearchParams } from 'react-router'
+import { useTranslation } from 'react-i18next'
 import {
   CalendarProvider,
   useCalendarNav,
@@ -12,9 +13,11 @@ import CalendarWeekView from 'components/organisms/CalendarWeekView/CalendarWeek
 import CalendarMonthView from 'components/organisms/CalendarMonthView/CalendarMonthView'
 import CalendarOrderSidePanel from 'components/organisms/CalendarOrderSidePanel/CalendarOrderSidePanel'
 import CalendarWeekBookingPanel from 'components/organisms/CalendarWeekBookingPanel/CalendarWeekBookingPanel'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import classes from './classes.module.scss'
 
 const CalendarContent: FC = () => {
+  const { t } = useTranslation()
   const { view, setView, setCurrentDate } = useCalendarNav()
   const { setPendingDeepLink } = useCalendarPanel()
   const [searchParams] = useSearchParams()
@@ -36,13 +39,19 @@ const CalendarContent: FC = () => {
   ])
 
   return (
-    <div className={classes.container}>
-      <CalendarToolbar />
-      {view === 'day' && <CalendarDayView />}
-      {view === 'week' && <CalendarWeekView />}
-      {view === 'month' && <CalendarMonthView />}
-      <CalendarOrderSidePanel />
-      <CalendarWeekBookingPanel />
+    <div className={classes.pageWrapper}>
+      <div className={classes.calendarHeader}>
+        <h1>{t('menu.calendar')}</h1>
+        <Tooltip helpSectionKey="calendar" />
+      </div>
+      <div className={classes.container}>
+        <CalendarToolbar />
+        {view === 'day' && <CalendarDayView />}
+        {view === 'week' && <CalendarWeekView />}
+        {view === 'month' && <CalendarMonthView />}
+        <CalendarOrderSidePanel />
+        <CalendarWeekBookingPanel />
+      </div>
     </div>
   )
 }
