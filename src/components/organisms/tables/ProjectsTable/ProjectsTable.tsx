@@ -136,8 +136,10 @@ const ProjectsTable: FC = () => {
   const { tagsFilters = [] } = useFetchTags({
     type: TagTypes.Project,
   })
-  const { classifierValues: allProjectTypes, classifierValuesFilters: allTypeFilters } =
-    useClassifierValuesFetch({ type: ClassifierValueType.ProjectType })
+  const {
+    classifierValues: allProjectTypes,
+    classifierValuesFilters: allTypeFilters,
+  } = useClassifierValuesFetch({ type: ClassifierValueType.ProjectType })
   const {
     languageDirectionFilters,
     loadMore,
@@ -234,7 +236,9 @@ const ProjectsTable: FC = () => {
   const verbalTypeIds = useMemo(
     () =>
       (allProjectTypes ?? [])
-        .filter((t) => includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime))
+        .filter((t) =>
+          includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime)
+        )
         .map((t) => t.id),
     [allProjectTypes]
   )
@@ -242,7 +246,9 @@ const ProjectsTable: FC = () => {
   const nonVerbalTypeIds = useMemo(
     () =>
       (allProjectTypes ?? [])
-        .filter((t) => !includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime))
+        .filter(
+          (t) => !includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime)
+        )
         .map((t) => t.id),
     [allProjectTypes]
   )
@@ -251,7 +257,10 @@ const ProjectsTable: FC = () => {
     () =>
       (allTypeFilters ?? []).filter(
         (_, i) =>
-          !includes(VERBAL_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+          !includes(
+            VERBAL_TYPE_VALUES,
+            allProjectTypes?.[i]?.value as TypesWithStartTime
+          )
       ),
     [allTypeFilters, allProjectTypes]
   )
@@ -259,7 +268,10 @@ const ProjectsTable: FC = () => {
   const verbalTypeFilters = useMemo(
     () =>
       (allTypeFilters ?? []).filter((_, i) =>
-        includes(VERBAL_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+        includes(
+          VERBAL_TYPE_VALUES,
+          allProjectTypes?.[i]?.value as TypesWithStartTime
+        )
       ),
     [allTypeFilters, allProjectTypes]
   )
@@ -354,7 +366,9 @@ const ProjectsTable: FC = () => {
           : []
       handleFilterChange({
         ...rest,
-        only_show_personal_projects: payload?.only_show_personal_projects ? 1 : 0,
+        only_show_personal_projects: payload?.only_show_personal_projects
+          ? 1
+          : 0,
         type_classifier_value_ids: categoryTypeIds,
       })
     },
@@ -451,7 +465,11 @@ const ProjectsTable: FC = () => {
         FilteringComponent: (
           <TableSelectFilter
             filterKey="type_classifier_value_ids"
-            options={includes(orderCategory, 'verbal') ? verbalTypeFilters : typeFilters}
+            options={
+              includes(orderCategory, 'verbal')
+                ? verbalTypeFilters
+                : typeFilters
+            }
             value={filters?.type_classifier_value_ids || []}
             isCustomSingleDropdown
           />
@@ -630,7 +648,10 @@ const ProjectsTable: FC = () => {
               name="order_category"
               control={control}
               options={[
-                { value: 'translation', label: t('projects.order_category_translation') },
+                {
+                  value: 'translation',
+                  label: t('projects.order_category_translation'),
+                },
                 { value: 'verbal', label: t('projects.order_category_verbal') },
               ]}
               inputType={InputTypes.TagsSelect}

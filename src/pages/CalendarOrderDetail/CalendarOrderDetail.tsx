@@ -8,12 +8,14 @@ import {
   useCancelCalendarOrder,
   useDeclineCancelCalendarOrder,
   useCreateCalendarOrder,
-  useFetchCalendarLanguages,
   useFetchSlotMatching,
   useFetchCalendarTags,
   useCalendarAddFiles,
   useAddCalendarOrderComment,
 } from 'hooks/requests/useCalendar'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
+import { orderClassifierByLangPriority } from 'helpers'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useAuth } from 'components/contexts/AuthContext'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -59,7 +61,20 @@ const CalendarOrderDetail: FC = () => {
   const { mutate: addComment, isPending: isPostingComment } =
     useAddCalendarOrderComment(isCreateMode ? null : (orderId ?? null))
 
-  const { languages } = useFetchCalendarLanguages()
+  const { classifierValues: allLanguages = [] } = useClassifierValuesFetch(
+    { type: ClassifierValueType.Language },
+    orderClassifierByLangPriority
+  )
+  const languages = allLanguages.map((l) => ({
+    language: {
+      id: l.id,
+      value: l.value,
+      name: l.name,
+      type: l.type,
+      meta: { iso3_code: '' },
+    },
+    pinned: false,
+  }))
   const { tags: domains } = useFetchCalendarTags()
   // UI state
   const [metaOpen, setMetaOpen] = useState(true)

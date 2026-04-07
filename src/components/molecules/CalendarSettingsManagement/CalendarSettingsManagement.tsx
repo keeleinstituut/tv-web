@@ -1,6 +1,7 @@
 import { FC, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm, Controller } from 'react-hook-form'
+import { includes } from 'lodash'
 import Container from 'components/atoms/Container/Container'
 import Button, { AppearanceTypes, SizeTypes } from 'components/molecules/Button/Button'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -13,6 +14,8 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { orderClassifierByLangPriority } from 'helpers'
 import { showValidationErrorMessage } from 'api/errorHandler'
+import { useAuth } from 'components/contexts/AuthContext'
+import { Privileges } from 'types/privileges'
 import EditIcon from 'assets/icons/edit.svg?react'
 import MultiSelectInput from './MultiSelectInput'
 import classes from './classes.module.scss'
@@ -23,6 +26,8 @@ interface FormValues {
 
 const CalendarSettingsManagement: FC = () => {
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
+  const canEdit = includes(userPrivileges, Privileges.EditInstitution)
   const [isEditing, setIsEditing] = useState(false)
 
   const { mainLanguages } = useFetchInstitutionMainLanguages()
@@ -83,7 +88,7 @@ const CalendarSettingsManagement: FC = () => {
               {t('calendar_settings.save_and_close')}
             </Button>
           </div>
-        ) : (
+        ) : canEdit ? (
           <Button
             appearance={AppearanceTypes.Text}
             size={SizeTypes.S}
@@ -92,7 +97,7 @@ const CalendarSettingsManagement: FC = () => {
           >
             {t('button.change')}
           </Button>
-        )}
+        ) : null}
       </div>
       <p className={classes.description}>
         {t('calendar_settings.description')}

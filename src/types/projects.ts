@@ -211,6 +211,7 @@ export interface ListProject {
   event_start_at?: string
   event_end_at?: string
   event_location?: string
+  location?: string
   meeting_link?: string
   service_type?: string
   created_at: string

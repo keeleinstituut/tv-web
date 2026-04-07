@@ -8,10 +8,17 @@ import classes from './classes.module.scss'
 
 interface ColumnProps {
   label?: string
+  compact?: boolean
 }
 
-const Column: FC<PropsWithChildren<ColumnProps>> = ({ label, children }) => (
-  <div className={classes.column}>
+const Column: FC<PropsWithChildren<ColumnProps>> = ({
+  label,
+  children,
+  compact,
+}) => (
+  <div
+    className={`${classes.column}${compact ? ` ${classes.columnCompact}` : ''}`}
+  >
     <span className={classes.label}>{label}</span>
     {children}
   </div>
@@ -23,11 +30,12 @@ interface ExpandableContentLeftComponentProps {
   price?: string
   deadline_at?: string
   mode?: ProjectDetailModes
+  isVerbal?: boolean
 }
 
 const ExpandableContentLeftComponent: FC<
   ExpandableContentLeftComponentProps
-> = ({ languageDirection, ext_id, price, deadline_at, mode }) => {
+> = ({ languageDirection, ext_id, price, deadline_at, mode, isVerbal }) => {
   const { t } = useTranslation()
 
   return (
@@ -49,7 +57,10 @@ const ExpandableContentLeftComponent: FC<
           {price ? `${price}€` : '-'}
         </span>
       </Column>
-      <Column label={t('label.deadline_at')}>
+      <Column
+        label={t(isVerbal ? 'label.event_start_at' : 'label.deadline_at')}
+        compact={isVerbal}
+      >
         <span className={classes.valueText}>
           {deadline_at ? dayjs(deadline_at).format('DD.MM.YYYY HH:mm') : '-'}
         </span>

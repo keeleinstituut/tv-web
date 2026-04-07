@@ -88,10 +88,10 @@ const DetailsSection = <TFormValues extends FieldValues>({
     const end = watchedEventEndAt as
       | { date?: string; time?: string }
       | undefined
-
     if (!start?.date || !start?.time || !end?.date || !end?.time) return ''
-    const startDt = dayjs(`${start.date} ${start.time}`)
-    const endDt = dayjs(`${end.date} ${end.time}`)
+    const fmt = ['DD/MM/YYYY HH:mm:ss', 'DD/MM/YYYY HH:mm']
+    const startDt = dayjs(`${start.date} ${start.time}`, fmt)
+    const endDt = dayjs(`${end.date} ${end.time}`, fmt)
     if (!startDt.isValid() || !endDt.isValid() || !endDt.isAfter(startDt))
       return ''
     return formatDuration(startDt.toISOString(), endDt.toISOString())

@@ -40,10 +40,15 @@ export const getProjectDefaultValues = ({
     created_at = '',
     tags = [],
     event_location = '',
+    location = '',
     meeting_link = '',
     service_type: rawServiceType = '',
     event_end_at,
   } = project || {}
+
+  // Calendar projects POST with `location`; Tellimused projects POST with `event_location`.
+  // The GET response returns whichever was stored, so fall back to `location` for calendar orders.
+  const effectiveLocation = event_location || location
 
   // Normalize service_type: API stores ON_SITE/REMOTE (calendar), form uses contact/remote.
   // Also derive from event_location/meeting_link for orders created via Tellimused
@@ -52,7 +57,7 @@ export const getProjectDefaultValues = ({
     if (rawServiceType === 'ON_SITE') return 'contact'
     if (rawServiceType === 'REMOTE') return 'remote'
     if (rawServiceType) return rawServiceType
-    if (event_location) return 'contact'
+    if (effectiveLocation) return 'contact'
     if (meeting_link) return 'remote'
     return ''
   })()
@@ -100,7 +105,7 @@ export const getProjectDefaultValues = ({
     translation_domain_classifier_value_id:
       translation_domain_classifier_value?.id || defaultDomainClassifier?.id,
     comments,
-    event_location,
+    event_location: effectiveLocation,
     meeting_link,
     service_type,
     tags: map(tags, 'id'),

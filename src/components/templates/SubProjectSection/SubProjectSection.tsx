@@ -39,6 +39,8 @@ type SubProjectProps = Pick<
   projectId?: string
   isUserClientOfProject?: boolean
   manager_institution_user_id?: string
+  isVerbal?: boolean
+  event_start_at?: string
 }
 
 const SubProjectSection: FC<SubProjectProps> = ({
@@ -52,6 +54,8 @@ const SubProjectSection: FC<SubProjectProps> = ({
   projectDomain,
   active_job_definition,
   projectId,
+  isVerbal,
+  event_start_at,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
@@ -189,9 +193,12 @@ const SubProjectSection: FC<SubProjectProps> = ({
         <ExpandableContentLeftComponent
           {...{
             ext_id,
-            deadline_at: innerDeadlineAt || deadline_at,
+            deadline_at: isVerbal
+              ? event_start_at
+              : innerDeadlineAt || deadline_at,
             price: subProjectPrice || price,
             languageDirection,
+            isVerbal,
           }}
         />
       }

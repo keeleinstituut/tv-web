@@ -55,6 +55,7 @@ type SubProjectTableRow = {
   deadline_at: string
   created_at: string
   event_start_at?: string
+  is_verbal: boolean
   type: string
   tags: string[]
   status?: SubProjectStatus
@@ -235,6 +236,7 @@ const SubProjectsTable: FC = () => {
             deadline_at,
             created_at,
             event_start_at: project?.event_start_at,
+            is_verbal: includes(VERBAL_TYPE_VALUES, project?.type_classifier_value?.value as TypesWithStartTime),
             type: project?.type_classifier_value?.name || '',
             status,
             price,
@@ -475,19 +477,25 @@ const SubProjectsTable: FC = () => {
       },
     }),
     columnHelper.accessor('deadline_at', {
-      header: () => t('label.deadline_at'),
+      header: ({ table }) => {
+        const isVerbal = table.options.data.some((r) => r.is_verbal)
+        return t(isVerbal ? 'label.event_start_at' : 'label.deadline_at')
+      },
       footer: (info) => info.column.id,
       cell: ({ getValue, row }) => {
-        const deadlineString = getValue()
-        if (!deadlineString) {
+        const dateString = row.original.is_verbal
+          ? row.original.event_start_at
+          : getValue()
+        if (!dateString) {
           return null
         }
-        const deadlineDate = dayjs(getValue())
+        const date = dayjs(dateString)
         const currentDate = dayjs()
-        const diff = deadlineDate.diff(currentDate)
-        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
+        const diff = date.diff(currentDate)
+        const formattedDate = date.format('DD.MM.YYYY HH:mm')
         const rowStatus = row.original.status
         const hasDeadlineError =
+          !row.original.is_verbal &&
           diff < 0 &&
           !includes(
             [SubProjectStatus.Completed, SubProjectStatus.Cancelled],

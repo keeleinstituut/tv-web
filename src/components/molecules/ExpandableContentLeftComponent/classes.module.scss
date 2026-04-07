@@ -16,6 +16,10 @@
     text-align: left;
   }
 
+  &.columnCompact {
+    margin-right: variables.spacing(6);
+  }
+
   .boldValueText {
     text-align: left;
     font-weight: variables.$font-weight-bold;
