@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import classNames from 'classnames'
 import { useClickAway } from 'ahooks'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
@@ -19,6 +19,7 @@ interface Props {
   disabled?: boolean
   /** Remove trigger border/padding so the parent container provides the visual frame. */
   flat?: boolean
+  searchable?: boolean
 }
 
 const CalendarSelect: FC<Props> = ({
@@ -29,13 +30,29 @@ const CalendarSelect: FC<Props> = ({
   className,
   disabled,
   flat,
+  searchable,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [query, setQuery] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useClickAway(() => setIsOpen(false), containerRef)
 
+  useEffect(() => {
+    if (isOpen && searchable) {
+      setQuery('')
+      searchInputRef.current?.focus()
+    }
+  }, [isOpen, searchable])
+
   const selected = options.find((o) => o.value === value)
+  const filteredOptions =
+    searchable && query
+      ? options.filter((o) =>
+          o.label.toLowerCase().includes(query.toLowerCase())
+        )
+      : options
 
   return (
     <div
@@ -74,7 +91,17 @@ const CalendarSelect: FC<Props> = ({
 
       {isOpen && (
         <div className={classes.dropdown}>
-          {options.map((opt) => (
+          {searchable && (
+            <input
+              ref={searchInputRef}
+              className={classes.searchInput}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onMouseDown={(e) => e.stopPropagation()}
+              placeholder="..."
+            />
+          )}
+          {filteredOptions.map((opt) => (
             <div
               key={opt.value}
               className={classNames(classes.option, {
@@ -89,7 +116,7 @@ const CalendarSelect: FC<Props> = ({
               {opt.isEmo && <span className={classes.emoBadge}>EMO</span>}
             </div>
           ))}
-          {options.length === 0 && (
+          {filteredOptions.length === 0 && (
             <span className={classes.empty}>—</span>
           )}
         </div>

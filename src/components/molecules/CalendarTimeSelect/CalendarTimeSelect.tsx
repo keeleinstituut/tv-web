@@ -5,6 +5,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useCallback,
 } from 'react'
 import { useClickAway } from 'ahooks'
 import classNames from 'classnames'
@@ -81,7 +82,9 @@ const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
   const listId = useId()
   const rootRef = useRef<HTMLDivElement>(null)
   const listRef = useRef<HTMLUListElement>(null)
+  const filterInputRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState(false)
+  const [filterQuery, setFilterQuery] = useState('')
 
   useClickAway(() => setOpen(false), rootRef)
 
@@ -110,10 +113,21 @@ const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
     active?.scrollIntoView({ block: 'nearest' })
   }, [open, selectValue, allowEmpty])
 
-  const pick = (next: string) => {
+  useEffect(() => {
+    if (open) {
+      setFilterQuery('')
+      filterInputRef.current?.focus()
+    }
+  }, [open])
+
+  const filteredValues = filterQuery
+    ? HALF_HOUR_VALUES.filter((t) => t.includes(filterQuery))
+    : HALF_HOUR_VALUES
+
+  const pick = useCallback((next: string) => {
     onChange(next)
     setOpen(false)
-  }
+  }, [onChange])
 
   return (
     <div ref={rootRef} className={classes.root}>
@@ -137,48 +151,58 @@ const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
         {triggerLabel}
       </button>
       {open && !disabled && (
-        <ul
-          ref={listRef}
-          id={listId}
-          className={classes.dropdown}
-          role="listbox"
-          aria-label={ariaLabel}
-        >
-          {allowEmpty && (
-            <li role="presentation">
-              <button
-                type="button"
-                role="option"
-                aria-selected={selectValue === ''}
-                data-selected={selectValue === '' ? 'true' : undefined}
-                className={classNames(
-                  classes.option,
-                  selectValue === '' && classes.optionSelected
-                )}
-                onClick={() => pick('')}
-              >
-                {emptyLabel}
-              </button>
-            </li>
-          )}
-          {HALF_HOUR_VALUES.map((t) => (
-            <li key={t} role="presentation">
-              <button
-                type="button"
-                role="option"
-                aria-selected={selectValue === t}
-                data-selected={selectValue === t ? 'true' : undefined}
-                className={classNames(
-                  classes.option,
-                  selectValue === t && classes.optionSelected
-                )}
-                onClick={() => pick(t)}
-              >
-                {t}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className={classes.dropdown}>
+          <input
+            ref={filterInputRef}
+            className={classes.filterInput}
+            value={filterQuery}
+            onChange={(e) => setFilterQuery(e.target.value)}
+            onMouseDown={(e) => e.stopPropagation()}
+            placeholder="..."
+          />
+          <ul
+            ref={listRef}
+            id={listId}
+            className={classes.list}
+            role="listbox"
+            aria-label={ariaLabel}
+          >
+            {allowEmpty && (
+              <li role="presentation">
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={selectValue === ''}
+                  data-selected={selectValue === '' ? 'true' : undefined}
+                  className={classNames(
+                    classes.option,
+                    selectValue === '' && classes.optionSelected
+                  )}
+                  onClick={() => pick('')}
+                >
+                  {emptyLabel}
+                </button>
+              </li>
+            )}
+            {filteredValues.map((t) => (
+              <li key={t} role="presentation">
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={selectValue === t}
+                  data-selected={selectValue === t ? 'true' : undefined}
+                  className={classNames(
+                    classes.option,
+                    selectValue === t && classes.optionSelected
+                  )}
+                  onClick={() => pick(t)}
+                >
+                  {t}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   )

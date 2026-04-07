@@ -223,6 +223,7 @@ const CalendarMobileWizard: FC = () => {
                 label: lang.language.name,
               }))}
               placeholder={t('calendar.select_language')}
+              searchable
             />
           ) : (
             <span className={classes.fieldReadonly}>

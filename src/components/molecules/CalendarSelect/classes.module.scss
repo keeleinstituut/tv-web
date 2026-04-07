@@ -111,6 +111,26 @@
   font-size: $font-size-14;
 }
 
+.searchInput {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border: none;
+  border-bottom: 1px solid $cal-input-border;
+  font: inherit;
+  font-size: $font-size-14;
+  color: $cal-text;
+  background: $color-white;
+  outline: none;
+  position: sticky;
+  top: 0;
+
+  &::placeholder {
+    color: $cal-input-border;
+  }
+}
+
 .emoBadge {
   display: inline-block;
   margin-left: 6px;

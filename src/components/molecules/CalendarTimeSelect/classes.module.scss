@@ -37,15 +37,37 @@
   right: 0;
   top: calc(100% + 2px);
   z-index: 100;
+  background: $color-white;
+  border: 1px solid $cal-input-border;
+  border-radius: $border-radius-4;
+  box-shadow: 0 4px 12px rgb(19 19 23 / 0.12);
+}
+
+.filterInput {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border: none;
+  border-bottom: 1px solid $cal-input-border;
+  font: inherit;
+  font-size: $font-size-14;
+  color: $cal-text;
+  background: $color-white;
+  outline: none;
+  border-radius: $border-radius-4 $border-radius-4 0 0;
+
+  &::placeholder {
+    color: $cal-input-border;
+  }
+}
+
+.list {
   margin: 0;
   padding: 4px 0;
   max-height: 200px;
   overflow-y: auto;
   overflow-x: hidden;
-  background: $color-white;
-  border: 1px solid $cal-input-border;
-  border-radius: $border-radius-4;
-  box-shadow: 0 4px 12px rgb(19 19 23 / 0.12);
   list-style: none;
 }
 

@@ -99,6 +99,7 @@ const SummaryFields: FC = () => {
                 (lang.is_rare ? ` (${t('calendar.rare_language')})` : ''),
             }))}
             placeholder={t('calendar.select_language')}
+            searchable
           />
           {languageId &&
             languages.find((l) => l.language.id === languageId)?.is_rare && (
