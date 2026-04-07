@@ -245,9 +245,10 @@ export function useCalendarOrderPanelState(): {
       ? [
           {
             id: sidePanelSelection.vendorId,
-            name: sidePanelSelection.vendorName ?? null,
+            name: sidePanelSelection.vendorName ?? '',
             institution_user_id: '',
             is_internal: true,
+            is_emo: false,
           },
         ]
       : fetchedVendors

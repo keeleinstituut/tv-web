@@ -30,6 +30,7 @@ import {
   transformProjectDetail,
   unwrapCalendarProjectPayload,
 } from './calendarOrderDetailTransform'
+import { EmergencySchedule } from 'types/vendors'
 
 dayjs.extend(isoWeek)
 
@@ -267,11 +268,15 @@ export const useFetchSlotMatching = (
           end_at: toCalendarApiDateTime(params!.end_at),
         })
         .then((res: { data: ApiSlotMatchingVendor[] }) => res.data)
+      const orderDate = dayjs(params!.start_at).format('YYYY-MM-DD')
       return raw.map((v) => ({
         id: v.id,
         institution_user_id: v.institution_user_id,
-        name: v.name,
+        name: `${v.institution_user.user.forename} ${v.institution_user.user.surname}`.trim(),
         is_internal: v.is_internal,
+        is_emo: v.emergency_schedules.some(
+          (s) => s.start_date <= orderDate && orderDate <= s.end_date
+        ),
       }))
     },
     enabled: !!params,
@@ -354,7 +359,7 @@ export const useFetchEmergencySchedules = (vendorId: string | null) => {
     queryFn: () =>
       apiClient
         .get(endpoints.VENDOR_EMERGENCY_SCHEDULES(vendorId!))
-        .then((res: { data: unknown[] }) => res.data),
+        .then((res: { data: EmergencySchedule[] }) => res.data),
     enabled: !!vendorId,
   })
   return { isLoading, isError, schedules: data ?? [] }

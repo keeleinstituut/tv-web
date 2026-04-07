@@ -334,8 +334,9 @@ export interface UpdateOrderPayload {
 export interface SlotMatchingVendor {
   id: string
   institution_user_id: string
-  name: string | null
+  name: string
   is_internal: boolean
+  is_emo: boolean
 }
 
 export interface CalendarSlotMatchingResponse {
@@ -568,8 +569,14 @@ export type ApiCalendarMonthResponse =
 export interface ApiSlotMatchingVendor {
   id: string
   institution_user_id: string
-  name: string | null
   is_internal: boolean
+  emergency_schedules: { id: string; start_date: string; end_date: string }[]
+  institution_user: {
+    user: {
+      forename: string
+      surname: string
+    }
+  }
 }
 
 // ---- Search ----

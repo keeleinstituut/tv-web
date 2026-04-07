@@ -1,4 +1,5 @@
 import { FC, useCallback, useState, useEffect } from 'react'
+import dayjs from 'dayjs'
 import ModalBase, {
   ButtonPositionTypes,
   ModalSizeTypes,
@@ -109,6 +110,7 @@ export interface SelectVendorModalProps {
   skill_id?: string
   source_language_classifier_value_id?: string
   destination_language_classifier_value_id?: string
+  event_start_at?: string
 }
 
 interface FormValues {
@@ -122,6 +124,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
   isModalOpen,
   source_language_classifier_value_id,
   destination_language_classifier_value_id,
+  event_start_at,
 }) => {
   const { t } = useTranslation()
   const { addAssignmentVendor, isLoading } = useAssignmentAddVendor({
@@ -247,6 +250,7 @@ const SelectVendorModal: FC<SelectVendorModalProps> = ({
         }
         control={control}
         hidden={isLoadingPrices}
+        orderDate={event_start_at ? dayjs(event_start_at).format('YYYY-MM-DD') : undefined}
       />
     </ModalBase>
   )

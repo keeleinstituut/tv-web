@@ -110,3 +110,15 @@
   color: $cal-input-border;
   font-size: $font-size-14;
 }
+
+.emoBadge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  background-color: $color-warning-light;
+  color: $color-warning-dark;
+  border-radius: 4px;
+  font-size: $font-size-12;
+  font-weight: 700;
+  vertical-align: middle;
+}

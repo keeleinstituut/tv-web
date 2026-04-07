@@ -7,6 +7,7 @@ import classes from './classes.module.scss'
 export interface CalendarSelectOption {
   value: string
   label: string
+  isEmo?: boolean
 }
 
 interface Props {
@@ -57,7 +58,12 @@ const CalendarSelect: FC<Props> = ({
             [classes.placeholder]: !selected,
           })}
         >
-          {selected ? selected.label : placeholder}
+          {selected ? (
+            <>
+              {selected.label}
+              {selected.isEmo && <span className={classes.emoBadge}>EMO</span>}
+            </>
+          ) : placeholder}
         </span>
         <ChevronLeft
           className={classNames(classes.chevron, {
@@ -80,6 +86,7 @@ const CalendarSelect: FC<Props> = ({
               }}
             >
               {opt.label}
+              {opt.isEmo && <span className={classes.emoBadge}>EMO</span>}
             </div>
           ))}
           {options.length === 0 && (

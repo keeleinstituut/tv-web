@@ -161,7 +161,8 @@ const SummaryFields: FC = () => {
               onChange={setVendorId}
               options={vendors.map((v) => ({
                 value: v.id,
-                label: v.name ?? '',
+                label: v.name,
+                isEmo: v.is_emo,
               }))}
               placeholder={t('calendar.select_translator')}
               disabled={!languageId || !startIso || !endIso}
@@ -317,7 +318,8 @@ const SummaryFields: FC = () => {
             onChange={setVendorId}
             options={vendors.map((v) => ({
               value: v.id,
-              label: v.name ?? '',
+              label: v.name,
+              isEmo: v.is_emo,
             }))}
             placeholder={t('calendar.select_translator')}
             disabled={!languageId || !startIso || !endIso}

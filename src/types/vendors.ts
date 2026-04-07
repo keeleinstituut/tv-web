@@ -28,6 +28,7 @@ export type Vendor = {
   comment: string
   institution_user_id: string
   is_internal: boolean
+  emergency_schedules?: EmergencySchedule[]
   created_at: string
   updated_at: string
 } & DiscountPercentages
@@ -148,3 +149,9 @@ export enum OrderDirection {
 export type CreateVendorPayload = { institution_user_id: string }[]
 
 export type DeleteVendorsPayload = string[]
+
+export interface EmergencySchedule {
+  id: string
+  start_date: string
+  end_date: string
+}

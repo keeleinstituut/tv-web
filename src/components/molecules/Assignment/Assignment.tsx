@@ -44,6 +44,7 @@ const Assignment: FC<AssignmentProps> = ({
   ext_id,
   status,
   isEditable,
+  event_start_at,
 }) => {
   const isAssignmentFinished = status === AssignmentStatus.Done
   const {
@@ -101,6 +102,7 @@ const Assignment: FC<AssignmentProps> = ({
       skill_id,
       source_language_classifier_value_id,
       destination_language_classifier_value_id,
+      event_start_at,
     })
   }, [
     id,
@@ -108,6 +110,7 @@ const Assignment: FC<AssignmentProps> = ({
     selectedVendorsIds,
     source_language_classifier_value_id,
     destination_language_classifier_value_id,
+    event_start_at,
   ])
 
   return (

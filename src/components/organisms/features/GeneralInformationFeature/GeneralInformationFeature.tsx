@@ -104,12 +104,13 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     id,
   })
 
+  const effectiveLocation = project?.event_location || project?.location || ''
   const normalizedServiceType = (() => {
     const st = project?.service_type
     if (st === 'ON_SITE') return 'contact'
     if (st === 'REMOTE') return 'remote'
     if (st) return st
-    if (project?.event_location) return 'contact'
+    if (effectiveLocation) return 'contact'
     if (project?.meeting_link) return 'remote'
     return ''
   })()
@@ -141,7 +142,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       final_files,
       cat_jobs: catToolJobs,
       service_type: normalizedServiceType,
-      event_location: project?.event_location || '',
+      event_location: effectiveLocation,
       meeting_link: project?.meeting_link || '',
       duration:
         isVerbalType && effectiveStartAt && effectiveEndAt

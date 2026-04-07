@@ -9,6 +9,7 @@ import { useAuth } from 'components/contexts/AuthContext'
 import { includes } from 'lodash'
 import { Privileges } from 'types/privileges'
 import { useTranslation } from 'react-i18next'
+import EmoSchedulesTimes from 'components/molecules/EmoSchedulesTimes/EmoSchedulesTimes'
 
 const VendorPage: FC = () => {
   const { t } = useTranslation()
@@ -31,6 +32,7 @@ const VendorPage: FC = () => {
         />
       </div>
 
+      <EmoSchedulesTimes vendorId={vendor.id} />
       <VendorForm vendor={vendor} />
       <VendorPriceListForm vendor={vendor} />
     </>

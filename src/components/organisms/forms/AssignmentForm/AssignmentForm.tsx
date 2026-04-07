@@ -76,13 +76,14 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     event_start_at: subProjectEventStartAt,
     project,
   } = useSubProjectCache(sub_project_id) || {}
-  const { type_classifier_value, service_type: projectServiceType, event_location, meeting_link, event_end_at: projectEventEndAt } = project || {}
+  const { type_classifier_value, service_type: projectServiceType, event_location, location, meeting_link, event_end_at: projectEventEndAt } = project || {}
+  const effectiveLocation = event_location || location || ''
 
   const normalizedServiceType = (() => {
     if (projectServiceType === 'ON_SITE') return 'contact'
     if (projectServiceType === 'REMOTE') return 'remote'
     if (projectServiceType) return projectServiceType
-    if (event_location) return 'contact'
+    if (effectiveLocation) return 'contact'
     if (meeting_link) return 'remote'
     return ''
   })()
@@ -116,7 +117,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
           ? formatDuration(effectiveStartAt, effectiveEndAt)
           : undefined,
       service_type: normalizedServiceType,
-      event_location: event_location || '',
+      event_location: effectiveLocation,
       meeting_link: meeting_link || '',
     }),
     [
@@ -129,7 +130,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       shouldShowStartTimeFields,
       isVerbalType,
       normalizedServiceType,
-      event_location,
+      effectiveLocation,
       meeting_link,
     ]
   )

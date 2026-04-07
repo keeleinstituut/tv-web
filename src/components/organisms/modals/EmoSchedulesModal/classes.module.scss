@@ -1,0 +1,8 @@
+@use 'styles/variables' as variables;
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(6);
+  margin: variables.spacing(6) 0;
+}
