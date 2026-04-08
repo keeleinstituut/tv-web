@@ -196,6 +196,33 @@ const DetailsSection = <TFormValues extends FieldValues>({
       },
       {
         inputType: InputTypes.DateTime,
+        ariaLabel: t('label.end_date'),
+        label: `${t('label.end_date')}${!isEditable ? '' : '*'}`,
+        hidden: !isVerbalType,
+        className: classes.customInternalClass,
+        name: 'event_end_at' as Path<TFormValues>,
+        onlyDisplay: !isEditable,
+        emptyDisplayText: '-',
+        rules: {
+          required: isVerbalType,
+          validate: (value: { date?: string; time?: string }, formValues) => {
+            if (!formValues.event_start_at?.date) return true
+            const event_start_at = dayjs(
+              formValues.event_start_at.date +
+                ' ' +
+                formValues.event_start_at.time
+            )
+            const event_end_at = dayjs(value.date + ' ' + value.time)
+
+            if (event_end_at.isBefore(event_start_at)) {
+              return t('error.deadline_at_before_event_start_at')
+            }
+            return true
+          },
+        },
+      },
+      {
+        inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         label: `${t('label.deadline')}${!isEditable ? '' : '*'}`,
         hidden: isVerbalType,

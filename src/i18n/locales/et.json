@@ -59,6 +59,7 @@
     "special_instructions": "Erijuhised tellimuse kohta",
     "event_start_at": "Algusaeg",
     "start_date": "Algus",
+    "end_date": "Lõpp",
     "start_time": "Alguse kellaaeg",
     "source_language": "Lähtekeel",
     "destination_language": "Sihtkeel",

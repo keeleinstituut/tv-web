@@ -24,6 +24,7 @@ import { ListTask, TasksPayloadType } from 'types/tasks'
 import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
 
 import classes from './classes.module.scss'
+import LanguageDirectionTags from 'components/atoms/LanguageDirectionTags/LanguageDirectionTags'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { useProjectLanguagesFetch } from 'hooks/requests/useProjects'
@@ -371,15 +372,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
         columnHelper.accessor('language_directions', {
           header: () => t('label.language_directions'),
           footer: (info) => info.column.id,
-          cell: ({ getValue }) => {
-            return (
-              <div className={classes.tagsRow}>
-                {map(getValue(), (value, index) => (
-                  <Tag label={value} value key={index} />
-                ))}
-              </div>
-            )
-          },
+          cell: ({ getValue }) => <LanguageDirectionTags values={getValue()} />,
           meta: {
             FilteringComponent: (
               <TableSelectFilter
@@ -449,10 +442,16 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {
             const dateValue = getValue()
+            if (!dateValue) {
+              return <span />
+            }
             const deadlineDate = dayjs(dateValue)
+            if (!deadlineDate.isValid()) {
+              return <span />
+            }
             const currentDate = dayjs()
             const diff = deadlineDate.diff(currentDate)
-            const formattedDate = dayjs(dateValue).format('DD.MM.YYYY')
+            const formattedDate = deadlineDate.format('DD.MM.YYYY')
 
             const hasDeadlineError = diff < 0
             return (

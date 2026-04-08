@@ -37,12 +37,20 @@ const TaskDetails: FC<TaskProps> = ({
   taskId,
   ...rest
 }) => {
-  const { assignment } = useTaskCache(taskId) || {}
-  const { deadline_at, subProject } = assignment || {}
+  const taskData = useTaskCache(taskId)
+  const { assignment, project } = taskData || {}
+  const { deadline_at, event_start_at, subProject } = assignment || {}
   const {
     source_language_classifier_value,
     destination_language_classifier_value,
   } = subProject || {}
+
+  const projectData = project || subProject?.project
+
+  const isVerbalType =
+    !!projectData?.type_classifier_value?.project_type_config
+      ?.is_start_date_supported &&
+    projectData?.type_classifier_value?.value !== 'POST_TRANSLATION'
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
 
@@ -92,7 +100,13 @@ const TaskDetails: FC<TaskProps> = ({
       wrapContent
       leftComponent={
         <ExpandableContentLeftComponent
-          {...{ ext_id, deadline_at, price, languageDirection }}
+          {...{
+            ext_id,
+            deadline_at: isVerbalType ? event_start_at : deadline_at,
+            price,
+            languageDirection,
+            isVerbal: isVerbalType,
+          }}
           mode={ProjectDetailModes.View}
         />
       }

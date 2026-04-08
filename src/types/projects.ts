@@ -320,6 +320,7 @@ export interface NewProjectPayload {
   translation_domain_classifier_value_id: string
   type_classifier_value_id: string
   event_start_at?: string
+  event_end_at?: string
   event_location?: string
   meeting_link?: string
   // TODO: Following are currently missing

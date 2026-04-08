@@ -48,6 +48,7 @@ import {
   TableSelectFilter,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import LanguageDirectionTags from 'components/atoms/LanguageDirectionTags/LanguageDirectionTags'
 
 type SubProjectTableRow = {
   ext_id: string
@@ -349,6 +350,15 @@ const SubProjectsTable: FC = () => {
     return () => subscription.unsubscribe()
   }, [handleSubmit, onSubmit, watch])
 
+  // Re-submit when type lists load (initial render fires before types are fetched)
+  const prevNonVerbalLengthRef = useRef(0)
+  useEffect(() => {
+    if (nonVerbalTypeIds.length > 0 && prevNonVerbalLengthRef.current === 0) {
+      prevNonVerbalLengthRef.current = nonVerbalTypeIds.length
+      handleSubmit(onSubmit)()
+    }
+  }, [nonVerbalTypeIds, handleSubmit, onSubmit])
+
   const columns = [
     columnHelper.accessor('ext_id', {
       header: () => t('label.sub_project_id'),
@@ -392,15 +402,7 @@ const SubProjectsTable: FC = () => {
     columnHelper.accessor('language_direction', {
       header: () => t('label.language_directions'),
       footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        return (
-          <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
-            ))}
-          </div>
-        )
-      },
+      cell: ({ getValue }) => <LanguageDirectionTags values={getValue()} />,
       meta: {
         FilteringComponent: (
           <TableSelectFilter
@@ -476,55 +478,53 @@ const SubProjectsTable: FC = () => {
         currentSorting: filters?.sort_by === 'price' ? filters.sort_order : '',
       },
     }),
-    columnHelper.accessor('deadline_at', {
-      header: ({ table }) => {
-        const isVerbal = table.options.data.some((r) => r.is_verbal)
-        return t(isVerbal ? 'label.event_start_at' : 'label.deadline_at')
-      },
-      footer: (info) => info.column.id,
-      cell: ({ getValue, row }) => {
-        const dateString = row.original.is_verbal
-          ? row.original.event_start_at
-          : getValue()
-        if (!dateString) {
-          return null
-        }
-        const date = dayjs(dateString)
-        const currentDate = dayjs()
-        const diff = date.diff(currentDate)
-        const formattedDate = date.format('DD.MM.YYYY HH:mm')
-        const rowStatus = row.original.status
-        const hasDeadlineError =
-          !row.original.is_verbal &&
-          diff < 0 &&
-          !includes(
-            [SubProjectStatus.Completed, SubProjectStatus.Cancelled],
-            rowStatus
-          )
-        return (
-          <span
-            className={classNames(
-              classes.deadline,
-              hasDeadlineError && classes.error
-            )}
-          >
-            {formattedDate}
-          </span>
-        )
-      },
-      meta: {
-        sortingParameterName: 'deadline_at',
-        sortingOption: ['asc', 'desc'],
-        currentSorting:
-          filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
-        FilteringComponent: (
-          <TableDateFilter
-            filterKey="deadline_at"
-            value={filters?.deadline_at}
-          />
-        ),
-      },
-    }),
+    ...(includes(orderCategory, 'verbal')
+      ? []
+      : [
+          columnHelper.accessor('deadline_at', {
+            header: () => t('label.deadline_at'),
+            footer: (info) => info.column.id,
+            cell: ({ getValue, row }) => {
+              const dateString = getValue()
+              if (!dateString) {
+                return <span />
+              }
+              const date = dayjs(dateString)
+              const currentDate = dayjs()
+              const diff = date.diff(currentDate)
+              const formattedDate = date.format('DD.MM.YYYY HH:mm')
+              const rowStatus = row.original.status
+              const hasDeadlineError =
+                diff < 0 &&
+                !includes(
+                  [SubProjectStatus.Completed, SubProjectStatus.Cancelled],
+                  rowStatus
+                )
+              return (
+                <span
+                  className={classNames(
+                    classes.deadline,
+                    hasDeadlineError && classes.error
+                  )}
+                >
+                  {formattedDate}
+                </span>
+              )
+            },
+            meta: {
+              sortingParameterName: 'deadline_at',
+              sortingOption: ['asc', 'desc'],
+              currentSorting:
+                filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
+              FilteringComponent: (
+                <TableDateFilter
+                  filterKey="deadline_at"
+                  value={filters?.deadline_at}
+                />
+              ),
+            },
+          }),
+        ]),
     columnHelper.accessor('created_at', {
       header: () => t('label.created_at'),
       footer: (info) => info.column.id,
@@ -542,35 +542,39 @@ const SubProjectsTable: FC = () => {
         return <span>{formattedDate}</span>
       },
     }),
-    columnHelper.accessor('event_start_at', {
-      header: () => t('label.event_start_at'),
-      footer: (info) => info.column.id,
-      meta: {
-        sortingParameterName: 'project.event_start_at',
-        sortingOption: ['asc', 'desc'],
-        currentSorting:
-          filters?.sort_by === 'project.event_start_at'
-            ? filters.sort_order
-            : '',
-        FilteringComponent: (
-          <TableDateFilter
-            filterKey="event_start_at"
-            value={filters?.event_start_at}
-          />
-        ),
-      },
-      cell: ({ getValue, row }) => {
-        const value = getValue()
+    ...(includes(orderCategory, 'verbal')
+      ? [
+          columnHelper.accessor('event_start_at', {
+            header: () => t('label.event_start_at'),
+            footer: (info) => info.column.id,
+            meta: {
+              sortingParameterName: 'project.event_start_at',
+              sortingOption: ['asc', 'desc'],
+              currentSorting:
+                filters?.sort_by === 'project.event_start_at'
+                  ? filters.sort_order
+                  : '',
+              FilteringComponent: (
+                <TableDateFilter
+                  filterKey="event_start_at"
+                  value={filters?.event_start_at}
+                />
+              ),
+            },
+            cell: ({ getValue }) => {
+              const value = getValue()
 
-        if (!value) {
-          return <span />
-        }
+              if (!value) {
+                return <span />
+              }
 
-        const formattedDate = dayjs(value).format('DD.MM.YYYY HH:mm')
+              const formattedDate = dayjs(value).format('DD.MM.YYYY HH:mm')
 
-        return <span>{formattedDate}</span>
-      },
-    }),
+              return <span>{formattedDate}</span>
+            },
+          }),
+        ]
+      : []),
     columnHelper.accessor('client_name', {
       header: () => t('label.client'),
       footer: (info) => info.column.id,

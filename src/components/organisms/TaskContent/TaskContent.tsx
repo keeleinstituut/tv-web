@@ -59,8 +59,9 @@ const TaskContent: FC<TaskContentProps> = ({
 }) => {
   const { t } = useTranslation()
   const { institutionUserId } = useAuth()
-  const { assignment, cat_tm_keys_meta, cat_tm_keys_stats } =
-    useTaskCache(taskId) || {}
+  const taskData = useTaskCache(taskId)
+  const { assignment, cat_tm_keys_meta, cat_tm_keys_stats, project } =
+    taskData || {}
 
   const {
     subProject,
@@ -84,10 +85,12 @@ const TaskContent: FC<TaskContentProps> = ({
     project: taskProject,
   } = subProject || {}
 
+  const projectData = project || taskProject
+
   const isVerbalType =
-    !!taskProject?.type_classifier_value?.project_type_config
+    !!projectData?.type_classifier_value?.project_type_config
       ?.is_start_date_supported &&
-    taskProject?.type_classifier_value?.value !== 'POST_TRANSLATION'
+    projectData?.type_classifier_value?.value !== 'POST_TRANSLATION'
 
   const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
     id: sub_project_id,
@@ -269,6 +272,36 @@ const TaskContent: FC<TaskContentProps> = ({
             <p className={classes.taskDetails}>{t('label.deadline_at')}</p>
             <p className={classes.taskContent}>
               {deadline_at ? formattedDate(deadline_at) : '-'}
+            </p>
+          </span>
+        )}
+        {isVerbalType && (
+          <span className={classes.taskContainer}>
+            <p className={classes.taskDetails}>{t('calendar.service_type')}</p>
+            <p className={classes.taskContent}>
+              {projectData?.service_type === 'ON_SITE'
+                ? t('calendar.service_type_contact')
+                : projectData?.service_type === 'REMOTE'
+                  ? t('calendar.service_type_remote')
+                  : '-'}
+            </p>
+          </span>
+        )}
+        {isVerbalType && projectData?.service_type === 'ON_SITE' && (
+          <span className={classes.taskContainer}>
+            <p className={classes.taskDetails}>{t('calendar.location')}</p>
+            <p className={classes.taskContent}>
+              {projectData?.location || projectData?.event_location || '-'}
+            </p>
+          </span>
+        )}
+        {isVerbalType && projectData?.service_type === 'REMOTE' && (
+          <span className={classes.taskContainer}>
+            <p className={classes.taskDetails}>
+              {t('calendar.meeting_link')}
+            </p>
+            <p className={classes.taskContent}>
+              {projectData?.meeting_link || '-'}
             </p>
           </span>
         )}

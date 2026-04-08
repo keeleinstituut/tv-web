@@ -42,6 +42,7 @@ import {
   TableSelectFilter,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import LanguageDirectionTags from 'components/atoms/LanguageDirectionTags/LanguageDirectionTags'
 
 const VERBAL_TYPE_VALUES = [
   TypesWithStartTime.OralTranslation,
@@ -430,15 +431,7 @@ const ProjectsTable: FC = () => {
     columnHelper.accessor('language_directions', {
       header: () => t('label.language_directions'),
       footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        return (
-          <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
-            ))}
-          </div>
-        )
-      },
+      cell: ({ getValue }) => <LanguageDirectionTags values={getValue()} />,
       meta: {
         FilteringComponent: (
           <TableSelectFilter
@@ -521,10 +514,17 @@ const ProjectsTable: FC = () => {
       header: () => t('label.deadline_at'),
       footer: (info) => info.column.id,
       cell: ({ getValue, row }) => {
-        const deadlineDate = dayjs(getValue())
+        const value = getValue()
+        if (!value) {
+          return <span />
+        }
+        const deadlineDate = dayjs(value)
+        if (!deadlineDate.isValid()) {
+          return <span />
+        }
         const currentDate = dayjs()
         const diff = deadlineDate.diff(currentDate)
-        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
+        const formattedDate = deadlineDate.format('DD.MM.YYYY HH:mm')
         const rowStatus = row.original.status
         const hasDeadlineError =
           diff < 0 &&

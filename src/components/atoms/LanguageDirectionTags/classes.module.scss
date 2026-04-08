@@ -1,0 +1,31 @@
+@use 'styles/variables' as variables;
+
+.wrapper {
+  max-width: 280px;
+}
+
+.tagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: variables.spacing(1);
+}
+
+.overflowBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: variables.$color-tag;
+  color: variables.$color-primary;
+  border: none;
+  border-radius: 4px;
+  padding: variables.spacing(0.625) variables.spacing(1.5);
+  font-size: variables.$font-size-14;
+  font-weight: variables.$font-weight-bold;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background: variables.$color-primary;
+    color: variables.$color-white;
+  }
+}

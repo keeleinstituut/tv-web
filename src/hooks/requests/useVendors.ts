@@ -183,7 +183,7 @@ export const useFetchInstitutionUserVendor = (institutionUserId?: string) => {
     enabled: !!institutionUserId,
     queryKey: ['institution-user-vendor', institutionUserId],
     queryFn: () =>
-      apiClient.get(endpoints.INSTITUTION_USER_VENDOR(institutionUserId!)),
+      apiClient.get(endpoints.INSTITUTION_USER_VENDOR(institutionUserId!), {}, { hideError: true }),
     staleTime: Infinity,
     retry: false,
   })

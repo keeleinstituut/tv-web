@@ -67,6 +67,7 @@ interface FormValues {
   help_file_types: HelperFileTypes[]
   translation_domain_classifier_value_id: string
   event_start_at?: { date?: string; time?: string }
+  event_end_at?: { date?: string; time?: string }
   service_type?: string
   event_location?: string
   meeting_link?: string
@@ -346,6 +347,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
     async ({
       deadline_at: deadlineObject,
       event_start_at: startObject,
+      event_end_at: endObject,
       source_files,
       help_files,
       tags,
@@ -363,6 +365,10 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
         startObject?.date || startObject?.time
           ? getUtcDateStringFromLocalDateObject(startObject)
           : null
+      const event_end_at =
+        endObject?.date || endObject?.time
+          ? getUtcDateStringFromLocalDateObject(endObject)
+          : null
 
       const payload: NewProjectPayload = {
         ...(deadline_at ? { deadline_at } : {}),
@@ -371,6 +377,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
         ...rest,
         ...(!isNew ? { tags } : {}),
         ...(event_start_at ? { event_start_at } : {}),
+        ...(event_end_at ? { event_end_at } : {}),
         ...(service_type === 'contact' && event_location
           ? { event_location }
           : {}),
