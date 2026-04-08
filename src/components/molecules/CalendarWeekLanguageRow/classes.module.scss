@@ -134,7 +134,7 @@ $block-gap: 4px;
 }
 
 .vendorLabelEmo {
-  background: #fffbea;
+  background: #fef3c7;
 }
 
 // ─── Slot area ────────────────────────────────────────────────────────────────
@@ -147,7 +147,7 @@ $block-gap: 4px;
 }
 
 .slotAreaEmo {
-  background: #fffbea;
+  background: #fef3c7;
 }
 
 .dayGroup {
@@ -161,29 +161,32 @@ $block-gap: 4px;
 
 // ─── Unavailable day banner (vacation / absence) ──────────────────────────────
 
-.dayUnavailableBanner {
+.dayEmoBanner {
   flex: 1;
   height: calc(#{$row-height} - #{$block-gap * 2});
-  background: #efdbdb;
+  background: #fee8d2;
   border-radius: $border-radius-4;
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: flex-start;
+  gap: 6px;
   padding: 0 8px;
 }
 
-.unavailableIcon {
+.emoIcon {
   width: 12px;
   height: 12px;
-  color: #8a4b4b;
+  color: #78350f;
   flex-shrink: 0;
+  z-index: 2;
 }
 
-.unavailableLabel {
+.emoBannerLabel {
   font-size: $font-size-12;
   font-weight: $font-weight-bold;
-  color: #8a4b4b;
+  color: #78350f;
   white-space: nowrap;
+  z-index: 2;
 }
 
 // ─── Booked day banner ────────────────────────────────────────────────────────

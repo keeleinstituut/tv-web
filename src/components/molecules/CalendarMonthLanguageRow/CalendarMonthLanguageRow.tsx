@@ -183,7 +183,6 @@ const VendorRow: FC<{
         <CalendarVendorBadge
           vendorId={vendor.id}
           name={vendor.institution_user.name}
-          isEmo={isEmo}
         />
       </div>
 

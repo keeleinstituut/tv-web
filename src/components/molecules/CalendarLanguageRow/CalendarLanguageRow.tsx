@@ -23,7 +23,11 @@ import {
   SLOT_WIDTH_PX,
 } from 'helpers/calendarSlotUtils'
 export { SLOT_WIDTH_PX, timeToX, slotIndexToIso, isSlotPast }
-import { BookedSlot, CalendarDayResponse, CalendarLanguage } from 'types/calendar'
+import {
+  BookedSlot,
+  CalendarDayResponse,
+  CalendarLanguage,
+} from 'types/calendar'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
 import classes from './classes.module.scss'

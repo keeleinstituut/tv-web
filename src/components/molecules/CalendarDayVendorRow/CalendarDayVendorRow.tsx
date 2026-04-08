@@ -78,11 +78,7 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
 
   return (
     <div className={classes.vendorRowWrapper}>
-      <div
-        className={classNames(classes.vendorLabel, {
-          [classes.vendorLabelEmo]: isEmo,
-        })}
-      >
+      <div className={classes.vendorLabel}>
         <CalendarVendorBadge
           vendorId={vendor.id}
           name={vendor.institution_user.name}
@@ -91,9 +87,7 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
       </div>
       <div
         ref={rowRef}
-        className={classNames(classes.slotArea, {
-          [classes.slotAreaEmo]: isEmo,
-        })}
+        className={classes.slotArea}
         style={{ width: totalWidth }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

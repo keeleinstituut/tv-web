@@ -254,22 +254,13 @@ const VendorRow: FC<{
   const isEmo = !vendor.is_internal
   return (
     <div className={classes.vendorRowWrapper}>
-      <div
-        className={classNames(classes.vendorLabel, {
-          [classes.vendorLabelEmo]: isEmo,
-        })}
-      >
+      <div className={classes.vendorLabel}>
         <CalendarVendorBadge
           vendorId={vendor.id}
           name={vendor.institution_user.name}
-          isEmo={isEmo}
         />
       </div>
-      <div
-        className={classNames(classes.slotArea, {
-          [classes.slotAreaEmo]: isEmo,
-        })}
-      >
+      <div className={classes.slotArea}>
         {Array.from({ length: DAYS_IN_WEEK }, (_, dayIdx) => {
           const daySlots = vendor.slots.slice(
             dayIdx * BLOCK_COUNT,
@@ -288,11 +279,9 @@ const VendorRow: FC<{
                 className={classes.dayGroup}
                 style={dayGroupStyle}
               >
-                <div className={classes.dayUnavailableBanner}>
-                  <ClockIcon className={classes.unavailableIcon} />
-                  <span className={classes.unavailableLabel}>
-                    {t('calendar.on_vacation')}
-                  </span>
+                <div className={classes.dayEmoBanner}>
+                  <ClockIcon className={classes.emoIcon} />
+                  <span className={classes.emoBannerLabel}>EMO</span>
                 </div>
               </div>
             )
