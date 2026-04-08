@@ -14,7 +14,7 @@ $layout-padding: 24px; // spacing(6) from MainLayout
   display: flex;
   align-items: center;
   gap: spacing(2);
-  padding: $layout-padding $layout-padding 0;
+  padding: 0 $layout-padding 0;
 }
 
 .container {
