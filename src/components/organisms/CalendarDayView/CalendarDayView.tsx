@@ -82,7 +82,7 @@ const CalendarDayView: FC = () => {
   const { languages, visibleLanguages, isLoading, isError } =
     useVisibleCalendarLanguages(dateStr, dateStr)
   const isToday = currentDate.isSame(dayjs(), 'day')
-  const { data: dayData } = useFetchCalendarDay(isTPM ? '' : dateStr)
+  const { data: dayData } = useFetchCalendarDay(dateStr)
 
   /** Auto-expand client languages with overlapping bookings once per selected day. */
   const clientOverlapAutoExpandedDateRef = useRef<string | null>(null)

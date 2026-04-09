@@ -191,26 +191,32 @@ export function transformDayResponse(
     const tpm = api as ApiCalendarDayTpmShape
     const vendorsByLanguage = new Map<string, VendorDayData[]>()
     for (const v of tpm.vendors) {
-      const vendorData: VendorDayData = {
-        id: v.id,
-        institution_user: {
-          id: v.institutionUser?.id ?? v.id,
-          name: v.institutionUser
-            ? `${v.institutionUser.user.forename} ${v.institutionUser.user.surname}`.trim()
-            : v.id,
-        },
-        is_internal: v.emergency_schedules.length === 0,
-        booked_slots: (v.calendar_entries ?? []).map((e) => ({
-          start_at: e.start_at,
-          end_at: e.end_at,
-          type: e.type,
-          assignment: buildAssignmentFromEntry(e),
-        })),
-        available_slots: tpm.available_slots
-          .filter((s) => s.vendor_ids.includes(v.id))
-          .map((s) => ({ start_at: s.start_at, end_at: s.end_at })),
-      }
       for (const langId of v.languages) {
+        const langEntries = (v.calendar_entries ?? []).filter((e) => {
+          if (e.type !== 'assignment') return true
+          const destLangId =
+            e.assignment?.subProject?.destination_language_classifier_value_id
+          return !destLangId || destLangId === langId
+        })
+        const vendorData: VendorDayData = {
+          id: v.id,
+          institution_user: {
+            id: v.institutionUser?.id ?? v.id,
+            name: v.institutionUser
+              ? `${v.institutionUser.user.forename} ${v.institutionUser.user.surname}`.trim()
+              : v.id,
+          },
+          is_internal: v.emergency_schedules.length === 0,
+          booked_slots: langEntries.map((e) => ({
+            start_at: e.start_at,
+            end_at: e.end_at,
+            type: e.type,
+            assignment: buildAssignmentFromEntry(e),
+          })),
+          available_slots: tpm.available_slots
+            .filter((s) => s.vendor_ids.includes(v.id))
+            .map((s) => ({ start_at: s.start_at, end_at: s.end_at })),
+        }
         if (!vendorsByLanguage.has(langId)) vendorsByLanguage.set(langId, [])
         vendorsByLanguage.get(langId)!.push(vendorData)
       }

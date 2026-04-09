@@ -67,7 +67,7 @@ export const useFetchCalendarDay = (date: string) => {
       return transformDayResponse(res.data, isTPM)
     },
     enabled: !!date,
-    staleTime: 2 * 60 * 1000,
+    staleTime: Infinity,
   })
   return { isLoading, isError, data }
 }
@@ -229,17 +229,12 @@ export const useFetchCalendarDayVendors = (
   date: string,
   languageId?: string
 ) => {
-  const { isTPM } = useCalendarRole()
   const { isLoading, isError, data } = useQuery<
     CalendarDayResponse,
     Error,
     CalendarDayVendorsResponse | CalendarDayVendorsAllResponse
   >({
     queryKey: ['calendar-day', date],
-    queryFn: async () => {
-      const res = await apiClient.get(endpoints.CALENDAR_DAY, { date })
-      return transformDayResponse(res.data, isTPM)
-    },
     select: (
       dayData
     ): CalendarDayVendorsResponse | CalendarDayVendorsAllResponse => {
@@ -251,6 +246,7 @@ export const useFetchCalendarDayVendors = (
       return { languages: tpmVendors }
     },
     enabled: !!date,
+    staleTime: Infinity,
   })
   return { isLoading, isError, data }
 }
