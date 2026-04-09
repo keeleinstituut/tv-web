@@ -105,6 +105,7 @@ export const endpoints = {
   CALENDAR_PREBOOK: translationOrder('calendar/prebook'),
   CALENDAR_VENDOR_ENTRIES: translationOrder('calendar/vendor-entries'),
   CALENDAR_IMPORT: translationOrder('calendar/import'),
+  CALENDAR_SETTINGS: translationOrder('calendar/settings'),
 
   TRANSLATION_MEMORIES: translationOrder('catv2/translation-memories'),
   IMPORT_TMX: translationOrder('catv2/translation-memories/import'),

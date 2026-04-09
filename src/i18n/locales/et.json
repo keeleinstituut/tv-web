@@ -1273,7 +1273,11 @@
     "import_button": "Impordi ics.",
     "import_success": "Kalender edukalt imporditud ({{count}} sündmust).",
     "last_import_info": "Viimati imporditud: {{count}} sündmust kuni {{date}}",
-    "import_end_date": "Määra impordi lõpukuupäev"
+    "import_end_date": "Määra impordi lõpukuupäev",
+    "time_rules_title": "Ajareeglid",
+    "time_rules_description": "Kui teenus toimub väljaspool asutust, rakendub enne ja pärast teenust puhveraeg.",
+    "buffer_before": "Aeg enne",
+    "buffer_after": "Aeg pärast"
   },
   "sessions": {
     "active_sessions": "Aktiivsed sessioonid",

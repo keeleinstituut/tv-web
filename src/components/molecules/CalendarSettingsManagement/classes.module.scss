@@ -39,4 +39,19 @@
     color: variables.$color-text-dark;
     font-weight: 500;
   }
+
+  .required {
+    color: #d93025;
+    margin-left: 2px;
+  }
+
+  .bufferRow {
+    display: flex;
+    gap: variables.spacing(4);
+
+    .field {
+      flex: 1;
+    }
+  }
+
 }

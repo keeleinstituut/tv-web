@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import isoWeek from 'dayjs/plugin/isoWeek'
 import {
@@ -359,4 +359,42 @@ export const useFetchEmergencySchedules = (vendorId: string | null) => {
     enabled: !!vendorId,
   })
   return { isLoading, isError, schedules: data ?? [] }
+}
+
+export interface CalendarSettings {
+  reaction_time_seconds: number
+  buffer_before_minutes: number
+  buffer_after_minutes: number
+  default_project_type_id: string | null
+}
+
+const DEFAULT_CALENDAR_SETTINGS: CalendarSettings = {
+  reaction_time_seconds: 30,
+  buffer_before_minutes: 30,
+  buffer_after_minutes: 30,
+  default_project_type_id: null,
+}
+
+export const useFetchCalendarSettings = () => {
+  const { isLoading, data } = useQuery<CalendarSettings>({
+    queryKey: ['calendar-settings'],
+    queryFn: async () => {
+      const res = await apiClient.get(endpoints.CALENDAR_SETTINGS)
+      if (!res || !res.data) return DEFAULT_CALENDAR_SETTINGS
+      return res.data
+    },
+  })
+  return { settings: data ?? DEFAULT_CALENDAR_SETTINGS, isLoading }
+}
+
+export const useUpdateCalendarSettings = () => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: updateSettings, isLoading } = useMutation({
+    mutationFn: (payload: Partial<CalendarSettings>) =>
+      apiClient.put(endpoints.CALENDAR_SETTINGS, payload),
+    onSuccess: ({ data }: { data: CalendarSettings }) => {
+      queryClient.setQueryData(['calendar-settings'], data)
+    },
+  })
+  return { updateSettings, isLoading }
 }
