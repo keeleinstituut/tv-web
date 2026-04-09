@@ -183,6 +183,8 @@ export const useUpdateCalendarOrder = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-month'] })
       queryClient.invalidateQueries({ queryKey: ['calendar-order-detail'] })
     },
   })

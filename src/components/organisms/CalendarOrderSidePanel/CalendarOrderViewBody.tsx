@@ -2,6 +2,8 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import { ServiceType } from 'types/calendar'
+import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
+import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import { calendarBookingStatusLabelKey } from 'helpers/calendarBookingStatus'
 import { useCalendarRole } from 'hooks/useCalendarRole'
@@ -177,19 +179,25 @@ const CalendarOrderViewBody: FC = () => {
           </label>
           {isEditing ? (
             <div style={{ display: 'flex', gap: 8 }}>
-              <input
-                className={classes.input}
-                value={selectedDate}
-                onChange={(e) => onSetSelectedDate(e.target.value)}
-                placeholder="pp.kk.aaaa"
-              />
-              <input
-                className={classes.input}
-                style={{ width: 90, flexShrink: 0 }}
-                value={startTimeInput}
-                onChange={(e) => onSetStartTimeInput(e.target.value)}
-                placeholder="hh:mm"
-              />
+              <div style={{ flex: 1 }}>
+                <DatePickerComponent
+                  name="selectedDate"
+                  value={
+                    selectedDate ? selectedDate.replace(/\./g, '/') : ''
+                  }
+                  onChange={(val) =>
+                    onSetSelectedDate(val.replace(/\//g, '.'))
+                  }
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <CalendarTimeSelect
+                  value={startTimeInput}
+                  onChange={onSetStartTimeInput}
+                  freeInput
+                  className={classes.input}
+                />
+              </div>
             </div>
           ) : (
             <span className={classes.readValue}>

@@ -100,7 +100,6 @@ $footer-height: 64px;
 .body {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -152,6 +151,10 @@ $footer-height: 64px;
   &:focus {
     border-color: $color-primary;
   }
+}
+
+.formGroup :global(.react-datepicker-wrapper) {
+  width: 100%;
 }
 
 .inputReadonly {

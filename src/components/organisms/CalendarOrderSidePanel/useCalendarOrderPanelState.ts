@@ -128,6 +128,9 @@ export function useCalendarOrderPanelState(): {
     clientInstitutionId: string
     domainIds: string[]
     vendorId: string
+    selectedDate: string
+    startTimeInput: string
+    durationMinutes: number
   } | null>(null)
 
   const [form, setForm] = useState<FormState>(INITIAL_FORM)
@@ -234,10 +237,29 @@ export function useCalendarOrderPanelState(): {
   })
   const isClientPastView = isClient && isViewMode && isPastSlot
 
+  // Compute effective start/end ISO strings (use edited values during edit mode)
+  const editedStartIso = useMemo(() => {
+    if (!isEditing) return startIso
+    if (!selectedDate || !startTimeInput) return startIso
+    const parsed = dayjs(
+      `${selectedDate} ${startTimeInput}`,
+      'DD.MM.YYYY HH:mm'
+    )
+    return parsed.isValid() ? parsed.toISOString() : startIso
+  }, [isEditing, selectedDate, startTimeInput, startIso])
+
+  const editedEndIso = useMemo(() => {
+    if (!editedStartIso) return endIso
+    if (!isEditing) return endIso
+    return dayjs(editedStartIso).add(durationMinutes, 'minute').toISOString()
+  }, [isEditing, editedStartIso, durationMinutes, endIso])
+
   const vendorLocked = !!sidePanelSelection?.vendorId
+  const effectiveStartIso = isEditing ? editedStartIso : startIso
+  const effectiveEndIso = isEditing ? editedEndIso : endIso
   const slotMatchingParams =
-    isFormMode && isTPM && !vendorLocked && startIso && endIso && language
-      ? { start_at: startIso, end_at: endIso, language_id: language.language.id }
+    isFormMode && isTPM && !vendorLocked && effectiveStartIso && effectiveEndIso && language
+      ? { start_at: effectiveStartIso, end_at: effectiveEndIso, language_id: language.language.id }
       : null
   const { vendors: fetchedVendors } = useFetchSlotMatching(slotMatchingParams)
   const vendors =
@@ -429,6 +451,9 @@ export function useCalendarOrderPanelState(): {
       clientInstitutionId: initClientInstitutionId,
       domainIds: initDomainIds,
       vendorId: form.vendorId,
+      selectedDate: date,
+      startTimeInput: startTime,
+      durationMinutes: slotDurationMinutes,
     }
   }
 
@@ -468,6 +493,16 @@ export function useCalendarOrderPanelState(): {
     }
     if (isTPM && !vendorLocked && (!b || vendorId !== b.vendorId)) {
       payload.vendor_id = vendorId || undefined
+    }
+
+    const dateTimeChanged =
+      !b ||
+      selectedDate !== b.selectedDate ||
+      startTimeInput !== b.startTimeInput ||
+      durationMinutes !== b.durationMinutes
+    if (dateTimeChanged && editedStartIso && editedEndIso) {
+      payload.start_at = editedStartIso
+      payload.end_at = editedEndIso
     }
 
     updateOrder(payload, {
