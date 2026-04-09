@@ -28,6 +28,7 @@ const CalendarVendorBadge: FC<Props> = ({ vendorId, name, isEmo }) => {
     >
       {getInitials(name)}
       {isEmo && <span className={classes.emoLabel}>EMO</span>}
+      <span className={classes.tooltip}>{name}</span>
     </span>
   )
 }
