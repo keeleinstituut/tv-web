@@ -29,7 +29,7 @@ interface FormValues {
   languages: string[]
 }
 
-const BUFFER_OPTIONS = [0, 15, 30, 45, 60, 90, 120].map((val) => ({
+const BUFFER_OPTIONS = [0, 30, 60, 90, 120].map((val) => ({
   value: String(val),
   label: val === 30 ? '30 minutit (vaikimisi)' : `${val} minutit`,
 }))

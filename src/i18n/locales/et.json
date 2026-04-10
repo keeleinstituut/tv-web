@@ -1275,7 +1275,7 @@
     "last_import_info": "Viimati imporditud: {{count}} sündmust kuni {{date}}",
     "import_end_date": "Määra impordi lõpukuupäev",
     "time_rules_title": "Ajareeglid",
-    "time_rules_description": "Kui teenus toimub väljaspool asutust, rakendub enne ja pärast teenust puhveraeg.",
+    "time_rules_description": "Suulise kontakttõlke puhul rakenduv puhveraeg, et tõlgil oleks aega minna kohapeale.",
     "buffer_before": "Aeg enne",
     "buffer_after": "Aeg pärast"
   },

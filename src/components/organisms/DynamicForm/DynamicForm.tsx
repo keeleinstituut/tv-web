@@ -84,7 +84,7 @@ function DynamicForm<TFormValues extends FieldValues>({
         // or just components that we need to render in the middle of the form
         // Check whether we are dealing with just a component
         if ('component' in inputData) {
-          // Render the component
+          if ('hidden' in inputData && inputData.hidden) return null
           return <Fragment key={index}>{inputData.component}</Fragment>
         }
         // Else render Input and pass the props
