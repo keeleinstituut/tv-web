@@ -9,7 +9,8 @@ const NotFoundMessage: FC = () => (
 )
 
 const CalendarAccessGuard: FC<PropsWithChildren> = ({ children }) => {
-  const { isTPM, isTranslator, isClient } = useCalendarRole()
+  const { isTPM, isTranslator, isClient, isLoading } = useCalendarRole()
+  if (isLoading) return null
   if (!isTPM && !isTranslator && !isClient) {
     return <NotFoundMessage />
   }

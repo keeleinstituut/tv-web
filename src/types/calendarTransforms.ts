@@ -98,6 +98,24 @@ function isTpmDayShape(
   return 'vendor_ids' in (tpm.available_slots[0] ?? {})
 }
 
+/**
+ * For TPM/client, use the project's event times instead of the calendar entry
+ * times, since the entry includes buffer time padding.
+ */
+function entryTimesForNonVendor(e: ApiVendorCalendarEntry) {
+  const proj = e.assignment?.subProject?.project
+  return {
+    start_at:
+      e.type === 'assignment' && proj?.event_start_at
+        ? proj.event_start_at
+        : e.start_at,
+    end_at:
+      e.type === 'assignment' && proj?.event_end_at
+        ? proj.event_end_at
+        : e.end_at,
+  }
+}
+
 function buildAssignmentFromEntry(
   e: ApiVendorCalendarEntry
 ): BookedSlotAssignment | null {
@@ -207,12 +225,15 @@ export function transformDayResponse(
               : v.id,
           },
           is_internal: v.emergency_schedules.length === 0,
-          booked_slots: langEntries.map((e) => ({
-            start_at: e.start_at,
-            end_at: e.end_at,
-            type: e.type,
-            assignment: buildAssignmentFromEntry(e),
-          })),
+          booked_slots: langEntries.map((e) => {
+            const times = entryTimesForNonVendor(e)
+            return {
+              start_at: times.start_at,
+              end_at: times.end_at,
+              type: e.type,
+              assignment: buildAssignmentFromEntry(e),
+            }
+          }),
           available_slots: tpm.available_slots
             .filter((s) => s.vendor_ids.includes(v.id))
             .map((s) => ({ start_at: s.start_at, end_at: s.end_at })),
@@ -290,9 +311,10 @@ export function transformDayResponse(
     const isOwn = !!entry || !!unassignedProject
     for (const langId of slot.languages) {
       if (!byLanguage[langId]) byLanguage[langId] = []
+      const entryTimes = entry ? entryTimesForNonVendor(entry) : null
       byLanguage[langId].push({
-        start_at: entry?.start_at ?? slot.start_at,
-        end_at: entry?.end_at ?? slot.end_at,
+        start_at: entryTimes?.start_at ?? slot.start_at,
+        end_at: entryTimes?.end_at ?? slot.end_at,
         type: isOwn ? (entry?.type ?? 'assignment') : 'external_calendar',
         assignment: entry
           ? buildAssignmentFromEntry(entry)
@@ -315,9 +337,10 @@ export function transformDayResponse(
   for (const e of assignmentEntries) {
     const built = buildAssignmentFromEntry(e)
     if (!built || !e.assignment_id) continue
+    const times = entryTimesForNonVendor(e)
     const slot: BookedSlot = {
-      start_at: e.start_at,
-      end_at: e.end_at,
+      start_at: times.start_at,
+      end_at: times.end_at,
       type: 'assignment',
       assignment: built,
     }
@@ -397,16 +420,19 @@ function buildVendorWeekData(
         const bookedHours = (v.calendar_entries ?? [])
           .filter((e) => {
             if (e.type !== 'assignment') return false
-            const eDate = e.start_at.slice(0, 10)
-            const eHour = new Date(e.start_at).getUTCHours()
+            const times = entryTimesForNonVendor(e)
+            const eDate = times.start_at.slice(0, 10)
+            const eHour = new Date(times.start_at).getUTCHours()
             return (
               eDate === dateStr && eHour >= blockHour && eHour < blockHour + 6
             )
           })
           .reduce((sum, e) => {
+            const times = entryTimesForNonVendor(e)
             return (
               sum +
-              (new Date(e.end_at).getTime() - new Date(e.start_at).getTime()) /
+              (new Date(times.end_at).getTime() -
+                new Date(times.start_at).getTime()) /
                 3600000
             )
           }, 0)
