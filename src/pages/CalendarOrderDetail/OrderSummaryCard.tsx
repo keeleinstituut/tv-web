@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
-import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import { useFetchCalendarClients } from 'hooks/requests/useUsers'
 import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
 import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import dayjs from 'dayjs'
@@ -46,11 +46,11 @@ const SummaryFields: FC = () => {
     formatMins,
   } = useOrderDetail()
 
-  const { users: clients } = useFetchInfiniteProjectPerson(
-    undefined,
-    'client',
-    isTPM
-  )
+  const {
+    clients,
+    search: clientSearch,
+    handleSearch: handleClientSearch,
+  } = useFetchCalendarClients(isTPM)
 
   if (isCreateMode) {
     return (
@@ -71,6 +71,8 @@ const SummaryFields: FC = () => {
                   .join(' '),
               }))}
               placeholder={t('calendar.select_client')}
+              searchQuery={clientSearch}
+              onSearch={handleClientSearch}
             />
           </div>
         )}
@@ -264,6 +266,8 @@ const SummaryFields: FC = () => {
                   .join(' '),
               }))}
               placeholder={t('calendar.select_client')}
+              searchQuery={clientSearch}
+              onSearch={handleClientSearch}
             />
           </div>
           <div className={classes.field}>

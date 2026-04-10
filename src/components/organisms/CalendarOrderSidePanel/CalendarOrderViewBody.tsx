@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { ServiceType } from 'types/calendar'
 import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
 import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
-import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import { useFetchCalendarClients } from 'hooks/requests/useUsers'
 import { calendarBookingStatusLabelKey } from 'helpers/calendarBookingStatus'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
@@ -58,11 +58,11 @@ const CalendarOrderViewBody: FC = () => {
   } = useSidePanel()
   const { isTranslator } = useCalendarRole()
 
-  const { users: clients } = useFetchInfiniteProjectPerson(
-    undefined,
-    'client',
-    isTPM && isEditing
-  )
+  const {
+    clients,
+    search: clientSearch,
+    handleSearch: handleClientSearch,
+  } = useFetchCalendarClients(isTPM && isEditing)
 
   const assignment = slot?.assignment
   const bookingStatusRole = isTPM
@@ -117,6 +117,8 @@ const CalendarOrderViewBody: FC = () => {
                     .join(' '),
                 }))}
                 placeholder={t('calendar.select_client')}
+                searchQuery={clientSearch}
+                onSearch={handleClientSearch}
               />
             </div>
           ) : assignment?.client ? (

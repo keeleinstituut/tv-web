@@ -20,6 +20,9 @@ interface Props {
   /** Remove trigger border/padding so the parent container provides the visual frame. */
   flat?: boolean
   searchable?: boolean
+  /** Server-side search: controlled query + callback. Overrides local filtering. */
+  searchQuery?: string
+  onSearch?: (query: string) => void
 }
 
 const CalendarSelect: FC<Props> = ({
@@ -31,24 +34,37 @@ const CalendarSelect: FC<Props> = ({
   disabled,
   flat,
   searchable,
+  searchQuery,
+  onSearch,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [query, setQuery] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
+  const isServerSearch = !!onSearch
+  const activeQuery = isServerSearch ? (searchQuery ?? '') : query
+
   useClickAway(() => setIsOpen(false), containerRef)
 
   useEffect(() => {
-    if (isOpen && searchable) {
-      setQuery('')
+    if (isOpen && (searchable || isServerSearch)) {
+      if (!isServerSearch) setQuery('')
       searchInputRef.current?.focus()
     }
-  }, [isOpen, searchable])
+  }, [isOpen, searchable, isServerSearch])
+
+  const handleQueryChange = (val: string) => {
+    if (isServerSearch) {
+      onSearch(val)
+    } else {
+      setQuery(val)
+    }
+  }
 
   const selected = options.find((o) => o.value === value)
   const filteredOptions =
-    searchable && query
+    searchable && query && !isServerSearch
       ? options.filter((o) =>
           o.label.toLowerCase().includes(query.toLowerCase())
         )
@@ -91,14 +107,14 @@ const CalendarSelect: FC<Props> = ({
 
       {isOpen && (
         <div className={classes.dropdown}>
-          {searchable && (
+          {(searchable || isServerSearch) && (
             <input
               ref={searchInputRef}
               className={classes.searchInput}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={activeQuery}
+              onChange={(e) => handleQueryChange(e.target.value)}
               onMouseDown={(e) => e.stopPropagation()}
-              placeholder="..."
+              placeholder="Otsi..."
             />
           )}
           {filteredOptions.map((opt) => (

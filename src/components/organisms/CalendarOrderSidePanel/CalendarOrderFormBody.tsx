@@ -2,7 +2,7 @@ import { FC, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import { ServiceType } from 'types/calendar'
-import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import { useFetchCalendarClients } from 'hooks/requests/useUsers'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
@@ -49,11 +49,11 @@ const CalendarOrderFormBody: FC = () => {
   const [isFilesOpen, setIsFilesOpen] = useState(false)
   const [isAddingComment, setIsAddingComment] = useState(false)
 
-  const { users: clients } = useFetchInfiniteProjectPerson(
-    undefined,
-    'client',
-    isTPM
-  )
+  const {
+    clients,
+    search: clientSearch,
+    handleSearch: handleClientSearch,
+  } = useFetchCalendarClients(isTPM)
 
   return (
     <>
@@ -79,6 +79,8 @@ const CalendarOrderFormBody: FC = () => {
                   .join(' '),
               }))}
               placeholder={t('calendar.select_client')}
+              searchQuery={clientSearch}
+              onSearch={handleClientSearch}
             />
           </div>
         )}

@@ -10,7 +10,7 @@ import {
   useCalendarDeleteFile,
   useUpdateCalendarOrderComment,
 } from 'hooks/requests/useCalendar'
-import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import { useFetchCalendarClients } from 'hooks/requests/useUsers'
 import { useAuth } from 'components/contexts/AuthContext'
 import EditIcon from 'assets/icons/edit.svg?react'
 import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
@@ -107,11 +107,11 @@ const CalendarMobileWizard: FC = () => {
     projectId: order?.id,
   })
   const { mutate: deleteFile } = useCalendarDeleteFile(order?.id)
-  const { users: clients } = useFetchInfiniteProjectPerson(
-    undefined,
-    'client',
-    isTPM
-  )
+  const {
+    clients,
+    search: clientSearch,
+    handleSearch: handleClientSearch,
+  } = useFetchCalendarClients(isTPM)
 
   useEffect(() => {
     if (!isEditing || isCreateMode) return
@@ -194,6 +194,8 @@ const CalendarMobileWizard: FC = () => {
                   .join(' '),
               }))}
               placeholder={t('calendar.select_client')}
+              searchQuery={clientSearch}
+              onSearch={handleClientSearch}
             />
           </div>
         )}
@@ -619,6 +621,8 @@ const CalendarMobileWizard: FC = () => {
                   .join(' '),
               }))}
               placeholder={t('calendar.select_client')}
+              searchQuery={clientSearch}
+              onSearch={handleClientSearch}
             />
           ) : (
             <span className={classes.viewValue}>
