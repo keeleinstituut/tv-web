@@ -32,8 +32,9 @@ const CalendarDayClientBookingRows: FC<Props> = ({
     [allBookedSlots]
   )
 
-  const langAvailSlots =
-    dayData?.available_slots_by_language?.[language.language.id]
+  const langAvailSlots = dayData?.available_slots_by_language
+    ? (dayData.available_slots_by_language[language.language.id] ?? [])
+    : undefined
 
   return (
     <>

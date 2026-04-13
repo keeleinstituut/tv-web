@@ -381,11 +381,7 @@ export function transformDayResponse(
     current_time: new Date().toISOString(),
     booked_slots: [],
     booked_slots_by_language: byLanguage,
-    // Omit available_slots_by_language for clients so that all non-past,
-    // non-booked slots render as bookable ("+ Vali aeg") instead of showing
-    // "Hõivatud" for slots where no translator is free. The client should
-    // only see their own orders and open booking slots.
-    available_slots_by_language: undefined,
+    available_slots_by_language: availByLanguage,
   }
 }
 
