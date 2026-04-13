@@ -309,13 +309,15 @@ export function transformDayResponse(
       ? findOverlappingUnassigned(slot.start_at, slot.end_at)
       : null
     const isOwn = !!entry || !!unassignedProject
+    // Client should only see their own orders, not other vendors' busy slots
+    if (!isOwn) continue
     for (const langId of slot.languages) {
       if (!byLanguage[langId]) byLanguage[langId] = []
       const entryTimes = entry ? entryTimesForNonVendor(entry) : null
       byLanguage[langId].push({
         start_at: entryTimes?.start_at ?? slot.start_at,
         end_at: entryTimes?.end_at ?? slot.end_at,
-        type: isOwn ? (entry?.type ?? 'assignment') : 'external_calendar',
+        type: entry?.type ?? 'assignment',
         assignment: entry
           ? buildAssignmentFromEntry(entry)
           : unassignedProject
@@ -379,7 +381,11 @@ export function transformDayResponse(
     current_time: new Date().toISOString(),
     booked_slots: [],
     booked_slots_by_language: byLanguage,
-    available_slots_by_language: availByLanguage,
+    // Omit available_slots_by_language for clients so that all non-past,
+    // non-booked slots render as bookable ("+ Vali aeg") instead of showing
+    // "Hõivatud" for slots where no translator is free. The client should
+    // only see their own orders and open booking slots.
+    available_slots_by_language: undefined,
   }
 }
 
