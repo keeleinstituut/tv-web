@@ -104,9 +104,6 @@ export interface OrderDetailContextValue {
   isCancelPending: boolean
   cancelCountdown: number
 
-  // Validation error from backend
-  formError: string
-
   // Handlers
   handleCreate: (comment?: string) => void
   handleSave: () => void

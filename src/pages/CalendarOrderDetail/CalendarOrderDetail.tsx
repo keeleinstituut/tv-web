@@ -20,7 +20,7 @@ import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useAuth } from 'components/contexts/AuthContext'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { showValidationErrorMessage, ValidationError } from 'api/errorHandler'
+import { showValidationErrorMessage } from 'api/errorHandler'
 import { useIsMobile } from 'hooks/useIsMobile'
 import { OrderDetailContext } from './OrderDetailContext'
 import OrderSummaryCard from './OrderSummaryCard'
@@ -112,7 +112,6 @@ const CalendarOrderDetail: FC = () => {
 
   // Pending comment (buffered for create, posted on submit)
   const [pendingComment, setPendingComment] = useState('')
-  const [formError, setFormError] = useState('')
 
   useEffect(() => {
     if (!isEditing || isCreateMode) return
@@ -283,7 +282,6 @@ const CalendarOrderDetail: FC = () => {
 
   const handleCreate = (comment?: string) => {
     if (!canCreateOrder || !startIso || !endIso) return
-    setFormError('')
     createOrder(
       {
         language_id: languageId,
@@ -312,12 +310,7 @@ const CalendarOrderDetail: FC = () => {
           navigate(`/calendar/${data.id}`)
         },
         onError: (err: unknown) => {
-          const validationErr = err as ValidationError
-          if (validationErr?.message) {
-            setFormError(validationErr.message)
-          } else {
-            showValidationErrorMessage(err)
-          }
+          showValidationErrorMessage(err)
         },
       }
     )
@@ -325,7 +318,6 @@ const CalendarOrderDetail: FC = () => {
 
   const handleSave = () => {
     if (!orderId) return
-    setFormError('')
     const saveStart = toCalendarApiDateTime(
       dayjs(`${selectedDate}T${startTimeInput}:00`).toISOString()
     )
@@ -360,19 +352,7 @@ const CalendarOrderDetail: FC = () => {
           })
         },
         onError: (err: unknown) => {
-          const validationErr = err as ValidationError
-          const msg = validationErr?.message ?? ''
-          if (msg.toLowerCase().includes('vendor is not available')) {
-            showNotification({
-              type: NotificationTypes.Error,
-              title: t('notification.error'),
-              content: t('calendar.vendor_not_available'),
-            })
-          } else if (msg) {
-            setFormError(msg)
-          } else {
-            showValidationErrorMessage(err)
-          }
+          showValidationErrorMessage(err)
         },
       }
     )
@@ -488,7 +468,6 @@ const CalendarOrderDetail: FC = () => {
     isCancelled,
     isCancelPending,
     cancelCountdown,
-    formError,
     handleCreate,
     handleSave,
     handleCancelOrder,

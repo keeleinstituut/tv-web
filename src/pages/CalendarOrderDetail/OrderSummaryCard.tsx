@@ -366,7 +366,6 @@ const OrderSummaryCard: FC = () => {
     pendingComment,
     canCreateOrder,
     isRefetchingOrder,
-    formError,
   } = useOrderDetail()
 
   return (
@@ -414,8 +413,6 @@ const OrderSummaryCard: FC = () => {
           {t('calendar.required_notice')}
         </p>
       )}
-
-      {formError && <div className={classes.formErrorBanner}>{formError}</div>}
 
       <div className={classes.summaryGrid}>
         <div className={classes.summaryLeft}>

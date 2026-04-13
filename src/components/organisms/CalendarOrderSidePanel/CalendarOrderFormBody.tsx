@@ -43,7 +43,6 @@ const CalendarOrderFormBody: FC = () => {
     setPendingFiles,
     pendingComment,
     setPendingComment,
-    formError,
   } = useSidePanel()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -59,9 +58,6 @@ const CalendarOrderFormBody: FC = () => {
   return (
     <>
       <div className={classes.form}>
-        {formError && (
-          <div className={classes.formErrorBanner}>{formError}</div>
-        )}
         <p className={classes.requiredNotice}>
           {t('calendar.required_notice')}
         </p>

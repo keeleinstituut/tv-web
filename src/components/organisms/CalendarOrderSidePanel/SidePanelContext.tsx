@@ -91,9 +91,6 @@ export interface SidePanelContextValue {
   addComment: (comment: string) => void
   isPostingComment: boolean
 
-  // Validation error from backend
-  formError: string
-
   // Actions
   handleSubmit: () => void
   handleStartEdit: () => void
