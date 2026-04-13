@@ -94,6 +94,33 @@ export function slotsForLanguageFromDay(
   return dayData.booked_slots_by_language[languageId] ?? []
 }
 
+/**
+ * Greedy bin-packing: pack sorted slots into the fewest rows possible.
+ * Each row contains non-overlapping slots. A new row is created only when
+ * a slot overlaps with every existing row.
+ */
+export function packSlotsIntoRows(sorted: BookedSlot[]): BookedSlot[][] {
+  const rows: BookedSlot[][] = []
+  const rowEnds: number[] = [] // track latest end time per row
+  for (const slot of sorted) {
+    const start = new Date(slot.start_at).getTime()
+    let placed = false
+    for (let r = 0; r < rows.length; r++) {
+      if (rowEnds[r] <= start) {
+        rows[r].push(slot)
+        rowEnds[r] = new Date(slot.end_at).getTime()
+        placed = true
+        break
+      }
+    }
+    if (!placed) {
+      rows.push([slot])
+      rowEnds.push(new Date(slot.end_at).getTime())
+    }
+  }
+  return rows
+}
+
 export function mergeClientPrebookSlot(
   language: CalendarLanguage,
   rawSlots: BookedSlot[],

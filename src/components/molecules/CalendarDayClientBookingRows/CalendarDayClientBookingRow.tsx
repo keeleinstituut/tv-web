@@ -9,8 +9,8 @@ import type { BookedSlot, CalendarLanguage } from 'types/calendar'
 
 interface Props {
   language: CalendarLanguage
-  /** The single booking rendered on this track */
-  rowSlot: BookedSlot
+  /** Slots packed onto this row (non-overlapping) */
+  rowSlots: BookedSlot[]
   /** All bookings for the language (for blocking drag / cell state) */
   allBookedSlots: BookedSlot[]
   langAvailSlots?: Array<{ start_at: string; end_at: string }>
@@ -20,7 +20,7 @@ interface Props {
 
 const CalendarDayClientBookingRow: FC<Props> = ({
   language,
-  rowSlot,
+  rowSlots,
   allBookedSlots,
   langAvailSlots,
   onSelectRange,
@@ -88,14 +88,17 @@ const CalendarDayClientBookingRow: FC<Props> = ({
             style={{ left: selectionLeft, width: selectionWidth }}
           />
         )}
-        <BookedSlotBlock
-          slot={rowSlot}
-          dayStartHour={dayStartHour}
-          onClick={onClickSlot}
-          alwaysLightBlue={false}
-          slotWidth={sw}
-          rowWidth={totalWidth}
-        />
+        {rowSlots.map((slot, idx) => (
+          <BookedSlotBlock
+            key={`${slot.start_at}-${slot.end_at}-${idx}`}
+            slot={slot}
+            dayStartHour={dayStartHour}
+            onClick={onClickSlot}
+            alwaysLightBlue={false}
+            slotWidth={sw}
+            rowWidth={totalWidth}
+          />
+        ))}
       </div>
     </div>
   )

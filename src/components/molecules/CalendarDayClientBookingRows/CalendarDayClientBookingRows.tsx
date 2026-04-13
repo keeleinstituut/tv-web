@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
-import { mergeClientPrebookSlot, sortBookedSlotsByStart } from 'helpers/calendarDayOverlaps'
+import { mergeClientPrebookSlot, sortBookedSlotsByStart, packSlotsIntoRows } from 'helpers/calendarDayOverlaps'
 import CalendarDayClientBookingRow from './CalendarDayClientBookingRow'
 import type { BookedSlot, CalendarDayResponse, CalendarLanguage } from 'types/calendar'
 
@@ -27,8 +27,8 @@ const CalendarDayClientBookingRows: FC<Props> = ({
     [language, rawSlots, sidePanelSelection]
   )
 
-  const sorted = useMemo(
-    () => sortBookedSlotsByStart(allBookedSlots),
+  const rows = useMemo(
+    () => packSlotsIntoRows(sortBookedSlotsByStart(allBookedSlots)),
     [allBookedSlots]
   )
 
@@ -38,11 +38,11 @@ const CalendarDayClientBookingRows: FC<Props> = ({
 
   return (
     <>
-      {sorted.map((rowSlot, idx) => (
+      {rows.map((rowSlots, idx) => (
         <CalendarDayClientBookingRow
-          key={`${language.language.id}-expanded-${idx}-${rowSlot.start_at}-${rowSlot.end_at}`}
+          key={`${language.language.id}-row-${idx}`}
           language={language}
-          rowSlot={rowSlot}
+          rowSlots={rowSlots}
           allBookedSlots={allBookedSlots}
           langAvailSlots={langAvailSlots}
           onSelectRange={onSelectRange}
