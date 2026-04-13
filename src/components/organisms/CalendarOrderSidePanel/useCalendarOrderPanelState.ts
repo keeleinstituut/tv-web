@@ -30,6 +30,7 @@ import {
 } from 'hooks/requests/useCalendar'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
+import { showValidationErrorMessage, ValidationError } from 'api/errorHandler'
 import { ServiceType, UpdateOrderPayload } from 'types/calendar'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
@@ -175,6 +176,7 @@ export function useCalendarOrderPanelState(): {
   const [isMetaOpen, setIsMetaOpen] = useState(false)
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [pendingComment, setPendingComment] = useState('')
+  const [formError, setFormError] = useState('')
 
   const isOpen = sidePanelSelection !== null
   const isViewMode = !!sidePanelSelection?.slot
@@ -290,6 +292,7 @@ export function useCalendarOrderPanelState(): {
       setIsCancelPending(false)
       setCancelCountdown(60)
       setIsMetaOpen(false)
+      setFormError('')
     } else {
       if (sidePanelSelection?.vendorId) {
         setVendorId(sidePanelSelection.vendorId)
@@ -388,6 +391,7 @@ export function useCalendarOrderPanelState(): {
 
   const handleSubmit = () => {
     if (!language || !startIso || !serviceType) return
+    setFormError('')
     const computedEndIso = dayjs(startIso).add(durationMinutes, 'minute').toISOString()
     createOrder(
       {
@@ -415,6 +419,14 @@ export function useCalendarOrderPanelState(): {
             title: t('notification.announcement'),
             content: t('success.calendar_order_created'),
           })
+        },
+        onError: (err: unknown) => {
+          const validationErr = err as ValidationError
+          if (validationErr?.message) {
+            setFormError(validationErr.message)
+          } else {
+            showValidationErrorMessage(err)
+          }
         },
       }
     )
@@ -505,19 +517,25 @@ export function useCalendarOrderPanelState(): {
       payload.end_at = editedEndIso
     }
 
+    setFormError('')
     updateOrder(payload, {
       onSuccess: () => {
         setIsEditing(false)
         editBaselineRef.current = null
       },
       onError: (err: unknown) => {
-        const msg = (err as { message?: string })?.message ?? ''
+        const validationErr = err as ValidationError
+        const msg = validationErr?.message ?? ''
         if (msg.toLowerCase().includes('vendor is not available')) {
           showNotification({
             type: NotificationTypes.Error,
             title: t('notification.error'),
             content: t('calendar.vendor_not_available'),
           })
+        } else if (msg) {
+          setFormError(msg)
+        } else {
+          showValidationErrorMessage(err)
         }
       },
     })
@@ -613,6 +631,7 @@ export function useCalendarOrderPanelState(): {
       setPendingComment,
       addComment,
       isPostingComment,
+      formError,
       handleSubmit,
       handleStartEdit,
       handleCancelEdit,
@@ -629,7 +648,7 @@ export function useCalendarOrderPanelState(): {
       clientInstitutionId, domainIds, vendorId, durationMinutes, isEditing,
       isConfirmingCancel, cancelReason, isCancelled, isCancelPending,
       cancelCountdown, isMetaOpen, isRequiredFilled, isCreating, isUpdating,
-      isCancelling, isDecliningCancel, domains, vendors, order, isAddingFiles,
+      isCancelling, isDecliningCancel, formError, domains, vendors, order, isAddingFiles,
       isDeletingFile, pendingFiles, pendingComment, isPostingComment,
       sidePanelSelection?.vendorName, handleClose, projectId,
     ]

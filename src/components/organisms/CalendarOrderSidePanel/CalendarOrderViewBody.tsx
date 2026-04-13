@@ -55,6 +55,7 @@ const CalendarOrderViewBody: FC = () => {
     order,
     isMetaOpen,
     setIsMetaOpen: onSetIsMetaOpen,
+    formError,
   } = useSidePanel()
   const { isTranslator } = useCalendarRole()
 
@@ -93,6 +94,9 @@ const CalendarOrderViewBody: FC = () => {
               : (t(bookingStatusKey as never) as string)}
         </div>
 
+        {isEditing && formError && (
+          <div className={classes.formErrorBanner}>{formError}</div>
+        )}
         {isEditing && (
           <p className={classes.requiredNotice}>
             {t('calendar.required_fields')}

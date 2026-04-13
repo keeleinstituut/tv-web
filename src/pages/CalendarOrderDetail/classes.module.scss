@@ -101,6 +101,16 @@
   color: $cal-label;
 }
 
+.formErrorBanner {
+  padding: 10px 12px;
+  border-radius: $border-radius-4;
+  background: #fdecea;
+  border: 1px solid #d93025;
+  font-size: $font-size-14;
+  color: #d93025;
+  line-height: 1.4;
+}
+
 .requiredNotice {
   font-size: $font-size-14;
   color: $cal-text;

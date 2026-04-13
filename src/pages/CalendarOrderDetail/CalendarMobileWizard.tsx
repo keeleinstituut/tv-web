@@ -90,6 +90,7 @@ const CalendarMobileWizard: FC = () => {
     isCancelling,
     isRefetchingOrder,
     showScheduledCancelBanner,
+    formError,
   } = useOrderDetail()
 
   const { institutionUserId } = useAuth()
@@ -485,6 +486,9 @@ const CalendarMobileWizard: FC = () => {
     return (
       <div className={classes.wizard}>
         {renderProgress()}
+        {formError && (
+          <div className={classes.formErrorBanner}>{formError}</div>
+        )}
         <div className={classes.stepHeader}>
           <div className={classes.stepCircle}>{step}</div>
           <h2 className={classes.stepTitle}>{STEP_TITLES[step - 1]}</h2>
@@ -1078,6 +1082,7 @@ const CalendarMobileWizard: FC = () => {
       </div>
 
       {renderProgress()}
+      {formError && <div className={classes.formErrorBanner}>{formError}</div>}
       {renderStepHeader()}
       {renderStepContent()}
 
