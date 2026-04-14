@@ -31,10 +31,10 @@ $border-color: #e2e4e9;
 }
 
 .monthCenter {
-  flex: 1;
   display: flex;
   align-items: center;
   overflow: hidden;
+  padding-right: 8px;
 }
 
 .monthLabel {
@@ -90,14 +90,15 @@ $border-color: #e2e4e9;
 }
 
 .cornerCellRight {
-  margin-left: auto;
-  width: $label-width;
-  min-width: $label-width;
+  margin-left: -48px;
+  width: 40px;
+  min-width: 40px;
   background: $color-white;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-shrink: 0;
+  z-index: 2;
 }
 
 // --- Day header column ---
@@ -164,7 +165,7 @@ $border-color: #e2e4e9;
   z-index: 3;
   background: $color-white;
   width: max-content;
-  min-width: calc(#{$label-width} + #{$day-width * 7} + #{$label-width});
+  min-width: calc(#{$label-width} + #{$day-width * 7} + 40px);
 }
 
 .timeAxis {

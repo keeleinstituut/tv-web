@@ -41,7 +41,10 @@ export function getWeeksForMonth(date: Dayjs): WeekRange[] {
   return weeks
 }
 
-function currentNeedleX(weeks: WeekRange[], weekColWidth: number): number | null {
+function currentNeedleX(
+  weeks: WeekRange[],
+  weekColWidth: number
+): number | null {
   const now = dayjs()
   const weekIdx = weeks.findIndex(
     (w) =>

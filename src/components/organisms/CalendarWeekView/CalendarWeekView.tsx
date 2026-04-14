@@ -18,7 +18,7 @@ import CalendarLoadingOverlay from 'components/atoms/CalendarLoadingOverlay/Cale
 import classes from './classes.module.scss'
 
 const MIN_DAY_WIDTH = 160
-const LABEL_RIGHT_WIDTH = 64 // cornerCellRight width
+const LABEL_RIGHT_WIDTH = 40 // cornerCellRight width
 
 // Estonian day letters: index matches dayjs .day() (0=Sun)
 const ET_DAY_LETTERS = ['P', 'E', 'T', 'K', 'N', 'R', 'L']
