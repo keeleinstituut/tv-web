@@ -107,6 +107,7 @@ export const endpoints = {
   CALENDAR_VENDOR_ENTRY: (entryId: string) =>
     translationOrder(`calendar/vendor-entries/${entryId}`),
   CALENDAR_IMPORT: translationOrder('calendar/import'),
+  CALENDAR_IMPORT_BULK: translationOrder('calendar/import/bulk'),
   CALENDAR_SETTINGS: translationOrder('calendar/settings'),
 
   TRANSLATION_MEMORIES: translationOrder('catv2/translation-memories'),

@@ -496,12 +496,35 @@ export const useCreateEmergencySchedule = () => {
 }
 
 export const useImportCalendar = () => {
+  const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ file, importEndDate }: { file: File; importEndDate: string }) =>
+    mutationFn: ({
+      file,
+      importEndDate,
+    }: {
+      file: File
+      importEndDate: string
+    }) =>
       apiClient.postForm(endpoints.CALENDAR_IMPORT, {
         file,
         import_end_date: importEndDate,
       }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-imports'] })
+    },
+  })
+}
+
+export const useDeleteCalendarImportBulk = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => apiClient.delete(endpoints.CALENDAR_IMPORT_BULK),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['calendar-imports'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-month'] })
+    },
   })
 }
 

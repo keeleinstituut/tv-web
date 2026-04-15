@@ -16,6 +16,7 @@ import {
   ApiCalendarWeekResponse,
   ApiCalendarMonthResponse,
   ApiSlotMatchingVendor,
+  ApiVendorCalendarEntry,
   SlotMatchingVendor,
   transformLanguages,
   transformDayResponse,
@@ -329,7 +330,7 @@ export const useFetchVendorCalendarEntries = (params: {
     queryFn: () =>
       apiClient
         .get(endpoints.CALENDAR_VENDOR_ENTRIES, params)
-        .then((res: { data: unknown[] }) => res.data),
+        .then((res: { data: ApiVendorCalendarEntry[] }) => res.data),
     enabled: !!params.date_from && !!params.date_to,
   })
   return { isLoading, isError, entries: data ?? [] }
@@ -394,6 +395,26 @@ const DEFAULT_CALENDAR_SETTINGS: CalendarSettings = {
   buffer_before_minutes: 30,
   buffer_after_minutes: 30,
   default_project_type_id: null,
+}
+
+export interface CalendarImport {
+  id: string
+  vendor_id: string
+  date_from: string
+  date_to: string
+  events_count: number
+  created_at: string
+}
+
+export const useFetchCalendarImports = () => {
+  const { isLoading, data } = useQuery<CalendarImport[]>({
+    queryKey: ['calendar-imports'],
+    queryFn: async () => {
+      const res = await apiClient.get(endpoints.CALENDAR_IMPORT)
+      return res?.data ?? []
+    },
+  })
+  return { isLoading, imports: data ?? [] }
 }
 
 export const useFetchCalendarSettings = () => {

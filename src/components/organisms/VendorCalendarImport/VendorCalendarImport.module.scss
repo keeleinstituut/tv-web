@@ -45,11 +45,10 @@
 }
 
 
-.importButton {
-  align-self: flex-start;
+.buttonRow {
   display: flex;
   align-items: center;
-  gap: variables.spacing(1);
+  gap: variables.spacing(2);
   margin-top: variables.spacing(2);
 }
 
