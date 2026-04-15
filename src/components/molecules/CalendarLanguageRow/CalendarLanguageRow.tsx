@@ -64,6 +64,7 @@ function getSlotClass(
     case 'external_calendar':
       return classes.slotExternal
     case 'vacation':
+    case 'absence':
       return classes.slotVacation
     case 'prebook':
       return classes.slotPrebook
@@ -151,7 +152,7 @@ export const BookedSlotBlock: FC<{
     )
   }
 
-  if (slot.type === 'vacation') {
+  if (slot.type === 'vacation' || slot.type === 'absence') {
     const vacLeft = rowWidth !== undefined ? Math.max(left, 0) : left
     const vacWidth =
       rowWidth !== undefined

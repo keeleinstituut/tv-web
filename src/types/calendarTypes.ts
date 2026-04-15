@@ -29,6 +29,7 @@ export type SlotType =
   | 'external_calendar'
   | 'vacation'
   | 'prebook'
+  | 'absence'
 
 export interface CalendarLanguage {
   language: {
@@ -388,7 +389,7 @@ export interface ApiVendorCalendarEntry {
   vendor_id: string
   start_at: string
   end_at: string
-  type: 'assignment' | 'prebook' | 'external_calendar' | 'vacation'
+  type: 'assignment' | 'prebook' | 'external_calendar' | 'vacation' | 'absence'
   assignment_id: string | null
   assignment?: ApiAssignmentSummary | null
 }

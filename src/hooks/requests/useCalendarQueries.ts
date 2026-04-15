@@ -30,7 +30,7 @@ import {
   transformProjectDetail,
   unwrapCalendarProjectPayload,
 } from './calendarOrderDetailTransform'
-import { EmergencySchedule } from 'types/vendors'
+import { EmergencySchedule, VendorAbsence } from 'types/vendors'
 
 dayjs.extend(isoWeek)
 
@@ -317,10 +317,15 @@ export const useFetchCalendarOrderDetail = (id: string | null) => {
 export const useFetchVendorCalendarEntries = (params: {
   date_from: string
   date_to: string
-  assignments_only?: boolean
+  type?: 'assignment' | 'external_calendar' | 'vacation' | 'prebook' | 'absence'
 }) => {
   const { isLoading, isError, data } = useQuery({
-    queryKey: ['vendor-calendar-entries', params.date_from, params.date_to],
+    queryKey: [
+      'vendor-calendar-entries',
+      params.date_from,
+      params.date_to,
+      params.type,
+    ],
     queryFn: () =>
       apiClient
         .get(endpoints.CALENDAR_VENDOR_ENTRIES, params)
@@ -328,6 +333,22 @@ export const useFetchVendorCalendarEntries = (params: {
     enabled: !!params.date_from && !!params.date_to,
   })
   return { isLoading, isError, entries: data ?? [] }
+}
+
+export const useFetchVendorAbsences = (vendorId: string | null | undefined) => {
+  const dateFrom = dayjs().format('YYYY-MM-DD')
+  const { isLoading, isError, data } = useQuery<VendorAbsence[]>({
+    queryKey: ['vendor-absences', dateFrom],
+    queryFn: () =>
+      apiClient
+        .get(endpoints.CALENDAR_VENDOR_ENTRIES, {
+          type: 'absence',
+          date_from: dateFrom,
+        })
+        .then((res: { data: VendorAbsence[] }) => res.data ?? []),
+  })
+  const absences = (data ?? []).filter((a) => a.vendor_id === vendorId)
+  return { isLoading, isError, absences }
 }
 
 export const useFetchVendorCalendar = (

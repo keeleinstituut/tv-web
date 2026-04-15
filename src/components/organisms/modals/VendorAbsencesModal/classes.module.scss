@@ -1,0 +1,30 @@
+@use 'styles/variables' as variables;
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(4);
+  margin: variables.spacing(6) 0;
+  padding-bottom: 220px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(3);
+  flex-wrap: wrap;
+}
+
+.datePicker {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.timeSelect {
+  min-width: 80px;
+}
+
+.deleteButton {
+  margin-left: auto;
+}

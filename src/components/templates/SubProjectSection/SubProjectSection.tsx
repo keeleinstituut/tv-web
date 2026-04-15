@@ -177,7 +177,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
               classes.startWorkFlowNotification,
               !canStartWorkflow && classes.warning
             )}
-            hidden={!isExpanded || isClientView}
+            hidden={!isExpanded || isClientView || isVerbal}
             children={
               <Button
                 children={t('button.send_sub_project_to_vendors')}

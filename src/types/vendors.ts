@@ -155,3 +155,11 @@ export interface EmergencySchedule {
   start_date: string
   end_date: string
 }
+
+export interface VendorAbsence {
+  id: string
+  vendor_id: string
+  start_at: string
+  end_at: string
+  comment?: string | null
+}

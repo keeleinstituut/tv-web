@@ -37,6 +37,7 @@ import { ConfirmAssignmentFinishedModalProps } from './ConfirmAssignmentFinished
 import { ConfirmSendToPreviousAssignmentModalProps } from './ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal'
 import { TranslationMemoryBulkExportModalProps } from './TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal'
 import { EmoSchedulesModalProps } from './EmoSchedulesModal/EmoSchedulesModal'
+import { VendorAbsencesModalProps } from './VendorAbsencesModal/VendorAbsencesModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -152,6 +153,10 @@ const EmoSchedulesModal = lazy(
   () => import('./EmoSchedulesModal/EmoSchedulesModal')
 )
 
+const VendorAbsencesModal = lazy(
+  () => import('./VendorAbsencesModal/VendorAbsencesModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -184,6 +189,7 @@ export enum ModalTypes {
   ConfirmSendToPreviousAssignment = 'confirmSendToPreviousAssignment',
   TranslationMemoryBulkExportModal = 'translationMemoryBulkExportModal',
   EmoSchedules = 'emoSchedules',
+  VendorAbsences = 'vendorAbsences',
 }
 
 // Add other modal props types here as well
@@ -218,6 +224,7 @@ type ModalPropTypes =
   | Omit<ConfirmSendToPreviousAssignmentModalProps, 'closeModal'>
   | Omit<TranslationMemoryBulkExportModalProps, 'closeModal'>
   | Omit<EmoSchedulesModalProps, 'closeModal'>
+  | Omit<VendorAbsencesModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -253,6 +260,7 @@ const MODALS = {
   [ModalTypes.TranslationMemoryBulkExportModal]:
     TranslationMemoryBulkExportModal,
   [ModalTypes.EmoSchedules]: EmoSchedulesModal,
+  [ModalTypes.VendorAbsences]: VendorAbsencesModal,
 }
 
 interface RefType {

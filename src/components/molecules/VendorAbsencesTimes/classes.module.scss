@@ -1,0 +1,22 @@
+@use 'styles/variables' as variables;
+
+.dateContainer {
+  display: flex;
+  height: max-content;
+
+  .bold {
+    font-weight: bold;
+    margin-right: variables.spacing(2);
+  }
+  .blue {
+    color: variables.$color-primary;
+    margin-right: variables.spacing(4);
+  }
+  .editButton {
+    padding: variables.spacing(0.3);
+    svg {
+      width: 21px;
+      height: 20px;
+    }
+  }
+}

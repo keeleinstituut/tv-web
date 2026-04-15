@@ -505,6 +505,51 @@ export const useImportCalendar = () => {
   })
 }
 
+export const useCreateVendorAbsence = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      vendor_id,
+      start_at,
+      end_at,
+      comment,
+    }: {
+      vendor_id: string
+      start_at: string
+      end_at: string
+      comment?: string
+    }) =>
+      apiClient.post(endpoints.CALENDAR_VENDOR_ENTRIES, {
+        vendor_id,
+        start_at: toCalendarApiDateTime(start_at),
+        end_at: toCalendarApiDateTime(end_at),
+        ...(comment ? { comment } : {}),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vendor-absences'] })
+      queryClient.invalidateQueries({ queryKey: ['vendor-calendar-entries'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-month'] })
+    },
+  })
+}
+
+export const useDeleteVendorAbsence = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (entryId: string) =>
+      apiClient.delete(endpoints.CALENDAR_VENDOR_ENTRY(entryId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vendor-absences'] })
+      queryClient.invalidateQueries({ queryKey: ['vendor-calendar-entries'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-month'] })
+    },
+  })
+}
+
 export const useDeleteEmergencySchedule = () => {
   const queryClient = useQueryClient()
   return useMutation({

@@ -10,6 +10,7 @@ import { includes } from 'lodash'
 import { Privileges } from 'types/privileges'
 import { useTranslation } from 'react-i18next'
 import EmoSchedulesTimes from 'components/molecules/EmoSchedulesTimes/EmoSchedulesTimes'
+import VendorAbsencesTimes from 'components/molecules/VendorAbsencesTimes/VendorAbsencesTimes'
 
 const VendorPage: FC = () => {
   const { t } = useTranslation()
@@ -33,6 +34,9 @@ const VendorPage: FC = () => {
       </div>
 
       <EmoSchedulesTimes vendorId={vendor.id} />
+      {includes(userPrivileges, Privileges.ManageProject) && (
+        <VendorAbsencesTimes vendorId={vendor.id} />
+      )}
       <VendorForm vendor={vendor} />
       <VendorPriceListForm vendor={vendor} />
     </>

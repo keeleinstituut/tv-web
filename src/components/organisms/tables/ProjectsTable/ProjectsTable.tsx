@@ -148,6 +148,7 @@ const ProjectsTable: FC = () => {
     setSelectedValues,
   } = useLanguageDirections({ includeValues: projectLanguages })
 
+  const canListUsers = includes(userPrivileges, Privileges.ManageProject)
   const {
     users: usersData,
     handleFilterChange: usersFetchHandleFilterChange,
@@ -156,7 +157,8 @@ const ProjectsTable: FC = () => {
     {
       per_page: 50,
     },
-    'client'
+    'client',
+    canListUsers
   )
 
   const userFilterValues = useMemo(() => {
