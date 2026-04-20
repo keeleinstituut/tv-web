@@ -263,14 +263,19 @@ const TaskContent: FC<TaskContentProps> = ({
             {event_start_at ? formattedDate(event_start_at) : '-'}
           </p>
         </span>
-        {isVerbalType && event_start_at && deadline_at && (
-          <span className={classes.taskContainer}>
-            <p className={classes.taskDetails}>{t('calendar.duration')}</p>
-            <p className={classes.taskContent}>
-              {formatDuration(event_start_at, deadline_at)}
-            </p>
-          </span>
-        )}
+        {isVerbalType &&
+          event_start_at &&
+          (projectData?.event_end_at || deadline_at) && (
+            <span className={classes.taskContainer}>
+              <p className={classes.taskDetails}>{t('calendar.duration')}</p>
+              <p className={classes.taskContent}>
+                {formatDuration(
+                  event_start_at,
+                  projectData?.event_end_at || deadline_at!
+                )}
+              </p>
+            </span>
+          )}
         {!isVerbalType && (
           <span className={classes.taskContainer}>
             <p className={classes.taskDetails}>{t('label.deadline_at')}</p>
