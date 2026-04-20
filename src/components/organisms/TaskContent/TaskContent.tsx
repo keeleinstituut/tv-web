@@ -10,11 +10,11 @@ import {
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import { filter, isEmpty, isEqual, map, split } from 'lodash'
+import { filter, includes, isEmpty, isEqual, map, split, without, values } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
-import { SourceFile } from 'types/projects'
+import { SourceFile, TypesWithStartTime } from 'types/projects'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 import { formatDuration } from 'helpers/calendar'
@@ -87,10 +87,14 @@ const TaskContent: FC<TaskContentProps> = ({
 
   const projectData = project || taskProject
 
-  const isVerbalType =
-    !!projectData?.type_classifier_value?.project_type_config
-      ?.is_start_date_supported &&
-    projectData?.type_classifier_value?.value !== 'POST_TRANSLATION'
+  const VERBAL_TYPES = without(
+    values(TypesWithStartTime),
+    TypesWithStartTime.PostTranslation
+  )
+  const isVerbalType = includes(
+    VERBAL_TYPES,
+    projectData?.type_classifier_value?.value
+  )
 
   const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
     id: sub_project_id,
