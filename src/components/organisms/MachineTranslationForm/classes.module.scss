@@ -1,0 +1,213 @@
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
+
+// .container {
+//   display: flex;
+//   flex-direction: column;
+//   gap: 24px;
+//   max-width: 900px;
+// }
+
+.machineTranslationFormContainer {
+  display: flex;
+  flex-direction: column;
+  border-radius: variables.$border-radius-6;
+  border: 1px solid variables.$color-border;
+  // padding: variables.spacing(4) 0;
+  padding: variables.spacing(6) variables.spacing(4);
+}
+
+.formRow {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+
+  padding-bottom: variables.spacing(6);
+}
+
+.translateButtonContainer {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.langSwapButton {
+  align-self: center;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.iconButton {
+  padding: variables.spacing(1);
+
+  svg {
+    padding: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  svg g path,
+  svg path {
+    fill: variables.$color-input-main;
+    fill-opacity: 1;
+  }
+}
+
+.modeToggle {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 6px;
+  width: fit-content;
+  overflow: hidden;
+}
+
+.modeBtn {
+  padding: 8px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary, #6b7280);
+  transition: background-color 0.15s;
+
+  &:hover {
+    background: var(--bg-hover, #f3f4f6);
+  }
+}
+
+.activeMode {
+  background: var(--primary-color, variables.$color-primary);
+  color: #fff;
+
+  &:hover {
+    background: var(--primary-color, variables.$color-primary);
+  }
+}
+
+.textSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.textAreaWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+
+  textarea {
+    resize: none;
+  }
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary, #111827);
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary-color, #003dae);
+  }
+}
+
+.resultTextarea {
+  background: var(--bg-secondary, #f9fafb);
+  color: var(--text-primary, #111827);
+}
+
+.fileSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fileImport {
+  flex: 1;
+}
+
+.fileImportListContainer {
+  display: block;
+  max-width: none;
+
+  li {
+    padding: variables.spacing(2) 0;
+  }
+}
+
+.fileStatus {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.fileTranslationJobsContainer {
+  // margin-top: 99px;
+  flex: 1;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+}
+
+.fileTranslationJobs {
+  margin-top: variables.spacing(2);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 6px;
+  padding: variables.spacing(4) variables.spacing(3);
+  gap: 8px;
+}
+
+.formAsOrderButton {
+  align-self: flex-end;
+  margin-bottom: variables.spacing(6);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status_pending,
+.status_processing {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status_completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status_failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.errorText {
+  color: var(--color-error, #dc2626);
+  font-size: 14px;
+  margin: 0;
+}

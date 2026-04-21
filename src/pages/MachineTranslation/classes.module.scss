@@ -1,0 +1,24 @@
+@use 'styles/variables' as variables;
+
+.header {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  align-items: center;
+  grid-gap: variables.spacing(4);
+  padding-bottom: variables.spacing(6);
+}
+
+.formContainer {
+  background-color: variables.$color-white;
+}
+
+
+// .container {
+//   padding: 24px;
+
+//   h1 {
+//     margin-bottom: 24px;
+//     font-size: 24px;
+//     font-weight: 600;
+//   }
+// }

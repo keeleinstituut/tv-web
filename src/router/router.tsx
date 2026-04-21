@@ -42,6 +42,7 @@ import CalendarOrderBreadcrumb from 'components/molecules/Breadcrumbs/CalendarOr
 import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
 import Terms from 'pages/Terms/Terms'
+import MachineTranslation from 'pages/MachineTranslation/MachineTranslation'
 
 // import icons
 
@@ -59,6 +60,7 @@ import TechnicalIcon from 'assets/icons/technical.svg?react'
 import ManualIcon from 'assets/icons/question_mark.svg?react'
 import TermsIcon from 'assets/icons/terms_icon.svg?react'
 import CalendarIcon from 'assets/icons/calendar_menu.svg?react'
+import MachineTranslationIcon from 'assets/icons/memories.svg?react'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,
@@ -254,6 +256,16 @@ export const protectedRoutes: FullRouteObject[] = [
           Privileges.DeleteTm,
         ],
       },
+    ],
+  },
+  {
+    path: 'machine-translation',
+    label: i18n.t('menu.machine_translation'),
+    element: <MachineTranslation />,
+    Icon: MachineTranslationIcon,
+    privileges: [
+      Privileges.UseMachineTranslationETranslation,
+      Privileges.UseMachineTranslationAzureOpenAI,
     ],
   },
   {

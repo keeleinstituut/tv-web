@@ -10,6 +10,7 @@ import dayjs from 'dayjs'
 import DepartmentManagement from 'components/molecules/DepartmentManagement/DepartmentManagement'
 import AuditLogManagement from 'components/molecules/AuditLogManagement/AuditLogManagement'
 import CalendarSettingsManagement from 'components/molecules/CalendarSettingsManagement/CalendarSettingsManagement'
+import AzureOpenAISettingsManagement from 'components/molecules/AzureOpenAISettingsManagement/AzureOpenAISettingsManagement'
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
@@ -48,6 +49,7 @@ const InstitutionSettings: FC = () => {
       <DepartmentManagement />
       <AuditLogManagement />
       <CalendarSettingsManagement />
+      <AzureOpenAISettingsManagement />
     </>
   )
 }

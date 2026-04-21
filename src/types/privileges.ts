@@ -45,6 +45,10 @@ export enum Privileges {
   EditUserVacation = 'EDIT_USER_VACATION',
   EditAuditLogSettings = 'EDIT_AUDIT_LOG_SETTINGS',
   ChangeProjectManager = 'CHANGE_PROJECT_MANAGER',
+
+  EditMachineTranslationSettings = 'EDIT_MACHINE_TRANSLATION_SETTINGS',
+  UseMachineTranslationETranslation = 'USE_MACHINE_TRANSLATION_ETRANSLATION',
+  UseMachineTranslationAzureOpenAI = 'USE_MACHINE_TRANSLATION_AZURE_OPENAI',
 }
 
 export type PrivilegeKey = `${Privileges}`

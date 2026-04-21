@@ -27,6 +27,7 @@ export enum DropdownSizeTypes {
   M = 'm',
   S = 's',
   XS = 'xs',
+  WFULL = 'w-full',
 }
 export type DropDownOptions = {
   label: string
