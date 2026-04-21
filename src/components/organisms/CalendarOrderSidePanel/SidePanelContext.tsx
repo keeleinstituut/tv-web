@@ -40,7 +40,6 @@ export interface SidePanelContextValue {
   domainIds: string[]
   setDomainIds: (v: string[]) => void
   vendorId: string
-  vendorLocked: boolean
   setVendorId: (v: string) => void
   durationMinutes: number
   setDurationMinutes: (v: number | ((prev: number) => number)) => void
