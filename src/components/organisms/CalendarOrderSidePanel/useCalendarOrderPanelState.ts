@@ -21,6 +21,7 @@ import {
   useCreatePrebook,
   useCancelPrebook,
   useFetchCalendarOrderDetail,
+  useFetchCalendarAssignmentDetail,
   useCalendarAddFiles,
   useCalendarDeleteFile,
   useCalendarDownloadFile,
@@ -50,7 +51,7 @@ interface FormState {
 
 const INITIAL_FORM: FormState = {
   referenceNumber: '',
-  serviceType: '',
+  serviceType: 'kaugtolge',
   location: '',
   selectedDate: '',
   startTimeInput: '',
@@ -194,8 +195,16 @@ export function useCalendarOrderPanelState(): {
     startIso && endIso ? dayjs(endIso).diff(dayjs(startIso), 'minute') : 60
 
   const projectId = slot?.assignment?.sub_project?.id
+  const assignmentId = slot?.assignment?.id
 
-  const { order } = useFetchCalendarOrderDetail(projectId ?? null)
+  const useAssignmentEndpoint = isTranslator && !isTPM
+  const { order: projectOrder } = useFetchCalendarOrderDetail(
+    !useAssignmentEndpoint ? (projectId ?? null) : null
+  )
+  const { order: assignmentOrder } = useFetchCalendarAssignmentDetail(
+    useAssignmentEndpoint ? (assignmentId ?? null) : null
+  )
+  const order = useAssignmentEndpoint ? assignmentOrder : projectOrder
   const { mutate: addFilesMutate, isPending: isAddingFiles } =
     useCalendarAddFiles(projectId)
   const { mutate: deleteFileMutate, isPending: isDeletingFile } =
@@ -255,26 +264,13 @@ export function useCalendarOrderPanelState(): {
     return dayjs(editedStartIso).add(durationMinutes, 'minute').toISOString()
   }, [isEditing, editedStartIso, durationMinutes, endIso])
 
-  const vendorLocked = !!sidePanelSelection?.vendorId
   const effectiveStartIso = isEditing ? editedStartIso : startIso
   const effectiveEndIso = isEditing ? editedEndIso : endIso
   const slotMatchingParams =
-    isFormMode && isTPM && !vendorLocked && effectiveStartIso && effectiveEndIso && language
+    isFormMode && isTPM && effectiveStartIso && effectiveEndIso && language
       ? { start_at: effectiveStartIso, end_at: effectiveEndIso, language_id: language.language.id }
       : null
-  const { vendors: fetchedVendors } = useFetchSlotMatching(slotMatchingParams)
-  const vendors =
-    vendorLocked && sidePanelSelection?.vendorId
-      ? [
-          {
-            id: sidePanelSelection.vendorId,
-            name: sidePanelSelection.vendorName ?? '',
-            institution_user_id: '',
-            is_internal: true,
-            is_emo: false,
-          },
-        ]
-      : fetchedVendors
+  const { vendors } = useFetchSlotMatching(slotMatchingParams)
 
   const { tags: domains } = useFetchCalendarTags()
 
@@ -495,7 +491,7 @@ export function useCalendarOrderPanelState(): {
     if (!b || !areSortedIdArraysEqual(domainIds, b.domainIds)) {
       payload.tag_ids = domainIds.length ? domainIds : undefined
     }
-    if (isTPM && !vendorLocked && (!b || vendorId !== b.vendorId)) {
+    if (isTPM && (!b || vendorId !== b.vendorId)) {
       payload.vendor_id = vendorId || undefined
     }
 
@@ -577,7 +573,6 @@ export function useCalendarOrderPanelState(): {
       domainIds,
       setDomainIds,
       vendorId,
-      vendorLocked,
       setVendorId,
       durationMinutes,
       setDurationMinutes,

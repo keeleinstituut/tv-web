@@ -99,6 +99,8 @@ const handleError = async (error?: AxiosError) => {
     case 401:
       rawLogout()
       throw error
+    case 403:
+      throw error
     case 422:
       throw error?.response?.data
     case 413:

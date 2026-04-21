@@ -154,7 +154,7 @@ const CalendarMobileWizard: FC = () => {
       !!selectedDate &&
       !!startTimeInput &&
       !!languageId &&
-      (!isTPM || (!!clientInstitutionId && !!vendorId))
+      (!isTPM || !!clientInstitutionId)
     const isLastStep = step === TOTAL_STEPS
 
     const renderProgress = () => (
@@ -280,7 +280,7 @@ const CalendarMobileWizard: FC = () => {
         {isTPM && (
           <div className={classes.field}>
             <label className={classes.fieldLabel}>
-              {t('calendar.translator')} *
+              {t('calendar.translator')}
             </label>
             <CalendarSelect
               value={vendorId}

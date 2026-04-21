@@ -46,7 +46,6 @@ const CalendarOrderViewBody: FC = () => {
     domainIds,
     setDomainIds: onSetDomainIds,
     vendorId,
-    vendorLocked,
     setVendorId: onSetVendorId,
     vendorName,
     isTPM,
@@ -257,7 +256,6 @@ const CalendarOrderViewBody: FC = () => {
                   label: v.name ?? '',
                 }))}
                 placeholder={t('calendar.select_translator')}
-                disabled={vendorLocked}
               />
             </div>
           ) : vendorName || assignment ? (

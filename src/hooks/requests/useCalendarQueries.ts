@@ -28,6 +28,7 @@ import { endpoints } from 'api/endpoints'
 import { toCalendarApiDateTime } from 'helpers/calendar'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import {
+  transformAssignmentDetail,
   transformProjectDetail,
   unwrapCalendarProjectPayload,
 } from './calendarOrderDetailTransform'
@@ -305,6 +306,25 @@ export const useFetchCalendarOrderDetail = (id: string | null) => {
         .get(`${endpoints.PROJECTS}/${id}`)
         .then((res) =>
           transformProjectDetail(unwrapCalendarProjectPayload(res))
+        ),
+  })
+  return {
+    order: data ?? null,
+    isLoading,
+    isFetching,
+    isError,
+  }
+}
+
+export const useFetchCalendarAssignmentDetail = (id: string | null) => {
+  const { isLoading, isFetching, isError, data } = useQuery({
+    queryKey: ['calendar-assignment-detail', id],
+    enabled: !!id,
+    queryFn: () =>
+      apiClient
+        .get(`${endpoints.ASSIGNMENTS}/${id}`)
+        .then((res) =>
+          transformAssignmentDetail(unwrapCalendarProjectPayload(res))
         ),
   })
   return {
