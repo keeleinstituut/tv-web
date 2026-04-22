@@ -126,6 +126,10 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
   const translatedText = textJob?.output_text ?? null
   const isTextJobInProgress =
     textJob?.status === 'pending' || textJob?.status === 'processing'
+  const isFileJobInProgress =
+    fileJobIds.length > 0 &&
+    (fileJobs.length === 0 ||
+      fileJobs.some((j) => j.status === 'pending' || j.status === 'processing'))
 
   const onSubmitText = handleSubmit(async (values) => {
     if (!values.text?.trim()) return
@@ -421,8 +425,8 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 appearance={AppearanceTypes.Primary}
                 size={SizeTypes.M}
                 onClick={onSubmitFile}
-                disabled={!selectedFiles.length || isSubmittingFile || fileLimitExceeded}
-                loading={isSubmittingFile}
+                disabled={!selectedFiles.length || isSubmittingFile || fileLimitExceeded || isFileJobInProgress}
+                loading={isSubmittingFile || isFileJobInProgress}
               >
                 {t('machine_translation.translate_button')}
               </Button>
@@ -528,7 +532,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 <div className={classes.fileTranslationJobsContainer}>
                   <Button
                     className={classes.formAsOrderButton}
-                    disabled={isEmpty(sortedFileJobs)}
+                    disabled={isEmpty(sortedFileJobs) || isFileJobInProgress}
                     onClick={handleFormAsOrder}
                   >
                     Vormista tellimuseks
