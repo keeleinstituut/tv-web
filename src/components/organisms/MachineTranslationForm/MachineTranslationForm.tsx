@@ -31,6 +31,8 @@ import SwapHorizontal from 'assets/icons/swap_horizontal.svg?react'
 import CloseIcon from 'assets/icons/close.svg?react'
 import CopyIcon from 'assets/icons/copy.svg?react'
 
+const SOURCE_TEXT_MAX_LENGTH = 5000
+
 type TranslationMode = 'text' | 'file'
 
 interface MTFormValues {
@@ -382,14 +384,14 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
             <div className={classes.modeToggle}>
               <button
                 type="button"
-                className={`${classes.modeBtn} ${mode === 'text' ? classes.activeMode : ''}`}
+                className={classNames(classes.modeBtn, mode === 'text' ? classes.activeMode : '')}
                 onClick={() => setMode('text')}
               >
                 {t('machine_translation.mode_text')}
               </button>
               <button
                 type="button"
-                className={`${classes.modeBtn} ${mode === 'file' ? classes.activeMode : ''}`}
+                className={classNames(classes.modeBtn, mode === 'file' ? classes.activeMode : '')}
                 onClick={() => setMode('file')}
               >
                 {t('machine_translation.mode_file')}
@@ -441,15 +443,20 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                     name="text"
                     control={control}
                     render={({ field }) => (
-                      <textarea
-                        {...field}
-                        className={classes.textarea}
-                        placeholder={t(
-                          'machine_translation.text_input_placeholder'
-                        )}
-                        rows={20}
-                        maxLength={10000}
-                      />
+                      <>
+                        <textarea
+                          {...field}
+                          className={classes.textarea}
+                          placeholder={t(
+                            'machine_translation.text_input_placeholder'
+                          )}
+                          rows={20}
+                          maxLength={SOURCE_TEXT_MAX_LENGTH}
+                        />
+                        <span className={classes.charCounter}>
+                          {(field.value ?? '').length}/{SOURCE_TEXT_MAX_LENGTH}
+                        </span>
+                      </>
                     )}
                   />
                   <Button
@@ -469,7 +476,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 </label>
                 <div className={classes.textareaContainer}>
                   <textarea
-                    className={`${classes.textarea} ${classes.resultTextarea}`}
+                    className={classNames(classes.textarea, classes.resultTextarea)}
                     value={translatedText || ""}
                     readOnly
                     rows={20}
@@ -488,19 +495,6 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 </div>
               </div>
             </div>
-
-
-            {/* Status badge while eTranslation is processing */}
-            {/* {textStatusLabel && (
-              <div className={classes.fileStatus}>
-                <span
-                  className={`${classes.statusBadge} ${classes[`status_${textJob?.status}`]}`}
-                >
-                  {textStatusLabel}
-                </span>
-              </div>
-            )} */}
-
 
             {textJob?.status === 'failed' && (
               <span className={classes.errorText}>
@@ -548,7 +542,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                           {fileJob.original_filename}
                         </span>
                         <span
-                          className={`${classes.statusBadge} ${classes[`status_${fileJob.status}`]}`}
+                          className={classNames(classes.statusBadge, classes[`status_${fileJob.status}`])}
                         >
                           {t(`machine_translation.file_status_${fileJob.status}`)}
                         </span>
