@@ -53,6 +53,7 @@ export interface CalendarLanguagesResponse {
 
 export interface BookedSlotAssignment {
   id: string
+  vendor_id?: string
   confirmed?: boolean
   /** Task / assignment workflow (calendar entry), not project status. */
   status?: BookedSlotAssignmentWorkflowStatus

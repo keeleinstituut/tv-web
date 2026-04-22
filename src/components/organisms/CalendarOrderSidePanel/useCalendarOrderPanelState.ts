@@ -35,6 +35,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { ServiceType, UpdateOrderPayload } from 'types/calendar'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
+import { useFetchVendor } from 'hooks/requests/useVendors'
 import { SidePanelContextValue } from './SidePanelContext'
 
 interface FormState {
@@ -91,9 +92,12 @@ export function useCalendarOrderPanelState(): {
   const { isTPM, isClient, isTranslator } = useCalendarRole()
   const { institutionUserId } = useAuth()
 
-  const { mutate: createOrder, isPending: isCreating } = useCreateCalendarOrder()
-  const { mutate: updateOrder, isPending: isUpdating } = useUpdateCalendarOrder()
-  const { mutate: cancelOrder, isPending: isCancelling } = useCancelCalendarOrder()
+  const { mutate: createOrder, isPending: isCreating } =
+    useCreateCalendarOrder()
+  const { mutate: updateOrder, isPending: isUpdating } =
+    useUpdateCalendarOrder()
+  const { mutate: cancelOrder, isPending: isCancelling } =
+    useCancelCalendarOrder()
   const { mutate: declineCancelOrder, isPending: isDecliningCancel } =
     useDeclineCancelCalendarOrder()
   const { mutate: createPrebook } = useCreatePrebook()
@@ -159,8 +163,7 @@ export function useCalendarOrderPanelState(): {
     setForm((f) => ({ ...f, startTimeInput: v }))
   const setClientInstitutionId = (v: string) =>
     setForm((f) => ({ ...f, clientInstitutionId: v }))
-  const setDomainIds = (v: string[]) =>
-    setForm((f) => ({ ...f, domainIds: v }))
+  const setDomainIds = (v: string[]) => setForm((f) => ({ ...f, domainIds: v }))
   const setVendorId = (v: string) => setForm((f) => ({ ...f, vendorId: v }))
   const setDurationMinutes = (v: number | ((prev: number) => number)) =>
     setForm((f) => ({
@@ -205,6 +208,13 @@ export function useCalendarOrderPanelState(): {
     useAssignmentEndpoint ? (assignmentId ?? null) : null
   )
   const order = useAssignmentEndpoint ? assignmentOrder : projectOrder
+
+  // Fetch vendor details (email, phone) via GET /vendors/{id}
+  const slotVendorId =
+    sidePanelSelection?.vendorId || slot?.assignment?.vendor_id
+  const { vendor: vendorDetail } = useFetchVendor({
+    id: isViewMode ? slotVendorId : undefined,
+  })
   const { mutate: addFilesMutate, isPending: isAddingFiles } =
     useCalendarAddFiles(projectId)
   const { mutate: deleteFileMutate, isPending: isDeletingFile } =
@@ -219,8 +229,7 @@ export function useCalendarOrderPanelState(): {
     order?.sub_project_status == null ||
     order.sub_project_status === 'REGISTERED' ||
     order.sub_project_status === 'TASKS_SUBMITTED_TO_VENDORS'
-  const canEdit =
-    isTPM || (isClient && isOwner && clientOrderNotYetAccepted)
+  const canEdit = isTPM || (isClient && isOwner && clientOrderNotYetAccepted)
   const isRequiredFilled =
     !!serviceType &&
     !!location.trim() &&
@@ -268,7 +277,11 @@ export function useCalendarOrderPanelState(): {
   const effectiveEndIso = isEditing ? editedEndIso : endIso
   const slotMatchingParams =
     isFormMode && isTPM && effectiveStartIso && effectiveEndIso && language
-      ? { start_at: effectiveStartIso, end_at: effectiveEndIso, language_id: language.language.id }
+      ? {
+          start_at: effectiveStartIso,
+          end_at: effectiveEndIso,
+          language_id: language.language.id,
+        }
       : null
   const { vendors } = useFetchSlotMatching(slotMatchingParams)
 
@@ -341,7 +354,9 @@ export function useCalendarOrderPanelState(): {
   // Re-issue prebook when duration changes so the reserved range matches the order end time
   useEffect(() => {
     if (!isOpen || isViewMode || !language || !startIso) return
-    const computedEnd = dayjs(startIso).add(durationMinutes, 'minute').toISOString()
+    const computedEnd = dayjs(startIso)
+      .add(durationMinutes, 'minute')
+      .toISOString()
     const timer = setTimeout(() => {
       cancelPrebook()
       prebookActiveRef.current = true
@@ -370,7 +385,10 @@ export function useCalendarOrderPanelState(): {
   // Cancel countdown tick
   useEffect(() => {
     if (!isCancelPending) return
-    if (cancelCountdown <= 0) { setIsCancelPending(false); return }
+    if (cancelCountdown <= 0) {
+      setIsCancelPending(false)
+      return
+    }
     const timer = setTimeout(() => setCancelCountdown((v) => v - 1), 1000)
     return () => clearTimeout(timer)
   }, [isCancelPending, cancelCountdown])
@@ -385,7 +403,9 @@ export function useCalendarOrderPanelState(): {
 
   const handleSubmit = () => {
     if (!language || !startIso || !serviceType) return
-    const computedEndIso = dayjs(startIso).add(durationMinutes, 'minute').toISOString()
+    const computedEndIso = dayjs(startIso)
+      .add(durationMinutes, 'minute')
+      .toISOString()
     createOrder(
       {
         language_id: language.language.id,
@@ -395,7 +415,9 @@ export function useCalendarOrderPanelState(): {
         reference_number: referenceNumber || undefined,
         location: serviceType === 'kontakttolge' ? location : undefined,
         meeting_link: serviceType === 'kaugtolge' ? location : undefined,
-        client_institution_id: isTPM ? clientInstitutionId || undefined : undefined,
+        client_institution_id: isTPM
+          ? clientInstitutionId || undefined
+          : undefined,
         tag_ids: domainIds.length ? domainIds : undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
         comment: pendingComment || undefined,
@@ -519,7 +541,11 @@ export function useCalendarOrderPanelState(): {
   const handleVoidConfirm = () => {
     if (!projectId || !cancelReason.trim()) return
     cancelOrder(
-      { id: projectId, cancellation_reason: cancelReason.trim(), is_delayed: true },
+      {
+        id: projectId,
+        cancellation_reason: cancelReason.trim(),
+        is_delayed: true,
+      },
       {
         onSuccess: () => {
           setCancelReason('')
@@ -586,9 +612,18 @@ export function useCalendarOrderPanelState(): {
       cancelCountdown,
       isMetaOpen,
       setIsMetaOpen,
-      vendorName: sidePanelSelection?.vendorName || order?.vendor?.name,
-      vendorEmail: order?.vendor?.email,
-      vendorPhone: order?.vendor?.phone,
+      vendorName:
+        sidePanelSelection?.vendorName ||
+        (vendorDetail?.institution_user
+          ? [
+              vendorDetail.institution_user.user?.forename,
+              vendorDetail.institution_user.user?.surname,
+            ]
+              .filter(Boolean)
+              .join(' ')
+          : undefined),
+      vendorEmail: vendorDetail?.institution_user?.email,
+      vendorPhone: vendorDetail?.institution_user?.phone,
       isCreating,
       isUpdating,
       isCancelling,
@@ -618,14 +653,47 @@ export function useCalendarOrderPanelState(): {
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      language, slot, date, startTime, duration, isPastSlot, isViewMode, isTPM,
-      referenceNumber, serviceType, location, selectedDate, startTimeInput,
-      clientInstitutionId, domainIds, vendorId, durationMinutes, isEditing,
-      isConfirmingCancel, cancelReason, isCancelled, isCancelPending,
-      cancelCountdown, isMetaOpen, isRequiredFilled, isCreating, isUpdating,
-      isCancelling, isDecliningCancel, domains, vendors, order, isAddingFiles,
-      isDeletingFile, pendingFiles, pendingComment, isPostingComment,
-      sidePanelSelection?.vendorName, handleClose, projectId,
+      language,
+      slot,
+      date,
+      startTime,
+      duration,
+      isPastSlot,
+      isViewMode,
+      isTPM,
+      referenceNumber,
+      serviceType,
+      location,
+      selectedDate,
+      startTimeInput,
+      clientInstitutionId,
+      domainIds,
+      vendorId,
+      durationMinutes,
+      isEditing,
+      isConfirmingCancel,
+      cancelReason,
+      isCancelled,
+      isCancelPending,
+      cancelCountdown,
+      isMetaOpen,
+      isRequiredFilled,
+      isCreating,
+      isUpdating,
+      isCancelling,
+      isDecliningCancel,
+      domains,
+      vendors,
+      order,
+      isAddingFiles,
+      isDeletingFile,
+      pendingFiles,
+      pendingComment,
+      isPostingComment,
+      sidePanelSelection?.vendorName,
+      vendorDetail,
+      handleClose,
+      projectId,
     ]
   )
 

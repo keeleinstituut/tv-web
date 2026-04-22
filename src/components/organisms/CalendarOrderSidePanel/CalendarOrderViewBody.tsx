@@ -58,7 +58,6 @@ const CalendarOrderViewBody: FC = () => {
     setIsMetaOpen: onSetIsMetaOpen,
   } = useSidePanel()
   const { isTranslator } = useCalendarRole()
-
   const {
     clients,
     search: clientSearch,
@@ -263,30 +262,24 @@ const CalendarOrderViewBody: FC = () => {
             </div>
           ) : null)}
 
-        {/* Teostaja details — client view */}
-        {!isTPM && !isTranslator && !isEditing && vendorName && (
-          <>
-            <div className={classes.formGroup}>
-              <span className={classes.label}>{t('calendar.vendor_name')}</span>
-              <span className={classes.readValue}>{vendorName}</span>
-            </div>
-            {vendorEmail && (
-              <div className={classes.formGroup}>
-                <span className={classes.label}>
-                  {t('calendar.vendor_email')}
-                </span>
-                <span className={classes.readValue}>{vendorEmail}</span>
-              </div>
-            )}
-            {vendorPhone && (
-              <div className={classes.formGroup}>
-                <span className={classes.label}>
-                  {t('calendar.vendor_phone')}
-                </span>
-                <span className={classes.readValue}>{vendorPhone}</span>
-              </div>
-            )}
-          </>
+        {/* Teostaja details — all roles */}
+        {!isTPM && !isEditing && vendorName && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_name')}</span>
+            <span className={classes.readValue}>{vendorName}</span>
+          </div>
+        )}
+        {!isEditing && vendorEmail && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_email')}</span>
+            <span className={classes.readValue}>{vendorEmail}</span>
+          </div>
+        )}
+        {!isEditing && vendorPhone && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_phone')}</span>
+            <span className={classes.readValue}>{vendorPhone}</span>
+          </div>
         )}
 
         {/* Tellimuse viis */}
