@@ -32,6 +32,7 @@ import CloseIcon from 'assets/icons/close.svg?react'
 import CopyIcon from 'assets/icons/copy.svg?react'
 
 const SOURCE_TEXT_MAX_LENGTH = 5000
+const MAX_FILE_COUNT = 3
 
 type TranslationMode = 'text' | 'file'
 
@@ -55,6 +56,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
   const { control, handleSubmit, watch, setValue, getValues } = useForm<MTFormValues>()
   const [mode, setMode] = useState<TranslationMode>('text')
   const [selectedFiles, setselectedFiles] = useState<File[]>([])
+  const fileLimitExceeded = selectedFiles.length > MAX_FILE_COUNT
   const [textJobId, setTextJobId] = useState<string | null>(null)
   const [fileJobIds, setFileJobIds] = useState<string[]>([])
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -419,7 +421,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 appearance={AppearanceTypes.Primary}
                 size={SizeTypes.M}
                 onClick={onSubmitFile}
-                disabled={!selectedFiles || isSubmittingFile}
+                disabled={!selectedFiles.length || isSubmittingFile || fileLimitExceeded}
                 loading={isSubmittingFile}
               >
                 {t('machine_translation.translate_button')}
@@ -516,6 +518,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 allowMultiple={true}
                 files={selectedFiles}
                 inputFileTypes={ProjectFileTypes}
+                error={fileLimitExceeded ? t('machine_translation.error_too_many_files') : undefined}
                 onChange={(files) => {
                   setselectedFiles(sortBy(files, 'name'))
                 }}
@@ -532,7 +535,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                   </Button>
 
                   <h5>
-                    {t('label.added_files')}
+                    {t('label.translated_files')}
                   </h5>
 
                   <div className={classes.fileTranslationJobs}>

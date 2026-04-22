@@ -17,6 +17,7 @@
     "role": "Roll",
     "added_file": "Lisatud fail",
     "added_files": "Lisatud failid",
+    "translated_files": "Tõlgitud failid",
     "kilobytes": "KB",
     "megabytes": "MB",
     "attach_file": "lisa fail",
@@ -1367,7 +1368,8 @@
     "file_status_completed": "Tõlge valmis",
     "file_status_failed": "Tõlkimine ebaõnnestus",
     "download_button": "Laadi tõlge alla",
-    "error_translation_failed": "Tõlkimine ebaõnnestus. Proovige uuesti."
+    "error_translation_failed": "Tõlkimine ebaõnnestus. Proovige uuesti.",
+    "error_too_many_files": "Korraga saab tõlkida maksimaalselt 3 faili."
   },
   "azure_openai_settings": {
     "title": "Azure OpenAI sätted",
