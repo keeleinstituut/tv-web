@@ -168,7 +168,6 @@ const SummaryFields: FC = () => {
           <div className={classes.field}>
             <span className={classes.fieldLabel}>
               {t('calendar.translator')}
-              <span className={classes.requiredMark}>*</span>
             </span>
             <CalendarSelect
               value={vendorId}
