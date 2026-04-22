@@ -1321,9 +1321,10 @@
       "QE": "Kvaliteedihinnang"
     },
     "templates": {
-      "default": "Üldine tõlge",
-      "formal": "Ametlik tõlge",
-      "technical": "Tehniline tõlge"
+      "translation_standard": "Tõlgi (standard)",
+      "summary": "Tee kokkuvõte",
+      "translation_formal": "Kasuta ametlikku stiili",
+      "translation_edited": "Paranda ja viimistle"
     },
     "languages": {
       "ar": "Araabia",
