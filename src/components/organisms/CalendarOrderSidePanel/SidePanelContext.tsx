@@ -56,6 +56,8 @@ export interface SidePanelContextValue {
   isMetaOpen: boolean
   setIsMetaOpen: (v: boolean) => void
   vendorName: string | undefined
+  vendorEmail: string | undefined
+  vendorPhone: string | undefined
 
   // Validation
   isRequiredFilled: boolean

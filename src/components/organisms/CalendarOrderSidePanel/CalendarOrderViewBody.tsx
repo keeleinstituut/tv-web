@@ -48,6 +48,8 @@ const CalendarOrderViewBody: FC = () => {
     vendorId,
     setVendorId: onSetVendorId,
     vendorName,
+    vendorEmail,
+    vendorPhone,
     isTPM,
     domains,
     vendors,
@@ -183,12 +185,8 @@ const CalendarOrderViewBody: FC = () => {
               <div style={{ flex: 1 }}>
                 <DatePickerComponent
                   name="selectedDate"
-                  value={
-                    selectedDate ? selectedDate.replace(/\./g, '/') : ''
-                  }
-                  onChange={(val) =>
-                    onSetSelectedDate(val.replace(/\//g, '.'))
-                  }
+                  value={selectedDate ? selectedDate.replace(/\./g, '/') : ''}
+                  onChange={(val) => onSetSelectedDate(val.replace(/\//g, '.'))}
                 />
               </div>
               <div style={{ flex: 1 }}>
@@ -266,22 +264,26 @@ const CalendarOrderViewBody: FC = () => {
           ) : null)}
 
         {/* Teostaja details — client view */}
-        {!isTPM && !isTranslator && !isEditing && order?.vendor && (
+        {!isTPM && !isTranslator && !isEditing && vendorName && (
           <>
             <div className={classes.formGroup}>
               <span className={classes.label}>{t('calendar.vendor_name')}</span>
-              <span className={classes.readValue}>{order.vendor.name || '—'}</span>
+              <span className={classes.readValue}>{vendorName}</span>
             </div>
-            {order.vendor.email && (
+            {vendorEmail && (
               <div className={classes.formGroup}>
-                <span className={classes.label}>{t('calendar.vendor_email')}</span>
-                <span className={classes.readValue}>{order.vendor.email}</span>
+                <span className={classes.label}>
+                  {t('calendar.vendor_email')}
+                </span>
+                <span className={classes.readValue}>{vendorEmail}</span>
               </div>
             )}
-            {order.vendor.phone && (
+            {vendorPhone && (
               <div className={classes.formGroup}>
-                <span className={classes.label}>{t('calendar.vendor_phone')}</span>
-                <span className={classes.readValue}>{order.vendor.phone}</span>
+                <span className={classes.label}>
+                  {t('calendar.vendor_phone')}
+                </span>
+                <span className={classes.readValue}>{vendorPhone}</span>
               </div>
             )}
           </>
