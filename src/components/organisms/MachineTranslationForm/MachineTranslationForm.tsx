@@ -28,6 +28,8 @@ import { orderClassifierByLangPriority } from 'helpers'
 import { first, isEmpty, map, sortBy, split } from 'lodash'
 import classNames from 'classnames'
 import SwapHorizontal from 'assets/icons/swap_horizontal.svg?react'
+import CloseIcon from 'assets/icons/close.svg?react'
+import CopyIcon from 'assets/icons/copy.svg?react'
 
 type TranslationMode = 'text' | 'file'
 
@@ -198,6 +200,11 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
       },
     })
   }, [getValues, classifierValues, selectedFiles, navigate])
+
+  const handleClearText = useCallback(() => {
+    setValue('text', '')
+    setTextJobId(null)
+  }, [setValue])
 
   const handleProviderChange = (_value: string | string[]) => {
     setTextJobId(null)
@@ -429,33 +436,56 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 <label className={classes.label}>
                   {t('machine_translation.text_input_label')}
                 </label>
-                <Controller
-                  name="text"
-                  control={control}
-                  render={({ field }) => (
-                    <textarea
-                      {...field}
-                      className={classes.textarea}
-                      placeholder={t(
-                        'machine_translation.text_input_placeholder'
-                      )}
-                      rows={20}
-                      maxLength={10000}
-                    />
-                  )}
-                />
+                <div className={classes.textareaContainer}>
+                  <Controller
+                    name="text"
+                    control={control}
+                    render={({ field }) => (
+                      <textarea
+                        {...field}
+                        className={classes.textarea}
+                        placeholder={t(
+                          'machine_translation.text_input_placeholder'
+                        )}
+                        rows={20}
+                        maxLength={10000}
+                      />
+                    )}
+                  />
+                  <Button
+                    appearance={AppearanceTypes.Text}
+                    size={SizeTypes.S}
+                    icon={CloseIcon}
+                    ariaLabel={t('button.clear_filter')}
+                    className={classNames(classes.iconButton, classes.textareaOverlayButton)}
+                    onClick={handleClearText}
+                  />
+                </div>
               </div>
 
               <div className={classes.textAreaWrapper}>
                 <label className={classes.label}>
                   {t('machine_translation.text_result_label')}
                 </label>
-                <textarea
-                  className={`${classes.textarea} ${classes.resultTextarea}`}
-                  value={translatedText || ""}
-                  readOnly
-                  rows={20}
-                />
+                <div className={classes.textareaContainer}>
+                  <textarea
+                    className={`${classes.textarea} ${classes.resultTextarea}`}
+                    value={translatedText || ""}
+                    readOnly
+                    rows={20}
+                  />
+                  <Button
+                    appearance={AppearanceTypes.Text}
+                    size={SizeTypes.S}
+                    icon={CopyIcon}
+                    ariaLabel={t('button.copy')}
+                    className={classNames(classes.iconButton, classes.textareaOverlayButton)}
+                    disabled={!translatedText}
+                    onClick={() => {
+                      if (translatedText) navigator.clipboard.writeText(translatedText)
+                    }}
+                  />
+                </div>
               </div>
             </div>
 

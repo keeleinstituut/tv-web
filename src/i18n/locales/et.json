@@ -1312,12 +1312,12 @@
     "template_label": "Tõlkemall",
     "template_placeholder": "Vali tõlkemall",
     "domains": {
-      "GEN": "Üldine",
-      "SPD": "Üldine (kiir)",
+      "GEN": "Üldine tekst",
+      "SPD": "ELi ametlik tekst",
       "ECB": "Euroopa Keskpank",
       "IPO": "Intellektuaalomandi amet",
-      "QE": "Kvaliteedihinnang",
-      "ECJ": "Euroopa Kohus"
+      "ECJ": "Euroopa Kohus",
+      "QE": "Kvaliteedihinnang"
     },
     "templates": {
       "default": "Üldine tõlge",

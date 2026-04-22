@@ -104,6 +104,16 @@
   }
 }
 
+.textareaContainer {
+  position: relative;
+}
+
+.textareaOverlayButton {
+  position: absolute;
+  top: variables.spacing(1);
+  right: variables.spacing(1);
+}
+
 .label {
   font-size: 14px;
   font-weight: 500;
