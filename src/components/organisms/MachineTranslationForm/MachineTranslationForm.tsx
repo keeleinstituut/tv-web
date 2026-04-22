@@ -28,6 +28,11 @@ import { orderClassifierByLangPriority } from 'helpers'
 import { first, isEmpty, map, sortBy, split } from 'lodash'
 import classNames from 'classnames'
 import SwapHorizontal from 'assets/icons/swap_horizontal.svg?react'
+import CloseIcon from 'assets/icons/close.svg?react'
+import CopyIcon from 'assets/icons/copy.svg?react'
+
+const SOURCE_TEXT_MAX_LENGTH = 5000
+const MAX_FILE_COUNT = 3
 
 type TranslationMode = 'text' | 'file'
 
@@ -51,6 +56,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
   const { control, handleSubmit, watch, setValue, getValues } = useForm<MTFormValues>()
   const [mode, setMode] = useState<TranslationMode>('text')
   const [selectedFiles, setselectedFiles] = useState<File[]>([])
+  const fileLimitExceeded = selectedFiles.length > MAX_FILE_COUNT
   const [textJobId, setTextJobId] = useState<string | null>(null)
   const [fileJobIds, setFileJobIds] = useState<string[]>([])
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -120,6 +126,10 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
   const translatedText = textJob?.output_text ?? null
   const isTextJobInProgress =
     textJob?.status === 'pending' || textJob?.status === 'processing'
+  const isFileJobInProgress =
+    fileJobIds.length > 0 &&
+    (fileJobs.length === 0 ||
+      fileJobs.some((j) => j.status === 'pending' || j.status === 'processing'))
 
   const onSubmitText = handleSubmit(async (values) => {
     if (!values.text?.trim()) return
@@ -198,6 +208,11 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
       },
     })
   }, [getValues, classifierValues, selectedFiles, navigate])
+
+  const handleClearText = useCallback(() => {
+    setValue('text', '')
+    setTextJobId(null)
+  }, [setValue])
 
   const handleProviderChange = (_value: string | string[]) => {
     setTextJobId(null)
@@ -375,14 +390,14 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
             <div className={classes.modeToggle}>
               <button
                 type="button"
-                className={`${classes.modeBtn} ${mode === 'text' ? classes.activeMode : ''}`}
+                className={classNames(classes.modeBtn, mode === 'text' ? classes.activeMode : '')}
                 onClick={() => setMode('text')}
               >
                 {t('machine_translation.mode_text')}
               </button>
               <button
                 type="button"
-                className={`${classes.modeBtn} ${mode === 'file' ? classes.activeMode : ''}`}
+                className={classNames(classes.modeBtn, mode === 'file' ? classes.activeMode : '')}
                 onClick={() => setMode('file')}
               >
                 {t('machine_translation.mode_file')}
@@ -410,8 +425,8 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 appearance={AppearanceTypes.Primary}
                 size={SizeTypes.M}
                 onClick={onSubmitFile}
-                disabled={!selectedFiles || isSubmittingFile}
-                loading={isSubmittingFile}
+                disabled={!selectedFiles.length || isSubmittingFile || fileLimitExceeded || isFileJobInProgress}
+                loading={isSubmittingFile || isFileJobInProgress}
               >
                 {t('machine_translation.translate_button')}
               </Button>
@@ -429,48 +444,63 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 <label className={classes.label}>
                   {t('machine_translation.text_input_label')}
                 </label>
-                <Controller
-                  name="text"
-                  control={control}
-                  render={({ field }) => (
-                    <textarea
-                      {...field}
-                      className={classes.textarea}
-                      placeholder={t(
-                        'machine_translation.text_input_placeholder'
-                      )}
-                      rows={20}
-                      maxLength={10000}
-                    />
-                  )}
-                />
+                <div className={classes.textareaContainer}>
+                  <Controller
+                    name="text"
+                    control={control}
+                    render={({ field }) => (
+                      <>
+                        <textarea
+                          {...field}
+                          className={classes.textarea}
+                          placeholder={t(
+                            'machine_translation.text_input_placeholder'
+                          )}
+                          rows={20}
+                          maxLength={SOURCE_TEXT_MAX_LENGTH}
+                        />
+                        <span className={classes.charCounter}>
+                          {(field.value ?? '').length}/{SOURCE_TEXT_MAX_LENGTH}
+                        </span>
+                      </>
+                    )}
+                  />
+                  <Button
+                    appearance={AppearanceTypes.Text}
+                    size={SizeTypes.S}
+                    icon={CloseIcon}
+                    ariaLabel={t('button.clear_filter')}
+                    className={classNames(classes.iconButton, classes.textareaOverlayButton)}
+                    onClick={handleClearText}
+                  />
+                </div>
               </div>
 
               <div className={classes.textAreaWrapper}>
                 <label className={classes.label}>
                   {t('machine_translation.text_result_label')}
                 </label>
-                <textarea
-                  className={`${classes.textarea} ${classes.resultTextarea}`}
-                  value={translatedText || ""}
-                  readOnly
-                  rows={20}
-                />
+                <div className={classes.textareaContainer}>
+                  <textarea
+                    className={classNames(classes.textarea, classes.resultTextarea)}
+                    value={translatedText || ""}
+                    readOnly
+                    rows={20}
+                  />
+                  <Button
+                    appearance={AppearanceTypes.Text}
+                    size={SizeTypes.S}
+                    icon={CopyIcon}
+                    ariaLabel={t('button.copy')}
+                    className={classNames(classes.iconButton, classes.textareaOverlayButton)}
+                    disabled={!translatedText}
+                    onClick={() => {
+                      if (translatedText) navigator.clipboard.writeText(translatedText)
+                    }}
+                  />
+                </div>
               </div>
             </div>
-
-
-            {/* Status badge while eTranslation is processing */}
-            {/* {textStatusLabel && (
-              <div className={classes.fileStatus}>
-                <span
-                  className={`${classes.statusBadge} ${classes[`status_${textJob?.status}`]}`}
-                >
-                  {textStatusLabel}
-                </span>
-              </div>
-            )} */}
-
 
             {textJob?.status === 'failed' && (
               <span className={classes.errorText}>
@@ -492,6 +522,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 allowMultiple={true}
                 files={selectedFiles}
                 inputFileTypes={ProjectFileTypes}
+                error={fileLimitExceeded ? t('machine_translation.error_too_many_files') : undefined}
                 onChange={(files) => {
                   setselectedFiles(sortBy(files, 'name'))
                 }}
@@ -501,14 +532,14 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                 <div className={classes.fileTranslationJobsContainer}>
                   <Button
                     className={classes.formAsOrderButton}
-                    disabled={isEmpty(sortedFileJobs)}
+                    disabled={isEmpty(sortedFileJobs) || isFileJobInProgress}
                     onClick={handleFormAsOrder}
                   >
                     Vormista tellimuseks
                   </Button>
 
                   <h5>
-                    {t('label.added_files')}
+                    {t('label.translated_files')}
                   </h5>
 
                   <div className={classes.fileTranslationJobs}>
@@ -518,7 +549,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                           {fileJob.original_filename}
                         </span>
                         <span
-                          className={`${classes.statusBadge} ${classes[`status_${fileJob.status}`]}`}
+                          className={classNames(classes.statusBadge, classes[`status_${fileJob.status}`])}
                         >
                           {t(`machine_translation.file_status_${fileJob.status}`)}
                         </span>

@@ -104,6 +104,16 @@
   }
 }
 
+.textareaContainer {
+  position: relative;
+}
+
+.textareaOverlayButton {
+  position: absolute;
+  top: variables.spacing(1);
+  right: variables.spacing(1);
+}
+
 .label {
   font-size: 14px;
   font-weight: 500;
@@ -112,7 +122,8 @@
 
 .textarea {
   width: 100%;
-  padding: 12px;
+  padding: variables.spacing(3);
+  padding-bottom: variables.spacing(7);
   border: 1px solid var(--border-color, #d1d5db);
   border-radius: 6px;
   font-size: 14px;
@@ -124,6 +135,16 @@
     outline: none;
     border-color: var(--primary-color, #003dae);
   }
+}
+
+.charCounter {
+  position: absolute;
+  bottom: variables.spacing(3);
+  left: variables.spacing(3);
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+  pointer-events: none;
+  user-select: none;
 }
 
 .resultTextarea {
