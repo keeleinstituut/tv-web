@@ -33,10 +33,19 @@ export const showValidationErrorMessage = (errorData: unknown) => {
   }
   const typedErrorData = errorData as ValidationError
   if (typedErrorData?.message) {
+    const messageMap: Record<string, string> = {
+      'Cancellation is already pending.': i18n.t(
+        'error.cancellation_already_pending'
+      ),
+    }
+    const content =
+      (typeof typedErrorData.message === 'string' &&
+        messageMap[typedErrorData.message]) ||
+      typedErrorData.message
     showNotification({
       type: NotificationTypes.Error,
       title: i18n.t('notification.error'),
-      content: typedErrorData.message,
+      content,
     })
   }
 }
@@ -98,6 +107,8 @@ const handleError = async (error?: AxiosError) => {
   switch (code) {
     case 401:
       rawLogout()
+      throw error
+    case 403:
       throw error
     case 422:
       throw error?.response?.data

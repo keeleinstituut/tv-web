@@ -76,6 +76,131 @@ function mapProjectMediaList(
   })
 }
 
+/**
+ * Transform GET /assignments/{id} response into CalendarOrderDetail.
+ *
+ * The assignment response nests: assignment → subProject → project.
+ * We pull the project-level fields from the nested project object.
+ */
+export function transformAssignmentDetail(
+  rawInput: Record<string, unknown>
+): CalendarOrderDetail {
+  const raw = mergeResourceAttributes(rawInput)
+  const subProject = raw.subProject as Record<string, unknown> | undefined
+  const project = subProject?.project as Record<string, unknown> | undefined
+
+  const destLang = subProject?.destination_language_classifier_value as
+    | { id: string; value: string; name: string }
+    | undefined
+  const lang = destLang ?? { id: '', value: '', name: '' }
+
+  const clientUser = project?.client_institution_user as
+    | {
+        id: string
+        email?: string
+        phone?: string
+        user?: { forename?: string; surname?: string }
+        institution?: { name?: string }
+      }
+    | undefined
+
+  const coordinatorUser = project?.manager_institution_user as
+    | {
+        email?: string
+        phone?: string
+        user?: { forename?: string; surname?: string }
+      }
+    | undefined
+
+  const assigneeVendor = raw.assignee as
+    | {
+        institution_user?: {
+          email?: string
+          phone?: string
+          user?: { forename?: string; surname?: string }
+        }
+      }
+    | undefined
+  const assigneeIU = assigneeVendor?.institution_user
+
+  const sub_project_status = normalizeCalendarSubProjectStatus(
+    (subProject?.status as string) ?? null
+  )
+
+  const projectStatus = (project?.status as string) ?? (raw.status as string)
+
+  return {
+    id: (project?.id as string) ?? (raw.id as string),
+    ext_id: (project?.ext_id as string) ?? (raw.ext_id as string),
+    status: projectStatus as CalendarOrderDetail['status'],
+    sub_project_status,
+    language: lang,
+    start_at:
+      (raw.event_start_at as string) ??
+      (project?.event_start_at as string) ??
+      '',
+    end_at: (project?.event_end_at as string) ?? (raw.deadline_at as string) ?? '',
+    service_type: (
+      (project?.service_type as string) ?? ''
+    ).toUpperCase() as 'REMOTE' | 'ON_SITE',
+    location: project?.location as string | undefined,
+    meeting_link: project?.meeting_link as string | undefined,
+    reference_number: project?.reference_number as string | undefined,
+    created_at: raw.created_at as string,
+    updated_at: raw.updated_at as string | undefined,
+    accepted_at: project?.accepted_at as string | undefined,
+    cancel_at: pickOptionalIsoString(project ?? {}, 'cancel_at', 'cancelAt'),
+    cancelled_at: pickOptionalIsoString(
+      project ?? {},
+      'cancelled_at',
+      'cancelledAt'
+    ),
+    completed_at: project?.completed_at as string | undefined,
+    client_institution_user: clientUser ? { id: clientUser.id } : undefined,
+    client: clientUser
+      ? {
+          name:
+            [clientUser.user?.forename, clientUser.user?.surname]
+              .filter(Boolean)
+              .join(' ') || '',
+          institution: clientUser.institution?.name ?? '',
+          email: clientUser.email ?? '',
+          phone: clientUser.phone ?? '',
+        }
+      : undefined,
+    coordinator: coordinatorUser
+      ? {
+          name:
+            [coordinatorUser.user?.forename, coordinatorUser.user?.surname]
+              .filter(Boolean)
+              .join(' ') || '',
+          email: coordinatorUser.email ?? '',
+          phone: coordinatorUser.phone ?? '',
+        }
+      : undefined,
+    vendor: assigneeIU
+      ? {
+          name:
+            [assigneeIU.user?.forename, assigneeIU.user?.surname]
+              .filter(Boolean)
+              .join(' ') || '',
+          email: assigneeIU.email ?? '',
+          phone: assigneeIU.phone ?? '',
+        }
+      : undefined,
+    tags: project?.tags as CalendarOrderDetail['tags'],
+    source_files: [
+      ...mapProjectMediaList(project?.help_files),
+      ...mapProjectMediaList(project?.source_files),
+      ...mapProjectMediaList(subProject?.source_files),
+    ],
+    files_count: 0,
+    files_accessible: true,
+    project_comments:
+      project?.project_comments as CalendarOrderDetail['project_comments'],
+  }
+}
+
 export function transformProjectDetail(
   rawInput: Record<string, unknown>
 ): CalendarOrderDetail {
@@ -118,6 +243,19 @@ export function transformProjectDetail(
         user?: { forename?: string; surname?: string }
       }
     | undefined
+
+  const assignments = (subProjects[0] as Record<string, unknown> | undefined)
+    ?.assignments as Array<Record<string, unknown>> | undefined
+  const assignee = assignments?.[0]?.assignee as
+    | {
+        institution_user?: {
+          email?: string
+          phone?: string
+          user?: { forename?: string; surname?: string }
+        }
+      }
+    | undefined
+  const vendorIU = assignee?.institution_user
 
   const sub_project_status = normalizeCalendarSubProjectStatus(
     subProjects[0]?.status ?? null
@@ -163,6 +301,16 @@ export function transformProjectDetail(
               .join(' ') || '',
           email: coordinatorUser.email ?? '',
           phone: coordinatorUser.phone ?? '',
+        }
+      : undefined,
+    vendor: vendorIU
+      ? {
+          name:
+            [vendorIU.user?.forename, vendorIU.user?.surname]
+              .filter(Boolean)
+              .join(' ') || '',
+          email: vendorIU.email ?? '',
+          phone: vendorIU.phone ?? '',
         }
       : undefined,
     tags: raw.tags as CalendarOrderDetail['tags'],

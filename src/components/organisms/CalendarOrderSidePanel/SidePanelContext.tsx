@@ -40,7 +40,6 @@ export interface SidePanelContextValue {
   domainIds: string[]
   setDomainIds: (v: string[]) => void
   vendorId: string
-  vendorLocked: boolean
   setVendorId: (v: string) => void
   durationMinutes: number
   setDurationMinutes: (v: number | ((prev: number) => number)) => void
@@ -57,6 +56,8 @@ export interface SidePanelContextValue {
   isMetaOpen: boolean
   setIsMetaOpen: (v: boolean) => void
   vendorName: string | undefined
+  vendorEmail: string | undefined
+  vendorPhone: string | undefined
 
   // Validation
   isRequiredFilled: boolean

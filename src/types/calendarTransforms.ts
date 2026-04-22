@@ -131,6 +131,7 @@ function buildAssignmentFromEntry(
     e.assignment_id
   return {
     id: e.assignment_id,
+    vendor_id: e.vendor_id || undefined,
     status: e.assignment?.status as BookedSlotAssignment['status'],
     project_status: normalizeCalendarProjectStatus(proj?.status ?? null),
     service_type: proj?.service_type,

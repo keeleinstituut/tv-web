@@ -178,7 +178,7 @@ const CalendarOrderDetail: FC = () => {
     Boolean(startIso) &&
     Boolean(endIso) &&
     address.trim().length > 0 &&
-    (!isTPM || (Boolean(clientInstitutionId) && Boolean(vendorId)))
+    (!isTPM || Boolean(clientInstitutionId))
 
   const slotMatchingParams =
     isTPM && (isCreateMode || isEditing) && startIso && endIso && languageId
@@ -337,6 +337,7 @@ const CalendarOrderDetail: FC = () => {
           ? clientInstitutionId || undefined
           : undefined,
         tag_ids: domainIds.length ? domainIds : undefined,
+        vendor_id: isTPM ? vendorId || undefined : undefined,
       },
       {
         onSuccess: () => {

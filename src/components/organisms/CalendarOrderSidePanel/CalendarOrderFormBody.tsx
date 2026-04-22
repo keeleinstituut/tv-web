@@ -33,7 +33,6 @@ const CalendarOrderFormBody: FC = () => {
     domainIds,
     setDomainIds: onSetDomainIds,
     vendorId,
-    vendorLocked,
     setVendorId: onSetVendorId,
     durationMinutes,
     setDurationMinutes: onSetDurationMinutes,
@@ -226,7 +225,6 @@ const CalendarOrderFormBody: FC = () => {
                 isEmo: v.is_emo,
               }))}
               placeholder={t('calendar.select_translator')}
-              disabled={vendorLocked}
             />
           </div>
         )}

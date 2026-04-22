@@ -46,9 +46,10 @@ const CalendarOrderViewBody: FC = () => {
     domainIds,
     setDomainIds: onSetDomainIds,
     vendorId,
-    vendorLocked,
     setVendorId: onSetVendorId,
     vendorName,
+    vendorEmail,
+    vendorPhone,
     isTPM,
     domains,
     vendors,
@@ -57,7 +58,6 @@ const CalendarOrderViewBody: FC = () => {
     setIsMetaOpen: onSetIsMetaOpen,
   } = useSidePanel()
   const { isTranslator } = useCalendarRole()
-
   const {
     clients,
     search: clientSearch,
@@ -184,12 +184,8 @@ const CalendarOrderViewBody: FC = () => {
               <div style={{ flex: 1 }}>
                 <DatePickerComponent
                   name="selectedDate"
-                  value={
-                    selectedDate ? selectedDate.replace(/\./g, '/') : ''
-                  }
-                  onChange={(val) =>
-                    onSetSelectedDate(val.replace(/\//g, '.'))
-                  }
+                  value={selectedDate ? selectedDate.replace(/\./g, '/') : ''}
+                  onChange={(val) => onSetSelectedDate(val.replace(/\//g, '.'))}
                 />
               </div>
               <div style={{ flex: 1 }}>
@@ -241,7 +237,7 @@ const CalendarOrderViewBody: FC = () => {
           </div>
         )}
 
-        {/* Teostaja — TPM only */}
+        {/* Teostaja — TPM only (editable) */}
         {isTPM &&
           (isEditing ? (
             <div className={classes.formGroup}>
@@ -257,7 +253,6 @@ const CalendarOrderViewBody: FC = () => {
                   label: v.name ?? '',
                 }))}
                 placeholder={t('calendar.select_translator')}
-                disabled={vendorLocked}
               />
             </div>
           ) : vendorName || assignment ? (
@@ -266,6 +261,26 @@ const CalendarOrderViewBody: FC = () => {
               <span className={classes.readValue}>{vendorName ?? '—'}</span>
             </div>
           ) : null)}
+
+        {/* Teostaja details — all roles */}
+        {!isTPM && !isEditing && vendorName && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_name')}</span>
+            <span className={classes.readValue}>{vendorName}</span>
+          </div>
+        )}
+        {!isEditing && vendorEmail && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_email')}</span>
+            <span className={classes.readValue}>{vendorEmail}</span>
+          </div>
+        )}
+        {!isEditing && vendorPhone && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_phone')}</span>
+            <span className={classes.readValue}>{vendorPhone}</span>
+          </div>
+        )}
 
         {/* Tellimuse viis */}
         {isEditing ? (

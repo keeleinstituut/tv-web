@@ -25,6 +25,7 @@ import classNames from 'classnames'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { TaskType } from 'types/tasks'
+import { AssignmentStatus } from 'types/assignments'
 
 import classes from './classes.module.scss'
 import { useTaskCache } from 'hooks/requests/useTasks'
@@ -73,6 +74,7 @@ const TaskContent: FC<TaskContentProps> = ({
     sub_project_id,
     assignee_comments,
     id,
+    status: assignmentStatus,
   } = assignment || {}
 
   const {
@@ -418,7 +420,7 @@ const TaskContent: FC<TaskContentProps> = ({
       <Button
         className={classes.finishedButton}
         onClick={handleSubmit(handleOpenCompleteModal)}
-        hidden={!isTaskAssignedToMe || !!isHistoryView}
+        hidden={!isTaskAssignedToMe || !!isHistoryView || assignmentStatus === AssignmentStatus.Done}
       >
         {t('button.mark_as_finished')}
       </Button>
@@ -426,7 +428,7 @@ const TaskContent: FC<TaskContentProps> = ({
         <Button
           className={classes.previousButton}
           onClick={handleSendToPreviousAssignmentModal}
-          hidden={!isTaskAssignedToMe || !!isHistoryView}
+          hidden={!isTaskAssignedToMe || !!isHistoryView || assignmentStatus === AssignmentStatus.Done}
           appearance={AppearanceTypes.Secondary}
         >
           {t('button.send_to_previous_assignment')}
