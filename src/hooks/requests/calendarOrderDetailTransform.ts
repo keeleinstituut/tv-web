@@ -112,6 +112,17 @@ export function transformAssignmentDetail(
       }
     | undefined
 
+  const assigneeVendor = raw.assignee as
+    | {
+        institution_user?: {
+          email?: string
+          phone?: string
+          user?: { forename?: string; surname?: string }
+        }
+      }
+    | undefined
+  const assigneeIU = assigneeVendor?.institution_user
+
   const sub_project_status = normalizeCalendarSubProjectStatus(
     (subProject?.status as string) ?? null
   )
@@ -165,6 +176,16 @@ export function transformAssignmentDetail(
               .join(' ') || '',
           email: coordinatorUser.email ?? '',
           phone: coordinatorUser.phone ?? '',
+        }
+      : undefined,
+    vendor: assigneeIU
+      ? {
+          name:
+            [assigneeIU.user?.forename, assigneeIU.user?.surname]
+              .filter(Boolean)
+              .join(' ') || '',
+          email: assigneeIU.email ?? '',
+          phone: assigneeIU.phone ?? '',
         }
       : undefined,
     tags: project?.tags as CalendarOrderDetail['tags'],
@@ -223,6 +244,19 @@ export function transformProjectDetail(
       }
     | undefined
 
+  const assignments = (subProjects[0] as Record<string, unknown> | undefined)
+    ?.assignments as Array<Record<string, unknown>> | undefined
+  const assignee = assignments?.[0]?.assignee as
+    | {
+        institution_user?: {
+          email?: string
+          phone?: string
+          user?: { forename?: string; surname?: string }
+        }
+      }
+    | undefined
+  const vendorIU = assignee?.institution_user
+
   const sub_project_status = normalizeCalendarSubProjectStatus(
     subProjects[0]?.status ?? null
   )
@@ -267,6 +301,16 @@ export function transformProjectDetail(
               .join(' ') || '',
           email: coordinatorUser.email ?? '',
           phone: coordinatorUser.phone ?? '',
+        }
+      : undefined,
+    vendor: vendorIU
+      ? {
+          name:
+            [vendorIU.user?.forename, vendorIU.user?.surname]
+              .filter(Boolean)
+              .join(' ') || '',
+          email: vendorIU.email ?? '',
+          phone: vendorIU.phone ?? '',
         }
       : undefined,
     tags: raw.tags as CalendarOrderDetail['tags'],

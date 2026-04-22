@@ -240,7 +240,7 @@ const CalendarOrderViewBody: FC = () => {
           </div>
         )}
 
-        {/* Teostaja — TPM only */}
+        {/* Teostaja — TPM only (editable) */}
         {isTPM &&
           (isEditing ? (
             <div className={classes.formGroup}>
@@ -264,6 +264,28 @@ const CalendarOrderViewBody: FC = () => {
               <span className={classes.readValue}>{vendorName ?? '—'}</span>
             </div>
           ) : null)}
+
+        {/* Teostaja details — client view */}
+        {!isTPM && !isTranslator && !isEditing && order?.vendor && (
+          <>
+            <div className={classes.formGroup}>
+              <span className={classes.label}>{t('calendar.vendor_name')}</span>
+              <span className={classes.readValue}>{order.vendor.name || '—'}</span>
+            </div>
+            {order.vendor.email && (
+              <div className={classes.formGroup}>
+                <span className={classes.label}>{t('calendar.vendor_email')}</span>
+                <span className={classes.readValue}>{order.vendor.email}</span>
+              </div>
+            )}
+            {order.vendor.phone && (
+              <div className={classes.formGroup}>
+                <span className={classes.label}>{t('calendar.vendor_phone')}</span>
+                <span className={classes.readValue}>{order.vendor.phone}</span>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Tellimuse viis */}
         {isEditing ? (
