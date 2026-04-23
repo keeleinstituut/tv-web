@@ -177,20 +177,26 @@ const TranslationMemoriesSection = <TFormValues extends FieldValues>({
   const selectedTMs = useMemo(
     () =>
       map(filteredData, (tm) => {
+        let segmentsCount = 0
+
+        if (translationMemoriesSegmentCounts) {
+          segmentsCount = translationMemoriesSegmentCounts[tm.id] || 0
+        }
+
         return {
           id: tm.id,
           language_direction: tm?.lang_pair,
           name: tm?.name,
           main_write: find(subProjectTmKeyObjectsArray, { key: tm.id })
             ?.is_writable,
-          chunk_amount: translationMemoriesSegmentCounts![tm.id],
+          chunk_amount: segmentsCount,
           delete_button: tm?.id,
           institution_id: tm?.institution_id,
           tm_key_id: find(subProjectTmKeyObjectsArray, { key: tm.id })?.id,
           type: tm.type,
         }
       }),
-    [filteredData, subProjectTmKeyObjectsArray]
+    [filteredData, subProjectTmKeyObjectsArray, translationMemoriesSegmentCounts]
   )
 
   const handleDelete = useCallback(
