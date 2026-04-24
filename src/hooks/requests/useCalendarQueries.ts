@@ -288,7 +288,7 @@ export const useFetchCalendarTags = () => {
     queryFn: async () => {
       const res: { data: Array<{ id: string; name: string }> } =
         await apiClient.get(endpoints.TAGS, {
-          'type[]': ['Tellimus', 'Valdkond'],
+          'type[]': ['Valdkond'],
         })
       return res.data ?? []
     },

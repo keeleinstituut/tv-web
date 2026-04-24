@@ -34,6 +34,13 @@ const CalendarClientPastBody: FC = () => {
           {t('calendar.status_completed')}
         </div>
 
+        {/* Collapsible metaandmed */}
+        <SlotMetaSection
+          source={order}
+          isMetaOpen={isMetaOpen}
+          onToggle={() => onSetIsMetaOpen(!isMetaOpen)}
+        />
+
         {slot?.assignment?.reference_number && (
           <div className={classes.formGroup}>
             <span className={classes.label}>
@@ -78,13 +85,6 @@ const CalendarClientPastBody: FC = () => {
           serviceType={slot?.assignment?.service_type}
           location={slot?.assignment?.location}
           meetingLink={slot?.assignment?.meeting_link}
-        />
-
-        {/* Collapsible metaandmed */}
-        <SlotMetaSection
-          source={order}
-          isMetaOpen={isMetaOpen}
-          onToggle={() => onSetIsMetaOpen(!isMetaOpen)}
         />
       </div>
 

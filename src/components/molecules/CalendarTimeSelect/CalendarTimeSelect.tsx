@@ -115,8 +115,7 @@ const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
       : normalizeToHalfHourValue(value)
   })()
 
-  const triggerLabel =
-    allowEmpty && !selectValue ? emptyLabel : (selectValue || emptyLabel)
+  const triggerLabel = selectValue || '-'
 
   useLayoutEffect(() => {
     if (!open || !listRef.current) return

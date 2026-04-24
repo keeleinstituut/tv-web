@@ -130,6 +130,15 @@ const CalendarOrderViewBody: FC = () => {
             </div>
           ) : null)}
 
+        {/* Metaandmed — view only */}
+        {!isEditing && (
+          <SlotMetaSection
+            source={order}
+            isMetaOpen={isMetaOpen}
+            onToggle={() => onSetIsMetaOpen(!isMetaOpen)}
+          />
+        )}
+
         {/* Viitenumber */}
         {isEditing ? (
           <div className={classes.formGroup}>
@@ -372,15 +381,6 @@ const CalendarOrderViewBody: FC = () => {
             </div>
           </div>
         ) : null}
-
-        {/* Metaandmed — view only */}
-        {!isEditing && (
-          <SlotMetaSection
-            source={order}
-            isMetaOpen={isMetaOpen}
-            onToggle={() => onSetIsMetaOpen(!isMetaOpen)}
-          />
-        )}
       </div>
 
       <OrderAttachments />

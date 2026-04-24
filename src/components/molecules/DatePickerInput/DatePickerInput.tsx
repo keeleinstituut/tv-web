@@ -40,7 +40,7 @@ const changeDateToString = (dateObject: Date | null | undefined) =>
 export const DatePickerComponent = ({
   name,
   value,
-  placeholder,
+  placeholder = '-',
   disabled,
   ariaLabel,
   onChange,
