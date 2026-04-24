@@ -16,8 +16,10 @@ import {
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { orderClassifierByLangPriority } from 'helpers'
+import { includes } from 'lodash'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useAuth } from 'components/contexts/AuthContext'
+import { Privileges } from 'types/privileges'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
@@ -42,7 +44,11 @@ const CalendarOrderDetail: FC = () => {
   const isCreateMode = !orderId
   const isMobile = useIsMobile()
   const { isTPM, isTranslator, isClient } = useCalendarRole()
-  const { institutionUserId } = useAuth()
+  const { institutionUserId, userPrivileges } = useAuth()
+  const hasManageProjectPrivilege = includes(
+    userPrivileges,
+    Privileges.ManageProject
+  )
 
   const {
     order,
@@ -256,6 +262,7 @@ const CalendarOrderDetail: FC = () => {
     order.sub_project_status === 'REGISTERED' ||
     order.sub_project_status === 'TASKS_SUBMITTED_TO_VENDORS'
   const canModify =
+    hasManageProjectPrivilege &&
     (isTPM || (isClient && isOwner && clientOrderNotYetAccepted)) &&
     !isCancelled &&
     !isPast &&

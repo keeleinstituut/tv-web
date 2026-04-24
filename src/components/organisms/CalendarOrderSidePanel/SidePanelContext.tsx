@@ -20,6 +20,7 @@ export interface SidePanelContextValue {
   duration: string
   isPastSlot: boolean
   isViewMode: boolean
+  canEdit: boolean
 
   // Role flags
   isTPM: boolean

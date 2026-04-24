@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { includes } from 'lodash'
 import dayjs from 'dayjs'
 import {
   apiServiceTypeToForm,
@@ -33,6 +34,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { ServiceType, UpdateOrderPayload } from 'types/calendar'
+import { Privileges } from 'types/privileges'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { SidePanelContextValue } from './SidePanelContext'
@@ -91,7 +93,11 @@ export function useCalendarOrderPanelState(): {
   const { t } = useTranslation()
   const { sidePanelSelection, closeSidePanel } = useCalendarPanel()
   const { isTPM, isClient, isTranslator } = useCalendarRole()
-  const { institutionUserId } = useAuth()
+  const { institutionUserId, userPrivileges } = useAuth()
+  const hasManageProjectPrivilege = includes(
+    userPrivileges,
+    Privileges.ManageProject
+  )
 
   const { mutate: createOrder, isPending: isCreating } =
     useCreateCalendarOrder()
@@ -227,7 +233,9 @@ export function useCalendarOrderPanelState(): {
     order?.sub_project_status == null ||
     order.sub_project_status === 'REGISTERED' ||
     order.sub_project_status === 'TASKS_SUBMITTED_TO_VENDORS'
-  const canEdit = isTPM || (isClient && isOwner && clientOrderNotYetAccepted)
+  const canEdit =
+    hasManageProjectPrivilege &&
+    (isTPM || (isClient && isOwner && clientOrderNotYetAccepted))
   const isRequiredFilled =
     !!serviceType &&
     !!location.trim() &&
@@ -587,6 +595,7 @@ export function useCalendarOrderPanelState(): {
       duration,
       isPastSlot,
       isViewMode,
+      canEdit,
       isTPM,
       referenceNumber,
       setReferenceNumber,
@@ -656,6 +665,7 @@ export function useCalendarOrderPanelState(): {
       duration,
       isPastSlot,
       isViewMode,
+      canEdit,
       isTPM,
       referenceNumber,
       serviceType,
