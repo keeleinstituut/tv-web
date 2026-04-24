@@ -39,6 +39,8 @@ export interface SidePanelContextValue {
   setClientInstitutionId: (v: string) => void
   domainIds: string[]
   setDomainIds: (v: string[]) => void
+  projectTagIds: string[]
+  setProjectTagIds: (v: string[]) => void
   vendorId: string
   setVendorId: (v: string) => void
   durationMinutes: number
@@ -53,8 +55,6 @@ export interface SidePanelContextValue {
   isCancelled: boolean
   isCancelPending: boolean
   cancelCountdown: number
-  isMetaOpen: boolean
-  setIsMetaOpen: (v: boolean) => void
   vendorName: string | undefined
   vendorEmail: string | undefined
   vendorPhone: string | undefined
@@ -69,6 +69,7 @@ export interface SidePanelContextValue {
 
   // Remote data
   domains: TagOption[] | undefined
+  projectTags: TagOption[] | undefined
   vendors: SlotMatchingVendor[]
   order: CalendarOrderDetail | null
 

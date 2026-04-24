@@ -386,6 +386,8 @@
     "service_type_remote": "Kaugtõlge",
     "service_type_contact": "Kontakttõlge",
     "domain": "Valdkond",
+    "tags": "Sildid",
+    "select_tags": "Vali sildid",
     "translator": "Teostaja",
     "location": "Asukoht",
     "enter_address": "Sisesta aadress",

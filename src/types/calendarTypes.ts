@@ -264,7 +264,7 @@ export interface CalendarOrderDetail {
   client_institution_user?: { id: string }
   coordinator?: { name: string; email: string; phone: string }
   vendor?: { name: string; email: string; phone: string }
-  tags?: Array<{ id: string; name: string }>
+  tags?: Array<{ id: string; name: string; type?: string }>
   source_files?: Array<{
     id: string
     name: string

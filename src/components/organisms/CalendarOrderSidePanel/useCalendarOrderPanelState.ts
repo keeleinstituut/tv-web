@@ -35,7 +35,6 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { ServiceType, UpdateOrderPayload } from 'types/calendar'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
-import { useFetchVendor } from 'hooks/requests/useVendors'
 import { SidePanelContextValue } from './SidePanelContext'
 
 interface FormState {
@@ -46,6 +45,7 @@ interface FormState {
   startTimeInput: string
   clientInstitutionId: string
   domainIds: string[]
+  projectTagIds: string[]
   vendorId: string
   durationMinutes: number
 }
@@ -58,6 +58,7 @@ const INITIAL_FORM: FormState = {
   startTimeInput: '',
   clientInstitutionId: '',
   domainIds: [],
+  projectTagIds: [],
   vendorId: '',
   durationMinutes: 60,
 }
@@ -133,6 +134,7 @@ export function useCalendarOrderPanelState(): {
     location: string
     clientInstitutionId: string
     domainIds: string[]
+    projectTagIds: string[]
     vendorId: string
     selectedDate: string
     startTimeInput: string
@@ -148,6 +150,7 @@ export function useCalendarOrderPanelState(): {
     startTimeInput,
     clientInstitutionId,
     domainIds,
+    projectTagIds,
     vendorId,
     durationMinutes,
   } = form
@@ -164,6 +167,8 @@ export function useCalendarOrderPanelState(): {
   const setClientInstitutionId = (v: string) =>
     setForm((f) => ({ ...f, clientInstitutionId: v }))
   const setDomainIds = (v: string[]) => setForm((f) => ({ ...f, domainIds: v }))
+  const setProjectTagIds = (v: string[]) =>
+    setForm((f) => ({ ...f, projectTagIds: v }))
   const setVendorId = (v: string) => setForm((f) => ({ ...f, vendorId: v }))
   const setDurationMinutes = (v: number | ((prev: number) => number)) =>
     setForm((f) => ({
@@ -177,7 +182,6 @@ export function useCalendarOrderPanelState(): {
   const [isCancelled, setIsCancelled] = useState(false)
   const [isCancelPending, setIsCancelPending] = useState(false)
   const [cancelCountdown, setCancelCountdown] = useState(60)
-  const [isMetaOpen, setIsMetaOpen] = useState(false)
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [pendingComment, setPendingComment] = useState('')
 
@@ -209,12 +213,6 @@ export function useCalendarOrderPanelState(): {
   )
   const order = useAssignmentEndpoint ? assignmentOrder : projectOrder
 
-  // Fetch vendor details (email, phone) via GET /vendors/{id}
-  const slotVendorId =
-    sidePanelSelection?.vendorId || slot?.assignment?.vendor_id
-  const { vendor: vendorDetail } = useFetchVendor({
-    id: isViewMode ? slotVendorId : undefined,
-  })
   const { mutate: addFilesMutate, isPending: isAddingFiles } =
     useCalendarAddFiles(projectId)
   const { mutate: deleteFileMutate, isPending: isDeletingFile } =
@@ -285,7 +283,7 @@ export function useCalendarOrderPanelState(): {
       : null
   const { vendors } = useFetchSlotMatching(slotMatchingParams)
 
-  const { tags: domains } = useFetchCalendarTags()
+  const { tags: domains, projectTags } = useFetchCalendarTags()
 
   // Reset state when panel opens/closes
   useEffect(() => {
@@ -299,7 +297,6 @@ export function useCalendarOrderPanelState(): {
       setIsCancelled(false)
       setIsCancelPending(false)
       setCancelCountdown(60)
-      setIsMetaOpen(false)
     } else {
       if (sidePanelSelection?.vendorId) {
         setVendorId(sidePanelSelection.vendorId)
@@ -313,9 +310,6 @@ export function useCalendarOrderPanelState(): {
         setServiceType(apiServiceTypeToForm(a.service_type))
         setLocation(a.meeting_link ?? a.location ?? '')
       }
-    }
-    if (isOpen && isClientPastView) {
-      setIsMetaOpen(true)
     }
   }, [sidePanelSelection]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -418,7 +412,10 @@ export function useCalendarOrderPanelState(): {
         client_institution_id: isTPM
           ? clientInstitutionId || undefined
           : undefined,
-        tag_ids: domainIds.length ? domainIds : undefined,
+        tag_ids:
+          domainIds.length || projectTagIds.length
+            ? [...domainIds, ...projectTagIds]
+            : undefined,
         vendor_id: isTPM ? vendorId || undefined : undefined,
         comment: pendingComment || undefined,
         help_files: pendingFiles.length ? pendingFiles : undefined,
@@ -452,7 +449,10 @@ export function useCalendarOrderPanelState(): {
     const initLocation =
       slot?.assignment?.location ?? order?.meeting_link ?? order?.location ?? ''
     const initClientInstitutionId = order?.client_institution_user?.id ?? ''
-    const initDomainIds = order?.tags?.map((tag) => tag.id) ?? []
+    const initDomainIds =
+      order?.tags?.filter((t) => t.type === 'Valdkond').map((t) => t.id) ?? []
+    const initProjectTagIds =
+      order?.tags?.filter((t) => t.type === 'Tellimus').map((t) => t.id) ?? []
 
     setForm({
       referenceNumber: initReferenceNumber,
@@ -463,6 +463,7 @@ export function useCalendarOrderPanelState(): {
       durationMinutes: slotDurationMinutes,
       clientInstitutionId: initClientInstitutionId,
       domainIds: initDomainIds,
+      projectTagIds: initProjectTagIds,
       vendorId: form.vendorId,
     })
 
@@ -472,6 +473,7 @@ export function useCalendarOrderPanelState(): {
       location: initLocation,
       clientInstitutionId: initClientInstitutionId,
       domainIds: initDomainIds,
+      projectTagIds: initProjectTagIds,
       vendorId: form.vendorId,
       selectedDate: date,
       startTimeInput: startTime,
@@ -510,8 +512,10 @@ export function useCalendarOrderPanelState(): {
     if (isTPM && (!b || clientInstitutionId !== b.clientInstitutionId)) {
       payload.client_institution_id = clientInstitutionId || undefined
     }
-    if (!b || !areSortedIdArraysEqual(domainIds, b.domainIds)) {
-      payload.tag_ids = domainIds.length ? domainIds : undefined
+    const mergedTagIds = [...domainIds, ...projectTagIds]
+    const baselineMergedTagIds = b ? [...b.domainIds, ...b.projectTagIds] : []
+    if (!b || !areSortedIdArraysEqual(mergedTagIds, baselineMergedTagIds)) {
+      payload.tag_ids = mergedTagIds.length ? mergedTagIds : undefined
     }
     if (isTPM && (!b || vendorId !== b.vendorId)) {
       payload.vendor_id = vendorId || undefined
@@ -598,6 +602,8 @@ export function useCalendarOrderPanelState(): {
       setClientInstitutionId,
       domainIds,
       setDomainIds,
+      projectTagIds,
+      setProjectTagIds,
       vendorId,
       setVendorId,
       durationMinutes,
@@ -610,24 +616,14 @@ export function useCalendarOrderPanelState(): {
       isCancelled,
       isCancelPending,
       cancelCountdown,
-      isMetaOpen,
-      setIsMetaOpen,
-      vendorName:
-        sidePanelSelection?.vendorName ||
-        (vendorDetail?.institution_user
-          ? [
-              vendorDetail.institution_user.user?.forename,
-              vendorDetail.institution_user.user?.surname,
-            ]
-              .filter(Boolean)
-              .join(' ')
-          : undefined),
-      vendorEmail: vendorDetail?.institution_user?.email,
-      vendorPhone: vendorDetail?.institution_user?.phone,
+      vendorName: sidePanelSelection?.vendorName || order?.vendor?.name,
+      vendorEmail: order?.vendor?.email,
+      vendorPhone: order?.vendor?.phone,
       isCreating,
       isUpdating,
       isCancelling,
       domains,
+      projectTags,
       isRequiredFilled,
       vendors: vendors ?? [],
       order: order ?? null,
@@ -668,6 +664,7 @@ export function useCalendarOrderPanelState(): {
       startTimeInput,
       clientInstitutionId,
       domainIds,
+      projectTagIds,
       vendorId,
       durationMinutes,
       isEditing,
@@ -676,13 +673,13 @@ export function useCalendarOrderPanelState(): {
       isCancelled,
       isCancelPending,
       cancelCountdown,
-      isMetaOpen,
       isRequiredFilled,
       isCreating,
       isUpdating,
       isCancelling,
       isDecliningCancel,
       domains,
+      projectTags,
       vendors,
       order,
       isAddingFiles,
@@ -691,7 +688,6 @@ export function useCalendarOrderPanelState(): {
       pendingComment,
       isPostingComment,
       sidePanelSelection?.vendorName,
-      vendorDetail,
       handleClose,
       projectId,
     ]

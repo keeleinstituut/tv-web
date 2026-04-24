@@ -246,7 +246,11 @@ export function transformProjectDetail(
 
   const assignments = (subProjects[0] as Record<string, unknown> | undefined)
     ?.assignments as Array<Record<string, unknown>> | undefined
-  const assignee = assignments?.[0]?.assignee as
+  const translationAssignment = assignments?.find((a) => {
+    const jd = a?.job_definition as { job_key?: string } | undefined
+    return jd?.job_key === 'job_translation'
+  })
+  const assignee = translationAssignment?.assignee as
     | {
         institution_user?: {
           email?: string
@@ -255,7 +259,19 @@ export function transformProjectDetail(
         }
       }
     | undefined
-  const vendorIU = assignee?.institution_user
+  const candidates = translationAssignment?.candidates as
+    | Array<{
+        vendor?: {
+          institution_user?: {
+            email?: string
+            phone?: string
+            user?: { forename?: string; surname?: string }
+          }
+        }
+      }>
+    | undefined
+  const vendorIU =
+    assignee?.institution_user ?? candidates?.[0]?.vendor?.institution_user
 
   const sub_project_status = normalizeCalendarSubProjectStatus(
     subProjects[0]?.status ?? null

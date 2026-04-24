@@ -283,18 +283,29 @@ export const useFetchSlotMatching = (
 }
 
 export const useFetchCalendarTags = () => {
-  const { data } = useQuery<Array<{ id: string; name: string }>>({
-    queryKey: ['calendar-tags'],
+  const { data } = useQuery<
+    Array<{ id: string; name: string; type: string }>
+  >({
+    queryKey: ['calendar-tags', 'valdkond-tellimus'],
     queryFn: async () => {
-      const res: { data: Array<{ id: string; name: string }> } =
-        await apiClient.get(endpoints.TAGS, {
-          'type[]': ['Valdkond'],
-        })
+      const res: {
+        data: Array<{ id: string; name: string; type: string }>
+      } = await apiClient.get(endpoints.TAGS, {
+        'type[]': ['Valdkond', 'Tellimus'],
+      })
       return res.data ?? []
     },
     staleTime: Infinity,
   })
-  return { tags: data ?? [] }
+  const all = data ?? []
+  return {
+    tags: all
+      .filter((t) => t.type === 'Valdkond')
+      .map(({ id, name }) => ({ id, name })),
+    projectTags: all
+      .filter((t) => t.type === 'Tellimus')
+      .map(({ id, name }) => ({ id, name })),
+  }
 }
 
 export const useFetchCalendarOrderDetail = (id: string | null) => {

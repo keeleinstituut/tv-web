@@ -17,15 +17,17 @@ const CalendarClientPastBody: FC = () => {
     date,
     startTime,
     duration,
-    isMetaOpen,
-    setIsMetaOpen: onSetIsMetaOpen,
     order,
     downloadFile,
+    isTPM,
+    vendorName,
+    vendorEmail,
+    vendorPhone,
   } = useSidePanel()
 
   const [isFilesOpen, setIsFilesOpen] = useState(false)
   const [isCommentsOpen, setIsCommentsOpen] = useState(false)
-
+  console.log(vendorName, vendorEmail, vendorPhone, 'tereee')
   return (
     <>
       {/* Status badge + read-only fields */}
@@ -34,12 +36,7 @@ const CalendarClientPastBody: FC = () => {
           {t('calendar.status_completed')}
         </div>
 
-        {/* Collapsible metaandmed */}
-        <SlotMetaSection
-          source={order}
-          isMetaOpen={isMetaOpen}
-          onToggle={() => onSetIsMetaOpen(!isMetaOpen)}
-        />
+        <SlotMetaSection source={order} />
 
         {slot?.assignment?.reference_number && (
           <div className={classes.formGroup}>
@@ -86,6 +83,27 @@ const CalendarClientPastBody: FC = () => {
           location={slot?.assignment?.location}
           meetingLink={slot?.assignment?.meeting_link}
         />
+
+        {vendorName && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>
+              {isTPM ? t('calendar.translator') : t('calendar.vendor_name')}
+            </span>
+            <span className={classes.readValue}>{vendorName}</span>
+          </div>
+        )}
+        {vendorEmail && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_email')}</span>
+            <span className={classes.readValue}>{vendorEmail}</span>
+          </div>
+        )}
+        {vendorPhone && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_phone')}</span>
+            <span className={classes.readValue}>{vendorPhone}</span>
+          </div>
+        )}
       </div>
 
       {/* Lisamaterjalid */}

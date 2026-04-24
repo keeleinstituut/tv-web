@@ -336,31 +336,14 @@ $footer-height: 64px;
   line-height: 24px;
 }
 
-.metaToggle {
+.metaHeader {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: none;
-  border: none;
-  cursor: pointer;
   padding: 24px 0 0;
   font-size: $font-size-16;
   color: #09090b;
   width: 100%;
-  text-align: left;
   border-top: 1px solid $color-border;
-}
-
-.metaIcon {
-  width: 16px;
-  height: 16px;
-  color: $color-text;
-  flex-shrink: 0;
-  transition: transform 0.2s;
-}
-
-.metaIconOpen {
-  transform: rotate(180deg);
 }
 
 .metaContent {
