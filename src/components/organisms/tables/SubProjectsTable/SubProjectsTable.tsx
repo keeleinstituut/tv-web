@@ -36,11 +36,7 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { TypesWithStartTime } from 'types/projects'
 
-const VERBAL_TYPE_VALUES = [
-  TypesWithStartTime.OralTranslation,
-  TypesWithStartTime.SynchronousTranslation,
-  TypesWithStartTime.SignLanguage,
-]
+const VERBAL_TYPE_VALUES = [TypesWithStartTime.OralTranslation]
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import {
