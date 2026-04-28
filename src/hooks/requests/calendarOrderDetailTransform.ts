@@ -114,6 +114,7 @@ export function transformAssignmentDetail(
 
   const assigneeVendor = raw.assignee as
     | {
+        id?: string
         institution_user?: {
           email?: string
           phone?: string
@@ -180,6 +181,7 @@ export function transformAssignmentDetail(
       : undefined,
     vendor: assigneeIU
       ? {
+          id: assigneeVendor?.id,
           name:
             [assigneeIU.user?.forename, assigneeIU.user?.surname]
               .filter(Boolean)
@@ -252,6 +254,7 @@ export function transformProjectDetail(
   })
   const assignee = translationAssignment?.assignee as
     | {
+        id?: string
         institution_user?: {
           email?: string
           phone?: string
@@ -262,6 +265,7 @@ export function transformProjectDetail(
   const candidates = translationAssignment?.candidates as
     | Array<{
         vendor?: {
+          id?: string
           institution_user?: {
             email?: string
             phone?: string
@@ -270,8 +274,10 @@ export function transformProjectDetail(
         }
       }>
     | undefined
+  const candidateVendor = candidates?.[0]?.vendor
   const vendorIU =
-    assignee?.institution_user ?? candidates?.[0]?.vendor?.institution_user
+    assignee?.institution_user ?? candidateVendor?.institution_user
+  const vendorId = assignee?.id ?? candidateVendor?.id
 
   const sub_project_status = normalizeCalendarSubProjectStatus(
     subProjects[0]?.status ?? null
@@ -321,6 +327,7 @@ export function transformProjectDetail(
       : undefined,
     vendor: vendorIU
       ? {
+          id: vendorId,
           name:
             [vendorIU.user?.forename, vendorIU.user?.surname]
               .filter(Boolean)

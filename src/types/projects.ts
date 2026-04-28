@@ -225,6 +225,17 @@ export interface ListProject {
   client_institution_user: UserType
   manager_institution_user: UserType
 }
+export interface ProjectComment {
+  id: string
+  institution_user_id: string
+  comment: string
+  created_at: string
+  institution_user?: {
+    id: string
+    user?: { forename?: string; surname?: string }
+  } | null
+}
+
 export interface ProjectDetail extends ListProject {
   translation_domain_classifier_value: ClassifierValue
   workflow_started?: boolean
@@ -237,6 +248,7 @@ export interface ProjectDetail extends ListProject {
   cancel_at?: string
   cancelled_at?: string
   reviews?: Review[]
+  project_comments?: ProjectComment[]
 }
 
 export type ProjectsPayloadType = PaginationFunctionType &

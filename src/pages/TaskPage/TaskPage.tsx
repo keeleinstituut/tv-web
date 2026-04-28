@@ -3,6 +3,7 @@ import { FC, useCallback } from 'react'
 import ProjectDetails, {
   ProjectDetailModes,
 } from 'components/organisms/ProjectDetails/ProjectDetails'
+import ProjectCommentsSection from 'components/molecules/ProjectCommentsSection/ProjectCommentsSection'
 import TaskDetails from 'components/organisms/TaskDetails/TaskDetails'
 import Button from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
@@ -108,6 +109,8 @@ const TaskPage: FC = () => {
         project={projectToUse}
         className={classes.projectDetails}
       />
+
+      <ProjectCommentsSection comments={projectToUse?.project_comments} />
 
       <div className={classes.separator} />
 
