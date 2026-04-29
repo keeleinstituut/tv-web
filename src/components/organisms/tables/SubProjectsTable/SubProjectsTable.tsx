@@ -170,7 +170,7 @@ const SubProjectsTable: FC = () => {
   const statusFilters = map(SubProjectStatus, (status) => ({
     label: t(`projects.status.${status}`),
     value: status,
-  }))
+  })).filter((f) => f.value !== SubProjectStatus.TasksCompleted)
   const { classifierValues: allProjectTypes, classifierValuesFilters: allTypeFilters } =
     useClassifierValuesFetch({ type: ClassifierValueType.ProjectType })
 
