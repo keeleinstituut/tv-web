@@ -111,7 +111,11 @@ const CalendarToolbar: FC = () => {
             showNotification(
               {
                 type: NotificationTypes.Warning,
-                title: t('calendar.no_slots_found'),
+                title: t(
+                  isClient && !isTPM
+                    ? 'calendar.no_slots_found_client'
+                    : 'calendar.no_slots_found'
+                ),
               },
               5000
             )

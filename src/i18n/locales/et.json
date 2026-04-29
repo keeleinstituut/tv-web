@@ -347,6 +347,7 @@
     "find_slot": "Leia sobiv aeg",
     "searching": "Otsin...",
     "no_slots_found": "Sobivat aega ei leitud",
+    "no_slots_found_client": "Kalendrist ei leitud vaba tõlki. Esita siiski tellimus ja meie tõlkekorraldaja leiab sobiva tõlgi.",
     "more": "Veel",
     "add_order": "Lisa tellimus",
     "order": "Tellimus",
