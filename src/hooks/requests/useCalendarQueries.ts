@@ -415,14 +415,14 @@ export const useFetchEmergencySchedules = (vendorId: string | null) => {
 }
 
 export interface CalendarSettings {
-  reaction_time_seconds: number
+  reaction_time_minutes: number
   buffer_before_minutes: number
   buffer_after_minutes: number
   default_project_type_id: string | null
 }
 
 const DEFAULT_CALENDAR_SETTINGS: CalendarSettings = {
-  reaction_time_seconds: 30,
+  reaction_time_minutes: 30,
   buffer_before_minutes: 30,
   buffer_after_minutes: 30,
   default_project_type_id: null,

@@ -1272,6 +1272,7 @@
       "NEW": "-",
       "SUBMITTED_TO_VENDOR": "Teostajale edastatud",
       "ACCEPTED": "Teostamisel",
+      "REJECTED": "Tagasi lükatud",
       "DONE": "Teostatud"
     }
   },
