@@ -7,6 +7,7 @@ import PersonSection, {
   PersonSectionTypes,
 } from 'components/molecules/PersonSection/PersonSection'
 import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
+import ProjectCommentsSection from 'components/molecules/ProjectCommentsSection/ProjectCommentsSection'
 import ProjectFilesSection from 'components/molecules/ProjectFilesSection/ProjectFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateProject, useUpdateProject } from 'hooks/requests/useProjects'
@@ -485,6 +486,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
             isEditable={isRestEditable && isEditEnabled}
             workflow_started={workflow_started}
           />
+          <ProjectCommentsSection comments={project?.project_comments} />
           <ProjectFilesSection
             projectId={id}
             control={control}

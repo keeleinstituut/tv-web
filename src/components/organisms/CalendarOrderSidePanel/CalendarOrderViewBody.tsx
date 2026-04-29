@@ -185,7 +185,7 @@ const CalendarOrderViewBody: FC = () => {
           </label>
           {isEditing ? (
             <div style={{ display: 'flex', gap: 8 }}>
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, position: 'relative' }}>
                 <DatePickerComponent
                   name="selectedDate"
                   value={selectedDate ? selectedDate.replace(/\./g, '/') : ''}
