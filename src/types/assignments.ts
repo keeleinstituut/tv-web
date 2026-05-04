@@ -18,6 +18,7 @@ export enum CandidateStatus {
   New = 'NEW',
   Submitted = 'SUBMITTED_TO_VENDOR',
   Accepted = 'ACCEPTED',
+  Rejected = 'REJECTED',
   Done = 'DONE',
 }
 

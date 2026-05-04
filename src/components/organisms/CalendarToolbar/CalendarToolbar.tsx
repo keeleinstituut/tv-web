@@ -17,8 +17,8 @@ import {
 } from 'hooks/requests/useCalendar'
 import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
 import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
+import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
 import { toCalendarApiDateTime } from 'helpers/calendar'
-import { openNativeDateTimePicker } from 'helpers/nativeDateTimeInput'
 import { CalendarView } from 'types/calendar'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -111,7 +111,11 @@ const CalendarToolbar: FC = () => {
             showNotification(
               {
                 type: NotificationTypes.Warning,
-                title: t('calendar.no_slots_found'),
+                title: t(
+                  isClient && !isTPM
+                    ? 'calendar.no_slots_found_client'
+                    : 'calendar.no_slots_found'
+                ),
               },
               5000
             )
@@ -174,13 +178,19 @@ const CalendarToolbar: FC = () => {
                 {t('calendar.date_and_time')}
               </span>
               <div className={classes.searchInput}>
-                <input
-                  type="date"
-                  className={classes.searchDatetime}
-                  value={searchDate}
-                  onChange={(e) => setSearchDate(e.target.value)}
-                  onClick={openNativeDateTimePicker}
-                />
+                <div className={classes.searchDatePicker}>
+                  <DatePickerComponent
+                    name="searchDate"
+                    value={
+                      searchDate ? dayjs(searchDate).format('DD/MM/YYYY') : ''
+                    }
+                    onChange={(val) =>
+                      setSearchDate(
+                        val ? dayjs(val, 'DD/MM/YYYY').format('YYYY-MM-DD') : ''
+                      )
+                    }
+                  />
+                </div>
                 <span className={classes.searchDateSep} />
                 <div className={classes.searchDatetimeSlot}>
                   <CalendarTimeSelect

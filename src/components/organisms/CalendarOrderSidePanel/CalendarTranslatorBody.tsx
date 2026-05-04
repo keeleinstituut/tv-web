@@ -19,8 +19,6 @@ const CalendarTranslatorBody: FC = () => {
     startTime,
     duration,
     isPastSlot,
-    isMetaOpen,
-    setIsMetaOpen: onSetIsMetaOpen,
     order,
     downloadFile,
     isCancelled,
@@ -83,11 +81,7 @@ const CalendarTranslatorBody: FC = () => {
           meetingLink={slot?.assignment?.meeting_link}
         />
 
-        <SlotMetaSection
-          source={order}
-          isMetaOpen={isMetaOpen}
-          onToggle={() => onSetIsMetaOpen(!isMetaOpen)}
-        />
+        <SlotMetaSection source={order} />
       </div>
 
       <div className={classes.divider} />

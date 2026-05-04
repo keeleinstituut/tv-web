@@ -283,18 +283,29 @@ export const useFetchSlotMatching = (
 }
 
 export const useFetchCalendarTags = () => {
-  const { data } = useQuery<Array<{ id: string; name: string }>>({
-    queryKey: ['calendar-tags'],
+  const { data } = useQuery<
+    Array<{ id: string; name: string; type: string }>
+  >({
+    queryKey: ['calendar-tags', 'valdkond-tellimus'],
     queryFn: async () => {
-      const res: { data: Array<{ id: string; name: string }> } =
-        await apiClient.get(endpoints.TAGS, {
-          'type[]': ['Tellimus', 'Valdkond'],
-        })
+      const res: {
+        data: Array<{ id: string; name: string; type: string }>
+      } = await apiClient.get(endpoints.TAGS, {
+        'type[]': ['Valdkond', 'Tellimus'],
+      })
       return res.data ?? []
     },
     staleTime: Infinity,
   })
-  return { tags: data ?? [] }
+  const all = data ?? []
+  return {
+    tags: all
+      .filter((t) => t.type === 'Valdkond')
+      .map(({ id, name }) => ({ id, name })),
+    projectTags: all
+      .filter((t) => t.type === 'Tellimus')
+      .map(({ id, name }) => ({ id, name })),
+  }
 }
 
 export const useFetchCalendarOrderDetail = (id: string | null) => {
@@ -404,14 +415,14 @@ export const useFetchEmergencySchedules = (vendorId: string | null) => {
 }
 
 export interface CalendarSettings {
-  reaction_time_seconds: number
+  reaction_time_minutes: number
   buffer_before_minutes: number
   buffer_after_minutes: number
   default_project_type_id: string | null
 }
 
 const DEFAULT_CALENDAR_SETTINGS: CalendarSettings = {
-  reaction_time_seconds: 30,
+  reaction_time_minutes: 30,
   buffer_before_minutes: 30,
   buffer_after_minutes: 30,
   default_project_type_id: null,

@@ -4,6 +4,8 @@
 .toolbar {
   padding: 0 spacing(8);
   background: $color-background-main;
+  position: relative;
+  z-index: 10;
 }
 
 .content {
@@ -335,6 +337,36 @@
 .searchDatetimeSlot {
   flex: 1;
   min-width: 0;
+}
+
+/* Flatten DatePickerComponent to fit inside the shared-border search row. */
+.searchDatePicker {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+
+  :global(.react-datepicker-wrapper) {
+    width: 100%;
+  }
+
+  :global(.react-datepicker__input-container) input {
+    height: 35px;
+    border: none;
+    padding: 0 24px 0 0;
+    background: transparent;
+    font-size: $font-size-14;
+    font-family: inherit;
+    color: #5d6071;
+    cursor: pointer;
+
+    &:focus {
+      border: none;
+      color: #5d6071;
+    }
+  }
+
 }
 
 .searchDateSep {

@@ -32,11 +32,14 @@ const CalendarOrderFormBody: FC = () => {
     setClientInstitutionId: onSetClientInstitutionId,
     domainIds,
     setDomainIds: onSetDomainIds,
+    projectTagIds,
+    setProjectTagIds: onSetProjectTagIds,
     vendorId,
     setVendorId: onSetVendorId,
     durationMinutes,
     setDurationMinutes: onSetDurationMinutes,
     domains,
+    projectTags,
     vendors,
     pendingFiles,
     setPendingFiles,
@@ -208,6 +211,19 @@ const CalendarOrderFormBody: FC = () => {
             placeholder={t('calendar.select_domain')}
           />
         </div>
+
+        {/* Sildid — TPM only */}
+        {isTPM && (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>{t('calendar.tags')}</label>
+            <MultiSelect
+              options={projectTags ?? []}
+              value={projectTagIds}
+              onChange={onSetProjectTagIds}
+              placeholder={t('calendar.select_tags')}
+            />
+          </div>
+        )}
 
         {/* Teostaja — TPM only */}
         {isTPM && (

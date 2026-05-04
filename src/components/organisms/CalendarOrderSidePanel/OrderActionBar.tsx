@@ -19,6 +19,7 @@ const OrderActionBar: FC = () => {
     isRequiredFilled,
     cancelReason,
     isCancelling,
+    canEdit,
     handleCancelEdit,
     handleSaveEdit,
     handleStartEdit,
@@ -99,12 +100,14 @@ const OrderActionBar: FC = () => {
         </>
       ) : (
         <>
-          <Button
-            appearance={AppearanceTypes.Secondary}
-            onClick={handleStartEdit}
-          >
-            {t('calendar.edit')}
-          </Button>
+          {canEdit && (
+            <Button
+              appearance={AppearanceTypes.Secondary}
+              onClick={handleStartEdit}
+            >
+              {t('calendar.edit')}
+            </Button>
+          )}
           <Button
             appearance={AppearanceTypes.Secondary}
             onClick={() => setIsConfirmingCancel(true)}

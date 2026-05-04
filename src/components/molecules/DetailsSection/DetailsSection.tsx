@@ -23,6 +23,10 @@ const VERBAL_TYPES = without(
   TypesWithStartTime.PostTranslation
 )
 
+// OralTranslation has its own dedicated calendar/oral order flow,
+// so it's the only type excluded from the regular project creation dropdown.
+const CALENDAR_ONLY_TYPES = [TypesWithStartTime.OralTranslation]
+
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   isNew?: boolean
@@ -100,7 +104,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
   const nonVerbalProjectTypeFilter = useMemo(
     () =>
       (projectTypeFilter ?? []).filter(
-        (_, i) => !includes(VERBAL_TYPES, projectTypes?.[i]?.value)
+        (_, i) => !includes(CALENDAR_ONLY_TYPES, projectTypes?.[i]?.value)
       ),
     [projectTypeFilter, projectTypes]
   )

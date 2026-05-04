@@ -45,6 +45,8 @@ const CalendarOrderViewBody: FC = () => {
     setClientInstitutionId: onSetClientInstitutionId,
     domainIds,
     setDomainIds: onSetDomainIds,
+    projectTagIds,
+    setProjectTagIds: onSetProjectTagIds,
     vendorId,
     setVendorId: onSetVendorId,
     vendorName,
@@ -52,10 +54,9 @@ const CalendarOrderViewBody: FC = () => {
     vendorPhone,
     isTPM,
     domains,
+    projectTags,
     vendors,
     order,
-    isMetaOpen,
-    setIsMetaOpen: onSetIsMetaOpen,
   } = useSidePanel()
   const { isTranslator } = useCalendarRole()
   const {
@@ -130,6 +131,9 @@ const CalendarOrderViewBody: FC = () => {
             </div>
           ) : null)}
 
+        {/* Metaandmed — view only */}
+        {!isEditing && <SlotMetaSection source={order} />}
+
         {/* Viitenumber */}
         {isEditing ? (
           <div className={classes.formGroup}>
@@ -181,7 +185,7 @@ const CalendarOrderViewBody: FC = () => {
           </label>
           {isEditing ? (
             <div style={{ display: 'flex', gap: 8 }}>
-              <div style={{ flex: 1 }}>
+              <div style={{ flex: 1, position: 'relative' }}>
                 <DatePickerComponent
                   name="selectedDate"
                   value={selectedDate ? selectedDate.replace(/\./g, '/') : ''}
@@ -360,27 +364,56 @@ const CalendarOrderViewBody: FC = () => {
               placeholder={t('calendar.select_domain')}
             />
           </div>
-        ) : order?.tags?.length ? (
-          <div className={classes.formGroup}>
-            <span className={classes.label}>{t('calendar.domain')}</span>
-            <div className={classes.tagList}>
-              {order.tags.map((tag) => (
-                <span key={tag.id} className={classes.domainChip}>
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          </div>
-        ) : null}
-
-        {/* Metaandmed — view only */}
-        {!isEditing && (
-          <SlotMetaSection
-            source={order}
-            isMetaOpen={isMetaOpen}
-            onToggle={() => onSetIsMetaOpen(!isMetaOpen)}
-          />
+        ) : (
+          (() => {
+            const domainChips =
+              order?.tags?.filter((t) => t.type === 'Valdkond') ?? []
+            if (!domainChips.length) return null
+            return (
+              <div className={classes.formGroup}>
+                <span className={classes.label}>{t('calendar.domain')}</span>
+                <div className={classes.tagList}>
+                  {domainChips.map((tag) => (
+                    <span key={tag.id} className={classes.domainChip}>
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )
+          })()
         )}
+
+        {/* Sildid — TPM only */}
+        {isTPM && isEditing && (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>{t('calendar.tags')}</label>
+            <MultiSelect
+              options={projectTags ?? []}
+              value={projectTagIds}
+              onChange={onSetProjectTagIds}
+              placeholder={t('calendar.select_tags')}
+            />
+          </div>
+        )}
+        {!isEditing &&
+          (() => {
+            const projectChips =
+              order?.tags?.filter((t) => t.type === 'Tellimus') ?? []
+            if (!projectChips.length) return null
+            return (
+              <div className={classes.formGroup}>
+                <span className={classes.label}>{t('calendar.tags')}</span>
+                <div className={classes.tagList}>
+                  {projectChips.map((tag) => (
+                    <span key={tag.id} className={classes.domainChip}>
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
       </div>
 
       <OrderAttachments />

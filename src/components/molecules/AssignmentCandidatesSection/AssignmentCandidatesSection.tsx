@@ -126,9 +126,7 @@ const AssignmentCandidatesSection: FC<AssignmentCandidatesSectionProps> = ({
           columnHelper.accessor('delete_button', {
             header: '',
             cell: ({ row, getValue }) => {
-              const isEnabled =
-                row.original.status === CandidateStatus.New ||
-                row.original.status === CandidateStatus.Submitted
+              const isEnabled = row.original.status !== CandidateStatus.Done
               return (
                 <BaseButton
                   className={classNames(

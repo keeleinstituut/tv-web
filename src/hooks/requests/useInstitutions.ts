@@ -220,6 +220,10 @@ export const useSyncInstitutionMainLanguages = () => {
       apiClient.post(endpoints.INSTITUTION_MAIN_LANGUAGES, payload),
     onSuccess: ({ data }) => {
       queryClient.setQueryData(['institution-main-languages'], { data })
+      queryClient.invalidateQueries({ queryKey: ['calendar-languages'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-day'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-week'] })
+      queryClient.invalidateQueries({ queryKey: ['calendar-month'] })
     },
   })
   return { syncMainLanguages, isLoading }

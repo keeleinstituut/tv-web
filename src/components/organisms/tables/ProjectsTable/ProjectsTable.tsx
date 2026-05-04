@@ -44,11 +44,7 @@ import {
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import LanguageDirectionTags from 'components/atoms/LanguageDirectionTags/LanguageDirectionTags'
 
-const VERBAL_TYPE_VALUES = [
-  TypesWithStartTime.OralTranslation,
-  TypesWithStartTime.SynchronousTranslation,
-  TypesWithStartTime.SignLanguage,
-]
+const VERBAL_TYPE_VALUES = [TypesWithStartTime.OralTranslation]
 
 // TODO: statuses might come from BE instead
 // Currently unclear
