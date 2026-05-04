@@ -338,7 +338,7 @@
     "last_changed": "Viimati muudetud {{ date }}",
     "sidebar_terms": "Kasutustingimused",
     "calendar": "Kalender",
-    "machine_translation": "Masintõlge"
+    "language_tools": "Keeletööriistad"
   },
   "calendar": {
     "today": "Päev",
@@ -1303,23 +1303,23 @@
     "buffer_after": "Aeg pärast"
   },
   "machine_translation": {
-    "title": "Masintõlge",
-    "provider_label": "Tõlkepakkuja",
-    "provider_placeholder": "Vali tõlkepakkuja",
+    "title": "Keeletööriistad",
+    "provider_label": "Tööriist",
+    "provider_placeholder": "Vali tööriist",
     "source_language_label": "Lähtekeel",
     "source_language_placeholder": "Vali lähtekeel",
     "target_language_label": "Sihtkeel",
     "target_language_placeholder": "Vali sihtkeel",
     "mode_text": "Tekst",
     "mode_file": "Fail",
-    "text_input_label": "Tõlgitav tekst",
+    "text_input_label": "Lähtetekst",
     "text_input_placeholder": "Sisesta tõlgitav tekst...",
-    "text_result_label": "Tõlge",
-    "translate_button": "Tõlgi",
+    "text_result_label": "Sihttekst",
+    "translate_button": "Alusta",
     "domain_label": "Valdkond",
     "domain_placeholder": "Vali valdkond",
-    "template_label": "Tõlkemall",
-    "template_placeholder": "Vali tõlkemall",
+    "template_label": "Viip",
+    "template_placeholder": "Vali viip",
     "domains": {
       "GEN": "Üldine tekst",
       "SPD": "ELi ametlik tekst",
@@ -1330,9 +1330,9 @@
     },
     "templates": {
       "translation_standard": "Tõlgi (standard)",
-      "summary": "Tee kokkuvõte",
-      "translation_formal": "Kasuta ametlikku stiili",
-      "translation_edited": "Paranda ja viimistle"
+      "summary": "Tee kokkuvõte (tõlge)",
+      "translation_formal": "Kasuta ametlikku stiili (tõlge)",
+      "translation_edited": "Paranda ja viimistle (toimetamine)"
     },
     "languages": {
       "ar": "Araabia",
