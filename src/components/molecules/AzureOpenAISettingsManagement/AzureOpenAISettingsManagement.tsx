@@ -19,6 +19,7 @@ import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 import { AzureOpenAISettingsPayload } from 'types/machineTranslation'
 import EditIcon from 'assets/icons/edit.svg?react'
+import CheckBoxInput from 'components/molecules/CheckBoxInput/CheckBoxInput'
 import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
 
@@ -29,6 +30,7 @@ interface FormValues {
   application_id: string
   client_secret: string
   deployment: string
+  show_confirmation: boolean
 }
 
 const AzureOpenAISettingsManagement: FC = () => {
@@ -45,12 +47,13 @@ const AzureOpenAISettingsManagement: FC = () => {
 
   const { control, handleSubmit, reset } = useForm<FormValues>({
     values: {
-      endpoint:       settings?.endpoint       ?? '',
-      api_key:        '',
-      tenant_id:      settings?.tenant_id      ?? '',
-      application_id: settings?.application_id ?? '',
-      client_secret:  '',
-      deployment:     settings?.deployment     ?? '',
+      endpoint:          settings?.endpoint          ?? '',
+      api_key:           '',
+      tenant_id:         settings?.tenant_id         ?? '',
+      application_id:    settings?.application_id    ?? '',
+      client_secret:     '',
+      deployment:        settings?.deployment        ?? '',
+      show_confirmation: settings?.show_confirmation ?? false,
     },
   })
 
@@ -58,10 +61,11 @@ const AzureOpenAISettingsManagement: FC = () => {
     async (values: FormValues) => {
       try {
         const payload: AzureOpenAISettingsPayload = {
-          endpoint:       values.endpoint       || null,
-          tenant_id:      values.tenant_id      || null,
-          application_id: values.application_id || null,
-          deployment:     values.deployment     || null,
+          endpoint:          values.endpoint          || null,
+          tenant_id:         values.tenant_id         || null,
+          application_id:    values.application_id    || null,
+          deployment:        values.deployment        || null,
+          show_confirmation: values.show_confirmation,
         }
         if (values.api_key)      payload.api_key = values.api_key
         if (values.client_secret) payload.client_secret = values.client_secret
@@ -245,6 +249,25 @@ const AzureOpenAISettingsManagement: FC = () => {
                   ariaLabel={t('azure_openai_settings.client_secret')}
                   disabled={!isEditing}
                   error={fieldState.error}
+                />
+              )}
+            />
+          </div>
+
+          <div className={classes.field}>
+            <Controller
+              control={control}
+              name="show_confirmation"
+              render={({ field }) => (
+                <CheckBoxInput
+                  name="show_confirmation"
+                  ariaLabel={t('azure_openai_settings.show_confirmation_label')}
+                  label={t('azure_openai_settings.show_confirmation_label')}
+                  value={field.value}
+                  onChange={(e) =>
+                    field.onChange((e.target as HTMLInputElement).checked)
+                  }
+                  disabled={!isEditing}
                 />
               )}
             />

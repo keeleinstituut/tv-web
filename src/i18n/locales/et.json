@@ -1378,7 +1378,11 @@
     "file_status_failed": "Tõlkimine ebaõnnestus",
     "download_button": "Laadi tõlge alla",
     "error_translation_failed": "Tõlkimine ebaõnnestus. Proovige uuesti.",
-    "error_too_many_files": "Korraga saab tõlkida maksimaalselt 3 faili."
+    "error_too_many_files": "Korraga saab tõlkida maksimaalselt 3 faili.",
+    "usage_confirm_title": "Oled valimas {{ provider_name }} tõlkemudelit",
+    "usage_confirm_description": "Palun kinnita, et sisestatav tekst ei sisalda tundliku infot ega isikuandmeid nagu isikukoodid, aadressid, terviseandmed või ligipääsuandmed.",
+    "usage_confirm_cancel": "Katkesta",
+    "usage_confirm_proceed": "Jah, kinnitan ja jätkan"
   },
   "azure_openai_settings": {
     "title": "Azure OpenAI sätted",
@@ -1389,7 +1393,8 @@
     "application_id": "Rakenduse ID (Application ID)",
     "client_secret": "Kliendi saladus (Client Secret)",
     "deployment": "Juurutus (Deployment)",
-    "key_saved": "(salvestatud)"
+    "key_saved": "(salvestatud)",
+    "show_confirmation_label": "Näita kasutajatele kinnituse dialoogi enne Copilot tõlkemudeli kasutamist"
   },
   "sessions": {
     "active_sessions": "Aktiivsed sessioonid",

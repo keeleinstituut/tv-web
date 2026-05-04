@@ -18,7 +18,7 @@ import {
   usePollMTJobsStatus,
 } from 'hooks/requests/useMachineTranslation'
 import { endpoints } from 'api/endpoints'
-import { MTProviderOptions } from 'types/machineTranslation'
+import { MTProvider, MTProviderOptions } from 'types/machineTranslation'
 import classes from './classes.module.scss'
 import DownloadIcon from 'assets/icons/download.svg?react'
 import { Root } from '@radix-ui/react-form'
@@ -30,6 +30,7 @@ import classNames from 'classnames'
 import SwapHorizontal from 'assets/icons/swap_horizontal.svg?react'
 import CloseIcon from 'assets/icons/close.svg?react'
 import CopyIcon from 'assets/icons/copy.svg?react'
+import ConfirmationModalBase from 'components/organisms/modals/ConfirmationModalBase/ConfirmationModalBase'
 
 const SOURCE_TEXT_MAX_LENGTH = 5000
 const MAX_FILE_COUNT = 3
@@ -60,6 +61,7 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
   const [textJobId, setTextJobId] = useState<string | null>(null)
   const [fileJobIds, setFileJobIds] = useState<string[]>([])
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [pendingProvider, setPendingProvider] = useState<MTProvider | null>(null)
 
   const selectedProvider = watch('provider')
   const { providers, isLoading: providersLoading } = useFetchMTProviders()
@@ -337,8 +339,13 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
                   options={providerOptions}
                   value={field.value}
                   onChange={(val) => {
-                    field.onChange(val)
-                    handleProviderChange(val as string)
+                    const provider = providers.find(p => p.name === val)
+                    if (provider?.show_confirmation && !sessionStorage.getItem('mt_azure_confirmed')) {
+                      setPendingProvider(provider)
+                    } else {
+                      field.onChange(val)
+                      handleProviderChange(val as string)
+                    }
                   }}
                   error={fieldState.error}
                   loading={providersLoading}
@@ -587,6 +594,24 @@ const MachineTranslationForm: FC<MachineTranslationFormProps> = (props) => {
         )}
 
       </Root>
+
+      <ConfirmationModalBase
+        isModalOpen={pendingProvider !== null}
+        title={t('machine_translation.usage_confirm_title', { provider_name: pendingProvider?.label })}
+        modalContent={t('machine_translation.usage_confirm_description')}
+        cancelButtonContent={t('machine_translation.usage_confirm_cancel')}
+        proceedButtonContent={t('machine_translation.usage_confirm_proceed')}
+        closeModal={() => setPendingProvider(null)}
+        handleCancel={() => setPendingProvider(null)}
+        handleProceed={() => {
+          if (pendingProvider) {
+            sessionStorage.setItem('mt_azure_confirmed', 'true')
+            setValue('provider', pendingProvider.name)
+            handleProviderChange(pendingProvider.name)
+          }
+          setPendingProvider(null)
+        }}
+      />
     </div>
   )
 }

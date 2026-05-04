@@ -2,6 +2,7 @@ export interface MTProvider {
   name: string
   label: string
   supports_file_translation: boolean
+  show_confirmation: boolean
 }
 
 export interface MTDropDownOption {
@@ -74,6 +75,7 @@ export interface AzureOpenAISettings {
   deployment?: string | null
   has_api_key?: boolean
   has_client_secret?: boolean
+  show_confirmation?: boolean
 }
 
 export interface AzureOpenAISettingsPayload {
@@ -83,6 +85,7 @@ export interface AzureOpenAISettingsPayload {
   application_id?: string | null
   client_secret?: string | null
   deployment?: string | null
+  show_confirmation?: boolean
 }
 
 export interface AzureOpenAISettingsResponse {
