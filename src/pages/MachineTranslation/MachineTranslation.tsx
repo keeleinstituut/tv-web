@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import MachineTranslationForm from 'components/organisms/MachineTranslationForm/MachineTranslationForm'
+import MachineTranslationJobsTable from 'components/organisms/tables/MachineTranslationJobsTable/MachineTranslationJobsTable'
 import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 
@@ -18,10 +19,10 @@ const MachineTranslation: FC = () => {
         className={classes.formContainer}
       />
 
-      {/* <div className={classes.container}>
-        <h1>{t('machine_translation.title')}</h1>
-        <MachineTranslationForm />
-      </div> */}
+      <div className={classes.historySection}>
+        <h2>{t('machine_translation.history_title')}</h2>
+        <MachineTranslationJobsTable />
+      </div>
     </>
   )
 }

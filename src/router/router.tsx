@@ -260,7 +260,7 @@ export const protectedRoutes: FullRouteObject[] = [
   },
   {
     path: 'machine-translation',
-    label: i18n.t('menu.machine_translation'),
+    label: i18n.t('menu.language_tools'),
     element: <MachineTranslation />,
     Icon: MachineTranslationIcon,
     privileges: [

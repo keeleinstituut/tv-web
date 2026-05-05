@@ -1,19 +1,11 @@
 @use 'styles/variables' as variables;
 @use 'styles/mixins' as mixins;
 
-// .container {
-//   display: flex;
-//   flex-direction: column;
-//   gap: 24px;
-//   max-width: 900px;
-// }
-
 .machineTranslationFormContainer {
   display: flex;
   flex-direction: column;
   border-radius: variables.$border-radius-6;
   border: 1px solid variables.$color-border;
-  // padding: variables.spacing(4) 0;
   padding: variables.spacing(6) variables.spacing(4);
 }
 
@@ -179,7 +171,6 @@
 }
 
 .fileTranslationJobsContainer {
-  // margin-top: 99px;
   flex: 1;
   align-self: stretch;
   display: flex;

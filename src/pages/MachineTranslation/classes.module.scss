@@ -12,13 +12,11 @@
   background-color: variables.$color-white;
 }
 
+.historySection {
+  margin-top: variables.spacing(8);
 
-// .container {
-//   padding: 24px;
-
-//   h1 {
-//     margin-bottom: 24px;
-//     font-size: 24px;
-//     font-weight: 600;
-//   }
-// }
+  h2 {
+    margin-bottom: variables.spacing(4);
+    font-size: 20px;
+  }
+}

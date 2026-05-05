@@ -10,6 +10,7 @@ import {
   TranslateFilePayload,
   TranslateTextPayload,
 } from 'types/machineTranslation'
+import useFilters from 'hooks/useFilters'
 
 export const useFetchMTProviders = () => {
   const { data, isLoading } = useQuery<MTProvidersResponse>({
@@ -55,6 +56,29 @@ export const useSubmitFileTranslation = () => {
     })
 
   return { submitFile, isLoading }
+}
+
+interface FetchMTJobsParameters {
+  type?: string
+  per_page: number
+  page?: number
+}
+
+export const useFetchMTJobs = (parameters: FetchMTJobsParameters) => {
+  const { filters, handlePaginationChange } = useFilters<FetchMTJobsParameters>(parameters)
+
+  const { data, isLoading } = useQuery<MTJobsResponse>({
+    queryKey: ['mt_jobs', filters],
+    queryFn: () => apiClient.get(endpoints.MT_JOBS, filters),
+    keepPreviousData: true,
+  })
+
+  return {
+    jobs: data?.data ?? [],
+    paginationData: data?.meta,
+    isLoading,
+    handlePaginationChange,
+  }
 }
 
 export const usePollMTJobsStatus = (jobIds: string[]) => {
