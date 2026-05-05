@@ -1,3 +1,5 @@
+import { ResponseMetaTypes } from 'types/collective'
+
 export interface MTProvider {
   name: string
   label: string
@@ -66,6 +68,7 @@ export interface MTFileTranslationResponse {
 
 export interface MTJobsResponse {
   data: TranslationJob[]
+  meta: ResponseMetaTypes
 }
 
 export interface AzureOpenAISettings {

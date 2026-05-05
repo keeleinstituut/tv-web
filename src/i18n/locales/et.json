@@ -1382,7 +1382,18 @@
     "usage_confirm_title": "Oled valimas {{ provider_name }} tõlkemudelit",
     "usage_confirm_description": "Palun kinnita, et sisestatav tekst ei sisalda tundliku infot ega isikuandmeid nagu isikukoodid, aadressid, terviseandmed või ligipääsuandmed.",
     "usage_confirm_cancel": "Katkesta",
-    "usage_confirm_proceed": "Jah, kinnitan ja jätkan"
+    "usage_confirm_proceed": "Jah, kinnitan ja jätkan",
+    "history_title": "Eelmised tõlked",
+    "job_type_text": "Tekst",
+    "job_type_file": "Fail",
+    "provider_etranslation": "eTranslation",
+    "provider_azure_openai": "Azure OpenAI",
+    "column_date": "Kuupäev",
+    "column_type": "Tüüp",
+    "column_provider": "Tõlkepakkuja",
+    "column_languages": "Keeled",
+    "column_status": "Olek",
+    "column_original_filename": "Failinimi"
   },
   "azure_openai_settings": {
     "title": "Azure OpenAI sätted",
