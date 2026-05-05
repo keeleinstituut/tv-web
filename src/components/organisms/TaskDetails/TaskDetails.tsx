@@ -47,10 +47,8 @@ const TaskDetails: FC<TaskProps> = ({
 
   const projectData = project || subProject?.project
 
-  const VERBAL_TYPES = without(
-    values(TypesWithStartTime),
-    TypesWithStartTime.PostTranslation
-  )
+  const VERBAL_TYPES = values(TypesWithStartTime)
+
   const isVerbalType = includes(
     VERBAL_TYPES,
     projectData?.type_classifier_value?.value

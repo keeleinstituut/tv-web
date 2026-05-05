@@ -1,7 +1,7 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchProject } from 'hooks/requests/useProjects'
 import { FC, useCallback, useEffect } from 'react'
-import { map, includes, sortBy, isEmpty } from 'lodash'
+import {map, includes, sortBy, isEmpty, values} from 'lodash'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -235,10 +235,8 @@ const ProjectPage: FC = () => {
     event_start_at: projectEventStartAt,
   } = project || {}
 
-  const isVerbal =
-    type_classifier_value?.value === TypesWithStartTime.OralTranslation ||
-    type_classifier_value?.value === TypesWithStartTime.SynchronousTranslation ||
-    type_classifier_value?.value === TypesWithStartTime.SignLanguage
+  const VERBAL_TYPES = values(TypesWithStartTime)
+  const isVerbal = includes(VERBAL_TYPES, type_classifier_value?.value)
 
   useProjectPageRedirect({
     client_institution_user_id: client_institution_user?.id,
