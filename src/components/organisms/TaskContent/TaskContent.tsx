@@ -10,7 +10,7 @@ import {
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import { filter, includes, isEmpty, isEqual, map, split, without, values } from 'lodash'
+import { filter, includes, isEmpty, isEqual, map, split, values } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
@@ -89,10 +89,7 @@ const TaskContent: FC<TaskContentProps> = ({
 
   const projectData = project || taskProject
 
-  const VERBAL_TYPES = without(
-    values(TypesWithStartTime),
-    TypesWithStartTime.PostTranslation
-  )
+  const VERBAL_TYPES = values(TypesWithStartTime)
   const isVerbalType = includes(
     VERBAL_TYPES,
     projectData?.type_classifier_value?.value

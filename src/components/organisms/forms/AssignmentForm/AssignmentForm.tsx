@@ -94,8 +94,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     type_classifier_value?.project_type_config?.is_start_date_supported
 
   const isVerbalType =
-    !!shouldShowStartTimeFields &&
-    type_classifier_value?.value !== 'POST_TRANSLATION'
+    !!shouldShowStartTimeFields
 
   const effectiveStartAt = event_start_at || subProjectEventStartAt
   const effectiveEndAt = projectEventEndAt

@@ -399,8 +399,9 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
         ...(!isNew ? { tags } : {}),
         ...(event_start_at ? { event_start_at } : {}),
         ...(event_end_at ? { event_end_at } : {}),
+        ...(service_type ? { service_type: service_type === 'contact' ? 'ON_SITE' : 'REMOTE' } : {}),
         ...(service_type === 'contact' && event_location
-          ? { event_location }
+          ? { location: event_location }
           : {}),
         ...(service_type === 'remote' && meeting_link ? { meeting_link } : {}),
       }

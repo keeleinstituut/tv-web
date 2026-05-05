@@ -333,8 +333,9 @@ export interface NewProjectPayload {
   type_classifier_value_id: string
   event_start_at?: string
   event_end_at?: string
-  event_location?: string
+  location?: string
   meeting_link?: string
+  service_type?: 'ON_SITE' | 'REMOTE'
   // TODO: Following are currently missing
   comments?: string
 }

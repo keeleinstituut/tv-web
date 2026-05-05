@@ -5,7 +5,7 @@ import DynamicForm, {
   InputTypes,
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { find, includes, values, without } from 'lodash'
+import { find, includes, values } from 'lodash'
 import classNames from 'classnames'
 import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
@@ -18,10 +18,7 @@ import { formatDuration } from 'helpers/calendar'
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
 import dayjs from 'dayjs'
 
-const VERBAL_TYPES = without(
-  values(TypesWithStartTime),
-  TypesWithStartTime.PostTranslation
-)
+const VERBAL_TYPES = values(TypesWithStartTime)
 
 // OralTranslation has its own dedicated calendar/oral order flow,
 // so it's the only type excluded from the regular project creation dropdown.
