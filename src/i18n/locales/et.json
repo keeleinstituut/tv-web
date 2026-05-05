@@ -1383,7 +1383,7 @@
     "usage_confirm_description": "Palun kinnita, et sisestatav tekst ei sisalda tundliku infot ega isikuandmeid nagu isikukoodid, aadressid, terviseandmed või ligipääsuandmed.",
     "usage_confirm_cancel": "Katkesta",
     "usage_confirm_proceed": "Jah, kinnitan ja jätkan",
-    "history_title": "Eelmised tõlked",
+    "history_title": "Eelmised failide tõlked",
     "job_type_text": "Tekst",
     "job_type_file": "Fail",
     "provider_etranslation": "eTranslation",
