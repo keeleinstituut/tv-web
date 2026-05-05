@@ -335,6 +335,7 @@ export interface NewProjectPayload {
   event_end_at?: string
   event_location?: string
   meeting_link?: string
+  service_type?: 'ON_SITE' | 'REMOTE'
   // TODO: Following are currently missing
   comments?: string
 }
