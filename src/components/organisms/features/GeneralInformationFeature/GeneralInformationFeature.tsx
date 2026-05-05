@@ -95,8 +95,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   project,
 }) => {
   const isVerbalType =
-    !!project?.type_classifier_value?.project_type_config?.is_start_date_supported &&
-    project?.type_classifier_value?.value !== 'POST_TRANSLATION'
+    !!project?.type_classifier_value?.project_type_config?.is_start_date_supported
   const { t } = useTranslation()
   const { dateTimePickerValidator } = useValidators()
   const { deadline_at: projectDeadlineAt } = useProjectCache(project_id) || {}
