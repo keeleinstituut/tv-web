@@ -191,6 +191,7 @@ export const getUtcDateStringFromLocalDateObject = ({
 }
 
 export const getLocalDateObjectFromUtcDateString = (datetime: string) => {
+  if (!datetime) return { date: '', time: '' }
   const dayjsObject = dayjs(datetime)
   const localDateTimeString = dayjsObject.format('DD/MM/YYYY HH:mm:ss')
   const splitDateTime = split(localDateTimeString, ' ')
