@@ -43,6 +43,8 @@ import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
 import Terms from 'pages/Terms/Terms'
 import MachineTranslation from 'pages/MachineTranslation/MachineTranslation'
+import Requests from 'pages/Requests/Requests'
+import RequestDetailPage from 'pages/RequestDetailPage/RequestDetailPage'
 
 // import icons
 
@@ -150,6 +152,25 @@ export const protectedRoutes: FullRouteObject[] = [
                 breadcrumb: BreadcrumbsTitle,
               },
             ],
+          },
+        ],
+      },
+      {
+        path: 'requests',
+        label: i18n.t('menu.requests'),
+        privileges: [Privileges.ViewRequests],
+        children: [
+          {
+            path: '',
+            element: <Requests />,
+            privileges: [Privileges.ViewRequests],
+            breadcrumb: i18n.t('menu.requests'),
+          },
+          {
+            path: ':requestId',
+            element: <RequestDetailPage />,
+            privileges: [Privileges.ViewRequests],
+            breadcrumb: BreadcrumbsTitle,
           },
         ],
       },

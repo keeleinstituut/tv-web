@@ -38,6 +38,8 @@ import { ConfirmSendToPreviousAssignmentModalProps } from './ConfirmSendToPrevio
 import { TranslationMemoryBulkExportModalProps } from './TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal'
 import { EmoSchedulesModalProps } from './EmoSchedulesModal/EmoSchedulesModal'
 import { VendorAbsencesModalProps } from './VendorAbsencesModal/VendorAbsencesModal'
+import { ComposeProjectRequestModalProps } from './ComposeProjectRequestModal/ComposeProjectRequestModal'
+import { ConfirmDeclineRequestModalProps } from './ConfirmDeclineRequestModal/ConfirmDeclineRequestModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -157,6 +159,14 @@ const VendorAbsencesModal = lazy(
   () => import('./VendorAbsencesModal/VendorAbsencesModal')
 )
 
+const ComposeProjectRequestModal = lazy(
+  () => import('./ComposeProjectRequestModal/ComposeProjectRequestModal')
+)
+
+const ConfirmDeclineRequestModal = lazy(
+  () => import('./ConfirmDeclineRequestModal/ConfirmDeclineRequestModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -190,6 +200,8 @@ export enum ModalTypes {
   TranslationMemoryBulkExportModal = 'translationMemoryBulkExportModal',
   EmoSchedules = 'emoSchedules',
   VendorAbsences = 'vendorAbsences',
+  ComposeProjectRequest = 'composeProjectRequest',
+  ConfirmDeclineRequest = 'confirmDeclineRequest',
 }
 
 // Add other modal props types here as well
@@ -225,6 +237,8 @@ type ModalPropTypes =
   | Omit<TranslationMemoryBulkExportModalProps, 'closeModal'>
   | Omit<EmoSchedulesModalProps, 'closeModal'>
   | Omit<VendorAbsencesModalProps, 'closeModal'>
+  | Omit<ComposeProjectRequestModalProps, 'closeModal'>
+  | Omit<ConfirmDeclineRequestModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -261,6 +275,8 @@ const MODALS = {
     TranslationMemoryBulkExportModal,
   [ModalTypes.EmoSchedules]: EmoSchedulesModal,
   [ModalTypes.VendorAbsences]: VendorAbsencesModal,
+  [ModalTypes.ComposeProjectRequest]: ComposeProjectRequestModal,
+  [ModalTypes.ConfirmDeclineRequest]: ConfirmDeclineRequestModal,
 }
 
 interface RefType {

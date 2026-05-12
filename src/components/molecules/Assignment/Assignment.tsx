@@ -21,6 +21,9 @@ import { useDeleteAssignment } from 'hooks/requests/useAssignments'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { useSubProjectCache } from 'hooks/requests/useProjects'
 import AssignmentForm from 'components/organisms/forms/AssignmentForm/AssignmentForm'
+import { useAuth } from 'components/contexts/AuthContext'
+import { Privileges } from 'types/privileges'
+import { includes, size } from 'lodash'
 
 dayjs.extend(utc)
 
@@ -53,6 +56,9 @@ const Assignment: FC<AssignmentProps> = ({
     workflow_started,
   } = useSubProjectCache(sub_project_id) || {}
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
+  const canManageRequests = includes(userPrivileges, Privileges.ManageRequests)
+  const hasInHouseVendorsAssigned = size(candidates) > 0
 
   const { deleteAssignment, isLoading: isDeletingAssignment } =
     useDeleteAssignment({
@@ -113,6 +119,12 @@ const Assignment: FC<AssignmentProps> = ({
     event_start_at,
   ])
 
+  const handleOpenComposeRequestModal = useCallback(() => {
+    showModal(ModalTypes.ComposeProjectRequest, {
+      assignmentId: id,
+    })
+  }, [id])
+
   return (
     <div className={classes.assignmentContainer}>
       <div>
@@ -140,6 +152,20 @@ const Assignment: FC<AssignmentProps> = ({
           }
         >
           {t('button.choose_from_database')}
+        </Button>
+        <Button
+          size={SizeTypes.S}
+          appearance={AppearanceTypes.Secondary}
+          className={classes.addButton}
+          hidden={!canManageRequests}
+          onClick={handleOpenComposeRequestModal}
+          disabled={
+            job_key === SubProjectFeatures.JobOverview ||
+            isAssignmentFinished ||
+            hasInHouseVendorsAssigned
+          }
+        >
+          {t('requests.compose_button')}
         </Button>
         <AssignmentForm
           id={id}

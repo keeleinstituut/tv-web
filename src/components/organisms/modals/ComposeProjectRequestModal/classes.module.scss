@@ -1,0 +1,346 @@
+@use 'styles/variables' as variables;
+
+.stepIndicator {
+  display: flex;
+  gap: variables.spacing(6);
+  align-items: stretch;
+  background-color: variables.$color-background;
+  border-radius: 5px;
+  padding: variables.spacing(2);
+  margin-bottom: variables.spacing(6);
+  overflow: hidden;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(2);
+  padding: variables.spacing(2);
+  border-radius: 4px;
+  color: variables.$color-text-dark;
+  font-size: variables.$font-size-14;
+  position: relative;
+}
+
+.stepActive {
+  background-color: variables.$color-primary;
+  color: variables.$color-white;
+  padding-right: variables.spacing(5);
+
+  .stepNumber {
+    color: variables.$color-dark;
+    background-color: variables.$color-white;
+  }
+}
+
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: variables.$color-background-disabled;
+  color: variables.$color-dark;
+  font-weight: bold;
+  font-size: variables.$font-size-14;
+}
+
+.stepLabel {
+  white-space: nowrap;
+}
+
+.stepChevron {
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: variables.$color-primary;
+}
+
+.stepBody {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(6);
+  padding-top: variables.spacing(4);
+}
+
+.stepTitle {
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 48px;
+  color: variables.$color-dark;
+  margin: 0;
+}
+
+.stepHint {
+  color: variables.$color-primary;
+  font-size: 16px;
+  line-height: 24px;
+  margin: 0;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(2);
+  max-width: 532px;
+  position: relative;
+}
+
+.fieldLabel {
+  color: variables.$color-text-dark;
+  font-size: variables.$font-size-14;
+}
+
+.searchResults {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  list-style: none;
+  padding: variables.spacing(1) 0;
+  margin: 0;
+  background-color: variables.$color-white;
+  border: 1px solid variables.$color-border;
+  border-radius: 4px;
+  z-index: 5;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.searchResultItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: variables.spacing(2) variables.spacing(3);
+  font-size: 16px;
+  color: variables.$color-text-dark;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    background-color: variables.$color-background;
+  }
+}
+
+.selectedList {
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid variables.$color-border;
+  border-bottom: 2px solid variables.$color-border;
+}
+
+.emptyHint {
+  color: variables.$color-text-light;
+  font-size: variables.$font-size-14;
+  padding: variables.spacing(3) 0;
+  margin: 0;
+}
+
+.vendorRow {
+  display: flex;
+  align-items: center;
+  height: 42px;
+  border-bottom: 1px solid variables.$color-border;
+  background-color: variables.$color-white;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.vendorRowDragging {
+  opacity: 0.6;
+  background-color: variables.$color-background;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 100%;
+  background: none;
+  border: none;
+  cursor: grab;
+  color: variables.$color-dark;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.vendorName {
+  flex: 1;
+  color: variables.$color-text-dark;
+  font-size: 16px;
+}
+
+.removeButton {
+  width: 54px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: variables.$color-dark;
+}
+
+.placeholderStep {
+  padding: variables.spacing(10);
+  color: variables.$color-text-light;
+  font-style: italic;
+}
+
+.formRow {
+  display: flex;
+  align-items: flex-start;
+  gap: variables.spacing(6);
+  padding: variables.spacing(2) variables.spacing(10);
+  background-color: variables.$color-white;
+}
+
+.rowLabel {
+  flex: 0 0 227px;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 24px;
+  color: variables.$color-text-dark;
+  padding-top: variables.spacing(2);
+}
+
+.rowContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(1);
+}
+
+.dateTimeGroup {
+  display: flex;
+  gap: variables.spacing(4);
+
+  > * {
+    width: 258px;
+  }
+}
+
+.reactionTimeSelect {
+  width: 258px;
+}
+
+.charCounter {
+  color: variables.$color-text-light;
+  font-size: variables.$font-size-14;
+  margin: 0;
+  align-self: flex-start;
+}
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: variables.spacing(4);
+  padding: variables.spacing(6) variables.spacing(10);
+  border: 2px dashed variables.$color-dark;
+  border-radius: 8px;
+  width: 529px;
+  min-height: 144px;
+  background-color: variables.$color-white;
+  transition: background-color 0.15s ease;
+}
+
+.dropzoneActive {
+  background-color: variables.$color-background;
+  border-color: variables.$color-primary;
+}
+
+.dropzoneText {
+  color: variables.$color-text-dark;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.fileList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(2);
+  padding: 0 variables.spacing(10);
+}
+
+.fileItem {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(3);
+  padding: variables.spacing(2) variables.spacing(3);
+  background-color: variables.$color-background;
+  border-radius: 4px;
+}
+
+.fileIcon {
+  flex: 0 0 auto;
+  color: variables.$color-primary;
+  width: 20px;
+  height: 20px;
+}
+
+.fileMeta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.fileName {
+  margin: 0;
+  font-size: 14px;
+  color: variables.$color-text-dark;
+}
+
+.fileSize {
+  margin: 0;
+  font-size: 12px;
+  color: variables.$color-text-light;
+}
+
+.fileDelete {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: variables.$color-dark;
+}
+
+.stepHintGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  p {
+    margin: 0;
+  }
+}
+
+.priceField {
+  position: relative;
+  width: 254px;
+}
+
+.priceSuffix {
+  position: absolute;
+  right: variables.spacing(3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: variables.$color-text-dark;
+  font-size: 16px;
+  pointer-events: none;
+}

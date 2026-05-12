@@ -138,6 +138,17 @@ export const endpoints = {
   MT_FILE_DOWNLOAD: (id: string) =>
     machineTranslation(`translate/file/${id}/download`),
   MT_INSTITUTION_SETTINGS: machineTranslation('settings'),
+
+  PROJECT_REQUESTS: translationOrder('project-requests'),
+  PROJECT_REQUEST_ACCEPT: (id: string) =>
+    translationOrder(`project-requests/${id}/accept`),
+  PROJECT_REQUEST_DECLINE: (id: string) =>
+    translationOrder(`project-requests/${id}/decline`),
+  PROJECT_REQUEST_CANCEL: (id: string) =>
+    translationOrder(`project-requests/${id}/cancel`),
+  PROJECT_REQUEST_SELECT_WINNER: (id: string) =>
+    translationOrder(`project-requests/${id}/select-winner`),
+  EXTERNAL_VENDOR_INSTITUTIONS: translationOrder('external-vendor-institutions'),
 }
 
 export const authEndpoints = {
