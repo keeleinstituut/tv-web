@@ -1303,7 +1303,9 @@
     "buffer_after": "Aeg pärast",
     "reaction_time_title": "Reaktsiooniaeg",
     "reaction_time_tooltip": "Kalendri tellimustele määratav ajavahemik, mille jooksul saab teostaja ülesande vastu võtta. Kui teostaja ei võta tellimust määratud aja jooksul vastu, lükkab süsteem selle tema eest automaatselt tagasi.",
-    "reaction_time_label": "Määratud reaktsiooniaeg:"
+    "reaction_time_label": "Määratud reaktsiooniaeg:",
+    "reaction_time_hours_suffix": "tundi",
+    "reaction_time_invalid": "Reaktsiooniaeg peab olema vähemalt 0,25 tundi."
   },
   "machine_translation": {
     "title": "Keeletööriistad",

@@ -64,4 +64,37 @@
     max-width: 320px;
   }
 
+  .reactionInputRow {
+    display: flex;
+    align-items: center;
+    gap: variables.spacing(2);
+  }
+
+  .reactionInput {
+    width: 120px;
+    padding: variables.spacing(2);
+    border: 1px solid variables.$color-input-border;
+    border-radius: 4px;
+    font-size: 16px;
+    line-height: 24px;
+    color: variables.$color-text-dark;
+    background-color: variables.$color-white;
+
+    &:disabled {
+      background-color: variables.$color-background;
+      color: variables.$color-text-light;
+      cursor: not-allowed;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: variables.$color-primary;
+    }
+  }
+
+  .reactionUnit {
+    color: variables.$color-text-dark;
+    font-size: 16px;
+  }
+
 }
