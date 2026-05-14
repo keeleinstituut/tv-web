@@ -54,4 +54,14 @@
     }
   }
 
+  .titleWithTooltip {
+    display: flex;
+    align-items: center;
+    gap: variables.spacing(2);
+  }
+
+  .reactionField {
+    max-width: 320px;
+  }
+
 }

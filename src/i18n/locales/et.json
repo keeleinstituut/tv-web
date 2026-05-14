@@ -1300,7 +1300,10 @@
     "time_rules_title": "Ajareeglid",
     "time_rules_description": "Suulise kontakttõlke puhul rakenduv puhveraeg, et tõlgil oleks aega minna kohapeale.",
     "buffer_before": "Aeg enne",
-    "buffer_after": "Aeg pärast"
+    "buffer_after": "Aeg pärast",
+    "reaction_time_title": "Reaktsiooniaeg",
+    "reaction_time_tooltip": "Kalendri tellimustele määratav ajavahemik, mille jooksul saab teostaja ülesande vastu võtta. Kui teostaja ei võta tellimust määratud aja jooksul vastu, lükkab süsteem selle tema eest automaatselt tagasi.",
+    "reaction_time_label": "Määratud reaktsiooniaeg:"
   },
   "machine_translation": {
     "title": "Keeletööriistad",

@@ -460,10 +460,17 @@ export const useFetchCalendarSettings = () => {
   return { settings: data ?? DEFAULT_CALENDAR_SETTINGS, isLoading }
 }
 
+export type UpdateCalendarSettingsPayload = Omit<
+  CalendarSettings,
+  'default_project_type_id'
+> & {
+  default_project_type_id?: string
+}
+
 export const useUpdateCalendarSettings = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateSettings, isLoading } = useMutation({
-    mutationFn: (payload: Partial<CalendarSettings>) =>
+    mutationFn: (payload: UpdateCalendarSettingsPayload) =>
       apiClient.put(endpoints.CALENDAR_SETTINGS, payload),
     onSuccess: ({ data }: { data: CalendarSettings }) => {
       queryClient.setQueryData(['calendar-settings'], data)
