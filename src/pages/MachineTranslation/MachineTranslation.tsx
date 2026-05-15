@@ -12,7 +12,7 @@ const MachineTranslation: FC = () => {
     <>
       <div className={classes.header}>
         <h1>{t('machine_translation.title')}</h1>
-        {/* <Tooltip helpSectionKey="technicalSettings" /> */}
+        <Tooltip helpSectionKey="languageTools" />
       </div>
 
       <MachineTranslationForm
