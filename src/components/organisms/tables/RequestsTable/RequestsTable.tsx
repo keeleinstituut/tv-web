@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
 import dayjs from 'dayjs'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
+import { Root } from '@radix-ui/react-form'
 
 import DataTable, {
   TableSizeTypes,
@@ -115,19 +116,21 @@ const RequestsTable: FC<RequestsTableProps> = ({
   )
 
   return (
-    <DataTable
-      data={rows}
-      columns={columns}
-      tableSize={TableSizeTypes.M}
-      paginationData={paginationData}
-      onPaginationChange={onPaginationChange}
-      onSortingChange={onSortingChange}
-      pageSizeOptions={[
-        { label: '10', value: '10' },
-        { label: '25', value: '25' },
-        { label: '50', value: '50' },
-      ]}
-    />
+    <Root>
+      <DataTable
+        data={rows}
+        columns={columns}
+        tableSize={TableSizeTypes.M}
+        paginationData={paginationData}
+        onPaginationChange={onPaginationChange}
+        onSortingChange={onSortingChange}
+        pageSizeOptions={[
+          { label: '10', value: '10' },
+          { label: '25', value: '25' },
+          { label: '50', value: '50' },
+        ]}
+      />
+    </Root>
   )
 }
 
