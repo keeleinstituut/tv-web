@@ -9,7 +9,7 @@ import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import TextInput from 'components/molecules/TextInput/TextInput'
 import RequestsTable from 'components/organisms/tables/RequestsTable/RequestsTable'
 import { useFetchOutsourceRequests } from 'hooks/requests/useProjectRequests'
-import { OutsourceRequestStatus } from 'types/projectRequests'
+import { OutsourceRequestStatus } from 'types/outsourceRequests'
 import { FilterFunctionType } from 'types/collective'
 
 import classes from './classes.module.scss'

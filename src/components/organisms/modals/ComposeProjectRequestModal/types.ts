@@ -1,4 +1,4 @@
-import { ReactionTimeMinutes } from 'types/projectRequests'
+import { ReactionTimeMinutes } from 'types/outsourceRequests'
 import { VolumeUnits } from 'types/assignments'
 
 export interface DraftRecipient {

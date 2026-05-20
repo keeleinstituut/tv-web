@@ -18,7 +18,7 @@ import {
   useFetchOutsourceRequest,
   useSelectOutsourceOffer,
 } from 'hooks/requests/useProjectRequests'
-import { OutsourceOfferStatus } from 'types/projectRequests'
+import { OutsourceOfferStatus } from 'types/outsourceRequests'
 
 import classes from './classes.module.scss'
 

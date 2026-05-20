@@ -17,7 +17,7 @@ import { useCreateOutsourceRequest } from 'hooks/requests/useProjectRequests'
 import {
   CreateOutsourceRequestPayload,
   OutsourceRequestMode,
-} from 'types/projectRequests'
+} from 'types/outsourceRequests'
 
 import StepIndicator from './StepIndicator'
 import Step1VendorSelection from './Step1VendorSelection'

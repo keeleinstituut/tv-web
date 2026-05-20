@@ -12,7 +12,7 @@ import SelectionControlsInput from 'components/organisms/SelectionControlsInput/
 import {
   REACTION_TIME_OPTIONS,
   ReactionTimeMinutes,
-} from 'types/projectRequests'
+} from 'types/outsourceRequests'
 
 import classes from './classes.module.scss'
 import { ComposeProjectRequestDraft } from './types'

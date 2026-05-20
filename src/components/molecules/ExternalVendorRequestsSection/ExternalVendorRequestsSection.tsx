@@ -20,7 +20,7 @@ import {
   OutsourceRequest,
   OutsourceRequestMode,
   OutsourceRequestStatus,
-} from 'types/projectRequests'
+} from 'types/outsourceRequests'
 
 import classes from './classes.module.scss'
 

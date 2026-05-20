@@ -18,7 +18,7 @@ import {
   OutsourceRequestFilters,
   OutsourceRequestMode,
   OutsourceRequestStatus,
-} from 'types/projectRequests'
+} from 'types/outsourceRequests'
 import {
   PaginationFunctionType,
   ResponseMetaTypes,

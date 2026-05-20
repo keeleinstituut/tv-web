@@ -13,7 +13,7 @@ import {
   OutsourceRequest,
   OutsourceRequestFilters,
   SelectOutsourceOfferPayload,
-} from 'types/projectRequests'
+} from 'types/outsourceRequests'
 
 interface ListResponse<T> {
   data: T[]
