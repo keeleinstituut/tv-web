@@ -51,8 +51,6 @@ const formatPrice = (price?: number | null) =>
 const formatDateTime = (iso?: string | null) =>
   iso ? dayjs(iso).format('DD.MM.YYYY HH:mm') : '-'
 
-// Per spec §58: cascade offers compute their deadline from notified_at + reaction_time;
-// parallel offers share the request-level deadline_at.
 const offerDeadline = (
   request: OutsourceRequest,
   notifiedAt?: string | null
@@ -124,8 +122,6 @@ const ExternalVendorRequestsSection: FC<ExternalVendorRequestsSectionProps> = ({
   )
 
   const rowClassFor = (row: Row) => {
-    // Per spec §58 / §207: when the TPM cancels the request, every offer row
-    // displays as cancelled regardless of its last offer-level status.
     if (row.request_cancelled) return classes.declinedRow
     if (row.status === OutsourceOfferStatus.RequestDeclined)
       return classes.declinedRow

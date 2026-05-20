@@ -97,9 +97,6 @@ const RequestDetailPage: FC = () => {
     !request.is_cascade_exhausted
   const showResponseActions = canRespond && isOpenForResponse
 
-  // Per spec §102 "Tellija kommentaar" surfaces the TPM's reason text either
-  // when the request was cancelled (cancellation_reason) or when this
-  // institution's offer was rejected in favour of another (rejection_comment).
   const clientComment =
     request.cancellation_reason ??
     find(request.offers ?? [], (o) => !!o.rejection_comment)
