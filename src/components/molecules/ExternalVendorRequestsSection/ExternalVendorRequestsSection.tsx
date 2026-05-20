@@ -83,7 +83,7 @@ const ExternalVendorRequestsSection: FC<ExternalVendorRequestsSectionProps> = ({
           institution_name: offer.institution?.name ?? offer.institution_id,
           status: offer.status,
           request_cancelled: requestCancelled,
-          price: offer.proposed_price ?? offer.calculated_price,
+          price: offer.price,
           response_comment: offer.response_comment,
           deadline_at: offerDeadline(r, offer.notified_at),
         })

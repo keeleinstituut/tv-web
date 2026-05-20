@@ -1,10 +1,10 @@
 import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import ToggleInput from 'components/molecules/ToggleInput/ToggleInput'
 import TextInput from 'components/molecules/TextInput/TextInput'
 import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import { VolumeUnits } from 'types/assignments'
+import { OutsourceRequestPriceMode } from 'types/outsourceRequests'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
 
 import classes from './classes.module.scss'
@@ -21,6 +21,12 @@ const VOLUME_UNIT_OPTIONS: VolumeUnits[] = [
   VolumeUnits.PAGES,
   VolumeUnits.MINUTES,
   VolumeUnits.HOURS,
+]
+
+const PRICE_MODE_OPTIONS = [
+  OutsourceRequestPriceMode.PricelistBased,
+  OutsourceRequestPriceMode.FixedPrice,
+  OutsourceRequestPriceMode.AskForPrice,
 ]
 
 const parseOptionalNumber = (raw: string): number | undefined => {
@@ -47,9 +53,22 @@ const Step4PriceAndVolume: FC<Step4Props> = ({ draft, onChange }) => {
     [onChange]
   )
 
+  const handlePriceModeChange = useCallback(
+    (value: string | string[]) => {
+      const v = Array.isArray(value) ? value[0] : value
+      onChange({
+        price_mode:
+          (v as OutsourceRequestPriceMode) ??
+          OutsourceRequestPriceMode.PricelistBased,
+        price: undefined,
+      })
+    },
+    [onChange]
+  )
+
   const handlePriceChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      onChange({ bulk_price: parseOptionalNumber(e.target.value) })
+      onChange({ price: parseOptionalNumber(e.target.value) })
     },
     [onChange]
   )
@@ -57,6 +76,11 @@ const Step4PriceAndVolume: FC<Step4Props> = ({ draft, onChange }) => {
   const unitOptions = VOLUME_UNIT_OPTIONS.map((unit) => ({
     label: t(`label.${apiTypeToKey(unit)}`),
     value: unit,
+  }))
+
+  const priceModeOptions = PRICE_MODE_OPTIONS.map((mode) => ({
+    label: t(`requests.price_mode.${mode}`),
+    value: mode,
   }))
 
   return (
@@ -69,18 +93,38 @@ const Step4PriceAndVolume: FC<Step4Props> = ({ draft, onChange }) => {
 
       <div className={classes.formRow}>
         <span className={classes.rowLabel}>
-          {t('requests.show_price_label')}
+          {t('requests.price_mode_label')}
         </span>
         <div className={classes.rowContent}>
-          <ToggleInput
-            name="include_price"
-            label={t('requests.show_price_toggle')}
-            value={draft.include_price}
-            onChange={(next) => onChange({ include_price: next })}
-            className={classes.modalToggle}
+          <SelectionControlsInput
+            name="price_mode"
+            ariaLabel={t('requests.price_mode_label')}
+            value={draft.price_mode}
+            options={priceModeOptions}
+            onChange={handlePriceModeChange}
           />
         </div>
       </div>
+
+      {draft.price_mode === OutsourceRequestPriceMode.FixedPrice && (
+        <div className={classes.formRow}>
+          <span className={classes.rowLabel}>{t('requests.price_label')}</span>
+          <div className={classes.rowContent}>
+            <div className={classes.priceField}>
+              <TextInput
+                name="price"
+                ariaLabel={t('requests.price_label')}
+                type="number"
+                min={0}
+                step="0.01"
+                value={draft.price !== undefined ? String(draft.price) : ''}
+                onChange={handlePriceChange}
+              />
+              <span className={classes.priceSuffix}>€</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={classes.formRow}>
         <span className={classes.rowLabel}>
@@ -116,27 +160,6 @@ const Step4PriceAndVolume: FC<Step4Props> = ({ draft, onChange }) => {
                 onChange={handleUnitChange}
               />
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className={classes.formRow}>
-        <span className={classes.rowLabel}>{t('requests.price_label')}</span>
-        <div className={classes.rowContent}>
-          <div className={classes.priceField}>
-            <TextInput
-              name="bulk_price"
-              ariaLabel={t('requests.add_unit_value')}
-              placeholder={t('requests.add_unit_value')}
-              type="number"
-              min={0}
-              step="0.01"
-              value={
-                draft.bulk_price !== undefined ? String(draft.bulk_price) : ''
-              }
-              onChange={handlePriceChange}
-            />
-            <span className={classes.priceSuffix}>€</span>
           </div>
         </div>
       </div>

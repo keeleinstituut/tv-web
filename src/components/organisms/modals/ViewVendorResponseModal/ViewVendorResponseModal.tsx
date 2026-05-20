@@ -30,7 +30,7 @@ const ViewVendorResponseModal: FC<ViewVendorResponseModalProps> = ({
   const { request, isLoading } = useFetchOutsourceRequest(requestId)
   const offer = find(request?.offers, { id: offerId })
 
-  const displayedPrice = offer?.proposed_price ?? offer?.calculated_price
+  const displayedPrice = offer?.price
   const priceText =
     displayedPrice !== null &&
     displayedPrice !== undefined &&

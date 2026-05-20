@@ -1126,8 +1126,12 @@
     "step4_title": "Lisa päringule teostajapõhine hind",
     "step4_subtitle_1": "Vaikimisi lisatakse päringule hind ja maht. Hind arvutatakse teostajate hinnakirjade alusel.",
     "step4_subtitle_2": "Määratud maht kehtib kõigile valitud teostajatele. Määratud hind asendab automaatselt arvutatud hinna. Kui hinda ja mahtu ei kuvata, saavad teostajad pakkuda oma hinna.",
-    "show_price_label": "Hinna kuva päringus",
-    "show_price_toggle": "Lisa hind päringule",
+    "price_mode_label": "Vali hinnastamise mudel",
+    "price_mode": {
+      "PRICELIST_BASED": "Teostajapõhine hinnastamine",
+      "FIXED_PRICE": "Fikseeritud hind",
+      "ASK_FOR_PRICE": "Küsi hinda"
+    },
     "task_volume_label": "Täpsusta tööülesande maht",
     "quantity": "Kogus",
     "unit": "Ühik",
@@ -1146,7 +1150,6 @@
     "field_mode": "Režiim",
     "field_reaction_time": "Reageerimise aeg",
     "field_created_at": "Loodud",
-    "price_not_fixed": "Hinda saavad teostajad pakkuda",
     "reaction_time_required": "Reageerimise aeg on kohustuslik",
     "cascade_exhausted_notice": "Kaskaad on ammendatud — kõik teostajad on päringule reageerinud või nende reageerimise aeg on möödunud.",
     "mode": {

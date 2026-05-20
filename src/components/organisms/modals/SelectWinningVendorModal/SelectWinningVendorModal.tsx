@@ -154,7 +154,7 @@ const SelectWinningVendorModal: FC<SelectWinningVendorModalProps> = ({
           {offers.map((offer) => {
             const selectable = isSelectable(offer.status)
             const isWinner = offer.id === winnerId
-            const price = offer.proposed_price ?? offer.calculated_price
+            const price = offer.price
             const showRejection = !!winnerId && !isWinner && selectable
             const rejectionValue = rejectionComments[offer.id] ?? ''
             const rejectionEmpty =

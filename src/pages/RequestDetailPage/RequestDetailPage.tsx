@@ -51,8 +51,7 @@ const RequestDetailPage: FC = () => {
   const [offeredPrice, setOfferedPrice] = useState('')
   const [responseComment, setResponseComment] = useState('')
 
-  const hasFixedPrice =
-    request?.fixed_price !== null && request?.fixed_price !== undefined
+  const priceInputNeeded = request?.offers?.[0]?.price == null
 
   const handleAccept = useCallback(async () => {
     try {
@@ -60,8 +59,8 @@ const RequestDetailPage: FC = () => {
         ? Number(offeredPrice.replace(',', '.'))
         : undefined
       await acceptOutsourceRequest({
-        proposed_price:
-          !hasFixedPrice && Number.isFinite(priceNumber)
+        price:
+          priceInputNeeded && Number.isFinite(priceNumber)
             ? priceNumber
             : undefined,
         response_comment: responseComment.trim() || undefined,
@@ -74,7 +73,7 @@ const RequestDetailPage: FC = () => {
     } catch (error) {
       showValidationErrorMessage(error)
     }
-  }, [acceptOutsourceRequest, offeredPrice, responseComment, hasFixedPrice, t])
+  }, [acceptOutsourceRequest, offeredPrice, responseComment, priceInputNeeded, t])
 
   const handleOpenDeclineModal = useCallback(() => {
     if (!requestId) return
@@ -164,9 +163,7 @@ const RequestDetailPage: FC = () => {
           <Field
             label={t('requests.field_price')}
             value={
-              hasFixedPrice
-                ? `${request.fixed_price}€`
-                : t('requests.price_not_fixed')
+              request.price != null ? `${request.price}€` : '—'
             }
           />
           <Field
@@ -186,7 +183,7 @@ const RequestDetailPage: FC = () => {
             className={classes.responseFields}
             onSubmit={(e) => e.preventDefault()}
           >
-            {!hasFixedPrice && (
+            {priceInputNeeded && (
               <div className={classes.responseField}>
                 <TextInput
                   name="offered_price"

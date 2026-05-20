@@ -1,3 +1,9 @@
+export enum OutsourceRequestPriceMode {
+  PricelistBased = 'PRICELIST_BASED',
+  FixedPrice = 'FIXED_PRICE',
+  AskForPrice = 'ASK_FOR_PRICE',
+}
+
 export enum OutsourceRequestMode {
   Cascade = 'CASCADE',
   Parallel = 'PARALLEL',
@@ -60,8 +66,7 @@ export interface OutsourceOffer {
   notified_at?: string | null
   responded_at?: string | null
   expires_at?: string | null
-  calculated_price?: number | null
-  proposed_price?: number | null
+  price?: number | null
   decline_comment?: string | null
   rejection_comment?: string | null
   response_comment?: string | null
@@ -74,16 +79,18 @@ export interface OutsourceRequest {
   id: string
   assignment_id: string
   mode: OutsourceRequestMode
+  price_mode: OutsourceRequestPriceMode
   reaction_time_minutes: number
   deadline_at?: string | null
   special_instructions?: string | null
-  fixed_price?: number | null
-  include_price: boolean
+  price?: number | null
   include_source_files: boolean
   status: OutsourceRequestStatus
   cancellation_reason?: string | null
   is_cascade_exhausted: boolean
   offers?: OutsourceOffer[]
+  assignment?: import('types/assignments').AssignmentType | null
+  media?: unknown[] | null
   created_at: string
   updated_at: string
 }
@@ -95,13 +102,13 @@ export interface CreateOutsourceRequestPayload {
   offers: Array<{ institution_id: string }>
   special_instructions?: string
   include_source_files?: boolean
-  include_price?: boolean
-  fixed_price?: number
+  price_mode: OutsourceRequestPriceMode
+  price?: number
   request_files?: File[]
 }
 
 export interface AcceptOutsourceRequestPayload {
-  proposed_price?: number
+  price?: number
   response_comment?: string
 }
 

@@ -17,6 +17,7 @@ import { useCreateOutsourceRequest } from 'hooks/requests/useProjectRequests'
 import {
   CreateOutsourceRequestPayload,
   OutsourceRequestMode,
+  OutsourceRequestPriceMode,
 } from 'types/outsourceRequests'
 
 import StepIndicator from './StepIndicator'
@@ -107,11 +108,6 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
       return
     }
 
-    const fixedPrice =
-      draft.bulk_volume !== undefined && draft.bulk_price !== undefined
-        ? draft.bulk_volume * draft.bulk_price
-        : undefined
-
     const payload: CreateOutsourceRequestPayload = {
       assignment_id: assignmentId,
       mode,
@@ -121,8 +117,11 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
       })),
       special_instructions: draft.special_instructions || undefined,
       include_source_files: draft.include_source_files,
-      include_price: draft.include_price,
-      fixed_price: fixedPrice,
+      price_mode: draft.price_mode,
+      price:
+        draft.price_mode === OutsourceRequestPriceMode.FixedPrice
+          ? draft.price
+          : undefined,
       request_files: files.length > 0 ? files : undefined,
     }
 
