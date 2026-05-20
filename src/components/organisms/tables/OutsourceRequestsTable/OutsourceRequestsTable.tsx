@@ -37,7 +37,7 @@ type RequestRow = {
 
 const columnHelper = createColumnHelper<RequestRow>()
 
-interface RequestsTableProps {
+interface OutsourceRequestsTableProps {
   requests: OutsourceRequest[]
   isLoading: boolean
   paginationData?: ResponseMetaTypes
@@ -49,7 +49,7 @@ interface RequestsTableProps {
 const formatDate = (iso?: string | null) =>
   iso ? dayjs(iso).format('DD.MM.YYYY HH:mm') : '-'
 
-const RequestsTable: FC<RequestsTableProps> = ({
+const OutsourceRequestsTable: FC<OutsourceRequestsTableProps> = ({
   requests,
   paginationData,
   onPaginationChange,
@@ -131,4 +131,4 @@ const RequestsTable: FC<RequestsTableProps> = ({
   )
 }
 
-export default RequestsTable
+export default OutsourceRequestsTable

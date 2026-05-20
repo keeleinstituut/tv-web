@@ -1,3 +1,5 @@
+import { AssignmentType } from 'types/assignments'
+
 export enum OutsourceRequestPriceMode {
   PricelistBased = 'PRICELIST_BASED',
   FixedPrice = 'FIXED_PRICE',
@@ -89,7 +91,7 @@ export interface OutsourceRequest {
   cancellation_reason?: string | null
   is_cascade_exhausted: boolean
   offers?: OutsourceOffer[]
-  assignment?: import('types/assignments').AssignmentType | null
+  assignment?: AssignmentType | null
   media?: unknown[] | null
   created_at: string
   updated_at: string

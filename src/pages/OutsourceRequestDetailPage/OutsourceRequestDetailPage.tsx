@@ -38,7 +38,7 @@ const Field: FC<{ label: string; value?: React.ReactNode }> = ({
   </div>
 )
 
-const RequestDetailPage: FC = () => {
+const OutsourceRequestDetailPage: FC = () => {
   const { t } = useTranslation()
   const { requestId } = useParams()
   const { userPrivileges } = useAuth()
@@ -230,4 +230,4 @@ const RequestDetailPage: FC = () => {
   )
 }
 
-export default RequestDetailPage
+export default OutsourceRequestDetailPage

@@ -1,16 +1,13 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { debounce, map } from 'lodash'
-import { Root } from '@radix-ui/react-form'
+import { map } from 'lodash'
 
 import Tabs from 'components/molecules/Tabs/Tabs'
 import { TabStyle } from 'components/molecules/Tab/Tab'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
-import TextInput from 'components/molecules/TextInput/TextInput'
-import RequestsTable from 'components/organisms/tables/RequestsTable/RequestsTable'
+import OutsourceRequestsTable from 'components/organisms/tables/OutsourceRequestsTable/OutsourceRequestsTable'
 import { useFetchOutsourceRequests } from 'hooks/requests/useProjectRequests'
 import { OutsourceRequestStatus } from 'types/outsourceRequests'
-import { FilterFunctionType } from 'types/collective'
 
 import classes from './classes.module.scss'
 
@@ -21,10 +18,8 @@ const STATUS_TAB_IDS: Array<'ALL' | OutsourceRequestStatus> = [
   OutsourceRequestStatus.Cancelled,
 ]
 
-const Requests: FC = () => {
+const OutsourceRequest: FC = () => {
   const { t } = useTranslation()
-  const [searchValue, setSearchValue] = useState('')
-
   const {
     requests,
     paginationData,
@@ -45,35 +40,11 @@ const Requests: FC = () => {
           ? undefined
           : [newActiveTab as OutsourceRequestStatus]
       handleFilterChange({
-        status: nextStatus,
+        status: nextStatus as string[],
         page: 1,
-      } as FilterFunctionType)
+      })
     },
     [handleFilterChange]
-  )
-
-  const debouncedSearchChange = useMemo(
-    () =>
-      debounce((next: string) => {
-        handleFilterChange({ search: next, page: 1 } as FilterFunctionType)
-      }, 300),
-    [handleFilterChange]
-  )
-
-  useEffect(
-    () => () => {
-      debouncedSearchChange.cancel()
-    },
-    [debouncedSearchChange]
-  )
-
-  const handleSearchChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const next = event.target.value
-      setSearchValue(next)
-      debouncedSearchChange(next)
-    },
-    [debouncedSearchChange]
   )
 
   const tabs = useMemo(
@@ -95,18 +66,6 @@ const Requests: FC = () => {
         <Tooltip helpSectionKey="requests" />
       </div>
 
-      <Root className={classes.toolbar} onSubmit={(e) => e.preventDefault()}>
-        <TextInput
-          name="search"
-          ariaLabel={t('label.search')}
-          placeholder={t('requests.search_placeholder')}
-          value={searchValue}
-          onChange={handleSearchChange}
-          isSearch
-          className={classes.searchInput}
-        />
-      </Root>
-
       <Tabs
         setActiveTab={handleSetActiveTab}
         activeTab={activeTab}
@@ -117,7 +76,7 @@ const Requests: FC = () => {
         className={classes.tabsContainer}
       />
 
-      <RequestsTable
+      <OutsourceRequestsTable
         requests={requests}
         isLoading={isLoading}
         paginationData={paginationData}
@@ -129,4 +88,4 @@ const Requests: FC = () => {
   )
 }
 
-export default Requests
+export default OutsourceRequest
