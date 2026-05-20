@@ -50,9 +50,12 @@ export enum Privileges {
   UseMachineTranslationETranslation = 'USE_MACHINE_TRANSLATION_ETRANSLATION',
   UseMachineTranslationAzureOpenAI = 'USE_MACHINE_TRANSLATION_AZURE_OPENAI',
 
-  ManageRequests = 'MANAGE_REQUESTS',
-  ViewRequests = 'VIEW_REQUESTS',
-  RespondToRequests = 'RESPOND_TO_REQUESTS',
+  ManageRequests = 'MANAGE_EXTERNAL_TRANSLATION_REQUEST',
+  ViewRequests = 'VIEW_EXTERNAL_TRANSLATION_REQUEST',
+  RespondToRequests = 'RESPOND_EXTERNAL_TRANSLATION_REQUEST',
+
+  ManageExternalPartner = 'MANAGE_EXTERNAL_PARTNER',
+  ViewExternalPartner = 'VIEW_EXTERNAL_PARTNER',
 }
 
 export type PrivilegeKey = `${Privileges}`
