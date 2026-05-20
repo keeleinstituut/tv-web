@@ -2,7 +2,7 @@ import { FC, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
-import { includes } from 'lodash'
+import { find, includes } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -97,6 +97,15 @@ const RequestDetailPage: FC = () => {
     !request.is_cascade_exhausted
   const showResponseActions = canRespond && isOpenForResponse
 
+  // Per spec §102 "Tellija kommentaar" surfaces the TPM's reason text either
+  // when the request was cancelled (cancellation_reason) or when this
+  // institution's offer was rejected in favour of another (rejection_comment).
+  const clientComment =
+    request.cancellation_reason ??
+    find(request.offers ?? [], (o) => !!o.rejection_comment)
+      ?.rejection_comment ??
+    null
+
   return (
     <>
       <div className={classes.titleRow}>
@@ -135,10 +144,10 @@ const RequestDetailPage: FC = () => {
             label={t('requests.field_status')}
             value={t(`requests.request_status.${request.status}`)}
           />
-          {request.cancellation_reason && (
+          {clientComment && (
             <Field
               label={t('requests.field_client_comment')}
-              value={request.cancellation_reason}
+              value={clientComment}
             />
           )}
         </section>

@@ -29,6 +29,7 @@ type Row = {
   offer_id: string
   institution_name: string
   status: OutsourceOfferStatus
+  request_cancelled: boolean
   price?: number | null
   response_comment?: string | null
   deadline_at?: string | null
@@ -76,12 +77,14 @@ const ExternalVendorRequestsSection: FC<ExternalVendorRequestsSectionProps> = ({
     const flat: Row[] = []
     requests.forEach((r) => {
       const orderedOffers = sortBy(r.offers ?? [], (o) => o.position)
+      const requestCancelled = r.status === OutsourceRequestStatus.Cancelled
       orderedOffers.forEach((offer) => {
         flat.push({
           request_id: r.id,
           offer_id: offer.id,
           institution_name: offer.institution?.name ?? offer.institution_id,
           status: offer.status,
+          request_cancelled: requestCancelled,
           price: offer.proposed_price ?? offer.calculated_price,
           response_comment: offer.response_comment,
           deadline_at: offerDeadline(r, offer.notified_at),
@@ -120,10 +123,13 @@ const ExternalVendorRequestsSection: FC<ExternalVendorRequestsSectionProps> = ({
     []
   )
 
-  const rowClassFor = (status: OutsourceOfferStatus) => {
-    if (status === OutsourceOfferStatus.RequestDeclined)
+  const rowClassFor = (row: Row) => {
+    // Per spec §58 / §207: when the TPM cancels the request, every offer row
+    // displays as cancelled regardless of its last offer-level status.
+    if (row.request_cancelled) return classes.declinedRow
+    if (row.status === OutsourceOfferStatus.RequestDeclined)
       return classes.declinedRow
-    if (status === OutsourceOfferStatus.RequestExpired)
+    if (row.status === OutsourceOfferStatus.RequestExpired)
       return classes.expiredRow
     return undefined
   }
@@ -134,23 +140,23 @@ const ExternalVendorRequestsSection: FC<ExternalVendorRequestsSectionProps> = ({
         columnHelper.accessor('institution_name', {
           header: () => t('requests.table.organisation_name'),
           cell: ({ row, getValue }) => (
-            <span className={rowClassFor(row.original.status)}>
-              {getValue()}
-            </span>
+            <span className={rowClassFor(row.original)}>{getValue()}</span>
           ),
         }),
         columnHelper.accessor('status', {
           header: () => t('requests.table.status'),
           cell: ({ row, getValue }) => (
-            <span className={rowClassFor(row.original.status)}>
-              {t(`requests.offer_status.${getValue()}`)}
+            <span className={rowClassFor(row.original)}>
+              {row.original.request_cancelled
+                ? t('requests.request_status.CANCELLED')
+                : t(`requests.offer_status.${getValue()}`)}
             </span>
           ),
         }),
         columnHelper.accessor('deadline_at', {
           header: () => t('requests.table.response_deadline'),
           cell: ({ row, getValue }) => (
-            <span className={rowClassFor(row.original.status)}>
+            <span className={rowClassFor(row.original)}>
               {formatDateTime(getValue())}
             </span>
           ),
@@ -161,7 +167,7 @@ const ExternalVendorRequestsSection: FC<ExternalVendorRequestsSectionProps> = ({
             <div
               className={classNames(
                 classes.costCell,
-                rowClassFor(row.original.status)
+                rowClassFor(row.original)
               )}
             >
               <span>{formatPrice(getValue())}</span>
