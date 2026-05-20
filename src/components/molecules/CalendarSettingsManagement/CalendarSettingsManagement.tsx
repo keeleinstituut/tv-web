@@ -21,6 +21,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
+import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import EditIcon from 'assets/icons/edit.svg?react'
 import MultiSelectInput from './MultiSelectInput'
 import classes from './classes.module.scss'
@@ -34,12 +35,21 @@ const BUFFER_OPTIONS = [0, 30, 60, 90, 120].map((val) => ({
   label: val === 30 ? '30 minutit (vaikimisi)' : `${val} minutit`,
 }))
 
+const DEFAULT_REACTION_TIME_HOURS = 0.5
+const REACTION_TIME_STEP_HOURS = 0.25
+const REACTION_TIME_MIN_HOURS = 0.25
+
+const minutesToHours = (minutes: number) =>
+  Math.round((minutes / 60) * 100) / 100
+const hoursToMinutes = (hours: number) => Math.round(hours * 60)
+
 const CalendarSettingsManagement: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const canEdit = includes(userPrivileges, Privileges.EditInstitution)
   const [isEditing, setIsEditing] = useState(false)
   const [isEditingBuffer, setIsEditingBuffer] = useState(false)
+  const [isEditingReactionTime, setIsEditingReactionTime] = useState(false)
 
   const { mainLanguages } = useFetchInstitutionMainLanguages()
   const { syncMainLanguages, isLoading } = useSyncInstitutionMainLanguages()
@@ -50,9 +60,18 @@ const CalendarSettingsManagement: FC = () => {
 
   const [bufferBefore, setBufferBefore] = useState<number | null>(null)
   const [bufferAfter, setBufferAfter] = useState<number | null>(null)
+  // Stored locally in HOURS; converted to/from minutes at the BE boundary.
+  const [reactionTimeHours, setReactionTimeHours] = useState<string>('')
 
   const effectiveBefore = bufferBefore ?? settings?.buffer_before_minutes ?? 30
   const effectiveAfter = bufferAfter ?? settings?.buffer_after_minutes ?? 30
+  const storedReactionHours = minutesToHours(
+    settings?.reaction_time_minutes ?? 30
+  )
+  const parsedReactionHours = parseFloat(reactionTimeHours.replace(',', '.'))
+  const effectiveReactionHours = Number.isFinite(parsedReactionHours)
+    ? parsedReactionHours
+    : storedReactionHours
 
   const { classifierValuesFilters: languageOptions = [] } =
     useClassifierValuesFetch(
@@ -103,8 +122,12 @@ const CalendarSettingsManagement: FC = () => {
   const handleBufferSave = useCallback(async () => {
     try {
       await updateSettings({
+        reaction_time_minutes: settings?.reaction_time_minutes ?? 30,
         buffer_before_minutes: effectiveBefore,
         buffer_after_minutes: effectiveAfter,
+        ...(settings?.default_project_type_id
+          ? { default_project_type_id: settings.default_project_type_id }
+          : {}),
       })
       showNotification({
         type: NotificationTypes.Success,
@@ -117,7 +140,51 @@ const CalendarSettingsManagement: FC = () => {
     } catch (errorData) {
       showValidationErrorMessage(errorData)
     }
-  }, [updateSettings, effectiveBefore, effectiveAfter, t])
+  }, [updateSettings, settings, effectiveBefore, effectiveAfter, t])
+
+  const handleReactionTimeEdit = useCallback(() => {
+    const initial = settings?.reaction_time_minutes
+      ? minutesToHours(settings.reaction_time_minutes)
+      : DEFAULT_REACTION_TIME_HOURS
+    setReactionTimeHours(String(initial))
+    setIsEditingReactionTime(true)
+  }, [settings])
+
+  const handleReactionTimeCancel = useCallback(() => {
+    setReactionTimeHours('')
+    setIsEditingReactionTime(false)
+  }, [])
+
+  const handleReactionTimeSave = useCallback(async () => {
+    const hours = parseFloat(reactionTimeHours.replace(',', '.'))
+    if (!Number.isFinite(hours) || hours < REACTION_TIME_MIN_HOURS) {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('calendar_settings.reaction_time_invalid'),
+      })
+      return
+    }
+    try {
+      await updateSettings({
+        reaction_time_minutes: hoursToMinutes(hours),
+        buffer_before_minutes: settings?.buffer_before_minutes ?? 30,
+        buffer_after_minutes: settings?.buffer_after_minutes ?? 30,
+        ...(settings?.default_project_type_id
+          ? { default_project_type_id: settings.default_project_type_id }
+          : {}),
+      })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.calendar_settings_updated'),
+      })
+      setReactionTimeHours('')
+      setIsEditingReactionTime(false)
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [updateSettings, settings, reactionTimeHours, t])
 
   return (
     <>
@@ -237,6 +304,73 @@ const CalendarSettingsManagement: FC = () => {
               onChange={(v) => setBufferAfter(Number(v))}
               disabled={!isEditingBuffer}
             />
+          </div>
+        </div>
+      </Container>
+
+      <Container className={classes.container}>
+        <div className={classes.header}>
+          <div className={classes.titleWithTooltip}>
+            <h3 className={classes.title}>
+              {t('calendar_settings.reaction_time_title')}
+            </h3>
+            <SmallTooltip
+              tooltipContent={t('calendar_settings.reaction_time_tooltip')}
+              ariaLabel={t('calendar_settings.reaction_time_title')}
+            />
+          </div>
+          {isEditingReactionTime ? (
+            <div className={classes.actions}>
+              <Button
+                appearance={AppearanceTypes.Secondary}
+                size={SizeTypes.S}
+                onClick={handleReactionTimeCancel}
+              >
+                {t('button.cancel')}
+              </Button>
+              <Button
+                size={SizeTypes.S}
+                loading={isUpdatingSettings}
+                onClick={handleReactionTimeSave}
+              >
+                {t('calendar_settings.save_and_close')}
+              </Button>
+            </div>
+          ) : canEdit ? (
+            <Button
+              appearance={AppearanceTypes.Text}
+              size={SizeTypes.S}
+              icon={EditIcon}
+              onClick={handleReactionTimeEdit}
+            >
+              {t('button.change')}
+            </Button>
+          ) : null}
+        </div>
+        <div className={classes.reactionField}>
+          <div className={classes.field}>
+            <label className={classes.fieldLabel}>
+              {t('calendar_settings.reaction_time_label')}
+              <span className={classes.required}>*</span>
+            </label>
+            <div className={classes.reactionInputRow}>
+              <input
+                type="number"
+                className={classes.reactionInput}
+                value={
+                  isEditingReactionTime
+                    ? reactionTimeHours
+                    : String(effectiveReactionHours)
+                }
+                min={REACTION_TIME_MIN_HOURS}
+                step={REACTION_TIME_STEP_HOURS}
+                disabled={!isEditingReactionTime}
+                onChange={(e) => setReactionTimeHours(e.target.value)}
+              />
+              <span className={classes.reactionUnit}>
+                {t('calendar_settings.reaction_time_hours_suffix')}
+              </span>
+            </div>
           </div>
         </div>
       </Container>
