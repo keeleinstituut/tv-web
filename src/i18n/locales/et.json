@@ -1163,11 +1163,11 @@
     },
     "offer_status": {
       "REQUEST_PENDING": "Ootel saatmist",
-      "REQUEST_SENT": "Saadetud",
-      "REQUEST_ACCEPTED": "Aktsepteeritud",
+      "REQUEST_SENT": "Ootel",
+      "REQUEST_ACCEPTED": "Vastatud",
       "REQUEST_DECLINED": "Keeldutud",
       "REQUEST_EXPIRED": "Aegunud",
-      "OFFER_ACCEPTED": "Pakkumus valitud",
+      "OFFER_ACCEPTED": "Aktsepteeritud",
       "OFFER_DECLINED": "Pakkumus tagasi lükatud"
     }
   },

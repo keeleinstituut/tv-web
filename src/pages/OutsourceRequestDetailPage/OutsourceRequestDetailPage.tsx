@@ -19,6 +19,7 @@ import {
   useFetchOutsourceRequest,
 } from 'hooks/requests/useProjectRequests'
 import {
+  OutsourceOfferStatus,
   OutsourceRequestMode,
   OutsourceRequestStatus,
 } from 'types/outsourceRequests'
@@ -51,7 +52,8 @@ const OutsourceRequestDetailPage: FC = () => {
   const [offeredPrice, setOfferedPrice] = useState('')
   const [responseComment, setResponseComment] = useState('')
 
-  const priceInputNeeded = request?.offers?.[0]?.price == null
+  const offer = request?.offers?.[0]
+  const priceInputNeeded = offer?.price == null
 
   const handleAccept = useCallback(async () => {
     try {
@@ -93,7 +95,7 @@ const OutsourceRequestDetailPage: FC = () => {
 
   const isOpenForResponse =
     request.status === OutsourceRequestStatus.Active &&
-    !request.is_cascade_exhausted
+    offer?.status === OutsourceOfferStatus.RequestSent
   const showResponseActions = canRespond && isOpenForResponse
 
   const clientComment =

@@ -7,15 +7,17 @@ import { TabStyle } from 'components/molecules/Tab/Tab'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import OutsourceRequestsTable from 'components/organisms/tables/OutsourceRequestsTable/OutsourceRequestsTable'
 import { useFetchOutsourceRequests } from 'hooks/requests/useProjectRequests'
-import { OutsourceRequestStatus } from 'types/outsourceRequests'
+import { OutsourceOfferStatus } from 'types/outsourceRequests'
 
 import classes from './classes.module.scss'
 
-const STATUS_TAB_IDS: Array<'ALL' | OutsourceRequestStatus> = [
+const OFFER_STATUS_TAB_IDS: Array<'ALL' | OutsourceOfferStatus> = [
   'ALL',
-  OutsourceRequestStatus.Active,
-  OutsourceRequestStatus.Fulfilled,
-  OutsourceRequestStatus.Cancelled,
+  OutsourceOfferStatus.RequestSent,
+  OutsourceOfferStatus.RequestAccepted,
+  OutsourceOfferStatus.RequestDeclined,
+  OutsourceOfferStatus.RequestExpired,
+  OutsourceOfferStatus.OfferAccepted,
 ]
 
 const OutsourceRequest: FC = () => {
@@ -30,17 +32,17 @@ const OutsourceRequest: FC = () => {
     handlePaginationChange,
   } = useFetchOutsourceRequests({ page: 1, per_page: 10 }, true)
 
-  const activeStatus = filters.status?.[0]
-  const activeTab = (activeStatus ?? 'ALL') as 'ALL' | OutsourceRequestStatus
+  const activeOfferStatus = filters.offer_status?.[0]
+  const activeTab = (activeOfferStatus ?? 'ALL') as 'ALL' | OutsourceOfferStatus
 
   const handleSetActiveTab = useCallback(
     (newActiveTab: string | undefined) => {
-      const nextStatus =
+      const nextOfferStatus =
         !newActiveTab || newActiveTab === 'ALL'
           ? undefined
-          : [newActiveTab as OutsourceRequestStatus]
+          : [newActiveTab as OutsourceOfferStatus]
       handleFilterChange({
-        status: nextStatus as string[],
+        offer_status: nextOfferStatus as string[],
         page: 1,
       })
     },
@@ -49,12 +51,12 @@ const OutsourceRequest: FC = () => {
 
   const tabs = useMemo(
     () =>
-      map(STATUS_TAB_IDS, (id) => ({
+      map(OFFER_STATUS_TAB_IDS, (id) => ({
         id,
         name:
           id === 'ALL'
             ? t('requests.tab_all')
-            : t(`requests.request_status.${id}`),
+            : t(`requests.offer_status.${id}`),
       })),
     [t]
   )

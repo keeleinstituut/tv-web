@@ -130,6 +130,7 @@ export interface SelectOutsourceOfferPayload {
 export interface OutsourceRequestFilters {
   type?: 'INCOMING' | 'OUTGOING'
   status?: OutsourceRequestStatus[]
+  offer_status?: OutsourceOfferStatus[]
   assignment_id?: string
   sub_project_id?: string
   project_id?: string

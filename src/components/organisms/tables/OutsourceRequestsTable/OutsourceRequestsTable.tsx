@@ -27,7 +27,7 @@ import {
 
 type RequestRow = {
   id: string
-  ext_id: string
+  ext_id: string | undefined
   status: OutsourceRequestStatus
   mode: OutsourceRequestMode
   reaction_time_minutes: number
@@ -61,7 +61,7 @@ const OutsourceRequestsTable: FC<OutsourceRequestsTableProps> = ({
     () =>
       map(requests, (r) => ({
         id: r.id,
-        ext_id: r.id.slice(0, 8),
+        ext_id: r.assignment?.ext_id,
         status: r.status,
         mode: r.mode,
         reaction_time_minutes: r.reaction_time_minutes,
