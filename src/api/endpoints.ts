@@ -59,9 +59,8 @@ export const endpoints = {
   VENDORS_BULK: translationOrder('vendors/bulk'),
   VOLUMES: translationOrder('volumes'),
   SKILLS: translationOrder('skills'),
-  INSTITUTION_PRICES: translationOrder('institution-prices'),
-  VENDOR_SKILL_LANGUAGES: translationOrder('vendor-skill-languages'),
-  VENDOR_SKILL_LANGUAGES_BULK: translationOrder('vendor-skill-languages/bulk'),
+  PRICES: translationOrder('prices'),
+  EDIT_PRICES: translationOrder('prices/bulk'),
   CLASSIFIER_VALUES: translationOrder('classifier-values'),
   PROJECTS: translationOrder('projects'),
   SUB_PROJECTS: translationOrder('subprojects'),
@@ -119,9 +118,7 @@ export const endpoints = {
   IMPORT_TMX: translationOrder('catv2/translation-memories/import'),
   EXPORT_TMX: translationOrder('catv2/translation-memories/export'),
   TM_STATS: translationMemory('tm/stats'),
-  TM_CONTENT_CHECKS: translationOrder(
-    'catv2/translation-memories/content-checks'
-  ),
+  TM_CONTENT_CHECKS: translationOrder('catv2/translation-memories/content-checks'),
 
   AUDIT_LOGS: auditLog('event-records'),
   AUDIT_LOG_ACTIONS: auditLog('event-records/actions'),

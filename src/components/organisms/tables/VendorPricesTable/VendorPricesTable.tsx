@@ -20,7 +20,6 @@ type VendorPricesTableProps<TFormValues extends FieldValues> = {
   skillId?: string
   // TODO: we have control, so following should be unnecessary
   getValues: UseFormGetValues<TFormValues>
-  disabled?: boolean
 }
 
 function VendorPricesTable<TFormValues extends FieldValues>({
@@ -28,7 +27,6 @@ function VendorPricesTable<TFormValues extends FieldValues>({
   languageDirectionKey,
   skillId,
   getValues,
-  disabled,
 }: VendorPricesTableProps<TFormValues>) {
   const { t } = useTranslation()
 
@@ -84,7 +82,6 @@ function VendorPricesTable<TFormValues extends FieldValues>({
             className={classes.pricesInput}
             rules={rules}
             errorZIndex={errorZIndex}
-            disabled={disabled}
           />
         )
       },
@@ -106,7 +103,6 @@ function VendorPricesTable<TFormValues extends FieldValues>({
             className={classes.pricesInput}
             rules={rules}
             errorZIndex={errorZIndex}
-            disabled={disabled}
           />
         )
       },
@@ -128,7 +124,6 @@ function VendorPricesTable<TFormValues extends FieldValues>({
             className={classes.pricesInput}
             rules={rules}
             errorZIndex={errorZIndex}
-            disabled={disabled}
           />
         )
       },
@@ -150,7 +145,6 @@ function VendorPricesTable<TFormValues extends FieldValues>({
             className={classes.pricesInput}
             rules={rules}
             errorZIndex={errorZIndex}
-            disabled={disabled}
           />
         )
       },
@@ -172,7 +166,6 @@ function VendorPricesTable<TFormValues extends FieldValues>({
             className={classes.pricesInput}
             rules={rules}
             errorZIndex={errorZIndex}
-            disabled={disabled}
           />
         )
       },
@@ -194,7 +187,6 @@ function VendorPricesTable<TFormValues extends FieldValues>({
             className={classes.pricesInput}
             rules={rules}
             errorZIndex={errorZIndex}
-            disabled={disabled}
           />
         )
       },
