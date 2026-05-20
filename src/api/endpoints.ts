@@ -59,8 +59,9 @@ export const endpoints = {
   VENDORS_BULK: translationOrder('vendors/bulk'),
   VOLUMES: translationOrder('volumes'),
   SKILLS: translationOrder('skills'),
-  PRICES: translationOrder('prices'),
-  EDIT_PRICES: translationOrder('prices/bulk'),
+  INSTITUTION_PRICES: translationOrder('institution-prices'),
+  VENDOR_SKILL_LANGUAGES: translationOrder('vendor-skill-languages'),
+  VENDOR_SKILL_LANGUAGES_BULK: translationOrder('vendor-skill-languages/bulk'),
   CLASSIFIER_VALUES: translationOrder('classifier-values'),
   PROJECTS: translationOrder('projects'),
   SUB_PROJECTS: translationOrder('subprojects'),
@@ -118,7 +119,9 @@ export const endpoints = {
   IMPORT_TMX: translationOrder('catv2/translation-memories/import'),
   EXPORT_TMX: translationOrder('catv2/translation-memories/export'),
   TM_STATS: translationMemory('tm/stats'),
-  TM_CONTENT_CHECKS: translationOrder('catv2/translation-memories/content-checks'),
+  TM_CONTENT_CHECKS: translationOrder(
+    'catv2/translation-memories/content-checks'
+  ),
 
   AUDIT_LOGS: auditLog('event-records'),
   AUDIT_LOG_ACTIONS: auditLog('event-records/actions'),
@@ -139,16 +142,18 @@ export const endpoints = {
     machineTranslation(`translate/file/${id}/download`),
   MT_INSTITUTION_SETTINGS: machineTranslation('settings'),
 
-  PROJECT_REQUESTS: translationOrder('project-requests'),
-  PROJECT_REQUEST_ACCEPT: (id: string) =>
-    translationOrder(`project-requests/${id}/accept`),
-  PROJECT_REQUEST_DECLINE: (id: string) =>
-    translationOrder(`project-requests/${id}/decline`),
-  PROJECT_REQUEST_CANCEL: (id: string) =>
-    translationOrder(`project-requests/${id}/cancel`),
-  PROJECT_REQUEST_SELECT_WINNER: (id: string) =>
-    translationOrder(`project-requests/${id}/select-winner`),
-  EXTERNAL_VENDOR_INSTITUTIONS: translationOrder('external-vendor-institutions'),
+  OUTSOURCE_REQUESTS: translationOrder('outsource-requests'),
+  OUTSOURCE_REQUEST: (id: string) =>
+    translationOrder(`outsource-requests/${id}`),
+  OUTSOURCE_REQUEST_CANCEL: (id: string) =>
+    translationOrder(`outsource-requests/${id}/cancel`),
+  OUTSOURCE_REQUEST_SELECT: (id: string) =>
+    translationOrder(`outsource-requests/${id}/select`),
+  OUTSOURCE_REQUEST_ACCEPT: (id: string) =>
+    translationOrder(`outsource-requests/${id}/accept`),
+  OUTSOURCE_REQUEST_DECLINE: (id: string) =>
+    translationOrder(`outsource-requests/${id}/decline`),
+  INSTITUTION_PARTNERS: translationOrder('institution-partners'),
 }
 
 export const authEndpoints = {

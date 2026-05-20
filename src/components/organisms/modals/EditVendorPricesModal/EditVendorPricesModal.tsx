@@ -512,6 +512,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
             languageOptions={languageFilter}
             skillId={skillId}
             getValues={getValues}
+            feesReadOnly
           />
         ),
         resetForm: resetForm,

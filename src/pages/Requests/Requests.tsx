@@ -1,25 +1,24 @@
-import { FC, useCallback, useMemo, useState } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { debounce, map } from 'lodash'
+import { Root } from '@radix-ui/react-form'
 
 import Tabs from 'components/molecules/Tabs/Tabs'
 import { TabStyle } from 'components/molecules/Tab/Tab'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import TextInput from 'components/molecules/TextInput/TextInput'
 import RequestsTable from 'components/organisms/tables/RequestsTable/RequestsTable'
-import { useFetchProjectRequests } from 'hooks/requests/useProjectRequests'
-import { ProjectRequestStatus } from 'types/projectRequests'
+import { useFetchOutsourceRequests } from 'hooks/requests/useProjectRequests'
+import { OutsourceRequestStatus } from 'types/projectRequests'
 import { FilterFunctionType } from 'types/collective'
 
 import classes from './classes.module.scss'
 
-const STATUS_TAB_IDS: Array<'ALL' | ProjectRequestStatus> = [
+const STATUS_TAB_IDS: Array<'ALL' | OutsourceRequestStatus> = [
   'ALL',
-  ProjectRequestStatus.Pending,
-  ProjectRequestStatus.Accepted,
-  ProjectRequestStatus.Responded,
-  ProjectRequestStatus.Declined,
-  ProjectRequestStatus.Expired,
+  OutsourceRequestStatus.Active,
+  OutsourceRequestStatus.Fulfilled,
+  OutsourceRequestStatus.Cancelled,
 ]
 
 const Requests: FC = () => {
@@ -34,25 +33,38 @@ const Requests: FC = () => {
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFetchProjectRequests({ page: 1, per_page: 10 }, true)
+  } = useFetchOutsourceRequests({ page: 1, per_page: 10 }, true)
 
-  const activeTab = (filters.status ?? 'ALL') as 'ALL' | ProjectRequestStatus
+  const activeStatus = filters.status?.[0]
+  const activeTab = (activeStatus ?? 'ALL') as 'ALL' | OutsourceRequestStatus
 
   const handleSetActiveTab = useCallback(
     (newActiveTab: string | undefined) => {
       const nextStatus =
-        !newActiveTab || newActiveTab === 'ALL' ? '' : newActiveTab
-      handleFilterChange({ status: nextStatus, page: 1 } as FilterFunctionType)
+        !newActiveTab || newActiveTab === 'ALL'
+          ? undefined
+          : [newActiveTab as OutsourceRequestStatus]
+      handleFilterChange({
+        status: nextStatus,
+        page: 1,
+      } as FilterFunctionType)
     },
     [handleFilterChange]
   )
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedSearchChange = useCallback(
-    debounce((next: string) => {
-      handleFilterChange({ search: next, page: 1 } as FilterFunctionType)
-    }, 300),
+  const debouncedSearchChange = useMemo(
+    () =>
+      debounce((next: string) => {
+        handleFilterChange({ search: next, page: 1 } as FilterFunctionType)
+      }, 300),
     [handleFilterChange]
+  )
+
+  useEffect(
+    () => () => {
+      debouncedSearchChange.cancel()
+    },
+    [debouncedSearchChange]
   )
 
   const handleSearchChange = useCallback(
@@ -68,7 +80,10 @@ const Requests: FC = () => {
     () =>
       map(STATUS_TAB_IDS, (id) => ({
         id,
-        name: id === 'ALL' ? t('requests.tab_all') : t(`requests.status.${id}`),
+        name:
+          id === 'ALL'
+            ? t('requests.tab_all')
+            : t(`requests.request_status.${id}`),
       })),
     [t]
   )
@@ -80,7 +95,7 @@ const Requests: FC = () => {
         <Tooltip helpSectionKey="requests" />
       </div>
 
-      <div className={classes.toolbar}>
+      <Root className={classes.toolbar} onSubmit={(e) => e.preventDefault()}>
         <TextInput
           name="search"
           ariaLabel={t('label.search')}
@@ -90,7 +105,7 @@ const Requests: FC = () => {
           isSearch
           className={classes.searchInput}
         />
-      </div>
+      </Root>
 
       <Tabs
         setActiveTab={handleSetActiveTab}

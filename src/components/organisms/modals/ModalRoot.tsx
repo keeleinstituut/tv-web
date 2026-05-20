@@ -40,6 +40,9 @@ import { EmoSchedulesModalProps } from './EmoSchedulesModal/EmoSchedulesModal'
 import { VendorAbsencesModalProps } from './VendorAbsencesModal/VendorAbsencesModal'
 import { ComposeProjectRequestModalProps } from './ComposeProjectRequestModal/ComposeProjectRequestModal'
 import { ConfirmDeclineRequestModalProps } from './ConfirmDeclineRequestModal/ConfirmDeclineRequestModal'
+import { SelectWinningVendorModalProps } from './SelectWinningVendorModal/SelectWinningVendorModal'
+import { ConfirmCancelRequestModalProps } from './ConfirmCancelRequestModal/ConfirmCancelRequestModal'
+import { ViewVendorResponseModalProps } from './ViewVendorResponseModal/ViewVendorResponseModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -110,9 +113,7 @@ const ConfirmTmWritableModal = lazy(
 
 const ConfirmAssignmentCompletionModal = lazy(
   () =>
-    import(
-      './ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal'
-    )
+    import('./ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal')
 )
 
 const ReassignProjectModal = lazy(
@@ -139,16 +140,12 @@ const ConfirmAssignmentFinishedModal = lazy(
 
 const ConfirmSendToPreviousAssignmentModal = lazy(
   () =>
-    import(
-      './ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal'
-    )
+    import('./ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal')
 )
 
 const TranslationMemoryBulkExportModal = lazy(
   () =>
-    import(
-      './TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal'
-    )
+    import('./TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal')
 )
 
 const EmoSchedulesModal = lazy(
@@ -165,6 +162,18 @@ const ComposeProjectRequestModal = lazy(
 
 const ConfirmDeclineRequestModal = lazy(
   () => import('./ConfirmDeclineRequestModal/ConfirmDeclineRequestModal')
+)
+
+const SelectWinningVendorModal = lazy(
+  () => import('./SelectWinningVendorModal/SelectWinningVendorModal')
+)
+
+const ConfirmCancelRequestModal = lazy(
+  () => import('./ConfirmCancelRequestModal/ConfirmCancelRequestModal')
+)
+
+const ViewVendorResponseModal = lazy(
+  () => import('./ViewVendorResponseModal/ViewVendorResponseModal')
 )
 
 export enum ModalTypes {
@@ -202,6 +211,9 @@ export enum ModalTypes {
   VendorAbsences = 'vendorAbsences',
   ComposeProjectRequest = 'composeProjectRequest',
   ConfirmDeclineRequest = 'confirmDeclineRequest',
+  SelectWinningVendor = 'selectWinningVendor',
+  ConfirmCancelRequest = 'confirmCancelRequest',
+  ViewVendorResponse = 'viewVendorResponse',
 }
 
 // Add other modal props types here as well
@@ -239,6 +251,9 @@ type ModalPropTypes =
   | Omit<VendorAbsencesModalProps, 'closeModal'>
   | Omit<ComposeProjectRequestModalProps, 'closeModal'>
   | Omit<ConfirmDeclineRequestModalProps, 'closeModal'>
+  | Omit<SelectWinningVendorModalProps, 'closeModal'>
+  | Omit<ConfirmCancelRequestModalProps, 'closeModal'>
+  | Omit<ViewVendorResponseModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -277,6 +292,9 @@ const MODALS = {
   [ModalTypes.VendorAbsences]: VendorAbsencesModal,
   [ModalTypes.ComposeProjectRequest]: ComposeProjectRequestModal,
   [ModalTypes.ConfirmDeclineRequest]: ConfirmDeclineRequestModal,
+  [ModalTypes.SelectWinningVendor]: SelectWinningVendorModal,
+  [ModalTypes.ConfirmCancelRequest]: ConfirmCancelRequestModal,
+  [ModalTypes.ViewVendorResponse]: ViewVendorResponseModal,
 }
 
 interface RefType {

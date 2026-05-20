@@ -11,7 +11,7 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import Delete from 'assets/icons/delete.svg?react'
-import File from 'assets/icons/file.svg?react'
+import FileIcon from 'assets/icons/file.svg?react'
 import {
   ProjectFileTypes,
   acceptFileExtensions,
@@ -77,10 +77,11 @@ const Step3RelatedFiles: FC<Step3Props> = ({
         </span>
         <div className={classes.rowContent}>
           <ToggleInput
-            name="include_project_files"
+            name="include_source_files"
             label=""
-            value={draft.include_project_files}
-            onChange={(next) => onChange({ include_project_files: next })}
+            value={draft.include_source_files}
+            onChange={(next) => onChange({ include_source_files: next })}
+            className={classes.modalToggle}
           />
         </div>
       </div>
@@ -117,7 +118,7 @@ const Step3RelatedFiles: FC<Step3Props> = ({
         <ul className={classes.fileList}>
           {files.map((file, index) => (
             <li key={`${file.name}-${index}`} className={classes.fileItem}>
-              <File className={classes.fileIcon} />
+              <FileIcon className={classes.fileIcon} />
               <div className={classes.fileMeta}>
                 <p className={classes.fileName}>{file.name}</p>
                 <p className={classes.fileSize}>{formatFileSize(file.size)}</p>

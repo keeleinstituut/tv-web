@@ -1,84 +1,31 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import {
-  CancelProjectRequestPayload,
-  CreateProjectRequestPayload,
-  DeclineProjectRequestPayload,
-  ExternalVendorInstitution,
-  ProjectRequest,
-  ProjectRequestFilters,
-  SelectWinningVendorPayload,
-} from 'types/projectRequests'
-import { ResponseMetaTypes } from 'types/collective'
+import { apiClient } from 'api'
+import { endpoints } from 'api/endpoints'
 import useFilters from 'hooks/useFilters'
+import { ResponseMetaTypes } from 'types/collective'
 import {
-  MOCK_EXTERNAL_VENDOR_INSTITUTIONS,
-  MOCK_PROJECT_REQUESTS,
-} from './mock/projectRequests.mock'
+  AcceptOutsourceRequestPayload,
+  CancelOutsourceRequestPayload,
+  CreateOutsourceRequestPayload,
+  DeclineOutsourceRequestPayload,
+  InstitutionPartner,
+  InstitutionPartnerFilters,
+  OutsourceRequest,
+  OutsourceRequestFilters,
+  SelectOutsourceOfferPayload,
+} from 'types/projectRequests'
 
-// BE is not ready yet — all hooks return mock data.
-// When BE lands, replace the queryFn / mutationFn bodies with apiClient calls
-// (endpoints are already defined in src/api/endpoints.ts).
-const USE_MOCK = true
-
-const delay = <T>(value: T, ms = 200): Promise<T> =>
-  new Promise((resolve) => setTimeout(() => resolve(value), ms))
-
-interface ProjectRequestsResponse {
-  data: ProjectRequest[]
-  meta: ResponseMetaTypes
+interface ListResponse<T> {
+  data: T[]
+  meta?: ResponseMetaTypes
 }
 
-const mockPaginate = (
-  filters: ProjectRequestFilters
-): ProjectRequestsResponse => {
-  const { status, search, page = 1, per_page = 10 } = filters
-  const loweredSearch = (search || '').trim().toLowerCase()
-
-  const filtered = MOCK_PROJECT_REQUESTS.filter((r) => {
-    if (status && r.status !== status) return false
-    if (!loweredSearch) return true
-    return [
-      r.project_ext_id,
-      r.requestor_institution_name,
-      r.project_type_name,
-      r.language_pair,
-    ]
-      .filter(Boolean)
-      .some((v) => String(v).toLowerCase().includes(loweredSearch))
-  })
-
-  const total = filtered.length
-  const startIdx = (page - 1) * per_page
-  const pageData = filtered.slice(startIdx, startIdx + per_page)
-
-  return {
-    data: pageData,
-    meta: {
-      current_page: page,
-      per_page,
-      total,
-      last_page: Math.max(1, Math.ceil(total / per_page)),
-      from: total ? startIdx + 1 : 0,
-      to: Math.min(startIdx + per_page, total),
-    },
-  }
+interface SingleResponse<T> {
+  data: T
 }
 
-export const useFetchExternalVendorInstitutions = () => {
-  const { data, isLoading } = useQuery<ExternalVendorInstitution[]>({
-    queryKey: ['external-vendor-institutions'],
-    queryFn: async () => {
-      if (USE_MOCK) return delay(MOCK_EXTERNAL_VENDOR_INSTITUTIONS)
-      throw new Error('Not implemented')
-    },
-    staleTime: Infinity,
-  })
-
-  return { institutions: data ?? [], isLoading }
-}
-
-export const useFetchProjectRequests = (
-  initialFilters?: ProjectRequestFilters,
+export const useFetchInstitutionPartners = (
+  initialFilters?: InstitutionPartnerFilters,
   saveQueryParams?: boolean
 ) => {
   const {
@@ -86,21 +33,19 @@ export const useFetchProjectRequests = (
     handleFilterChange,
     handleSortingChange,
     handlePaginationChange,
-  } = useFilters<ProjectRequestFilters>(initialFilters, saveQueryParams)
+  } = useFilters<InstitutionPartnerFilters>(initialFilters, saveQueryParams)
 
-  const { data, isLoading } = useQuery<ProjectRequestsResponse>({
-    queryKey: ['project-requests', filters],
-    queryFn: async () => {
-      if (USE_MOCK) return delay(mockPaginate(filters as ProjectRequestFilters))
-      throw new Error('Not implemented')
-    },
+  const { data, isLoading } = useQuery<ListResponse<InstitutionPartner>>({
+    queryKey: ['institution-partners', filters],
+    queryFn: () => apiClient.get(endpoints.INSTITUTION_PARTNERS, filters),
     keepPreviousData: true,
+    staleTime: 60_000,
   })
 
   return {
-    requests: data?.data ?? [],
+    partners: data?.data ?? [],
     paginationData: data?.meta,
-    filters: filters as ProjectRequestFilters,
+    filters: filters as InstitutionPartnerFilters,
     isLoading,
     handleFilterChange,
     handleSortingChange,
@@ -108,106 +53,159 @@ export const useFetchProjectRequests = (
   }
 }
 
-export const useFetchProjectRequest = (id?: string) => {
-  const { data, isLoading } = useQuery<ProjectRequest | undefined>({
-    queryKey: ['project-requests', id],
-    queryFn: async () => {
-      if (USE_MOCK) return delay(MOCK_PROJECT_REQUESTS.find((r) => r.id === id))
-      throw new Error('Not implemented')
-    },
+export const useFetchOutsourceRequests = (
+  initialFilters?: OutsourceRequestFilters,
+  saveQueryParams?: boolean
+) => {
+  const {
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useFilters<OutsourceRequestFilters>(initialFilters, saveQueryParams)
+
+  const { search, ...serverFilters } = filters as OutsourceRequestFilters
+
+  const { data, isLoading } = useQuery<ListResponse<OutsourceRequest>>({
+    queryKey: ['outsource-requests', serverFilters],
+    queryFn: () => apiClient.get(endpoints.OUTSOURCE_REQUESTS, serverFilters),
+    keepPreviousData: true,
+  })
+
+  return {
+    requests: data?.data ?? [],
+    paginationData: data?.meta,
+    filters: filters as OutsourceRequestFilters,
+    searchValue: search ?? '',
+    isLoading,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  }
+}
+
+export const useFetchOutsourceRequest = (id?: string) => {
+  const { data, isLoading } = useQuery<SingleResponse<OutsourceRequest>>({
     enabled: !!id,
+    queryKey: ['outsource-requests', id],
+    queryFn: () => apiClient.get(endpoints.OUTSOURCE_REQUEST(id!)),
   })
 
-  return { request: data, isLoading }
+  return { request: data?.data, isLoading }
 }
 
-export const useFetchAssignmentProjectRequests = (assignmentId?: string) => {
-  const { data, isLoading } = useQuery<ProjectRequest[]>({
-    queryKey: ['project-requests', 'assignment', assignmentId],
-    queryFn: async () => {
-      if (USE_MOCK)
-        return delay(
-          MOCK_PROJECT_REQUESTS.filter((r) => r.assignment_id === assignmentId)
-        )
-      throw new Error('Not implemented')
-    },
+export const useFetchAssignmentOutsourceRequests = (assignmentId?: string) => {
+  const { data, isLoading } = useQuery<ListResponse<OutsourceRequest>>({
     enabled: !!assignmentId,
+    queryKey: ['outsource-requests', 'assignment', assignmentId],
+    queryFn: () =>
+      apiClient.get(endpoints.OUTSOURCE_REQUESTS, {
+        assignment_id: assignmentId,
+      }),
   })
 
-  return { requests: data ?? [], isLoading }
+  return { requests: data?.data ?? [], isLoading }
 }
 
-export const useCreateProjectRequest = () => {
+export const useCreateOutsourceRequest = () => {
   const queryClient = useQueryClient()
-  const { mutateAsync: createProjectRequest, isLoading } = useMutation({
-    mutationFn: async (payload: CreateProjectRequestPayload) => {
-      if (USE_MOCK) return delay({ data: { ...payload, id: 'mock-new' } })
-      throw new Error('Not implemented')
+  const { mutateAsync: createOutsourceRequest, isLoading } = useMutation({
+    mutationFn: async (payload: CreateOutsourceRequestPayload) => {
+      const { request_files, ...rest } = payload
+      if (request_files && request_files.length > 0) {
+        const form = new FormData()
+        form.append('assignment_id', rest.assignment_id)
+        form.append('mode', rest.mode)
+        form.append('reaction_time_minutes', String(rest.reaction_time_minutes))
+        rest.offers.forEach((offer, idx) => {
+          form.append(`offers[${idx}][institution_id]`, offer.institution_id)
+        })
+        if (rest.special_instructions !== undefined) {
+          form.append('special_instructions', rest.special_instructions)
+        }
+        if (rest.include_source_files !== undefined) {
+          form.append('include_source_files', String(rest.include_source_files))
+        }
+        if (rest.include_price !== undefined) {
+          form.append('include_price', String(rest.include_price))
+        }
+        if (rest.fixed_price !== undefined) {
+          form.append('fixed_price', String(rest.fixed_price))
+        }
+        request_files.forEach((file, idx) => {
+          form.append(`request_files[${idx}]`, file)
+        })
+        return apiClient.post(endpoints.OUTSOURCE_REQUESTS, form)
+      }
+      return apiClient.post(endpoints.OUTSOURCE_REQUESTS, rest)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['project-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['outsource-requests'] })
     },
   })
 
-  return { createProjectRequest, isLoading }
+  return { createOutsourceRequest, isLoading }
 }
 
-export const useAcceptProjectRequest = (id: string) => {
+export const useAcceptOutsourceRequest = (id: string) => {
   const queryClient = useQueryClient()
-  const { mutateAsync: acceptProjectRequest, isLoading } = useMutation({
-    mutationFn: async () => {
-      if (USE_MOCK) return delay({ data: { id } })
-      throw new Error('Not implemented')
+  const { mutateAsync: acceptOutsourceRequest, isLoading } = useMutation({
+    mutationFn: async (payload?: AcceptOutsourceRequestPayload) => {
+      if (!id) throw new Error('Outsource request id is required')
+      return apiClient.post(
+        endpoints.OUTSOURCE_REQUEST_ACCEPT(id),
+        payload ?? {}
+      )
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['project-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['outsource-requests'] })
     },
   })
 
-  return { acceptProjectRequest, isLoading }
+  return { acceptOutsourceRequest, isLoading }
 }
 
-export const useDeclineProjectRequest = (id: string) => {
+export const useDeclineOutsourceRequest = (id: string) => {
   const queryClient = useQueryClient()
-  const { mutateAsync: declineProjectRequest, isLoading } = useMutation({
-    mutationFn: async (payload: DeclineProjectRequestPayload) => {
-      if (USE_MOCK) return delay({ data: { id, ...payload } })
-      throw new Error('Not implemented')
+  const { mutateAsync: declineOutsourceRequest, isLoading } = useMutation({
+    mutationFn: async (payload: DeclineOutsourceRequestPayload) => {
+      if (!id) throw new Error('Outsource request id is required')
+      return apiClient.post(endpoints.OUTSOURCE_REQUEST_DECLINE(id), payload)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['project-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['outsource-requests'] })
     },
   })
 
-  return { declineProjectRequest, isLoading }
+  return { declineOutsourceRequest, isLoading }
 }
 
-export const useCancelProjectRequest = (id: string) => {
+export const useCancelOutsourceRequest = (id: string) => {
   const queryClient = useQueryClient()
-  const { mutateAsync: cancelProjectRequest, isLoading } = useMutation({
-    mutationFn: async (payload: CancelProjectRequestPayload) => {
-      if (USE_MOCK) return delay({ data: { id, ...payload } })
-      throw new Error('Not implemented')
+  const { mutateAsync: cancelOutsourceRequest, isLoading } = useMutation({
+    mutationFn: async (payload: CancelOutsourceRequestPayload) => {
+      if (!id) throw new Error('Outsource request id is required')
+      return apiClient.post(endpoints.OUTSOURCE_REQUEST_CANCEL(id), payload)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['project-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['outsource-requests'] })
     },
   })
 
-  return { cancelProjectRequest, isLoading }
+  return { cancelOutsourceRequest, isLoading }
 }
 
-export const useSelectWinningVendor = (id: string) => {
+export const useSelectOutsourceOffer = (id: string) => {
   const queryClient = useQueryClient()
-  const { mutateAsync: selectWinningVendor, isLoading } = useMutation({
-    mutationFn: async (payload: SelectWinningVendorPayload) => {
-      if (USE_MOCK) return delay({ data: { id, ...payload } })
-      throw new Error('Not implemented')
+  const { mutateAsync: selectOutsourceOffer, isLoading } = useMutation({
+    mutationFn: async (payload: SelectOutsourceOfferPayload) => {
+      if (!id) throw new Error('Outsource request id is required')
+      return apiClient.post(endpoints.OUTSOURCE_REQUEST_SELECT(id), payload)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['project-requests'] })
+      queryClient.invalidateQueries({ queryKey: ['outsource-requests'] })
     },
   })
 
-  return { selectWinningVendor, isLoading }
+  return { selectOutsourceOffer, isLoading }
 }

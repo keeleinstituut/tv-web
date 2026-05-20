@@ -77,6 +77,7 @@ const Step4PriceAndVolume: FC<Step4Props> = ({ draft, onChange }) => {
             label={t('requests.show_price_toggle')}
             value={draft.include_price}
             onChange={(next) => onChange({ include_price: next })}
+            className={classes.modalToggle}
           />
         </div>
       </div>
@@ -87,22 +88,28 @@ const Step4PriceAndVolume: FC<Step4Props> = ({ draft, onChange }) => {
         </span>
         <div className={classes.rowContent}>
           <div className={classes.dateTimeGroup}>
-            <TextInput
-              name="bulk_volume_quantity"
-              ariaLabel={t('requests.quantity')}
-              label={t('requests.quantity')}
-              type="number"
-              min={0}
-              value={
-                draft.bulk_volume !== undefined ? String(draft.bulk_volume) : ''
-              }
-              onChange={handleQuantityChange}
-            />
-            <div className={classes.reactionTimeSelect}>
+            <div className={classes.fieldStack}>
+              <span className={classes.fieldLabel}>
+                {t('requests.quantity')}
+              </span>
+              <TextInput
+                name="bulk_volume_quantity"
+                ariaLabel={t('requests.quantity')}
+                type="number"
+                min={0}
+                value={
+                  draft.bulk_volume !== undefined
+                    ? String(draft.bulk_volume)
+                    : ''
+                }
+                onChange={handleQuantityChange}
+              />
+            </div>
+            <div className={classes.fieldStack}>
+              <span className={classes.fieldLabel}>{t('requests.unit')}</span>
               <SelectionControlsInput
                 name="bulk_volume_unit"
                 ariaLabel={t('requests.unit')}
-                label={t('requests.unit')}
                 placeholder={t('requests.unit')}
                 value={draft.bulk_volume_unit ?? ''}
                 options={unitOptions}

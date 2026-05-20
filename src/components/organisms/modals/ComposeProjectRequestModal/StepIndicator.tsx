@@ -1,7 +1,6 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
-import ChevronRight from 'assets/icons/arrow_right.svg?react'
 
 import classes from './classes.module.scss'
 import { WizardStep } from './types'
@@ -34,7 +33,6 @@ const StepIndicator: FC<StepIndicatorProps> = ({ current }) => {
           >
             <span className={classes.stepNumber}>{step}</span>
             <span className={classes.stepLabel}>{label}</span>
-            {isActive && <ChevronRight className={classes.stepChevron} />}
           </div>
         )
       })}

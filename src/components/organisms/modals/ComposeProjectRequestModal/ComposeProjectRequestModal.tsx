@@ -1,6 +1,8 @@
 import { FC, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
+import dayjs from 'dayjs'
+import { Root } from '@radix-ui/react-form'
 
 import ModalBase, {
   ButtonPositionTypes,
@@ -11,8 +13,11 @@ import { AppearanceTypes } from 'components/molecules/Button/Button'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { useCreateProjectRequest } from 'hooks/requests/useProjectRequests'
-import { CreateProjectRequestPayload } from 'types/projectRequests'
+import { useCreateOutsourceRequest } from 'hooks/requests/useProjectRequests'
+import {
+  CreateOutsourceRequestPayload,
+  OutsourceRequestMode,
+} from 'types/projectRequests'
 
 import StepIndicator from './StepIndicator'
 import Step1VendorSelection from './Step1VendorSelection'
@@ -21,6 +26,7 @@ import Step3RelatedFiles from './Step3RelatedFiles'
 import Step4PriceAndVolume from './Step4PriceAndVolume'
 import {
   ComposeProjectRequestDraft,
+  WIZARD_STEPS,
   WizardStep,
   createEmptyDraft,
 } from './types'
@@ -41,7 +47,7 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
   const [draft, setDraft] =
     useState<ComposeProjectRequestDraft>(createEmptyDraft)
   const [files, setFiles] = useState<File[]>([])
-  const { createProjectRequest, isLoading } = useCreateProjectRequest()
+  const { createOutsourceRequest, isLoading } = useCreateOutsourceRequest()
 
   const updateDraft = useCallback(
     (patch: Partial<ComposeProjectRequestDraft>) =>
@@ -60,66 +66,95 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
     reset()
   }, [closeModal, reset])
 
+  const currentIndex = WIZARD_STEPS.indexOf(step)
+  const isLastStep = currentIndex === WIZARD_STEPS.length - 1
+  const isFirstStep = currentIndex === 0
+
   const canAdvance = (() => {
     if (step === WizardStep.VendorSelection) return draft.recipients.length > 0
     if (step === WizardStep.RequestConditions) {
       if (draft.cascade_mode) return draft.reaction_time_minutes !== undefined
-      return true
+      if (!draft.response_deadline_at) return false
+      return dayjs(draft.response_deadline_at).isAfter(dayjs())
     }
     return true
   })()
 
   const handleNext = useCallback(async () => {
-    if (step < WizardStep.PriceAndVolume) {
-      setStep((s) => (s + 1) as WizardStep)
+    if (!isLastStep) {
+      setStep(WIZARD_STEPS[currentIndex + 1])
       return
     }
 
-    const payload: CreateProjectRequestPayload = {
+    const mode = draft.cascade_mode
+      ? OutsourceRequestMode.Cascade
+      : OutsourceRequestMode.Parallel
+
+    let reactionTimeMinutes: number | undefined
+    if (mode === OutsourceRequestMode.Cascade) {
+      reactionTimeMinutes = draft.reaction_time_minutes
+    } else if (draft.response_deadline_at) {
+      const diffMs = dayjs(draft.response_deadline_at).diff(dayjs())
+      reactionTimeMinutes = Math.max(1, Math.round(diffMs / 60_000))
+    }
+
+    if (!reactionTimeMinutes) {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('requests.reaction_time_required'),
+      })
+      return
+    }
+
+    const fixedPrice =
+      draft.bulk_volume !== undefined && draft.bulk_price !== undefined
+        ? draft.bulk_volume * draft.bulk_price
+        : undefined
+
+    const payload: CreateOutsourceRequestPayload = {
       assignment_id: assignmentId,
-      cascade_mode: draft.cascade_mode,
-      reaction_time_minutes: draft.cascade_mode
-        ? draft.reaction_time_minutes
-        : undefined,
-      response_deadline_at: !draft.cascade_mode
-        ? draft.response_deadline_at
-        : undefined,
-      special_instructions: draft.special_instructions || undefined,
-      include_project_files: draft.include_project_files,
-      include_price: draft.include_price,
-      bulk_volume: draft.bulk_volume,
-      bulk_volume_unit: draft.bulk_volume_unit,
-      bulk_price: draft.bulk_price,
-      recipients: map(draft.recipients, (r, index) => ({
-        external_vendor_institution_id: r.external_vendor_institution_id,
-        priority: index,
-        price: r.price,
-        volume: r.volume,
+      mode,
+      reaction_time_minutes: reactionTimeMinutes,
+      offers: map(draft.recipients, (r) => ({
+        institution_id: r.institution_id,
       })),
-      file_ids: draft.file_ids,
+      special_instructions: draft.special_instructions || undefined,
+      include_source_files: draft.include_source_files,
+      include_price: draft.include_price,
+      fixed_price: fixedPrice,
+      request_files: files.length > 0 ? files : undefined,
     }
 
     try {
-      await createProjectRequest(payload)
+      await createOutsourceRequest(payload)
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
-        content: t('requests.accept_confirmation'),
+        content: t('requests.send_success'),
       })
       closeModal()
       reset()
     } catch (error) {
       showValidationErrorMessage(error)
     }
-  }, [step, assignmentId, draft, createProjectRequest, t, closeModal, reset])
+  }, [
+    isLastStep,
+    currentIndex,
+    assignmentId,
+    draft,
+    files,
+    createOutsourceRequest,
+    t,
+    closeModal,
+    reset,
+  ])
 
   const handleBack = useCallback(() => {
-    if (step > WizardStep.VendorSelection) {
-      setStep((s) => (s - 1) as WizardStep)
+    if (!isFirstStep) {
+      setStep(WIZARD_STEPS[currentIndex - 1])
     }
-  }, [step])
-
-  const isLastStep = step === WizardStep.PriceAndVolume
+  }, [isFirstStep, currentIndex])
 
   return (
     <ModalBase
@@ -132,8 +167,7 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
         {
           appearance: AppearanceTypes.Secondary,
           children: t('requests.cancel_button'),
-          onClick:
-            step === WizardStep.VendorSelection ? handleCancel : handleBack,
+          onClick: isFirstStep ? handleCancel : handleBack,
         },
         {
           appearance: AppearanceTypes.Primary,
@@ -141,31 +175,33 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
             ? t('requests.send_button')
             : t('requests.next_step'),
           onClick: handleNext,
-          disabled: !canAdvance,
+          disabled: !canAdvance || (isLoading && isLastStep),
           loading: isLoading && isLastStep,
         },
       ]}
     >
-      {step === WizardStep.VendorSelection && (
-        <Step1VendorSelection
-          recipients={draft.recipients}
-          onChange={(recipients) => updateDraft({ recipients })}
-        />
-      )}
-      {step === WizardStep.RequestConditions && (
-        <Step2RequestConditions draft={draft} onChange={updateDraft} />
-      )}
-      {step === WizardStep.RelatedFiles && (
-        <Step3RelatedFiles
-          draft={draft}
-          files={files}
-          onChange={updateDraft}
-          onFilesChange={setFiles}
-        />
-      )}
-      {step === WizardStep.PriceAndVolume && (
-        <Step4PriceAndVolume draft={draft} onChange={updateDraft} />
-      )}
+      <Root onSubmit={(e) => e.preventDefault()}>
+        {step === WizardStep.VendorSelection && (
+          <Step1VendorSelection
+            recipients={draft.recipients}
+            onChange={(recipients) => updateDraft({ recipients })}
+          />
+        )}
+        {step === WizardStep.RequestConditions && (
+          <Step2RequestConditions draft={draft} onChange={updateDraft} />
+        )}
+        {step === WizardStep.RelatedFiles && (
+          <Step3RelatedFiles
+            draft={draft}
+            files={files}
+            onChange={updateDraft}
+            onFilesChange={setFiles}
+          />
+        )}
+        {step === WizardStep.PriceAndVolume && (
+          <Step4PriceAndVolume draft={draft} onChange={updateDraft} />
+        )}
+      </Root>
     </ModalBase>
   )
 }

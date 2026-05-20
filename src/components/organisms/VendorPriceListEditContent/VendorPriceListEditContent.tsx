@@ -11,6 +11,7 @@ type VendorPriceListEditContentProps<TFormValues extends FieldValues> = {
   languageOptions?: { value: string; label: string }[]
   skillId?: string
   getValues: UseFormGetValues<TFormValues>
+  feesReadOnly?: boolean
 }
 
 function VendorPriceListEditContent<TFormValues extends FieldValues>({
@@ -21,6 +22,7 @@ function VendorPriceListEditContent<TFormValues extends FieldValues>({
   languageOptions,
   skillId,
   getValues,
+  feesReadOnly,
 }: VendorPriceListEditContentProps<TFormValues>) {
   return (
     <>
@@ -36,6 +38,7 @@ function VendorPriceListEditContent<TFormValues extends FieldValues>({
           languageDirectionKey={languageDirectionKey}
           skillId={skillId}
           getValues={getValues}
+          disabled={feesReadOnly}
         />
       </Root>
     </>

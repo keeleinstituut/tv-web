@@ -7,8 +7,7 @@
   background-color: variables.$color-background;
   border-radius: 5px;
   padding: variables.spacing(2);
-  margin-bottom: variables.spacing(6);
-  overflow: hidden;
+  margin: 0 variables.spacing(6) variables.spacing(6);
 }
 
 .step {
@@ -25,7 +24,21 @@
 .stepActive {
   background-color: variables.$color-primary;
   color: variables.$color-white;
-  padding-right: variables.spacing(5);
+  padding-right: variables.spacing(3);
+  margin-right: 14px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 0;
+    bottom: 0;
+    width: 14px;
+    background-color: variables.$color-primary;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+  }
 
   .stepNumber {
     color: variables.$color-dark;
@@ -48,16 +61,6 @@
 
 .stepLabel {
   white-space: nowrap;
-}
-
-.stepChevron {
-  position: absolute;
-  right: -10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  color: variables.$color-primary;
 }
 
 .stepBody {
@@ -95,38 +98,9 @@
   font-size: variables.$font-size-14;
 }
 
-.searchResults {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  list-style: none;
-  padding: variables.spacing(1) 0;
-  margin: 0;
-  background-color: variables.$color-white;
-  border: 1px solid variables.$color-border;
-  border-radius: 4px;
-  z-index: 5;
-  max-height: 240px;
-  overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.searchResultItem {
-  display: block;
-  width: 100%;
-  text-align: left;
-  background: none;
-  border: none;
-  padding: variables.spacing(2) variables.spacing(3);
-  font-size: 16px;
-  color: variables.$color-text-dark;
-  cursor: pointer;
-
-  &:hover,
-  &:focus {
-    background-color: variables.$color-background;
-  }
+.requiredMark {
+  color: variables.$color-error;
+  margin-left: variables.spacing(0.5);
 }
 
 .selectedList {
@@ -134,13 +108,7 @@
   flex-direction: column;
   border-top: 2px solid variables.$color-border;
   border-bottom: 2px solid variables.$color-border;
-}
-
-.emptyHint {
-  color: variables.$color-text-light;
-  font-size: variables.$font-size-14;
-  padding: variables.spacing(3) 0;
-  margin: 0;
+  min-height: 8px;
 }
 
 .vendorRow {
@@ -191,12 +159,6 @@
   color: variables.$color-dark;
 }
 
-.placeholderStep {
-  padding: variables.spacing(10);
-  color: variables.$color-text-light;
-  font-style: italic;
-}
-
 .formRow {
   display: flex;
   align-items: flex-start;
@@ -229,6 +191,43 @@
   > * {
     width: 258px;
   }
+}
+
+.fieldStack {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(1);
+
+  // Force the inner InputWrapper.Field and its wrapper div (e.g. .datePickerWrapper / .timePickerWrapper,
+  // which hard-code width: 125px in their own modules) to fill the stack width.
+  > div,
+  > div > div {
+    width: 100%;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+  }
+}
+
+.fieldStackWide {
+  width: 540px;
+}
+
+.textareaField {
+  width: 100%;
+
+  textarea {
+    width: 100%;
+    min-height: 144px;
+  }
+}
+
+// Tripled class for specificity to beat ToggleInput's deeply-nested
+// `.toggleInputContainer .toggleContainer .row` rule (specificity 0,3,0).
+.modalToggle.modalToggle.modalToggle > div {
+  margin-left: 0;
 }
 
 .reactionTimeSelect {

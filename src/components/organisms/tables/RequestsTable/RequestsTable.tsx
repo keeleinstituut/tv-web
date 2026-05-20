@@ -14,38 +14,39 @@ import Button, {
 } from 'components/molecules/Button/Button'
 import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import {
-  ProjectRequest,
-  ProjectRequestFilters,
-  ProjectRequestStatus,
+  OutsourceRequest,
+  OutsourceRequestFilters,
+  OutsourceRequestMode,
+  OutsourceRequestStatus,
 } from 'types/projectRequests'
+import {
+  PaginationFunctionType,
+  ResponseMetaTypes,
+  SortingFunctionType,
+} from 'types/collective'
 
 type RequestRow = {
   id: string
-  project_ext_id: string
-  requestor: string
-  requestor_email: string
-  project_type: string
-  language_pair: string
-  status: ProjectRequestStatus
-  response_deadline_at?: string
+  ext_id: string
+  status: OutsourceRequestStatus
+  mode: OutsourceRequestMode
+  reaction_time_minutes: number
+  deadline_at?: string | null
+  created_at: string
 }
 
 const columnHelper = createColumnHelper<RequestRow>()
 
 interface RequestsTableProps {
-  requests: ProjectRequest[]
+  requests: OutsourceRequest[]
   isLoading: boolean
-  paginationData?: import('types/collective').ResponseMetaTypes
-  filters: ProjectRequestFilters
-  onPaginationChange?: (
-    value?: import('types/collective').PaginationFunctionType
-  ) => void
-  onSortingChange?: (
-    value?: import('types/collective').SortingFunctionType
-  ) => void
+  paginationData?: ResponseMetaTypes
+  filters: OutsourceRequestFilters
+  onPaginationChange?: (value?: PaginationFunctionType) => void
+  onSortingChange?: (value?: SortingFunctionType) => void
 }
 
-const formatDeadline = (iso?: string) =>
+const formatDate = (iso?: string | null) =>
   iso ? dayjs(iso).format('DD.MM.YYYY HH:mm') : '-'
 
 const RequestsTable: FC<RequestsTableProps> = ({
@@ -60,13 +61,12 @@ const RequestsTable: FC<RequestsTableProps> = ({
     () =>
       map(requests, (r) => ({
         id: r.id,
-        project_ext_id: r.project_ext_id ?? '-',
-        requestor: r.requestor_institution_name ?? '-',
-        requestor_email: r.requestor_email ?? '-',
-        project_type: r.project_type_name ?? '-',
-        language_pair: r.language_pair ?? '-',
+        ext_id: r.id.slice(0, 8),
         status: r.status,
-        response_deadline_at: r.response_deadline_at,
+        mode: r.mode,
+        reaction_time_minutes: r.reaction_time_minutes,
+        deadline_at: r.deadline_at ?? undefined,
+        created_at: r.created_at,
       })),
     [requests]
   )
@@ -74,8 +74,8 @@ const RequestsTable: FC<RequestsTableProps> = ({
   const columns = useMemo(
     () =>
       [
-        columnHelper.accessor('project_ext_id', {
-          header: () => t('requests.table.project_id'),
+        columnHelper.accessor('ext_id', {
+          header: () => t('requests.table.request_id'),
           cell: ({ row }) => (
             <Button
               appearance={AppearanceTypes.Text}
@@ -83,31 +83,32 @@ const RequestsTable: FC<RequestsTableProps> = ({
               icon={ArrowRight}
               iconPositioning={IconPositioningTypes.Left}
               href={`/projects/requests/${row.original.id}`}
-              ariaLabel={t('requests.table.project_id')}
+              ariaLabel={t('requests.table.request_id')}
             >
-              {row.original.project_ext_id}
+              {row.original.ext_id}
             </Button>
           ),
         }),
-        columnHelper.accessor('requestor', {
-          header: () => t('requests.table.requestor'),
+        columnHelper.accessor('mode', {
+          header: () => t('requests.table.mode'),
+          cell: ({ getValue }) => t(`requests.mode.${getValue()}`),
         }),
-        columnHelper.accessor('requestor_email', {
-          header: () => t('requests.table.requestor_email'),
-        }),
-        columnHelper.accessor('project_type', {
-          header: () => t('requests.table.project_type'),
-        }),
-        columnHelper.accessor('language_pair', {
-          header: () => t('requests.table.language_pair'),
+        columnHelper.accessor('reaction_time_minutes', {
+          header: () => t('requests.table.reaction_time'),
+          cell: ({ getValue }) =>
+            t('requests.reaction_time_minutes', { count: getValue() }),
         }),
         columnHelper.accessor('status', {
           header: () => t('requests.table.status'),
-          cell: ({ getValue }) => t(`requests.status.${getValue()}`),
+          cell: ({ getValue }) => t(`requests.request_status.${getValue()}`),
         }),
-        columnHelper.accessor('response_deadline_at', {
+        columnHelper.accessor('deadline_at', {
           header: () => t('requests.table.response_deadline'),
-          cell: ({ getValue }) => formatDeadline(getValue()),
+          cell: ({ getValue }) => formatDate(getValue()),
+        }),
+        columnHelper.accessor('created_at', {
+          header: () => t('requests.table.created_at'),
+          cell: ({ getValue }) => formatDate(getValue()),
         }),
       ] as ColumnDef<RequestRow>[],
     [t]

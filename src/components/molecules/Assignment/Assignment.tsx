@@ -1,5 +1,5 @@
 import { FC, useCallback } from 'react'
-import { map } from 'lodash'
+import { includes, map, size, some } from 'lodash'
 import { SubProjectFeatures } from 'types/projects'
 import { AssignmentStatus, AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
@@ -14,16 +14,18 @@ import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import AssignmentCandidatesSection from 'components/molecules/AssignmentCandidatesSection/AssignmentCandidatesSection'
+import ExternalVendorRequestsSection from 'components/molecules/ExternalVendorRequestsSection/ExternalVendorRequestsSection'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from '../Notification/Notification'
 import { useDeleteAssignment } from 'hooks/requests/useAssignments'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { useSubProjectCache } from 'hooks/requests/useProjects'
+import { useFetchAssignmentOutsourceRequests } from 'hooks/requests/useProjectRequests'
+import { OutsourceRequestStatus } from 'types/projectRequests'
 import AssignmentForm from 'components/organisms/forms/AssignmentForm/AssignmentForm'
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
-import { includes, size } from 'lodash'
 
 dayjs.extend(utc)
 
@@ -59,6 +61,12 @@ const Assignment: FC<AssignmentProps> = ({
   const { userPrivileges } = useAuth()
   const canManageRequests = includes(userPrivileges, Privileges.ManageRequests)
   const hasInHouseVendorsAssigned = size(candidates) > 0
+  const { requests: outsourceRequests } =
+    useFetchAssignmentOutsourceRequests(id)
+  const hasActiveOutsourceRequest = some(
+    outsourceRequests,
+    (r) => r.status === OutsourceRequestStatus.Active
+  )
 
   const { deleteAssignment, isLoading: isDeletingAssignment } =
     useDeleteAssignment({
@@ -143,30 +151,31 @@ const Assignment: FC<AssignmentProps> = ({
 
         <span className={classes.assignmentId}>{ext_id}</span>
 
-        <Button
-          size={SizeTypes.S}
-          className={classes.addButton}
-          onClick={handleOpenVendorsModal}
-          disabled={
-            job_key === SubProjectFeatures.JobOverview || isAssignmentFinished
-          }
-        >
-          {t('button.choose_from_database')}
-        </Button>
-        <Button
-          size={SizeTypes.S}
-          appearance={AppearanceTypes.Secondary}
-          className={classes.addButton}
-          hidden={!canManageRequests}
-          onClick={handleOpenComposeRequestModal}
-          disabled={
-            job_key === SubProjectFeatures.JobOverview ||
-            isAssignmentFinished ||
-            hasInHouseVendorsAssigned
-          }
-        >
-          {t('requests.compose_button')}
-        </Button>
+        <div className={classes.addButtonRow}>
+          <Button
+            size={SizeTypes.S}
+            onClick={handleOpenVendorsModal}
+            disabled={
+              job_key === SubProjectFeatures.JobOverview || isAssignmentFinished
+            }
+          >
+            {t('button.choose_from_database')}
+          </Button>
+          <Button
+            size={SizeTypes.S}
+            appearance={AppearanceTypes.Secondary}
+            hidden={!canManageRequests}
+            onClick={handleOpenComposeRequestModal}
+            disabled={
+              job_key === SubProjectFeatures.JobOverview ||
+              isAssignmentFinished ||
+              hasInHouseVendorsAssigned ||
+              hasActiveOutsourceRequest
+            }
+          >
+            {t('requests.compose_button')}
+          </Button>
+        </div>
         <AssignmentForm
           id={id}
           sub_project_id={sub_project_id}
@@ -188,6 +197,10 @@ const Assignment: FC<AssignmentProps> = ({
             isEditable,
             assignmentStatus: status,
           }}
+        />
+        <ExternalVendorRequestsSection
+          requests={outsourceRequests}
+          isAssignmentFinished={isAssignmentFinished}
         />
       </div>
       <div className={classes.formButtons}>

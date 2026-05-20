@@ -1,5 +1,6 @@
 import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import classNames from 'classnames'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 
@@ -109,8 +110,10 @@ const Step2RequestConditions: FC<Step2Props> = ({ draft, onChange }) => {
           <ToggleInput
             name="cascade_mode"
             label=""
+            ariaLabel={t('requests.cascade_mode_label')}
             value={draft.cascade_mode}
             onChange={handleCascadeChange}
+            className={classes.modalToggle}
           />
         </div>
       </div>
@@ -118,23 +121,29 @@ const Step2RequestConditions: FC<Step2Props> = ({ draft, onChange }) => {
       {draft.cascade_mode ? (
         <div className={classes.formRow}>
           <span className={classes.rowLabel}>
-            {t('requests.reaction_time')}
+            {t('requests.response_deadline')}
           </span>
           <div className={classes.rowContent}>
-            <div className={classes.reactionTimeSelect}>
-              <SelectionControlsInput
-                name="reaction_time_minutes"
-                ariaLabel={t('requests.reaction_time')}
-                placeholder={t('requests.reaction_time')}
-                value={
-                  draft.reaction_time_minutes !== undefined
-                    ? String(draft.reaction_time_minutes)
-                    : ''
-                }
-                options={reactionTimeOptions}
-                onChange={handleReactionTimeChange}
-                rules={{ required: true }}
-              />
+            <div className={classes.fieldStack}>
+              <span className={classes.fieldLabel}>
+                {t('requests.reaction_time_label')}
+                <span className={classes.requiredMark}>*</span>
+              </span>
+              <div className={classes.reactionTimeSelect}>
+                <SelectionControlsInput
+                  name="reaction_time_minutes"
+                  ariaLabel={t('requests.reaction_time_label')}
+                  placeholder={t('requests.reaction_time')}
+                  value={
+                    draft.reaction_time_minutes !== undefined
+                      ? String(draft.reaction_time_minutes)
+                      : ''
+                  }
+                  options={reactionTimeOptions}
+                  onChange={handleReactionTimeChange}
+                  rules={{ required: true }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -145,20 +154,29 @@ const Step2RequestConditions: FC<Step2Props> = ({ draft, onChange }) => {
           </span>
           <div className={classes.rowContent}>
             <div className={classes.dateTimeGroup}>
-              <DatePickerInput
-                name="deadline_date"
-                ariaLabel={t('requests.deadline_date')}
-                label={t('requests.deadline_date')}
-                value={deadlineDate}
-                onChange={handleDateChange}
-              />
-              <TimePickerInput
-                name="deadline_time"
-                ariaLabel={t('requests.deadline_time')}
-                label={t('requests.deadline_time')}
-                value={deadlineTime}
-                onChange={handleTimeChange}
-              />
+              <div className={classes.fieldStack}>
+                <span className={classes.fieldLabel}>
+                  {t('requests.deadline_date')}
+                </span>
+                <DatePickerInput
+                  name="deadline_date"
+                  ariaLabel={t('requests.deadline_date')}
+                  placeholder="kk.pp.aaaa"
+                  value={deadlineDate}
+                  onChange={handleDateChange}
+                />
+              </div>
+              <div className={classes.fieldStack}>
+                <span className={classes.fieldLabel}>
+                  {t('requests.deadline_time')}
+                </span>
+                <TimePickerInput
+                  name="deadline_time"
+                  ariaLabel={t('requests.deadline_time')}
+                  value={deadlineTime}
+                  onChange={handleTimeChange}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -169,16 +187,23 @@ const Step2RequestConditions: FC<Step2Props> = ({ draft, onChange }) => {
           {t('requests.special_instructions')}
         </span>
         <div className={classes.rowContent}>
-          <TextInput
-            name="special_instructions"
-            ariaLabel={t('requests.special_instructions_label')}
-            label={t('requests.special_instructions_label')}
-            placeholder={t('requests.special_instructions_label')}
-            value={draft.special_instructions}
-            onChange={handleInstructionsChange}
-            isTextarea
-            maxLength={MAX_SPECIAL_INSTRUCTIONS}
-          />
+          <div
+            className={classNames(classes.fieldStack, classes.fieldStackWide)}
+          >
+            <span className={classes.fieldLabel}>
+              {t('requests.special_instructions_label')}
+            </span>
+            <TextInput
+              name="special_instructions"
+              ariaLabel={t('requests.special_instructions_label')}
+              placeholder={t('requests.special_instructions_label')}
+              value={draft.special_instructions}
+              onChange={handleInstructionsChange}
+              isTextarea
+              maxLength={MAX_SPECIAL_INSTRUCTIONS}
+              className={classes.textareaField}
+            />
+          </div>
           <p className={classes.charCounter}>
             {t('requests.character_count', {
               count: draft.special_instructions.length,

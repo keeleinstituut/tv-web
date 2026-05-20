@@ -1,9 +1,10 @@
-import { FC, useMemo, useState, useCallback } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { filter, map } from 'lodash'
+import { filter, find, map } from 'lodash'
 import {
   DndContext,
   DragEndEvent,
+  KeyboardSensor,
   PointerSensor,
   closestCenter,
   useSensor,
@@ -12,12 +13,12 @@ import {
 import {
   SortableContext,
   arrayMove,
+  sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 
-import { useFetchExternalVendorInstitutions } from 'hooks/requests/useProjectRequests'
-import { ExternalVendorInstitution } from 'types/projectRequests'
-import TextInput from 'components/molecules/TextInput/TextInput'
+import { useFetchInstitutionPartners } from 'hooks/requests/useProjectRequests'
+import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 
 import classes from './classes.module.scss'
 import { DraftRecipient } from './types'
@@ -33,53 +34,61 @@ const Step1VendorSelection: FC<Step1VendorSelectionProps> = ({
   onChange,
 }) => {
   const { t } = useTranslation()
-  const { institutions } = useFetchExternalVendorInstitutions()
-  const [search, setSearch] = useState('')
+  const { partners } = useFetchInstitutionPartners({ per_page: 50 })
+
+  const partnerOptions = useMemo(
+    () =>
+      map(partners, (p) => ({
+        id: p.partner_institution_id,
+        name:
+          p.partner_institution?.name ??
+          p.partner_institution?.short_name ??
+          p.partner_institution_id,
+      })),
+    [partners]
+  )
 
   const selectedIds = useMemo(
-    () => new Set(map(recipients, 'external_vendor_institution_id')),
+    () => new Set(map(recipients, 'institution_id')),
     [recipients]
   )
 
-  const availableOptions = useMemo(() => {
-    const lowered = search.trim().toLowerCase()
-    return filter(
-      institutions,
-      (inst) =>
-        !selectedIds.has(inst.id) &&
-        (!lowered || inst.name.toLowerCase().includes(lowered))
-    )
-  }, [institutions, selectedIds, search])
+  const dropdownOptions = useMemo(
+    () =>
+      filter(partnerOptions, (p) => !selectedIds.has(p.id)).map((p) => ({
+        label: p.name,
+        value: p.id,
+      })),
+    [partnerOptions, selectedIds]
+  )
 
   const handleAdd = useCallback(
-    (institution: ExternalVendorInstitution) => {
+    (value: string | string[]) => {
+      const id = Array.isArray(value) ? value[0] : value
+      if (!id) return
+      const partner = find(partnerOptions, { id })
+      if (!partner) return
       onChange([
         ...recipients,
         {
-          external_vendor_institution_id: institution.id,
-          institution_name: institution.name,
-          email: institution.email,
+          institution_id: partner.id,
+          institution_name: partner.name,
         },
       ])
-      setSearch('')
     },
-    [onChange, recipients]
+    [partnerOptions, onChange, recipients]
   )
 
   const handleRemove = useCallback(
     (institutionId: string) => {
-      onChange(
-        filter(
-          recipients,
-          (r) => r.external_vendor_institution_id !== institutionId
-        )
-      )
+      onChange(filter(recipients, (r) => r.institution_id !== institutionId))
     },
     [onChange, recipients]
   )
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
   const handleDragEnd = useCallback(
@@ -87,11 +96,9 @@ const Step1VendorSelection: FC<Step1VendorSelectionProps> = ({
       const { active, over } = event
       if (!over || active.id === over.id) return
       const oldIndex = recipients.findIndex(
-        (r) => r.external_vendor_institution_id === active.id
+        (r) => r.institution_id === active.id
       )
-      const newIndex = recipients.findIndex(
-        (r) => r.external_vendor_institution_id === over.id
-      )
+      const newIndex = recipients.findIndex((r) => r.institution_id === over.id)
       if (oldIndex < 0 || newIndex < 0) return
       onChange(arrayMove(recipients, oldIndex, newIndex))
     },
@@ -106,64 +113,49 @@ const Step1VendorSelection: FC<Step1VendorSelectionProps> = ({
       </p>
 
       <div className={classes.fieldGroup}>
-        <label className={classes.fieldLabel}>
+        <span className={classes.fieldLabel}>
           {t('requests.select_organisation')}
-        </label>
-        <TextInput
-          name="external-vendor-search"
-          ariaLabel={t('requests.search_placeholder')}
+        </span>
+        <SelectionControlsInput
+          name="external-vendor-picker"
+          ariaLabel={t('requests.select_organisation')}
           placeholder={t('requests.search_placeholder')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          isSearch
+          value=""
+          options={dropdownOptions}
+          onChange={handleAdd}
+          showSearch
+          usePortal
         />
-        {search && availableOptions.length > 0 && (
-          <ul className={classes.searchResults}>
-            {map(availableOptions, (institution) => (
-              <li key={institution.id}>
-                <button
-                  type="button"
-                  className={classes.searchResultItem}
-                  onClick={() => handleAdd(institution)}
-                >
-                  {institution.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
 
       <div className={classes.fieldGroup}>
-        <label className={classes.fieldLabel}>
+        <span className={classes.fieldLabel}>
           {t('requests.selected_external_vendors')}
-        </label>
-        <div className={classes.selectedList}>
-          {recipients.length === 0 && (
-            <p className={classes.emptyHint}>
-              {t('requests.search_placeholder')}
-            </p>
-          )}
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={map(recipients, 'external_vendor_institution_id')}
-              strategy={verticalListSortingStrategy}
+        </span>
+        {recipients.length > 0 && (
+          <div className={classes.selectedList}>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+              autoScroll={false}
             >
-              {map(recipients, (recipient) => (
-                <SortableVendorItem
-                  key={recipient.external_vendor_institution_id}
-                  id={recipient.external_vendor_institution_id}
-                  name={recipient.institution_name}
-                  onRemove={handleRemove}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
-        </div>
+              <SortableContext
+                items={map(recipients, 'institution_id')}
+                strategy={verticalListSortingStrategy}
+              >
+                {map(recipients, (recipient) => (
+                  <SortableVendorItem
+                    key={recipient.institution_id}
+                    id={recipient.institution_id}
+                    name={recipient.institution_name}
+                    onRemove={handleRemove}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          </div>
+        )}
       </div>
     </div>
   )
