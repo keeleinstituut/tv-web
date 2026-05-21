@@ -50,9 +50,9 @@ export enum Privileges {
   UseMachineTranslationETranslation = 'USE_MACHINE_TRANSLATION_ETRANSLATION',
   UseMachineTranslationAzureOpenAI = 'USE_MACHINE_TRANSLATION_AZURE_OPENAI',
 
-  ManageRequests = 'MANAGE_EXTERNAL_TRANSLATION_REQUEST',
-  ViewRequests = 'VIEW_EXTERNAL_TRANSLATION_REQUEST',
-  RespondToRequests = 'RESPOND_EXTERNAL_TRANSLATION_REQUEST',
+  ManageRequests = 'MANAGE_OUTSOURCE_REQUEST',
+  ViewRequests = 'VIEW_OUTSOURCE_REQUEST',
+  RespondToRequests = 'RESPOND_OUTSOURCE_REQUEST',
 
   ManageExternalPartner = 'MANAGE_EXTERNAL_PARTNER',
   ViewExternalPartner = 'VIEW_EXTERNAL_PARTNER',

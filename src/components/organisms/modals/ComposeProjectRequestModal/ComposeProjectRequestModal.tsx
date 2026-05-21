@@ -36,12 +36,14 @@ export interface ComposeProjectRequestModalProps {
   isModalOpen?: boolean
   closeModal: () => void
   assignmentId: string
+  sub_project_id: string
 }
 
 const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
   isModalOpen,
   closeModal,
   assignmentId,
+  sub_project_id,
 }) => {
   const { t } = useTranslation()
   const [step, setStep] = useState<WizardStep>(WizardStep.VendorSelection)
@@ -75,8 +77,10 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
     if (step === WizardStep.VendorSelection) return draft.recipients.length > 0
     if (step === WizardStep.RequestConditions) {
       if (draft.cascade_mode) return draft.reaction_time_minutes !== undefined
-      if (!draft.response_deadline_at) return false
-      return dayjs(draft.response_deadline_at).isAfter(dayjs())
+      return (
+        !!draft.response_deadline_at &&
+        dayjs(draft.response_deadline_at).isAfter(dayjs())
+      )
     }
     return true
   })()
@@ -97,15 +101,6 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
     } else if (draft.response_deadline_at) {
       const diffMs = dayjs(draft.response_deadline_at).diff(dayjs())
       reactionTimeMinutes = Math.max(1, Math.round(diffMs / 60_000))
-    }
-
-    if (!reactionTimeMinutes) {
-      showNotification({
-        type: NotificationTypes.Error,
-        title: t('notification.error'),
-        content: t('requests.reaction_time_required'),
-      })
-      return
     }
 
     const payload: CreateOutsourceRequestPayload = {
@@ -198,7 +193,12 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
           />
         )}
         {step === WizardStep.PriceAndVolume && (
-          <Step4PriceAndVolume draft={draft} onChange={updateDraft} />
+          <Step4PriceAndVolume
+            draft={draft}
+            onChange={updateDraft}
+            assignmentId={assignmentId}
+            sub_project_id={sub_project_id}
+          />
         )}
       </Root>
     </ModalBase>

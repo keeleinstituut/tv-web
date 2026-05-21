@@ -1,5 +1,4 @@
 import { OutsourceRequestPriceMode, ReactionTimeMinutes } from 'types/outsourceRequests'
-import { VolumeUnits } from 'types/assignments'
 
 export interface DraftRecipient {
   institution_id: string
@@ -15,8 +14,6 @@ export interface ComposeProjectRequestDraft {
   include_source_files: boolean
   price_mode: OutsourceRequestPriceMode
   price?: number
-  bulk_volume?: number
-  bulk_volume_unit?: VolumeUnits
 }
 
 export const createEmptyDraft = (): ComposeProjectRequestDraft => ({
@@ -27,7 +24,6 @@ export const createEmptyDraft = (): ComposeProjectRequestDraft => ({
   special_instructions: '',
   include_source_files: true,
   price_mode: OutsourceRequestPriceMode.PricelistBased,
-  bulk_volume: undefined,
 })
 
 export enum WizardStep {

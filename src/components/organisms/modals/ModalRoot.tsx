@@ -40,7 +40,7 @@ import { EmoSchedulesModalProps } from './EmoSchedulesModal/EmoSchedulesModal'
 import { VendorAbsencesModalProps } from './VendorAbsencesModal/VendorAbsencesModal'
 import { ComposeProjectRequestModalProps } from './ComposeProjectRequestModal/ComposeProjectRequestModal'
 import { ConfirmDeclineRequestModalProps } from './ConfirmDeclineRequestModal/ConfirmDeclineRequestModal'
-import { SelectWinningVendorModalProps } from './SelectWinningVendorModal/SelectWinningVendorModal'
+import { SelectOutsourceOfferModalProps } from './SelectOutsourceOfferModal/SelectOutsourceOfferModal'
 import { ConfirmCancelRequestModalProps } from './ConfirmCancelRequestModal/ConfirmCancelRequestModal'
 import { ViewVendorResponseModalProps } from './ViewVendorResponseModal/ViewVendorResponseModal'
 
@@ -164,8 +164,8 @@ const ConfirmDeclineRequestModal = lazy(
   () => import('./ConfirmDeclineRequestModal/ConfirmDeclineRequestModal')
 )
 
-const SelectWinningVendorModal = lazy(
-  () => import('./SelectWinningVendorModal/SelectWinningVendorModal')
+const SelectOutsourceOfferModal = lazy(
+  () => import('./SelectOutsourceOfferModal/SelectOutsourceOfferModal')
 )
 
 const ConfirmCancelRequestModal = lazy(
@@ -211,7 +211,7 @@ export enum ModalTypes {
   VendorAbsences = 'vendorAbsences',
   ComposeProjectRequest = 'composeProjectRequest',
   ConfirmDeclineRequest = 'confirmDeclineRequest',
-  SelectWinningVendor = 'selectWinningVendor',
+  SelectOutsourceOffer = 'selectOutsourceOffer',
   ConfirmCancelRequest = 'confirmCancelRequest',
   ViewVendorResponse = 'viewVendorResponse',
 }
@@ -251,7 +251,7 @@ type ModalPropTypes =
   | Omit<VendorAbsencesModalProps, 'closeModal'>
   | Omit<ComposeProjectRequestModalProps, 'closeModal'>
   | Omit<ConfirmDeclineRequestModalProps, 'closeModal'>
-  | Omit<SelectWinningVendorModalProps, 'closeModal'>
+  | Omit<SelectOutsourceOfferModalProps, 'closeModal'>
   | Omit<ConfirmCancelRequestModalProps, 'closeModal'>
   | Omit<ViewVendorResponseModalProps, 'closeModal'>
 
@@ -292,7 +292,7 @@ const MODALS = {
   [ModalTypes.VendorAbsences]: VendorAbsencesModal,
   [ModalTypes.ComposeProjectRequest]: ComposeProjectRequestModal,
   [ModalTypes.ConfirmDeclineRequest]: ConfirmDeclineRequestModal,
-  [ModalTypes.SelectWinningVendor]: SelectWinningVendorModal,
+  [ModalTypes.SelectOutsourceOffer]: SelectOutsourceOfferModal,
   [ModalTypes.ConfirmCancelRequest]: ConfirmCancelRequestModal,
   [ModalTypes.ViewVendorResponse]: ViewVendorResponseModal,
 }

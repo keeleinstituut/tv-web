@@ -100,7 +100,7 @@ export interface OutsourceRequest {
 export interface CreateOutsourceRequestPayload {
   assignment_id: string
   mode: OutsourceRequestMode
-  reaction_time_minutes: number
+  reaction_time_minutes?: number
   offers: Array<{ institution_id: string }>
   special_instructions?: string
   include_source_files?: boolean

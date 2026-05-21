@@ -343,3 +343,65 @@
   font-size: 16px;
   pointer-events: none;
 }
+
+.inlineVolumeEditor {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(1);
+}
+
+.inlineVolumeRow {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(2);
+  padding: variables.spacing(1) 0;
+  font-size: 16px;
+  color: variables.$color-text-dark;
+}
+
+.inlineEditButton,
+.inlineDeleteButton {
+  display: flex;
+  align-items: center;
+  padding: variables.spacing(1);
+  color: variables.$color-dark;
+  background: none;
+  border: none;
+  cursor: pointer;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.inlineConfirmRow {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(4);
+  padding: variables.spacing(2) 0;
+}
+
+.inlineConfirmText {
+  font-size: 14px;
+  color: variables.$color-text-dark;
+}
+
+.inlineFormRow {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(3);
+  padding: variables.spacing(3) 0;
+  border-top: 1px solid variables.$color-border;
+  border-bottom: 1px solid variables.$color-border;
+}
+
+.inlineActionButtons {
+  display: flex;
+  gap: variables.spacing(3);
+}
+
+.addVolumeButton {
+  align-self: flex-start;
+  margin-top: variables.spacing(1);
+}

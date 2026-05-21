@@ -124,7 +124,7 @@ export const useCreateOutsourceRequest = () => {
           form.append('special_instructions', rest.special_instructions)
         }
         if (rest.include_source_files !== undefined) {
-          form.append('include_source_files', String(rest.include_source_files))
+          form.append('include_source_files', rest.include_source_files ? '1' : '0')
         }
         form.append('price_mode', rest.price_mode)
         if (rest.price !== undefined) {

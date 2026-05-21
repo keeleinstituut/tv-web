@@ -3,25 +3,18 @@ import { useTranslation } from 'react-i18next'
 
 import TextInput from 'components/molecules/TextInput/TextInput'
 import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-import { VolumeUnits } from 'types/assignments'
 import { OutsourceRequestPriceMode } from 'types/outsourceRequests'
-import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
 
 import classes from './classes.module.scss'
 import { ComposeProjectRequestDraft } from './types'
+import InlineVolumeEditor from './InlineVolumeEditor'
 
 interface Step4Props {
   draft: ComposeProjectRequestDraft
   onChange: (patch: Partial<ComposeProjectRequestDraft>) => void
+  assignmentId: string
+  sub_project_id: string
 }
-
-const VOLUME_UNIT_OPTIONS: VolumeUnits[] = [
-  VolumeUnits.CHARACTERS,
-  VolumeUnits.WORDS,
-  VolumeUnits.PAGES,
-  VolumeUnits.MINUTES,
-  VolumeUnits.HOURS,
-]
 
 const PRICE_MODE_OPTIONS = [
   OutsourceRequestPriceMode.PricelistBased,
@@ -35,23 +28,13 @@ const parseOptionalNumber = (raw: string): number | undefined => {
   return Number.isFinite(num) ? num : undefined
 }
 
-const Step4PriceAndVolume: FC<Step4Props> = ({ draft, onChange }) => {
+const Step4PriceAndVolume: FC<Step4Props> = ({
+  draft,
+  onChange,
+  assignmentId,
+  sub_project_id,
+}) => {
   const { t } = useTranslation()
-
-  const handleQuantityChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      onChange({ bulk_volume: parseOptionalNumber(e.target.value) })
-    },
-    [onChange]
-  )
-
-  const handleUnitChange = useCallback(
-    (value: string | string[]) => {
-      const v = Array.isArray(value) ? value[0] : value
-      onChange({ bulk_volume_unit: v ? (v as VolumeUnits) : undefined })
-    },
-    [onChange]
-  )
 
   const handlePriceModeChange = useCallback(
     (value: string | string[]) => {
@@ -72,11 +55,6 @@ const Step4PriceAndVolume: FC<Step4Props> = ({ draft, onChange }) => {
     },
     [onChange]
   )
-
-  const unitOptions = VOLUME_UNIT_OPTIONS.map((unit) => ({
-    label: t(`label.${apiTypeToKey(unit)}`),
-    value: unit,
-  }))
 
   const priceModeOptions = PRICE_MODE_OPTIONS.map((mode) => ({
     label: t(`requests.price_mode.${mode}`),
@@ -126,43 +104,19 @@ const Step4PriceAndVolume: FC<Step4Props> = ({ draft, onChange }) => {
         </div>
       )}
 
-      <div className={classes.formRow}>
-        <span className={classes.rowLabel}>
-          {t('requests.task_volume_label')}
-        </span>
-        <div className={classes.rowContent}>
-          <div className={classes.dateTimeGroup}>
-            <div className={classes.fieldStack}>
-              <span className={classes.fieldLabel}>
-                {t('requests.quantity')}
-              </span>
-              <TextInput
-                name="bulk_volume_quantity"
-                ariaLabel={t('requests.quantity')}
-                type="number"
-                min={0}
-                value={
-                  draft.bulk_volume !== undefined
-                    ? String(draft.bulk_volume)
-                    : ''
-                }
-                onChange={handleQuantityChange}
-              />
-            </div>
-            <div className={classes.fieldStack}>
-              <span className={classes.fieldLabel}>{t('requests.unit')}</span>
-              <SelectionControlsInput
-                name="bulk_volume_unit"
-                ariaLabel={t('requests.unit')}
-                placeholder={t('requests.unit')}
-                value={draft.bulk_volume_unit ?? ''}
-                options={unitOptions}
-                onChange={handleUnitChange}
-              />
-            </div>
+      {draft.price_mode !== OutsourceRequestPriceMode.FixedPrice && (
+        <div className={classes.formRow}>
+          <span className={classes.rowLabel}>
+            {t('requests.task_volume_label')}
+          </span>
+          <div className={classes.rowContent}>
+            <InlineVolumeEditor
+              assignmentId={assignmentId}
+              sub_project_id={sub_project_id}
+            />
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
