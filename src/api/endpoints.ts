@@ -150,6 +150,12 @@ export const endpoints = {
     translationOrder(`outsource-requests/${id}/accept`),
   OUTSOURCE_REQUEST_DECLINE: (id: string) =>
     translationOrder(`outsource-requests/${id}/decline`),
+  OUTSOURCE_OFFERS: translationOrder('outsource-offers'),
+  OUTSOURCE_OFFER: (id: string) => translationOrder(`outsource-offers/${id}`),
+  OUTSOURCE_OFFER_ACCEPT: (id: string) =>
+    translationOrder(`outsource-offers/${id}/accept`),
+  OUTSOURCE_OFFER_DECLINE: (id: string) =>
+    translationOrder(`outsource-offers/${id}/decline`),
   INSTITUTION_PARTNERS: translationOrder('institution-partners'),
 }
 

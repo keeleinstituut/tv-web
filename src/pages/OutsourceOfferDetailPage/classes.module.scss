@@ -1,0 +1,174 @@
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
+
+.statusBadge {
+  @include mixins.statusTagStyle(variables.$color-text-dark);
+  font-size: variables.$font-size-14;
+}
+
+.expandableSpacing {
+  margin-top: variables.spacing(4);
+}
+
+.expandableTitle {
+  @include mixins.h3TextStyle;
+  color: variables.$color-input-main;
+}
+
+// Matches ProjectDetails .viewModeWrapper — connects visually to the expandable header card
+.contentWrapper {
+  background: variables.$color-white;
+  border-radius: 0 0 variables.$border-radius-4 variables.$border-radius-4;
+  box-shadow: 0 0 20px 0 rgba(0, 39, 69, 0.10);
+  padding: variables.spacing(6);
+}
+
+// Two-column wrapper inside Container 1
+.requestDetailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: variables.spacing(10);
+  padding: variables.spacing(4);
+}
+
+// Manager section — matches ProjectDetails .peopleContainer in viewModeWrapper
+.managerContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: variables.spacing(10);
+  padding: variables.spacing(4);
+}
+
+// Details + files section — matches ProjectDetails .detailsContainer in viewModeWrapper
+.projectDetailsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: variables.spacing(10);
+  padding: variables.spacing(4);
+  margin-top: variables.spacing(2);
+
+  h2 {
+    @include mixins.h3TextStyle;
+    color: variables.$color-primary;
+    margin-bottom: variables.spacing(4);
+  }
+}
+
+// Grid for DetailsRow label/value pairs — matches PersonSection .column.adjustedLayout
+.detailsColumn {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 44px;
+  grid-auto-rows: minmax(24px, auto);
+  grid-column-gap: variables.spacing(2.5);
+  grid-row-gap: variables.spacing(2);
+  justify-items: left;
+  align-items: center;
+
+  h3 {
+    grid-column: 1 / 3;
+    @include mixins.h3TextStyle;
+    color: variables.$color-primary;
+    margin-bottom: variables.spacing(2);
+    align-self: start;
+  }
+}
+
+.labelClass {
+  justify-self: unset;
+}
+
+.boldText {
+  font-weight: variables.$font-weight-bold;
+}
+
+// Response form — single-column stacked layout (label above input)
+.responseColumn {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-row-gap: variables.spacing(2);
+}
+
+.responseLabel {
+  color: variables.$color-text-dark;
+  font-size: variables.$font-size-14;
+  margin-top: variables.spacing(4);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: variables.spacing(3);
+  padding-top: variables.spacing(4);
+}
+
+.responseField {
+  display: flex;
+  align-items: center;
+  width: 400px;
+  height: 40px;
+  border: 1px solid variables.$color-input-border;
+  border-radius: 4px;
+  background: variables.$color-white;
+
+  &:focus-within {
+    border-color: variables.$color-primary;
+  }
+
+  > div {
+    flex: 1;
+    height: 100%;
+    min-width: 0;
+
+    > div {
+      flex: 1;
+    }
+  }
+
+  input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border: none;
+    }
+  }
+}
+
+.priceSuffix {
+  padding: 0 variables.spacing(2.5);
+  color: variables.$color-text-dark;
+  font-size: 16px;
+  pointer-events: none;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.commentField {
+  width: 100%;
+
+  > div {
+    flex: 1;
+    min-width: 0;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 240px;
+    box-sizing: border-box;
+  }
+}
+
+.notFound {
+  color: variables.$color-text;
+  font-size: 16px;
+  margin: 0;
+}

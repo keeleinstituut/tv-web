@@ -7,6 +7,7 @@ import { useFetchTranslationMemory } from 'hooks/requests/useTranslationMemories
 import { includes } from 'lodash'
 import { useFetchHistoryTask, useFetchTask } from 'hooks/requests/useTasks'
 import { useFetchProject } from 'hooks/requests/useProjects'
+import { useFetchOutsourceOffer } from 'hooks/requests/useProjectRequests'
 
 interface idTypes {
   vendorId?: string
@@ -15,6 +16,7 @@ interface idTypes {
   memoryId?: string
   taskId?: string
   isHistoryView?: string
+  offerId?: string
 }
 
 const BreadcrumbsTitle = <ParamKey extends string = string>({
@@ -22,10 +24,11 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
 }: BreadcrumbComponentProps<ParamKey>) => {
   const { t } = useTranslation()
 
-  const { vendorId, userId, projectId, memoryId, taskId }: idTypes =
+  const { vendorId, userId, projectId, memoryId, taskId, offerId }: idTypes =
     match?.params || {}
 
   const { vendor } = useFetchVendor({ id: vendorId })
+  const { offer } = useFetchOutsourceOffer(offerId)
   const { user } = useFetchUser({ id: userId })
   const { project } = useFetchProject({ id: projectId })
   const { translationMemory } = useFetchTranslationMemory({
@@ -69,6 +72,9 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
             : task?.assignment?.ext_id,
         }
       }
+      case !!offerId: {
+        return { name: offer?.outsource_request?.assignment?.ext_id }
+      }
 
       default: {
         return {}
@@ -91,6 +97,8 @@ const BreadcrumbsTitle = <ParamKey extends string = string>({
     isHistoryTask,
     historyTask?.assignment?.ext_id,
     task?.assignment?.ext_id,
+    offerId,
+    offer?.outsource_request?.assignment?.ext_id,
   ])
 
   return <span>{includes(name, undefined) ? '' : name}</span>

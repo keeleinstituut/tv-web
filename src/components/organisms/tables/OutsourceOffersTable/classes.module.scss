@@ -1,0 +1,13 @@
+@use 'styles/variables' as variables;
+
+.headContainer {
+  padding: variables.spacing(6) variables.spacing(4);
+}
+
+.searchInput {
+  .searchInnerContainer {
+    input {
+      width: 328px;
+    }
+  }
+}

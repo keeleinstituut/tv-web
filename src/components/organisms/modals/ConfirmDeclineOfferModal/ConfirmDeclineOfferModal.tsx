@@ -10,24 +10,23 @@ import TextInput from 'components/molecules/TextInput/TextInput'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { useDeclineOutsourceRequest } from 'hooks/requests/useProjectRequests'
+import { useDeclineOutsourceOffer } from 'hooks/requests/useProjectRequests'
 
-export interface ConfirmDeclineRequestModalProps extends ConfirmationModalBaseProps {
-  requestId: string
+export interface ConfirmDeclineOfferModalProps extends ConfirmationModalBaseProps {
+  offerId: string
 }
 
 interface FormValues {
   decline_comment: string
 }
 
-const ConfirmDeclineRequestModal: FC<ConfirmDeclineRequestModalProps> = ({
-  requestId,
+const ConfirmDeclineOfferModal: FC<ConfirmDeclineOfferModalProps> = ({
+  offerId,
   isModalOpen,
   closeModal,
 }) => {
   const { t } = useTranslation()
-  const { declineOutsourceRequest, isLoading } =
-    useDeclineOutsourceRequest(requestId)
+  const { declineOutsourceOffer, isLoading } = useDeclineOutsourceOffer(offerId)
 
   const {
     control,
@@ -41,7 +40,7 @@ const ConfirmDeclineRequestModal: FC<ConfirmDeclineRequestModalProps> = ({
   const onSubmit = useCallback(
     async ({ decline_comment }: FormValues) => {
       try {
-        await declineOutsourceRequest({ decline_comment })
+        await declineOutsourceOffer({ decline_comment })
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -52,7 +51,7 @@ const ConfirmDeclineRequestModal: FC<ConfirmDeclineRequestModalProps> = ({
         showValidationErrorMessage(error)
       }
     },
-    [declineOutsourceRequest, closeModal, t]
+    [declineOutsourceOffer, closeModal, t]
   )
 
   return (
@@ -88,4 +87,4 @@ const ConfirmDeclineRequestModal: FC<ConfirmDeclineRequestModalProps> = ({
   )
 }
 
-export default ConfirmDeclineRequestModal
+export default ConfirmDeclineOfferModal

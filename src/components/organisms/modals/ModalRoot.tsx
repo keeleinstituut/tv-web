@@ -39,7 +39,7 @@ import { TranslationMemoryBulkExportModalProps } from './TranslationMemoryBulkEx
 import { EmoSchedulesModalProps } from './EmoSchedulesModal/EmoSchedulesModal'
 import { VendorAbsencesModalProps } from './VendorAbsencesModal/VendorAbsencesModal'
 import { ComposeProjectRequestModalProps } from './ComposeProjectRequestModal/ComposeProjectRequestModal'
-import { ConfirmDeclineRequestModalProps } from './ConfirmDeclineRequestModal/ConfirmDeclineRequestModal'
+import { ConfirmDeclineOfferModalProps } from './ConfirmDeclineOfferModal/ConfirmDeclineOfferModal'
 import { SelectOutsourceOfferModalProps } from './SelectOutsourceOfferModal/SelectOutsourceOfferModal'
 import { ConfirmCancelRequestModalProps } from './ConfirmCancelRequestModal/ConfirmCancelRequestModal'
 import { ViewVendorResponseModalProps } from './ViewVendorResponseModal/ViewVendorResponseModal'
@@ -160,8 +160,8 @@ const ComposeProjectRequestModal = lazy(
   () => import('./ComposeProjectRequestModal/ComposeProjectRequestModal')
 )
 
-const ConfirmDeclineRequestModal = lazy(
-  () => import('./ConfirmDeclineRequestModal/ConfirmDeclineRequestModal')
+const ConfirmDeclineOfferModal = lazy(
+  () => import('./ConfirmDeclineOfferModal/ConfirmDeclineOfferModal')
 )
 
 const SelectOutsourceOfferModal = lazy(
@@ -250,7 +250,7 @@ type ModalPropTypes =
   | Omit<EmoSchedulesModalProps, 'closeModal'>
   | Omit<VendorAbsencesModalProps, 'closeModal'>
   | Omit<ComposeProjectRequestModalProps, 'closeModal'>
-  | Omit<ConfirmDeclineRequestModalProps, 'closeModal'>
+  | Omit<ConfirmDeclineOfferModalProps, 'closeModal'>
   | Omit<SelectOutsourceOfferModalProps, 'closeModal'>
   | Omit<ConfirmCancelRequestModalProps, 'closeModal'>
   | Omit<ViewVendorResponseModalProps, 'closeModal'>
@@ -291,7 +291,7 @@ const MODALS = {
   [ModalTypes.EmoSchedules]: EmoSchedulesModal,
   [ModalTypes.VendorAbsences]: VendorAbsencesModal,
   [ModalTypes.ComposeProjectRequest]: ComposeProjectRequestModal,
-  [ModalTypes.ConfirmDeclineRequest]: ConfirmDeclineRequestModal,
+  [ModalTypes.ConfirmDeclineRequest]: ConfirmDeclineOfferModal,
   [ModalTypes.SelectOutsourceOffer]: SelectOutsourceOfferModal,
   [ModalTypes.ConfirmCancelRequest]: ConfirmCancelRequestModal,
   [ModalTypes.ViewVendorResponse]: ViewVendorResponseModal,

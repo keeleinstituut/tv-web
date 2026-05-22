@@ -43,8 +43,8 @@ import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
 import Terms from 'pages/Terms/Terms'
 import MachineTranslation from 'pages/MachineTranslation/MachineTranslation'
-import OutsourceRequest from 'pages/OutsourceRequest/OutsourceRequest'
-import OutsourceRequestDetailPage from 'pages/OutsourceRequestDetailPage/OutsourceRequestDetailPage'
+import OutsourceOffer from 'pages/OutsourceOffer/OutsourceOffer'
+import OutsourceOfferDetailPage from 'pages/OutsourceOfferDetailPage/OutsourceOfferDetailPage'
 
 // import icons
 
@@ -156,19 +156,19 @@ export const protectedRoutes: FullRouteObject[] = [
         ],
       },
       {
-        path: 'requests',
+        path: 'outsource-offers',
         label: i18n.t('menu.requests'),
         privileges: [Privileges.ViewRequests],
         children: [
           {
             path: '',
-            element: <OutsourceRequest />,
+            element: <OutsourceOffer />,
             privileges: [Privileges.ViewRequests],
             breadcrumb: i18n.t('menu.requests'),
           },
           {
-            path: ':requestId',
-            element: <OutsourceRequestDetailPage />,
+            path: ':offerId',
+            element: <OutsourceOfferDetailPage />,
             privileges: [Privileges.ViewRequests],
             breadcrumb: BreadcrumbsTitle,
           },

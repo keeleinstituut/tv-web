@@ -73,6 +73,7 @@ export interface OutsourceOffer {
   rejection_comment?: string | null
   response_comment?: string | null
   institution?: Institution | null
+  outsource_request?: OutsourceRequest | null
   created_at: string
   updated_at: string
 }
@@ -80,6 +81,7 @@ export interface OutsourceOffer {
 export interface OutsourceRequest {
   id: string
   assignment_id: string
+  owner_institution?: Institution | null
   mode: OutsourceRequestMode
   price_mode: OutsourceRequestPriceMode
   reaction_time_minutes: number
@@ -125,6 +127,18 @@ export interface CancelOutsourceRequestPayload {
 export interface SelectOutsourceOfferPayload {
   offer_id: string
   rejection_comments: Array<{ offer_id: string; rejection_comment: string }>
+}
+
+export interface OutsourceOfferFilters {
+  q?: string
+  assignment_id?: string
+  sub_project_id?: string
+  project_id?: string
+  status?: OutsourceOfferStatus[]
+  per_page?: number
+  page?: number
+  sort_by?: 'created_at'
+  sort_order?: 'asc' | 'desc'
 }
 
 export interface OutsourceRequestFilters {

@@ -10,6 +10,8 @@ import {
   DeclineOutsourceRequestPayload,
   InstitutionPartner,
   InstitutionPartnerFilters,
+  OutsourceOffer,
+  OutsourceOfferFilters,
   OutsourceRequest,
   OutsourceRequestFilters,
   SelectOutsourceOfferPayload,
@@ -191,6 +193,74 @@ export const useCancelOutsourceRequest = (id: string) => {
   })
 
   return { cancelOutsourceRequest, isLoading }
+}
+
+export const useFetchOutsourceOffers = (
+  initialFilters?: OutsourceOfferFilters,
+  saveQueryParams?: boolean
+) => {
+  const {
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  } = useFilters<OutsourceOfferFilters>(initialFilters, saveQueryParams)
+
+  const { data, isLoading } = useQuery<ListResponse<OutsourceOffer>>({
+    queryKey: ['outsource-offers', filters],
+    queryFn: () => apiClient.get(endpoints.OUTSOURCE_OFFERS, filters),
+    keepPreviousData: true,
+  })
+
+  return {
+    offers: data?.data ?? [],
+    paginationData: data?.meta,
+    filters: filters as OutsourceOfferFilters,
+    isLoading,
+    handleFilterChange,
+    handleSortingChange,
+    handlePaginationChange,
+  }
+}
+
+export const useFetchOutsourceOffer = (id?: string) => {
+  const { data, isLoading } = useQuery<SingleResponse<OutsourceOffer>>({
+    enabled: !!id,
+    queryKey: ['outsource-offers', id],
+    queryFn: () => apiClient.get(endpoints.OUTSOURCE_OFFER(id!)),
+  })
+
+  return { offer: data?.data, isLoading }
+}
+
+export const useAcceptOutsourceOffer = (id: string) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: acceptOutsourceOffer, isLoading } = useMutation({
+    mutationFn: async (payload?: AcceptOutsourceRequestPayload) => {
+      if (!id) throw new Error('Outsource offer id is required')
+      return apiClient.post(endpoints.OUTSOURCE_OFFER_ACCEPT(id), payload ?? {})
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['outsource-offers'] })
+    },
+  })
+
+  return { acceptOutsourceOffer, isLoading }
+}
+
+export const useDeclineOutsourceOffer = (id: string) => {
+  const queryClient = useQueryClient()
+  const { mutateAsync: declineOutsourceOffer, isLoading } = useMutation({
+    mutationFn: async (payload: DeclineOutsourceRequestPayload) => {
+      if (!id) throw new Error('Outsource offer id is required')
+      return apiClient.post(endpoints.OUTSOURCE_OFFER_DECLINE(id), payload)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['outsource-offers'] })
+    },
+  })
+
+  return { declineOutsourceOffer, isLoading }
 }
 
 export const useSelectOutsourceOffer = (id: string) => {
