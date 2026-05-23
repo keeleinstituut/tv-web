@@ -270,7 +270,7 @@ const OutsourceOfferDetailPage: FC = () => {
             {t('requests.section_response') as string}
           </h2>
         }
-        hidden={!showResponseActions}
+        hidden={!canRespond}
         initialIsExpanded
       >
         <div className={classes.contentWrapper}>
@@ -278,26 +278,23 @@ const OutsourceOfferDetailPage: FC = () => {
             className={classes.responseColumn}
             onSubmit={(e) => e.preventDefault()}
           >
-            {priceInputNeeded && (
-              <>
-                <label className={classes.responseLabel} htmlFor="offered_price">
-                  {t('requests.response_price_label')}
-                </label>
-                <div className={classes.responseField}>
-                  <TextInput
-                    name="offered_price"
-                    ariaLabel={t('requests.response_price_label')}
-                    placeholder={t('requests.response_price_placeholder')}
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={offeredPrice}
-                    onChange={(e) => setOfferedPrice(e.target.value)}
-                  />
-                  <span className={classes.priceSuffix}>€</span>
-                </div>
-              </>
-            )}
+            <label className={classes.responseLabel} htmlFor="offered_price">
+              {t('requests.response_price_label')}
+            </label>
+            <div className={classes.responseField}>
+              <TextInput
+                name="offered_price"
+                ariaLabel={t('requests.response_price_label')}
+                placeholder={t('requests.response_price_placeholder')}
+                type="number"
+                min={0}
+                step="0.01"
+                value={priceInputNeeded ? offeredPrice : (offer?.price?.toString() ?? '')}
+                onChange={(e) => setOfferedPrice(e.target.value)}
+                disabled={!priceInputNeeded || !showResponseActions}
+              />
+              <span className={classes.priceSuffix}>€</span>
+            </div>
             <label className={classes.responseLabel} htmlFor="response_comment">
               {t('requests.response_comment_label')}
             </label>
@@ -305,26 +302,29 @@ const OutsourceOfferDetailPage: FC = () => {
               name="response_comment"
               ariaLabel={t('requests.response_comment_label')}
               placeholder={t('requests.response_comment_placeholder')}
-              value={responseComment}
+              value={showResponseActions ? responseComment : (offer?.response_comment ?? '')}
               onChange={(e) => setResponseComment(e.target.value)}
               isTextarea
               className={classes.commentField}
+              disabled={!showResponseActions}
             />
-            <div className={classes.footer}>
-              <Button
-                appearance={AppearanceTypes.Secondary}
-                onClick={handleOpenDeclineModal}
-              >
-                {t('requests.decline_request')}
-              </Button>
-              <Button
-                appearance={AppearanceTypes.Primary}
-                onClick={handleAccept}
-                loading={isAccepting}
-              >
-                {t('requests.accept_request_short')}
-              </Button>
-            </div>
+            {showResponseActions && (
+              <div className={classes.footer}>
+                <Button
+                  appearance={AppearanceTypes.Secondary}
+                  onClick={handleOpenDeclineModal}
+                >
+                  {t('requests.decline_request')}
+                </Button>
+                <Button
+                  appearance={AppearanceTypes.Primary}
+                  onClick={handleAccept}
+                  loading={isAccepting}
+                >
+                  {t('requests.accept_request_short')}
+                </Button>
+              </div>
+            )}
           </Root>
         </div>
       </ExpandableContentContainer>

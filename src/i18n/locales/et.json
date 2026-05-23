@@ -1143,7 +1143,7 @@
     "price_label": "Hind",
     "add_unit_value": "Lisa ühiku väärtus",
     "table": {
-      "request_id": "Päringu ID",
+      "request_id": "Ülesande ID",
       "status": "Staatus",
       "mode": "Režiim",
       "reaction_time": "Reageerimise aeg",

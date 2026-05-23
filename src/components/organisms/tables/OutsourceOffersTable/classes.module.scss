@@ -5,6 +5,8 @@
 }
 
 .searchInput {
+  margin-top: variables.spacing(2);
+
   .searchInnerContainer {
     input {
       width: 328px;

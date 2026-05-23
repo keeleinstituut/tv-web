@@ -59,7 +59,7 @@ const Assignment: FC<AssignmentProps> = ({
     status: subProjectStatus,
   } = useSubProjectCache(sub_project_id) || {}
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
+  const { userPrivileges, selectedInstitutionType } = useAuth()
   const canManageRequests = includes(userPrivileges, Privileges.ManageRequests)
   const hasInHouseVendorsAssigned = size(candidates) > 0
   const { requests: outsourceRequests } =
@@ -168,6 +168,7 @@ const Assignment: FC<AssignmentProps> = ({
             appearance={AppearanceTypes.Secondary}
             hidden={
               !canManageRequests ||
+              selectedInstitutionType === 'TRANSLATION_AGENCY' ||
               subProjectStatus === SubProjectStatus.Cancelled ||
               subProjectStatus === SubProjectStatus.Completed
             }

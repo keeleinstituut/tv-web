@@ -99,10 +99,11 @@ export const useFetchOutsourceRequest = (id?: string) => {
 export const useFetchAssignmentOutsourceRequests = (assignmentId?: string) => {
   const { data, isLoading } = useQuery<ListResponse<OutsourceRequest>>({
     enabled: !!assignmentId,
-    queryKey: ['outsource-requests', 'assignment', assignmentId],
+    queryKey: ['outsource-requests', 'assignment', assignmentId, 'OUTGOING'],
     queryFn: () =>
       apiClient.get(endpoints.OUTSOURCE_REQUESTS, {
         assignment_id: assignmentId,
+        type: 'OUTGOING',
       }),
   })
 

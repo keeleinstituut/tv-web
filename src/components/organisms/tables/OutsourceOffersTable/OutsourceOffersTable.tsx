@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { map } from 'lodash'
@@ -17,6 +17,10 @@ import Button, {
 import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { FormInput, InputTypes } from 'components/organisms/DynamicForm/DynamicForm'
 import LanguageDirectionTags from 'components/atoms/LanguageDirectionTags/LanguageDirectionTags'
+import { useInstitutionsFetch } from 'hooks/requests/useInstitutions'
+import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
+import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
+import { ClassifierValueType } from 'types/classifierValues'
 import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import classes from './classes.module.scss'
 import {
@@ -67,13 +71,48 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const { control, watch } = useForm<{ q: string }>({
-    defaultValues: { q: '' },
+  const { institutions } = useInstitutionsFetch()
+  const institutionOptions = useMemo(
+    () => map(institutions, ({ id, name }) => ({ label: name, value: id })),
+    [institutions]
+  )
+
+  const { languageDirectionFilters, loadMore, handleSearch } = useLanguageDirections({})
+
+  const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
+    type: ClassifierValueType.ProjectType,
+  })
+
+  const handleModifiedFilterChange = useCallback(
+    (value?: FilterFunctionType) => {
+      let current = value
+      if (value && 'language_directions' in value) {
+        const { language_directions, ...rest } = current || {}
+        current = {
+          language_directions: map(language_directions as string[], (s) => s.replace('_', ':')),
+          ...rest,
+        }
+      }
+      if (value && 'institution_id' in value) {
+        const { institution_id, ...rest } = current || {}
+        const ids = institution_id as string[]
+        current = {
+          institution_id: ids?.[0] || '',
+          ...rest,
+        }
+      }
+      onFiltersChange?.(current)
+    },
+    [onFiltersChange]
+  )
+
+  const { control, watch } = useForm<{ q: string; status: OutsourceOfferStatus[] }>({
+    defaultValues: { q: '', status: filters.status ?? [] },
   })
 
   useEffect(() => {
     const subscription = watch((value) => {
-      onFiltersChange?.({ q: value.q || '', page: 1 })
+      onFiltersChange?.({ q: value.q || '', status: value.status as string[], page: 1 })
     })
     return () => subscription.unsubscribe()
   }, [watch, onFiltersChange])
@@ -101,7 +140,7 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
           job_short_name: req?.assignment?.job_definition?.job_short_name ?? undefined,
           languages,
           status: o.status,
-          deadline_at: req?.deadline_at ?? undefined,
+          deadline_at: o?.expires_at ?? undefined,
         }
       }),
     [offers]
@@ -137,6 +176,16 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
         columnHelper.accessor('owner_institution_name', {
           header: () => t('requests.table.owner_institution'),
           cell: ({ getValue }) => getValue() ?? '-',
+          meta: {
+            FilteringComponent: (
+              <TableSelectFilter
+                filterKey="institution_id"
+                options={institutionOptions}
+                value={filters?.institution_id ? [filters.institution_id] : []}
+                isCustomSingleDropdown
+              />
+            ),
+          },
         }),
         columnHelper.accessor('owner_institution_email', {
           header: () => t('requests.table.owner_email'),
@@ -145,6 +194,16 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
         columnHelper.accessor('job_short_name', {
           header: () => t('requests.table.job_name'),
           cell: ({ getValue }) => getValue() ?? '-',
+          meta: {
+            FilteringComponent: (
+              <TableSelectFilter
+                filterKey="type_classifier_value_ids"
+                options={typeFilters}
+                value={filters?.type_classifier_value_ids ?? []}
+                isCustomSingleDropdown
+              />
+            ),
+          },
         }),
         columnHelper.accessor('languages', {
           header: () => t('requests.table.languages'),
@@ -154,26 +213,39 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
             ) : (
               '-'
             ),
-        }),
-        columnHelper.accessor('status', {
-          header: () => t('requests.table.status'),
-          cell: ({ getValue }) => t(`requests.offer_status.${getValue()}`),
           meta: {
             FilteringComponent: (
               <TableSelectFilter
-                filterKey="status"
-                options={statusFilterOptions}
-                value={filters.status ?? []}
+                filterKey="language_directions"
+                options={languageDirectionFilters}
+                onEndReached={loadMore}
+                onSearch={handleSearch}
+                showSearch
+                value={
+                  filters?.language_directions
+                    ? filters.language_directions.map((v) => v.replace(':', '_'))
+                    : []
+                }
               />
             ),
           },
         }),
+        columnHelper.accessor('status', {
+          header: () => t('requests.table.status'),
+          cell: ({ getValue }) => t(`requests.offer_status.${getValue()}`),
+        }),
         columnHelper.accessor('deadline_at', {
           header: () => t('requests.table.deadline'),
           cell: ({ getValue }) => formatDate(getValue()),
+          meta: {
+            sortingOption: ['asc', 'desc'],
+            sortingParameterName: 'expires_at',
+            currentSorting:
+              filters.sort_by === 'expires_at' ? filters.sort_order : undefined,
+          },
         }),
       ] as ColumnDef<OfferRow>[],
-    [t]
+    [t, institutionOptions, languageDirectionFilters, loadMore, handleSearch, filters, statusFilterOptions, typeFilters]
   )
 
   return (
@@ -183,6 +255,12 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
         columns={columns}
         headComponent={
           <div className={classes.headContainer}>
+            <FormInput
+              name="status"
+              control={control}
+              options={statusFilterOptions}
+              inputType={InputTypes.TagsSelect}
+            />
             <FormInput
               name="q"
               control={control}
@@ -199,7 +277,7 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
         paginationData={paginationData}
         onPaginationChange={onPaginationChange}
         onSortingChange={onSortingChange}
-        onFiltersChange={onFiltersChange}
+        onFiltersChange={handleModifiedFilterChange}
         pageSizeOptions={[
           { label: '10', value: '10' },
           { label: '25', value: '25' },
