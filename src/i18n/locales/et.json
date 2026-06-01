@@ -50,6 +50,8 @@
     "tag_name": "Nimetus",
     "company_name": "Lepingupartneri ärinimi",
     "add_remove_vendor": "Lisa/eemalda teostajad",
+    "add_remove_institution_partner": "Lisa/eemalda välispartnerid",
+    "external_partner": "Välispartner",
     "view": "Vaata",
     "search": "Otsi",
     "updated": "UUENDATUD",
@@ -259,7 +261,8 @@
     "expand": "Laienda",
     "view_vendor_in_progress_tasks": "Vaata teostaja teostamisel ülesandeid",
     "click_here": "Vajuta siia",
-    "dropdown_cancel": "Sulge"
+    "dropdown_cancel": "Sulge",
+    "view": "Vaata"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -340,7 +343,8 @@
     "last_changed": "Viimati muudetud {{ date }}",
     "sidebar_terms": "Kasutustingimused",
     "calendar": "Kalender",
-    "language_tools": "Keeletööriistad"
+    "language_tools": "Keeletööriistad",
+    "institution_partners": "Välised teostajad"
   },
   "calendar": {
     "today": "Päev",
@@ -814,6 +818,7 @@
     "vendors_added_to_task": "Teostajad edukalt lisatud ülesande külge!",
     "vendors_removed_from_task": "Teostajad edukalt eemaldatud ülesande küljest!",
     "vendors_created_removed": "Teostajad edukalt lisatud/eemaldatud",
+    "institution_partners_updated": "Välispartnerid edukalt uuendatud",
     "volume_deleted": "Maht edukalt kustutatud!",
     "files_assigned_to_vendors": "Lähtefailid edukalt määratud teostajatele!",
     "task_finished": "Ülesanne on edukalt lõpetatud!",

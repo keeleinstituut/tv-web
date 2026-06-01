@@ -1,6 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import { apiClient } from 'api'
+import useFilters from 'hooks/useFilters'
+import { ResponseMetaTypes } from 'types/collective'
+import { Institution } from 'types/outsourceRequests'
 import {
   InstitutionDataType,
   InstitutionDiscountsDataType,
@@ -227,4 +230,41 @@ export const useSyncInstitutionMainLanguages = () => {
     },
   })
   return { syncMainLanguages, isLoading }
+}
+
+interface OutsourceInstitutionsFilters {
+  name?: string
+  per_page?: number
+  page?: number
+  sort_by?: 'name'
+  sort_order?: 'asc' | 'desc'
+}
+
+interface ListResponse<T> {
+  data: T[]
+  meta?: ResponseMetaTypes
+}
+
+export const useTranslationOrderInstitutions = (
+  initialFilters?: OutsourceInstitutionsFilters,
+  saveQueryParams?: boolean
+) => {
+  const { filters, handleFilterChange, handlePaginationChange } =
+    useFilters<OutsourceInstitutionsFilters>(initialFilters, saveQueryParams)
+
+  const { data, isLoading } = useQuery<ListResponse<Institution>>({
+    queryKey: ['translation-order-institutions', filters],
+    queryFn: () =>
+      apiClient.get(endpoints.TRANSLATION_ORDER_INSTITUTIONS, filters),
+    keepPreviousData: true,
+  })
+
+  return {
+    institutions: data?.data ?? [],
+    paginationData: data?.meta,
+    filters: filters as OutsourceInstitutionsFilters,
+    isLoading,
+    handleFilterChange,
+    handlePaginationChange,
+  }
 }

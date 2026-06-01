@@ -54,6 +54,7 @@ export interface InstitutionPartner {
 
 export interface InstitutionPartnerFilters {
   partner_institution_id?: string[]
+  q?: string
   per_page?: number
   page?: number
   sort_by?: 'created_at'

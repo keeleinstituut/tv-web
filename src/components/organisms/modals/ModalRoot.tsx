@@ -43,6 +43,7 @@ import { ConfirmDeclineOfferModalProps } from './ConfirmDeclineOfferModal/Confir
 import { SelectOutsourceOfferModalProps } from './SelectOutsourceOfferModal/SelectOutsourceOfferModal'
 import { ConfirmCancelRequestModalProps } from './ConfirmCancelRequestModal/ConfirmCancelRequestModal'
 import { ViewVendorResponseModalProps } from './ViewVendorResponseModal/ViewVendorResponseModal'
+import { InstitutionPartnersEditModalProps } from './InstitutionPartnersEditModal/InstitutionPartnersEditModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -176,6 +177,10 @@ const ViewVendorResponseModal = lazy(
   () => import('./ViewVendorResponseModal/ViewVendorResponseModal')
 )
 
+const InstitutionPartnersEditModal = lazy(
+  () => import('./InstitutionPartnersEditModal/InstitutionPartnersEditModal')
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -214,6 +219,7 @@ export enum ModalTypes {
   SelectOutsourceOffer = 'selectOutsourceOffer',
   ConfirmCancelRequest = 'confirmCancelRequest',
   ViewVendorResponse = 'viewVendorResponse',
+  InstitutionPartnersEdit = 'institutionPartnersEdit',
 }
 
 // Add other modal props types here as well
@@ -254,6 +260,7 @@ type ModalPropTypes =
   | Omit<SelectOutsourceOfferModalProps, 'closeModal'>
   | Omit<ConfirmCancelRequestModalProps, 'closeModal'>
   | Omit<ViewVendorResponseModalProps, 'closeModal'>
+  | Omit<InstitutionPartnersEditModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -295,6 +302,7 @@ const MODALS = {
   [ModalTypes.SelectOutsourceOffer]: SelectOutsourceOfferModal,
   [ModalTypes.ConfirmCancelRequest]: ConfirmCancelRequestModal,
   [ModalTypes.ViewVendorResponse]: ViewVendorResponseModal,
+  [ModalTypes.InstitutionPartnersEdit]: InstitutionPartnersEditModal,
 }
 
 interface RefType {

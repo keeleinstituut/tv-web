@@ -8,14 +8,14 @@ import {
   CancelOutsourceRequestPayload,
   CreateOutsourceRequestPayload,
   DeclineOutsourceRequestPayload,
-  InstitutionPartner,
-  InstitutionPartnerFilters,
   OutsourceOffer,
   OutsourceOfferFilters,
   OutsourceRequest,
   OutsourceRequestFilters,
   SelectOutsourceOfferPayload,
 } from 'types/outsourceRequests'
+
+export { useFetchInstitutionPartners } from './useInstitutionPartners'
 
 interface ListResponse<T> {
   data: T[]
@@ -24,35 +24,6 @@ interface ListResponse<T> {
 
 interface SingleResponse<T> {
   data: T
-}
-
-export const useFetchInstitutionPartners = (
-  initialFilters?: InstitutionPartnerFilters,
-  saveQueryParams?: boolean
-) => {
-  const {
-    filters,
-    handleFilterChange,
-    handleSortingChange,
-    handlePaginationChange,
-  } = useFilters<InstitutionPartnerFilters>(initialFilters, saveQueryParams)
-
-  const { data, isLoading } = useQuery<ListResponse<InstitutionPartner>>({
-    queryKey: ['institution-partners', filters],
-    queryFn: () => apiClient.get(endpoints.INSTITUTION_PARTNERS, filters),
-    keepPreviousData: true,
-    staleTime: 60_000,
-  })
-
-  return {
-    partners: data?.data ?? [],
-    paginationData: data?.meta,
-    filters: filters as InstitutionPartnerFilters,
-    isLoading,
-    handleFilterChange,
-    handleSortingChange,
-    handlePaginationChange,
-  }
 }
 
 export const useFetchOutsourceRequests = (
