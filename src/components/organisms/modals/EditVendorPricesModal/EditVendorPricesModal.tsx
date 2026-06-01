@@ -30,14 +30,14 @@ import DynamicForm, {
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { PriceObject } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
-import VendorPriceListButtons from 'components/molecules/VendorPriceListButtons/VendorPriceListButtons'
-import { SkillPrice } from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
+import PriceListButtons from 'components/molecules/PriceListButtons/PriceListButtons'
+import { SkillPrice } from 'types/vendors'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useTranslation } from 'react-i18next'
 import classes from './classes.module.scss'
-import VendorPriceListSecondStep from 'components/organisms/VendorPriceListSecondStep/VendorPriceListSecondStep'
-import VendorPriceListEditContent from 'components/organisms/VendorPriceListEditContent/VendorPriceListEditContent'
+import PriceListSecondStep from 'components/organisms/PriceListSecondStep/PriceListSecondStep'
+import PriceListEditContent from 'components/organisms/PriceListEditContent/PriceListEditContent'
 import { DataStateTypes } from '../EditableListModal/EditableListModal'
 import { UpdatePricesPayload } from 'types/vendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
@@ -485,7 +485,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
         title: t('vendors.choose_skills'),
         helperText: t('vendors.skills_helper_text'),
         modalContent: (
-          <VendorPriceListSecondStep<FormValues>
+          <PriceListSecondStep<FormValues>
             skillsFormFields={skillsFormFields}
             control={control}
             customSkillsDynamicFormClass={classes.skillsDynamicForm}
@@ -502,7 +502,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
         title: t('vendors.price_list_change'),
         helperText: t('vendors.price_list_change_description'),
         modalContent: (
-          <VendorPriceListEditContent
+          <PriceListEditContent
             control={control}
             languageDirectionKey={languageDirectionKey || ''}
             srcLanguageValue={srcLanguage}
@@ -540,7 +540,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
       resetForm={resetForm}
       formData={formData}
       buttonComponent={
-        <VendorPriceListButtons
+        <PriceListButtons
           control={control}
           languageDirectionKey={languageDirectionKey}
           isLoading={isSubmitting}

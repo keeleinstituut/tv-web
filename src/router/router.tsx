@@ -255,7 +255,7 @@ export const protectedRoutes: FullRouteObject[] = [
         breadcrumb: i18n.t('menu.institution_partners'),
       },
       {
-        path: ':partnerId',
+        path: ':institutionPartnerId',
         element: <InstitutionPartnerPage />,
         privileges: [Privileges.ViewExternalPartner],
         breadcrumb: BreadcrumbsTitle,

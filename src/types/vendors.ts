@@ -7,7 +7,6 @@ import { UserType } from './users'
 import { Price } from './price'
 import { Tag } from './tags'
 import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
-import { SkillPrice } from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
 
 export type SkillsData = {
   id: string
@@ -105,6 +104,19 @@ export type UpdateVendorPayload = {
   prices?: string[]
   tags?: string[]
   comment?: string
+}
+
+export type SkillPrice = {
+  id?: string | undefined
+  isSelected?: boolean
+  character_fee: number
+  word_fee: number
+  page_fee: number
+  minute_fee: number
+  hour_fee: number
+  minimal_fee: number
+  skill_id: string
+  skill?: { id: string; name: string }
 }
 
 export type PayloadItem = {

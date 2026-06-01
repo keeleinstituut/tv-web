@@ -33,6 +33,7 @@ import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjec
 import { ConfirmCompleteTaskModalProps } from './ConfirmCompleteTaskModal/ConfirmCompleteTaskModal'
 import { ConfirmSendToPreviousTaskModalProps } from './ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal'
 import { EditVendorPricesModalProps } from './EditVendorPricesModal/EditVendorPricesModal'
+import { EditInstitutionPartnerPricesModalProps } from './EditInstitutionPartnerPricesModal/EditInstitutionPartnerPricesModal'
 import { ConfirmAssignmentFinishedModalProps } from './ConfirmAssignmentFinishedModal/ConfirmAssignmentFinishedModal'
 import { ConfirmSendToPreviousAssignmentModalProps } from './ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal'
 import { TranslationMemoryBulkExportModalProps } from './TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal'
@@ -181,6 +182,13 @@ const InstitutionPartnersEditModal = lazy(
   () => import('./InstitutionPartnersEditModal/InstitutionPartnersEditModal')
 )
 
+const EditInstitutionPartnerPricesModal = lazy(
+  () =>
+    import(
+      './EditInstitutionPartnerPricesModal/EditInstitutionPartnerPricesModal'
+    )
+)
+
 export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
@@ -220,6 +228,7 @@ export enum ModalTypes {
   ConfirmCancelRequest = 'confirmCancelRequest',
   ViewVendorResponse = 'viewVendorResponse',
   InstitutionPartnersEdit = 'institutionPartnersEdit',
+  EditInstitutionPartnerPrices = 'editInstitutionPartnerPrices',
 }
 
 // Add other modal props types here as well
@@ -261,6 +270,7 @@ type ModalPropTypes =
   | Omit<ConfirmCancelRequestModalProps, 'closeModal'>
   | Omit<ViewVendorResponseModalProps, 'closeModal'>
   | Omit<InstitutionPartnersEditModalProps, 'closeModal'>
+  | Omit<EditInstitutionPartnerPricesModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -303,6 +313,7 @@ const MODALS = {
   [ModalTypes.ConfirmCancelRequest]: ConfirmCancelRequestModal,
   [ModalTypes.ViewVendorResponse]: ViewVendorResponseModal,
   [ModalTypes.InstitutionPartnersEdit]: InstitutionPartnersEditModal,
+  [ModalTypes.EditInstitutionPartnerPrices]: EditInstitutionPartnerPricesModal,
 }
 
 interface RefType {

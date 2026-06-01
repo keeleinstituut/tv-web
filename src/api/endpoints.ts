@@ -158,6 +158,10 @@ export const endpoints = {
     translationOrder(`outsource-offers/${id}/decline`),
   INSTITUTION_PARTNERS: translationOrder('institution-partners'),
   INSTITUTION_PARTNERS_BULK: translationOrder('institution-partners/bulk'),
+  INSTITUTION_PARTNER_PRICES: translationOrder('institution-partner-prices'),
+  INSTITUTION_PARTNER_PRICES_BULK: translationOrder(
+    'institution-partner-prices/bulk'
+  ),
   TRANSLATION_ORDER_INSTITUTIONS: translationOrder('institutions'),
 }
 

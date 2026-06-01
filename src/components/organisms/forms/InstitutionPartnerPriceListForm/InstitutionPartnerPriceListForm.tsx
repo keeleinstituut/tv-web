@@ -2,57 +2,43 @@ import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { chain, isEmpty, map, orderBy } from 'lodash'
 import { Root } from '@radix-ui/react-form'
-import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
+import {
+  useAllInstitutionPartnerPricesFetch,
+} from 'hooks/requests/useInstitutionPartners'
+import { useFetchSkills } from 'hooks/requests/useVendors'
 import LanguageDirectionCell from 'components/molecules/LanguageDirectionCell/LanguageDirectionCell'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
-import { VendorFormProps } from 'components/organisms/forms/VendorForm/VendorForm'
-import VendorPriceManagementButton from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
-import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButton/DeleteVendorPriceButton'
+import { InstitutionPartner } from 'types/outsourceRequests'
+import { PriceObject } from 'components/organisms/forms/VendorPriceListForm/VendorPriceListForm'
+import InstitutionPartnerPriceManagementButton from 'components/organisms/InstitutionPartnerPriceManagementButton/InstitutionPartnerPriceManagementButton'
+import DeleteInstitutionPartnerPriceButton from 'components/organisms/DeleteInstitutionPartnerPriceButton/DeleteInstitutionPartnerPriceButton'
 
 import classes from './classes.module.scss'
 import { useSearchParams } from 'react-router-dom'
 
-export type PriceObject = {
-  id: string
-  isSelected?: boolean
-  character_fee: number
-  word_fee: number
-  page_fee: number
-  minute_fee: number
-  hour_fee: number
-  minimal_fee: number
-  skill_id: string
-  skill: { id: string; name: string }
-  language_direction?: string
-  language_direction_key?: string
-  source_language_classifier_value?: {
-    name: string
-    id?: string
-  }
-  destination_language_classifier_value?: {
-    name: string
-    id?: string
-  }
-  subRows: PriceObject[]
-}
-
 
 const columnHelper = createColumnHelper<PriceObject>()
 
-const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
+export type InstitutionPartnerPriceListFormProps = {
+  institutionPartner: InstitutionPartner
+}
+
+const InstitutionPartnerPriceListForm: FC<InstitutionPartnerPriceListFormProps> = ({
+  institutionPartner,
+}) => {
   const { t } = useTranslation()
   const [searchParams] = useSearchParams()
 
   const { skills: skillsData } = useFetchSkills()
-  const { id: vendor_id } = vendor
+  const { id: institution_partner_id } = institutionPartner
 
   const initialFilters = {
     ...Object.fromEntries(searchParams.entries()),
-    vendor_id: vendor_id,
+    institution_partner_id,
   }
 
   const {
@@ -61,7 +47,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
     paginationData,
     handlePaginationChange,
     filters,
-  } = useAllPricesFetch({
+  } = useAllInstitutionPartnerPricesFetch({
     initialFilters: {
       ...initialFilters,
       ...{ sort_by: 'lang_pair', sort_order: 'asc' },
@@ -100,8 +86,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       )
       .map((items) => {
         return {
-          language_direction: `${items[0].source_language_classifier_value.name} > ${items[0].destination_language_classifier_value.name}`,
-          language_direction_key: `${items[0].source_language_classifier_value.id}_${items[0].destination_language_classifier_value.id}`,
+          language_direction: `${items[0].source_language_classifier_value?.name} > ${items[0].destination_language_classifier_value?.name}`,
+          language_direction_key: `${items[0].source_language_classifier_value?.id}_${items[0].destination_language_classifier_value?.id}`,
           subRows: map(
             items,
             ({
@@ -118,7 +104,7 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
               id,
             }) => {
               return {
-                language_direction_key: `${items[0].source_language_classifier_value.id}_${items[0].destination_language_classifier_value.id}`,
+                language_direction_key: `${items[0].source_language_classifier_value?.id}_${items[0].destination_language_classifier_value?.id}`,
                 character_fee,
                 hour_fee,
                 minimal_fee,
@@ -199,22 +185,22 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
 
           return (
             <div className={classes.iconsContainer}>
-              <VendorPriceManagementButton
+              <InstitutionPartnerPriceManagementButton
                 languageDirectionKey={languageDirectionKey}
                 filters={filters}
                 skillId={skillId}
-                vendor_id={vendor_id}
+                institution_partner_id={institution_partner_id}
               />
-              <DeleteVendorPriceButton
+              <DeleteInstitutionPartnerPriceButton
                 languagePairIds={languagePairIds}
-                vendor_id={vendor_id}
+                institution_partner_id={institution_partner_id}
               />
             </div>
           )
         },
       }),
     ],
-    [filters, skillsData, t, vendor_id]
+    [filters, skillsData, t, institution_partner_id]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ) as ColumnDef<any>[]
 
@@ -236,10 +222,10 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           title={
             <div className={classes.pricesDataTableHeader}>
               <h4>{t('vendors.vendor_price_list_title')}</h4>
-              <VendorPriceManagementButton
+              <InstitutionPartnerPriceManagementButton
                 languageDirectionKey="new"
                 filters={filters}
-                vendor_id={vendor_id}
+                institution_partner_id={institution_partner_id}
               />
             </div>
           }
@@ -258,4 +244,4 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   )
 }
 
-export default VendorPriceListForm
+export default InstitutionPartnerPriceListForm

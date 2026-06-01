@@ -3,7 +3,7 @@ import LanguageLabels from 'components/atoms/LanguageLabels/LanguageLabels'
 import { Root } from '@radix-ui/react-form'
 import VendorPricesTable from 'components/organisms/tables/VendorPricesTable/VendorPricesTable'
 
-type VendorPriceListEditContentProps<TFormValues extends FieldValues> = {
+type PriceListEditContentProps<TFormValues extends FieldValues> = {
   control: Control<TFormValues>
   srcLanguageValue?: string
   dstLanguageValues?: string[]
@@ -13,7 +13,7 @@ type VendorPriceListEditContentProps<TFormValues extends FieldValues> = {
   getValues: UseFormGetValues<TFormValues>
 }
 
-function VendorPriceListEditContent<TFormValues extends FieldValues>({
+function PriceListEditContent<TFormValues extends FieldValues>({
   control,
   srcLanguageValue,
   dstLanguageValues,
@@ -21,7 +21,7 @@ function VendorPriceListEditContent<TFormValues extends FieldValues>({
   languageOptions,
   skillId,
   getValues,
-}: VendorPriceListEditContentProps<TFormValues>) {
+}: PriceListEditContentProps<TFormValues>) {
   return (
     <>
       <LanguageLabels<TFormValues>
@@ -42,4 +42,4 @@ function VendorPriceListEditContent<TFormValues extends FieldValues>({
   )
 }
 
-export default VendorPriceListEditContent
+export default PriceListEditContent

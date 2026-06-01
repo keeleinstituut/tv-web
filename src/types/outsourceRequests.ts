@@ -1,4 +1,5 @@
 import { AssignmentType } from 'types/assignments'
+import { ResponseMetaTypes } from 'types/collective'
 
 export enum OutsourceRequestPriceMode {
   PricelistBased = 'PRICELIST_BASED',
@@ -50,6 +51,61 @@ export interface InstitutionPartner {
   created_at: string
   updated_at: string
   partner_institution?: Institution | null
+  discount_percentage_0_49: string | null
+  discount_percentage_50_74: string | null
+  discount_percentage_75_84: string | null
+  discount_percentage_85_94: string | null
+  discount_percentage_95_99: string | null
+  discount_percentage_100: string | null
+  discount_percentage_101: string | null
+  discount_percentage_repetitions: string | null
+}
+
+export type InstitutionPartnerResponse = { data: InstitutionPartner }
+
+export type UpdateInstitutionPartnerPayload = {
+  discount_percentage_0_49?: number
+  discount_percentage_50_74?: number
+  discount_percentage_75_84?: number
+  discount_percentage_85_94?: number
+  discount_percentage_95_99?: number
+  discount_percentage_100?: number
+  discount_percentage_101?: number
+  discount_percentage_repetitions?: number
+}
+
+export type InstitutionPartnerPrice = {
+  id: string
+  institution_partner_id: string
+  skill_id: string
+  src_lang_classifier_value_id: string
+  dst_lang_classifier_value_id: string
+  character_fee: number
+  word_fee: number
+  page_fee: number
+  minute_fee: number
+  hour_fee: number
+  minimal_fee: number
+  created_at: string
+  updated_at: string
+  skill?: { id: string; name: string }
+  source_language_classifier_value?: { name: string; id?: string }
+  destination_language_classifier_value?: { name: string; id?: string }
+}
+
+export type InstitutionPartnerPricesFilters = {
+  institution_partner_id?: string
+  lang_pair?: { src?: string; dst?: string }[]
+  per_page?: number
+  page?: number
+  sort_by?: string
+  sort_order?: 'asc' | 'desc'
+}
+
+export type InstitutionPartnerPricesData = {
+  data: InstitutionPartnerPrice[]
+  meta?: ResponseMetaTypes
+  aggregation?: { min_created_at?: string; max_updated_at?: string }
 }
 
 export interface InstitutionPartnerFilters {
