@@ -99,9 +99,6 @@ const Step2RequestConditions: FC<Step2Props> = ({ draft, onChange }) => {
 
   return (
     <div className={classes.stepBody}>
-      <h2 className={classes.stepTitle}>{t('requests.wizard_step_2')}</h2>
-      <p className={classes.stepHint}>{t('requests.step2_subtitle')}</p>
-
       <div className={classes.formRow}>
         <span className={classes.rowLabel}>
           {t('requests.cascade_mode_label')}

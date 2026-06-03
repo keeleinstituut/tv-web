@@ -63,11 +63,6 @@ const Step4PriceAndVolume: FC<Step4Props> = ({
 
   return (
     <div className={classes.stepBody}>
-      <h2 className={classes.stepTitle}>{t('requests.step4_title')}</h2>
-      <div className={classes.stepHintGroup}>
-        <p className={classes.stepHint}>{t('requests.step4_subtitle_1')}</p>
-        <p className={classes.stepHint}>{t('requests.step4_subtitle_2')}</p>
-      </div>
 
       <div className={classes.formRow}>
         <span className={classes.rowLabel}>

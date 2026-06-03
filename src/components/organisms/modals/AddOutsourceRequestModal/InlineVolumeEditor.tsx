@@ -24,7 +24,7 @@ import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
 import { useAssignmentRemoveVolume } from 'hooks/requests/useVolumes'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
 import { VolumeValue } from 'types/volumes'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useMemo } from 'react'
 
 import classes from './classes.module.scss'

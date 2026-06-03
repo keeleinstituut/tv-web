@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react'
+import { FC, ReactElement, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { map } from 'lodash'
 import dayjs from 'dayjs'
@@ -32,14 +32,14 @@ import {
   createEmptyDraft,
 } from './types'
 
-export interface ComposeProjectRequestModalProps {
+export interface AddOutsourceRequestModalProps {
   isModalOpen?: boolean
   closeModal: () => void
   assignmentId: string
   sub_project_id: string
 }
 
-const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
+const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
   isModalOpen,
   closeModal,
   assignmentId,
@@ -68,6 +68,34 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
     closeModal()
     reset()
   }, [closeModal, reset])
+
+  const stepConfig = useMemo(
+    (): Record<WizardStep, { title: string; helperText: string | ReactElement }> => ({
+      [WizardStep.VendorSelection]: {
+        title: t('requests.compose_title'),
+        helperText: t('requests.select_external_vendors_hint'),
+      },
+      [WizardStep.RequestConditions]: {
+        title: t('requests.wizard_step_2'),
+        helperText: t('requests.step2_subtitle'),
+      },
+      [WizardStep.RelatedFiles]: {
+        title: t('requests.step3_title'),
+        helperText: t('requests.step3_subtitle'),
+      },
+      [WizardStep.PriceAndVolume]: {
+        title: t('requests.step4_title'),
+        helperText: (
+          <>
+            {t('requests.step4_subtitle_1')}
+            <br />
+            {t('requests.step4_subtitle_2')}
+          </>
+        ),
+      },
+    }),
+    [t]
+  )
 
   const currentIndex = WIZARD_STEPS.indexOf(step)
   const isLastStep = currentIndex === WIZARD_STEPS.length - 1
@@ -153,10 +181,12 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
   return (
     <ModalBase
       open={!!isModalOpen}
+      title={stepConfig[step].title}
+      helperText={stepConfig[step].helperText}
       titleFont={TitleFontTypes.Gray}
       size={ModalSizeTypes.ExtraLarge}
       buttonsPosition={ButtonPositionTypes.SpaceBetween}
-      headComponent={<StepIndicator current={step} />}
+      progressBar={<StepIndicator current={step} />}
       buttons={[
         {
           appearance: AppearanceTypes.Secondary,
@@ -205,4 +235,4 @@ const ComposeProjectRequestModal: FC<ComposeProjectRequestModalProps> = ({
   )
 }
 
-export default ComposeProjectRequestModal
+export default AddOutsourceRequestModal

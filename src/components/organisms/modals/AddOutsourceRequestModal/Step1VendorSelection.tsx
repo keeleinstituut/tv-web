@@ -107,11 +107,6 @@ const Step1VendorSelection: FC<Step1VendorSelectionProps> = ({
 
   return (
     <div className={classes.stepBody}>
-      <h2 className={classes.stepTitle}>{t('requests.compose_title')}</h2>
-      <p className={classes.stepHint}>
-        {t('requests.select_external_vendors_hint')}
-      </p>
-
       <div className={classes.fieldGroup}>
         <span className={classes.fieldLabel}>
           {t('requests.select_organisation')}

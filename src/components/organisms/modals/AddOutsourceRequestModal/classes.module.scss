@@ -6,8 +6,7 @@
   align-items: stretch;
   background-color: variables.$color-background;
   border-radius: 5px;
-  padding: variables.spacing(2);
-  margin: 0 variables.spacing(6) variables.spacing(6);
+  margin: 0;
 }
 
 .step {
@@ -68,6 +67,7 @@
   flex-direction: column;
   gap: variables.spacing(6);
   padding-top: variables.spacing(4);
+  padding-bottom: variables.spacing(16);
 }
 
 .stepTitle {
@@ -268,7 +268,6 @@
 
 .fileList {
   list-style: none;
-  padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;

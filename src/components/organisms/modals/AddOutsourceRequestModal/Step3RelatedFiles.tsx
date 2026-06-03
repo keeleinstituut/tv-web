@@ -68,9 +68,6 @@ const Step3RelatedFiles: FC<Step3Props> = ({
 
   return (
     <div className={classes.stepBody}>
-      <h2 className={classes.stepTitle}>{t('requests.step3_title')}</h2>
-      <p className={classes.stepHint}>{t('requests.step3_subtitle')}</p>
-
       <div className={classes.formRow}>
         <span className={classes.rowLabel}>
           {t('requests.share_project_files')}

@@ -39,7 +39,7 @@ import { ConfirmSendToPreviousAssignmentModalProps } from './ConfirmSendToPrevio
 import { TranslationMemoryBulkExportModalProps } from './TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal'
 import { EmoSchedulesModalProps } from './EmoSchedulesModal/EmoSchedulesModal'
 import { VendorAbsencesModalProps } from './VendorAbsencesModal/VendorAbsencesModal'
-import { ComposeProjectRequestModalProps } from './ComposeProjectRequestModal/ComposeProjectRequestModal'
+import { AddOutsourceRequestModalProps } from './AddOutsourceRequestModal/AddOutsourceRequestModal'
 import { ConfirmDeclineOfferModalProps } from './ConfirmDeclineOfferModal/ConfirmDeclineOfferModal'
 import { SelectOutsourceOfferModalProps } from './SelectOutsourceOfferModal/SelectOutsourceOfferModal'
 import { ConfirmCancelRequestModalProps } from './ConfirmCancelRequestModal/ConfirmCancelRequestModal'
@@ -158,8 +158,8 @@ const VendorAbsencesModal = lazy(
   () => import('./VendorAbsencesModal/VendorAbsencesModal')
 )
 
-const ComposeProjectRequestModal = lazy(
-  () => import('./ComposeProjectRequestModal/ComposeProjectRequestModal')
+const AddOutsourceRequestModal = lazy(
+  () => import('./AddOutsourceRequestModal/AddOutsourceRequestModal')
 )
 
 const ConfirmDeclineOfferModal = lazy(
@@ -222,7 +222,7 @@ export enum ModalTypes {
   TranslationMemoryBulkExportModal = 'translationMemoryBulkExportModal',
   EmoSchedules = 'emoSchedules',
   VendorAbsences = 'vendorAbsences',
-  ComposeProjectRequest = 'composeProjectRequest',
+  AddOutsourceRequest = 'addOutsourceRequest',
   ConfirmDeclineRequest = 'confirmDeclineRequest',
   SelectOutsourceOffer = 'selectOutsourceOffer',
   ConfirmCancelRequest = 'confirmCancelRequest',
@@ -264,7 +264,7 @@ type ModalPropTypes =
   | Omit<TranslationMemoryBulkExportModalProps, 'closeModal'>
   | Omit<EmoSchedulesModalProps, 'closeModal'>
   | Omit<VendorAbsencesModalProps, 'closeModal'>
-  | Omit<ComposeProjectRequestModalProps, 'closeModal'>
+  | Omit<AddOutsourceRequestModalProps, 'closeModal'>
   | Omit<ConfirmDeclineOfferModalProps, 'closeModal'>
   | Omit<SelectOutsourceOfferModalProps, 'closeModal'>
   | Omit<ConfirmCancelRequestModalProps, 'closeModal'>
@@ -307,7 +307,7 @@ const MODALS = {
     TranslationMemoryBulkExportModal,
   [ModalTypes.EmoSchedules]: EmoSchedulesModal,
   [ModalTypes.VendorAbsences]: VendorAbsencesModal,
-  [ModalTypes.ComposeProjectRequest]: ComposeProjectRequestModal,
+  [ModalTypes.AddOutsourceRequest]: AddOutsourceRequestModal,
   [ModalTypes.ConfirmDeclineRequest]: ConfirmDeclineOfferModal,
   [ModalTypes.SelectOutsourceOffer]: SelectOutsourceOfferModal,
   [ModalTypes.ConfirmCancelRequest]: ConfirmCancelRequestModal,

@@ -129,7 +129,7 @@ const Assignment: FC<AssignmentProps> = ({
   ])
 
   const handleOpenComposeRequestModal = useCallback(() => {
-    showModal(ModalTypes.ComposeProjectRequest, {
+    showModal(ModalTypes.AddOutsourceRequest, {
       assignmentId: id,
       sub_project_id,
     })
