@@ -93,8 +93,14 @@ const OutsourceRequestsSection: FC<OutsourceRequestsSectionProps> = ({
   )
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(
-    () => new Set(sortedRequests.length ? [sortedRequests[0].id] : [])
+    () => new Set(sortedRequests[0]?.id ? [sortedRequests[0].id] : [])
   )
+  const [prevFirstId, setPrevFirstId] = useState(sortedRequests[0]?.id)
+
+  if (sortedRequests[0]?.id !== prevFirstId) {
+    setPrevFirstId(sortedRequests[0]?.id)
+    setExpandedIds(new Set(sortedRequests[0]?.id ? [sortedRequests[0].id] : []))
+  }
 
   const toggleRequest = useCallback((id: string) => {
     setExpandedIds((prev) => {
@@ -168,8 +174,6 @@ const OutsourceRequestsSection: FC<OutsourceRequestsSectionProps> = ({
       ] as ColumnDef<Row>[],
     [t, handleOpenResponseModal]
   )
-
-  if (!sortedRequests.length) return null
 
   return (
     <div className={classNames(classes.container, className)}>

@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import dayjs from 'dayjs'
-import { find, includes } from 'lodash'
+import { find, includes, map } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useForm } from 'react-hook-form'
 
@@ -17,11 +17,9 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
-import PersonSection, {
-  PersonSectionTypes,
-} from 'components/molecules/PersonSection/PersonSection'
 import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
 import ProjectFilesSection from 'components/molecules/ProjectFilesSection/ProjectFilesSection'
+import RequestFilesList from 'components/molecules/RequestFilesList/RequestFilesList'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType, HelperFileTypes } from 'types/classifierValues'
 import { SourceFile } from 'types/projects'
@@ -31,6 +29,7 @@ import {
   useFetchOutsourceOffer,
 } from 'hooks/requests/useProjectRequests'
 import { OutsourceOfferStatus } from 'types/outsourceRequests'
+import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
 
 import classes from './classes.module.scss'
 
@@ -107,6 +106,7 @@ const OutsourceOfferDetailPage: FC = () => {
   const [responseComment, setResponseComment] = useState('')
 
   const outsourceRequest = offer?.outsource_request
+  const volumes = outsourceRequest?.assignment?.volumes ?? []
   const priceInputNeeded = offer?.price == null
 
   const handleAccept = useCallback(async () => {
@@ -151,10 +151,12 @@ const OutsourceOfferDetailPage: FC = () => {
   const clientComment =
     outsourceRequest?.cancellation_reason ?? offer.rejection_comment ?? null
 
-  const client =
-    outsourceRequest?.assignment?.subProject?.project?.client_institution_user
-  const clientName =
-    [client?.user?.forename, client?.user?.surname].filter(Boolean).join(' ') ||
+  const manager =
+    outsourceRequest?.assignment?.subProject?.project?.manager_institution_user
+  const requestOwnerInstitution = outsourceRequest?.owner_institution
+
+  const managerName =
+    [manager?.user?.forename, manager?.user?.surname].filter(Boolean).join(' ') ||
     undefined
 
     return (
@@ -176,28 +178,33 @@ const OutsourceOfferDetailPage: FC = () => {
           <div className={classes.requestDetailsGrid}>
             <div className={classes.detailsColumn}>
               <h3>{t('requests.subsection_request_data') as string}</h3>
-              <DetailsRow label={t('label.name')} value={clientName} labelClass={classes.labelClass} valueClass={classes.boldText} />
+              <DetailsRow
+                label={t('label.name')}
+                value={managerName ?? '-'}
+                labelClass={classes.labelClass}
+                valueClass={classes.boldText}
+              />
               <DetailsRow
                 label={t('label.institution')}
-                value={client?.institution?.name}
+                value={manager?.institution?.name ?? requestOwnerInstitution?.name ?? '-'}
                 labelClass={classes.labelClass}
                 valueClass={classes.boldText}
               />
               <DetailsRow
                 label={t('label.department')}
-                value={client?.department?.name}
+                value={manager?.department?.name ?? '-'}
                 labelClass={classes.labelClass}
                 valueClass={classes.boldText}
               />
               <DetailsRow
                 label={t('label.email')}
-                value={client?.email}
+                value={manager?.email ?? requestOwnerInstitution?.email ?? '-'}
                 labelClass={classes.labelClass}
                 valueClass={classes.boldText}
               />
               <DetailsRow
                 label={t('label.phone')}
-                value={client?.phone}
+                value={manager?.phone ?? requestOwnerInstitution?.phone ?? '-'}
                 labelClass={classes.labelClass}
                 valueClass={classes.boldText}
               />
@@ -238,27 +245,32 @@ const OutsourceOfferDetailPage: FC = () => {
         initialIsExpanded
       >
         <div className={classes.contentWrapper}>
-          <div className={classes.managerContainer}>
-            <PersonSection
-              type={PersonSectionTypes.Manager}
-              control={control}
-              selectedUser={project?.manager_institution_user}
-              selectedUserId={project?.manager_institution_user?.id}
-              isEditable={false}
-            />
-          </div>
           <div className={classes.projectDetailsContainer}>
-            <DetailsSection
-              control={control}
-              isNew={false}
-              isEditable={false}
-              workflow_started={project?.workflow_started}
-            />
-            <ProjectFilesSection
-              projectId={project?.id ?? ''}
-              control={control}
-              isEditable={false}
-            />
+            <div>
+              <DetailsSection
+                control={control}
+                isNew={false}
+                isEditable={false}
+                workflow_started={project?.workflow_started}
+              />
+              {map(volumes, (volume, index) => (
+                <div key={volume.id} className={classes.volumeRow}>
+                  <span>{index === 0 ? t('label.volume') : ''}</span>
+                  <span>{`${Number(volume.unit_quantity)} ${t(`label.${apiTypeToKey(volume.unit_type)}`)}${volume.cat_job ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <ProjectFilesSection
+                projectId={project?.id ?? ''}
+                control={control}
+                isEditable={false}
+              />
+              <RequestFilesList
+                files={outsourceRequest?.media ?? []}
+                title={t('requests.field_request_files')}
+              />
+            </div>
           </div>
         </div>
       </ExpandableContentContainer>

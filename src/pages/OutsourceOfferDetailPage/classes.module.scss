@@ -29,6 +29,7 @@
   grid-template-columns: 1fr 1fr;
   grid-gap: variables.spacing(10);
   padding: variables.spacing(4);
+  align-items: start;
 }
 
 // Manager section — matches ProjectDetails .peopleContainer in viewModeWrapper
@@ -164,6 +165,16 @@
     width: 100%;
     min-height: 240px;
     box-sizing: border-box;
+  }
+}
+
+.volumeRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: variables.spacing(2);
+
+  :last-child {
+    font-weight: variables.$font-weight-bold;
   }
 }
 

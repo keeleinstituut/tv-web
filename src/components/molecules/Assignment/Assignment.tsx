@@ -206,11 +206,13 @@ const Assignment: FC<AssignmentProps> = ({
           }}
         />
       </div>
-      <OutsourceRequestsSection
-        requests={outsourceRequests}
-        isAssignmentFinished={isAssignmentFinished}
-        className={classes.fullWidth}
-      />
+      {outsourceRequests.length > 0 && (
+        <OutsourceRequestsSection
+          requests={outsourceRequests}
+          isAssignmentFinished={isAssignmentFinished}
+          className={classes.fullWidth}
+        />
+      )}
       <div className={classes.formButtons}>
         <Button
           appearance={AppearanceTypes.Secondary}

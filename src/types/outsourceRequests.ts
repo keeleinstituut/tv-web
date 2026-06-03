@@ -1,5 +1,6 @@
 import { AssignmentType } from 'types/assignments'
 import { ResponseMetaTypes } from 'types/collective'
+import { SourceFile } from 'types/projects'
 
 export enum OutsourceRequestPriceMode {
   PricelistBased = 'PRICELIST_BASED',
@@ -151,7 +152,7 @@ export interface OutsourceRequest {
   is_cascade_exhausted: boolean
   offers?: OutsourceOffer[]
   assignment?: AssignmentType | null
-  media?: unknown[] | null
+  media?: SourceFile[] | null
   created_at: string
   updated_at: string
 }

@@ -1087,6 +1087,7 @@
     "field_status": "Staatus",
     "field_client_comment": "Tellija kommentaar",
     "field_source_files": "Lähtefailid",
+    "field_request_files": "Päringu failid",
     "decline_modal_title": "Kas oled kindel, et soovid päringust keelduda?",
     "decline_modal_helper": "Päringust keeldumiseks sisesta põhjus.",
     "decline_comment_placeholder": "Põhjus",
