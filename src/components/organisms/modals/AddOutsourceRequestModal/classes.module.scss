@@ -159,6 +159,71 @@
   color: variables.$color-dark;
 }
 
+.vendorPrice {
+  width: 80px;
+  text-align: left;
+  color: variables.$color-text-dark;
+  font-size: 16px;
+}
+
+.vendorTableHeader {
+  display: flex;
+  align-items: center;
+  padding: variables.spacing(1) 0;
+  font-size: variables.$font-size-14;
+}
+
+.vendorTableHeaderName {
+  flex: 1;
+}
+
+.vendorTableHeaderPrice {
+  width: 80px;
+  text-align: left;
+  padding-right: variables.spacing(4);
+}
+
+.fileTableHeader {
+  padding: variables.spacing(1) 0;
+  border-bottom: 1px solid variables.$color-border;
+  font-size: variables.$font-size-14;
+}
+
+.summaryFileItem {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(3);
+  padding: variables.spacing(2) 0;
+  border-bottom: 1px solid variables.$color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.summaryFileIcon {
+  flex: 0 0 auto;
+  color: variables.$color-primary;
+  width: 20px;
+  height: 20px;
+}
+
+.summaryFileName {
+  font-size: 14px;
+  color: variables.$color-text-dark;
+}
+
+.summaryVolumeList {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(1);
+}
+
+.summaryVolumeItem {
+  font-size: 16px;
+  color: variables.$color-text-dark;
+}
+
 .formRow {
   display: flex;
   align-items: flex-start;

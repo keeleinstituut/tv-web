@@ -7,7 +7,7 @@ import { useFetchTranslationMemory } from 'hooks/requests/useTranslationMemories
 import { includes } from 'lodash'
 import { useFetchHistoryTask, useFetchTask } from 'hooks/requests/useTasks'
 import { useFetchProject } from 'hooks/requests/useProjects'
-import { useFetchOutsourceOffer } from 'hooks/requests/useProjectRequests'
+import { useFetchOutsourceOffer } from 'hooks/requests/useOutsourceRequests'
 import { useFetchInstitutionPartner } from 'hooks/requests/useInstitutionPartners'
 
 interface idTypes {

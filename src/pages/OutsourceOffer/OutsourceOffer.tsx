@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import OutsourceOffersTable from 'components/organisms/tables/OutsourceOffersTable/OutsourceOffersTable'
-import { useFetchOutsourceOffers } from 'hooks/requests/useProjectRequests'
+import { useFetchOutsourceOffers } from 'hooks/requests/useOutsourceRequests'
 
 import classes from './classes.module.scss'
 

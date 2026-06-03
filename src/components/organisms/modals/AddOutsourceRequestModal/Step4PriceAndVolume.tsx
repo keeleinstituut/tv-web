@@ -6,12 +6,12 @@ import SelectionControlsInput from 'components/organisms/SelectionControlsInput/
 import { OutsourceRequestPriceMode } from 'types/outsourceRequests'
 
 import classes from './classes.module.scss'
-import { ComposeProjectRequestDraft } from './types'
+import { AddOutsourceRequestDraft } from './types'
 import InlineVolumeEditor from './InlineVolumeEditor'
 
 interface Step4Props {
-  draft: ComposeProjectRequestDraft
-  onChange: (patch: Partial<ComposeProjectRequestDraft>) => void
+  draft: AddOutsourceRequestDraft
+  onChange: (patch: Partial<AddOutsourceRequestDraft>) => void
   assignmentId: string
   sub_project_id: string
 }

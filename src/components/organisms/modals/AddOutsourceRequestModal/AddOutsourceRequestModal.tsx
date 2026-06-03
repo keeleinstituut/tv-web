@@ -12,7 +12,7 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { useCreateOutsourceRequest } from 'hooks/requests/useProjectRequests'
+import { useCreateOutsourceRequest } from 'hooks/requests/useOutsourceRequests'
 import {
   CreateOutsourceRequestPayload,
   OutsourceRequestMode,
@@ -24,8 +24,9 @@ import Step1VendorSelection from './Step1VendorSelection'
 import Step2RequestConditions from './Step2RequestConditions'
 import Step3RelatedFiles from './Step3RelatedFiles'
 import Step4PriceAndVolume from './Step4PriceAndVolume'
+import Step5Summary from './Step5Summary'
 import {
-  ComposeProjectRequestDraft,
+  AddOutsourceRequestDraft,
   WIZARD_STEPS,
   WizardStep,
   createEmptyDraft,
@@ -48,12 +49,12 @@ const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
   const { t } = useTranslation()
   const [step, setStep] = useState<WizardStep>(WizardStep.VendorSelection)
   const [draft, setDraft] =
-    useState<ComposeProjectRequestDraft>(createEmptyDraft)
+    useState<AddOutsourceRequestDraft>(createEmptyDraft)
   const [files, setFiles] = useState<File[]>([])
   const { createOutsourceRequest, isLoading } = useCreateOutsourceRequest()
 
   const updateDraft = useCallback(
-    (patch: Partial<ComposeProjectRequestDraft>) =>
+    (patch: Partial<AddOutsourceRequestDraft>) =>
       setDraft((prev) => ({ ...prev, ...patch })),
     []
   )
@@ -92,6 +93,10 @@ const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
             {t('requests.step4_subtitle_2')}
           </>
         ),
+      },
+      [WizardStep.Summary]: {
+        title: t('requests.step5_title'),
+        helperText: '',
       },
     }),
     [t]
@@ -233,6 +238,15 @@ const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
             onChange={updateDraft}
             assignmentId={assignmentId}
             sub_project_id={sub_project_id}
+          />
+        )}
+        {step === WizardStep.Summary && (
+          <Step5Summary
+            draft={draft}
+            files={files}
+            assignmentId={assignmentId}
+            sub_project_id={sub_project_id}
+            onChange={(recipients) => updateDraft({ recipients })}
           />
         )}
       </Root>

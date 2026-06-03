@@ -18,7 +18,7 @@ import i18n from 'i18n/i18n'
 import {
   useFetchOutsourceRequest,
   useSelectOutsourceOffer,
-} from 'hooks/requests/useProjectRequests'
+} from 'hooks/requests/useOutsourceRequests'
 import { OutsourceOfferStatus } from 'types/outsourceRequests'
 
 import classes from './classes.module.scss'

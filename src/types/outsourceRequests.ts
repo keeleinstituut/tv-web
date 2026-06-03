@@ -182,6 +182,11 @@ export interface CancelOutsourceRequestPayload {
   cancellation_reason: string
 }
 
+export interface OutsourceRequestPreviewOffer {
+  institution_id: string
+  price: number | null
+}
+
 export interface SelectOutsourceOfferPayload {
   offer_id: string
   rejection_comments: Array<{ offer_id: string; rejection_comment: string }>

@@ -10,7 +10,7 @@ import TextInput from 'components/molecules/TextInput/TextInput'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import { useDeclineOutsourceOffer } from 'hooks/requests/useProjectRequests'
+import { useDeclineOutsourceOffer } from 'hooks/requests/useOutsourceRequests'
 
 export interface ConfirmDeclineOfferModalProps extends ConfirmationModalBaseProps {
   offerId: string

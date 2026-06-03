@@ -18,12 +18,12 @@ import {
 } from 'components/organisms/FileImport/FileImport'
 
 import classes from './classes.module.scss'
-import { ComposeProjectRequestDraft } from './types'
+import { AddOutsourceRequestDraft } from './types'
 
 interface Step3Props {
-  draft: ComposeProjectRequestDraft
+  draft: AddOutsourceRequestDraft
   files: File[]
-  onChange: (patch: Partial<ComposeProjectRequestDraft>) => void
+  onChange: (patch: Partial<AddOutsourceRequestDraft>) => void
   onFilesChange: (files: File[]) => void
 }
 

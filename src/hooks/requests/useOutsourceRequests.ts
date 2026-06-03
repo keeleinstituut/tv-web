@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { map } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import useFilters from 'hooks/useFilters'
@@ -12,6 +13,8 @@ import {
   OutsourceOfferFilters,
   OutsourceRequest,
   OutsourceRequestFilters,
+  OutsourceRequestPreviewOffer,
+  OutsourceRequestPriceMode,
   SelectOutsourceOfferPayload,
 } from 'types/outsourceRequests'
 
@@ -248,4 +251,33 @@ export const useSelectOutsourceOffer = (id: string) => {
   })
 
   return { selectOutsourceOffer, isLoading }
+}
+
+export const useOutsourceRequestPreviewPrices = ({
+  assignmentId,
+  offers,
+  priceMode,
+  price,
+  enabled = true,
+}: {
+  assignmentId: string
+  offers: { institution_id: string }[]
+  priceMode: OutsourceRequestPriceMode
+  price?: number
+  enabled?: boolean
+}) => {
+  const { data, isLoading } = useQuery<{ data: OutsourceRequestPreviewOffer[] }>({
+    queryKey: ['outsource-preview-prices', assignmentId, offers, priceMode, price],
+    queryFn: () =>
+      apiClient.put(endpoints.OUTSOURCE_REQUEST_PREVIEW_PRICES, {
+        assignment_id: assignmentId,
+        offers: map(offers, (o) => ({ institution_id: o.institution_id })),
+        price_mode: priceMode,
+        price: priceMode === OutsourceRequestPriceMode.FixedPrice ? price : undefined,
+      }),
+    enabled: enabled && offers.length > 0,
+    keepPreviousData: true,
+  })
+
+  return { previewOffers: data?.data ?? [], isLoading }
 }

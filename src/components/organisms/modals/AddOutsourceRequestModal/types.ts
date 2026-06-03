@@ -5,7 +5,7 @@ export interface DraftRecipient {
   institution_name: string
 }
 
-export interface ComposeProjectRequestDraft {
+export interface AddOutsourceRequestDraft {
   recipients: DraftRecipient[]
   cascade_mode: boolean
   reaction_time_minutes?: ReactionTimeMinutes
@@ -16,7 +16,7 @@ export interface ComposeProjectRequestDraft {
   price?: number
 }
 
-export const createEmptyDraft = (): ComposeProjectRequestDraft => ({
+export const createEmptyDraft = (): AddOutsourceRequestDraft => ({
   recipients: [],
   cascade_mode: false,
   reaction_time_minutes: undefined,
@@ -31,6 +31,7 @@ export enum WizardStep {
   RequestConditions = 2,
   RelatedFiles = 3,
   PriceAndVolume = 4,
+  Summary = 5,
 }
 
 export const WIZARD_STEPS: WizardStep[] = [
@@ -38,4 +39,5 @@ export const WIZARD_STEPS: WizardStep[] = [
   WizardStep.RequestConditions,
   WizardStep.RelatedFiles,
   WizardStep.PriceAndVolume,
+  WizardStep.Summary,
 ]

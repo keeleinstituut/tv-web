@@ -9,7 +9,7 @@ import ModalBase, {
 } from 'components/organisms/ModalBase/ModalBase'
 import { AppearanceTypes } from 'components/molecules/Button/Button'
 import Loader from 'components/atoms/Loader/Loader'
-import { useFetchOutsourceRequest } from 'hooks/requests/useProjectRequests'
+import { useFetchOutsourceRequest } from 'hooks/requests/useOutsourceRequests'
 
 import classes from './classes.module.scss'
 

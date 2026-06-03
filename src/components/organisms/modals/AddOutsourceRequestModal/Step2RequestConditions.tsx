@@ -15,15 +15,15 @@ import {
 } from 'types/outsourceRequests'
 
 import classes from './classes.module.scss'
-import { ComposeProjectRequestDraft } from './types'
+import { AddOutsourceRequestDraft } from './types'
 
 dayjs.extend(customParseFormat)
 
 const MAX_SPECIAL_INSTRUCTIONS = 1800
 
 interface Step2Props {
-  draft: ComposeProjectRequestDraft
-  onChange: (patch: Partial<ComposeProjectRequestDraft>) => void
+  draft: AddOutsourceRequestDraft
+  onChange: (patch: Partial<AddOutsourceRequestDraft>) => void
 }
 
 const parseIsoToParts = (iso?: string) => {

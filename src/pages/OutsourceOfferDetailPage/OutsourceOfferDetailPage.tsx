@@ -27,7 +27,7 @@ import { getProjectDefaultValues } from 'helpers/project'
 import {
   useAcceptOutsourceOffer,
   useFetchOutsourceOffer,
-} from 'hooks/requests/useProjectRequests'
+} from 'hooks/requests/useOutsourceRequests'
 import { OutsourceOfferStatus } from 'types/outsourceRequests'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
 

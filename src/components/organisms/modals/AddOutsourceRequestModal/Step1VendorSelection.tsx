@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 
-import { useFetchInstitutionPartners } from 'hooks/requests/useProjectRequests'
+import { useFetchInstitutionPartners } from 'hooks/requests/useOutsourceRequests'
 import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 
 import classes from './classes.module.scss'

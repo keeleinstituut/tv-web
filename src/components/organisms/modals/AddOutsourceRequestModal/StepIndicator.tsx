@@ -20,6 +20,7 @@ const StepIndicator: FC<StepIndicatorProps> = ({ current }) => {
     },
     { step: WizardStep.RelatedFiles, label: t('requests.wizard_step_3') },
     { step: WizardStep.PriceAndVolume, label: t('requests.wizard_step_4') },
+    { step: WizardStep.Summary, label: t('requests.wizard_step_5') },
   ]
 
   return (
