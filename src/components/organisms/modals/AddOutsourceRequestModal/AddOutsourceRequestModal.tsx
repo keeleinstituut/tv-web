@@ -5,11 +5,10 @@ import dayjs from 'dayjs'
 import { Root } from '@radix-ui/react-form'
 
 import ModalBase, {
-  ButtonPositionTypes,
   ModalSizeTypes,
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
-import { AppearanceTypes } from 'components/molecules/Button/Button'
+import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
@@ -31,6 +30,7 @@ import {
   WizardStep,
   createEmptyDraft,
 } from './types'
+import classes from './classes.module.scss'
 
 export interface AddOutsourceRequestModalProps {
   isModalOpen?: boolean
@@ -185,24 +185,29 @@ const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
       helperText={stepConfig[step].helperText}
       titleFont={TitleFontTypes.Gray}
       size={ModalSizeTypes.ExtraLarge}
-      buttonsPosition={ButtonPositionTypes.SpaceBetween}
       progressBar={<StepIndicator current={step} />}
-      buttons={[
-        {
-          appearance: AppearanceTypes.Secondary,
-          children: t('requests.cancel_button'),
-          onClick: isFirstStep ? handleCancel : handleBack,
-        },
-        {
-          appearance: AppearanceTypes.Primary,
-          children: isLastStep
-            ? t('requests.send_button')
-            : t('requests.next_step'),
-          onClick: handleNext,
-          disabled: !canAdvance || (isLoading && isLastStep),
-          loading: isLoading && isLastStep,
-        },
-      ]}
+      buttonComponent={
+        <div className={classes.footer}>
+          <Button appearance={AppearanceTypes.Secondary} onClick={handleCancel}>
+            {t('requests.cancel_button')}
+          </Button>
+          <div className={classes.footerRight}>
+            {!isFirstStep && (
+              <Button appearance={AppearanceTypes.Secondary} onClick={handleBack}>
+                {t('requests.prev_step')}
+              </Button>
+            )}
+            <Button
+              appearance={AppearanceTypes.Primary}
+              onClick={handleNext}
+              disabled={!canAdvance || (isLoading && isLastStep)}
+              loading={isLoading && isLastStep}
+            >
+              {isLastStep ? t('requests.send_button') : t('requests.next_step')}
+            </Button>
+          </div>
+        </div>
+      }
     >
       <Root onSubmit={(e) => e.preventDefault()}>
         {step === WizardStep.VendorSelection && (

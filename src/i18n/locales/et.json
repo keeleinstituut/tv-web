@@ -1059,6 +1059,7 @@
     "compose_button": "Koosta päring",
     "send_button": "Saada päring",
     "next_step": "Edasi",
+    "prev_step": "Tagasi",
     "cancel_button": "Loobun",
     "cancel_request": "Tühista päring",
     "decline_request": "Keeldu",

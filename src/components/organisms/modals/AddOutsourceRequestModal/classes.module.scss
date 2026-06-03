@@ -404,3 +404,17 @@
   align-self: flex-start;
   margin-top: variables.spacing(1);
 }
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: variables.spacing(6);
+  padding-right: variables.spacing(6);
+  padding-left: variables.spacing(6);
+}
+
+.footerRight {
+  display: flex;
+  gap: variables.spacing(2);
+}
