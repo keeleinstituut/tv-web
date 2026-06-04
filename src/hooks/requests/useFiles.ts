@@ -17,6 +17,7 @@ export enum CollectionType {
   Source = 'source',
   Help = 'help',
   Review = 'review',
+  RequestFiles = 'request_files',
 }
 
 const filesKeys: Record<
@@ -281,7 +282,7 @@ const useUpdateBulkFiles = (config: {
   }
 }
 
-const useDownloadFile = (config: {
+export const useDownloadFile = (config: {
   reference_object_id: string
   reference_object_type: string
   collection: CollectionType

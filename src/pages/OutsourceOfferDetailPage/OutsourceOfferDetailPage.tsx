@@ -269,6 +269,7 @@ const OutsourceOfferDetailPage: FC = () => {
               <RequestFilesList
                 files={outsourceRequest?.media ?? []}
                 title={t('requests.field_request_files')}
+                requestId={outsourceRequest?.id ?? ''}
               />
             </div>
           </div>
