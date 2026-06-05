@@ -134,7 +134,7 @@ const SelectOutsourceOfferModal: FC<SelectOutsourceOfferModalProps> = ({
       size={ModalSizeTypes.ExtraLarge}
       title={t('requests.winner_modal_title')}
       helperText={t('requests.winner_modal_subtitle')}
-      buttonsPosition={ButtonPositionTypes.SpaceBetween}
+      buttonsPosition={ButtonPositionTypes.Right}
       buttons={[
         {
           appearance: AppearanceTypes.Secondary,

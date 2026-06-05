@@ -9,9 +9,7 @@ import Button, {
   AppearanceTypes,
   SizeTypes,
 } from 'components/molecules/Button/Button'
-import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import Delete from 'assets/icons/delete.svg?react'
-import FileIcon from 'assets/icons/file.svg?react'
+import UploadedFilesList from 'components/molecules/UploadedFilesList/UploadedFilesList'
 import {
   ProjectFileTypes,
   acceptFileExtensions,
@@ -25,12 +23,6 @@ interface Step3Props {
   files: File[]
   onChange: (patch: Partial<AddOutsourceRequestDraft>) => void
   onFilesChange: (files: File[]) => void
-}
-
-const formatFileSize = (sizeInBytes: number): string => {
-  const kilobytes = sizeInBytes / 1024
-  if (kilobytes < 1024) return `${kilobytes.toFixed(2)} KB`
-  return `${(kilobytes / 1024).toFixed(2)} MB`
 }
 
 const Step3RelatedFiles: FC<Step3Props> = ({
@@ -111,26 +103,10 @@ const Step3RelatedFiles: FC<Step3Props> = ({
         </div>
       </div>
 
-      {files.length > 0 && (
-        <ul className={classes.fileList}>
-          {files.map((file, index) => (
-            <li key={`${file.name}-${index}`} className={classes.fileItem}>
-              <FileIcon className={classes.fileIcon} />
-              <div className={classes.fileMeta}>
-                <p className={classes.fileName}>{file.name}</p>
-                <p className={classes.fileSize}>{formatFileSize(file.size)}</p>
-              </div>
-              <BaseButton
-                onClick={() => handleDelete(index)}
-                aria-label={t('button.delete')}
-                className={classes.fileDelete}
-              >
-                <Delete />
-              </BaseButton>
-            </li>
-          ))}
-        </ul>
-      )}
+      <UploadedFilesList
+        files={files}
+        onDelete={handleDelete}
+      />
     </div>
   )
 }

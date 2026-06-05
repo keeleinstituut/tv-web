@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 
-import FileIcon from 'assets/icons/file.svg?react'
+import UploadedFilesList from 'components/molecules/UploadedFilesList/UploadedFilesList'
 import { useAssignmentCache } from 'hooks/requests/useAssignments'
 import { useOutsourceRequestPreviewPrices } from 'hooks/requests/useOutsourceRequests'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
@@ -95,20 +95,7 @@ const Step5Summary: FC<Step5SummaryProps> = ({
       <div className={classes.formRow}>
         <span className={classes.rowLabel}>{t('label.added_files')}</span>
         <div className={classes.rowContent}>
-          <div className={classes.fileTableHeader}>{t('label.tag_name')}</div>
-          {files.length === 0 ? (
-            <span>{t('requests.files_none')}</span>
-          ) : (
-            files.map((file, index) => (
-              <div
-                key={`${file.name}-${index}`}
-                className={classes.summaryFileItem}
-              >
-                <FileIcon className={classes.summaryFileIcon} />
-                <span className={classes.summaryFileName}>{file.name}</span>
-              </div>
-            ))
-          )}
+          <UploadedFilesList files={files} />
         </div>
       </div>
 

@@ -17,6 +17,7 @@ import {
   useEffect,
   useMemo,
 } from 'react'
+import { TRANSLATION_AGENCY_RESTRICTED_PRIVILEGES } from 'helpers'
 import { InstitutionDataType } from 'types/institutions'
 import { PrivilegeKey } from 'types/privileges'
 
@@ -43,6 +44,7 @@ interface AuthContextType {
   userPrivileges: PrivilegeKey[]
   institutionUserId: string
   selectedInstitutionType?: 'INSTITUTION' | 'TRANSLATION_AGENCY' | null
+  isTranslationAgency: boolean
   institutions: InstitutionDataType[]
   openInstitutionSelectModal: (
     props: Partial<InstitutionSelectModalProps>
@@ -60,6 +62,7 @@ const authContextDefaultValues: AuthContextType = {
   userPrivileges: [],
   institutionUserId: '',
   selectedInstitutionType: undefined,
+  isTranslationAgency: false,
   institutions: [],
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   openInstitutionSelectModal: () => {},
@@ -206,7 +209,13 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
       tolkevarav: user,
     }
   }, [user])
-  const userPrivileges = useMemo(() => user?.privileges || [], [user])
+  const userPrivileges = useMemo(() => {
+    const raw = user?.privileges || []
+    const isTA = user?.selectedInstitution?.type === 'TRANSLATION_AGENCY'
+    return isTA
+      ? raw.filter((p: PrivilegeKey) => !TRANSLATION_AGENCY_RESTRICTED_PRIVILEGES.includes(p))
+      : raw
+  }, [user])
   const institutionUserId = user?.institutionUserId || ''
   const selectedInstitutionType = user?.selectedInstitution?.type
   const initializing = contextQuery.isLoading
@@ -270,6 +279,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
       userPrivileges,
       institutionUserId,
       selectedInstitutionType,
+      isTranslationAgency: selectedInstitutionType === 'TRANSLATION_AGENCY',
       initializing,
       institutions,
       openInstitutionSelectModal,

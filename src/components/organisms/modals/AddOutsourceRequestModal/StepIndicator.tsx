@@ -7,9 +7,11 @@ import { WizardStep } from './types'
 
 interface StepIndicatorProps {
   current: WizardStep
+  maxStep: WizardStep
+  onStepClick?: (step: WizardStep) => void
 }
 
-const StepIndicator: FC<StepIndicatorProps> = ({ current }) => {
+const StepIndicator: FC<StepIndicatorProps> = ({ current, maxStep, onStepClick }) => {
   const { t } = useTranslation()
 
   const steps: Array<{ step: WizardStep; label: string }> = [
@@ -27,10 +29,18 @@ const StepIndicator: FC<StepIndicatorProps> = ({ current }) => {
     <div className={classes.stepIndicator}>
       {steps.map(({ step, label }) => {
         const isActive = step === current
+        const isCompleted = step !== current && step <= maxStep
         return (
           <div
             key={step}
-            className={classNames(classes.step, isActive && classes.stepActive)}
+            className={classNames(
+              classes.step,
+              isActive && classes.stepActive,
+              isCompleted && classes.stepCompleted,
+            )}
+            onClick={
+              isCompleted && onStepClick ? () => onStepClick(step) : undefined
+            }
           >
             <span className={classes.stepNumber}>{step}</span>
             <span className={classes.stepLabel}>{label}</span>

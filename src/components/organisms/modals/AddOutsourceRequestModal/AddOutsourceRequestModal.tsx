@@ -33,6 +33,22 @@ import {
 } from './types'
 import classes from './classes.module.scss'
 
+const getCanAdvance = (
+  targetStep: WizardStep,
+  draft: AddOutsourceRequestDraft
+): boolean => {
+  if (targetStep === WizardStep.VendorSelection)
+    return draft.recipients.length > 0
+  if (targetStep === WizardStep.RequestConditions) {
+    if (draft.cascade_mode) return draft.reaction_time_minutes !== undefined
+    return (
+      !!draft.response_deadline_at &&
+      dayjs(draft.response_deadline_at).isAfter(dayjs())
+    )
+  }
+  return true
+}
+
 export interface AddOutsourceRequestModalProps {
   isModalOpen?: boolean
   closeModal: () => void
@@ -48,6 +64,7 @@ const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
 }) => {
   const { t } = useTranslation()
   const [step, setStep] = useState<WizardStep>(WizardStep.VendorSelection)
+  const [maxStep, setMaxStep] = useState<WizardStep>(WizardStep.VendorSelection)
   const [draft, setDraft] =
     useState<AddOutsourceRequestDraft>(createEmptyDraft)
   const [files, setFiles] = useState<File[]>([])
@@ -61,6 +78,7 @@ const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
 
   const reset = useCallback(() => {
     setStep(WizardStep.VendorSelection)
+    setMaxStep(WizardStep.VendorSelection)
     setDraft(createEmptyDraft())
     setFiles([])
   }, [])
@@ -106,21 +124,13 @@ const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
   const isLastStep = currentIndex === WIZARD_STEPS.length - 1
   const isFirstStep = currentIndex === 0
 
-  const canAdvance = (() => {
-    if (step === WizardStep.VendorSelection) return draft.recipients.length > 0
-    if (step === WizardStep.RequestConditions) {
-      if (draft.cascade_mode) return draft.reaction_time_minutes !== undefined
-      return (
-        !!draft.response_deadline_at &&
-        dayjs(draft.response_deadline_at).isAfter(dayjs())
-      )
-    }
-    return true
-  })()
+  const canAdvance = getCanAdvance(step, draft)
 
   const handleNext = useCallback(async () => {
     if (!isLastStep) {
-      setStep(WIZARD_STEPS[currentIndex + 1])
+      const nextStep = WIZARD_STEPS[currentIndex + 1]
+      setStep(nextStep)
+      setMaxStep((prev) => (nextStep > prev ? nextStep : prev))
       return
     }
 
@@ -183,6 +193,19 @@ const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
     }
   }, [isFirstStep, currentIndex])
 
+  const handleStepClick = useCallback(
+    (targetStep: WizardStep) => {
+      const targetIndex = WIZARD_STEPS.indexOf(targetStep)
+      if (targetIndex > currentIndex) {
+        for (let i = currentIndex; i < targetIndex; i++) {
+          if (!getCanAdvance(WIZARD_STEPS[i], draft)) return
+        }
+      }
+      setStep(targetStep)
+    },
+    [currentIndex, draft]
+  )
+
   return (
     <ModalBase
       open={!!isModalOpen}
@@ -190,7 +213,7 @@ const AddOutsourceRequestModal: FC<AddOutsourceRequestModalProps> = ({
       helperText={stepConfig[step].helperText}
       titleFont={TitleFontTypes.Gray}
       size={ModalSizeTypes.ExtraLarge}
-      progressBar={<StepIndicator current={step} />}
+      progressBar={<StepIndicator current={step} maxStep={maxStep} onStepClick={handleStepClick} />}
       buttonComponent={
         <div className={classes.footer}>
           <Button appearance={AppearanceTypes.Secondary} onClick={handleCancel}>

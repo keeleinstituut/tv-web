@@ -68,8 +68,8 @@ const OutsourceOfferDetailPage: FC = () => {
   const { acceptOutsourceOffer, isLoading: isAccepting } =
     useAcceptOutsourceOffer(offerId ?? '')
 
-  const project =
-    offer?.outsource_request?.assignment?.subProject?.project ?? undefined
+  const subProject = offer?.outsource_request?.assignment?.subProject
+  const project = subProject?.project ?? undefined
 
   const { classifierValues: domainValues } = useClassifierValuesFetch({
     type: ClassifierValueType.TranslationDomain,
@@ -84,16 +84,31 @@ const OutsourceOfferDetailPage: FC = () => {
   })
 
   const defaultValues = useMemo(
-    () =>
-      getProjectDefaultValues({
+    () => ({
+      ...getProjectDefaultValues({
         institutionUserId: institutionUserId ?? '',
         isNew: false,
         project,
         defaultDomainClassifier,
         defaultProjectTypeClassifier,
       }),
+      // Languages live on subProject directly; project.sub_projects is not populated in this API response
+      source_language_classifier_value_id:
+        subProject?.source_language_classifier_value_id ?? '',
+      destination_language_classifier_value_ids:
+        subProject?.destination_language_classifier_value_id
+          ? [subProject.destination_language_classifier_value_id]
+          : [],
+    }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [project?.id, institutionUserId, defaultDomainClassifier?.id, defaultProjectTypeClassifier?.id]
+    [
+      project?.id,
+      institutionUserId,
+      defaultDomainClassifier?.id,
+      defaultProjectTypeClassifier?.id,
+      subProject?.source_language_classifier_value_id,
+      subProject?.destination_language_classifier_value_id,
+    ]
   )
 
   const { control, reset } = useForm<FormValues>({ defaultValues })
@@ -151,8 +166,7 @@ const OutsourceOfferDetailPage: FC = () => {
   const clientComment =
     outsourceRequest?.cancellation_reason ?? offer.rejection_comment ?? null
 
-  const manager =
-    outsourceRequest?.assignment?.subProject?.project?.manager_institution_user
+  const manager = subProject?.project?.manager_institution_user
   const requestOwnerInstitution = outsourceRequest?.owner_institution
 
   const managerName =
