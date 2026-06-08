@@ -58,7 +58,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
   event_start_at,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
+  const { userPrivileges, isTranslationAgency } = useAuth()
 
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
@@ -177,7 +177,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
               classes.startWorkFlowNotification,
               !canStartWorkflow && classes.warning
             )}
-            hidden={!isExpanded || isClientView || isVerbal}
+            hidden={!isExpanded || isClientView || isVerbal || isTranslationAgency}
             children={
               <Button
                 children={t('button.send_sub_project_to_vendors')}
@@ -199,6 +199,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
             price: subProjectPrice || price,
             languageDirection,
             isVerbal,
+            hideCost: isTranslationAgency,
           }}
         />
       }

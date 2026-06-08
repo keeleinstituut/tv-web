@@ -51,11 +51,6 @@ const ViewVendorResponseModal: FC<ViewVendorResponseModalProps> = ({
           children: t('requests.cancel_button'),
           onClick: closeModal,
         },
-        {
-          appearance: AppearanceTypes.Primary,
-          children: t('button.confirm'),
-          onClick: closeModal,
-        },
       ]}
     >
       {isLoading || !offer ? (

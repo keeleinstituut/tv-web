@@ -31,11 +31,12 @@ interface ExpandableContentLeftComponentProps {
   deadline_at?: string
   mode?: ProjectDetailModes
   isVerbal?: boolean
+  hideCost?: boolean
 }
 
 const ExpandableContentLeftComponent: FC<
   ExpandableContentLeftComponentProps
-> = ({ languageDirection, ext_id, price, deadline_at, mode, isVerbal }) => {
+> = ({ languageDirection, ext_id, price, deadline_at, mode, isVerbal, hideCost }) => {
   const { t } = useTranslation()
 
   return (
@@ -52,11 +53,13 @@ const ExpandableContentLeftComponent: FC<
       >
         <span className={classes.valueText}>{ext_id}</span>
       </Column>
-      <Column label={t('label.cost')}>
-        <span className={classes.boldValueText}>
-          {price ? `${price}€` : '-'}
-        </span>
-      </Column>
+      {!hideCost && (
+        <Column label={t('label.cost')}>
+          <span className={classes.boldValueText}>
+            {price ? `${price}€` : '-'}
+          </span>
+        </Column>
+      )}
       <Column
         label={t(isVerbal ? 'label.event_start_at' : 'label.deadline_at')}
         compact={isVerbal}

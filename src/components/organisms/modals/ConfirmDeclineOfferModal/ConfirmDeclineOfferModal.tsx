@@ -7,6 +7,7 @@ import ConfirmationModalBase, {
   ConfirmationModalBaseProps,
 } from '../ConfirmationModalBase/ConfirmationModalBase'
 import TextInput from 'components/molecules/TextInput/TextInput'
+import classes from './classes.module.scss'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
@@ -78,6 +79,7 @@ const ConfirmDeclineOfferModal: FC<ConfirmDeclineOfferModalProps> = ({
                 placeholder={t('requests.decline_comment_placeholder')}
                 isTextarea
                 error={error}
+                inputContainerClassName={classes.inputContainer}
               />
             )}
           />
