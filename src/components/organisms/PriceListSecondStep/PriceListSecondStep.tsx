@@ -4,7 +4,7 @@ import DynamicForm, {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { Control, FieldValues } from 'react-hook-form'
 
-type VendorPriceListSecondStepProps<TFormValues extends FieldValues> = {
+type PriceListSecondStepProps<TFormValues extends FieldValues> = {
   skillsFormFields: FieldProps<TFormValues>[]
   control: Control<TFormValues>
   languageOptions?: { label: string; value: string }[]
@@ -13,14 +13,14 @@ type VendorPriceListSecondStepProps<TFormValues extends FieldValues> = {
   dstLanguageValues?: string[]
 }
 
-function VendorPriceListSecondStep<TFormValues extends FieldValues>({
+function PriceListSecondStep<TFormValues extends FieldValues>({
   skillsFormFields,
   control,
   languageOptions,
   customSkillsDynamicFormClass,
   srcLanguageValue,
   dstLanguageValues,
-}: VendorPriceListSecondStepProps<TFormValues>) {
+}: PriceListSecondStepProps<TFormValues>) {
   return (
     <>
       <LanguageLabels<TFormValues>
@@ -38,4 +38,4 @@ function VendorPriceListSecondStep<TFormValues extends FieldValues>({
   )
 }
 
-export default VendorPriceListSecondStep
+export default PriceListSecondStep

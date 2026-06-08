@@ -15,6 +15,7 @@ export interface ToggleInputProps
   className?: string
   tooltipContent?: string
   label: string
+  ariaLabel?: string
   value?: boolean
   onChange?: (newValue: boolean) => void
 }
@@ -23,6 +24,7 @@ const ToggleInput = forwardRef<HTMLInputElement, ToggleInputProps>(
   function ToggleInput(
     {
       label,
+      ariaLabel,
       name,
       className,
       tooltipContent,
@@ -48,6 +50,7 @@ const ToggleInput = forwardRef<HTMLInputElement, ToggleInputProps>(
         <BaseButton
           onClick={handleChange}
           disabled={disabled}
+          aria-label={ariaLabel || label || undefined}
           className={classNames(
             classes.toggleContainer,
             disabled && classes.disabled,

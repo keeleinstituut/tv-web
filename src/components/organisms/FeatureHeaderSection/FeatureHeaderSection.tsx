@@ -17,6 +17,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useToggleMtEngine } from 'hooks/requests/useProjects'
+import { useAuth } from 'components/contexts/AuthContext'
 
 export enum FeatureTabs {
   Vendors = 'vendor',
@@ -87,6 +88,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   id,
 }) => {
   const { t } = useTranslation()
+  const { isTranslationAgency } = useAuth()
   // TODO: not sure yet what this will do
   // It should decide whether machine translation is allowed or not, but not sure what that changes in other views
 
@@ -114,7 +116,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   }, [mt_enabled, t, toggleMtEngine])
 
   const isSplitButtonHidden =
-    activeTab === FeatureTabs.Xliff || !isSplittingAllowed
+    activeTab === FeatureTabs.Xliff || !isSplittingAllowed || isTranslationAgency
 
   return (
     <div

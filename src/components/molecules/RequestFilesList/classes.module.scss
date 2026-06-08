@@ -1,0 +1,34 @@
+@use 'styles/variables' as variables;
+
+.container {
+  display: grid;
+  grid-template-columns: minmax(194px, max-content) max-content max-content;
+  grid-row-gap: variables.spacing(2);
+  grid-column-gap: variables.spacing(4);
+  align-items: center;
+  margin-bottom: variables.spacing(8);
+
+  h3 {
+    grid-column: 1/4;
+    font-size: variables.$font-size-16;
+    margin-bottom: variables.spacing(2);
+  }
+
+  label {
+    font-size: variables.$font-size-16;
+    font-weight: variables.$font-weight-bold;
+  }
+
+  span {
+    font-size: variables.$font-size-14;
+  }
+}
+
+.button {
+  display: flex;
+  padding: variables.spacing(1);
+
+  &:focus {
+    box-shadow: inset 0 0 0 2px variables.$color-primary;
+  }
+}

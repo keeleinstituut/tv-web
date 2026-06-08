@@ -1,0 +1,23 @@
+@use 'styles/variables' as variables;
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: variables.spacing(2);
+  padding-top: variables.spacing(6);
+  padding-right: variables.spacing(6);
+  padding-left: variables.spacing(6);
+}
+
+.reasonInput {
+  width: 100%;
+
+  > div {
+    flex: 1;
+  }
+
+  textarea {
+    width: 100%;
+  }
+}

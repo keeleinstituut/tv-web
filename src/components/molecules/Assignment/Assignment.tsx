@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react'
-import { map } from 'lodash'
-import { SubProjectFeatures } from 'types/projects'
+import { includes, map, size, some } from 'lodash'
+import { SubProjectFeatures, SubProjectStatus } from 'types/projects'
 import { AssignmentStatus, AssignmentType } from 'types/assignments'
 import { useTranslation } from 'react-i18next'
 import Button, {
@@ -14,13 +14,18 @@ import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import AssignmentCandidatesSection from 'components/molecules/AssignmentCandidatesSection/AssignmentCandidatesSection'
+import OutsourceRequestsSection from 'components/molecules/OutsourceRequestsSection/OutsourceRequestsSection'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from '../Notification/Notification'
 import { useDeleteAssignment } from 'hooks/requests/useAssignments'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { useSubProjectCache } from 'hooks/requests/useProjects'
+import { useFetchAssignmentOutsourceRequests } from 'hooks/requests/useOutsourceRequests'
+import { OutsourceRequestStatus } from 'types/outsourceRequests'
 import AssignmentForm from 'components/organisms/forms/AssignmentForm/AssignmentForm'
+import { useAuth } from 'components/contexts/AuthContext'
+import { Privileges } from 'types/privileges'
 
 dayjs.extend(utc)
 
@@ -51,8 +56,18 @@ const Assignment: FC<AssignmentProps> = ({
     source_language_classifier_value_id,
     destination_language_classifier_value_id,
     workflow_started,
+    status: subProjectStatus,
   } = useSubProjectCache(sub_project_id) || {}
   const { t } = useTranslation()
+  const { userPrivileges } = useAuth()
+  const canManageRequests = includes(userPrivileges, Privileges.ManageRequests)
+  const hasInHouseVendorsAssigned = size(candidates) > 0
+  const { requests: outsourceRequests } =
+    useFetchAssignmentOutsourceRequests(id)
+  const hasNonCancelledOutsourceRequest = some(
+    outsourceRequests,
+    (r) => r.status !== OutsourceRequestStatus.Cancelled
+  )
 
   const { deleteAssignment, isLoading: isDeletingAssignment } =
     useDeleteAssignment({
@@ -113,6 +128,13 @@ const Assignment: FC<AssignmentProps> = ({
     event_start_at,
   ])
 
+  const handleOpenComposeRequestModal = useCallback(() => {
+    showModal(ModalTypes.AddOutsourceRequest, {
+      assignmentId: id,
+      sub_project_id,
+    })
+  }, [id, sub_project_id])
+
   return (
     <div className={classes.assignmentContainer}>
       <div>
@@ -131,16 +153,35 @@ const Assignment: FC<AssignmentProps> = ({
 
         <span className={classes.assignmentId}>{ext_id}</span>
 
-        <Button
-          size={SizeTypes.S}
-          className={classes.addButton}
-          onClick={handleOpenVendorsModal}
-          disabled={
-            job_key === SubProjectFeatures.JobOverview || isAssignmentFinished
-          }
-        >
-          {t('button.choose_from_database')}
-        </Button>
+        <div className={classes.addButtonRow}>
+          <Button
+            size={SizeTypes.S}
+            onClick={handleOpenVendorsModal}
+            disabled={
+              job_key === SubProjectFeatures.JobOverview || isAssignmentFinished
+            }
+          >
+            {t('button.choose_from_database')}
+          </Button>
+          <Button
+            size={SizeTypes.S}
+            appearance={AppearanceTypes.Secondary}
+            hidden={
+              !canManageRequests ||
+              subProjectStatus === SubProjectStatus.Cancelled ||
+              subProjectStatus === SubProjectStatus.Completed
+            }
+            onClick={handleOpenComposeRequestModal}
+            disabled={
+              job_key === SubProjectFeatures.JobOverview ||
+              isAssignmentFinished ||
+              hasInHouseVendorsAssigned ||
+              hasNonCancelledOutsourceRequest
+            }
+          >
+            {t('requests.compose_button')}
+          </Button>
+        </div>
         <AssignmentForm
           id={id}
           sub_project_id={sub_project_id}
@@ -164,6 +205,13 @@ const Assignment: FC<AssignmentProps> = ({
           }}
         />
       </div>
+      {outsourceRequests.length > 0 && (
+        <OutsourceRequestsSection
+          requests={outsourceRequests}
+          isAssignmentFinished={isAssignmentFinished}
+          className={classes.fullWidth}
+        />
+      )}
       <div className={classes.formButtons}>
         <Button
           appearance={AppearanceTypes.Secondary}

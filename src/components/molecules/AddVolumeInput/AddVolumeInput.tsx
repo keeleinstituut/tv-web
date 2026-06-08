@@ -14,12 +14,14 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Price, PriceUnits } from 'types/price'
 import { VolumeValue } from 'types/volumes'
+import { useAuth } from 'components/contexts/AuthContext'
 
 interface VolumeRowProps extends VolumeValue {
   index: number
   handleDelete: (index: number, id: string) => void
   handleEdit: (index: number) => void
   disabled?: boolean
+  hideActions?: boolean
 }
 
 export const apiTypeToKey = (apiType: string) => {
@@ -66,6 +68,7 @@ const VolumeRow: FC<VolumeRowProps> = ({
   handleDelete,
   handleEdit,
   disabled,
+  hideActions,
   id,
 }) => {
   const { t } = useTranslation()
@@ -80,28 +83,32 @@ const VolumeRow: FC<VolumeRowProps> = ({
       <span>{`${Number(unit_quantity)} ${t(
         `label.${apiTypeToKey(unit_type)}`
       )}${cat_job ? ` ${t('task.open_in_cat')}` : ''}`}</span>
-      <BaseButton
-        onClick={onEditClick}
-        className={classNames(
-          classes.editButton,
-          disabled && classes.disabledIcon
-        )}
-        disabled={disabled}
-        aria-label={t('button.edit')}
-      >
-        <Edit />
-      </BaseButton>
-      <BaseButton
-        onClick={onDeleteClick}
-        className={classNames(
-          classes.deleteButton,
-          disabled && classes.disabledIcon
-        )}
-        disabled={disabled}
-        aria-label={t('button.delete')}
-      >
-        <Delete />
-      </BaseButton>
+      {!hideActions && (
+        <BaseButton
+          onClick={onEditClick}
+          className={classNames(
+            classes.editButton,
+            disabled && classes.disabledIcon
+          )}
+          disabled={disabled}
+          aria-label={t('button.edit')}
+        >
+          <Edit />
+        </BaseButton>
+      )}
+      {!hideActions && (
+        <BaseButton
+          onClick={onDeleteClick}
+          className={classNames(
+            classes.deleteButton,
+            disabled && classes.disabledIcon
+          )}
+          disabled={disabled}
+          aria-label={t('button.delete')}
+        >
+          <Delete />
+        </BaseButton>
+      )}
     </div>
   )
 }
@@ -135,6 +142,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   disabled,
 }) => {
   const { t } = useTranslation()
+  const { isTranslationAgency } = useAuth()
 
   const handleDelete = useCallback(
     (index: number, id: string) => {
@@ -210,6 +218,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
         {map(value, (props, index) => (
           <VolumeRow
             {...{ ...props, index, handleDelete, handleEdit, disabled }}
+            hideActions={isTranslationAgency}
             key={index}
           />
         ))}
@@ -221,6 +230,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
           icon={Add}
           children={t('button.add_volume')}
           onClick={handleAdd}
+          hidden={isTranslationAgency}
         />
       </div>
     </div>

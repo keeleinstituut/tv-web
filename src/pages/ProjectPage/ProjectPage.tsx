@@ -34,7 +34,7 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
   sub_projects,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
+  const { userPrivileges, isTranslationAgency } = useAuth()
   const { tasks, isLoading, refetch } = useFetchTasks({
     project_id: projectId,
     task_type: TaskType.ClientReview,
@@ -183,7 +183,7 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
         appearance={AppearanceTypes.Secondary}
         children={t('button.delegate_to_other_manager')}
         onClick={openReassignmentModal}
-        hidden={!canReassignProject}
+        hidden={!canReassignProject || isTranslationAgency}
       />
       {/* Reject button */}
       <Button
@@ -205,7 +205,7 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
         appearance={AppearanceTypes.Primary}
         children={t('button.cancel_project')}
         onClick={openConfirmCancelModal}
-        hidden={!canCancelProject}
+        hidden={!canCancelProject || isTranslationAgency}
       />
       {/* Accept button */}
       <Button

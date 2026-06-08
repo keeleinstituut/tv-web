@@ -23,7 +23,7 @@ type ButtonsProps<TFormValues extends FieldValues> = {
   isLoading?: boolean
 }
 
-function VendorPriceListButtons<TFormValues extends FieldValues>({
+function PriceListButtons<TFormValues extends FieldValues>({
   control,
   handleProceed,
   handleQuit,
@@ -118,4 +118,4 @@ function VendorPriceListButtons<TFormValues extends FieldValues>({
   )
 }
 
-export default VendorPriceListButtons
+export default PriceListButtons

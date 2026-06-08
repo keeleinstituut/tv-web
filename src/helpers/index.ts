@@ -247,6 +247,7 @@ const addablePrivilegesWithConditions: PrivilegeKeyValueType = {
   // ],
 }
 
+
 export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
   const selectedByDefaultPrivileges = flatMap(selectedPrivileges, ({ key }) => {
     const filteredArray = pickBy(

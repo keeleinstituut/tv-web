@@ -43,6 +43,10 @@ import GeneralPriceList from 'pages/GeneralPriceList/GeneralPriceList'
 import VendorTasks from 'pages/VendorTasks/VendorTasks'
 import Terms from 'pages/Terms/Terms'
 import MachineTranslation from 'pages/MachineTranslation/MachineTranslation'
+import OutsourceOffer from 'pages/OutsourceOffer/OutsourceOffer'
+import OutsourceOfferDetailPage from 'pages/OutsourceOfferDetailPage/OutsourceOfferDetailPage'
+import InstitutionPartnersDatabase from 'pages/InstitutionPartnersDatabase/InstitutionPartnersDatabase'
+import InstitutionPartnerPage from 'pages/InstitutionPartnerPage/InstitutionPartnerPage'
 
 // import icons
 
@@ -153,6 +157,25 @@ export const protectedRoutes: FullRouteObject[] = [
           },
         ],
       },
+      {
+        path: 'outsource-offers',
+        label: i18n.t('menu.requests'),
+        privileges: [Privileges.ViewRequests],
+        children: [
+          {
+            path: '',
+            element: <OutsourceOffer />,
+            privileges: [Privileges.ViewRequests],
+            breadcrumb: i18n.t('menu.requests'),
+          },
+          {
+            path: ':offerId',
+            element: <OutsourceOfferDetailPage />,
+            privileges: [Privileges.ViewRequests],
+            breadcrumb: BreadcrumbsTitle,
+          },
+        ],
+      },
     ],
   },
   {
@@ -216,6 +239,26 @@ export const protectedRoutes: FullRouteObject[] = [
         element: <GeneralPriceList />,
         privileges: [Privileges.ViewGeneralPricelist],
         breadcrumb: i18n.t('vendors.price_list'),
+      },
+    ],
+  },
+  {
+    path: 'institution-partners',
+    label: i18n.t('menu.institution_partners'),
+    Icon: VendorsIcon,
+    privileges: [Privileges.ViewExternalPartner],
+    children: [
+      {
+        path: '',
+        element: <InstitutionPartnersDatabase />,
+        privileges: [Privileges.ViewExternalPartner],
+        breadcrumb: i18n.t('menu.institution_partners'),
+      },
+      {
+        path: ':institutionPartnerId',
+        element: <InstitutionPartnerPage />,
+        privileges: [Privileges.ViewExternalPartner],
+        breadcrumb: BreadcrumbsTitle,
       },
     ],
   },

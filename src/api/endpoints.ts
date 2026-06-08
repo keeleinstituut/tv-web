@@ -138,6 +138,34 @@ export const endpoints = {
   MT_FILE_DOWNLOAD: (id: string) =>
     machineTranslation(`translate/file/${id}/download`),
   MT_INSTITUTION_SETTINGS: machineTranslation('settings'),
+
+  OUTSOURCE_REQUESTS: translationOrder('outsource-requests'),
+  OUTSOURCE_REQUEST: (id: string) =>
+    translationOrder(`outsource-requests/${id}`),
+  OUTSOURCE_REQUEST_CANCEL: (id: string) =>
+    translationOrder(`outsource-requests/${id}/cancel`),
+  OUTSOURCE_REQUEST_SELECT: (id: string) =>
+    translationOrder(`outsource-requests/${id}/select`),
+  OUTSOURCE_REQUEST_ACCEPT: (id: string) =>
+    translationOrder(`outsource-requests/${id}/accept`),
+  OUTSOURCE_REQUEST_DECLINE: (id: string) =>
+    translationOrder(`outsource-requests/${id}/decline`),
+  OUTSOURCE_REQUEST_PREVIEW_PRICES: translationOrder(
+    'outsource-requests/preview-prices'
+  ),
+  OUTSOURCE_OFFERS: translationOrder('outsource-offers'),
+  OUTSOURCE_OFFER: (id: string) => translationOrder(`outsource-offers/${id}`),
+  OUTSOURCE_OFFER_ACCEPT: (id: string) =>
+    translationOrder(`outsource-offers/${id}/accept`),
+  OUTSOURCE_OFFER_DECLINE: (id: string) =>
+    translationOrder(`outsource-offers/${id}/decline`),
+  INSTITUTION_PARTNERS: translationOrder('institution-partners'),
+  INSTITUTION_PARTNERS_BULK: translationOrder('institution-partners/bulk'),
+  INSTITUTION_PARTNER_PRICES: translationOrder('institution-partner-prices'),
+  INSTITUTION_PARTNER_PRICES_BULK: translationOrder(
+    'institution-partner-prices/bulk'
+  ),
+  TRANSLATION_ORDER_INSTITUTIONS: translationOrder('institutions'),
 }
 
 export const authEndpoints = {
