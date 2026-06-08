@@ -247,20 +247,6 @@ const addablePrivilegesWithConditions: PrivilegeKeyValueType = {
   // ],
 }
 
-export const TRANSLATION_AGENCY_RESTRICTED_PRIVILEGES: PrivilegeKey[] = [
-  Privileges.EditAuditLogSettings,
-  Privileges.DeleteTm,
-  Privileges.EditTmMetadata,
-  Privileges.DeleteDepartment,
-  Privileges.EditDepartment,
-  Privileges.AddDepartment,
-  Privileges.ChangeClient,
-  Privileges.CreateProject,
-  Privileges.ManageRequests,
-  Privileges.ChangeProjectManager,
-  Privileges.ViewExternalPartner,
-  Privileges.ManageExternalPartner,
-]
 
 export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
   const selectedByDefaultPrivileges = flatMap(selectedPrivileges, ({ key }) => {

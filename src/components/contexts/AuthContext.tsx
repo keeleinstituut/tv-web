@@ -17,7 +17,6 @@ import {
   useEffect,
   useMemo,
 } from 'react'
-import { TRANSLATION_AGENCY_RESTRICTED_PRIVILEGES } from 'helpers'
 import { InstitutionDataType } from 'types/institutions'
 import { PrivilegeKey } from 'types/privileges'
 
@@ -209,13 +208,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
       tolkevarav: user,
     }
   }, [user])
-  const userPrivileges = useMemo(() => {
-    const raw = user?.privileges || []
-    const isTA = user?.selectedInstitution?.type === 'TRANSLATION_AGENCY'
-    return isTA
-      ? raw.filter((p: PrivilegeKey) => !TRANSLATION_AGENCY_RESTRICTED_PRIVILEGES.includes(p))
-      : raw
-  }, [user])
+  const userPrivileges = useMemo(() => user?.privileges || [], [user])
   const institutionUserId = user?.institutionUserId || ''
   const selectedInstitutionType = user?.selectedInstitution?.type
   const initializing = contextQuery.isLoading
