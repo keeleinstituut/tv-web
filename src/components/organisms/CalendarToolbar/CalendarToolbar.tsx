@@ -1,11 +1,10 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import CalendarIcon from 'assets/icons/calender.svg?react'
 import ViewWeekIcon from 'assets/icons/view_week.svg?react'
 import ViewMonthIcon from 'assets/icons/view_month.svg?react'
-import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
 import {
   useCalendarNav,
   useCalendarPanel,
@@ -56,20 +55,6 @@ const CalendarToolbar: FC = () => {
   const [searchDate, setSearchDate] = useState('')
   const [searchTime, setSearchTime] = useState('')
   const [searchDuration, setSearchDuration] = useState(60)
-  const [moreOpen, setMoreOpen] = useState(false)
-
-  const moreRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!moreOpen) return
-    const handler = (e: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
-        setMoreOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [moreOpen])
 
   const views: {
     key: CalendarView
@@ -127,10 +112,6 @@ const CalendarToolbar: FC = () => {
     )
   }
 
-  const handleAddOrder = () => {
-    setMoreOpen(false)
-    navigate('/calendar/new-order')
-  }
 
   return (
     <div className={classes.toolbar}>
@@ -246,25 +227,12 @@ const CalendarToolbar: FC = () => {
         )}
 
         {isInstitutionClientOrTPM && (
-          <div className={classes.moreWrapper} ref={moreRef}>
-            <button
-              className={classes.moreButton}
-              onClick={() => setMoreOpen((o) => !o)}
-            >
-              {t('calendar.more')}
-              <HorizontalDotsIcon className={classes.moreIcon} />
-            </button>
-            {moreOpen && (
-              <div className={classes.moreDropdown}>
-                <button
-                  className={classes.moreDropdownItem}
-                  onClick={handleAddOrder}
-                >
-                  {t('calendar.add_order')}
-                </button>
-              </div>
-            )}
-          </div>
+          <button
+            className={classes.addOrderButton}
+            onClick={() => navigate('/calendar/new-order')}
+          >
+            {t('calendar.add_order')}
+          </button>
         )}
       </div>
     </div>

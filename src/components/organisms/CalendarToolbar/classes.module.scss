@@ -435,21 +435,12 @@
   }
 }
 
-.moreWrapper {
-  position: relative;
-
-  @media (max-width: 900px) {
-    order: 2;
-    margin-left: auto;
-  }
-}
-
-.moreButton {
+.addOrderButton {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px 8px 24px;
+  justify-content: center;
   height: 40px;
+  padding: 8px 24px;
   border: 2px solid #5d6071;
   border-radius: 20px;
   background: transparent;
@@ -457,48 +448,15 @@
   font-size: 16px;
   font-family: inherit;
   color: #4d4f5d;
-  line-height: 19px;
   white-space: nowrap;
   transition: background 0.15s;
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
-}
 
-.moreIcon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  transform: rotate(90deg);
-}
-
-.moreDropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  background: $color-white;
-  border: 1px solid #e2e4e9;
-  border-radius: $border-radius-4;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  min-width: 160px;
-}
-
-.moreDropdownItem {
-  display: block;
-  width: 100%;
-  padding: 10px 16px;
-  border: none;
-  background: transparent;
-  text-align: left;
-  font-size: $font-size-14;
-  font-family: inherit;
-  color: $color-text;
-  cursor: pointer;
-  white-space: nowrap;
-
-  &:hover {
-    background: $color-background;
+  @media (max-width: 900px) {
+    order: 2;
+    margin-left: auto;
   }
 }
