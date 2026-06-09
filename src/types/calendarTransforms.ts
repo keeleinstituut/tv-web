@@ -31,6 +31,7 @@ import {
   normalizeCalendarProjectStatus,
   normalizeCalendarSubProjectStatus,
 } from 'helpers/calendarBookingStatus'
+import { sortVendors } from 'helpers/calendar'
 
 export function transformLanguages(
   api: ApiCalendarLanguagesResponse
@@ -225,7 +226,7 @@ export function transformDayResponse(
               ? `${v.institutionUser.user.forename} ${v.institutionUser.user.surname}`.trim()
               : v.id,
           },
-          is_internal: v.emergency_schedules.length === 0,
+          is_emo: v.emergency_schedules.length > 0,
           booked_slots: langEntries.map((e) => {
             const times = entryTimesForNonVendor(e)
             return {
@@ -249,7 +250,7 @@ export function transformDayResponse(
     )
     const tpmVendors = languageIds.map((langId) => ({
       language_id: langId,
-      vendors: vendorsByLanguage.get(langId) ?? [],
+      vendors: sortVendors(vendorsByLanguage.get(langId) ?? []),
     }))
 
     return {
@@ -458,7 +459,7 @@ function buildVendorWeekData(
   return {
     id: v.id,
     institution_user: { id: v.institutionUser?.id ?? '', name: vendorName(v) },
-    is_internal: v.emergency_schedules.length === 0,
+    is_emo: v.emergency_schedules.length > 0,
     slots,
   }
 }
@@ -493,7 +494,7 @@ function buildVendorMonthData(
   return {
     id: v.id,
     institution_user: { id: v.institutionUser?.id ?? '', name: vendorName(v) },
-    is_internal: v.emergency_schedules.length === 0,
+    is_emo: v.emergency_schedules.length > 0,
     slots,
   }
 }
@@ -536,9 +537,11 @@ export function transformWeekResponse(
       )
       return {
         language_id: langId,
-        vendors: tpm.vendors
-          .filter((v) => langVendorIds.includes(v.id))
-          .map((v) => buildVendorWeekData(v, langSlots, wStart)),
+        vendors: sortVendors(
+          tpm.vendors
+            .filter((v) => langVendorIds.includes(v.id))
+            .map((v) => buildVendorWeekData(v, langSlots, wStart))
+        ),
       }
     })
     return {
@@ -668,9 +671,11 @@ export function transformMonthResponse(
       )
       return {
         language_id: langId,
-        vendors: tpm.vendors
-          .filter((v) => langVendorIds.includes(v.id))
-          .map((v) => buildVendorMonthData(v, langSlots, m)),
+        vendors: sortVendors(
+          tpm.vendors
+            .filter((v) => langVendorIds.includes(v.id))
+            .map((v) => buildVendorMonthData(v, langSlots, m))
+        ),
       }
     })
     return {

@@ -251,7 +251,7 @@ const VendorRow: FC<{
   dayWidth?: number
 }> = ({ vendor, dayWidth }) => {
   const { t } = useTranslation()
-  const isEmo = !vendor.is_internal
+  const isEmo = vendor.is_emo
   return (
     <div className={classes.vendorRowWrapper}>
       <div className={classes.vendorLabel}>

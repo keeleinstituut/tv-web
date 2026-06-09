@@ -74,15 +74,13 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
     [language, vendor.id, openSidePanel]
   )
 
-  const isEmo = !vendor.is_internal
-
   return (
     <div className={classes.vendorRowWrapper}>
       <div className={classes.vendorLabel}>
         <CalendarVendorBadge
           vendorId={vendor.id}
           name={vendor.institution_user.name}
-          isEmo={isEmo}
+          isEmo={vendor.is_emo}
         />
       </div>
       <div

@@ -165,7 +165,7 @@ const VendorRow: FC<{
   weeks: WeekRange[]
   weekColWidth?: number
 }> = ({ vendor, weeks, weekColWidth }) => {
-  const isEmo = !vendor.is_internal
+  const isEmo = vendor.is_emo
   const weekData = weeks.map((week) => getVendorWeekData(vendor, week))
   const totalBooked = weekData.reduce((sum, w) => sum + w.bookedMinutes, 0)
   const cellClass = isEmo ? classes.weekCellBooked : classes.weekCellAvailable
