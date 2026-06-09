@@ -26,6 +26,12 @@
   color: #78350f;
 }
 
+.badgeUnassigned {
+  background: #e9d5ff;
+  color: #5b21b6;
+  cursor: default;
+}
+
 .emoLabel {
   font-size: 10px;
   font-weight: $font-weight-bold;

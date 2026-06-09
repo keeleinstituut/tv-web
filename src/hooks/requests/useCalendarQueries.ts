@@ -243,7 +243,12 @@ export const useFetchCalendarDayVendors = (
       const tpmVendors = dayData.tpm_vendors ?? []
       if (languageId) {
         const langData = tpmVendors.find((l) => l.language_id === languageId)
-        return { language_id: languageId, vendors: langData?.vendors ?? [] }
+        return {
+          language_id: languageId,
+          vendors: langData?.vendors ?? [],
+          unassigned_slots:
+            dayData.tpm_unassigned_by_language?.[languageId],
+        }
       }
       return { languages: tpmVendors }
     },

@@ -78,6 +78,7 @@ export const BookedSlotBlock: FC<{
   dayStartHour: number
   onClick?: (slot: BookedSlot) => void
   alwaysLightBlue?: boolean
+  alwaysViolet?: boolean
   slotWidth?: number
   rowWidth?: number
 }> = ({
@@ -85,6 +86,7 @@ export const BookedSlotBlock: FC<{
   dayStartHour,
   onClick,
   alwaysLightBlue,
+  alwaysViolet,
   slotWidth,
   rowWidth,
 }) => {
@@ -108,14 +110,17 @@ export const BookedSlotBlock: FC<{
   if (slot.type === 'assignment' && !isPast) {
     const label = formatDuration(slot.start_at, slot.end_at)
     const isConfirmed =
-      !alwaysLightBlue && !isOngoing && !!slot.assignment?.confirmed
+      !alwaysLightBlue && !alwaysViolet && !isOngoing && !!slot.assignment?.confirmed
+    const assignmentClass = alwaysViolet
+      ? classes.slotAssignmentViolet
+      : isConfirmed
+        ? classes.slotAssignmentConfirmed
+        : classes.slotAssignmentFuture
     return (
       <div
         className={classNames(
           classes.slotBlock,
-          isConfirmed
-            ? classes.slotAssignmentConfirmed
-            : classes.slotAssignmentFuture,
+          assignmentClass,
           {
             [classes.slotClickable]: !!handleClick,
             [classes.slotBlockNarrow]: isNarrow,

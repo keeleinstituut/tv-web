@@ -371,6 +371,7 @@
     "up_to_3h": "kuni 3 tundi",
     "up_to_4h": "kuni 4 tundi",
     "booked": "Hõivatud",
+    "no_vendor": "Teostajata",
     "select_time": "+ Vali aeg",
     "create_order": "Loo tellimus",
     "saving": "Salvestamine...",

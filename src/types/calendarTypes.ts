@@ -105,6 +105,8 @@ export interface CalendarDayResponse {
   booked_slots_by_language: Record<string, BookedSlot[]>
   /** TPM role: vendor-level breakdown per language */
   tpm_vendors?: Array<{ language_id: string; vendors: VendorDayData[] }>
+  /** TPM role: unassigned projects grouped by destination language_id */
+  tpm_unassigned_by_language?: Record<string, BookedSlot[]>
   /** Client role: time ranges with available vendors, grouped by language_id */
   available_slots_by_language?: Record<
     string,
@@ -173,6 +175,7 @@ export interface VendorDayData {
 export interface CalendarDayVendorsResponse {
   language_id: string
   vendors: VendorDayData[]
+  unassigned_slots?: BookedSlot[]
 }
 
 export interface CalendarDayVendorsAllResponse {
@@ -497,6 +500,7 @@ export interface ApiCalendarDayTpmShape {
     vendor_ids: string[]
   }>
   vendors: ApiVendorExpand[]
+  unassigned_projects?: ApiUnassignedProject[]
 }
 
 export type ApiCalendarDayResponse =

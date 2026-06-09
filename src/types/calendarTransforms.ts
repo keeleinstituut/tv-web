@@ -175,6 +175,24 @@ function destinationLangIdsFromCalendarEntry(
   return id ? [id] : []
 }
 
+function buildAssignmentFromUnassigned(
+  p: ApiUnassignedProject
+): BookedSlotAssignment {
+  return {
+    id: p.id,
+    project_status: normalizeCalendarProjectStatus(p.status),
+    sub_project: {
+      id: p.id,
+      ext_id: p.ext_id,
+      source_language: { id: '', value: '', name: '' },
+      destination_language: { id: '', value: '', name: '' },
+    },
+    service_type: (p.service_type as 'REMOTE' | 'ON_SITE') ?? undefined,
+    location: p.location ?? undefined,
+    meeting_link: p.meeting_link ?? undefined,
+  }
+}
+
 function appendClientBookingIfNew(
   byLanguage: Record<string, BookedSlot[]>,
   langId: string,
@@ -253,11 +271,28 @@ export function transformDayResponse(
       vendors: sortVendors(vendorsByLanguage.get(langId) ?? []),
     }))
 
+    const unassignedByLang: Record<string, BookedSlot[]> = {}
+    for (const p of tpm.unassigned_projects ?? []) {
+      const slot: BookedSlot = {
+        start_at: p.event_start_at,
+        end_at: p.event_end_at ?? p.event_start_at,
+        type: 'assignment',
+        assignment: buildAssignmentFromUnassigned(p),
+      }
+      for (const langId of p.destination_language_classifier_value_ids ?? []) {
+        if (!unassignedByLang[langId]) unassignedByLang[langId] = []
+        unassignedByLang[langId].push(slot)
+      }
+    }
+
     return {
       current_time: new Date().toISOString(),
       booked_slots: [],
       booked_slots_by_language: {},
       tpm_vendors: tpmVendors,
+      tpm_unassigned_by_language: Object.keys(unassignedByLang).length
+        ? unassignedByLang
+        : undefined,
     }
   }
 
@@ -285,24 +320,6 @@ export function transformDayResponse(
       }
       return pStart >= new Date(startAt) && pStart < new Date(endAt)
     })
-
-  function buildAssignmentFromUnassigned(
-    p: ApiUnassignedProject
-  ): BookedSlotAssignment {
-    return {
-      id: p.id,
-      project_status: normalizeCalendarProjectStatus(p.status),
-      sub_project: {
-        id: p.id,
-        ext_id: p.ext_id,
-        source_language: { id: '', value: '', name: '' },
-        destination_language: { id: '', value: '', name: '' },
-      },
-      service_type: (p.service_type as 'REMOTE' | 'ON_SITE') ?? undefined,
-      location: p.location ?? undefined,
-      meeting_link: p.meeting_link ?? undefined,
-    }
-  }
 
   const byLanguage: Record<string, BookedSlot[]> = {}
   for (const slot of clientShape.booked_slots ?? []) {
