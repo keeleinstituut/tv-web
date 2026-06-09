@@ -14,6 +14,7 @@ interface Props {
   /** All bookings for the language (for blocking drag / cell state) */
   allBookedSlots: BookedSlot[]
   langAvailSlots?: Array<{ start_at: string; end_at: string }>
+  readOnly?: boolean
   onSelectRange?: (langId: string, startIso: string, endIso: string) => void
   onClickSlot?: (slot: BookedSlot) => void
 }
@@ -23,6 +24,7 @@ const CalendarDayClientBookingRow: FC<Props> = ({
   rowSlots,
   allBookedSlots,
   langAvailSlots,
+  readOnly,
   onSelectRange,
   onClickSlot,
 }) => {
@@ -69,12 +71,13 @@ const CalendarDayClientBookingRow: FC<Props> = ({
         ref={rowRef}
         className={langClasses.slotArea}
         style={{ width: totalWidth }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onMouseDown={readOnly ? undefined : handleMouseDown}
+        onMouseMove={readOnly ? undefined : handleMouseMove}
+        onMouseUp={readOnly ? undefined : handleMouseUp}
+        onMouseLeave={readOnly ? undefined : handleMouseUp}
       >
-        <CalendarSlotCells
+        {!readOnly && (
+          <CalendarSlotCells
             totalSlots={totalSlots}
             date={date}
             dayStartHour={dayStartHour}
@@ -82,7 +85,8 @@ const CalendarDayClientBookingRow: FC<Props> = ({
             isSlotBooked={isSlotBooked}
             isSlotFullyBooked={isSlotFullyBooked}
           />
-        {isDragging && (
+        )}
+        {!readOnly && isDragging && (
           <div
             className={langClasses.selectionHighlight}
             style={{ left: selectionLeft, width: selectionWidth }}

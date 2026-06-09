@@ -9,8 +9,8 @@ import { useAuth } from 'components/contexts/AuthContext'
 
 const AuthWrapper: FC<PropsWithChildren> = () => {
   const auth = useAuth()
-  const { isUserLoggedIn, initializing: isLoading, userPrivileges } = auth
-  useAuthRedirect(userPrivileges)
+  const { isUserLoggedIn, initializing: isLoading, userInfo } = auth
+  useAuthRedirect(userInfo?.tolkevarav?.privileges)
 
   return (
     <>
