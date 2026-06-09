@@ -24,6 +24,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
+import { useAuth } from 'components/contexts/AuthContext'
 
 const DURATION_OPTIONS = [
   { value: 30, labelKey: 'calendar.up_to_30min' },
@@ -40,7 +41,8 @@ const CalendarToolbar: FC = () => {
   const { setFocusedLanguageId } = useCalendarPanel()
   const navigate = useNavigate()
   const { isTPM, isClient } = useCalendarRole()
-  const canSearch = isTPM || isClient
+  const { isTranslationAgency } = useAuth()
+  const isInstitutionClientOrTPM = (isTPM || isClient) && !isTranslationAgency
   const { languages } = useFetchCalendarLanguages(
     currentDate.format('YYYY-MM-DD')
   )
@@ -148,7 +150,7 @@ const CalendarToolbar: FC = () => {
           ))}
         </div>
 
-        {canSearch && (
+        {isInstitutionClientOrTPM && (
           <div className={classes.searchGroup}>
             <div className={classes.searchField}>
               <span className={classes.searchLabel}>
@@ -228,7 +230,7 @@ const CalendarToolbar: FC = () => {
           </div>
         )}
 
-        {canSearch && (
+        {isInstitutionClientOrTPM && (
           <div className={classes.findWrapper}>
             <button
               className={classNames(classes.findButton, {
@@ -243,7 +245,7 @@ const CalendarToolbar: FC = () => {
           </div>
         )}
 
-        {canSearch && (
+        {isInstitutionClientOrTPM && (
           <div className={classes.moreWrapper} ref={moreRef}>
             <button
               className={classes.moreButton}

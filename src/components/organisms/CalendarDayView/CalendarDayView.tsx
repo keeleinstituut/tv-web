@@ -17,6 +17,7 @@ import CalendarLanguageRow, {
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import { useCurrentTimeMarker } from 'hooks/useCurrentTimeMarker'
 import { useCalendarRole } from 'hooks/useCalendarRole'
+import { useAuth } from 'components/contexts/AuthContext'
 import { CalendarDayProvider } from 'components/contexts/CalendarDayContext'
 import { useCalendarPinning } from 'hooks/useCalendarPinning'
 import { useVisibleCalendarLanguages } from 'hooks/useVisibleCalendarLanguages'
@@ -76,6 +77,7 @@ const CalendarDayView: FC = () => {
   const { openSidePanel, sidePanelSelection } = useCalendarPanel()
   const { t } = useTranslation()
   const { isTPM, isClient, isTranslator } = useCalendarRole()
+  const { isTranslationAgency } = useAuth()
   const canInteract = isTPM || isClient
   const { handleTogglePin, pinnedCount } = useCalendarPinning()
   const dateStr = currentDate.format('YYYY-MM-DD')
@@ -281,7 +283,7 @@ const CalendarDayView: FC = () => {
                 <Fragment key={lang.language.id}>
                   <CalendarLanguageRow
                     language={lang}
-                    readOnly={isTPM || !canInteract}
+                    readOnly={isTPM || !canInteract || isTranslationAgency}
                     dayData={dayData}
                     onSelectRange={
                       isClient
@@ -325,6 +327,7 @@ const CalendarDayView: FC = () => {
                     <CalendarDayClientBookingRows
                       language={lang}
                       dayData={dayData}
+                      readOnly={isTranslationAgency}
                       onSelectRange={(langId, start, end) => {
                         const l = languages.find(
                           (l) => l.language.id === langId

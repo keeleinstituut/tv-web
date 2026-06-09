@@ -7,6 +7,7 @@ import type { BookedSlot, CalendarDayResponse, CalendarLanguage } from 'types/ca
 interface Props {
   language: CalendarLanguage
   dayData?: CalendarDayResponse
+  readOnly?: boolean
   onSelectRange?: (langId: string, startIso: string, endIso: string) => void
   onClickSlot?: (slot: BookedSlot) => void
 }
@@ -14,6 +15,7 @@ interface Props {
 const CalendarDayClientBookingRows: FC<Props> = ({
   language,
   dayData,
+  readOnly,
   onSelectRange,
   onClickSlot,
 }) => {
@@ -45,6 +47,7 @@ const CalendarDayClientBookingRows: FC<Props> = ({
           rowSlots={rowSlots}
           allBookedSlots={allBookedSlots}
           langAvailSlots={langAvailSlots}
+          readOnly={readOnly}
           onSelectRange={onSelectRange}
           onClickSlot={onClickSlot}
         />
