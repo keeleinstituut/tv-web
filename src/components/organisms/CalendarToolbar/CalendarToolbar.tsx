@@ -94,6 +94,15 @@ const CalendarToolbar: FC = () => {
             setCurrentDate(dayjs(start_at))
             setView('day')
             setFocusedLanguageId(searchLangId)
+            if (searchDate && !dayjs(start_at).isSame(dayjs(searchDate), 'day')) {
+              showNotification(
+                {
+                  type: NotificationTypes.Warning,
+                  title: t('calendar.no_slots_on_searched_date'),
+                },
+                5000
+              )
+            }
           } else {
             showNotification(
               {
