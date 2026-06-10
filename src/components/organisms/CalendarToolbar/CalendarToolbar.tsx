@@ -99,6 +99,7 @@ const CalendarToolbar: FC = () => {
                 {
                   type: NotificationTypes.Warning,
                   title: t('calendar.no_slots_on_searched_date'),
+                  content: t('calendar.no_slots_on_searched_date_content'),
                 },
                 5000
               )
