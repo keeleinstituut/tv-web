@@ -149,7 +149,7 @@ const SummaryFields: FC = () => {
           <div className={classes.durationStepper}>
             <button
               className={classes.stepperBtn}
-              onClick={() => setDurationMinutes((v) => Math.max(30, v - 30))}
+              onClick={() => setDurationMinutes((v) => Math.max(10, v - 10))}
             >
               −
             </button>
@@ -158,7 +158,7 @@ const SummaryFields: FC = () => {
             </span>
             <button
               className={classes.stepperBtn}
-              onClick={() => setDurationMinutes((v) => v + 30)}
+              onClick={() => setDurationMinutes((v) => v + 10)}
             >
               +
             </button>
@@ -316,7 +316,7 @@ const SummaryFields: FC = () => {
         <div className={classes.durationStepper}>
           <button
             className={classes.stepperBtn}
-            onClick={() => setDurationMinutes((v) => Math.max(30, v - 30))}
+            onClick={() => setDurationMinutes((v) => Math.max(10, v - 10))}
           >
             −
           </button>
@@ -325,7 +325,7 @@ const SummaryFields: FC = () => {
           </span>
           <button
             className={classes.stepperBtn}
-            onClick={() => setDurationMinutes((v) => v + 30)}
+            onClick={() => setDurationMinutes((v) => v + 10)}
           >
             +
           </button>

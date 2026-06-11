@@ -11,8 +11,10 @@ import PinIcon from 'assets/icons/pin.svg?react'
 import SmallArrowIcon from 'assets/icons/small_arrow.svg?react'
 import { formatDuration } from 'helpers/calendar'
 import {
+  defaultBookingRange,
   mergeClientPrebookSlot,
   mergedOverlapIntervals,
+  TimeInterval,
 } from 'helpers/calendarDayOverlaps'
 import CalendarSlotCells from 'components/molecules/CalendarSlotCells/CalendarSlotCells'
 import {
@@ -20,6 +22,7 @@ import {
   durationToWidth,
   slotIndexToIso,
   isSlotPast,
+  blockInnerWidth,
   SLOT_WIDTH_PX,
 } from 'helpers/calendarSlotUtils'
 export { SLOT_WIDTH_PX, timeToX, slotIndexToIso, isSlotPast }
@@ -126,7 +129,7 @@ export const BookedSlotBlock: FC<{
             [classes.slotBlockNarrow]: isNarrow,
           }
         )}
-        style={{ left: left + 4, width: width - 8 }}
+        style={{ left: left + 4, width: blockInnerWidth(width) }}
         title={slot.assignment?.sub_project.ext_id}
         onClick={handleClick}
       >
@@ -144,7 +147,7 @@ export const BookedSlotBlock: FC<{
           getSlotClass(slot, isPast, isOngoing),
           { [classes.slotBlockNarrow]: isNarrow }
         )}
-        style={{ left: left + 4, width: width - 8 }}
+        style={{ left: left + 4, width: blockInnerWidth(width) }}
         title={slot.meta}
       >
         <BookingBusyIcon className={classes.slotIconExternal} />
@@ -172,7 +175,7 @@ export const BookedSlotBlock: FC<{
             [classes.slotBlockNarrow]: vacWidth <= sw,
           }
         )}
-        style={{ left: vacLeft + 4, width: vacWidth - 8 }}
+        style={{ left: vacLeft + 4, width: blockInnerWidth(vacWidth) }}
         title={slot.meta}
       >
         <BookingBusyIcon className={classes.slotIconVacation} />
@@ -192,7 +195,7 @@ export const BookedSlotBlock: FC<{
           classes.slotBlock,
           getSlotClass(slot, isPast, isOngoing)
         )}
-        style={{ left: left + 4, width: width - 8 }}
+        style={{ left: left + 4, width: blockInnerWidth(width) }}
       />
     )
   }
@@ -209,7 +212,7 @@ export const BookedSlotBlock: FC<{
           [classes.slotBlockNarrow]: isNarrow,
         }
       )}
-      style={{ left: left + 4, width: width - 8 }}
+      style={{ left: left + 4, width: blockInnerWidth(width) }}
       title={slot.assignment?.sub_project.ext_id}
       onClick={handleClick}
     >
@@ -253,12 +256,8 @@ const CalendarLanguageRow: FC<Props> = ({
     ? (dayData.available_slots_by_language[language.language.id] ?? [])
     : undefined
 
-  const { isSlotFullyBooked } = useSlotStateCheckers(
-    date,
-    dayStartHour,
-    [],
-    langAvailSlots
-  )
+  const { isSlotBooked, isSlotFullyBooked, isSlotFullyAvailable, freeIntervals } =
+    useSlotStateCheckers(date, dayStartHour, bookedSlots, langAvailSlots)
 
   useEffect(() => {
     if (!pendingDeepLink || !bookedSlots.length) return
@@ -289,12 +288,20 @@ const CalendarLanguageRow: FC<Props> = ({
 
   const rowRef = useRef<HTMLDivElement>(null)
 
-  const { isSlotBooked } = useSlotStateCheckers(date, dayStartHour, bookedSlots)
-
   const overlapCollapsedIntervals = useMemo(
     () => (omitBookedSlotBlocks ? mergedOverlapIntervals(bookedSlots) : []),
     [omitBookedSlotBlocks, bookedSlots]
   )
+
+  const handleGapClick = (freeInterval: TimeInterval) => {
+    const range = defaultBookingRange(freeInterval)
+    if (!range) return
+    openSidePanel({
+      language,
+      startIso: range.startIso,
+      endIso: range.endIso,
+    })
+  }
 
   const {
     isDragging,
@@ -311,6 +318,8 @@ const CalendarLanguageRow: FC<Props> = ({
     slotWidth: sw,
     isSlotBooked,
     isSlotFullyBooked,
+    isSlotFullyAvailable,
+    freeIntervals,
     onDragComplete: (startIso, endIso) =>
       onSelectRange?.(language.language.id, startIso, endIso),
   })
@@ -372,6 +381,8 @@ const CalendarLanguageRow: FC<Props> = ({
             slotWidth={sw}
             isSlotBooked={isSlotBooked}
             isSlotFullyBooked={isSlotFullyBooked}
+            freeIntervals={freeIntervals}
+            onGapClick={handleGapClick}
           />
         )}
 

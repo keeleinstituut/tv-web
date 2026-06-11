@@ -5,6 +5,8 @@ import { BookedSlotBlock } from 'components/molecules/CalendarLanguageRow/Calend
 import CalendarSlotCells from 'components/molecules/CalendarSlotCells/CalendarSlotCells'
 import langClasses from 'components/molecules/CalendarLanguageRow/classes.module.scss'
 import { useDragSelection } from 'hooks/useDragSelection'
+import { useCalendarPanel } from 'components/contexts/CalendarContext'
+import { defaultBookingRange, TimeInterval } from 'helpers/calendarDayOverlaps'
 import type { BookedSlot, CalendarLanguage } from 'types/calendar'
 
 interface Props {
@@ -29,16 +31,23 @@ const CalendarDayClientBookingRow: FC<Props> = ({
   onClickSlot,
 }) => {
   const { date, dayStartHour, dayEndHour, slotWidth: sw } = useCalendarDay()
+  const { openSidePanel } = useCalendarPanel()
   const totalSlots = (dayEndHour - dayStartHour) * 2
   const totalWidth = totalSlots * sw
   const rowRef = useRef<HTMLDivElement>(null)
 
-  const { isSlotBooked, isSlotFullyBooked } = useSlotStateCheckers(
-    date,
-    dayStartHour,
-    allBookedSlots,
-    langAvailSlots
-  )
+  const { isSlotBooked, isSlotFullyBooked, isSlotFullyAvailable, freeIntervals } =
+    useSlotStateCheckers(date, dayStartHour, allBookedSlots, langAvailSlots)
+
+  const handleGapClick = (freeInterval: TimeInterval) => {
+    const range = defaultBookingRange(freeInterval)
+    if (!range) return
+    openSidePanel({
+      language,
+      startIso: range.startIso,
+      endIso: range.endIso,
+    })
+  }
 
   const {
     isDragging,
@@ -55,6 +64,8 @@ const CalendarDayClientBookingRow: FC<Props> = ({
     slotWidth: sw,
     isSlotBooked,
     isSlotFullyBooked,
+    isSlotFullyAvailable,
+    freeIntervals,
     onDragComplete: (startIso, endIso) =>
       onSelectRange?.(language.language.id, startIso, endIso),
   })
@@ -84,6 +95,8 @@ const CalendarDayClientBookingRow: FC<Props> = ({
             slotWidth={sw}
             isSlotBooked={isSlotBooked}
             isSlotFullyBooked={isSlotFullyBooked}
+            freeIntervals={freeIntervals}
+            onGapClick={handleGapClick}
           />
         )}
         {!readOnly && isDragging && (

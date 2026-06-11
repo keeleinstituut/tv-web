@@ -46,6 +46,8 @@ export interface SidePanelContextValue {
   setVendorId: (v: string) => void
   durationMinutes: number
   setDurationMinutes: (v: number | ((prev: number) => number)) => void
+  /** Valid clock-aligned 10-min start times (HH:mm) for create mode */
+  startOptions: string[]
 
   // UI state
   isEditing: boolean

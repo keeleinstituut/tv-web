@@ -14,7 +14,7 @@ const DurationStepper: FC<DurationStepperProps> = ({
   <div className={classes.durationStepper}>
     <button
       className={classes.stepperBtn}
-      onClick={() => onSetDurationMinutes((v) => Math.max(30, v - 30))}
+      onClick={() => onSetDurationMinutes((v) => Math.max(10, v - 10))}
     >
       −
     </button>
@@ -23,7 +23,7 @@ const DurationStepper: FC<DurationStepperProps> = ({
     </span>
     <button
       className={classes.stepperBtn}
-      onClick={() => onSetDurationMinutes((v) => v + 30)}
+      onClick={() => onSetDurationMinutes((v) => v + 10)}
     >
       +
     </button>

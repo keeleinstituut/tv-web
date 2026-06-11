@@ -159,6 +159,10 @@ $border-color: #e2e4e9;
   user-select: none;
 }
 
+.slotCellGap {
+  z-index: 1;
+}
+
 .slotCellFullyBooked {
   cursor: default;
   background: #efdbdb;

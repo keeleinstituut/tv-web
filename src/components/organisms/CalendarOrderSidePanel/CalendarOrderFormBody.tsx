@@ -5,6 +5,7 @@ import { ServiceType } from 'types/calendar'
 import { useFetchCalendarClients } from 'hooks/requests/useUsers'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
+import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DeleteIcon from 'assets/icons/delete.svg?react'
@@ -38,6 +39,9 @@ const CalendarOrderFormBody: FC = () => {
     setVendorId: onSetVendorId,
     durationMinutes,
     setDurationMinutes: onSetDurationMinutes,
+    startTimeInput,
+    setStartTimeInput: onSetStartTimeInput,
+    startOptions,
     domains,
     projectTags,
     vendors,
@@ -127,7 +131,17 @@ const CalendarOrderFormBody: FC = () => {
               {t('calendar.from')}
               <span className={classes.requiredMark}>*</span>
             </label>
-            <div className={classes.inputReadonly}>{startTime}</div>
+            {isViewMode || !startOptions.length ? (
+              <div className={classes.inputReadonly}>{startTime}</div>
+            ) : (
+              <CalendarTimeSelect
+                value={startTimeInput}
+                onChange={onSetStartTimeInput}
+                options={startOptions}
+                className={classes.input}
+                aria-label={t('calendar.from')}
+              />
+            )}
           </div>
           <div className={classes.formGroup}>
             <label className={classes.label}>

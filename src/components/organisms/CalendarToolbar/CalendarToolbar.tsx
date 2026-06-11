@@ -26,6 +26,8 @@ import classNames from 'classnames'
 import { useAuth } from 'components/contexts/AuthContext'
 
 const DURATION_OPTIONS = [
+  { value: 10, labelKey: 'calendar.up_to_10min' },
+  { value: 20, labelKey: 'calendar.up_to_20min' },
   { value: 30, labelKey: 'calendar.up_to_30min' },
   { value: 60, labelKey: 'calendar.up_to_1h' },
   { value: 120, labelKey: 'calendar.up_to_2h' },

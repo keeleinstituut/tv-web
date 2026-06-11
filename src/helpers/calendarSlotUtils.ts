@@ -21,6 +21,11 @@ export function durationToWidth(
   return (minutes / 30) * slotWidthPx
 }
 
+/** Normal blocks keep 8px breathing room; short blocks shrink so a 10-min block stays visible (~14px floor). */
+export function blockInnerWidth(width: number): number {
+  return Math.max(width - 8, Math.min(16, width - 2))
+}
+
 export function slotIndexToIso(
   index: number,
   date: string,
