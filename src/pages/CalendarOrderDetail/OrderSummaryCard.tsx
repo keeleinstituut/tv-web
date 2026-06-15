@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import ArrowDownIcon from 'assets/icons/arrow_down.svg?react'
 import { useFetchCalendarClients } from 'hooks/requests/useUsers'
-import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import TimeDropdownSelect from 'components/molecules/TimeDropdownSelect/TimeDropdownSelect'
 import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
@@ -133,7 +133,7 @@ const SummaryFields: FC = () => {
                 }}
               />
             </div>
-            <CalendarTimeSelect
+            <TimeDropdownSelect
               className={classes.editTimeSelect}
               value={startTimeInput}
               onChange={setStartTimeInput}
@@ -303,7 +303,7 @@ const SummaryFields: FC = () => {
               }}
             />
           </div>
-          <CalendarTimeSelect
+          <TimeDropdownSelect
             className={classes.editTimeSelect}
             value={startTimeInput}
             onChange={setStartTimeInput}

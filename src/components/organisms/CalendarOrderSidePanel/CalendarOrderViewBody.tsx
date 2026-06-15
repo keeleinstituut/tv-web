@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import { ServiceType } from 'types/calendar'
 import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
-import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import TimeDropdownSelect from 'components/molecules/TimeDropdownSelect/TimeDropdownSelect'
 import { useFetchCalendarClients } from 'hooks/requests/useUsers'
 import { calendarBookingStatusLabelKey } from 'helpers/calendarBookingStatus'
 import { useCalendarRole } from 'hooks/useCalendarRole'
@@ -193,7 +193,7 @@ const CalendarOrderViewBody: FC = () => {
                 />
               </div>
               <div style={{ flex: 1 }}>
-                <CalendarTimeSelect
+                <TimeDropdownSelect
                   value={startTimeInput}
                   onChange={onSetStartTimeInput}
                   freeInput

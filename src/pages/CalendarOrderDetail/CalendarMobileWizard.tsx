@@ -13,7 +13,7 @@ import {
 import { useFetchCalendarClients } from 'hooks/requests/useUsers'
 import { useAuth } from 'components/contexts/AuthContext'
 import EditIcon from 'assets/icons/edit.svg?react'
-import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import TimeDropdownSelect from 'components/molecules/TimeDropdownSelect/TimeDropdownSelect'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
 import {
@@ -254,7 +254,7 @@ const CalendarMobileWizard: FC = () => {
                 }}
               />
             </div>
-            <CalendarTimeSelect
+            <TimeDropdownSelect
               className={classes.fieldSelect}
               value={startTimeInput}
               onChange={setStartTimeInput}
@@ -673,7 +673,7 @@ const CalendarMobileWizard: FC = () => {
                 }}
               />
             </div>
-            <CalendarTimeSelect
+            <TimeDropdownSelect
               className={classes.fieldSelect}
               value={startTimeInput}
               onChange={setStartTimeInput}

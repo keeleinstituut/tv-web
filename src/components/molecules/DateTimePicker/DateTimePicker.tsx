@@ -1,4 +1,4 @@
-import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import TimeDropdownSelect from 'components/molecules/TimeDropdownSelect/TimeDropdownSelect'
 import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInput'
 import { Ref, forwardRef, useCallback } from 'react'
 import { FieldError } from 'react-hook-form'
@@ -78,7 +78,7 @@ const DateTimePicker = forwardRef<HTMLInputElement, DateTimePickerProps>(
             className={classes.datePickerContainer}
           />
           <div className={classes.timeSelectWrapper}>
-            <CalendarTimeSelect
+            <TimeDropdownSelect
               value={value?.time ?? ''}
               onChange={onChangeTime}
               disabled={disabled}

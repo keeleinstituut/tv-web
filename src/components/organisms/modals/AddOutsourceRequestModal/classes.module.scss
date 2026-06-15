@@ -309,6 +309,19 @@
   width: 258px;
 }
 
+.datePickerWrap {
+  position: relative;
+}
+
+.timeSelectTrigger {
+  height: 40px;
+  padding: variables.spacing(2);
+  border: 1px solid variables.$color-input-border;
+  border-radius: 4px;
+  background-color: variables.$color-white;
+  color: variables.$color-input-main;
+}
+
 .charCounter {
   color: variables.$color-text-light;
   font-size: variables.$font-size-14;
