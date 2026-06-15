@@ -419,14 +419,14 @@ export const useFetchEmergencySchedules = (vendorId: string | null) => {
   return { isLoading, isError, schedules: data ?? [] }
 }
 
-export interface CalendarSettings {
+export interface InstitutionSettings {
   reaction_time_minutes: number
   buffer_before_minutes: number
   buffer_after_minutes: number
   default_project_type_id: string | null
 }
 
-const DEFAULT_CALENDAR_SETTINGS: CalendarSettings = {
+const DEFAULT_INSTITUTION_SETTINGS: InstitutionSettings = {
   reaction_time_minutes: 30,
   buffer_before_minutes: 30,
   buffer_after_minutes: 30,
@@ -453,32 +453,32 @@ export const useFetchCalendarImports = () => {
   return { isLoading, imports: data ?? [] }
 }
 
-export const useFetchCalendarSettings = () => {
-  const { isLoading, data } = useQuery<CalendarSettings>({
-    queryKey: ['calendar-settings'],
+export const useFetchInstitutionSettings = () => {
+  const { isLoading, data } = useQuery<InstitutionSettings>({
+    queryKey: ['institution-settings'],
     queryFn: async () => {
-      const res = await apiClient.get(endpoints.CALENDAR_SETTINGS)
-      if (!res || !res.data) return DEFAULT_CALENDAR_SETTINGS
+      const res = await apiClient.get(endpoints.INSTITUTION_SETTINGS)
+      if (!res || !res.data) return DEFAULT_INSTITUTION_SETTINGS
       return res.data
     },
   })
-  return { settings: data ?? DEFAULT_CALENDAR_SETTINGS, isLoading }
+  return { settings: data ?? DEFAULT_INSTITUTION_SETTINGS, isLoading }
 }
 
-export type UpdateCalendarSettingsPayload = Omit<
-  CalendarSettings,
+export type UpdateInstitutionSettingsPayload = Omit<
+  InstitutionSettings,
   'default_project_type_id'
 > & {
   default_project_type_id?: string
 }
 
-export const useUpdateCalendarSettings = () => {
+export const useUpdateInstitutionSettings = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateSettings, isLoading } = useMutation({
-    mutationFn: (payload: UpdateCalendarSettingsPayload) =>
-      apiClient.put(endpoints.CALENDAR_SETTINGS, payload),
-    onSuccess: ({ data }: { data: CalendarSettings }) => {
-      queryClient.setQueryData(['calendar-settings'], data)
+    mutationFn: (payload: UpdateInstitutionSettingsPayload) =>
+      apiClient.put(endpoints.INSTITUTION_SETTINGS, payload),
+    onSuccess: ({ data }: { data: InstitutionSettings }) => {
+      queryClient.setQueryData(['institution-settings'], data)
     },
   })
   return { updateSettings, isLoading }

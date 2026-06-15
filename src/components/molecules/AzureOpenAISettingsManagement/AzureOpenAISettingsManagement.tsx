@@ -110,7 +110,7 @@ const AzureOpenAISettingsManagement: FC = () => {
                 loading={isSaving}
                 onClick={handleSubmit(onSubmit)}
               >
-                {t('calendar_settings.save_and_close')}
+                {t('institution_settings.save_and_close')}
               </Button>
             </div>
           ) : (

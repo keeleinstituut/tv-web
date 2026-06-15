@@ -11,8 +11,8 @@ import {
   useSyncInstitutionMainLanguages,
 } from 'hooks/requests/useInstitutions'
 import {
-  useFetchCalendarSettings,
-  useUpdateCalendarSettings,
+  useFetchInstitutionSettings,
+  useUpdateInstitutionSettings,
 } from 'hooks/requests/useCalendar'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
@@ -43,7 +43,7 @@ const minutesToHours = (minutes: number) =>
   Math.round((minutes / 60) * 100) / 100
 const hoursToMinutes = (hours: number) => Math.round(hours * 60)
 
-const CalendarSettingsManagement: FC = () => {
+const InstitutionSettingsManagement: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const canEdit = includes(userPrivileges, Privileges.EditInstitution)
@@ -54,9 +54,9 @@ const CalendarSettingsManagement: FC = () => {
   const { mainLanguages } = useFetchInstitutionMainLanguages()
   const { syncMainLanguages, isLoading } = useSyncInstitutionMainLanguages()
 
-  const { settings } = useFetchCalendarSettings()
+  const { settings } = useFetchInstitutionSettings()
   const { updateSettings, isLoading: isUpdatingSettings } =
-    useUpdateCalendarSettings()
+    useUpdateInstitutionSettings()
 
   const [bufferBefore, setBufferBefore] = useState<number | null>(null)
   const [bufferAfter, setBufferAfter] = useState<number | null>(null)
@@ -92,7 +92,7 @@ const CalendarSettingsManagement: FC = () => {
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.calendar_settings_updated'),
+          content: t('success.institution_settings_updated'),
         })
         setIsEditing(false)
       } catch (errorData) {
@@ -132,7 +132,7 @@ const CalendarSettingsManagement: FC = () => {
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
-        content: t('success.calendar_settings_updated'),
+        content: t('success.institution_settings_updated'),
       })
       setBufferBefore(null)
       setBufferAfter(null)
@@ -161,7 +161,7 @@ const CalendarSettingsManagement: FC = () => {
       showNotification({
         type: NotificationTypes.Error,
         title: t('notification.error'),
-        content: t('calendar_settings.reaction_time_invalid'),
+        content: t('institution_settings.reaction_time_invalid'),
       })
       return
     }
@@ -177,7 +177,7 @@ const CalendarSettingsManagement: FC = () => {
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
-        content: t('success.calendar_settings_updated'),
+        content: t('success.institution_settings_updated'),
       })
       setReactionTimeHours('')
       setIsEditingReactionTime(false)
@@ -190,7 +190,7 @@ const CalendarSettingsManagement: FC = () => {
     <>
       <Container className={classes.container}>
         <div className={classes.header}>
-          <h3 className={classes.title}>{t('calendar_settings.title')}</h3>
+          <h3 className={classes.title}>{t('institution_settings.title')}</h3>
           {isEditing ? (
             <div className={classes.actions}>
               <Button
@@ -205,7 +205,7 @@ const CalendarSettingsManagement: FC = () => {
                 loading={isLoading}
                 onClick={handleSubmit(onSubmit)}
               >
-                {t('calendar_settings.save_and_close')}
+                {t('institution_settings.save_and_close')}
               </Button>
             </div>
           ) : canEdit ? (
@@ -220,11 +220,11 @@ const CalendarSettingsManagement: FC = () => {
           ) : null}
         </div>
         <p className={classes.description}>
-          {t('calendar_settings.description')}
+          {t('institution_settings.description')}
         </p>
         <div className={classes.field}>
           <label className={classes.fieldLabel}>
-            {t('calendar_settings.calendar_languages')}
+            {t('institution_settings.calendar_languages')}
           </label>
           <Controller
             control={control}
@@ -247,7 +247,7 @@ const CalendarSettingsManagement: FC = () => {
       <Container className={classes.container}>
         <div className={classes.header}>
           <h3 className={classes.title}>
-            {t('calendar_settings.time_rules_title')}
+            {t('institution_settings.time_rules_title')}
           </h3>
           {isEditingBuffer ? (
             <div className={classes.actions}>
@@ -263,7 +263,7 @@ const CalendarSettingsManagement: FC = () => {
                 loading={isUpdatingSettings}
                 onClick={handleBufferSave}
               >
-                {t('calendar_settings.save_and_close')}
+                {t('institution_settings.save_and_close')}
               </Button>
             </div>
           ) : canEdit ? (
@@ -278,12 +278,12 @@ const CalendarSettingsManagement: FC = () => {
           ) : null}
         </div>
         <p className={classes.description}>
-          {t('calendar_settings.time_rules_description')}
+          {t('institution_settings.time_rules_description')}
         </p>
         <div className={classes.bufferRow}>
           <div className={classes.field}>
             <label className={classes.fieldLabel}>
-              {t('calendar_settings.buffer_before')}
+              {t('institution_settings.buffer_before')}
               <span className={classes.required}>*</span>
             </label>
             <CalendarSelect
@@ -295,7 +295,7 @@ const CalendarSettingsManagement: FC = () => {
           </div>
           <div className={classes.field}>
             <label className={classes.fieldLabel}>
-              {t('calendar_settings.buffer_after')}
+              {t('institution_settings.buffer_after')}
               <span className={classes.required}>*</span>
             </label>
             <CalendarSelect
@@ -312,11 +312,11 @@ const CalendarSettingsManagement: FC = () => {
         <div className={classes.header}>
           <div className={classes.titleWithTooltip}>
             <h3 className={classes.title}>
-              {t('calendar_settings.reaction_time_title')}
+              {t('institution_settings.reaction_time_title')}
             </h3>
             <SmallTooltip
-              tooltipContent={t('calendar_settings.reaction_time_tooltip')}
-              ariaLabel={t('calendar_settings.reaction_time_title')}
+              tooltipContent={t('institution_settings.reaction_time_tooltip')}
+              ariaLabel={t('institution_settings.reaction_time_title')}
             />
           </div>
           {isEditingReactionTime ? (
@@ -333,7 +333,7 @@ const CalendarSettingsManagement: FC = () => {
                 loading={isUpdatingSettings}
                 onClick={handleReactionTimeSave}
               >
-                {t('calendar_settings.save_and_close')}
+                {t('institution_settings.save_and_close')}
               </Button>
             </div>
           ) : canEdit ? (
@@ -350,7 +350,7 @@ const CalendarSettingsManagement: FC = () => {
         <div className={classes.reactionField}>
           <div className={classes.field}>
             <label className={classes.fieldLabel}>
-              {t('calendar_settings.reaction_time_label')}
+              {t('institution_settings.reaction_time_label')}
               <span className={classes.required}>*</span>
             </label>
             <div className={classes.reactionInputRow}>
@@ -368,7 +368,7 @@ const CalendarSettingsManagement: FC = () => {
                 onChange={(e) => setReactionTimeHours(e.target.value)}
               />
               <span className={classes.reactionUnit}>
-                {t('calendar_settings.reaction_time_hours_suffix')}
+                {t('institution_settings.reaction_time_hours_suffix')}
               </span>
             </div>
           </div>
@@ -378,4 +378,4 @@ const CalendarSettingsManagement: FC = () => {
   )
 }
 
-export default CalendarSettingsManagement
+export default InstitutionSettingsManagement
