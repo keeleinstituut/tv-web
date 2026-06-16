@@ -97,4 +97,21 @@
     font-size: 16px;
   }
 
+  .checkboxRow {
+    display: flex;
+    align-items: center;
+    gap: variables.spacing(2);
+    cursor: pointer;
+
+    input[type='checkbox'] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+    }
+  }
+
 }

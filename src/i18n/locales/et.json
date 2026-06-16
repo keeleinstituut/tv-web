@@ -1466,7 +1466,13 @@
     "reaction_time_tooltip": "Kalendri tellimustele määratav ajavahemik, mille jooksul saab teostaja ülesande vastu võtta. Kui teostaja ei võta tellimust määratud aja jooksul vastu, lükkab süsteem selle tema eest automaatselt tagasi.",
     "reaction_time_label": "Määratud reaktsiooniaeg:",
     "reaction_time_hours_suffix": "tundi",
-    "reaction_time_invalid": "Reaktsiooniaeg peab olema vähemalt 0,25 tundi."
+    "reaction_time_invalid": "Reaktsiooniaeg peab olema vähemalt 0,25 tundi.",
+    "auto_acceptance_title": "Tellimuste automaatne vastuvõtmine",
+    "auto_acceptance_description": "Määra päevade arv, mille jooksul teostaja tellimuse automaatselt vastu võtab.",
+    "verbal_threshold_label": "Suuline tõlge",
+    "non_verbal_threshold_label": "Kirjalik tõlge",
+    "days_suffix": "päeva",
+    "threshold_invalid": "Lävi peab olema vahemikus 1–365 päeva."
   },
   "machine_translation": {
     "title": "Keeletööriistad",

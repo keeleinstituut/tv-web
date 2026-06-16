@@ -424,6 +424,8 @@ export interface InstitutionSettings {
   buffer_before_minutes: number
   buffer_after_minutes: number
   default_project_type_id: string | null
+  verbal_auto_acceptance_threshold_days: number | null
+  non_verbal_auto_acceptance_threshold_days: number | null
 }
 
 const DEFAULT_INSTITUTION_SETTINGS: InstitutionSettings = {
@@ -431,6 +433,8 @@ const DEFAULT_INSTITUTION_SETTINGS: InstitutionSettings = {
   buffer_before_minutes: 30,
   buffer_after_minutes: 30,
   default_project_type_id: null,
+  verbal_auto_acceptance_threshold_days: null,
+  non_verbal_auto_acceptance_threshold_days: null,
 }
 
 export interface CalendarImport {
@@ -465,12 +469,7 @@ export const useFetchInstitutionSettings = () => {
   return { settings: data ?? DEFAULT_INSTITUTION_SETTINGS, isLoading }
 }
 
-export type UpdateInstitutionSettingsPayload = Omit<
-  InstitutionSettings,
-  'default_project_type_id'
-> & {
-  default_project_type_id?: string
-}
+export type UpdateInstitutionSettingsPayload = Partial<InstitutionSettings>
 
 export const useUpdateInstitutionSettings = () => {
   const queryClient = useQueryClient()
