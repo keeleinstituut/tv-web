@@ -1,5 +1,5 @@
 import { FC, useCallback, useState, useEffect } from 'react'
-import { SubProjectDetail, SubProjectFeatures } from 'types/projects'
+import { SubProjectDetail, SubProjectFeatures, TypesWithStartTime } from 'types/projects'
 import { Root } from '@radix-ui/react-form'
 import { useTranslation } from 'react-i18next'
 import FeatureHeaderSection, {
@@ -8,9 +8,10 @@ import FeatureHeaderSection, {
 import FeatureAssignments from 'components/molecules/FeatureAssignments/FeatureAssignments'
 import FeatureCatJobs from 'components/molecules/FeatureCatJobs/FeatureCatJobs'
 import { useSplitAssignment } from 'hooks/requests/useAssignments'
+import { useProjectCache } from 'hooks/requests/useProjects'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { get } from 'lodash'
+import { get, includes, values } from 'lodash'
 
 type MainFeatureProps = Pick<
   SubProjectDetail,
@@ -41,6 +42,8 @@ const MainFeature: FC<MainFeatureProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation()
+  const project = useProjectCache(project_id)
+  const isVerbal = includes(values(TypesWithStartTime), project?.type_classifier_value?.value)
   const isSomethingEditable = true
   const featureTabs = [
     {
@@ -94,7 +97,8 @@ const MainFeature: FC<MainFeatureProps> = ({
       feature === SubProjectFeatures.JobOverview ||
       (feature === SubProjectFeatures.JobRevision && !isFirstTaskJobRevision) ||
       !isMultiAssignmentsEnabled ||
-      workflow_started
+      workflow_started ||
+      isVerbal
     )
   }
 
