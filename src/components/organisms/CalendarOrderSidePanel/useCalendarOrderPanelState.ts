@@ -11,6 +11,7 @@ import {
   isCalendarBookingEventEnded,
   sidePanelIsPastSlot,
 } from 'helpers/calendarCancelUi'
+import { validBookingStartsInInterval } from 'helpers/calendarDayOverlaps'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useCalendarRole } from 'hooks/useCalendarRole'
 import { useAuth } from 'components/contexts/AuthContext'
@@ -279,8 +280,37 @@ export function useCalendarOrderPanelState(): {
     return dayjs(editedStartIso).add(durationMinutes, 'minute').toISOString()
   }, [isEditing, editedStartIso, durationMinutes, endIso])
 
-  const effectiveStartIso = isEditing ? editedStartIso : startIso
-  const effectiveEndIso = isEditing ? editedEndIso : endIso
+  // Create mode: the user may move the start within the selected frame
+  const createStartIso = useMemo(() => {
+    if (isViewMode || !startIso || !startTimeInput) return startIso
+    const parsed = dayjs(
+      `${dayjs(startIso).format('DD.MM.YYYY')} ${startTimeInput}`,
+      'DD.MM.YYYY HH:mm'
+    )
+    return parsed.isValid() ? parsed.toISOString() : startIso
+  }, [isViewMode, startTimeInput, startIso])
+
+  const effectiveStartIso = isEditing
+    ? editedStartIso
+    : isViewMode
+      ? startIso
+      : createStartIso
+  const effectiveEndIso = isEditing
+    ? editedEndIso
+    : isViewMode
+      ? endIso
+      : createStartIso
+        ? dayjs(createStartIso).add(durationMinutes, 'minute').toISOString()
+        : endIso
+
+  // Valid clock-aligned 10-min start times within the clicked frame.
+  const startOptions = useMemo(() => {
+    if (isViewMode || !startIso || !endIso) return []
+    return validBookingStartsInInterval(startIso, endIso).map((iso) =>
+      dayjs(iso).format('HH:mm')
+    )
+  }, [isViewMode, startIso, endIso])
+
   const slotMatchingParams =
     isFormMode && isTPM && effectiveStartIso && effectiveEndIso && language
       ? {
@@ -335,6 +365,7 @@ export function useCalendarOrderPanelState(): {
       }
       if (!isViewMode) {
         setDurationMinutes(slotDurationMinutes)
+        setStartTimeInput(startIso ? dayjs(startIso).format('HH:mm') : '')
       }
       if (isTPM && sidePanelSelection?.slot?.assignment?.status === 'NEW') {
         const a = sidePanelSelection.slot.assignment
@@ -345,9 +376,12 @@ export function useCalendarOrderPanelState(): {
     }
   }, [sidePanelSelection]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Create prebook when opening a new (non-view) slot
+  // Create prebook when a new (non-view) slot selection becomes active.
+  // Runs on every selection change so gap clicks / drags while the panel
+  // is open also replace the selection and need a fresh prebook.
   useEffect(() => {
     if (!isOpen || isViewMode || !language || !startIso || !endIso) return
+    if (prebookActiveRef.current) cancelPrebook()
     prebookActiveRef.current = true
     createPrebook(
       {
@@ -375,21 +409,24 @@ export function useCalendarOrderPanelState(): {
         },
       }
     )
-  }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [sidePanelSelection]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Re-issue prebook when duration changes so the reserved range matches the order end time
+  // Re-issue prebook when start or duration changes so the reserved range
+  // matches the order time (the selection-change effect covers the initial range)
   useEffect(() => {
     if (!isOpen || isViewMode || !language || !startIso) return
-    const computedEnd = dayjs(startIso)
+    const start = effectiveStartIso ?? startIso
+    const computedEnd = dayjs(start)
       .add(durationMinutes, 'minute')
       .toISOString()
+    if (start === startIso && computedEnd === endIso) return
     const timer = setTimeout(() => {
       cancelPrebook()
       prebookActiveRef.current = true
       createPrebook(
         {
           language_id: language.language.id,
-          start_at: startIso,
+          start_at: start,
           end_at: computedEnd,
           ...(sidePanelSelection?.vendorId
             ? { vendor_id: sidePanelSelection.vendorId }
@@ -406,7 +443,7 @@ export function useCalendarOrderPanelState(): {
       )
     }, 600)
     return () => clearTimeout(timer)
-  }, [durationMinutes]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [durationMinutes, effectiveStartIso]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Cancel countdown tick
   useEffect(() => {
@@ -429,13 +466,14 @@ export function useCalendarOrderPanelState(): {
 
   const handleSubmit = () => {
     if (!language || !startIso || !serviceType) return
-    const computedEndIso = dayjs(startIso)
+    const submitStartIso = effectiveStartIso ?? startIso
+    const computedEndIso = dayjs(submitStartIso)
       .add(durationMinutes, 'minute')
       .toISOString()
     createOrder(
       {
         language_id: language.language.id,
-        start_at: startIso,
+        start_at: submitStartIso,
         end_at: computedEndIso,
         service_type: serviceType === 'kaugtolge' ? 'REMOTE' : 'ON_SITE',
         reference_number: referenceNumber || undefined,
@@ -643,6 +681,7 @@ export function useCalendarOrderPanelState(): {
       setVendorId,
       durationMinutes,
       setDurationMinutes,
+      startOptions,
       isEditing,
       isConfirmingCancel,
       setIsConfirmingCancel,
@@ -703,6 +742,7 @@ export function useCalendarOrderPanelState(): {
       projectTagIds,
       vendorId,
       durationMinutes,
+      startOptions,
       isEditing,
       isConfirmingCancel,
       cancelReason,

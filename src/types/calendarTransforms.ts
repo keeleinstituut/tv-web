@@ -31,6 +31,7 @@ import {
   normalizeCalendarProjectStatus,
   normalizeCalendarSubProjectStatus,
 } from 'helpers/calendarBookingStatus'
+import { sortVendors } from 'helpers/calendar'
 
 export function transformLanguages(
   api: ApiCalendarLanguagesResponse
@@ -174,6 +175,24 @@ function destinationLangIdsFromCalendarEntry(
   return id ? [id] : []
 }
 
+function buildAssignmentFromUnassigned(
+  p: ApiUnassignedProject
+): BookedSlotAssignment {
+  return {
+    id: p.id,
+    project_status: normalizeCalendarProjectStatus(p.status),
+    sub_project: {
+      id: p.id,
+      ext_id: p.ext_id,
+      source_language: { id: '', value: '', name: '' },
+      destination_language: { id: '', value: '', name: '' },
+    },
+    service_type: (p.service_type as 'REMOTE' | 'ON_SITE') ?? undefined,
+    location: p.location ?? undefined,
+    meeting_link: p.meeting_link ?? undefined,
+  }
+}
+
 function appendClientBookingIfNew(
   byLanguage: Record<string, BookedSlot[]>,
   langId: string,
@@ -225,7 +244,7 @@ export function transformDayResponse(
               ? `${v.institutionUser.user.forename} ${v.institutionUser.user.surname}`.trim()
               : v.id,
           },
-          is_internal: v.emergency_schedules.length === 0,
+          is_emo: v.emergency_schedules.length > 0,
           booked_slots: langEntries.map((e) => {
             const times = entryTimesForNonVendor(e)
             return {
@@ -249,14 +268,31 @@ export function transformDayResponse(
     )
     const tpmVendors = languageIds.map((langId) => ({
       language_id: langId,
-      vendors: vendorsByLanguage.get(langId) ?? [],
+      vendors: sortVendors(vendorsByLanguage.get(langId) ?? []),
     }))
+
+    const unassignedByLang: Record<string, BookedSlot[]> = {}
+    for (const p of tpm.unassigned_projects ?? []) {
+      const slot: BookedSlot = {
+        start_at: p.event_start_at,
+        end_at: p.event_end_at ?? p.event_start_at,
+        type: 'assignment',
+        assignment: buildAssignmentFromUnassigned(p),
+      }
+      for (const langId of p.destination_language_classifier_value_ids ?? []) {
+        if (!unassignedByLang[langId]) unassignedByLang[langId] = []
+        unassignedByLang[langId].push(slot)
+      }
+    }
 
     return {
       current_time: new Date().toISOString(),
       booked_slots: [],
       booked_slots_by_language: {},
       tpm_vendors: tpmVendors,
+      tpm_unassigned_by_language: Object.keys(unassignedByLang).length
+        ? unassignedByLang
+        : undefined,
     }
   }
 
@@ -284,24 +320,6 @@ export function transformDayResponse(
       }
       return pStart >= new Date(startAt) && pStart < new Date(endAt)
     })
-
-  function buildAssignmentFromUnassigned(
-    p: ApiUnassignedProject
-  ): BookedSlotAssignment {
-    return {
-      id: p.id,
-      project_status: normalizeCalendarProjectStatus(p.status),
-      sub_project: {
-        id: p.id,
-        ext_id: p.ext_id,
-        source_language: { id: '', value: '', name: '' },
-        destination_language: { id: '', value: '', name: '' },
-      },
-      service_type: (p.service_type as 'REMOTE' | 'ON_SITE') ?? undefined,
-      location: p.location ?? undefined,
-      meeting_link: p.meeting_link ?? undefined,
-    }
-  }
 
   const byLanguage: Record<string, BookedSlot[]> = {}
   for (const slot of clientShape.booked_slots ?? []) {
@@ -458,7 +476,7 @@ function buildVendorWeekData(
   return {
     id: v.id,
     institution_user: { id: v.institutionUser?.id ?? '', name: vendorName(v) },
-    is_internal: v.emergency_schedules.length === 0,
+    is_emo: v.emergency_schedules.length > 0,
     slots,
   }
 }
@@ -493,7 +511,7 @@ function buildVendorMonthData(
   return {
     id: v.id,
     institution_user: { id: v.institutionUser?.id ?? '', name: vendorName(v) },
-    is_internal: v.emergency_schedules.length === 0,
+    is_emo: v.emergency_schedules.length > 0,
     slots,
   }
 }
@@ -536,9 +554,11 @@ export function transformWeekResponse(
       )
       return {
         language_id: langId,
-        vendors: tpm.vendors
-          .filter((v) => langVendorIds.includes(v.id))
-          .map((v) => buildVendorWeekData(v, langSlots, wStart)),
+        vendors: sortVendors(
+          tpm.vendors
+            .filter((v) => langVendorIds.includes(v.id))
+            .map((v) => buildVendorWeekData(v, langSlots, wStart))
+        ),
       }
     })
     return {
@@ -668,9 +688,11 @@ export function transformMonthResponse(
       )
       return {
         language_id: langId,
-        vendors: tpm.vendors
-          .filter((v) => langVendorIds.includes(v.id))
-          .map((v) => buildVendorMonthData(v, langSlots, m)),
+        vendors: sortVendors(
+          tpm.vendors
+            .filter((v) => langVendorIds.includes(v.id))
+            .map((v) => buildVendorMonthData(v, langSlots, m))
+        ),
       }
     })
     return {

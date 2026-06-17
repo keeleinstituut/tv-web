@@ -1,11 +1,24 @@
-import { FC, useCallback, useRef } from 'react'
+import { FC, Fragment, useCallback, useRef } from 'react'
 import { useCalendarDay } from 'components/contexts/CalendarDayContext'
 import { useSlotStateCheckers } from 'hooks/useSlotStateCheckers'
 import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import { BookedSlot, CalendarLanguage, VendorDayData } from 'types/calendar'
 import { BookedSlotBlock } from 'components/molecules/CalendarLanguageRow/CalendarLanguageRow'
-import { slotIndexToIso, isSlotPast } from 'helpers/calendarSlotUtils'
+import {
+  slotIndexToIso,
+  isSlotPast,
+  timeToX,
+  durationToWidth,
+  blockInnerWidth,
+} from 'helpers/calendarSlotUtils'
+import {
+  clipIntervals,
+  defaultBookingRange,
+  extendToStretchEnd,
+  validBookingStartsInInterval,
+  TimeInterval,
+} from 'helpers/calendarDayOverlaps'
 import { useCalendarPanel } from 'components/contexts/CalendarContext'
 import { useDragSelection } from 'hooks/useDragSelection'
 import CalendarVendorBadge from 'components/atoms/CalendarVendorBadge/CalendarVendorBadge'
@@ -25,16 +38,36 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
 
   const rowRef = useRef<HTMLDivElement>(null)
 
-  const { isSlotBooked, isSlotFullyBooked } = useSlotStateCheckers(
-    date,
-    dayStartHour,
-    vendor.booked_slots,
-    vendor.available_slots
-  )
+  const { isSlotBooked, isSlotFullyBooked, isSlotFullyAvailable, freeIntervals } =
+    useSlotStateCheckers(
+      date,
+      dayStartHour,
+      vendor.booked_slots,
+      vendor.available_slots
+    )
 
   const isSlotAvailable = (slotIndex: number) => !isSlotFullyBooked(slotIndex)
   const isSlotBlocked = (slotIndex: number) =>
     isSlotBooked(slotIndex) || isSlotFullyBooked(slotIndex)
+
+  const freeAt = useCallback(
+    (i: number): TimeInterval[] =>
+      clipIntervals(
+        freeIntervals ?? [],
+        slotIndexToIso(i, date, dayStartHour),
+        slotIndexToIso(i + 1, date, dayStartHour)
+      ),
+    [freeIntervals, date, dayStartHour]
+  )
+
+  const partialAt = useCallback(
+    (i: number): boolean => {
+      if (isSlotPast(slotIndexToIso(i, date, dayStartHour))) return false
+      if (isSlotBooked(i) || isSlotFullyBooked(i)) return false
+      return !isSlotFullyAvailable(i)
+    },
+    [date, dayStartHour, isSlotBooked, isSlotFullyBooked, isSlotFullyAvailable]
+  )
 
   const {
     isDragging,
@@ -50,6 +83,9 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
     totalSlots,
     slotWidth: sw,
     isSlotBooked: isSlotBlocked,
+    isSlotFullyBooked,
+    isSlotFullyAvailable,
+    freeIntervals,
     onDragComplete: (startIso, endIso) =>
       openSidePanel({
         language,
@@ -71,10 +107,41 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
         vendorName: vendor.institution_user.name,
       })
     },
-    [language, vendor.id, openSidePanel]
+    [language, vendor.id, vendor.institution_user.name, openSidePanel]
   )
 
-  const isEmo = !vendor.is_internal
+  const handleGapClick = (freeInterval: TimeInterval) => {
+    const range = defaultBookingRange(freeInterval)
+    if (!range) return
+    openSidePanel({
+      language,
+      startIso: range.startIso,
+      endIso: range.endIso,
+      vendorId: vendor.id,
+      vendorName: vendor.institution_user.name,
+    })
+  }
+
+  const renderGaps = (free: TimeInterval[]) =>
+    free.map((f) => {
+      const starts = validBookingStartsInInterval(f.start_at, f.end_at)
+      if (!starts.length) return null
+      const left = timeToX(starts[0], dayStartHour, sw) + 4
+      const width = blockInnerWidth(durationToWidth(starts[0], f.end_at, sw))
+      return (
+        <div
+          key={`gap-${f.start_at}`}
+          className={classNames(classes.slotCell, classes.slotCellFuture)}
+          style={{ left, width, top: 4, bottom: 4, zIndex: 1 }}
+          onClick={(e) => {
+            e.stopPropagation()
+            handleGapClick(extendToStretchEnd(f, freeIntervals ?? []))
+          }}
+        >
+          <span className={classes.slotCellLabel}>+</span>
+        </div>
+      )
+    })
 
   return (
     <div className={classes.vendorRowWrapper}>
@@ -82,7 +149,7 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
         <CalendarVendorBadge
           vendorId={vendor.id}
           name={vendor.institution_user.name}
-          isEmo={isEmo}
+          isEmo={vendor.is_emo}
         />
       </div>
       <div
@@ -100,11 +167,39 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
           const isBooked = isSlotBooked(i)
           const isAvailable = isSlotAvailable(i)
 
-          if (isBooked) return null
+          // Booked cells render no background; a partially booked cell still
+          // exposes its bookable remainder as gap(s).
+          if (isBooked) {
+            if (isPast) return null
+            const gaps = renderGaps(freeAt(i)).filter(Boolean)
+            return gaps.length ? <Fragment key={i}>{gaps}</Fragment> : null
+          }
+
+          // Availability edge inside the cell: gray base + bookable gap(s).
+          if (partialAt(i)) {
+            return (
+              <Fragment key={i}>
+                <div
+                  className={classNames(
+                    classes.slotCell,
+                    classes.slotCellUnavailable
+                  )}
+                  style={{
+                    left: i * sw + 4,
+                    width: sw - 8,
+                    top: 4,
+                    bottom: 4,
+                    height: 'auto',
+                  }}
+                />
+                {renderGaps(freeAt(i))}
+              </Fragment>
+            )
+          }
 
           if (i % 2 === 1) {
             const prevBooked = isSlotBooked(i - 1)
-            if (!prevBooked) {
+            if (!prevBooked && !partialAt(i - 1)) {
               const prevPast = isSlotPast(
                 slotIndexToIso(i - 1, date, dayStartHour)
               )
@@ -122,6 +217,7 @@ const CalendarDayVendorRow: FC<Props> = ({ vendor, language }) => {
             i % 2 === 0 &&
             nextSlotIso !== null &&
             !isSlotBooked(i + 1) &&
+            !partialAt(i + 1) &&
             isSlotPast(nextSlotIso) === isPast &&
             isSlotAvailable(i + 1) === isAvailable
           const isBookable = !isPast && isAvailable

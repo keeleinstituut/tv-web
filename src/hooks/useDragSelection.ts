@@ -4,6 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { slotIndexToIso } from 'helpers/calendarSlotUtils'
+import {
+  clampSelectionToFree,
+  clipIntervals,
+  TimeInterval,
+} from 'helpers/calendarDayOverlaps'
 
 interface Options {
   rowRef: RefObject<HTMLDivElement>
@@ -13,6 +18,10 @@ interface Options {
   slotWidth: number
   isSlotBooked: (slotIndex: number) => boolean
   isSlotFullyBooked?: (slotIndex: number) => boolean
+  /** True when the cell is fully covered by free time (used in fallback validation). */
+  isSlotFullyAvailable?: (slotIndex: number) => boolean
+  /** Row free time (availability minus bookings); enables edge clamping on drag. */
+  freeIntervals?: TimeInterval[]
   onDragComplete: (startIso: string, endIso: string) => void
 }
 
@@ -24,6 +33,8 @@ export function useDragSelection({
   slotWidth,
   isSlotBooked,
   isSlotFullyBooked,
+  isSlotFullyAvailable,
+  freeIntervals,
   onDragComplete,
 }: Options) {
   const { t } = useTranslation()
@@ -47,11 +58,19 @@ export function useDragSelection({
       const idx = getSlotIndexFromX(e.clientX)
       if (idx === null) return
       const slotIso = slotIndexToIso(idx, date, dayStartHour)
-      if (dayjs(slotIso).isBefore(dayjs()) || isSlotBooked(idx)) return
+      if (dayjs(slotIso).isBefore(dayjs())) return
+      const hasFreePiece =
+        !!freeIntervals?.length &&
+        clipIntervals(
+          freeIntervals,
+          slotIso,
+          slotIndexToIso(idx + 1, date, dayStartHour)
+        ).length > 0
+      if (isSlotBooked(idx) && !hasFreePiece) return
       setDragStart(idx)
       setDragEnd(idx)
     },
-    [getSlotIndexFromX, date, dayStartHour, isSlotBooked]
+    [getSlotIndexFromX, date, dayStartHour, isSlotBooked, freeIntervals]
   )
 
   const handleMouseMove = useCallback(
@@ -86,6 +105,30 @@ export function useDragSelection({
       }
     }
 
+    const isSingleCell = endIdx - startIdx === 1
+    if (
+      isSingleCell &&
+      isSlotFullyAvailable &&
+      !isSlotFullyAvailable(startIdx) &&
+      !isSlotFullyBooked?.(startIdx)
+    ) {
+      setDragStart(null)
+      setDragEnd(null)
+      return
+    }
+
+    if (freeIntervals?.length) {
+      const selStartIso = slotIndexToIso(startIdx, date, dayStartHour)
+      const selEndIso = slotIndexToIso(endIdx, date, dayStartHour)
+      const clamped = clampSelectionToFree(selStartIso, selEndIso, freeIntervals)
+      if (clamped) {
+        onDragComplete(clamped.start_at, clamped.end_at)
+        setDragStart(null)
+        setDragEnd(null)
+        return
+      }
+    }
+
     for (let i = startIdx; i < endIdx; i++) {
       if (isSlotBooked(i)) {
         setDragStart(null)
@@ -96,6 +139,23 @@ export function useDragSelection({
           content: t('calendar.drag_into_booked'),
         })
         return
+      }
+    }
+
+    // Fallback when clamping did not apply: reject partial cells (gap click
+    // handles those). Cells with zero availability keep the warn-and-allow flow.
+    if (isSlotFullyAvailable) {
+      for (let i = startIdx; i < endIdx; i++) {
+        if (!isSlotFullyAvailable(i) && !isSlotFullyBooked?.(i)) {
+          setDragStart(null)
+          setDragEnd(null)
+          showNotification({
+            type: NotificationTypes.Error,
+            title: t('notification.announcement'),
+            content: t('calendar.drag_into_partial'),
+          })
+          return
+        }
       }
     }
 
@@ -117,7 +177,18 @@ export function useDragSelection({
     onDragComplete(startIso, endIso)
     setDragStart(null)
     setDragEnd(null)
-  }, [dragStart, dragEnd, date, dayStartHour, isSlotBooked, isSlotFullyBooked, onDragComplete, t])
+  }, [
+    dragStart,
+    dragEnd,
+    date,
+    dayStartHour,
+    isSlotBooked,
+    isSlotFullyBooked,
+    isSlotFullyAvailable,
+    freeIntervals,
+    onDragComplete,
+    t,
+  ])
 
   const selectionLeft = isDragging
     ? Math.min(dragStart!, dragEnd!) * slotWidth + 4

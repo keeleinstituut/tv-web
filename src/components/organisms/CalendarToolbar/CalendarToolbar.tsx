@@ -1,11 +1,10 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import CalendarIcon from 'assets/icons/calender.svg?react'
 import ViewWeekIcon from 'assets/icons/view_week.svg?react'
 import ViewMonthIcon from 'assets/icons/view_month.svg?react'
-import HorizontalDotsIcon from 'assets/icons/horizontal_dots.svg?react'
 import {
   useCalendarNav,
   useCalendarPanel,
@@ -27,6 +26,8 @@ import classNames from 'classnames'
 import { useAuth } from 'components/contexts/AuthContext'
 
 const DURATION_OPTIONS = [
+  { value: 10, labelKey: 'calendar.up_to_10min' },
+  { value: 20, labelKey: 'calendar.up_to_20min' },
   { value: 30, labelKey: 'calendar.up_to_30min' },
   { value: 60, labelKey: 'calendar.up_to_1h' },
   { value: 120, labelKey: 'calendar.up_to_2h' },
@@ -56,20 +57,6 @@ const CalendarToolbar: FC = () => {
   const [searchDate, setSearchDate] = useState('')
   const [searchTime, setSearchTime] = useState('')
   const [searchDuration, setSearchDuration] = useState(60)
-  const [moreOpen, setMoreOpen] = useState(false)
-
-  const moreRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!moreOpen) return
-    const handler = (e: MouseEvent) => {
-      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
-        setMoreOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    return () => document.removeEventListener('mousedown', handler)
-  }, [moreOpen])
 
   const views: {
     key: CalendarView
@@ -109,6 +96,16 @@ const CalendarToolbar: FC = () => {
             setCurrentDate(dayjs(start_at))
             setView('day')
             setFocusedLanguageId(searchLangId)
+            if (searchDate && !dayjs(start_at).isSame(dayjs(searchDate), 'day')) {
+              showNotification(
+                {
+                  type: NotificationTypes.Warning,
+                  title: t('calendar.no_slots_on_searched_date'),
+                  content: t('calendar.no_slots_on_searched_date_content'),
+                },
+                5000
+              )
+            }
           } else {
             showNotification(
               {
@@ -127,10 +124,6 @@ const CalendarToolbar: FC = () => {
     )
   }
 
-  const handleAddOrder = () => {
-    setMoreOpen(false)
-    navigate('/calendar/new-order')
-  }
 
   return (
     <div className={classes.toolbar}>
@@ -246,25 +239,12 @@ const CalendarToolbar: FC = () => {
         )}
 
         {isInstitutionClientOrTPM && (
-          <div className={classes.moreWrapper} ref={moreRef}>
-            <button
-              className={classes.moreButton}
-              onClick={() => setMoreOpen((o) => !o)}
-            >
-              {t('calendar.more')}
-              <HorizontalDotsIcon className={classes.moreIcon} />
-            </button>
-            {moreOpen && (
-              <div className={classes.moreDropdown}>
-                <button
-                  className={classes.moreDropdownItem}
-                  onClick={handleAddOrder}
-                >
-                  {t('calendar.add_order')}
-                </button>
-              </div>
-            )}
-          </div>
+          <button
+            className={classes.addOrderButton}
+            onClick={() => navigate('/calendar/new-order')}
+          >
+            {t('calendar.add_order')}
+          </button>
         )}
       </div>
     </div>

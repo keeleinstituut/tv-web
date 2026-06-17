@@ -4,6 +4,8 @@ export const CALENDAR_MOBILE_DURATION_OPTIONS: Array<{
   value: number
   label: string
 }> = [
+  { value: 10, label: 'calendar.up_to_10min' },
+  { value: 20, label: 'calendar.up_to_20min' },
   { value: 30, label: 'calendar.up_to_30min' },
   { value: 60, label: 'calendar.up_to_1h' },
   { value: 90, label: 'calendar.up_to_1h30min' },

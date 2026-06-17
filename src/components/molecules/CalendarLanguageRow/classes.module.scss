@@ -159,6 +159,10 @@ $border-color: #e2e4e9;
   user-select: none;
 }
 
+.slotCellGap {
+  z-index: 1;
+}
+
 .slotCellFullyBooked {
   cursor: default;
   background: #efdbdb;
@@ -261,6 +265,11 @@ $border-color: #e2e4e9;
 .slotAssignmentConfirmed {
   background: #b8d8ef;
   color: $color-secondary-dark;
+}
+
+.slotAssignmentViolet {
+  background: #e9d5ff;
+  color: #5b21b6;
 }
 
 .slotAssignmentPast {

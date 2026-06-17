@@ -71,6 +71,8 @@ export type TimeDropdownSelectProps = {
   allowEmpty?: boolean
   emptyLabel?: string
   freeInput?: boolean
+  /** Explicit HH:MM option values; overrides the built-in 30-min grid. */
+  options?: string[]
   id?: string
   'aria-label'?: string
 }
@@ -78,6 +80,7 @@ export type TimeDropdownSelectProps = {
 /**
  * 24h time picker. Default: 30-minute steps (:00 / :30).
  * With freeInput: accepts any HH:MM value typed by the user.
+ * With options: offers exactly the given HH:MM values.
  */
 const TimeDropdownSelect: FC<TimeDropdownSelectProps> = ({
   value,
@@ -87,6 +90,7 @@ const TimeDropdownSelect: FC<TimeDropdownSelectProps> = ({
   allowEmpty,
   emptyLabel = '–',
   freeInput,
+  options,
   id,
   'aria-label': ariaLabel,
 }) => {
@@ -99,17 +103,19 @@ const TimeDropdownSelect: FC<TimeDropdownSelectProps> = ({
 
   useClickAway(() => setOpen(false), rootRef)
 
+  const valueList = options ?? HALF_HOUR_VALUES
+
   useEffect(() => {
-    if (freeInput) return
+    if (freeInput || options) return
     if (!value) return
     if (HALF_HOUR_VALUES.includes(value)) return
     onChange(normalizeToHalfHourValue(value))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, freeInput])
+  }, [value, freeInput, options])
 
   const selectValue = (() => {
-    if (!value.trim()) return allowEmpty ? '' : (freeInput ? '' : HALF_HOUR_VALUES[0])
-    if (freeInput) return value
+    if (!value.trim()) return allowEmpty ? '' : freeInput ? '' : valueList[0]
+    if (freeInput || options) return value
     return HALF_HOUR_VALUES.includes(value)
       ? value
       : normalizeToHalfHourValue(value)
@@ -133,8 +139,8 @@ const TimeDropdownSelect: FC<TimeDropdownSelectProps> = ({
   }, [open])
 
   const filteredValues = filterQuery
-    ? HALF_HOUR_VALUES.filter((t) => t.includes(filterQuery))
-    : HALF_HOUR_VALUES
+    ? valueList.filter((t) => t.includes(filterQuery))
+    : valueList
 
   const pick = useCallback((next: string) => {
     onChange(next)

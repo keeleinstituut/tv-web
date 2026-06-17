@@ -5,26 +5,36 @@ import { getInitials } from 'helpers/calendar'
 import classes from './classes.module.scss'
 
 interface Props {
-  vendorId: string
+  vendorId?: string
   name: string
   isEmo?: boolean
+  unassigned?: boolean
 }
 
-const CalendarVendorBadge: FC<Props> = ({ vendorId, name, isEmo }) => {
+const CalendarVendorBadge: FC<Props> = ({ vendorId, name, isEmo, unassigned }) => {
   const navigate = useNavigate()
-  const handleNavigate = () => navigate(`/vendors/${vendorId}`)
+  const handleNavigate = vendorId
+    ? () => navigate(`/vendors/${vendorId}`)
+    : undefined
   return (
     <span
-      className={classNames(classes.badge, { [classes.badgeEmo]: isEmo })}
+      className={classNames(classes.badge, {
+        [classes.badgeEmo]: isEmo,
+        [classes.badgeUnassigned]: unassigned,
+      })}
       onClick={handleNavigate}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          handleNavigate()
-        }
-      }}
-      role="button"
-      tabIndex={0}
+      onKeyDown={
+        handleNavigate
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                handleNavigate()
+              }
+            }
+          : undefined
+      }
+      role={handleNavigate ? 'button' : undefined}
+      tabIndex={handleNavigate ? 0 : undefined}
     >
       {getInitials(name)}
       {isEmo && <span className={classes.emoLabel}>EMO</span>}

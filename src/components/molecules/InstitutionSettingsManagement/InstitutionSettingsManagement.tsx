@@ -11,8 +11,8 @@ import {
   useSyncInstitutionMainLanguages,
 } from 'hooks/requests/useInstitutions'
 import {
-  useFetchCalendarSettings,
-  useUpdateCalendarSettings,
+  useFetchInstitutionSettings,
+  useUpdateInstitutionSettings,
 } from 'hooks/requests/useCalendar'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
@@ -43,25 +43,29 @@ const minutesToHours = (minutes: number) =>
   Math.round((minutes / 60) * 100) / 100
 const hoursToMinutes = (hours: number) => Math.round(hours * 60)
 
-const CalendarSettingsManagement: FC = () => {
+const InstitutionSettingsManagement: FC = () => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const canEdit = includes(userPrivileges, Privileges.EditInstitution)
   const [isEditing, setIsEditing] = useState(false)
   const [isEditingBuffer, setIsEditingBuffer] = useState(false)
   const [isEditingReactionTime, setIsEditingReactionTime] = useState(false)
+  const [isEditingAutoAcceptance, setIsEditingAutoAcceptance] = useState(false)
 
   const { mainLanguages } = useFetchInstitutionMainLanguages()
   const { syncMainLanguages, isLoading } = useSyncInstitutionMainLanguages()
 
-  const { settings } = useFetchCalendarSettings()
+  const { settings } = useFetchInstitutionSettings()
   const { updateSettings, isLoading: isUpdatingSettings } =
-    useUpdateCalendarSettings()
+    useUpdateInstitutionSettings()
 
   const [bufferBefore, setBufferBefore] = useState<number | null>(null)
   const [bufferAfter, setBufferAfter] = useState<number | null>(null)
   // Stored locally in HOURS; converted to/from minutes at the BE boundary.
   const [reactionTimeHours, setReactionTimeHours] = useState<string>('')
+  // null = feature disabled (will send null to BE); string = enabled with day count
+  const [verbalDays, setVerbalDays] = useState<string | null>(null)
+  const [nonVerbalDays, setNonVerbalDays] = useState<string | null>(null)
 
   const effectiveBefore = bufferBefore ?? settings?.buffer_before_minutes ?? 30
   const effectiveAfter = bufferAfter ?? settings?.buffer_after_minutes ?? 30
@@ -72,6 +76,15 @@ const CalendarSettingsManagement: FC = () => {
   const effectiveReactionHours = Number.isFinite(parsedReactionHours)
     ? parsedReactionHours
     : storedReactionHours
+
+  const storedVerbalDays = settings?.verbal_auto_acceptance_threshold_days ?? null
+  const storedNonVerbalDays = settings?.non_verbal_auto_acceptance_threshold_days ?? null
+  const effectiveVerbalDays = isEditingAutoAcceptance
+    ? verbalDays
+    : storedVerbalDays !== null ? String(storedVerbalDays) : null
+  const effectiveNonVerbalDays = isEditingAutoAcceptance
+    ? nonVerbalDays
+    : storedNonVerbalDays !== null ? String(storedNonVerbalDays) : null
 
   const { classifierValuesFilters: languageOptions = [] } =
     useClassifierValuesFetch(
@@ -92,7 +105,7 @@ const CalendarSettingsManagement: FC = () => {
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
-          content: t('success.calendar_settings_updated'),
+          content: t('success.institution_settings_updated'),
         })
         setIsEditing(false)
       } catch (errorData) {
@@ -132,7 +145,7 @@ const CalendarSettingsManagement: FC = () => {
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
-        content: t('success.calendar_settings_updated'),
+        content: t('success.institution_settings_updated'),
       })
       setBufferBefore(null)
       setBufferAfter(null)
@@ -161,7 +174,7 @@ const CalendarSettingsManagement: FC = () => {
       showNotification({
         type: NotificationTypes.Error,
         title: t('notification.error'),
-        content: t('calendar_settings.reaction_time_invalid'),
+        content: t('institution_settings.reaction_time_invalid'),
       })
       return
     }
@@ -177,7 +190,7 @@ const CalendarSettingsManagement: FC = () => {
       showNotification({
         type: NotificationTypes.Success,
         title: t('notification.announcement'),
-        content: t('success.calendar_settings_updated'),
+        content: t('success.institution_settings_updated'),
       })
       setReactionTimeHours('')
       setIsEditingReactionTime(false)
@@ -186,11 +199,57 @@ const CalendarSettingsManagement: FC = () => {
     }
   }, [updateSettings, settings, reactionTimeHours, t])
 
+  const handleAutoAcceptanceEdit = useCallback(() => {
+    setVerbalDays(storedVerbalDays !== null ? String(storedVerbalDays) : null)
+    setNonVerbalDays(storedNonVerbalDays !== null ? String(storedNonVerbalDays) : null)
+    setIsEditingAutoAcceptance(true)
+  }, [storedVerbalDays, storedNonVerbalDays])
+
+  const handleAutoAcceptanceCancel = useCallback(() => {
+    setVerbalDays(null)
+    setNonVerbalDays(null)
+    setIsEditingAutoAcceptance(false)
+  }, [])
+
+  const handleAutoAcceptanceSave = useCallback(async () => {
+    const verbalParsed = verbalDays !== null ? parseInt(verbalDays, 10) : null
+    const nonVerbalParsed = nonVerbalDays !== null ? parseInt(nonVerbalDays, 10) : null
+
+    const isVerbalInvalid = verbalParsed !== null && (isNaN(verbalParsed) || verbalParsed < 1 || verbalParsed > 365)
+    const isNonVerbalInvalid = nonVerbalParsed !== null && (isNaN(nonVerbalParsed) || nonVerbalParsed < 1 || nonVerbalParsed > 365)
+
+    if (isVerbalInvalid || isNonVerbalInvalid) {
+      showNotification({
+        type: NotificationTypes.Error,
+        title: t('notification.error'),
+        content: t('institution_settings.threshold_invalid'),
+      })
+      return
+    }
+
+    try {
+      await updateSettings({
+        verbal_auto_acceptance_threshold_days: verbalParsed,
+        non_verbal_auto_acceptance_threshold_days: nonVerbalParsed,
+      })
+      showNotification({
+        type: NotificationTypes.Success,
+        title: t('notification.announcement'),
+        content: t('success.institution_settings_updated'),
+      })
+      setVerbalDays(null)
+      setNonVerbalDays(null)
+      setIsEditingAutoAcceptance(false)
+    } catch (errorData) {
+      showValidationErrorMessage(errorData)
+    }
+  }, [updateSettings, settings, verbalDays, nonVerbalDays, t])
+
   return (
     <>
       <Container className={classes.container}>
         <div className={classes.header}>
-          <h3 className={classes.title}>{t('calendar_settings.title')}</h3>
+          <h3 className={classes.title}>{t('institution_settings.title')}</h3>
           {isEditing ? (
             <div className={classes.actions}>
               <Button
@@ -205,7 +264,7 @@ const CalendarSettingsManagement: FC = () => {
                 loading={isLoading}
                 onClick={handleSubmit(onSubmit)}
               >
-                {t('calendar_settings.save_and_close')}
+                {t('institution_settings.save_and_close')}
               </Button>
             </div>
           ) : canEdit ? (
@@ -220,11 +279,11 @@ const CalendarSettingsManagement: FC = () => {
           ) : null}
         </div>
         <p className={classes.description}>
-          {t('calendar_settings.description')}
+          {t('institution_settings.description')}
         </p>
         <div className={classes.field}>
           <label className={classes.fieldLabel}>
-            {t('calendar_settings.calendar_languages')}
+            {t('institution_settings.calendar_languages')}
           </label>
           <Controller
             control={control}
@@ -247,7 +306,7 @@ const CalendarSettingsManagement: FC = () => {
       <Container className={classes.container}>
         <div className={classes.header}>
           <h3 className={classes.title}>
-            {t('calendar_settings.time_rules_title')}
+            {t('institution_settings.time_rules_title')}
           </h3>
           {isEditingBuffer ? (
             <div className={classes.actions}>
@@ -263,7 +322,7 @@ const CalendarSettingsManagement: FC = () => {
                 loading={isUpdatingSettings}
                 onClick={handleBufferSave}
               >
-                {t('calendar_settings.save_and_close')}
+                {t('institution_settings.save_and_close')}
               </Button>
             </div>
           ) : canEdit ? (
@@ -278,12 +337,12 @@ const CalendarSettingsManagement: FC = () => {
           ) : null}
         </div>
         <p className={classes.description}>
-          {t('calendar_settings.time_rules_description')}
+          {t('institution_settings.time_rules_description')}
         </p>
         <div className={classes.bufferRow}>
           <div className={classes.field}>
             <label className={classes.fieldLabel}>
-              {t('calendar_settings.buffer_before')}
+              {t('institution_settings.buffer_before')}
               <span className={classes.required}>*</span>
             </label>
             <CalendarSelect
@@ -295,7 +354,7 @@ const CalendarSettingsManagement: FC = () => {
           </div>
           <div className={classes.field}>
             <label className={classes.fieldLabel}>
-              {t('calendar_settings.buffer_after')}
+              {t('institution_settings.buffer_after')}
               <span className={classes.required}>*</span>
             </label>
             <CalendarSelect
@@ -312,11 +371,11 @@ const CalendarSettingsManagement: FC = () => {
         <div className={classes.header}>
           <div className={classes.titleWithTooltip}>
             <h3 className={classes.title}>
-              {t('calendar_settings.reaction_time_title')}
+              {t('institution_settings.reaction_time_title')}
             </h3>
             <SmallTooltip
-              tooltipContent={t('calendar_settings.reaction_time_tooltip')}
-              ariaLabel={t('calendar_settings.reaction_time_title')}
+              tooltipContent={t('institution_settings.reaction_time_tooltip')}
+              ariaLabel={t('institution_settings.reaction_time_title')}
             />
           </div>
           {isEditingReactionTime ? (
@@ -333,7 +392,7 @@ const CalendarSettingsManagement: FC = () => {
                 loading={isUpdatingSettings}
                 onClick={handleReactionTimeSave}
               >
-                {t('calendar_settings.save_and_close')}
+                {t('institution_settings.save_and_close')}
               </Button>
             </div>
           ) : canEdit ? (
@@ -350,7 +409,7 @@ const CalendarSettingsManagement: FC = () => {
         <div className={classes.reactionField}>
           <div className={classes.field}>
             <label className={classes.fieldLabel}>
-              {t('calendar_settings.reaction_time_label')}
+              {t('institution_settings.reaction_time_label')}
               <span className={classes.required}>*</span>
             </label>
             <div className={classes.reactionInputRow}>
@@ -368,14 +427,112 @@ const CalendarSettingsManagement: FC = () => {
                 onChange={(e) => setReactionTimeHours(e.target.value)}
               />
               <span className={classes.reactionUnit}>
-                {t('calendar_settings.reaction_time_hours_suffix')}
+                {t('institution_settings.reaction_time_hours_suffix')}
               </span>
             </div>
           </div>
+        </div>
+      </Container>
+
+      <Container className={classes.container}>
+        <div className={classes.header}>
+          <h3 className={classes.title}>
+            {t('institution_settings.auto_acceptance_title')}
+          </h3>
+          {isEditingAutoAcceptance ? (
+            <div className={classes.actions}>
+              <Button
+                appearance={AppearanceTypes.Secondary}
+                size={SizeTypes.S}
+                onClick={handleAutoAcceptanceCancel}
+              >
+                {t('button.cancel')}
+              </Button>
+              <Button
+                size={SizeTypes.S}
+                loading={isUpdatingSettings}
+                onClick={handleAutoAcceptanceSave}
+              >
+                {t('institution_settings.save_and_close')}
+              </Button>
+            </div>
+          ) : canEdit ? (
+            <Button
+              appearance={AppearanceTypes.Text}
+              size={SizeTypes.S}
+              icon={EditIcon}
+              onClick={handleAutoAcceptanceEdit}
+            >
+              {t('button.change')}
+            </Button>
+          ) : null}
+        </div>
+        <p className={classes.description}>
+          {t('institution_settings.auto_acceptance_description')}
+        </p>
+        <div className={classes.field}>
+          <label className={classes.checkboxRow}>
+            <input
+              type="checkbox"
+              checked={effectiveVerbalDays !== null}
+              disabled={!isEditingAutoAcceptance}
+              onChange={(e) => setVerbalDays(e.target.checked ? '7' : null)}
+            />
+            <span className={classes.fieldLabel}>
+              {t('institution_settings.verbal_threshold_label')}
+            </span>
+          </label>
+          {effectiveVerbalDays !== null && (
+            <div className={classes.reactionInputRow}>
+              <input
+                type="number"
+                className={classes.reactionInput}
+                value={effectiveVerbalDays}
+                min={1}
+                max={365}
+                step={1}
+                disabled={!isEditingAutoAcceptance}
+                onChange={(e) => setVerbalDays(e.target.value)}
+              />
+              <span className={classes.reactionUnit}>
+                {t('institution_settings.days_suffix')}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className={classes.field}>
+          <label className={classes.checkboxRow}>
+            <input
+              type="checkbox"
+              checked={effectiveNonVerbalDays !== null}
+              disabled={!isEditingAutoAcceptance}
+              onChange={(e) => setNonVerbalDays(e.target.checked ? '14' : null)}
+            />
+            <span className={classes.fieldLabel}>
+              {t('institution_settings.non_verbal_threshold_label')}
+            </span>
+          </label>
+          {effectiveNonVerbalDays !== null && (
+            <div className={classes.reactionInputRow}>
+              <input
+                type="number"
+                className={classes.reactionInput}
+                value={effectiveNonVerbalDays}
+                min={1}
+                max={365}
+                step={1}
+                disabled={!isEditingAutoAcceptance}
+                onChange={(e) => setNonVerbalDays(e.target.value)}
+              />
+              <span className={classes.reactionUnit}>
+                {t('institution_settings.days_suffix')}
+              </span>
+            </div>
+          )}
         </div>
       </Container>
     </>
   )
 }
 
-export default CalendarSettingsManagement
+export default InstitutionSettingsManagement

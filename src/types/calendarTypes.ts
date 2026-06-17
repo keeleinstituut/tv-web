@@ -105,6 +105,8 @@ export interface CalendarDayResponse {
   booked_slots_by_language: Record<string, BookedSlot[]>
   /** TPM role: vendor-level breakdown per language */
   tpm_vendors?: Array<{ language_id: string; vendors: VendorDayData[] }>
+  /** TPM role: unassigned projects grouped by destination language_id */
+  tpm_unassigned_by_language?: Record<string, BookedSlot[]>
   /** Client role: time ranges with available vendors, grouped by language_id */
   available_slots_by_language?: Record<
     string,
@@ -165,7 +167,7 @@ export interface CalendarMonthResponse {
 export interface VendorDayData {
   id: string
   institution_user: { id: string; name: string }
-  is_internal: boolean
+  is_emo: boolean
   booked_slots: BookedSlot[]
   available_slots: Array<{ start_at: string; end_at: string }>
 }
@@ -173,6 +175,7 @@ export interface VendorDayData {
 export interface CalendarDayVendorsResponse {
   language_id: string
   vendors: VendorDayData[]
+  unassigned_slots?: BookedSlot[]
 }
 
 export interface CalendarDayVendorsAllResponse {
@@ -193,7 +196,7 @@ export interface VendorWeekSlot {
 export interface VendorWeekData {
   id: string
   institution_user: { id: string; name: string }
-  is_internal: boolean
+  is_emo: boolean
   slots: VendorWeekSlot[]
 }
 
@@ -221,7 +224,7 @@ export interface VendorMonthSlot {
 export interface VendorMonthData {
   id: string
   institution_user: { id: string; name: string }
-  is_internal: boolean
+  is_emo: boolean
   slots: VendorMonthSlot[]
 }
 
@@ -417,6 +420,8 @@ export interface ApiAssignmentSummary {
       location?: string
       meeting_link?: string
       reference_number?: string
+      event_start_at?: string
+      event_end_at?: string
       client_institution_user?: {
         id: string
         email?: string
@@ -495,6 +500,7 @@ export interface ApiCalendarDayTpmShape {
     vendor_ids: string[]
   }>
   vendors: ApiVendorExpand[]
+  unassigned_projects?: ApiUnassignedProject[]
 }
 
 export type ApiCalendarDayResponse =
