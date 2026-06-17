@@ -13,7 +13,7 @@ import ModalBase, {
   TitleFontTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
-import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import TimeDropdownSelect from 'components/molecules/TimeDropdownSelect/TimeDropdownSelect'
 import Add from 'assets/icons/add.svg?react'
 import Delete from 'assets/icons/delete.svg?react'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
@@ -170,7 +170,7 @@ const VendorAbsencesModal: FC<VendorAbsencesModalProps> = ({
               />
             </div>
             <div className={classes.timeSelect}>
-              <CalendarTimeSelect
+              <TimeDropdownSelect
                 value={row.startTime}
                 onChange={(v) => updateRow(row.rowId, { startTime: v })}
                 disabled={!!row.existingId}
@@ -187,7 +187,7 @@ const VendorAbsencesModal: FC<VendorAbsencesModalProps> = ({
               />
             </div>
             <div className={classes.timeSelect}>
-              <CalendarTimeSelect
+              <TimeDropdownSelect
                 value={row.endTime}
                 onChange={(v) => updateRow(row.rowId, { endTime: v })}
                 disabled={!!row.existingId}

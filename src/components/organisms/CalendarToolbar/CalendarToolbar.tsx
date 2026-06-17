@@ -14,7 +14,7 @@ import {
   useCalendarSearch,
   useFetchCalendarLanguages,
 } from 'hooks/requests/useCalendar'
-import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
+import TimeDropdownSelect from 'components/molecules/TimeDropdownSelect/TimeDropdownSelect'
 import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
 import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
 import { toCalendarApiDateTime } from 'helpers/calendar'
@@ -188,7 +188,7 @@ const CalendarToolbar: FC = () => {
                 </div>
                 <span className={classes.searchDateSep} />
                 <div className={classes.searchDatetimeSlot}>
-                  <CalendarTimeSelect
+                  <TimeDropdownSelect
                     allowEmpty
                     className={classes.searchDatetime}
                     value={searchTime}

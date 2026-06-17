@@ -5,8 +5,8 @@ import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 
 import ToggleInput from 'components/molecules/ToggleInput/ToggleInput'
-import DatePickerInput from 'components/molecules/DatePickerInput/DatePickerInput'
-import TimePickerInput from 'components/molecules/TimePickerInput/TimePickerInput'
+import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
+import TimeDropdownSelect from 'components/molecules/TimeDropdownSelect/TimeDropdownSelect'
 import TextInput from 'components/molecules/TextInput/TextInput'
 import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import {
@@ -155,23 +155,25 @@ const Step2RequestConditions: FC<Step2Props> = ({ draft, onChange }) => {
                 <span className={classes.fieldLabel}>
                   {t('requests.deadline_date')}
                 </span>
-                <DatePickerInput
-                  name="deadline_date"
-                  ariaLabel={t('requests.deadline_date')}
-                  placeholder="kk.pp.aaaa"
-                  value={deadlineDate}
-                  onChange={handleDateChange}
-                />
+                <div className={classes.datePickerWrap}>
+                  <DatePickerComponent
+                    name="deadline_date"
+                    ariaLabel={t('requests.deadline_date')}
+                    placeholder="kk.pp.aaaa"
+                    value={deadlineDate}
+                    onChange={handleDateChange}
+                  />
+                </div>
               </div>
               <div className={classes.fieldStack}>
                 <span className={classes.fieldLabel}>
                   {t('requests.deadline_time')}
                 </span>
-                <TimePickerInput
-                  name="deadline_time"
-                  ariaLabel={t('requests.deadline_time')}
+                <TimeDropdownSelect
+                  aria-label={t('requests.deadline_time')}
                   value={deadlineTime}
                   onChange={handleTimeChange}
+                  className={classes.timeSelectTrigger}
                 />
               </div>
             </div>

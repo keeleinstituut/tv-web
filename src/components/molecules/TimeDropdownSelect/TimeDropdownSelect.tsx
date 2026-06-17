@@ -63,7 +63,7 @@ function normalizeToMinuteValue(raw: string): string {
   return `${String(h).padStart(2, '0')}:${String(min).padStart(2, '0')}`
 }
 
-export type CalendarTimeSelectProps = {
+export type TimeDropdownSelectProps = {
   value: string
   onChange: (value: string) => void
   className?: string
@@ -82,7 +82,7 @@ export type CalendarTimeSelectProps = {
  * With freeInput: accepts any HH:MM value typed by the user.
  * With options: offers exactly the given HH:MM values.
  */
-const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
+const TimeDropdownSelect: FC<TimeDropdownSelectProps> = ({
   value,
   onChange,
   className,
@@ -232,4 +232,4 @@ const CalendarTimeSelect: FC<CalendarTimeSelectProps> = ({
   )
 }
 
-export default CalendarTimeSelect
+export default TimeDropdownSelect

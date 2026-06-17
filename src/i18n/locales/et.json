@@ -1196,6 +1196,7 @@
       "REQUEST_ACCEPTED": "Vastatud",
       "REQUEST_DECLINED": "Keeldutud",
       "REQUEST_EXPIRED": "Aegunud",
+      "REQUEST_CANCELLED": "Tühistatud",
       "OFFER_ACCEPTED": "Aktsepteeritud",
       "OFFER_DECLINED": "Pakkumus tagasi lükatud"
     }
