@@ -5,7 +5,6 @@ import { ServiceType } from 'types/calendar'
 import { useFetchCalendarClients } from 'hooks/requests/useUsers'
 import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
 import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
-import CalendarTimeSelect from 'components/molecules/CalendarTimeSelect/CalendarTimeSelect'
 import ChevronLeft from 'assets/icons/chevron_left.svg?react'
 import AddIcon from 'assets/icons/add.svg?react'
 import DeleteIcon from 'assets/icons/delete.svg?react'
@@ -13,6 +12,7 @@ import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useSidePanel } from './SidePanelContext'
 import DurationStepper from './DurationStepper'
 import classes from './classes.module.scss'
+import TimeDropdownSelect from "../../molecules/TimeDropdownSelect/TimeDropdownSelect";
 
 const CalendarOrderFormBody: FC = () => {
   const { t } = useTranslation()
@@ -134,7 +134,7 @@ const CalendarOrderFormBody: FC = () => {
             {isViewMode || !startOptions.length ? (
               <div className={classes.inputReadonly}>{startTime}</div>
             ) : (
-              <CalendarTimeSelect
+              <TimeDropdownSelect
                 value={startTimeInput}
                 onChange={onSetStartTimeInput}
                 options={startOptions}
