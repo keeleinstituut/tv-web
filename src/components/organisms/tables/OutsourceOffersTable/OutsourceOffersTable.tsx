@@ -95,9 +95,8 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
       }
       if (value && 'institution_id' in value) {
         const { institution_id, ...rest } = current || {}
-        const ids = institution_id as string[]
         current = {
-          institution_id: ids?.[0] || '',
+          institution_id: institution_id as string || '',
           ...rest,
         }
       }
@@ -200,7 +199,6 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
                 filterKey="type_classifier_value_ids"
                 options={typeFilters}
                 value={filters?.type_classifier_value_ids ?? []}
-                isCustomSingleDropdown
               />
             ),
           },

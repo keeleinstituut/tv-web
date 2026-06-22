@@ -160,7 +160,8 @@ const OutsourceOfferDetailPage: FC = () => {
       </>
     )
 
-  const isOpenForResponse = offer.status === OutsourceOfferStatus.RequestSent
+  const isExpired = offer.expires_at ? dayjs().isAfter(dayjs(offer.expires_at)) : false
+  const isOpenForResponse = offer.status === OutsourceOfferStatus.RequestSent && !isExpired
   const showResponseActions = canRespond && isOpenForResponse
 
   const clientComment =
