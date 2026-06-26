@@ -158,7 +158,7 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
             className={classes.fitContent}
             size={SizeTypes.S}
             href={getValue()}
-            disabled={!isEditable || !!isHistoryView}
+            disabled={!!isHistoryView}
             target="_blank"
           >
             {t('button.open_in_translation_tool')}
