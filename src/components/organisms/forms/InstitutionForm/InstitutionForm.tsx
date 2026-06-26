@@ -92,6 +92,7 @@ const InstitutionForm: FC<InstitutionType> = (props) => {
       }),
       rules: {
         required: true,
+        maxLength: 3,
         validate: nameInputValidator,
       },
     },
