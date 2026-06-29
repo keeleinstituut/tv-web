@@ -16,9 +16,14 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
 } from 'react'
 import { InstitutionDataType } from 'types/institutions'
 import { PrivilegeKey } from 'types/privileges'
+import {
+  getNotificationThreshold,
+  shouldLogoutAfterExpiryCheck,
+} from './authSession'
 
 interface UserInfoType {
   tolkevarav?: {
@@ -92,6 +97,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   const { children } = props
 
   const queryClient = useQueryClient()
+  const isVerifyingSessionRef = useRef(false)
 
   const login = useCallback(() => {
     rawLogin()
@@ -213,22 +219,26 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   const selectedInstitutionType = user?.selectedInstitution?.type
   const initializing = contextQuery.isLoading
 
-  const checkSession = useCallback(() => {
+  const checkSession = useCallback(async () => {
+    if (document.hidden) {
+      return
+    }
+
     const now = Math.ceil(Date.now() / 1000)
     const sessionExpires = context?.sessionExpiry
 
     if (!sessionExpires || !context?.authenticated) {
       return
     }
+
     const remaining = sessionExpires - now
     const isSessionExpired = now >= sessionExpires
+    const currentNotificationThreshold = getNotificationThreshold(remaining)
 
-    const notificationThresholds = [3600, 1800, 60, 30].filter(
-      (i) => remaining >= i
-    )
-    const currentNotificationThreshold = notificationThresholds[0]
-
-    if (remaining <= currentNotificationThreshold) {
+    if (
+      currentNotificationThreshold &&
+      remaining <= currentNotificationThreshold
+    ) {
       let time_left = currentNotificationThreshold
       let time_unit = i18n.t('error.time_unit_s')
       const time_left_m = time_left / 60
@@ -249,10 +259,23 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
       })
     }
 
-    if (isSessionExpired) {
-      logout()
+    if (!isSessionExpired || isVerifyingSessionRef.current) {
+      return
     }
-  }, [logout, context])
+
+    isVerifyingSessionRef.current = true
+
+    try {
+      const result = await contextQuery.refetch()
+      const freshNow = Math.ceil(Date.now() / 1000)
+
+      if (shouldLogoutAfterExpiryCheck(freshNow, result.data)) {
+        logout()
+      }
+    } finally {
+      isVerifyingSessionRef.current = false
+    }
+  }, [logout, context, contextQuery])
 
   const checkSessionRef = useAsRef(checkSession)
 
@@ -262,6 +285,19 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     const timer = setInterval(() => checkSessionRef.current!(), 1000)
     return () => clearInterval(timer)
   }, [checkSessionRef])
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        contextQuery.refetch()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [contextQuery])
 
   const value = useMemo((): AuthContextType => {
     return {
