@@ -125,7 +125,7 @@ const VendorsTable: FC<VendorsTableProps> = ({ hidden }) => {
             ({
               source_language_classifier_value: srcLang,
               destination_language_classifier_value: destLang,
-            }) => `${srcLang.value} > ${destLang.value}`
+            }) => `${srcLang?.value ?? ''} > ${destLang?.value ?? ''}`
           )
 
           const tagNames = map(tags, 'name')
