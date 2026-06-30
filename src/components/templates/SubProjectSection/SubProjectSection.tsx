@@ -99,20 +99,12 @@ const SubProjectSection: FC<SubProjectProps> = ({
 
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
-  const hasAnyFeaturesWithoutCandidates = find(
-    assignments,
-    ({ candidates, job_definition }) =>
-      isEmpty(candidates) &&
-      job_definition?.job_key !== SubProjectFeatures.JobOverview
-  )
-
   const hasAnyAssignmentsWithoutDeadline = find(
     assignments,
     ({ deadline_at }) => !deadline_at
   )
 
-  const canStartWorkflow =
-    !hasAnyAssignmentsWithoutDeadline && !hasAnyFeaturesWithoutCandidates
+  const canStartWorkflow = !hasAnyAssignmentsWithoutDeadline
 
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
