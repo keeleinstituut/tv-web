@@ -41,6 +41,7 @@ import {
   useAssignmentEditCatVolume,
   useAssignmentEditVolume,
 } from 'hooks/requests/useVolumes'
+import { useAssignmentCache } from 'hooks/requests/useAssignments'
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
 import { CatAnalysis } from 'types/projects'
 import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
@@ -121,6 +122,7 @@ export interface VolumeFormProps {
   mode?: ProjectDetailModes
   taskViewPricesClass?: string
   hideVendor?: boolean
+  jobShortName?: string
   onSuccess: (volume: VolumeValue) => void
   onFormStateChange?: (state: VolumeFormState) => void
 }
@@ -139,6 +141,7 @@ const VolumeForm: FC<VolumeFormProps> = ({
   unit_type,
   sub_project_id,
   hideVendor,
+  jobShortName,
   onSuccess,
   onFormStateChange,
   mode,
@@ -146,6 +149,12 @@ const VolumeForm: FC<VolumeFormProps> = ({
 }) => {
   const { t } = useTranslation()
   const validators = useValidators()
+
+  const assignment = useAssignmentCache({
+    id: assignmentId ?? '',
+    sub_project_id: sub_project_id ?? '',
+  })
+  const taskType = jobShortName ?? assignment?.job_definition?.job_short_name
 
   const inverseDiscounts = mapValues(
     discounts || defaultDiscounts,
@@ -188,7 +197,7 @@ const VolumeForm: FC<VolumeFormProps> = ({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      task_type: 'Tõlkimine',
+      task_type: taskType,
       unit: isCat ? PriceUnits.WordFee : undefined,
       unit_fee: isCat ? vendorPrices?.word_fee : undefined,
       vendor: vendorName || undefined,
@@ -199,7 +208,7 @@ const VolumeForm: FC<VolumeFormProps> = ({
 
   useEffect(() => {
     reset({
-      task_type: 'Tõlkimine',
+      task_type: taskType,
       unit: isCat ? PriceUnits.WordFee : undefined,
       unit_fee: isCat ? vendorPrices?.word_fee : undefined,
       vendor: vendorName || undefined,

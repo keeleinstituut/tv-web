@@ -28,6 +28,7 @@ export interface VolumeChangeModalProps {
   onChangeValue?: (volume: VolumeValue) => void
   mode?: ProjectDetailModes
   taskViewPricesClass?: string
+  jobShortName?: string
 }
 
 const noop = () => {}
@@ -48,6 +49,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   onChangeValue,
   mode,
   taskViewPricesClass,
+  jobShortName,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -109,6 +111,7 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
           sub_project_id={sub_project_id}
           mode={mode}
           taskViewPricesClass={taskViewPricesClass}
+          jobShortName={jobShortName}
           onFormStateChange={setFormState}
           onSuccess={(volume) => {
             onChangeValue?.(volume)

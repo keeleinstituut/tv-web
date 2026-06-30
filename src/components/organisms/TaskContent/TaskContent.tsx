@@ -63,6 +63,7 @@ const TaskContent: FC<TaskContentProps> = ({
   const taskData = useTaskCache(taskId)
   const { assignment, cat_tm_keys_meta, cat_tm_keys_stats, project } =
     taskData || {}
+  const jobShortName = assignment?.job_definition?.job_short_name
 
   const {
     subProject,
@@ -201,8 +202,9 @@ const TaskContent: FC<TaskContentProps> = ({
         total: total || '0',
       },
       taskViewPricesClass: classes.taskViewPrices,
+      jobShortName,
     })
-  }, [volumes])
+  }, [volumes, jobShortName])
 
   const handleAddAssigneeComment = useCallback(
     async (value: string) => {

@@ -179,10 +179,11 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
         vendorName,
         onChangeValue,
         sub_project_id,
+        assignmentId,
         ...matchingVolume,
       })
     },
-    [value, vendorPrices, vendorName, onChange, sub_project_id]
+    [value, vendorPrices, vendorName, onChange, sub_project_id, assignmentId]
   )
 
   const handleAdd = useCallback(() => {
