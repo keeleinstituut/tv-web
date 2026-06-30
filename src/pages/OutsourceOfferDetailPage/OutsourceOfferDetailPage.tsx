@@ -235,7 +235,7 @@ const OutsourceOfferDetailPage: FC = () => {
               <h3>{t('requests.subsection_request_extra') as string}</h3>
               <DetailsRow
                 label={t('requests.field_deadline')}
-                value={formatDateTime(outsourceRequest?.deadline_at)}
+                value={formatDateTime(offer?.expires_at)}
                 labelClass={classes.labelClass}
                 valueClass={classes.boldText}
               />
