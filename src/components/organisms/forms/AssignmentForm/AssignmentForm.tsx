@@ -365,6 +365,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         value: volumes,
         assignmentId: id,
         sub_project_id,
+        ownerInstitutionId: project?.institution_id,
         disabled: !isEditable,
       },
       {

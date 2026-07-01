@@ -14,7 +14,7 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { Price, PriceUnits } from 'types/price'
 import { VolumeValue } from 'types/volumes'
-import { useAuth } from 'components/contexts/AuthContext'
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 
 interface VolumeRowProps extends VolumeValue {
   index: number
@@ -126,6 +126,7 @@ export interface AddVolumeInputProps {
   vendorName?: string
   assignmentId?: string
   sub_project_id?: string
+  ownerInstitutionId?: string
 }
 
 const AddVolumeInput: FC<AddVolumeInputProps> = ({
@@ -139,10 +140,11 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
   vendorName,
   assignmentId,
   sub_project_id,
+  ownerInstitutionId,
   disabled,
 }) => {
   const { t } = useTranslation()
-  const { isTranslationAgency } = useAuth()
+  const isShared = !useIsDataOwner(ownerInstitutionId)
 
   const handleDelete = useCallback(
     (index: number, id: string) => {
@@ -219,7 +221,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
         {map(value, (props, index) => (
           <VolumeRow
             {...{ ...props, index, handleDelete, handleEdit, disabled }}
-            hideActions={isTranslationAgency}
+            hideActions={isShared}
             key={index}
           />
         ))}
@@ -231,7 +233,7 @@ const AddVolumeInput: FC<AddVolumeInputProps> = ({
           icon={Add}
           children={t('button.add_volume')}
           onClick={handleAdd}
-          hidden={isTranslationAgency}
+          hidden={isShared}
         />
       </div>
     </div>

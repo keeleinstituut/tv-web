@@ -20,6 +20,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
 import { useAuth } from 'components/contexts/AuthContext'
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 import SubProjectSectionContent from 'components/organisms/SubProjectSectionContent/SubProjectSectionContent'
 import { Privileges } from 'types/privileges'
 import ExpandableContentLeftComponent from 'components/molecules/ExpandableContentLeftComponent/ExpandableContentLeftComponent'
@@ -58,7 +59,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
   event_start_at,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges, isTranslationAgency } = useAuth()
+  const { userPrivileges } = useAuth()
 
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
@@ -72,6 +73,8 @@ const SubProjectSection: FC<SubProjectProps> = ({
     price: subProjectPrice,
     deadline_at: innerDeadlineAt,
   } = subProject || {}
+
+  const isShared = !useIsDataOwner(subProject?.project?.institution_id)
   const { job_short_name } =
     localActiveJobDefinition || active_job_definition || {}
 
@@ -169,7 +172,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
               classes.startWorkFlowNotification,
               !canStartWorkflow && classes.warning
             )}
-            hidden={!isExpanded || isClientView || isVerbal || isTranslationAgency}
+            hidden={!isExpanded || isClientView || isVerbal || isShared}
             children={
               <Button
                 children={t('button.send_sub_project_to_vendors')}
@@ -191,7 +194,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
             price: subProjectPrice || price,
             languageDirection,
             isVerbal,
-            hideCost: isTranslationAgency,
+            hideCost: isShared,
           }}
         />
       }

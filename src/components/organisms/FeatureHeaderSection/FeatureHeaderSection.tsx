@@ -17,7 +17,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { useToggleMtEngine } from 'hooks/requests/useProjects'
-import { useAuth } from 'components/contexts/AuthContext'
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 
 export enum FeatureTabs {
   Vendors = 'vendor',
@@ -74,6 +74,7 @@ interface FeatureHeaderSectionProps extends Omit<ToggleTabsProps, 'name'> {
   activeTab?: string
   setActiveTab?: (id: string) => void
   isEditable?: boolean
+  ownerInstitutionId?: string
 }
 
 const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
@@ -86,9 +87,10 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   mt_enabled = true,
   isEditable,
   id,
+  ownerInstitutionId,
 }) => {
   const { t } = useTranslation()
-  const { isTranslationAgency } = useAuth()
+  const isShared = !useIsDataOwner(ownerInstitutionId)
   // TODO: not sure yet what this will do
   // It should decide whether machine translation is allowed or not, but not sure what that changes in other views
 
@@ -116,7 +118,7 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   }, [mt_enabled, t, toggleMtEngine])
 
   const isSplitButtonHidden =
-    activeTab === FeatureTabs.Xliff || !isSplittingAllowed || isTranslationAgency
+    activeTab === FeatureTabs.Xliff || !isSplittingAllowed || isShared
 
   return (
     <div

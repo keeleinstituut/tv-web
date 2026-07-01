@@ -45,7 +45,7 @@ import { ClassifierValue } from 'types/classifierValues'
 import dayjs from 'dayjs'
 import useValidators from 'hooks/useValidators'
 import { showValidationErrorMessage } from 'api/errorHandler'
-import {useAuth} from "../../../contexts/AuthContext";
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 
 // TODO: this is WIP code for subProject view
 
@@ -103,7 +103,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   const { updateSubProject, isLoading } = useUpdateSubProject({
     id,
   })
-const { isTranslationAgency } = useAuth()
+  const isShared = !useIsDataOwner(project?.institution_id)
 
   const effectiveLocation = project?.event_location || project?.location || ''
   const normalizedServiceType = (() => {
@@ -343,7 +343,7 @@ const { isTranslationAgency } = useAuth()
           isCatProjectLoading={isPolling}
           catSetupStatus={catSetupStatus}
           subProjectId={id}
-          isEditable={isSomethingEditable && !isTranslationAgency}
+          isEditable={isSomethingEditable && !isShared}
         />
         <FinalFilesList
           name="final_files"
@@ -366,13 +366,13 @@ const { isTranslationAgency } = useAuth()
             destination_language_classifier_value
           }
           canSendToVendors={true} //TODO add check when camunda is ready
-          isEditable={isSomethingEditable && !isTranslationAgency}
+          isEditable={isSomethingEditable && !isShared}
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}
           hidden={!catSupported}
           control={control}
-          isEditable={isSomethingEditable && isEmpty(catToolJobs) && !isTranslationAgency}
+          isEditable={isSomethingEditable && isEmpty(catToolJobs) && !isShared}
           subProjectId={id}
           subProjectTmKeyObjectsArray={subProjectTmKeyObjectsArray}
           subProjectLangPair={subProjectLangPair}

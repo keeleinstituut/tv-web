@@ -48,6 +48,7 @@ interface AuthContextType {
   userPrivileges: PrivilegeKey[]
   institutionUserId: string
   selectedInstitutionType?: 'INSTITUTION' | 'TRANSLATION_AGENCY' | null
+  selectedInstitutionId?: string
   isTranslationAgency: boolean
   institutions: InstitutionDataType[]
   openInstitutionSelectModal: (
@@ -66,6 +67,7 @@ const authContextDefaultValues: AuthContextType = {
   userPrivileges: [],
   institutionUserId: '',
   selectedInstitutionType: undefined,
+  selectedInstitutionId: undefined,
   isTranslationAgency: false,
   institutions: [],
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -217,6 +219,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   const userPrivileges = useMemo(() => user?.privileges || [], [user])
   const institutionUserId = user?.institutionUserId || ''
   const selectedInstitutionType = user?.selectedInstitution?.type
+  const selectedInstitutionId = user?.selectedInstitution?.id
   const initializing = contextQuery.isLoading
 
   const checkSession = useCallback(async () => {
@@ -308,6 +311,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
       userPrivileges,
       institutionUserId,
       selectedInstitutionType,
+      selectedInstitutionId,
       isTranslationAgency: selectedInstitutionType === 'TRANSLATION_AGENCY',
       initializing,
       institutions,
@@ -321,6 +325,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     userPrivileges,
     institutionUserId,
     selectedInstitutionType,
+    selectedInstitutionId,
     initializing,
     institutions,
     openInstitutionSelectModal,

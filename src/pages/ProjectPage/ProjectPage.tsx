@@ -7,6 +7,7 @@ import classes from './classes.module.scss'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from 'components/contexts/AuthContext'
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 import { Privileges } from 'types/privileges'
 import { ListSubProjectDetail, ProjectStatus, TypesWithStartTime } from 'types/projects'
 import ProjectDetails, {
@@ -25,6 +26,7 @@ interface ProjectButtonProps {
   isUserClientOfProject?: boolean
   projectId?: string
   sub_projects?: ListSubProjectDetail[]
+  ownerInstitutionId?: string
 }
 
 const ProjectButtons: FC<ProjectButtonProps> = ({
@@ -32,9 +34,11 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
   isUserClientOfProject,
   projectId,
   sub_projects,
+  ownerInstitutionId,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges, isTranslationAgency } = useAuth()
+  const { userPrivileges } = useAuth()
+  const isShared = !useIsDataOwner(ownerInstitutionId)
   const { tasks, isLoading, refetch } = useFetchTasks({
     project_id: projectId,
     task_type: TaskType.ClientReview,
@@ -183,7 +187,7 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
         appearance={AppearanceTypes.Secondary}
         children={t('button.delegate_to_other_manager')}
         onClick={openReassignmentModal}
-        hidden={!canReassignProject || isTranslationAgency}
+        hidden={!canReassignProject || isShared}
       />
       {/* Reject button */}
       <Button
@@ -205,7 +209,7 @@ const ProjectButtons: FC<ProjectButtonProps> = ({
         appearance={AppearanceTypes.Primary}
         children={t('button.cancel_project')}
         onClick={openConfirmCancelModal}
-        hidden={!canCancelProject || isTranslationAgency}
+        hidden={!canCancelProject || isShared}
       />
       {/* Accept button */}
       <Button
@@ -233,6 +237,7 @@ const ProjectPage: FC = () => {
     translation_domain_classifier_value,
     type_classifier_value,
     event_start_at: projectEventStartAt,
+    institution_id,
   } = project || {}
 
   const VERBAL_TYPES = values(TypesWithStartTime)
@@ -253,7 +258,13 @@ const ProjectPage: FC = () => {
       <div className={classes.titleRow}>
         <h1>{ext_id}</h1>
         <ProjectButtons
-          {...{ status, isUserClientOfProject, projectId, sub_projects }}
+          {...{
+            status,
+            isUserClientOfProject,
+            projectId,
+            sub_projects,
+            ownerInstitutionId: institution_id,
+          }}
         />
       </div>
 
