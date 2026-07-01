@@ -9,6 +9,7 @@ import TaskContent from 'components/organisms/TaskContent/TaskContent'
 import { ListProject, SubProjectStatus, TypesWithStartTime } from 'types/projects'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import ExpandableContentLeftComponent from 'components/molecules/ExpandableContentLeftComponent/ExpandableContentLeftComponent'
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 
 import classes from './classes.module.scss'
 import { useTaskCache } from 'hooks/requests/useTasks'
@@ -46,6 +47,8 @@ const TaskDetails: FC<TaskProps> = ({
   } = subProject || {}
 
   const projectData = project || subProject?.project
+
+  const isShared = !useIsDataOwner(projectData?.institution_id)
 
   const VERBAL_TYPES = values(TypesWithStartTime)
 
@@ -108,6 +111,7 @@ const TaskDetails: FC<TaskProps> = ({
             price,
             languageDirection,
             isVerbal: isVerbalType,
+            hideCost: isShared,
           }}
           mode={ProjectDetailModes.View}
         />
