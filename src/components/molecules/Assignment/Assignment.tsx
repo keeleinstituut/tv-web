@@ -25,6 +25,7 @@ import { useFetchAssignmentOutsourceRequests } from 'hooks/requests/useOutsource
 import { OutsourceRequestStatus } from 'types/outsourceRequests'
 import AssignmentForm from 'components/organisms/forms/AssignmentForm/AssignmentForm'
 import { useAuth } from 'components/contexts/AuthContext'
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 import { Privileges } from 'types/privileges'
 
 dayjs.extend(utc)
@@ -57,9 +58,11 @@ const Assignment: FC<AssignmentProps> = ({
     destination_language_classifier_value_id,
     workflow_started,
     status: subProjectStatus,
+    project,
   } = useSubProjectCache(sub_project_id) || {}
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
+  const isShared = !useIsDataOwner(project?.institution_id)
   const canManageRequests = includes(userPrivileges, Privileges.ManageRequests)
   const hasInHouseVendorsAssigned = size(candidates) > 0
   const { requests: outsourceRequests } =
@@ -168,6 +171,7 @@ const Assignment: FC<AssignmentProps> = ({
             appearance={AppearanceTypes.Secondary}
             hidden={
               !canManageRequests ||
+              isShared ||
               subProjectStatus === SubProjectStatus.Cancelled ||
               subProjectStatus === SubProjectStatus.Completed
             }
