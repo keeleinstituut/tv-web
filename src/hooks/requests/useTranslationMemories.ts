@@ -98,6 +98,7 @@ export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
     isError,
     translationMemory: data?.data,
     chunk_amount: data?.segment_count,
+    edit_url: data?.edit_url,
     isFetching,
   }
 }

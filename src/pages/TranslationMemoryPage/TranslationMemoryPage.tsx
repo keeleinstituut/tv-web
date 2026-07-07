@@ -18,7 +18,7 @@ const TranslationMemoryPage: FC = () => {
   const { memoryId = '' } = useParams()
   const { userInfo, userPrivileges } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
-  const { translationMemory, isLoading, chunk_amount } = useFetchTranslationMemory({
+  const { translationMemory, isLoading, chunk_amount, edit_url } = useFetchTranslationMemory({
     id: memoryId,
   })
 
@@ -37,6 +37,7 @@ const TranslationMemoryPage: FC = () => {
         translationMemory={{
           ...translationMemory,
           chunk_amount,
+          edit_url,
         }}
         memoryId={memoryId}
         isTmOwnedByUserInstitution={isTmOwnedByUserInstitution}

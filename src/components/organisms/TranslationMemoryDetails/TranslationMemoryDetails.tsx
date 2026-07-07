@@ -153,6 +153,17 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           }
         />
         <Button
+          appearance={AppearanceTypes.Secondary}
+          size={SizeTypes.S}
+          href={translationMemory?.edit_url}
+          target="_blank"
+          children={t('button.edit')}
+          disabled={
+            !includes(userPrivileges, Privileges.EditTmMetadata) ||
+            !isTmOwnedByUserInstitution
+          }
+        />
+        <Button
           appearance={AppearanceTypes.Text}
           iconPositioning={IconPositioningTypes.Right}
           icon={Delete}
