@@ -198,7 +198,7 @@ export interface OutsourceOfferFilters {
   sub_project_id?: string
   project_id?: string
   status?: OutsourceOfferStatus[]
-  institution_id?: string
+  institution_ids?: string[]
   language_directions?: string[]
   type_classifier_value_ids?: string[]
   per_page?: number

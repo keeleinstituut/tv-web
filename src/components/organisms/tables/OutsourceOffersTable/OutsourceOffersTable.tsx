@@ -17,7 +17,7 @@ import Button, {
 import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { FormInput, InputTypes } from 'components/organisms/DynamicForm/DynamicForm'
 import LanguageDirectionTags from 'components/atoms/LanguageDirectionTags/LanguageDirectionTags'
-import { useInstitutionsFetch } from 'hooks/requests/useInstitutions'
+import { usePartnerInstitutions } from 'hooks/requests/useInstitutions'
 import { useLanguageDirections } from 'hooks/requests/useLanguageDirections'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
@@ -71,9 +71,9 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
 }) => {
   const { t } = useTranslation()
 
-  const { institutions } = useInstitutionsFetch()
+  const { institutions } = usePartnerInstitutions()
   const institutionOptions = useMemo(
-    () => map(institutions, ({ id, name }) => ({ label: name, value: id })),
+    () => map(institutions, ({ id, name }) => ({ label: name ?? '', value: id })),
     [institutions]
   )
 
@@ -90,13 +90,6 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
         const { language_directions, ...rest } = current || {}
         current = {
           language_directions: map(language_directions as string[], (s) => s.replace('_', ':')),
-          ...rest,
-        }
-      }
-      if (value && 'institution_id' in value) {
-        const { institution_id, ...rest } = current || {}
-        current = {
-          institution_id: institution_id as string || '',
           ...rest,
         }
       }
@@ -178,10 +171,9 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
           meta: {
             FilteringComponent: (
               <TableSelectFilter
-                filterKey="institution_id"
+                filterKey="institution_ids"
                 options={institutionOptions}
-                value={filters?.institution_id ? [filters.institution_id] : []}
-                isCustomSingleDropdown
+                value={filters?.institution_ids ?? []}
               />
             ),
           },
