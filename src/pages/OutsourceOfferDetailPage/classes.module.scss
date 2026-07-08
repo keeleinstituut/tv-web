@@ -178,6 +178,24 @@
   }
 }
 
+.volumeValue {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(2);
+}
+
+.volumeIcon {
+  // Align with TaskContent eye icon spacing
+  padding-left: variables.spacing(1);
+}
+
+.taskViewPrices div table tbody tr td div {
+  width: 127px;
+}
+
+.taskViewPrices {
+}
+
 .notFound {
   color: variables.$color-text;
   font-size: 16px;
