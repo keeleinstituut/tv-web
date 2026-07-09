@@ -423,7 +423,6 @@ export interface InstitutionSettings {
   reaction_time_minutes: number
   buffer_before_minutes: number
   buffer_after_minutes: number
-  default_project_type_id: string | null
   verbal_auto_acceptance_threshold_days: number | null
   non_verbal_auto_acceptance_threshold_days: number | null
 }
@@ -432,7 +431,6 @@ const DEFAULT_INSTITUTION_SETTINGS: InstitutionSettings = {
   reaction_time_minutes: 30,
   buffer_before_minutes: 30,
   buffer_after_minutes: 30,
-  default_project_type_id: null,
   verbal_auto_acceptance_threshold_days: null,
   non_verbal_auto_acceptance_threshold_days: null,
 }
