@@ -64,19 +64,17 @@ const getNewSubProjectWithoutVolume = (
   const { data: previousData } = oldData || {}
   if (!previousData) return oldData
 
-  const existingAssignment = find(previousData.assignments, (volumes) =>
-    find(volumes, { id: volumeId })
+  const existingAssignment = previousData.assignments.find((assignment) =>
+    find(assignment.volumes, { id: volumeId })
   )
 
-  const typedExistingAssignment = existingAssignment as AssignmentType
-
   const newVolumes = filter(
-    typedExistingAssignment?.volumes,
+    existingAssignment?.volumes,
     ({ id }) => id !== volumeId
   )
 
   const newAssignments = map(previousData.assignments, (item) => {
-    if (item.id === typedExistingAssignment?.id) {
+    if (item.id === existingAssignment?.id) {
       return {
         ...item,
         volumes: newVolumes,
