@@ -38,7 +38,7 @@ export const usePartnerInstitutions = () => {
     queryKey: ['partner-institutions'],
     queryFn: () =>
       apiClient.get(endpoints.TRANSLATION_ORDER_INSTITUTIONS, {
-        has_current_institution_as_partner: true,
+        has_current_institution_as_partner: 1,
         per_page: 10000,
       }),
   })
