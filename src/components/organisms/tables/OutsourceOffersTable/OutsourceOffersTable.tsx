@@ -143,7 +143,9 @@ const OutsourceOffersTable: FC<OutsourceOffersTableProps> = ({
       map(OutsourceOfferStatus, (value) => ({
         label: t(`requests.offer_status.${value}`),
         value,
-      })),
+      })).filter(
+        (option) => option.value !== OutsourceOfferStatus.RequestPending
+      ),
     [t]
   )
 
