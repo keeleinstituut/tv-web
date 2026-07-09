@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import Delete from 'assets/icons/delete.svg?react'
 import Edit from 'assets/icons/edit.svg?react'
 import Add from 'assets/icons/add.svg?react'
+import Eye from 'assets/icons/eye.svg?react'
 import Button, {
   AppearanceTypes,
   IconPositioningTypes,
@@ -12,6 +13,7 @@ import Button, {
 import { filter, map } from 'lodash'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { Price, PriceUnits } from 'types/price'
 import { VolumeValue } from 'types/volumes'
 import { useIsDataOwner } from 'hooks/useIsDataOwner'
@@ -64,6 +66,9 @@ const VolumeRow: FC<VolumeRowProps> = ({
   unit_quantity,
   unit_type,
   cat_job,
+  discounts,
+  unit_fee,
+  volume_analysis,
   index,
   handleDelete,
   handleEdit,
@@ -78,35 +83,69 @@ const VolumeRow: FC<VolumeRowProps> = ({
   const onDeleteClick = useCallback(() => {
     handleDelete(index, id)
   }, [handleDelete, index, id])
+  const onShowClick = useCallback(() => {
+    const {
+      files_names,
+      repetitions,
+      tm_0_49,
+      tm_50_74,
+      tm_75_84,
+      tm_85_94,
+      tm_95_99,
+      tm_100,
+      tm_101,
+      total,
+    } = volume_analysis || {}
+
+    showModal(ModalTypes.VolumeChange, {
+      isCat: true,
+      mode: ProjectDetailModes.View,
+      discounts,
+      unit_fee,
+      volume_analysis: {
+        files_names,
+        repetitions: repetitions || '0',
+        tm_0_49: tm_0_49 || '0',
+        tm_50_74: tm_50_74 || '0',
+        tm_75_84: tm_75_84 || '0',
+        tm_85_94: tm_85_94 || '0',
+        tm_95_99: tm_95_99 || '0',
+        tm_100: tm_100 || '0',
+        tm_101: tm_101 || '0',
+        total: total || '0',
+      },
+    })
+  }, [discounts, unit_fee, volume_analysis])
   return (
     <div className={classes.row}>
       <span>{`${Number(unit_quantity)} ${t(
         `label.${apiTypeToKey(unit_type)}`
       )}${cat_job ? ` ${t('task.open_in_cat')}` : ''}`}</span>
-      {!hideActions && (
+      {!hideActions && !disabled && (
         <BaseButton
           onClick={onEditClick}
-          className={classNames(
-            classes.editButton,
-            disabled && classes.disabledIcon
-          )}
-          disabled={disabled}
+          className={classes.editButton}
           aria-label={t('button.edit')}
         >
           <Edit />
         </BaseButton>
       )}
-      {!hideActions && (
+      {!hideActions && !disabled && (
         <BaseButton
           onClick={onDeleteClick}
-          className={classNames(
-            classes.deleteButton,
-            disabled && classes.disabledIcon
-          )}
-          disabled={disabled}
+          className={classes.deleteButton}
           aria-label={t('button.delete')}
         >
           <Delete />
+        </BaseButton>
+      )}
+      {(disabled || hideActions) && cat_job && (
+        <BaseButton
+          onClick={onShowClick}
+          className={classes.volumeIcon}
+          aria-label={t('button.view')}
+        >
+          <Eye />
         </BaseButton>
       )}
     </div>

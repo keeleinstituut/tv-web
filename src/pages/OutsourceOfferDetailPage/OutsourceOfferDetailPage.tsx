@@ -127,7 +127,7 @@ const OutsourceOfferDetailPage: FC = () => {
   const volumes = outsourceRequest?.assignment?.volumes ?? []
   const priceInputNeeded = offer?.price == null
 
-  const firstCatIndex = volumes.findIndex((v) => v.cat_job === true)
+  const firstCatIndex = volumes.findIndex((v) => !!v.cat_job)
   const firstCatVolume = firstCatIndex >= 0 ? volumes[firstCatIndex] : undefined
 
   const jobShortName =
