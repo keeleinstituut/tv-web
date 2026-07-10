@@ -48,3 +48,14 @@
   width: 125px;
   position: relative;
 }
+
+// Clicks anywhere on the field (not only the clock icon) open the time dropdown
+.timeFieldClickTarget {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+}
+
+.timeFieldClickTargetDisabled {
+  cursor: not-allowed;
+}

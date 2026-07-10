@@ -209,6 +209,11 @@ export interface ListProject {
   workflow_instance_ref: string | null
   deadline_at: string
   event_start_at?: string
+  event_end_at?: string
+  event_location?: string
+  location?: string
+  meeting_link?: string
+  service_type?: string
   created_at: string
   updated_at: string
   sub_projects: ListSubProjectDetail[]
@@ -220,6 +225,17 @@ export interface ListProject {
   client_institution_user: UserType
   manager_institution_user: UserType
 }
+export interface ProjectComment {
+  id: string
+  institution_user_id: string
+  comment: string
+  created_at: string
+  institution_user?: {
+    id: string
+    user?: { forename?: string; surname?: string }
+  } | null
+}
+
 export interface ProjectDetail extends ListProject {
   translation_domain_classifier_value: ClassifierValue
   workflow_started?: boolean
@@ -228,8 +244,11 @@ export interface ProjectDetail extends ListProject {
   accepted_at?: string
   corrected_at?: string
   rejected_at?: string
+  /** Delayed calendar cancellation executes at this time (ISO); absent if not scheduled. */
+  cancel_at?: string
   cancelled_at?: string
   reviews?: Review[]
+  project_comments?: ProjectComment[]
 }
 
 export type ProjectsPayloadType = PaginationFunctionType &
@@ -303,7 +322,7 @@ export interface CatProjectPayload {
 export interface NewProjectPayload {
   client_institution_user_id: string
   manager_institution_user_id: string
-  deadline_at: string
+  deadline_at?: string | null
   source_files: (File | SourceFile)[]
   reference_number?: string
   source_language_classifier_value_id: string
@@ -313,6 +332,10 @@ export interface NewProjectPayload {
   translation_domain_classifier_value_id: string
   type_classifier_value_id: string
   event_start_at?: string
+  event_end_at?: string
+  location?: string
+  meeting_link?: string
+  service_type?: 'ON_SITE' | 'REMOTE'
   // TODO: Following are currently missing
   comments?: string
 }

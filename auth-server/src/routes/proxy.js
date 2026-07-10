@@ -6,6 +6,7 @@ const {
   AUTHORIZATION_SERVICE_BASE_URL,
   TRANSLATION_MEMORY_SERVICE_BASE_URL,
   AUDIT_LOG_SERVICE_BASE_URL,
+  MACHINE_TRANSLATION_SERVICE_BASE_URL,
 } = require('../env')
 const { omit } = require('lodash')
 const {
@@ -109,6 +110,21 @@ function constructProxyRoutes() {
     requiresValidCsrfToken(),
     proxy({
       target: AUDIT_LOG_SERVICE_BASE_URL,
+      changeOrigin: true,
+      on: {
+        proxyReq: onProxyReq,
+        proxyRes: onProxyRes,
+      },
+    })
+  )
+
+  router.use(
+    '/machine-translation',
+    requiresAuth(),
+    requiresValidAccessToken(),
+    requiresValidCsrfToken(),
+    proxy({
+      target: MACHINE_TRANSLATION_SERVICE_BASE_URL,
       changeOrigin: true,
       on: {
         proxyReq: onProxyReq,

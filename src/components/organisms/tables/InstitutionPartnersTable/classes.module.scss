@@ -1,0 +1,9 @@
+@use 'styles/variables' as variables;
+
+.topSection {
+  padding: variables.spacing(6) variables.spacing(4);
+}
+
+.searchInput {
+  max-width: variables.spacing(60);
+}

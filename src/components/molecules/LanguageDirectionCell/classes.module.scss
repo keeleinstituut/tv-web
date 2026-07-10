@@ -1,0 +1,13 @@
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
+
+.languageTag {
+  background-color: variables.$color-tag;
+  border-radius: variables.$border-radius-4;
+  color: variables.$color-primary;
+  @include mixins.bodyTextSmallStyle;
+  font-weight: variables.$font-weight-bold;
+  padding: variables.spacing(0.6) variables.spacing(1);
+  width: fit-content;
+  display: inline-block;
+}

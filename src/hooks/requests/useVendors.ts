@@ -15,6 +15,7 @@ import {
   SkillsData,
   PricesData,
   PayloadItem,
+  SkillPrice,
 } from 'types/vendors'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
@@ -23,7 +24,6 @@ import useFilters from 'hooks/useFilters'
 import { compact, filter, find, flatMap, includes, isEmpty, map } from 'lodash'
 import { UsersDataType } from 'types/users'
 import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
-import { SkillPrice } from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
 
 export const useVendorsFetch = (
   initialFilters?: GetVendorsPayload,
@@ -176,6 +176,18 @@ export const useFetchVendor = ({ id }: { id?: string }) => {
     isError,
     vendor: data?.data,
   }
+}
+
+export const useFetchInstitutionUserVendor = (institutionUserId?: string) => {
+  const { isLoading, data } = useQuery<VendorResponse>({
+    enabled: !!institutionUserId,
+    queryKey: ['institution-user-vendor', institutionUserId],
+    queryFn: () =>
+      apiClient.get(endpoints.INSTITUTION_USER_VENDOR(institutionUserId!), {}, { hideError: true }),
+    staleTime: Infinity,
+    retry: false,
+  })
+  return { isLoading, vendor: data?.data ?? null }
 }
 
 export const useVendorCache = (id?: string): Vendor | undefined => {

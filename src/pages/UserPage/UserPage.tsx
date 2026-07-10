@@ -89,7 +89,7 @@ const UserPage: FC = () => {
       monday_worktime_start:
         user?.monday_worktime_start || user?.institution.monday_worktime_start,
       monday_worktime_end:
-        user?.monday_worktime_end || user?.institution.monday_worktime_start,
+        user?.monday_worktime_end || user?.institution.monday_worktime_end,
       tuesday_worktime_start:
         user?.tuesday_worktime_start ||
         user?.institution.tuesday_worktime_start,

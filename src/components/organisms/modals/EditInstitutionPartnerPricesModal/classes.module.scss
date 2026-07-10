@@ -1,0 +1,29 @@
+@use 'styles/variables' as variables;
+
+.skillsField {
+  padding-bottom: variables.spacing(4);
+}
+
+
+.skillsDynamicForm {
+  padding-top: variables.spacing(8);
+  display: grid;
+  padding-bottom: variables.spacing(17);
+  grid-template-columns: repeat(5, 1fr);
+  column-gap: variables.spacing(12);
+  grid-auto-flow: column;
+  > .skillsField:nth-child(n + 7) {
+    grid-column: 2 / 3;
+  }
+}
+
+.languagePairSelection {
+  justify-content: flex-end;
+}
+
+.languageLabelContainer {
+  display: inline-grid;
+  grid-gap: variables.spacing(15);
+  padding-top: variables.spacing(4);
+  padding-bottom: variables.spacing(39);
+}

@@ -9,6 +9,7 @@ import {
   reduce,
   includes,
 } from 'lodash'
+import { formatDuration } from 'helpers/calendar'
 import {
   useUpdateSubProject,
   useFetchSubProjectCatToolJobs,
@@ -44,6 +45,7 @@ import { ClassifierValue } from 'types/classifierValues'
 import dayjs from 'dayjs'
 import useValidators from 'hooks/useValidators'
 import { showValidationErrorMessage } from 'api/errorHandler'
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 
 // TODO: this is WIP code for subProject view
 
@@ -54,9 +56,11 @@ type GeneralInformationFeatureProps = Pick<
   | 'source_files'
   | 'final_files'
   | 'deadline_at'
+  | 'event_start_at'
   | 'source_language_classifier_value'
   | 'destination_language_classifier_value'
   | 'project_id'
+  | 'project'
   | 'id'
 > & {
   catSupported?: boolean
@@ -65,10 +69,15 @@ type GeneralInformationFeatureProps = Pick<
 
 interface FormValues {
   deadline_at: { date?: string; time?: string }
+  event_start_at: { date?: string; time?: string }
   cat_files: SourceFile[]
   source_files: SourceFile[]
   final_files: SourceFile[]
   write_to_memory: { [key: string]: boolean }
+  service_type?: string
+  event_location?: string
+  meeting_link?: string
+  duration?: string
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
@@ -79,17 +88,33 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   source_files,
   final_files,
   deadline_at,
+  event_start_at,
   source_language_classifier_value,
   destination_language_classifier_value,
   projectDomain,
   project_id,
+  project,
 }) => {
+  const isVerbalType =
+    !!project?.type_classifier_value?.project_type_config?.is_start_date_supported
   const { t } = useTranslation()
   const { dateTimePickerValidator } = useValidators()
   const { deadline_at: projectDeadlineAt } = useProjectCache(project_id) || {}
   const { updateSubProject, isLoading } = useUpdateSubProject({
     id,
   })
+  const isShared = !useIsDataOwner(project?.institution_id)
+
+  const effectiveLocation = project?.event_location || project?.location || ''
+  const normalizedServiceType = (() => {
+    const st = project?.service_type
+    if (st === 'ON_SITE') return 'contact'
+    if (st === 'REMOTE') return 'remote'
+    if (st) return st
+    if (effectiveLocation) return 'contact'
+    if (project?.meeting_link) return 'remote'
+    return ''
+  })()
   const { catToolJobs, catSetupStatus, startPolling, isPolling } =
     useFetchSubProjectCatToolJobs({
       id,
@@ -100,11 +125,16 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   const isSomethingEditable = true
 
+  const effectiveStartAt = event_start_at || project?.event_start_at
+  const effectiveEndAt = project?.event_end_at
+  const effectiveDeadlineAt = deadline_at || projectDeadlineAt
+
   const defaultValues = useMemo(
     () => ({
-      deadline_at: getLocalDateObjectFromUtcDateString(
-        deadline_at || projectDeadlineAt || ''
-      ),
+      deadline_at: getLocalDateObjectFromUtcDateString(effectiveDeadlineAt || ''),
+      event_start_at: effectiveStartAt
+        ? getLocalDateObjectFromUtcDateString(effectiveStartAt)
+        : { date: '', time: '' },
       cat_files,
       source_files: map(source_files, (file) => ({
         ...file,
@@ -112,6 +142,13 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       })),
       final_files,
       cat_jobs: catToolJobs,
+      service_type: normalizedServiceType,
+      event_location: effectiveLocation,
+      meeting_link: project?.meeting_link || '',
+      duration:
+        isVerbalType && effectiveStartAt && effectiveEndAt
+          ? formatDuration(effectiveStartAt, effectiveEndAt)
+          : undefined,
       write_to_memory: reduce(
         subProjectTmKeyObjectsArray,
         (result, { key, is_writable }) => {
@@ -122,13 +159,18 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       ),
     }),
     [
-      deadline_at,
-      projectDeadlineAt,
+      effectiveDeadlineAt,
+      effectiveStartAt,
+      effectiveEndAt,
       cat_files,
       source_files,
       final_files,
       catToolJobs,
       subProjectTmKeyObjectsArray,
+      normalizedServiceType,
+      project?.event_location,
+      project?.meeting_link,
+      isVerbalType,
     ]
   )
 
@@ -208,18 +250,87 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   return (
     <Root>
-      <FormInput
-        {...{
-          inputType: InputTypes.DateTime,
-          ariaLabel: t('label.deadline_at'),
-          label: `${t('label.deadline_at')}`,
-          control: control,
-          name: 'deadline_at',
-          maxDate: dayjs(projectDeadlineAt).toDate(),
-          onDateTimeChange: handleChangeDeadline,
-          onlyDisplay: !isSomethingEditable,
-        }}
-      />
+      {isVerbalType ? (
+        <>
+          <FormInput
+            {...{
+              inputType: InputTypes.DateTime,
+              ariaLabel: t('label.start_date'),
+              label: `${t('label.start_date')}`,
+              control: control,
+              name: 'event_start_at',
+              onlyDisplay: true,
+            }}
+          />
+          <FormInput
+            {...{
+              inputType: InputTypes.Text,
+              ariaLabel: t('calendar.duration'),
+              label: t('calendar.duration'),
+              control: control,
+              name: 'duration',
+              onlyDisplay: true,
+              emptyDisplayText: '-',
+            }}
+          />
+          {normalizedServiceType && (
+            <FormInput
+              {...{
+                inputType: InputTypes.Selections,
+                ariaLabel: t('calendar.service_type'),
+                label: t('calendar.service_type'),
+                control: control,
+                name: 'service_type',
+                options: [
+                  { value: 'contact', label: t('calendar.service_type_contact') },
+                  { value: 'remote', label: t('calendar.service_type_remote') },
+                ],
+                onlyDisplay: true,
+                emptyDisplayText: '-',
+              }}
+            />
+          )}
+          {normalizedServiceType === 'contact' && (
+            <FormInput
+              {...{
+                inputType: InputTypes.Text,
+                ariaLabel: t('calendar.location'),
+                label: t('calendar.location'),
+                control: control,
+                name: 'event_location',
+                onlyDisplay: true,
+                emptyDisplayText: '-',
+              }}
+            />
+          )}
+          {normalizedServiceType === 'remote' && (
+            <FormInput
+              {...{
+                inputType: InputTypes.Text,
+                ariaLabel: t('calendar.meeting_link'),
+                label: t('calendar.meeting_link'),
+                control: control,
+                name: 'meeting_link',
+                onlyDisplay: true,
+                emptyDisplayText: '-',
+              }}
+            />
+          )}
+        </>
+      ) : (
+        <FormInput
+          {...{
+            inputType: InputTypes.DateTime,
+            ariaLabel: t('label.deadline_at'),
+            label: `${t('label.deadline_at')}`,
+            control: control,
+            name: 'deadline_at',
+            maxDate: projectDeadlineAt ? dayjs(projectDeadlineAt).toDate() : undefined,
+            onDateTimeChange: handleChangeDeadline,
+            onlyDisplay: !isSomethingEditable,
+          }}
+        />
+      )}
       <div className={classes.grid}>
         <SourceFilesList
           name="source_files"
@@ -232,7 +343,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           isCatProjectLoading={isPolling}
           catSetupStatus={catSetupStatus}
           subProjectId={id}
-          isEditable={isSomethingEditable}
+          isEditable={isSomethingEditable && !isShared}
         />
         <FinalFilesList
           name="final_files"
@@ -255,13 +366,13 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
             destination_language_classifier_value
           }
           canSendToVendors={true} //TODO add check when camunda is ready
-          isEditable={isSomethingEditable}
+          isEditable={isSomethingEditable && !isShared}
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}
           hidden={!catSupported}
           control={control}
-          isEditable={isSomethingEditable && isEmpty(catToolJobs)}
+          isEditable={isSomethingEditable && isEmpty(catToolJobs) && !isShared}
           subProjectId={id}
           subProjectTmKeyObjectsArray={subProjectTmKeyObjectsArray}
           subProjectLangPair={subProjectLangPair}

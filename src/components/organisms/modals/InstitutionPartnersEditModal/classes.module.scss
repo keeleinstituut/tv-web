@@ -1,0 +1,9 @@
+@use 'styles/variables' as variables;
+
+.searchInput {
+  margin: variables.spacing(2) 0;
+
+  input {
+    width: 328px;
+  }
+}

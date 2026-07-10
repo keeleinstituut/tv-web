@@ -45,3 +45,19 @@
 .row {
   display: flex;
 }
+
+.nameCell {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(2);
+}
+
+.emoBadge {
+  background-color: variables.$color-warning-light;
+  color: variables.$color-warning-dark;
+  border-radius: 4px;
+  padding: variables.spacing(0.25) variables.spacing(1);
+  font-size: variables.$font-size-12;
+  font-weight: variables.$font-weight-bold;
+  white-space: nowrap;
+}

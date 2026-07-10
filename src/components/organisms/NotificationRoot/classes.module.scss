@@ -4,11 +4,11 @@
   display: grid;
   grid-auto-rows: max-content;
   position: absolute;
-  top: 0;
+  top: variables.$header-height;
   right: 0;
   max-height: 100vh;
   overflow-y: auto;
-  z-index: 5;
+  z-index: 1000;
 
   .transitionContainer {
     transition: margin-top .5s ease-in-out;

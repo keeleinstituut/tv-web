@@ -10,13 +10,14 @@ import {
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
 import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import { filter, isEmpty, isEqual, map, split } from 'lodash'
+import { filter, includes, isEmpty, isEqual, map, split, values } from 'lodash'
 import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
-import { SourceFile } from 'types/projects'
+import { SourceFile, TypesWithStartTime } from 'types/projects'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
+import { formatDuration } from 'helpers/calendar'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import Eye from 'assets/icons/eye.svg?react'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
@@ -24,6 +25,7 @@ import classNames from 'classnames'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { TaskType } from 'types/tasks'
+import { AssignmentStatus } from 'types/assignments'
 
 import classes from './classes.module.scss'
 import { useTaskCache } from 'hooks/requests/useTasks'
@@ -58,8 +60,10 @@ const TaskContent: FC<TaskContentProps> = ({
 }) => {
   const { t } = useTranslation()
   const { institutionUserId } = useAuth()
-  const { assignment, cat_tm_keys_meta, cat_tm_keys_stats } =
-    useTaskCache(taskId) || {}
+  const taskData = useTaskCache(taskId)
+  const { assignment, cat_tm_keys_meta, cat_tm_keys_stats, project } =
+    taskData || {}
+  const jobShortName = assignment?.job_definition?.job_short_name
 
   const {
     subProject,
@@ -71,6 +75,7 @@ const TaskContent: FC<TaskContentProps> = ({
     sub_project_id,
     assignee_comments,
     id,
+    status: assignmentStatus,
   } = assignment || {}
 
   const {
@@ -80,7 +85,16 @@ const TaskContent: FC<TaskContentProps> = ({
     source_files,
     final_files,
     cat_tm_keys,
+    project: taskProject,
   } = subProject || {}
+
+  const projectData = project || taskProject
+
+  const VERBAL_TYPES = values(TypesWithStartTime)
+  const isVerbalType = includes(
+    VERBAL_TYPES,
+    projectData?.type_classifier_value?.value
+  )
 
   const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
     id: sub_project_id,
@@ -188,8 +202,9 @@ const TaskContent: FC<TaskContentProps> = ({
         total: total || '0',
       },
       taskViewPricesClass: classes.taskViewPrices,
+      jobShortName,
     })
-  }, [volumes])
+  }, [volumes, jobShortName])
 
   const handleAddAssigneeComment = useCallback(
     async (value: string) => {
@@ -249,12 +264,57 @@ const TaskContent: FC<TaskContentProps> = ({
             {event_start_at ? formattedDate(event_start_at) : '-'}
           </p>
         </span>
-        <span className={classes.taskContainer}>
-          <p className={classes.taskDetails}>{t('label.deadline_at')}</p>
-          <p className={classes.taskContent}>
-            {deadline_at ? formattedDate(deadline_at) : '-'}
-          </p>
-        </span>
+        {isVerbalType &&
+          event_start_at &&
+          (projectData?.event_end_at || deadline_at) && (
+            <span className={classes.taskContainer}>
+              <p className={classes.taskDetails}>{t('calendar.duration')}</p>
+              <p className={classes.taskContent}>
+                {formatDuration(
+                  event_start_at,
+                  projectData?.event_end_at || deadline_at!
+                )}
+              </p>
+            </span>
+          )}
+        {!isVerbalType && (
+          <span className={classes.taskContainer}>
+            <p className={classes.taskDetails}>{t('label.deadline_at')}</p>
+            <p className={classes.taskContent}>
+              {deadline_at ? formattedDate(deadline_at) : '-'}
+            </p>
+          </span>
+        )}
+        {isVerbalType && (
+          <span className={classes.taskContainer}>
+            <p className={classes.taskDetails}>{t('calendar.service_type')}</p>
+            <p className={classes.taskContent}>
+              {projectData?.service_type === 'ON_SITE'
+                ? t('calendar.service_type_contact')
+                : projectData?.service_type === 'REMOTE'
+                  ? t('calendar.service_type_remote')
+                  : '-'}
+            </p>
+          </span>
+        )}
+        {isVerbalType && projectData?.service_type === 'ON_SITE' && (
+          <span className={classes.taskContainer}>
+            <p className={classes.taskDetails}>{t('calendar.location')}</p>
+            <p className={classes.taskContent}>
+              {projectData?.location || projectData?.event_location || '-'}
+            </p>
+          </span>
+        )}
+        {isVerbalType && projectData?.service_type === 'REMOTE' && (
+          <span className={classes.taskContainer}>
+            <p className={classes.taskDetails}>
+              {t('calendar.meeting_link')}
+            </p>
+            <p className={classes.taskContent}>
+              {projectData?.meeting_link || '-'}
+            </p>
+          </span>
+        )}
         <span className={classes.taskContainer}>
           <p className={classes.taskDetails}>
             {t('label.special_instructions')}
@@ -359,7 +419,7 @@ const TaskContent: FC<TaskContentProps> = ({
       <Button
         className={classes.finishedButton}
         onClick={handleSubmit(handleOpenCompleteModal)}
-        hidden={!isTaskAssignedToMe || !!isHistoryView}
+        hidden={!isTaskAssignedToMe || !!isHistoryView || assignmentStatus === AssignmentStatus.Done}
       >
         {t('button.mark_as_finished')}
       </Button>
@@ -367,7 +427,7 @@ const TaskContent: FC<TaskContentProps> = ({
         <Button
           className={classes.previousButton}
           onClick={handleSendToPreviousAssignmentModal}
-          hidden={!isTaskAssignedToMe || !!isHistoryView}
+          hidden={!isTaskAssignedToMe || !!isHistoryView || assignmentStatus === AssignmentStatus.Done}
           appearance={AppearanceTypes.Secondary}
         >
           {t('button.send_to_previous_assignment')}

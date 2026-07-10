@@ -39,7 +39,28 @@ export const getProjectDefaultValues = ({
     cancelled_at = '',
     created_at = '',
     tags = [],
+    event_location = '',
+    location = '',
+    meeting_link = '',
+    service_type: rawServiceType = '',
+    event_end_at,
   } = project || {}
+
+  // Calendar projects POST with `location`; Tellimused projects POST with `event_location`.
+  // The GET response returns whichever was stored, so fall back to `location` for calendar orders.
+  const effectiveLocation = event_location || location
+
+  // Normalize service_type: API stores ON_SITE/REMOTE (calendar), form uses contact/remote.
+  // Also derive from event_location/meeting_link for orders created via Tellimused
+  // where service_type was never stored.
+  const service_type = (() => {
+    if (rawServiceType === 'ON_SITE') return 'contact'
+    if (rawServiceType === 'REMOTE') return 'remote'
+    if (rawServiceType) return rawServiceType
+    if (effectiveLocation) return 'contact'
+    if (meeting_link) return 'remote'
+    return ''
+  })()
   const source_language_classifier_value_id =
     sub_projects?.[0]?.source_language_classifier_value_id || ''
   const destination_language_classifier_value_ids =
@@ -75,12 +96,18 @@ export const getProjectDefaultValues = ({
     event_start_at: event_start_at
       ? getLocalDateObjectFromUtcDateString(event_start_at)
       : { date: '', time: '' },
+    event_end_at: event_end_at
+      ? getLocalDateObjectFromUtcDateString(event_end_at)
+      : { date: '', time: '' },
     source_language_classifier_value_id,
     destination_language_classifier_value_ids,
     help_file_types,
     translation_domain_classifier_value_id:
       translation_domain_classifier_value?.id || defaultDomainClassifier?.id,
     comments,
+    event_location: effectiveLocation,
+    meeting_link,
+    service_type,
     tags: map(tags, 'id'),
     accepted_at: accepted_at ? dayjs(accepted_at).format('DD.MM.YYYY') : '',
     corrected_at: corrected_at ? dayjs(corrected_at).format('DD.MM.YYYY') : '',

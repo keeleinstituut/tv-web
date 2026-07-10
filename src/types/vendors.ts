@@ -7,7 +7,6 @@ import { UserType } from './users'
 import { Price } from './price'
 import { Tag } from './tags'
 import { DataStateTypes } from 'components/organisms/modals/EditableListModal/EditableListModal'
-import { SkillPrice } from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
 
 export type SkillsData = {
   id: string
@@ -27,6 +26,8 @@ export type Vendor = {
   skills: SkillsData[]
   comment: string
   institution_user_id: string
+  is_internal: boolean
+  emergency_schedules?: EmergencySchedule[]
   created_at: string
   updated_at: string
 } & DiscountPercentages
@@ -105,6 +106,19 @@ export type UpdateVendorPayload = {
   comment?: string
 }
 
+export type SkillPrice = {
+  id?: string | undefined
+  isSelected?: boolean
+  character_fee: number
+  word_fee: number
+  page_fee: number
+  minute_fee: number
+  hour_fee: number
+  minimal_fee: number
+  skill_id: string
+  skill?: { id: string; name: string }
+}
+
 export type PayloadItem = {
   prices: SkillPrice[]
   state: DataStateTypes
@@ -147,3 +161,17 @@ export enum OrderDirection {
 export type CreateVendorPayload = { institution_user_id: string }[]
 
 export type DeleteVendorsPayload = string[]
+
+export interface EmergencySchedule {
+  id: string
+  start_date: string
+  end_date: string
+}
+
+export interface VendorAbsence {
+  id: string
+  vendor_id: string
+  start_at: string
+  end_at: string
+  comment?: string | null
+}

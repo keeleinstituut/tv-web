@@ -1,0 +1,11 @@
+@use 'styles/variables' as variables;
+
+.editIcon svg {
+  width: 22px;
+  height: 20px;
+}
+
+.languageButton {
+  align-self: center;
+  padding-left: variables.spacing(6);
+}

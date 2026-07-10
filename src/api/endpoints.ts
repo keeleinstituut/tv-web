@@ -2,7 +2,9 @@ const clean = (path: string) => path.replace(/^\//, '').replace('/$', '')
 
 const gateway = (path: string) => {
   return (
-    import.meta.env.REACT_APP_GATEWAY_BASE?.replace(/\/$/, '') + '/' + clean(path)
+    import.meta.env.REACT_APP_GATEWAY_BASE?.replace(/\/$/, '') +
+    '/' +
+    clean(path)
   )
 }
 
@@ -20,6 +22,10 @@ const translationMemory = (path: string) => {
 
 const auditLog = (path: string) => {
   return gateway(`/audit-log/api/${clean(path)}`)
+}
+
+const machineTranslation = (path: string) => {
+  return gateway(`/machine-translation/api/${clean(path)}`)
 }
 
 export const endpoints = {
@@ -44,6 +50,8 @@ export const endpoints = {
 
   CAT_TOOL: translationOrder('cat-tool'),
   TRANSLATION_USERS: translationOrder('institution-users'),
+  INSTITUTION_USER_VENDOR: (id: string) =>
+    translationOrder(`institution-users/${id}/vendor`),
   TAGS: translationOrder('tags'),
   CREATE_TAGS: translationOrder('tags/bulk-create'),
   UPDATE_TAGS: translationOrder('tags/bulk-update'),
@@ -79,6 +87,33 @@ export const endpoints = {
   UPDATE_TM_KEYS: translationOrder('tm-keys/sync'),
   TOGGLE_TM_WRITABLE: translationOrder('tm-keys/toggle-writable'),
 
+  CALENDAR_LANGUAGES: translationOrder('calendar/languages'),
+  INSTITUTION_MAIN_LANGUAGES: translationOrder('institutions/main-languages'),
+  CALENDAR_DAY: translationOrder('calendar/day'),
+  CALENDAR_WEEK: translationOrder('calendar/week'),
+  CALENDAR_MONTH: translationOrder('calendar/month'),
+  CALENDAR_SEARCH: translationOrder('calendar/search'),
+  CALENDAR_SLOT_MATCHING: translationOrder('calendar/slot-matching/vendors'),
+  PINNED_LANGUAGES: translationOrder('institution-users/pinned-languages'),
+  VENDOR_CALENDAR: (vendorId: string) =>
+    translationOrder(`vendors/${vendorId}/calendar`),
+  VENDOR_EMERGENCY_SCHEDULES: (vendorId: string) =>
+    translationOrder(`vendors/${vendorId}/emergency-schedules`),
+  VENDOR_EMERGENCY_SCHEDULE: (vendorId: string, scheduleId: string) =>
+    translationOrder(`vendors/${vendorId}/emergency-schedules/${scheduleId}`),
+  PROJECT_CANCEL_DECLINE: (id: string) =>
+    translationOrder(`projects/${id}/cancel-decline`),
+  PROJECT_COMMENTS: (id: string) => translationOrder(`projects/${id}/comments`),
+  PROJECT_COMMENT: (projectId: string, commentId: string) =>
+    translationOrder(`projects/${projectId}/comments/${commentId}`),
+  CALENDAR_PREBOOK: translationOrder('calendar/prebook'),
+  CALENDAR_VENDOR_ENTRIES: translationOrder('calendar/vendor-entries'),
+  CALENDAR_VENDOR_ENTRY: (entryId: string) =>
+    translationOrder(`calendar/vendor-entries/${entryId}`),
+  CALENDAR_IMPORT: translationOrder('calendar/import'),
+  CALENDAR_IMPORT_BULK: translationOrder('calendar/import/bulk'),
+  INSTITUTION_SETTINGS: translationOrder('institution/settings'),
+
   TRANSLATION_MEMORIES: translationOrder('catv2/translation-memories'),
   IMPORT_TMX: translationOrder('catv2/translation-memories/import'),
   EXPORT_TMX: translationOrder('catv2/translation-memories/export'),
@@ -93,6 +128,44 @@ export const endpoints = {
 
   AUDIT_LOGS_OLD: auditLog('event-records-old'),
   EXPORT_AUDIT_LOGS_OLD: auditLog('event-records-old/export'),
+
+  MT_PROVIDERS: machineTranslation('providers'),
+  MT_PROVIDER_OPTIONS: (provider: string) =>
+    machineTranslation(`providers/${provider}/options`),
+  MT_TRANSLATE_TEXT: machineTranslation('translate/text'),
+  MT_TRANSLATE_FILE: machineTranslation('translate/file'),
+  MT_JOBS: machineTranslation('translate/jobs'),
+  MT_FILE_DOWNLOAD: (id: string) =>
+    machineTranslation(`translate/file/${id}/download`),
+  MT_INSTITUTION_SETTINGS: machineTranslation('settings'),
+
+  OUTSOURCE_REQUESTS: translationOrder('outsource-requests'),
+  OUTSOURCE_REQUEST: (id: string) =>
+    translationOrder(`outsource-requests/${id}`),
+  OUTSOURCE_REQUEST_CANCEL: (id: string) =>
+    translationOrder(`outsource-requests/${id}/cancel`),
+  OUTSOURCE_REQUEST_SELECT: (id: string) =>
+    translationOrder(`outsource-requests/${id}/select`),
+  OUTSOURCE_REQUEST_ACCEPT: (id: string) =>
+    translationOrder(`outsource-requests/${id}/accept`),
+  OUTSOURCE_REQUEST_DECLINE: (id: string) =>
+    translationOrder(`outsource-requests/${id}/decline`),
+  OUTSOURCE_REQUEST_PREVIEW_PRICES: translationOrder(
+    'outsource-requests/preview-prices'
+  ),
+  OUTSOURCE_OFFERS: translationOrder('outsource-offers'),
+  OUTSOURCE_OFFER: (id: string) => translationOrder(`outsource-offers/${id}`),
+  OUTSOURCE_OFFER_ACCEPT: (id: string) =>
+    translationOrder(`outsource-offers/${id}/accept`),
+  OUTSOURCE_OFFER_DECLINE: (id: string) =>
+    translationOrder(`outsource-offers/${id}/decline`),
+  INSTITUTION_PARTNERS: translationOrder('institution-partners'),
+  INSTITUTION_PARTNERS_BULK: translationOrder('institution-partners/bulk'),
+  INSTITUTION_PARTNER_PRICES: translationOrder('institution-partner-prices'),
+  INSTITUTION_PARTNER_PRICES_BULK: translationOrder(
+    'institution-partner-prices/bulk'
+  ),
+  TRANSLATION_ORDER_INSTITUTIONS: translationOrder('institutions'),
 }
 
 export const authEndpoints = {

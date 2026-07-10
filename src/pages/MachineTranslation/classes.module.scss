@@ -1,0 +1,22 @@
+@use 'styles/variables' as variables;
+
+.header {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  align-items: center;
+  grid-gap: variables.spacing(4);
+  padding-bottom: variables.spacing(6);
+}
+
+.formContainer {
+  background-color: variables.$color-white;
+}
+
+.historySection {
+  margin-top: variables.spacing(8);
+
+  h2 {
+    margin-bottom: variables.spacing(4);
+    font-size: 20px;
+  }
+}

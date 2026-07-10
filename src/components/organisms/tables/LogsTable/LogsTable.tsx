@@ -54,86 +54,129 @@ const LogsTable: FC<LogsTableProps> = ({
     { label: '50', value: '50' },
   ]
   const tableData: AuditLog[] = map(data as any, (record) => {
-    const result = get(
+    const isNotification = !!record.notification_type
+
+    const result = isNotification
+      ? t('logs.sent')
+      : get(
+          {
+            '2': t('logs.successful'),
+            '3': t('logs.successful'),
+          },
+          String(record.response_status_code)[0],
+          t('logs.failed')
+        )
+
+    const event = isNotification
+      ? t('logs.email_notification_prefix') +
+        t(`logs.notification_types.${record.notification_type}` as any)
+      : t(`logs.event_type2.${record.action}` as any)
+
+    const user = isNotification
+      ? '-'
+      : `${record.actor_name} (${record.actor_pic})`
+
+    const commonSubRows = [
       {
-        '2': t('logs.successful'),
-        '3': t('logs.successful'),
+        label: t('logs.event_record.id'),
+        Component: () => <span>{record.id}</span>,
       },
-      String(record.response_status_code)[0],
-      t('logs.failed')
-    )
+      {
+        label: t('logs.event_record.happened_at'),
+        Component: () => <pre>{record.happened_at}</pre>,
+      },
+      {
+        label: t('logs.event_record.actor_pic'),
+        Component: () => <pre>{record.actor_pic}</pre>,
+      },
+      {
+        label: t('logs.event_record.actor_name'),
+        Component: () => <pre>{record.actor_name}</pre>,
+      },
+    ]
+
+    const httpSubRows = [
+      {
+        label: t('logs.event_record.action'),
+        Component: () => (
+          <pre>
+            {t(`logs.event_type2.${record.action}` as any)} ({record.action})
+          </pre>
+        ),
+      },
+      {
+        label: t('logs.event_record.actor_session'),
+        Component: () => <pre>{record.actor_session}</pre>,
+      },
+      {
+        label: t('logs.event_record.path'),
+        Component: () => <pre>{record.path}</pre>,
+      },
+      {
+        label: t('logs.event_record.request_method'),
+        Component: () => <pre>{record.request_method}</pre>,
+      },
+      {
+        label: t('logs.event_record.web_path'),
+        Component: () => (
+          <NavLink
+            style={{ textDecoration: 'underline' }}
+            to={record.web_path || '#'}
+            target="_blank"
+          >
+            {record.web_path}
+          </NavLink>
+        ),
+      },
+      {
+        label: t('logs.event_record.response_status_code'),
+        Component: () => <pre>{record.response_status_code}</pre>,
+      },
+      {
+        label: t('logs.event_record.request_query'),
+        Component: () => (
+          <pre>{JSON.stringify(record.request_query, null, 2)}</pre>
+        ),
+      },
+      {
+        label: t('logs.event_record.request_body'),
+        Component: () => (
+          <pre>{JSON.stringify(record.request_body, null, 2)}</pre>
+        ),
+      },
+    ]
+
+    const notificationSubRows = [
+      {
+        label: t('logs.event_record.notification_type'),
+        Component: () => <pre>{record.notification_type}</pre>,
+      },
+      {
+        label: t('logs.event_record.receiver_email'),
+        Component: () => <pre>{record.notification_params?.receiver_email}</pre>,
+      },
+      {
+        label: t('logs.event_record.receiver_name'),
+        Component: () => <pre>{record.notification_params?.receiver_name}</pre>,
+      },
+      {
+        label: t('logs.event_record.notification_variables'),
+        Component: () => (
+          <pre>
+            {JSON.stringify(record.notification_params?.variables, null, 2)}
+          </pre>
+        ),
+      },
+    ]
 
     return {
-      user: `${record.actor_name} (${record.actor_pic})`,
-      // happened_at: record.happened_at,
+      user,
       happened_at: dayjs(record.happened_at).format('YYYY.MM.DD HH:mm:ss'),
       result,
-      event: t(`logs.event_type2.${record.action}` as any),
+      event,
       subRows: [
-        {
-          label: t('logs.event_record.id'),
-          Component: () => <span>{record.id}</span>,
-        },
-        {
-          label: t('logs.event_record.action'),
-          Component: () => (
-            <pre>
-              {t(`logs.event_type2.${record.action}` as any)} ({record.action})
-            </pre>
-          ),
-        },
-        {
-          label: t('logs.event_record.happened_at'),
-          Component: () => <pre>{record.happened_at}</pre>,
-        },
-        {
-          label: t('logs.event_record.actor_pic'),
-          Component: () => <pre>{record.actor_pic}</pre>,
-        },
-        {
-          label: t('logs.event_record.actor_name'),
-          Component: () => <pre>{record.actor_name}</pre>,
-        },
-        {
-          label: t('logs.event_record.actor_session'),
-          Component: () => <pre>{record.actor_session}</pre>,
-        },
-        {
-          label: t('logs.event_record.path'),
-          Component: () => <pre>{record.path}</pre>,
-        },
-        {
-          label: t('logs.event_record.request_method'),
-          Component: () => <pre>{record.request_method}</pre>,
-        },
-        {
-          label: t('logs.event_record.web_path'),
-          Component: () => (
-            <NavLink
-              style={{ textDecoration: 'underline' }}
-              to={record.web_path}
-              target="_blank"
-            >
-              {record.web_path}
-            </NavLink>
-          ),
-        },
-        {
-          label: t('logs.event_record.response_status_code'),
-          Component: () => <pre>{record.response_status_code}</pre>,
-        },
-        {
-          label: t('logs.event_record.request_query'),
-          Component: () => (
-            <pre>{JSON.stringify(record.request_query, null, 2)}</pre>
-          ),
-        },
-        {
-          label: t('logs.event_record.request_body'),
-          Component: () => (
-            <pre>{JSON.stringify(record.request_body, null, 2)}</pre>
-          ),
-        },
+        ...commonSubRows,
+        ...(isNotification ? notificationSubRows : httpSubRows),
       ],
     }
   })

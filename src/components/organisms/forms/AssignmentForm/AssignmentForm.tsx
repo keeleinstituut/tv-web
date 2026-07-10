@@ -27,6 +27,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import useValidators from 'hooks/useValidators'
+import { formatDuration } from 'helpers/calendar'
 
 dayjs.extend(utc)
 
@@ -44,6 +45,10 @@ interface FormValues {
   comments?: string
   volume?: VolumeValue[]
   assignee_comments?: string
+  duration?: string
+  service_type?: string
+  event_location?: string
+  meeting_link?: string
 }
 
 const AssignmentForm: FC<AssignmentFormProps> = ({
@@ -68,38 +73,64 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     destination_language_classifier_value_id,
     source_language_classifier_value_id,
     deadline_at: subProjectDeadline,
+    event_start_at: subProjectEventStartAt,
     project,
   } = useSubProjectCache(sub_project_id) || {}
-  const { type_classifier_value } = project || {}
+  const { type_classifier_value, service_type: projectServiceType, event_location, location, meeting_link, event_end_at: projectEventEndAt } = project || {}
+  const effectiveLocation = event_location || location || ''
+
+  const normalizedServiceType = (() => {
+    if (projectServiceType === 'ON_SITE') return 'contact'
+    if (projectServiceType === 'REMOTE') return 'remote'
+    if (projectServiceType) return projectServiceType
+    if (effectiveLocation) return 'contact'
+    if (meeting_link) return 'remote'
+    return ''
+  })()
 
   const { updateAssignment } = useAssignmentUpdate({ id })
 
   const shouldShowStartTimeFields =
     type_classifier_value?.project_type_config?.is_start_date_supported
 
+  const isVerbalType =
+    !!shouldShowStartTimeFields
+
+  const effectiveStartAt = event_start_at || subProjectEventStartAt
+  const effectiveEndAt = projectEventEndAt
+  const effectiveDeadlineAt = deadline_at || subProjectDeadline
+
   const defaultValues = useMemo(
     () => ({
-      ...(deadline_at
-        ? {
-            deadline_at: getLocalDateObjectFromUtcDateString(deadline_at),
-          }
+      ...(effectiveDeadlineAt
+        ? { deadline_at: getLocalDateObjectFromUtcDateString(effectiveDeadlineAt) }
         : {}),
-      ...(shouldShowStartTimeFields && event_start_at
-        ? {
-            event_start_at: getLocalDateObjectFromUtcDateString(event_start_at),
-          }
+      ...(shouldShowStartTimeFields && effectiveStartAt
+        ? { event_start_at: getLocalDateObjectFromUtcDateString(effectiveStartAt) }
         : {}),
       volume: volumes,
       comments,
       assignee_comments,
+      duration:
+        isVerbalType && effectiveStartAt && effectiveEndAt
+          ? formatDuration(effectiveStartAt, effectiveEndAt)
+          : undefined,
+      service_type: normalizedServiceType,
+      event_location: effectiveLocation,
+      meeting_link: meeting_link || '',
     }),
     [
       comments,
-      deadline_at,
-      event_start_at,
+      effectiveDeadlineAt,
+      effectiveStartAt,
+      effectiveEndAt,
       volumes,
       assignee_comments,
       shouldShowStartTimeFields,
+      isVerbalType,
+      normalizedServiceType,
+      effectiveLocation,
+      meeting_link,
     ]
   )
 
@@ -244,23 +275,68 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
   const fields: FieldProps<FormValues>[] = useMemo(
     () => [
       {
+        inputType: InputTypes.Selections,
+        ariaLabel: t('calendar.service_type'),
+        label: t('calendar.service_type'),
+        name: 'service_type',
+        hidden: !isVerbalType || !normalizedServiceType,
+        options: [
+          { value: 'contact', label: t('calendar.service_type_contact') },
+          { value: 'remote', label: t('calendar.service_type_remote') },
+        ],
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('calendar.location'),
+        label: t('calendar.location'),
+        name: 'event_location',
+        hidden: !isVerbalType || normalizedServiceType !== 'contact',
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('calendar.meeting_link'),
+        label: t('calendar.meeting_link'),
+        name: 'meeting_link',
+        hidden: !isVerbalType || normalizedServiceType !== 'remote',
+        onlyDisplay: true,
+        emptyDisplayText: '-',
+      },
+      {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}`,
         hidden: !shouldShowStartTimeFields,
         className: classes.customInternalClass,
         name: 'event_start_at',
-        maxDate: dayjs(subProjectDeadline).toDate(),
+        maxDate: subProjectDeadline
+          ? dayjs(subProjectDeadline).toDate()
+          : undefined,
         onDateTimeChange: handleAddStartTime,
         disabled: !isEditable || isAssignmentFinished,
+      },
+      {
+        inputType: InputTypes.Text,
+        ariaLabel: t('calendar.duration'),
+        label: t('calendar.duration'),
+        hidden: !isVerbalType,
+        name: 'duration',
+        className: classes.customInternalClass,
+        onlyDisplay: true,
       },
       {
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         label: t('label.deadline'),
+        hidden: isVerbalType,
         className: classes.customInternalClass,
         name: 'deadline_at',
-        maxDate: dayjs(subProjectDeadline).toDate(),
+        maxDate: subProjectDeadline
+          ? dayjs(subProjectDeadline).toDate()
+          : undefined,
         onDateTimeChange: handleAddDateTime,
         disabled: !isEditable || isAssignmentFinished,
       },
@@ -289,6 +365,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         value: volumes,
         assignmentId: id,
         sub_project_id,
+        ownerInstitutionId: project?.institution_id,
         disabled: !isEditable,
       },
       {
@@ -309,6 +386,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       isEditable,
       isAssignmentFinished,
       shouldShowStartTimeFields,
+      isVerbalType,
       handleAddStartTime,
       id,
       handleAddComment,
@@ -318,6 +396,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       vendorName,
       volumes,
       sub_project_id,
+      normalizedServiceType,
     ]
   )
 

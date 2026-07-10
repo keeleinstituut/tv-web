@@ -22,8 +22,10 @@ import { FilterFunctionType } from 'types/collective'
 import Loader from 'components/atoms/Loader/Loader'
 import { ListTask, TasksPayloadType } from 'types/tasks'
 import { useFetchHistoryTasks, useFetchTasks } from 'hooks/requests/useTasks'
+import { useAuth } from 'components/contexts/AuthContext'
 
 import classes from './classes.module.scss'
+import LanguageDirectionTags from 'components/atoms/LanguageDirectionTags/LanguageDirectionTags'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import { useProjectLanguagesFetch } from 'hooks/requests/useProjects'
@@ -62,6 +64,7 @@ const columnHelper = createColumnHelper<TaskTableRow>()
 
 const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
   const { t } = useTranslation()
+  const { isTranslationAgency } = useAuth()
   const isHistoryTab = type === TaskTableTypes.HistoryTasks
 
   const initialFilters: TasksPayloadType = {
@@ -371,15 +374,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
         columnHelper.accessor('language_directions', {
           header: () => t('label.language_directions'),
           footer: (info) => info.column.id,
-          cell: ({ getValue }) => {
-            return (
-              <div className={classes.tagsRow}>
-                {map(getValue(), (value, index) => (
-                  <Tag label={value} value key={index} />
-                ))}
-              </div>
-            )
-          },
+          cell: ({ getValue }) => <LanguageDirectionTags values={getValue()} />,
           meta: {
             FilteringComponent: (
               <TableSelectFilter
@@ -397,16 +392,21 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             ),
           },
         }),
-        columnHelper.accessor('cost', {
-          header: () => t('label.cost'),
-          footer: (info) => info.column.id,
-          cell: ({ getValue }) => (getValue() ? `${getValue()}€` : '-'),
-          meta: {
-            sortingOption: ['asc', 'desc'],
-            currentSorting: sort_by === 'project.price' ? sort_order : '',
-            sortingParameterName: 'project.price',
-          },
-        }),
+        ...(isTranslationAgency
+          ? []
+          : [
+              columnHelper.accessor('cost', {
+                header: () => t('label.cost'),
+                footer: (info) => info.column.id,
+                cell: ({ getValue }) => (getValue() ? `${getValue()}€` : '-'),
+                meta: {
+                  sortingOption: ['asc', 'desc'],
+                  currentSorting:
+                    sort_by === 'project.price' ? sort_order : '',
+                  sortingParameterName: 'project.price',
+                },
+              }),
+            ]),
         columnHelper.accessor('type', {
           header: () => t('label.type'),
           footer: (info) => info.column.id,
@@ -449,10 +449,16 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {
             const dateValue = getValue()
+            if (!dateValue) {
+              return <span />
+            }
             const deadlineDate = dayjs(dateValue)
+            if (!deadlineDate.isValid()) {
+              return <span />
+            }
             const currentDate = dayjs()
             const diff = deadlineDate.diff(currentDate)
-            const formattedDate = dayjs(dateValue).format('DD.MM.YYYY')
+            const formattedDate = deadlineDate.format('DD.MM.YYYY')
 
             const hasDeadlineError = diff < 0
             return (
@@ -507,18 +513,22 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
             return <span>{formattedDate}</span>
           },
         }),
-        columnHelper.accessor('client_name', {
-          header: () => t('label.client'),
-          footer: (info) => info.column.id,
-          meta: {
-            sortingOption: ['asc', 'desc'],
-            currentSorting:
-              sort_by === 'project.clientInstitutionUser.name'
-                ? sort_order
-                : '',
-            sortingParameterName: 'project.clientInstitutionUser.name',
-          },
-        }),
+        ...(isTranslationAgency
+          ? []
+          : [
+              columnHelper.accessor('client_name', {
+                header: () => t('label.client'),
+                footer: (info) => info.column.id,
+                meta: {
+                  sortingOption: ['asc', 'desc'],
+                  currentSorting:
+                    sort_by === 'project.clientInstitutionUser.name'
+                      ? sort_order
+                      : '',
+                  sortingParameterName: 'project.clientInstitutionUser.name',
+                },
+              }),
+            ]),
       ] as ColumnDef<TaskTableRow>[],
     [
       languageDirectionFilters,
@@ -533,6 +543,7 @@ const TasksTable: FC<TasksTableProps> = ({ type, userId }) => {
       isHistoryTab,
       tagsFilters,
       filters,
+      isTranslationAgency,
     ]
   )
 

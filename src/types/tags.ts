@@ -3,6 +3,7 @@ export enum TagTypes {
   Vendor = 'Teostaja',
   Project = 'Tellimus',
   Skills = 'Oskused',
+  Domain = 'Valdkond',
 }
 export interface TagsResponse {
   data: Tag[]

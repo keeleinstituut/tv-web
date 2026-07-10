@@ -21,6 +21,7 @@ export interface TranslationMemoryType {
   created_at: string
   lang_pair: string
   chunk_amount?: string | number
+  edit_url?: string
   import_at?: string
 }
 

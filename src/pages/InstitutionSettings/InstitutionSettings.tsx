@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next'
 import dayjs from 'dayjs'
 import DepartmentManagement from 'components/molecules/DepartmentManagement/DepartmentManagement'
 import AuditLogManagement from 'components/molecules/AuditLogManagement/AuditLogManagement'
+import InstitutionSettingsManagement from 'components/molecules/InstitutionSettingsManagement/InstitutionSettingsManagement'
+import AzureOpenAISettingsManagement from 'components/molecules/AzureOpenAISettingsManagement/AzureOpenAISettingsManagement'
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
@@ -46,6 +48,8 @@ const InstitutionSettings: FC = () => {
       </p>
       <DepartmentManagement />
       <AuditLogManagement />
+      <InstitutionSettingsManagement />
+      <AzureOpenAISettingsManagement />
     </>
   )
 }

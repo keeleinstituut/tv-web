@@ -12,6 +12,21 @@
   margin-bottom: variables.spacing(2);
 }
 
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: variables.spacing(6);
+  align-items: start;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sessionsGap {
+  margin-top: variables.spacing(6);
+}
+
 .dateText {
   @include mixins.bodyTextSmallStyle;
   color: variables.$color-input-main;

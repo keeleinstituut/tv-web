@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { map, range, includes } from 'lodash'
+import { map, range, includes, some } from 'lodash'
 import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import Tag from 'components/atoms/Tag/Tag'
 import {
@@ -62,12 +62,14 @@ interface SelectVendorsTableProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
   skill_id?: string
   selectedVendorsIds?: string[]
+  orderDate?: string
 }
 interface PricesTableRow {
   selected: string
   alert_icon?: boolean
   languageDirection: string
   name: string
+  is_emo: boolean
   working_and_vacation_times: WorkingAndVacationTime[]
   tags: string[]
   skill?: string
@@ -94,6 +96,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   selectedVendorsIds,
   source_language_classifier_value_id,
   destination_language_classifier_value_id,
+  orderDate,
 }: SelectVendorsTableProps<TFormValues>) => {
   const { t } = useTranslation()
   // const { tagsFilters = [] } = useFetchTags({
@@ -121,8 +124,9 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
   })
 
   const tableData = useMemo(
-    () =>
-      map(
+    () => {
+      const checkDate = orderDate ?? dayjs().format('YYYY-MM-DD')
+      return map(
         data,
         ({
           id,
@@ -140,11 +144,17 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
           vendor: {
             tags,
             institution_user: { user },
+            emergency_schedules,
           },
         }) => {
           const languageDirection = `${source_language_classifier_value.value} > ${destination_language_classifier_value.value}`
 
           const tagNames = map(tags, 'name')
+          const is_emo = some(
+            emergency_schedules,
+            ({ start_date, end_date }) =>
+              start_date <= checkDate && checkDate <= end_date
+          )
           const priceLanguageMatch =
             source_language_classifier_value.id ===
               source_language_classifier_value_id &&
@@ -172,6 +182,7 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
             selected: vendor_id,
             alert_icon: taskSkillId !== skill_id || !priceLanguageMatch,
             name: `${user?.forename} ${user?.surname}`,
+            is_emo,
             languageDirection,
             working_and_vacation_times,
             tags: tagNames,
@@ -184,12 +195,14 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
             minimal_fee,
           }
         }
-      ),
+      )
+    },
     [
       data,
       destination_language_classifier_value_id,
       source_language_classifier_value_id,
       taskSkillId,
+      orderDate,
     ]
   )
 
@@ -300,6 +313,14 @@ const SelectVendorsTable = <TFormValues extends FieldValues>({
     columnHelper.accessor('name', {
       header: () => t('label.name'),
       footer: (info) => info.column.id,
+      cell: ({ getValue, row }) => (
+        <div className={classes.nameCell}>
+          {getValue()}
+          {row.original.is_emo && (
+            <span className={classes.emoBadge}>EMO</span>
+          )}
+        </div>
+      ),
     }),
     columnHelper.accessor('working_and_vacation_times', {
       header: FreeDaysHeader,

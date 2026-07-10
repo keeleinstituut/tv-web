@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useCallback } from 'react'
+import { FC, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable, {
   TableSizeTypes,
@@ -14,7 +14,7 @@ import classNames from 'classnames'
 import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import classes from './classes.module.scss'
 import { Root } from '@radix-ui/react-form'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form'
 import {
   FormInput,
   InputTypes,
@@ -34,6 +34,9 @@ import { FilterFunctionType } from 'types/collective'
 import { useSearchParams } from 'react-router-dom'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
+import { TypesWithStartTime } from 'types/projects'
+
+const VERBAL_TYPE_VALUES = [TypesWithStartTime.OralTranslation]
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import {
@@ -41,6 +44,7 @@ import {
   TableSelectFilter,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
+import LanguageDirectionTags from 'components/atoms/LanguageDirectionTags/LanguageDirectionTags'
 
 type SubProjectTableRow = {
   ext_id: string
@@ -48,6 +52,7 @@ type SubProjectTableRow = {
   deadline_at: string
   created_at: string
   event_start_at?: string
+  is_verbal: boolean
   type: string
   tags: string[]
   status?: SubProjectStatus
@@ -62,6 +67,7 @@ interface FormValues {
   status?: SubProjectStatus[]
   only_show_personal_projects: boolean
   q?: string
+  order_category: string[]
 }
 
 const SubProjectsTable: FC = () => {
@@ -164,10 +170,42 @@ const SubProjectsTable: FC = () => {
   const statusFilters = map(SubProjectStatus, (status) => ({
     label: t(`projects.status.${status}`),
     value: status,
-  }))
-  const { classifierValuesFilters: typeFilters } = useClassifierValuesFetch({
-    type: ClassifierValueType.ProjectType,
-  })
+  })).filter((f) => f.value !== SubProjectStatus.TasksCompleted)
+  const { classifierValues: allProjectTypes, classifierValuesFilters: allTypeFilters } =
+    useClassifierValuesFetch({ type: ClassifierValueType.ProjectType })
+
+  const verbalTypeIds = useMemo(
+    () =>
+      (allProjectTypes ?? [])
+        .filter((t) => includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime))
+        .map((t) => t.id),
+    [allProjectTypes]
+  )
+
+  const nonVerbalTypeIds = useMemo(
+    () =>
+      (allProjectTypes ?? [])
+        .filter((t) => !includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime))
+        .map((t) => t.id),
+    [allProjectTypes]
+  )
+
+  const typeFilters = useMemo(
+    () =>
+      (allTypeFilters ?? []).filter(
+        (_, i) =>
+          !includes(VERBAL_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+      ),
+    [allTypeFilters, allProjectTypes]
+  )
+
+  const verbalTypeFilters = useMemo(
+    () =>
+      (allTypeFilters ?? []).filter((_, i) =>
+        includes(VERBAL_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+      ),
+    [allTypeFilters, allProjectTypes]
+  )
 
   const projectRows = useMemo(
     () =>
@@ -195,6 +233,7 @@ const SubProjectsTable: FC = () => {
             deadline_at,
             created_at,
             event_start_at: project?.event_start_at,
+            is_verbal: includes(VERBAL_TYPE_VALUES, project?.type_classifier_value?.value as TypesWithStartTime),
             type: project?.type_classifier_value?.name || '',
             status,
             price,
@@ -216,17 +255,33 @@ const SubProjectsTable: FC = () => {
         Number(filters?.only_show_personal_projects) || 0
       ),
       ext_id: filters?.ext_id || '',
+      order_category: ['translation'],
     }),
     [filters]
   )
 
-  const { control, handleSubmit, watch } = useForm<FormValues>({
+  const { control, handleSubmit, watch, setValue } = useForm<FormValues>({
     mode: 'onChange',
     defaultValues: defaultFilterValues,
     resetOptions: {
       keepErrors: true,
     },
   })
+
+  const orderCategory = useWatch({ control, name: 'order_category' })
+
+  // Enforce single-selection: when a new item is added alongside an existing one, keep only the latest
+  const prevCategoryRef = useRef<string[]>(['translation'])
+  useEffect(() => {
+    const prev = prevCategoryRef.current
+    const added = orderCategory?.filter((v) => !includes(prev, v))
+    if (added?.length && orderCategory.length > 1) {
+      prevCategoryRef.current = [added[0]]
+      setValue('order_category', [added[0]])
+    } else {
+      prevCategoryRef.current = orderCategory ?? prev
+    }
+  }, [orderCategory, setValue])
 
   const handleModifiedFilterChange = useCallback(
     (filters?: FilterFunctionType) => {
@@ -250,12 +305,13 @@ const SubProjectsTable: FC = () => {
 
       if (filters && 'type_classifier_value_id' in filters) {
         const { type_classifier_value_id, ...rest } = currentFilters || {}
-        const typedTypeClassifierValueId = type_classifier_value_id as string
 
         currentFilters = {
-          type_classifier_value_id: !!typedTypeClassifierValueId
-            ? [typedTypeClassifierValueId]
-            : [],
+          type_classifier_value_id: Array.isArray(type_classifier_value_id)
+            ? type_classifier_value_id
+            : type_classifier_value_id
+              ? [type_classifier_value_id as string]
+              : [],
           ...rest,
         }
       }
@@ -269,14 +325,19 @@ const SubProjectsTable: FC = () => {
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     (payload) => {
+      const { order_category, ...rest } = payload
+      const categoryTypeIds = includes(order_category, 'verbal')
+        ? verbalTypeIds
+        : includes(order_category, 'translation')
+          ? nonVerbalTypeIds
+          : []
       handleModifiedFilterChange({
-        ...payload,
-        only_show_personal_projects: payload?.only_show_personal_projects
-          ? 1
-          : 0,
+        ...rest,
+        only_show_personal_projects: payload?.only_show_personal_projects ? 1 : 0,
+        type_classifier_value_id: categoryTypeIds,
       })
     },
-    [handleModifiedFilterChange]
+    [handleModifiedFilterChange, verbalTypeIds, nonVerbalTypeIds]
   )
 
   useEffect(() => {
@@ -284,6 +345,15 @@ const SubProjectsTable: FC = () => {
     const subscription = watch(() => handleSubmit(onSubmit)())
     return () => subscription.unsubscribe()
   }, [handleSubmit, onSubmit, watch])
+
+  // Re-submit when type lists load (initial render fires before types are fetched)
+  const prevNonVerbalLengthRef = useRef(0)
+  useEffect(() => {
+    if (nonVerbalTypeIds.length > 0 && prevNonVerbalLengthRef.current === 0) {
+      prevNonVerbalLengthRef.current = nonVerbalTypeIds.length
+      handleSubmit(onSubmit)()
+    }
+  }, [nonVerbalTypeIds, handleSubmit, onSubmit])
 
   const columns = [
     columnHelper.accessor('ext_id', {
@@ -328,15 +398,7 @@ const SubProjectsTable: FC = () => {
     columnHelper.accessor('language_direction', {
       header: () => t('label.language_directions'),
       footer: (info) => info.column.id,
-      cell: ({ getValue }) => {
-        return (
-          <div className={classes.tagsRow}>
-            {map(getValue(), (value) => (
-              <Tag label={value} value key={value} />
-            ))}
-          </div>
-        )
-      },
+      cell: ({ getValue }) => <LanguageDirectionTags values={getValue()} />,
       meta: {
         FilteringComponent: (
           <TableSelectFilter
@@ -363,7 +425,7 @@ const SubProjectsTable: FC = () => {
         FilteringComponent: (
           <TableSelectFilter
             filterKey="type_classifier_value_id"
-            options={typeFilters}
+            options={includes(orderCategory, 'verbal') ? verbalTypeFilters : typeFilters}
             value={filters.type_classifier_value_id}
             isCustomSingleDropdown
           />
@@ -412,49 +474,53 @@ const SubProjectsTable: FC = () => {
         currentSorting: filters?.sort_by === 'price' ? filters.sort_order : '',
       },
     }),
-    columnHelper.accessor('deadline_at', {
-      header: () => t('label.deadline_at'),
-      footer: (info) => info.column.id,
-      cell: ({ getValue, row }) => {
-        const deadlineString = getValue()
-        if (!deadlineString) {
-          return null
-        }
-        const deadlineDate = dayjs(getValue())
-        const currentDate = dayjs()
-        const diff = deadlineDate.diff(currentDate)
-        const formattedDate = dayjs(getValue()).format('DD.MM.YYYY HH:mm')
-        const rowStatus = row.original.status
-        const hasDeadlineError =
-          diff < 0 &&
-          !includes(
-            [SubProjectStatus.Completed, SubProjectStatus.Cancelled],
-            rowStatus
-          )
-        return (
-          <span
-            className={classNames(
-              classes.deadline,
-              hasDeadlineError && classes.error
-            )}
-          >
-            {formattedDate}
-          </span>
-        )
-      },
-      meta: {
-        sortingParameterName: 'deadline_at',
-        sortingOption: ['asc', 'desc'],
-        currentSorting:
-          filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
-        FilteringComponent: (
-          <TableDateFilter
-            filterKey="deadline_at"
-            value={filters?.deadline_at}
-          />
-        ),
-      },
-    }),
+    ...(includes(orderCategory, 'verbal')
+      ? []
+      : [
+          columnHelper.accessor('deadline_at', {
+            header: () => t('label.deadline_at'),
+            footer: (info) => info.column.id,
+            cell: ({ getValue, row }) => {
+              const dateString = getValue()
+              if (!dateString) {
+                return <span />
+              }
+              const date = dayjs(dateString)
+              const currentDate = dayjs()
+              const diff = date.diff(currentDate)
+              const formattedDate = date.format('DD.MM.YYYY HH:mm')
+              const rowStatus = row.original.status
+              const hasDeadlineError =
+                diff < 0 &&
+                !includes(
+                  [SubProjectStatus.Completed, SubProjectStatus.Cancelled],
+                  rowStatus
+                )
+              return (
+                <span
+                  className={classNames(
+                    classes.deadline,
+                    hasDeadlineError && classes.error
+                  )}
+                >
+                  {formattedDate}
+                </span>
+              )
+            },
+            meta: {
+              sortingParameterName: 'deadline_at',
+              sortingOption: ['asc', 'desc'],
+              currentSorting:
+                filters?.sort_by === 'deadline_at' ? filters.sort_order : '',
+              FilteringComponent: (
+                <TableDateFilter
+                  filterKey="deadline_at"
+                  value={filters?.deadline_at}
+                />
+              ),
+            },
+          }),
+        ]),
     columnHelper.accessor('created_at', {
       header: () => t('label.created_at'),
       footer: (info) => info.column.id,
@@ -472,35 +538,39 @@ const SubProjectsTable: FC = () => {
         return <span>{formattedDate}</span>
       },
     }),
-    columnHelper.accessor('event_start_at', {
-      header: () => t('label.event_start_at'),
-      footer: (info) => info.column.id,
-      meta: {
-        sortingParameterName: 'project.event_start_at',
-        sortingOption: ['asc', 'desc'],
-        currentSorting:
-          filters?.sort_by === 'project.event_start_at'
-            ? filters.sort_order
-            : '',
-        FilteringComponent: (
-          <TableDateFilter
-            filterKey="event_start_at"
-            value={filters?.event_start_at}
-          />
-        ),
-      },
-      cell: ({ getValue, row }) => {
-        const value = getValue()
+    ...(includes(orderCategory, 'verbal')
+      ? [
+          columnHelper.accessor('event_start_at', {
+            header: () => t('label.event_start_at'),
+            footer: (info) => info.column.id,
+            meta: {
+              sortingParameterName: 'project.event_start_at',
+              sortingOption: ['asc', 'desc'],
+              currentSorting:
+                filters?.sort_by === 'project.event_start_at'
+                  ? filters.sort_order
+                  : '',
+              FilteringComponent: (
+                <TableDateFilter
+                  filterKey="event_start_at"
+                  value={filters?.event_start_at}
+                />
+              ),
+            },
+            cell: ({ getValue }) => {
+              const value = getValue()
 
-        if (!value) {
-          return <span />
-        }
+              if (!value) {
+                return <span />
+              }
 
-        const formattedDate = dayjs(value).format('DD.MM.YYYY HH:mm')
+              const formattedDate = dayjs(value).format('DD.MM.YYYY HH:mm')
 
-        return <span>{formattedDate}</span>
-      },
-    }),
+              return <span>{formattedDate}</span>
+            },
+          }),
+        ]
+      : []),
     columnHelper.accessor('client_name', {
       header: () => t('label.client'),
       footer: (info) => info.column.id,
@@ -542,6 +612,16 @@ const SubProjectsTable: FC = () => {
         defaultPaginationData={defaultPaginationData}
         headComponent={
           <div className={classes.topSection}>
+            <FormInput
+              name="order_category"
+              control={control}
+              options={[
+                { value: 'translation', label: t('projects.order_category_translation') },
+                { value: 'verbal', label: t('projects.order_category_verbal') },
+              ]}
+              inputType={InputTypes.TagsSelect}
+              hideAll
+            />
             <FormInput
               name="status"
               control={control}

@@ -16,15 +16,21 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
 } from 'react'
 import { InstitutionDataType } from 'types/institutions'
 import { PrivilegeKey } from 'types/privileges'
+import {
+  getNotificationThreshold,
+  shouldLogoutAfterExpiryCheck,
+} from './authSession'
 
 interface UserInfoType {
   tolkevarav?: {
     selectedInstitution?: {
       id: string
       name: string
+      type?: 'INSTITUTION' | 'TRANSLATION_AGENCY' | null
     }
     surname?: string
     forename?: string
@@ -41,6 +47,9 @@ interface AuthContextType {
   userInfo: UserInfoType
   userPrivileges: PrivilegeKey[]
   institutionUserId: string
+  selectedInstitutionType?: 'INSTITUTION' | 'TRANSLATION_AGENCY' | null
+  selectedInstitutionId?: string
+  isTranslationAgency: boolean
   institutions: InstitutionDataType[]
   openInstitutionSelectModal: (
     props: Partial<InstitutionSelectModalProps>
@@ -57,6 +66,9 @@ const authContextDefaultValues: AuthContextType = {
   userInfo: {},
   userPrivileges: [],
   institutionUserId: '',
+  selectedInstitutionType: undefined,
+  selectedInstitutionId: undefined,
+  isTranslationAgency: false,
   institutions: [],
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   openInstitutionSelectModal: () => {},
@@ -87,6 +99,7 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   const { children } = props
 
   const queryClient = useQueryClient()
+  const isVerifyingSessionRef = useRef(false)
 
   const login = useCallback(() => {
     rawLogin()
@@ -205,24 +218,30 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
   }, [user])
   const userPrivileges = useMemo(() => user?.privileges || [], [user])
   const institutionUserId = user?.institutionUserId || ''
+  const selectedInstitutionType = user?.selectedInstitution?.type
+  const selectedInstitutionId = user?.selectedInstitution?.id
   const initializing = contextQuery.isLoading
 
-  const checkSession = useCallback(() => {
+  const checkSession = useCallback(async () => {
+    if (document.hidden) {
+      return
+    }
+
     const now = Math.ceil(Date.now() / 1000)
     const sessionExpires = context?.sessionExpiry
 
     if (!sessionExpires || !context?.authenticated) {
       return
     }
+
     const remaining = sessionExpires - now
     const isSessionExpired = now >= sessionExpires
+    const currentNotificationThreshold = getNotificationThreshold(remaining)
 
-    const notificationThresholds = [3600, 1800, 60, 30].filter(
-      (i) => remaining >= i
-    )
-    const currentNotificationThreshold = notificationThresholds[0]
-
-    if (remaining <= currentNotificationThreshold) {
+    if (
+      currentNotificationThreshold &&
+      remaining <= currentNotificationThreshold
+    ) {
       let time_left = currentNotificationThreshold
       let time_unit = i18n.t('error.time_unit_s')
       const time_left_m = time_left / 60
@@ -243,10 +262,23 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
       })
     }
 
-    if (isSessionExpired) {
-      logout()
+    if (!isSessionExpired || isVerifyingSessionRef.current) {
+      return
     }
-  }, [logout, context])
+
+    isVerifyingSessionRef.current = true
+
+    try {
+      const result = await contextQuery.refetch()
+      const freshNow = Math.ceil(Date.now() / 1000)
+
+      if (shouldLogoutAfterExpiryCheck(freshNow, result.data)) {
+        logout()
+      }
+    } finally {
+      isVerifyingSessionRef.current = false
+    }
+  }, [logout, context, contextQuery])
 
   const checkSessionRef = useAsRef(checkSession)
 
@@ -257,6 +289,19 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     return () => clearInterval(timer)
   }, [checkSessionRef])
 
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        contextQuery.refetch()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [contextQuery])
+
   const value = useMemo((): AuthContextType => {
     return {
       isUserLoggedIn: isUserLoggedIn && !isEmpty(institutions),
@@ -265,6 +310,9 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
       userInfo,
       userPrivileges,
       institutionUserId,
+      selectedInstitutionType,
+      selectedInstitutionId,
+      isTranslationAgency: selectedInstitutionType === 'TRANSLATION_AGENCY',
       initializing,
       institutions,
       openInstitutionSelectModal,
@@ -276,6 +324,8 @@ export const AuthProvider: FC<PropsWithChildren> = (props) => {
     userInfo,
     userPrivileges,
     institutionUserId,
+    selectedInstitutionType,
+    selectedInstitutionId,
     initializing,
     institutions,
     openInstitutionSelectModal,

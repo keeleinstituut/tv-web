@@ -20,6 +20,7 @@ import { showValidationErrorMessage } from 'api/errorHandler'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { ClassifierValue } from 'types/classifierValues'
 import { useAuth } from 'components/contexts/AuthContext'
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 import SubProjectSectionContent from 'components/organisms/SubProjectSectionContent/SubProjectSectionContent'
 import { Privileges } from 'types/privileges'
 import ExpandableContentLeftComponent from 'components/molecules/ExpandableContentLeftComponent/ExpandableContentLeftComponent'
@@ -39,6 +40,8 @@ type SubProjectProps = Pick<
   projectId?: string
   isUserClientOfProject?: boolean
   manager_institution_user_id?: string
+  isVerbal?: boolean
+  event_start_at?: string
 }
 
 const SubProjectSection: FC<SubProjectProps> = ({
@@ -52,6 +55,8 @@ const SubProjectSection: FC<SubProjectProps> = ({
   projectDomain,
   active_job_definition,
   projectId,
+  isVerbal,
+  event_start_at,
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
@@ -68,6 +73,8 @@ const SubProjectSection: FC<SubProjectProps> = ({
     price: subProjectPrice,
     deadline_at: innerDeadlineAt,
   } = subProject || {}
+
+  const isShared = !useIsDataOwner(subProject?.project?.institution_id)
   const { job_short_name } =
     localActiveJobDefinition || active_job_definition || {}
 
@@ -95,20 +102,12 @@ const SubProjectSection: FC<SubProjectProps> = ({
 
   const languageDirection = `${source_language_classifier_value?.value} > ${destination_language_classifier_value?.value}`
 
-  const hasAnyFeaturesWithoutCandidates = find(
-    assignments,
-    ({ candidates, job_definition }) =>
-      isEmpty(candidates) &&
-      job_definition?.job_key !== SubProjectFeatures.JobOverview
-  )
-
   const hasAnyAssignmentsWithoutDeadline = find(
     assignments,
     ({ deadline_at }) => !deadline_at
   )
 
-  const canStartWorkflow =
-    !hasAnyAssignmentsWithoutDeadline && !hasAnyFeaturesWithoutCandidates
+  const canStartWorkflow = !hasAnyAssignmentsWithoutDeadline
 
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
@@ -173,7 +172,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
               classes.startWorkFlowNotification,
               !canStartWorkflow && classes.warning
             )}
-            hidden={!isExpanded || isClientView}
+            hidden={!isExpanded || isClientView || isVerbal || isShared}
             children={
               <Button
                 children={t('button.send_sub_project_to_vendors')}
@@ -189,9 +188,13 @@ const SubProjectSection: FC<SubProjectProps> = ({
         <ExpandableContentLeftComponent
           {...{
             ext_id,
-            deadline_at: innerDeadlineAt || deadline_at,
+            deadline_at: isVerbal
+              ? event_start_at
+              : innerDeadlineAt || deadline_at,
             price: subProjectPrice || price,
             languageDirection,
+            isVerbal,
+            hideCost: isShared,
           }}
         />
       }

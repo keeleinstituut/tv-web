@@ -37,10 +37,10 @@ dayjs.extend(customParseFormat)
 const changeDateToString = (dateObject: Date | null | undefined) =>
   dayjs(dateObject).format('DD/MM/YYYY')
 
-const DatePickerComponent = ({
+export const DatePickerComponent = ({
   name,
   value,
-  placeholder,
+  placeholder = '-',
   disabled,
   ariaLabel,
   onChange,
@@ -87,6 +87,11 @@ const DatePickerComponent = ({
         minDate={minDate ? minDate : undefined}
         maxDate={maxDate ? maxDate : undefined}
         preventOpenOnFocus={true}
+        onInputClick={() => {
+          if (!disabled) {
+            calendarRef.current?.setOpen(true)
+          }
+        }}
         onKeyDown={handleKeyDown}
         onBlur={onBlur}
         {...rest}

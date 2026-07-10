@@ -1,0 +1,59 @@
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: variables.$color-white;
+  padding: variables.spacing(8) variables.spacing(6);
+  border: 1px solid variables.$color-border;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px variables.$color-shadow-main;
+
+  .formButtons {
+    display: flex;
+    margin: variables.spacing(3);
+    justify-content: flex-end;
+
+    > :first-child {
+      margin-right: variables.spacing(2);
+    }
+  }
+
+  .inputInternalPosition {
+    justify-content: flex-end;
+    margin-bottom: variables.spacing(4);
+    padding-right: variables.spacing(10);
+
+    input,
+    textarea {
+      width: 274px;
+    }
+  }
+}
+
+.paddingRight120 {
+  padding-right: 120px;
+}
+
+.formContainer {
+  display: flex;
+}
+
+.fullWidth {
+  width: 100%;
+  --discount-input-width: 100%;
+}
+
+.datesContainer {
+  margin-bottom: variables.spacing(3);
+
+  .dateText {
+    @include mixins.bodyTextSmallStyle;
+    color: variables.$color-input-main;
+    &:first-of-type {
+      margin-top: variables.spacing(2);
+    }
+  }
+}

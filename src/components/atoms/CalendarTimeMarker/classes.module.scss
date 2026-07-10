@@ -1,0 +1,20 @@
+@use 'styles/variables' as *;
+
+.marker {
+  position: absolute;
+  width: 2px;
+  background: #09090b;
+  pointer-events: none;
+  z-index: 5;
+  transform: translateX(-1px);
+}
+
+.dot {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #09090b;
+}

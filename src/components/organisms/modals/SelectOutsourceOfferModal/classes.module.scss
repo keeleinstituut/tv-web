@@ -1,0 +1,101 @@
+@use 'styles/variables' as variables;
+
+.recipientList {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(3);
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: variables.spacing(2);
+}
+
+.recipientCard {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(2);
+  padding: variables.spacing(2) variables.spacing(4) variables.spacing(4);
+  background-color: variables.$color-white;
+  border: 2px solid variables.$color-border;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    border-color: variables.$color-input-main;
+  }
+}
+
+.recipientCardWinner {
+  border-color: variables.$color-primary;
+}
+
+.recipientCardDisabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+
+  &:hover {
+    border-color: variables.$color-border;
+  }
+}
+
+.recipientHeader {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(4);
+  padding-top: variables.spacing(2);
+}
+
+.recipientNameBlock {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(2);
+}
+
+.recipientRadio {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  accent-color: variables.$color-primary;
+}
+
+.recipientName {
+  color: variables.$color-text-dark;
+  font-size: 16px;
+  font-weight: variables.$font-weight-normal;
+}
+
+.statusBadge {
+  background-color: variables.$color-white;
+  border: 2px solid variables.$color-input-main;
+  color: variables.$color-text-dark;
+  font-size: variables.$font-size-14;
+  padding: variables.spacing(1) variables.spacing(2);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.recipientMeta {
+  display: flex;
+  gap: variables.spacing(2);
+  padding-left: variables.spacing(8);
+  color: variables.$color-text-dark;
+  font-size: variables.$font-size-14;
+}
+
+.metaLabel {
+  flex: 0 0 180px;
+}
+
+.metaSeparator {
+  flex: 0 0 auto;
+}
+
+.metaComment {
+  flex: 1;
+  min-width: 0;
+}
+
+.rejectionField {
+  padding: variables.spacing(2) 0 variables.spacing(1) variables.spacing(8);
+}
+

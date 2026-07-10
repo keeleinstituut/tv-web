@@ -24,6 +24,7 @@ type MainFeatureProps = Pick<
   | 'mt_enabled'
   | 'deadline_at'
   | 'workflow_started'
+  | 'project'
 > & {
   catSupported?: boolean
   feature: SubProjectFeatures
@@ -38,6 +39,7 @@ const MainFeature: FC<MainFeatureProps> = ({
   assignments,
   workflow_started,
   project_id,
+  project,
   ...rest
 }) => {
   const { t } = useTranslation()
@@ -113,6 +115,7 @@ const MainFeature: FC<MainFeatureProps> = ({
           mt_enabled,
           isEditable: isSomethingEditable,
           id,
+          ownerInstitutionId: project?.institution_id,
         }}
       />
       <FeatureAssignments

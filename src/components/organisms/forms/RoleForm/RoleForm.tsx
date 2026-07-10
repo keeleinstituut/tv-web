@@ -147,7 +147,10 @@ const RoleForm: FC<RoleFormProps> = ({
   }
 
   // map data for rendering
-  const fields: FieldProps<FormValues>[] = map(allPrivileges, ({ key }) => ({
+  const sortedPrivileges = [...allPrivileges].sort((a, b) =>
+    t(`privileges.${a.key}`).localeCompare(t(`privileges.${b.key}`))
+  )
+  const fields: FieldProps<FormValues>[] = map(sortedPrivileges, ({ key }) => ({
     inputType: InputTypes.Checkbox,
     ariaLabel: t(`privileges.${key}`),
     label: t(`privileges.${key}`),

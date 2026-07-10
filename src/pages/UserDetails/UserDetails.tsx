@@ -10,16 +10,18 @@ import VacationTimes from 'components/molecules/VacationTimes/VacationTimes'
 import { useInstitutionUserVacationsFetch } from 'hooks/requests/useInstitutions'
 import WorkingTimes from 'components/molecules/WorkingTimes/WorkingTimes'
 import SessionManagement from 'components/organisms/SessionManagement/SessionManagement'
+import { useFetchInstitutionUserVendor } from 'hooks/requests/useVendors'
+import VendorCalendarImport from 'components/organisms/VendorCalendarImport/VendorCalendarImport'
 
 const UserDetails: FC = () => {
   const { t } = useTranslation()
   const { userInfo } = useAuth()
   const userId = userInfo?.tolkevarav?.institutionUserId || ''
+  const { vendor } = useFetchInstitutionUserVendor(userId)
   const { isLoading, user } = useFetchUser({
     id: userId,
   })
   const { userVacations } = useInstitutionUserVacationsFetch({ id: userId })
-
   const userName = {
     surname: user?.user.surname,
     forename: user?.user.forename,
@@ -85,18 +87,25 @@ const UserDetails: FC = () => {
           isDetailPageTimes
         />
       </div>
-      <UserForm {...user} id={userId} isUserAccount />
-      <p className={classes.dateText}>
-        {t('user.created_at', {
-          time: dayjs(user?.created_at).format('DD.MM.YYYY HH:mm') || '',
-        })}
-      </p>
-      <p className={classes.dateText}>
-        {t('user.updated_at', {
-          time: dayjs(user?.updated_at).format('DD.MM.YYYY HH:mm') || '',
-        })}
-      </p>
-      <SessionManagement />
+      <div className={vendor ? classes.formRow : undefined}>
+        <div>
+          <UserForm {...user} id={userId} isUserAccount />
+          <p className={classes.dateText}>
+            {t('user.created_at', {
+              time: dayjs(user?.created_at).format('DD.MM.YYYY HH:mm') || '',
+            })}
+          </p>
+          <p className={classes.dateText}>
+            {t('user.updated_at', {
+              time: dayjs(user?.updated_at).format('DD.MM.YYYY HH:mm') || '',
+            })}
+          </p>
+        </div>
+        {vendor && <VendorCalendarImport />}
+      </div>
+      <div className={classes.sessionsGap}>
+        <SessionManagement />
+      </div>
     </>
   )
 }

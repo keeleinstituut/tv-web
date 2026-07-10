@@ -31,7 +31,7 @@ export type TimePickerInputProps = SharedTimeProps & {
 }
 
 export type TimeInputProps = SharedTimeProps & {
-  onClick: () => void
+  onClick?: () => void
   handleKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>) => void
 }
 
@@ -120,7 +120,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
     const inputRef = useRef<HTMLInputElement>(null)
 
     useClickAway(() => {
-      setIsModalOpen && setIsModalOpen(false)
+      setIsModalOpen?.(false)
       setTimeColumnOpen(false)
     }, [clickAwayInputRef, ...(wrapperRef?.current ? [wrapperRef] : [])])
 
@@ -140,7 +140,7 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
           const inputElement = (
             clickAwayInputRef.current as unknown as HTMLElement
           ).querySelector('button')
-          inputElement && inputElement.focus()
+          inputElement?.focus()
         }
       }
     }
@@ -155,19 +155,26 @@ const TimePickerInput = forwardRef<HTMLInputElement, TimePickerInputProps>(
         wrapperClass={classes.timePickerWrapper}
         errorZIndex={errorZIndex}
       >
-        <TimeInput
-          name={name}
-          disabled={disabled}
-          ariaLabel={ariaLabel}
-          value={value}
-          error={error}
-          showSeconds={showSeconds}
-          onChange={onChange}
-          ref={mergeRefs([ref, inputRef])}
-          icon={icon}
-          handleKeyDown={handleKeyDown}
-          onClick={handleClick}
-        />
+        <div
+          className={classNames(
+            classes.timeFieldClickTarget,
+            disabled && classes.timeFieldClickTargetDisabled
+          )}
+          onClick={disabled ? undefined : handleClick}
+        >
+          <TimeInput
+            name={name}
+            disabled={disabled}
+            ariaLabel={ariaLabel}
+            value={value}
+            error={error}
+            showSeconds={showSeconds}
+            onChange={onChange}
+            ref={mergeRefs([ref, inputRef])}
+            icon={icon}
+            handleKeyDown={handleKeyDown}
+          />
+        </div>
         <TimeDropdown
           wrapperRef={wrapperRef}
           clickAwayInputRef={clickAwayInputRef}

@@ -18,7 +18,8 @@ import useFilters from 'hooks/useFilters'
 import { flatMap, last } from 'lodash'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useDebounceFn } from 'ahooks'
 
 dayjs.extend(customParseFormat)
 
@@ -107,6 +108,45 @@ export const useFetchInfiniteProjectPerson = (
     fetchNextPage,
     isFetching,
   }
+}
+
+export interface CalendarClient {
+  id: string
+  user: { forename?: string; surname?: string }
+}
+
+export const useFetchCalendarClients = (enabled = true) => {
+  const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  const { run: applyDebounce } = useDebounceFn(
+    (value: string) => setDebouncedSearch(value),
+    { wait: 1000 }
+  )
+
+  const handleSearch = (value: string) => {
+    setSearch(value)
+    applyDebounce(value)
+  }
+
+  const { isLoading, data } = useQuery<UsersDataType>({
+    enabled,
+    queryKey: ['calendar-clients', debouncedSearch],
+    queryFn: () =>
+      apiClient.get(endpoints.TRANSLATION_USERS, {
+        project_role: 'client',
+        per_page: 50,
+        ...(debouncedSearch ? { fullname: debouncedSearch } : {}),
+      }),
+    keepPreviousData: true,
+  })
+
+  const clients: CalendarClient[] = (data?.data ?? []).map((u) => ({
+    id: u.id,
+    user: u.user,
+  }))
+
+  return { clients, isLoading, search, handleSearch }
 }
 
 export const useFetchUser = ({ id }: { id?: string }) => {

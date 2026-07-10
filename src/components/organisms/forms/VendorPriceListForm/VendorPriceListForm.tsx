@@ -1,13 +1,13 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { chain, isEmpty, map, orderBy } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import LanguageDirectionCell from 'components/molecules/LanguageDirectionCell/LanguageDirectionCell'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
-import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 import dayjs from 'dayjs'
 import { VendorFormProps } from 'components/organisms/forms/VendorForm/VendorForm'
 import VendorPriceManagementButton from 'components/organisms/VendorPriceManagementButton/VendorPriceManagementButton'
@@ -40,35 +40,6 @@ export type PriceObject = {
   subRows: PriceObject[]
 }
 
-export type LanguageDirectionCellProps = {
-  row: Row<PriceObject>
-}
-
-const LanguageDirectionCell: FC<LanguageDirectionCellProps> = ({ row }) => {
-  const canExpand = row?.getCanExpand() ?? false
-  const languageDirection = row?.original?.language_direction
-
-  useEffect(() => {
-    if (canExpand) {
-      row.toggleExpanded(true)
-    }
-  }, [canExpand, row])
-
-  return (
-    <>
-      {canExpand && (
-        <Button
-          onClick={() => row.toggleExpanded()}
-          appearance={AppearanceTypes.Text}
-          hidden
-        />
-      )}
-      <p className={languageDirection && classes.languageTag}>
-        {languageDirection}
-      </p>
-    </>
-  )
-}
 
 const columnHelper = createColumnHelper<PriceObject>()
 

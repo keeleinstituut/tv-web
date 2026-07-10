@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { apiClient } from 'api'
 import { useQuery } from '@tanstack/react-query'
 import { map } from 'lodash'
@@ -18,6 +19,7 @@ export const useClassifierValuesFetch = (
     data: classifierValuesData,
   } = useQuery<ClassifierValuesDataTypes>({
     queryKey: ['classifierValues', initialFilters],
+    enabled: !!initialFilters,
     queryFn: () => apiClient.get(endpoints.CLASSIFIER_VALUES, initialFilters),
   })
 
@@ -27,9 +29,10 @@ export const useClassifierValuesFetch = (
     classifierValues = orderFn(classifierValues)
   }
 
-  const classifierValuesFilters = map(classifierValues, ({ id, name }) => {
-    return { value: id, label: name }
-  })
+  const classifierValuesFilters = useMemo(
+    () => map(classifierValues, ({ id, name }) => ({ value: id, label: name })),
+    [classifierValues]
+  )
 
   return {
     classifierValues,

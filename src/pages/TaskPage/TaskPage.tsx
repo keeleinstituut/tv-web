@@ -16,6 +16,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { includes } from 'lodash'
+import { AssignmentStatus } from 'types/assignments'
 import { useFetchProject } from 'hooks/requests/useProjects'
 
 import classes from './classes.module.scss'
@@ -96,7 +97,7 @@ const TaskPage: FC = () => {
           className={classes.acceptButton}
           onClick={handleAcceptTask}
           loading={isAcceptingTask}
-          hidden={!!assignee_institution_user_id}
+          hidden={!!assignee_institution_user_id || assignment?.status === AssignmentStatus.Done}
         >
           {t('button.accept')}
         </Button>

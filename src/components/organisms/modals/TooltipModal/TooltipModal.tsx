@@ -32,7 +32,7 @@ const TooltipModal: FC<TooltipModalProps> = ({
 
   return (
     <ModalBase
-      title={`[${title}] ${t('modal.location_helper')}`}
+      title={title}
       titleFont={TitleFontTypes.Gray}
       open={!!isModalOpen}
       className={classNames(classes.modalContent, className)}

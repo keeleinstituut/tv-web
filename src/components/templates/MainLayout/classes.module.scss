@@ -16,5 +16,10 @@
       overflow-y: scroll;
       padding: variables.spacing(6);
     }
+
+    .scrollableContentFull {
+      height: 100vh;
+      padding: 0;
+    }
   }
 }

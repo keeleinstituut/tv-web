@@ -33,9 +33,18 @@ import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjec
 import { ConfirmCompleteTaskModalProps } from './ConfirmCompleteTaskModal/ConfirmCompleteTaskModal'
 import { ConfirmSendToPreviousTaskModalProps } from './ConfirmSendToPreviousTaskModal/ConfirmSendToPreviousTaskModal'
 import { EditVendorPricesModalProps } from './EditVendorPricesModal/EditVendorPricesModal'
+import { EditInstitutionPartnerPricesModalProps } from './EditInstitutionPartnerPricesModal/EditInstitutionPartnerPricesModal'
 import { ConfirmAssignmentFinishedModalProps } from './ConfirmAssignmentFinishedModal/ConfirmAssignmentFinishedModal'
 import { ConfirmSendToPreviousAssignmentModalProps } from './ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal'
 import { TranslationMemoryBulkExportModalProps } from './TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal'
+import { EmoSchedulesModalProps } from './EmoSchedulesModal/EmoSchedulesModal'
+import { VendorAbsencesModalProps } from './VendorAbsencesModal/VendorAbsencesModal'
+import { AddOutsourceRequestModalProps } from './AddOutsourceRequestModal/AddOutsourceRequestModal'
+import { ConfirmDeclineOfferModalProps } from './ConfirmDeclineOfferModal/ConfirmDeclineOfferModal'
+import { SelectOutsourceOfferModalProps } from './SelectOutsourceOfferModal/SelectOutsourceOfferModal'
+import { ConfirmCancelRequestModalProps } from './ConfirmCancelRequestModal/ConfirmCancelRequestModal'
+import { ViewVendorResponseModalProps } from './ViewVendorResponseModal/ViewVendorResponseModal'
+import { InstitutionPartnersEditModalProps } from './InstitutionPartnersEditModal/InstitutionPartnersEditModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -106,9 +115,7 @@ const ConfirmTmWritableModal = lazy(
 
 const ConfirmAssignmentCompletionModal = lazy(
   () =>
-    import(
-      './ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal'
-    )
+    import('./ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal')
 )
 
 const ReassignProjectModal = lazy(
@@ -135,15 +142,50 @@ const ConfirmAssignmentFinishedModal = lazy(
 
 const ConfirmSendToPreviousAssignmentModal = lazy(
   () =>
-    import(
-      './ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal'
-    )
+    import('./ConfirmSendToPreviousAssignmentModal/ConfirmSendToPreviousAssignmentModal')
 )
 
 const TranslationMemoryBulkExportModal = lazy(
   () =>
+    import('./TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal')
+)
+
+const EmoSchedulesModal = lazy(
+  () => import('./EmoSchedulesModal/EmoSchedulesModal')
+)
+
+const VendorAbsencesModal = lazy(
+  () => import('./VendorAbsencesModal/VendorAbsencesModal')
+)
+
+const AddOutsourceRequestModal = lazy(
+  () => import('./AddOutsourceRequestModal/AddOutsourceRequestModal')
+)
+
+const ConfirmDeclineOfferModal = lazy(
+  () => import('./ConfirmDeclineOfferModal/ConfirmDeclineOfferModal')
+)
+
+const SelectOutsourceOfferModal = lazy(
+  () => import('./SelectOutsourceOfferModal/SelectOutsourceOfferModal')
+)
+
+const ConfirmCancelRequestModal = lazy(
+  () => import('./ConfirmCancelRequestModal/ConfirmCancelRequestModal')
+)
+
+const ViewVendorResponseModal = lazy(
+  () => import('./ViewVendorResponseModal/ViewVendorResponseModal')
+)
+
+const InstitutionPartnersEditModal = lazy(
+  () => import('./InstitutionPartnersEditModal/InstitutionPartnersEditModal')
+)
+
+const EditInstitutionPartnerPricesModal = lazy(
+  () =>
     import(
-      './TranslationMemoryBulkExportModal/TranslationMemoryBulkExportModal'
+      './EditInstitutionPartnerPricesModal/EditInstitutionPartnerPricesModal'
     )
 )
 
@@ -178,6 +220,15 @@ export enum ModalTypes {
   ConfirmAssignmentFinished = 'confirmAssignmentFinished',
   ConfirmSendToPreviousAssignment = 'confirmSendToPreviousAssignment',
   TranslationMemoryBulkExportModal = 'translationMemoryBulkExportModal',
+  EmoSchedules = 'emoSchedules',
+  VendorAbsences = 'vendorAbsences',
+  AddOutsourceRequest = 'addOutsourceRequest',
+  ConfirmDeclineRequest = 'confirmDeclineRequest',
+  SelectOutsourceOffer = 'selectOutsourceOffer',
+  ConfirmCancelRequest = 'confirmCancelRequest',
+  ViewVendorResponse = 'viewVendorResponse',
+  InstitutionPartnersEdit = 'institutionPartnersEdit',
+  EditInstitutionPartnerPrices = 'editInstitutionPartnerPrices',
 }
 
 // Add other modal props types here as well
@@ -211,6 +262,15 @@ type ModalPropTypes =
   | Omit<ConfirmAssignmentFinishedModalProps, 'closeModal'>
   | Omit<ConfirmSendToPreviousAssignmentModalProps, 'closeModal'>
   | Omit<TranslationMemoryBulkExportModalProps, 'closeModal'>
+  | Omit<EmoSchedulesModalProps, 'closeModal'>
+  | Omit<VendorAbsencesModalProps, 'closeModal'>
+  | Omit<AddOutsourceRequestModalProps, 'closeModal'>
+  | Omit<ConfirmDeclineOfferModalProps, 'closeModal'>
+  | Omit<SelectOutsourceOfferModalProps, 'closeModal'>
+  | Omit<ConfirmCancelRequestModalProps, 'closeModal'>
+  | Omit<ViewVendorResponseModalProps, 'closeModal'>
+  | Omit<InstitutionPartnersEditModalProps, 'closeModal'>
+  | Omit<EditInstitutionPartnerPricesModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -245,6 +305,15 @@ const MODALS = {
     ConfirmSendToPreviousAssignmentModal,
   [ModalTypes.TranslationMemoryBulkExportModal]:
     TranslationMemoryBulkExportModal,
+  [ModalTypes.EmoSchedules]: EmoSchedulesModal,
+  [ModalTypes.VendorAbsences]: VendorAbsencesModal,
+  [ModalTypes.AddOutsourceRequest]: AddOutsourceRequestModal,
+  [ModalTypes.ConfirmDeclineRequest]: ConfirmDeclineOfferModal,
+  [ModalTypes.SelectOutsourceOffer]: SelectOutsourceOfferModal,
+  [ModalTypes.ConfirmCancelRequest]: ConfirmCancelRequestModal,
+  [ModalTypes.ViewVendorResponse]: ViewVendorResponseModal,
+  [ModalTypes.InstitutionPartnersEdit]: InstitutionPartnersEditModal,
+  [ModalTypes.EditInstitutionPartnerPrices]: EditInstitutionPartnerPricesModal,
 }
 
 interface RefType {

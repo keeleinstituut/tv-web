@@ -21,19 +21,6 @@ type VendorPriceManagementButtonProps = {
   filters?: GetPricesPayload
 }
 
-export type SkillPrice = {
-  id?: string | undefined
-  isSelected?: boolean
-  character_fee: number
-  word_fee: number
-  page_fee: number
-  minute_fee: number
-  hour_fee: number
-  minimal_fee: number
-  skill_id: string
-  skill?: { id: string; name: string }
-}
-
 const VendorPriceManagementButton: FC<VendorPriceManagementButtonProps> = ({
   vendor_id,
   languageDirectionKey,

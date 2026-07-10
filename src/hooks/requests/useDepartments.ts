@@ -13,9 +13,12 @@ export const useDepartmentsFetch = () => {
   })
   const { data: existingDepartments } = data || {}
 
-  const departmentFilters = map(existingDepartments, ({ name, id }) => {
-    return { value: id, label: name }
-  })
+  const departmentFilters = map(
+    existingDepartments?.filter(Boolean),
+    ({ name, id }) => {
+      return { value: id, label: name }
+    }
+  )
 
   return {
     existingDepartments,

@@ -1,0 +1,36 @@
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
+
+.container {
+  flex: 1;
+}
+
+.filesListContainer {
+  box-shadow: unset;
+  border: unset;
+}
+
+.iconButton {
+  display: flex;
+
+  svg {
+    width: 21px;
+    height: 20px;
+  }
+
+  &:focus {
+    box-shadow: inset 0 0 0 2px variables.$color-primary;
+  }
+}
+
+.titleRow {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: variables.spacing(4);
+
+  h3 {
+    @include mixins.h4TextStyle;
+    margin-right: variables.spacing(2);
+  }
+}

@@ -1,0 +1,27 @@
+@use 'styles/variables' as *;
+
+$layout-padding: 24px; // spacing(6) from MainLayout
+
+.pageWrapper {
+  display: flex;
+  flex-direction: column;
+  // Negate the padding from .scrollableContent in MainLayout
+  margin: -$layout-padding;
+  height: calc(100% + #{$layout-padding * 2});
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  gap: spacing(2);
+  padding: 0 $layout-padding 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}

@@ -1,0 +1,28 @@
+@use 'styles/variables' as variables;
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: variables.spacing(6);
+  width: fit-content;
+
+  .inputInternalPosition {
+    justify-content: flex-end;
+    margin-bottom: variables.spacing(4);
+    display: flex;
+
+    span {
+      &:nth-child(2) {
+        width: 274px;
+      }
+    }
+
+    label {
+      text-align: end;
+    }
+    input,
+    textarea {
+      width: 274px;
+    }
+  }
+}

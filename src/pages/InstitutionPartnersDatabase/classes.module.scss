@@ -1,0 +1,10 @@
+@use 'styles/variables' as variables;
+
+.header {
+  display: grid;
+  grid-template-columns: max-content auto max-content;
+  align-items: center;
+  justify-items: start;
+  grid-gap: variables.spacing(2);
+  margin-bottom: variables.spacing(7);
+}

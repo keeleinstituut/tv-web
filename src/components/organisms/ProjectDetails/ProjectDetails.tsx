@@ -7,6 +7,7 @@ import PersonSection, {
   PersonSectionTypes,
 } from 'components/molecules/PersonSection/PersonSection'
 import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
+import ProjectCommentsSection from 'components/molecules/ProjectCommentsSection/ProjectCommentsSection'
 import ProjectFilesSection from 'components/molecules/ProjectFilesSection/ProjectFilesSection'
 import { FieldPath, SubmitHandler, useForm } from 'react-hook-form'
 import { useCreateProject, useUpdateProject } from 'hooks/requests/useProjects'
@@ -67,21 +68,33 @@ interface FormValues {
   help_file_types: HelperFileTypes[]
   translation_domain_classifier_value_id: string
   event_start_at?: { date?: string; time?: string }
+  event_end_at?: { date?: string; time?: string }
+  service_type?: string
+  event_location?: string
+  meeting_link?: string
   comments?: string
   ext_id?: string
   tags?: string[]
+}
+
+export interface ProjectPrefillData {
+  sourceLanguageId?: string
+  targetLanguageId?: string
+  sourceFiles?: File[]
 }
 
 interface ProjectDetailsProps {
   mode?: ProjectDetailModes
   project?: ProjectDetail
   className?: string
+  prefillData?: ProjectPrefillData
 }
 
 const ProjectDetails: FC<ProjectDetailsProps> = ({
   mode,
   project,
   className,
+  prefillData,
 }) => {
   const {
     workflow_started,
@@ -135,23 +148,35 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
 
   const [isEditEnabled, setIsEditEnabled] = useState(isNew)
 
-  const defaultValues = useMemo(
-    () =>
-      getProjectDefaultValues({
-        institutionUserId,
-        isNew,
-        project,
-        defaultDomainClassifier,
-        defaultProjectTypeClassifier,
-      }),
-    [
-      defaultDomainClassifier,
-      defaultProjectTypeClassifier,
+  const defaultValues = useMemo(() => {
+    const base = getProjectDefaultValues({
       institutionUserId,
       isNew,
       project,
-    ]
-  )
+      defaultDomainClassifier,
+      defaultProjectTypeClassifier,
+    })
+    if (!isNew || !prefillData) return base
+    return {
+      ...base,
+      ...(prefillData.sourceLanguageId
+        ? { source_language_classifier_value_id: prefillData.sourceLanguageId }
+        : {}),
+      ...(prefillData.targetLanguageId
+        ? { destination_language_classifier_value_ids: [prefillData.targetLanguageId] }
+        : {}),
+      ...(prefillData.sourceFiles?.length
+        ? { source_files: prefillData.sourceFiles }
+        : {}),
+    }
+  }, [
+    defaultDomainClassifier,
+    defaultProjectTypeClassifier,
+    institutionUserId,
+    isNew,
+    prefillData,
+    project,
+  ])
 
   const {
     control,
@@ -343,25 +368,42 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
     async ({
       deadline_at: deadlineObject,
       event_start_at: startObject,
+      event_end_at: endObject,
       source_files,
       help_files,
       tags,
       ext_id,
+      service_type,
+      event_location,
+      meeting_link,
       ...rest
     }) => {
-      const deadline_at = getUtcDateStringFromLocalDateObject(deadlineObject)
+      const deadline_at =
+        deadlineObject?.date || deadlineObject?.time
+          ? getUtcDateStringFromLocalDateObject(deadlineObject)
+          : null
       const event_start_at =
         startObject?.date || startObject?.time
           ? getUtcDateStringFromLocalDateObject(startObject)
           : null
+      const event_end_at =
+        endObject?.date || endObject?.time
+          ? getUtcDateStringFromLocalDateObject(endObject)
+          : null
 
       const payload: NewProjectPayload = {
-        deadline_at,
+        ...(deadline_at ? { deadline_at } : {}),
         source_files: compact(source_files),
         help_files: compact(help_files),
         ...rest,
         ...(!isNew ? { tags } : {}),
         ...(event_start_at ? { event_start_at } : {}),
+        ...(event_end_at ? { event_end_at } : {}),
+        ...(service_type ? { service_type: service_type === 'contact' ? 'ON_SITE' : 'REMOTE' } : {}),
+        ...(service_type === 'contact' && event_location
+          ? { location: event_location }
+          : {}),
+        ...(service_type === 'remote' && meeting_link ? { meeting_link } : {}),
       }
 
       if (isNew) {
@@ -445,6 +487,7 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
             isEditable={isRestEditable && isEditEnabled}
             workflow_started={workflow_started}
           />
+          <ProjectCommentsSection comments={project?.project_comments} />
           <ProjectFilesSection
             projectId={id}
             control={control}

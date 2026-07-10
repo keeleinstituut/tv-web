@@ -1,0 +1,64 @@
+@use 'styles/variables' as variables;
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(6);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(3);
+}
+
+.vendorName {
+  font-size: 20px;
+  line-height: 30px;
+  color: variables.$color-text-dark;
+}
+
+.statusBadge {
+  background-color: variables.$color-white;
+  border: 2px solid variables.$color-input-main;
+  color: variables.$color-text-dark;
+  font-size: variables.$font-size-14;
+  padding: variables.spacing(1) variables.spacing(2);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: variables.spacing(2);
+}
+
+.fieldLabel {
+  color: variables.$color-text-dark;
+  font-size: 16px;
+}
+
+.readonlyInput {
+  background-color: variables.$color-background-dark;
+  border: 1px solid variables.$color-input-main;
+  border-radius: 4px;
+  padding: variables.spacing(2) variables.spacing(2);
+  color: variables.$color-text-light;
+  font-size: 16px;
+  line-height: 24px;
+  min-height: 40px;
+  width: 260px;
+}
+
+.readonlyTextarea {
+  background-color: variables.$color-background-dark;
+  border: 1px solid variables.$color-input-main;
+  border-radius: 5px;
+  padding: variables.spacing(2) variables.spacing(3);
+  color: variables.$color-text-light;
+  font-size: 16px;
+  line-height: 24px;
+  min-height: 180px;
+  white-space: pre-wrap;
+}

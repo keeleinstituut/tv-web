@@ -24,6 +24,7 @@ class ApiClient {
       timeout: 40000,
     })
     this.debug_mode = !import.meta.env.PROD
+    this.instance.defaults.headers.common['Accept'] = 'application/json'
     this.instance.interceptors.response.use(undefined, ApiClientInterceptor)
     // this.instance.defaults.paramsSerializer = (params) => {
     //   return queryString.stringify(params, {

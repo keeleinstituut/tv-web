@@ -183,16 +183,17 @@ export const getUtcDateStringFromLocalDateObject = ({
   time?: string
 }) => {
   const dayjsObject = dayjs(
-    trim(`${date || ''} ${time || '12:00:00'}`),
-    'DD/MM/YYYY HH:mm:ss'
+    trim(`${date || ''} ${time || '12:00'}`),
+    ['DD/MM/YYYY HH:mm:ss', 'DD/MM/YYYY HH:mm']
   )
   const formattedString = dayjsObject.utc().format('YYYY-MM-DDTHH:mm:ss[Z]')
   return formattedString
 }
 
 export const getLocalDateObjectFromUtcDateString = (datetime: string) => {
+  if (!datetime) return { date: '', time: '' }
   const dayjsObject = dayjs(datetime)
-  const localDateTimeString = dayjsObject.format('DD.MM.YYYY HH:mm:ss')
+  const localDateTimeString = dayjsObject.format('DD/MM/YYYY HH:mm:ss')
   const splitDateTime = split(localDateTimeString, ' ')
   return { date: splitDateTime[0], time: splitDateTime[1] }
 }
@@ -245,6 +246,7 @@ const addablePrivilegesWithConditions: PrivilegeKeyValueType = {
   //   Privileges.ManageProject,
   // ],
 }
+
 
 export const getAllNewPrivileges = (selectedPrivileges: PrivilegeType[]) => {
   const selectedByDefaultPrivileges = flatMap(selectedPrivileges, ({ key }) => {

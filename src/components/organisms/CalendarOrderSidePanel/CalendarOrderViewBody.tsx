@@ -1,0 +1,425 @@
+import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
+import dayjs from 'dayjs'
+import { ServiceType } from 'types/calendar'
+import { DatePickerComponent } from 'components/molecules/DatePickerInput/DatePickerInput'
+import TimeDropdownSelect from 'components/molecules/TimeDropdownSelect/TimeDropdownSelect'
+import { useFetchCalendarClients } from 'hooks/requests/useUsers'
+import { calendarBookingStatusLabelKey } from 'helpers/calendarBookingStatus'
+import { useCalendarRole } from 'hooks/useCalendarRole'
+import MultiSelect from 'components/molecules/MultiSelect/MultiSelect'
+import CalendarSelect from 'components/molecules/CalendarSelect/CalendarSelect'
+import DurationStepper from './DurationStepper'
+import SlotMetaSection from './SlotMetaSection'
+import OrderServiceLocationReadonly from './OrderServiceLocationReadonly'
+import OrderActionBar from './OrderActionBar'
+import OrderStatusBanners from './OrderStatusBanners'
+import OrderAttachments from './OrderAttachments'
+import OrderComments from './OrderComments'
+import { useSidePanel } from './SidePanelContext'
+import classes from './classes.module.scss'
+
+const CalendarOrderViewBody: FC = () => {
+  const { t } = useTranslation()
+  const {
+    language,
+    slot,
+    date,
+    startTime,
+    duration,
+    isEditing,
+    isCancelled,
+    durationMinutes,
+    setDurationMinutes: onSetDurationMinutes,
+    referenceNumber,
+    setReferenceNumber: onSetReferenceNumber,
+    serviceType,
+    setServiceType: onSetServiceType,
+    location,
+    setLocation: onSetLocation,
+    selectedDate,
+    setSelectedDate: onSetSelectedDate,
+    startTimeInput,
+    setStartTimeInput: onSetStartTimeInput,
+    clientInstitutionId,
+    setClientInstitutionId: onSetClientInstitutionId,
+    domainIds,
+    setDomainIds: onSetDomainIds,
+    projectTagIds,
+    setProjectTagIds: onSetProjectTagIds,
+    vendorId,
+    setVendorId: onSetVendorId,
+    vendorName,
+    vendorEmail,
+    vendorPhone,
+    isTPM,
+    domains,
+    projectTags,
+    vendors,
+    order,
+  } = useSidePanel()
+  const { isTranslator } = useCalendarRole()
+  const {
+    clients,
+    search: clientSearch,
+    handleSearch: handleClientSearch,
+  } = useFetchCalendarClients(isTPM && isEditing)
+
+  const assignment = slot?.assignment
+  const bookingStatusRole = isTPM
+    ? 'tpm'
+    : isTranslator
+      ? 'translator'
+      : 'client'
+  const bookingStatusKey = calendarBookingStatusLabelKey(
+    order?.status ?? assignment?.project_status ?? null,
+    order?.sub_project_status ?? assignment?.sub_project?.status ?? null,
+    bookingStatusRole
+  )
+  const hasScheduledCancelAt =
+    typeof order?.cancel_at === 'string' && order.cancel_at.trim().length > 0
+
+  return (
+    <>
+      <OrderActionBar />
+      <OrderStatusBanners />
+
+      <div className={classes.form}>
+        {/* Status badge */}
+        <div className={classes.statusBadgeGrey}>
+          {hasScheduledCancelAt
+            ? t('calendar.status_cancelling')
+            : isTPM && isCancelled
+              ? t('calendar.status_cancelled')
+              : (t(bookingStatusKey as never) as string)}
+        </div>
+
+        {isEditing && (
+          <p className={classes.requiredNotice}>
+            {t('calendar.required_fields')}
+          </p>
+        )}
+
+        {/* Tellija — TPM only */}
+        {isTPM &&
+          (isEditing ? (
+            <div className={classes.formGroup}>
+              <label className={classes.label}>
+                {t('calendar.client')}
+                <span className={classes.requiredMark}>*</span>
+              </label>
+              <CalendarSelect
+                value={clientInstitutionId}
+                onChange={onSetClientInstitutionId}
+                options={clients.map((c) => ({
+                  value: c.id,
+                  label: [c.user.forename, c.user.surname]
+                    .filter(Boolean)
+                    .join(' '),
+                }))}
+                placeholder={t('calendar.select_client')}
+                searchQuery={clientSearch}
+                onSearch={handleClientSearch}
+              />
+            </div>
+          ) : assignment?.client ? (
+            <div className={classes.formGroup}>
+              <span className={classes.label}>{t('calendar.client')}</span>
+              <span className={classes.readValue}>
+                {assignment.client.name}
+              </span>
+            </div>
+          ) : null)}
+
+        {/* Metaandmed — view only */}
+        {!isEditing && <SlotMetaSection source={order} />}
+
+        {/* Viitenumber */}
+        {isEditing ? (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>
+              {t('calendar.reference_number')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
+            <input
+              className={classes.input}
+              value={referenceNumber}
+              onChange={(e) => onSetReferenceNumber(e.target.value)}
+            />
+          </div>
+        ) : assignment?.reference_number ? (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>
+              {t('calendar.reference_number')}
+            </span>
+            <span className={classes.readValue}>
+              {assignment.reference_number}
+            </span>
+          </div>
+        ) : null}
+
+        {/* Keel */}
+        <div className={classes.formGroup}>
+          <span className={classes.label}>
+            {t('calendar.language')}
+            {isEditing && <span className={classes.requiredMark}>*</span>}
+          </span>
+          {isEditing ? (
+            <div className={classes.inputReadonly}>
+              {language?.language.name ?? ''}
+            </div>
+          ) : (
+            <span className={classes.readValue}>
+              {language?.language.name ?? ''}
+            </span>
+          )}
+        </div>
+
+        {/* Kuupäev ja kellaaeg */}
+        <div className={classes.formGroup}>
+          <label className={classes.label}>
+            {isEditing
+              ? t('calendar.date_and_start_time')
+              : t('calendar.date_and_time')}
+            {isEditing && <span className={classes.requiredMark}>*</span>}
+          </label>
+          {isEditing ? (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <DatePickerComponent
+                  name="selectedDate"
+                  value={selectedDate ? selectedDate.replace(/\./g, '/') : ''}
+                  onChange={(val) => onSetSelectedDate(val.replace(/\//g, '.'))}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <TimeDropdownSelect
+                  value={startTimeInput}
+                  onChange={onSetStartTimeInput}
+                  freeInput
+                  className={classes.input}
+                />
+              </div>
+            </div>
+          ) : (
+            <span className={classes.readValue}>
+              {date} / {startTime}
+            </span>
+          )}
+        </div>
+
+        {/* Kestus */}
+        {isEditing ? (
+          <div className={classes.durationGroup}>
+            <label className={classes.label}>
+              {t('calendar.duration')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
+            <DurationStepper
+              durationMinutes={durationMinutes}
+              onSetDurationMinutes={onSetDurationMinutes}
+            />
+            {!isTPM && (
+              <span className={classes.sectionNote}>
+                {t('calendar.cannot_extend_time')}
+              </span>
+            )}
+          </div>
+        ) : (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.duration')}</span>
+            <span className={classes.readValue}>{duration}</span>
+            {assignment?.updated_at && (
+              <span className={classes.sectionNote}>
+                {t('calendar.last_modified', {
+                  date: dayjs(assignment.updated_at).format(
+                    'DD.MM.YYYY [kell] HH:mm'
+                  ),
+                })}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Teostaja — TPM only (editable) */}
+        {isTPM &&
+          (isEditing ? (
+            <div className={classes.formGroup}>
+              <label className={classes.label}>
+                {t('calendar.translator')}
+                <span className={classes.requiredMark}>*</span>
+              </label>
+              <CalendarSelect
+                value={vendorId}
+                onChange={onSetVendorId}
+                options={vendors.map((v) => ({
+                  value: v.id,
+                  label: v.name ?? '',
+                }))}
+                placeholder={t('calendar.select_translator')}
+              />
+            </div>
+          ) : vendorName || assignment ? (
+            <div className={classes.formGroup}>
+              <span className={classes.label}>{t('calendar.translator')}</span>
+              <span className={classes.readValue}>{vendorName ?? '—'}</span>
+            </div>
+          ) : null)}
+
+        {/* Teostaja details — all roles */}
+        {!isTPM && !isEditing && vendorName && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_name')}</span>
+            <span className={classes.readValue}>{vendorName}</span>
+          </div>
+        )}
+        {!isEditing && vendorEmail && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_email')}</span>
+            <span className={classes.readValue}>{vendorEmail}</span>
+          </div>
+        )}
+        {!isEditing && vendorPhone && (
+          <div className={classes.formGroup}>
+            <span className={classes.label}>{t('calendar.vendor_phone')}</span>
+            <span className={classes.readValue}>{vendorPhone}</span>
+          </div>
+        )}
+
+        {/* Tellimuse viis */}
+        {isEditing ? (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>
+              {t('calendar.order_way')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
+            <CalendarSelect
+              value={serviceType}
+              onChange={(v) => {
+                onSetServiceType(v as ServiceType)
+                onSetLocation('')
+              }}
+              options={[
+                {
+                  value: 'kaugtolge',
+                  label: t('calendar.service_type_remote'),
+                },
+                {
+                  value: 'kontakttolge',
+                  label: t('calendar.service_type_contact'),
+                },
+              ]}
+              placeholder={t('calendar.select_type')}
+            />
+          </div>
+        ) : (assignment?.service_type ?? order?.service_type) ? (
+          <OrderServiceLocationReadonly
+            variant="view"
+            serviceType={
+              assignment?.service_type ?? order?.service_type ?? null
+            }
+            location={order?.location}
+            meetingLink={order?.meeting_link}
+          />
+        ) : null}
+
+        {/* Asukoht / Koosoleku link — edit mode only */}
+        {isEditing && serviceType === 'kontakttolge' && (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>
+              {t('calendar.location')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
+            <input
+              className={classes.input}
+              value={location}
+              onChange={(e) => onSetLocation(e.target.value)}
+              placeholder={t('calendar.enter_address')}
+            />
+          </div>
+        )}
+        {isEditing && serviceType === 'kaugtolge' && (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>
+              {t('calendar.meeting_link')}
+              <span className={classes.requiredMark}>*</span>
+            </label>
+            <input
+              className={classes.input}
+              value={location}
+              onChange={(e) => onSetLocation(e.target.value)}
+              placeholder={t('calendar.enter_link')}
+            />
+          </div>
+        )}
+
+        {/* Valdkond */}
+        {isEditing ? (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>{t('calendar.domain')}</label>
+            <MultiSelect
+              options={domains ?? []}
+              value={domainIds}
+              onChange={onSetDomainIds}
+              placeholder={t('calendar.select_domain')}
+            />
+          </div>
+        ) : (
+          (() => {
+            const domainChips =
+              order?.tags?.filter((t) => t.type === 'Valdkond') ?? []
+            if (!domainChips.length) return null
+            return (
+              <div className={classes.formGroup}>
+                <span className={classes.label}>{t('calendar.domain')}</span>
+                <div className={classes.tagList}>
+                  {domainChips.map((tag) => (
+                    <span key={tag.id} className={classes.domainChip}>
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )
+          })()
+        )}
+
+        {/* Sildid — TPM only */}
+        {isTPM && isEditing && (
+          <div className={classes.formGroup}>
+            <label className={classes.label}>{t('calendar.tags')}</label>
+            <MultiSelect
+              options={projectTags ?? []}
+              value={projectTagIds}
+              onChange={onSetProjectTagIds}
+              placeholder={t('calendar.select_tags')}
+            />
+          </div>
+        )}
+        {!isEditing &&
+          (() => {
+            const projectChips =
+              order?.tags?.filter((t) => t.type === 'Tellimus') ?? []
+            if (!projectChips.length) return null
+            return (
+              <div className={classes.formGroup}>
+                <span className={classes.label}>{t('calendar.tags')}</span>
+                <div className={classes.tagList}>
+                  {projectChips.map((tag) => (
+                    <span key={tag.id} className={classes.domainChip}>
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
+      </div>
+
+      <OrderAttachments />
+      <OrderComments />
+    </>
+  )
+}
+
+export default CalendarOrderViewBody
