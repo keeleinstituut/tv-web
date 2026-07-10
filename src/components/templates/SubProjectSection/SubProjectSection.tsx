@@ -115,7 +115,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
     ({ deadline_at }) => !deadline_at
   )
 
-  const canStartWorkflow = !hasAnyAssignmentsWithoutDeadline
+  const canStartWorkflow = !hasAnyAssignmentsWithoutDeadline || isVerbal
 
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
