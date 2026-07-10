@@ -957,7 +957,8 @@
       "general_information": "üldinfo",
       "job_translation": "tõlkimine",
       "job_revision": "toimetamine",
-      "job_overview": "ülevaatus"
+      "job_overview": "ülevaatus",
+      "cat_tool": "CAT tööriist"
     },
     "file_types": {
       "STYLE_GUIDE": "Stiilijuhis",

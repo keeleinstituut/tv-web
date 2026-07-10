@@ -4,6 +4,7 @@ import { SubProjectDetail, SubProjectFeatures } from 'types/projects'
 import GeneralInformationFeature from './GeneralInformationFeature/GeneralInformationFeature'
 import MainFeature from './MainFeature/MainFeature'
 import { ClassifierValue } from 'types/classifierValues'
+import CatToolFeature from './CatToolFeature/CatToolFeature'
 
 interface FeatureProps {
   subProject?: SubProjectDetail
@@ -23,6 +24,9 @@ const Feature: FC<FeatureProps> = ({ feature, subProject, projectDomain }) => {
     case SubProjectFeatures.JobRevision:
     case SubProjectFeatures.JobOverview:
       Component = MainFeature
+      break
+    case SubProjectFeatures.CatTool:
+      Component = CatToolFeature
       break
 
     default:

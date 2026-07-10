@@ -279,8 +279,12 @@ const ManagerContent: FC<ManagerContentProps> = ({ id, projectDomain }) => {
 
   const allTabs = [
     {
-      id: 'general_information',
+      id: SubProjectFeatures.GeneralInformation,
       name: t('projects.features.general_information'),
+    },
+    {
+      id: SubProjectFeatures.CatTool,
+      name: t('projects.features.cat_tool'),
     },
     ...sortedAvailableTabs,
   ]

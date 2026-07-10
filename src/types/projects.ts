@@ -43,6 +43,7 @@ export enum SubProjectFeatures {
   JobTranslation = 'job_translation',
   JobRevision = 'job_revision',
   JobOverview = 'job_overview',
+  CatTool = 'cat_tool',
 }
 
 export enum WorkflowTemplateID {
