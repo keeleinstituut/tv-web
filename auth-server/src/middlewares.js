@@ -32,7 +32,15 @@ const sendToAuditLog = async () => {
   }
 }
 
+const skipAuditLog = () => {
+  return (req, res, next) => {
+    res.locals.skipAuditLog = true
+    next()
+  }
+}
+
 module.exports = {
   storeResponseBody,
   sendToAuditLog,
+  skipAuditLog,
 }

@@ -3,9 +3,9 @@ const { createProxyMiddleware: proxy } = require('http-proxy-middleware')
 const {
   TRANSLATION_ORDER_SERVICE_BASE_URL,
   AUTHORIZATION_SERVICE_BASE_URL,
-  TRANSLATION_MEMORY_SERVICE_BASE_URL,
   AUDIT_LOG_SERVICE_BASE_URL,
   MACHINE_TRANSLATION_SERVICE_BASE_URL,
+  CAT2_SERVICE_BASE_URL,
 } = require('../env')
 const { omit } = require('lodash')
 
@@ -75,18 +75,6 @@ function constructProxyDirectRoutes() {
   )
 
   router.use(
-    '/translation-memory',
-    proxy({
-      target: TRANSLATION_MEMORY_SERVICE_BASE_URL,
-      changeOrigin: true,
-      on: {
-        proxyReq: onProxyReq,
-        proxyRes: onProxyRes,
-      },
-    })
-  )
-
-  router.use(
     '/audit-log',
     proxy({
       target: AUDIT_LOG_SERVICE_BASE_URL,
@@ -102,6 +90,18 @@ function constructProxyDirectRoutes() {
     '/machine-translation',
     proxy({
       target: MACHINE_TRANSLATION_SERVICE_BASE_URL,
+      changeOrigin: true,
+      on: {
+        proxyReq: onProxyReq,
+        proxyRes: onProxyRes,
+      },
+    })
+  )
+
+  router.use(
+    '/cat2',
+    proxy({
+      target: CAT2_SERVICE_BASE_URL,
       changeOrigin: true,
       on: {
         proxyReq: onProxyReq,
