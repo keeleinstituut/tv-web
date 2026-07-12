@@ -5,7 +5,7 @@ import DynamicForm, {
   InputTypes,
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { find, includes } from 'lodash'
+import { find } from 'lodash'
 import classNames from 'classnames'
 import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
@@ -15,7 +15,7 @@ import { TagTypes } from 'types/tags'
 import { orderClassifierByLangPriority } from 'helpers'
 import { formatDuration } from 'helpers/calendar'
 import {
-  CALENDAR_TYPE_VALUES,
+  isCalendarProjectType,
   isEventBasedProjectType,
 } from 'helpers/project'
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
@@ -98,7 +98,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
   const nonVerbalProjectTypeFilter = useMemo(
     () =>
       (projectTypeFilter ?? []).filter(
-        (_, i) => !includes(CALENDAR_TYPE_VALUES, projectTypes?.[i]?.value)
+        (_, i) => !isCalendarProjectType(projectTypes?.[i])
       ),
     [projectTypeFilter, projectTypes]
   )

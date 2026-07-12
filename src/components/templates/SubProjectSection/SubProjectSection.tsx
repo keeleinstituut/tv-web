@@ -24,6 +24,10 @@ import { useIsDataOwner } from 'hooks/useIsDataOwner'
 import SubProjectSectionContent from 'components/organisms/SubProjectSectionContent/SubProjectSectionContent'
 import { Privileges } from 'types/privileges'
 import ExpandableContentLeftComponent from 'components/molecules/ExpandableContentLeftComponent/ExpandableContentLeftComponent'
+import {
+  isCalendarProjectType,
+  isEventBasedProjectType,
+} from 'helpers/project'
 
 type SubProjectProps = Pick<
   ListSubProjectDetail,
@@ -40,7 +44,6 @@ type SubProjectProps = Pick<
   projectId?: string
   isUserClientOfProject?: boolean
   manager_institution_user_id?: string
-  isEventBased?: boolean
   event_start_at?: string
 }
 
@@ -55,7 +58,6 @@ const SubProjectSection: FC<SubProjectProps> = ({
   projectDomain,
   active_job_definition,
   projectId,
-  isEventBased,
   event_start_at,
 }) => {
   const { t } = useTranslation()
@@ -73,6 +75,10 @@ const SubProjectSection: FC<SubProjectProps> = ({
     price: subProjectPrice,
     deadline_at: innerDeadlineAt,
   } = subProject || {}
+
+  const typeClassifierValue = subProject?.project?.type_classifier_value
+  const isEventBased = isEventBasedProjectType(typeClassifierValue)
+  const isCalendarProject = isCalendarProjectType(typeClassifierValue)
 
   const isShared = !useIsDataOwner(subProject?.project?.institution_id)
   const { job_short_name } =
@@ -107,7 +113,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
     ({ deadline_at }) => !deadline_at
   )
 
-  const canStartWorkflow = !hasAnyAssignmentsWithoutDeadline
+  const canStartWorkflow = !hasAnyAssignmentsWithoutDeadline || isEventBased
 
   const handleOpenContainer = useCallback(
     (isExpanded: boolean) => {
@@ -172,7 +178,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
               classes.startWorkFlowNotification,
               !canStartWorkflow && classes.warning
             )}
-            hidden={!isExpanded || isClientView || isEventBased || isShared}
+            hidden={!isExpanded || isClientView || isCalendarProject || isShared}
             children={
               <Button
                 children={t('button.send_sub_project_to_vendors')}

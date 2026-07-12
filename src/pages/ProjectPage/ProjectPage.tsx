@@ -10,7 +10,6 @@ import { useAuth } from 'components/contexts/AuthContext'
 import { useIsDataOwner } from 'hooks/useIsDataOwner'
 import { Privileges } from 'types/privileges'
 import { ListSubProjectDetail, ProjectStatus } from 'types/projects'
-import { isEventBasedProjectType } from 'helpers/project'
 import ProjectDetails, {
   ProjectDetailModes,
 } from 'components/organisms/ProjectDetails/ProjectDetails'
@@ -236,12 +235,9 @@ const ProjectPage: FC = () => {
     client_institution_user,
     manager_institution_user,
     translation_domain_classifier_value,
-    type_classifier_value,
     event_start_at: projectEventStartAt,
     institution_id,
   } = project || {}
-
-  const isEventBased = isEventBasedProjectType(type_classifier_value)
 
   useProjectPageRedirect({
     client_institution_user_id: client_institution_user?.id,
@@ -278,7 +274,6 @@ const ProjectPage: FC = () => {
           projectId={projectId}
           key={subProject.id}
           projectDomain={translation_domain_classifier_value}
-          isEventBased={isEventBased}
           event_start_at={projectEventStartAt}
         />
       ))}

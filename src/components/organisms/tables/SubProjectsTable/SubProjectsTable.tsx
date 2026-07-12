@@ -34,8 +34,7 @@ import { FilterFunctionType } from 'types/collective'
 import { useSearchParams } from 'react-router-dom'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
-import { TypesWithStartTime } from 'types/projects'
-import { CALENDAR_TYPE_VALUES } from 'helpers/project'
+import { isCalendarProjectType } from 'helpers/project'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import {
@@ -175,7 +174,7 @@ const SubProjectsTable: FC = () => {
   const calendarTypeIds = useMemo(
     () =>
       (allProjectTypes ?? [])
-        .filter((t) => includes(CALENDAR_TYPE_VALUES, t.value as TypesWithStartTime))
+        .filter((t) => isCalendarProjectType(t))
         .map((t) => t.id),
     [allProjectTypes]
   )
@@ -183,7 +182,7 @@ const SubProjectsTable: FC = () => {
   const nonCalendarTypeIds = useMemo(
     () =>
       (allProjectTypes ?? [])
-        .filter((t) => !includes(CALENDAR_TYPE_VALUES, t.value as TypesWithStartTime))
+        .filter((t) => !isCalendarProjectType(t))
         .map((t) => t.id),
     [allProjectTypes]
   )
@@ -191,8 +190,7 @@ const SubProjectsTable: FC = () => {
   const typeFilters = useMemo(
     () =>
       (allTypeFilters ?? []).filter(
-        (_, i) =>
-          !includes(CALENDAR_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+        (_, i) => !isCalendarProjectType(allProjectTypes?.[i])
       ),
     [allTypeFilters, allProjectTypes]
   )
@@ -200,7 +198,7 @@ const SubProjectsTable: FC = () => {
   const calendarTypeFilters = useMemo(
     () =>
       (allTypeFilters ?? []).filter((_, i) =>
-        includes(CALENDAR_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+        isCalendarProjectType(allProjectTypes?.[i])
       ),
     [allTypeFilters, allProjectTypes]
   )
