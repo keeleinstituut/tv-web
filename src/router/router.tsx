@@ -76,6 +76,7 @@ export type FullRouteObject<ParamKey extends string = string> = Omit<
   isInterTitle?: boolean
   privileges?: Privileges[]
   breadcrumb?: BreadcrumbComponentType<ParamKey> | string | null
+  isHiddenForTranslationAgency?: boolean
 }
 
 export const protectedRoutes: FullRouteObject[] = [
@@ -182,6 +183,7 @@ export const protectedRoutes: FullRouteObject[] = [
     path: 'calendar',
     label: i18n.t('menu.calendar'),
     Icon: CalendarIcon,
+    isHiddenForTranslationAgency: true,
     element: (
       <CalendarAccessGuard>
         <Outlet />
