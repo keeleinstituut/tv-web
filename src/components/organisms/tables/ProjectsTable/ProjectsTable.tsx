@@ -37,14 +37,13 @@ import { useSearchParams } from 'react-router-dom'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { TypesWithStartTime } from 'types/projects'
+import { CALENDAR_TYPE_VALUES } from 'helpers/project'
 import {
   TableDateFilter,
   TableSelectFilter,
 } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import { useFetchInfiniteProjectPerson } from 'hooks/requests/useUsers'
 import LanguageDirectionTags from 'components/atoms/LanguageDirectionTags/LanguageDirectionTags'
-
-const VERBAL_TYPE_VALUES = [TypesWithStartTime.OralTranslation]
 
 // TODO: statuses might come from BE instead
 // Currently unclear
@@ -232,21 +231,21 @@ const ProjectsTable: FC = () => {
     [projects]
   )
 
-  const verbalTypeIds = useMemo(
+  const calendarTypeIds = useMemo(
     () =>
       (allProjectTypes ?? [])
         .filter((t) =>
-          includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime)
+          includes(CALENDAR_TYPE_VALUES, t.value as TypesWithStartTime)
         )
         .map((t) => t.id),
     [allProjectTypes]
   )
 
-  const nonVerbalTypeIds = useMemo(
+  const nonCalendarTypeIds = useMemo(
     () =>
       (allProjectTypes ?? [])
         .filter(
-          (t) => !includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime)
+          (t) => !includes(CALENDAR_TYPE_VALUES, t.value as TypesWithStartTime)
         )
         .map((t) => t.id),
     [allProjectTypes]
@@ -257,18 +256,18 @@ const ProjectsTable: FC = () => {
       (allTypeFilters ?? []).filter(
         (_, i) =>
           !includes(
-            VERBAL_TYPE_VALUES,
+            CALENDAR_TYPE_VALUES,
             allProjectTypes?.[i]?.value as TypesWithStartTime
           )
       ),
     [allTypeFilters, allProjectTypes]
   )
 
-  const verbalTypeFilters = useMemo(
+  const calendarTypeFilters = useMemo(
     () =>
       (allTypeFilters ?? []).filter((_, i) =>
         includes(
-          VERBAL_TYPE_VALUES,
+          CALENDAR_TYPE_VALUES,
           allProjectTypes?.[i]?.value as TypesWithStartTime
         )
       ),
@@ -359,9 +358,9 @@ const ProjectsTable: FC = () => {
     (payload) => {
       const { order_category, ...rest } = payload
       const categoryTypeIds = includes(order_category, 'verbal')
-        ? verbalTypeIds
+        ? calendarTypeIds
         : includes(order_category, 'translation')
-          ? nonVerbalTypeIds
+          ? nonCalendarTypeIds
           : []
       handleFilterChange({
         ...rest,
@@ -371,7 +370,7 @@ const ProjectsTable: FC = () => {
         type_classifier_value_ids: categoryTypeIds,
       })
     },
-    [handleFilterChange, verbalTypeIds, nonVerbalTypeIds]
+    [handleFilterChange, calendarTypeIds, nonCalendarTypeIds]
   )
 
   useEffect(() => {
@@ -381,13 +380,13 @@ const ProjectsTable: FC = () => {
   }, [handleSubmit, watch, onSubmit])
 
   // Re-submit when type lists load (initial render fires before types are fetched)
-  const prevNonVerbalLengthRef = useRef(0)
+  const prevNonCalendarLengthRef = useRef(0)
   useEffect(() => {
-    if (nonVerbalTypeIds.length > 0 && prevNonVerbalLengthRef.current === 0) {
-      prevNonVerbalLengthRef.current = nonVerbalTypeIds.length
+    if (nonCalendarTypeIds.length > 0 && prevNonCalendarLengthRef.current === 0) {
+      prevNonCalendarLengthRef.current = nonCalendarTypeIds.length
       handleSubmit(onSubmit)()
     }
-  }, [nonVerbalTypeIds, handleSubmit, onSubmit])
+  }, [nonCalendarTypeIds, handleSubmit, onSubmit])
 
   const columns = [
     columnHelper.accessor('ext_id', {
@@ -458,7 +457,7 @@ const ProjectsTable: FC = () => {
             filterKey="type_classifier_value_ids"
             options={
               includes(orderCategory, 'verbal')
-                ? verbalTypeFilters
+                ? calendarTypeFilters
                 : typeFilters
             }
             value={filters?.type_classifier_value_ids || []}

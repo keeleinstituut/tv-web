@@ -28,6 +28,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import useValidators from 'hooks/useValidators'
 import { formatDuration } from 'helpers/calendar'
+import { isEventBasedProjectType } from 'helpers/project'
 
 dayjs.extend(utc)
 
@@ -90,11 +91,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
   const { updateAssignment } = useAssignmentUpdate({ id })
 
-  const shouldShowStartTimeFields =
-    type_classifier_value?.project_type_config?.is_start_date_supported
-
-  const isVerbalType =
-    !!shouldShowStartTimeFields
+  const isEventBasedType = isEventBasedProjectType(type_classifier_value)
 
   const effectiveStartAt = event_start_at || subProjectEventStartAt
   const effectiveEndAt = projectEventEndAt
@@ -105,14 +102,14 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       ...(effectiveDeadlineAt
         ? { deadline_at: getLocalDateObjectFromUtcDateString(effectiveDeadlineAt) }
         : {}),
-      ...(shouldShowStartTimeFields && effectiveStartAt
+      ...(isEventBasedType && effectiveStartAt
         ? { event_start_at: getLocalDateObjectFromUtcDateString(effectiveStartAt) }
         : {}),
       volume: volumes,
       comments,
       assignee_comments,
       duration:
-        isVerbalType && effectiveStartAt && effectiveEndAt
+        isEventBasedType && effectiveStartAt && effectiveEndAt
           ? formatDuration(effectiveStartAt, effectiveEndAt)
           : undefined,
       service_type: normalizedServiceType,
@@ -126,8 +123,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       effectiveEndAt,
       volumes,
       assignee_comments,
-      shouldShowStartTimeFields,
-      isVerbalType,
+      isEventBasedType,
       normalizedServiceType,
       effectiveLocation,
       meeting_link,
@@ -279,7 +275,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         ariaLabel: t('calendar.service_type'),
         label: t('calendar.service_type'),
         name: 'service_type',
-        hidden: !isVerbalType || !normalizedServiceType,
+        hidden: !isEventBasedType || !normalizedServiceType,
         options: [
           { value: 'contact', label: t('calendar.service_type_contact') },
           { value: 'remote', label: t('calendar.service_type_remote') },
@@ -292,7 +288,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         ariaLabel: t('calendar.location'),
         label: t('calendar.location'),
         name: 'event_location',
-        hidden: !isVerbalType || normalizedServiceType !== 'contact',
+        hidden: !isEventBasedType || normalizedServiceType !== 'contact',
         onlyDisplay: true,
         emptyDisplayText: '-',
       },
@@ -301,7 +297,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         ariaLabel: t('calendar.meeting_link'),
         label: t('calendar.meeting_link'),
         name: 'meeting_link',
-        hidden: !isVerbalType || normalizedServiceType !== 'remote',
+        hidden: !isEventBasedType || normalizedServiceType !== 'remote',
         onlyDisplay: true,
         emptyDisplayText: '-',
       },
@@ -309,7 +305,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}`,
-        hidden: !shouldShowStartTimeFields,
+        hidden: !isEventBasedType,
         className: classes.customInternalClass,
         name: 'event_start_at',
         maxDate: subProjectDeadline
@@ -322,7 +318,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         inputType: InputTypes.Text,
         ariaLabel: t('calendar.duration'),
         label: t('calendar.duration'),
-        hidden: !isVerbalType,
+        hidden: !isEventBasedType,
         name: 'duration',
         className: classes.customInternalClass,
         onlyDisplay: true,
@@ -331,7 +327,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         label: t('label.deadline'),
-        hidden: isVerbalType,
+        hidden: isEventBasedType,
         className: classes.customInternalClass,
         name: 'deadline_at',
         maxDate: subProjectDeadline
@@ -385,8 +381,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
       handleAddDateTime,
       isEditable,
       isAssignmentFinished,
-      shouldShowStartTimeFields,
-      isVerbalType,
+      isEventBasedType,
       handleAddStartTime,
       id,
       handleAddComment,

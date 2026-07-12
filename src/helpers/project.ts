@@ -1,10 +1,27 @@
 import { getLocalDateObjectFromUtcDateString } from 'helpers'
-import { filter, find, isEmpty, map, uniq, compact, flatMap } from 'lodash'
-import { ProjectDetail, SourceFile } from 'types/projects'
+import {
+  filter,
+  find,
+  isEmpty,
+  map,
+  uniq,
+  compact,
+  flatMap,
+  includes,
+  values,
+} from 'lodash'
+import { ProjectDetail, SourceFile, TypesWithStartTime } from 'types/projects'
 
 import dayjs from 'dayjs'
 import { ClassifierValue, HelperFileTypes } from 'types/classifierValues'
 import { CollectionType } from 'hooks/requests/useFiles'
+
+export const EVENT_BASED_PROJECT_TYPE_VALUES = values(TypesWithStartTime)
+export const CALENDAR_TYPE_VALUES = [TypesWithStartTime.OralTranslation]
+
+export const isEventBasedProjectType = (classifierValue?: {
+  value?: string
+}): boolean => includes(EVENT_BASED_PROJECT_TYPE_VALUES, classifierValue?.value)
 
 export const getProjectDefaultValues = ({
   institutionUserId,

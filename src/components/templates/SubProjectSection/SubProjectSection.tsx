@@ -5,8 +5,8 @@ import {
   useSubProjectWorkflow,
 } from 'hooks/requests/useProjects'
 import Loader from 'components/atoms/Loader/Loader'
-import { includes, toLower, find, isEmpty } from 'lodash'
-import { ListSubProjectDetail, SubProjectFeatures } from 'types/projects'
+import { includes, toLower, find } from 'lodash'
+import { ListSubProjectDetail } from 'types/projects'
 import { useTranslation } from 'react-i18next'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import classNames from 'classnames'
@@ -40,7 +40,7 @@ type SubProjectProps = Pick<
   projectId?: string
   isUserClientOfProject?: boolean
   manager_institution_user_id?: string
-  isVerbal?: boolean
+  isEventBased?: boolean
   event_start_at?: string
 }
 
@@ -55,7 +55,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
   projectDomain,
   active_job_definition,
   projectId,
-  isVerbal,
+  isEventBased,
   event_start_at,
 }) => {
   const { t } = useTranslation()
@@ -172,7 +172,7 @@ const SubProjectSection: FC<SubProjectProps> = ({
               classes.startWorkFlowNotification,
               !canStartWorkflow && classes.warning
             )}
-            hidden={!isExpanded || isClientView || isVerbal || isShared}
+            hidden={!isExpanded || isClientView || isEventBased || isShared}
             children={
               <Button
                 children={t('button.send_sub_project_to_vendors')}
@@ -188,12 +188,12 @@ const SubProjectSection: FC<SubProjectProps> = ({
         <ExpandableContentLeftComponent
           {...{
             ext_id,
-            deadline_at: isVerbal
+            deadline_at: isEventBased
               ? event_start_at
               : innerDeadlineAt || deadline_at,
             price: subProjectPrice || price,
             languageDirection,
-            isVerbal,
+            isEventBased,
             hideCost: isShared,
           }}
         />

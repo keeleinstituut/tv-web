@@ -30,13 +30,21 @@ interface ExpandableContentLeftComponentProps {
   price?: string
   deadline_at?: string
   mode?: ProjectDetailModes
-  isVerbal?: boolean
+  isEventBased?: boolean
   hideCost?: boolean
 }
 
 const ExpandableContentLeftComponent: FC<
   ExpandableContentLeftComponentProps
-> = ({ languageDirection, ext_id, price, deadline_at, mode, isVerbal, hideCost }) => {
+> = ({
+  languageDirection,
+  ext_id,
+  price,
+  deadline_at,
+  mode,
+  isEventBased,
+  hideCost,
+}) => {
   const { t } = useTranslation()
 
   return (
@@ -61,8 +69,8 @@ const ExpandableContentLeftComponent: FC<
         </Column>
       )}
       <Column
-        label={t(isVerbal ? 'label.event_start_at' : 'label.deadline_at')}
-        compact={isVerbal}
+        label={t(isEventBased ? 'label.event_start_at' : 'label.deadline_at')}
+        compact={isEventBased}
       >
         <span className={classes.valueText}>
           {deadline_at ? dayjs(deadline_at).format('DD.MM.YYYY HH:mm') : '-'}

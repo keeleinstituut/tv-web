@@ -5,24 +5,21 @@ import DynamicForm, {
   InputTypes,
   FieldProps,
 } from 'components/organisms/DynamicForm/DynamicForm'
-import { find, includes, values } from 'lodash'
+import { find, includes } from 'lodash'
 import classNames from 'classnames'
 import { Control, FieldValues, Path, useWatch } from 'react-hook-form'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
-import { TypesWithStartTime } from 'types/projects'
 import { orderClassifierByLangPriority } from 'helpers'
 import { formatDuration } from 'helpers/calendar'
+import {
+  CALENDAR_TYPE_VALUES,
+  isEventBasedProjectType,
+} from 'helpers/project'
 import DisplayValue from 'components/molecules/DisplayValue/DisplayValue'
 import dayjs from 'dayjs'
-
-const VERBAL_TYPES = values(TypesWithStartTime)
-
-// OralTranslation has its own dedicated calendar/oral order flow,
-// so it's the only type excluded from the regular project creation dropdown.
-const CALENDAR_ONLY_TYPES = [TypesWithStartTime.OralTranslation]
 
 interface DetailsSectionProps<TFormValues extends FieldValues> {
   control: Control<TFormValues>
@@ -79,10 +76,10 @@ const DetailsSection = <TFormValues extends FieldValues>({
 
   const selectedProjectType = find(projectTypes, { id: selectedProjectTypeId })
 
-  const isVerbalType = includes(VERBAL_TYPES, selectedProjectType?.value)
+  const isEventBasedType = isEventBasedProjectType(selectedProjectType)
 
   const durationDisplay = useMemo(() => {
-    if (!isVerbalType) return ''
+    if (!isEventBasedType) return ''
     const start = watchedEventStartAt as
       | { date?: string; time?: string }
       | undefined
@@ -96,12 +93,12 @@ const DetailsSection = <TFormValues extends FieldValues>({
     if (!startDt.isValid() || !endDt.isValid() || !endDt.isAfter(startDt))
       return ''
     return formatDuration(startDt.toISOString(), endDt.toISOString())
-  }, [isVerbalType, watchedEventStartAt, watchedEventEndAt])
+  }, [isEventBasedType, watchedEventStartAt, watchedEventEndAt])
 
   const nonVerbalProjectTypeFilter = useMemo(
     () =>
       (projectTypeFilter ?? []).filter(
-        (_, i) => !includes(CALENDAR_ONLY_TYPES, projectTypes?.[i]?.value)
+        (_, i) => !includes(CALENDAR_TYPE_VALUES, projectTypes?.[i]?.value)
       ),
     [projectTypeFilter, projectTypes]
   )
@@ -161,9 +158,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.start_date'),
         label: `${t('label.start_date')}${!isEditable ? '' : '*'}`,
-        hidden: isNew
-          ? !includes(values(TypesWithStartTime), selectedProjectType?.value)
-          : !selectedProjectType?.project_type_config?.is_start_date_supported,
+        hidden: !isEventBasedType,
         className: classes.customInternalClass,
         name: 'event_start_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
@@ -185,7 +180,7 @@ const DetailsSection = <TFormValues extends FieldValues>({
         },
       },
       {
-        hidden: !isVerbalType || !durationDisplay,
+        hidden: !isEventBasedType || !durationDisplay,
         component: (
           <DisplayValue
             name="duration"
@@ -199,13 +194,13 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.end_date'),
         label: `${t('label.end_date')}${!isEditable ? '' : '*'}`,
-        hidden: !isVerbalType,
+        hidden: !isEventBasedType,
         className: classes.customInternalClass,
         name: 'event_end_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
-          required: isVerbalType,
+          required: isEventBasedType,
           validate: (value: { date?: string; time?: string }, formValues) => {
             if (!formValues.event_start_at?.date) return true
             const event_start_at = dayjs(
@@ -226,13 +221,13 @@ const DetailsSection = <TFormValues extends FieldValues>({
         inputType: InputTypes.DateTime,
         ariaLabel: t('label.deadline'),
         label: `${t('label.deadline')}${!isEditable ? '' : '*'}`,
-        hidden: isVerbalType,
+        hidden: isEventBasedType,
         className: classes.customInternalClass,
         name: 'deadline_at' as Path<TFormValues>,
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
-          required: !isVerbalType,
+          required: !isEventBasedType,
           validate: (value: { date?: string; time?: string }, formValues) => {
             if (!formValues.event_start_at?.date) return true
             const deadline_at = dayjs(value.date + ' ' + value.time)
@@ -266,11 +261,11 @@ const DetailsSection = <TFormValues extends FieldValues>({
             label: t('calendar.service_type_remote'),
           },
         ],
-        hidden: !isVerbalType,
+        hidden: !isEventBasedType,
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
-          required: isVerbalType,
+          required: isEventBasedType,
         },
       },
       {
@@ -280,11 +275,11 @@ const DetailsSection = <TFormValues extends FieldValues>({
         label: `${t('calendar.location')}${!isEditable ? '' : '*'}`,
         name: 'event_location' as Path<TFormValues>,
         className: classes.inputInternalPosition,
-        hidden: !isVerbalType || selectedServiceType !== 'contact',
+        hidden: !isEventBasedType || selectedServiceType !== 'contact',
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
-          required: isVerbalType && selectedServiceType === 'contact',
+          required: isEventBasedType && selectedServiceType === 'contact',
         },
       },
       {
@@ -294,11 +289,11 @@ const DetailsSection = <TFormValues extends FieldValues>({
         label: `${t('calendar.meeting_link')}${!isEditable ? '' : '*'}`,
         name: 'meeting_link' as Path<TFormValues>,
         className: classes.inputInternalPosition,
-        hidden: !isVerbalType || selectedServiceType !== 'remote',
+        hidden: !isEventBasedType || selectedServiceType !== 'remote',
         onlyDisplay: !isEditable,
         emptyDisplayText: '-',
         rules: {
-          required: isVerbalType && selectedServiceType === 'remote',
+          required: isEventBasedType && selectedServiceType === 'remote',
         },
       },
       // TODO: not sure if comment field is correct for this
@@ -366,10 +361,8 @@ const DetailsSection = <TFormValues extends FieldValues>({
       nonVerbalProjectTypeFilter,
       workflow_started,
       domainValuesFilter,
-      selectedProjectType?.value,
-      selectedProjectType?.project_type_config?.is_start_date_supported,
       languageFilters,
-      isVerbalType,
+      isEventBasedType,
       selectedServiceType,
       durationDisplay,
     ]

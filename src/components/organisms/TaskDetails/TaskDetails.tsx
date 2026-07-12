@@ -1,15 +1,16 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { FC, useCallback, useEffect, useState } from 'react'
-import { includes, toLower, without, values } from 'lodash'
+import { includes, toLower } from 'lodash'
 import ExpandableContentContainer from 'components/molecules/ExpandableContentContainer/ExpandableContentContainer'
 import classNames from 'classnames'
 import useHashState from 'hooks/useHashState'
 import ProjectStatusTag from 'components/molecules/ProjectStatusTag/ProjectStatusTag'
 import TaskContent from 'components/organisms/TaskContent/TaskContent'
-import { ListProject, SubProjectStatus, TypesWithStartTime } from 'types/projects'
+import { ListProject, SubProjectStatus } from 'types/projects'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import ExpandableContentLeftComponent from 'components/molecules/ExpandableContentLeftComponent/ExpandableContentLeftComponent'
 import { useIsDataOwner } from 'hooks/useIsDataOwner'
+import { isEventBasedProjectType } from 'helpers/project'
 
 import classes from './classes.module.scss'
 import { useTaskCache } from 'hooks/requests/useTasks'
@@ -50,11 +51,8 @@ const TaskDetails: FC<TaskProps> = ({
 
   const isShared = !useIsDataOwner(projectData?.institution_id)
 
-  const VERBAL_TYPES = values(TypesWithStartTime)
-
-  const isVerbalType = includes(
-    VERBAL_TYPES,
-    projectData?.type_classifier_value?.value
+  const isEventBasedType = isEventBasedProjectType(
+    projectData?.type_classifier_value
   )
   const { setHash, currentHash } = useHashState()
   const [isExpanded, setIsExpanded] = useState(includes(currentHash, ext_id))
@@ -107,10 +105,10 @@ const TaskDetails: FC<TaskProps> = ({
         <ExpandableContentLeftComponent
           {...{
             ext_id,
-            deadline_at: isVerbalType ? event_start_at : deadline_at,
+            deadline_at: isEventBasedType ? event_start_at : deadline_at,
             price,
             languageDirection,
-            isVerbal: isVerbalType,
+            isEventBased: isEventBasedType,
             hideCost: isShared,
           }}
           mode={ProjectDetailModes.View}
