@@ -33,6 +33,19 @@ export const useInstitutionsFetch = () => {
   }
 }
 
+export const usePartnerInstitutions = () => {
+  const { data, isLoading } = useQuery<ListResponse<Institution>>({
+    queryKey: ['partner-institutions'],
+    queryFn: () =>
+      apiClient.get(endpoints.TRANSLATION_ORDER_INSTITUTIONS, {
+        has_current_institution_as_partner: 1,
+        per_page: 10000,
+      }),
+  })
+
+  return { institutions: data?.data ?? [], isLoading }
+}
+
 export const useInstitutionFetch = ({ id }: { id?: string }) => {
   const { isLoading, isError, data } = useQuery<InstitutionDataType>({
     enabled: !!id,

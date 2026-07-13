@@ -15,6 +15,7 @@ import { showNotification } from 'components/organisms/NotificationRoot/Notifica
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { showModal, ModalTypes } from 'components/organisms/modals/ModalRoot'
+import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { useAuth } from 'components/contexts/AuthContext'
 import { Privileges } from 'types/privileges'
 import DetailsSection from 'components/molecules/DetailsSection/DetailsSection'
@@ -30,6 +31,8 @@ import {
 } from 'hooks/requests/useOutsourceRequests'
 import { OutsourceOfferStatus } from 'types/outsourceRequests'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
+import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
+import Eye from 'assets/icons/eye.svg?react'
 
 import classes from './classes.module.scss'
 
@@ -124,6 +127,12 @@ const OutsourceOfferDetailPage: FC = () => {
   const volumes = outsourceRequest?.assignment?.volumes ?? []
   const priceInputNeeded = offer?.price == null
 
+  const firstCatIndex = volumes.findIndex((v) => !!v.cat_job)
+  const firstCatVolume = firstCatIndex >= 0 ? volumes[firstCatIndex] : undefined
+
+  const jobShortName =
+    outsourceRequest?.assignment?.job_definition?.job_short_name ?? undefined
+
   const handleAccept = useCallback(async () => {
     try {
       const priceNumber = offeredPrice.trim()
@@ -150,6 +159,45 @@ const OutsourceOfferDetailPage: FC = () => {
     if (!offerId) return
     showModal(ModalTypes.ConfirmDeclineRequest, { offerId })
   }, [offerId])
+
+  const handleOpenCatVolume = useCallback(() => {
+    if (!firstCatVolume) return
+
+    const { discounts, unit_fee, volume_analysis } = firstCatVolume
+    const {
+      files_names,
+      repetitions,
+      tm_0_49,
+      tm_50_74,
+      tm_75_84,
+      tm_85_94,
+      tm_95_99,
+      tm_100,
+      tm_101,
+      total,
+    } = volume_analysis || {}
+
+    showModal(ModalTypes.VolumeChange, {
+      isCat: true,
+      mode: ProjectDetailModes.View,
+      discounts,
+      unit_fee,
+      volume_analysis: {
+        files_names,
+        repetitions: repetitions || '0',
+        tm_0_49: tm_0_49 || '0',
+        tm_50_74: tm_50_74 || '0',
+        tm_75_84: tm_75_84 || '0',
+        tm_85_94: tm_85_94 || '0',
+        tm_95_99: tm_95_99 || '0',
+        tm_100: tm_100 || '0',
+        tm_101: tm_101 || '0',
+        total: total || '0',
+      },
+      taskViewPricesClass: classes.taskViewPrices,
+      jobShortName,
+    })
+  }, [firstCatVolume, jobShortName])
 
   if (isLoading) return <Loader loading />
   if (!offer)
@@ -271,7 +319,20 @@ const OutsourceOfferDetailPage: FC = () => {
               {map(volumes, (volume, index) => (
                 <div key={volume.id} className={classes.volumeRow}>
                   <span>{index === 0 ? t('label.volume') : ''}</span>
-                  <span>{`${Number(volume.unit_quantity)} ${t(`label.${apiTypeToKey(volume.unit_type)}`)}${volume.cat_job ? ` ${t('task.open_in_cat')}` : ''}`}</span>
+                  <span className={classes.volumeValue}>
+                    <span>
+                      {`${Number(volume.unit_quantity)} ${t(`label.${apiTypeToKey(volume.unit_type)}`)}${
+                        index === firstCatIndex ? ` ${t('task.open_in_cat')}` : ''
+                      }`}
+                    </span>
+                    <BaseButton
+                      onClick={handleOpenCatVolume}
+                      className={classes.volumeIcon}
+                      hidden={index !== firstCatIndex}
+                    >
+                      <Eye />
+                    </BaseButton>
+                  </span>
                 </div>
               ))}
             </div>

@@ -34,9 +34,7 @@ import { FilterFunctionType } from 'types/collective'
 import { useSearchParams } from 'react-router-dom'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
-import { TypesWithStartTime } from 'types/projects'
-
-const VERBAL_TYPE_VALUES = [TypesWithStartTime.OralTranslation]
+import { isCalendarProjectType } from 'helpers/project'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
 import {
@@ -52,7 +50,6 @@ type SubProjectTableRow = {
   deadline_at: string
   created_at: string
   event_start_at?: string
-  is_verbal: boolean
   type: string
   tags: string[]
   status?: SubProjectStatus
@@ -174,18 +171,18 @@ const SubProjectsTable: FC = () => {
   const { classifierValues: allProjectTypes, classifierValuesFilters: allTypeFilters } =
     useClassifierValuesFetch({ type: ClassifierValueType.ProjectType })
 
-  const verbalTypeIds = useMemo(
+  const calendarTypeIds = useMemo(
     () =>
       (allProjectTypes ?? [])
-        .filter((t) => includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime))
+        .filter((t) => isCalendarProjectType(t))
         .map((t) => t.id),
     [allProjectTypes]
   )
 
-  const nonVerbalTypeIds = useMemo(
+  const nonCalendarTypeIds = useMemo(
     () =>
       (allProjectTypes ?? [])
-        .filter((t) => !includes(VERBAL_TYPE_VALUES, t.value as TypesWithStartTime))
+        .filter((t) => !isCalendarProjectType(t))
         .map((t) => t.id),
     [allProjectTypes]
   )
@@ -193,16 +190,15 @@ const SubProjectsTable: FC = () => {
   const typeFilters = useMemo(
     () =>
       (allTypeFilters ?? []).filter(
-        (_, i) =>
-          !includes(VERBAL_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+        (_, i) => !isCalendarProjectType(allProjectTypes?.[i])
       ),
     [allTypeFilters, allProjectTypes]
   )
 
-  const verbalTypeFilters = useMemo(
+  const calendarTypeFilters = useMemo(
     () =>
       (allTypeFilters ?? []).filter((_, i) =>
-        includes(VERBAL_TYPE_VALUES, allProjectTypes?.[i]?.value as TypesWithStartTime)
+        isCalendarProjectType(allProjectTypes?.[i])
       ),
     [allTypeFilters, allProjectTypes]
   )
@@ -233,7 +229,6 @@ const SubProjectsTable: FC = () => {
             deadline_at,
             created_at,
             event_start_at: project?.event_start_at,
-            is_verbal: includes(VERBAL_TYPE_VALUES, project?.type_classifier_value?.value as TypesWithStartTime),
             type: project?.type_classifier_value?.name || '',
             status,
             price,
@@ -327,9 +322,9 @@ const SubProjectsTable: FC = () => {
     (payload) => {
       const { order_category, ...rest } = payload
       const categoryTypeIds = includes(order_category, 'verbal')
-        ? verbalTypeIds
+        ? calendarTypeIds
         : includes(order_category, 'translation')
-          ? nonVerbalTypeIds
+          ? nonCalendarTypeIds
           : []
       handleModifiedFilterChange({
         ...rest,
@@ -337,7 +332,7 @@ const SubProjectsTable: FC = () => {
         type_classifier_value_id: categoryTypeIds,
       })
     },
-    [handleModifiedFilterChange, verbalTypeIds, nonVerbalTypeIds]
+    [handleModifiedFilterChange, calendarTypeIds, nonCalendarTypeIds]
   )
 
   useEffect(() => {
@@ -347,13 +342,13 @@ const SubProjectsTable: FC = () => {
   }, [handleSubmit, onSubmit, watch])
 
   // Re-submit when type lists load (initial render fires before types are fetched)
-  const prevNonVerbalLengthRef = useRef(0)
+  const prevNonCalendarLengthRef = useRef(0)
   useEffect(() => {
-    if (nonVerbalTypeIds.length > 0 && prevNonVerbalLengthRef.current === 0) {
-      prevNonVerbalLengthRef.current = nonVerbalTypeIds.length
+    if (nonCalendarTypeIds.length > 0 && prevNonCalendarLengthRef.current === 0) {
+      prevNonCalendarLengthRef.current = nonCalendarTypeIds.length
       handleSubmit(onSubmit)()
     }
-  }, [nonVerbalTypeIds, handleSubmit, onSubmit])
+  }, [nonCalendarTypeIds, handleSubmit, onSubmit])
 
   const columns = [
     columnHelper.accessor('ext_id', {
@@ -425,7 +420,7 @@ const SubProjectsTable: FC = () => {
         FilteringComponent: (
           <TableSelectFilter
             filterKey="type_classifier_value_id"
-            options={includes(orderCategory, 'verbal') ? verbalTypeFilters : typeFilters}
+            options={includes(orderCategory, 'verbal') ? calendarTypeFilters : typeFilters}
             value={filters.type_classifier_value_id}
             isCustomSingleDropdown
           />

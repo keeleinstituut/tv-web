@@ -41,10 +41,8 @@ const getCanAdvance = (
     return draft.recipients.length > 0
   if (targetStep === WizardStep.RequestConditions) {
     if (draft.cascade_mode) return draft.reaction_time_minutes !== undefined
-    return (
-      !!draft.response_deadline_at &&
-      dayjs(draft.response_deadline_at).isAfter(dayjs())
-    )
+    if (!draft.response_deadline_at) return true
+    return dayjs(draft.response_deadline_at).isAfter(dayjs())
   }
   return true
 }
