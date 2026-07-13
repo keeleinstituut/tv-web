@@ -157,7 +157,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           size={SizeTypes.S}
           href={translationMemory?.edit_url}
           target="_blank"
-          children={t('button.edit')}
+          children={t('button.open_translation_memory')}
           disabled={
             !includes(userPrivileges, Privileges.EditTmMetadata) ||
             !isTmOwnedByUserInstitution

@@ -263,7 +263,8 @@
     "view_vendor_in_progress_tasks": "Vaata teostaja teostamisel ülesandeid",
     "click_here": "Vajuta siia",
     "dropdown_cancel": "Sulge",
-    "view": "Vaata"
+    "view": "Vaata",
+    "open_translation_memory": "Ava tõlkemälu"
   },
   "error": {
     "input_title": "Veateade: ",
