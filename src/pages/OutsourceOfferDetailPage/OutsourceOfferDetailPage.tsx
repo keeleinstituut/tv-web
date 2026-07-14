@@ -111,6 +111,8 @@ const OutsourceOfferDetailPage: FC = () => {
       defaultProjectTypeClassifier?.id,
       subProject?.source_language_classifier_value_id,
       subProject?.destination_language_classifier_value_id,
+      project?.source_files,
+      project?.help_files,
     ]
   )
 
