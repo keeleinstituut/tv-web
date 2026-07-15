@@ -21,7 +21,7 @@ const InstitutionPartnersDatabase: FC = () => {
     <>
       <div className={classes.header}>
         <h1>{t('menu.institution_partners')}</h1>
-        <Tooltip helpSectionKey="vendorsDatabase" />
+        <Tooltip helpSectionKey="institutionPartnersDatabase" />
         <Button
           onClick={handleOpenModal}
           appearance={AppearanceTypes.Secondary}

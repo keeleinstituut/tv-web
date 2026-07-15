@@ -447,7 +447,10 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
       contentAlwaysVisible={isNew}
       rightComponent={<ProjectStatusTag status={status} />}
       toolTip={
-        <Tooltip className={classes.toolTip} helpSectionKey="projectDetails" />
+        <Tooltip
+          className={classes.toolTip}
+          helpSectionKey={isNew ? 'projectDetails' : 'editProjectDetails'}
+        />
       }
       leftComponent={
         <h2 className={classes.expandableContentTitle}>
