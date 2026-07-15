@@ -115,6 +115,10 @@
   ul {
     display: flex;
     flex-direction: column;
+    padding-bottom: variables.spacing(6);
+    &:last-child {
+      padding-bottom: 0;
+    }
 
     li {
       display: inline-block;
