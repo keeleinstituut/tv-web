@@ -69,6 +69,8 @@ const TaskContent: FC<TaskContentProps> = ({
   const {
     subProject,
     cat_jobs,
+    can_download_xliff: assignmentCanDownloadXliff,
+    can_download_translations: assignmentCanDownloadTranslations,
     deadline_at,
     comments,
     event_start_at,
@@ -95,7 +97,12 @@ const TaskContent: FC<TaskContentProps> = ({
     projectData?.type_classifier_value
   )
 
-  const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
+  const {
+    catToolJobs,
+    catSetupStatus,
+    canDownloadXliff,
+    canDownloadTranslations,
+  } = useFetchSubProjectCatToolJobs({
     id: sub_project_id,
     disabled: isVendor,
   })
@@ -109,6 +116,12 @@ const TaskContent: FC<TaskContentProps> = ({
 
   const catJobsToUse = isVendor ? cat_jobs : catToolJobs
   const tmKeysToUse = isVendor ? cat_tm_keys : subProjectTmKeyObjectsArray
+  const canDownloadXliffToUse = isVendor
+    ? assignmentCanDownloadXliff
+    : canDownloadXliff
+  const canDownloadTranslationsToUse = isVendor
+    ? assignmentCanDownloadTranslations
+    : canDownloadTranslations
 
   const my_final_files = useMemo(
     () =>
@@ -413,6 +426,8 @@ const TaskContent: FC<TaskContentProps> = ({
           }
           mode={ProjectDetailModes.View}
           isHistoryView={isHistoryView}
+          canDownloadXliff={canDownloadXliffToUse}
+          canDownloadTranslations={canDownloadTranslationsToUse}
         />
       </div>
       <Button

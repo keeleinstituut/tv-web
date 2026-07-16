@@ -319,6 +319,8 @@ export const useFetchSubProjectCatToolJobs = ({
     catToolJobs: data?.data?.cat_jobs,
     catSetupStatus: data?.data?.setup_status,
     catAnalyzeStatus: data?.data?.analyzing_status,
+    canDownloadXliff: data?.data?.can_download_xliff,
+    canDownloadTranslations: data?.data?.can_download_translations,
     startPolling,
     isPolling: shouldRefetch,
   }
