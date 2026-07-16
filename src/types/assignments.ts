@@ -40,6 +40,8 @@ export interface AssignmentType {
   candidates: Candidate[]
   volumes?: VolumeValue[]
   cat_jobs?: CatJob[]
+  can_download_xliff?: boolean
+  can_download_translations?: boolean
   assigned_vendor_id?: string
   assignee?: Vendor
   assignee_comments?: string
