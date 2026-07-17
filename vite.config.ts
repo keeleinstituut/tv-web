@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import svgr from 'vite-plugin-svgr'
@@ -42,25 +42,6 @@ export default defineConfig({
   preview: {
     port: 3000,
     open: false,
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/setupTests.ts',
-    include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
-    exclude: ['node_modules', 'dist', 'build', '.git'],
-    coverage: {
-      include: ['src/**/*.{js,ts,jsx,tsx}'],
-      exclude: [
-        'node_modules/**',
-        'dist/**',
-        'build/**',
-        '**/*.d.ts',
-        '**/*.config.*',
-        '**/setupTests.ts',
-        'src/vite-env.d.ts',
-      ],
-    },
   },
 })
 
