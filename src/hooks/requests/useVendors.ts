@@ -81,25 +81,17 @@ export const useUpdateVendor = ({ id }: { id?: string }) => {
   }
 }
 
-export const useCreateVendors = (vendorFilters?: GetVendorsPayload) => {
+export const useCreateVendors = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: createVendor, isLoading } = useMutation({
-    mutationKey: ['vendors', vendorFilters],
+    mutationKey: ['vendors'],
     mutationFn: async (payload: CreateVendorPayload) => {
       return apiClient.post(endpoints.VENDORS_BULK, {
         data: payload,
       })
     },
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['vendors', vendorFilters],
-        (oldData?: VendorsDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = { ...previousData, ...data }
-          return { ...oldData, data: newData }
-        }
-      )
+      queryClient.invalidateQueries({ queryKey: ['vendors'] })
       queryClient.setQueryData(
         ['translationUsers'],
         (oldData?: UsersDataType) => {
@@ -121,29 +113,17 @@ export const useCreateVendors = (vendorFilters?: GetVendorsPayload) => {
   }
 }
 
-export const useDeleteVendors = (vendorFilters?: GetVendorsPayload) => {
+export const useDeleteVendors = () => {
   const queryClient = useQueryClient()
   const { mutateAsync: deleteVendors, isLoading } = useMutation({
-    mutationKey: ['vendors', vendorFilters],
+    mutationKey: ['vendors'],
     mutationFn: async (payload: DeleteVendorsPayload) => {
       return apiClient.delete(endpoints.VENDORS_BULK, {
         id: payload,
       })
     },
     onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['vendors', vendorFilters],
-        (oldData?: VendorsDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const vendorIds = map(data, 'id')
-          const newData = filter(
-            previousData,
-            ({ id }) => !includes(vendorIds, id)
-          )
-          return { ...oldData, data: newData }
-        }
-      )
+      queryClient.invalidateQueries({ queryKey: ['vendors'] })
       queryClient.setQueryData(
         ['translationUsers'],
         (oldData?: UsersDataType) => {
