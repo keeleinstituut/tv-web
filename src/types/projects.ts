@@ -107,6 +107,7 @@ export interface SourceFile {
   updated_at: string
   original_url: string
   preview_url: string
+  url: string
   is_project_final_file?: boolean
   // Type not clear yet:
   manipulations: string[]
@@ -169,6 +170,7 @@ export interface ListSubProjectDetail {
   event_start_at?: string
   active_job_definition?: JobDefinition
   cat_jobs: CatJob[]
+  cat_metadata?: { catto_project_id?: string }
 }
 
 export interface SubProjectDetail extends ListSubProjectDetail {

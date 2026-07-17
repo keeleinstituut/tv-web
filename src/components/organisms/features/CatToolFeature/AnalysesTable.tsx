@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "api"
 import { FC } from "react"
+import { CAT2_API_BASE_URL } from "./constants"
 
 const getAnalyses = ({ queryKey }) => {
   const [_, params] = queryKey
-  return apiClient.get('http://devbox.host:8000/cat2/api/analyses', params)
+  return apiClient.get(`${CAT2_API_BASE_URL}/analyses`, params)
 }
 
 interface AnalysesTableProps {

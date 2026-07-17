@@ -1,22 +1,19 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { createColumnHelper } from "@tanstack/react-table"
 import { apiClient } from "api"
 import Button, { SizeTypes } from "components/molecules/Button/Button"
 import DataTable, { TableSizeTypes } from "components/organisms/DataTable/DataTable"
 import { keys } from "lodash"
 import { FC, useState } from "react"
-
-const getJobs = ({ queryKey }) => {
-  const [_, params] = queryKey
-  return apiClient.get('http://devbox.host:8000/cat2/api/jobs', params)
-}
+import { CAT2_API_BASE_URL } from "./constants"
+import { useCatJobs } from "./useCatJobs"
 
 const postAnalyses = async (params: any) => {
-  return apiClient.post('http://devbox.host:8000/cat2/api/analyses', params)
+  return apiClient.post(`${CAT2_API_BASE_URL}/analyses`, params)
 }
 
 const postPretranslate = async (params: any) => {
-  return apiClient.post('http://devbox.host:8000/cat2/api/jobs/pretranslate', params)
+  return apiClient.post(`${CAT2_API_BASE_URL}/jobs/pretranslate`, params)
 }
 
 const columnHelper = createColumnHelper<any>()
@@ -62,13 +59,7 @@ const JobsTable: FC<JobsTableProps> = (props) => {
   const { catProjectId } = props
   const [rowSelection, setRowSelection] = useState({})
 
-  const catJobsQuery = useQuery({
-    queryFn: getJobs,
-    queryKey: ['catJobs', {
-      project_id: catProjectId,
-    }],
-    enabled: !!catProjectId
-  })
+  const catJobsQuery = useCatJobs(catProjectId)
 
   const analyseMutation = useMutation({
     mutationFn: postAnalyses
