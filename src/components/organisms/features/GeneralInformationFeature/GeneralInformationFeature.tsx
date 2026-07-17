@@ -115,13 +115,13 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     if (project?.meeting_link) return 'remote'
     return ''
   })()
-  const { catToolJobs, catSetupStatus, startPolling, isPolling } =
-    useFetchSubProjectCatToolJobs({
-      id,
-    })
-  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
-    subProjectId: id,
-  })
+  // const { catToolJobs, catSetupStatus, startPolling, isPolling } =
+  //   useFetchSubProjectCatToolJobs({
+  //     id,
+  //   })
+  // const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
+  //   subProjectId: id,
+  // })
 
   const isSomethingEditable = true
 
@@ -141,7 +141,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         isChecked: false,
       })),
       final_files,
-      cat_jobs: catToolJobs,
+      // cat_jobs: catToolJobs,
       service_type: normalizedServiceType,
       event_location: effectiveLocation,
       meeting_link: project?.meeting_link || '',
@@ -149,14 +149,14 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         isVerbalType && effectiveStartAt && effectiveEndAt
           ? formatDuration(effectiveStartAt, effectiveEndAt)
           : undefined,
-      write_to_memory: reduce(
-        subProjectTmKeyObjectsArray,
-        (result, { key, is_writable }) => {
-          if (!key) return result
-          return { ...result, [key]: is_writable }
-        },
-        {}
-      ),
+      // write_to_memory: reduce(
+      //   subProjectTmKeyObjectsArray,
+      //   (result, { key, is_writable }) => {
+      //     if (!key) return result
+      //     return { ...result, [key]: is_writable }
+      //   },
+      //   {}
+      // ),
     }),
     [
       effectiveDeadlineAt,
@@ -165,8 +165,8 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       cat_files,
       source_files,
       final_files,
-      catToolJobs,
-      subProjectTmKeyObjectsArray,
+      // catToolJobs,
+      // subProjectTmKeyObjectsArray,
       normalizedServiceType,
       project?.event_location,
       project?.meeting_link,
@@ -184,20 +184,20 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues])
 
-  const openSendToCatModal = useCallback(() => {
-    const sourceFiles = getValues('source_files')
-    const selectedSourceFiles = filter(sourceFiles, 'isChecked')
+  // const openSendToCatModal = useCallback(() => {
+  //   const sourceFiles = getValues('source_files')
+  //   const selectedSourceFiles = filter(sourceFiles, 'isChecked')
 
-    const payload: CatProjectPayload = {
-      sub_project_id: id,
-      source_files_ids: compact(map(selectedSourceFiles, 'id')),
-    }
+  //   const payload: CatProjectPayload = {
+  //     sub_project_id: id,
+  //     source_files_ids: compact(map(selectedSourceFiles, 'id')),
+  //   }
 
-    showModal(ModalTypes.ConfirmSendToCat, {
-      sendPayload: payload,
-      callback: startPolling,
-    })
-  }, [getValues, id, startPolling])
+  //   showModal(ModalTypes.ConfirmSendToCat, {
+  //     sendPayload: payload,
+  //     callback: startPolling,
+  //   })
+  // }, [getValues, id, startPolling])
 
   const handleChangeDeadline = useCallback(
     async (value: { date: string; time: string }) => {
@@ -238,15 +238,15 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     return `${slangShort}_${tlangShort}`
   }, [destination_language_classifier_value, source_language_classifier_value])
 
-  const canGenerateProject =
-    catSupported &&
-    isEmpty(catToolJobs) &&
-    !includes(CatProjectStatus.Done, catSetupStatus)
+  // const canGenerateProject =
+  //   catSupported &&
+  //   isEmpty(catToolJobs) &&
+  //   !includes(CatProjectStatus.Done, catSetupStatus)
 
-  const isGenerateProjectButtonDisabled =
-    !some(watch('source_files'), 'isChecked') ||
-    !some(watch('write_to_memory'), (val) => !!val) ||
-    !includes(CatProjectStatus.NotStarted, catSetupStatus)
+  // const isGenerateProjectButtonDisabled =
+  //   !some(watch('source_files'), 'isChecked') ||
+  //   !some(watch('write_to_memory'), (val) => !!val) ||
+  //   !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
   return (
     <Root>
@@ -337,11 +337,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           title={t('projects.source_files')}
           tooltipContent={t('tooltip.source_files_helper')}
           control={control}
-          openSendToCatModal={openSendToCatModal}
-          canGenerateProject={canGenerateProject}
-          isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
-          isCatProjectLoading={isPolling}
-          catSetupStatus={catSetupStatus}
+          // openSendToCatModal={openSendToCatModal}
+          // canGenerateProject={canGenerateProject}
+          // isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
+          // isCatProjectLoading={isPolling}
+          // catSetupStatus={catSetupStatus}
           subProjectId={id}
           isEditable={isSomethingEditable && !isShared}
         />
@@ -353,7 +353,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           subProjectId={id}
           isEditable={isSomethingEditable}
         />
-        <CatJobsTable
+        {/* <CatJobsTable
           subProjectId={id}
           className={classes.catJobs}
           hidden={!catSupported || isEmpty(catToolJobs)}
@@ -367,8 +367,8 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           }
           canSendToVendors={true} //TODO add check when camunda is ready
           isEditable={isSomethingEditable && !isShared}
-        />
-        <TranslationMemoriesSection
+        /> */}
+        {/* <TranslationMemoriesSection
           className={classes.translationMemories}
           hidden={!catSupported}
           control={control}
@@ -377,7 +377,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           subProjectTmKeyObjectsArray={subProjectTmKeyObjectsArray}
           subProjectLangPair={subProjectLangPair}
           projectDomain={projectDomain}
-        />
+        /> */}
       </div>
     </Root>
   )

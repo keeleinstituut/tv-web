@@ -1,25 +1,20 @@
-import TranslationMemoriesSection from "components/organisms/TranslationMemoriesSection/TranslationMemoriesSection"
 import { FC } from "react"
+import JobsTable from "./JobsTable"
 
 interface CatToolFeatureProps {
-
+  subProject: any
 }
 
-const CatToolFeature: FC<CatToolFeatureProps> = () => {
-    return (
-        <TranslationMemoriesSection
-        //   className={classes.translationMemories}
-        //   hidden={!catSupported}
-        //   control={control}
-        //   isEditable={isSomethingEditable && isEmpty(catToolJobs) && !isShared}
-        //   subProjectId={id}
-        //   subProjectTmKeyObjectsArray={subProjectTmKeyObjectsArray}
-        //   subProjectLangPair={subProjectLangPair}
-        //   projectDomain={projectDomain}
-            hidden={false}
-            isEditable={true}
-        />
-    )
+const CatToolFeature: FC<CatToolFeatureProps> = (props) => {
+  const { subProject } = props
+
+  const catProjectId = (props as any)?.cat_metadata?.catto_project_id
+
+  return (
+    <>
+      <JobsTable catProjectId={catProjectId} />
+    </>
+  )
 }
 
 export default CatToolFeature
