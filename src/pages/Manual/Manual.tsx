@@ -5,16 +5,21 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import useHashState from 'hooks/useHashState'
 import ReactHtmlParser from 'html-react-parser'
 import manual from 'static/manual.json'
+import translationAgencyManual from 'static/translationAgencyManual.json'
 import { HelpSections } from 'components/organisms/Tooltip/Tooltip'
+import { useAuth } from 'components/contexts/AuthContext'
 
 import classes from './classes.module.scss'
 
 const Manual: FC = () => {
   const { t } = useTranslation()
+  const { isTranslationAgency } = useAuth()
 
-  const helpSectionsData: HelpSections = manual
+  const helpSectionsData: HelpSections = isTranslationAgency
+    ? translationAgencyManual
+    : manual
 
-  const date = '13.10.2025'
+  const date = '19.07.2026'
   const author = 'Interlex'
   const authorEmail = 'koostaja@interlex.ee'
 
