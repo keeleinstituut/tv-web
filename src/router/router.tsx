@@ -47,6 +47,7 @@ import OutsourceOffer from 'pages/OutsourceOffer/OutsourceOffer'
 import OutsourceOfferDetailPage from 'pages/OutsourceOfferDetailPage/OutsourceOfferDetailPage'
 import InstitutionPartnersDatabase from 'pages/InstitutionPartnersDatabase/InstitutionPartnersDatabase'
 import InstitutionPartnerPage from 'pages/InstitutionPartnerPage/InstitutionPartnerPage'
+import Statistics from 'pages/Statistics/Statistics'
 
 // import icons
 
@@ -65,6 +66,7 @@ import ManualIcon from 'assets/icons/question_mark.svg?react'
 import TermsIcon from 'assets/icons/terms_icon.svg?react'
 import CalendarIcon from 'assets/icons/calendar_menu.svg?react'
 import MachineTranslationIcon from 'assets/icons/memories.svg?react'
+import StatisticsIcon from 'assets/icons/logs.svg?react'
 
 export type FullRouteObject<ParamKey extends string = string> = Omit<
   RouteObject,
@@ -312,6 +314,13 @@ export const protectedRoutes: FullRouteObject[] = [
       Privileges.UseMachineTranslationETranslation,
       Privileges.UseMachineTranslationAzureOpenAI,
     ],
+  },
+  {
+    path: 'statistics',
+    label: i18n.t('menu.statistics'),
+    element: <Statistics />,
+    Icon: StatisticsIcon,
+    privileges: [Privileges.ViewStatistic],
   },
   {
     path: 'user-details',

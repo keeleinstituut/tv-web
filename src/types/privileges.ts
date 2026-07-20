@@ -56,6 +56,7 @@ export enum Privileges {
 
   ManageExternalPartner = 'MANAGE_EXTERNAL_PARTNER',
   ViewExternalPartner = 'VIEW_EXTERNAL_PARTNER',
+  ViewStatistic = 'VIEW_STATISTIC',
 }
 
 export type PrivilegeKey = `${Privileges}`

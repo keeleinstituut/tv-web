@@ -346,7 +346,62 @@
     "sidebar_terms": "Kasutustingimused",
     "calendar": "Kalender",
     "language_tools": "Keeletööriistad",
-    "institution_partners": "Välised teostajad"
+    "institution_partners": "Välised teostajad",
+    "statistics": "Statistika"
+  },
+  "statistics": {
+    "title": "Statistika",
+    "parameters": "Parameetrid",
+    "yes": "Jah",
+    "no": "Ei",
+    "no_data": "Andmed puuduvad",
+    "load_error": "Statistika laadimine ebaõnnestus",
+    "select": {
+      "grouping": "Andmete grupeerimine",
+      "timeframe": "Aja grupeerimine",
+      "basis": "Aja arvestus"
+    },
+    "options": {
+      "grouping": {
+        "projects_plain": "Tellimuste statistika",
+        "projects_extended": "Tellimuste laiendatud statistika",
+        "subprojects_plain": "Alam-tellimuste statistika",
+        "subprojects_extended": "Alam-tellimuste laiendatud statistika",
+        "assignments_plain": "Ülesannete statistika",
+        "assignments_extended": "Ülesannete laiendatud statistika"
+      },
+      "timeframe": {
+        "daily": "Päevade kaupa",
+        "monthly": "Kuude kaupa",
+        "yearly": "Aastate kaupa"
+      },
+      "basis": {
+        "created": "Tellimuse vormistamise kuupäev",
+        "completed": "Tellimuse vastuvõtmise kuupäev"
+      }
+    },
+    "columns": {
+      "period": "Periood",
+      "is_verbal": "Suuline",
+      "status": "Staatus",
+      "job_short_name": "Töö",
+      "tag_id": "Silt",
+      "type_classifier_value_id": "Tellimuse tüüp",
+      "source_language_classifier_value_id": "Lähtekeel",
+      "destination_language_classifier_value_id": "Sihtkeel",
+      "assignee_institution_id": "Teostaja asutus",
+      "projects_count": "Tellimuste arv",
+      "sub_projects_count": "Alam-tellimuste arv",
+      "assignments_count": "Ülesannete arv",
+      "total_price": "Kogumaksumus",
+      "total_discount": "Soodustus kokku",
+      "volume_words": "Sõnad",
+      "volume_characters": "Tähemärgid",
+      "volume_pages": "Leheküljed",
+      "volume_minutes": "Minutid",
+      "volume_hours": "Tunnid",
+      "volume_min_fee": "Miinimumtasu"
+    }
   },
   "calendar": {
     "today": "Päev",
@@ -657,7 +712,8 @@
     "VIEW_OUTSOURCE_REQUEST": "Päringute vaatamine",
     "RESPOND_OUTSOURCE_REQUEST": "Päringutele vastamine",
     "MANAGE_EXTERNAL_PARTNER": "Väliste teostajate haldamine",
-    "VIEW_EXTERNAL_PARTNER": "Väliste teostajate vaatamine"
+    "VIEW_EXTERNAL_PARTNER": "Väliste teostajate vaatamine",
+    "VIEW_STATISTIC": "Statistika mooduli ligipääs"
   },
   "modal": {
     "pick_institution_title": "Vali asutus, mille alt soovid Tõlkeväravasse siseneda.",
