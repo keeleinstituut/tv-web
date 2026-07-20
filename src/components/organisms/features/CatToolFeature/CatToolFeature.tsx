@@ -1,4 +1,5 @@
 import { FC } from "react"
+import AnalysesTable from "./AnalysesTable"
 import JobsTable from "./JobsTable"
 import SendSourceFilesToCat from "./SendSourceFilesToCat"
 import TranslationMemoriesTable from "./TranslationMemoriesTable"
@@ -24,6 +25,7 @@ const CatToolFeature: FC<CatToolFeatureProps> = (props) => {
         sourceFiles={props?.source_files}
       />
       <JobsTable catProjectId={catProjectId} />
+      <AnalysesTable catProjectId={catProjectId} />
       <TranslationMemoriesTable catProjectId={catProjectId} />
     </>
   )

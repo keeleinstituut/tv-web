@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { createColumnHelper } from "@tanstack/react-table"
 import { apiClient } from "api"
 import Button, { SizeTypes } from "components/molecules/Button/Button"
@@ -58,11 +58,13 @@ interface JobsTableProps {
 const JobsTable: FC<JobsTableProps> = (props) => {
   const { catProjectId } = props
   const [rowSelection, setRowSelection] = useState({})
+  const queryClient = useQueryClient()
 
   const catJobsQuery = useCatJobs(catProjectId)
 
   const analyseMutation = useMutation({
-    mutationFn: postAnalyses
+    mutationFn: postAnalyses,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['catAnalyses'] }),
   })
 
   const pretranslateMutation = useMutation({
