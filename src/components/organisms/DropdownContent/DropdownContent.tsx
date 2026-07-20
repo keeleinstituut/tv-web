@@ -70,6 +70,7 @@ const DropdownContentComponent = forwardRef<
     errorZIndex,
     wrapperRef,
     className,
+    optionClassName,
     onSearch,
     loading,
     onEndReached,
@@ -265,7 +266,8 @@ const DropdownContentComponent = forwardRef<
                 <Button
                   className={classNames(
                     classes.option,
-                    isSingleSelected && classes.selectedOption
+                    isSingleSelected && classes.selectedOption,
+                    optionClassName
                   )}
                   hidden={multiple}
                   appearance={AppearanceTypes.Text}

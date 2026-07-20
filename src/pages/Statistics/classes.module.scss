@@ -1,0 +1,34 @@
+@use 'styles/variables' as variables;
+
+.title {
+  margin-bottom: variables.spacing(6);
+}
+
+.parametersContainer {
+  margin-bottom: variables.spacing(6);
+  padding: variables.spacing(6) variables.spacing(4);
+}
+
+.parametersHeading {
+  color: variables.$color-primary;
+  margin-bottom: variables.spacing(4);
+}
+
+.parameters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: variables.spacing(6);
+
+  & > * {
+    width: auto;
+  }
+}
+
+.container {
+  padding: variables.spacing(6) variables.spacing(8);
+}
+
+.wrappingOption {
+  height: auto !important;
+  min-height: 40px;
+}
