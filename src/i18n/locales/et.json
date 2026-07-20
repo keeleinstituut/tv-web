@@ -978,6 +978,9 @@
   "translation_memory": {
     "cat_file_name": "Nimi: {{file_name}}",
     "chosen_translation_memories": "Valitud tõlkemälud",
+    "title": "Tõlkemälud",
+    "read": "Loe",
+    "write": "Kirjuta",
     "chunk": {
       "total": "Kokku",
       "tm_101": "101%",

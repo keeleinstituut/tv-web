@@ -1,6 +1,7 @@
 import { FC } from "react"
 import JobsTable from "./JobsTable"
 import SendSourceFilesToCat from "./SendSourceFilesToCat"
+import TranslationMemoriesTable from "./TranslationMemoriesTable"
 
 interface CatToolFeatureProps {
   cat_metadata?: { catto_project_id?: string }
@@ -23,6 +24,7 @@ const CatToolFeature: FC<CatToolFeatureProps> = (props) => {
         sourceFiles={props?.source_files}
       />
       <JobsTable catProjectId={catProjectId} />
+      <TranslationMemoriesTable catProjectId={catProjectId} />
     </>
   )
 }
