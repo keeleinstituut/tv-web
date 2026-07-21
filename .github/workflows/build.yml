@@ -1,0 +1,72 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and analyze
+    runs-on: self-hosted   # GH_runner1
+    env:
+      DTRACK_API_KEY: ${{ secrets.DTRACK_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Two independent Yarn Classic (v1) projects in this repo: the root
+      # frontend and auth-server/. Each gets its own dependency install and
+      # its own Dependency-Track project (auth-server suffixed) so their
+      # separate dependency trees don't get merged into one SBOM.
+      - name: Install root dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install auth-server dependencies
+        working-directory: auth-server
+        run: yarn install --frozen-lockfile
+
+      - name: Upload root SBOM to Dependency-Track
+        if: env.DTRACK_API_KEY != ''
+        env:
+          PROJECT_NAME: ${{ github.event.repository.name }}
+        run: |
+          npx --yes @cyclonedx/cdxgen -o bom.json .
+          curl -sSf -X POST "http://193.40.153.113:9010/api/v1/bom" \
+            -H "X-Api-Key: $DTRACK_API_KEY" \
+            -F "autoCreate=true" \
+            -F "projectName=$PROJECT_NAME" \
+            -F "projectVersion=$GITHUB_REF_NAME" \
+            -F "bom=@bom.json"
+
+      - name: Upload auth-server SBOM to Dependency-Track
+        if: env.DTRACK_API_KEY != ''
+        working-directory: auth-server
+        env:
+          PROJECT_NAME: ${{ github.event.repository.name }}-auth-server
+        run: |
+          npx --yes @cyclonedx/cdxgen -o bom.json .
+          curl -sSf -X POST "http://193.40.153.113:9010/api/v1/bom" \
+            -H "X-Api-Key: $DTRACK_API_KEY" \
+            -F "autoCreate=true" \
+            -F "projectName=$PROJECT_NAME" \
+            -F "projectVersion=$GITHUB_REF_NAME" \
+            -F "bom=@bom.json"
+
+      - uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995 # v8.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ github.event.repository.name }}${{ github.ref_name != 'master' && format('-{0}', github.ref_name) || '' }}
