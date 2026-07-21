@@ -1,29 +1,34 @@
+import { pick } from 'lodash'
 import { apiClient } from 'api'
 import { useQuery } from '@tanstack/react-query'
 import { endpoints } from 'api/endpoints'
 import useFilters from 'hooks/useFilters'
-import { StatisticsParams, StatisticsResponse } from 'types/statistics'
+import { StatisticsFilters, StatisticsResponse } from 'types/statistics'
+
+const SERVER_KEYS = ['type', 'timeframe', 'basis'] as const
 
 export const useFetchStatistics = (
-  initialParams?: StatisticsParams,
+  initialParams?: StatisticsFilters,
   saveQueryParams?: boolean
 ) => {
-  const { filters, handleFilterChange } = useFilters<StatisticsParams>(
-    initialParams,
-    saveQueryParams,
-    { includePage: false }
-  )
+  const { filters, handleFilterChange, handleSortingChange } =
+    useFilters<StatisticsFilters>(initialParams, saveQueryParams, {
+      includePage: false,
+    })
+
+  const serverParams = pick(filters as StatisticsFilters, SERVER_KEYS)
 
   const { data, isLoading, isError } = useQuery<StatisticsResponse>({
-    queryKey: ['statistics', filters],
-    queryFn: () => apiClient.get(endpoints.STATISTICS, filters),
+    queryKey: ['statistics', serverParams],
+    queryFn: () => apiClient.get(endpoints.STATISTICS, serverParams),
   })
 
   return {
     rows: data?.data ?? [],
     isLoading,
     isError,
-    filters: filters as StatisticsParams,
+    filters: filters as StatisticsFilters,
     handleFilterChange,
+    handleSortingChange,
   }
 }

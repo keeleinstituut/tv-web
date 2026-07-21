@@ -1,3 +1,5 @@
+import { FilterFunctionType, SortingFunctionType } from './collective'
+
 export type StatisticsType =
   | 'projects_plain'
   | 'projects_extended'
@@ -19,3 +21,6 @@ export type StatisticsRow = Record<string, string | number | boolean | null>
 export interface StatisticsResponse {
   data: StatisticsRow[]
 }
+
+export type StatisticsFilters = StatisticsParams &
+  Partial<FilterFunctionType & SortingFunctionType>

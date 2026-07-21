@@ -355,7 +355,12 @@
     "yes": "Jah",
     "no": "Ei",
     "no_data": "Andmed puuduvad",
+    "no_filtered_results": "Valitud filtritele vastavad andmed puuduvad",
     "load_error": "Statistika laadimine ebaõnnestus",
+    "filter": {
+      "from": "Alates",
+      "to": "Kuni"
+    },
     "select": {
       "grouping": "Andmete grupeerimine",
       "timeframe": "Aja grupeerimine",

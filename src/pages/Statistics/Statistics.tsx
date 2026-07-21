@@ -1,14 +1,29 @@
-import { FC, useMemo, useState } from 'react'
+import {
+  FC,
+  createContext,
+  startTransition,
+  useContext,
+  useDeferredValue,
+  useMemo,
+} from 'react'
+import { isEmpty } from 'lodash'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import { Root as Form } from '@radix-ui/react-form'
 import Container from 'components/atoms/Container/Container'
 import Loader from 'components/atoms/Loader/Loader'
+import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
+import {
+  TableSelectFilter,
+  TableDateRangeFilter,
+  DateRangeGranularity,
+} from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 import SelectionControlsInput, {
+  DropDownOptions,
   DropdownSizeTypes,
 } from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
 import { useFetchStatistics } from 'hooks/requests/useStatistics'
@@ -16,10 +31,33 @@ import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { useTranslationOrderInstitutions } from 'hooks/requests/useInstitutions'
 import { ClassifierValueType } from 'types/classifierValues'
-import { StatisticsParams, StatisticsRow } from 'types/statistics'
+import {
+  StatisticsFilters,
+  StatisticsParams,
+  StatisticsRow,
+  StatisticsTimeframe,
+} from 'types/statistics'
 import { formatCell, FormatCellContext } from './formatCell'
+import { exportStatisticsCsv } from './exportCsv'
+import {
+  ColumnKind,
+  getColumnKind,
+  getFilterOptions,
+  filterRows,
+  isSelectableFilterColumn,
+  sortRows,
+} from './tableHelpers'
 
 import classes from './classes.module.scss'
+
+const GRANULARITY_BY_TIMEFRAME: Record<
+  StatisticsTimeframe,
+  DateRangeGranularity
+> = {
+  daily: 'day',
+  monthly: 'month',
+  yearly: 'year',
+}
 
 const DROPDOWNS: { key: keyof StatisticsParams; values: string[] }[] = [
   {
@@ -37,39 +75,132 @@ const DROPDOWNS: { key: keyof StatisticsParams; values: string[] }[] = [
   { key: 'basis', values: ['created', 'completed'] },
 ]
 
-const DEFAULT_PARAMS: StatisticsParams = {
+const DEFAULT_PARAMS: StatisticsFilters = {
   type: 'projects_plain',
   timeframe: 'monthly',
   basis: 'created',
 }
 
+const StatisticsFiltersContext =
+  createContext<StatisticsFilters>(DEFAULT_PARAMS)
+
+const LOCAL_MULTI_FILTER_KEYS = [
+  'status',
+  'job_short_name',
+  'tag_id',
+  'type_classifier_value_id',
+  'source_language_classifier_value_id',
+  'destination_language_classifier_value_id',
+  'assignee_institution_id',
+  'is_verbal',
+] as const
+
+const LOCAL_SCALAR_FILTER_KEYS = [
+  'sort_by',
+  'sort_order',
+  'period_start',
+  'period_end',
+] as const
+
+const LOCAL_FILTER_KEYS = [
+  ...LOCAL_MULTI_FILTER_KEYS,
+  ...LOCAL_SCALAR_FILTER_KEYS,
+] as const
+
+const clearedLocalFilters = () =>
+  Object.fromEntries(LOCAL_FILTER_KEYS.map((key) => [key, '']))
+
 const parseInitialParams = (
   searchParams: URLSearchParams
-): StatisticsParams => {
+): StatisticsFilters => {
   const fromUrl = Object.fromEntries(searchParams.entries())
 
   const validEntries = DROPDOWNS.filter(
     ({ key, values }) => fromUrl[key] && values.includes(fromUrl[key])
   ).map(({ key }) => [key, fromUrl[key]])
 
+  const scalarLocalEntries = LOCAL_SCALAR_FILTER_KEYS.filter(
+    (key) => fromUrl[key]
+  ).map((key) => [key, fromUrl[key]])
+
+  const multiLocalEntries = LOCAL_MULTI_FILTER_KEYS.map((key) => [
+    key,
+    searchParams.getAll(key),
+  ]).filter(([, values]) => !isEmpty(values))
+
   return {
     ...DEFAULT_PARAMS,
     ...Object.fromEntries(validEntries),
-  } as StatisticsParams
+    ...Object.fromEntries(scalarLocalEntries),
+    ...Object.fromEntries(multiLocalEntries),
+  } as StatisticsFilters
 }
 
 const columnHelper = createColumnHelper<StatisticsRow>()
+
+type StatisticsSelectFilterHeaderProps = {
+  filterKey: string
+  kind: ColumnKind
+  options: DropDownOptions[]
+}
+
+const StatisticsSelectFilterHeader = ({
+  filterKey,
+  kind,
+  options,
+}: StatisticsSelectFilterHeaderProps) => {
+  const liveFilters = useContext(StatisticsFiltersContext)
+  return (
+    <TableSelectFilter
+      filterKey={filterKey}
+      options={options}
+      value={(liveFilters[filterKey] as string[]) ?? []}
+      showSearch={kind === 'id'}
+    />
+  )
+}
+
+type StatisticsPeriodFilterHeaderProps = {
+  fromLabel: string
+  toLabel: string
+}
+
+const StatisticsPeriodFilterHeader = ({
+  fromLabel,
+  toLabel,
+}: StatisticsPeriodFilterHeaderProps) => {
+  const liveFilters = useContext(StatisticsFiltersContext)
+  return (
+    <TableDateRangeFilter
+      startKey="period_start"
+      endKey="period_end"
+      granularity={GRANULARITY_BY_TIMEFRAME[liveFilters.timeframe]}
+      fromLabel={fromLabel}
+      toLabel={toLabel}
+      value={{
+        start: liveFilters.period_start as string | undefined,
+        end: liveFilters.period_end as string | undefined,
+      }}
+    />
+  )
+}
 
 const Statistics: FC = () => {
   const { t } = useTranslation()
   const [searchParams] = useSearchParams()
 
-  const [initialParams] = useState<StatisticsParams>(() =>
-    parseInitialParams(searchParams)
-  )
+  const initialParams = parseInitialParams(searchParams)
 
-  const { rows, isLoading, isError, filters, handleFilterChange } =
-    useFetchStatistics(initialParams, true)
+  const {
+    rows,
+    isLoading,
+    isError,
+    filters,
+    handleFilterChange,
+    handleSortingChange,
+  } = useFetchStatistics(initialParams, true)
+
+  const deferredFilters = useDeferredValue(filters)
 
   const { classifierValues: languageValues } = useClassifierValuesFetch({
     type: ClassifierValueType.Language,
@@ -83,9 +214,10 @@ const Statistics: FC = () => {
   const classifierMap = useMemo(
     () =>
       Object.fromEntries(
-        [...(languageValues ?? []), ...(projectTypeValues ?? [])].map(
-          (cv) => [cv.id, cv.name]
-        )
+        [...(languageValues ?? []), ...(projectTypeValues ?? [])].map((cv) => [
+          cv.id,
+          cv.name,
+        ])
       ),
     [languageValues, projectTypeValues]
   )
@@ -116,19 +248,64 @@ const Statistics: FC = () => {
 
   const columns = useMemo(
     () =>
-      Object.keys(rows[0] ?? {}).map((key) =>
-        columnHelper.accessor(key, {
+      Object.keys(rows[0] ?? {}).map((key) => {
+        const kind = getColumnKind(key)
+        const options = isSelectableFilterColumn(kind)
+          ? getFilterOptions(key, rows, ctx)
+          : []
+
+        const FilteringComponent = isSelectableFilterColumn(kind)
+          ? () => (
+              <StatisticsSelectFilterHeader
+                filterKey={key}
+                kind={kind}
+                options={options}
+              />
+            )
+          : kind === 'period'
+            ? () => (
+                <StatisticsPeriodFilterHeader
+                  fromLabel={t('statistics.filter.from')}
+                  toLabel={t('statistics.filter.to')}
+                />
+              )
+            : undefined
+
+        return columnHelper.accessor(key, {
           header: () =>
             t(`statistics.columns.${key}` as 'statistics.columns.period'),
           cell: ({ getValue }) => formatCell(key, getValue(), ctx),
+          meta: {
+            sortingOption: ['asc', 'desc'],
+            sortingParameterName: key,
+            currentSorting:
+              filters.sort_by === key
+                ? (filters.sort_order as 'asc' | 'desc' | undefined)
+                : undefined,
+            ...(FilteringComponent ? { FilteringComponent } : {}),
+          },
         })
-      ) as ColumnDef<StatisticsRow>[],
-    [rows, ctx, t]
+      }) as ColumnDef<StatisticsRow>[],
+    [rows, ctx, t, filters.sort_by, filters.sort_order]
+  )
+
+  const displayedRows = useMemo(
+    () => sortRows(filterRows(rows, deferredFilters), deferredFilters, ctx),
+    [rows, deferredFilters, ctx]
   )
 
   return (
     <>
-      <h1 className={classes.title}>{t('statistics.title')}</h1>
+      <div className={classes.header}>
+        <h1 className={classes.title}>{t('statistics.title')}</h1>
+        <Button
+          appearance={AppearanceTypes.Secondary}
+          onClick={() => exportStatisticsCsv(displayedRows, ctx, t)}
+          disabled={isLoading || isError || displayedRows.length === 0}
+        >
+          {t('button.export_csv')}
+        </Button>
+      </div>
 
       <Container className={classes.parametersContainer}>
         <h4 className={classes.parametersHeading}>
@@ -145,8 +322,8 @@ const Statistics: FC = () => {
             value={filters.type}
             rules={{ required: true }}
             options={(
-              DROPDOWNS.find((dropdown) => dropdown.key === 'type')
-                ?.values ?? []
+              DROPDOWNS.find((dropdown) => dropdown.key === 'type')?.values ??
+              []
             ).map((value) => ({
               value,
               label: t(
@@ -155,7 +332,10 @@ const Statistics: FC = () => {
             }))}
             onChange={(value) => {
               if (typeof value !== 'string') return
-              handleFilterChange({ type: value })
+              handleFilterChange({
+                type: value,
+                ...clearedLocalFilters(),
+              })
             }}
           />
           {DROPDOWNS.filter(
@@ -182,7 +362,12 @@ const Statistics: FC = () => {
               }))}
               onChange={(value) => {
                 if (typeof value === 'string' && values.includes(value)) {
-                  handleFilterChange({ [key]: value })
+                  handleFilterChange({
+                    [key]: value,
+                    ...(key === 'timeframe'
+                      ? { period_start: '', period_end: '' }
+                      : {}),
+                  })
                 }
               }}
             />
@@ -201,13 +386,39 @@ const Statistics: FC = () => {
           <p>{t('statistics.no_data')}</p>
         </Container>
       ) : (
-        <DataTable
-          data={rows}
-          columns={columns}
-          tableSize={TableSizeTypes.M}
-          hidePagination
-          isHorizontallyScrollable
-        />
+        <StatisticsFiltersContext.Provider value={filters}>
+          <Form onSubmit={(e) => e.preventDefault()}>
+            <DataTable
+              key={[
+                filters.type,
+                filters.timeframe,
+                filters.basis,
+                ...LOCAL_FILTER_KEYS.map((key) => {
+                  const value = filters[key]
+                  return Array.isArray(value)
+                    ? value.join(',')
+                    : String(value ?? '')
+                }),
+              ].join('|')}
+              data={displayedRows}
+              columns={columns}
+              tableSize={TableSizeTypes.M}
+              defaultPaginationData={{ per_page: 15 }}
+              isHorizontallyScrollable
+              onFiltersChange={(next) => {
+                startTransition(() => handleFilterChange(next))
+              }}
+              onSortingChange={(next) => {
+                startTransition(() => handleSortingChange(next))
+              }}
+            />
+            {displayedRows.length === 0 && (
+              <Container className={classes.container}>
+                <p>{t('statistics.no_filtered_results')}</p>
+              </Container>
+            )}
+          </Form>
+        </StatisticsFiltersContext.Provider>
       )}
     </>
   )

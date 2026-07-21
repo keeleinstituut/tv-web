@@ -176,6 +176,123 @@ export const TableDateFilter = <TData,>({
   )
 }
 
+export type DateRangeGranularity = 'day' | 'month' | 'year'
+
+type TableDateRangeFilterProps = {
+  startKey: string
+  endKey: string
+  granularity: DateRangeGranularity
+  fromLabel: string
+  toLabel: string
+  value?: { start?: string; end?: string }
+}
+
+type RangeDateFieldProps = {
+  label: string
+  value?: string
+  pickerProps: Partial<{
+    showYearPicker: boolean
+    showMonthYearPicker: boolean
+    dateFormat: string
+  }>
+  onChangeIso: (iso: string) => void
+}
+
+const RangeDateField = ({
+  label,
+  value,
+  pickerProps,
+  onChangeIso,
+}: RangeDateFieldProps) => {
+  const { t } = useTranslation()
+
+  return (
+    <DatePicker
+      selected={value ? dayjs(value).toDate() : null}
+      onChange={(date) =>
+        onChangeIso(date ? dayjs(date).format('YYYY-MM-DD') : '')
+      }
+      autoComplete="off"
+      customInput={
+        <Button
+          appearance={AppearanceTypes.Text}
+          size={SizeTypes.S}
+          icon={FilterIcon}
+          ariaLabel={label}
+          className={classes.iconButton}
+        >
+          {label}
+        </Button>
+      }
+      calendarContainer={({ children, className }) => (
+        <div className={classes.customCalendarContainer}>
+          <CalendarContainer
+            className={classNames(className, classes.calendar)}
+          >
+            {children}
+          </CalendarContainer>
+          <div className={classes.buttonsContainer}>
+            <Button
+              appearance={AppearanceTypes.Secondary}
+              size={SizeTypes.S}
+              onClick={() => onChangeIso('')}
+            >
+              {t('button.clear_filter')}
+            </Button>
+          </div>
+        </div>
+      )}
+      {...pickerProps}
+    />
+  )
+}
+
+export const TableDateRangeFilter = <TData,>({
+  startKey,
+  endKey,
+  granularity,
+  fromLabel,
+  toLabel,
+  value,
+}: TableDateRangeFilterProps) => {
+  const { onFiltersChange } =
+    useContext<HeaderItemContextType<TData>>(HeaderItemContext)
+
+  const emitBound =
+    (key: string, unitFn: 'startOf' | 'endOf') => (iso: string) => {
+      if (!onFiltersChange) return
+      onFiltersChange({
+        [key]: iso
+          ? dayjs(iso)[unitFn](granularity).format('YYYY-MM-DD')
+          : '',
+      })
+    }
+
+  const pickerProps =
+    granularity === 'year'
+      ? { showYearPicker: true, dateFormat: 'yyyy' }
+      : granularity === 'month'
+        ? { showMonthYearPicker: true, dateFormat: 'MM.yyyy' }
+        : {}
+
+  return (
+    <div className={classes.rangeTriggers}>
+      <RangeDateField
+        label={fromLabel}
+        value={value?.start}
+        pickerProps={pickerProps}
+        onChangeIso={emitBound(startKey, 'startOf')}
+      />
+      <RangeDateField
+        label={toLabel}
+        value={value?.end}
+        pickerProps={pickerProps}
+        onChangeIso={emitBound(endKey, 'endOf')}
+      />
+    </div>
+  )
+}
+
 const HeaderItem = <TData,>({
   hidden,
   header,
