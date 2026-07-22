@@ -968,6 +968,51 @@ Logidest saab vaadata järgmist:
 
 Logisid säilitatakse 731 päeva.
 
+[END]
+
+[START]
+
+## Statistika
+
+Statistika moodul annab asutusele ülevaate Tõlkeväravas tehtud tellimuste arvust ja mahtudest. 
+Statistika lehte saavad vaadata kasutajad, kelle rollile on lisatud privileeg „Statistika mooduli ligipääs“. 
+Statistika lehel on eelseadistatud filtrid ja neid ei pea ise seadistama. 
+
+[BREAK]
+
+**Statistika vaatamine**
+
+Rippmenüüst saab määrata kolm väärtust: andmete grupi, ajatüübi ja kuupäeva.
+
+Andmete grupeerimise valikud
+* „Tellimuste statistika“ – tellimused tüübi, staatuse, arvu ja maksumuse järgi
+* „Tellimuste laiendatud statistika“ – tellimused tüübi, staatuse, siltide, arvu ja maksumuse järgi
+* „Alamtellimuste statistika“ – alamtellimused tüübi, staatuse, mahu, arvu, allahindluse ja maksumuse järgi
+* „Alamtellimuste laiendatud statistika“ – alamtellimused tüübi, keelepaari, staatuse, siltide, mahu, arvu, allahindluse ja maksumuse järgi
+* „Ülesannete statistika“ – ülesanded tüübi, staatuse, mahu, arvu, allahindluse ja maksumuse järgi
+* „Ülesannete laiendatud statistika“ – ülesanded asutuse, tüübi, staatuse, keelepaari, siltide, mahu, arvu, allahindluse ja maksumuse järgi
+
+Näiteks kui soovid näha viimase kuu jooksul lõpetatud tellimuste arvu tellimuse tüübi kaupa, vali „Tellimuste statistika“ ja määra soovitud ajavahemik. Kuvatud tulemustest saab soovi korral ka teatud staatusega tellimused eemaldada (nt tühistatud tellimused).
+
+Lisaks gruppidele kuvatakse igas tulemuste tabelis ka arvulisi näitajaid (nt arv, maht, tõlkemälu kasutuse allahindlus, maksumus), mis sõltuvad valitud statistika filtrist.
+
+**Ajavahemiku valimine**
+
+Aja grupeerimise all on kolm valikut
+* „Päevade kaupa“ – tellimused päeva kaupa
+* „Kuude kaupa“ – tellimused kuu kaupa
+* „Aastate kaupa“ – tellimused aastate kaupa
+
+Aja arvestuse all on kaks valikut
+* „Tellimuse vormistamise kuupäev“ – loomise kuupäeva järgi
+* „Tellimuse vastuvõtmise kuupäev“ – vastuvõtmise kuupäeva järgi
+
+Vali rippmenüüst „Aja grupeerimine“, kas soovid andmeid vaadata päevade, kuude või aastate kaupa. Vali rippmenüüst „Aja arvestus“, kas soovitud perioodi arvestatakse tellimuse vormistamise või vastuvõtmise kuupäeva järgi. Valiku tegemisel lisandub tulemuste tabelisse veerg valitud perioodiga (nt „August 2026“). Näide: „Tellimuste statistika“ + „Kuude kaupa“ + „Tellimuse vormistamise kuupäev“.
+
+**Tulemuste eksportimine** 
+
+Otsingutulemused saab ka alla laadida CSV-failina.
+
 [END]`
 
 export default manualText

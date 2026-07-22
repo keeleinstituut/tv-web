@@ -121,6 +121,7 @@ const orderOfKeys = [
   'institutionManagement',
   'technicalSettings',
   'logs',
+  'statistics',
 ]
 
 const translationAgencyOrderOfKeys = [
@@ -179,11 +180,13 @@ const syncManualFile = async (markup, keys, outputPath) => {
       )
     }
 
+    const stripBrNewline = (html) => html.replace(/(<br\s*\/?>)\n+/g, '$1')
+
     // Take the keys based on the order
     jsonContent[keys[i]] = {
       title: section.title,
-      content: htmlSection.content,
-      tooltipContent: htmlSection.tooltipContent,
+      content: stripBrNewline(htmlSection.content),
+      tooltipContent: stripBrNewline(htmlSection.tooltipContent),
     }
   })
 

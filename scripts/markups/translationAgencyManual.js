@@ -1,3 +1,10 @@
+// Two [END] markers missing in the source wiki page (before "Ülesanded" and before
+// "Auditlogid") were added here to keep section parsing correct — a bug in the wiki
+// page itself, so re-pulling the raw wiki content will drop them again; re-add if so.
+// The CAT-tool section (translationTool) has no "## " heading of its own in the wiki
+// page; a synthetic "## Tõlketööriist" heading was added here so it parses/titles
+// like every other section — keep the space after "##" or the API won't render it
+// as a heading.
 const translationAgencyManualText = `# Kasutusjuhend
 
 [START]
@@ -95,29 +102,29 @@ Lisaks saab tellimusi filtreerida tellimuse ID, viitenumbri, keelesuuna, tüübi
 
 **3. Tellimuse tüüp**: tüüp viitab tellitud teenusele (nt „Tõlkimine, Toimetamine“ või „Vandetõlge“ jne). Välise teostajana ei pruugi tellija asutus alati töösse saata kõiki tellimuse tüübi all olevaid ülesandeid. Nimelt saab tellija tööd jagada ka osadeks ja määrata ülesanded kas ühele ja samale või eri teostajatele. Tellimuse tüübi lühend on ka iga tellimuse ID-s ja see annab kasutajale märku, mis teenuse tüübiga on tegu:
 
-Suuline tõlge – S; <br>
-Järeltõlge – JÄ; <br>
-Sünkroontõlge – SÜ; <br>
-Viipekeel – VK; <br>
-Tõlkimine(CAT), Ülevaatus – T; <br>
-Tõlkimine(CAT) – T; <br>
-Tõlkimine, Ülevaatus – T; <br>
-Tõlkimine – T; <br>
-Toimetamine, Ülevaatus – TO; <br>
-Toimetamine – TO; <br>
-Toimetatud tõlge, Ülevaatus – TO; <br>
-Toimetatud tõlge – TT; <br>
-Tõlkimine(CAT), Toimetamine, Ülevaatus – TT; <br>
-Tõlkimine(CAT), Toimetamine – TT; <br>
-Tõlkimine, Toimetamine, Ülevaatus – TT; <br>
-Tõlkimine, Toimetamine – TT; <br>
-Käsikirjaline tõlge, Ülevaatus – KT; <br>
-Käsikirjaline tõlge – KT; <br>
-Terminoloogia töö – TR; <br>
-Vandetõlge (CAT), Ülevaatus – VT; <br>
-Vandetõlge (CAT) – VT; <br>
-Vandetõlge, Ülevaatus – VT; <br>
-Vandetõlge – VT.<br>
+* Suuline tõlge – S;
+* Järeltõlge – JÄ;
+* Sünkroontõlge – SÜ;
+* Viipekeel – VK;
+* Tõlkimine(CAT), Ülevaatus – T;
+* Tõlkimine(CAT) – T;
+* Tõlkimine, Ülevaatus – T;
+* Tõlkimine – T;
+* Toimetamine, Ülevaatus – TO;
+* Toimetamine – TO;
+* Toimetatud tõlge, Ülevaatus – TO;
+* Toimetatud tõlge – TT;
+* Tõlkimine(CAT), Toimetamine, Ülevaatus – TT;
+* Tõlkimine(CAT), Toimetamine – TT;
+* Tõlkimine, Toimetamine, Ülevaatus – TT;
+* Tõlkimine, Toimetamine – TT;
+* Käsikirjaline tõlge, Ülevaatus – KT;
+* Käsikirjaline tõlge – KT;
+* Terminoloogia töö – TR;
+* Vandetõlge (CAT), Ülevaatus – VT;
+* Vandetõlge (CAT) – VT;
+* Vandetõlge, Ülevaatus – VT;
+* Vandetõlge – VT.
 
 Märkus. Sulgudes lühend CAT tellimuse tüübi nimes viitab sellele, et teenuse osaks on kirjalik tõlkimine tõlketööriistas.
 
@@ -246,7 +253,7 @@ Teostajate andmebaasis kuvatakse kõik asutuse kasutajad, kes on teostajate andm
 
 Teostaja konto andmete vaates saab hallata temaga kokkulepitud keelepaare ja oskusi.
 
-Tõlkevärava kasutajakontod on seotud kasutaja isikukoodi ja nimega. Teostajate andmebaasi lisatud kasutajatele on võimalik lisada ka „Lepingupartneri ärinimi“. Kui teenust osutab FIE, OÜ, vms ja mitte eraisik või põhikohaga töötaja, siis saab teostajale lisada ka ärinime või viite koostöövormile.
+Tõlkevärava kasutajakontod on seotud kasutaja isikukoodi ja nimega. Teostajate andmebaasi lisatud kasutajatele on võimalik lisada ka „Lepingupartneri ärinimi“. Kui teenust osutab FIE, OÜ, vms ja mitte eraisik või põhikohaga töötaja, siis saab teostajale lisada ka ärinime või viite koostöövormile. 
 
 [BREAK]
 
@@ -264,7 +271,7 @@ Tõlkevärava kasutajakontod on seotud kasutaja isikukoodi ja nimega. Teostajate
 
 ## Tõlketööriist
 
-**Mida on tõlketööriistaga tõlkimiseks vaja?**
+**Mida on tõlketööriistaga tõlkimiseks vaja?**   
 
 Tõlkevärava tõlketööriist on veebipõhine. Sellega saab töötada vaid veebibrauseris ja arvutis peab olema internetiühendus, et luua ühendus tõlkemälu, masintõlkemootori ja Ekilexiga.
 
@@ -274,15 +281,12 @@ Tõlkevärav on mõeldud kasutajatele, kellel on internetiühendus.
 Ajutise internetiühenduse katkemise korral saab siiski kuni 20 segmenti tõlkida. Tõlkevärav sünkroonib tõlgitud segmendid, kui ühendus taastub.  
 
 
-### Kiirklahvide otseteed  
+**Kiirklahvide otseteed** 
 
-**Nipid kiiremini töötamiseks**  
-
-Tõlkevärava tõlketööriistas saab kasutada otseteena kiirklahve. Vormindamise ja funktsionaalsuste otseteede tundmaõppimine aitab tõlkijal olla produktiivsem ja kiiremini tõlkida. Otseteede nimekirja saab avada, klõpsates tõlketööriista kasutajaliidese ülemisel kolme punktiga tähistatud nupule „Kiirklahvid“.  
+Tõlkevärava tõlketööriistas saab kasutada otseteena **kiirklahve**. Vormindamise ja funktsionaalsuste otseteede tundmaõppimine aitab tõlkijal olla produktiivsem ja kiiremini tõlkida. Otseteede nimekirja saab avada, klõpsates tõlketööriista kasutajaliidese ülemisel kolme punktiga tähistatud nupule „Kiirklahvid“.  
 
 
-
-### Tõlke allalaadimine tõlketööriistast
+**Tõlke allalaadimine tõlketööriistast**  
 
 Tõlketeksti saab alla laadida alamtellimuse vaates kolme punktiga ikoonist avanevast allalaadimise nupust **„Laadi alla valmis tõlge“**. 
 
