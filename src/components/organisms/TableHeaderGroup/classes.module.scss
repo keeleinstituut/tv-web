@@ -51,3 +51,8 @@
 .leftMargin {
   margin-left: variables.spacing(2);
 }
+
+.rangeTriggers {
+  display: flex;
+  gap: variables.spacing(1);
+}

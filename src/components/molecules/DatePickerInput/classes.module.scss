@@ -112,7 +112,8 @@
   border-bottom: 0;
 }
 
-:global(.react-datepicker__current-month) {
+:global(.react-datepicker__current-month),
+:global(.react-datepicker-year-header) {
   height: 50px;
   border-bottom: 1px solid variables.$color-input-border;
   background-color: variables.$color-primary;
@@ -195,7 +196,8 @@
   left: -8px;
 }
 
-:global(.react-datepicker__day--keyboard-selected) {
+
+:global(.react-datepicker__day--keyboard-selected:not(.react-datepicker__day--selected)) {
   background-color: transparent;
   border-radius: 16px;
   position: relative;
@@ -219,4 +221,36 @@
 
 :global(.react-datepicker__day--disabled:hover) {
   color: variables.$color-white;
+}
+
+:global(.react-datepicker__year-wrapper) {
+  max-width: 100%;
+}
+
+:global(.react-datepicker__month-text),
+:global(.react-datepicker__year-text) {
+  color: variables.$color-input-main;
+  @include mixins.subtitleSmallTextStyle;
+  line-height: variables.$line-height;
+  border-radius: 16px;
+  padding: variables.spacing(1.5) variables.spacing(2);
+
+  &:hover {
+    border-radius: 16px;
+    background-color: variables.$color-background-dark;
+  }
+}
+
+:global(.react-datepicker__month-text--selected),
+:global(.react-datepicker__year-text--selected) {
+  color: variables.$color-white;
+  background-color: variables.$color-primary;
+  border-radius: 16px;
+}
+
+:global(.react-datepicker__month-text--keyboard-selected:not(.react-datepicker__month-text--selected)),
+:global(.react-datepicker__year-text--keyboard-selected:not(.react-datepicker__year-text--selected)) {
+  background-color: transparent;
+  color: variables.$color-input-main;
+  border-radius: 16px;
 }

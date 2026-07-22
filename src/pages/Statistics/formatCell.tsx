@@ -18,7 +18,7 @@ const PERIOD_FORMAT: Record<StatisticsTimeframe, string> = {
   yearly: 'YYYY',
 }
 
-const RELATION_MAP_BY_KEY: Record<
+export const RELATION_MAP_BY_KEY: Record<
   string,
   'classifierMap' | 'tagMap' | 'institutionMap'
 > = {
@@ -29,11 +29,11 @@ const RELATION_MAP_BY_KEY: Record<
   assignee_institution_id: 'institutionMap',
 }
 
-export const formatCell = (
+export const formatCellValue = (
   key: string,
   value: StatisticsRow[string],
   ctx: FormatCellContext
-): ReactNode => {
+): string => {
   const { t, timeframe } = ctx
 
   if (value === null || value === undefined) return '–'
@@ -71,3 +71,9 @@ export const formatCell = (
 
   return String(value)
 }
+
+export const formatCell = (
+  key: string,
+  value: StatisticsRow[string],
+  ctx: FormatCellContext
+): ReactNode => formatCellValue(key, value, ctx)
