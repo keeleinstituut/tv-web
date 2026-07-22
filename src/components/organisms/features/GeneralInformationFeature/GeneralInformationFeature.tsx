@@ -117,10 +117,16 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     if (project?.meeting_link) return 'remote'
     return ''
   })()
-  const { catToolJobs, catSetupStatus, startPolling, isPolling } =
-    useFetchSubProjectCatToolJobs({
-      id,
-    })
+  const {
+    catToolJobs,
+    catSetupStatus,
+    canDownloadXliff,
+    canDownloadTranslations,
+    startPolling,
+    isPolling,
+  } = useFetchSubProjectCatToolJobs({
+    id,
+  })
   const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
     subProjectId: id,
   })
@@ -369,6 +375,8 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           }
           canSendToVendors={true} //TODO add check when camunda is ready
           isEditable={isSomethingEditable && !isShared}
+          canDownloadXliff={canDownloadXliff}
+          canDownloadTranslations={canDownloadTranslations}
         />
         <TranslationMemoriesSection
           className={classes.translationMemories}

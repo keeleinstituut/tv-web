@@ -676,6 +676,7 @@
     "IMPORT_TM": "Asutuse tõlkemälu import",
     "EXPORT_TM": "Asutuse tõlkemälu eksport",
     "DELETE_TM": "Asutuse tõlkemälu eemaldamine",
+    "EDIT_TM": "Asutuse tõlkemälu andmete muutmine",
     "EDIT_TM_METADATA": "Asutuse tõlkemälu andmete muutmine",
     "VIEW_TM": "Asutuse tõlkemälude vaatamine",
     "CREATE_PROJECT": "Tellimuse lisamine",

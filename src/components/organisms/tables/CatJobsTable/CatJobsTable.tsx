@@ -1,6 +1,6 @@
 import { useCallback, useMemo, FC } from 'react'
 import { useTranslation } from 'react-i18next'
-import { map, round, size, toNumber } from 'lodash'
+import { compact, isEmpty, map, round, size, toNumber } from 'lodash'
 import ArrowRight from 'assets/icons/arrow_right.svg?react'
 import HorizontalDots from 'assets/icons/horizontal_dots.svg?react'
 import classNames from 'classnames'
@@ -42,6 +42,8 @@ interface CatJobsTableProps {
   mode?: ProjectDetailModes
   isHistoryView?: string
   isEditable?: boolean
+  canDownloadXliff?: boolean
+  canDownloadTranslations?: boolean
 }
 
 interface CatJobRow {
@@ -68,6 +70,8 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
   mode,
   isHistoryView,
   isEditable,
+  canDownloadXliff,
+  canDownloadTranslations,
 }) => {
   const { t } = useTranslation()
   const { downloadXliff } = useDownloadXliffFile({ isZip: size(cat_files) > 1 })
@@ -169,55 +173,56 @@ const CatJobsTable: FC<CatJobsTableProps> = ({
     }),
     columnHelper.accessor('dots_button', {
       cell: () => {
-        return mode === ProjectDetailModes.View ? (
+        if (mode !== ProjectDetailModes.View) return ''
+        const options = compact([
+          canDownloadXliff && {
+            label: t('button.download_xliff'),
+            onClick: () => downloadXliff(subProjectId),
+          },
+          canDownloadTranslations && {
+            label: t('button.download_ready_translation'),
+            onClick: () => downloadTranslatedFile(subProjectId),
+          },
+        ])
+        if (isEmpty(options)) return ''
+        return (
           <SimpleDropdown
             icon={HorizontalDots}
             disabled={!!isHistoryView}
             className={classes.dropdown}
             buttonClassName={classes.dropdownInnerButton}
-            options={[
-              {
-                label: t('button.download_xliff'),
-                onClick: () => downloadXliff(subProjectId),
-              },
-              {
-                label: t('button.download_ready_translation'),
-                onClick: () => downloadTranslatedFile(subProjectId),
-              },
-            ]}
+            options={options}
           />
-        ) : (
-          ''
         )
       },
       header: () => {
-        return mode !== ProjectDetailModes.View ? (
+        if (mode === ProjectDetailModes.View) return ''
+        const options = compact([
+          isEditable && {
+            label: t('button.split_file'),
+            onClick: handleCatSplitClick,
+          },
+          canDownloadXliff && {
+            label: t('button.download_xliff'),
+            onClick: () => downloadXliff(subProjectId),
+          },
+          canDownloadTranslations && {
+            label: t('button.download_ready_translation'),
+            onClick: () => downloadTranslatedFile(subProjectId),
+          },
+          isEditable && {
+            label: t('button.join_files'),
+            onClick: handleCatMergeClick,
+          },
+        ])
+        if (isEmpty(options)) return ''
+        return (
           <SimpleDropdown
             icon={HorizontalDots}
             className={classes.dropdown}
             buttonClassName={classes.dropdownInnerButton}
-            disabled={!isEditable}
-            options={[
-              {
-                label: t('button.split_file'),
-                onClick: handleCatSplitClick,
-              },
-              {
-                label: t('button.download_xliff'),
-                onClick: () => downloadXliff(subProjectId),
-              },
-              {
-                label: t('button.download_ready_translation'),
-                onClick: () => downloadTranslatedFile(subProjectId),
-              },
-              {
-                label: t('button.join_files'),
-                onClick: handleCatMergeClick,
-              },
-            ]}
+            options={options}
           />
-        ) : (
-          ''
         )
       },
       footer: (info) => info.column.id,

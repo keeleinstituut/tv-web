@@ -29,7 +29,6 @@ import { useCreateVendors, useDeleteVendors } from 'hooks/requests/useVendors'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { ValidationError } from 'api/errorHandler'
-import { GetVendorsPayload } from 'types/vendors'
 
 export interface VendorsEditModalProps {
   isModalOpen?: boolean
@@ -37,7 +36,6 @@ export interface VendorsEditModalProps {
   usersData?: VendorUser
   paginationData?: ResponseMetaTypes
   onPaginationChange?: (value?: PaginationFunctionType) => void
-  vendorsFilters?: GetVendorsPayload
 }
 
 type FormValues = {
@@ -50,7 +48,6 @@ type FormValues = {
 const VendorsEditModal: FC<VendorsEditModalProps> = ({
   isModalOpen,
   closeModal,
-  vendorsFilters,
 }) => {
   const { t } = useTranslation()
   const [searchValue, setSearchValue] = useState<string>('')
@@ -64,9 +61,8 @@ const VendorsEditModal: FC<VendorsEditModalProps> = ({
       useTranslationService: true,
     })
 
-  // TODO: might need to take these filters from url instead
-  const { createVendor } = useCreateVendors(vendorsFilters)
-  const { deleteVendors } = useDeleteVendors(vendorsFilters)
+  const { createVendor } = useCreateVendors()
+  const { deleteVendors } = useDeleteVendors()
 
   const resetSearch = () => {
     setSearchValue('')

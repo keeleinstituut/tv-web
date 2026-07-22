@@ -310,6 +310,8 @@ export interface CatToolJobsResponse {
     setup_status: CatProjectStatus
     analyzing_status: CatProjectStatus
     cat_jobs: CatJob[]
+    can_download_xliff: boolean
+    can_download_translations: boolean
   }
 }
 // TODO: not sure what should be sent for CatProjectPayload

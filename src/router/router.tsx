@@ -394,6 +394,7 @@ export const protectedRoutes: FullRouteObject[] = [
         label: i18n.t('menu.report_export'),
         element: <ReportExport />,
         Icon: ReportIcon,
+        privileges: [Privileges.ExportInstitutionGeneralReport],
       },
       {
         path: 'institution-settings',
