@@ -13,6 +13,7 @@ import { createColumnHelper, ColumnDef } from '@tanstack/react-table'
 import { Root as Form } from '@radix-ui/react-form'
 import Container from 'components/atoms/Container/Container'
 import Loader from 'components/atoms/Loader/Loader'
+import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import DataTable, {
   TableSizeTypes,
@@ -297,7 +298,10 @@ const Statistics: FC = () => {
   return (
     <>
       <div className={classes.header}>
-        <h1 className={classes.title}>{t('statistics.title')}</h1>
+        <div className={classes.titleWithTooltip}>
+          <h1 className={classes.title}>{t('statistics.title')}</h1>
+          <Tooltip helpSectionKey="statistics" />
+        </div>
         <Button
           appearance={AppearanceTypes.Secondary}
           onClick={() => exportStatisticsCsv(displayedRows, ctx, t)}

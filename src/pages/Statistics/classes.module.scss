@@ -12,6 +12,12 @@
   margin-bottom: 0;
 }
 
+.titleWithTooltip {
+  display: flex;
+  align-items: center;
+  gap: variables.spacing(2);
+}
+
 .parametersContainer {
   margin-bottom: variables.spacing(6);
   padding: variables.spacing(6) variables.spacing(4);
