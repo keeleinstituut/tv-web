@@ -44,8 +44,10 @@ export const formatCellValue = (
 
   if (key === 'is_verbal') {
     const isTrue =
-      value === true || value === 't' || value === 1 || value === '1'
-    return isTrue ? t('statistics.yes') : t('statistics.no')
+      value === true || value === 'true' || value === 1 || value === '1'
+    return isTrue
+      ? t('statistics.is_verbal_true')
+      : t('statistics.is_verbal_false')
   }
 
   if (key === 'status') {

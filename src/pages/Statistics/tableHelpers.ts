@@ -54,8 +54,8 @@ export const getFilterOptions = (
 
   if (kind === 'is_verbal') {
     return [
-      { value: 'true', label: ctx.t('statistics.yes') },
-      { value: 'false', label: ctx.t('statistics.no') },
+      { value: 'true', label: ctx.t('statistics.is_verbal_true') },
+      { value: 'false', label: ctx.t('statistics.is_verbal_false') },
     ]
   }
 

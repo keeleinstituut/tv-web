@@ -248,7 +248,7 @@ const DropdownContentComponent = forwardRef<
           {map(visibleOptions, (option, index) => {
             const isMultiSelected =
               selectedValue && includes(selectedValue, option?.value)
-            const isSingleSelected = value && includes(value, option?.value)
+            const isSingleSelected = value === option?.value
 
             return (
               <li key={option.value} className={classes.dropdownMenuItem}>

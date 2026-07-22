@@ -223,6 +223,10 @@
   color: variables.$color-white;
 }
 
+:global(.react-datepicker__year--container) {
+  width: 392px;
+}
+
 :global(.react-datepicker__year-wrapper) {
   max-width: 100%;
 }

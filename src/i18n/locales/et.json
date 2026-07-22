@@ -354,6 +354,8 @@
     "parameters": "Parameetrid",
     "yes": "Jah",
     "no": "Ei",
+    "is_verbal_true": "Suuline",
+    "is_verbal_false": "Kirjalik",
     "no_data": "Andmed puuduvad",
     "no_filtered_results": "Valitud filtritele vastavad andmed puuduvad",
     "load_error": "Statistika laadimine ebaõnnestus",
@@ -387,7 +389,7 @@
     },
     "columns": {
       "period": "Periood",
-      "is_verbal": "Suuline",
+      "is_verbal": "Tellimuse tüüp",
       "status": "Staatus",
       "job_short_name": "Töö",
       "tag_id": "Silt",
