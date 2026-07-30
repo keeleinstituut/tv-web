@@ -9,6 +9,9 @@ import {
   useCatTranslationMemoriesList,
   useUpdateCatProjectTranslationMemories,
 } from "./useCatTranslationMemories"
+import { chain } from "lodash"
+import Button, { SizeTypes } from "components/molecules/Button/Button"
+import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
 
 interface CatTranslationMemory {
   id: string
@@ -52,13 +55,24 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
     return map
   }, [catProjectQuery.data])
 
+  const addNewTm = () => {
+    showModal(ModalTypes.AddTranslationMemories, { catProjectId })
+  }
+
   const rows: CatTmRow[] = useMemo(() => {
     const allTms: CatTranslationMemory[] = catTmsQuery.data?.data || []
-    return allTms.map((tm) => ({
-      ...tm,
-      read: assignedMap.get(tm.id)?.read ?? false,
-      write: assignedMap.get(tm.id)?.write ?? false,
-    }))
+
+    return chain(allTms)
+      .filter(tm => assignedMap.has(tm.id))
+      .map(tm => {
+        const assigned = assignedMap.get(tm.id)
+        return {
+          ...tm,
+          read: assigned?.read ?? false,
+          write: assigned?.write ?? false,
+        }
+      })
+      .value()
   }, [catTmsQuery.data, assignedMap])
 
   const handleToggle = useCallback(
@@ -130,6 +144,13 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
       initialIsExpanded
       wrapContent
       leftComponent={<h3>{t('translation_memory.title')}</h3>}
+      rightComponent={<>
+        <Button
+          children={t('button.add_tm')}
+          size={SizeTypes.S}
+          onClick={addNewTm}
+        />
+      </>}
     >
       <DataTable
         data={rows}
