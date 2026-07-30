@@ -23,7 +23,7 @@ const TranslationMemoryPage: FC = () => {
   })
 
   const isTmOwnedByUserInstitution =
-    selectedInstitution?.id === translationMemory?.institution_id
+    selectedInstitution?.id === translationMemory?.meta.institution_id
 
   if (isLoading) return <Loader loading={isLoading} />
 

@@ -45,12 +45,15 @@ import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 
 type TranslationMemoriesTableRow = {
-  name: string
   id: string
-  type?: string
-  tv_tags?: string[]
-  tv_domain?: string
-  lang_pair?: string
+  name: string
+  source_locale?: string
+  target_locale?: string
+  meta: {
+    visibility?: string
+    tv_tags?: string[]
+    tv_domain?: string
+  }
 }
 
 const columnHelper = createColumnHelper<TranslationMemoriesTableRow>()
@@ -224,7 +227,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           footer: (info) => info.column.id,
           size: 240,
         }),
-        columnHelper.accessor('type', {
+        columnHelper.accessor('meta.visibility', {
           header: () => '',
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {
@@ -233,7 +236,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           },
           size: 20,
         }),
-        columnHelper.accessor('tv_tags', {
+        columnHelper.accessor('meta.tv_tags', {
           header: () => t('label.tags'),
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {
@@ -258,7 +261,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
             ),
           },
         }),
-        columnHelper.accessor('tv_domain', {
+        columnHelper.accessor('meta.tv_domain', {
           header: () => t('label.translation_domain'),
           footer: (info) => info.column.id,
 
@@ -277,7 +280,8 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
             ),
           },
         }),
-        columnHelper.accessor('lang_pair', {
+        columnHelper.accessor(row => `${row.source_locale}_${row.target_locale}`, {
+          id: 'lang_pair',
           header: () => t('label.language_directions'),
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {

@@ -17,13 +17,16 @@ import { ClassifierValueType } from 'types/classifierValues'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { useNavigate } from 'react-router-dom'
 import { useCreateTranslationMemory } from 'hooks/requests/useTranslationMemories'
+import { useAuth } from 'components/contexts/AuthContext'
 
 interface FormValues {
   name: string
-  slang: string
-  tlang: string
-  tv_domain?: string
-  type: TMType
+  source_locale: string
+  target_locale: string
+  meta: {
+    tv_domain?: string
+    visibility: TMType
+  }
 }
 
 const TranslationMemoryForm: FC = () => {
@@ -47,7 +50,11 @@ const TranslationMemoryForm: FC = () => {
     setValue,
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
-    defaultValues: { type: TMType.Internal },
+    defaultValues: {
+      meta: {
+        visibility: TMType.Internal
+      }
+    },
   })
 
   const statusOptions = map(TMType, (status) => ({
@@ -55,12 +62,12 @@ const TranslationMemoryForm: FC = () => {
     value: status,
   }))
 
-  const statusValue = watch('type')
+  const statusValue = watch('meta.visibility')
 
   useEffect(() => {
     if (includes([TMType.Shared, TMType.Public], statusValue)) {
       showModal(ModalTypes.ConfirmationModal, {
-        handleCancel: () => setValue('type', TMType.Internal),
+        handleCancel: () => setValue('meta.visibility', TMType.Internal),
         title: t('translation_memories.confirmation_text'),
         cancelButtonContent: t('button.cancel'),
         helperText: t('translation_memories.confirmation_help_text'),
@@ -85,7 +92,7 @@ const TranslationMemoryForm: FC = () => {
       ariaLabel: t('label.translation_domain'),
       placeholder: t('placeholder.pick'),
       label: `${t('label.translation_domain')}*`,
-      name: 'tv_domain',
+      name: 'meta.tv_domain',
       options: domainOptions,
       className: classes.inputInternalPosition,
       rules: {
@@ -97,7 +104,7 @@ const TranslationMemoryForm: FC = () => {
       ariaLabel: t('label.source_language'),
       placeholder: t('placeholder.pick'),
       label: `${t('label.source_language')}*`,
-      name: 'slang',
+      name: 'source_locale',
       className: classes.inputInternalPosition,
       options: languageOptions,
       showSearch: true,
@@ -111,7 +118,7 @@ const TranslationMemoryForm: FC = () => {
       ariaLabel: t('label.destination_language'),
       placeholder: t('placeholder.pick'),
       label: `${t('label.destination_language')}*`,
-      name: 'tlang',
+      name: 'target_locale',
       className: classes.inputInternalPosition,
       options: languageOptions,
       showSearch: true,
@@ -124,24 +131,33 @@ const TranslationMemoryForm: FC = () => {
       inputType: InputTypes.Selections,
       ariaLabel: t('label.usage'),
       label: t('label.usage'),
-      name: 'type',
+      name: 'meta.visibility',
       options: statusOptions,
       className: classes.inputInternalPosition,
       helperText: t('translation_memories.helper_text'),
     },
   ]
 
+  const { userInfo } = useAuth()
+
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const slangValue = filter(classifierValues, { id: values.slang })[0].value
+      const slangValue = filter(classifierValues, { id: values.source_locale })[0].value
       const sortSlang = split(slangValue, '-')[0]
-      const tlangValue = filter(classifierValues, { id: values.tlang })[0].value
+      const tlangValue = filter(classifierValues, { id: values.target_locale })[0].value
       const sortTlang = split(tlangValue, '-')[0]
 
       const payload = {
-        ...{ lang_pair: `${sortSlang}_${sortTlang}` },
-        ...omit(values, ['slang', 'tlang']),
+        name: values.name,
+        source_locale: sortSlang,
+        target_locale: sortTlang,
+        meta: {
+          institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
+          visibility: values.meta.visibility,
+          tv_domain: values.meta.tv_domain,
+        }
       }
+
       try {
         const data = await createTranslationMemory(payload)
         showNotification({

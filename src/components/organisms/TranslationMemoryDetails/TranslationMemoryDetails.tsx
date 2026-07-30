@@ -45,8 +45,6 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
   const { exportTMX, isLoading } = useExportTMX()
   const navigate = useNavigate()
 
-  const { lang_pair } = translationMemory || {}
-
   const handleImportSegments = async (uploadedFile: File) => {
     const payload = {
       file: uploadedFile,
@@ -72,11 +70,8 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
   }
 
   const handleExportFile = async () => {
-    const langPair = split(lang_pair, '_')
     const payload = {
-      slang: langPair[0],
-      tlang: langPair[1],
-      tag: [memoryId],
+      translation_memory_ids: [memoryId],
     }
     try {
       await exportTMX(payload)

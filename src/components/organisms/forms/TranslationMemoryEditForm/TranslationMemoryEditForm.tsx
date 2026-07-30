@@ -29,10 +29,12 @@ import { useUpdateTranslationMemory } from 'hooks/requests/useTranslationMemorie
 
 interface FormValues {
   name: string
-  tv_domain?: string
-  type: TMType
-  tv_tags: string[]
-  comment: string
+  meta: {
+    tv_domain?: string
+    visibility: TMType
+    tv_tags: string[]
+    comment: string
+  }
 }
 type TranslationMemoryEditFormTypes = {
   data: Partial<TranslationMemoryType>
@@ -53,7 +55,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { institution } = useInstitutionFetch({ id: data?.institution_id })
+  const { institution } = useInstitutionFetch({ id: data?.meta.institution_id })
   const { updateTranslationMemory } = useUpdateTranslationMemory({
     id: data.id,
   })
@@ -69,7 +71,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
   const details = useMemo(
     () => ({
       id: data?.id || '',
-      language_direction: data?.lang_pair || '',
+      language_direction: `${data.source_locale}_${data.target_locale}`,
       chunk_amount: data.chunk_amount || 0,
       owner: institution?.name || '',
       created_at: dayjs(date).format('DD.MM.YYYY') || '',
@@ -79,11 +81,18 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
 
   const defaultValues = useMemo(
     () => ({
+      // name: data.name || '',
+      // type: data?.meta.visibility || TMType.Internal,
+      // tv_domain: data?.meta.tv_domain || '',
+      // tv_tags: data?.meta.tv_tags || [],
+      // comment: data?.meta.comment || '',
       name: data.name || '',
-      type: data?.type || TMType.Internal,
-      tv_domain: data?.tv_domain || '',
-      tv_tags: data?.tv_tags || [],
-      comment: data?.comment || '',
+      meta: {
+        visibility: data?.meta.visibility || TMType.Internal,
+        tv_domain: data?.meta.tv_domain || '',
+        tv_tags: data?.meta.tv_tags || [],
+        comment: data?.meta.comment || '',
+      },
     }),
     [data]
   )
@@ -124,7 +133,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       ariaLabel: t('label.tags'),
       placeholder: t('placeholder.select_tags'),
       label: `${t('label.tags')}`,
-      name: 'tv_tags',
+      name: 'meta.tv_tags',
       className: classes.inputInternalPosition,
       options: tagOptions,
       multiple: true,
@@ -137,7 +146,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       inputType: InputTypes.Selections,
       ariaLabel: t('label.usage'),
       label: t('label.usage'),
-      name: 'type',
+      name: 'meta.visibility',
       options: statusOptions,
       className: classes.inputInternalPosition,
       rules: {
@@ -154,7 +163,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       ariaLabel: t('label.comment'),
       placeholder: t('placeholder.write_here'),
       label: `${t('label.comment')}`,
-      name: 'comment',
+      name: 'meta.comment',
       type: 'comment',
       className: classes.inputInternalPosition,
       disabled:
@@ -166,7 +175,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       ariaLabel: t('label.translation_domain'),
       placeholder: t('placeholder.pick'),
       label: t('label.translation_domain'),
-      name: 'tv_domain',
+      name: 'meta.tv_domain',
       options: domainOptions,
       className: classes.inputInternalPosition,
       disabled:

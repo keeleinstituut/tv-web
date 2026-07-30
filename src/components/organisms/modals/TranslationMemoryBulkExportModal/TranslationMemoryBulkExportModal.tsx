@@ -38,9 +38,7 @@ const TranslationMemoryBulkExportModal: FC<
 
   const handleExport = async () => {
     const payload = {
-      tag: map(translationMemories, 'id'),
-      slang: source_language,
-      tlang: target_language,
+      translation_memory_ids: map(translationMemories, 'id'),
     }
 
     try {

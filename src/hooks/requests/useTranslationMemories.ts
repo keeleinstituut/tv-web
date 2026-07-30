@@ -204,9 +204,9 @@ export const useImportTMX = () => {
   } = useMutation({
     mutationKey: ['tmx'],
     mutationFn: async (data: ImportTMXPayload) => {
-      formData.append('file', data.file)
-      formData.append('tag', data.tag)
-      return apiClient.post(endpoints.IMPORT_TMX, formData)
+      formData.append('files[]', data.file)
+      formData.append('translation_memory_id', data.tag)
+      return apiClient.post(endpoints.TRANSLATION_MEMORIES_IMPORT, formData)
     },
   })
 
@@ -224,7 +224,7 @@ export const useExportTMX = () => {
   const { mutateAsync: exportTMX } = useMutation({
     mutationKey: ['tmx'],
     mutationFn: async (payload: ExportTMXPayload) =>
-      apiClient.post(endpoints.EXPORT_TMX, payload, { responseType: 'blob' }),
+      apiClient.post(endpoints.TRANSLATION_MEMORIES_EXPORT, payload, { responseType: 'blob' }),
     onSuccess: (data) => {
       finishLoading()
       downloadFile({
