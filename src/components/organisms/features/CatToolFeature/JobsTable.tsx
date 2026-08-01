@@ -12,6 +12,7 @@ import classes from "./classes.module.scss"
 import { useTranslation } from "react-i18next"
 import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
 import { SourceFile } from "types/projects"
+import dayjs from "dayjs"
 
 const postAnalyses = async (params: any) => {
   return apiClient.post(`${CAT2_API_BASE_URL}/analyses`, params)
@@ -61,23 +62,21 @@ const JobsTable: FC<JobsTableProps> = (props) => {
         )
       },
     }),
-    {
-      accessorKey: "source_file.file_name",
+    columnHelper.accessor('source_file.file_name', {
       header: t('cat_tool_feature.jobs_table.column.file'),
-    },
-    {
-      accessorKey: "xliff_file.file_name",
+    }),
+    columnHelper.accessor('xliff_file.file_name', {
       header: t('cat_tool_feature.jobs_table.column.xliff'),
       cell: ({ row }: { row: any }) => (
         <a target="_blank" href={`http://devbox.host:5173/jobs/${row.original.id}/translate`}>
           {row.original.xliff_file?.file_name || t('cat_tool_feature.jobs_table.open_in_editor')}
         </a>
       ),
-    },
-    {
-      accessorKey: "created_at",
+    }),
+    columnHelper.accessor('created_at', {
       header: t('cat_tool_feature.jobs_table.column.created_at'),
-    },
+      cell: ({ getValue }) => dayjs(getValue()).format('YYYY.MM.DD HH:mm'),
+    }),
   ]
 
   return (
