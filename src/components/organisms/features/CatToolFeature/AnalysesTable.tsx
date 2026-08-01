@@ -6,6 +6,8 @@ import { FC } from "react"
 import classes from "./classes.module.scss"
 import { CattoAnalysis, CattoAnalysisResults } from "./types"
 import { useCatAnalyses } from "./useCatAnalyses"
+import ExpandableContentContainer from "components/molecules/ExpandableContentContainer/ExpandableContentContainer"
+import { useTranslation } from "react-i18next"
 
 const BAND_LABELS: Record<keyof CattoAnalysisResults["bands"], string> = {
   ice: "101%",
@@ -76,20 +78,28 @@ interface AnalysesTableProps {
 
 const AnalysesTable: FC<AnalysesTableProps> = (props) => {
   const { catProjectId } = props
+  const { t } = useTranslation()
   const { analyses, paginationData, handlePaginationChange } = useCatAnalyses(catProjectId)
 
   return (
-    <DataTable
-      data={analyses}
-      columns={analysesTableColumns}
-      tableSize={TableSizeTypes.M}
-      getRowId={(row) => row.id}
-      // paginationData={paginationData}
-      // onPaginationChange={handlePaginationChange}
-      // defaultPaginationData={{ per_page: 15 }}
-      headComponent={<h1>Analüüsid</h1>}
-      hidePagination
-    />
+    <ExpandableContentContainer
+      className={classes.expandableContainer}
+      initialIsExpanded
+      wrapContent
+      leftComponent={<h3>{t('cat_tool_feature.analyses')}</h3>}
+    >
+      <DataTable
+        data={analyses}
+        columns={analysesTableColumns}
+        tableSize={TableSizeTypes.M}
+        getRowId={(row) => row.id}
+        className={classes.translationMemoriesTable}
+        // paginationData={paginationData}
+        // onPaginationChange={handlePaginationChange}
+        // defaultPaginationData={{ per_page: 15 }}
+        hidePagination
+      />
+    </ExpandableContentContainer>
   )
 }
 

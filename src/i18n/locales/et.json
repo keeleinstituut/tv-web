@@ -998,6 +998,11 @@
     "public_confirmation": "Kinnitan, et soovin salvestada tõlked avalikku mällu.",
     "public_confirmation_help_text": "Mälu tähisega „Avalik“ on jagatud kõikide Tõlkevärava kasutajatega, seda mälu ja sellesse salvestatud tõlkesegmente näevad ja saavad tõlkimisel kasutada ka asutusevälised kasutajad."
   },
+  "cat_tool_feature": {
+    "jobs": "Tööd",
+    "analyses": "Analüüsid",
+    "translation_memories": "Tõlkemälud"
+  },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",
     "project_does_not_exist": "Tundub, et seda tellimust ei eksisteeri enam",

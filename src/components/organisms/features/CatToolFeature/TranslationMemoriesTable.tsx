@@ -60,6 +60,10 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
     showModal(ModalTypes.AddTranslationMemories, { catProjectId })
   }
 
+  const createEmptyTm = () => {
+    // TODO: wire up empty TM creation
+  }
+
   const rows: CatTmRow[] = useMemo(() => {
     const allTms: CatTranslationMemory[] = catTmsQuery.data?.data || []
 
@@ -139,16 +143,12 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
     }),
   ] as ColumnDef<CatTmRow>[]
 
-  const createEmptyTm = () => {
-    // TODO: wire up empty TM creation
-  }
-
   return (
     <ExpandableContentContainer
       className={classes.expandableContainer}
       initialIsExpanded
       wrapContent
-      leftComponent={<h3>{t('translation_memory.title')}</h3>}
+      leftComponent={<h3>{t('cat_tool_feature.translation_memories')}</h3>}
       rightComponent={<>
         <Button
           appearance={AppearanceTypes.Secondary}

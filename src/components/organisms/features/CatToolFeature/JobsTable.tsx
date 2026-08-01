@@ -4,9 +4,12 @@ import { apiClient } from "api"
 import Button, { SizeTypes } from "components/molecules/Button/Button"
 import DataTable, { TableSizeTypes } from "components/organisms/DataTable/DataTable"
 import { keys } from "lodash"
-import { FC, useState } from "react"
+import { FC, useMemo, useState } from "react"
 import { CAT2_API_BASE_URL } from "./constants"
 import { useCatJobs } from "./useCatJobs"
+import ExpandableContentContainer from "components/molecules/ExpandableContentContainer/ExpandableContentContainer"
+import classes from "./classes.module.scss"
+import { useTranslation } from "react-i18next"
 
 const postAnalyses = async (params: any) => {
   return apiClient.post(`${CAT2_API_BASE_URL}/analyses`, params)
@@ -57,7 +60,9 @@ interface JobsTableProps {
 
 const JobsTable: FC<JobsTableProps> = (props) => {
   const { catProjectId } = props
+  const { t } = useTranslation()
   const [rowSelection, setRowSelection] = useState({})
+  const rowSelectionCount = useMemo(() => keys(rowSelection).length, [rowSelection])
   const queryClient = useQueryClient()
 
   const catJobsQuery = useCatJobs(catProjectId)
@@ -72,37 +77,53 @@ const JobsTable: FC<JobsTableProps> = (props) => {
   })
 
   return (
-      <>
-        <DataTable
-          data={catJobsQuery.data?.data || []}
-          columns={jobTableColumns}
-          tableSize={TableSizeTypes.M}
-          // className={classes.filesListContainer}
-          hidePagination
-          rowSelection={rowSelection}
-          onRowSelectionChange={setRowSelection}
-          getRowId={row => row.id}
-          headComponent={
-            <>
-              <h1>Jobs</h1>
-              <span>
-                <Button
-                  size={SizeTypes.S}
-                  onClick={() => analyseMutation.mutate({ job_id: keys(rowSelection) })}
-                >
-                  Analüüsi
-                </Button>
-                <Button
-                  size={SizeTypes.S}
-                  onClick={() => pretranslateMutation.mutate({ job_ids: keys(rowSelection) })}
-                >
-                  Eeltõlgi
-                </Button>
-              </span>
-            </>
-          }
-        />
-      </>
+    <ExpandableContentContainer
+      className={classes.expandableContainer}
+      initialIsExpanded
+      wrapContent
+      leftComponent={
+        <>
+          <h3>{t('cat_tool_feature.jobs')}</h3>
+          <Button
+            className={classes.mainButton}
+            size={SizeTypes.S}
+            disabled={rowSelectionCount == 0}
+            onClick={() => analyseMutation.mutate({ job_id: keys(rowSelection) })}
+          >
+            Analüüsi
+          </Button>
+          <Button
+            className={classes.mainButton}
+            size={SizeTypes.S}
+            disabled={rowSelectionCount == 0}
+            onClick={() => pretranslateMutation.mutate({ job_ids: keys(rowSelection) })}
+          >
+            Eeltõlgi
+          </Button>
+        </>
+      }
+      rightComponent={
+        <>
+          <Button
+            size={SizeTypes.S}
+            onClick={() => {}}
+          >
+            Lisa failid
+          </Button>
+        </>
+      }
+    >
+      <DataTable
+        data={catJobsQuery.data?.data || []}
+        columns={jobTableColumns}
+        tableSize={TableSizeTypes.M}
+        getRowId={row => row.id}
+        className={classes.translationMemoriesTable}
+        hidePagination
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
+      />
+    </ExpandableContentContainer>
   )
 }
 
