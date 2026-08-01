@@ -23,39 +23,6 @@ const postPretranslate = async (params: any) => {
 
 const columnHelper = createColumnHelper<any>()
 
-const jobTableColumns = [
-  columnHelper.accessor('id', {
-    header: '',
-    footer: (info) => info.column.id,
-    cell: ({ getValue, row }) => {
-      return (
-        <input
-          type="checkbox"
-          checked={row.getIsSelected()}
-          onChange={(e) => row.toggleSelected(!!e.currentTarget.checked)}
-        />
-      )
-    },
-  }),
-  {
-    accessorKey: "source_file.file_name",
-    header: "File",
-  },
-  {
-    accessorKey: "xliff_file.file_name",
-    header: "Xliff",
-    cell: ({ row }) => (
-      <a target="_blank" href={`http://devbox.host:5173/jobs/${row.original.id}/translate`}>
-        {row.original.xliff_file?.file_name || 'Open in editor'}
-      </a>
-    ),
-  },
-  {
-    accessorKey: "created_at",
-    header: "Created at",
-  },
-]
-
 interface JobsTableProps {
   catProjectId: string
   targetLocale?: string
@@ -80,6 +47,39 @@ const JobsTable: FC<JobsTableProps> = (props) => {
     mutationFn: postPretranslate
   })
 
+  const jobTableColumns = [
+    columnHelper.accessor('id', {
+      header: '',
+      footer: (info) => info.column.id,
+      cell: ({ getValue, row }) => {
+        return (
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            onChange={(e) => row.toggleSelected(!!e.currentTarget.checked)}
+          />
+        )
+      },
+    }),
+    {
+      accessorKey: "source_file.file_name",
+      header: t('cat_tool_feature.jobs_table.column.file'),
+    },
+    {
+      accessorKey: "xliff_file.file_name",
+      header: t('cat_tool_feature.jobs_table.column.xliff'),
+      cell: ({ row }: { row: any }) => (
+        <a target="_blank" href={`http://devbox.host:5173/jobs/${row.original.id}/translate`}>
+          {row.original.xliff_file?.file_name || t('cat_tool_feature.jobs_table.open_in_editor')}
+        </a>
+      ),
+    },
+    {
+      accessorKey: "created_at",
+      header: t('cat_tool_feature.jobs_table.column.created_at'),
+    },
+  ]
+
   return (
     <ExpandableContentContainer
       className={classes.expandableContainer}
@@ -94,7 +94,7 @@ const JobsTable: FC<JobsTableProps> = (props) => {
             disabled={rowSelectionCount == 0}
             onClick={() => analyseMutation.mutate({ job_id: keys(rowSelection) })}
           >
-            Analüüsi
+            {t('cat_tool_feature.jobs_table.analyse')}
           </Button>
           <Button
             className={classes.mainButton}
@@ -102,7 +102,7 @@ const JobsTable: FC<JobsTableProps> = (props) => {
             disabled={rowSelectionCount == 0}
             onClick={() => pretranslateMutation.mutate({ job_ids: keys(rowSelection) })}
           >
-            Eeltõlgi
+            {t('cat_tool_feature.jobs_table.pretranslate')}
           </Button>
         </>
       }
@@ -118,7 +118,7 @@ const JobsTable: FC<JobsTableProps> = (props) => {
               })
             }
           >
-            Lisa failid
+            {t('cat_tool_feature.jobs_table.add_files')}
           </Button>
         </>
       }

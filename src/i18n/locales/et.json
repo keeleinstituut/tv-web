@@ -1010,6 +1010,33 @@
     "tooltip": {
       "sent_at": "Fail saadeti CAT tööriista {{date}}",
       "updated_since_sent": "Fail on muudetud pärast CAT tööriista saatmist ({{date}}). CAT tööriistas on endiselt vana versioon."
+    },
+    "analyses_table": {
+      "band": {
+        "repetitions": "Kordused",
+        "no_match": "Uus"
+      },
+      "column": {
+        "created": "Loodud",
+        "languages": "Keeled",
+        "status": "Staatus",
+        "total_words": "Sõnu kokku",
+        "new_words": "Uusi sõnu",
+        "distribution": "Jaotus"
+      },
+      "status_done": "Valmis",
+      "status_pending": "Ootel"
+    },
+    "jobs_table": {
+      "column": {
+        "file": "Fail",
+        "xliff": "Xliff",
+        "created_at": "Loodud"
+      },
+      "open_in_editor": "Ava redaktoris",
+      "analyse": "Analüüsi",
+      "pretranslate": "Eeltõlgi",
+      "add_files": "Lisa failid"
     }
   },
   "warning": {
