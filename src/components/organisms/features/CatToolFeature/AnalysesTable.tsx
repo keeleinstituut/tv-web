@@ -1,3 +1,4 @@
+import { Root } from "@radix-ui/react-form"
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import Tag from "components/atoms/Tag/Tag"
 import DataTable, { TableSizeTypes } from "components/organisms/DataTable/DataTable"
@@ -91,17 +92,22 @@ const AnalysesTable: FC<AnalysesTableProps> = (props) => {
       wrapContent
       leftComponent={<h3>{t('cat_tool_feature.analyses')}</h3>}
     >
-      <DataTable
-        data={analyses}
-        columns={analysesTableColumns}
-        tableSize={TableSizeTypes.M}
-        getRowId={(row) => row.id}
-        className={classes.translationMemoriesTable}
-        // paginationData={paginationData}
-        // onPaginationChange={handlePaginationChange}
-        // defaultPaginationData={{ per_page: 15 }}
-        hidePagination
-      />
+      <Root onSubmit={(e) => e.preventDefault()}>
+        <DataTable
+          data={analyses}
+          columns={analysesTableColumns}
+          tableSize={TableSizeTypes.M}
+          getRowId={(row) => row.id}
+          className={classes.translationMemoriesTable}
+          paginationData={paginationData}
+          onPaginationChange={handlePaginationChange}
+          defaultPaginationData={{ per_page: 15 }}
+          pageSizeOptions={[
+            { label: '15', value: '15' },
+            { label: '50', value: '50' },
+          ]}
+        />
+      </Root>
     </ExpandableContentContainer>
   )
 }

@@ -25,6 +25,7 @@ export const useCatAnalyses = (catProjectId?: string) => {
     queryFn: getAnalyses,
     queryKey: ['catAnalyses', filters],
     enabled: !!catProjectId,
+    keepPreviousData: true,
     refetchInterval: (data) => {
       const analyses = data?.data ?? []
       const isPending = analyses.some((analysis) => !analysis.results)
