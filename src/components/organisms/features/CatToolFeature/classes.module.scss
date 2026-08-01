@@ -1,5 +1,20 @@
+@use 'styles/variables' as variables;
+
 .bandsCell {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
+}
+
+.expandableContainer {
+  margin-top: variables.spacing(8);
+}
+
+.translationMemoriesTable {
+  border: unset;
+  box-shadow: unset;
+}
+
+.mainButton {
+  margin-left: variables.spacing(2);
 }

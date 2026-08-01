@@ -5,17 +5,7 @@ import ModalBase, {
   ModalSizeTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import { t } from 'i18next'
-import {
-  join,
-  keys,
-  map,
-  pickBy,
-  reduce,
-  reverse,
-  size,
-  split,
-  union,
-} from 'lodash'
+import { join, keys, pickBy, reduce, reverse, size, split } from 'lodash'
 import { closeModal } from '../ModalRoot'
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { ConfirmationModalBaseProps } from '../ConfirmationModalBase/ConfirmationModalBase'
@@ -61,7 +51,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
     () =>
       reduce(
         assignedList,
-        (result, tm) => (tm.read ? { ...result, [tm.id]: true } : result),
+        (result, tm) => ({ ...result, [tm.id]: true }),
         {}
       ),
     [assignedList]
@@ -100,19 +90,15 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const checkedIds = keys(pickBy(values, (val) => !!val))
-      const checkedSet = new Set(checkedIds)
-      const allIds = union(map(assignedList, 'id'), checkedIds)
 
-      const translation_memories = allIds
-        .map((id) => {
-          const existing = assignedMap.get(id)
-          return {
-            id,
-            read: checkedSet.has(id),
-            write: existing?.write ?? false,
-          }
-        })
-        .filter((tm) => tm.read || tm.write)
+      const translation_memories = checkedIds.map((id) => {
+        const existing = assignedMap.get(id)
+        return {
+          id,
+          read: existing?.read ?? true,
+          write: existing?.write ?? false,
+        }
+      })
 
       try {
         await updateCatProjectTms(translation_memories)
@@ -126,7 +112,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
         // error message comes from api errorHandles
       }
     },
-    [assignedList, assignedMap, updateCatProjectTms]
+    [assignedMap, updateCatProjectTms]
   )
 
   return (

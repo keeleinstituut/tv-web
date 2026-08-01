@@ -10,8 +10,9 @@ import {
   useUpdateCatProjectTranslationMemories,
 } from "./useCatTranslationMemories"
 import { chain } from "lodash"
-import Button, { SizeTypes } from "components/molecules/Button/Button"
+import Button, { AppearanceTypes, SizeTypes } from "components/molecules/Button/Button"
 import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
+import classes from "./classes.module.scss"
 
 interface CatTranslationMemory {
   id: string
@@ -81,7 +82,6 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
         row.id === tmId ? { ...row, [field]: checked } : row
       )
       const translation_memories = next
-        .filter((row) => row.read || row.write)
         .map(({ id, read, write }) => ({ id, read, write }))
       updateMutation.mutate(translation_memories)
     },
@@ -89,10 +89,6 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
   )
 
   const columns = [
-    columnHelper.accessor('name', {
-      header: () => t('label.tag_name'),
-      footer: (info) => info.column.id,
-    }),
     columnHelper.accessor('id', {
       id: 'language_direction',
       header: () => t('label.language_direction'),
@@ -104,10 +100,9 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
         />
       ),
     }),
-    columnHelper.accessor('segment_count', {
-      header: () => t('label.chunks'),
+    columnHelper.accessor('name', {
+      header: () => t('label.tag_name'),
       footer: (info) => info.column.id,
-      cell: ({ getValue }) => getValue() ?? 0,
     }),
     columnHelper.accessor('read', {
       header: () => t('translation_memory.read'),
@@ -137,17 +132,34 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
         />
       ),
     }),
+    columnHelper.accessor('segment_count', {
+      header: () => t('label.chunk_amount'),
+      footer: (info) => info.column.id,
+      cell: ({ getValue }) => getValue() ?? 0,
+    }),
   ] as ColumnDef<CatTmRow>[]
+
+  const createEmptyTm = () => {
+    // TODO: wire up empty TM creation
+  }
 
   return (
     <ExpandableContentContainer
+      className={classes.expandableContainer}
       initialIsExpanded
       wrapContent
       leftComponent={<h3>{t('translation_memory.title')}</h3>}
       rightComponent={<>
         <Button
+          appearance={AppearanceTypes.Secondary}
+          children={t('button.create_empty_tm')}
+          size={SizeTypes.S}
+          onClick={createEmptyTm}
+        />
+        <Button
           children={t('button.add_tm')}
           size={SizeTypes.S}
+          className={classes.mainButton}
           onClick={addNewTm}
         />
       </>}
@@ -156,6 +168,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
         data={rows}
         columns={columns}
         tableSize={TableSizeTypes.M}
+        className={classes.translationMemoriesTable}
         hidePagination
       />
     </ExpandableContentContainer>
