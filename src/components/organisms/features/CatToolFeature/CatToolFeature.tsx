@@ -1,7 +1,6 @@
 import { FC } from "react"
 import AnalysesTable from "./AnalysesTable"
 import JobsTable from "./JobsTable"
-import SendSourceFilesToCat from "./SendSourceFilesToCat"
 import TranslationMemoriesTable from "./TranslationMemoriesTable"
 
 interface CatToolFeatureProps {
@@ -19,12 +18,11 @@ const CatToolFeature: FC<CatToolFeatureProps> = (props) => {
 
   return (
     <>
-      <SendSourceFilesToCat
-        cattoProjectId={catProjectId}
+      <JobsTable
+        catProjectId={catProjectId}
         targetLocale={props?.destination_language_classifier_value?.value}
         sourceFiles={props?.source_files}
       />
-      <JobsTable catProjectId={catProjectId} />
       <AnalysesTable catProjectId={catProjectId} />
       <TranslationMemoriesTable catProjectId={catProjectId} />
     </>

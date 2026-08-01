@@ -10,6 +10,7 @@ import { useCatJobs } from "./useCatJobs"
 import ExpandableContentContainer from "components/molecules/ExpandableContentContainer/ExpandableContentContainer"
 import classes from "./classes.module.scss"
 import { useTranslation } from "react-i18next"
+import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
 
 const postAnalyses = async (params: any) => {
   return apiClient.post(`${CAT2_API_BASE_URL}/analyses`, params)
@@ -56,10 +57,12 @@ const jobTableColumns = [
 
 interface JobsTableProps {
   catProjectId: string
+  targetLocale?: string
+  sourceFiles?: { id: string | number; file_name: string; url: string }[]
 }
 
 const JobsTable: FC<JobsTableProps> = (props) => {
-  const { catProjectId } = props
+  const { catProjectId, targetLocale, sourceFiles } = props
   const { t } = useTranslation()
   const [rowSelection, setRowSelection] = useState({})
   const rowSelectionCount = useMemo(() => keys(rowSelection).length, [rowSelection])
@@ -106,7 +109,13 @@ const JobsTable: FC<JobsTableProps> = (props) => {
         <>
           <Button
             size={SizeTypes.S}
-            onClick={() => {}}
+            onClick={() =>
+              showModal(ModalTypes.AddCatJobFiles, {
+                catProjectId,
+                targetLocale,
+                sourceFiles,
+              })
+            }
           >
             Lisa failid
           </Button>

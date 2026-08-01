@@ -45,6 +45,7 @@ import { SelectOutsourceOfferModalProps } from './SelectOutsourceOfferModal/Sele
 import { ConfirmCancelRequestModalProps } from './ConfirmCancelRequestModal/ConfirmCancelRequestModal'
 import { ViewVendorResponseModalProps } from './ViewVendorResponseModal/ViewVendorResponseModal'
 import { InstitutionPartnersEditModalProps } from './InstitutionPartnersEditModal/InstitutionPartnersEditModal'
+import { AddCatJobFilesModalProps } from './AddCatJobFilesModal/AddCatJobFilesModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -95,6 +96,10 @@ const ConfirmDeleteVolumeModal = lazy(
 
 const AddTranslationMemoriesModal = lazy(
   () => import('./AddTranslationMemoriesModal/AddTranslationMemoriesModal')
+)
+
+const AddCatJobFilesModal = lazy(
+  () => import('./AddCatJobFilesModal/AddCatJobFilesModal')
 )
 
 const ConfirmCancelProjectModal = lazy(
@@ -208,6 +213,7 @@ export enum ModalTypes {
   VolumeChange = 'volumeChange',
   ConfirmDeleteVolume = 'confirmDeleteVolume',
   AddTranslationMemories = 'addTranslationMemories',
+  AddCatJobFiles = 'addCatJobFiles',
   ConfirmCancelProject = 'confirmCancelProject',
   ConfirmRejectProject = 'confirmRejectProject',
   ConfirmDeleteSourceFile = 'confirmDeleteSourceFile',
@@ -250,6 +256,7 @@ type ModalPropTypes =
   | Omit<AddVolumeModalProps, 'closeModal'>
   | Omit<VolumeChangeModalProps, 'closeModal'>
   | Omit<ConfirmDeleteVolumeModalProps, 'closeModal'>
+  | Omit<AddCatJobFilesModalProps, 'closeModal'>
   | Omit<ConfirmCancelProjectModalProps, 'closeModal'>
   | Omit<ConfirmRejectProjectModalProps, 'closeModal'>
   | Omit<ConfirmDeleteSourceFileModalProps, 'closeModal'>
@@ -291,6 +298,7 @@ const MODALS = {
   [ModalTypes.VolumeChange]: VolumeChangeModal,
   [ModalTypes.ConfirmDeleteVolume]: ConfirmDeleteVolumeModal,
   [ModalTypes.AddTranslationMemories]: AddTranslationMemoriesModal,
+  [ModalTypes.AddCatJobFiles]: AddCatJobFilesModal,
   [ModalTypes.ConfirmCancelProject]: ConfirmCancelProjectModal,
   [ModalTypes.ConfirmRejectProject]: ConfirmRejectProjectModal,
   [ModalTypes.ConfirmDeleteSourceFile]: ConfirmDeleteSourceFileModal,
