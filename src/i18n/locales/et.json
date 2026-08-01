@@ -1001,7 +1001,16 @@
   "cat_tool_feature": {
     "jobs": "Tööd",
     "analyses": "Analüüsid",
-    "translation_memories": "Tõlkemälud"
+    "translation_memories": "Tõlkemälud",
+    "status": {
+      "new": "Uus",
+      "sent": "CAT-is",
+      "outdated": "Muudetud pärast saatmist"
+    },
+    "tooltip": {
+      "sent_at": "Fail saadeti CAT tööriista {{date}}",
+      "updated_since_sent": "Fail on muudetud pärast CAT tööriista saatmist ({{date}}). CAT tööriistas on endiselt vana versioon."
+    }
   },
   "warning": {
     "missing_permissions": "Teil puudub ligipääs soovitud lehele",

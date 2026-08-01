@@ -129,6 +129,9 @@ export interface CatJob {
   name: string
   id: number | string
   volume_analysis?: CatAnalysis[]
+  source_file?: { id?: string; file_name: string }
+  xliff_file?: { file_name: string }
+  created_at: string
 }
 
 export enum TranslationMemoryPercentageNames {}

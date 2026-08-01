@@ -11,6 +11,7 @@ import ExpandableContentContainer from "components/molecules/ExpandableContentCo
 import classes from "./classes.module.scss"
 import { useTranslation } from "react-i18next"
 import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
+import { SourceFile } from "types/projects"
 
 const postAnalyses = async (params: any) => {
   return apiClient.post(`${CAT2_API_BASE_URL}/analyses`, params)
@@ -58,7 +59,7 @@ const jobTableColumns = [
 interface JobsTableProps {
   catProjectId: string
   targetLocale?: string
-  sourceFiles?: { id: string | number; file_name: string; url: string }[]
+  sourceFiles?: SourceFile[]
 }
 
 const JobsTable: FC<JobsTableProps> = (props) => {

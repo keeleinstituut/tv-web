@@ -1,4 +1,5 @@
 @use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
 
 .modalContent {
   padding: 0 variables.spacing(4);
@@ -19,4 +20,22 @@
   display: inline-flex;
   align-items: center;
   gap: variables.spacing(1);
+}
+
+.statusCell {
+  display: inline-flex;
+  align-items: center;
+  gap: variables.spacing(1);
+}
+
+.new {
+  @include mixins.statusTagStyle(variables.$color-border, variables.$color-text);
+}
+
+.sent {
+  @include mixins.statusTagStyle(variables.$color-success);
+}
+
+.outdated {
+  @include mixins.statusTagStyle(variables.$color-warning, variables.$color-warning-dark);
 }

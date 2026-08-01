@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { SourceFile } from "types/projects"
 import AnalysesTable from "./AnalysesTable"
 import JobsTable from "./JobsTable"
 import TranslationMemoriesTable from "./TranslationMemoriesTable"
@@ -6,7 +7,7 @@ import TranslationMemoriesTable from "./TranslationMemoriesTable"
 interface CatToolFeatureProps {
   cat_metadata?: { catto_project_id?: string }
   destination_language_classifier_value?: { value: string }
-  source_files?: { id: string | number; file_name: string; url: string }[]
+  source_files?: SourceFile[]
 }
 
 const CatToolFeature: FC<CatToolFeatureProps> = (props) => {
