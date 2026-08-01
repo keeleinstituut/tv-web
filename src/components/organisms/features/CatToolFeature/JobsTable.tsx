@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { createColumnHelper } from "@tanstack/react-table"
 import { apiClient } from "api"
-import Button, { SizeTypes } from "components/molecules/Button/Button"
+import Button, { AppearanceTypes, SizeTypes } from "components/molecules/Button/Button"
 import DataTable, { TableSizeTypes } from "components/organisms/DataTable/DataTable"
 import { keys } from "lodash"
 import { FC, useMemo, useState } from "react"
@@ -88,8 +88,13 @@ const JobsTable: FC<JobsTableProps> = (props) => {
       leftComponent={
         <>
           <h3>{t('cat_tool_feature.jobs')}</h3>
+        </>
+      }
+      rightComponent={
+        <>
           <Button
             className={classes.mainButton}
+            appearance={AppearanceTypes.Secondary}
             size={SizeTypes.S}
             disabled={rowSelectionCount == 0}
             onClick={() => analyseMutation.mutate({ job_id: keys(rowSelection) })}
@@ -98,17 +103,15 @@ const JobsTable: FC<JobsTableProps> = (props) => {
           </Button>
           <Button
             className={classes.mainButton}
+            appearance={AppearanceTypes.Secondary}
             size={SizeTypes.S}
             disabled={rowSelectionCount == 0}
             onClick={() => pretranslateMutation.mutate({ job_ids: keys(rowSelection) })}
           >
             {t('cat_tool_feature.jobs_table.pretranslate')}
           </Button>
-        </>
-      }
-      rightComponent={
-        <>
           <Button
+            className={classes.mainButton}
             size={SizeTypes.S}
             onClick={() =>
               showModal(ModalTypes.AddCatJobFiles, {
