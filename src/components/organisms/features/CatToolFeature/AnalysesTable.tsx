@@ -14,10 +14,13 @@ const columnHelper = createColumnHelper<CattoAnalysis>()
 
 interface AnalysesTableProps {
   catProjectId: string
+  selectable?: boolean
+  selectedAnalysisId?: string
+  onSelect?: (analysis: CattoAnalysis) => void
 }
 
 const AnalysesTable: FC<AnalysesTableProps> = (props) => {
-  const { catProjectId } = props
+  const { catProjectId, selectable, selectedAnalysisId, onSelect } = props
   const { t } = useTranslation()
   const { analyses, paginationData, handlePaginationChange } = useCatAnalyses(catProjectId)
 
@@ -33,6 +36,23 @@ const AnalysesTable: FC<AnalysesTableProps> = (props) => {
   }
 
   const analysesTableColumns = [
+    ...(selectable
+      ? [
+          columnHelper.display({
+            id: 'select',
+            header: '',
+            cell: ({ row }) => (
+              <input
+                type="radio"
+                name="cat-analysis-select"
+                checked={row.original.id === selectedAnalysisId}
+                disabled={!row.original.results}
+                onChange={() => onSelect?.(row.original)}
+              />
+            ),
+          }),
+        ]
+      : []),
     columnHelper.accessor('created_at', {
       header: t('cat_tool_feature.analyses_table.column.created'),
       cell: ({ getValue }) => dayjs(getValue()).format('YYYY.MM.DD HH:mm'),
