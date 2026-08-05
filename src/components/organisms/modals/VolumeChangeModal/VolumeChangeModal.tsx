@@ -4,7 +4,7 @@ import { closeModal } from '../ModalRoot'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { Price } from 'types/price'
 import { DiscountPercentages } from 'types/vendors'
-import { CatAnalysis } from 'types/projects'
+import { VolumeAnalysisBands } from 'types/assignments'
 import { VolumeValue } from 'types/volumes'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import VolumeForm, { VolumeFormState } from 'components/organisms/forms/VolumeForm/VolumeForm'
@@ -20,7 +20,7 @@ export interface VolumeChangeModalProps {
   vendorPrices?: Price
   discounts?: DiscountPercentages
   vendorName?: string
-  volume_analysis?: CatAnalysis
+  volume_analysis?: VolumeAnalysisBands
   unit_fee?: number
   unit_type?: string
   unit_quantity?: number

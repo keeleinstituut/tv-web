@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react'
+import { FC } from 'react'
 import classNames from 'classnames'
 import ToggleTabs, {
   ToggleTabsProps,
@@ -13,10 +13,6 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { showValidationErrorMessage } from 'api/errorHandler'
-import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
-import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useToggleMtEngine } from 'hooks/requests/useProjects'
 import { useIsDataOwner } from 'hooks/useIsDataOwner'
 
 export enum FeatureTabs {
@@ -28,16 +24,12 @@ interface ToggleButtonsSectionProps {
   className?: string
   hidden?: boolean
   machineTranslation?: boolean
-  setMachineTranslation: (newMachineTranslation: boolean) => void
-  disabled?: boolean
 }
 
 const ToggleButtonsSection: FC<ToggleButtonsSectionProps> = ({
   className,
   hidden,
   machineTranslation,
-  setMachineTranslation,
-  disabled,
 }) => {
   const { t } = useTranslation()
 
@@ -52,10 +44,9 @@ const ToggleButtonsSection: FC<ToggleButtonsSectionProps> = ({
       />
       <ToggleInput
         label={t('label.machine_translation')}
-        onChange={setMachineTranslation}
         name="machineTranslation"
         value={machineTranslation}
-        disabled={disabled}
+        disabled
         // TODO: not sure where the selected memory will come from yet
         tooltipContent={t('tooltip.selected_translation_memory', {
           memory: 'MTee',
@@ -94,28 +85,10 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
   // TODO: not sure yet what this will do
   // It should decide whether machine translation is allowed or not, but not sure what that changes in other views
 
-  const { toggleMtEngine } = useToggleMtEngine({ id })
-
   // TODO: not sure what this check will be yet
   // First part will be "Task data entry template variable "PM task entry": "false"" - Not sure what this will look like from BE yet
   // Second part will be: !!addVendor. We won't pass this function, when dealing with job_revision, which is not the first task (first after general info)
   const isSplittingAllowed = !!addVendor
-
-  const toggleInputChange = useCallback(async () => {
-    const payload = { mt_enabled: mt_enabled ? 0 : 1 }
-
-    try {
-      await toggleMtEngine(payload)
-
-      showNotification({
-        type: NotificationTypes.Success,
-        title: t('notification.announcement'),
-        content: t('success.machine_translation'),
-      })
-    } catch (errorData) {
-      showValidationErrorMessage(errorData)
-    }
-  }, [mt_enabled, t, toggleMtEngine])
 
   const isSplitButtonHidden =
     activeTab === FeatureTabs.Xliff || !isSplittingAllowed || isShared
@@ -142,8 +115,6 @@ const FeatureHeaderSection: FC<FeatureHeaderSectionProps> = ({
         className={classes.toggleButtons}
         hidden={activeTab === FeatureTabs.Xliff || !catSupported}
         machineTranslation={mt_enabled}
-        disabled={!isEditable}
-        setMachineTranslation={toggleInputChange}
       />
       <div className={classes.splitSection}>
         <Button

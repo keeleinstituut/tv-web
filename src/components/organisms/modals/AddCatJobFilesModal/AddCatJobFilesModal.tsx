@@ -20,7 +20,8 @@ import dayjs from "dayjs"
 import { isEmpty } from "lodash"
 import { FC, useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { CatJob, SourceFile } from "types/projects"
+import { SourceFile } from "types/projects"
+import { CattoJob } from "components/organisms/features/CatToolFeature/types"
 import { closeModal } from "../ModalRoot"
 import { ConfirmationModalBaseProps } from "../ConfirmationModalBase/ConfirmationModalBase"
 import classes from "./classes.module.scss"
@@ -36,15 +37,15 @@ const createCattoJob = (payload: {
 
 const columnHelper = createColumnHelper<SourceFile>()
 
-const getLatestJobPerSourceFile = (jobs: CatJob[]) => {
-  const byId = new Map<string, CatJob>()
-  const byFileName = new Map<string, CatJob>()
+const getLatestJobPerSourceFile = (jobs: CattoJob[]) => {
+  const byId = new Map<string, CattoJob>()
+  const byFileName = new Map<string, CattoJob>()
 
   jobs.forEach((job) => {
     const sourceFile = job?.source_file
     if (!sourceFile) return
 
-    const isNewer = (existing?: CatJob) =>
+    const isNewer = (existing?: CattoJob) =>
       !existing || dayjs(job.created_at).isAfter(dayjs(existing.created_at))
 
     if (sourceFile.id && isNewer(byId.get(sourceFile.id))) {
@@ -60,7 +61,7 @@ const getLatestJobPerSourceFile = (jobs: CatJob[]) => {
 
 const getCatFileStatus = (
   file: SourceFile,
-  matchingJob?: CatJob
+  matchingJob?: CattoJob
 ): { status: CatFileStatus; sentAt?: string } => {
   if (!matchingJob) return { status: "new" }
   const isOutdated = dayjs(file.updated_at).isAfter(dayjs(matchingJob.created_at))

@@ -10,12 +10,8 @@ import {
   Suspense,
   useEffect,
 } from 'react'
-import { CatSplitModalProps } from './CatSplitModal/CatSplitModal'
-import { CatMergeModalProps } from './CatMergeModal/CatMergeModal'
 import { EditableListModalProps } from './EditableListModal/EditableListModal'
 import { AuditLogSettingsModalProps } from './AuditLogSettingsModal/AuditLogSettingsModal'
-import { ConfirmSendToCatModalProps } from './ConfirmSendToCatModal/ConfirmSendToCatModal'
-import { CatAnalysisModalProps } from './CatAnalysisModal/CatAnalysisModal'
 import { ConfirmationModalBaseProps } from './ConfirmationModalBase/ConfirmationModalBase'
 import { DateTimeRangeFormModalProps } from './DateTimeRangeFormModal/DateTimeRangeFormModal'
 import { DateRangeFormModalProps } from './DateRangeFormModal/DateRangeFormModal'
@@ -27,7 +23,6 @@ import { ConfirmDeleteVolumeModalProps } from './ConfirmDeleteVolumeModal/Confir
 import { ConfirmCancelProjectModalProps } from './ConfirmCancelProjectModal/ConfirmCancelProjectModal'
 import { ConfirmRejectProjectModalProps } from './ConfirmRejectProjectModal/ConfirmRejectProjectModal'
 import { ConfirmDeleteSourceFileModalProps } from './ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal'
-import { ConfirmTmWritableModalProps } from './ConfirmTmWritableModal/ConfirmTmWritableModal'
 import { ConfirmAssignmentCompletionModalProps } from './ConfirmAssignmentCompletionModal/ConfirmAssignmentCompletionModal'
 import { ReassignProjectModalProps } from './ReassignProjectModal/ReassignProjectModal'
 import { ConfirmCompleteTaskModalProps } from './ConfirmCompleteTaskModal/ConfirmCompleteTaskModal'
@@ -61,17 +56,8 @@ const AuditLogSettingsModal = lazy(
   () => import('./AuditLogSettingsModal/AuditLogSettingsModal')
 )
 
-const ConfirmSendToCatModal = lazy(
-  () => import('./ConfirmSendToCatModal/ConfirmSendToCatModal')
-)
-const CatSplitModal = lazy(() => import('./CatSplitModal/CatSplitModal'))
-const CatMergeModal = lazy(() => import('./CatMergeModal/CatMergeModal'))
-
 const ConfirmationModal = lazy(
   () => import('./ConfirmationModal/ConfirmationModal')
-)
-const CatAnalysisModal = lazy(
-  () => import('./CatAnalysisModal/CatAnalysisModal')
 )
 const DateTimeRangeFormModal = lazy(
   () => import('./DateTimeRangeFormModal/DateTimeRangeFormModal')
@@ -112,10 +98,6 @@ const ConfirmRejectProjectModal = lazy(
 
 const ConfirmDeleteSourceFileModal = lazy(
   () => import('./ConfirmDeleteSourceFileModal/ConfirmDeleteSourceFileModal')
-)
-
-const ConfirmTmWritableModal = lazy(
-  () => import('./ConfirmTmWritableModal/ConfirmTmWritableModal')
 )
 
 const ConfirmAssignmentCompletionModal = lazy(
@@ -198,13 +180,9 @@ export enum ModalTypes {
   InstitutionSelect = 'institutionSelect',
   UserAndRoleManagement = 'userAndRoleManagement',
   Tooltip = 'tooltip',
-  CatSplit = 'catSplit',
-  CatMerge = 'catMerge',
   EditableListModal = 'editableListModal',
   AuditLogSettingsModal = 'auditLogSettingsModal',
   ConfirmationModal = 'confirmationModal',
-  ConfirmSendToCat = 'confirmSendToCat',
-  CatAnalysis = 'catAnalysis',
   DateTimeRangeForm = 'dateTimeRangeForm',
   DateRangeForm = 'dateRangeForm',
   VendorsEdit = 'vendorsEdit',
@@ -217,7 +195,6 @@ export enum ModalTypes {
   ConfirmCancelProject = 'confirmCancelProject',
   ConfirmRejectProject = 'confirmRejectProject',
   ConfirmDeleteSourceFile = 'confirmDeleteSourceFile',
-  ConfirmTmWritable = 'confirmTmWritable',
   ConfirmAssignmentCompletion = 'confirmAssignmentCompletion',
   ReassignProject = 'reassignProject',
   ConfirmCompleteTask = 'confirmCompleteTask',
@@ -242,13 +219,9 @@ type ModalPropTypes =
   | Omit<InstitutionSelectModalProps, 'closeModal'>
   | Omit<UserAndRoleManagementModalProps, 'closeModal'>
   | Omit<TooltipModalProps, 'closeModal'>
-  | Omit<CatSplitModalProps, 'closeModal'>
-  | Omit<CatMergeModalProps, 'closeModal'>
   | Omit<EditableListModalProps, 'closeModal'>
   | Omit<AuditLogSettingsModalProps, 'closeModal'>
   | Omit<ConfirmationModalBaseProps, 'closeModal'>
-  | Omit<ConfirmSendToCatModalProps, 'closeModal'>
-  | Omit<CatAnalysisModalProps, 'closeModal'>
   | Omit<DateTimeRangeFormModalProps, 'closeModal'>
   | Omit<DateRangeFormModalProps, 'closeModal'>
   | Omit<VendorsEditModalProps, 'closeModal'>
@@ -260,7 +233,6 @@ type ModalPropTypes =
   | Omit<ConfirmCancelProjectModalProps, 'closeModal'>
   | Omit<ConfirmRejectProjectModalProps, 'closeModal'>
   | Omit<ConfirmDeleteSourceFileModalProps, 'closeModal'>
-  | Omit<ConfirmTmWritableModalProps, 'closeModal'>
   | Omit<ConfirmAssignmentCompletionModalProps, 'closeModal'>
   | Omit<ReassignProjectModalProps, 'closeModal'>
   | Omit<ConfirmCompleteTaskModalProps, 'closeModal'>
@@ -283,13 +255,9 @@ const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
   [ModalTypes.UserAndRoleManagement]: UserAndRoleManagementModal,
   [ModalTypes.Tooltip]: TooltipModal,
-  [ModalTypes.CatSplit]: CatSplitModal,
-  [ModalTypes.CatMerge]: CatMergeModal,
   [ModalTypes.EditableListModal]: EditableListModal,
   [ModalTypes.AuditLogSettingsModal]: AuditLogSettingsModal,
   [ModalTypes.ConfirmationModal]: ConfirmationModal,
-  [ModalTypes.ConfirmSendToCat]: ConfirmSendToCatModal,
-  [ModalTypes.CatAnalysis]: CatAnalysisModal,
   [ModalTypes.DateTimeRangeForm]: DateTimeRangeFormModal,
   [ModalTypes.DateRangeForm]: DateRangeFormModal,
   [ModalTypes.VendorsEdit]: VendorsEditModal,
@@ -302,7 +270,6 @@ const MODALS = {
   [ModalTypes.ConfirmCancelProject]: ConfirmCancelProjectModal,
   [ModalTypes.ConfirmRejectProject]: ConfirmRejectProjectModal,
   [ModalTypes.ConfirmDeleteSourceFile]: ConfirmDeleteSourceFileModal,
-  [ModalTypes.ConfirmTmWritable]: ConfirmTmWritableModal,
   [ModalTypes.ConfirmAssignmentCompletion]: ConfirmAssignmentCompletionModal,
   [ModalTypes.ReassignProject]: ReassignProjectModal,
   [ModalTypes.ConfirmCompleteTask]: ConfirmCompleteTaskModal,

@@ -45,10 +45,6 @@ export type TranslationMemoryPayload = {
   type?: TMType
   tv_domain?: string
 }
-export interface TmStatsType {
-  lang_pairs?: { [lang_pair: string]: object }
-  tag?: { [tm_key: string]: number }
-}
 
 export type TranslationMemoryFilters = {
   lang_pair?: string[]
@@ -69,27 +65,6 @@ export interface ExportTMXPayload {
   slang: string
   tlang: string
   tag: string | string[]
-}
-
-export interface SubProjectTmKeys {
-  id: string
-  sub_project_id: string
-  key: string
-  is_writable: boolean
-}
-
-export interface SubProjectTmKeysResponse {
-  data: SubProjectTmKeys[]
-}
-export interface SubProjectTmKeysPayload {
-  id?: string
-  sub_project_id?: string
-  is_writable?: number
-  tm_keys?: {
-    key: string
-  }[]
-  key?: string
-  created_as_empty?: number
 }
 
 export type ContextCheckPayload = {
@@ -117,3 +92,4 @@ export interface ContextCheckListResponse {
   data: ContextCheckType[]
   meta?: ResponseMetaTypes
 }
+

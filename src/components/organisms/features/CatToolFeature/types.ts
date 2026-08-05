@@ -1,5 +1,12 @@
 import { ResponseMetaTypes } from "types/collective"
 
+export interface CattoJob {
+  id: string
+  source_file?: { id?: string; file_name: string }
+  xliff_file?: { file_name: string }
+  created_at: string
+}
+
 export interface BandStats {
   segments: number
   words: number

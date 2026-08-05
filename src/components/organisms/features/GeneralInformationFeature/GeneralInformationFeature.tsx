@@ -1,27 +1,8 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
-import {
-  map,
-  filter,
-  compact,
-  isEmpty,
-  split,
-  some,
-  reduce,
-  includes,
-} from 'lodash'
+import { map } from 'lodash'
 import { formatDuration } from 'helpers/calendar'
-import {
-  useUpdateSubProject,
-  useFetchSubProjectCatToolJobs,
-  useProjectCache,
-} from 'hooks/requests/useProjects'
-import {
-  CatProjectPayload,
-  CatProjectStatus,
-  SourceFile,
-  SubProjectDetail,
-} from 'types/projects'
-import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
+import { useUpdateSubProject, useProjectCache } from 'hooks/requests/useProjects'
+import { SourceFile, SubProjectDetail } from 'types/projects'
 import { Root } from '@radix-ui/react-form'
 import {
   FormInput,
@@ -32,11 +13,8 @@ import { useForm } from 'react-hook-form'
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import classes from './classes.module.scss'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
-import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
-import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
-import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import {
   getLocalDateObjectFromUtcDateString,
   getUtcDateStringFromLocalDateObject,
@@ -51,14 +29,10 @@ import { useIsDataOwner } from 'hooks/useIsDataOwner'
 
 type GeneralInformationFeatureProps = Pick<
   SubProjectDetail,
-  | 'cat_files'
-  | 'cat_analyzis'
   | 'source_files'
   | 'final_files'
   | 'deadline_at'
   | 'event_start_at'
-  | 'source_language_classifier_value'
-  | 'destination_language_classifier_value'
   | 'project_id'
   | 'project'
   | 'id'
@@ -70,7 +44,6 @@ type GeneralInformationFeatureProps = Pick<
 interface FormValues {
   deadline_at: { date?: string; time?: string }
   event_start_at: { date?: string; time?: string }
-  cat_files: SourceFile[]
   source_files: SourceFile[]
   final_files: SourceFile[]
   write_to_memory: { [key: string]: boolean }
@@ -81,16 +54,11 @@ interface FormValues {
 }
 
 const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
-  catSupported,
   id,
-  cat_analyzis,
-  cat_files,
   source_files,
   final_files,
   deadline_at,
   event_start_at,
-  source_language_classifier_value,
-  destination_language_classifier_value,
   projectDomain,
   project_id,
   project,
@@ -115,14 +83,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     if (project?.meeting_link) return 'remote'
     return ''
   })()
-  // const { catToolJobs, catSetupStatus, startPolling, isPolling } =
-  //   useFetchSubProjectCatToolJobs({
-  //     id,
-  //   })
-  // const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
-  //   subProjectId: id,
-  // })
-
   const isSomethingEditable = true
 
   const effectiveStartAt = event_start_at || project?.event_start_at
@@ -135,13 +95,11 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       event_start_at: effectiveStartAt
         ? getLocalDateObjectFromUtcDateString(effectiveStartAt)
         : { date: '', time: '' },
-      cat_files,
       source_files: map(source_files, (file) => ({
         ...file,
         isChecked: false,
       })),
       final_files,
-      // cat_jobs: catToolJobs,
       service_type: normalizedServiceType,
       event_location: effectiveLocation,
       meeting_link: project?.meeting_link || '',
@@ -149,24 +107,13 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
         isVerbalType && effectiveStartAt && effectiveEndAt
           ? formatDuration(effectiveStartAt, effectiveEndAt)
           : undefined,
-      // write_to_memory: reduce(
-      //   subProjectTmKeyObjectsArray,
-      //   (result, { key, is_writable }) => {
-      //     if (!key) return result
-      //     return { ...result, [key]: is_writable }
-      //   },
-      //   {}
-      // ),
     }),
     [
       effectiveDeadlineAt,
       effectiveStartAt,
       effectiveEndAt,
-      cat_files,
       source_files,
       final_files,
-      // catToolJobs,
-      // subProjectTmKeyObjectsArray,
       normalizedServiceType,
       project?.event_location,
       project?.meeting_link,
@@ -174,7 +121,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     ]
   )
 
-  const { control, getValues, watch, reset } = useForm<FormValues>({
+  const { control, reset } = useForm<FormValues>({
     reValidateMode: 'onChange',
     defaultValues: defaultValues,
   })
@@ -183,21 +130,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     reset(defaultValues)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues])
-
-  // const openSendToCatModal = useCallback(() => {
-  //   const sourceFiles = getValues('source_files')
-  //   const selectedSourceFiles = filter(sourceFiles, 'isChecked')
-
-  //   const payload: CatProjectPayload = {
-  //     sub_project_id: id,
-  //     source_files_ids: compact(map(selectedSourceFiles, 'id')),
-  //   }
-
-  //   showModal(ModalTypes.ConfirmSendToCat, {
-  //     sendPayload: payload,
-  //     callback: startPolling,
-  //   })
-  // }, [getValues, id, startPolling])
 
   const handleChangeDeadline = useCallback(
     async (value: { date: string; time: string }) => {
@@ -228,25 +160,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
     },
     [defaultValues?.deadline_at, updateSubProject, dateTimePickerValidator, t]
   )
-
-  const subProjectLangPair = useMemo(() => {
-    const slangShort = split(source_language_classifier_value?.value, '-')[0]
-    const tlangShort = split(
-      destination_language_classifier_value?.value,
-      '-'
-    )[0]
-    return `${slangShort}_${tlangShort}`
-  }, [destination_language_classifier_value, source_language_classifier_value])
-
-  // const canGenerateProject =
-  //   catSupported &&
-  //   isEmpty(catToolJobs) &&
-  //   !includes(CatProjectStatus.Done, catSetupStatus)
-
-  // const isGenerateProjectButtonDisabled =
-  //   !some(watch('source_files'), 'isChecked') ||
-  //   !some(watch('write_to_memory'), (val) => !!val) ||
-  //   !includes(CatProjectStatus.NotStarted, catSetupStatus)
 
   return (
     <Root>
@@ -337,11 +250,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           title={t('projects.source_files')}
           tooltipContent={t('tooltip.source_files_helper')}
           control={control}
-          // openSendToCatModal={openSendToCatModal}
-          // canGenerateProject={canGenerateProject}
-          // isGenerateProjectButtonDisabled={isGenerateProjectButtonDisabled}
-          // isCatProjectLoading={isPolling}
-          // catSetupStatus={catSetupStatus}
           subProjectId={id}
           isEditable={isSomethingEditable && !isShared}
         />
@@ -353,31 +261,6 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
           subProjectId={id}
           isEditable={isSomethingEditable}
         />
-        {/* <CatJobsTable
-          subProjectId={id}
-          className={classes.catJobs}
-          hidden={!catSupported || isEmpty(catToolJobs)}
-          cat_jobs={catToolJobs}
-          cat_files={cat_files}
-          source_files={source_files}
-          cat_analyzis={cat_analyzis}
-          source_language_classifier_value={source_language_classifier_value}
-          destination_language_classifier_value={
-            destination_language_classifier_value
-          }
-          canSendToVendors={true} //TODO add check when camunda is ready
-          isEditable={isSomethingEditable && !isShared}
-        /> */}
-        {/* <TranslationMemoriesSection
-          className={classes.translationMemories}
-          hidden={!catSupported}
-          control={control}
-          isEditable={isSomethingEditable && isEmpty(catToolJobs) && !isShared}
-          subProjectId={id}
-          subProjectTmKeyObjectsArray={subProjectTmKeyObjectsArray}
-          subProjectLangPair={subProjectLangPair}
-          projectDomain={projectDomain}
-        /> */}
       </div>
     </Root>
   )

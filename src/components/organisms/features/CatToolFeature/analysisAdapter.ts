@@ -1,10 +1,10 @@
-import { CatAnalysis } from 'types/projects'
+import { VolumeAnalysisBands } from 'types/assignments'
 import { CattoAnalysis } from './types'
 
 export const mapCattoAnalysisToVolumeAnalysis = (
   analysis: CattoAnalysis,
   fileNames: string[] = []
-): CatAnalysis => {
+): VolumeAnalysisBands => {
   const bands = analysis.results?.bands
   return {
     raw_word_count: analysis.results?.total.words ?? 0,

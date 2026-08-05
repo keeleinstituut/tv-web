@@ -1,10 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { filter, includes, isEmpty, map } from 'lodash'
-import {
-  InputTypes,
-  FormInput,
-} from 'components/organisms/DynamicForm/DynamicForm'
 import Delete from 'assets/icons/delete.svg?react'
 import Download from 'assets/icons/download.svg?react'
 import { Control, FieldValues, Path, useController } from 'react-hook-form'
@@ -19,8 +15,7 @@ import DataTable, {
   TableSizeTypes,
 } from 'components/organisms/DataTable/DataTable'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
-import { SourceFile, CatProjectStatus } from 'types/projects'
-import GenerateForTranslationSection from 'components/molecules/GenerateForTranslationSection/GenerateForTranslationSection'
+import { SourceFile } from 'types/projects'
 import classes from './classes.module.scss'
 import { CollectionType, useHandleFiles } from 'hooks/requests/useFiles'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
@@ -41,11 +36,6 @@ interface SourceFilesListProps<TFormValues extends FieldValues> {
   isEditable?: boolean
   subProjectId: string
   className?: string
-  openSendToCatModal?: () => void
-  canGenerateProject?: boolean
-  isCatProjectLoading?: boolean
-  isGenerateProjectButtonDisabled?: boolean
-  catSetupStatus?: CatProjectStatus
   mode?: ProjectDetailModes
   isHistoryView?: string
 }
@@ -69,12 +59,7 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   hiddenIfNoValue,
   isEditable,
   className,
-  canGenerateProject,
-  openSendToCatModal,
-  isCatProjectLoading,
   subProjectId,
-  isGenerateProjectButtonDisabled,
-  catSetupStatus,
   mode,
   isHistoryView,
 }: SourceFilesListProps<TFormValues>) => {
@@ -151,26 +136,6 @@ const SourceFilesList = <TFormValues extends FieldValues>({
   )
 
   const columns = [
-    ...((canGenerateProject && isEditable) ||
-    (canGenerateProject && mode !== ProjectDetailModes.View)
-      ? [
-          columnHelper.accessor('check', {
-            header: '',
-            footer: (info) => info.column.id,
-            cell: ({ getValue, row }) => {
-              return (
-                <FormInput
-                  name={`${name}.${row.id}.isChecked` as Path<TFormValues>}
-                  ariaLabel={t('label.file_type')}
-                  control={control}
-                  inputType={InputTypes.Checkbox}
-                  // className={classes.fitContent}
-                />
-              )
-            },
-          }),
-        ]
-      : []),
     columnHelper.accessor('name', {
       header: () => t('label.file_name'),
       footer: (info) => info.column.id,
@@ -284,16 +249,6 @@ const SourceFilesList = <TFormValues extends FieldValues>({
             />
           </div>
         }
-      />
-      <GenerateForTranslationSection
-        hidden={
-          !canGenerateProject || mode === ProjectDetailModes.View || !isEditable
-        }
-        openSendToCatModal={openSendToCatModal}
-        className={classes.generateSection}
-        disabled={isGenerateProjectButtonDisabled}
-        isLoading={isCatProjectLoading}
-        catSetupStatus={catSetupStatus}
       />
     </div>
   )

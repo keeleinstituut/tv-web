@@ -1,5 +1,4 @@
 import Loader from 'components/atoms/Loader/Loader'
-import { useFetchSubProjectCatToolJobs } from 'hooks/requests/useProjects'
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Root } from '@radix-ui/react-form'
@@ -9,11 +8,8 @@ import {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
-import CatJobsTable from 'components/organisms/tables/CatJobsTable/CatJobsTable'
-import { filter, includes, isEmpty, isEqual, map, split, values } from 'lodash'
-import TranslationMemoriesSection from 'components/organisms/TranslationMemoriesSection/TranslationMemoriesSection'
+import { filter, includes, isEqual, map, values } from 'lodash'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useFetchSubProjectTmKeys } from 'hooks/requests/useTranslationMemories'
 import { SourceFile, TypesWithStartTime } from 'types/projects'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
@@ -61,13 +57,11 @@ const TaskContent: FC<TaskContentProps> = ({
   const { t } = useTranslation()
   const { institutionUserId } = useAuth()
   const taskData = useTaskCache(taskId)
-  const { assignment, cat_tm_keys_meta, cat_tm_keys_stats, project } =
-    taskData || {}
+  const { assignment, project } = taskData || {}
   const jobShortName = assignment?.job_definition?.job_short_name
 
   const {
     subProject,
-    cat_jobs,
     deadline_at,
     comments,
     event_start_at,
@@ -79,12 +73,8 @@ const TaskContent: FC<TaskContentProps> = ({
   } = assignment || {}
 
   const {
-    source_language_classifier_value,
-    destination_language_classifier_value,
-    cat_files,
     source_files,
     final_files,
-    cat_tm_keys,
     project: taskProject,
   } = subProject || {}
 
@@ -96,20 +86,7 @@ const TaskContent: FC<TaskContentProps> = ({
     projectData?.type_classifier_value?.value
   )
 
-  const { catToolJobs, catSetupStatus } = useFetchSubProjectCatToolJobs({
-    id: sub_project_id,
-    disabled: isVendor,
-  })
-
-  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
-    subProjectId: sub_project_id,
-    disabled: isVendor,
-  })
-
   const { updateAssigneeComment } = useAssignmentCommentUpdate({ id, taskId })
-
-  const catJobsToUse = isVendor ? cat_jobs : catToolJobs
-  const tmKeysToUse = isVendor ? cat_tm_keys : subProjectTmKeyObjectsArray
 
   const my_final_files = useMemo(
     () =>
@@ -155,15 +132,6 @@ const TaskContent: FC<TaskContentProps> = ({
     reset(defaultValues)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues])
-
-  const subProjectLangPair = useMemo(() => {
-    const srcLangShort = split(source_language_classifier_value?.value, '-')[0]
-    const dstLangShort = split(
-      destination_language_classifier_value?.value,
-      '-'
-    )[0]
-    return `${srcLangShort}_${dstLangShort}`
-  }, [destination_language_classifier_value, source_language_classifier_value])
 
   const formattedDate = (date: string) => {
     return dayjs(date).format('DD.MM.YYYY HH:mm')
@@ -363,26 +331,12 @@ const TaskContent: FC<TaskContentProps> = ({
           />
         </span>
       </div>
-      <TranslationMemoriesSection
-        className={classes.translationMemories}
-        hidden={isEmpty(tmKeysToUse)}
-        control={control}
-        isEditable={false}
-        subProjectId={sub_project_id}
-        subProjectTmKeyObjectsArray={tmKeysToUse}
-        subProjectLangPair={subProjectLangPair}
-        cat_tm_keys_meta={cat_tm_keys_meta}
-        cat_tm_keys_stats={cat_tm_keys_stats}
-        isVendor={isVendor}
-        mode={ProjectDetailModes.View}
-      />
       <div className={classes.grid}>
         <SourceFilesList
           name="my_source_files"
           title={t('my_tasks.my_source_files')}
           tooltipContent={t('tooltip.my_source_files_helper')}
           control={control}
-          catSetupStatus={catSetupStatus}
           mode={ProjectDetailModes.View}
           subProjectId={sub_project_id || ''}
           isHistoryView={isHistoryView}
@@ -396,22 +350,6 @@ const TaskContent: FC<TaskContentProps> = ({
           subProjectId={sub_project_id || ''}
           taskId={taskId}
           className={classes.myFinalFiles}
-          mode={ProjectDetailModes.View}
-          isHistoryView={isHistoryView}
-        />
-        <CatJobsTable
-          subProjectId={sub_project_id || ''}
-          className={classes.catJobs}
-          hidden={isEmpty(catJobsToUse)}
-          cat_jobs={catJobsToUse}
-          isEditable={isTaskAssignedToMe}
-          cat_files={cat_files}
-          source_files={source_files}
-          canSendToVendors={true} //TODO add check when camunda is ready
-          source_language_classifier_value={source_language_classifier_value}
-          destination_language_classifier_value={
-            destination_language_classifier_value
-          }
           mode={ProjectDetailModes.View}
           isHistoryView={isHistoryView}
         />

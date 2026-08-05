@@ -43,8 +43,11 @@ import {
 } from 'hooks/requests/useVolumes'
 import { useAssignmentCache } from 'hooks/requests/useAssignments'
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
-import { CatAnalysis } from 'types/projects'
-import { CatVolumePayload, ManualVolumePayload } from 'types/assignments'
+import {
+  CatVolumePayload,
+  ManualVolumePayload,
+  VolumeAnalysisBands,
+} from 'types/assignments'
 import {
   apiTypeToKey,
   keyToApiType,
@@ -111,7 +114,7 @@ export interface VolumeFormProps {
   id?: string
   isCat?: boolean
   catJobId?: string
-  volume_analysis?: CatAnalysis
+  volume_analysis?: VolumeAnalysisBands
   unit_fee?: number
   unit_type?: string
   unit_quantity?: number

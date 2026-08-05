@@ -4,7 +4,6 @@ import {
   SortingFunctionType,
 } from './collective'
 import { AssignmentType } from 'types/assignments'
-import { TmStatsType, TranslationMemoryType } from './translationMemories'
 import { ProjectDetail, SubProjectDetail } from './projects'
 
 export enum TaskType {
@@ -32,10 +31,6 @@ export interface ListTask {
   project_id: string
   assignment: AssignmentType
   assignee_institution_user_id?: string
-  cat_tm_keys_stats?: TmStatsType
-  cat_tm_keys_meta?: {
-    tags: TranslationMemoryType[]
-  }
   subProject?: Partial<SubProjectDetail>
 }
 

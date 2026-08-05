@@ -9,9 +9,6 @@ import {
   ContextCheckPayload,
   ExportTMXPayload,
   ImportTMXPayload,
-  SubProjectTmKeysPayload,
-  SubProjectTmKeysResponse,
-  TmStatsType,
   TranslationMemoryDataType,
   TranslationMemoryFilters,
   TranslationMemoryPayload,
@@ -20,7 +17,7 @@ import {
 } from 'types/translationMemories'
 import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
-import { map, flatten, join, omit, pick, filter } from 'lodash'
+import { filter } from 'lodash'
 import { SubProjectsResponse } from 'types/projects'
 import { useCallback, useEffect } from 'react'
 import useWaitForLoading from 'hooks/useWaitForLoading'
@@ -100,21 +97,6 @@ export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
     chunk_amount: data?.segment_count,
     edit_url: data?.edit_url,
     isFetching,
-  }
-}
-
-export const useFetchTmChunkAmounts = ({
-  disabled,
-}: {
-  disabled?: boolean
-}) => {
-  const { data } = useQuery<TmStatsType>({
-    enabled: !disabled,
-    queryKey: ['translationMemories-stats'],
-    queryFn: () => apiClient.get(endpoints.TM_STATS),
-  })
-  return {
-    tmChunkAmounts: data?.tag,
   }
 }
 
@@ -285,136 +267,6 @@ export const useFetchTranslationMemorySubProjects = ({
   }
 }
 
-export const useFetchSubProjectTmKeys = ({
-  subProjectId,
-  disabled,
-}: {
-  subProjectId?: string
-  disabled?: boolean
-}) => {
-  const { isLoading, isError, isFetching, data } =
-    useQuery<SubProjectTmKeysResponse>({
-      enabled: !!subProjectId && !disabled,
-      queryKey: ['subProject-tm-keys', subProjectId],
-      queryFn: () => apiClient.get(`${endpoints.TM_KEYS}/${subProjectId}`),
-    })
-
-  return {
-    isLoading,
-    isError,
-    subProjectTmKeyObjectsArray: data?.data,
-    isFetching,
-  }
-}
-
-export const useUpdateSubProjectTmKeys = ({
-  subProjectId,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: updateSubProjectTmKeys, isLoading } = useMutation({
-    mutationKey: ['subProject-tm-keys', subProjectId],
-    mutationFn: async (payload: SubProjectTmKeysPayload) => {
-      return apiClient.post(endpoints.UPDATE_TM_KEYS, {
-        sub_project_id: subProjectId,
-        ...payload,
-      })
-    },
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['subProject-tm-keys', subProjectId],
-        (oldData?: SubProjectTmKeysResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          return { data }
-        }
-      )
-    },
-  })
-
-  return {
-    updateSubProjectTmKeys,
-    isLoading,
-  }
-}
-export const useToggleTmWritable = ({
-  subProjectId,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: toggleTmWritable, isLoading } = useMutation({
-    mutationKey: ['subProject-tm-keys', subProjectId],
-    mutationFn: async (payload: SubProjectTmKeysPayload) => {
-      return apiClient.put(
-        `${endpoints.TOGGLE_TM_WRITABLE}/${payload.id}`,
-        omit(payload, 'id')
-      )
-    },
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['subProject-tm-keys', subProjectId],
-        (oldData?: SubProjectTmKeysResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = [
-            ...filter(previousData, ({ id }) => id !== data.id),
-            data,
-          ]
-
-          return { data: newData }
-        }
-      )
-    },
-  })
-
-  return {
-    toggleTmWritable,
-    isLoading,
-  }
-}
-
-export const useCreateEmptyTm = ({
-  subProjectId,
-  key,
-}: {
-  subProjectId?: string
-  key?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: createEmptyTm, isLoading } = useMutation({
-    mutationKey: ['subProject-tm-keys', subProjectId],
-    mutationFn: () => apiClient.post(`${endpoints.TM_KEYS}/${subProjectId}`),
-    onSuccess: ({ data }) => {
-      const { cat_tm_key, cat_tm_meta } = data || {}
-      queryClient.setQueryData(
-        ['subProject-tm-keys', subProjectId],
-        (oldData?: SubProjectTmKeysResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = [...previousData, cat_tm_key]
-          return { data: newData }
-        }
-      )
-      queryClient.setQueryData(
-        ['translationMemories', key],
-        (oldData?: TranslationMemoryDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = [...previousData, cat_tm_meta?.tag]
-          return { data: newData }
-        }
-      )
-    },
-  })
-
-  return {
-    isLoading,
-    createEmptyTm,
-  }
-}
-
 export const useFetchTranslationMemoryContextChecks = (options?: {
   initialFilters: ContextCheckFilters
   refetchInterval?: number
@@ -464,3 +316,4 @@ export const useCreateTranslationMemoryContextCheck = () => {
     isLoading,
   }
 }
+

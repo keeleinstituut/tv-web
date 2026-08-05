@@ -6,7 +6,6 @@ import FeatureHeaderSection, {
   FeatureTabs,
 } from 'components/organisms/FeatureHeaderSection/FeatureHeaderSection'
 import FeatureAssignments from 'components/molecules/FeatureAssignments/FeatureAssignments'
-import FeatureCatJobs from 'components/molecules/FeatureCatJobs/FeatureCatJobs'
 import { useSplitAssignment } from 'hooks/requests/useAssignments'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
@@ -17,8 +16,6 @@ type MainFeatureProps = Pick<
   | 'assignments'
   | 'source_language_classifier_value_id'
   | 'destination_language_classifier_value_id'
-  | 'cat_analyzis'
-  | 'cat_jobs'
   | 'project_id'
   | 'id'
   | 'mt_enabled'
@@ -35,12 +32,10 @@ const MainFeature: FC<MainFeatureProps> = ({
   feature,
   mt_enabled,
   id,
-  cat_jobs,
   assignments,
   workflow_started,
   project_id,
   project,
-  ...rest
 }) => {
   const { t } = useTranslation()
   const isSomethingEditable = true
@@ -123,13 +118,6 @@ const MainFeature: FC<MainFeatureProps> = ({
         hidden={activeTab === FeatureTabs.Xliff}
         catSupported={catSupported}
         isEditable={isSomethingEditable}
-      />
-      <FeatureCatJobs
-        hidden={activeTab === FeatureTabs.Vendors}
-        assignments={assignments}
-        subProjectCatJobs={cat_jobs}
-        isSomethingEditable={isSomethingEditable}
-        {...rest}
       />
     </Root>
   )

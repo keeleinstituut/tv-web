@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "api"
-import { CatJob } from "types/projects"
+import { CattoJob } from "./types"
 import { CAT2_API_BASE_URL } from "./constants"
 
 export const getJobs = ({ queryKey }) => {
@@ -9,7 +9,7 @@ export const getJobs = ({ queryKey }) => {
 }
 
 export const useCatJobs = (catProjectId?: string) =>
-  useQuery<{ data: CatJob[] }>({
+  useQuery<{ data: CattoJob[] }>({
     queryFn: getJobs,
     queryKey: ['catJobs', {
       project_id: catProjectId,

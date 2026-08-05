@@ -1,6 +1,6 @@
 import { FC, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { find, isEmpty, map } from 'lodash'
+import { map } from 'lodash'
 import classNames from 'classnames'
 
 import Delete from 'assets/icons/delete.svg?react'
@@ -12,31 +12,17 @@ import Button, {
   IconPositioningTypes,
 } from 'components/molecules/Button/Button'
 import BaseButton from 'components/atoms/BaseButton/BaseButton'
-import SelectionControlsInput from 'components/organisms/SelectionControlsInput/SelectionControlsInput'
-import DynamicForm, {
-  FieldProps,
-  InputTypes,
-} from 'components/organisms/DynamicForm/DynamicForm'
 import VolumeForm, { VolumeFormState } from 'components/organisms/forms/VolumeForm/VolumeForm'
-import { useSubProjectCache } from 'hooks/requests/useProjects'
 import { useAssignmentCache } from 'hooks/requests/useAssignments'
-import { useCatAnalysisFetch } from 'hooks/requests/useAnalysis'
 import { useAssignmentRemoveVolume } from 'hooks/requests/useVolumes'
 import { apiTypeToKey } from 'components/molecules/AddVolumeInput/AddVolumeInput'
 import { VolumeValue } from 'types/volumes'
-import { useForm } from 'react-hook-form'
-import { useMemo } from 'react'
 
 import classes from './classes.module.scss'
 
 interface InlineVolumeEditorProps {
   assignmentId: string
   sub_project_id: string
-}
-
-interface CatJobFormValues {
-  addType: 'manual' | 'cat'
-  chunkId?: string
 }
 
 const noop = () => {}
@@ -49,12 +35,6 @@ const InlineVolumeEditor: FC<InlineVolumeEditorProps> = ({
 
   const assignment = useAssignmentCache({ id: assignmentId, sub_project_id })
   const volumes = assignment?.volumes ?? []
-
-  const { cat_features } = useSubProjectCache(sub_project_id) || {}
-  const catSupported = !isEmpty(cat_features)
-  const { cat_analysis } = useCatAnalysisFetch({
-    subProjectId: catSupported ? sub_project_id : undefined,
-  })
 
   const { removeAssignmentVolume, isLoading: isDeleting } =
     useAssignmentRemoveVolume({ subProjectId: sub_project_id })
@@ -76,23 +56,11 @@ const InlineVolumeEditor: FC<InlineVolumeEditorProps> = ({
   })
   const [deletingVolumeId, setDeletingVolumeId] = useState<string | null>(null)
 
-  // CAT job selection within the add flow
-  const {
-    control: catControl,
-    watch: catWatch,
-    reset: catReset,
-  } = useForm<CatJobFormValues>({
-    defaultValues: { addType: 'manual' },
-  })
-  const pendingAddType = catWatch('addType')
-  const pendingCatJobId = catWatch('chunkId')
-
   const openAdd = useCallback(() => {
     setIsAdding(true)
     setEditingVolumeId(null)
     setDeletingVolumeId(null)
-    catReset({ addType: 'manual' })
-  }, [catReset])
+  }, [])
 
   const openEdit = useCallback((volumeId: string) => {
     setEditingVolumeId(volumeId)
@@ -117,45 +85,6 @@ const InlineVolumeEditor: FC<InlineVolumeEditorProps> = ({
     await removeAssignmentVolume({ volumeId: deletingVolumeId })
     setDeletingVolumeId(null)
   }, [deletingVolumeId, removeAssignmentVolume])
-
-  const addTypeOptions = useMemo(
-    () => [
-      { value: 'manual', label: t('task.add_manual_volume') },
-      ...(catSupported
-        ? [{ value: 'cat', label: t('task.add_cat_volume') }]
-        : []),
-    ],
-    [catSupported, t]
-  )
-
-  const catJobOptions = useMemo(
-    () =>
-      map(cat_analysis?.cat_jobs, ({ id, name }) => ({
-        value: id.toString(),
-        label: name,
-      })),
-    [cat_analysis?.cat_jobs]
-  )
-
-  const catChunkField: FieldProps<CatJobFormValues>[] = useMemo(
-    () => [
-      {
-        inputType: InputTypes.RadioGroup,
-        name: 'chunkId',
-        options: catJobOptions,
-        rules: { required: true },
-      },
-    ],
-    [catJobOptions]
-  )
-
-  const selectedCatJob =
-    pendingCatJobId && cat_analysis?.cat_jobs
-      ? find(cat_analysis.cat_jobs, { id: pendingCatJobId })
-      : undefined
-
-  const isAddFormReady =
-    pendingAddType === 'manual' || (pendingAddType === 'cat' && !!pendingCatJobId)
 
   return (
     <div className={classes.inlineVolumeEditor}>
@@ -250,49 +179,19 @@ const InlineVolumeEditor: FC<InlineVolumeEditorProps> = ({
 
       {isAdding && (
         <div className={classes.inlineFormRow}>
-          {catSupported && (
-            <SelectionControlsInput
-              name="addType"
-              ariaLabel={t('modal.pick_volume_add_method')}
-              value={pendingAddType}
-              options={addTypeOptions}
-              onChange={(v) => {
-                const val = Array.isArray(v) ? v[0] : v
-                catReset({ addType: (val as 'manual' | 'cat') ?? 'manual' })
-              }}
-            />
-          )}
-          {pendingAddType === 'cat' && catJobOptions.length > 0 && (
-            <DynamicForm
-              control={catControl}
-              fields={catChunkField}
-            />
-          )}
-          {isAddFormReady && (
-            <VolumeForm
-              assignmentId={assignmentId}
-              isCat={pendingAddType === 'cat'}
-              catJobId={pendingCatJobId ?? undefined}
-              volume_analysis={selectedCatJob?.volume_analysis}
-              sub_project_id={sub_project_id}
-              hideVendor
-              onFormStateChange={setAddFormState}
-              onSuccess={() => {
-                setIsAdding(false)
-                catReset({ addType: 'manual' })
-              }}
-            />
-          )}
+          <VolumeForm
+            assignmentId={assignmentId}
+            sub_project_id={sub_project_id}
+            hideVendor
+            onFormStateChange={setAddFormState}
+            onSuccess={() => setIsAdding(false)}
+          />
           <div className={classes.inlineActionButtons}>
             <Button
               appearance={AppearanceTypes.Primary}
               onClick={addFormState.submit}
               loading={addFormState.isLoading}
-              disabled={
-                !isAddFormReady ||
-                !addFormState.isValid ||
-                addFormState.isLoading
-              }
+              disabled={!addFormState.isValid || addFormState.isLoading}
             >
               {t('button.save')}
             </Button>
