@@ -20,7 +20,7 @@ import { find, includes, map } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export const useFetchProjects = (
   initialFilters?: ProjectsPayloadType,
@@ -218,11 +218,37 @@ export const useUpdateSubProject = ({ id }: { id?: string }) => {
   }
 }
 
+// CAT project creation happens in a background job after subproject creation,
+// so cat_metadata.catto_project_id is often not set yet on the first fetch.
+// Poll briefly until it appears; give up so subprojects without CAT enabled
+// don't poll forever.
+const CAT_METADATA_POLL_INTERVAL = 3000
+const CAT_METADATA_MAX_POLL_ATTEMPTS = 20
+
 export const useFetchSubProject = ({ id }: { id?: string }) => {
+  const catMetadataPollAttempts = useRef(0)
+
   const { isLoading, isError, data } = useQuery<SubProjectResponse>({
     enabled: !!id,
     queryKey: ['subprojects', id],
     queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`),
+    refetchInterval: (data) => {
+      const catToolEnabled =
+        data?.data?.project?.type_classifier_value?.project_type_config
+          ?.cat_tool_enabled
+      if (!catToolEnabled) {
+        return false
+      }
+      if (data?.data?.cat_metadata?.catto_project_id) {
+        catMetadataPollAttempts.current = 0
+        return false
+      }
+      if (catMetadataPollAttempts.current >= CAT_METADATA_MAX_POLL_ATTEMPTS) {
+        return false
+      }
+      catMetadataPollAttempts.current += 1
+      return CAT_METADATA_POLL_INTERVAL
+    },
   })
 
   const { data: subProject } = data || {}

@@ -1,4 +1,17 @@
 @use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
+
+.pendingContainer {
+  @include mixins.subtitleSmallTextStyle;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: variables.spacing(2);
+  color: variables.$color-text;
+  min-height: 80px;
+  margin-top: variables.spacing(14);
+}
 
 .bandsCell {
   display: flex;

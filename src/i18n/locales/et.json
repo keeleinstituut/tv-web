@@ -933,7 +933,8 @@
       "job_translation": "tõlkimine",
       "job_revision": "toimetamine",
       "job_overview": "ülevaatus",
-      "cat_tool": "CAT tööriist"
+      "cat_tool": "CAT tööriist",
+      "cat_tool_pending": "CAT tööriista projekti seadistamine..."
     },
     "file_types": {
       "STYLE_GUIDE": "Stiilijuhis",

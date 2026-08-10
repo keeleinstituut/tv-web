@@ -1,8 +1,12 @@
-import { FC } from "react"
-import { SourceFile } from "types/projects"
-import AnalysesTable from "./AnalysesTable"
-import JobsTable from "./JobsTable"
-import TranslationMemoriesTable from "./TranslationMemoriesTable"
+import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
+import { SourceFile } from 'types/projects'
+import Loader from 'components/atoms/Loader/Loader'
+import AnalysesTable from './AnalysesTable'
+import JobsTable from './JobsTable'
+import TranslationMemoriesTable from './TranslationMemoriesTable'
+
+import classes from './classes.module.scss'
 
 interface CatToolFeatureProps {
   cat_metadata?: { catto_project_id?: string }
@@ -11,10 +15,16 @@ interface CatToolFeatureProps {
 }
 
 const CatToolFeature: FC<CatToolFeatureProps> = (props) => {
+  const { t } = useTranslation()
   const catProjectId = props?.cat_metadata?.catto_project_id
 
   if (!catProjectId) {
-    return null
+    return (
+      <div className={classes.pendingContainer}>
+        <Loader loading />
+        <span>{t('projects.features.cat_tool_pending')}</span>
+      </div>
+    )
   }
 
   return (
