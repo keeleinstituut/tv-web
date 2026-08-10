@@ -996,7 +996,11 @@
       "open_in_editor": "Ava redaktoris",
       "analyse": "Analüüsi",
       "pretranslate": "Eeltõlgi",
-      "add_files": "Lisa failid"
+      "add_files": "Lisa failid",
+      "download": "Laadi alla",
+      "download_original": "Originaal",
+      "download_xliff": "XLIFF",
+      "download_translated": "Tõlgitud"
     }
   },
   "warning": {

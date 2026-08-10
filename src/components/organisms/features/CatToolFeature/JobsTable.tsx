@@ -13,6 +13,9 @@ import { useTranslation } from "react-i18next"
 import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
 import { SourceFile } from "types/projects"
 import dayjs from "dayjs"
+import SimpleDropdown from "components/molecules/SimpleDropdown/SimpleDropdown"
+import { downloadFile } from "helpers"
+import { CattoJob } from "./types"
 
 const postAnalyses = async (params: any) => {
   return apiClient.post(`${CAT2_API_BASE_URL}/analyses`, params)
@@ -20,6 +23,28 @@ const postAnalyses = async (params: any) => {
 
 const postPretranslate = async (params: any) => {
   return apiClient.post(`${CAT2_API_BASE_URL}/jobs/pretranslate`, params)
+}
+
+type CatJobDownloadType = 'source' | 'source_xliff' | 'target'
+
+const postJobDownload = async (params: { job_ids: string[]; type: CatJobDownloadType }) => {
+  return apiClient.post(`${CAT2_API_BASE_URL}/download`, params, { responseType: 'blob' })
+}
+
+const getDownloadFileName = (
+  jobs: CattoJob[] | undefined,
+  jobId: string,
+  type: CatJobDownloadType
+) => {
+  const job = jobs?.find((job) => job.id === jobId)
+  switch (type) {
+    case 'source':
+      return job?.source_file?.file_name ?? `original_${jobId}`
+    case 'source_xliff':
+      return job?.xliff_file?.file_name ?? `${jobId}.xlf`
+    case 'target':
+      return job?.source_file?.file_name ?? `translated_${jobId}`
+  }
 }
 
 const columnHelper = createColumnHelper<any>()
@@ -46,6 +71,18 @@ const JobsTable: FC<JobsTableProps> = (props) => {
 
   const pretranslateMutation = useMutation({
     mutationFn: postPretranslate
+  })
+
+  const downloadMutation = useMutation({
+    mutationFn: postJobDownload,
+    onSuccess: (data, { job_ids, type, file_name }) => {
+      
+      const fileName =
+        job_ids.length > 1
+          ? 'files.zip'
+          : getDownloadFileName(catJobsQuery.data?.data, job_ids[0], type)
+      downloadFile({ data, fileName })
+    },
   })
 
   const jobTableColumns = [
@@ -109,6 +146,31 @@ const JobsTable: FC<JobsTableProps> = (props) => {
           >
             {t('cat_tool_feature.jobs_table.pretranslate')}
           </Button>
+          <SimpleDropdown
+            className={classes.mainButton}
+            appearance={AppearanceTypes.Secondary}
+            icon={null}
+            size={SizeTypes.S}
+            label={t('cat_tool_feature.jobs_table.download')}
+            disabled={rowSelectionCount == 0}
+            options={[
+              {
+                label: t('cat_tool_feature.jobs_table.download_original'),
+                onClick: () =>
+                  downloadMutation.mutate({ job_ids: keys(rowSelection), type: 'source' }),
+              },
+              {
+                label: t('cat_tool_feature.jobs_table.download_xliff'),
+                onClick: () =>
+                  downloadMutation.mutate({ job_ids: keys(rowSelection), type: 'source_xliff' }),
+              },
+              {
+                label: t('cat_tool_feature.jobs_table.download_translated'),
+                onClick: () =>
+                  downloadMutation.mutate({ job_ids: keys(rowSelection), type: 'target' }),
+              },
+            ]}
+          />
           <Button
             className={classes.mainButton}
             size={SizeTypes.S}
