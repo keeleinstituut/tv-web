@@ -19,7 +19,6 @@ interface CatTranslationMemory {
   name: string
   source_locale: string
   target_locale: string
-  segment_count?: number
 }
 
 interface CatProjectTranslationMemory {
@@ -31,6 +30,7 @@ interface CatProjectTranslationMemory {
 interface CatTmRow extends CatTranslationMemory {
   read: boolean
   write: boolean
+  segment_count: number
 }
 
 const columnHelper = createColumnHelper<CatTmRow>()
@@ -66,6 +66,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
 
   const rows: CatTmRow[] = useMemo(() => {
     const allTms: CatTranslationMemory[] = catTmsQuery.data?.data || []
+    const segmentCounts: Record<string, number> = catTmsQuery.data?.segment_counts || {}
 
     return chain(allTms)
       .filter(tm => assignedMap.has(tm.id))
@@ -75,6 +76,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
           ...tm,
           read: assigned?.read ?? false,
           write: assigned?.write ?? false,
+          segment_count: segmentCounts[tm.id] ?? 0,
         }
       })
       .value()
