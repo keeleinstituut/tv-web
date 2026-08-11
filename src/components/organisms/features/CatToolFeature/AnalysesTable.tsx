@@ -9,10 +9,12 @@ import { FC } from "react"
 import classes from "./classes.module.scss"
 import BandsCell from "./BandsCell"
 import { CattoAnalysis } from "./types"
-import { useCatAnalyses } from "./useCatAnalyses"
+import { useCatAnalyses, useDeleteCatAnalysis } from "./useCatAnalyses"
 import ExpandableContentContainer from "components/molecules/ExpandableContentContainer/ExpandableContentContainer"
 import { useTranslation } from "react-i18next"
 import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
+import Delete from "assets/icons/delete.svg?react"
+import BaseButton from "components/atoms/BaseButton/BaseButton"
 
 const columnHelper = createColumnHelper<CattoAnalysis>()
 
@@ -28,6 +30,7 @@ const AnalysesTable: FC<AnalysesTableProps> = (props) => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { analyses, paginationData, handlePaginationChange } = useCatAnalyses(catProjectId)
+  const { mutate: deleteAnalysis } = useDeleteCatAnalysis()
 
   const analysesTableColumns = [
     ...(selectable
@@ -93,16 +96,25 @@ const AnalysesTable: FC<AnalysesTableProps> = (props) => {
       id: 'actions',
       header: '',
       cell: ({ row }) => (
-        <Button
-          appearance={AppearanceTypes.Text}
-          size={SizeTypes.S}
-          onClick={() => {
-            queryClient.setQueryData(['catAnalysis', row.original.id], { data: row.original })
-            showModal(ModalTypes.CatAnalysisDetails, { analysisId: row.original.id, catProjectId })
-          }}
-        >
-          {t('cat_tool_feature.analyses_table.view')}
-        </Button>
+        <div className={classes.actionsContainer}>
+          <Button
+            appearance={AppearanceTypes.Text}
+            size={SizeTypes.S}
+            onClick={() => {
+              queryClient.setQueryData(['catAnalysis', row.original.id], { data: row.original })
+              showModal(ModalTypes.CatAnalysisDetails, { analysisId: row.original.id, catProjectId })
+            }}
+          >
+            {t('cat_tool_feature.analyses_table.view')}
+          </Button>
+          <BaseButton
+            onClick={() => deleteAnalysis(row.original.id)}
+            aria-label={t('button.delete')}
+            className={classes.iconButton}
+          >
+            <Delete />
+          </BaseButton>
+        </div>
       ),
     }),
   ] as ColumnDef<CattoAnalysis>[]

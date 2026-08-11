@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { apiClient } from "api"
 import useFilters from "hooks/useFilters"
 import { CAT2_API_BASE_URL } from "./constants"
@@ -39,4 +39,12 @@ export const useCatAnalyses = (catProjectId?: string) => {
     handlePaginationChange,
     isLoading: catAnalysesQuery.isLoading,
   }
+}
+
+export const useDeleteCatAnalysis = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => apiClient.delete(`${CAT2_API_BASE_URL}/analyses/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['catAnalyses'] }),
+  })
 }

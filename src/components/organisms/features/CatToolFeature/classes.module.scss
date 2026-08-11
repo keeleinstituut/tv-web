@@ -36,3 +36,24 @@
   border: unset;
   box-shadow: unset;
 }
+
+.actionsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+
+  & > * {
+    margin-left: variables.spacing(2);
+    margin-right: variables.spacing(2);
+  }
+}
+
+.iconButton {
+  display: flex;
+
+  svg {
+    width: 21px;
+    height: 20px;
+  }
+}

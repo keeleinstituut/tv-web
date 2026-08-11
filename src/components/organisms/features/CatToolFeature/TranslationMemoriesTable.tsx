@@ -13,6 +13,8 @@ import { chain } from "lodash"
 import Button, { AppearanceTypes, SizeTypes } from "components/molecules/Button/Button"
 import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
 import classes from "./classes.module.scss"
+import Delete from "assets/icons/delete.svg?react"
+import BaseButton from "components/atoms/BaseButton/BaseButton"
 
 interface CatTranslationMemory {
   id: string
@@ -94,6 +96,16 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
     [rows, updateMutation]
   )
 
+  const handleUnassign = useCallback(
+    (tmId: string) => {
+      const translation_memories = rows
+        .filter((row) => row.id !== tmId)
+        .map(({ id, read, write }) => ({ id, read, write }))
+      updateMutation.mutate(translation_memories)
+    },
+    [rows, updateMutation]
+  )
+
   const columns = [
     columnHelper.accessor('id', {
       id: 'language_direction',
@@ -142,6 +154,21 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
       header: () => t('label.chunk_amount'),
       footer: (info) => info.column.id,
       cell: ({ getValue }) => getValue() ?? 0,
+    }),
+    columnHelper.display({
+      id: 'delete_button',
+      header: '',
+      cell: ({ row }) => (
+        <div className={classes.actionsContainer}>
+          <BaseButton
+            onClick={() => handleUnassign(row.original.id)}
+            aria-label={t('button.delete')}
+            className={classes.iconButton}
+          >
+            <Delete />
+          </BaseButton>
+        </div>
+      ),
     }),
   ] as ColumnDef<CatTmRow>[]
 

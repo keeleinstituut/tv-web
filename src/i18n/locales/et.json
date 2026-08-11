@@ -988,7 +988,8 @@
       },
       "status_done": "Valmis",
       "status_pending": "Ootel",
-      "view": "Vaata"
+      "view": "Vaata",
+      "delete": "Kustuta"
     },
     "analysis_details_modal": {
       "title": "Analüüsi arvestus",
@@ -1031,7 +1032,8 @@
       "download": "Laadi alla",
       "download_original": "Originaal",
       "download_xliff": "XLIFF",
-      "download_translated": "Tõlgitud"
+      "download_translated": "Tõlgitud",
+      "delete_confirmation_text": "Kas oled kindel, et soovid selle töö kustutada?"
     }
   },
   "warning": {

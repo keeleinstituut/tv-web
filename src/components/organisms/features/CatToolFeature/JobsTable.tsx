@@ -6,16 +6,18 @@ import DataTable, { TableSizeTypes } from "components/organisms/DataTable/DataTa
 import { keys } from "lodash"
 import { FC, useMemo, useState } from "react"
 import { CAT2_API_BASE_URL } from "./constants"
-import { useCatJobs } from "./useCatJobs"
+import { useCatJobs, useDeleteCatJob } from "./useCatJobs"
 import ExpandableContentContainer from "components/molecules/ExpandableContentContainer/ExpandableContentContainer"
 import classes from "./classes.module.scss"
 import { useTranslation } from "react-i18next"
-import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
+import { ModalTypes, showModal, closeModal } from "components/organisms/modals/ModalRoot"
 import { SourceFile } from "types/projects"
 import dayjs from "dayjs"
 import SimpleDropdown from "components/molecules/SimpleDropdown/SimpleDropdown"
 import { downloadFile } from "helpers"
 import { CattoJob } from "./types"
+import Delete from "assets/icons/delete.svg?react"
+import BaseButton from "components/atoms/BaseButton/BaseButton"
 
 const postAnalyses = async (params: any) => {
   return apiClient.post(`${CAT2_API_BASE_URL}/analyses`, params)
@@ -63,6 +65,7 @@ const JobsTable: FC<JobsTableProps> = (props) => {
   const queryClient = useQueryClient()
 
   const catJobsQuery = useCatJobs(catProjectId)
+  const { mutateAsync: deleteJob } = useDeleteCatJob()
 
   const analyseMutation = useMutation({
     mutationFn: postAnalyses,
@@ -90,6 +93,18 @@ const JobsTable: FC<JobsTableProps> = (props) => {
       downloadFile({ data, fileName })
     },
   })
+
+  const handleDelete = (jobId: string) => {
+    showModal(ModalTypes.ConfirmationModal, {
+      handleProceed: async () => {
+        await deleteJob(jobId)
+        closeModal()
+      },
+      modalContent: (
+        <h1>{t('cat_tool_feature.jobs_table.delete_confirmation_text')}</h1>
+      ),
+    })
+  }
 
   const jobTableColumns = [
     columnHelper.accessor('id', {
@@ -119,6 +134,21 @@ const JobsTable: FC<JobsTableProps> = (props) => {
     columnHelper.accessor('created_at', {
       header: t('cat_tool_feature.jobs_table.column.created_at'),
       cell: ({ getValue }) => dayjs(getValue()).format('YYYY.MM.DD HH:mm'),
+    }),
+    columnHelper.display({
+      id: 'delete_button',
+      header: '',
+      cell: ({ row }) => (
+        <div className={classes.actionsContainer}>
+          <BaseButton
+            onClick={() => handleDelete(row.original.id)}
+            aria-label={t('button.delete')}
+            className={classes.iconButton}
+          >
+            <Delete />
+          </BaseButton>
+        </div>
+      ),
     }),
   ]
 
