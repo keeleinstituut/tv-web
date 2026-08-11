@@ -113,7 +113,6 @@ export interface VolumeFormProps {
   assignmentId?: string
   id?: string
   isCat?: boolean
-  catJobId?: string
   volume_analysis?: VolumeAnalysisBands
   unit_fee?: number
   unit_type?: string
@@ -138,7 +137,6 @@ const VolumeForm: FC<VolumeFormProps> = ({
   discounts,
   volume_analysis,
   assignmentId,
-  catJobId,
   unit_fee: initialUnitFee,
   unit_quantity: initialUnitQuantity,
   unit_type,
@@ -495,7 +493,6 @@ const VolumeForm: FC<VolumeFormProps> = ({
               // @ts-expect-error type mismatch
               map(amountValues, toNumber).reverse()
             ),
-            cat_tool_job_id: catJobId ?? '',
           }
       if (id) {
         onSaveEdit(!!isCat, payload)
@@ -503,7 +500,7 @@ const VolumeForm: FC<VolumeFormProps> = ({
         onSaveNew(!!isCat, payload)
       }
     },
-    [isCat, assignmentId, amountDiscounts, amountValues, catJobId, id, onSaveEdit, onSaveNew]
+    [isCat, assignmentId, amountDiscounts, amountValues, id, onSaveEdit, onSaveNew]
   )
 
   const submit = useCallback(

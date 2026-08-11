@@ -14,7 +14,6 @@ export interface VolumeAnalysisBands {
   tm_75_84: number
   tm_50_74: number
   tm_0_49: number
-  chunk_id: string
   files_names: string[]
 }
 

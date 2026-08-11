@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { apiClient } from "api"
 import useFilters from "hooks/useFilters"
 import { CAT2_API_BASE_URL } from "./constants"
-import { CattoAnalysesResponse } from "./types"
+import { CattoAnalysesResponse, JobAnalysisEntry } from "./types"
 
 const getAnalyses = ({ queryKey }) => {
   const [_, params] = queryKey
@@ -28,7 +28,7 @@ export const useCatAnalyses = (catProjectId?: string) => {
     keepPreviousData: true,
     refetchInterval: (data) => {
       const analyses = data?.data ?? []
-      const isPending = analyses.some((analysis) => !analysis.results)
+      const isPending = analyses.some((analysis) => analysis.status === 'pending')
       return isPending ? 3000 : false
     },
   })

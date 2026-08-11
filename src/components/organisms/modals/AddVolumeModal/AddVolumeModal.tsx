@@ -4,17 +4,16 @@ import { ModalTypes, closeModal, showModal } from '../ModalRoot'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { ModalSizeTypes } from 'components/organisms/ModalBase/ModalBase'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { find } from 'lodash'
 import DynamicForm, {
   FieldProps,
   InputTypes,
 } from 'components/organisms/DynamicForm/DynamicForm'
 import { VolumeChangeModalProps } from 'components/organisms/modals/VolumeChangeModal/VolumeChangeModal'
 import { useSubProjectCache } from 'hooks/requests/useProjects'
-import AnalysesTable from 'components/organisms/features/CatToolFeature/AnalysesTable'
 import { useCatJobs } from 'components/organisms/features/CatToolFeature/useCatJobs'
 import { mapCattoAnalysisToVolumeAnalysis } from 'components/organisms/features/CatToolFeature/analysisAdapter'
 import { CattoAnalysis } from 'components/organisms/features/CatToolFeature/types'
+import AnalysesTable from 'components/organisms/features/CatToolFeature/AnalysesTable'
 
 export interface AddVolumeModalProps extends VolumeChangeModalProps {
   catSupported?: boolean
@@ -85,21 +84,14 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
       const isCat = values?.addType === 'cat'
-      const matchingJob = find(catJobsData?.data, {
-        id: selectedAnalysis?.job_id,
-      })
+
+      const shouldUseVolumeFromCat = isCat && selectedAnalysis
+
       showModal(ModalTypes.VolumeChange, {
         sub_project_id,
         isCat,
-        catJobId: selectedAnalysis?.job_id,
-        volume_analysis:
-          isCat && selectedAnalysis
-            ? mapCattoAnalysisToVolumeAnalysis(
-                selectedAnalysis,
-                matchingJob?.source_file?.file_name
-                  ? [matchingJob.source_file.file_name]
-                  : []
-              )
+        volume_analysis: shouldUseVolumeFromCat
+            ? mapCattoAnalysisToVolumeAnalysis(selectedAnalysis)
             : undefined,
         ...rest,
       })

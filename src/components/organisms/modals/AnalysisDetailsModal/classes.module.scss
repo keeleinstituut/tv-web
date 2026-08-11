@@ -1,0 +1,64 @@
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
+
+.modalContent {
+  padding: 0 variables.spacing(18);
+}
+
+.tabLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: variables.spacing(1);
+}
+
+// Same 16x16 footprint as .tabStatusDone so swapping between the two on
+// completion doesn't shift the tab's width/height.
+.tabStatusPendingLoader {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+
+  &::after {
+    width: 8px !important;
+    height: 8px !important;
+    margin: 2px !important;
+    border-width: 2px !important;
+  }
+}
+
+.tabStatusDone {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: variables.spacing(2);
+  margin-bottom: variables.spacing(4);
+}
+
+.metaInfo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: variables.spacing(4);
+  color: variables.$color-text;
+}
+
+.metaLabel {
+  font-weight: 600;
+}
+
+.tabsRow {
+  margin-bottom: variables.spacing(4);
+}
+
+.pendingText {
+  @include mixins.subtitleSmallTextStyle;
+  color: variables.$color-text;
+  padding: variables.spacing(4) 0;
+}

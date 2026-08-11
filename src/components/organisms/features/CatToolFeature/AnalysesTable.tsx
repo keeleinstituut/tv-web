@@ -1,14 +1,18 @@
 import { Root } from "@radix-ui/react-form"
+import { useQueryClient } from "@tanstack/react-query"
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import Tag from "components/atoms/Tag/Tag"
+import Button, { AppearanceTypes, SizeTypes } from "components/molecules/Button/Button"
 import DataTable, { TableSizeTypes } from "components/organisms/DataTable/DataTable"
 import dayjs from "dayjs"
 import { FC } from "react"
 import classes from "./classes.module.scss"
-import { CattoAnalysis, CattoAnalysisResults } from "./types"
+import BandsCell from "./BandsCell"
+import { CattoAnalysis } from "./types"
 import { useCatAnalyses } from "./useCatAnalyses"
 import ExpandableContentContainer from "components/molecules/ExpandableContentContainer/ExpandableContentContainer"
 import { useTranslation } from "react-i18next"
+import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
 
 const columnHelper = createColumnHelper<CattoAnalysis>()
 
@@ -22,86 +26,84 @@ interface AnalysesTableProps {
 const AnalysesTable: FC<AnalysesTableProps> = (props) => {
   const { catProjectId, selectable, selectedAnalysisId, onSelect } = props
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
   const { analyses, paginationData, handlePaginationChange } = useCatAnalyses(catProjectId)
-
-  const bandLabels: Record<keyof CattoAnalysisResults["bands"], string> = {
-    ice: "101%",
-    exact: "100%",
-    repetitions: t('cat_tool_feature.analyses_table.band.repetitions'),
-    high_fuzzy: "95-99%",
-    medium_fuzzy: "85-94%",
-    low_fuzzy: "75-84%",
-    slight_fuzzy: "50-74%",
-    no_match: t('cat_tool_feature.analyses_table.band.no_match'),
-  }
 
   const analysesTableColumns = [
     ...(selectable
       ? [
-          columnHelper.display({
-            id: 'select',
-            header: '',
-            cell: ({ row }) => (
-              <input
-                type="radio"
-                name="cat-analysis-select"
-                checked={row.original.id === selectedAnalysisId}
-                disabled={!row.original.results}
-                onChange={() => onSelect?.(row.original)}
-              />
-            ),
-          }),
-        ]
-      : []),
+        columnHelper.display({
+          id: 'select',
+          header: '',
+          cell: ({ row }) => (
+            <input
+              type="radio"
+              name="cat-analysis-select"
+              checked={row.original.id === selectedAnalysisId}
+              disabled={row.original.status != 'done'}
+              onChange={() => onSelect?.(row.original)}
+            />
+          ),
+        })
+      ]
+    : []),
     columnHelper.accessor('created_at', {
       header: t('cat_tool_feature.analyses_table.column.created'),
       cell: ({ getValue }) => dayjs(getValue()).format('YYYY.MM.DD HH:mm'),
     }),
-    columnHelper.accessor('languages', {
-      header: t('cat_tool_feature.analyses_table.column.languages'),
-      cell: ({ getValue }) => {
-        const { source, target } = getValue()
-        return <Tag label={`${source.toUpperCase()} > ${target.toUpperCase()}`} value />
-      },
+    columnHelper.accessor('job_analyses', {
+      id: 'jobs_count',
+      header: t('cat_tool_feature.analyses_table.column.jobs'),
+      cell: ({ getValue }) => getValue().length,
     }),
-    columnHelper.accessor('results', {
-      id: 'status',
+    // columnHelper.accessor('translation_memories', {
+    //   id: 'translation_memories',
+    //   header: t('cat_tool_feature.analyses_table.column.translation_memories'),
+    //   cell: ({ getValue }) => (
+    //     <div className={classes.bandsCell}>
+    //       {getValue().map((tm) => (
+    //         <Tag key={tm.id} label={tm.name} value />
+    //       ))}
+    //     </div>
+    //   ),
+    // }),
+    columnHelper.accessor('status', {
       header: t('cat_tool_feature.analyses_table.column.status'),
       cell: ({ getValue }) =>
-        getValue()
+        getValue() === 'done'
           ? t('cat_tool_feature.analyses_table.status_done')
           : t('cat_tool_feature.analyses_table.status_pending'),
     }),
-    columnHelper.accessor('results', {
+    columnHelper.accessor('total', {
       id: 'total',
       header: t('cat_tool_feature.analyses_table.column.total_words'),
-      cell: ({ getValue }) => getValue()?.total.words.toLocaleString() ?? '—',
+      cell: ({ getValue }) => getValue().words.toLocaleString(),
     }),
-    columnHelper.accessor('results', {
+    columnHelper.accessor('bands', {
       id: 'new_words',
       header: t('cat_tool_feature.analyses_table.column.new_words'),
-      cell: ({ getValue }) => getValue()?.bands.no_match.words.toLocaleString() ?? '—',
+      cell: ({ getValue }) => getValue().no_match.words.toLocaleString(),
     }),
-    columnHelper.accessor('results', {
-      id: 'bands',
-      header: t('cat_tool_feature.analyses_table.column.distribution'),
-      cell: ({ getValue }) => {
-        const results = getValue()
-        if (!results) return null
-        return (
-          <div className={classes.bandsCell}>
-            {Object.entries(results.bands)
-              .filter(([, stats]) => stats.words > 0)
-              .map(([band, stats]) => (
-                <Tag
-                  key={band}
-                  label={`${bandLabels[band as keyof typeof bandLabels]}: ${stats.words}`}
-                  value
-                />
-              ))}
-          </div>
-        )
-      },
+    // columnHelper.accessor('bands', {
+    //   id: 'bands',
+    //   header: t('cat_tool_feature.analyses_table.column.distribution'),
+    //   cell: ({ getValue }) => <BandsCell bands={getValue()} />,
+    // }),
+    columnHelper.display({
+      id: 'actions',
+      header: '',
+      cell: ({ row }) => (
+        <Button
+          appearance={AppearanceTypes.Text}
+          size={SizeTypes.S}
+          onClick={() => {
+            queryClient.setQueryData(['catAnalysis', row.original.id], { data: row.original })
+            showModal(ModalTypes.CatAnalysisDetails, { analysisId: row.original.id, catProjectId })
+          }}
+        >
+          {t('cat_tool_feature.analyses_table.view')}
+        </Button>
+      ),
     }),
   ] as ColumnDef<CattoAnalysis>[]
 
@@ -121,9 +123,10 @@ const AnalysesTable: FC<AnalysesTableProps> = (props) => {
           className={classes.translationMemoriesTable}
           paginationData={paginationData}
           onPaginationChange={handlePaginationChange}
-          defaultPaginationData={{ per_page: 15 }}
+          defaultPaginationData={{ per_page: 10 }}
           pageSizeOptions={[
-            { label: '15', value: '15' },
+            { label: '10', value: '10' },
+            { label: '25', value: '25' },
             { label: '50', value: '50' },
           ]}
         />

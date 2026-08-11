@@ -982,10 +982,41 @@
         "status": "Staatus",
         "total_words": "Sõnu kokku",
         "new_words": "Uusi sõnu",
-        "distribution": "Jaotus"
+        "distribution": "Jaotus",
+        "jobs": "Töid",
+        "translation_memories": "Tõlkemälud"
       },
       "status_done": "Valmis",
-      "status_pending": "Ootel"
+      "status_pending": "Ootel",
+      "view": "Vaata"
+    },
+    "analysis_details_modal": {
+      "title": "Analüüsi arvestus",
+      "subtitle": "TM-vastete jaotus failide kaupa. Vali vahekaart, et näha kõikide failide kokkuvõtet või konkreetse faili analüüsi.",
+      "info": {
+        "started": "Käivitatud",
+        "tm_used": "Kasutatud TM-id",
+        "tm_count": "{{count}} mälu",
+        "progress": "Valmis",
+        "files_progress": "{{done}}/{{total}} faili"
+      },
+      "download_csv": "Laadi alla CSV",
+      "tab": {
+        "summary": "Summary ({{count}} faili)",
+        "summary_csv": "Summary"
+      },
+      "row": {
+        "total": "Kõik"
+      },
+      "column": {
+        "file": "Fail",
+        "match_type": "Vaste tüüp",
+        "segments": "Segmenti",
+        "pages": "Lehekülgi",
+        "words": "Sõnu",
+        "characters": "Tähemärki",
+        "percent": "%"
+      }
     },
     "jobs_table": {
       "column": {

@@ -71,9 +71,11 @@ type DataTableProps<TData extends RowData> = {
     parentId?: string
     getIsExpanded?: () => boolean
     index?: number
+    original?: TData
   }) => {
     background?: string
     fontSize?: number
+    opacity?: number
   }
 
   columnOrder?: string[] | undefined

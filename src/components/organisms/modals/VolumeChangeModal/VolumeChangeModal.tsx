@@ -13,7 +13,6 @@ import classes from './classes.module.scss'
 
 export interface VolumeChangeModalProps {
   assignmentId?: string
-  catJobId?: string
   isCat?: boolean
   isModalOpen?: boolean
   id?: string
@@ -41,7 +40,6 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   discounts,
   volume_analysis,
   assignmentId,
-  catJobId,
   unit_fee,
   unit_quantity,
   unit_type,
@@ -104,7 +102,6 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
           discounts={discounts}
           volume_analysis={volume_analysis}
           assignmentId={assignmentId}
-          catJobId={catJobId}
           unit_fee={unit_fee}
           unit_quantity={unit_quantity}
           unit_type={unit_type}

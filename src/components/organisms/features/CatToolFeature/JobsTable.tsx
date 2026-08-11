@@ -66,7 +66,13 @@ const JobsTable: FC<JobsTableProps> = (props) => {
 
   const analyseMutation = useMutation({
     mutationFn: postAnalyses,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['catAnalyses'] }),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ['catAnalyses'] })
+      const analysisId = response?.data?.id
+      if (analysisId) {
+        showModal(ModalTypes.CatAnalysisDetails, { analysisId, catProjectId })
+      }
+    },
   })
 
   const pretranslateMutation = useMutation({

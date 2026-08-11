@@ -11,6 +11,7 @@ export interface BandStats {
   segments: number
   words: number
   chars: number
+  pages: number
 }
 
 export interface CattoAnalysisResults {
@@ -27,11 +28,29 @@ export interface CattoAnalysisResults {
   total: BandStats
 }
 
-export interface CattoAnalysis {
+export interface JobAnalysisEntry {
   id: string
   job_id: string
+  job?: CattoJob
   languages: { source: string; target: string }
   results: CattoAnalysisResults | null
+}
+
+export interface CattoTranslationMemoryRef {
+  id: string
+  name: string
+  source_locale: string
+  target_locale: string
+}
+
+export interface CattoAnalysis {
+  id: string
+  project_id: string
+  translation_memories: CattoTranslationMemoryRef[]
+  status: 'done' | 'pending'
+  bands: CattoAnalysisResults['bands']
+  total: BandStats
+  job_analyses: JobAnalysisEntry[]
   created_at: string
   updated_at: string
 }
