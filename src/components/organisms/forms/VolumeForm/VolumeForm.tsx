@@ -36,18 +36,12 @@ import {
   DiscountPercentagesAmounts,
 } from 'types/vendors'
 import {
-  useAssignmentAddCatVolume,
   useAssignmentAddVolume,
-  useAssignmentEditCatVolume,
   useAssignmentEditVolume,
 } from 'hooks/requests/useVolumes'
 import { useAssignmentCache } from 'hooks/requests/useAssignments'
 import VolumeCatPriceTable from 'components/organisms/tables/VolumeCatPriceTable/VolumeCatPriceTable'
-import {
-  CatVolumePayload,
-  ManualVolumePayload,
-  VolumeAnalysisBands,
-} from 'types/assignments'
+import { VolumeAnalysisBands, VolumePayload } from 'types/assignments'
 import {
   apiTypeToKey,
   keyToApiType,
@@ -164,15 +158,10 @@ const VolumeForm: FC<VolumeFormProps> = ({
 
   const { addAssignmentVolume, isLoading: isAddingVolume } =
     useAssignmentAddVolume({ subProjectId: sub_project_id })
-  const { addAssignmentCatVolume, isLoading: isAddingCatVolume } =
-    useAssignmentAddCatVolume({ subProjectId: sub_project_id })
   const { editAssignmentVolume, isLoading: isEditingVolume } =
     useAssignmentEditVolume({ subProjectId: sub_project_id })
-  const { editAssignmentCatVolume, isLoading: isEditingCatVolume } =
-    useAssignmentEditCatVolume({ subProjectId: sub_project_id })
 
-  const isLoading =
-    isAddingVolume || isAddingCatVolume || isEditingVolume || isEditingCatVolume
+  const isLoading = isAddingVolume || isEditingVolume
 
   const catAnalysisAmounts = useMemo(() => {
     const relevantValues = pick(volume_analysis, values(CatAnalysisVolumes))
@@ -184,7 +173,7 @@ const VolumeForm: FC<VolumeFormProps> = ({
         }_amount`
     )
     return keyedByDiscount
-  }, [volume_analysis]) as DiscountPercentages
+  }, [volume_analysis]) as unknown as Partial<DiscountPercentagesAmounts>
 
   const {
     control,
@@ -363,26 +352,21 @@ const VolumeForm: FC<VolumeFormProps> = ({
   )
 
   const onSaveNew = useCallback(
-    async (isCat: boolean, args: ManualVolumePayload | CatVolumePayload) => {
+    async (args: VolumePayload) => {
       let res: VolumeValue
       try {
-        if (isCat) {
-          const { data: response } = await addAssignmentCatVolume({
-            data: {
-              ...(args as CatVolumePayload),
+        const { data: response } = await addAssignmentVolume({
+          data: {
+            ...args,
+            ...(args.discounts && {
               discounts: pickBy(
-                (args as CatVolumePayload).discounts,
+                args.discounts,
                 identity
               ) as DiscountPercentages,
-            },
-          })
-          res = response
-        } else {
-          const { data: response } = await addAssignmentVolume({
-            data: args as ManualVolumePayload,
-          })
-          res = response
-        }
+            }),
+          },
+        })
+        res = response
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -413,27 +397,19 @@ const VolumeForm: FC<VolumeFormProps> = ({
         }
       }
     },
-    [addAssignmentCatVolume, addAssignmentVolume, onSuccess, setError, t]
+    [addAssignmentVolume, onSuccess, setError, t]
   )
 
   const onSaveEdit = useCallback(
-    async (isCat: boolean, args: ManualVolumePayload | CatVolumePayload) => {
+    async (args: VolumePayload) => {
       delete args.assignment_id
       let res: VolumeValue
       try {
-        if (isCat) {
-          const { data: response } = await editAssignmentCatVolume({
-            volumeId: id as string,
-            data: args as CatVolumePayload,
-          })
-          res = response
-        } else {
-          const { data: response } = await editAssignmentVolume({
-            volumeId: id as string,
-            data: args as ManualVolumePayload,
-          })
-          res = response
-        }
+        const { data: response } = await editAssignmentVolume({
+          volumeId: id as string,
+          data: args,
+        })
+        res = response
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -464,43 +440,51 @@ const VolumeForm: FC<VolumeFormProps> = ({
         }
       }
     },
-    [editAssignmentCatVolume, editAssignmentVolume, id, onSuccess, setError, t]
+    [editAssignmentVolume, id, onSuccess, setError, t]
   )
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async ({ unit_quantity, unit, unit_fee }) => {
-      // @ts-expect-error type mismatch
-      const payload: ManualVolumePayload | CatVolumePayload = !isCat
-        ? {
-            assignment_id: assignmentId ?? '',
-            unit_fee: toNumber(unit_fee),
-            unit_quantity: toNumber(unit_quantity),
-            unit_type: keyToApiType(unit),
-          }
-        : {
-            assignment_id: assignmentId ?? '',
-            unit_fee: toNumber(unit_fee),
-            discounts: mapValues(
-              zipObject<DiscountPercentages>(
-                values(DiscountPercentageNames),
-                // @ts-expect-error type mismatch
-                map(amountDiscounts, toNumber)
-              ),
-              (value: number) => 100 - value
+      const payload: VolumePayload = {
+        assignment_id: assignmentId ?? '',
+        unit_fee: toNumber(unit_fee),
+        unit_quantity: toNumber(unit_quantity),
+        unit_type: keyToApiType(unit),
+        ...(isCat && {
+          discounts: mapValues(
+            zipObject<number>(
+              values(DiscountPercentageNames),
+              map(amountDiscounts, toNumber)
             ),
-            custom_volume_analysis: zipObject<CatAnalysisVolumes>(
+            (value: number) => 100 - value
+          ) as unknown as DiscountPercentages,
+          custom_volume_analysis: {
+            raw_word_count: volume_analysis?.raw_word_count ?? 0,
+            total: volume_analysis?.total ?? 0,
+            files_names: volume_analysis?.files_names ?? [],
+            ...zipObject<number>(
               values(CatAnalysisVolumes),
-              // @ts-expect-error type mismatch
               map(amountValues, toNumber).reverse()
             ),
-          }
+          } as VolumeAnalysisBands,
+        }),
+      }
       if (id) {
-        onSaveEdit(!!isCat, payload)
+        onSaveEdit(payload)
       } else {
-        onSaveNew(!!isCat, payload)
+        onSaveNew(payload)
       }
     },
-    [isCat, assignmentId, amountDiscounts, amountValues, id, onSaveEdit, onSaveNew]
+    [
+      isCat,
+      assignmentId,
+      amountDiscounts,
+      amountValues,
+      volume_analysis,
+      id,
+      onSaveEdit,
+      onSaveNew,
+    ]
   )
 
   const submit = useCallback(

@@ -1,5 +1,6 @@
 import { PriceUnits } from './price'
 import { DiscountPercentages } from './vendors'
+import { VolumeAnalysisBands } from './assignments'
 
 export interface VolumeValue {
   amount: number
@@ -14,7 +15,7 @@ export interface VolumeValue {
   unit_fee: number
   updated_at: string
   created_at: string
-  volume_analysis: null | any
+  volume_analysis: VolumeAnalysisBands | null
   discounts: DiscountPercentages
   assignment?: any
 }

@@ -85,22 +85,17 @@ export enum VolumeUnits {
   PAGES = 'PAGES',
   MINUTES = 'MINUTES',
   HOURS = 'HOURS',
+  MIN_FEE = 'MIN_FEE',
 }
 
-export interface ManualVolumePayload {
+export interface VolumePayload {
   id?: string
   assignment_id?: string
   unit_type: VolumeUnits
   unit_quantity: number
   unit_fee: number
-}
-
-export interface CatVolumePayload {
-  assignment_id?: string
-  cat_tool_job_id: string
-  unit_fee: number
+  discounts?: DiscountPercentages
   custom_volume_analysis?: VolumeAnalysisBands
-  discounts: DiscountPercentages
 }
 
 export interface CompleteAssignmentPayload {
