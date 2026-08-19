@@ -21,6 +21,9 @@ export const useDeleteCatJob = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => apiClient.delete(`${CAT2_API_BASE_URL}/jobs/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['catJobs'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['catJobs'] })
+      queryClient.invalidateQueries({ queryKey: ['catAnalyses'] })
+    },
   })
 }
