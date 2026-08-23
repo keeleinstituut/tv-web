@@ -44,6 +44,7 @@ import { getProjectDefaultValues, mapFilesForApi } from 'helpers/project'
 import { HelperFileTypes } from 'types/classifierValues'
 import { useHandleBulkFiles, CollectionType } from 'hooks/requests/useFiles'
 import ProjectFormButtons from 'components/molecules/ProjectFormButtons/ProjectFormButtons'
+import { useIsDataOwner } from 'hooks/useIsDataOwner'
 
 import classes from './classes.module.scss'
 import { AxiosError } from 'axios'
@@ -104,10 +105,12 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
     source_files,
     client_institution_user,
     manager_institution_user,
+    institution_id,
   } = project || {}
 
   const { t } = useTranslation()
   const { institutionUserId, userPrivileges } = useAuth()
+  const isShared = !useIsDataOwner(institution_id)
   const { createProject, isLoading } = useCreateProject()
   const { updateProject, isLoading: isUpdatingProject } = useUpdateProject({
     id,
@@ -200,16 +203,20 @@ const ProjectDetails: FC<ProjectDetailsProps> = ({
   const isUserClientOfProject =
     client_institution_user?.id === institutionUserId ||
     !client_institution_user?.id
+  // A new project has no owning institution yet, so only existing projects are subject to the ownership check
+  const isOwnerOrNew = isNew || !isShared
 
   const isManagerEditable =
     (isNew || hasManagerPrivilege) &&
-    includes(userPrivileges, Privileges.ChangeProjectManager)
+    includes(userPrivileges, Privileges.ChangeProjectManager) &&
+    isOwnerOrNew
 
   const isClientEditable =
     (isUserClientOfProject || hasManagerPrivilege) &&
-    includes(userPrivileges, Privileges.ChangeClient)
+    includes(userPrivileges, Privileges.ChangeClient) &&
+    isOwnerOrNew
 
-  const isRestEditable = isNew || hasManagerPrivilege
+  const isRestEditable = (isNew || hasManagerPrivilege) && isOwnerOrNew
 
   const isSomethingEditable =
     isManagerEditable || isClientEditable || isRestEditable
