@@ -137,6 +137,7 @@ export const TableDateFilter = <TData,>({
     <>
       <DatePicker
         selected={value ? dayjs(value).toDate() : null}
+        locale="et-EE"
         onChange={(value) => {
           if (onFiltersChange) {
             const formatted = dayjs(value).format('YYYY-MM-DD')
@@ -209,6 +210,7 @@ const RangeDateField = ({
   return (
     <DatePicker
       selected={value ? dayjs(value).toDate() : null}
+      locale="et-EE"
       onChange={(date) =>
         onChangeIso(date ? dayjs(date).format('YYYY-MM-DD') : '')
       }
