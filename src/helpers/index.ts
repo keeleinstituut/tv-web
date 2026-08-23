@@ -223,7 +223,7 @@ const addablePrivilegesWithConditions: PrivilegeKeyValueType = {
     Privileges.ImportTm,
     Privileges.ExportTm,
     Privileges.DeleteTm,
-    Privileges.EditTmMetadata,
+    Privileges.EditTm,
   ],
   [Privileges.ViewAuditLog]: [Privileges.ExportAuditLog],
   [Privileges.ViewVendorDb]: [

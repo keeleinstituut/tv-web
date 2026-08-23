@@ -117,7 +117,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       },
       disabled:
         !isTmOwnedByUserInstitution ||
-        !includes(userPrivileges, Privileges.EditTmMetadata),
+        !includes(userPrivileges, Privileges.EditTm),
     },
     {
       inputType: InputTypes.Selections,
@@ -131,7 +131,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       buttons: true,
       disabled:
         !isTmOwnedByUserInstitution ||
-        !includes(userPrivileges, Privileges.EditTmMetadata),
+        !includes(userPrivileges, Privileges.EditTm),
     },
     {
       inputType: InputTypes.Selections,
@@ -146,7 +146,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       helperText: t('translation_memories.helper_text'),
       disabled:
         !isTmOwnedByUserInstitution ||
-        !includes(userPrivileges, Privileges.EditTmMetadata),
+        !includes(userPrivileges, Privileges.EditTm),
     },
     {
       inputType: InputTypes.Text,
@@ -159,7 +159,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       className: classes.inputInternalPosition,
       disabled:
         !isTmOwnedByUserInstitution ||
-        !includes(userPrivileges, Privileges.EditTmMetadata),
+        !includes(userPrivileges, Privileges.EditTm),
     },
     {
       inputType: InputTypes.Selections,
@@ -171,7 +171,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       className: classes.inputInternalPosition,
       disabled:
         !isTmOwnedByUserInstitution ||
-        !includes(userPrivileges, Privileges.EditTmMetadata),
+        !includes(userPrivileges, Privileges.EditTm),
     },
   ]
 
@@ -261,7 +261,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
         isSubmitDisabled={
           !isDirty ||
           !isValid ||
-          !includes(userPrivileges, Privileges.EditTmMetadata)
+          !includes(userPrivileges, Privileges.EditTm)
         }
         loading={isSubmitting}
         resetForm={resetForm}

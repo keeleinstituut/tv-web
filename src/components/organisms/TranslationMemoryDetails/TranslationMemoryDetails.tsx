@@ -159,7 +159,7 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
           target="_blank"
           children={t('button.open_translation_memory')}
           disabled={
-            !includes(userPrivileges, Privileges.EditTmMetadata) ||
+            !includes(userPrivileges, Privileges.EditTm) ||
             !isTmOwnedByUserInstitution
           }
         />
