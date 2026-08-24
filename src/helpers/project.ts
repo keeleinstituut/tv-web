@@ -124,7 +124,8 @@ export const getProjectDefaultValues = ({
     destination_language_classifier_value_ids,
     help_file_types,
     translation_domain_classifier_value_id:
-      translation_domain_classifier_value?.id || defaultDomainClassifier?.id,
+      translation_domain_classifier_value?.id ||
+      (isNew ? defaultDomainClassifier?.id : undefined),
     comments,
     event_location: effectiveLocation,
     meeting_link,

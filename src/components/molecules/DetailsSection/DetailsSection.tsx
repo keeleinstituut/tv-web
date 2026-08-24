@@ -138,7 +138,6 @@ const DetailsSection = <TFormValues extends FieldValues>({
           required: true,
         },
       },
-      // TODO: translation_domain info missing right now, this is based on dummydata
       {
         inputType: InputTypes.Selections,
         ariaLabel: t('label.translation_domain'),
