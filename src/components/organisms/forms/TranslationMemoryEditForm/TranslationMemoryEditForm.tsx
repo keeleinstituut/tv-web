@@ -37,7 +37,10 @@ interface FormValues {
   }
 }
 type TranslationMemoryEditFormTypes = {
-  data: Partial<TranslationMemoryType>
+  data: Partial<TranslationMemoryType> & {
+    chunk_amount?: number
+    edit_url?: string
+  }
   isTmOwnedByUserInstitution?: boolean
 }
 
@@ -55,7 +58,9 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
 }) => {
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
-  const { institution } = useInstitutionFetch({ id: data?.meta.institution_id })
+  const { institution } = useInstitutionFetch({
+    id: data?.meta?.institution_id,
+  })
   const { updateTranslationMemory } = useUpdateTranslationMemory({
     id: data.id,
   })
@@ -81,17 +86,12 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
 
   const defaultValues = useMemo(
     () => ({
-      // name: data.name || '',
-      // type: data?.meta.visibility || TMType.Internal,
-      // tv_domain: data?.meta.tv_domain || '',
-      // tv_tags: data?.meta.tv_tags || [],
-      // comment: data?.meta.comment || '',
       name: data.name || '',
       meta: {
-        visibility: data?.meta.visibility || TMType.Internal,
-        tv_domain: data?.meta.tv_domain || '',
-        tv_tags: data?.meta.tv_tags || [],
-        comment: data?.meta.comment || '',
+        visibility: data?.meta?.visibility || TMType.Internal,
+        tv_domain: data?.meta?.tv_domain || '',
+        tv_tags: data?.meta?.tv_tags || [],
+        comment: data?.meta?.comment || '',
       },
     }),
     [data]

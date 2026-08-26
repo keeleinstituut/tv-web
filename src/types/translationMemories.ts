@@ -10,40 +10,54 @@ export enum TMType {
   Public = 'public',
 }
 
+export interface TranslationMemoryMetaType {
+  institution_id?: string
+  visibility?: TMType
+  tv_domain?: string
+  tv_tags?: string[]
+  comment?: string
+}
+
 export interface TranslationMemoryType {
   id: string
-  institution_id: string
   name: string
-  type?: TMType
-  tv_tags?: string[]
-  tv_domain?: string
-  comment?: string
+  source_locale?: string
+  target_locale?: string
   created_at: string
-  lang_pair: string
-  chunk_amount?: string | number
-  edit_url?: string
   import_at?: string
+  meta: TranslationMemoryMetaType
+}
+
+export interface TranslationMemoryResponse {
+  data: TranslationMemoryType
+  segment_count?: number
+  edit_url?: string
 }
 
 export interface TranslationMemoryDataType {
-  tags?: TranslationMemoryType[]
   data?: TranslationMemoryType[]
   segment_counts?: Record<string, number>
 }
 
 export interface TranslationMemoryPostType {
-  name: string
-  type?: TMType
-  tv_tags?: string[]
-  tv_domain?: string
-  comment?: string
+  name?: string
+  meta?: {
+    visibility?: TMType
+    tv_domain?: string
+    tv_tags?: string[]
+    comment?: string
+  }
 }
 
 export type TranslationMemoryPayload = {
-  lang_pair?: string
-  name?: string
-  type?: TMType
-  tv_domain?: string
+  name: string
+  source_locale: string
+  target_locale: string
+  meta: {
+    institution_id?: string
+    visibility?: TMType
+    tv_domain?: string
+  }
 }
 
 export type TranslationMemoryFilters = {
@@ -62,9 +76,7 @@ export interface ImportTMXPayload {
 }
 
 export interface ExportTMXPayload {
-  slang: string
-  tlang: string
-  tag: string | string[]
+  translation_memory_ids: string[]
 }
 
 export type ContextCheckPayload = {

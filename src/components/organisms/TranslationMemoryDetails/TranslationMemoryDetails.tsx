@@ -28,7 +28,10 @@ import { useNavigate } from 'react-router-dom'
 import { AxiosError } from 'axios'
 
 type TranslationMemoryDetailsTypes = {
-  translationMemory: Partial<TranslationMemoryType>
+  translationMemory: Partial<TranslationMemoryType> & {
+    chunk_amount?: number
+    edit_url?: string
+  }
   isTmOwnedByUserInstitution?: boolean
   memoryId: string
 }

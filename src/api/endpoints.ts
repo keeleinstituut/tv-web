@@ -104,6 +104,7 @@ export const endpoints = {
   TRANSLATION_MEMORIES: catTool('translation-memories'),
   TRANSLATION_MEMORIES_IMPORT: catTool('translation-memories/import'),
   TRANSLATION_MEMORIES_EXPORT: catTool('translation-memories/export'),
+  TM_CONTENT_CHECKS: catTool('translation-memories/context-checks'),
 
   AUDIT_LOGS: auditLog('event-records'),
   AUDIT_LOG_ACTIONS: auditLog('event-records/actions'),

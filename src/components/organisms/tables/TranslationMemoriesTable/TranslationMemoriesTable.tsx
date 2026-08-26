@@ -31,7 +31,11 @@ import {
 import Tag from 'components/atoms/Tag/Tag'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
-import { TMType, TranslationMemoryFilters } from 'types/translationMemories'
+import {
+  TMType,
+  TranslationMemoryFilters,
+  TranslationMemoryType,
+} from 'types/translationMemories'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemories'
@@ -44,19 +48,7 @@ import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 
-type TranslationMemoriesTableRow = {
-  id: string
-  name: string
-  source_locale?: string
-  target_locale?: string
-  meta: {
-    visibility?: string
-    tv_tags?: string[]
-    tv_domain?: string
-  }
-}
-
-const columnHelper = createColumnHelper<TranslationMemoriesTableRow>()
+const columnHelper = createColumnHelper<TranslationMemoryType>()
 interface FormValues {
   [types: string]: TMType[]
 }
@@ -308,7 +300,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
               }
             : {},
         }),
-      ] as ColumnDef<TranslationMemoriesTableRow>[],
+      ] as ColumnDef<TranslationMemoryType>[],
     [
       domainOptions,
       filters?.lang_pair,
@@ -401,7 +393,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
         }
         columnOrder={
           isSelectingModal
-            ? ['id', 'lang_pair', 'name', 'tv_tags', 'tv_domains']
+            ? ['id', 'lang_pair', 'name', 'meta.tv_tags', 'meta.tv_domain']
             : undefined
         }
       />

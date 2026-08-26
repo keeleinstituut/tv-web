@@ -13,7 +13,7 @@ import {
   TranslationMemoryFilters,
   TranslationMemoryPayload,
   TranslationMemoryPostType,
-  TranslationMemoryType,
+  TranslationMemoryResponse,
 } from 'types/translationMemories'
 import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
@@ -84,7 +84,7 @@ export const useFetchTranslationMemories = ({
 
 export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
   const { isLoading, isError, isFetching, data } =
-    useQuery<TranslationMemoryType>({
+    useQuery<TranslationMemoryResponse>({
       enabled: !!id,
       queryKey: ['translationMemories', id],
       queryFn: () => apiClient.get(`${endpoints.TRANSLATION_MEMORIES}/${id}`),
@@ -112,10 +112,9 @@ export const useUpdateTranslationMemory = ({ id }: { id?: string }) => {
     onSuccess: ({ data }) => {
       queryClient.setQueryData(
         ['translationMemories', id],
-        (oldData?: TranslationMemoryType) => {
-          const previousData = oldData || {}
-          if (!previousData) return oldData
-          return { data }
+        (oldData?: TranslationMemoryResponse) => {
+          if (!oldData) return oldData
+          return { ...oldData, data }
         }
       )
     },
@@ -140,7 +139,7 @@ export const useCreateTranslationMemory = () => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
           const newData = [...previousData, data]
-          return { data: newData }
+          return { ...oldData, data: newData }
         }
       )
     },
@@ -158,14 +157,14 @@ export const useDeleteTranslationMemory = () => {
     mutationKey: ['translationMemories'],
     mutationFn: (id: string) =>
       apiClient.delete(`${endpoints.TRANSLATION_MEMORIES}/${id}`),
-    onSuccess: ({ tag: data }) => {
+    onSuccess: (_response, deletedId) => {
       queryClient.setQueryData(
         ['translationMemories'],
         (oldData?: TranslationMemoryDataType) => {
-          const { tags: previousData } = oldData || {}
+          const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const newData = filter(previousData, ({ id }) => id !== data.id)
-          return { tags: newData }
+          const newData = filter(previousData, ({ id }) => id !== deletedId)
+          return { ...oldData, data: newData }
         }
       )
     },
