@@ -50,7 +50,7 @@ import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHe
 
 const columnHelper = createColumnHelper<TranslationMemoryType>()
 interface FormValues {
-  [types: string]: TMType[]
+  [visibility: string]: TMType[]
 }
 interface TranslationMemoriesTableTypes {
   isSelectingModal?: boolean
@@ -64,14 +64,14 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   initialFilters,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
+  const { userPrivileges, selectedInstitutionId } = useAuth()
 
   const [searchParams] = useSearchParams()
   const combinedInitialFilters = {
     ...initialFilters,
     ...omit(Object.fromEntries(searchParams.entries()), ['page', 'per_page']),
     tv_tags: searchParams.getAll('tv_tags'),
-    type: searchParams.getAll('type') as TMType[],
+    visibility: searchParams.getAll('visibility') as TMType[],
     tv_domain: searchParams.getAll('tv_domain'),
     lang_pair: searchParams.getAll('lang_pair'),
   }
@@ -83,6 +83,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   } = useFetchTranslationMemories({
     initialFilters: combinedInitialFilters,
     saveQueryParams: true,
+    tenantId: selectedInstitutionId,
   })
 
   const [searchValue, setSearchValue] = useState<string>(filters?.name || '')
@@ -122,9 +123,9 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
 
   const defaultFilterValues = useMemo(
     () => ({
-      types: (filters?.type as TMType[]) || [],
+      visibility: (filters?.visibility as TMType[]) || [],
     }),
-    [filters?.type]
+    [filters?.visibility]
   )
 
   const { control, watch } = useForm<FormValues>({
@@ -168,12 +169,12 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     })
   }, [translationMemories, filters])
 
-  const [types] = watch(['types'])
+  const [visibility] = watch(['visibility'])
 
   useEffect(() => {
-    handleFilterChange({ type: types })
+    handleFilterChange({ visibility })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [types])
+  }, [visibility])
 
   const columns = useMemo(
     () =>
@@ -219,11 +220,11 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           footer: (info) => info.column.id,
           size: 240,
         }),
-        columnHelper.accessor('meta.visibility', {
+        columnHelper.accessor('visibility', {
           header: () => '',
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {
-            const type = getValue() || 'INTERNAL'
+            const type = getValue() || TMType.Internal
             return <span className={classNames(classes.dot, classes[type])} />
           },
           size: 20,
@@ -351,7 +352,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           >
             <div>
               <FormInput
-                name="types"
+                name="visibility"
                 control={control}
                 options={statusFilters}
                 inputType={InputTypes.TagsSelect}

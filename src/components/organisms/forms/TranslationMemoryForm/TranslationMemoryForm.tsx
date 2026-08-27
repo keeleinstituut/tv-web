@@ -23,9 +23,9 @@ interface FormValues {
   name: string
   source_locale: string
   target_locale: string
+  visibility: TMType
   meta: {
     tv_domain?: string
-    visibility: TMType
   }
 }
 
@@ -51,9 +51,7 @@ const TranslationMemoryForm: FC = () => {
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     defaultValues: {
-      meta: {
-        visibility: TMType.Internal
-      }
+      visibility: TMType.Internal,
     },
   })
 
@@ -62,12 +60,12 @@ const TranslationMemoryForm: FC = () => {
     value: status,
   }))
 
-  const statusValue = watch('meta.visibility')
+  const statusValue = watch('visibility')
 
   useEffect(() => {
     if (includes([TMType.Shared, TMType.Public], statusValue)) {
       showModal(ModalTypes.ConfirmationModal, {
-        handleCancel: () => setValue('meta.visibility', TMType.Internal),
+        handleCancel: () => setValue('visibility', TMType.Internal),
         title: t('translation_memories.confirmation_text'),
         cancelButtonContent: t('button.cancel'),
         helperText: t('translation_memories.confirmation_help_text'),
@@ -131,7 +129,7 @@ const TranslationMemoryForm: FC = () => {
       inputType: InputTypes.Selections,
       ariaLabel: t('label.usage'),
       label: t('label.usage'),
-      name: 'meta.visibility',
+      name: 'visibility',
       options: statusOptions,
       className: classes.inputInternalPosition,
       helperText: t('translation_memories.helper_text'),
@@ -151,9 +149,9 @@ const TranslationMemoryForm: FC = () => {
         name: values.name,
         source_locale: sortSlang,
         target_locale: sortTlang,
+        tenant_id: userInfo?.tolkevarav?.selectedInstitution?.id,
+        visibility: values.visibility,
         meta: {
-          institution_id: userInfo?.tolkevarav?.selectedInstitution?.id,
-          visibility: values.meta.visibility,
           tv_domain: values.meta.tv_domain,
         }
       }

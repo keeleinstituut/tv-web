@@ -25,16 +25,39 @@ import { PaginationFunctionType } from 'types/collective'
 
 dayjs.extend(customParseFormat)
 
+const toTranslationMemoryQueryParams = (
+  filters: TranslationMemoryFilters,
+  tenantId?: string
+) => {
+  const { lang_pair, ...rest } = filters
+  const params = tenantId ? { ...rest, tenant_id: tenantId } : rest
+  if (!lang_pair?.length) return params
+
+  const source_locale: string[] = []
+  const target_locale: string[] = []
+  lang_pair.forEach((pair) => {
+    const [source, target] = pair.split('_')
+    if (source && target) {
+      source_locale.push(source)
+      target_locale.push(target)
+    }
+  })
+
+  return { ...params, source_locale, target_locale }
+}
+
 export const useFetchTranslationMemories = ({
   initialFilters,
   disabled,
   saveQueryParams,
   key,
+  tenantId,
 }: {
   initialFilters?: TranslationMemoryFilters
   disabled?: boolean
   saveQueryParams?: boolean
   key?: string
+  tenantId?: string
 }) => {
   const {
     filters,
@@ -49,7 +72,10 @@ export const useFetchTranslationMemories = ({
       queryFn: () =>
         apiClient.get(
           endpoints.TRANSLATION_MEMORIES,
-          filters
+          toTranslationMemoryQueryParams(
+            filters as TranslationMemoryFilters,
+            tenantId
+          )
         ),
       keepPreviousData: true,
     })
@@ -59,7 +85,7 @@ export const useFetchTranslationMemories = ({
       refetch()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters])
+  }, [filters, tenantId])
 
   //TODO: Pagination is not done from BE side. This comes later
 

@@ -11,8 +11,6 @@ export enum TMType {
 }
 
 export interface TranslationMemoryMetaType {
-  institution_id?: string
-  visibility?: TMType
   tv_domain?: string
   tv_tags?: string[]
   comment?: string
@@ -23,6 +21,8 @@ export interface TranslationMemoryType {
   name: string
   source_locale?: string
   target_locale?: string
+  tenant_id?: string
+  visibility?: TMType
   created_at: string
   import_at?: string
   meta: TranslationMemoryMetaType
@@ -41,8 +41,8 @@ export interface TranslationMemoryDataType {
 
 export interface TranslationMemoryPostType {
   name?: string
+  visibility?: TMType
   meta?: {
-    visibility?: TMType
     tv_domain?: string
     tv_tags?: string[]
     comment?: string
@@ -53,9 +53,9 @@ export type TranslationMemoryPayload = {
   name: string
   source_locale: string
   target_locale: string
-  meta: {
-    institution_id?: string
-    visibility?: TMType
+  tenant_id?: string
+  visibility?: TMType
+  meta?: {
     tv_domain?: string
   }
 }
@@ -63,7 +63,7 @@ export type TranslationMemoryPayload = {
 export type TranslationMemoryFilters = {
   lang_pair?: string[]
   name?: string
-  type?: TMType | TMType[]
+  visibility?: TMType | TMType[]
   tv_domain?: string | string[]
   tv_tags?: string[]
   with_segment_count?: number

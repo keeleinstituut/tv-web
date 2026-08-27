@@ -29,9 +29,9 @@ import { useUpdateTranslationMemory } from 'hooks/requests/useTranslationMemorie
 
 interface FormValues {
   name: string
+  visibility: TMType
   meta: {
     tv_domain?: string
-    visibility: TMType
     tv_tags: string[]
     comment: string
   }
@@ -59,7 +59,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
   const { t } = useTranslation()
   const { userPrivileges } = useAuth()
   const { institution } = useInstitutionFetch({
-    id: data?.meta?.institution_id,
+    id: data?.tenant_id,
   })
   const { updateTranslationMemory } = useUpdateTranslationMemory({
     id: data.id,
@@ -87,8 +87,8 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
   const defaultValues = useMemo(
     () => ({
       name: data.name || '',
+      visibility: data?.visibility || TMType.Internal,
       meta: {
-        visibility: data?.meta?.visibility || TMType.Internal,
         tv_domain: data?.meta?.tv_domain || '',
         tv_tags: data?.meta?.tv_tags || [],
         comment: data?.meta?.comment || '',
@@ -146,7 +146,7 @@ const TranslationMemoryEditForm: FC<TranslationMemoryEditFormTypes> = ({
       inputType: InputTypes.Selections,
       ariaLabel: t('label.usage'),
       label: t('label.usage'),
-      name: 'meta.visibility',
+      name: 'visibility',
       options: statusOptions,
       className: classes.inputInternalPosition,
       rules: {
