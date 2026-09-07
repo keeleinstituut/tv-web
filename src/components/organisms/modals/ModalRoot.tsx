@@ -42,6 +42,7 @@ import { ViewVendorResponseModalProps } from './ViewVendorResponseModal/ViewVend
 import { InstitutionPartnersEditModalProps } from './InstitutionPartnersEditModal/InstitutionPartnersEditModal'
 import { AddCatJobFilesModalProps } from './AddCatJobFilesModal/AddCatJobFilesModal'
 import { AnalysisDetailsModalProps } from './AnalysisDetailsModal/AnalysisDetailsModal'
+import { CreateTranslationMemoryModalProps } from './CreateTranslationMemoryModal/CreateTranslationMemoryModal'
 
 const InstitutionSelectModal = lazy(
   () => import('./InstitutionSelectModal/InstitutionSelectModal')
@@ -83,6 +84,10 @@ const ConfirmDeleteVolumeModal = lazy(
 
 const AddTranslationMemoriesModal = lazy(
   () => import('./AddTranslationMemoriesModal/AddTranslationMemoriesModal')
+)
+
+const CreateTranslationMemoryModal = lazy(
+  () => import('./CreateTranslationMemoryModal/CreateTranslationMemoryModal')
 )
 
 const AddCatJobFilesModal = lazy(
@@ -196,6 +201,7 @@ export enum ModalTypes {
   VolumeChange = 'volumeChange',
   ConfirmDeleteVolume = 'confirmDeleteVolume',
   AddTranslationMemories = 'addTranslationMemories',
+  CreateTranslationMemory = 'createTranslationMemory',
   AddCatJobFiles = 'addCatJobFiles',
   CatAnalysisDetails = 'catAnalysisDetails',
   ConfirmCancelProject = 'confirmCancelProject',
@@ -257,6 +263,7 @@ type ModalPropTypes =
   | Omit<ViewVendorResponseModalProps, 'closeModal'>
   | Omit<InstitutionPartnersEditModalProps, 'closeModal'>
   | Omit<EditInstitutionPartnerPricesModalProps, 'closeModal'>
+  | Omit<CreateTranslationMemoryModalProps, 'closeModal'>
 
 const MODALS = {
   [ModalTypes.InstitutionSelect]: InstitutionSelectModal,
@@ -273,6 +280,7 @@ const MODALS = {
   [ModalTypes.VolumeChange]: VolumeChangeModal,
   [ModalTypes.ConfirmDeleteVolume]: ConfirmDeleteVolumeModal,
   [ModalTypes.AddTranslationMemories]: AddTranslationMemoriesModal,
+  [ModalTypes.CreateTranslationMemory]: CreateTranslationMemoryModal,
   [ModalTypes.AddCatJobFiles]: AddCatJobFilesModal,
   [ModalTypes.CatAnalysisDetails]: AnalysisDetailsModal,
   [ModalTypes.ConfirmCancelProject]: ConfirmCancelProjectModal,

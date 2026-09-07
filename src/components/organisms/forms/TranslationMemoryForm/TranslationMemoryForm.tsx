@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect } from 'react'
+import classNames from 'classnames'
 import { useForm, SubmitHandler, FieldPath } from 'react-hook-form'
 import DynamicForm, {
   FieldProps,
@@ -29,7 +30,30 @@ interface FormValues {
   }
 }
 
-const TranslationMemoryForm: FC = () => {
+export interface TranslationMemoryFormState {
+  submit: () => void
+  isValid: boolean
+  isLoading: boolean
+}
+
+interface TranslationMemoryFormProps {
+  onSuccess?: (tm: { id: string }) => void
+  prefill?: {
+    name?: string
+    source_locale?: string
+    target_locale?: string
+    tv_domain?: string
+  }
+  inModal?: boolean
+  onFormStateChange?: (state: TranslationMemoryFormState) => void
+}
+
+const TranslationMemoryForm: FC<TranslationMemoryFormProps> = ({
+  onSuccess,
+  prefill,
+  inModal,
+  onFormStateChange,
+}) => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const { createTranslationMemory } = useCreateTranslationMemory()
@@ -51,7 +75,11 @@ const TranslationMemoryForm: FC = () => {
   } = useForm<FormValues>({
     reValidateMode: 'onSubmit',
     defaultValues: {
+      name: prefill?.name,
       visibility: TMType.Internal,
+      source_locale: prefill?.source_locale,
+      target_locale: prefill?.target_locale,
+      meta: { tv_domain: prefill?.tv_domain },
     },
   })
 
@@ -163,7 +191,11 @@ const TranslationMemoryForm: FC = () => {
           title: t('notification.announcement'),
           content: t('success.translation_memory_created'),
         })
-        navigate(`/memories/${data?.data?.id}`)
+        if (onSuccess) {
+          onSuccess(data?.data)
+        } else {
+          navigate(`/memories/${data?.data?.id}`)
+        }
       } catch (errorData) {
         const typedErrorData = errorData as ValidationError
         if (typedErrorData.errors) {
@@ -175,24 +207,42 @@ const TranslationMemoryForm: FC = () => {
         }
       }
     },
-    [classifierValues, createTranslationMemory, t, navigate, setError]
+    [
+      classifierValues,
+      createTranslationMemory,
+      t,
+      navigate,
+      setError,
+      onSuccess,
+    ]
   )
+
+  const submit = useCallback(
+    () => handleSubmit(onSubmit)(),
+    [handleSubmit, onSubmit]
+  )
+
+  useEffect(() => {
+    onFormStateChange?.({ submit, isValid, isLoading: isSubmitting })
+  }, [submit, isValid, isSubmitting, onFormStateChange])
 
   return (
     <DynamicForm
       fields={fields}
       control={control}
       onSubmit={handleSubmit(onSubmit)}
-      className={classes.formContainer}
+      className={classNames(classes.formContainer, !inModal && classes.card)}
     >
-      <FormButtons
-        isResetDisabled={!isDirty}
-        isSubmitDisabled={!isDirty || !isValid}
-        loading={isSubmitting}
-        resetForm={() => reset({})}
-        className={classes.formButtons}
-        submitButtonName={t('button.create_translation_memory')}
-      />
+      {!inModal && (
+        <FormButtons
+          isResetDisabled={!isDirty}
+          isSubmitDisabled={!isValid}
+          loading={isSubmitting}
+          resetForm={() => reset({})}
+          className={classes.formButtons}
+          submitButtonName={t('button.create_translation_memory')}
+        />
+      )}
     </DynamicForm>
   )
 }

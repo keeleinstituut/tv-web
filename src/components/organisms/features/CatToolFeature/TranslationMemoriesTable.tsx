@@ -15,6 +15,7 @@ import { ModalTypes, showModal } from "components/organisms/modals/ModalRoot"
 import classes from "./classes.module.scss"
 import Delete from "assets/icons/delete.svg?react"
 import BaseButton from "components/atoms/BaseButton/BaseButton"
+import { ClassifierValue, LanguageClassifierValue } from "types/classifierValues"
 
 interface CatTranslationMemory {
   id: string
@@ -39,10 +40,18 @@ const columnHelper = createColumnHelper<CatTmRow>()
 
 interface TranslationMemoriesTableProps {
   catProjectId: string
+  extId?: string
+  sourceLanguage?: LanguageClassifierValue
+  targetLanguage?: LanguageClassifierValue
+  domain?: ClassifierValue
 }
 
 const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
   catProjectId,
+  extId,
+  sourceLanguage,
+  targetLanguage,
+  domain,
 }) => {
   const { t } = useTranslation()
 
@@ -59,11 +68,24 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableProps> = ({
   }, [catProjectQuery.data])
 
   const addNewTm = () => {
-    showModal(ModalTypes.AddTranslationMemories, { catProjectId })
+    const subProjectLangPair = `${sourceLanguage?.name.match(/\[(.*?)-/)?.[1]}_${targetLanguage?.name.match(/\[(.*?)-/)?.[1]}`
+    showModal(ModalTypes.AddTranslationMemories, {
+      catProjectId,
+      subProjectLangPair,
+      projectDomain: domain,
+    })
   }
 
   const createEmptyTm = () => {
-    // TODO: wire up empty TM creation
+    showModal(ModalTypes.CreateTranslationMemory, {
+      catProjectId,
+      prefill: {
+        name: extId,
+        source_locale: sourceLanguage?.id,
+        target_locale: targetLanguage?.id,
+        tv_domain: domain?.id,
+      },
+    })
   }
 
   const rows: CatTmRow[] = useMemo(() => {

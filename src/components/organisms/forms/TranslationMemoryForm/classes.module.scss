@@ -5,12 +5,15 @@
   display: flex;
   flex-direction: column;
   width: 514px;
-  background: variables.$color-white;
   padding: variables.spacing(6) variables.spacing(8) variables.spacing(6) 0;
-  border: 1px solid variables.$color-border;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px variables.$color-shadow-main;
   margin-top: variables.spacing(6);
+
+  &.card {
+    background: variables.$color-white;
+    border: 1px solid variables.$color-border;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px variables.$color-shadow-main;
+  }
 
   .formButtons {
     align-self: end;

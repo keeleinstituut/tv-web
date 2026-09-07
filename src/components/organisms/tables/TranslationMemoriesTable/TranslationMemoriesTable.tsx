@@ -70,10 +70,18 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   const combinedInitialFilters = {
     ...initialFilters,
     ...omit(Object.fromEntries(searchParams.entries()), ['page', 'per_page']),
-    tv_tags: searchParams.getAll('tv_tags'),
-    visibility: searchParams.getAll('visibility') as TMType[],
-    tv_domain: searchParams.getAll('tv_domain'),
-    lang_pair: searchParams.getAll('lang_pair'),
+    tv_tags: searchParams.has('tv_tags')
+      ? searchParams.getAll('tv_tags')
+      : initialFilters?.tv_tags,
+    visibility: searchParams.has('visibility')
+      ? (searchParams.getAll('visibility') as TMType[])
+      : initialFilters?.visibility,
+    tv_domain: searchParams.has('tv_domain')
+      ? searchParams.getAll('tv_domain')
+      : initialFilters?.tv_domain,
+    lang_pair: searchParams.has('lang_pair')
+      ? searchParams.getAll('lang_pair')
+      : initialFilters?.lang_pair,
   }
 
   const {

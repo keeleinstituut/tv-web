@@ -1,6 +1,10 @@
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SourceFile } from 'types/projects'
+import {
+  ClassifierValue,
+  LanguageClassifierValue,
+} from 'types/classifierValues'
 import Loader from 'components/atoms/Loader/Loader'
 import AnalysesTable from './AnalysesTable'
 import JobsTable from './JobsTable'
@@ -10,7 +14,10 @@ import classes from './classes.module.scss'
 
 interface CatToolFeatureProps {
   cat_metadata?: { catto_project_id?: string }
-  destination_language_classifier_value?: { value: string }
+  ext_id?: string
+  source_language_classifier_value?: LanguageClassifierValue
+  destination_language_classifier_value?: LanguageClassifierValue
+  projectDomain?: ClassifierValue
   source_files?: SourceFile[]
 }
 
@@ -35,7 +42,13 @@ const CatToolFeature: FC<CatToolFeatureProps> = (props) => {
         sourceFiles={props?.source_files}
       />
       <AnalysesTable catProjectId={catProjectId} />
-      <TranslationMemoriesTable catProjectId={catProjectId} />
+      <TranslationMemoriesTable
+        catProjectId={catProjectId}
+        extId={props?.ext_id}
+        sourceLanguage={props?.source_language_classifier_value}
+        targetLanguage={props?.destination_language_classifier_value}
+        domain={props?.projectDomain}
+      />
     </>
   )
 }
