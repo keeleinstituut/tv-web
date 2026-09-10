@@ -989,7 +989,8 @@
       "status_done": "Valmis",
       "status_pending": "Ootel",
       "view": "Vaata",
-      "delete": "Kustuta"
+      "delete": "Kustuta",
+      "select_analysis": "Vali analüüs"
     },
     "analysis_details_modal": {
       "title": "Analüüsi arvestus",

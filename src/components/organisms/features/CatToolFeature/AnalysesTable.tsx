@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import Tag from "components/atoms/Tag/Tag"
 import Button, { AppearanceTypes, SizeTypes } from "components/molecules/Button/Button"
+import RadioInput from "components/molecules/RadioInput/RadioInput"
 import DataTable, { TableSizeTypes } from "components/organisms/DataTable/DataTable"
 import dayjs from "dayjs"
 import { FC } from "react"
@@ -39,10 +40,11 @@ const AnalysesTable: FC<AnalysesTableProps> = (props) => {
           id: 'select',
           header: '',
           cell: ({ row }) => (
-            <input
-              type="radio"
+            <RadioInput
               name="cat-analysis-select"
-              checked={row.original.id === selectedAnalysisId}
+              ariaLabel={t('cat_tool_feature.analyses_table.select_analysis')}
+              optionValue={row.original.id}
+              value={selectedAnalysisId}
               disabled={row.original.status != 'done'}
               onChange={() => onSelect?.(row.original)}
             />
@@ -92,59 +94,74 @@ const AnalysesTable: FC<AnalysesTableProps> = (props) => {
     //   header: t('cat_tool_feature.analyses_table.column.distribution'),
     //   cell: ({ getValue }) => <BandsCell bands={getValue()} />,
     // }),
-    columnHelper.display({
-      id: 'actions',
-      header: '',
-      cell: ({ row }) => (
-        <div className={classes.actionsContainer}>
-          <Button
-            appearance={AppearanceTypes.Text}
-            size={SizeTypes.S}
-            onClick={() => {
-              queryClient.setQueryData(['catAnalysis', row.original.id], { data: row.original })
-              showModal(ModalTypes.CatAnalysisDetails, { analysisId: row.original.id, catProjectId })
-            }}
-          >
-            {t('cat_tool_feature.analyses_table.view')}
-          </Button>
-          <BaseButton
-            onClick={() => deleteAnalysis(row.original.id)}
-            aria-label={t('button.delete')}
-            className={classes.iconButton}
-          >
-            <Delete />
-          </BaseButton>
-        </div>
-      ),
-    }),
+    ...(!selectable
+      ? [
+        columnHelper.display({
+          id: 'actions',
+          header: '',
+          cell: ({ row }) => (
+            <div className={classes.actionsContainer}>
+              <Button
+                appearance={AppearanceTypes.Text}
+                size={SizeTypes.S}
+                onClick={() => {
+                  queryClient.setQueryData(['catAnalysis', row.original.id], { data: row.original })
+                  showModal(ModalTypes.CatAnalysisDetails, { analysisId: row.original.id, catProjectId })
+                }}
+              >
+                {t('cat_tool_feature.analyses_table.view')}
+              </Button>
+              <BaseButton
+                onClick={() => deleteAnalysis(row.original.id)}
+                aria-label={t('button.delete')}
+                className={classes.iconButton}
+              >
+                <Delete />
+              </BaseButton>
+            </div>
+          ),
+        })
+      ]
+    : []),
   ] as ColumnDef<CattoAnalysis>[]
 
-  return (
-    <ExpandableContentContainer
-      className={classes.expandableContainer}
-      initialIsExpanded
-      wrapContent
-      leftComponent={<h3>{t('cat_tool_feature.analyses')}</h3>}
+  const table = (
+    <Root
+      className={selectable ? classes.analysesTable : undefined}
+      onSubmit={(e) => e.preventDefault()}
     >
-      <Root onSubmit={(e) => e.preventDefault()}>
-        <DataTable
-          data={analyses}
-          columns={analysesTableColumns}
-          tableSize={TableSizeTypes.M}
-          getRowId={(row) => row.id}
-          className={classes.translationMemoriesTable}
-          paginationData={paginationData}
-          onPaginationChange={handlePaginationChange}
-          defaultPaginationData={{ per_page: 10 }}
-          pageSizeOptions={[
-            { label: '10', value: '10' },
-            { label: '25', value: '25' },
-            { label: '50', value: '50' },
-          ]}
-        />
-      </Root>
-    </ExpandableContentContainer>
+      <DataTable
+        data={analyses}
+        columns={analysesTableColumns}
+        tableSize={TableSizeTypes.M}
+        getRowId={(row) => row.id}
+        className={classes.translationMemoriesTable}
+        paginationData={paginationData}
+        onPaginationChange={handlePaginationChange}
+        defaultPaginationData={{ per_page: 10 }}
+        pageSizeOptions={[
+          { label: '10', value: '10' },
+          { label: '25', value: '25' },
+          { label: '50', value: '50' },
+        ]}
+      />
+    </Root>
   )
+
+  if (!selectable) {
+    return (
+      <ExpandableContentContainer
+        className={classes.expandableContainer}
+        initialIsExpanded
+        wrapContent
+        leftComponent={<h3>{t('cat_tool_feature.analyses')}</h3>}
+      >
+        {table}
+      </ExpandableContentContainer>
+    )
+  }
+
+  return table
 }
 
 export default AnalysesTable

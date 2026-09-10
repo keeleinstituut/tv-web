@@ -14,6 +14,7 @@ import { useCatJobs } from 'components/organisms/features/CatToolFeature/useCatJ
 import { mapCattoAnalysisToVolumeAnalysis } from 'components/organisms/features/CatToolFeature/analysisAdapter'
 import { CattoAnalysis } from 'components/organisms/features/CatToolFeature/types'
 import AnalysesTable from 'components/organisms/features/CatToolFeature/AnalysesTable'
+import classes from './classes.module.scss'
 
 export interface AddVolumeModalProps extends VolumeChangeModalProps {
   catSupported?: boolean
@@ -103,6 +104,7 @@ const AddVolumeModal: FC<AddVolumeModalProps> = ({
     <ConfirmationModalBase
       isModalOpen={isModalOpen}
       size={addType === 'cat' ? ModalSizeTypes.ExtraLarge : undefined}
+      innerWrapperClassName={classes.modalContent}
       handleProceed={handleSubmit(onSubmit)}
       proceedButtonDisabled={
         !isValid || (addType === 'cat' && !selectedAnalysis)
