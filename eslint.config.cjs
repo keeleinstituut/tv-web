@@ -50,13 +50,5 @@ module.exports = [
       quotes: ['error', 'single'],
       '@typescript-eslint/no-unused-vars': 'warn'
     }
-  },
-  {
-    files: ['**/__tests__/**/*', '**/*.{spec,test}.*'],
-    languageOptions: {
-      globals: {
-        ...globals.jest
-      }
-    }
   }
 ]

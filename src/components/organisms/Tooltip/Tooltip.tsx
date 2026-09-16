@@ -7,6 +7,8 @@ import classNames from 'classnames'
 import { useTranslation } from 'react-i18next'
 import ReactHtmlParser from 'html-react-parser'
 import manual from 'static/manual.json'
+import translationAgencyManual from 'static/translationAgencyManual.json'
+import { useAuth } from 'components/contexts/AuthContext'
 
 import classes from './classes.module.scss'
 
@@ -49,8 +51,11 @@ const Tooltip: FC<TooltipProps> = ({
   className,
 }) => {
   const { t } = useTranslation()
+  const { isTranslationAgency } = useAuth()
 
-  const helpSectionsData: HelpSections = manual
+  const helpSectionsData: HelpSections = isTranslationAgency
+    ? translationAgencyManual
+    : manual
 
   const selectedHelpSection = helpSectionsData[helpSectionKey] || {}
 

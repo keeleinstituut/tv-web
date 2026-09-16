@@ -54,9 +54,12 @@ const Step3RelatedFiles: FC<Step3Props> = ({
     ),
   })
 
-  const handleDelete = (index: number) => {
-    onFilesChange(files.filter((_, i) => i !== index))
-  }
+  const handleDelete = useCallback(
+    (deleteIndex: number) => {
+      onFilesChange(files.filter((_, i) => i !== deleteIndex))
+    },
+    [files, onFilesChange]
+  )
 
   return (
     <div className={classes.stepBody}>

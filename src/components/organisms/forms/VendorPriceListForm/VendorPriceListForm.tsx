@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { chain, isEmpty, map, orderBy } from 'lodash'
+import { chain, isEmpty, map, orderBy, reject, includes } from 'lodash'
 import { Root } from '@radix-ui/react-form'
 import { useAllPricesFetch, useFetchSkills } from 'hooks/requests/useVendors'
 import LanguageDirectionCell from 'components/molecules/LanguageDirectionCell/LanguageDirectionCell'
@@ -15,6 +15,7 @@ import DeleteVendorPriceButton from 'components/organisms/DeleteVendorPriceButto
 
 import classes from './classes.module.scss'
 import { useSearchParams } from 'react-router-dom'
+import { useAuth } from 'components/contexts/AuthContext'
 
 export type PriceObject = {
   id: string
@@ -40,12 +41,21 @@ export type PriceObject = {
   subRows: PriceObject[]
 }
 
-
 const columnHelper = createColumnHelper<PriceObject>()
+
+const feeColumnIds = [
+  'character_fee',
+  'word_fee',
+  'page_fee',
+  'minute_fee',
+  'hour_fee',
+  'minimal_fee',
+]
 
 const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
   const [searchParams] = useSearchParams()
+  const { isTranslationAgency } = useAuth()
 
   const { skills: skillsData } = useFetchSkills()
   const { id: vendor_id } = vendor
@@ -138,8 +148,8 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
       .value()
   }, [orderedList])
 
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    const allColumns = [
       columnHelper.accessor('language_direction', {
         header: () => t('vendors.language_direction'),
         cell: ({ row }) => <LanguageDirectionCell row={row} />,
@@ -197,14 +207,20 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           const subRowsIds = map(row.original.subRows, ({ id }) => id)
           const languagePairIds = skillId ? [row.original.id] : subRowsIds
 
+          // Agencies don't configure fees, so the per-skill (sub-row) edit
+          // button — which opens the price-only step — is hidden for them.
+          const hidePerSkillEdit = isTranslationAgency && !!skillId
+
           return (
             <div className={classes.iconsContainer}>
-              <VendorPriceManagementButton
-                languageDirectionKey={languageDirectionKey}
-                filters={filters}
-                skillId={skillId}
-                vendor_id={vendor_id}
-              />
+              {!hidePerSkillEdit && (
+                <VendorPriceManagementButton
+                  languageDirectionKey={languageDirectionKey}
+                  filters={filters}
+                  skillId={skillId}
+                  vendor_id={vendor_id}
+                />
+              )}
               <DeleteVendorPriceButton
                 languagePairIds={languagePairIds}
                 vendor_id={vendor_id}
@@ -213,10 +229,18 @@ const VendorPriceListForm: FC<VendorFormProps> = ({ vendor }) => {
           )
         },
       }),
-    ],
-    [filters, skillsData, t, vendor_id]
+    ]
+
+    // Agencies don't configure fees, so the fee columns are hidden for them.
+    const visibleColumns = isTranslationAgency
+      ? reject(allColumns, (column) =>
+          includes(feeColumnIds, 'accessorKey' in column && column.accessorKey)
+        )
+      : allColumns
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ) as ColumnDef<any>[]
+    return visibleColumns as ColumnDef<any>[]
+  }, [filters, isTranslationAgency, skillsData, t, vendor_id])
 
   return (
     <>

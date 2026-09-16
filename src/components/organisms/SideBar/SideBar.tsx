@@ -25,7 +25,7 @@ const MenuItems: FC<MenuItemsProps> = ({
   setNavCollapsed,
 }) => {
   const location = useLocation()
-  const { userPrivileges } = useAuth()
+  const { userPrivileges, isTranslationAgency } = useAuth()
   const handleNavToggle = (event: MouseEvent) => {
     const isExpanded =
       event.currentTarget.getAttribute('aria-expanded') === 'true'
@@ -43,7 +43,15 @@ const MenuItems: FC<MenuItemsProps> = ({
     <>
       {map(
         menuItems,
-        ({ children, path, Icon, isInterTitle, label, privileges }) => {
+        ({
+          children,
+          path,
+          Icon,
+          isInterTitle,
+          label,
+          privileges,
+          isHiddenForTranslationAgency,
+        }) => {
           const fullPath = parentPath
             ? path
               ? `${parentPath}/${path}`
@@ -56,8 +64,10 @@ const MenuItems: FC<MenuItemsProps> = ({
           const userHasPrivilege =
             !privileges ||
             find(privileges, (privilege) => includes(userPrivileges, privilege))
+          const isHidden =
+            isHiddenForTranslationAgency && isTranslationAgency
 
-          if (!label || !userHasPrivilege) {
+          if (!label || !userHasPrivilege || isHidden) {
             return null
           }
           if (!hasChildrenToShow) {

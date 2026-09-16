@@ -12,7 +12,8 @@ import { stringifyLanguagePairs } from 'helpers'
 
 const useFilters = <TFilters extends object>(
   initialFilters?: TFilters,
-  saveParamsToQueryString?: boolean
+  saveParamsToQueryString?: boolean,
+  { includePage = true }: { includePage?: boolean } = {}
 ) => {
   const [filters, setFiltersBase] = useState<TFilters | object>({
     ...initialFilters,
@@ -63,13 +64,15 @@ const useFilters = <TFilters extends object>(
     (value?: FilterFunctionType) => {
       setFilters(
         pickBy(
-          { ...filters, ...value, page },
+          includePage
+            ? { ...filters, ...value, page }
+            : { ...filters, ...value },
           (val: string | number) => val === 0 || !!val
         )
       )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters]
+    [filters, includePage]
   )
 
   const handleSortingChange = useCallback(
@@ -77,13 +80,19 @@ const useFilters = <TFilters extends object>(
       if (!value?.sort_order) {
         const sortingKeys = keys(value)
         const filtersWithOutSorting = filters ? omit(filters, sortingKeys) : {}
-        setFilters({ ...filtersWithOutSorting, page })
+        setFilters(
+          includePage
+            ? { ...filtersWithOutSorting, page }
+            : filtersWithOutSorting
+        )
       } else {
-        setFilters({ ...filters, ...value, page })
+        setFilters(
+          includePage ? { ...filters, ...value, page } : { ...filters, ...value }
+        )
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters]
+    [filters, includePage]
   )
 
   const handlePaginationChange = useCallback(

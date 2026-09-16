@@ -45,6 +45,7 @@ import { NotificationTypes } from 'components/molecules/Notification/Notificatio
 import { closeModal } from '../ModalRoot'
 import { ValidationError } from 'api/errorHandler'
 import { GetPricesPayload } from 'types/price'
+import { useAuth } from 'components/contexts/AuthContext'
 
 interface PriceObjectWithOptionalId extends Omit<PriceObject, 'id'> {
   id?: string
@@ -87,6 +88,7 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation()
+  const { isTranslationAgency } = useAuth()
   const newLanguagePair = languageDirectionKey === 'new'
   const [src, dst] = split(languageDirectionKey, '_')
 
@@ -467,61 +469,65 @@ const EditVendorPricesModal: FC<EditVendorPricesModalProps> = ({
   )
 
   const formData = useMemo(
-    () => [
-      {
-        label: t('vendors.add_language_pairs'),
-        title: t('vendors.choose_language_pairs'),
-        helperText: t('vendors.language_pairs_helper_text'),
-        modalContent: (
-          <DynamicForm
-            fields={languagePairFormFields}
-            control={control}
-            className={classes.languageLabelContainer}
-          />
-        ),
-      },
-      {
-        label: t('vendors.add_skills'),
-        title: t('vendors.choose_skills'),
-        helperText: t('vendors.skills_helper_text'),
-        modalContent: (
-          <PriceListSecondStep<FormValues>
-            skillsFormFields={skillsFormFields}
-            control={control}
-            customSkillsDynamicFormClass={classes.skillsDynamicForm}
-            srcLanguageValue={srcLanguage}
-            dstLanguageValues={
-              typeof dstLanguage === 'string' ? [dstLanguage] : dstLanguage
-            }
-            languageOptions={languageFilter}
-          />
-        ),
-      },
-      {
-        label: t('vendors.add_price_list'),
-        title: t('vendors.price_list_change'),
-        helperText: t('vendors.price_list_change_description'),
-        modalContent: (
-          <PriceListEditContent
-            control={control}
-            languageDirectionKey={languageDirectionKey || ''}
-            srcLanguageValue={srcLanguage}
-            dstLanguageValues={
-              typeof dstLanguage === 'string' ? [dstLanguage] : dstLanguage
-            }
-            languageOptions={languageFilter}
-            skillId={skillId}
-            getValues={getValues}
-          />
-        ),
-        resetForm: resetForm,
-        showOnly: !!skillId,
-      },
-    ],
+    () =>
+      compact([
+        {
+          label: t('vendors.add_language_pairs'),
+          title: t('vendors.choose_language_pairs'),
+          helperText: t('vendors.language_pairs_helper_text'),
+          modalContent: (
+            <DynamicForm
+              fields={languagePairFormFields}
+              control={control}
+              className={classes.languageLabelContainer}
+            />
+          ),
+        },
+        {
+          label: t('vendors.add_skills'),
+          title: t('vendors.choose_skills'),
+          helperText: t('vendors.skills_helper_text'),
+          modalContent: (
+            <PriceListSecondStep<FormValues>
+              skillsFormFields={skillsFormFields}
+              control={control}
+              customSkillsDynamicFormClass={classes.skillsDynamicForm}
+              srcLanguageValue={srcLanguage}
+              dstLanguageValues={
+                typeof dstLanguage === 'string' ? [dstLanguage] : dstLanguage
+              }
+              languageOptions={languageFilter}
+            />
+          ),
+        },
+        // Translation agencies don't configure per-vendor fees, so the price
+        // step is skipped and prices are submitted with their '0' defaults.
+        !isTranslationAgency && {
+          label: t('vendors.add_price_list'),
+          title: t('vendors.price_list_change'),
+          helperText: t('vendors.price_list_change_description'),
+          modalContent: (
+            <PriceListEditContent
+              control={control}
+              languageDirectionKey={languageDirectionKey || ''}
+              srcLanguageValue={srcLanguage}
+              dstLanguageValues={
+                typeof dstLanguage === 'string' ? [dstLanguage] : dstLanguage
+              }
+              languageOptions={languageFilter}
+              skillId={skillId}
+              getValues={getValues}
+            />
+          ),
+          resetForm: resetForm,
+          showOnly: !!skillId,
+        },
+      ]),
     [
       control,
       dstLanguage,
       getValues,
+      isTranslationAgency,
       languageDirectionKey,
       languageFilter,
       languagePairFormFields,

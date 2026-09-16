@@ -24,6 +24,7 @@ import dayjs from 'dayjs'
 import useValidators from 'hooks/useValidators'
 import { showValidationErrorMessage } from 'api/errorHandler'
 import { useIsDataOwner } from 'hooks/useIsDataOwner'
+import { isEventBasedProjectType } from 'helpers/project'
 
 // TODO: this is WIP code for subProject view
 
@@ -63,8 +64,9 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
   project_id,
   project,
 }) => {
-  const isVerbalType =
-    !!project?.type_classifier_value?.project_type_config?.is_start_date_supported
+  const isEventBasedType = isEventBasedProjectType(
+    project?.type_classifier_value
+  )
   const { t } = useTranslation()
   const { dateTimePickerValidator } = useValidators()
   const { deadline_at: projectDeadlineAt } = useProjectCache(project_id) || {}
@@ -104,7 +106,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       event_location: effectiveLocation,
       meeting_link: project?.meeting_link || '',
       duration:
-        isVerbalType && effectiveStartAt && effectiveEndAt
+        isEventBasedType && effectiveStartAt && effectiveEndAt
           ? formatDuration(effectiveStartAt, effectiveEndAt)
           : undefined,
     }),
@@ -117,7 +119,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
       normalizedServiceType,
       project?.event_location,
       project?.meeting_link,
-      isVerbalType,
+      isEventBasedType,
     ]
   )
 
@@ -163,7 +165,7 @@ const GeneralInformationFeature: FC<GeneralInformationFeatureProps> = ({
 
   return (
     <Root>
-      {isVerbalType ? (
+      {isEventBasedType ? (
         <>
           <FormInput
             {...{

@@ -68,6 +68,7 @@ export const endpoints = {
   HISTORY_TASKS: translationOrder('workflow/history/tasks'),
   HISTORY_TASKS2: translationOrder('workflow/history/tasks2'),
   ASSIGNMENTS: translationOrder('assignments'),
+  STATISTICS: translationOrder('statistics'),
   DISCOUNTS: translationOrder('institution-discounts'),
   MEDIA: translationOrder('media'),
   MEDIA_BULK: translationOrder('media/bulk'),

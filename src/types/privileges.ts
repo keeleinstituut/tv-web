@@ -14,7 +14,7 @@ export enum Privileges {
   ImportTm = 'IMPORT_TM',
   ExportTm = 'EXPORT_TM',
   DeleteTm = 'DELETE_TM',
-  EditTmMetadata = 'EDIT_TM',
+  EditTm = 'EDIT_TM',
   ViewTm = 'VIEW_TM',
   CreateProject = 'CREATE_PROJECT',
   ManageProject = 'MANAGE_PROJECT',
@@ -56,6 +56,7 @@ export enum Privileges {
 
   ManageExternalPartner = 'MANAGE_EXTERNAL_PARTNER',
   ViewExternalPartner = 'VIEW_EXTERNAL_PARTNER',
+  ViewStatistic = 'VIEW_STATISTIC',
 }
 
 export type PrivilegeKey = `${Privileges}`

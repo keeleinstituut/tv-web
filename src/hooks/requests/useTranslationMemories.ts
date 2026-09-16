@@ -135,7 +135,7 @@ export const useUpdateTranslationMemory = ({ id }: { id?: string }) => {
         ...payload,
       })
     },
-    onSuccess: ({ data }) => {
+    onSuccess: (response) => {
       queryClient.setQueryData(
         ['translationMemories', id],
         (oldData?: TranslationMemoryResponse) => {
@@ -203,6 +203,7 @@ export const useDeleteTranslationMemory = () => {
 }
 
 export const useImportTMX = () => {
+  const queryClient = useQueryClient()
   const formData = new FormData()
   const {
     mutateAsync: importTMX,
@@ -214,6 +215,11 @@ export const useImportTMX = () => {
       formData.append('files[]', data.file)
       formData.append('translation_memory_id', data.tag)
       return apiClient.post(endpoints.TRANSLATION_MEMORIES_IMPORT, formData)
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['translationMemories', variables.tag],
+      })
     },
   })
 

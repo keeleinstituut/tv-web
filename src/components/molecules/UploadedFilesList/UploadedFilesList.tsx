@@ -17,6 +17,7 @@ interface UploadedFilesListProps {
 interface FileRow {
   name: string
   size: string
+  delete_button: number
 }
 
 const columnHelper = createColumnHelper<FileRow>()
@@ -36,9 +37,10 @@ const UploadedFilesList: FC<UploadedFilesListProps> = ({
 
   const rows = useMemo(
     () =>
-      files.map((file) => ({
+      files.map((file, index) => ({
         name: file.name,
         size: formatFileSize(file.size),
+        delete_button: index,
       })),
     [files]
   )
@@ -56,18 +58,18 @@ const UploadedFilesList: FC<UploadedFilesListProps> = ({
         }),
         ...(onDelete
           ? [
-              columnHelper.display({
-                id: 'delete',
+              columnHelper.accessor('delete_button', {
                 header: '',
-                cell: ({ row }) => (
+                cell: ({ getValue }) => (
                   <BaseButton
                     className={classes.iconButton}
-                    onClick={() => onDelete(row.index)}
+                    onClick={() => onDelete(getValue())}
                     aria-label={t('button.delete')}
                   >
                     <Delete />
                   </BaseButton>
                 ),
+                footer: (info) => info.column.id,
               }),
             ]
           : []),

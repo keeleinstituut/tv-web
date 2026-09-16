@@ -70,6 +70,7 @@ const DropdownContentComponent = forwardRef<
     errorZIndex,
     wrapperRef,
     className,
+    optionClassName,
     onSearch,
     loading,
     onEndReached,
@@ -247,7 +248,7 @@ const DropdownContentComponent = forwardRef<
           {map(visibleOptions, (option, index) => {
             const isMultiSelected =
               selectedValue && includes(selectedValue, option?.value)
-            const isSingleSelected = value && includes(value, option?.value)
+            const isSingleSelected = value === option?.value
 
             return (
               <li key={option.value} className={classes.dropdownMenuItem}>
@@ -265,7 +266,8 @@ const DropdownContentComponent = forwardRef<
                 <Button
                   className={classNames(
                     classes.option,
-                    isSingleSelected && classes.selectedOption
+                    isSingleSelected && classes.selectedOption,
+                    optionClassName
                   )}
                   hidden={multiple}
                   appearance={AppearanceTypes.Text}

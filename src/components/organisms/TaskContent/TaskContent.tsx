@@ -8,9 +8,10 @@ import {
 } from 'components/organisms/DynamicForm/DynamicForm'
 import SourceFilesList from 'components/molecules/SourceFilesList/SourceFilesList'
 import FinalFilesList from 'components/molecules/FinalFilesList/FinalFilesList'
-import { filter, includes, isEqual, map, values } from 'lodash'
+import { filter, isEqual, map } from 'lodash'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { SourceFile, TypesWithStartTime } from 'types/projects'
+import { SourceFile } from 'types/projects'
+import { isEventBasedProjectType } from 'helpers/project'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import dayjs from 'dayjs'
 import { formatDuration } from 'helpers/calendar'
@@ -80,10 +81,8 @@ const TaskContent: FC<TaskContentProps> = ({
 
   const projectData = project || taskProject
 
-  const VERBAL_TYPES = values(TypesWithStartTime)
-  const isVerbalType = includes(
-    VERBAL_TYPES,
-    projectData?.type_classifier_value?.value
+  const isEventBasedType = isEventBasedProjectType(
+    projectData?.type_classifier_value
   )
 
   const { updateAssigneeComment } = useAssignmentCommentUpdate({ id, taskId })
@@ -232,7 +231,7 @@ const TaskContent: FC<TaskContentProps> = ({
             {event_start_at ? formattedDate(event_start_at) : '-'}
           </p>
         </span>
-        {isVerbalType &&
+        {isEventBasedType &&
           event_start_at &&
           (projectData?.event_end_at || deadline_at) && (
             <span className={classes.taskContainer}>
@@ -245,7 +244,7 @@ const TaskContent: FC<TaskContentProps> = ({
               </p>
             </span>
           )}
-        {!isVerbalType && (
+        {!isEventBasedType && (
           <span className={classes.taskContainer}>
             <p className={classes.taskDetails}>{t('label.deadline_at')}</p>
             <p className={classes.taskContent}>
@@ -253,7 +252,7 @@ const TaskContent: FC<TaskContentProps> = ({
             </p>
           </span>
         )}
-        {isVerbalType && (
+        {isEventBasedType && (
           <span className={classes.taskContainer}>
             <p className={classes.taskDetails}>{t('calendar.service_type')}</p>
             <p className={classes.taskContent}>
@@ -265,7 +264,7 @@ const TaskContent: FC<TaskContentProps> = ({
             </p>
           </span>
         )}
-        {isVerbalType && projectData?.service_type === 'ON_SITE' && (
+        {isEventBasedType && projectData?.service_type === 'ON_SITE' && (
           <span className={classes.taskContainer}>
             <p className={classes.taskDetails}>{t('calendar.location')}</p>
             <p className={classes.taskContent}>
@@ -273,7 +272,7 @@ const TaskContent: FC<TaskContentProps> = ({
             </p>
           </span>
         )}
-        {isVerbalType && projectData?.service_type === 'REMOTE' && (
+        {isEventBasedType && projectData?.service_type === 'REMOTE' && (
           <span className={classes.taskContainer}>
             <p className={classes.taskDetails}>
               {t('calendar.meeting_link')}

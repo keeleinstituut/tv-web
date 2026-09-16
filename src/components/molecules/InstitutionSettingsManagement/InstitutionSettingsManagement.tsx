@@ -138,9 +138,6 @@ const InstitutionSettingsManagement: FC = () => {
         reaction_time_minutes: settings?.reaction_time_minutes ?? 30,
         buffer_before_minutes: effectiveBefore,
         buffer_after_minutes: effectiveAfter,
-        ...(settings?.default_project_type_id
-          ? { default_project_type_id: settings.default_project_type_id }
-          : {}),
       })
       showNotification({
         type: NotificationTypes.Success,
@@ -183,9 +180,6 @@ const InstitutionSettingsManagement: FC = () => {
         reaction_time_minutes: hoursToMinutes(hours),
         buffer_before_minutes: settings?.buffer_before_minutes ?? 30,
         buffer_after_minutes: settings?.buffer_after_minutes ?? 30,
-        ...(settings?.default_project_type_id
-          ? { default_project_type_id: settings.default_project_type_id }
-          : {}),
       })
       showNotification({
         type: NotificationTypes.Success,

@@ -14,7 +14,7 @@ import AzureOpenAISettingsManagement from 'components/molecules/AzureOpenAISetti
 
 const InstitutionSettings: FC = () => {
   const { t } = useTranslation()
-  const { userInfo } = useAuth()
+  const { userInfo, isTranslationAgency } = useAuth()
   const { selectedInstitution } = userInfo?.tolkevarav || {}
   const institutionId = selectedInstitution?.id || ''
   const name = selectedInstitution?.name || ''
@@ -48,7 +48,7 @@ const InstitutionSettings: FC = () => {
       </p>
       <DepartmentManagement />
       <AuditLogManagement />
-      <InstitutionSettingsManagement />
+      {!isTranslationAgency && <InstitutionSettingsManagement />}
       <AzureOpenAISettingsManagement />
     </>
   )

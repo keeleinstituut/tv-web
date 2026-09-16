@@ -1,7 +1,7 @@
 import Loader from 'components/atoms/Loader/Loader'
 import { useFetchProject } from 'hooks/requests/useProjects'
 import { FC, useCallback, useEffect } from 'react'
-import {map, includes, sortBy, isEmpty, values} from 'lodash'
+import { map, includes, sortBy, isEmpty } from 'lodash'
 import { useParams } from 'react-router-dom'
 import classes from './classes.module.scss'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from 'components/contexts/AuthContext'
 import { useIsDataOwner } from 'hooks/useIsDataOwner'
 import { Privileges } from 'types/privileges'
-import { ListSubProjectDetail, ProjectStatus, TypesWithStartTime } from 'types/projects'
+import { ListSubProjectDetail, ProjectStatus } from 'types/projects'
 import ProjectDetails, {
   ProjectDetailModes,
 } from 'components/organisms/ProjectDetails/ProjectDetails'
@@ -235,13 +235,9 @@ const ProjectPage: FC = () => {
     client_institution_user,
     manager_institution_user,
     translation_domain_classifier_value,
-    type_classifier_value,
     event_start_at: projectEventStartAt,
     institution_id,
   } = project || {}
-
-  const VERBAL_TYPES = values(TypesWithStartTime)
-  const isVerbal = includes(VERBAL_TYPES, type_classifier_value?.value)
 
   useProjectPageRedirect({
     client_institution_user_id: client_institution_user?.id,
@@ -278,7 +274,6 @@ const ProjectPage: FC = () => {
           projectId={projectId}
           key={subProject.id}
           projectDomain={translation_domain_classifier_value}
-          isVerbal={isVerbal}
           event_start_at={projectEventStartAt}
         />
       ))}

@@ -34,6 +34,7 @@ type Row = {
   request_cancelled: boolean
   price?: number | null
   response_comment?: string | null
+  decline_comment?: string | null
   deadline_at?: string | null
 }
 
@@ -76,6 +77,7 @@ const buildRowsForRequest = (request: OutsourceRequest): Row[] => {
     request_cancelled: requestCancelled,
     price: offer.price,
     response_comment: offer.response_comment,
+    decline_comment: offer.decline_comment,
     deadline_at: offerDeadline(request, offer.notified_at),
   }))
 }
@@ -154,7 +156,7 @@ const OutsourceRequestsSection: FC<OutsourceRequestsSectionProps> = ({
               className={classes.costCell}
             >
               <span>{formatPrice(getValue())}</span>
-              {row.original.response_comment ? (
+              {row.original.response_comment || row.original.decline_comment ? (
                 <BaseButton
                   className={classes.chatButton}
                   onClick={() =>

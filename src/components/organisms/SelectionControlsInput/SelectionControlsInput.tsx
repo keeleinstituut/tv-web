@@ -54,6 +54,7 @@ export interface SelectionControlsInputProps {
   dropdownSize?: DropdownSizeTypes
   hideTags?: boolean
   className?: string
+  optionClassName?: string
   selectIcon?: FC<SVGProps<SVGSVGElement>>
   errorZIndex?: number
   usePortal?: boolean

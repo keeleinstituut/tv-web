@@ -1,5 +1,6 @@
 import { FC, PropsWithChildren } from 'react'
 import { useCalendarRole } from 'hooks/useCalendarRole'
+import { useAuth } from 'components/contexts/AuthContext'
 
 /** Same copy as PageNotFound when not under a route error boundary. */
 const NotFoundMessage: FC = () => (
@@ -9,9 +10,10 @@ const NotFoundMessage: FC = () => (
 )
 
 const CalendarAccessGuard: FC<PropsWithChildren> = ({ children }) => {
+  const { isTranslationAgency } = useAuth()
   const { isTPM, isTranslator, isClient, isLoading } = useCalendarRole()
   if (isLoading) return null
-  if (!isTPM && !isTranslator && !isClient) {
+  if (isTranslationAgency || (!isTPM && !isTranslator && !isClient)) {
     return <NotFoundMessage />
   }
   return <>{children}</>

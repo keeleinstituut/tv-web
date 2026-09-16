@@ -43,7 +43,7 @@ export type VendorFormProps = {
 
 const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
+  const { userPrivileges, isTranslationAgency } = useAuth()
   const { tags: allTags = [] } = useFetchTags({ type: TagTypes.Vendor })
   const { updateVendor } = useUpdateVendor({ id: vendor.id })
 
@@ -259,14 +259,16 @@ const VendorPage: FC<VendorFormProps> = ({ vendor }) => {
             className={classes.paddingRight120}
           />
 
-          <DiscountForm
-            {...{
-              control,
-              isSubmitting,
-              resetForm,
-              isEditDisabled,
-            }}
-          />
+          {!isTranslationAgency && (
+            <DiscountForm
+              {...{
+                control,
+                isSubmitting,
+                resetForm,
+                isEditDisabled,
+              }}
+            />
+          )}
         </div>
         <div className={classes.formButtons}>
           <Button

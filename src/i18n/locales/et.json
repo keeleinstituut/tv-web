@@ -256,7 +256,8 @@
     "view_vendor_in_progress_tasks": "Vaata teostaja teostamisel ülesandeid",
     "click_here": "Vajuta siia",
     "dropdown_cancel": "Sulge",
-    "view": "Vaata"
+    "view": "Vaata",
+    "open_translation_memory": "Ava tõlkemälu"
   },
   "error": {
     "input_title": "Veateade: ",
@@ -336,7 +337,69 @@
     "sidebar_terms": "Kasutustingimused",
     "calendar": "Kalender",
     "language_tools": "Keeletööriistad",
-    "institution_partners": "Välised teostajad"
+    "institution_partners": "Välised teostajad",
+    "statistics": "Statistika"
+  },
+  "statistics": {
+    "title": "Statistika",
+    "parameters": "Parameetrid",
+    "yes": "Jah",
+    "no": "Ei",
+    "is_verbal_true": "Suuline",
+    "is_verbal_false": "Kirjalik",
+    "no_data": "Andmed puuduvad",
+    "no_filtered_results": "Valitud filtritele vastavad andmed puuduvad",
+    "load_error": "Statistika laadimine ebaõnnestus",
+    "filter": {
+      "from": "Alates",
+      "to": "Kuni"
+    },
+    "select": {
+      "grouping": "Andmete grupeerimine",
+      "timeframe": "Aja grupeerimine",
+      "basis": "Aja arvestus"
+    },
+    "options": {
+      "grouping": {
+        "projects_plain": "Tellimuste statistika",
+        "projects_extended": "Tellimuste laiendatud statistika",
+        "subprojects_plain": "Alam-tellimuste statistika",
+        "subprojects_extended": "Alam-tellimuste laiendatud statistika",
+        "assignments_plain": "Ülesannete statistika",
+        "assignments_extended": "Ülesannete laiendatud statistika"
+      },
+      "timeframe": {
+        "daily": "Päevade kaupa",
+        "monthly": "Kuude kaupa",
+        "yearly": "Aastate kaupa"
+      },
+      "basis": {
+        "created": "Tellimuse vormistamise kuupäev",
+        "completed": "Tellimuse vastuvõtmise kuupäev"
+      }
+    },
+    "columns": {
+      "period": "Periood",
+      "is_verbal": "Tellimuse tüüp",
+      "status": "Staatus",
+      "job_short_name": "Töö",
+      "tag_id": "Silt",
+      "type_classifier_value_id": "Tellimuse tüüp",
+      "source_language_classifier_value_id": "Lähtekeel",
+      "destination_language_classifier_value_id": "Sihtkeel",
+      "assignee_institution_id": "Teostaja asutus",
+      "projects_count": "Tellimuste arv",
+      "sub_projects_count": "Alam-tellimuste arv",
+      "assignments_count": "Ülesannete arv",
+      "total_price": "Kogumaksumus",
+      "total_discount": "Soodustus kokku",
+      "volume_words": "Sõnad",
+      "volume_characters": "Tähemärgid",
+      "volume_pages": "Leheküljed",
+      "volume_minutes": "Minutid",
+      "volume_hours": "Tunnid",
+      "volume_min_fee": "Miinimumtasu"
+    }
   },
   "calendar": {
     "today": "Päev",
@@ -646,7 +709,8 @@
     "VIEW_OUTSOURCE_REQUEST": "Päringute vaatamine",
     "RESPOND_OUTSOURCE_REQUEST": "Päringutele vastamine",
     "MANAGE_EXTERNAL_PARTNER": "Väliste teostajate haldamine",
-    "VIEW_EXTERNAL_PARTNER": "Väliste teostajate vaatamine"
+    "VIEW_EXTERNAL_PARTNER": "Väliste teostajate vaatamine",
+    "VIEW_STATISTIC": "Statistika mooduli ligipääs"
   },
   "modal": {
     "pick_institution_title": "Vali asutus, mille alt soovid Tõlkeväravasse siseneda.",
@@ -1467,7 +1531,64 @@
       "translation-memory.tm.maintain": "Tõlkemälu halduse operatsioon",
       "translation-memory.tm.clean": "Tõlkemälu puhastamise operatsioon",
       "translation-memory.tm.stats": "Tõlkemälude statistika vaatamine",
-      "translation-memory.tm.usage": "Tõlkemälude kasutusstatistika vaatamine"
+      "translation-memory.tm.usage": "Tõlkemälude kasutusstatistika vaatamine",
+      "auth-server.invalidate-session": "Sessiooni lõpetamine",
+      "auth-server.switch-context": "Asutuse vahetamine",
+      "authorization.departments.bulkUpdate": "Üksuste uuendamine",
+      "l5-swagger.default.api": "API dokumentatsiooni vaatamine",
+      "None": "Tundmatu tegevus",
+      "null": "Tundmatu tegevus",
+      "translation-memory.content-checks.create": "Sisukontrolli käivitamine",
+      "translation-memory.content-checks.index": "Sisukontrollide vaatamine",
+      "translation-memory.tags.update": "Tõlkemälu uuendamine",
+      "translation-order.assignments.show": "Ülesande vaatamine",
+      "translation-order.calendar.day": "Kalendri päeva vaatamine",
+      "translation-order.calendar.import": "Kalendri importimine",
+      "translation-order.calendar.import.bulkDestroy": "Kalendri importide kustutamine",
+      "translation-order.calendar.import.index": "Kalendri importide vaatamine",
+      "translation-order.calendar.languages": "Kalendri keelte vaatamine",
+      "translation-order.calendar.month": "Kalendri kuu vaatamine",
+      "translation-order.calendar.prebook": "Kalendri eelbroneerimine",
+      "translation-order.calendar.prebook.cancel": "Kalendri eelbroneeringu tühistamine",
+      "translation-order.calendar.search": "Kalendrist otsimine",
+      "translation-order.calendar.settings.show": "Kalendri sätete vaatamine",
+      "translation-order.calendar.settings.store": "Kalendri sätete uuendamine",
+      "translation-order.calendar.slot-matching.vendors": "Sobivate teostajate vaatamine",
+      "translation-order.calendar.vendor_entries.index": "Teostaja kalendrikirjete vaatamine",
+      "translation-order.calendar.vendor_entries.store": "Teostaja kalendrikirje lisamine",
+      "translation-order.calendar.week": "Kalendri nädala vaatamine",
+      "translation-order.institution_partner_prices.bulkStore": "Välispartneri hindade lisamine",
+      "translation-order.institution_partner_prices.bulkUpdate": "Välispartneri hindade uuendamine",
+      "translation-order.institution_partner_prices.index": "Välispartneri hindade vaatamine",
+      "translation-order.institution_partners.bulkCreate": "Välispartnerite lisamine",
+      "translation-order.institution_partners.index": "Välispartnerite vaatamine",
+      "translation-order.institution_partners.show": "Välispartneri vaatamine",
+      "translation-order.institution_partners.update": "Välispartneri uuendamine",
+      "translation-order.institution_users.pinLanguage": "Kalendri keele kinnistamine",
+      "translation-order.institution_users.unpinLanguage": "Kalendri keele kinnistuse eemaldamine",
+      "translation-order.institution_users.vendor": "Teostaja vaatamine",
+      "translation-order.institution.settings.show": "Kalendri sätete vaatamine",
+      "translation-order.institution.settings.store": "Kalendri sätete uuendamine",
+      "translation-order.institutions.index": "Institutsioonide vaatamine",
+      "translation-order.institutions.mainLanguages.index": "Kalendri keelte vaatamine",
+      "translation-order.institutions.syncMainLanguages": "Kalendri keelte muutmine",
+      "translation-order.outsource_offers.accept": "Päringu vastuvõtmine",
+      "translation-order.outsource_offers.decline": "Päringust keeldumine",
+      "translation-order.outsource_offers.index": "Päringute vaatamine",
+      "translation-order.outsource_offers.show": "Päringu vaatamine",
+      "translation-order.outsource_requests.cancel": "Päringu tühistamine",
+      "translation-order.outsource_requests.index": "Päringute vaatamine",
+      "translation-order.outsource_requests.previewPrices": "Hinna eelvaatamine",
+      "translation-order.outsource_requests.select": "Võitja valimine",
+      "translation-order.outsource_requests.show": "Päringu vaatamine",
+      "translation-order.outsource_requests.store": "Päringu saatmine",
+      "translation-order.project_comments.store": "Projekti kommentaari lisamine",
+      "translation-order.project_comments.update": "Projekti kommentaari uuendamine",
+      "translation-order.projects.cancel-decline": "Tühistamisest keeldumine",
+      "translation-order.statistics.index": "Statistika vaatamine",
+      "translation-order.vendor_emergency_schedules.destroy": "Teostaja EMO aegade eemaldamine",
+      "translation-order.vendor_emergency_schedules.index": "Teostaja EMO aegade vaatamine",
+      "translation-order.vendor_emergency_schedules.store": "Teostaja EMO aegade lisamine"
     }
   },
   "candidate": {
