@@ -9,7 +9,7 @@ export const getJobs = ({ queryKey }) => {
 }
 
 export const useCatJobs = (catProjectId?: string) =>
-  useQuery<{ data: CattoJob[] }>({
+  useQuery<{ data: CattoJob[], translate_urls: Record<string, string> }>({
     queryFn: getJobs,
     queryKey: ['catJobs', {
       project_id: catProjectId,

@@ -125,11 +125,15 @@ const JobsTable: FC<JobsTableProps> = (props) => {
     }),
     columnHelper.accessor('xliff_file.file_name', {
       header: t('cat_tool_feature.jobs_table.column.xliff'),
-      cell: ({ row }: { row: any }) => (
-        <a target="_blank" href={`http://devbox.host:5173/jobs/${row.original.id}/translate`}>
-          {row.original.xliff_file?.file_name || t('cat_tool_feature.jobs_table.open_in_editor')}
-        </a>
-      ),
+      cell: ({ row }: { row: any }) => {
+        const translateUrl = catJobsQuery.data?.translate_urls[row.original.id]
+
+        return (
+          <a target="_blank" href={translateUrl}>
+            {row.original.xliff_file?.file_name || t('cat_tool_feature.jobs_table.open_in_editor')}
+          </a>
+        )
+      },
     }),
     columnHelper.accessor('created_at', {
       header: t('cat_tool_feature.jobs_table.column.created_at'),
