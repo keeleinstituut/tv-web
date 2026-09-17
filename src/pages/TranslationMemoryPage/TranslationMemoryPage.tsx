@@ -4,10 +4,7 @@ import classes from './classes.module.scss'
 import Tooltip from 'components/organisms/Tooltip/Tooltip'
 import TranslationMemoryDetails from 'components/organisms/TranslationMemoryDetails/TranslationMemoryDetails'
 import TranslationMemorySubProjectsTable from 'components/organisms/tables/TranslationMemorySubProjectsTable/TranslationMemorySubProjectsTable'
-import {
-  useFetchTmChunkAmounts,
-  useFetchTranslationMemory,
-} from 'hooks/requests/useTranslationMemories'
+import { useFetchTranslationMemory } from 'hooks/requests/useTranslationMemories'
 import { useAuth } from 'components/contexts/AuthContext'
 import Loader from 'components/atoms/Loader/Loader'
 import { includes } from 'lodash'
@@ -23,7 +20,7 @@ const TranslationMemoryPage: FC = () => {
   })
 
   const isTmOwnedByUserInstitution =
-    selectedInstitution?.id === translationMemory?.institution_id
+    selectedInstitution?.id === translationMemory?.tenant_id
 
   if (isLoading) return <Loader loading={isLoading} />
 

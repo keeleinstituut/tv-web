@@ -1,12 +1,21 @@
-import {
-  CatAnalysis,
-  CatJob,
-  JobDefinition,
-  SubProjectDetail,
-} from 'types/projects'
+import { JobDefinition, SubProjectDetail } from 'types/projects'
 import { DiscountPercentages, Vendor } from './vendors'
 import { VolumeValue } from './volumes'
 import { UserType } from './users'
+
+export interface VolumeAnalysisBands {
+  raw_word_count: number
+  total: number
+  repetitions: number
+  tm_101: number
+  tm_100: number
+  tm_95_99: number
+  tm_85_94: number
+  tm_75_84: number
+  tm_50_74: number
+  tm_0_49: number
+  files_names: string[]
+}
 
 export enum AssignmentStatus {
   New = 'NEW',
@@ -39,9 +48,6 @@ export interface AssignmentType {
   id: string
   candidates: Candidate[]
   volumes?: VolumeValue[]
-  cat_jobs?: CatJob[]
-  can_download_xliff?: boolean
-  can_download_translations?: boolean
   assigned_vendor_id?: string
   assignee?: Vendor
   assignee_comments?: string
@@ -79,22 +85,17 @@ export enum VolumeUnits {
   PAGES = 'PAGES',
   MINUTES = 'MINUTES',
   HOURS = 'HOURS',
+  MIN_FEE = 'MIN_FEE',
 }
 
-export interface ManualVolumePayload {
+export interface VolumePayload {
   id?: string
   assignment_id?: string
   unit_type: VolumeUnits
   unit_quantity: number
   unit_fee: number
-}
-
-export interface CatVolumePayload {
-  assignment_id?: string
-  cat_tool_job_id: string
-  unit_fee: number
-  custom_volume_analysis?: CatAnalysis
-  discounts: DiscountPercentages
+  discounts?: DiscountPercentages
+  custom_volume_analysis?: VolumeAnalysisBands
 }
 
 export interface CompleteAssignmentPayload {

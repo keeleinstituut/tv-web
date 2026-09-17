@@ -7,25 +7,20 @@ import {
   SubProjectResponse,
   SubProjectsPayloadType,
   ProjectLanguagesResponse,
-  CatProjectPayload,
-  CatToolJobsResponse,
   SubProjectPayload,
-  CatJobsPayload,
   CancelProjectPayload,
-  CatProjectStatus,
   SubProjectDetail,
   ProjectDetail,
   SendFinalFilesPayload,
   ExportProjectsPayload,
-  SourceFile,
 } from 'types/projects'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import useFilters from 'hooks/useFilters'
-import { find, includes, map, size } from 'lodash'
+import { find, includes, map } from 'lodash'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { downloadFile } from 'helpers'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export const useFetchProjects = (
   initialFilters?: ProjectsPayloadType,
@@ -223,11 +218,37 @@ export const useUpdateSubProject = ({ id }: { id?: string }) => {
   }
 }
 
+// CAT project creation happens in a background job after subproject creation,
+// so cat_metadata.catto_project_id is often not set yet on the first fetch.
+// Poll briefly until it appears; give up so subprojects without CAT enabled
+// don't poll forever.
+const CAT_METADATA_POLL_INTERVAL = 3000
+const CAT_METADATA_MAX_POLL_ATTEMPTS = 20
+
 export const useFetchSubProject = ({ id }: { id?: string }) => {
+  const catMetadataPollAttempts = useRef(0)
+
   const { isLoading, isError, data } = useQuery<SubProjectResponse>({
     enabled: !!id,
     queryKey: ['subprojects', id],
     queryFn: () => apiClient.get(`${endpoints.SUB_PROJECTS}/${id}`),
+    refetchInterval: (data) => {
+      const catToolEnabled =
+        data?.data?.project?.type_classifier_value?.project_type_config
+          ?.cat_tool_enabled
+      if (!catToolEnabled) {
+        return false
+      }
+      if (data?.data?.cat_metadata?.catto_project_id) {
+        catMetadataPollAttempts.current = 0
+        return false
+      }
+      if (catMetadataPollAttempts.current >= CAT_METADATA_MAX_POLL_ATTEMPTS) {
+        return false
+      }
+      catMetadataPollAttempts.current += 1
+      return CAT_METADATA_POLL_INTERVAL
+    },
   })
 
   const { data: subProject } = data || {}
@@ -275,140 +296,6 @@ export const useFetchSubProjects = (
   }
 }
 
-export const useSubProjectSendToCat = () => {
-  const { mutateAsync: sendToCat, isLoading } = useMutation({
-    mutationKey: ['send_cat'],
-    mutationFn: (payload: CatProjectPayload) =>
-      apiClient.post(endpoints.CAT_TOOL_SETUP, payload),
-  })
-  return {
-    sendToCat,
-    isCatProjectLoading: isLoading,
-  }
-}
-
-export const useFetchSubProjectCatToolJobs = ({
-  id,
-  disabled,
-}: {
-  id?: string
-  disabled?: boolean
-}) => {
-  const [shouldRefetch, setShouldRefetch] = useState(false)
-  const { data } = useQuery<CatToolJobsResponse>({
-    enabled: !!id && !disabled,
-    queryKey: ['cat-jobs', id],
-    queryFn: () => apiClient.get(`${endpoints.CAT_TOOL_JOBS}/${id}`),
-    ...(shouldRefetch ? { refetchInterval: 3000 } : {}),
-  })
-  useEffect(() => {
-    if (
-      includes(
-        [CatProjectStatus.Done, CatProjectStatus.Failed],
-        data?.data?.setup_status
-      )
-    ) {
-      setShouldRefetch(false)
-    }
-  }, [data?.data?.setup_status, shouldRefetch])
-
-  const startPolling = useCallback(() => {
-    setShouldRefetch(true)
-  }, [])
-  return {
-    catToolJobs: data?.data?.cat_jobs,
-    catSetupStatus: data?.data?.setup_status,
-    catAnalyzeStatus: data?.data?.analyzing_status,
-    canDownloadXliff: data?.data?.can_download_xliff,
-    canDownloadTranslations: data?.data?.can_download_translations,
-    startPolling,
-    isPolling: shouldRefetch,
-  }
-}
-
-export const useSplitCatJobs = () => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: splitCatJobs, isLoading } = useMutation({
-    mutationKey: ['cat-jobs'],
-    mutationFn: (payload: CatJobsPayload) =>
-      apiClient.post(endpoints.CAT_TOOL_SPLIT, payload),
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['cat-jobs'], type: 'active' })
-    },
-  })
-
-  return {
-    splitCatJobs,
-    isLoading,
-  }
-}
-export const useMergeCatJobs = () => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: mergeCatJobs, isLoading } = useMutation({
-    mutationKey: ['cat-jobs'],
-    mutationFn: (payload: CatJobsPayload) =>
-      apiClient.post(endpoints.CAT_TOOL_MERGE, payload),
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['cat-jobs'], type: 'active' })
-    },
-  })
-
-  return {
-    mergeCatJobs,
-    isLoading,
-  }
-}
-
-export const useDownloadXliffFile = ({ isZip }: { isZip: boolean }) => {
-  const { mutateAsync: downloadXliff, isLoading } = useMutation({
-    mutationKey: ['xliff'],
-    mutationFn: (sub_project_id: string) =>
-      apiClient.get(
-        `${endpoints.DOWNLOAD_XLIFF}/${sub_project_id}`,
-        {},
-        { responseType: 'blob' }
-      ),
-    onSuccess: (data) => {
-      downloadFile({
-        data,
-        fileName: `xliff.${isZip ? 'zip' : 'xlf'}`,
-      })
-    },
-  })
-  return {
-    isLoading,
-    downloadXliff,
-  }
-}
-export const useDownloadTranslatedFile = ({
-  cat_files,
-}: {
-  cat_files?: SourceFile[]
-}) => {
-  const { mutateAsync: downloadTranslatedFile, isLoading } = useMutation({
-    mutationKey: ['translated'],
-    mutationFn: (sub_project_id: string) =>
-      apiClient.get(
-        `${endpoints.DOWNLOAD_TRANSLATED}/${sub_project_id}`,
-        {},
-        { responseType: 'blob' }
-      ),
-    onSuccess: (data) => {
-      const isZip = size(cat_files) > 1
-      const singleFileName = cat_files?.[0].file_name || 'xliff.xlf'
-
-      downloadFile({
-        data,
-        fileName: isZip ? 'translatedFiles.zip' : singleFileName,
-      })
-    },
-  })
-  return {
-    isLoading,
-    downloadTranslatedFile,
-  }
-}
-
 export const useSubProjectWorkflow = ({
   id,
   projectId,
@@ -434,35 +321,6 @@ export const useSubProjectWorkflow = ({
 
   return {
     startSubProjectWorkflow,
-    isLoading,
-  }
-}
-
-export const useToggleMtEngine = ({ id }: { id?: string }) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: toggleMtEngine, isLoading } = useMutation({
-    mutationKey: ['mt_engine', id],
-    mutationFn: async (payload: { mt_enabled: number }) =>
-      apiClient.put(`${endpoints.MT_ENGINE}/${id}`, payload),
-    onSuccess: ({ data }: { data: { mt_enabled: boolean } }) => {
-      queryClient.setQueryData(
-        ['subprojects', id],
-        (oldData?: SubProjectResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          return {
-            data: {
-              ...previousData,
-              mt_enabled: data?.mt_enabled,
-            },
-          }
-        }
-      )
-    },
-  })
-
-  return {
-    toggleMtEngine,
     isLoading,
   }
 }

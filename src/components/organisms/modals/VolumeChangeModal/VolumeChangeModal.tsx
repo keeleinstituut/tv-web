@@ -4,7 +4,7 @@ import { closeModal } from '../ModalRoot'
 import ConfirmationModalBase from '../ConfirmationModalBase/ConfirmationModalBase'
 import { Price } from 'types/price'
 import { DiscountPercentages } from 'types/vendors'
-import { CatAnalysis } from 'types/projects'
+import { VolumeAnalysisBands } from 'types/assignments'
 import { VolumeValue } from 'types/volumes'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import VolumeForm, { VolumeFormState } from 'components/organisms/forms/VolumeForm/VolumeForm'
@@ -13,14 +13,13 @@ import classes from './classes.module.scss'
 
 export interface VolumeChangeModalProps {
   assignmentId?: string
-  catJobId?: string
   isCat?: boolean
   isModalOpen?: boolean
   id?: string
   vendorPrices?: Price
   discounts?: DiscountPercentages
   vendorName?: string
-  volume_analysis?: CatAnalysis
+  volume_analysis?: VolumeAnalysisBands
   unit_fee?: number
   unit_type?: string
   unit_quantity?: number
@@ -41,7 +40,6 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
   discounts,
   volume_analysis,
   assignmentId,
-  catJobId,
   unit_fee,
   unit_quantity,
   unit_type,
@@ -104,7 +102,6 @@ const VolumeChangeModal: FC<VolumeChangeModalProps> = ({
           discounts={discounts}
           volume_analysis={volume_analysis}
           assignmentId={assignmentId}
-          catJobId={catJobId}
           unit_fee={unit_fee}
           unit_quantity={unit_quantity}
           unit_type={unit_type}

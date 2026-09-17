@@ -1,5 +1,8 @@
 import React, { FC, RefObject, SVGProps, useRef, useState } from 'react'
-import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
+import Button, {
+  AppearanceTypes,
+  SizeTypes,
+} from 'components/molecules/Button/Button'
 import DropdownArrow from 'assets/icons/arrow_down.svg?react'
 import { createPortal } from 'react-dom'
 import { useClickAway } from 'ahooks'
@@ -85,19 +88,23 @@ interface SimpleDropdownProps
   extends Pick<SimpleDropdownContentProps, 'options'> {
   title?: string
   label?: string
-  icon?: FC<SVGProps<SVGSVGElement>>
+  icon?: FC<SVGProps<SVGSVGElement>> | null
   className?: string
   buttonClassName?: string
   disabled?: boolean
+  appearance?: AppearanceTypes
+  size?: SizeTypes
 }
 
 const SimpleDropdown: FC<SimpleDropdownProps> = ({
   title,
   label,
-  icon,
+  icon = DropdownArrow,
   className,
   buttonClassName,
   disabled,
+  appearance = AppearanceTypes.Text,
+  size,
   ...rest
 }) => {
   const clickAwayInputRef = useRef(null)
@@ -131,11 +138,12 @@ const SimpleDropdown: FC<SimpleDropdownProps> = ({
       ref={clickAwayInputRef}
       onKeyDown={handleKeyDown}
     >
-      <label>{title}</label>
+      {title ? <label>{title}</label> : null}
       <Button
         onClick={toggleDropdown}
-        appearance={AppearanceTypes.Text}
-        icon={icon || DropdownArrow}
+        appearance={appearance}
+        size={size}
+        icon={icon}
         ariaLabel={title}
         disabled={disabled}
         className={classNames(classes.iconButton, buttonClassName)}

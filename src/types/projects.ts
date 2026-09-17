@@ -12,7 +12,6 @@ import {
 import { AssignmentType } from './assignments'
 import { UserType } from './users'
 import { Tag } from './tags'
-import { SubProjectTmKeys } from './translationMemories'
 
 // TODO: hopefully we can split these types a bit, once we have the full correct list of types
 
@@ -43,6 +42,7 @@ export enum SubProjectFeatures {
   JobTranslation = 'job_translation',
   JobRevision = 'job_revision',
   JobOverview = 'job_overview',
+  CatTool = 'cat_tool',
 }
 
 export enum WorkflowTemplateID {
@@ -56,12 +56,6 @@ export enum TypesWithStartTime {
   SignLanguage = 'SIGN_LANGUAGE',
 }
 
-export enum CatProjectStatus {
-  Done = 'DONE',
-  NotStarted = 'NOT_STARTED',
-  InProgress = 'IN_PROGRESS',
-  Failed = 'FAILED',
-}
 export interface Link {
   url: null | string
   label: string
@@ -106,6 +100,7 @@ export interface SourceFile {
   updated_at: string
   original_url: string
   preview_url: string
+  url: string
   is_project_final_file?: boolean
   // Type not clear yet:
   manipulations: string[]
@@ -119,32 +114,7 @@ export interface SourceFile {
   institution_user: UserType
 }
 
-export interface CatJob {
-  xliff_download_url?: string
-  translate_url?: string
-  translation_download_url?: string
-  progress_percentage?: string
-  name: string
-  id: number | string
-  volume_analysis?: CatAnalysis[]
-}
-
 export enum TranslationMemoryPercentageNames {}
-
-export interface CatAnalysis {
-  raw_word_count: number
-  total: number
-  repetitions: number
-  tm_101: number
-  tm_100: number
-  tm_95_99: number
-  tm_85_94: number
-  tm_75_84: number
-  tm_50_74: number
-  tm_0_49: number
-  chunk_id: string
-  files_names: string[]
-}
 
 export interface ListSubProjectDetail {
   id: string
@@ -154,29 +124,23 @@ export interface ListSubProjectDetail {
   destination_language_classifier_value: LanguageClassifierValue
   file_collection: string
   workflow_ref: string | null
-  matecat_job_id: string | null
   source_language_classifier_value_id: string
   destination_language_classifier_value_id: string
   created_at: string
   updated_at: string
   project: ProjectDetail
   status?: SubProjectStatus
-  cat_tm_keys?: SubProjectTmKeys[]
   deadline_at: string
   price?: string
   translation_domain_classifier_value?: ClassifierValue
   event_start_at?: string
   active_job_definition?: JobDefinition
-  cat_jobs: CatJob[]
+  cat_metadata?: { catto_project_id?: string }
 }
 
 export interface SubProjectDetail extends ListSubProjectDetail {
   // Others from what Markus used:
-  cat_project_created: string
-  cat_features: SubProjectFeatures[]
   job_definitions: JobDefinition[]
-  cat_analyzis: CatAnalysis[]
-  cat_files: SourceFile[]
   final_files: SourceFile[]
   source_files: SourceFile[]
   review_files: SourceFile[]
@@ -305,22 +269,6 @@ export interface SubProjectPayload {
   final_files?: (File | SourceFile)[]
 }
 
-export interface CatToolJobsResponse {
-  data: {
-    setup_status: CatProjectStatus
-    analyzing_status: CatProjectStatus
-    cat_jobs: CatJob[]
-    can_download_xliff: boolean
-    can_download_translations: boolean
-  }
-}
-// TODO: not sure what should be sent for CatProjectPayload
-export interface CatProjectPayload {
-  sub_project_id: string
-  source_files_ids: string[]
-  translation_memory_ids?: string[]
-}
-
 export interface NewProjectPayload {
   client_institution_user_id: string
   manager_institution_user_id: string
@@ -342,10 +290,6 @@ export interface NewProjectPayload {
   comments?: string
 }
 
-export interface CatJobsPayload {
-  sub_project_id: string
-  chunks_count?: number
-}
 export interface SplitProjectPayload {
   sub_project_id: string
   job_key: SubProjectFeatures

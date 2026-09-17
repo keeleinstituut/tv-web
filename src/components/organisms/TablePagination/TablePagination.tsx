@@ -144,6 +144,7 @@ const TablePagination = <TData,>({
       </div>
       <SelectionControlsInput
         hidden={hidePaginationSelectionInput}
+        usePortal
         className={classes.pageSizeWrapper}
         name={t('label.pagination_result_count')}
         ariaLabel={t('label.pagination_result_count')}

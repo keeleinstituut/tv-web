@@ -9,18 +9,15 @@ import {
   ContextCheckPayload,
   ExportTMXPayload,
   ImportTMXPayload,
-  SubProjectTmKeysPayload,
-  SubProjectTmKeysResponse,
-  TmStatsType,
   TranslationMemoryDataType,
   TranslationMemoryFilters,
   TranslationMemoryPayload,
   TranslationMemoryPostType,
-  TranslationMemoryType,
+  TranslationMemoryResponse,
 } from 'types/translationMemories'
 import { downloadFile } from 'helpers'
 import useFilters from 'hooks/useFilters'
-import { map, flatten, join, omit, pick, filter } from 'lodash'
+import { filter } from 'lodash'
 import { SubProjectsResponse } from 'types/projects'
 import { useCallback, useEffect } from 'react'
 import useWaitForLoading from 'hooks/useWaitForLoading'
@@ -28,16 +25,39 @@ import { PaginationFunctionType } from 'types/collective'
 
 dayjs.extend(customParseFormat)
 
+const toTranslationMemoryQueryParams = (
+  filters: TranslationMemoryFilters,
+  tenantId?: string
+) => {
+  const { lang_pair, ...rest } = filters
+  const params = tenantId ? { ...rest, tenant_id: tenantId } : rest
+  if (!lang_pair?.length) return params
+
+  const source_locale: string[] = []
+  const target_locale: string[] = []
+  lang_pair.forEach((pair) => {
+    const [source, target] = pair.split('_')
+    if (source && target) {
+      source_locale.push(source)
+      target_locale.push(target)
+    }
+  })
+
+  return { ...params, source_locale, target_locale }
+}
+
 export const useFetchTranslationMemories = ({
   initialFilters,
   disabled,
   saveQueryParams,
   key,
+  tenantId,
 }: {
   initialFilters?: TranslationMemoryFilters
   disabled?: boolean
   saveQueryParams?: boolean
   key?: string
+  tenantId?: string
 }) => {
   const {
     filters,
@@ -52,7 +72,10 @@ export const useFetchTranslationMemories = ({
       queryFn: () =>
         apiClient.get(
           endpoints.TRANSLATION_MEMORIES,
-          filters
+          toTranslationMemoryQueryParams(
+            filters as TranslationMemoryFilters,
+            tenantId
+          )
         ),
       keepPreviousData: true,
     })
@@ -62,7 +85,7 @@ export const useFetchTranslationMemories = ({
       refetch()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters])
+  }, [filters, tenantId])
 
   //TODO: Pagination is not done from BE side. This comes later
 
@@ -87,7 +110,7 @@ export const useFetchTranslationMemories = ({
 
 export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
   const { isLoading, isError, isFetching, data } =
-    useQuery<TranslationMemoryType>({
+    useQuery<TranslationMemoryResponse>({
       enabled: !!id,
       queryKey: ['translationMemories', id],
       queryFn: () => apiClient.get(`${endpoints.TRANSLATION_MEMORIES}/${id}`),
@@ -103,21 +126,6 @@ export const useFetchTranslationMemory = ({ id }: { id?: string }) => {
   }
 }
 
-export const useFetchTmChunkAmounts = ({
-  disabled,
-}: {
-  disabled?: boolean
-}) => {
-  const { data } = useQuery<TmStatsType>({
-    enabled: !disabled,
-    queryKey: ['translationMemories-stats'],
-    queryFn: () => apiClient.get(endpoints.TM_STATS),
-  })
-  return {
-    tmChunkAmounts: data?.tag,
-  }
-}
-
 export const useUpdateTranslationMemory = ({ id }: { id?: string }) => {
   const queryClient = useQueryClient()
   const { mutateAsync: updateTranslationMemory, isLoading } = useMutation({
@@ -130,9 +138,9 @@ export const useUpdateTranslationMemory = ({ id }: { id?: string }) => {
     onSuccess: (response) => {
       queryClient.setQueryData(
         ['translationMemories', id],
-        (oldData?: TranslationMemoryType) => {
+        (oldData?: TranslationMemoryResponse) => {
           if (!oldData) return oldData
-          return { ...oldData, ...response }
+          return { ...oldData, data }
         }
       )
     },
@@ -157,7 +165,7 @@ export const useCreateTranslationMemory = () => {
           const { data: previousData } = oldData || {}
           if (!previousData) return oldData
           const newData = [...previousData, data]
-          return { data: newData }
+          return { ...oldData, data: newData }
         }
       )
     },
@@ -175,14 +183,14 @@ export const useDeleteTranslationMemory = () => {
     mutationKey: ['translationMemories'],
     mutationFn: (id: string) =>
       apiClient.delete(`${endpoints.TRANSLATION_MEMORIES}/${id}`),
-    onSuccess: ({ tag: data }) => {
+    onSuccess: (_response, deletedId) => {
       queryClient.setQueryData(
         ['translationMemories'],
         (oldData?: TranslationMemoryDataType) => {
-          const { tags: previousData } = oldData || {}
+          const { data: previousData } = oldData || {}
           if (!previousData) return oldData
-          const newData = filter(previousData, ({ id }) => id !== data.id)
-          return { tags: newData }
+          const newData = filter(previousData, ({ id }) => id !== deletedId)
+          return { ...oldData, data: newData }
         }
       )
     },
@@ -204,9 +212,9 @@ export const useImportTMX = () => {
   } = useMutation({
     mutationKey: ['tmx'],
     mutationFn: async (data: ImportTMXPayload) => {
-      formData.append('file', data.file)
-      formData.append('tag', data.tag)
-      return apiClient.post(endpoints.IMPORT_TMX, formData)
+      formData.append('files[]', data.file)
+      formData.append('translation_memory_id', data.tag)
+      return apiClient.post(endpoints.TRANSLATION_MEMORIES_IMPORT, formData)
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
@@ -229,7 +237,7 @@ export const useExportTMX = () => {
   const { mutateAsync: exportTMX } = useMutation({
     mutationKey: ['tmx'],
     mutationFn: async (payload: ExportTMXPayload) =>
-      apiClient.post(endpoints.EXPORT_TMX, payload, { responseType: 'blob' }),
+      apiClient.post(endpoints.TRANSLATION_MEMORIES_EXPORT, payload, { responseType: 'blob' }),
     onSuccess: (data) => {
       finishLoading()
       downloadFile({
@@ -290,136 +298,6 @@ export const useFetchTranslationMemorySubProjects = ({
   }
 }
 
-export const useFetchSubProjectTmKeys = ({
-  subProjectId,
-  disabled,
-}: {
-  subProjectId?: string
-  disabled?: boolean
-}) => {
-  const { isLoading, isError, isFetching, data } =
-    useQuery<SubProjectTmKeysResponse>({
-      enabled: !!subProjectId && !disabled,
-      queryKey: ['subProject-tm-keys', subProjectId],
-      queryFn: () => apiClient.get(`${endpoints.TM_KEYS}/${subProjectId}`),
-    })
-
-  return {
-    isLoading,
-    isError,
-    subProjectTmKeyObjectsArray: data?.data,
-    isFetching,
-  }
-}
-
-export const useUpdateSubProjectTmKeys = ({
-  subProjectId,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: updateSubProjectTmKeys, isLoading } = useMutation({
-    mutationKey: ['subProject-tm-keys', subProjectId],
-    mutationFn: async (payload: SubProjectTmKeysPayload) => {
-      return apiClient.post(endpoints.UPDATE_TM_KEYS, {
-        sub_project_id: subProjectId,
-        ...payload,
-      })
-    },
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['subProject-tm-keys', subProjectId],
-        (oldData?: SubProjectTmKeysResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          return { data }
-        }
-      )
-    },
-  })
-
-  return {
-    updateSubProjectTmKeys,
-    isLoading,
-  }
-}
-export const useToggleTmWritable = ({
-  subProjectId,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: toggleTmWritable, isLoading } = useMutation({
-    mutationKey: ['subProject-tm-keys', subProjectId],
-    mutationFn: async (payload: SubProjectTmKeysPayload) => {
-      return apiClient.put(
-        `${endpoints.TOGGLE_TM_WRITABLE}/${payload.id}`,
-        omit(payload, 'id')
-      )
-    },
-    onSuccess: ({ data }) => {
-      queryClient.setQueryData(
-        ['subProject-tm-keys', subProjectId],
-        (oldData?: SubProjectTmKeysResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = [
-            ...filter(previousData, ({ id }) => id !== data.id),
-            data,
-          ]
-
-          return { data: newData }
-        }
-      )
-    },
-  })
-
-  return {
-    toggleTmWritable,
-    isLoading,
-  }
-}
-
-export const useCreateEmptyTm = ({
-  subProjectId,
-  key,
-}: {
-  subProjectId?: string
-  key?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: createEmptyTm, isLoading } = useMutation({
-    mutationKey: ['subProject-tm-keys', subProjectId],
-    mutationFn: () => apiClient.post(`${endpoints.TM_KEYS}/${subProjectId}`),
-    onSuccess: ({ data }) => {
-      const { cat_tm_key, cat_tm_meta } = data || {}
-      queryClient.setQueryData(
-        ['subProject-tm-keys', subProjectId],
-        (oldData?: SubProjectTmKeysResponse) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = [...previousData, cat_tm_key]
-          return { data: newData }
-        }
-      )
-      queryClient.setQueryData(
-        ['translationMemories', key],
-        (oldData?: TranslationMemoryDataType) => {
-          const { data: previousData } = oldData || {}
-          if (!previousData) return oldData
-          const newData = [...previousData, cat_tm_meta?.tag]
-          return { data: newData }
-        }
-      )
-    },
-  })
-
-  return {
-    isLoading,
-    createEmptyTm,
-  }
-}
-
 export const useFetchTranslationMemoryContextChecks = (options?: {
   initialFilters: ContextCheckFilters
   refetchInterval?: number
@@ -469,3 +347,4 @@ export const useCreateTranslationMemoryContextCheck = () => {
     isLoading,
   }
 }
+

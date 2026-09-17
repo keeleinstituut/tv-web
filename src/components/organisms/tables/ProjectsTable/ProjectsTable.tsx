@@ -99,8 +99,8 @@ const ProjectsTable: FC = () => {
   const [searchParams] = useSearchParams()
   const initialFilters: ProjectsPayloadType = {
     per_page: 50,
-    sort_by: 'deadline_at',
-    sort_order: 'asc',
+    sort_by: 'created_at',
+    sort_order: 'desc',
     page: 1,
     ...Object.fromEntries(searchParams.entries()),
     statuses: onlyNewProjectsAllowed

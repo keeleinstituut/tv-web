@@ -5,7 +5,7 @@ import ModalBase, {
   ModalSizeTypes,
 } from 'components/organisms/ModalBase/ModalBase'
 import { t } from 'i18next'
-import { join, map, pickBy, reduce, reverse, size, split } from 'lodash'
+import { join, keys, pickBy, reduce, reverse, size, split } from 'lodash'
 import { closeModal } from '../ModalRoot'
 import { FC, useCallback, useEffect, useMemo } from 'react'
 import { ConfirmationModalBaseProps } from '../ConfirmationModalBase/ConfirmationModalBase'
@@ -15,47 +15,46 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { NotificationTypes } from 'components/molecules/Notification/Notification'
 import { showNotification } from 'components/organisms/NotificationRoot/NotificationRoot'
 import {
-  useFetchSubProjectTmKeys,
-  useUpdateSubProjectTmKeys,
-} from 'hooks/requests/useTranslationMemories'
+  useCatProject,
+  useUpdateCatProjectTranslationMemories,
+} from 'components/organisms/features/CatToolFeature/useCatTranslationMemories'
 import { ClassifierValue } from 'types/classifierValues'
 
 interface FormValues {
   [key: string]: boolean
 }
 type AddTranslationMemoriesType = {
-  subProjectId?: string
+  catProjectId: string
   subProjectLangPair?: string
   projectDomain?: ClassifierValue
 } & ConfirmationModalBaseProps
 
 const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
   isModalOpen,
-  subProjectId,
+  catProjectId,
   subProjectLangPair = '',
   projectDomain,
 }) => {
-  const { updateSubProjectTmKeys } = useUpdateSubProjectTmKeys({ subProjectId })
-  const { subProjectTmKeyObjectsArray } = useFetchSubProjectTmKeys({
-    subProjectId,
-  })
+  const catProjectQuery = useCatProject(catProjectId)
+  const { mutateAsync: updateCatProjectTms } =
+    useUpdateCatProjectTranslationMemories(catProjectId)
+
+  const assignedList: { id: string; read: boolean; write: boolean }[] =
+    catProjectQuery.data?.data?.translation_memories || []
+
+  const assignedMap = useMemo(
+    () => new Map(assignedList.map((tm) => [tm.id, tm])),
+    [assignedList]
+  )
 
   const defaultFormValues = useMemo(
     () =>
       reduce(
-        subProjectTmKeyObjectsArray,
-        (result, value) => {
-          if (!value.key) {
-            return result
-          }
-          return {
-            ...result,
-            [value.key]: true,
-          }
-        },
+        assignedList,
+        (result, tm) => ({ ...result, [tm.id]: true }),
         {}
       ),
-    [subProjectTmKeyObjectsArray]
+    [assignedList]
   )
 
   const {
@@ -90,18 +89,19 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
 
   const onSubmit: SubmitHandler<FormValues> = useCallback(
     async (values) => {
-      const checkedValues = pickBy(values, (val) => !!val)
+      const checkedIds = keys(pickBy(values, (val) => !!val))
 
-      const payload = {
-        tm_keys: map(checkedValues, (_, key) => {
-          return {
-            key: key || '',
-          }
-        }),
-      }
+      const translation_memories = checkedIds.map((id) => {
+        const existing = assignedMap.get(id)
+        return {
+          id,
+          read: existing?.read ?? true,
+          write: existing?.write ?? false,
+        }
+      })
 
       try {
-        await updateSubProjectTmKeys(payload)
+        await updateCatProjectTms(translation_memories)
         showNotification({
           type: NotificationTypes.Success,
           title: t('notification.announcement'),
@@ -112,7 +112,7 @@ const AddTranslationMemoriesModal: FC<AddTranslationMemoriesType> = ({
         // error message comes from api errorHandles
       }
     },
-    [updateSubProjectTmKeys]
+    [assignedMap, updateCatProjectTms]
   )
 
   return (

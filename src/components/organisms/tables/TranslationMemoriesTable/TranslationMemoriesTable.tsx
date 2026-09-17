@@ -31,7 +31,11 @@ import {
 import Tag from 'components/atoms/Tag/Tag'
 import { useFetchTags } from 'hooks/requests/useTags'
 import { TagTypes } from 'types/tags'
-import { TMType, TranslationMemoryFilters } from 'types/translationMemories'
+import {
+  TMType,
+  TranslationMemoryFilters,
+  TranslationMemoryType,
+} from 'types/translationMemories'
 import { useClassifierValuesFetch } from 'hooks/requests/useClassifierValues'
 import { ClassifierValueType } from 'types/classifierValues'
 import { useFetchTranslationMemories } from 'hooks/requests/useTranslationMemories'
@@ -44,18 +48,9 @@ import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import SmallTooltip from 'components/molecules/SmallTooltip/SmallTooltip'
 import { TableSelectFilter } from 'components/organisms/TableHeaderGroup/TableHeaderGroup'
 
-type TranslationMemoriesTableRow = {
-  name: string
-  id: string
-  type?: string
-  tv_tags?: string[]
-  tv_domain?: string
-  lang_pair?: string
-}
-
-const columnHelper = createColumnHelper<TranslationMemoriesTableRow>()
+const columnHelper = createColumnHelper<TranslationMemoryType>()
 interface FormValues {
-  [types: string]: TMType[]
+  [visibility: string]: TMType[]
 }
 interface TranslationMemoriesTableTypes {
   isSelectingModal?: boolean
@@ -69,16 +64,24 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   initialFilters,
 }) => {
   const { t } = useTranslation()
-  const { userPrivileges } = useAuth()
+  const { userPrivileges, selectedInstitutionId } = useAuth()
 
   const [searchParams] = useSearchParams()
   const combinedInitialFilters = {
     ...initialFilters,
     ...omit(Object.fromEntries(searchParams.entries()), ['page', 'per_page']),
-    tv_tags: searchParams.getAll('tv_tags'),
-    type: searchParams.getAll('type') as TMType[],
-    tv_domain: searchParams.getAll('tv_domain'),
-    lang_pair: searchParams.getAll('lang_pair'),
+    tv_tags: searchParams.has('tv_tags')
+      ? searchParams.getAll('tv_tags')
+      : initialFilters?.tv_tags,
+    visibility: searchParams.has('visibility')
+      ? (searchParams.getAll('visibility') as TMType[])
+      : initialFilters?.visibility,
+    tv_domain: searchParams.has('tv_domain')
+      ? searchParams.getAll('tv_domain')
+      : initialFilters?.tv_domain,
+    lang_pair: searchParams.has('lang_pair')
+      ? searchParams.getAll('lang_pair')
+      : initialFilters?.lang_pair,
   }
 
   const {
@@ -88,6 +91,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
   } = useFetchTranslationMemories({
     initialFilters: combinedInitialFilters,
     saveQueryParams: true,
+    tenantId: selectedInstitutionId,
   })
 
   const [searchValue, setSearchValue] = useState<string>(filters?.name || '')
@@ -127,9 +131,9 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
 
   const defaultFilterValues = useMemo(
     () => ({
-      types: (filters?.type as TMType[]) || [],
+      visibility: (filters?.visibility as TMType[]) || [],
     }),
-    [filters?.type]
+    [filters?.visibility]
   )
 
   const { control, watch } = useForm<FormValues>({
@@ -173,12 +177,12 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
     })
   }, [translationMemories, filters])
 
-  const [types] = watch(['types'])
+  const [visibility] = watch(['visibility'])
 
   useEffect(() => {
-    handleFilterChange({ type: types })
+    handleFilterChange({ visibility })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [types])
+  }, [visibility])
 
   const columns = useMemo(
     () =>
@@ -224,16 +228,16 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           footer: (info) => info.column.id,
           size: 240,
         }),
-        columnHelper.accessor('type', {
+        columnHelper.accessor('visibility', {
           header: () => '',
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {
-            const type = getValue() || 'INTERNAL'
+            const type = getValue() || TMType.Internal
             return <span className={classNames(classes.dot, classes[type])} />
           },
           size: 20,
         }),
-        columnHelper.accessor('tv_tags', {
+        columnHelper.accessor('meta.tv_tags', {
           header: () => t('label.tags'),
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {
@@ -258,7 +262,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
             ),
           },
         }),
-        columnHelper.accessor('tv_domain', {
+        columnHelper.accessor('meta.tv_domain', {
           header: () => t('label.translation_domain'),
           footer: (info) => info.column.id,
 
@@ -277,7 +281,8 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
             ),
           },
         }),
-        columnHelper.accessor('lang_pair', {
+        columnHelper.accessor(row => `${row.source_locale}_${row.target_locale}`, {
+          id: 'lang_pair',
           header: () => t('label.language_directions'),
           footer: (info) => info.column.id,
           cell: ({ getValue }) => {
@@ -304,7 +309,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
               }
             : {},
         }),
-      ] as ColumnDef<TranslationMemoriesTableRow>[],
+      ] as ColumnDef<TranslationMemoryType>[],
     [
       domainOptions,
       filters?.lang_pair,
@@ -355,7 +360,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
           >
             <div>
               <FormInput
-                name="types"
+                name="visibility"
                 control={control}
                 options={statusFilters}
                 inputType={InputTypes.TagsSelect}
@@ -397,7 +402,7 @@ const TranslationMemoriesTable: FC<TranslationMemoriesTableTypes> = ({
         }
         columnOrder={
           isSelectingModal
-            ? ['id', 'lang_pair', 'name', 'tv_tags', 'tv_domains']
+            ? ['id', 'lang_pair', 'name', 'meta.tv_tags', 'meta.tv_domain']
             : undefined
         }
       />

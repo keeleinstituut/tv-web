@@ -1,0 +1,63 @@
+@use 'styles/variables' as variables;
+@use 'styles/mixins' as mixins;
+
+.pendingContainer {
+  @include mixins.subtitleSmallTextStyle;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: variables.spacing(2);
+  color: variables.$color-text;
+  min-height: 80px;
+  margin-top: variables.spacing(14);
+}
+
+.bandsCell {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.expandableContainer {
+  margin-top: variables.spacing(8);
+}
+
+.translationMemoriesTable {
+  border: unset;
+  box-shadow: unset;
+}
+
+.analysesTable {
+  margin-top: variables.spacing(6);
+}
+
+.mainButton {
+  margin-left: variables.spacing(2);
+}
+
+.bandsTable {
+  border: unset;
+  box-shadow: unset;
+}
+
+.actionsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+
+  & > * {
+    margin-left: variables.spacing(2);
+    margin-right: variables.spacing(2);
+  }
+}
+
+.iconButton {
+  display: flex;
+
+  svg {
+    width: 21px;
+    height: 20px;
+  }
+}

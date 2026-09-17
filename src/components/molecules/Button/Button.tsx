@@ -24,7 +24,7 @@ export enum IconPositioningTypes {
 export interface ButtonProps extends BaseButtonProps {
   appearance?: AppearanceTypes
   size?: SizeTypes
-  icon?: FC<SVGProps<SVGSVGElement>>
+  icon?: FC<SVGProps<SVGSVGElement>> | null
   ariaLabel?: string
   hidden?: boolean
   className?: string
@@ -33,7 +33,7 @@ export interface ButtonProps extends BaseButtonProps {
 }
 
 export type IconProps = {
-  icon?: FC<SVGProps<SVGSVGElement>>
+  icon?: FC<SVGProps<SVGSVGElement>> | null
   className?: string
   ariaLabel?: string
   hidden?: boolean

@@ -2,11 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from 'api'
 import { endpoints } from 'api/endpoints'
 import { filter, find, map } from 'lodash'
-import {
-  AssignmentType,
-  CatVolumePayload,
-  ManualVolumePayload,
-} from 'types/assignments'
+import { AssignmentType, VolumePayload } from 'types/assignments'
 import { SubProjectResponse } from 'types/projects'
 import { VolumeValue } from 'types/volumes'
 
@@ -98,7 +94,7 @@ export const useAssignmentAddVolume = ({
   const queryClient = useQueryClient()
   const { mutateAsync: addAssignmentVolume, isLoading } = useMutation({
     mutationKey: ['subprojects', id],
-    mutationFn: (payload: { data: ManualVolumePayload }) =>
+    mutationFn: (payload: { data: VolumePayload }) =>
       apiClient.post(`${endpoints.VOLUMES}`, payload.data),
     onSuccess: ({ data }: { data: VolumeValue }) => {
       // TODO: currently not supported by BE
@@ -128,7 +124,7 @@ export const useAssignmentEditVolume = ({
   const queryClient = useQueryClient()
   const { mutateAsync: editAssignmentVolume, isLoading } = useMutation({
     mutationKey: ['subprojects', id],
-    mutationFn: (payload: { data: ManualVolumePayload; volumeId: string }) =>
+    mutationFn: (payload: { data: VolumePayload; volumeId: string }) =>
       apiClient.put(`${endpoints.VOLUMES}/${payload.volumeId}`, payload.data),
     onSuccess: ({ data }: { data: VolumeValue }) => {
       // TODO: currently not supported by BE
@@ -146,69 +142,6 @@ export const useAssignmentEditVolume = ({
 
   return {
     editAssignmentVolume,
-    isLoading,
-  }
-}
-
-export const useAssignmentAddCatVolume = ({
-  subProjectId: id,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: addAssignmentCatVolume, isLoading } = useMutation({
-    mutationKey: ['subprojects', id],
-    mutationFn: (payload: { data: CatVolumePayload }) =>
-      apiClient.post(`${endpoints.VOLUMES}/cat-tool`, payload.data),
-    onSuccess: ({ data }: { data: VolumeValue }) => {
-      // TODO: currently not supported by BE
-      queryClient.setQueryData(
-        ['subprojects', id],
-        (oldData?: SubProjectResponse) =>
-          getNewSubProjectWithAssignment(data, oldData)
-      )
-      queryClient.refetchQueries({
-        queryKey: ['subprojects', id],
-        type: 'active',
-      })
-    },
-  })
-
-  return {
-    addAssignmentCatVolume,
-    isLoading,
-  }
-}
-
-export const useAssignmentEditCatVolume = ({
-  subProjectId: id,
-}: {
-  subProjectId?: string
-}) => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: editAssignmentCatVolume, isLoading } = useMutation({
-    mutationKey: ['subprojects', id],
-    mutationFn: (payload: { data: CatVolumePayload; volumeId: string }) =>
-      apiClient.put(
-        `${endpoints.VOLUMES}/cat-tool/${payload.volumeId}`,
-        payload.data
-      ),
-    onSuccess: ({ data }: { data: VolumeValue }) => {
-      // TODO: currently not supported by BE
-      queryClient.setQueryData(
-        ['subprojects', id],
-        (oldData?: SubProjectResponse) =>
-          getNewSubProjectWithAssignment(data, oldData)
-      )
-      queryClient.refetchQueries({
-        queryKey: ['subprojects', id],
-        type: 'active',
-      })
-    },
-  })
-
-  return {
-    editAssignmentCatVolume,
     isLoading,
   }
 }

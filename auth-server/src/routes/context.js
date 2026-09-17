@@ -4,31 +4,34 @@ const { requiresAuth } = require('express-openid-connect')
 const { ISSUER, CLIENT_ID, CLIENT_SECRET } = require('../env')
 const { getCsrfTokenFromSession } = require('../util')
 const { requiresValidCsrfToken } = require('./middleware')
+const { skipAuditLog } = require('../middlewares')
 
 function constructContextRoutes() {
   const router = Router()
 
-  router.get('/context', async (req, res) => {
-    res.locals.skipAuditLog = true
+  router.get(
+    '/context',
+    skipAuditLog(),
+    async (req, res) => {
+      const { accessToken, refreshToken } = req.oidc
+      const parsedAccessToken = !accessToken
+        ? {}
+        : jwtDecode(accessToken.access_token)
 
-    const { accessToken, refreshToken } = req.oidc
-    const parsedAccessToken = !accessToken
-      ? {}
-      : jwtDecode(accessToken.access_token)
+      if (!accessToken) {
+        return res.status(200).json()
+      }
 
-    if (!accessToken) {
-      return res.status(200).json()
+      const { exp: sessionExpiry } = jwtDecode(refreshToken)
+
+      res.json({
+        sessionExpiry,
+        authenticated: true,
+        user: parsedAccessToken?.tolkevarav,
+        csrfToken: getCsrfTokenFromSession(req),
+      })
     }
-
-    const { exp: sessionExpiry } = jwtDecode(refreshToken)
-
-    res.json({
-      sessionExpiry,
-      authenticated: true,
-      user: parsedAccessToken?.tolkevarav,
-      csrfToken: getCsrfTokenFromSession(req),
-    })
-  })
+  )
 
   router.get(
     '/switch-context',

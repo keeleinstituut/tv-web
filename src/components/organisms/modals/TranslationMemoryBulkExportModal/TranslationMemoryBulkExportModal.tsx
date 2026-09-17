@@ -31,16 +31,14 @@ const TranslationMemoryBulkExportModal: FC<
   const { t } = useTranslation()
 
   const translationMemories = useMemo(() => {
-    return chain(translationMemoriesBase).sortBy(['type', 'name']).value()
+    return chain(translationMemoriesBase).sortBy(['visibility', 'name']).value()
   }, [translationMemoriesBase])
 
   const { exportTMX, isLoading } = useExportTMX()
 
   const handleExport = async () => {
     const payload = {
-      tag: map(translationMemories, 'id'),
-      slang: source_language,
-      tlang: target_language,
+      translation_memory_ids: map(translationMemories, 'id'),
     }
 
     try {
@@ -75,13 +73,15 @@ const TranslationMemoryBulkExportModal: FC<
               {map(translationMemories, (m) => {
                 const translatedType = t(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  `translation_memories.status.${m.type}` as any
+                  `translation_memories.status.${m.visibility}` as any
                 )
                 return (
                   <li
                     key={m.id}
                     className={
-                      m.type !== TMType.Public ? classes.notPublicMemory : ''
+                      m.visibility !== TMType.Public
+                        ? classes.notPublicMemory
+                        : ''
                     }
                   >
                     {translatedType} - {m.name}

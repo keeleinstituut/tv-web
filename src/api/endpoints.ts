@@ -16,16 +16,16 @@ const translationOrder = (path: string) => {
   return gateway(`/translation-order/api/${clean(path)}`)
 }
 
-const translationMemory = (path: string) => {
-  return gateway(`/translation-memory/api/v1/${clean(path)}`)
-}
-
 const auditLog = (path: string) => {
   return gateway(`/audit-log/api/${clean(path)}`)
 }
 
 const machineTranslation = (path: string) => {
   return gateway(`/machine-translation/api/${clean(path)}`)
+}
+
+const catTool = (path: string) => {
+  return gateway(`/cat2/api/${clean(path)}`)
 }
 
 export const endpoints = {
@@ -48,7 +48,6 @@ export const endpoints = {
   ),
   PROJECT_CLIENT: authorization('institution-users/assignable-clients'),
 
-  CAT_TOOL: translationOrder('cat-tool'),
   TRANSLATION_USERS: translationOrder('institution-users'),
   INSTITUTION_USER_VENDOR: (id: string) =>
     translationOrder(`institution-users/${id}/vendor`),
@@ -64,29 +63,17 @@ export const endpoints = {
   CLASSIFIER_VALUES: translationOrder('classifier-values'),
   PROJECTS: translationOrder('projects'),
   SUB_PROJECTS: translationOrder('subprojects'),
-  MT_ENGINE: translationOrder('cat-tool/toggle-mt-engine'),
   TASKS: translationOrder('workflow/tasks'),
   TASKS2: translationOrder('workflow/tasks2'),
   HISTORY_TASKS: translationOrder('workflow/history/tasks'),
   HISTORY_TASKS2: translationOrder('workflow/history/tasks2'),
   ASSIGNMENTS: translationOrder('assignments'),
   STATISTICS: translationOrder('statistics'),
-  LINK_CAT_TOOL_JOBS: translationOrder('assignments/link-cat-tool-jobs'),
-  CAT_ASSIGNMENTS: translationOrder('cat-tool/split'),
   DISCOUNTS: translationOrder('institution-discounts'),
-  CAT_TOOL_JOBS: translationOrder('cat-tool/jobs'),
-  CAT_TOOL_SETUP: translationOrder('cat-tool/setup'),
-  CAT_TOOL_SPLIT: translationOrder('cat-tool/split'),
-  CAT_TOOL_MERGE: translationOrder('cat-tool/merge'),
   MEDIA: translationOrder('media'),
   MEDIA_BULK: translationOrder('media/bulk'),
   MEDIA_DOWNLOAD: translationOrder('media/download'),
-  DOWNLOAD_XLIFF: translationOrder('cat-tool/download-xliff'),
-  DOWNLOAD_TRANSLATED: translationOrder('cat-tool/download-translated'),
-  TM_KEYS: translationOrder('tm-keys'),
   TM_SUB_PROJECTS: translationOrder('tm-keys/subprojects'),
-  UPDATE_TM_KEYS: translationOrder('tm-keys/sync'),
-  TOGGLE_TM_WRITABLE: translationOrder('tm-keys/toggle-writable'),
 
   CALENDAR_LANGUAGES: translationOrder('calendar/languages'),
   INSTITUTION_MAIN_LANGUAGES: translationOrder('institutions/main-languages'),
@@ -115,11 +102,10 @@ export const endpoints = {
   CALENDAR_IMPORT_BULK: translationOrder('calendar/import/bulk'),
   INSTITUTION_SETTINGS: translationOrder('institution/settings'),
 
-  TRANSLATION_MEMORIES: translationOrder('catv2/translation-memories'),
-  IMPORT_TMX: translationOrder('catv2/translation-memories/import'),
-  EXPORT_TMX: translationOrder('catv2/translation-memories/export'),
-  TM_STATS: translationMemory('tm/stats'),
-  TM_CONTENT_CHECKS: translationOrder('catv2/translation-memories/content-checks'),
+  TRANSLATION_MEMORIES: catTool('translation-memories'),
+  TRANSLATION_MEMORIES_IMPORT: catTool('translation-memories/import'),
+  TRANSLATION_MEMORIES_EXPORT: catTool('translation-memories/export'),
+  TM_CONTENT_CHECKS: catTool('translation-memories/context-checks'),
 
   AUDIT_LOGS: auditLog('event-records'),
   AUDIT_LOG_ACTIONS: auditLog('event-records/actions'),

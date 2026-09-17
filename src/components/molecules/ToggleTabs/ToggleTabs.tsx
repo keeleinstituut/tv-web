@@ -1,11 +1,11 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import classNames from 'classnames'
 import { isEmpty, map } from 'lodash'
 import Button, { AppearanceTypes } from 'components/molecules/Button/Button'
 import classes from './classes.module.scss'
 
 interface ToggleTab {
-  label?: string
+  label?: ReactNode
   id?: string
 }
 export interface ToggleTabsProps {

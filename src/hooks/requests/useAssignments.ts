@@ -233,37 +233,6 @@ export const useSplitAssignment = () => {
   }
 }
 
-export const useLinkCatToolJobs = () => {
-  const queryClient = useQueryClient()
-  const { mutateAsync: linkCatToolJobs, isLoading } = useMutation({
-    mutationKey: ['link_cat_tool_jobs'],
-    mutationFn: (payload: {
-      linking: {
-        cat_tool_job_id: string
-        assignment_id: string
-      }[]
-      job_key: string
-      sub_project_id: string
-    }) =>
-      apiClient.post(endpoints.LINK_CAT_TOOL_JOBS, {
-        ...payload,
-      }),
-    onSuccess: ({ data }: { data: AssignmentType[] }) => {
-      const { sub_project_id } = data?.[0] || {}
-      queryClient.setQueryData(
-        ['subprojects', sub_project_id],
-        (oldData?: SubProjectResponse) =>
-          getNewSubProjectWithAssignment(data, oldData)
-      )
-    },
-  })
-
-  return {
-    linkCatToolJobs,
-    isLoading,
-  }
-}
-
 export const useDeleteAssignment = ({
   sub_project_id,
 }: {

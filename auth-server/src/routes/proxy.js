@@ -4,9 +4,9 @@ const { requiresAuth } = require('express-openid-connect')
 const {
   TRANSLATION_ORDER_SERVICE_BASE_URL,
   AUTHORIZATION_SERVICE_BASE_URL,
-  TRANSLATION_MEMORY_SERVICE_BASE_URL,
   AUDIT_LOG_SERVICE_BASE_URL,
   MACHINE_TRANSLATION_SERVICE_BASE_URL,
+  CAT2_SERVICE_BASE_URL,
 } = require('../env')
 const { omit } = require('lodash')
 const {
@@ -89,21 +89,6 @@ function constructProxyRoutes() {
   )
 
   router.use(
-    '/translation-memory',
-    requiresAuth(),
-    requiresValidAccessToken(),
-    requiresValidCsrfToken(),
-    proxy({
-      target: TRANSLATION_MEMORY_SERVICE_BASE_URL,
-      changeOrigin: true,
-      on: {
-        proxyReq: onProxyReq,
-        proxyRes: onProxyRes,
-      },
-    })
-  )
-
-  router.use(
     '/audit-log',
     requiresAuth(),
     requiresValidAccessToken(),
@@ -125,6 +110,21 @@ function constructProxyRoutes() {
     requiresValidCsrfToken(),
     proxy({
       target: MACHINE_TRANSLATION_SERVICE_BASE_URL,
+      changeOrigin: true,
+      on: {
+        proxyReq: onProxyReq,
+        proxyRes: onProxyRes,
+      },
+    })
+  )
+
+  router.use(
+    '/cat2',
+    requiresAuth(),
+    requiresValidAccessToken(),
+    requiresValidCsrfToken(),
+    proxy({
+      target: CAT2_SERVICE_BASE_URL,
       changeOrigin: true,
       on: {
         proxyReq: onProxyReq,

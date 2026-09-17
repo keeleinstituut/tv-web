@@ -28,7 +28,10 @@ import { useNavigate } from 'react-router-dom'
 import { AxiosError } from 'axios'
 
 type TranslationMemoryDetailsTypes = {
-  translationMemory: Partial<TranslationMemoryType>
+  translationMemory: Partial<TranslationMemoryType> & {
+    chunk_amount?: number
+    edit_url?: string
+  }
   isTmOwnedByUserInstitution?: boolean
   memoryId: string
 }
@@ -44,8 +47,6 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
   const { importTMX } = useImportTMX()
   const { exportTMX, isLoading } = useExportTMX()
   const navigate = useNavigate()
-
-  const { lang_pair } = translationMemory || {}
 
   const handleImportSegments = async (uploadedFile: File) => {
     const payload = {
@@ -72,11 +73,8 @@ const TranslationMemoryDetails: FC<TranslationMemoryDetailsTypes> = ({
   }
 
   const handleExportFile = async () => {
-    const langPair = split(lang_pair, '_')
     const payload = {
-      slang: langPair[0],
-      tlang: langPair[1],
-      tag: [memoryId],
+      translation_memory_ids: [memoryId],
     }
     try {
       await exportTMX(payload)

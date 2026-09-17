@@ -277,13 +277,21 @@ const ManagerContent: FC<ManagerContentProps> = ({ id, projectDomain }) => {
     (tab) => orderMapping[tab.id]
   )
 
-  const allTabs = [
+  const catToolEnabled =
+    subProject?.project?.type_classifier_value?.project_type_config
+      ?.cat_tool_enabled
+
+  const allTabs = compact([
     {
-      id: 'general_information',
+      id: SubProjectFeatures.GeneralInformation,
       name: t('projects.features.general_information'),
     },
+    catToolEnabled && {
+      id: SubProjectFeatures.CatTool,
+      name: t('projects.features.cat_tool'),
+    },
     ...sortedAvailableTabs,
-  ]
+  ])
   return (
     <>
       <Tabs

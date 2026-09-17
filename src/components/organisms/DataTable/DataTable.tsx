@@ -22,6 +22,8 @@ import {
   Row,
   RowData,
   ColumnDef,
+  RowSelectionState,
+  OnChangeFn,
 } from '@tanstack/react-table'
 import Container from 'components/atoms/Container/Container'
 import TablePagination from 'components/organisms/TablePagination/TablePagination'
@@ -69,14 +71,19 @@ type DataTableProps<TData extends RowData> = {
     parentId?: string
     getIsExpanded?: () => boolean
     index?: number
+    original?: TData
   }) => {
     background?: string
     fontSize?: number
+    opacity?: number
   }
 
   columnOrder?: string[] | undefined
   subRowComponent?: (row: Row<TData>) => ReactElement
   defaultPaginationData?: PaginationFunctionType
+  rowSelection?: RowSelectionState
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>
+  getRowId?: (originalRow: TData, index: number, parent?: Row<TData>) => string
 } & HeaderGroupFunctions
 
 declare module '@tanstack/react-table' {
@@ -109,6 +116,9 @@ const DataTable = <TData,>(
     columnOrder,
     subRowComponent,
     defaultPaginationData,
+    rowSelection,
+    onRowSelectionChange,
+    getRowId,
   }: DataTableProps<TData>,
   ref: Ref<HTMLDivElement>
 ) => {
@@ -145,7 +155,9 @@ const DataTable = <TData,>(
     columns,
     manualPagination: !!paginationData, // Tell react-table that you will handle the pagination manually
     pageCount: last_page, // Provide the total number of pages
+    getRowId,
     state: {
+      rowSelection,
       expanded,
       columnOrder,
       ...{ pagination },
@@ -157,6 +169,7 @@ const DataTable = <TData,>(
     onExpandedChange: setExpanded,
     getSubRows: getSubRows,
     getExpandedRowModel: getExpandedRowModel(),
+    onRowSelectionChange,
   })
 
   // useEffect(() => {

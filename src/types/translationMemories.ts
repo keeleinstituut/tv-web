@@ -10,50 +10,60 @@ export enum TMType {
   Public = 'public',
 }
 
+export interface TranslationMemoryMetaType {
+  tv_domain?: string
+  tv_tags?: string[]
+  comment?: string
+}
+
 export interface TranslationMemoryType {
   id: string
-  institution_id: string
   name: string
-  type?: TMType
-  tv_tags?: string[]
-  tv_domain?: string
-  comment?: string
+  source_locale?: string
+  target_locale?: string
+  tenant_id?: string
+  visibility?: TMType
   created_at: string
-  lang_pair: string
-  chunk_amount?: string | number
-  edit_url?: string
   import_at?: string
+  meta: TranslationMemoryMetaType
+}
+
+export interface TranslationMemoryResponse {
+  data: TranslationMemoryType
+  segment_count?: number
+  edit_url?: string
 }
 
 export interface TranslationMemoryDataType {
-  tags?: TranslationMemoryType[]
   data?: TranslationMemoryType[]
   segment_counts?: Record<string, number>
 }
 
 export interface TranslationMemoryPostType {
-  name: string
-  type?: TMType
-  tv_tags?: string[]
-  tv_domain?: string
-  comment?: string
+  name?: string
+  visibility?: TMType
+  meta?: {
+    tv_domain?: string
+    tv_tags?: string[]
+    comment?: string
+  }
 }
 
 export type TranslationMemoryPayload = {
-  lang_pair?: string
-  name?: string
-  type?: TMType
-  tv_domain?: string
-}
-export interface TmStatsType {
-  lang_pairs?: { [lang_pair: string]: object }
-  tag?: { [tm_key: string]: number }
+  name: string
+  source_locale: string
+  target_locale: string
+  tenant_id?: string
+  visibility?: TMType
+  meta?: {
+    tv_domain?: string
+  }
 }
 
 export type TranslationMemoryFilters = {
   lang_pair?: string[]
   name?: string
-  type?: TMType | TMType[]
+  visibility?: TMType | TMType[]
   tv_domain?: string | string[]
   tv_tags?: string[]
   with_segment_count?: number
@@ -66,30 +76,7 @@ export interface ImportTMXPayload {
 }
 
 export interface ExportTMXPayload {
-  slang: string
-  tlang: string
-  tag: string | string[]
-}
-
-export interface SubProjectTmKeys {
-  id: string
-  sub_project_id: string
-  key: string
-  is_writable: boolean
-}
-
-export interface SubProjectTmKeysResponse {
-  data: SubProjectTmKeys[]
-}
-export interface SubProjectTmKeysPayload {
-  id?: string
-  sub_project_id?: string
-  is_writable?: number
-  tm_keys?: {
-    key: string
-  }[]
-  key?: string
-  created_as_empty?: number
+  translation_memory_ids: string[]
 }
 
 export type ContextCheckPayload = {
@@ -117,3 +104,4 @@ export interface ContextCheckListResponse {
   data: ContextCheckType[]
   meta?: ResponseMetaTypes
 }
+

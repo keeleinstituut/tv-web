@@ -18,6 +18,7 @@ export interface ConfirmationModalBaseProps {
   handleCancel?: () => void
   helperText?: string | ReactElement
   className?: string
+  innerWrapperClassName?: string
   size?: ModalSizeTypes
   proceedButtonDisabled?: boolean
   proceedButtonLoading?: boolean

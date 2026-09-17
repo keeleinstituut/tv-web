@@ -15,6 +15,7 @@ import BaseButton from 'components/atoms/BaseButton/BaseButton'
 import { ModalTypes, showModal } from 'components/organisms/modals/ModalRoot'
 import { ProjectDetailModes } from 'components/organisms/ProjectDetails/ProjectDetails'
 import { Price, PriceUnits } from 'types/price'
+import { VolumeUnits } from 'types/assignments'
 import { VolumeValue } from 'types/volumes'
 import { useIsDataOwner } from 'hooks/useIsDataOwner'
 
@@ -44,21 +45,21 @@ export const apiTypeToKey = (apiType: string) => {
   }
 }
 
-export const keyToApiType = (key: string) => {
+export const keyToApiType = (key: string): VolumeUnits => {
   switch (key) {
     case PriceUnits.CharacterFee:
-      return 'CHARACTERS'
+      return VolumeUnits.CHARACTERS
     case PriceUnits.WordFee:
-      return 'WORDS'
+      return VolumeUnits.WORDS
     case PriceUnits.PageFee:
-      return 'PAGES'
+      return VolumeUnits.PAGES
     case PriceUnits.MinuteFee:
-      return 'MINUTES'
+      return VolumeUnits.MINUTES
     case PriceUnits.HourFee:
-      return 'HOURS'
+      return VolumeUnits.HOURS
     case PriceUnits.MinimalFee:
     default:
-      return 'MIN_FEE'
+      return VolumeUnits.MIN_FEE
   }
 }
 
